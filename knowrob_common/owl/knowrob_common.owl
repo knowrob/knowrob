@@ -2343,6 +2343,14 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#frameName -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob_common;frameName">
+        <rdfs:subPropertyOf rdf:resource="&knowrob_common;nameString"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#fullName -->
 
     <owl:DatatypeProperty rdf:about="&knowrob_common;fullName">
@@ -4487,13 +4495,13 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;ReleasingGraspOfSomething"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;ClosingADoor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;ClosingADoor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;ReleasingGraspOfSomething"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -5136,6 +5144,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#DescendingEvent -->
+
+    <owl:Class rdf:about="&knowrob_common;DescendingEvent">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Designator -->
 
     <owl:Class rdf:about="&knowrob_common;Designator">
@@ -5553,6 +5569,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FetchAndDeliver -->
+
+    <owl:Class rdf:about="&knowrob_common;FetchAndDeliver">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;TransportationEvent"/>
+        <rdfs:comment rdf:datatype="&xsd;string">Sequence of PickingUpAnObject and
+PuttingDownAnObject.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#FillingProcess -->
 
     <owl:Class rdf:about="&knowrob_common;FillingProcess">
@@ -5784,14 +5810,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         <rdfs:subClassOf rdf:resource="&knowrob_common;StateOfMatterChangeEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;inputsDestroyed"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;LiquidTangibleThing"/>
+                <owl:onProperty rdf:resource="&knowrob_common;maxTempForProcess"/>
+                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;maxTempForProcess"/>
-                <owl:hasValue rdf:datatype="&xsd;integer">0</owl:hasValue>
+                <owl:onProperty rdf:resource="&knowrob_common;inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;LiquidTangibleThing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -6805,14 +6831,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
         <rdfs:subClassOf rdf:resource="&knowrob_common;PurposefulAction"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;performedBy"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;IntelligentAgent"/>
+                <owl:onProperty rdf:resource="&knowrob_common;locationSearched"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;EnduringThing-Localized"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;locationSearched"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;EnduringThing-Localized"/>
+                <owl:onProperty rdf:resource="&knowrob_common;performedBy"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;IntelligentAgent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -7266,6 +7292,21 @@ For example, although a ticking grandfather clock is not normally undergoing eit
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
+
+    <owl:Class rdf:about="&knowrob_common;MovingToLocation">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob_common;goalLocation"/>
+                <owl:onClass rdf:resource="&knowrob_common;SpatialThing"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#MultiRoomUnit -->
 
     <owl:Class rdf:about="&knowrob_common;MultiRoomUnit">
@@ -7496,13 +7537,13 @@ For example, although a ticking grandfather clock is not normally undergoing eit
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;OpeningADoor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;Reaching"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;OpeningADoor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -7516,13 +7557,13 @@ For example, although a ticking grandfather clock is not normally undergoing eit
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;OpeningADrawer"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;Reaching"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;OpeningADrawer"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -8044,6 +8085,12 @@ For example, although a ticking grandfather clock is not normally undergoing eit
     <owl:Class rdf:about="&knowrob_common;Point">
         <rdfs:subClassOf rdf:resource="&knowrob_common;GeometricallyDescribableThing"/>
         <rdfs:subClassOf rdf:resource="&knowrob_common;HomogeneousSpaceRegion"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob_common;boundingBoxSize"/>
+                <owl:hasValue rdf:datatype="&xsd;string">0 0 0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">A specialization of HomogeneousSpaceRegion and ZeroDimensionalThing (qq.v.). This is the collection of points that have a fixed location with respect to some coordinate system or frame of reference. Space points can be used to indicate the locations (or partial locations) of things in space (see locatedAtPoint_Spatial).
 
 An important specialization of this collection is Point_Empirical (q.v.), whose instances have fixed locations with respect to some coordinate system or frame of reference in the empirically-observable universe, and thus are embedded in time. An example of a space-point not in the empirical universe is a point in some abstract Euclidean space of the sort studied in geometry.
@@ -8385,12 +8432,6 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;orderingConstraints"/>
-                <owl:hasValue rdf:resource="&knowrob_common;SubEventOrderingPuttingSomethingSomewhere2"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
                 <owl:someValuesFrom rdf:resource="&knowrob_common;CarryingWhileLocomoting"/>
             </owl:Restriction>
@@ -8399,6 +8440,12 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;subAction"/>
                 <owl:someValuesFrom rdf:resource="&knowrob_common;PickingUpAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob_common;orderingConstraints"/>
+                <owl:hasValue rdf:resource="&knowrob_common;SubEventOrderingPuttingSomethingSomewhere2"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -8732,13 +8779,13 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
         <rdfs:subClassOf rdf:resource="&knowrob_common;RotationMatrix"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;matrixNumRows"/>
+                <owl:onProperty rdf:resource="&knowrob_common;matrixNumColumns"/>
                 <owl:hasValue rdf:datatype="&xsd;integer">3</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;matrixNumColumns"/>
+                <owl:onProperty rdf:resource="&knowrob_common;matrixNumRows"/>
                 <owl:hasValue rdf:datatype="&xsd;integer">3</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -8963,6 +9010,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <owl:Class rdf:about="&knowrob_common;SinkingAGripper">
         <rdfs:subClassOf rdf:resource="&knowrob_common;ActionOnGripper"/>
         <rdfs:subClassOf rdf:resource="&knowrob_common;SinkingAnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SinkingAnObject -->
+
+    <owl:Class rdf:about="&knowrob_common;SinkingAnObject">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;DescendingEvent"/>
     </owl:Class>
     
 
@@ -9323,14 +9378,14 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
         <rdfs:subClassOf rdf:resource="&knowrob_common;StateOfMatterChangeEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;outputsCreated"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;SolidTangibleThing"/>
+                <owl:onProperty rdf:resource="&knowrob_common;inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;GaseousTangibleThing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;inputsDestroyed"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;GaseousTangibleThing"/>
+                <owl:onProperty rdf:resource="&knowrob_common;outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;SolidTangibleThing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -9840,6 +9895,12 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <rdfs:subClassOf rdf:resource="&knowrob_common;RegulatingFluidFlow"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob_common;fromState"/>
+                <owl:hasValue rdf:resource="&knowrob_common;DeviceStateOn"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;deviceUsed"/>
                 <owl:someValuesFrom rdf:resource="&knowrob_common;Tap-PlumbingFixture"/>
             </owl:Restriction>
@@ -9848,12 +9909,6 @@ As the above examples illustrate, it is not the case that everthing that has a t
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob_common;toState"/>
                 <owl:hasValue rdf:resource="&knowrob_common;DeviceStateOff"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;fromState"/>
-                <owl:hasValue rdf:resource="&knowrob_common;DeviceStateOn"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">The collection of events in which a tap is closed and water can no longer flow through it.</rdfs:comment>
@@ -9903,14 +9958,14 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <rdfs:subClassOf rdf:resource="&knowrob_common;RegulatingFluidFlow"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;toState"/>
-                <owl:hasValue rdf:resource="&knowrob_common;DeviceStateOn"/>
+                <owl:onProperty rdf:resource="&knowrob_common;deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="&knowrob_common;Tap-PlumbingFixture"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;deviceUsed"/>
-                <owl:someValuesFrom rdf:resource="&knowrob_common;Tap-PlumbingFixture"/>
+                <owl:onProperty rdf:resource="&knowrob_common;toState"/>
+                <owl:hasValue rdf:resource="&knowrob_common;DeviceStateOn"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -10274,47 +10329,6 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#DescendingEvent -->
-
-    <owl:Class rdf:about="&knowrob_common;DescendingEvent">
-        <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#FetchAndDeliver -->
-
-    <owl:Class rdf:about="&knowrob_common;FetchAndDeliver">
-        <rdfs:subClassOf rdf:resource="&knowrob_common;TransportationEvent"/>
-        <rdfs:comment rdf:datatype="&xsd;string">Sequence of PickingUpAnObject and
-PuttingDownAnObject.</rdfs:comment>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
-
-    <owl:Class rdf:about="&knowrob_common;MovingToLocation">
-        <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob_common;goalLocation"/>
-                <owl:onClass rdf:resource="&knowrob_common;SpatialThing"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#SinkingAnObject -->
-
-    <owl:Class rdf:about="&knowrob_common;SinkingAnObject">
-        <rdfs:subClassOf rdf:resource="&knowrob_common;DescendingEvent"/>
-    </owl:Class>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -10380,7 +10394,7 @@ PuttingDownAnObject.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#MapFrame -->
 
     <owl:NamedIndividual rdf:about="&knowrob_common;MapFrame">
-        <rdf:type rdf:resource="&knowrob_common;FrameOfReference"/>
+        <rdf:type rdf:resource="&knowrob_common;CartesianCoordinateSystem"/>
         <rdf:type rdf:resource="&knowrob_common;SpatialThing-Localized"/>
         <pose rdf:resource="&knowrob_common;Pose_MapFrame"/>
     </owl:NamedIndividual>
@@ -10416,7 +10430,7 @@ PuttingDownAnObject.</rdfs:comment>
     <owl:NamedIndividual rdf:about="&knowrob_common;Pose_MapFrame">
         <rdf:type rdf:resource="&knowrob_common;Pose"/>
         <translation rdf:datatype="&xsd;string">0.0 0.0 0.0</translation>
-        <quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</quaternion>
+        <quaternion rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</quaternion>
     </owl:NamedIndividual>
     
 
@@ -10483,18 +10497,6 @@ PuttingDownAnObject.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#designatedThing -->
-
-    <owl:NamedIndividual rdf:about="&knowrob_common;designatedThing">
-        <rdf:type rdf:resource="&computable;PrologProperty"/>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:command rdf:datatype="&xsd;string">knowrob_owl:comp_designatedThing</computable:command>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob_common;designatedThing"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:NamedIndividual rdf:about="&owl;Thing"/>
@@ -10512,6 +10514,25 @@ PuttingDownAnObject.</rdfs:comment>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob_common;CleaningSubstance"/>
+            <rdf:Description rdf:about="&knowrob_common;DomesticCleaningTool"/>
+            <rdf:Description rdf:about="&knowrob_common;Napkin"/>
+            <rdf:Description rdf:about="&knowrob_common;PaperTowel"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob_common;AngularDistance"/>
+            <rdf:Description rdf:about="&knowrob_common;Area"/>
+            <rdf:Description rdf:about="&knowrob_common;Distance"/>
+            <rdf:Description rdf:about="&knowrob_common;Orientation"/>
+            <rdf:Description rdf:about="&knowrob_common;Volume"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="&knowrob_common;FrameOfReference"/>
             <rdf:Description rdf:about="&knowrob_common;Matrix"/>
             <rdf:Description rdf:about="&knowrob_common;RelationalStructure"/>
@@ -10522,18 +10543,21 @@ PuttingDownAnObject.</rdfs:comment>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob_common;CleaningSubstance"/>
-            <rdf:Description rdf:about="&knowrob_common;DomesticCleaningTool"/>
-            <rdf:Description rdf:about="&knowrob_common;Napkin"/>
-            <rdf:Description rdf:about="&knowrob_common;PaperTowel"/>
+            <rdf:Description rdf:about="&knowrob_common;Arm"/>
+            <rdf:Description rdf:about="&knowrob_common;Digit-AnatomicalPart"/>
+            <rdf:Description rdf:about="&knowrob_common;FaceOfAnimal"/>
+            <rdf:Description rdf:about="&knowrob_common;Hand"/>
+            <rdf:Description rdf:about="&knowrob_common;Leg"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob_common;Broom"/>
-            <rdf:Description rdf:about="&knowrob_common;Mop"/>
-            <rdf:Description rdf:about="&knowrob_common;VacuumCleaner"/>
+            <rdf:Description rdf:about="&knowrob_common;IndexFinger"/>
+            <rdf:Description rdf:about="&knowrob_common;LittleFinger"/>
+            <rdf:Description rdf:about="&knowrob_common;MiddleFinger"/>
+            <rdf:Description rdf:about="&knowrob_common;RingFinger"/>
+            <rdf:Description rdf:about="&knowrob_common;Thumb"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
@@ -10551,31 +10575,9 @@ PuttingDownAnObject.</rdfs:comment>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob_common;IndexFinger"/>
-            <rdf:Description rdf:about="&knowrob_common;LittleFinger"/>
-            <rdf:Description rdf:about="&knowrob_common;MiddleFinger"/>
-            <rdf:Description rdf:about="&knowrob_common;RingFinger"/>
-            <rdf:Description rdf:about="&knowrob_common;Thumb"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob_common;AngularDistance"/>
-            <rdf:Description rdf:about="&knowrob_common;Area"/>
-            <rdf:Description rdf:about="&knowrob_common;Distance"/>
-            <rdf:Description rdf:about="&knowrob_common;Orientation"/>
-            <rdf:Description rdf:about="&knowrob_common;Volume"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob_common;Arm"/>
-            <rdf:Description rdf:about="&knowrob_common;Digit-AnatomicalPart"/>
-            <rdf:Description rdf:about="&knowrob_common;FaceOfAnimal"/>
-            <rdf:Description rdf:about="&knowrob_common;Hand"/>
-            <rdf:Description rdf:about="&knowrob_common;Leg"/>
+            <rdf:Description rdf:about="&knowrob_common;Broom"/>
+            <rdf:Description rdf:about="&knowrob_common;Mop"/>
+            <rdf:Description rdf:about="&knowrob_common;VacuumCleaner"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>

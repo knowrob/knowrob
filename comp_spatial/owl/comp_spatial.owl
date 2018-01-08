@@ -22,84 +22,84 @@
   </owl:Ontology>
 
 
-    <computable:PrologProperty rdf:about="#computeInCenterOf">
+    <computable:PrologTemporalProperty rdf:about="#computeInCenterOf">
         <computable:command rdf:datatype="&xsd;string">comp_inCenterOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;inCenterOf"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeInContGeneric">
+    <computable:PrologTemporalProperty rdf:about="#computeInContGeneric">
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">in_ContGeneric</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;in-ContGeneric"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeInFrontOf">
+    <computable:PrologTemporalProperty rdf:about="#computeInFrontOf">
         <computable:command rdf:datatype="&xsd;string">comp_inFrontOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;inFrontOf-Generally"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeCenter">
+    <computable:PrologTemporalProperty rdf:about="#computeCenter">
         <computable:command rdf:datatype="&xsd;string">comp_center</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;center"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeOnPhysical">
+    <computable:PrologTemporalProperty rdf:about="#computeOnPhysical">
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">on_Physical</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;on-Physical"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeAboveOf">
+    <computable:PrologTemporalProperty rdf:about="#computeAboveOf">
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">comp_above_of</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;above-Generally"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeBelowOf">
+    <computable:PrologTemporalProperty rdf:about="#computeBelowOf">
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">comp_below_of</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;below-Generally"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeToTheLeftOf">
+    <computable:PrologTemporalProperty rdf:about="#computeToTheLeftOf">
         <computable:command rdf:datatype="&xsd;string">comp_toTheLeftOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheLeftOf"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeToTheRightOf">
+    <computable:PrologTemporalProperty rdf:about="#computeToTheRightOf">
         <computable:command rdf:datatype="&xsd;string">comp_toTheRightOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheRightOf"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
-    <computable:PrologProperty rdf:about="#computeToTheSideOf">
+    <computable:PrologTemporalProperty rdf:about="#computeToTheSideOf">
         <computable:command rdf:datatype="&xsd;string">comp_toTheSideOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheSideOf"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 
 </rdf:RDF>

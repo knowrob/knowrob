@@ -9,11 +9,15 @@ import org.ros.node.ConnectedNode;
 
 import com.mongodb.BasicDBObject;
 
+import org.apache.log4j.Logger;
+
 /**
  * Factory singleton that allows to generate and publish ROS messages from Mongo DB objects.
  * @author Daniel Beßler
  */
 public class MongoMessages extends AbstractNodeMain {
+	final static Logger logger = Logger.getLogger(MongoMessages.class);
+	
 	private ConnectedNode node = null;
 	private Map<String,MongoPublisher<?>> publisher = new HashMap<String,MongoPublisher<?>>();
 	private static MongoMessages instance = null;
@@ -72,6 +76,7 @@ public class MongoMessages extends AbstractNodeMain {
 		}
 		catch (InterruptedException e) {
 			// TODO Auto-generated catch block
+			logger.error("mongo getPublisher failed: " + e.getMessage());
 			e.printStackTrace();
 		}
 		

@@ -198,7 +198,7 @@ public class PrologQueryUtils {
 		owlClass = PrologInterface.removeSingleQuotes(owlClass);
 		
 		HashMap<String, Vector<String>> values = 
-			PrologInterface.executeQuery("class_properties('" + owlClass + "', P, O)");
+			PrologInterface.executeQuery("owl_class_properties('" + owlClass + "', P, O)");
 		
 		return values;
 	}
@@ -686,7 +686,7 @@ public class PrologQueryUtils {
 		action = PrologInterface.removeSingleQuotes(action);
 		
 		HashMap<String, Vector<String>> t_insts = PrologInterface.
-				executeQuery("class_properties('" + action + "', 'http://knowrob.org/kb/knowrob.owl#stateTransition', T)");
+				executeQuery("owl_class_properties('" + action + "', 'http://knowrob.org/kb/knowrob.owl#stateTransition', T)");
 
 		if(t_insts !=null && t_insts.get("T").size() > 0) {
 			

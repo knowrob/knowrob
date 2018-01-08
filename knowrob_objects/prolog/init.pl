@@ -1,5 +1,6 @@
 /*
   Copyright (C) 2011-2014 Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,12 +34,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-% :- register_ros_package(tf_prolog).
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 
-:- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_perception')).
-:- use_module(library('knowrob_coordinates')).
-% :- use_module(library('knowrob_cad_parser')).
-% :- use_module(library('tf_prolog')).
+:- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/beliefstate')).
+:- use_module(library('knowrob/perception')).

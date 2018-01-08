@@ -13,6 +13,8 @@ import org.ros.node.topic.Publisher;
 
 import com.mongodb.BasicDBObject;
 
+import org.apache.log4j.Logger;
+
 /**
  * A typed publisher of ROS messages generated from mongo DB objects.
  * @author Daniel Beßler
@@ -20,6 +22,8 @@ import com.mongodb.BasicDBObject;
  * @param <RosType> The ROS message type (e.g., sensor_msgs.Image)
  */
 public class MongoPublisher<RosType> {
+	final static Logger logger = Logger.getLogger(MongoPublisher.class);
+	
 	Publisher<RosType> pub = null;
 	// e.g. "std_msgs/String"
 	final String typeName;
@@ -47,7 +51,8 @@ public class MongoPublisher<RosType> {
 			return msg;
 		}
 		catch (Exception e) {
-			System.err.println("Failed to create message: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to create message: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -55,7 +60,7 @@ public class MongoPublisher<RosType> {
 
 	public RosType publish(BasicDBObject mngObj) {
 		if(pub==null) {
-			System.err.println("Not connected.");
+			logger.error("Not connected.");
 			return null;
 		}
 		try {
@@ -65,7 +70,8 @@ public class MongoPublisher<RosType> {
 			return msg;
 		}
 		catch (Exception e) {
-			System.err.println("Failed to publish message: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to publish message: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -87,7 +93,7 @@ public class MongoPublisher<RosType> {
 
 			final Object value = mngObj.get(fieldName);
 			if(value==null) {
-				System.err.println("Mongo entry missing " + fieldName + " field.");
+				logger.error("Mongo entry missing " + fieldName + " field.");
 				continue;
 			}
 			
@@ -98,8 +104,8 @@ public class MongoPublisher<RosType> {
 					createMessage(getter.invoke(msg), (BasicDBObject)value);
 				} 
 				catch (Exception e) {
-					// TODO Auto-generated catch block
-					System.err.println("Failed to get message field '" + fieldName + "'" +
+					// TODO: throw exception
+					logger.error("Failed to get message field '" + fieldName + "'" +
 							". Error: " + e.getMessage());
 					e.printStackTrace();
 				}
@@ -135,8 +141,8 @@ public class MongoPublisher<RosType> {
 			m.invoke(msg, value);
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.err.println("Failed to set message field '" + fieldName + "'" +
+			// TODO: throw exception
+			logger.error("Failed to set message field '" + fieldName + "'" +
 					". Value type: " + value.getClass().getName() +
 					". Method argument type: " + m.getParameterTypes()[0].getName() +
 					". Error: " + e.getMessage());

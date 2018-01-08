@@ -29,7 +29,7 @@
             "text": "Visualize semantic map"
         },
         {
-            "q": "owl_subclass_of(T, knowrob:'StorageConstruct'), class_properties(T, knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable'), owl_individual_of(Obj, T), highlight_object_with_children(Obj).",
+            "q": "owl_subclass_of(T, knowrob:'StorageConstruct'), owl_class_properties(T, knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable'), owl_individual_of(Obj, T), highlight_object_with_children(Obj).",
             "text": "What is the storage place for perishable items?"
         },
         {
