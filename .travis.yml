@@ -68,7 +68,7 @@ before_install:
   - sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
   - sudo apt-get update -qq
   - sudo apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin
-  - sudo apt-get install -y ros-indigo-rospy ros-indigo-roscpp ros-indigo-rosjava swi-prolog-java ros-indigo-urdf ros-indigo-rospack
+  - sudo apt-get install -y ros-indigo-rospy ros-indigo-roscpp ros-indigo-rosjava swi-prolog-java ros-indigo-urdf ros-indigo-rospack ros-indigo-tf ros-indigo-urdfdom-py ros-indigo-json-prolog-msgs ros-indigo-data-vis-msgs libjson-java libjson-glib-dev python-lxml
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Prepare rosdep to install dependencies.
   - sudo rosdep init
