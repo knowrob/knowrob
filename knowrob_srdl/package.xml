@@ -20,6 +20,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rosjava_build_tools</build_depend>
+  <build_depend>xacro</build_depend>
   
   <build_depend>knowrob_common</build_depend>
   <build_depend>knowrob_actions</build_depend>
