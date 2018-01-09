@@ -1,6 +1,8 @@
 knowrob
 =======
 
+[![Build Status](https://travis-ci.org/knowrob/knowrob.svg?branch=master)](https://travis-ci.org/knowrob/knowrob)
+
 In order to robustly perform tasks based on abstract instructions, robots need sophisticated knowledge processing
 methods. These methods have to supply the difference between the (often shallow and symbolic) information in the
 instructions and the (detailed, grounded and often real-valued) information needed for execution. For filling these
