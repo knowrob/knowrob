@@ -33,7 +33,6 @@ dependencies {
   compile 'org.ros.rosjava_messages:visualization_msgs:1.10.+'
   
   compile 'org.knowrob.knowrob_common:knowrob_common:[0.1,)'
-  compile 'org.knowrob.tf_prolog:tfjava:[0.1,)'
   
   compile 'org.eclipse.jetty:jetty-server:8.1.15.v20140411'
   compile 'jpl:jpl:3.1.4-alpha'
