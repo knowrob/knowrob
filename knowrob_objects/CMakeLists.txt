@@ -18,6 +18,9 @@ message(STATUS "SWIPL found.")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_library(knowrob_objects SHARED src/knowrob_objects.cpp)
 target_link_libraries(knowrob_objects ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(knowrob_objects 
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${catkin_EXPORTED_TARGETS})
 
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
