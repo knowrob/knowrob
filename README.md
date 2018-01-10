@@ -14,4 +14,5 @@ tailored to filling in information gaps for successful task execution.
 This repository contains
 KnowRob core packages and general issue tracker for the KnowRob knowledge base.
 
-Please visit http://www.knowrob.org for more information and documentation.
+Please visit http://www.knowrob.org for
+more information and [installation instructions](http://www.knowrob.org/installation).

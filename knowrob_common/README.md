@@ -44,7 +44,7 @@ owl_individual_of_during/3 expands owl_compute_individual_of/2,
 and owl_has_has/4 expands owl_compute_has/3 with temporal semantics.
 Finally, holds/2 allows to put triples in a term Predicate(Subject,Object):
 
-    holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), 25.0)
+    holds(knowrob:volumeOfObject(Obj, literal(type(xsd:float,15.0))), 25.0)
 
 ### Ontologies
 
