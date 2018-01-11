@@ -12,7 +12,7 @@ It provides a service that exposes a Prolog shell via ROS.
 You can run the json_prolog service using a launch file such as the following
 ==
 <launch>
-  <param name="initial_package" type="string" value="knowrob_map_data" />
+  <param name="initial_package" type="string" value="knowrob_maps" />
   <param name="initial_goal" type="string" value="owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl')" />
 
   <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
