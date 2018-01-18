@@ -43,6 +43,7 @@ import com.google.common.base.Joiner;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.utils.ros.RosUtilities;
 
+import org.jpl7.fli.Prolog;
 import org.jpl7.JPL;
 import org.jpl7.Query;
 import org.jpl7.Term;
@@ -64,17 +65,17 @@ public class PrologInterface {
     	if(!initialized) {
 
     		try {
-    			Vector<String> args= new Vector<String>(Arrays.asList(org.jpl7.fli.Prolog.get_default_init_args()));
+    			Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
     			//            args.add( "-G256M" );
     			//args.add( "-q" );
     			args.add( "-nosignals" );
 
     			String rosprolog = RosUtilities.rospackFind("rosprolog");
-    			org.jpl7.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+    			Prolog.set_default_init_args( args.toArray( new String[0] ) );
 
     			// load the appropriate startup file for this context
-    			new org.jpl7.Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
-    			new org.jpl7.Query("register_ros_package('"+initPackage+"')").oneSolution();
+    			new Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
+    			new Query("register_ros_package('"+initPackage+"')").oneSolution();
 
     			initialized = true;
     			
@@ -95,14 +96,14 @@ public class PrologInterface {
 
 		if(!PrologInterface.isInitialized()) {
 			try {
-				Vector<String> args= new Vector<String>(Arrays.asList(org.jpl7.fli.Prolog.get_default_init_args()));
+				Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
 				// args.add( "-G256M" );
 				// args.add( "-q" );
 				args.add( "-nosignals" );
-				org.jpl7.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+				Prolog.set_default_init_args( args.toArray( new String[0] ) );
 
 				// load the appropriate startup file for this context
-				new org.jpl7.Query("ensure_loaded('"+initFile+"')").oneSolution();
+				new Query("ensure_loaded('"+initFile+"')").oneSolution();
 
 				PrologInterface.setInitialized(true);
 				
@@ -140,7 +141,6 @@ public class PrologInterface {
 
     		// Build the result
     		for (int i=0; i<solutions.length; i++) {
-    			@SuppressWarnings("rawtypes")
 				Map<String, Term> solution = solutions[i];
     			for (Object key: solution.keySet()) {
     				String keyStr = key.toString();
