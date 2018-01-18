@@ -11,7 +11,7 @@
     Perl.  See http://www.perl.com/pub/a/language/misc/Artistic.html
 */
 
-:- module(plunit,
+:- module(plunit_knowrob,
 	  [ set_test_options/1,		% +Options
 	    begin_tests/1,		% +Name
 	    begin_tests/2,		% +Name, +Options
