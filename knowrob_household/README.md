@@ -1,7 +1,7 @@
 knowrob_household
 ===
 
-This package is supposed to hold any household specific artifacts
+This package holds household specific artifacts
 including Prolog reasoning rules and in particular ontologies
 describing household concepts.
 
@@ -24,8 +24,8 @@ from where ontologies of different semantic rooms is imported.
 Semantic room ontologies are further decomposed into *furniture*, *item*, and *activity* ontology.
 
 The *furniture ontology* describes furniture pieces that are characteristic for a
-particular semantic room, and 
-What they are used for
+particular semantic room, 
+what they are used for
 ([typePrimaryFunction-deviceUsedFor](http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor))
 and what they most likely contain
 ([typePrimaryFunction-containerFor](http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor)).

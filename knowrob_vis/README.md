@@ -73,9 +73,9 @@ in which case they are used for visualization of all of its instances.
 The following OWL snippet shows how an instance
 can be linked to its CAD model using the [pathToCadModel](http://knowrob.org/kb/knowrob.owl#pathToCadModel) property:
 
-     <owl:NamedIndividual rdf:about="&map_obj;milk1">
+     <owl:NamedIndividual rdf:about="&map;milk1">
          <rdf:type rdf:resource="&knowrob;CowsMilk-Product"/>
-         <knowrob:pathToCadModel rdf:datatype="&xsd;string">
+         <knowrob:pathToCadModel rdf:datatype="&xsd;string"
                              package://knowrob_tutorial/cad/milk.kmz</knowrob:pathToCadModel>
      </owl:NamedIndividual>
 
