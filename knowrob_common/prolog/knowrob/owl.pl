@@ -279,7 +279,7 @@ owl_readable_internal(P,P_readable) :-
 owl_readable_internal(class(X),Y) :- owl_readable_internal(X,Y).
 owl_readable_internal(X,Y) :- atom(X), rdf_split_url(_, Y, X).
 owl_readable_internal(X,X) :- atom(X).
-owl_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
+owl_readable_internal(X,Y) :- compound(X), owl_readable(X,Y).
 
 		 /*******************************
 		 *		  ABOX ASSERTIONS		*
