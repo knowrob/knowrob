@@ -296,7 +296,7 @@ rdf_paths_down(A, B, [Sub|Path]) :-
 %
 rdf_most_similar(Class, Super, N, NMostSim) :-
   findall([A, D], (rdfs_subclass_of(A, Super),
-                   rdf_wup_distance(A, Class, D)), Dists),
+                   rdf_wup_similarity(A, Class, D)), Dists),
   predsort(compare_inference_probs, Dists, MostSim),
   first_n_elem(MostSim, N, NMostSim).
 
