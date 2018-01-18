@@ -1,0 +1,36 @@
+<package>
+  <name>knowrob_maps</name>
+  <version>1.0.0</version>
+  <description>Additional predicates for manipulating semantic maps and
+               reasoning about them
+  </description>
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://www.ros.org/wiki/knowrob</url>
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+  <author>Lars Kunze</author>
+  <author>Lorenz Moesenlechner</author>
+  <author>Moritz Tenorth</author>
+  <author email="furushchev@jsk.imi.i.u-tokyo.ac.jp">Yuki Furuta</author>
+  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>comp_spatial</build_depend>
+
+  <run_depend>comp_spatial</run_depend>
+  <run_depend>python-lxml</run_depend>
+  <run_depend>python-numpy</run_depend>
+  <run_depend>rospack</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>urdfdom_py</run_depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml"/>
+  </export>
+
+</package>

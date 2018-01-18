@@ -6,7 +6,7 @@
     through ROS services. It is implemented in Java by using rosjava and jpl7.JPL.
   </description>
 
-  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD</license>
 
@@ -15,6 +15,7 @@
 
   <author>Lorenz Moesenlechner</author>
   <author>Moritz Tenorth</author>
+  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
 
   
   <buildtool_depend>catkin</buildtool_depend>

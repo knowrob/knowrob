@@ -29,6 +29,7 @@
         <owl:imports rdf:resource="package://knowrob_household/owl/groceries.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_items.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_activities.owl"/>
+        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_action_effects.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_furniture.owl"/>
     </owl:Ontology>
 
