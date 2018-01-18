@@ -208,6 +208,62 @@ public class MarkerObject {
 		queueRepublish();
 	}
 	
+	public double[][] getPoints() {
+		List<geometry_msgs.Point> points = markerMsg.getPoints();
+		if(points == null) return null;
+		double[][] out = new double[points.size()][3];
+		int i = 0;
+		for(geometry_msgs.Point p : points) {
+			out[i] = new double[3];
+			out[i][0] = p.getX();
+			out[i][1] = p.getY();
+			out[i][2] = p.getZ();
+			i += 1;
+		}
+		return out;
+	}
+	
+	public void setPoints(double[][] in) {
+		List<geometry_msgs.Point> points = new LinkedList<geometry_msgs.Point>();
+		for(int i=0; i<points.size(); ++i) {
+			geometry_msgs.Point p = publisher.node.getTopicMessageFactory().newFromType(geometry_msgs.Point._TYPE);
+			p.setX(in[i][0]);
+			p.setY(in[i][1]);
+			p.setZ(in[i][2]);
+			points.add(p);
+		}
+		markerMsg.setPoints(points);
+	}
+	
+	public float[][] getColors() {
+		List<std_msgs.ColorRGBA> colors = markerMsg.getColors();
+		if(colors == null) return null;
+		float[][] out = new float[colors.size()][4];
+		int i = 0;
+		for(std_msgs.ColorRGBA c : colors) {
+			out[i] = new float[4];
+			out[i][0] = c.getR();
+			out[i][1] = c.getG();
+			out[i][2] = c.getB();
+			out[i][3] = c.getA();
+			i += 1;
+		}
+		return out;
+	}
+	
+	public void setColors(float[][] in) {
+		List<std_msgs.ColorRGBA> colors = new LinkedList<std_msgs.ColorRGBA>();
+		for(int i=0; i<colors.size(); ++i) {
+			std_msgs.ColorRGBA c = publisher.node.getTopicMessageFactory().newFromType(std_msgs.ColorRGBA._TYPE);
+			c.setR(in[i][0]);
+			c.setG(in[i][1]);
+			c.setB(in[i][2]);
+			c.setA(in[i][3]);
+			colors.add(c);
+		}
+		markerMsg.setColors(colors);
+	}
+	
 	public double[] getTranslation() {
 		return new double[] {
 			markerMsg.getPose().getPosition().getX(),
@@ -218,10 +274,10 @@ public class MarkerObject {
 	
 	public double[] getOrientation() {
 		return new double[] {
-			markerMsg.getPose().getOrientation().getW(),
 			markerMsg.getPose().getOrientation().getX(),
 			markerMsg.getPose().getOrientation().getY(),
-			markerMsg.getPose().getOrientation().getZ()
+			markerMsg.getPose().getOrientation().getZ(),
+			markerMsg.getPose().getOrientation().getW()
 		};
 	}
 	
@@ -233,10 +289,10 @@ public class MarkerObject {
 	}
 	
 	public void setOrientation(double []orientation) {
-		markerMsg.getPose().getOrientation().setW(orientation[0]);
-		markerMsg.getPose().getOrientation().setX(orientation[1]);
-		markerMsg.getPose().getOrientation().setY(orientation[2]);
-		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		markerMsg.getPose().getOrientation().setX(orientation[0]);
+		markerMsg.getPose().getOrientation().setY(orientation[1]);
+		markerMsg.getPose().getOrientation().setZ(orientation[2]);
+		markerMsg.getPose().getOrientation().setW(orientation[3]);
 		queueRepublish();
 	}
 	
@@ -248,10 +304,10 @@ public class MarkerObject {
 	}
 	
 	public void setOrientation(float []orientation) {
-		markerMsg.getPose().getOrientation().setW(orientation[0]);
-		markerMsg.getPose().getOrientation().setX(orientation[1]);
-		markerMsg.getPose().getOrientation().setY(orientation[2]);
-		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		markerMsg.getPose().getOrientation().setX(orientation[0]);
+		markerMsg.getPose().getOrientation().setY(orientation[1]);
+		markerMsg.getPose().getOrientation().setZ(orientation[2]);
+		markerMsg.getPose().getOrientation().setW(orientation[3]);
 		queueRepublish();
 	}
 

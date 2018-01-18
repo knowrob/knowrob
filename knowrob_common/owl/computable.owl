@@ -447,32 +447,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/computable.owl#JythonClass -->
-
-    <owl:Class rdf:about="#JythonClass">
-        <rdfs:subClassOf rdf:resource="#ComputableClass"/>
-        <rdfs:subClassOf rdf:resource="#JythonComputable"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#JythonComputable -->
-
-    <owl:Class rdf:about="#JythonComputable"/>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#JythonProperty -->
-
-    <owl:Class rdf:about="#JythonProperty">
-        <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
-        <rdfs:subClassOf rdf:resource="#JythonComputable"/>
-        <rdfs:comment rdf:datatype="&xsd;string"
-            >The Parameter &quot;frame&quot; is always set to the frame-Symbol</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/computable.owl#Parameter -->
 
     <owl:Class rdf:about="#Parameter"/>
@@ -505,6 +479,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/computable.owl#PrologTemporalProperty -->
+
+    <owl:Class rdf:about="#PrologTemporalProperty">
+        <rdfs:subClassOf rdf:resource="#PrologProperty"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/computable.owl#PropertyCombination -->
 
     <owl:Class rdf:about="#PropertyCombination">
@@ -516,30 +498,6 @@
     <!-- http://knowrob.org/kb/computable.owl#PropertyConcatenation -->
 
     <owl:Class rdf:about="#PropertyConcatenation"/>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#SqlClass -->
-
-    <owl:Class rdf:about="#SqlClass">
-        <rdfs:subClassOf rdf:resource="#ComputableClass"/>
-        <rdfs:subClassOf rdf:resource="#SqlComputable"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#SqlComputable -->
-
-    <owl:Class rdf:about="#SqlComputable"/>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#SqlProperty -->
-
-    <owl:Class rdf:about="#SqlProperty">
-        <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
-        <rdfs:subClassOf rdf:resource="#SqlComputable"/>
-    </owl:Class>
 </rdf:RDF>
 
 

@@ -12,6 +12,9 @@
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rosjava_bootstrap</build_depend>
+  <build_depend>rosjava_build_tools</build_depend>
+  <build_depend>rosjava_messages</build_depend>
   
   <build_depend>rosjava_build_tools</build_depend>
   <build_depend>rosprolog</build_depend>

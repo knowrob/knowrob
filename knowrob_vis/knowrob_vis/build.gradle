@@ -30,13 +30,11 @@ dependencies {
   compile project(':data_vis_msgs')
   
   compile 'org.ros.rosjava_core:rosjava:[0.3,0.4)'
-  compile 'org.knowrob.knowrob_common:knowrob_common:[0.1,)'
-  compile 'org.knowrob.tf_prolog:tfjava:[0.1,)'
-  compile 'org.knowrob.knowrob_mongo:knowrob_mongo:[0.1,)'
-  
   compile 'org.ros.rosjava_messages:visualization_msgs:1.12.+'
-  compile 'org.eclipse.jetty:jetty-server:8.1.15.v20140411'
   
+  compile 'org.knowrob.knowrob_common:knowrob_common:[0.1,)'
+  
+  compile 'org.eclipse.jetty:jetty-server:8.1.15.v20140411'
   compile 'jpl:jpl:7.0.1'
 }
 

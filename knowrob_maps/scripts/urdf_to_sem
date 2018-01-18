@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author: Yuki Furuta <furushchev@jsk.imi.i.u-tokyo.ac.jp>
+
+
+import argparse
+import sys
+
+import knowrob_maps
+
+
+def execute(args):
+    if knowrob_maps.urdf_to_sem(args.urdf, args.sem, args.overwrite, args.suffix):
+        return 0
+    else:
+        return 1
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("urdf", type=str,
+                        help="Path to URDF file. (required)")
+    parser.add_argument("sem", type=str, default=None, nargs='?',
+                        help="Path to output SemanticEnvironmentMap file. (default: <urdf file name>.owl)")
+
+    parser.add_argument("-n", "--namespace", type=str,
+                        help="Namespace of output map. (default: file name of urdf)")
+    parser.add_argument("-s", "--suffix", type=str, default=None,
+                        help="Suffix for SemanticEnvironmentMap instance. (default: random string)")
+    parser.add_argument("-f", "--overwrite", action='store_true', default=False,
+                        help="Overwrite output file if exists. (default: false)")
+
+    args = parser.parse_args()
+
+    sys.exit(execute(args))

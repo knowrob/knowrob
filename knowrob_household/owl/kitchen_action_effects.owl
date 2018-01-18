@@ -1,0 +1,1139 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/kitchen_action_effects.owl#"
+     xml:base="http://knowrob.org/kb/kitchen_action_effects.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/kitchen_action_effects.owl">
+        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_units.owl"/>
+        <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionConcept -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionConcept"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionVariable -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionVariable"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#todo -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://qudt.org/schema/qudt#DegreeCelsius -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/schema/qudt#DegreeCelsius"/>
+    
+
+
+    <!-- http://qudt.org/schema/qudt#MinuteTime -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/schema/qudt#MinuteTime"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#causedBy -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causedBy"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsDestroyed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectAddedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectOfStateChange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsRemaining -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsRemaining"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStarted -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStarted"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStopped -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStopped"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#slices -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#slices"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#stateOfObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#stateOfObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toState -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toState"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#duration -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#duration"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#temperatureOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temperatureOfObject"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Action -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Baked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Baked"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BakingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Boiled -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BoilingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BoilingFood"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cracking -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cracking"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingOffAPiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingOffAPiece"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Destroyed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Destroyed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dough"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EggYolk-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EggYolk-Food"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Eggshell -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Eggshell"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleStuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatSource -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatSource"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingProcess -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingProcess"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MixForBakedGoods -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MixForBakedGoods"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransportationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WheatFlour -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WheatFlour"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Clean -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Clean"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="urn:swrl#evt">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#obj">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#baking">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#src">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#duration">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#baked">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#act">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#shell">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#yolk">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#slice">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#heating">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#food">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#dough">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TransportationEvent</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#evt</knowrob:swrlActionVariable>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">baking stops when food is moved away from heat source</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TransportationEvent</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                                        <swrl:argument2 rdf:resource="urn:swrl#src"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#processStopped"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#baking"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#Mixing</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
+        <knowrob:todo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">add hasIngredient property that links dough to the ingredients</knowrob:todo>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixing</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                        <owl:someValuesFrom>
+                                            <owl:Class>
+                                                <owl:unionOf rdf:parseType="Collection">
+                                                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Dough"/>
+                                                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#MixForBakedGoods"/>
+                                                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#WheatFlour"/>
+                                                </owl:unionOf>
+                                            </owl:Class>
+                                        </owl:someValuesFrom>
+                                    </owl:Restriction>
+                                </swrl:classPredicate>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Dough"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#dough"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#dough"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#dough"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#BakingFood</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#baking</knowrob:swrlActionVariable>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BakingFood</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#duration"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#duration"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                                                <swrl:arguments>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                        <rdf:first rdf:resource="urn:swrl#duration"/>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                                <rdf:first rdf:datatype="http://qudt.org/schema/qudt#MinuteTime">10</rdf:first>
+                                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </swrl:arguments>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#baked"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#processStopped"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#baking"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#BoilingFood</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BoilingFood</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#BoilingFood"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#temperatureOfObject"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                        <swrl:argument2 rdf:datatype="http://qudt.org/schema/qudt#DegreeCelsius">100</swrl:argument2>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#Cracking</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cracking</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Cracking"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Eggshell"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#shell"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#EggYolk-Food"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#yolk"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#shell"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#yolk"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate>
+                                                            <owl:Class>
+                                                                <owl:complementOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                                                            </owl:Class>
+                                                        </swrl:classPredicate>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#HeatingProcess</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#heating</knowrob:swrlActionVariable>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">baking starts when active heat source is thermically connected to some food</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HeatingProcess</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingProcess"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#heating"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#causedBy"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#heating"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#src"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#src"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#food"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#food"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate>
+                                                            <owl:Class>
+                                                                <owl:complementOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+                                                            </owl:Class>
+                                                        </swrl:classPredicate>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#food"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#causedBy"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#src"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#food"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#processStarted"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#heating"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#baking"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TransportationEvent</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#evt</knowrob:swrlActionVariable>
+        <rdfs:comment>Baking starts when food is is moved so that it is termically connected to an active heat source</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TransportationEvent</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate>
+                                                    <owl:Class>
+                                                        <owl:complementOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+                                                    </owl:Class>
+                                                </swrl:classPredicate>
+                                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingProcess"/>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#heating"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#causedBy"/>
+                                                                <swrl:argument1 rdf:resource="urn:swrl#heating"/>
+                                                                <swrl:argument2 rdf:resource="urn:swrl#src"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                <rdf:first>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo"/>
+                                                                        <swrl:argument1 rdf:resource="urn:swrl#src"/>
+                                                                        <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                                                                    </rdf:Description>
+                                                                </rdf:first>
+                                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#causedBy"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#src"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#baking"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#processStarted"/>
+                                                <swrl:argument1 rdf:resource="urn:swrl#evt"/>
+                                                <swrl:argument2 rdf:resource="urn:swrl#baking"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

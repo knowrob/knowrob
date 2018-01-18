@@ -155,7 +155,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ApplyingSomethingToSurface</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -232,7 +232,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PouringSomethingOnto</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -309,7 +309,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PuttingSomethingIntoSomething</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -386,7 +386,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PuttingSomethingOnto</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
