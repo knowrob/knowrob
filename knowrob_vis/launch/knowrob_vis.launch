@@ -3,7 +3,7 @@
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
 
   <param name="initial_package" type="string" value="knowrob_vis" />
-  <param name="initial_goal" type="string" value="visualisation_server,visualisation_canvas" />
+  <param name="initial_goal" type="string" value="visualisation_server" />
   <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
 
 </launch>

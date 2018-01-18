@@ -34,8 +34,8 @@
 :- register_ros_package(knowrob_common). %knowrob ontology
 :- register_ros_package(comp_orgprinciples).
 
-:- use_module(library('comp_similarity')).
-:- use_module(library('comp_orgprinciples')).
+:- use_module(library('knowrob/comp_similarity')).
+:- use_module(library('knowrob/comp_orgprinciples')).
 
 
 % parse OWL files, register name spaces

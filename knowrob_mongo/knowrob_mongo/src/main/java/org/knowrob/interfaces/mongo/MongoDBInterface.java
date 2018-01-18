@@ -55,8 +55,10 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
+import org.apache.log4j.Logger;
 
 public class MongoDBInterface {
+	final static Logger logger = Logger.getLogger(MongoDBInterface.class);
 
 	TFMemory mem;
 
@@ -162,8 +164,7 @@ public class MongoDBInterface {
 					else if("exist".equals(rel) || "exists".equals(rel))
 						query = query.and(key).exists(val);
 					else {
-						// TODO: proper logging
-						System.err.println("Unknown mongo relation: " + rel);
+						logger.error("Unknown mongo relation: " + rel);
 					}
 				}
 			}
@@ -171,8 +172,8 @@ public class MongoDBInterface {
 			return query(collection, query);
 		}
 		catch (Exception e) {
-			// TODO: handle exception
-			System.err.println("MONGO query failed: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("MONGO query failed: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -191,8 +192,8 @@ public class MongoDBInterface {
 			return cursor;
 		}
 		catch (Exception e) {
-			// TODO: handle exception
-			System.err.println("MONGO query failed: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("MONGO query failed: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -203,7 +204,8 @@ public class MongoDBInterface {
 			return cursor.sort(new BasicDBObject(key, 1));
 		}
 		catch(Exception e) {
-			System.err.println("Failed to sort cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -214,7 +216,8 @@ public class MongoDBInterface {
 			return cursor.sort(new BasicDBObject(key, -1));
 		}
 		catch(Exception e) {
-			System.err.println("Failed to sort cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -225,7 +228,8 @@ public class MongoDBInterface {
 			return cursor.limit(number);
 		}
 		catch(Exception e) {
-			System.err.println("Failed to limit cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to limit cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -266,52 +270,6 @@ public class MongoDBInterface {
 	
 	public void close(DBCursor cursor) {
 		cursor.close();
-	}
-	
-	/**
-	 * Read designators based on the given filter pattern. The strings in the
-	 * keys and values lists are AND-joined to form query expressions for MongoDB.
-	 * 
-	 * K = ['designator.TYPE','designator.GOAL.TO','designator.GOAL.OBJ.TYPE']
-	 * V = [NAVIGATION,SEE,PANCAKEMIX].
-	 * 
-	 * @param keys Strings describing fields in a document using the dot notation 
-	 * @param values Strings of values that these fields need to have
-	 * @return List of @Designator data structures that match the query expressions
-	 */
-	public Designator[] queryDesignatorsByPattern(String[] keys, String[] values) {
-		
-		DBCollection coll = getDatabase().getCollection(COLLECTION_LOGGED_DESIGNATORS);
-		
-		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
-		for(int i=0; i<keys.length; i++) {
-			
-			// HACK
-			//values[i] = values[i].replace("_", "");
-			
-			qb = qb.and(keys[i]).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE)); // pattern for case insensitive matching
-		}
-		
-		DBObject query = qb.get();
-		
-		DBObject cols  = new BasicDBObject();
-		cols.put("__recorded", 1 );		
-		cols.put("designator", 1 );
-
-		DBCursor cursor = coll.find(query, cols);
-
-		Designator[] res = new Designator[cursor.size()];
-		int r=0;
-		
-		while(cursor.hasNext()) {
-			DBObject row = cursor.next();
-			java.util.Date instant = (java.util.Date) row.get("__recorded");
-			Designator desig = new Designator(instant).readFromDBObject((BasicDBObject) row.get("designator"));
-			res[r++]=desig;
-		}
-		cursor.close();
-		
-		return res;
 	}
 	
 	/**

@@ -19,8 +19,10 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>knowrob_common</build_depend>
+  <build_depend>knowrob_objects</build_depend>
   <build_depend>comp_temporal</build_depend>
 
+  <run_depend>knowrob_objects</run_depend>
   <run_depend>knowrob_common</run_depend>
   <run_depend>comp_temporal</run_depend>
 
