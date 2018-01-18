@@ -41,8 +41,7 @@
 
 ################################################################################
 
-# Use ubuntu xenial (16.04) with sudo privileges.
-dist: xenial
+dist: trusty
 sudo: required
 language:
   - generic
