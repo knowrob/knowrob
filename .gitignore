@@ -5,3 +5,5 @@ bin
 build
 .gradle
 doc
+.idea
+cmake-build-debug
