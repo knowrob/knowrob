@@ -6,3 +6,5 @@ build
 .gradle
 doc
 *.pyc
+.idea
+cmake-build-debug
