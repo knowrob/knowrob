@@ -1,5 +1,4 @@
 /*
-  Copyright (C) 2014 Moritz Tenorth
   Copyright (C) 2018 Georg Bartels
   All rights reserved.
 
@@ -24,29 +23,18 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@author Georg Bartels
-@license BSD
-
 */
 
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_actions).
-:- register_ros_package(knowrob_srdl).
+:- module(urdf_parsing,
+    [
+      foo/1,
+      bar/1
+    ]).
 
-:- use_module(library('knowrob/srdl2')).
-:- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/computable')). % needed for computables in restricted actions
-:- use_module('knowrob/urdf_parsing').
+/** <module> URDF Parsing interface for Prolog
 
-:- rdf_db:rdf_register_ns(pr2,    'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(baxter, 'http://knowrob.org/kb/baxter.owl#', [keep(true)]).
+@author Georg Bartels
+@license BSD
+*/
 
-:- rdf_db:rdf_register_ns(srdl2, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2cap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2act, 'http://knowrob.org/kb/srdl2-action.owl#', [keep(true)]).
-
-:- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-action.owl').
-
+:- use_foreign_library('liburdf_parsing.so').
