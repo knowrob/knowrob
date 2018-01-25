@@ -4,7 +4,10 @@ project(rosprolog)
 
 find_package(catkin REQUIRED COMPONENTS roscpp tf roslib rospack)
 
-catkin_package(CATKIN_DEPENDS roscpp roslib rospack)
+catkin_package(
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp roslib rospack
+  LIBRARIES rosprolog)
 
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
