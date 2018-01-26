@@ -1,9 +1,9 @@
 #include "rosprolog.h"
 #include <string>
+#include <vector>
 
 PREDICATE(foo, 1) {
     PL_A1 = std::string("foo").c_str();
-    PL_A1 = std::string("foo2").c_str();
     return true;
 }
 
@@ -12,9 +12,9 @@ PREDICATE(bar, 1) {
     return true;
 }
 
-// PREDICATE(foo_bar, 1) {
-//     PlTail l("foo");
-//     l.append("bar");
-//     PL_A1 = l;
-//     return true;
-// }
+PREDICATE_NONDET(foo_bar, 1) {
+//    switch( PL_foreign_control(handle) ) {
+//
+//    }
+    return false;
+}
