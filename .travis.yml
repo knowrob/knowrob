@@ -47,8 +47,6 @@ sudo: required
 language:
   - generic
 cache:
-  - apt
-cache:
   directories:
   - ~/.m2
 
