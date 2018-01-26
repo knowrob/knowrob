@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_srdl)
 
+add_compile_options(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS rosjava_build_tools knowrob_common knowrob_actions urdf xacro rosprolog)
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
