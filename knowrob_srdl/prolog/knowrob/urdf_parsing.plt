@@ -1,5 +1,5 @@
 %%
-%% Copyright (C) 2018 by Moritz Tenorth
+%% Copyright (C) 2018 by Georg Bartels
 %%
 %% This file contains tests for the URDF parsing tools in KnowRob.
 %%
