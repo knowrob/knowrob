@@ -171,7 +171,6 @@ PREDICATE(joint_parent_link, 2) {
 
 PREDICATE(joint_axis, 2) {
      try {
-
          std::string joint_name((char*) PL_A1);
          urdf::JointConstSharedPtr joint = get_joint(joint_name);
          // joint axis not defined for the following three joint types
@@ -190,17 +189,47 @@ PREDICATE(joint_axis, 2) {
     }
 }
 
-// TODO: read joint axis
-
 // TODO: read joint origin
 
 // TODO: read joint lower pos limit
 
 // TODO: read joint upper pos limit
 
-// TODO: read joint vel limit
+PREDICATE(joint_velocity_limit, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        // velocity limit is not defined for the following joint types
+        if (joint->type == urdf::Joint::FIXED ||
+                joint->type == urdf::Joint::UNKNOWN ||
+                joint->type == urdf::Joint::FLOATING ||
+                joint->type == urdf::Joint::PLANAR)
+            return false;
+        PL_A2 = joint->limits->velocity;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
-// TODO: read joint effort limit
+PREDICATE(joint_effort_limit, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        // effort limit is not defined for the following joint types
+        if (joint->type == urdf::Joint::FIXED ||
+                joint->type == urdf::Joint::UNKNOWN ||
+                joint->type == urdf::Joint::FLOATING ||
+                joint->type == urdf::Joint::PLANAR)
+            return false;
+        PL_A2 = joint->limits->effort;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
 /**************************************/
 /******** DUMMY PREDICATES ************/

@@ -173,4 +173,10 @@ test(joint_axis_pr2_l_shoulder_pan_joint) :-
 test(joint_axis_pr2_fail_fixed_joint, fail) :-
   joint_axis(head_plate_frame_joint, _).
 
+test(joint_vel_limit_pr2_r_gripper_joint) :-
+  joint_velocity_limit(r_gripper_joint, 0.2).
+
+test(joint_effort_limit_pr2_head_pan_joint) :-
+  joint_effort_limit(head_pan_joint, 6.0).
+
 :- end_tests(urdf_parsing).
