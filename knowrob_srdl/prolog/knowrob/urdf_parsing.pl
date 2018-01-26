@@ -31,13 +31,14 @@
       bar/1,
       load_urdf/1,
       root_link_name/1,
-      joint_names/1,
       link_names/1,
+      link_parent_joint/2,
+      link_child_joints/2,
+      joint_names/1,
       joint_type/2,
       joint_child_link/2,
       joint_parent_link/2,
-      link_parent_joint/2,
-      link_child_joints/2
+      joint_axis/2
     ]).
 
 /** <module> URDF Parsing interface for Prolog
