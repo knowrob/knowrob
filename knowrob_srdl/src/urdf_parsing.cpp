@@ -23,7 +23,7 @@ PREDICATE(load_urdf, 1) {
 }
 
 /**************************************/
-/******** BASIC KIN. TREE *************/
+/******** LINK PROPERTIES *************/
 /**************************************/
 
 PREDICATE(root_link_name, 1) {
@@ -36,23 +36,62 @@ PREDICATE(root_link_name, 1) {
     }
 }
 
-PREDICATE(joint_names, 1) {
+PREDICATE(link_names, 1) {
     try {
         PlTail names(PL_A1);
-        for (auto const& joint_entry: get_robot_model()->joints_)
-            names.append(joint_entry.first.c_str());
+        for (auto const& link_entry: get_robot_model()->links_)
+            names.append(link_entry.first.c_str());
         return names.close();
     } catch (const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
         return false;
     }
 }
+urdf::LinkConstSharedPtr get_link(const std::string& link_name) {
+    urdf::LinkConstSharedPtr link = get_robot_model()->getLink(link_name);
+    if (!link)
+        throw std::runtime_error("No link with name '" + link_name + "' in loaded robot.");
+    return link;
+}
 
-PREDICATE(link_names, 1) {
+PREDICATE(link_parent_joint, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (link->parent_joint) {
+            PL_A2 = link->parent_joint->name.c_str();
+            return true;
+        } else
+            return false;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_child_joints, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        PlTail child_joints(PL_A2);
+        for (auto const& child_joint: link->child_joints)
+            child_joints.append(child_joint->name.c_str());
+        return child_joints.close();
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+/**************************************/
+/******** JOINT PROPERTIES ************/
+/**************************************/
+
+PREDICATE(joint_names, 1) {
     try {
         PlTail names(PL_A1);
-        for (auto const& link_entry: get_robot_model()->links_)
-            names.append(link_entry.first.c_str());
+        for (auto const& joint_entry: get_robot_model()->joints_)
+            names.append(joint_entry.first.c_str());
         return names.close();
     } catch (const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
@@ -129,41 +168,7 @@ PREDICATE(joint_parent_link, 2) {
     }
 }
 
-urdf::LinkConstSharedPtr get_link(const std::string& link_name) {
-    urdf::LinkConstSharedPtr link = get_robot_model()->getLink(link_name);
-    if (!link)
-        throw std::runtime_error("No link with name '" + link_name + "' in loaded robot.");
-    return link;
-}
 
-PREDICATE(link_parent_joint, 2) {
-    try {
-        std::string link_name((char*) PL_A1);
-        urdf::LinkConstSharedPtr link = get_link(link_name);
-        if (link->parent_joint) {
-            PL_A2 = link->parent_joint->name.c_str();
-            return true;
-        } else
-            return false;
-    } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
-    }
-}
-
-PREDICATE(link_child_joints, 2) {
-    try {
-        std::string link_name((char*) PL_A1);
-        urdf::LinkConstSharedPtr link = get_link(link_name);
-        PlTail child_joints(PL_A2);
-        for (auto const& child_joint: link->child_joints)
-            child_joints.append(child_joint->name.c_str());
-        return child_joints.close();
-    } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
-    }
-}
 /**************************************/
 /******** DUMMY PREDICATES ************/
 /**************************************/
