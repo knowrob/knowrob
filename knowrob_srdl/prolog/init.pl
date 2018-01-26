@@ -34,6 +34,7 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_actions).
 :- register_ros_package(knowrob_srdl).
+:- register_ros_package(rosprolog).
 
 :- use_module(library('knowrob/srdl2')).
 :- use_module(library('knowrob/owl')).
