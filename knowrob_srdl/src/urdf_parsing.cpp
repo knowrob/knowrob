@@ -83,6 +83,7 @@ PREDICATE(link_child_joints, 2) {
     }
 }
 
+
 /**************************************/
 /******** JOINT PROPERTIES ************/
 /**************************************/
@@ -168,6 +169,38 @@ PREDICATE(joint_parent_link, 2) {
     }
 }
 
+PREDICATE(joint_axis, 2) {
+     try {
+
+         std::string joint_name((char*) PL_A1);
+         urdf::JointConstSharedPtr joint = get_joint(joint_name);
+         // joint axis not defined for the following three joint types
+         if (joint->type == urdf::Joint::FIXED ||
+                 joint->type == urdf::Joint::UNKNOWN ||
+                 joint->type == urdf::Joint::FLOATING)
+             return false;
+         PlTail l(PL_A2);
+         l.append(joint->axis.x);
+         l.append(joint->axis.y);
+         l.append(joint->axis.z);
+         return l.close();
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+// TODO: read joint axis
+
+// TODO: read joint origin
+
+// TODO: read joint lower pos limit
+
+// TODO: read joint upper pos limit
+
+// TODO: read joint vel limit
+
+// TODO: read joint effort limit
 
 /**************************************/
 /******** DUMMY PREDICATES ************/

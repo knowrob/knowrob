@@ -167,4 +167,10 @@ test(link_child_joints_pr2_torso_lift_link) :-
     [head_pan_joint, imu_joint, l_shoulder_pan_joint, l_torso_lift_side_plate_joint,
      laser_tilt_mount_joint, r_shoulder_pan_joint, r_torso_lift_side_plate_joint].
 
+test(joint_axis_pr2_l_shoulder_pan_joint) :-
+  joint_axis(l_shoulder_pan_joint, [0,0,1]).
+
+test(joint_axis_pr2_fail_fixed_joint, fail) :-
+  joint_axis(head_plate_frame_joint, _).
+
 :- end_tests(urdf_parsing).
