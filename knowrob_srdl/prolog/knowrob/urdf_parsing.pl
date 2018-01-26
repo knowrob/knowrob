@@ -38,7 +38,9 @@
       joint_type/2,
       joint_child_link/2,
       joint_parent_link/2,
-      joint_axis/2
+      joint_axis/2,
+      joint_velocity_limit/2,
+      joint_effort_limit/2
     ]).
 
 /** <module> URDF Parsing interface for Prolog
