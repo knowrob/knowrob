@@ -120,6 +120,31 @@ bool joint_has_effort_limit(urdf::JointConstSharedPtr joint) {
     return joint_has_vel_limit(joint);
 }
 
+void to_prolog_position(PlTermv &out, const urdf::Vector3 &v) {
+    PlTail l(out[0]);
+    l.append(v.x);
+    l.append(v.y);
+    l.append(v.z);
+    l.close();
+}
+
+void to_prolog_orientation(PlTermv &out, const urdf::Rotation &q) {
+    PlTail l(out[1]);
+    l.append(q.x);
+    l.append(q.y);
+    l.append(q.z);
+    l.append(q.w);
+    l.close();
+}
+
+PlCompound to_prolog_pose(const urdf::Pose& p) {
+    // create term `pose([X,Y,Z], [QX,QY,QZ,QW])`
+    PlTermv prolog_pose(2);
+    to_prolog_position(prolog_pose, p.position);
+    to_prolog_orientation(prolog_pose, p.rotation);
+    return PlCompound("pose", prolog_pose);
+}
+
 PREDICATE(joint_names, 1) {
     try {
         PlTail names(PL_A1);
@@ -215,7 +240,17 @@ PREDICATE(joint_axis, 2) {
     }
 }
 
-// TODO: read joint origin
+PREDICATE(joint_origin, 2) {
+     try {
+         std::string joint_name((char*) PL_A1);
+         urdf::JointConstSharedPtr joint = get_joint(joint_name);
+         PL_A2 = to_prolog_pose(joint->parent_to_joint_origin_transform);
+         return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
 PREDICATE(joint_lower_pos_limit, 2) {
      try {

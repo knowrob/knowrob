@@ -41,6 +41,7 @@
       joint_child_link/2,
       joint_parent_link/2,
       joint_axis/2,
+      joint_origin/2,
       joint_lower_pos_limit/2,
       joint_upper_pos_limit/2,
       joint_velocity_limit/2,

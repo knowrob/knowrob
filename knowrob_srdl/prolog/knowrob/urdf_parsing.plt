@@ -169,8 +169,15 @@ test(link_child_joints_pr2_torso_lift_link) :-
 test(joint_axis_pr2_l_shoulder_pan_joint) :-
   joint_axis(l_shoulder_pan_joint, [0,0,1]).
 
-test(joint_axis_pr2_fail_fixed_joint, fail) :-
+test(joint_axis_pr2_fixed_joint, fail) :-
   joint_axis(head_plate_frame_joint, _).
+
+test(joint_origin_pr2_r_gripper_led_joint) :-
+  joint_origin(r_gripper_led_joint, pose([0.0513, 0.0, 0.0244], [0, 0, 0, 1])).
+
+test(joint_origin_pr2_l_foreaem_cam_optical_frame_joint) :-
+  joint_origin(l_forearm_cam_optical_frame_joint,
+               pose([0,0,0],[-0.5, 0.5, -0.5, 0.5])).
 
 test(joint_lower_limit_pr2_l_elbow_flex_joint) :-
   joint_lower_pos_limit(l_elbow_flex_joint, -2.3213).
