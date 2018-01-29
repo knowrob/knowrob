@@ -29,7 +29,9 @@
     [
       foo/1,
       bar/1,
-      load_urdf/1,
+      load_urdf_file/1,
+      load_urdf_param/1,
+      load_urdf_string/1,
       root_link_name/1,
       link_names/1,
       link_parent_joint/2,
@@ -39,6 +41,8 @@
       joint_child_link/2,
       joint_parent_link/2,
       joint_axis/2,
+      joint_lower_pos_limit/2,
+      joint_upper_pos_limit/2,
       joint_velocity_limit/2,
       joint_effort_limit/2
     ]).

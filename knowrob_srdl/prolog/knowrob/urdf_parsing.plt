@@ -35,15 +35,14 @@ test(bar) :-
 %%   findall(X, foo_bar(X), Xs),
 %%   Xs == [foo, bar].
 
-test(load_urdf_pr2) :-
+test(load_urdf_file_pr2) :-
   ros_package_path('knowrob_srdl', X),
   atom_concat(X, '/urdf/pr2.urdf', Filename),
-  load_urdf(Filename).
+  load_urdf_file(Filename).
 
 test(load_non_existent_urdf, fail) :-
-  load_urdf('foo.urdf').
+  load_urdf_file('foo.urdf').
 
-%% TODO: setUp and cleanUP functions
 test(roo_link_name_pr2) :-
   root_link_name(base_footprint).
 
@@ -172,6 +171,18 @@ test(joint_axis_pr2_l_shoulder_pan_joint) :-
 
 test(joint_axis_pr2_fail_fixed_joint, fail) :-
   joint_axis(head_plate_frame_joint, _).
+
+test(joint_lower_limit_pr2_l_elbow_flex_joint) :-
+  joint_lower_pos_limit(l_elbow_flex_joint, -2.3213).
+
+test(joint_lower_limit_pr2_l_wrist_roll_joint, fail) :-
+  joint_lower_pos_limit(l_wrist_roll_joint, _).
+
+test(joint_upper_limit_pr2_torso_lift_joint) :-
+  joint_upper_pos_limit(torso_lift_joint, 0.33).
+
+test(joint_upper_limit_pr2_r_forearm_roll_joint, fail) :-
+  joint_lower_pos_limit(r_forearm_roll_joint, _).
 
 test(joint_vel_limit_pr2_r_gripper_joint) :-
   joint_velocity_limit(r_gripper_joint, 0.2).
