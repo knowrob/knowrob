@@ -17,9 +17,19 @@ urdf::Model* get_robot_model() {
     return robot_model;
 }
 
-PREDICATE(load_urdf, 1) {
+PREDICATE(load_urdf_file, 1) {
     std::string filename((char*)PL_A1);
     return get_robot_model()->initFile(filename);
+}
+
+PREDICATE(load_urdf_param, 1) {
+    std::string param_name((char*)PL_A1);
+    return get_robot_model()->initParam(param_name);
+}
+
+PREDICATE(load_urdf_string, 1) {
+    std::string urdf_string((char*)PL_A1);
+    return get_robot_model()->initString(urdf_string);
 }
 
 /**************************************/
@@ -88,6 +98,28 @@ PREDICATE(link_child_joints, 2) {
 /******** JOINT PROPERTIES ************/
 /**************************************/
 
+urdf::JointConstSharedPtr get_joint(const std::string& joint_name) {
+    urdf::JointConstSharedPtr joint = get_robot_model()->getJoint(joint_name);
+    if (!joint)
+        throw std::runtime_error("No joint with name '" + joint_name + "' in parsed URDF.");
+    return joint;
+}
+
+bool joint_has_pos_limits(urdf::JointConstSharedPtr joint) {
+    return joint->type == urdf::Joint::PRISMATIC || joint->type == urdf::Joint::REVOLUTE;
+}
+
+bool joint_has_vel_limit(urdf::JointConstSharedPtr joint) {
+    return joint->type == urdf::Joint::REVOLUTE ||
+           joint->type == urdf::Joint::PRISMATIC ||
+           joint->type == urdf::Joint::CONTINUOUS;
+}
+
+bool joint_has_effort_limit(urdf::JointConstSharedPtr joint) {
+    // joints that have velocity limits should also have effort limits
+    return joint_has_vel_limit(joint);
+}
+
 PREDICATE(joint_names, 1) {
     try {
         PlTail names(PL_A1);
@@ -98,13 +130,6 @@ PREDICATE(joint_names, 1) {
         ROS_ERROR("%s", e.what());
         return false;
     }
-}
-
-urdf::JointConstSharedPtr get_joint(const std::string& joint_name) {
-    urdf::JointConstSharedPtr joint = get_robot_model()->getJoint(joint_name);
-    if (!joint)
-        throw std::runtime_error("No joint with name '" + joint_name + "' in parsed URDF.");
-    return joint;
 }
 
 PREDICATE(joint_type, 2) {
@@ -147,6 +172,7 @@ PREDICATE(joint_type, 2) {
         return false;
     }
 }
+
 PREDICATE(joint_child_link, 2) {
     try {
         std::string joint_name((char*) PL_A1);
@@ -191,19 +217,39 @@ PREDICATE(joint_axis, 2) {
 
 // TODO: read joint origin
 
-// TODO: read joint lower pos limit
+PREDICATE(joint_lower_pos_limit, 2) {
+     try {
+         std::string joint_name((char*) PL_A1);
+         urdf::JointConstSharedPtr joint = get_joint(joint_name);
+         if (!joint_has_pos_limits(joint))
+            return false;
+         PL_A2 = joint->limits->lower;
+         return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
-// TODO: read joint upper pos limit
+PREDICATE(joint_upper_pos_limit, 2) {
+     try {
+         std::string joint_name((char*) PL_A1);
+         urdf::JointConstSharedPtr joint = get_joint(joint_name);
+         if (!joint_has_pos_limits(joint))
+            return false;
+         PL_A2 = joint->limits->upper;
+         return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
 PREDICATE(joint_velocity_limit, 2) {
     try {
         std::string joint_name((char*) PL_A1);
         urdf::JointConstSharedPtr joint = get_joint(joint_name);
-        // velocity limit is not defined for the following joint types
-        if (joint->type == urdf::Joint::FIXED ||
-                joint->type == urdf::Joint::UNKNOWN ||
-                joint->type == urdf::Joint::FLOATING ||
-                joint->type == urdf::Joint::PLANAR)
+        if (!joint_has_vel_limit(joint))
             return false;
         PL_A2 = joint->limits->velocity;
         return true;
@@ -217,11 +263,7 @@ PREDICATE(joint_effort_limit, 2) {
     try {
         std::string joint_name((char*) PL_A1);
         urdf::JointConstSharedPtr joint = get_joint(joint_name);
-        // effort limit is not defined for the following joint types
-        if (joint->type == urdf::Joint::FIXED ||
-                joint->type == urdf::Joint::UNKNOWN ||
-                joint->type == urdf::Joint::FLOATING ||
-                joint->type == urdf::Joint::PLANAR)
+        if (!joint_has_effort_limit(joint))
             return false;
         PL_A2 = joint->limits->effort;
         return true;
