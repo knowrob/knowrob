@@ -308,6 +308,34 @@ PREDICATE(joint_effort_limit, 2) {
     }
 }
 
+PREDICATE(joint_calibration_rising, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->calibration && joint->calibration->rising))
+            return false;
+        PL_A2 = *(joint->calibration->rising);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_calibration_falling, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->calibration && joint->calibration->falling))
+            return false;
+        PL_A2 = *(joint->calibration->falling);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
 /**************************************/
 /******** DUMMY PREDICATES ************/
 /**************************************/

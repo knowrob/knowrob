@@ -45,7 +45,9 @@
       joint_lower_pos_limit/2,
       joint_upper_pos_limit/2,
       joint_velocity_limit/2,
-      joint_effort_limit/2
+      joint_effort_limit/2,
+      joint_calibration_rising/2,
+      joint_calibration_falling/2
     ]).
 
 /** <module> URDF Parsing interface for Prolog
