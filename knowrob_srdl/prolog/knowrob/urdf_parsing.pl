@@ -49,7 +49,10 @@
       joint_calibration_rising/2,
       joint_calibration_falling/2,
       joint_dynamics_damping/2,
-      joint_dynamics_friction/2
+      joint_dynamics_friction/2,
+      joint_mimic_joint_name/2,
+      joint_mimic_multiplier/2,
+      joint_mimic_offset/2
     ]).
 
 /** <module> URDF Parsing interface for Prolog

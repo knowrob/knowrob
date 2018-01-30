@@ -221,4 +221,23 @@ test(joint_dynamics_damping_pr2_head_pan_joint) :-
 test(joint_dynamics_friction_pr2_head_pan_joint) :-
   joint_dynamics_friction(head_pan_joint, 0.0).
 
+test(joint_mimic_joint_name_pr2_torso_lift_joint, fail) :-
+  joint_mimic_joint_name(torso_lift_joint, _).
+
+test(joint_mimic_multiplier_pr2_torso_lift_joint, fail) :-
+  joint_mimic_multiplier(torso_lift_joint, _).
+
+test(joint_mimic_offset_pr2_torso_lift_joint, fail) :-
+  joint_mimic_offset(torso_lift_joint, _).
+
+test(joint_mimic_joint_name_pr2_r_gripper_r_finger_joint) :-
+  joint_mimic_joint_name(r_gripper_r_finger_joint, r_gripper_l_finger_joint).
+
+test(joint_mimic_multiplier_pr2_r_gripper_r_finger_joint) :-
+  joint_mimic_multiplier(r_gripper_r_finger_joint, 1.0).
+
+test(joint_mimic_offset_pr2_r_gripper_r_finger_joint) :-
+  joint_mimic_offset(r_gripper_r_finger_joint, 0.0).
+
+
 :- end_tests(urdf_parsing).
