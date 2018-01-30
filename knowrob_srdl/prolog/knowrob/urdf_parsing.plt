@@ -197,4 +197,16 @@ test(joint_vel_limit_pr2_r_gripper_joint) :-
 test(joint_effort_limit_pr2_head_pan_joint) :-
   joint_effort_limit(head_pan_joint, 6.0).
 
+test(joint_calibration_rising_pr2_fl_caster_rotation_joint) :-
+  joint_calibration_rising(fl_caster_rotation_joint, -0.785398163397).
+
+test(joint_calibration_rising_pr2_torso_lift_joint, fail) :-
+  joint_calibration_rising(torso_lift_joint, _).
+
+test(joint_calibration_falling_pr2_fl_caster_rotation_joint, fail) :-
+  joint_calibration_falling(fl_caster_rotation_joint, _).
+
+test(joint_calibration_falling_pr2_torso_lift_joint) :-
+  joint_calibration_falling(torso_lift_joint, 0.00475).
+
 :- end_tests(urdf_parsing).
