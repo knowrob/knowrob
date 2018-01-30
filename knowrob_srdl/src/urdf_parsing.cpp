@@ -364,6 +364,48 @@ PREDICATE(joint_dynamics_friction, 2) {
     }
 }
 
+PREDICATE(joint_mimic_joint_name, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->mimic))
+            return false;
+        PL_A2 = joint->mimic->joint_name.c_str();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_mimic_multiplier, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->mimic))
+            return false;
+        PL_A2 = joint->mimic->multiplier;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_mimic_offset, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->mimic))
+            return false;
+        PL_A2 = joint->mimic->offset;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
 /**************************************/
 /******** DUMMY PREDICATES ************/
 /**************************************/
