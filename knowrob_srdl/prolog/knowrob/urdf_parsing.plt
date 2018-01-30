@@ -239,5 +239,28 @@ test(joint_mimic_multiplier_pr2_r_gripper_r_finger_joint) :-
 test(joint_mimic_offset_pr2_r_gripper_r_finger_joint) :-
   joint_mimic_offset(r_gripper_r_finger_joint, 0.0).
 
+test(joint_safety_lower_limit_pr2_l_upper_arm_joint, fail) :-
+  joint_safety_lower_limit(l_upper_arm_joint, _).
+
+test(joint_safety_upper_limit_pr2_l_upper_arm_joint, fail) :-
+  joint_safety_upper_limit(l_upper_arm_joint, _).
+
+test(joint_safety_kp_pr2_l_upper_arm_joint, fail) :-
+  joint_safety_kp(l_upper_arm_joint, _).
+
+test(joint_safety_kv_pr2_l_upper_arm_joint, fail) :-
+  joint_safety_kv(l_upper_arm_joint, _).
+
+test(joint_safety_lower_limit_pr2_l_elbow_flex_joint) :-
+  joint_safety_lower_limit(l_elbow_flex_joint, -2.1213).
+
+test(joint_safety_upper_limit_pr2_l_elbow_flex_joint) :-
+  joint_safety_upper_limit(l_elbow_flex_joint, -0.15).
+
+test(joint_safety_kp_pr2_l_elbow_flex_joint) :-
+  joint_safety_kp(l_elbow_flex_joint, 100.0).
+
+test(joint_safety_kv_pr2_l_elbow_flex_joint) :-
+  joint_safety_kv(l_elbow_flex_joint, 3.0).
 
 :- end_tests(urdf_parsing).

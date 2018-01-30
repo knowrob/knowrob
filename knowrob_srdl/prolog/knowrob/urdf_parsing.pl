@@ -52,7 +52,11 @@
       joint_dynamics_friction/2,
       joint_mimic_joint_name/2,
       joint_mimic_multiplier/2,
-      joint_mimic_offset/2
+      joint_mimic_offset/2,
+      joint_safety_lower_limit/2,
+      joint_safety_upper_limit/2,
+      joint_safety_kp/2,
+      joint_safety_kv/2
     ]).
 
 /** <module> URDF Parsing interface for Prolog
