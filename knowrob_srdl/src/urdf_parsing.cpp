@@ -406,6 +406,62 @@ PREDICATE(joint_mimic_offset, 2) {
     }
 }
 
+PREDICATE(joint_safety_lower_limit, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->safety))
+            return false;
+        PL_A2 = joint->safety->soft_lower_limit;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_safety_upper_limit, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->safety))
+            return false;
+        PL_A2 = joint->safety->soft_upper_limit;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_safety_kp, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->safety))
+            return false;
+        PL_A2 = joint->safety->k_position;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_safety_kv, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->safety))
+            return false;
+        PL_A2 = joint->safety->k_velocity;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
 /**************************************/
 /******** DUMMY PREDICATES ************/
 /**************************************/
