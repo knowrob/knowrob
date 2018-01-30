@@ -209,4 +209,16 @@ test(joint_calibration_falling_pr2_fl_caster_rotation_joint, fail) :-
 test(joint_calibration_falling_pr2_torso_lift_joint) :-
   joint_calibration_falling(torso_lift_joint, 0.00475).
 
+test(joint_dynamics_damping_pr2_l_torso_lift_side_plate_joint, fail) :-
+  joint_dynamics_damping(l_torso_lift_side_plate_joint, _).
+
+test(joint_dynamics_friction_pr2_l_torso_lift_side_plate_joint, fail) :-
+  joint_dynamics_friction(l_torso_lift_side_plate_joint, _).
+
+test(joint_dynamics_damping_pr2_head_pan_joint) :-
+  joint_dynamics_damping(head_pan_joint, 0.5).
+
+test(joint_dynamics_friction_pr2_head_pan_joint) :-
+  joint_dynamics_friction(head_pan_joint, 0.0).
+
 :- end_tests(urdf_parsing).

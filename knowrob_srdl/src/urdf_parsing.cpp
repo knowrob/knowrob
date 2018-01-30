@@ -336,6 +336,34 @@ PREDICATE(joint_calibration_falling, 2) {
     }
 }
 
+PREDICATE(joint_dynamics_damping, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->dynamics))
+            return false;
+        PL_A2 = joint->dynamics->damping;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(joint_dynamics_friction, 2) {
+    try {
+        std::string joint_name((char*) PL_A1);
+        urdf::JointConstSharedPtr joint = get_joint(joint_name);
+        if (!(joint->dynamics))
+            return false;
+        PL_A2 = joint->dynamics->friction;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
 /**************************************/
 /******** DUMMY PREDICATES ************/
 /**************************************/
