@@ -5,6 +5,35 @@
 #include <urdf/model.h>
 
 /**************************************/
+/********** CONVERSIONS ***************/
+/**************************************/
+
+void to_prolog_position(PlTermv &out, const urdf::Vector3 &v) {
+    PlTail l(out[0]);
+    l.append(v.x);
+    l.append(v.y);
+    l.append(v.z);
+    l.close();
+}
+
+void to_prolog_orientation(PlTermv &out, const urdf::Rotation &q) {
+    PlTail l(out[1]);
+    l.append(q.x);
+    l.append(q.y);
+    l.append(q.z);
+    l.append(q.w);
+    l.close();
+}
+
+PlCompound to_prolog_pose(const urdf::Pose& p) {
+    // create term `pose([X,Y,Z], [QX,QY,QZ,QW])`
+    PlTermv prolog_pose(2);
+    to_prolog_position(prolog_pose, p.position);
+    to_prolog_orientation(prolog_pose, p.rotation);
+    return PlCompound("pose", prolog_pose);
+}
+
+/**************************************/
 /********** INIT URDF *****************/
 /**************************************/
 
@@ -36,6 +65,13 @@ PREDICATE(load_urdf_string, 1) {
 /******** LINK PROPERTIES *************/
 /**************************************/
 
+urdf::LinkConstSharedPtr get_link(const std::string& link_name) {
+    urdf::LinkConstSharedPtr link = get_robot_model()->getLink(link_name);
+    if (!link)
+        throw std::runtime_error("No link with name '" + link_name + "' in loaded robot.");
+    return link;
+}
+
 PREDICATE(root_link_name, 1) {
     try {
         PL_A1 = get_robot_model()->root_link_->name.c_str();
@@ -56,12 +92,6 @@ PREDICATE(link_names, 1) {
         ROS_ERROR("%s", e.what());
         return false;
     }
-}
-urdf::LinkConstSharedPtr get_link(const std::string& link_name) {
-    urdf::LinkConstSharedPtr link = get_robot_model()->getLink(link_name);
-    if (!link)
-        throw std::runtime_error("No link with name '" + link_name + "' in loaded robot.");
-    return link;
 }
 
 PREDICATE(link_parent_joint, 2) {
@@ -93,6 +123,53 @@ PREDICATE(link_child_joints, 2) {
     }
 }
 
+PREDICATE(link_inertial_origin, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link->inertial)
+            return false;
+        PL_A2 = to_prolog_pose(link->inertial->origin);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_inertial_mass, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link->inertial)
+            return false;
+        PL_A2 = link->inertial->mass;
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_inertial_inertia, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link->inertial)
+            return false;
+        PlTail inertia(PL_A2);
+        inertia.append(link->inertial->ixx);
+        inertia.append(link->inertial->ixy);
+        inertia.append(link->inertial->ixz);
+        inertia.append(link->inertial->iyy);
+        inertia.append(link->inertial->iyz);
+        inertia.append(link->inertial->izz);
+        return inertia.close();
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
 /**************************************/
 /******** JOINT PROPERTIES ************/
@@ -120,30 +197,6 @@ bool joint_has_effort_limit(urdf::JointConstSharedPtr joint) {
     return joint_has_vel_limit(joint);
 }
 
-void to_prolog_position(PlTermv &out, const urdf::Vector3 &v) {
-    PlTail l(out[0]);
-    l.append(v.x);
-    l.append(v.y);
-    l.append(v.z);
-    l.close();
-}
-
-void to_prolog_orientation(PlTermv &out, const urdf::Rotation &q) {
-    PlTail l(out[1]);
-    l.append(q.x);
-    l.append(q.y);
-    l.append(q.z);
-    l.append(q.w);
-    l.close();
-}
-
-PlCompound to_prolog_pose(const urdf::Pose& p) {
-    // create term `pose([X,Y,Z], [QX,QY,QZ,QW])`
-    PlTermv prolog_pose(2);
-    to_prolog_position(prolog_pose, p.position);
-    to_prolog_orientation(prolog_pose, p.rotation);
-    return PlCompound("pose", prolog_pose);
-}
 
 PREDICATE(joint_names, 1) {
     try {
