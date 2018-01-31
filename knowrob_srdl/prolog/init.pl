@@ -39,7 +39,7 @@
 :- use_module(library('knowrob/srdl2')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')). % needed for computables in restricted actions
-:- use_module('knowrob/urdf_parsing').
+:- use_module('knowrob/urdf_parser').
 
 :- rdf_db:rdf_register_ns(pr2,    'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(baxter, 'http://knowrob.org/kb/baxter.owl#', [keep(true)]).

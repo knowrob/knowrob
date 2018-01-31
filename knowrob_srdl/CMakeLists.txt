@@ -10,7 +10,7 @@ catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository wri
 
 catkin_package(
   CATKIN_DEPENDS knowrob_common urdf rosprolog
-  LIBRARIES urdf_parsing
+  LIBRARIES urdf_parser
 )
 
 # find SWI-Prolog package configuration
@@ -20,8 +20,8 @@ message(STATUS "SWIPL found.")
 
 # build C++ library with predicates to parse URDF files
 include_directories(${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
-add_library(urdf_parsing SHARED src/urdf_parsing.cpp)
-target_link_libraries(urdf_parsing ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_library(urdf_parser SHARED src/urdf_parser.cpp)
+target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 
 # Xacro files
 set(xacro_files_out "")
