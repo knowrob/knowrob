@@ -33,6 +33,47 @@ PlCompound to_prolog_pose(const urdf::Pose& p) {
     return PlCompound("pose", prolog_pose);
 }
 
+PlCompound to_prolog_geometry(urdf::GeometryConstSharedPtr geom) {
+    if (!geom)
+        throw std::runtime_error("Unexcepted null-ptr for geometry.");
+
+    switch(geom->type) {
+        case urdf::Geometry::BOX: {
+            urdf::BoxConstSharedPtr box = urdf::dynamic_pointer_cast<const urdf::Box>(geom);
+            PlTermv dim_term(3);
+            dim_term[0] = box->dim.x;
+            dim_term[1] = box->dim.y;
+            dim_term[2] = box->dim.z;
+            return PlCompound("box", dim_term);
+        }
+        case urdf::Geometry::SPHERE: {
+            urdf::SphereConstSharedPtr sphere = urdf::dynamic_pointer_cast<const urdf::Sphere>(geom);
+            PlTermv dim_term(1);
+            dim_term[0] = sphere->radius;
+            return PlCompound("sphere", dim_term);
+        }
+        case urdf::Geometry::CYLINDER : {
+            urdf::CylinderConstSharedPtr cylinder = urdf::dynamic_pointer_cast<const urdf::Cylinder>(geom);
+            PlTermv dim_term(2);
+            dim_term[0] = cylinder->radius;
+            dim_term[1] = cylinder->length;
+            return PlCompound("cylinder", dim_term);
+        }
+        case urdf::Geometry::MESH : {
+            urdf::MeshConstSharedPtr mesh = urdf::dynamic_pointer_cast<const urdf::Mesh>(geom);
+            PlTermv dim_term(2);
+            dim_term[0] = mesh->filename.c_str();
+            PlTail scale(dim_term[1]);
+            scale.append(mesh->scale.x);
+            scale.append(mesh->scale.y);
+            scale.append(mesh->scale.z);
+            scale.close();
+            return PlCompound("mesh", dim_term);
+        }
+        default:
+            throw std::runtime_error("Encountered unsupported geometry type.");
+    }
+}
 /**************************************/
 /********** INIT URDF *****************/
 /**************************************/
@@ -253,11 +294,21 @@ PREDICATE(link_visual_origin, 3) {
     }
 }
 
-
-//PREDICATE(link_visual_geometry, 3) {
-//    // TODO: implement me
-    // signature: link_name, visual_index, Compound for geometry, e.g. box(size_x, size_y, size_z)
-//}
+PREDICATE(link_visual_geometry, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_visual_with_index(link, index) ||
+                !link->visual_array[index]->geometry)
+            return false;
+        PL_A3 = to_prolog_geometry(link->visual_array[index]->geometry);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
 
 /**************************************/
 /******** JOINT PROPERTIES ************/
