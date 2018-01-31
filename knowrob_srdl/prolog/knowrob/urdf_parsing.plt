@@ -43,7 +43,10 @@ test(load_urdf_file_pr2) :-
 test(load_non_existent_urdf, fail) :-
   load_urdf_file('foo.urdf').
 
-test(roo_link_name_pr2) :-
+test(robot_name_pr2) :-
+  robot_name(pr2).
+
+test(root_link_name_pr2) :-
   root_link_name(base_footprint).
 
 test(joint_names_pr2) :-

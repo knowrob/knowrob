@@ -83,6 +83,7 @@ PlCompound to_prolog_rgba(const urdf::Color& rgba) {
     rgba_term[3] = rgba.a;
     return PlCompound("rgba", rgba_term);
 }
+
 /**************************************/
 /********** INIT URDF *****************/
 /**************************************/
@@ -109,6 +110,20 @@ PREDICATE(load_urdf_param, 1) {
 PREDICATE(load_urdf_string, 1) {
     std::string urdf_string((char*)PL_A1);
     return get_robot_model()->initString(urdf_string);
+}
+
+/**************************************/
+/******** ROBOT PROPERTIES ************/
+/**************************************/
+
+PREDICATE(robot_name, 1) {
+    try {
+        PL_A1 = get_robot_model()->name_.c_str();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
 }
 
 /**************************************/

@@ -32,6 +32,7 @@
       load_urdf_file/1,
       load_urdf_param/1,
       load_urdf_string/1,
+      robot_name/1,
       root_link_name/1,
       link_names/1,
       link_parent_joint/2,
