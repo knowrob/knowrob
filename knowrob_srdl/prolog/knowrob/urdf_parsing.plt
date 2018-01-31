@@ -37,7 +37,7 @@ test(bar) :-
 
 test(load_urdf_file_pr2) :-
   ros_package_path('knowrob_srdl', X),
-  atom_concat(X, '/urdf/pr2.urdf', Filename),
+  atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', Filename),
   load_urdf_file(Filename).
 
 test(load_non_existent_urdf, fail) :-
@@ -281,11 +281,30 @@ test(link_inertial_inertia_pr2_l_gripper_led_frame, fail) :-
 test(link_inertial_mass_pr2_l_elbow_flex_link) :-
   link_inertial_inertia(l_elbow_flex_link, [0.00346541989, 0.00004066825, 0.00043171614, 0.00441606455, 0.00003968914, 0.00359156824]).
 
-%%  <link name="l_elbow_flex_link">
-%%    <inertial>
-%%      <mass value="1.90327"/>
-%%      <origin xyz="0.01014 0.00032 -0.01211"/>
-%%      <inertia ixx="0.00346541989" ixy="0.00004066825" ixz="0.00043171614" iyy="0.00441606455" iyz="-0.00003968914" izz="0.00359156824"/>
-%%    </inertial>
+test(link_num_visuals_pr2_r_gripper_led_frame) :-
+  link_num_visuals(r_gripper_led_frame, N),
+  N=0.
+
+test(link_num_visuals_pr2_r_gripper_motor_accelerometer_link) :-
+  link_num_visuals(r_gripper_motor_accelerometer_link, N),
+  N=1.
+
+test(link_visual_type_pr2_r_gripper_motor_accelerometer_link) :-
+  link_visual_type(r_gripper_motor_accelerometer_link, 0, box).
+
+test(link_visual_type_pr2_r_gripper_motor_slider_link) :-
+  link_visual_type(r_gripper_motor_slider_link, 0, cylinder).
+
+test(link_visual_type_pr2_head_mount_kinect_ir_link) :-
+  link_visual_type(head_mount_kinect_ir_link, 0, sphere).
+
+test(link_visual_type_negative_out_of_bounds, fail) :-
+  link_visual_type(head_mount_kinect_ir_link, -1, _).
+
+test(link_visual_type_positive_out_of_bounds, fail) :-
+  link_visual_type(head_mount_kinect_ir_link, 1, _).
+
+test(link_visual_name_pr2_head_mount_kinect_ir_link, fail) :-
+  link_visual_name(head_mount_kinect_ir_link, 0, _).
 
 :- end_tests(urdf_parsing).
