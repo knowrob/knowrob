@@ -27,8 +27,8 @@
 
 :- module(urdf_parsing,
     [
-      foo/1,
-      bar/1,
+      foo/1, %% TODO: remove
+      bar/1, %% TODO: remove
       load_urdf_file/1,
       load_urdf_param/1,
       load_urdf_string/1,
@@ -46,6 +46,11 @@
       link_material_name/3,
       link_material_color/3,
       link_material_texture/3,
+      link_num_collisions/2,
+      link_collision_type/3,
+      link_collision_name/3,
+      link_collision_origin/3,
+      link_collision_geometry/3,
       joint_names/1,
       joint_type/2,
       joint_child_link/2,
@@ -76,3 +81,5 @@
 */
 
 :- use_foreign_library('liburdf_parsing.so').
+
+%% TODO: add doc-strings
