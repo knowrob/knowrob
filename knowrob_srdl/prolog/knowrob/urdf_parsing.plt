@@ -263,4 +263,29 @@ test(joint_safety_kp_pr2_l_elbow_flex_joint) :-
 test(joint_safety_kv_pr2_l_elbow_flex_joint) :-
   joint_safety_kv(l_elbow_flex_joint, 3.0).
 
+test(link_inertial_origin_pr2_l_gripper_led_frame, fail) :-
+  link_inertial_origin(l_gripper_led_frame, _).
+
+test(link_inertial_origin_pr2_l_elbow_flex_link) :-
+  link_inertial_origin(l_elbow_flex_link, pose([0.01014, 0.00032, -0.01211], [0.0, 0.0, 0.0, 1.0])).
+
+test(link_inertial_mass_pr2_l_gripper_led_frame, fail) :-
+  link_inertial_mass(l_gripper_led_frame, _).
+
+test(link_inertial_mass_pr2_l_elbow_flex_link) :-
+  link_inertial_mass(l_elbow_flex_link, 1.90327).
+
+test(link_inertial_inertia_pr2_l_gripper_led_frame, fail) :-
+  link_inertial_inertia(l_gripper_led_frame, _).
+
+test(link_inertial_mass_pr2_l_elbow_flex_link) :-
+  link_inertial_inertia(l_elbow_flex_link, [0.00346541989, 0.00004066825, 0.00043171614, 0.00441606455, 0.00003968914, 0.00359156824]).
+
+%%  <link name="l_elbow_flex_link">
+%%    <inertial>
+%%      <mass value="1.90327"/>
+%%      <origin xyz="0.01014 0.00032 -0.01211"/>
+%%      <inertia ixx="0.00346541989" ixy="0.00004066825" ixz="0.00043171614" iyy="0.00441606455" iyz="-0.00003968914" izz="0.00359156824"/>
+%%    </inertial>
+
 :- end_tests(urdf_parsing).
