@@ -42,6 +42,7 @@
       link_num_visuals/2,
       link_visual_type/3,
       link_visual_origin/3,
+      link_visual_geometry/3,
       joint_names/1,
       joint_type/2,
       joint_child_link/2,

@@ -307,4 +307,26 @@ test(link_visual_type_positive_out_of_bounds, fail) :-
 test(link_visual_name_pr2_head_mount_kinect_ir_link, fail) :-
   link_visual_name(head_mount_kinect_ir_link, 0, _).
 
+test(link_origin_pr2_r_gripper_motor_slider_link) :-
+  link_visual_origin(r_gripper_motor_slider_link, 0,
+  pose([0.0,0.0,0.0],[0.7071080798594737, 0.0, 0.0, 0.7071054825112363])).
+
+test(link_visual_geometry_pr2_r_gripper_motor_accelerometer_link) :-
+  link_visual_geometry(r_gripper_motor_accelerometer_link, 0, box([0.001, 0.001, 0.001])).
+
+test(link_visual_geometry_pr2_head_mount_kinect_ir_link) :-
+  link_visual_geometry(head_mount_kinect_ir_link, 0, sphere([0.0005])).
+
+test(link_visual_geometry_pr2_r_gripper_motor_slider_link) :-
+  link_visual_geometry(r_gripper_motor_slider_link, 0, cylinder([0.002, 0.025])).
+
+test(link_visual_geometry_pr2_head_mount_link) :-
+  link_visual_geometry(head_mount_link, 0, mesh('package://pr2_description/meshes/sensors/kinect_prosilica_v0/115x100_swept_back--coarse.STL', [0.001, 0.001, 0.001])).
+
+test(link_visual_geometry_pr2_r_gripper_led_frame, fail) :-
+  link_visual_geometry(r_gripper_led_frame, 0, _).
+
+test(link_visual_geometry_pr2_laser_tilt_mount_link) :-
+  link_visual_geometry(laser_tilt_mount_link, 0, mesh('package://pr2_description/meshes/tilting_laser_v0/tilting_hokuyo.dae', [1.0, 1.0, 1.0])).
+
 :- end_tests(urdf_parsing).
