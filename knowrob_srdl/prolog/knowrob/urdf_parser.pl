@@ -27,8 +27,6 @@
 
 :- module(urdf_parser,
     [
-      foo/1, %% TODO: remove
-      bar/1, %% TODO: remove
       load_urdf_file/1,
       load_urdf_param/1,
       load_urdf_string/1,
