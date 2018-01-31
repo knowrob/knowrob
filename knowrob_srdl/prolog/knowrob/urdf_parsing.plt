@@ -347,4 +347,56 @@ test(link_material_color_pr2_fl_caster_rotation_link) :-
 test(link_material_texture_pr2_fl_caster_rotation_link) :-
   link_material_texture(fl_caster_rotation_link, 0, 'package://pr2_description/materials/textures/pr2_caster_texture.png').
 
+test(link_num_collisions_pr2_base_link) :-
+  link_num_collisions(base_link, N),
+  N=1.
+
+test(link_num_collisions_pr2_base_laser_link) :-
+  link_num_collisions(base_laser_link, N),
+  N=0.
+
+test(link_num_collision_foo_link, fail) :-
+  link_num_collisions(foo, _).
+
+test(link_collision_type_pr2_base_link) :-
+  link_collision_type(base_link, 0, mesh).
+
+test(link_collision_type_pr2_base_laser_link, fail) :-
+  link_collision_type(base_laser_link, 0, _).
+
+test(link_collision_type_pr2_torso_lift_motor_screw_link) :-
+  link_collision_type(torso_lift_motor_screw_link, 0, box).
+
+test(link_collision_type_pr2_head_mount_prosilica_link) :-
+  link_collision_type(head_mount_prosilica_link, 0, sphere).
+
+test(link_collision_type_pr2_fr_caster_r_wheel_link) :-
+  link_collision_type(fr_caster_r_wheel_link, 0, cylinder).
+
+test(link_collision_name_pr2_torso_lift_link) :-
+  link_collision_name(torso_lift_link, 0, torso_lift_collision).
+
+test(link_collision_name_pr2_torso_lift_motor_screw_link, fail) :-
+  link_collision_name(torso_lift_motor_screw_link, 0, _).
+
+test(link_collision_origin_pr2_r_gripper_r_finger_link) :-
+  link_collision_origin(r_gripper_r_finger_link, 0,
+  pose([0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0])).
+
+test(link_collision_geometry_pr2_r_gripper_r_finger_link) :-
+  link_collision_geometry(r_gripper_r_finger_link, 0,
+  mesh("package://pr2_description/meshes/gripper_v0/l_finger.stl", [1.0, 1.0, 1.0])).
+
+test(link_collision_geometry_pr2_head_mount_prosilica_link) :-
+  link_collision_geometry(head_mount_prosilica_link, 0, sphere([0.0005])).
+
+test(link_collision_geometry_pr2_fr_caster_r_wheel_link) :-
+  link_collision_geometry(fr_caster_r_wheel_link, 0, cylinder([0.074792, 0.034])).
+
+test(link_collision_geometry_pr2_torso_lift_motor_screw_link) :-
+  link_collision_geometry(torso_lift_motor_screw_link, 0, box([0.5, 0.7, 0.01])).
+
+test(link_collision_geometry_pr2_base_laser_link, fail) :-
+  link_collision_geometry(base_laser_link, 0, _).
+
 :- end_tests(urdf_parsing).

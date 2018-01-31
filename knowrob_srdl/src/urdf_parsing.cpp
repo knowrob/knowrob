@@ -127,6 +127,11 @@ bool link_has_visual_with_index(const urdf::LinkConstSharedPtr link, long index)
             (link->visual_array[index]);
 }
 
+bool link_has_collision_with_index(const urdf::LinkConstSharedPtr link, long index) {
+    return link && (index >= 0) && (index < link->collision_array.size()) &&
+            (link->collision_array[index]);
+}
+
 PREDICATE(root_link_name, 1) {
     try {
         PL_A1 = get_robot_model()->root_link_->name.c_str();
@@ -361,6 +366,99 @@ PREDICATE(link_material_texture, 3) {
                 link->visual_array[index]->material->texture_filename.compare("") == 0)
             return false;
         PL_A3 = link->visual_array[index]->material->texture_filename.c_str();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_num_collisions, 2) {
+    try {
+        std::string link_name((char*) PL_A1);
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        PL_A2 = (long) link->collision_array.size();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_collision_type, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_collision_with_index(link, index) ||
+                !link->collision_array[index]->geometry)
+            return false;
+        switch (link->collision_array[index]->geometry->type) {
+            case urdf::Geometry::BOX: {
+                PL_A3 = "box";
+                return true;
+            }
+            case urdf::Geometry::CYLINDER: {
+                PL_A3 = "cylinder";
+                return true;
+            }
+            case urdf::Geometry::SPHERE: {
+                PL_A3 = "sphere";
+                return true;
+            }
+            case urdf::Geometry::MESH: {
+                PL_A3 = "mesh";
+                return true;
+            }
+            default:
+                return false;
+        }
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_collision_name, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_collision_with_index(link, index) ||
+                (link->collision_array[index]->name.compare("") == 0))
+            return false;
+        PL_A3 = link->collision_array[index]->name.c_str();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_collision_origin, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_collision_with_index(link, index))
+            return false;
+        PL_A3 = to_prolog_pose(link->collision_array[index]->origin);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_collision_geometry, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_collision_with_index(link, index) ||
+                !link->collision_array[index]->geometry)
+            return false;
+        PL_A3 = to_prolog_geometry(link->collision_array[index]->geometry);
         return true;
     } catch (const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
