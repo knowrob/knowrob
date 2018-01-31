@@ -329,4 +329,22 @@ test(link_visual_geometry_pr2_r_gripper_led_frame, fail) :-
 test(link_visual_geometry_pr2_laser_tilt_mount_link) :-
   link_visual_geometry(laser_tilt_mount_link, 0, mesh('package://pr2_description/meshes/tilting_laser_v0/tilting_hokuyo.dae', [1.0, 1.0, 1.0])).
 
+test(link_material_name_pr2_laser_tilt_mount_link) :-
+  link_material_name(laser_tilt_mount_link, 0, 'Red').
+
+test(link_material_color_pr2_laser_tilt_mount_link) :-
+  link_material_name(laser_tilt_mount_link, 0, rgba([0.8, 0.0, 0.0, 1.0])).
+
+test(link_material_texture_pr2_laser_tilt_mount_link, fail) :-
+  link_material_texture(laser_tilt_mount_link, 0, _).
+
+test(link_material_name_pr2_fl_caster_rotation_link) :-
+  link_material_name(fl_caster_rotation_link, 0, 'Caster').
+
+test(link_material_color_pr2_fl_caster_rotation_link) :-
+  link_material_name(fl_caster_rotation_link, 0, rgba([0.0, 0.0, 0.0, 1.0])).
+
+test(link_material_texture_pr2_fl_caster_rotation_link) :-
+  link_material_texture(fl_caster_rotation_link, 0, 'package://pr2_description/materials/textures/pr2_caster_texture.png').
+
 :- end_tests(urdf_parsing).

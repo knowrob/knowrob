@@ -74,6 +74,15 @@ PlCompound to_prolog_geometry(urdf::GeometryConstSharedPtr geom) {
             throw std::runtime_error("Encountered unsupported geometry type.");
     }
 }
+
+PlCompound to_prolog_rgba(const urdf::Color& rgba) {
+    PlTermv rgba_term(4);
+    rgba_term[0] = rgba.r;
+    rgba_term[1] = rgba.g;
+    rgba_term[2] = rgba.b;
+    rgba_term[3] = rgba.a;
+    return PlCompound("rgba", rgba_term);
+}
 /**************************************/
 /********** INIT URDF *****************/
 /**************************************/
@@ -303,6 +312,55 @@ PREDICATE(link_visual_geometry, 3) {
                 !link->visual_array[index]->geometry)
             return false;
         PL_A3 = to_prolog_geometry(link->visual_array[index]->geometry);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_material_name, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_visual_with_index(link, index) ||
+                !link->visual_array[index]->material)
+            return false;
+        PL_A3 = link->visual_array[index]->material->name.c_str();
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_material_color, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_visual_with_index(link, index) ||
+                !link->visual_array[index]->material)
+            return false;
+        PL_A3 = to_prolog_rgba(link->visual_array[index]->material->color);
+        return true;
+    } catch (const std::runtime_error& e) {
+        ROS_ERROR("%s", e.what());
+        return false;
+    }
+}
+
+PREDICATE(link_material_texture, 3) {
+    try {
+        std::string link_name((char*) PL_A1);
+        long index = (long) PL_A2;
+        urdf::LinkConstSharedPtr link = get_link(link_name);
+        if (!link_has_visual_with_index(link, index) ||
+                !link->visual_array[index]->material ||
+                link->visual_array[index]->material->texture_filename.compare("") == 0)
+            return false;
+        PL_A3 = link->visual_array[index]->material->texture_filename.c_str();
         return true;
     } catch (const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
