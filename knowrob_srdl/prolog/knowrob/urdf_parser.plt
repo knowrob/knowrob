@@ -17,9 +17,9 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(urdf_parsing).
+:- begin_tests(urdf_parser).
 
-:- use_module('urdf_parsing').
+:- use_module('urdf_parser').
 :- use_module(library('roscpp')).
 
 
@@ -402,4 +402,4 @@ test(link_collision_geometry_pr2_torso_lift_motor_screw_link) :-
 test(link_collision_geometry_pr2_base_laser_link, fail) :-
   link_collision_geometry(base_laser_link, 0, _).
 
-:- end_tests(urdf_parsing).
+:- end_tests(urdf_parser).

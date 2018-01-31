@@ -25,7 +25,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(urdf_parsing,
+:- module(urdf_parser,
     [
       foo/1, %% TODO: remove
       bar/1, %% TODO: remove
@@ -81,6 +81,6 @@
 @license BSD
 */
 
-:- use_foreign_library('liburdf_parsing.so').
+:- use_foreign_library('liburdf_parser.so').
 
 %% TODO: add doc-strings
