@@ -128,6 +128,7 @@ mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
   % only compute poses for time instants in the past
   current_time(Now), Now > Instant + 20.0,
   map_frame_name(MapFrame),
-  rdf_has(Obj, knowrob:frameName, ObjFrame),
-  mng_lookup_transform(MapFrame, ObjFrame, PoseTerm, Instant),
+  rdf_has(Obj, knowrob:frameName, ObjFrameP),
+  strip_literal_type(ObjFrameP,ObjFrame),
+  mng_lookup_transform(MapFrame,ObjFrame, PoseTerm, Instant),
   owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose).
