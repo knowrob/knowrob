@@ -70,14 +70,14 @@ mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Inst
           [TargetFrame, SourceFrame, T], StampedTransform),
   \+ jpl_null(StampedTransform),
   jpl_call(StampedTransform, 'getTranslation', [], Vector3d),
-  jpl_call(Vector3d, 'x', [], X),
-  jpl_call(Vector3d, 'y', [], Y),
-  jpl_call(Vector3d, 'z', [], Z),
+  jpl_get(Vector3d, 'x', X),
+  jpl_get(Vector3d, 'y', Y),
+  jpl_get(Vector3d, 'z', Z),
   jpl_call(StampedTransform, 'getRotation', [], Quat4d),
-  jpl_call(Quat4d, 'x', [], QX),
-  jpl_call(Quat4d, 'y', [], QY),
-  jpl_call(Quat4d, 'z', [], QZ),
-  jpl_call(Quat4d, 'w', [], QW).
+  jpl_get(Quat4d, 'x', QX),
+  jpl_get(Quat4d, 'y', QY),
+  jpl_get(Quat4d, 'z', QZ),
+  jpl_get(Quat4d, 'w', QW).
 
 %% mng_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Instant) is nondet
 %
