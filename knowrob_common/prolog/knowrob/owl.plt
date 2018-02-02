@@ -209,7 +209,7 @@ test(generate_temporal_part_description) :-
   Descr_=Descr.
 
 %% TBOX
-test(assert_class_and_properties) :-
+test(assert_restrictions_and_check, all(Count = [1])) :-
   rdf_assert(knowrob:'MarsianTime', rdf:type, owl:'Class'),
   rdf_assert(knowrob:'MarsianTime', rdfs:subClassOf, knowrob:'TimePoint'),
   rdf_assert(knowrob:'MarsLocation', rdf:type, owl:'Class'),
@@ -231,8 +231,10 @@ test(assert_class_and_properties) :-
   findall( Val,owl_class_properties_value(knowrob:'MarsianCoreTime', _Prop, Val), ValuesE),
   length(ValuesE, 0),
   findall( Val,owl_class_properties_nosup(knowrob:'MarsianCoreTime', _Prop, Val), ValuesF),
-  length(ValuesF, 0).
-
-
+  length(ValuesF, 0),
+  rdf_instance_from_class(knowrob:'MarsianTime', MarsianTimeInst),
+  rdf_assert(MarsianTimeInst, rdf:type, owl:'NamedIndividual'),
+  rdf_assert(MarsianTimeInst, rdf:type, knowrob:'MarsianTime'),
+  owl_restriction_on(MarsianTimeInst, 'http://knowrob.org/kb/knowrob.owl#locationOf', Rstr1).
   
 :- end_tests(knowrob_owl).
