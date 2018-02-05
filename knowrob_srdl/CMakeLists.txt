@@ -2,13 +2,26 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_srdl)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools knowrob_common knowrob_actions urdf xacro)
+add_compile_options(-std=c++11)
+
+find_package(catkin REQUIRED COMPONENTS rosjava_build_tools knowrob_common knowrob_actions urdf xacro rosprolog)
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(
-  CATKIN_DEPENDS knowrob_common urdf
+  CATKIN_DEPENDS knowrob_common urdf rosprolog
+  LIBRARIES urdf_parser
 )
+
+# find SWI-Prolog package configuration
+find_package(PkgConfig)
+pkg_check_modules(SWIPL REQUIRED swipl)
+message(STATUS "SWIPL found.")
+
+# build C++ library with predicates to parse URDF files
+include_directories(${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+add_library(urdf_parser SHARED src/urdf_parser.cpp)
+target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 
 # Xacro files
 set(xacro_files_out "")
