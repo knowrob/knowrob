@@ -234,10 +234,18 @@ test(assert_restrictions_and_check, [nondet]) :-
   length(ValuesF, 0),
   rdf_instance_from_class(knowrob:'MarsianTime', MarsianTimeInst),
   rdf_assert(MarsianTimeInst, rdf:type, knowrob:'MarsianTime'),
+  rdf_assert(MarsianTimeInst, rdf:type, owl:'NamedIndividual'),
   rdf_instance_from_class(knowrob:'MarsianCoreTime', MarsianCoreTimeInst),
   rdf_assert(MarsianCoreTimeInst, rdf:type, knowrob:'MarsianCoreTime'),
+  rdf_assert(MarsianTimeInst, knowrob:'afterI', MarsianCoreTimeInst),
   owl_restriction_on(MarsianTimeInst, 'http://knowrob.org/kb/knowrob.owl#locationOf', Rstr1),
   owl_restriction_on(MarsianCoreTimeInst, 'http://knowrob.org/kb/knowrob.owl#locationOf', Rstr1),
   owl_restriction_on(MarsianCoreTimeInst, 'http://knowrob.org/kb/knowrob.owl#toLocation', Rstr2).
+
+%% Inspect, Input, Output
+test(inspect_individuals_and_classes, [nondet]) :-
+   owl_inspect(knowrob:'MarsianTime', 'http://knowrob.org/kb/knowrob.owl#locationOf', O),
+   rdfs_individual_of(MT, knowrob:'MarsianTime'),
+   owl_inspect(MT, knowrob:'afterI', CT).
   
 :- end_tests(knowrob_owl).
