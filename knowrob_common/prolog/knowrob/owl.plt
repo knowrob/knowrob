@@ -246,6 +246,10 @@ test(assert_restrictions_and_check, [nondet]) :-
 test(inspect_individuals_and_classes, [nondet]) :-
    owl_inspect(knowrob:'MarsianTime', 'http://knowrob.org/kb/knowrob.owl#locationOf', O),
    rdfs_individual_of(MT, knowrob:'MarsianTime'),
-   owl_inspect(MT, knowrob:'afterI', CT).
+   owl_inspect(MT, knowrob:'afterI', CT),
+   owl_readable(MT, R_MT),
+   owl_readable(knowrob:'Knife', ['Knife']),
+   owl_readable(knowrob:'Joint-Physical', ['Joint-Physical']),
+   owl_readable(knowrob:'afterI', ['inverse_of(beforeI)']).
   
 :- end_tests(knowrob_owl).
