@@ -98,7 +98,10 @@
         ros : ros,
         tfClient : tfClient,
         topic : '/visualization_marker',
-        rootObject : viewer.scene
+        sceneObjects : viewer.scene,
+        orthogonalObjects : viewer.orthoScene,
+        selectableObjects : viewer.selectableObjects,
+        backgroundObjects : viewer.backgroundScene
       });
       
       // Setup the marker array client.
@@ -106,7 +109,10 @@
         ros : ros,
         tfClient : tfClient,
         topic : '/visualization_marker_array',
-        rootObject : viewer.scene,
+        sceneObjects : viewer.scene,
+        orthogonalObjects : viewer.orthoScene,
+        selectableObjects : viewer.selectableObjects,
+        backgroundObjects : viewer.backgroundScene,
         markerClient : markerClient
       });
 
