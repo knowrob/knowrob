@@ -284,11 +284,25 @@ belief_at_global(Obj, GlobalPose, Instant) :-
   object_frame_name(Obj, ChildFrame),
   holds( knowrob:pose(Obj,TransformId), Instant ),
   transform_data(TransformId, (T,Q)),
-  ( rdf_has(TransformId, knowrob:'relativeTo', Parent) -> (
+  ( transform_parent_object(TransformId, Parent) -> (
     belief_at_global(Parent, GlobalTransform, Instant),
     object_frame_name(Parent, ParentFrame),
     transform_multiply(GlobalTransform, [ParentFrame,ChildFrame,T,Q], GlobalPose)
   ) ; ( map_frame_name(MapFrame), GlobalPose=[MapFrame,ChildFrame,T,Q]) ), !.
+
+transform_parent_object(TransformId, Parent) :-
+  rdf_has(TransformId, knowrob:'relativeTo', RelativeTo),
+  (( rdf_has(X, knowrob:'eventOccursAt', RelativeTo),
+     rdf_has(X, knowrob:'objectActedOn', Object) );
+     rdf_has(Object, knowrob:'pose', RelativeTo) ;
+     Object = RelativeTo ),
+  resolve_temporal_part(Object,Parent), !.
+
+resolve_temporal_part(TemporalPart, Object) :-
+  rdf_has(Object, knowrob:'temporalParts', TemporalPart), !.
+resolve_temporal_part(Object, Object).
+  
+  
 
 %% belief_at_update(+Obj:iri, +Transform:list) is semidet.
 %% belief_at_update(+Obj:iri, +Transform:list, +RelativeTo:iri) is semidet.
