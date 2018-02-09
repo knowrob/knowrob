@@ -774,6 +774,7 @@ marker_update(object_without_children(Identifier), MarkerObject, T) :-
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+    ground((Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
