@@ -322,10 +322,11 @@ marker_initialize_object(Identifier,MarkerObject) :-
       marker_scale(MarkerObject, ScaleVec)
     ) ; true )
   )),
-  ignore((
-    object_color(Identifier, Color),
+  ignore(once((
+    holds(Identifier, knowrob:mainColorOfObject, Color_rdf),
+    rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Color),
     marker_color(MarkerObject, Color)
-  )).
+  ))).
 
 %% marker_primitive(+Type, +MarkerName, +MarkerTerm, -MarkerObject, +Parent) is det.
 %
@@ -774,6 +775,7 @@ marker_update(object_without_children(Identifier), MarkerObject, T) :-
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+    ground((Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),

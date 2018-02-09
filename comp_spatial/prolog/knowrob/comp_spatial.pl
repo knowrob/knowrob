@@ -196,7 +196,7 @@ comp_below_of(Bottom, Top, Interval) :- comp_above_of(Top, Bottom, Interval).
 %
 comp_toTheLeftOf(Left, Right) :-
     current_time(Instant),
-    comp_above_of(Left, Right, [Instant,Instant]).
+    comp_toTheLeftOf(Left, Right, [Instant,Instant]).
 
 comp_toTheLeftOf(Left, Right, Interval) :-
     spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).

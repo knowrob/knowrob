@@ -172,6 +172,7 @@ visualisation_server(WebServer) :-
     jpl_new('org.knowrob.vis.WebServer', [], WebServer),
     jpl_list_to_array(['org.knowrob.vis.WebServer'], Arr),
     jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [WebServer, Arr], _),
+    writeln('% (knowrob_vis) Minimal marker visualization client running at: http://localhost:1111'),
     assert(v_server(WebServer)),!.
 visualisation_server(WebServer) :-
     current_predicate(v_server, _),
