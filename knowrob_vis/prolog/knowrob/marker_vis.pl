@@ -38,6 +38,7 @@
       marker_remove/1,
       marker_child/2,
       marker_object/4,
+      marker_term/2,
       
       marker_properties/2,
       marker_type/2,
@@ -81,6 +82,7 @@
             marker_show(t),
             marker_update(t),
             marker_update(t,r),
+            marker_term(t,?),
             marker_remove(t),
             marker_children(t,?),
             marker_type(t,?),
@@ -308,7 +310,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_scale(MarkerObject, [X, Y, Z])
   )),
   ignore((
-    get_model_path(Identifier, Path),
+    object_mesh_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
