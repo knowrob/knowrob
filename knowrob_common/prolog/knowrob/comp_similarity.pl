@@ -32,7 +32,8 @@
       rdf_path_distance/3,
       rdf_shortest_path/3,
       rdf_paths/3,
-      rdf_most_similar/4
+      rdf_most_similar/4,
+      rdf_all_similar/3
     ]).
 /** <module> Computables that calculate semantic similarities between objects.
 
@@ -48,7 +49,8 @@
       rdf_path_distance(r,r,-),
       rdf_shortest_path(r,r,-),
       rdf_paths(r,r,t),
-      rdf_most_similar(r,r,+,-).
+      rdf_most_similar(r,r,+,-),
+      rdf_all_similar(r,r,-).
 
 %% rdf_wup_similarity(+A:rdf_class, +B:rdf_class, -Sim:float).
 %
@@ -207,6 +209,10 @@ rdf_most_similar(Class, Super, N, NMostSim) :-
   first_n_elem(MostSim, N, NMostSim).
 
 
+rdf_all_similar(Class, Super, MostSim) :-
+  findall([A, D], (rdfs_subclass_of(A, Super),
+                   rdf_wup_similarity(A, Class, D)), Dists),
+  predsort(compare_inference_probs, Dists, MostSim).
 
 first_n_elem([F|In], N, [F|Out]) :-
     N>0,
