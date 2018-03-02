@@ -344,12 +344,12 @@ in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     
     spatial_thing(InnerObj),
     map_frame_name(MapFrame),
-    object_pose_at_time(InnerObj, Instant, (MapFrame, _, [IX,IY,IZ], _)),
+    object_pose_at_time(InnerObj, Instant, [MapFrame, _, [IX,IY,IZ], _]),
     object_dimensions(InnerObj, ID, IW, IH),
     
     rdfs_individual_of(OuterObj, knowrob:'Container'),
     InnerObj \= OuterObj,
-    object_pose_at_time(OuterObj, Instant, (MapFrame, _, [OX,OY,OZ], _)),
+    object_pose_at_time(OuterObj, Instant, [MapFrame, _, [OX,OY,OZ], _]),
     object_dimensions(OuterObj, OD, OW, OH),
     
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)

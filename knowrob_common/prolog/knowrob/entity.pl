@@ -571,6 +571,8 @@ entity_head(Entity, _, Descr, TypeIri) :-
   -> true
   ; (
     findall(E, (
+      % TODO: it might not allways be best to early resolve the entities,
+      %       also there could be many of them!
       owl_individual_of_all(Types, E),
       \+ owl_individual_of(E, knowrob:'TemporalPart')
     ), Entities),

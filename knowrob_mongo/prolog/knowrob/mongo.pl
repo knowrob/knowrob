@@ -193,6 +193,16 @@ mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_cursor_ascending(DBCursor, TimeKey, DBCursorAscending),
   mng_cursor_read(DBCursorAscending, DBObj).
 
+mng_query_between(Collection, DBObj, TimeKey, [Begin,End]) :-
+  mng_query_between(Collection, DBObj, TimeKey, [Begin,End], []).
+
+mng_query_between(Collection, DBObj, TimeKey, [Begin,End], Pattern) :-
+  mng_cursor(Collection, [
+    [TimeKey, '<', date(End)],
+    [TimeKey, '>', date(Begin)]|Pattern], DBCursor),
+  mng_cursor_ascending(DBCursor, TimeKey, DBCursorAscending),
+  mng_cursor_read(DBCursorAscending, DBObj).
+
 mng_query(Collection, DBObj) :-
   mng_interface(DB),
   jpl_call(DB, 'query', [Collection], DBCursor),
