@@ -118,14 +118,14 @@ on_Physical_at_time(Top, Bottom, Instant) :-
     spatial_thing(Top),
     map_frame_name(MapFrame),
     % get object center for Top
-    object_pose_at_time(Top, Instant, (MapFrame, _, [TX,TY,TZ], _)),
+    object_pose_at_time(Top, Instant, [MapFrame, _, [TX,TY,TZ], _]),
     
     spatial_thing(Bottom),
     Top \= Bottom,
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom,Instant),
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, (MapFrame, _, [_,_,BZ], _)),
+    object_pose_at_time(Bottom, Instant, [MapFrame, _, [_,_,BZ], _]),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -153,7 +153,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     map_frame_name(MapFrame),
     
     % get object center for Top
-    object_pose_at_time(Top, Instant, (MapFrame, _, [TX,TY,TZ], _)),
+    object_pose_at_time(Top, Instant, [MapFrame, _, [TX,TY,TZ], _]),
     
     spatial_thing(Bottom),
     Top \= Bottom,
@@ -162,7 +162,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     objectAtPoint2D(TX,TY,Bottom,Instant),
 
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, (MapFrame, _, [_,_,BZ], _)),
+    object_pose_at_time(Bottom, Instant, [MapFrame, _, [_,_,BZ], _]),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -207,11 +207,11 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     %
     spatial_thing(Left),
     map_frame_name(MapFrame),
-    object_pose_at_time(Left, Instant, (MapFrame, _, [LX,LY,LZ], _)),
+    object_pose_at_time(Left, Instant, [MapFrame, _, [LX,LY,LZ], _]),
     
     spatial_thing(Right),
     Left \= Right,
-    object_pose_at_time(Right, Instant, (MapFrame, _, [RX,RY,RZ], _)),
+    object_pose_at_time(Right, Instant, [MapFrame, _, [RX,RY,RZ], _]),
 
     =<( abs( LX - RX), 0.30),  % less than 30cm y diff
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
@@ -279,11 +279,11 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     %
     spatial_thing(Front),
     map_frame_name(MapFrame),
-    object_pose_at_time(Front, Instant, (MapFrame, _, [FX,_,_], _)),
+    object_pose_at_time(Front, Instant, [MapFrame, _, [FX,_,_], _]),
     
     spatial_thing(Back),
     Front \= Back,
-    object_pose_at_time(Back, Instant, (MapFrame, _, [BX,_,_], _)),
+    object_pose_at_time(Back, Instant, [MapFrame, _, [BX,_,_], _]),
 
     =<( BX, FX ).      % front obj has a higher x coord.
 
@@ -310,11 +310,11 @@ comp_inCenterOf(Inner, Outer, Interval) :-
 comp_inCenterOf_at_time(Inner, Outer, Instant) :-
     spatial_thing(Inner),
     map_frame_name(MapFrame),
-    object_pose_at_time(Inner, Instant, (MapFrame, _, [IX,IY,IZ], _)),
+    object_pose_at_time(Inner, Instant, [MapFrame, _, [IX,IY,IZ], _]),
     
     spatial_thing(Outer),
     Inner \= Outer,
-    object_pose_at_time(Outer, Instant, (MapFrame, _, [OX,OY,OZ], _)),
+    object_pose_at_time(Outer, Instant, [MapFrame, _, [OX,OY,OZ], _]),
 
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
@@ -406,10 +406,8 @@ objectAtPoint2D(PX, PY, Obj, Instant) :-
     % get information of potential objects at positon point2d (x/y)
     object_dimensions(Obj, OD, OW, _),
     
-    object_pose_at_time(Obj, Instant, mat([M00, M01, _, OX,
-                                           M10, M11, _, OY,
-                                           _, _, _, _,
-                                           _, _, _, _])),
+    object_pose_at_time(Obj, Instant, [map,_,Pos,Rot]),
+    matrix([M00,M01,_,OX, M10,M11,_,OY|_], Pos, Rot),
 
     % object must have an extension
     <(0,OW), <(0,OD),
@@ -459,11 +457,6 @@ spatially_holds_interval(S, P, O, I) :-
   var(I), !,
   call(P, S, O, I).
 spatially_holds_interval(S, P, O, I) :-
-  % I is a time instant
-  nonvar(I),
-  time_term(I, Instant), !,
-  call(P, S, O, Instant).
-spatially_holds_interval(S, P, O, I) :-
   % I is a closed interval
   nonvar(I),
   interval(I, [Begin, End]), !,
@@ -474,6 +467,11 @@ spatially_holds_interval(S, P, O, I) :-
   interval(I, [Begin]), !,
   current_time(End),
   spatially_holds_interval(S, P, O, Begin, End).
+spatially_holds_interval(S, P, O, I) :-
+  % I is a time instant
+  nonvar(I),
+  time_term(I, Instant), !,
+  call(P, S, O, Instant).
 spatially_holds_interval(S, P, O, Begin, End) :-
   % NOTE: this is an approximation, just checking if the relations holds
   %       for begin and end of the time interval.
