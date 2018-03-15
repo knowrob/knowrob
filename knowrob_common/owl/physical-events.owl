@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/physical-events.owl#"
+     xml:base="http://knowrob.org/kb/physical-events.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/physical-events.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsDestroyed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectOfStateChange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectsInContact -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectsInContact">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsRemaining -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsRemaining">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDestructionEvent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#transformedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#transformedObject">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#maxTempForProcess -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#maxTempForProcess"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#minTempForProcess -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#minTempForProcess"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Action -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AttachmentEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AttachmentEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Boiling -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Boiling">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vaporization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#minTempForProcess"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In each instance of this collection some liquid matter is raised to its boilingPoint and is thereby changed from being in the Liquid-StateOfMatter to being in the Gaseous-StateOfMatter.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Collision -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Collision">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContinuousPhysicalContactSituation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Condensing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Condensing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GaseousTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ContinuousPhysicalContactSituation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ContinuousPhysicalContactSituation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of PhysicalContactSituation each instance of which involves two or more tangible objects touching (see touches) continuously throughout the entire duration of the situation. Every PhysicalContactSituation has a ContinuousPhysicalContactSituation as a (proper or improper) sub-situation (see subSituations).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwNL5wJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cracking -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cracking">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDestructionEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>In each Cracking event, something becomes cracked. I.e., two or more areas of the thing are separated from one another (though perhaps not divided wholly into parts). In order to undergo a Cracking, the objectOfStateChange must be a SolidTangibleThing.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CreationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CreationEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CreationOrDestructionEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CreationOrDestructionEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DestructionEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DestructionEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dissolving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dissolving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDestructionEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The collection of instances of FluidFlow_Translation events in which some part of a portion of fluid moves and separates from that original portion.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4ruFtYZgJhEdyAAADggVbxzQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlowEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent"/>
+        <rdfs:comment>Each instance of FluidFlowEvent is an event in which a fluid moves (or a group of particles collectively moves). The spatial extent of the fluid may change (i.e. expansion or contraction) and/or they may undergo a MovementEvent such as rotation (e.g. a whirlpool or a tornado) and/or translation. If the fluid undergoes translation, then the event is also an instance of FluidFlow-Translation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Freezing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Freezing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#maxTempForProcess"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Frozen -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GaseousTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GaseousTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingProcess -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingProcess"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Melting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Melting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#minTempForProcess"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:comment>A collection of physical events in which two or more objects are in physical contact (see touches) for at least part of the event&apos;s duration. Note that, although most PhysicalEvents involve some kind of touching, only those for which contact is salient should be instances of PhysicalContactEvent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent"/>
+        <rdfs:comment>The collection of all temporal situations in which two or more tangible objects are touching (see touches) for at least part of the situation&apos;s duration. This includes an object&apos;s rubbing against another, objects colliding, as well as static touching configurations. Note that, although most types of PhysicalEvents involve some kind of touching, only those types for which contact is salient should be subcollections of PhysicalContactSituation.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv_-mQpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalCreationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalCreationEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CreationEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalCreationOrDestructionEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalCreationOrDestructionEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalCreationOrDestructionEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CreationOrDestructionEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDestructionEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDestructionEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DestructionEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalCreationOrDestructionEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Separation-Complete -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Separation-Complete">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SeparationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SeparationEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+        <rdfs:comment>In each instance of SeparationEvent, an object is cut, scraped, broken, cracked or pulverized, so that part of the object is no longer attached where it once was. Note that the part need not be completely separated from the object; it may still be attached in places. See the specialization Separation-Complete for the case of complete separation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SolidTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">StateOfMatterChangeEvent is the collection of events in which some piece of matter changes from one of the physical states of matter to another. Such changes of state can be induced by changes in temperature (or the equivalent in the manipulation of kinetic energy).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sublimating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sublimating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GaseousTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SublimatingToSolid -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SublimatingToSolid">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GaseousTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Vaporization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vaporization">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#LiquidFlow-Separation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/physical-events.owl#LiquidFlow-Separation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#LiquidFlow-Translation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/physical-events.owl#LiquidFlow-Translation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

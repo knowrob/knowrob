@@ -8,6 +8,7 @@
     <!ENTITY srdl2 "http://knowrob.org/kb/srdl2.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY knowrob 'http://knowrob.org/kb/knowrob.owl#'>
 ]>
 
 
@@ -18,6 +19,8 @@
      xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
@@ -44,6 +47,20 @@
     </owl:ObjectProperty>
 
 
+
+    <computable:PrologTemporalProperty rdf:about="#compute_baseLinkPose">
+        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:comp_baselink_pose</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;pose"/>
+    </computable:PrologTemporalProperty>
+
+    <computable:PrologTemporalProperty rdf:about="#compute_inFieldOfView">
+        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:srdl_inFieldOfView</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;inFieldOfView"/>
+    </computable:PrologTemporalProperty>
 
 
 

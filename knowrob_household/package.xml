@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>knowrob_household</name>
+  <version>0.1.0</version>
+  <description>Household domain representation and reasoning.</description>
+
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://knowrob.org</url>
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>knowrob_common</build_depend>
+  <build_depend>knowrob_actions</build_depend>
+
+  <run_depend>knowrob_common</run_depend>
+  <run_depend>knowrob_actions</run_depend>
+
+</package>

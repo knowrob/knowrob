@@ -1,0 +1,493 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
+     xml:base="http://knowrob.org/kb/knowrob.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/household.owl">
+        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Basin -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Basin"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BathRoom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BathRoom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Restroom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bathtub -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bathtub">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Basin"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bed-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bed-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Person-SupportingFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BedRoom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BedRoom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BedsideTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BedsideTable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SideTable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BodyWash -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BodyWash">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Surfactant"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Box-Container -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Chair-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Chair-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Person-SupportingFurniture"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#Sofa-PieceOfFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CleaningARoom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CleaningARoom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CleaningDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CleaningDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClothesDryer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClothesDryer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClothesIron -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClothesIron">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClothesWasher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClothesWasher">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CleaningDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoffeeTable-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoffeeTable-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ContainerArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cushion-PartOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cushion-PartOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Deodorant -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Deodorant">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Desk-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Desk-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DryingLaundry -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DryingLaundry">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HouseholdAppliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric-powered Household Appliances</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FurniturePiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HouseholdAppliance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PoweredDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LaundryDetergent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LaundryDetergent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MoppingAFloor -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MoppingAFloor">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#NonPoweredDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NonPoweredDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Object-SupportingFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Object-SupportingFurniture"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Oven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Person-SupportingFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Person-SupportingFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Object-SupportingFurniture"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PoweredDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PoweredDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Rack-Holder -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Rack-Holder">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NonPoweredDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RackOfDishwasher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RackOfDishwasher">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Rack-Holder"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Restroom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Restroom"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RoomInAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Shampoo -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Shampoo">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Surfactant"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ShavingCream -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ShavingCream">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SideTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SideTable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Basin"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#WashingDishes"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container found in knowrobs, bathrooms, utility rooms etc which holds water, dishes, etc.. The Sink is the whole of which the basin, faucets, etc, are a part.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Soap-Personal -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Soap-Personal">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Surfactant"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sofa-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sofa-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Person-SupportingFurniture"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A piece of furniture used for seating that can hold more than one person comfortably; usually padded and fully upholstered [covered with fabric].</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Surfactant -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Surfactant"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SweepingAnArea -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SweepingAnArea">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Object-SupportingFurniture"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A piece of furniture usually made entirely of rigid material, used to support objects.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TakingABath -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakingABath"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TakingOutTheGarbage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakingOutTheGarbage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TeethCleaning -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TeethCleaning"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TelevisionSet -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TelevisionSet">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ToiletPaper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToiletPaper">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ToiletrySubstance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Toothpaste -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Toothpaste">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Vacuuming -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vacuuming">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingClothesInAMachine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingClothesInAMachine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishes -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishes"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

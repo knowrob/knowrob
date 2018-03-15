@@ -1,8 +1,8 @@
 <package>
   <name>knowrob_actions</name>
   <version>1.0.0</version>
-  <description>knowrob_actions</description>
-  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
+  <description>Reasoning about action effects</description>
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD</license>
 

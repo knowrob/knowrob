@@ -1,0 +1,6 @@
+<launch>
+  <param name="initial_package" type="string" value="knowrob_maps" />
+  <param name="initial_goal" type="string" value="owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl')" />
+  
+  <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
+</launch>

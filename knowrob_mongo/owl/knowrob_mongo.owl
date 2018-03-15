@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns'>
+    <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+    <!ENTITY knowrob 'http://knowrob.org/kb/knowrob.owl#'>
+]>
+
+<rdf:RDF
+    xmlns:computable="http://knowrob.org/kb/computable.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://knowrob.org/kb/knowrob_objects.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:knowrob="&knowrob;"
+    xml:base="http://knowrob.org/kb/knowrob_mongo.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+  </owl:Ontology>
+
+    <computable:PrologTemporalProperty rdf:about="#compute_mngPose">
+        <computable:command rdf:datatype="&xsd;string">knowrob_mongo:mng_comp_pose</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;pose"/>
+    </computable:PrologTemporalProperty>
+
+</rdf:RDF>

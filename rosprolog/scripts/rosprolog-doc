@@ -10,7 +10,7 @@ if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
     export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
 
     if [ -f $(rospack find $1)/prolog/init.pl ]; then
-        SCRIPT_FILE="-g ensure_loaded('${PL_INIT_FILE}'),register_ros_package($1),doc_save('$(rospack find $1)/',[recursive(true),doc_root('$(rospack find $1)/doc')]) -t halt"
+        SCRIPT_FILE="-g ensure_loaded('${PL_INIT_FILE}'),register_ros_package($1),doc_save('$(rospack find $1)/',[format(html),recursive(true),doc_root('$(rospack find $1)/doc')]) -t halt"
     fi
     PL_ARGS=${@:1}
 fi

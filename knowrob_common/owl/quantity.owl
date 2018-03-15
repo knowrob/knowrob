@@ -6,7 +6,7 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:voag="http://voag.linkedmodel.org/schema/voag#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:qudt="http://qudt.org/schema/qudt#"
+    xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#"
     xmlns:creativecommons="http://creativecommons.org/ns#"
     xmlns:qudt-quantity="http://qudt.org/vocab/quantity#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -18,7 +18,7 @@
   xml:base="http://qudt.org/1.1/vocab/quantity" > 
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#CubicElectricDipoleMomentPerSquareEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cubic Electric Dipole Moment per Square Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Quad">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -28,11 +28,11 @@
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Flux or Luminous Power is the measure of the perceived power of light. It differs from radiant flux, the measure of the total power of light emitted, in that luminous flux is adjusted to reflect the varying sensitivity of the human eye to different wavelengths of light.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassPerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass per Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Femtometer">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -41,7 +41,7 @@
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cp</qudt:symbol>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyPerTemperature"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat Capacity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#VoltPerMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricField"/>
@@ -54,7 +54,7 @@
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">T</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time is a basic component of the measuring system used to sequence events, to compare the durations of events and the intervals between them, and to quantify the motions of objects.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundForcePerSquareFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -78,7 +78,7 @@
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Dipole"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Electric Dipole Moment is a measure of the separation of positive and negative electrical charges in a system of (discrete or continuous) charges. It is a vector-valued quantity. If the system of charges is neutral, that is if the sum of all charges is zero, then the dipole moment of the system is independent of the choice of a reference frame; however in a non-neutral system, such as the dipole moment of a single proton, a dependence on the choice of reference point arises. In such cases it is conventional to choose the reference point to be the center of mass of the system or the center of charge, not some arbitrary origin. This convention ensures that the dipole moment is an intrinsic property of the system.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Dipole Moment</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#YearTropical">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Time"/>
@@ -115,7 +115,7 @@
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Pressure"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted at a point due to the presence of an atmosphere. In most circumstances atmospheric pressure is closely approximated by the hydrostatic pressure caused by the weight of air above the measurement point. Low pressure areas have less atmospheric mass above their location, whereas high pressure areas have more atmospheric mass above their location. Similarly, as elevation increases there is less overlying atmospheric mass, so that pressure decreases with increasing elevation. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atmospheric Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MoldovanLeu">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -133,7 +133,7 @@
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Thermal_energy"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Area"/>
@@ -154,7 +154,7 @@
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Acceleration"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Acceleration"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear Acceleration</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AmperePerMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AuxillaryMagneticField"/>
@@ -164,7 +164,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerPerAreaAngle">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power per Area Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricPotential">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Category:Units_of_electrical_potential"/>
@@ -172,7 +172,7 @@
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyPerElectricCharge"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Electric Potential is a scalar valued quantity associated with an electric field. The electric potential Φ(x) at a point, x, is formally defined as the line integral of the electric field taken along a path from x to the point at infinity. If the electric field is static, i.e. time independent, then the choice of the path is arbitrary; however if the electric field is time dependent, taking the integral along different paths will produce different results.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Potential</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Joule">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -181,7 +181,7 @@
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Energy is the energy of electromagnetic waves. The quantity of radiant energy may be calculated by integrating radiant flux (or power) with respect to time</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubanPeso">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -210,27 +210,27 @@
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Mass"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The molecular mass, or molecular weight of a chemical compound is the mass of one molecule of that compound, relative to the unified atomic mass unit, u. Molecular mass should not be confused with molar mass, which is the mass of one mole of a substance.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molecular Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Luminance">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Luminance"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminance is a photometric measure of the luminous intensity per unit area of light travelling in a given direction. It describes the amount of light that passes through or is emitted from a particular area, and falls within a given solid angle.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Abohm">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Resistance"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricChargePerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge per Unit Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kilogram">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Mass"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MagneticFluxPerUnitLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Flux per Unit Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MileUSStatute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -259,11 +259,11 @@
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Density">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Density"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ForcePerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force Per Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Absiemen">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricConductivity"/>
@@ -278,18 +278,18 @@
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Magnetomotive_force"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetomotive Force (mmf) is the ability of an electric circuit to produce magnetic flux. Just as the ability of a battery to produce electric current is called its electromotive force or emf, mmf is taken as the work required to move a unit magnet pole from any point through any path which links the electric circuit back the same point in the presence of the magnetic force produced by the electric current in the circuit.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetomotive Force</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#DynamicViscosity">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Viscosity"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">μ</qudt:symbol>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Viscosity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dynamic Viscosity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#QuarticElectricDipoleMomentPerCubicEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Quartic Electric Dipole Moment per Cubic Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MegaHertzPerTesla">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerMass"/>
@@ -302,7 +302,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#TemperaturePerMagneticFluxDensity">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature per Magnetic Flux Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ArubanGuilder">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -321,14 +321,14 @@ It is a measure of the randomness of molecules in a system and is central to the
 &#xD;
 It can be seen that the dimensions of entropy are energy divided by temperature, which is the same as the dimensions of Boltzmann's constant (kB) and heat capacity. The SI unit of entropy is joule per kelvin. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermodynamic Entropy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#BtuInch">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ThermalEnergyLength"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ForceMagnitude">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force Magnitude</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PerMeterKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#InverseLengthTemperature"/>
@@ -343,14 +343,14 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Mass"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Microgravity">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearAcceleration"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyPerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy per Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerMoleKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolarHeatCapacity"/>
@@ -358,7 +358,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificEnergy">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Specific_energy"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Som">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -366,7 +366,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PolarMomentOfInertia">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The polar moment of inertia is a quantity used to predict an object's ability to resist torsion, in objects (or segments of objects) with an invariant circular cross-section and no significant warping or out-of-plane deformation. It is used to calculate the angular displacement of an object subjected to a torque. It is analogous to the area moment of inertia, which characterizes an object's ability to resist bending.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polar moment of inertia</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundForceFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Torque"/>
@@ -374,7 +374,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LiquidVolume">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Liquid Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#TonAssay">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Mass"/>
@@ -387,7 +387,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Reynolds number (Re) is a dimensionless number defined as the ratio of inertial forces to viscous forces and, consequently, it quantifies the relative importance of these two types of forces for given flow conditions.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reynolds Number</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Ouguiya">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -415,7 +415,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ψ</qudt:symbol>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dimensionless Ratio</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#BtuFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ThermalEnergyLength"/>
@@ -434,22 +434,22 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#SpecificEnergy"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The equivalent dose to a tissue is found by multiplying the absorbed dose, in gray, by a dimensionless "quality factor" Q, dependent upon radiation type, and by another dimensionless factor N, dependent on all other pertinent factors. N depends upon the part of the body irradiated, the time and volume over which the dose was spread, even the species of the subject.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dose Equivalent</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolarVolume">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Molar_volume"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">V_m</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molar Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricCurrentPerUnitEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current per Unit Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#CoefficientOfHeatTransfer">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Heat_transfer"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coefficient of Heat Transfer</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloPascal">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -487,7 +487,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AmountOfSubstancePerUnitVolume">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Concentration"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of Substance Per Unit Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NewtonMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Torque"/>
@@ -535,7 +535,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Turbidity"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turbidity is the cloudiness or haziness of a fluid, or of air, caused by individual particles (suspended solids) that are generally invisible to the naked eye, similar to smoke in air. Turbidity in open water is often caused by phytoplankton and the measurement of turbidity is a key test of water quality. The higher the turbidity, the higher the risk of the drinkers developing gastrointestinal diseases, especially for immune-compromised people, because contaminants like virus or bacteria can become attached to the suspended solid. The suspended solids interfere with water disinfection with chlorine because the particles act as shields for the virus and bacteria. Similarly suspended solids can protect bacteria from UV sterilisation of water. Fluids can contain suspended solid matter consisting of particles of many different sizes. While some suspended material will be large enough and heavy enough to settle rapidly to the bottom container if a liquid sample is left to stand (the settleable solids), very small particles will settle only very slowly or not at all if the sample is regularly agitated or the particles are colloidal. These small solid particles cause the liquid to appear turbid.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turbidity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ErgPerCubicCentimeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyDensity"/>
@@ -563,7 +563,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A general term used to denote an increase in signal power or signal strength in transmission from one point to another. Gain is usually expressed in decibels and is widely used to denote transducer gain.  An increase or amplification. In radar there are two general usages of the term: (a) antenna gain, or gain factor, is the ratio of the power transmitted along the beam axis to that of an isotropic radiator transmitting the same total power; (b) receiver gain, or video gain, is the amplification given a signal by the receiver.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gain</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilePerHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
@@ -577,7 +577,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LuminousFluxPerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Flux per Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Rem">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DoseEquivalent"/>
@@ -606,7 +606,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MassTemperature"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#KinematicViscosity"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Power"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerArea"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerArea"/>
@@ -642,7 +642,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyPerTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy per Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Statmho">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricConductivity"/>
@@ -665,7 +665,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AreaTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Micro">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
@@ -692,7 +692,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Velocity"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Velocity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear Velocity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AbcoulombPerSquareCentimeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerArea"/>
@@ -720,7 +720,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CostaRicanColon">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -731,7 +731,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#RF-Power">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#SignalStrength"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RF-Power</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#CommunicationsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#CommunicationsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MicroFarad">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Capacitance"/>
@@ -746,7 +746,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Electric_flux"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Electric Flux through an area is defined as the electric field multiplied by the area of the surface projected in a plane perpendicular to the field. Electric Flux is a scalar-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#RevolutionPerSecondSquared">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AngularAcceleration"/>
@@ -758,7 +758,7 @@ It can be seen that the dimensions of entropy are energy divided by temperature,
 &#xD;
 The electronic polarizability α is defined as the ratio of the induced dipole moment of an atom to the electric field that produces this dipole moment. Polarizability is often a scalar valued quantity, however in the general case it is tensor-valued.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polarizability</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Denier">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerLength"/>
@@ -771,7 +771,7 @@ The electronic polarizability α is defined as the ratio of the induced dipole m
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ForceMagnitude"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tension is the magnitude of the pulling force exerted by a string, cable, chain, or similar object on another object. It is the opposite of compression.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tension</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchPerSecondSquared">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearAcceleration"/>
@@ -781,18 +781,18 @@ The electronic polarizability α is defined as the ratio of the induced dipole m
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthByForce">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Force</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilogramPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerTime"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#TimeTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyPerElectricCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy per Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CentimeterOfWater">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -809,14 +809,14 @@ The electronic polarizability α is defined as the ratio of the induced dipole m
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular acceleration is the rate of change of angular velocity over time. Measurement of the change made in the rate of change of an angle that a spinning object undergoes per unit time. It is a vector quantity.  Also called Rotational acceleration.&#xD;
 In SI units, it is measured in radians per second squared (rad/s^2), and is usually denoted by the Greek letter alpha.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular Acceleration</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MagneticFlux">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Magnetic_flux"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Φ</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Flux is the product of the average magnetic field times the perpendicular area that it penetrates.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CzechKoruna">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -846,7 +846,7 @@ I is the current.&#xD;
 &#xD;
 However, in general electric power is calculated by taking the integral of the vector cross-product of the electrical and magnetic fields over a specified area.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Power</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NewTurkishLira">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -861,7 +861,7 @@ However, in general electric power is calculated by taking the integral of the v
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#LuminousFluxPerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Emittance is the luminous flux per unit area emitted from a surface.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Emmitance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchPoundForce">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -878,11 +878,11 @@ However, in general electric power is calculated by taking the integral of the v
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricCurrentPerAngle">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current per Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthPerUnitElectricCurrent">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length per Unit Electric Current</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#StatvoltCentimeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricFlux"/>
@@ -891,7 +891,7 @@ However, in general electric power is calculated by taking the integral of the v
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Speed"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Speed is the magnitude of velocity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Speed</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloPascalAbsolute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -940,7 +940,7 @@ However, in general electric power is calculated by taking the integral of the v
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseAmountOfSubstance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MegaElectronVolt">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -983,7 +983,7 @@ However, in general electric power is calculated by taking the integral of the v
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrentPerUnitLength"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricPotential"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticField"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Capacitance"/>
     <qudt:unitSystem rdf:resource="http://qudt.org/vocab/unit#SystemOfUnits_CGS-ESU"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticDipoleMoment"/>
@@ -998,7 +998,7 @@ However, in general electric power is calculated by taking the integral of the v
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyPerElectricCharge"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In physics, electromotive force, or most commonly emf (seldom capitalized), or (occasionally) electromotance is "that which tends to cause current (actual electrons and ions) to flow."[1]. More formally, emf is the external work expended per unit of charge to produce an electric potential difference across two open-circuited terminals.[2][3] The electric potential difference is created by separating positive and negative charges, thereby generating an electric field.[4][5] The created electrical potential difference drives current flow if a circuit is attached to the source of emf. When current flows, however, the voltage across the terminals of the source of emf is no longer the open-circuit value, due to voltage drops inside the device due to its internal resistance. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electromotive Force</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GigaHertz">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Frequency"/>
@@ -1008,7 +1008,7 @@ However, in general electric power is calculated by taking the integral of the v
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AtomicCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atomic Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#AtomicPhysicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#DominicanPeso">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1016,11 +1016,11 @@ However, in general electric power is calculated by taking the integral of the v
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AmountOfSubstancePerUnitMass">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Concentration"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of substance per unit mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InformationEntropy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Information Entropy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#InformationQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#InformationQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerSquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerArea"/>
@@ -1082,7 +1082,7 @@ However, in general electric power is calculated by taking the integral of the v
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolarEnergy">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Energy"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molar Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#EuropeanMonetaryUnit">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1092,21 +1092,21 @@ However, in general electric power is calculated by taking the integral of the v
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyPerAreaElectricCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy per Area Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootLambert">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Luminance"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Permeability">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Permeability"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">μ</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permeability is the degree of magnetization of a material that responds linearly to an applied magnetic field. In general permeability is a tensor-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permeability</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#VoltPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#PowerPerElectricCharge"/>
@@ -1132,7 +1132,7 @@ However, in general electric power is calculated by taking the integral of the v
 &#xD;
 That is, given a point P on a smooth curve C, the curvature of C at P is defined to be 1/R where R is the radius of the osculating circle of C at P. The magnitude of curvature at points on physical curves can be measured in diopters (also spelled dioptre) — this is the convention in optics. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Curvature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Candela">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LuminousIntensity"/>
@@ -1149,7 +1149,7 @@ That is, given a point P on a smooth curve C, the curvature of C at P is defined
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#TimeSquared">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Time_Squared"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time Squared</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreePerSecondSquared">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AngularAcceleration"/>
@@ -1192,7 +1192,7 @@ That is, given a point P on a smooth curve C, the curvature of C at P is defined
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricChargePerMass">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge per Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Weight">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Weight"/>
@@ -1200,14 +1200,14 @@ That is, given a point P on a smooth curve C, the curvature of C at P is defined
 2. The product of the mass of a body and the acceleration acting on a body. &#xD;
 In a dynamic situation, the weight can be a multiple of that under resting conditions. Weight also varies on other planets in accordance with their gravity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Weight</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Heat">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Heat"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ThermalEnergy"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy transferred by a thermal process.  Heat can be measured in terms of the dynamical units of energy, as the erg, joule, etc., or in terms of the amount of energy required to produce a definite thermal change in some substance, as, for example, the energy required per degree to raise the temperature of a unit mass of water at some temperature ( calorie, Btu).</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PlanckTemperature">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ThermodynamicTemperature"/>
@@ -1217,7 +1217,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThermalEnergyLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Energy Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Hecto">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
@@ -1239,7 +1239,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#PowerPerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Irradiance and Radiant Emittance are radiometry terms for the power per unit area of electromagnetic radiation at a surface. "Irradiance" is used when the electromagnetic radiation is incident on the surface. "Radiant emmitance" (or "radiant exitance") is used when the radiation is emerging from the surface.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Emmitance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LebanesePound">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1277,7 +1277,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Polarization Field is the vector field that expresses the density of permanent or induced electric dipole moments in a dielectric material. The polarization vector P is defined as the ratio of electric dipole moment per unit volume.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polarization Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LiberianDollar">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1287,11 +1287,11 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AbsorbedDoseRate">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absorbed Dose Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassPerElectricCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass per Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SystemOfQuantities_CGS">
     <qudt:unitSystem rdf:resource="http://qudt.org/vocab/unit#SystemOfUnits_CGS"/>
@@ -1325,7 +1325,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Curvature"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CGS System of Quantities</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Torque"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Stress"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Power"/>
@@ -1340,14 +1340,14 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolecularViscosity">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Viscosity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molecular Viscosity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Stilb">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Luminance"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerAreaPerSolidAngle">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power Area per Solid Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#HongKongDollar">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1372,7 +1372,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThermalInsulance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Insulance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#StathenryPerCentimeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Permeability"/>
@@ -1380,7 +1380,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#VolumetricHeatCapacity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Volumetric_heat_capacity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volumetric Heat Capacity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Riel">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1403,7 +1403,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolarMass">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Molar_mass"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molar Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Lek">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1434,23 +1434,23 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#StandardGravitationalParameter">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Standard_gravitational_parameter"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">μ</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Standard Gravitational Parameter</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthTemperatureTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Temperature Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#StrainEnergyDensity">
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">u</qudt:symbol>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyDensity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strain Energy Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MicroTorr">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -1467,14 +1467,14 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThermalConductivity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Thermal_conductivity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Conductivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#RevolutionPerHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AngularVelocity"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseVolume">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#RelativePermittivity">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Permittivity"/>
@@ -1492,12 +1492,12 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Pressure"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Static Pressure is the pressure at a nominated point in a fluid. Every point in a steadily flowing fluid, regardless of the fluid speed at that point, has its own static pressure P, dynamic pressure q, and total pressure P_0. The total pressure is the sum of the dynamic and static pressures, i.e. P_0 = P + q.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Static Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SerumOrPlasmaLevel">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#AmountOfSubstancePerUnitVolume"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serum or Plasma Level</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#BiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Afghani">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1517,7 +1517,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificHeatPressure">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific heat at a constant pressure.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Heat Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilocaloriePerMole">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolarEnergy"/>
@@ -1538,7 +1538,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Volume"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The volume of a solid object is the three-dimensional concept of how much space it occupies, often quantified numerically. One-dimensional figures (such as lines) and two-dimensional shapes (such as squares) are assigned zero volume in the three-dimensional space.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Statfarad">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Capacitance"/>
@@ -1548,14 +1548,14 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#LuminousFluxPerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Illuminance is the total luminous flux incident on a surface, per unit area. It is a measure of the intensity of the incident light, wavelength-weighted by the luminosity function to correlate with human brightness perception.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Illuminance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicInch">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseTimeTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Time Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PlanckEnergy">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -1577,7 +1577,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Power"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Flux, or radiant power, is the measure of the total power of electromagnetic radiation (including infrared, ultraviolet, and visible light). The power may be the total emitted from a source, or the total landing on a particular surface.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ArcMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#PlaneAngle"/>
@@ -1590,7 +1590,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In chemistry, the mole fraction of a component in a mixture is the relative proportion of molecules belonging to the component to those in the mixture, by number of molecules. It is one way of measuring concentration.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mole Fraction</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ComoroFranc">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1639,7 +1639,7 @@ In a dynamic situation, the weight can be a multiple of that under resting condi
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Amount_of_substance"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">N</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Curie">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Activity"/>
@@ -1681,7 +1681,7 @@ These characteristics are closely related. The volumetric thermal expansion coef
 &#xD;
 Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume Thermal Expansion</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MeterPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
@@ -1689,7 +1689,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#RespiratoryRate">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Respiratory_rate"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Respiratory Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#BiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CoulombPerSquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerArea"/>
@@ -1711,7 +1711,7 @@ q = dynamic pressure in pascals &#xD;
 ρ = fluid density in kg/m3 (e.g. density of air) &#xD;
 v = fluid velocity in m/s</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dynamic Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootPoundForcePerHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Power"/>
@@ -1724,7 +1724,7 @@ v = fluid velocity in m/s</qudt:description>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ε</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permittivity is a physical quantity that describes how an electric field affects, and is affected by a dielectric medium, and is determined by the ability of a material to polarize in response to the field, and thereby reduce the total electric field inside the material.  Permittivity is often a scalar valued quantity, however in the general case it is tensor-valued.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permittivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchOfMercury">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -1749,7 +1749,7 @@ v = fluid velocity in m/s</qudt:description>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific volume (ν) is the volume occupied by a unit of mass of a material. It is equal to the inverse of density.</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ν</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NauticalMile">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -1766,20 +1766,20 @@ v = fluid velocity in m/s</qudt:description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SecondMomentOfArea">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The second moment of area is a property of a physical object that can be used to predict its resistance to bending and deflection. The deflection of an object under load depends not only on the load, but also on the geometry of the object's cross-section.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Second Moment of Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerSquareFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerArea"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthMass">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricField">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The space surrounding an electric charge or in the presence of a time-varying magnetic field has a property called an electric field. This electric field exerts a force on other electrically charged objects. In the idealized case, the force exerted between two point charges is inversely proportional to the square of the distance between them. (Coulomb's Law)</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">E</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Capacity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Capacity"/>
@@ -1787,7 +1787,7 @@ v = fluid velocity in m/s</qudt:description>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In computer operations, (a) the largest quantity which can be stored, processed, or transferred; (b) the largest number of digits or characters which may regularly be processed; (c) the upper and lower limits of the quantities which may be processed.&#xD;
 In other contexts, the amount of material that  can be stored, such as fuel or food.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Capacity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#InformationQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#InformationQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GuyanaDollar">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -1806,7 +1806,7 @@ J = σE&#xD;
 &#xD;
 In isotropic materials, conductivity is scalar-valued, however in general, conductivity is a tensor-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Conductivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PascalSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DynamicViscosity"/>
@@ -1840,11 +1840,11 @@ In isotropic materials, conductivity is scalar-valued, however in general, condu
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Energy_density"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy density is defined as energy per unit volume. The SI unit for energy density is the joule per cubic meter.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PascalPerHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerAreaTime"/>
@@ -1863,7 +1863,7 @@ In isotropic materials, conductivity is scalar-valued, however in general, condu
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MomentOfInertia">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Moment of Inertia</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AmperePerSquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrentDensity"/>
@@ -1889,12 +1889,12 @@ In isotropic materials, conductivity is scalar-valued, however in general, condu
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Magnetization Field is defined as the ratio of magnetic moment per unit volume. It is a vector-valued quantity.</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetization Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolarHeatCapacity">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Specific_heat_capacity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molar Heat Capacity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CalorieThermochemical">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -1905,11 +1905,11 @@ In isotropic materials, conductivity is scalar-valued, however in general, condu
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerPerAreaQuarticTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power per Area Quartic Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyPerSquareMagneticFluxDensity">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy per Square Magnetic Flux Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AngularMomentum">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Angular_momentum"/>
@@ -1919,7 +1919,7 @@ Linear momentum is the quantity obtained by multiplying the mass of a body by it
 &#xD;
 In physics, the angular momentum of an object rotating about some reference point is the measure of the extent to which the object will continue to rotate about that point unless acted upon by an external torque. In particular, if a point mass rotates about an axis, then the angular momentum with respect to a point on the axis is related to the mass of the object, the velocity and the distance of the mass to the axis. While the motion associated with linear momentum has no absolute frame of reference, the rotation associated with angular momentum is sometimes spoken of as being measured relative to the fixed stars.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular Momentum</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Milligravity">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearAcceleration"/>
@@ -1954,7 +1954,7 @@ In physics, the angular momentum of an object rotating about some reference poin
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/subject"/>
     <vaem:hasDisciplineScope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">All disciplines</vaem:hasDisciplineScope>
     <voag:hasLicenseType rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
-    <voag:withAttributionTo rdf:resource="http://qudt.org/schema/qudt#NASA-ARC-Attribution"/>
+    <voag:withAttributionTo rdf:resource="http://data.nasa.gov/qudt/owl/qudt#NASA-ARC-Attribution"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/description"/>
     <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#exactMatch"/>
     <dc:subject rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measurable Quantities</dc:subject>
@@ -1992,7 +1992,7 @@ In physics, the angular momentum of an object rotating about some reference poin
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassPerTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass per Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloHertz">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Frequency"/>
@@ -2009,7 +2009,7 @@ In physics, the angular momentum of an object rotating about some reference poin
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#HeartRate">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Heart_rate"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heart Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#BiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Barn">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Area"/>
@@ -2023,7 +2023,7 @@ In physics, the angular momentum of an object rotating about some reference poin
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#CatalyticActivity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Catalysis"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Catalytic Activity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Hryvnia">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2042,7 +2042,7 @@ In physics, the angular momentum of an object rotating about some reference poin
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MolarAngularMomentum">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Molar Angular Momentum</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GramDegreeCelsius">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassTemperature"/>
@@ -2056,7 +2056,7 @@ In physics, the angular momentum of an object rotating about some reference poin
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificImpulseByWeight">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Time"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Impulse by Weight</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MachNumber">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Mach_number"/>
@@ -2073,7 +2073,7 @@ where&#xD;
 &#xD;
 The Mach number is commonly used both with objects traveling at high speed in a fluid, and with high-speed fluid flows inside channels such as nozzles, diffusers or wind tunnels. As it is defined as a ratio of two speeds, it is a dimensionless number. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mach Number</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CandelaPerSquareInch">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Luminance"/>
@@ -2104,7 +2104,7 @@ where&#xD;
 L is the angular momentum vector &#xD;
 t stands for time. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Torque</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#TeslaMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticFluxPerUnitLength"/>
@@ -2113,26 +2113,26 @@ t stands for time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Temperature"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Θ</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificImpulseByMass">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Impulse by Mass</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#TeslaSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerElectricCharge"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ForcePerLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force per Unit Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Steradian">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#SolidAngle"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseSquareEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Square Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#BtuPerSquareFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerArea"/>
@@ -2144,7 +2144,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S</qudt:symbol>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Action</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantumMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantumMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
@@ -2166,7 +2166,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In any branch of science dealing with materials and their behaviour, strain is the geometrical expression of deformation caused by the action of stress on a physical body. Strain is calculated by first assuming a change between two body states: the beginning state and the final state. Then the difference in placement of two points in this body in those two states expresses the numerical value of strain. Strain therefore expresses itself as a change in size and/or shape. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strain</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Zebi">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
@@ -2175,7 +2175,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#PowerPerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiosity is the total emitted and reflected radiation leaving a surface.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiosity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LumenPerWatt">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LuminousEfficacy"/>
@@ -2183,11 +2183,11 @@ t stands for time. [Wikipedia]</qudt:description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThermalResistivity">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The reciprocal of thermal conductivity is thermal resistivity, measured in kelvin-metres per watt (K*m/W).</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Resistivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SquareEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Square Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SouthKoreanWon">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2196,7 +2196,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The first moment of area is the summation of area times distance to an axis. It is a measure of the distribution of the area of a shape in relationship to an axis.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">First Moment of Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilliSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Time"/>
@@ -2209,7 +2209,7 @@ t stands for time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ForcePerElectricCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force per Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Giga">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
@@ -2236,7 +2236,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stress is a measure of the average amount of force exerted per unit area of a surface within a deformable body on which internal forces act. In other words, it is a measure of the intensity or internal distribution of the total internal forces acting within a deformable body across imaginary surfaces. These internal forces are produced between the particles in the body as a reaction to external forces applied on the body.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stress</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SolidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#IranianRial">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2255,7 +2255,7 @@ t stands for time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AreaPerTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area per Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Tebi">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
@@ -2279,7 +2279,7 @@ t stands for time. [Wikipedia]</qudt:description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#GravitationalAttraction">
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Gravitational_constant"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravitational Attraction</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MegaHertzPerKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#InverseTimeTemperature"/>
@@ -2333,19 +2333,19 @@ t stands for time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Length"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Concentration">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Concentration"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Concentration</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareFootPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#KinematicViscosity"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseLengthTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Length Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Mho">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricConductivity"/>
@@ -2355,7 +2355,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inductance is an electromagentic quantity that characterizes a circuit's resistance to any change of electric current; a change in the electric current through induces an opposing electromotive force (EMF). Quantitatively, inductance is proportional to the magnetic flux per unit of electric current.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inductance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#WattPerSteradian">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#RadiantIntensity"/>
@@ -2375,7 +2375,7 @@ t stands for time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#TemperatureAmountOfSubstance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKilogramKelvinPerCubicMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#SpecificHeatVolume"/>
@@ -2394,7 +2394,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ElectricField"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In telecommunications, particularly in radio, signal strength refers to the magnitude of the electric field at a reference point that is a significant distance from the transmitting antenna. It may also be referred to as received signal level or field strength. Typically, it is expressed in voltage per length or signal power received by a reference antenna. High-powered transmissions, such as those used in broadcasting, are expressed in dB-millivolts per metre (dBmV/m). [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Signal Strength</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#CommunicationsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#CommunicationsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LumenSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LuminousEnergy"/>
@@ -2417,12 +2417,12 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In a dielectric material the presence of an electric field E causes the bound charges in the material (atomic nuclei and their electrons) to slightly separate, inducing a local electric dipole moment. The Electric Displacement Field, D, is a vector field that accounts for the effects of free charges within such dielectric materials. </qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Displacement Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificHeatVolume">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific heat per constant volume.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Heat Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootUSSurvey">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -2432,7 +2432,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Static enthalpy per unit mass. The specific enthalpy of a working mass is a property of that mass used in thermodynamics, defined as h=u+p . v where u is the specific internal energy, p is the pressure, and v is specific volume. In other words, h = H / m where m is the mass of the system. The SI unit for specific enthalpy is joules per kilogram. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Enthalpy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Peck">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DryVolume"/>
@@ -2445,7 +2445,7 @@ t stands for time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NuevoSol">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2476,7 +2476,7 @@ t stands for time. [Wikipedia]</qudt:description>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Magnetic Field, denoted B, is a fundamental field in electrodynamics which characterizes the magnetic force exerted by electric currents.  It is closely related to the auxillary magnetic field H (see quantity:AuxillaryMagneticField).</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AbsorbedDose">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Absorbed_dose"/>
@@ -2485,7 +2485,7 @@ t stands for time. [Wikipedia]</qudt:description>
 Note that the absorbed dose is not a good indicator of the likely biological effect. 1 Gy of alpha radiation would be much more biologically damaging than 1 Gy of photon radiation for example. Appropriate weighting factors can be applied reflecting the different relative biological effects to find the equivalent dose.&#xD;
 The risk of stoctic effects due to radiation exposure can be quantified using the effective dose, which is a weighted average of the equivalent dose to each organ depending upon its radiosensitivity. When ionising radiation is used to treat cancer, the doctor will usually prescribe the radiotherapy treatment in Gy. When risk from ionising radiation is being discussed, a related unit, the Sievert is used.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absorbed Dose</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#BangladeshiTaka">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2621,7 +2621,7 @@ The risk of stoctic effects due to radiation exposure can be quantified using th
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCharge"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerElectricCharge"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticFluxPerUnitLength"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricQuadrupoleMoment"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricConductivity"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearMomentum"/>
@@ -2675,7 +2675,7 @@ These characteristics are closely related. The volumetric thermal expansion coef
 &#xD;
 Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Thermal Expansion</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AmperePerDegree">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrentPerAngle"/>
@@ -2683,7 +2683,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Velocity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Velocity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Velocity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Teaspoon">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
@@ -2701,7 +2701,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Internal_energy"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Internal Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NewtonPerMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerLength"/>
@@ -2723,7 +2723,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#TemperaturePerTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature per Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PlanckCharge">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCharge"/>
@@ -2741,7 +2741,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Data_rate"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The frequency derived from the period of time required to transmit one bit. This represents the amount of data transferred per second by a communications channel or a computing or storage device. Data rate is measured in units of bits per second (written "b/s" or "bps"), bytes per second (Bps), or baud. When applied to data rate, the multiplier prefixes "kilo-", "mega-", "giga-", etc. (and their abbreviations, "k", "M", "G", etc.) always denote powers of 1000. For example, 64 kbps is 64,000 bits per second. This contrasts with units of storage which use different prefixes to denote multiplication by powers of 1024, e.g. 1 kibibit = 1024 bits.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Data Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#InformationQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#InformationQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
@@ -2781,7 +2781,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricDipoleMoment"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticField"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#AuxillaryMagneticField"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricDisplacementField"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Resistance"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrent"/>
@@ -2822,7 +2822,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#VideoFrameRate">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Video Frame Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#InformationQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#InformationQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SwissFranc">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2838,14 +2838,14 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThrustToMassRatio">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thrust to Mass Ratio</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LinearMomentum">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Momentum"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Momentum"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear momentum is the product of mass and linear velocity. The SI unit for linear momentum is meter-kilogram per second (m-kg/s).</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear Momentum</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ElectronVoltPerKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#HeatCapacity"/>
@@ -2861,7 +2861,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force is an influence that causes mass to accelerate. It may be experienced as a lift, a push, or a pull. Force is defined by Newton's Second Law as F = m · a, where F is force, m is mass and a is acceleration.&#xD;
 Net force is mathematically equal to the time rate of change of the momentum of the body on which it acts. Since momentum is a vector quantity (has both a magnitude and direction), force also is a vector quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#VoltPerSquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerAreaElectricCharge"/>
@@ -2871,7 +2871,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The inclination to each other of two intersecting lines, measured by the arc of a circle intercepted between the two lines forming the angle, the center of the circle being the point of intersection.  An acute angle is less than 90°; a right angle 90 °; an obtuse angle, more than 90° but less than 180 °; a straight angle, 180°; a reflex angle, more than 180° but less than 360°; a perigon, 360°. Any angle not a multiple of 90° is an oblique angle. If the sum of two angles is 90°, they are complementary angles; if 180°, supplementary angles; if 360°, explementary angles. Two adjacent angles have a common vertex and lie on opposite sides of a common side. A dihedral angle is the angle between two intersecting planes. A spherical angle is the angle between two intersecting great circles.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Balboa">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2881,7 +2881,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#AngularVelocity"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In the simplest sense, vorticity is the tendency for elements of a fluid to "spin." More formally, vorticity can be related to the amount of "circulation" or "rotation" (or more strictly, the local angular rate of rotation) in a fluid. The average vorticity in a small region of fluid flow is equal to the circulation C around the boundary of the small region, divided by the area A of the small region. Mathematically, vorticity is a vector field and is defined as the curl of the velocity field.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vorticity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PlanckLength">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -2892,7 +2892,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Frequency"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular frequency is a scalar measure of rotation rate. It is the magnitude of the vector quantity angular velocity. </qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular Frequency</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicFootPerMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#VolumePerUnitTime"/>
@@ -2921,7 +2921,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#AreaPerTime"/>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Kinematic Viscosity of a fluid is the dynamic viscosity divided by the fluid density.</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kinematic Viscosity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GallonUSPerMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#VolumePerUnitTime"/>
@@ -2936,7 +2936,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Frequency"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Frequency is the number of occurrences of a repeating event per unit time. The repetition of the events may be periodic (i.e. the length of time between event repetitions is fixed) or aperiodic (i.e. the length of time between event repetitions varies). Therefore, we distinguish between periodic and aperiodic frequencies. In the SI system, periodic frequency is measured in hertz (Hz) or multiples of hertz, while aperiodic frequency is measured in becquerel (Bq).</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Frequency</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Boliviano">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2946,7 +2946,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Fields surround magnetic materials and electric currents and are detected by the force they exert on other magnetic materials and moving electric charges. The electric and magnetic fields are two interrelated aspects of a single object, called the electromagnetic field. A pure electric field in one reference frame is observed as a combination of both an electric field and a magnetic field in a moving reference frame. The Auxillary Magnetic Field, H characterizes how the true Magnetic Field B influences the organization of magnetic dipoles in a given medium.</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Auxillary Magnetic Field</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Abvolt">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerElectricCharge"/>
@@ -2959,7 +2959,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyAndWorkPerMassAmountOfSubstance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy and Work per Mass Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKilogramKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#SpecificHeatCapacity"/>
@@ -2969,7 +2969,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Pressure"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> The total pressure is the sum of the dynamic and static pressures, i.e. P_0 = P + q.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#ArmenianDram">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2982,7 +2982,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure is an effect which occurs when a force is applied on a surface. Pressure is the amount of force acting on a unit area. Pressure is distinct from stress, as the former is the ratio of the component of force normal to a surface to the surface area. Stress is a tensor that relates the vector force to the vector area.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#OmaniRial">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -2995,38 +2995,38 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">γ</qudt:symbol>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerMass"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gyromagnetic Ratio</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#AtomicPhysicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerFootHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DynamicViscosity"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassAmountOfSubstance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kip">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Force"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassAmountOfSubstanceTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass Amount of Substance Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilAngle">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#PlaneAngle"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AreaTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AreaTimeTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Time Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Exposure">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Exposure"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#ElectricChargePerMass"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exposure</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Inch">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -3035,7 +3035,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Stochastic_process"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Frequency"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stochastic Process</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#WattSquareMeter">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#PowerArea"/>
@@ -3048,7 +3048,7 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Velocity"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The change of angle per unit time; specifically, in celestial mechanics, the change in angle of the radius vector per unit time.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular Velocity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MolePerKilogram">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AmountOfSubstancePerUnitMass"/>
@@ -3073,13 +3073,13 @@ Net force is mathematically equal to the time rate of change of the momentum of 
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal efficiency is a dimensionless performance measure of a thermal device such as an internal combustion engine, a boiler, or a furnace. The input to the device is heat, or the heat-content of a fuel that is consumed. The desired output is mechanical work, or heat, or possibly both.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Efficiency</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#EnergyKinetic">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Kinetic_energy"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kinetic Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#KineticEnergy">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Kinetic_energy"/>
@@ -3089,7 +3089,7 @@ For relativistic speeds the kinetic energy is given by &#xD;
 Ek = mc^2 - m0c^2 &#xD;
 where c is the velocity of light in a vacuum, m0 is the rest mass, and m is the moving mass.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kinetic Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Statcoulomb">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCharge"/>
@@ -3104,7 +3104,7 @@ where P is power &#xD;
 W is work &#xD;
 t is time. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Radian">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#PlaneAngle"/>
@@ -3117,14 +3117,14 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy possessed by a body by virtue of its position in a gravity field in contrast with kinetic energy, that possessed by virtue of its motion.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Potential Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MagneticDipoleMoment">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Magnetic_moment"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">μ</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The magnetic moment of a system is a measure of the magnitude and the direction of its magnetism. Magnetic moment usually refers to its Magnetic Dipole Moment, and quantifies the contribution of the system's internal magnetism to the external dipolar magnetic field produced by the system (that is, the component of the external magnetic field that is inversely proportional to the cube of the distance to the observer). The Magnetic Dipole Moment is a vector-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic Dipole Moment</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Lumen">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LuminousFlux"/>
@@ -3141,7 +3141,7 @@ t is time. [Wikipedia]</qudt:description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Asset">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Asset is an economic resource owned by a business or company. Simply stated, assets are things of value that can be readily converted into cash (although cash itself is also considered an asset).</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Asset</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FinancialQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FinancialQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Oersted">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AuxillaryMagneticField"/>
@@ -3150,7 +3150,7 @@ t is time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Viscosity"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Viscosity is a measure of the resistance of a fluid which is being deformed by either shear stress or extensional stress. In general terms it is the resistance of a liquid to flow, or its "thickness". Viscosity describes a fluid's internal resistance to flow and may be thought of as a measure of fluid friction. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Viscosity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundForceInch">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Torque"/>
@@ -3163,14 +3163,14 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Angle"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The solid angle subtended by a surface S is defined as the surface area of a unit sphere covered by the surface S's projection onto the sphere. A solid angle is related to the surface of a sphere in the same way an ordinary angle is related to the circumference of a circle. Since the total surface area of the unit sphere is 4*pi, the measure of solid angle will always be between 0 and 4*pi.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solid Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareFootHourDegreeFahrenheit">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AreaTimeTemperature"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthPerUnitMagneticFlux">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length per Unit Magnetic Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AmpereHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCharge"/>
@@ -3194,7 +3194,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric current density is a measure of the density of flow of electric charge; it is the electric current per unit area of cross section. Electric current density is a vector-valued quantity.</qudt:description>
     <qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J</qudt:abbreviation>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKelvin">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#HeatCapacity"/>
@@ -3207,7 +3207,7 @@ t is time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MicrobialFormation">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Microbial Formation</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#BiologyQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BiologyQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Palladium-OunceTroy">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3241,7 +3241,7 @@ t is time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InverseMagneticFlux">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Magnetic Flux</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#RevolutionPerMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AngularVelocity"/>
@@ -3250,7 +3250,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SystemOfQuantities_CGS-Gauss">
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Permittivity"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerElectricCharge"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrent"/>
@@ -3343,7 +3343,7 @@ t is time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ForcePerAreaTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Force Per Area Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Gram">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Mass"/>
@@ -3353,7 +3353,7 @@ t is time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricCurrentPerUnitLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current per Unit Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Statohm">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Resistance"/>
@@ -3395,7 +3395,7 @@ t is time. [Wikipedia]</qudt:description>
     <skos:closeMatch rdf:resource="http://dbpedia.org/resource/Heat_transfer"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Power"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat Flow Rate</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GrayPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AbsorbedDoseRate"/>
@@ -3422,14 +3422,14 @@ t is time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Thermal_diffusivity"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#AreaPerTime"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Diffusivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Nano">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Dimensionless"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassPerAreaTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass per Area Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LatvianLats">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3441,7 +3441,7 @@ t is time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Capacitance"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Capacitance is the ability of a body to hold an electrical charge; it is quantified as the amount of electric charge stored for a given electric potential. Capacitance is a scalar-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Capacitance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kina">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3463,7 +3463,7 @@ t is time. [Wikipedia]</qudt:description>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthMolarEnergy">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Molar Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SystemOfQuantities_CGS-EMU">
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyPerElectricCharge"/>
@@ -3488,7 +3488,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#LengthPerUnitElectricCurrent"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricCurrent"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#ElectricDisplacementField"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SystemOfQuantities"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities"/>
     <qudt:systemBaseQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Time"/>
     <qudt:systemBaseQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
     <qudt:systemDerivedQuantityKind rdf:resource="http://qudt.org/vocab/quantity#Resistance"/>
@@ -3506,7 +3506,7 @@ t is time. [Wikipedia]</qudt:description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#DryVolume">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dry Volume</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JapaneseYen">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3524,13 +3524,13 @@ t is time. [Wikipedia]</qudt:description>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Plane_angle"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Angle"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plane Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Dimensionless">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Dimensionless_quantity"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">U</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dimensionless</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#BolivianMvdol">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3540,7 +3540,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#StochasticProcess"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Activity is the term used to characterise the number of nuclei which disintegrate in a radioactive substance per unit time. Activity is usually measured in Becquerels (Bq), where 1 Bq is 1 disintegration per second.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Activity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantumMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantumMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundForceSecondPerSquareFoot">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DynamicViscosity"/>
@@ -3549,7 +3549,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Qv</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Energy is the perceived energy of light. This is sometimes also called the quantity of light.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Energy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareCentimeterMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#AreaTime"/>
@@ -3607,7 +3607,7 @@ t is time. [Wikipedia]</qudt:description>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Density"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute humidity is the mass of water in a particular volume of air. It is a measure of the density of water vapor in an atmosphere.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute Humidity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Erg">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#EnergyAndWork"/>
@@ -3625,14 +3625,14 @@ These characteristics are closely related. The volumetric thermal expansion coef
 &#xD;
 Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. [Wikipedia]</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear Thermal Expansion</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundSterling">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#VolumePerUnitTime">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume per Unit Time</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Fathom">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -3645,22 +3645,22 @@ Some substances expand when cooled, such as freezing water, so they have negativ
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricChargePerAmountOfSubstance">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge per Amount of Substance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ChemistryQuantityKind"/>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerTesla">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MagneticDipoleMoment"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerPerElectricCharge">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power per Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#LiquidPintUS">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LiquidVolume"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#AreaAngle">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Angle</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MillimeterOfMercury">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -3679,7 +3679,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">I</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current is the flow (movement) of electric charge. The amount of electric current through some surface, e.g., a section through a copper conductor, is defined as the amount of electric charge flowing through that surface over time. Current is a scalar-valued quantity.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Current</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PascalPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerAreaTime"/>
@@ -3697,7 +3697,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Currency"/>
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Asset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Currency</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FinancialQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FinancialQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Dyne">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Force"/>
@@ -3708,7 +3708,7 @@ Some substances expand when cooled, such as freezing water, so they have negativ
 The momentum of a system of particles is given by the sum of the momentums of the individual particles which make up the system or by the product of the total mass of the system and the velocity of the center of gravity of the system. &#xD;
 The momentum of a continuous medium is given by the integral of the velocity over the mass of the medium or by the product of the total mass of the medium and the velocity of the center of gravity of the medium.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Momentum</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloPond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Force"/>
@@ -3719,7 +3719,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#InverseVolume"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In physics, astronomy, and chemistry, number density (symbol: n) is a kind of quantity used to describe the degree of concentration of countable objects (atoms, molecules, dust particles, galaxies, etc.) in the three-dimensional physical space.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SlugPerFootSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DynamicViscosity"/>
@@ -3744,7 +3744,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#InversePermittivity">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse Permittivity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilocaloriePerMoleDegreeCelsius">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolarHeatCapacity"/>
@@ -3763,7 +3763,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The heat capacity ratio, or ratio of specific heats, is the ratio of the heat capacity at constant pressure (C_P) to heat capacity at constant volume (C_V). For an ideal gas, the heat capacity is constant with temperature (Θ). Accordingly we can express the enthalpy as H = C_P*Θ and the internal energy as U = C_V*Θ. Thus, it can also be said that the heat capacity ratio is the ratio between enthalpy and internal energy</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat Capacity Ratio</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kilometer">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Length"/>
@@ -3773,7 +3773,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Q</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric charge is a fundamental conserved property of some subatomic particles, which determines their electromagnetic interaction. Electrically charged matter is influenced by, and produces, electromagnetic fields. The electric charge on a body may be positive or negative. Two positively charged bodies experience a mutual repulsive force, as do two negatively charged bodies. A positively charged body and a negatively charged body experience an attractive force.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Dalton">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolecularMass"/>
@@ -3801,7 +3801,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LengthTemperature">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length Temperature</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MegaHertz">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Frequency"/>
@@ -3816,7 +3816,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#PowerPerAreaAngle"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiance is a radiometric measure that describes the amount of light that passes through or is emitted from a particular area, and falls within a given solid angle in a specified direction.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#NewtonPerCoulomb">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerElectricCharge"/>
@@ -3845,14 +3845,14 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricChargeVolumeDensity">
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ρ</qudt:symbol>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge Volume Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilobitsPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#DataRate"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SignalDetectionThreshold">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Signal Detection Threshold</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#CommunicationsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#CommunicationsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerMinute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MassPerTime"/>
@@ -3880,7 +3880,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#Force"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Friction is the force of two surfaces In contact, or the force of a medium acting on a moving object (i.e. air on an aircraft). When contacting surfaces move relative to each other, the friction between the two objects converts kinetic energy into thermal energy.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Friction</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Circulation">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Circulation_%28fluid_dynamics%29"/>
@@ -3888,7 +3888,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#AreaPerTime"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In fluid dynamics, circulation is the line integral around a closed curve of the fluid velocity. It has dimensions of length squared over time.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Circulation</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#FluidMechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#YuanRenminbi">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3912,7 +3912,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Work_%28physics%29"/>
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Energy"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy and Work</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundForcePerPound">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ThrustToMassRatio"/>
@@ -3920,7 +3920,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#SpecificHeatCapacity">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Specific_heat_capacity"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specific Heat Capacity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#GuineaFranc">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -3933,7 +3933,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#DimensionlessRatio"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The compressibility factor (Z) is a useful thermodynamic property for modifying the ideal gas law to account for the real gas behaviour. The closer a gas is to a phase change, the larger the deviations from ideal behavior. Values for compressibility are calculated using equations of state (EOS), such as the virial equation and van der Waals equation. The compressibility factor for specific gases can be obtained, with out calculation, from compressibility charts. These charts are created by plotting Z as a function of pressure at constant temperature.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Compressibility Factor</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicMeterPerMole">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolarVolume"/>
@@ -3986,11 +3986,11 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Q</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Electric Quadrupole Moment is a quantity which describes the effective shape of the ellipsoid of nuclear charge distribution. A non-zero quadrupole moment Q indicates that the charge distribution is not spherically symmetric. By convention, the value of Q is taken to be positive if the ellipsoid is prolate and negative if it is oblate. In general, the electric quadrupole moment is tensor-valued.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Quadrupole Moment</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#MassPerLength">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass per Length</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SecondTime">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Time"/>
@@ -4002,7 +4002,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Area"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area is a quantity expressing the two-dimensional size of a defined part of a surface, typically a region bounded by a closed curve.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CroatianKuna">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -4030,13 +4030,13 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Intensity is a measure of the wavelength-weighted power emitted by a light source in a particular direction per unit solid angle. The weighting is determined by the luminosity function, a standardized model of the sensitivity of the human eye to different wavelengths.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Intensity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Irradiance">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#PowerPerArea"/>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Irradiance and Radiant Emittance are radiometry terms for the power per unit area of electromagnetic radiation at a surface. "Irradiance" is used when the electromagnetic radiation is incident on the surface. "Radiant emmitance" (or "radiant exitance") is used when the radiation is emerging from the surface.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Irradiance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicMeterPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#VolumePerUnitTime"/>
@@ -4067,7 +4067,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
 2. The force exerted in any direction by a fluid jet or by a powered screw, as, the thrust of an antitorque rotor. &#xD;
 3. (symbol F). Specifically, in rocketry, F = mv where m is propellant mass flow and v is exhaust velocity relative to the vehicle. Also called momentum thrust.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thrust</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#Barrel">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Volume"/>
@@ -4078,14 +4078,14 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#HeatFlowRatePerUnitArea">
     <qudt:generalization rdf:resource="http://qudt.org/vocab/quantity#PowerPerArea"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat Flow Rate per Unit Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#Resistance">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Resistance"/>
     <qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">R</qudt:symbol>
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The electrical resistance of an object is a measure of its opposition to the passage of a steady electric current.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Resistance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KelvinPerHour">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#TemperaturePerTime"/>
@@ -4117,7 +4117,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#RadiantIntensity">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Intensity is a measure of the intensity of electromagnetic radiation. It is defined as power per unit solid angle.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radiant Intensity</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#RadiometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#AzerbaijanianManat">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -4135,7 +4135,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LuminousEfficacy">
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Efficacy is the ratio of luminous flux (in lumens) to power (usually measured in watts). Depending on context, the power can be either the radiant flux of the source's output, or it can be the total electric power consumed by the source.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Luminous Efficacy</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#PhotometryQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilometerPerSecond">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#LinearVelocity"/>
@@ -4172,7 +4172,7 @@ The momentum of a continuous medium is given by the integral of the velocity ove
     <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acceleration is the (instantaneous) rate of change of velocity. Acceleration may be either linear acceleration, or angular acceleration. It is a vector quantity with dimension length/time^2 for linear acceleration, or in the case of angular acceleration, with dimension angle/time^2. In SI units, linear acceleration is measured in meters/second^2 (m·s^-2) and angular acceleration is measured in radians/second^2. &#xD;
 In common speech, the term acceleration is only used for an increase in speed. In physics, any increase or decrease in speed is referred to as acceleration and similarly, motion in a circle at constant speed is also an acceleration, since the direction component of the velocity is changing.</qudt:description>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acceleration</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#SpaceAndTimeQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#MillimeterOfMercuryAbsolute">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ForcePerArea"/>
@@ -4180,7 +4180,7 @@ In common speech, the term acceleration is only used for an increase in speed. I
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#LinearEnergyTransfer">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Linear_energy_transfer"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear Energy Transfer</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#AtomicPhysicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#CapeVerdeEscudo">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Currency"/>
@@ -4188,7 +4188,7 @@ In common speech, the term acceleration is only used for an increase in speed. I
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ThermalResistance">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Thermal_resistance"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal Resistance</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ThermodynamicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#OuncePerGallon">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Density"/>
@@ -4198,14 +4198,14 @@ In common speech, the term acceleration is only used for an increase in speed. I
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#ElectricChargeLineDensity">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electric Charge Line Density</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#ElectricityAndMagnetismQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareFootHourDegreeFahrenheitPerBtu">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#ThermalInsulance"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/quantity#PowerPerArea">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power per Area</rdfs:label>
-    <rdf:type rdf:resource="http://qudt.org/schema/qudt#MechanicsQuantityKind"/>
+    <rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://qudt.org/vocab/unit#TonShortPerCubicYard">
     <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#Density"/>

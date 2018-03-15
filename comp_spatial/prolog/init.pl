@@ -33,17 +33,12 @@
 
 % dependencies
 :- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_mongo).
 :- register_ros_package(knowrob_objects).
-:- register_ros_package(comp_temporal).
 :- register_ros_package(comp_spatial).
 
-:- use_module(library('comp_spatial')).
-
-
+:- use_module(library('knowrob/comp_spatial')).
 
 % parse OWL files, register name spaces
 :- owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- rdf_db:rdf_register_ns(comp_spatial, 'http://knowrob.org/kb/comp_spatial.owl#',     [keep(true)]).
-
 

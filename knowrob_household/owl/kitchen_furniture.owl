@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
+     xml:base="http://knowrob.org/kb/knowrob.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/kitchen_furniture.owl">
+        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_activities.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+        <owl:imports rdf:resource="package://knowrob_household/owl/groceries.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This ontology describes different furniture pieces regularly
+present in (western) kitchens.
+These are described by their functionality:
+What they are used for
+(typePrimaryFunction-deviceUsedFor)
+and what they most likely contain
+(typePrimaryFunction-containerFor).</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://qudt.org/vocab/unit#DegreeCelsius -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#DegreeCelsius"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#workingTemperature -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BakingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Box-Container -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CleaningDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CleaningDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoffeeMaker -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoffeeMaker">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Colander -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Colander">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StrainerForCooking"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ContainerArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CookingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoolingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoolingDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoolingProcess -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoolingProcess"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DiningRoomTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DiningRoomTable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingTable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dishwasher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dishwasher">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CleaningDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#FoodUtensil"/>
+                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of devices designed to wash dishes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EatingEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EatingTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EatingTable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tables found in kitchens, restaurants, bars, etc, at which people eat or drink.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of PhysicalDevice. Each instance of FoodOrDrinkPreparationDevice is a device designed to be used in the preparation of food or drink. Specializations of FoodOrDrinkPreparationDevice include CoffeeMaker, SpiceMill, and ElectricalToaster.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodUtensil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodUtensil"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Freezing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Freezing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Frozen -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FurniturePiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingFood"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HouseholdAppliance"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KitchenTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KitchenTable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingTable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MicrowaveOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MicrowaveOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of appliances that cook food by using electromagnetic waves. Microwave ovens can generally cook or heat up food very quickly.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Oven">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingFood"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMaker -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PancakeMaker">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">150</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perishable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RefrigeratedStorageDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RefrigeratedStorageDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CoolingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of electrical devices whose purpose is to maintain something at a lower temperature than the surroundings through refrigeration (usually through the compression/decompression of a gas).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Refrigerator -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Refrigerator">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RefrigeratedStorageDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CoolingProcess"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">6.0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of devices used for cold storage, for example, knowrob refrigerators used for keeping food cold.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Refrigerator-Freezer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Refrigerator-Freezer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Box-Container"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RefrigeratedStorageDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Freezing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">-18.0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RegularOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RegularOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">200</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StoveTop -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StoveTop">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FurniturePiece"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
+                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">150</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The part of a CookingRange (cf) that has the burners and is used for frying &amp; boiling in pots &amp; pans. Often called &apos;Stove&apos; in english..</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StrainerForCooking -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StrainerForCooking">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ToasterOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToasterOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small electric oevn that can be used to toast bread, heat up leftovers, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishes -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishes"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

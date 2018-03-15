@@ -32,8 +32,15 @@
           of this content or inclusion of it in other ontologies.
         </rdfs:comment>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_communication.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_queries.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/physical-events.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/motions.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/actions.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/objects.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/agents.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/buildings.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/communication.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/queries.owl"/>
+        <owl:imports rdf:resource="package://knowrob_household/owl/household.owl"/>
     </owl:Ontology>
 </rdf:RDF>
 

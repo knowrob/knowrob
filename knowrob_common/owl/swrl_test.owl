@@ -1,0 +1,1099 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/swrl_test#"
+     xml:base="http://knowrob.org/kb/swrl_test"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
+     xmlns:swrl_test="http://knowrob.org/kb/swrl_test#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/swrl_test"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#ruleId -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/swrl_test#ruleId"/>
+    
+
+
+    <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled -->
+
+    <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasBrother -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasBrother"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasParent -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasParent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasSibling -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasSibling"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasUncle -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasUncle"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasAge -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasAge"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasAreaInSquareMeters -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasAreaInSquareMeters"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasCar -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasCar"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasChild -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasChild"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasHeight -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasHeight"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasHeightInMeters -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasHeightInMeters"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasInternationalNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasInternationalNumber"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasName"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasNumber"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasWidthInMeters -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/swrl_test#hasWidthInMeters"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Adult -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Adult">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#BigRectangle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#BigRectangle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Car -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Car">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Child -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Child">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:complementOf rdf:resource="http://knowrob.org/kb/swrl_test#Adult"/>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Driver -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Driver">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Hermaphrodite -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Hermaphrodite">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Man -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Man">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#NonHuman -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#NonHuman">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Parent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Parent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Person -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Person">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Rectangle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Rectangle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Singleton -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Singleton">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#TestThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#TestThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Woman -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Woman">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Alex -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Alex">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Woman"/>
+        <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16</hasAge>
+        <hasCar rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</hasCar>
+        <hasChild rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</hasChild>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Ernest -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Ernest">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+        <hasSibling rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
+        <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18</hasAge>
+        <hasCar rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</hasCar>
+        <hasChild rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</hasChild>
+        <hasNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">123456</hasNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Fred -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Fred">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+        <hasSibling rdf:resource="http://knowrob.org/kb/swrl_test#Ernest"/>
+        <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">34</hasAge>
+        <hasCar rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</hasCar>
+        <hasChild rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</hasChild>
+        <hasNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+49123456</hasNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#Lea -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Lea">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Woman"/>
+        <hasParent rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
+        <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</hasAge>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#RectangleBig -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#RectangleBig">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Rectangle"/>
+        <hasHeightInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">13</hasHeightInMeters>
+        <hasWidthInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">13</hasWidthInMeters>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#RectangleSmall -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#RectangleSmall">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Rectangle"/>
+        <hasHeightInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</hasHeightInMeters>
+        <hasWidthInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</hasWidthInMeters>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#RedCar -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#RedCar">
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Car"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="urn:swrl#p">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#s">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#p">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#age">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#number">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#x">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#r">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#w">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#h">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#areaInSquareMeters">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>However, a form of single rule logical disjunction is supported with the use of OWL class union descriptions in rules.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Person</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate>
+                            <owl:Class>
+                                <owl:unionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Man"/>
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Woman"/>
+                                </owl:unionOf>
+                            </owl:Class>
+                        </swrl:classPredicate>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Using a boolean data valued property, a rule that asserts that all persons that own a car should be classified as drivers can then be written as</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Driver</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasCar"/>
+                                <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#p"/>
+                                <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrl:argument2>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Driver"/>
+                        <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>An example SWRL rule using a core SWRL built-in to indicate that a person with an age of greater than 17 is an adult is</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">greaterThen</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasAge"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#age"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                                        <swrl:arguments>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                <rdf:first rdf:resource="urn:swrl#age"/>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">17</rdf:first>
+                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </swrl:arguments>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Adult"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>An example SWRL rule expressing that a person with a male sibling has a brother would thus require capturing the concepts of person, female, sibling of and brother of in OWL. Intuitively, the concept of person and male can be captured using an OWL class called Person with a subclass Man; the sibling and brother relationships can be expressed using OWL object properties hasSibling and hasBrother with a domain and range of Person.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">brother</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasSibling"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasBrother"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>A rule that uses a core SWRL string built-in to determine if a person&apos;s telephone number starts with the international access code &quot;+&quot; can be written as follows</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">startsWith</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasNumber"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#number"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#startsWith"/>
+                                        <swrl:arguments>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                <rdf:first rdf:resource="urn:swrl#number"/>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                        <rdf:first>+</rdf:first>
+                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </swrl:arguments>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasInternationalNumber"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                        <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrl:argument2>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">exactly</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/swrl_test#hasSibling"/>
+                                        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+                                    </owl:Restriction>
+                                </swrl:classPredicate>
+                                <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Singleton"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>Named individuals in an ontology can also be referred to directly. For example, one could rewrite the above rule to classify an individual named Fred as a driver as follows</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DriverFred</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                        <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasCar"/>
+                                <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
+                                <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrl:argument2>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Driver"/>
+                        <swrl:argument1 rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>We can use a similar rule to classify a rectangle with an area of over 100 square meters as a BigRectangle</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BigRectangle</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Rectangle"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasWidthInMeters"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#w"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasHeightInMeters"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#h"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                                                <swrl:arguments rdf:parseType="Collection">
+                                                    <rdf:Description rdf:about="urn:swrl#areaInSquareMeters"/>
+                                                    <rdf:Description rdf:about="urn:swrl#w"/>
+                                                    <rdf:Description rdf:about="urn:swrl#h"/>
+                                                </swrl:arguments>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                                                        <swrl:arguments>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                                <rdf:first rdf:resource="urn:swrl#areaInSquareMeters"/>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</rdf:first>
+                                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </swrl:arguments>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasAreaInSquareMeters"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#areaInSquareMeters"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#BigRectangle"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>An example rule that uses built-ins with assignment to calculate the area of a rectangle can be be written as follows</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">area</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Rectangle"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasWidthInMeters"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#w"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasHeightInMeters"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#h"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                                                <swrl:arguments rdf:parseType="Collection">
+                                                    <rdf:Description rdf:about="urn:swrl#areaInSquareMeters"/>
+                                                    <rdf:Description rdf:about="urn:swrl#w"/>
+                                                    <rdf:Description rdf:about="urn:swrl#h"/>
+                                                </swrl:arguments>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/swrl_test#hasAreaInSquareMeters"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#r"/>
+                        <swrl:argument2 rdf:resource="urn:swrl#areaInSquareMeters"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:comment>While SWRL does not support negated atoms or negation as failure, classical negation is possible in SWRL with the use of owl:complementOf class descriptions in rules. For example, we can write the following rule that asserts that of an individual is not a member of class Person then it should be classified as a member of the class NonHuman.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NonHuman</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                <swrl:classPredicate>
+                                    <owl:Class>
+                                        <owl:complementOf rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
+                                    </owl:Class>
+                                </swrl:classPredicate>
+                                <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#NonHuman"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Person2</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Man"/>
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Person"/>
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Woman"/>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </swrl:classPredicate>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Hermaphrodite"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adult2</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate>
+                            <owl:Class>
+                                <owl:unionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Driver"/>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#Person"/>
+                                            <owl:Restriction>
+                                                <owl:onProperty rdf:resource="http://knowrob.org/kb/swrl_test#hasChild"/>
+                                                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</owl:hasValue>
+                                            </owl:Restriction>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:unionOf>
+                            </owl:Class>
+                        </swrl:classPredicate>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/swrl_test#Adult"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

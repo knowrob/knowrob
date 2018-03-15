@@ -29,7 +29,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	/**
 	 * The ROS node if connected, else null
 	 */
-	private ConnectedNode node = null;
+	protected ConnectedNode node = null;
 	/**
 	 * Logger of ROS node if connected, else null
 	 */
