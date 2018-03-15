@@ -73,6 +73,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
 :- use_module(library('lists')). % for sum_list
+:- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/transforms')).
 
@@ -531,22 +532,27 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   ).
 
 marker_new(MarkerName, spot_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(spot_light, MarkerName, spot_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject),
   % get look at target object (more specific the name of the marker)
+  % this is a HACK that misuses the marker message text field
   once(((
-    rdf_has(Identifier, knowrob:lightTarget, LookAt),
+    owl_has(Identifier, knowrob:lightTarget, LookAt),
     marker_term(LookAt, LookAtMarker),
     marker(LookAtMarker, LookAtMarkerObj),
     jpl_call(LookAtMarkerObj, 'getId', [], LookAtId),
     term_to_atom(LookAtMarker, LookAtMarkerAtom),
     atom_concat(LookAtMarkerAtom, LookAtId, LookAtName)
+  ) ; (
+    owl_has(Identifier, knowrob:lightDirection, Direction),
+    strip_literal_type(Direction, LookAtName)
   ) ; LookAtName='' )),
-  marker_primitive(spot_light, MarkerName, spot_light(Identifier), MarkerObject, Parent),
-  marker_initialize_object(Identifier, MarkerObject),
   marker_text(MarkerObject, LookAtName),
   % read spot properties from owl
-  ( rdf_has(Identifier, knowrob:lightSpotExponent, Exponent) ; Exponent=1.0 ),
-  ( rdf_has(Identifier, knowrob:lightConeAngle, ConeAngle) ; ConeAngle=3.14159 ),
-  marker_scale(MarkerObject, [Exponent,ConeAngle,1.0]).
+  ( owl_has_prolog(Identifier, knowrob:lightExponent, Exponent)   ; Exponent=2.0 ),
+  ( owl_has_prolog(Identifier, knowrob:lightConeAngle, ConeAngle) ; ConeAngle=1.4 ),
+  ( owl_has_prolog(Identifier, knowrob:lightDistance, Distance)   ; Distance=3.0 ),
+  marker_scale(MarkerObject, [Exponent,ConeAngle,Distance]).
 marker_new(MarkerName, point_light(Identifier), MarkerObject, Parent) :-
   marker_primitive(point_light, MarkerName, point_light(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
