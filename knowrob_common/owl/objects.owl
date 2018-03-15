@@ -60,6 +60,15 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#lightTarget -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightTarget">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#madeOf -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#madeOf"/>
@@ -119,6 +128,82 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightConeAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightConeAngle">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightDirection -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightDirection">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightIntensity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightIntensity">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightProperty -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightProperty">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob_common.owl#LightEmitter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightSpotExponent -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightSpotExponent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightType -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightType">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                        <rdf:first>directional</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first>point</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                        <rdf:first>spot</rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+        <rdfs:comment>One of &apos;spot&apos;, &apos;point&apos;, or &apos;directional&apos;. Corresponds to different light types used in Computer Graphics.</rdfs:comment>
+    </owl:DatatypeProperty>
     
 
 
@@ -268,6 +353,15 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#BatteryPoweredDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BatteryPoweredDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>The collection of all SelfPoweredDevices in which a Battery serves as a noteworthy internalPowerSource.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#BladeOfADevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BladeOfADevice">
@@ -369,6 +463,15 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Candle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Candle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
+        <rdfs:comment>The collection of pieces of wax, tallow, etc. with embedded wicks designed to be burned to give light. Modern candles are often long and slender. The whole of a candle burns up, unlike a torch, which remains after its fuel has been consumed by the fire.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#CardboardBox -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CardboardBox">
@@ -382,6 +485,15 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CashRegister">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CeilingLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CeilingLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightFixture"/>
+        <rdfs:comment>The collection of all ceiling lights. A type of ElectricalLightingDevice. The concept WallLight is an ArtifactTypeByGenericCategory and a SpatiallyDisjointObjectType.</rdfs:comment>
     </owl:Class>
     
 
@@ -647,7 +759,8 @@
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricLamp -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricLamp">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightFixture"/>
         <rdfs:comment>The collection for all kinds of freestanding (easily moveable) electrical lamps.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjeTpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -674,10 +787,26 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightingDevice"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#LightSource"/>
         <rdfs:comment>Devices that provide light by transforming electrical current into light energy.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjZQZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
@@ -742,6 +871,12 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FixedObstacle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FixedObstacle"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#FixedWingAircraft -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FixedWingAircraft">
@@ -755,7 +890,9 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Flashlight -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flashlight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BatteryPoweredDevice"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PortableObject"/>
         <rdfs:comment>A small portable electric lamp powered by batteries.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjc1pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -955,6 +1092,7 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndicatorLight">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all indicator lights. A type of ElectricalLightingDevice. The concept IndicatorLight is an ArtifactTypeByGenericCategory and a SpatiallyDisjointObjectType.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjcYZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
@@ -979,6 +1117,7 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lamp-Hanging">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all hanging lamps. A type of ElectricalLightingDevice. The concept Lamp_Hanging is an ArtifactTypeByGenericCategory and a SpatiallyDisjointObjectType.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv3vm3ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
@@ -995,12 +1134,39 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LightEmitter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightEmitter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightingDevice"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#LightFixture -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightFixture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalHouseholdAppliance"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
         <rdfs:comment>Light fixtures are lights that are permanently attached as parts of rooms or buildings. e.g. Flourescent light fixtures in office building ceilings.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjvUpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightType -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightType">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeAmbient"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeDirectional"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypePoint"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeSpot"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ObjectType"/>
     </owl:Class>
     
 
@@ -1009,9 +1175,18 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lightbulb">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalComponent"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter"/>
         <rdfs:comment>A bulb of glass or quartz enclosing material that incandesces or fluoresces when provided with current, thus generating light.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMgnAuqUkEd2AAABQjYGu0g</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightingDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PoweredDevice"/>
+        <rdfs:comment>LightingDevice is a specialization of PoweredDevice. Each instance of LightingDevice has the primaryFunction of providing light. The light provided may be provided in different ways and for different specialized purposes. For example, it may be for general illumination of a fixed area (as by instances of Candle, Lantern, ElectricLamp, and Streetlight); or it may be for specially directed illumination (as by instances of AutomotiveLight and Flashlight); or it may be for use in a signal or sign (as by instances of TrafficLight and IndicatorLight); or it may be for some other special purposes (as by instances of StrobeLight).</rdfs:comment>
     </owl:Class>
     
 
@@ -1141,6 +1316,12 @@
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The main axis of an object, if applicable. Examples are the rotational axis of a screwdriver or the direction of the handle of a spatula.</rdfs:comment>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ObjectType -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ObjectType"/>
     
 
 
@@ -1480,6 +1661,8 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StreetLight">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FixedObstacle"/>
+        <rdfs:comment>The collection of all streetlights. A type of ElectricalLightingDevice and FixedObstacle. The collection Streetlight is an ArtifactTypeByGenericCategory and a SpatiallyDisjointObjectType.</rdfs:comment>
     </owl:Class>
     
 
@@ -1726,9 +1909,58 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob_common.owl#LightEmitter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#LightEmitter"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob_common.owl#LightSource -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#LightSource"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeAmbient -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeAmbient">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#LightType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeDirectional -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeDirectional">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#LightType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightTypePoint -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypePoint">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#LightType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeSpot -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeSpot">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#LightType"/>
+    </owl:NamedIndividual>
     
 
 

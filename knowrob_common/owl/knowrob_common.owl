@@ -9,8 +9,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
-    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_common.owl">
-    </owl:Ontology>
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_common.owl"/>
     
 
 
@@ -1823,82 +1822,6 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#extensionParametersOfObject"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightConeAngle -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightConeAngle">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightDirection -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightDirection">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightIntensity -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightIntensity">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightProperty -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightProperty">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob_common.owl#LightSource"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightSpotExponent -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightSpotExponent">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#lightType -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightType">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
-        <rdfs:range>
-            <rdfs:Datatype>
-                <owl:oneOf>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                        <rdf:first>directional</rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                                <rdf:first>point</rdf:first>
-                                <rdf:rest>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                                        <rdf:first>spot</rdf:first>
-                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                                    </rdf:Description>
-                                </rdf:rest>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </owl:oneOf>
-            </rdfs:Datatype>
-        </rdfs:range>
-        <rdfs:comment>One of &apos;spot&apos;, &apos;point&apos;, or &apos;directional&apos;. Corresponds to different light types used in Computer Graphics.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
