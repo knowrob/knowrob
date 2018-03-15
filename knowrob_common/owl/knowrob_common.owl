@@ -3313,6 +3313,16 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     <!-- http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty>
+                    <rdf:Description>
+                        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                    </rdf:Description>
+                </owl:onProperty>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
     </owl:Class>
     
@@ -3987,6 +3997,14 @@ For example, an event is a temporally-extended thing, as it is extended in time;
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wood">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NonFluidlikeTangibleThing"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of PlantProduct. Each instance of Wood is a piece of solid, rigid, fibrous organic substance in or derivedFrom (q.v.) the inside of the trunks and limbs of trees. Specializations of Wood include Firewood, (WoodFn OakTree) and (WoodFn CherryTree).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#Illuminating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Illuminating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event-Localized"/>
     </owl:Class>
     
 

@@ -188,7 +188,17 @@
     <!-- http://knowrob.org/kb/knowrob.owl#AgentBodyPart -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AgentBodyPart">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty>
+                    <rdf:Description>
+                        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                    </rdf:Description>
+                </owl:onProperty>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
     </owl:Class>
     
 
@@ -421,6 +431,12 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
     
 
 
