@@ -469,6 +469,7 @@ ROS3D.Marker = function(options) {
       var pointLight = new THREE.PointLight(htmlColor(this.msgColor), message.color.a);
       pointLight.position.set(0.0,0.0,0.0);
       this.add( pointLight );
+      this.add( new THREE.Mesh(new THREE.CubeGeometry(0.2,0.2,0.2), colorMaterial) );
       break;
     case ROS3D.MARKER_SPOT_LIGHT:
       this.isSelectable = false;
@@ -482,6 +483,7 @@ ROS3D.Marker = function(options) {
         spotLight.target = client.markers[message.text]; // look at the target marker
       else
         spotLight.add( spotLight.target );               // attach target to light
+      this.add( new THREE.Mesh(new THREE.CubeGeometry(0.2,0.2,0.2), colorMaterial) );
       break;
     case ROS3D.MARKER_DIRECTIONAL_LIGHT:
       this.isSelectable = false;
