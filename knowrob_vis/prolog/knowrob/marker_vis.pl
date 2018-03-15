@@ -915,13 +915,13 @@ marker_update(object(Identifier), MarkerObject, T) :-
 
 
 marker_update(spot_light(Identifier), MarkerObject, T) :-
-  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
   marker_pose(MarkerObject,Translation,Orientation).
 marker_update(point_light(Identifier), MarkerObject, T) :-
-  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
   marker_pose(MarkerObject,Translation,Orientation).
 marker_update(directional_light(Identifier), MarkerObject, T) :-
-  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
   marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(attached(Marker,AttachedTo), _, T) :-
