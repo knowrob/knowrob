@@ -29,6 +29,7 @@
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake-making-test.owl').
+:- owl_parse('package://knowrob_household/owl/kitchen_action_effects.owl'). % has baking rule
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).

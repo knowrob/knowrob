@@ -360,4 +360,4 @@ belief_at_internal_(Obj, (Translation, Rotation), TransformId) :-
 
 %% belief_republish_objects(+ObjectIds) is det
 %
-belief_republish_objects([O|Os]) :- mark_dirty_objects([O|Os]).
+belief_republish_objects(ObjectIds) :- mark_dirty_objects(ObjectIds).
