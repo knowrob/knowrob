@@ -7,7 +7,7 @@ from collections import defaultdict
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
 from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
-from multiprocessing import Lock
+from multiprocessing import Lock, Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
 from visualization_msgs.msg._Marker import Marker
@@ -69,9 +69,10 @@ class ObjectStatePublisher(object):
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=10)
         self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
-        self.dirty_lock = Lock()
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
         self.objects = defaultdict(lambda: PerceivedObject())
+        self.dirty_timer = rospy.Timer(rospy.Duration(.01), self.dirty_timer_cb)
+        self.dirty_object_requests = Queue()
         rospy.loginfo('object state publisher is running')
 
     def update_object_positions_cb(self, trigger):
@@ -80,21 +81,24 @@ class ObjectStatePublisher(object):
         r.success = True
         return r
 
+    def dirty_timer_cb(self, _):
+        # This is done in a different thread to prevent deadlocks in json prolog
+        srv_msg = self.dirty_object_requests.get()
+        rospy.loginfo('got dirty object request {}'.format(srv_msg))
+        self.load_object_ids()
+        for object_id in srv_msg.object_ids:
+            if not self.load_object(object_id):
+                rospy.logdebug("object '{}' unknown".format(object_id))
+            else:
+                rospy.loginfo("object '{}' updated".format(object_id))
+        self.publish_object_frames()
+        self.publish_object_markers()
+
     def dirty_cb(self, srv_msg):
-        with self.dirty_lock:
-            rospy.loginfo('got dirty object request {}'.format(srv_msg))
-            r = DirtyObjectResponse()
-            r.error_code = r.SUCCESS
-            self.load_object_ids()
-            for object_id in srv_msg.object_ids:
-                if not self.load_object(object_id):
-                    rospy.logdebug("object '{}' unknown".format(object_id))
-                    r.error_code = r.UNKNOWN_OBJECT
-                else:
-                    rospy.loginfo("object '{}' updated".format(object_id))
-            self.publish_object_frames()
-            self.publish_object_markers()
-            return r
+        self.dirty_object_requests.put(srv_msg)
+        r = DirtyObjectResponse()
+        r.error_code = r.SUCCESS
+        return r
 
     def prolog_query(self, q):
         query = self.prolog.query(q)
