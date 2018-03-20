@@ -264,7 +264,8 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 % @param FilePath   the path (usually a package:// path)
 %
 object_mesh_path(Obj, FilePath) :-
-  holds(Obj, knowrob:pathToCadModel, literal(type(xsd:string, FilePath))).
+  holds(Obj, knowrob:pathToCadModel, Val),
+  strip_literal_type(Val, FilePath).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
