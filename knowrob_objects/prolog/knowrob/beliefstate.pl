@@ -56,6 +56,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/objects')).
 
