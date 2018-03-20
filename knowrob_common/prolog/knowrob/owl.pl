@@ -29,6 +29,7 @@
     [
       owl_compute_individual_of/2,      % ?Resource, ?Description
       owl_compute_has/3,                % ?Subject, ?Predicate, ?Object
+      owl_has_prolog/3,
       owl_class_properties/3,           % ?Class, ?Prop, ?Val
       owl_class_properties_some/3,      % ?Class, ?Prop, ?Val
       owl_class_properties_all/3,       % ?Class, ?Prop, ?Val
@@ -57,6 +58,7 @@
 
 :- rdf_meta owl_compute_individual_of(r, t),
             owl_compute_has(r, r, o),
+            owl_has_prolog(r, r, ?),
             owl_class_properties(r,r,t),
             owl_class_properties_some(r,r,t),
             owl_class_properties_all(r,r,t),
@@ -108,6 +110,10 @@ owl_compute_individual_of(Resource, Description) :-
 owl_compute_has(S, P, O) :-
   owl_computable_db(DB),
   owl_has(S, P, O, DB).
+
+owl_has_prolog(S,P,Val) :-
+  owl_has(S,P,O),
+  rdfs_value_prolog(P,O,Val).
 
 		 /*******************************
 		 *		  TBOX reasoning		*

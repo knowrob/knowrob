@@ -551,7 +551,7 @@ temporal_part_has(S, P, O, Interval, Lifespan) :-
   interval(Ext, Lifespan),
   ( ground(Interval) ->
     interval_during(Interval, Lifespan) ;
-    Interval=Lifespan ),
+    Interval=Lifespan ), % FIXME: also fine without exact match!
   % read from the triple store
   rdf_has(S, P, S_O),
   % ignore some specific type statements in case of

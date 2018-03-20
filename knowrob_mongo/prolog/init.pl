@@ -38,3 +38,5 @@
 :- use_module(library('knowrob/mongo_tf')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+
+:- owl_parser:owl_parse('package://knowrob_mongo/owl/knowrob_mongo.owl').

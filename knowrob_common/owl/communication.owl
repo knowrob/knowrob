@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_communication.owl#"
-     xml:base="http://knowrob.org/kb/knowrob_communication.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/communication.owl#"
+     xml:base="http://knowrob.org/kb/communication.owl"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -10,7 +10,7 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
-    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_communication.owl">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/communication.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
     </owl:Ontology>
     
@@ -70,6 +70,12 @@
         <rdfs:comment>A BinaryRolePredicate that is used to specify some or all of the meaningful content of a particular transferral of information (see InformationTransferEvent). (infoTransferred TRANSFER INFO) means that INFO is information (see AspatialInformationStore) that is transferred due to TRANSFER. INFO originates (see informationOrigin) from some agent or InformationBearingThing (&quot;IBT&quot;) and, after TRANSFER, is had by another agent or is contained in another IBT (see informationDestination); INFO may persist in the origin as well. For example, when I read the front page of the newspaper, some information about current world events is transferred from the newspaper to me.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvWUq7JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectSought -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectSought"/>
     
 
 
@@ -180,6 +186,12 @@
         <rdfs:comment>A specialization of CommunicationAct_Single. Each instance of this collection is an action that conveys information to the effect that the performing agent has received some prior CommunicationAct_Single (which was performed by another agent). An example is Joan saying, `I hear you&apos; in response to Bette&apos;s exclaiming, `What a dump!&apos; Note that acknowledging can be implicit; for example, one can acknowledge a question by answering it.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkMQZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Action -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
     
 
 
@@ -334,12 +346,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Emission -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Emission"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Explaining-CommunicationAct -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Explaining-CommunicationAct">
@@ -365,8 +371,24 @@
     <!-- http://knowrob.org/kb/knowrob.owl#IBTGeneration -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IBTGeneration">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Action"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+        <rdfs:comment>A specialization of InformationTransferEvent and of Action. Each instance of IBTGeneration is an event which creates some InformationBearingThing. The InformationBearingThing created may be either a transient wave phenomenon (e.g. sound, light, or radio waves), or it may be a relatively long-lasting instance of InformationBearingObject (cf. the important specialization of IBTGeneration -- IBOCreation). Humans frequently generate such IBTs as spoken language, gestures, and handwritten notes. It is irrelevant for instances of IBTGeneration whether there is another agent who accesses the resulting IBT. Note that every communication act starts with an instance of IBTGeneration. (Thus, see also Communicating and its specializations, especially CommunicationAct_Single.) For an analogous collection regarding instances of ConceptualWork, see CWCreation. Two important specializations of this collection are IBTGeneration_Original and IBTGeneration_Replication. See also the predicate ibtGenerated.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvXDRVpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationBearingObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationBearingObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationBearingThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
     
 
 
@@ -475,21 +497,29 @@ Specializations of Informing include Reporting, Testifying, and AnnouncingSometh
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#MediaTransmitting -->
+    <!-- http://knowrob.org/kb/knowrob.owl#LookingForAnIBO -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MediaTransmitting">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Emission"/>
-        <rdfs:comment>A collection of Events; a subset of MediaTransferEvent and of Emission. In every instance of MediaTransmitting, a collection of intangible InformationBearingThings are transmitted and received by CommunicationDevices. These IBTs are NOT electrical signals, radio waves, or the like, but are constituted of sounds and/or images emitted by individual receiving devices and accessible to human senses. Subsets of MediaTransmitting include Broadcasting (via radio or TV) and TVTransmitting (via cable or broadcast).</rdfs:comment>
-        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvzyIYJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LookingForAnIBO">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LookingForSomething"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectSought"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
+    <!-- http://knowrob.org/kb/knowrob.owl#LookingForSomething -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LookingForSomething"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MediaTransmitting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MediaTransmitting"/>
     
 
 
@@ -561,16 +591,6 @@ Specializations of Informing include Reporting, Testifying, and AnnouncingSometh
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationRequest-IBT"/>
         <rdfs:comment>The collection of all instances of InformationRequest_IBT which take the form of a question. This collection includes yes/no questions, questions that ask for bindings (e.g. beginning with &apos;Who&apos;, &apos;What&apos; or &apos;When&apos;) and questions that ask for descriptions or explanations (e.g. &apos;How&apos; or &apos;Why&apos;).</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rrGMp8PDVQdaSupKiIKZZZA</rdfs:seeAlso>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Receiving -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Receiving">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
-        <rdfs:comment>A specialization of TransferIn. Each instance of Receiving is an event in which something `comes in&apos; to an object. Typically, a receiving has associated with it an instance of Translocation (q.v.); a particular receiving and its associated translocation(s) are related by the predicate transferInSubEvent. If the thing which `comes in&apos; is an instance of PartiallyTangible (such as a baseball, or a SCUD missile), then its reception is an instance of the specialization ReceivingAnObject (q.v.). If the translocation associated with the receiving is an instance of WavePropagation (such as a radio broadcast, or heat radiation from the Sun), then the receiving is an instance of the specialization ReceivingAWave (q.v.).</rdfs:comment>
-        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rva8CdpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -702,6 +722,12 @@ Note that, as with all CharacterStrings, a TextString is a sequence of abstract 
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#TransferOut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#VariableBinding -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VariableBinding">
@@ -731,5 +757,5 @@ Note that, as with all CharacterStrings, a TextString is a sequence of abstract 
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
 

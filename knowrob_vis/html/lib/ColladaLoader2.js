@@ -1958,7 +1958,7 @@
             case "reflectivity":
             case "transparency":
             case "index_of_refraction":
-              technique[child.nodeName] = parseFloat(child.childNodes[1].textContent);
+              technique[child.nodeName] = parseFloat(child.childNodes[0].textContent);
               break;
             case "transparent":
               this._parseEffectColorOrTexture(technique, child);
@@ -4170,8 +4170,14 @@
 
     ColladaLoader2.prototype._loadTextureFromURL = function(imageURL) {
       var texture;
+
+// HACK
+var isTif = /\.tif$/i.test( imageURL );
+if(isTif) { imageURL = imageURL.slice(0, -3) + "png" };
+
       texture = this._imageCache[imageURL];
       if (texture != null) return texture;
+
       if (this.options.localImageMode) texture = this._loadImageLocal(imageURL);
       if (!(texture != null)) texture = this._loadImageSimple(imageURL);
       if (texture != null) {
