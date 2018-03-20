@@ -93,7 +93,7 @@
 belief_existing_objects(ObjectIds) :-
   findall(J, (
       rdf(J, _, _, belief_state),
-      rdfs_individual_of(J, knowrob:'SpatialThing')), X),
+      rdfs_individual_of(J, knowrob:'EnduringThing-Localized')), X),
   list_to_set(X,ObjectIds).
 
 %% belief_forget is det.
