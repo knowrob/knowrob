@@ -267,10 +267,28 @@ rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
   ( term_to_atom(Module:Pred, Cmd) ->
   ( Goal=..[Pred|Args], Command=Module:Goal ) ;
   ( Command=..[Cmd|Args] )),
+  % Make sure the predicate exists
+  computable_predicate(Command, Predicate),
+  once(( current_predicate(Predicate) ; (
+         term_to_atom(Predicate, CmdAtom),
+         atomic_list_concat([
+            'Undefined computable ', CmdAtom, '.',
+            ' Missing register_ros_package?'], ErrStr),
+         ros_warn(ErrStr),
+         fail
+  ))),
   % execute the Prolog predicate (namespace expansion etc.)
   ( nonvar(Value) ->
   ( PrologValue=Value, call(Command) );
   ( call(Command), rdfs_prolog_to_rdf(Property, PrologValue, Value))).
+
+computable_predicate(Command, Predicate) :-
+  functor(Command, N, A),
+  ( N=':' -> (
+    Command =.. [':', Module,Command_i],
+    functor(Command_i, N_i, A_i),
+    Predicate=Module:N_i/A_i
+  ) ; Predicate=N/A ).
 
 rdfs_computable_triple_during(Property, Frame, Value, _) :-
   rdf_equal(Property, rdfs:range),
