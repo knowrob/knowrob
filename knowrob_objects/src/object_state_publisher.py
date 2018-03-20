@@ -6,7 +6,7 @@ from collections import defaultdict
 
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
-from knowrob_beliefstate.srv._DirtyObject import DirtyObject, DirtyObjectResponse
+from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
 from multiprocessing import Lock
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
