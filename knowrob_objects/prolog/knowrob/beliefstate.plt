@@ -16,13 +16,18 @@ test(belief_new_object) :-
   belief_new_object(knowrob:'Cup', Cup),
   rdfs_individual_of(Cup, knowrob:'Cup'),
   rdfs_individual_of(Cup, owl:'NamedIndividual'),
-  rdf_has(Cup, knowrob:frameName, _),
   assertz(test_object(Cup)).
 
 test(belief_at_update) :-
   test_object(Cup),
   belief_at_update(Cup, ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]]),
   rdf_has(Cup, knowrob:'pose', _), !.
+  
+test(belief_at_update2) :-
+  test_object(Cup),
+  object_frame_name(Cup, F1),
+  belief_perceived_at(knowrob:'Cup', [F1,_,[1.0,1.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup2),
+  belief_at(Cup2,[F1,_,_,_]), !.
 
 test(belief_at_location_equal) :-
   belief_existing_object_at(knowrob:'Cup', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
