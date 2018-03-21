@@ -333,7 +333,7 @@ belief_at_update(Obj, [ReferenceFrame,_,Translation,Rotation]) :-
     write(ReferenceFrame),
     writeln('", ignoring belief update.'),
     fail
-  )),
+  )), !,
   belief_at_update(Obj, (Translation, Rotation), RelativeTo).
 
 belief_at_update(Obj, TransformData, RelativeTo) :-
@@ -343,7 +343,7 @@ belief_at_update(Obj, TransformData, RelativeTo) :-
 %% belief_at_internal(+Obj, +TransformData, +RelativeTo) is det.
 %
 belief_at_internal(Obj, TransformData, RelativeTo) :-
-  belief_at_internal_(Obj, RelativeTo, TransformData, TransformId), !.
+  belief_at_internal_(Obj, RelativeTo, TransformData, _), !.
 
 belief_at_internal(Obj, TransformData) :-
   belief_at_internal_(Obj, 'http://knowrob.org/kb/knowrob.owl#MapFrame', TransformData, _), !.
