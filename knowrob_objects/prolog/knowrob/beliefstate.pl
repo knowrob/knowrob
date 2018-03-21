@@ -343,14 +343,13 @@ belief_at_update(Obj, TransformData, RelativeTo) :-
 %% belief_at_internal(+Obj, +TransformData, +RelativeTo) is det.
 %
 belief_at_internal(Obj, TransformData, RelativeTo) :-
-  belief_at_internal_(Obj, TransformData, TransformId), !,
-  rdf_assert(TransformId, knowrob:'relativeTo', RelativeTo).
+  belief_at_internal_(Obj, RelativeTo, TransformData, TransformId), !.
 
 belief_at_internal(Obj, TransformData) :-
-  belief_at_internal_(Obj, TransformData, _).
+  belief_at_internal_(Obj, 'http://knowrob.org/kb/knowrob.owl#MapFrame', TransformData, _), !.
 
-belief_at_internal_(Obj, (Translation, Rotation), TransformId) :-
-  owl_instance_from_class(knowrob:'Pose', [pose=(Translation,Rotation)], TransformId),
+belief_at_internal_(Obj, RelativeTo, (Translation, Rotation), TransformId) :-
+  owl_instance_from_class(knowrob:'Pose', [pose=(RelativeTo,Translation,Rotation)], TransformId),
   current_time(Now),
   ( rdf_has(Obj, knowrob:pose, OldPose) ->
     assert_temporal_part_end(Obj, knowrob:pose, OldPose, Now, belief_state) ;
