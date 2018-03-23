@@ -4,12 +4,14 @@ import rospy
 import tf
 from collections import defaultdict
 
+from geometry_msgs.msg import Vector3
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
 from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
-from multiprocessing import Lock, Queue
+from multiprocessing import Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
+from visualization_msgs.msg import MarkerArray
 from visualization_msgs.msg._Marker import Marker
 from json_prolog import json_prolog
 
@@ -18,8 +20,9 @@ class PerceivedObject(object):
     def __init__(self):
         self.transform = None
         self.mesh_path = ''
-        self.color = ColorRGBA()
+        self.color = ColorRGBA(0,0,0,1)
         self.initialized = False
+        self.scale = Vector3(0.05, 0.05, 0.05)
 
     def update_color(self, r, g, b, a):
         self.color = ColorRGBA()
@@ -33,25 +36,28 @@ class PerceivedObject(object):
         self.object_name = str(object_name)
         self.transform = [self.ref_frame, self.object_name, translation, rotation]
 
+    def update_dimensions(self, depth, width, height):
+        self.scale = Vector3(width, depth, height)
+
     def get_marker(self):
         marker = Marker()
         marker.header.frame_id = self.ref_frame
-        marker.type = marker.MESH_RESOURCE
         marker.action = Marker.ADD
         marker.id = 1337
         marker.ns = self.object_name
         marker.color = self.color
 
-        marker.scale.x = 1
-        marker.scale.y = 1
-        marker.scale.z = 1
+        marker.scale = Vector3(1,1,1) # don't use self.scale because the meshes are already scaled.
         marker.frame_locked = True
         marker.pose.position = Point(*self.transform[-2])
         marker.pose.orientation = Quaternion(*self.transform[-1])
-        if len(self.mesh_path)>2 and self.mesh_path[0] == "'":
-            marker.mesh_resource = self.mesh_path[1:-1]
+        if self.mesh_path != '':
+            marker.type = marker.MESH_RESOURCE
+            marker.mesh_resource = self.mesh_path.replace('\'', '')
         else:
-            marker.mesh_resource = self.mesh_path
+            rospy.logdebug('{} has no mesh'.format(self.object_name))
+            marker.type = Marker.CUBE
+            marker.scale = self.scale
         return marker
 
     def get_del_marker(self):
@@ -68,6 +74,7 @@ class ObjectStatePublisher(object):
         self.prolog = json_prolog.Prolog()
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=10)
+        self.marker_array_publisher = rospy.Publisher('/visualization_marker_array', MarkerArray, queue_size=10)
         self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
         self.objects = defaultdict(lambda: PerceivedObject())
@@ -122,6 +129,7 @@ class ObjectStatePublisher(object):
             self.load_object_color(object_id)
             self.load_object_mesh(object_id)
             self.load_object_transform(object_id)
+            self.load_object_dimensions(object_id)
             self.objects[object_id].initialized = True
             self.objects[object_id].object_name = object_id
             return True
@@ -163,12 +171,20 @@ class ObjectStatePublisher(object):
             self.objects[object_id].mesh_path = str(solutions[0]['A'])
             rospy.logdebug("'{}' has mesh path: {}".format(object_id, self.objects[object_id].mesh_path))
 
+    def load_object_dimensions(self, object_id):
+        q = "object_dimensions('{}', D, W, H)".format(object_id)
+        solutions = self.prolog_query(q)
+        if len(solutions) > 0:
+            self.objects[object_id].update_dimensions(depth=solutions[0]['D'],
+                                                      width=solutions[0]['W'],
+                                                      height=solutions[0]['H'])
+
     def publish_object_markers(self):
-        r = rospy.Rate(10)
+        ma = MarkerArray()
         for object_id, v in self.objects.items():
             if v.initialized:
-                self.marker_publisher.publish(v.get_marker())
-                r.sleep()
+                ma.markers.append(v.get_marker())
+        self.marker_array_publisher.publish(ma)
 
     def publish_object_frames(self):
         for object_id, perceived_object in self.objects.items():
