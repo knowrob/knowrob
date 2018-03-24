@@ -68,9 +68,10 @@ class PerceivedObject(object):
         return marker
 
 class ObjectStatePublisher(object):
-    def __init__(self, tf_frequency):
+    def __init__(self, tf_frequency, object_types):
         rospy.wait_for_service('/json_prolog/query')
         self.tf_frequency = tf_frequency
+        self.object_types = object_types
         self.prolog = json_prolog.Prolog()
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=10)
@@ -91,13 +92,13 @@ class ObjectStatePublisher(object):
     def dirty_timer_cb(self, _):
         # This is done in a different thread to prevent deadlocks in json prolog
         srv_msg = self.dirty_object_requests.get()
-        rospy.loginfo('got dirty object request {}'.format(srv_msg))
+        rospy.logdebug('got dirty object request {}'.format(srv_msg))
         self.load_object_ids()
         for object_id in srv_msg.object_ids:
             if not self.load_object(object_id):
                 rospy.logdebug("object '{}' unknown".format(object_id))
             else:
-                rospy.loginfo("object '{}' updated".format(object_id))
+                rospy.logdebug("object '{}' updated".format(object_id))
         self.publish_object_frames()
         self.publish_object_markers()
 
@@ -137,7 +138,7 @@ class ObjectStatePublisher(object):
         return False
 
     def load_object_ids(self):
-        q = 'belief_existing_objects(A)'
+        q = 'belief_existing_objects(A,['+','.join(self.object_types)+'])'
         solutions = self.prolog_query(q)
         for object_id in solutions[0]['A']:
             if object_id not in self.objects.keys():
@@ -146,7 +147,7 @@ class ObjectStatePublisher(object):
             if object_id not in solutions[0]['A']:
                 self.marker_publisher.publish(self.objects[object_id].get_del_marker())
                 self.objects.pop(object_id)
-        rospy.loginfo('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
+        rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
 
     def load_object_transform(self, object_id):
         q = "belief_at('{}', A)".format(object_id)
@@ -207,5 +208,6 @@ class ObjectStatePublisher(object):
 if __name__ == '__main__':
     rospy.init_node('object_state_publisher')
     hz = rospy.get_param('~hz', default='1')
-    object_state_publisher = ObjectStatePublisher(int(hz))
+    object_types = rospy.get_param('~object_types', default="knowrob:'EnduringThing-Localized'")
+    object_state_publisher = ObjectStatePublisher(int(hz), object_types.split(','))
     object_state_publisher.loop()
