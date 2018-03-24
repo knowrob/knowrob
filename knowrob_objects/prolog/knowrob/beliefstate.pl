@@ -27,7 +27,9 @@
 
 :- module(knowrob_beliefstate,
     [
+      belief_parse/1,
       belief_existing_objects/1,    % set of known objects in the belief state
+      belief_existing_objects/2,
       belief_existing_object_at/4,  % query known object near some pose
       belief_new_object/2,          % assert a new object in the belief state
       belief_at/2,                  % query the current pose of an object
@@ -65,6 +67,7 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 
 :-  rdf_meta
+    belief_existing_objects(-,t),
     belief_existing_object_at(r,+,+,r),
     belief_new_object(r,r),
     belief_at(r,+,r),
@@ -92,10 +95,27 @@
 % @param ObjectIds the object names
 %
 belief_existing_objects(ObjectIds) :-
+  belief_existing_objects(ObjectIds, [knowrob:'EnduringThing-Localized']).
+
+belief_existing_objects(ObjectIds, ObjectTypes) :-
   findall(J, (
       rdf(J, _, _, belief_state),
-      rdfs_individual_of(J, knowrob:'EnduringThing-Localized')), X),
+      member(T, ObjectTypes),
+      rdfs_individual_of(J, T)
+  ), X),
   list_to_set(X,ObjectIds).
+
+belief_parse(File) :-
+  owl_parser:owl_parse(File, belief_state),
+  belief_assign_frames.
+
+belief_assign_frames :-
+  belief_existing_objects(ObjectIds),
+  forall( member(Obj,ObjectIds), (
+    rdf_split_url(_, ObjName, Obj),
+    once(( rdf_has(Obj, knowrob:'frameName', _) ;
+           rdf_assert(Obj, knowrob:'frameName', literal(ObjName), belief_state) )))).
+  
 
 %% belief_forget is det.
 %
@@ -263,7 +283,7 @@ belief_at_relative_to(Child, Parent, RelPose) :-
 belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Child,  ChildGlobal, Instant),
   belief_at_global(Parent, ParentGlobal, Instant),
-  transform_between(ChildGlobal, ParentGlobal, RelPose).
+  transform_between(ParentGlobal, ChildGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet.
 %% belief_at_global(+Obj:iri, ?GlobalPose:list, +Instant:time) is semidet.
