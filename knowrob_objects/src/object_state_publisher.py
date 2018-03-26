@@ -150,7 +150,7 @@ class ObjectStatePublisher(object):
         rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
 
     def load_object_transform(self, object_id):
-        q = "belief_at('{}', A)".format(object_id)
+        q = "belief_at_id('{}', A)".format(object_id)
         solutions = self.prolog_query(q)
         if len(solutions) > 0:
             self.objects[object_id].update_transform(*solutions[0]['A'])
