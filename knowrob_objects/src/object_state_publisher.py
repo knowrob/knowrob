@@ -22,6 +22,7 @@ class PerceivedObject(object):
         self.mesh_path = ''
         self.color = ColorRGBA(0,0,0,1)
         self.initialized = False
+        self.visualize = False
         self.scale = Vector3(0.05, 0.05, 0.05)
 
     def update_color(self, r, g, b, a):
@@ -126,11 +127,13 @@ class ObjectStatePublisher(object):
         self.publish_object_markers()
 
     def load_object(self, object_id):
-        if object_id in self.objects.keys() and self.object_has_visual(object_id):
-            self.load_object_color(object_id)
-            self.load_object_mesh(object_id)
+        if object_id in self.objects.keys():
             self.load_object_transform(object_id)
-            self.load_object_dimensions(object_id)
+            self.objects[object_id].visualize = self.object_has_visual(object_id)
+            if self.objects[object_id].visualize:
+              self.load_object_color(object_id)
+              self.load_object_mesh(object_id)
+              self.load_object_dimensions(object_id)
             self.objects[object_id].initialized = True
             self.objects[object_id].object_name = object_id
             return True
@@ -189,7 +192,7 @@ class ObjectStatePublisher(object):
     def publish_object_markers(self):
         ma = MarkerArray()
         for object_id, v in self.objects.items():
-            if v.initialized:
+            if v.initialized and v.visualize:
                 ma.markers.append(v.get_marker())
         self.marker_array_publisher.publish(ma)
 
