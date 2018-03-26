@@ -108,12 +108,12 @@ class ObjectStatePublisher(object):
         r.error_code = r.SUCCESS
         return r
 
-    def prolog_query(self, q):
+    def prolog_query(self, q, silent=False):
         query = self.prolog.query(q)
         solutions = [x for x in query.solutions()]
-        if len(solutions) > 1:
+        if not silent and len(solutions) > 1:
             rospy.logwarn('{} returned more than one result'.format(q))
-        elif len(solutions) == 0:
+        elif not silent and len(solutions) == 0:
             rospy.logwarn('{} returned nothing'.format(q))
         query.finish()
         return solutions
@@ -126,7 +126,7 @@ class ObjectStatePublisher(object):
         self.publish_object_markers()
 
     def load_object(self, object_id):
-        if object_id in self.objects.keys():
+        if object_id in self.objects.keys() and self.object_has_visual(object_id):
             self.load_object_color(object_id)
             self.load_object_mesh(object_id)
             self.load_object_transform(object_id)
@@ -136,6 +136,12 @@ class ObjectStatePublisher(object):
             return True
         rospy.logwarn("object with id:'{}' not found in database".format(object_id))
         return False
+
+    def object_has_visual(self, object_id):
+        q = "not(rdf_has('{}', knowrob:'hasVisual', literal(type(_,false))))".format(object_id)
+        solutions = self.prolog_query(q,silent=True)
+        if len(solutions) > 0: return True
+        else:                  return False
 
     def load_object_ids(self):
         q = 'belief_existing_objects(A,['+','.join(self.object_types)+'])'
@@ -166,7 +172,7 @@ class ObjectStatePublisher(object):
         rospy.logdebug("'{}' has color: {}".format(object_id, self.objects[object_id].color))
 
     def load_object_mesh(self, object_id):
-        q = "object_mesh_path('{}', A)".format(object_id)
+        q = "object_mesh_path('{}', A),!".format(object_id)
         solutions = self.prolog_query(q)
         if len(solutions) > 0:
             self.objects[object_id].mesh_path = str(solutions[0]['A'])
