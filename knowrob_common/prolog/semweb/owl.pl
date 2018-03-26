@@ -1146,7 +1146,8 @@ owl_has_property_chain_O2S(O, [P|RestChain], S, DB) :-
 %% owl_use_has_value
 owl_use_has_value(S, P, O) :-
 	nonvar(P), !,
-	rdf_has(Super, owl:onProperty, P),
+	rdfs_subproperty_of(P_sub, P),
+	rdf_has(Super, owl:onProperty, P_sub),
 	rdf_has(Super, owl:hasValue, O),
 	% NOTE(DB): not possible to infer has-value restrictions of superclasses using owl_direct_subclass_of
 	owl_subclass_of(Type, Super),
