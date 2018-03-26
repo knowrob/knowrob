@@ -34,6 +34,8 @@
       belief_new_object/2,          % assert a new object in the belief state
       belief_at/2,                  % query the current pose of an object
       belief_at/3,
+      belief_at_id/2,
+      belief_at_id/3,
       belief_at_update/2,           % assign new pose to object
       belief_at_update/3,
       belief_at_global/2,           % query the current pose of an object in global frame
@@ -72,6 +74,8 @@
     belief_new_object(r,r),
     belief_at(r,+,r),
     belief_at(r,+),
+    belief_at_id(r,+,r),
+    belief_at_id(r,+),
     belief_at_update(r,+,r),
     belief_at_update(r,+),
     belief_at_internal(r,+,r),
@@ -255,7 +259,14 @@ belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
   object_frame_name(Ref, ReferenceFrame), !,
   belief_at_relative_to(Obj, Ref, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant).
 
-belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
+belief_at(Obj, Transform, Instant) :-
+  belief_at_id(Obj, Transform, Instant).
+
+belief_at_id(Obj, Transform) :-
+  current_time(Instant),
+  belief_at_id(Obj, Transform, Instant).
+
+belief_at_id(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
   holds( knowrob:pose(Obj,TransformId), Instant ),
   object_frame_name(Obj, TargetFrame),
   transform_reference_frame(TransformId, ReferenceFrame), 
