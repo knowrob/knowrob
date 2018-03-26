@@ -30,6 +30,7 @@
     [
       current_object_pose/2,
       object_pose_at_time/3,
+      object_affordance_static_transform/3,
       object_trajectory/4,
       object_distance/3,
       object_frame_name/2,
@@ -71,6 +72,7 @@
 :-  rdf_meta
     current_object_pose(r,-),
     object_pose_at_time(r,r,?),
+    object_affordance_static_transform(r,r,?),
     object_trajectory(r,t,+,-),
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
@@ -97,6 +99,13 @@
 % @param Pose  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
 current_object_pose(Obj, Pose) :- belief_at(Obj, Pose).
+
+object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
+  % TODO: Affordance should be part of upper ontology
+  object_frame_name(Obj, ObjFrame),
+  owl_has(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', Aff),
+  % TODO: think about relativeTo relation!
+  belief_at_id(Aff, [_,AffFrame,Pos,Rot]).
 
 %% object_pose_at_time(+Obj:iri, +Instant:float, ?Pose:term) is semidet
 %
@@ -266,7 +275,7 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 object_mesh_path(Obj, FilePath) :-
   holds(Obj, knowrob:pathToCadModel, Val),
   strip_literal_type(Val, FilePath).
-
+  
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Pose from TF
