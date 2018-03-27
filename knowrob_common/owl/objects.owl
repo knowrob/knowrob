@@ -27,6 +27,22 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#affordancePoseOfStaticTransform -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#affordancePoseOfStaticTransform">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#AffordanceTransform"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#AffordanceTransform"/>
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#relativeTo"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#hasAffordance"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#pose"/>
+        </owl:propertyChainAxiom>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#causes-Underspecified -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causes-Underspecified"/>
@@ -44,6 +60,18 @@
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#doorHingedTo">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#hingedTo"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#DoorwayCovering"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasAffordance -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasAffordance">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
     </owl:ObjectProperty>
     
 
@@ -75,9 +103,21 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#pose -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#pose"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#properPhysicalParts -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#relativeTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#relativeTo"/>
     
 
 
@@ -255,6 +295,44 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Affordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Affordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AffordanceTransform -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AffordanceTransform">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StaticTransform"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty>
+                    <rdf:Description>
+                        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#pose"/>
+                    </rdf:Description>
+                </owl:onProperty>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#affordancePoseOfStaticTransform"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#affordancePoseOfStaticTransform"/>
+                <owl:hasSelf rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</owl:hasSelf>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#AirCoolingDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AirCoolingDevice">
@@ -307,6 +385,15 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Artifact -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Artifact"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AssemblyAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AssemblyAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
     
 
 
@@ -975,6 +1062,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#GraspingAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GraspingAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#HandTool -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HandTool">
@@ -1352,6 +1447,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#PerceptionAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PerceptionAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PersonalHygieneProduct -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PersonalHygieneProduct">
@@ -1476,6 +1579,12 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Pose -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pose"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PoweredDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PoweredDevice">
@@ -1586,6 +1695,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#SideGraspAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SideGraspAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
@@ -1597,6 +1714,12 @@
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sponge-CleaningImplement">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CleaningImplement"/>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StaticTransform -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StaticTransform"/>
     
 
 
@@ -1717,6 +1840,14 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToolTip">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TopGraspAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TopGraspAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
     </owl:Class>
     
 

@@ -1726,30 +1726,6 @@ PuttingDownAnObject.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob_common.owl#WindingUpAnArm -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#WindingUpAnArm"/>
-    
-
-
-    <!-- http://knowrob.org/kb/shop.owl#PuttingLabelOnShelf -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/shop.owl#PuttingLabelOnShelf">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/shop.owl#PuttingProductOnShelf -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/shop.owl#PuttingProductOnShelf">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/shop.owl#PuttingSeparatorOnShelf -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/shop.owl#PuttingSeparatorOnShelf">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
-    </owl:Class>
 </rdf:RDF>
 
 

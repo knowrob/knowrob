@@ -261,35 +261,26 @@ export_to_owl(Atoms, File) :-
 % @param ObjInfosSorted  List of all related OWL identifiers (to be used in rdf_save_subject)
 %
 read_object_info(Inst, ObjInfosSorted) :-
+  read_object_info(Inst, ObjInfosSorted, []).
+
+read_object_info(Inst, ObjInfosSorted, Blacklist) :-
+  \+ member(Inst, Blacklist),
 
   % read all direct properties
   findall(Prop, (
-              owl_has(Inst,P,Prop),
+              rdf_has(Inst,P,Prop),
+              atom(P),
               rdfs_individual_of(P, 'http://www.w3.org/2002/07/owl#ObjectProperty')
           ), Properties),
 
 
   % read all direct properties
   findall(PartInfo, (
-              rdf_reachable(Inst, 'http://knowrob.org/kb/knowrob.owl#properPhysicalParts', Part),
-              Part \= Inst,
-              read_object_info(Part, PartInfo)
+              member(Part, Properties),
+              read_object_info(Part, PartInfo, [Inst|Blacklist])
           ), PartInfos),
 
-  % read all perception instances
-  findall(Perc, (
-              owl_has(Perc, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', Inst),
-              owl_individual_of(Perc, 'http://knowrob.org/kb/knowrob.owl#MentalEvent')
-        ), Perceptions),
-
-  % read properties of all perception instances
-  findall(PercProp, (
-              member(Perc, Perceptions),
-              owl_has(Perc,P,PercProp),
-              rdfs_individual_of(P, 'http://www.w3.org/2002/07/owl#ObjectProperty')
-          ), PercProperties),
-
-  append([Properties,PartInfos,Perceptions,PercProperties], ObjInfos),
+  append([[Inst|Properties],PartInfos], ObjInfos),
   flatten(ObjInfos, ObjInfosFlat),
   sort(ObjInfosFlat, ObjInfosSorted).
 
