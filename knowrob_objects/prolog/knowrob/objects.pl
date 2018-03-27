@@ -275,20 +275,22 @@ object_mesh_path(Obj, FilePath) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Object affordances
-% TODO: Affordance should be part of upper ontology
 
 %%
 object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
   object_instantiate_affordances(Obj),
   object_frame_name(Obj, ObjFrame),
-  owl_has(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', Aff),
-  % TODO: think about relativeTo relation!
+  owl_has(Obj, knowrob:hasAffordance, Aff),
+  % TODO: StaticAffordanceTransform declares
+  %  ((relativeTo o hasAffordance o pose) Self)
+  % Use this to infer the relativeTo entity:
+  %    relativeTo value (Self.(inverse(pose)oinverse(hasAffordance)))
   belief_at_id(Aff, [_,AffFrame,Pos,Rot]).
 
 %%
 object_instantiate_affordances(Obj) :-
   findall(Type, (
-    owl_restriction_on(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', R),
+    owl_restriction_on(Obj, knowrob:hasAffordance, R),
     owl_restriction_object_domain(R, Type)), Types),
   list_to_set(Types, Types_set),
   forall(
@@ -298,8 +300,8 @@ object_instantiate_affordances(Obj) :-
   )).
 
 object_instantiate_affordances(Obj, class(Cls)) :-
-  owl_cardinality_on_resource(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', Cls, cardinality(Desired,_)),
-  owl_cardinality(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', Cls, Actual),
+  owl_cardinality_on_resource(Obj, knowrob:hasAffordance, Cls, cardinality(Desired,_)),
+  owl_cardinality(Obj, knowrob:hasAffordance, Cls, Actual),
   Missing is Desired - Actual,
   object_instantiate_affordances(Obj,[Cls],Missing).
 
@@ -307,7 +309,7 @@ object_instantiate_affordances(Obj, union_of(Classes)) :-
   forall(
     member(Cls,Classes), (
     owl_description(Cls,Cls_descr),
-    object_instantiate_affordances(Obj,Cls_descr)
+    ignore(object_instantiate_affordances(Obj,Cls_descr))
   )).
 
 object_instantiate_affordances(Obj, intersection_of(Classes)) :- fail.
@@ -318,7 +320,7 @@ object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
 object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
   owl_instance_from_class(Cls, Affordance),
   forall(member(X,Rest), rdf_assert(Affordance,rdf:type, X)),
-  rdf_assert(Obj, 'http://knowrob.org/kb/knowrob_assembly.owl#hasAffordance', Affordance),
+  rdf_assert(Obj, knowrob:hasAffordance, Affordance),
   Next is Missing-1,
   object_instantiate_affordances(Obj,[Cls|Rest],Next).
   
