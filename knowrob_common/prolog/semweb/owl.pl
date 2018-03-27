@@ -189,8 +189,8 @@ owl_restriction_on(Class, Restriction) :-
 %% owl_restriction_on(?Resource, ?Property, ?Restriction)
 %
 owl_restriction_on(Resource, Property, Restriction) :-
-  rdfs_individual_of(Resource, Cls),
-  rdfs_individual_of(Cls, owl:'Restriction'),
+  rdfs_individual_of(Resource, Restriction),
+  rdfs_individual_of(Restriction, owl:'Restriction'),
   rdf_has(Restriction, owl:onProperty, Property).
 
 %% owl_restriction_object_domain(?Resource, ?Domain)
