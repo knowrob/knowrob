@@ -79,3 +79,25 @@ class Prolog(object):
         finally:
             if q:
                 q.finish()
+
+    def wait_for_service(self, timeout=None):
+        """
+            Blocks until json_prolog service is available. Use this in
+            initialization code if your program depends on the service
+            already running.
+            @param timeout: timeout time in seconds, None for no
+            timeout. NOTE: timeout=0 is invalid as wait_for_service actually
+            contacts the service, so non-blocking behavior is not
+            possible. For timeout=0 uses cases, just call the service without
+            waiting.
+            @type  timeout: double
+            @raise ROSException: if specified timeout is exceeded
+            @raise ROSInterruptException: if shutdown interrupts wait
+            """
+        global _simple_query_srv
+        global _next_solution_srv
+        global _finish_query_srv
+
+        _simple_query_srv.wait_for_service(timeout=timeout)
+        _next_solution_srv.wait_for_service(timeout=timeout)
+        _finish_query_srv.wait_for_service(timeout=timeout)
