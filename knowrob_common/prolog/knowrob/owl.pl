@@ -349,8 +349,6 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, Tim
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[X,Y,Z],[QW,QX,QY,QZ])], Pose) :- !,
   rdfs_individual_of(Frame, knowrob:'SpatialThing-Localized'),
-  % HACK: there is `object_frame_name/2` but its defined in knowrob_objects
-  rdf_split_url(_, Ref, Frame),
   rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', Pose),
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
