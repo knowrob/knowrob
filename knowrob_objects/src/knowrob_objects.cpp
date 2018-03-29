@@ -13,10 +13,15 @@ PREDICATE(mark_dirty_objects, 1) {
   while(tail.next(e)) {
     msg.request.object_ids.push_back(std::string((char*)e));
   }
+  // TODO: better do this multi threaded, KnowRob spends to much time in here
   if (!ros::service::call("/object_state_publisher/mark_dirty_object", msg)) {
-    std::cerr << "Failed to call service " <<
+    static bool complainedMarkDirtyNotAvailable = false;
+    if(!complainedMarkDirtyNotAvailable) {
+      std::cerr << "Failed to call service " <<
                 "/object_state_publisher/mark_dirty_object. " <<
                 "Is it running?" << std::endl;
+      complainedMarkDirtyNotAvailable = true;
+    }
   }
   return TRUE;
 }
