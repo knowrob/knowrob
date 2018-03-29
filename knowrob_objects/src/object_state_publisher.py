@@ -64,7 +64,7 @@ class PerceivedObject(object):
             marker.type = marker.MESH_RESOURCE
             marker.mesh_resource = self.mesh_path.replace('\'', '')
         else:
-            rospy.logdebug('{} has no mesh'.format(self.object_name))
+            #rospy.logdebug('{} has no mesh'.format(self.object_name))
             marker.type = Marker.CUBE
             marker.scale = self.scale
         return marker
@@ -135,9 +135,9 @@ class ObjectStatePublisher(object):
 
     def load_objects(self):
         self.load_object_ids()
-        self.load_object_information(self.objects.keys())
-        #for object_id in self.objects.keys():
-        #    self.load_object(object_id)
+        #self.load_object_information(self.objects.keys())
+        for object_id in self.objects.keys():
+            self.load_object(object_id)
         self.publish_object_frames()
         self.publish_object_markers()
 
@@ -192,6 +192,8 @@ class ObjectStatePublisher(object):
                 obj.update_dimensions(depth=x['D'],width=x['W'],height=x['H'])
             obj.initialized = True
             obj.object_name = object_id
+            #if not obj.are_static_transforms_loaded():
+            #    self.load_object_static_transforms(object_id)
         rospy.logdebug('Updated object ids: {}'.format(object_ids))
 
     def load_object_transform(self, object_id):
@@ -249,7 +251,6 @@ class ObjectStatePublisher(object):
                 msg.child_frame_id = object_frame
                 msg.transform.translation = Vector3(*translation)
                 msg.transform.rotation = Quaternion(*rotation)
-                # TODO(DB): transforms can also be broadcasted in an array
                 self.tf_broadcaster.sendTransform(msg)
 
     def publish_static_transforms(self):
