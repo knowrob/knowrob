@@ -32,6 +32,7 @@
       belief_existing_objects/2,
       belief_existing_object_at/4,  % query known object near some pose
       belief_new_object/2,          % assert a new object in the belief state
+      belief_new_part/3,
       belief_at/2,                  % query the current pose of an object
       belief_at/3,
       belief_at_id/2,
@@ -45,6 +46,7 @@
       belief_at_internal/2,         % TODO: these should not be exposed
       belief_at_internal/3,
       belief_perceived_at/4,        % convinience rule to be called by perception system to inform about perceptions
+      belief_perceived_part_at/5,
       belief_republish_objects/1,   % causes marker messages to be generated
       belief_forget/0
     ]).
@@ -72,6 +74,7 @@
     belief_existing_objects(-,t),
     belief_existing_object_at(r,+,+,r),
     belief_new_object(r,r),
+    belief_new_part(r,r,r),
     belief_at(r,+,r),
     belief_at(r,+),
     belief_at_id(r,+,r),
@@ -83,6 +86,7 @@
     belief_at_global(r,-),
     belief_at_relative_to(r,r,-),
     belief_perceived_at(r,+,+,r),
+    belief_perceived_part_at(r,+,+,r,r),
     belief_republish_objects(t).
 
 % TODO
@@ -147,6 +151,11 @@ belief_new_object(ObjType, Obj) :-
     rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
     rdf_assert(Obj, knowrob:'describedInMap', Map, belief_state)
   ))).
+
+%%
+belief_new_part(PartType, Part, Parent) :-
+  belief_new_object(PartType, Part),
+  rdf_assert(Parent, knowrob:properPhysicalParts, Part, belief_state).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -230,6 +239,17 @@ belief_perceived_at(ObjType, Transform, Threshold, Obj) :-
 belief_perceived_at(ObjType, Transform, _, Obj) :-
   belief_new_object(ObjType, Obj),
   belief_at_update(Obj, Transform).
+
+%%
+belief_perceived_part_at(PartType, Transform, Threshold, Part, Parent) :-
+  owl_has(Parent, knowrob:properPhysicalParts, Part),
+  belief_existing_object_at(PartType, Transform, Threshold, Part),
+  belief_class_of(Part, PartType), !.
+
+belief_perceived_part_at(PartType, Transform, _, Part, Parent) :-
+  belief_new_part(PartType, Part, Parent),
+  % TODO enforce transform in parent frame
+  belief_at_update(Part, Transform).
 
 %% belief_at(+Obj:iri, ?Transform:list) is semidet.
 %% belief_at(+Obj:iri, ?Transform:list, +Instant:time) is semidet.
