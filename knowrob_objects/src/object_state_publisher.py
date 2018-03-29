@@ -60,7 +60,7 @@ class PerceivedObject(object):
         marker.frame_locked = True
         marker.pose.position = Point(*self.transform[-2])
         marker.pose.orientation = Quaternion(*self.transform[-1])
-        if self.mesh_path != '':
+        if self.mesh_path != '' and self.mesh_path != "''":
             marker.type = marker.MESH_RESOURCE
             marker.mesh_resource = self.mesh_path.replace('\'', '')
         else:
@@ -91,6 +91,7 @@ class ObjectStatePublisher(object):
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
         self.objects = defaultdict(lambda: PerceivedObject())
         self.dirty_timer = rospy.Timer(rospy.Duration(.01), self.dirty_timer_cb)
+        self.timer_lock = False
         rospy.loginfo('object state publisher is running')
 
     def update_object_positions_cb(self, trigger):
@@ -101,16 +102,19 @@ class ObjectStatePublisher(object):
 
     def dirty_timer_cb(self, _):
         # This is done in a different thread to prevent deadlocks in json prolog
-        srv_msg = self.dirty_object_requests.get()
-        rospy.logdebug('got dirty object request {}'.format(srv_msg))
+        if self.timer_lock or self.dirty_object_requests.empty(): return True
+        self.timer_lock = True
+        object_ids = set()
+        while not self.dirty_object_requests.empty():
+            srv_msg = self.dirty_object_requests.get()
+            object_ids |= set(srv_msg.object_ids)
         self.load_object_ids()
-        for object_id in srv_msg.object_ids:
-            if not self.load_object(object_id):
-                rospy.logdebug("object '{}' unknown".format(object_id))
-            else:
-                rospy.logdebug("object '{}' updated".format(object_id))
+        #for object_id in object_ids:
+        #    self.load_object(object_id)
+        self.load_object_information(object_ids)
         self.publish_object_frames()
         self.publish_object_markers()
+        self.timer_lock = False
 
     def dirty_cb(self, srv_msg):
         self.dirty_object_requests.put(srv_msg)
@@ -131,8 +135,9 @@ class ObjectStatePublisher(object):
 
     def load_objects(self):
         self.load_object_ids()
-        for object_id in self.objects.keys():
-            self.load_object(object_id)
+        self.load_object_information(self.objects.keys())
+        #for object_id in self.objects.keys():
+        #    self.load_object(object_id)
         self.publish_object_frames()
         self.publish_object_markers()
 
@@ -162,6 +167,7 @@ class ObjectStatePublisher(object):
 
     def load_object_ids(self):
         q = 'belief_existing_objects(A,['+','.join(self.object_types)+'])'
+        rospy.logdebug('belief_existing_objects: {}'.format(str(q)))
         solutions = self.prolog_query(q)
         for object_id in solutions[0]['A']:
             if object_id not in self.objects.keys():
@@ -171,6 +177,22 @@ class ObjectStatePublisher(object):
                 self.marker_publisher.publish(self.objects[object_id].get_del_marker())
                 self.objects.pop(object_id)
         rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
+
+    def load_object_information(self, object_ids):
+        q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,HasVisual,Color,Mesh,[D,W,H],Pose)"
+        solutions = self.prolog_query(q, verbose=False)
+        for x in solutions:
+            object_id = str(x['Obj'])
+            obj = self.objects[object_id]
+            obj.update_transform(*x['Pose'])
+            obj.visualize = (str(x['HasVisual'])=="'true'")
+            if obj.visualize:
+                obj.update_color(*x['Color'])
+                obj.mesh_path = str(x['Mesh'])
+                obj.update_dimensions(depth=x['D'],width=x['W'],height=x['H'])
+            obj.initialized = True
+            obj.object_name = object_id
+        rospy.logdebug('Updated object ids: {}'.format(object_ids))
 
     def load_object_transform(self, object_id):
         q = "belief_at_id('{}', A)".format(object_id)
@@ -227,15 +249,17 @@ class ObjectStatePublisher(object):
                 msg.child_frame_id = object_frame
                 msg.transform.translation = Vector3(*translation)
                 msg.transform.rotation = Quaternion(*rotation)
+                # TODO(DB): transforms can also be broadcasted in an array
                 self.tf_broadcaster.sendTransform(msg)
 
     def publish_static_transforms(self):
         # we have to publish all tf static msg in one msg otherwise shit doesn't work for some reason
         tf_msgs = []
+        stamp = rospy.get_rostime()
         for object in self.objects.values():
             for [ref_frame, object_frame, translation, rotation] in object.static_transforms.values():
                 msg = TransformStamped()
-                msg.header.stamp = rospy.get_rostime()
+                msg.header.stamp = stamp
                 msg.header.frame_id = ref_frame
                 msg.child_frame_id = object_frame
                 msg.transform.translation = Vector3(*translation)
