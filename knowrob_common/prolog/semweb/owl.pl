@@ -1145,21 +1145,25 @@ owl_has_property_chain_O2S(O, [P|RestChain], S, DB) :-
 
 %% owl_use_has_value
 owl_use_has_value(S, P, O) :-
-	nonvar(P), !,
-	rdfs_subproperty_of(P_sub, P),
-	rdf_has(Super, owl:onProperty, P_sub),
-	rdf_has(Super, owl:hasValue, O),
-	% NOTE(DB): not possible to infer has-value restrictions of superclasses using owl_direct_subclass_of
-	owl_subclass_of(Type, Super),
-	%owl_direct_subclass_of(Type, Super),
-	rdf_has(S, rdf:type, Type).
+	ground(S), !,
+	rdfs_individual_of(S,Type), % this won't allow to find has-values of inferred types
+	%owl_individual_of(S,Type),
+	( ground(P) -> (
+	  rdf(Type, owl:onProperty, P_sub),
+	  rdf(Type, owl:hasValue, O),
+	  once(rdfs_subproperty_of(P_sub, P))) ; (
+	  rdf(Type, owl:onProperty, P),
+	  rdf(Type, owl:hasValue, O))
+	).
 owl_use_has_value(S, P, O) :-
-	rdf_has(S, rdf:type, Type),
-	owl_subclass_of(Type, Super),
-	%owl_direct_subclass_of(Type, Super),
-	rdfs_individual_of(Super, owl:'Restriction'),
-	rdf_has(Super, owl:onProperty, P),
-	rdf_has(Super, owl:hasValue, O).
+	ground(O), !,
+	rdf(Type, owl:hasValue, O),
+	( ground(P) -> (
+	  rdf(Type, owl:onProperty, P_sub),
+	  once(rdfs_subproperty_of(P_sub, P))) ;
+	  rdf_has(Type, owl:onProperty, P)
+	),
+	rdfs_individual_of(S,Type).
 
 		 /*******************************
 		 *	   DB ACCESS	*
