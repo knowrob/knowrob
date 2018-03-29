@@ -40,7 +40,7 @@
       object_assert_color/2,
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
-      object_information/6,
+      object_information/8,
       storagePlaceFor/2,
       storagePlaceForBecause/3,
       object_query/4,
@@ -273,12 +273,14 @@ object_mesh_path(Obj, FilePath) :-
   holds(Obj, knowrob:pathToCadModel, Val),
   strip_literal_type(Val, FilePath).
 
-object_information(Obj, HasVisual, Color, Mesh, [D, W, H], Pose) :-
+object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms) :-
+  rdfs_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
   (rdf_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
   (object_color(Obj,Color)),
   (object_mesh_path(Obj,Mesh);Mesh=''),
-  (object_dimensions(Obj,D,W,H);(D=0,W=0,H=0)),
-  (belief_at_id(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]), !.
+  (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
+  (belief_at_id(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
+  findall(X, object_affordance_static_transform(Obj,_,X), StaticTransforms), !.
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
