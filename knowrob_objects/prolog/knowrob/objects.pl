@@ -278,7 +278,7 @@ object_information(Obj, HasVisual, Color, Mesh, [D, W, H], Pose) :-
   (object_color(Obj,Color)),
   (object_mesh_path(Obj,Mesh);Mesh=''),
   (object_dimensions(Obj,D,W,H);(D=0,W=0,H=0)),
-  belief_at_id(Obj, Pose), !.
+  (belief_at_id(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]), !.
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
