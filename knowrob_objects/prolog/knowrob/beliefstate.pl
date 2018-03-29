@@ -202,20 +202,22 @@ belief_class_of(Obj, NewObjType) :-
 % @param Threshold   a distance below which two translations are thought to be the same
 % @param Obj         the object id
 %
-belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
-  % check for typed object
-  belief_class_at_location(ObjType, Transform, Threshold, Obj), !.
+%belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
+%  % check for typed object
+%  belief_class_at_location(ObjType, Transform, Threshold, Obj), !.
 
 belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
   % check for any type
-  belief_existing_objects(KnownObjects),
-  member(Obj,KnownObjects),
-  \+ rdfs_individual_of(Obj, ObjType),
+  rdf(Obj, _, _, belief_state),
+  %member(Obj,KnownObjects),
+  %\+ rdfs_individual_of(Obj, ObjType),
+  rdfs_individual_of(Obj, 'EnduringThing-Localized'),
   belief_object_at_location(Obj, Transform, Threshold), !.
 
-belief_class_at_location(ObjectType, Transform, Thresholds, ObjectId) :-
-  rdfs_individual_of(ObjectId, ObjectType),
-  belief_object_at_location(ObjectId, Transform, Thresholds).
+%belief_class_at_location(ObjectType, Transform, Thresholds, ObjectId) :-
+%  rdf(ObjectId, _, _, belief_state),
+%  rdfs_individual_of(ObjectId, ObjectType),
+%  belief_object_at_location(ObjectId, Transform, Thresholds).
 
 belief_object_at_location(ObjectId, NewPose, Dmax) :-
   belief_at(ObjectId, OldPose),
