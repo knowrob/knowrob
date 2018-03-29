@@ -1626,7 +1626,7 @@ See also the specialization cotemporal.</rdfs:comment>
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#HandTool"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
     </owl:ObjectProperty>
     
@@ -2936,12 +2936,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Group_of_tangible_things</rdfs:seeAlso>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#HandTool -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HandTool"/>
     
 
 
