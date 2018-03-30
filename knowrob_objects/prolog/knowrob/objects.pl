@@ -38,6 +38,7 @@
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
+      object_affordance/2,
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
       object_information/8,
@@ -82,6 +83,7 @@
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
+    object_affordance(r,r),
     object_instantiate_affordances(r),
     object_affordance_static_transform(r,r,?),
     storagePlaceFor(r,r),
@@ -287,8 +289,13 @@ object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, Stati
 % % % % % Object affordances
 
 %%
+object_affordance(Obj, Aff) :-
+  object_instantiate_affordances(Obj), % HACK
+  owl_has(Obj, knowrob:hasAffordance, Aff).
+
+%%
 object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
-  object_instantiate_affordances(Obj),
+  object_instantiate_affordances(Obj), % HACK
   object_frame_name(Obj, ObjFrame),
   owl_has(Obj, knowrob:hasAffordance, Aff),
   % TODO: StaticAffordanceTransform declares
