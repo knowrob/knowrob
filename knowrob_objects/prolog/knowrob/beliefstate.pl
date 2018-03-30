@@ -263,6 +263,7 @@ belief_part_offset(Parent, PartType, [DX,DY,DZ]) :-
   owl_property_range_on_subject(Affordance, knowrob:userOfAffordance, AllowedType),
   rdfs_subclass_of(PartType, AllowedType),
   belief_at_id(Affordance, [_,_,[DX,DY,DZ],_]), !.
+belief_part_offset(_, _, [0,0,0]).
 
 belief_perceived_part_at_axis(Parent, PartType, norm(Axis,Pos), Part) :- !,
   denormalize_part_pos(Parent, Axis, Pos, Denormalized),
@@ -272,10 +273,8 @@ belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Pos), Part) :-
   object_frame_name(Parent,ParentFrame),
   belief_part_offset(Parent, PartType, Offset),
   belief_perceived_pos(Offset, pos(Axis,Pos), PerceivedPos),
-  belief_perceived_part_at(PartType, [ParentFrame,_,
-      PerceivedPos,
-      [0.0, 0.0, 0.0, 1.0]],
-      0.02, Part, Parent).
+  belief_perceived_part_at(PartType, [ParentFrame,_,PerceivedPos,
+      [0.0, 0.0, 0.0, 1.0]], 0.02, Part, Parent).
 
 %% belief_at(+Obj:iri, ?Transform:list) is semidet.
 %% belief_at(+Obj:iri, ?Transform:list, +Instant:time) is semidet.
