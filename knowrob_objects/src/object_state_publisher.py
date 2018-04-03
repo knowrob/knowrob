@@ -56,8 +56,7 @@ class PerceivedObject(object):
         marker.id = self.marker_id
         marker.ns = self.marker_ns
         marker.color = self.color
-
-        marker.scale = Vector3(1, 1, 1)  # don't use self.scale because the meshes are already scaled.
+        marker.scale = Vector3(1, 1, 1) # don't use self.scale because the meshes are already scaled.
         marker.frame_locked = True
         marker.pose.position = Point(*self.transform[-2])
         marker.pose.orientation = Quaternion(*self.transform[-1])
@@ -167,8 +166,9 @@ class ObjectStatePublisher(object):
         for x in solutions:
             object_id = str(x['Obj']).replace('\'', '')
             obj = self.objects[object_id]
+            obj.update_transform(*x['Pose'])
+            obj.visualize = (str(x['HasVisual']) == "'true'")
             obj.marker_ns = (str(x['Type']).replace('\'', ''))
-            obj.visualize = (str(x['HasVisual'])=="'true'")
             obj.update_transform(*x['Pose'])
             for static_transform in x['StaticTransforms']:
                 obj.set_static_transform(*static_transform)
