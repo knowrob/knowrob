@@ -248,14 +248,21 @@ belief_perceived_pos([DX,DY,DZ], pos(z,P), [DX,Y,DZ]) :- Y is DY+P, !.
 belief_perceived_pos([DX,DY,DZ], pos(y,P), [DX,DY,Z]) :- Z is DZ+P, !.
 
 denormalize_part_pos(Obj, x, In, Out) :-
-  object_dimensions(Obj,_,V,_),
-  Out is V*In - 0.5*V.
+  object_dimensions(Obj,_,V,_), Out is V*In.
 denormalize_part_pos(Obj, y, In, Out) :-
-  object_dimensions(Obj,_,_,V),
-  Out is V*In - 0.5*V.
+  object_dimensions(Obj,_,_,V), Out is V*In.
 denormalize_part_pos(Obj, z, In, Out) :-
+  object_dimensions(Obj,V,_,_), Out is V*In.
+
+center_part_pos(Obj, x, In, Out) :-
+  object_dimensions(Obj,_,V,_),
+  Out is In - 0.5*V.
+center_part_pos(Obj, y, In, Out) :-
+  object_dimensions(Obj,_,_,V),
+  Out is In - 0.5*V.
+center_part_pos(Obj, z, In, Out) :-
   object_dimensions(Obj,V,_,_),
-  Out is V*In - 0.5*V.
+  Out is In - 0.5*V.
 
 belief_part_offset(Parent, PartType, [DX,DY,DZ]) :-
   object_affordance(Parent,Affordance),
@@ -270,9 +277,10 @@ belief_perceived_part_at_axis(Parent, PartType, norm(Axis,Pos), Part) :- !,
   belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Denormalized), Part).
 
 belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Pos), Part) :-
+  center_part_pos(Parent, Axis, Pos, Centered),
   object_frame_name(Parent,ParentFrame),
   belief_part_offset(Parent, PartType, Offset),
-  belief_perceived_pos(Offset, pos(Axis,Pos), PerceivedPos),
+  belief_perceived_pos(Offset, pos(Axis,Centered), PerceivedPos),
   belief_perceived_part_at(PartType, [ParentFrame,_,PerceivedPos,
       [0.0, 0.0, 0.0, 1.0]], 0.02, Part, Parent).
 
