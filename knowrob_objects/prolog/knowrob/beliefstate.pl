@@ -47,6 +47,7 @@
       belief_at_internal/3,
       belief_perceived_at/4,        % convinience rule to be called by perception system to inform about perceptions
       belief_perceived_part_at/5,
+      belief_perceived_part_at_axis/4,
       belief_republish_objects/1,   % causes marker messages to be generated
       belief_forget/0
     ]).
@@ -87,6 +88,7 @@
     belief_at_relative_to(r,r,-),
     belief_perceived_at(r,+,+,r),
     belief_perceived_part_at(r,+,+,r,r),
+    belief_perceived_part_at_axis(r,r,+,r),
     belief_republish_objects(t).
 
 % TODO
@@ -240,6 +242,39 @@ belief_perceived_part_at(PartType, Transform, _, Part, Parent) :-
   belief_new_part(PartType, Part, Parent),
   % TODO enforce transform in parent frame
   belief_at_update(Part, Transform).
+
+belief_perceived_pos([DX,DY,DZ], pos(x,P), [X,DY,DZ]) :- X is DX+P, !.
+belief_perceived_pos([DX,DY,DZ], pos(z,P), [DX,Y,DZ]) :- Y is DY+P, !.
+belief_perceived_pos([DX,DY,DZ], pos(y,P), [DX,DY,Z]) :- Z is DZ+P, !.
+
+denormalize_part_pos(Obj, x, In, Out) :-
+  object_dimensions(Obj,_,V,_),
+  Out is V*In - 0.5*V.
+denormalize_part_pos(Obj, y, In, Out) :-
+  object_dimensions(Obj,_,_,V),
+  Out is V*In - 0.5*V.
+denormalize_part_pos(Obj, z, In, Out) :-
+  object_dimensions(Obj,V,_,_),
+  Out is V*In - 0.5*V.
+
+belief_part_offset(Parent, PartType, [DX,DY,DZ]) :-
+  object_affordance(Parent,Affordance),
+  rdfs_individual_of(Affordance, knowrob:'PartOffsetAffordance'),
+  owl_property_range_on_subject(Affordance, knowrob:userOfAffordance, AllowedType),
+  rdfs_subclass_of(PartType, AllowedType),
+  belief_at_id(Affordance, [_,_,[DX,DY,DZ],_]), !.
+belief_part_offset(_, _, [0,0,0]).
+
+belief_perceived_part_at_axis(Parent, PartType, norm(Axis,Pos), Part) :- !,
+  denormalize_part_pos(Parent, Axis, Pos, Denormalized),
+  belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Denormalized), Part).
+
+belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Pos), Part) :-
+  object_frame_name(Parent,ParentFrame),
+  belief_part_offset(Parent, PartType, Offset),
+  belief_perceived_pos(Offset, pos(Axis,Pos), PerceivedPos),
+  belief_perceived_part_at(PartType, [ParentFrame,_,PerceivedPos,
+      [0.0, 0.0, 0.0, 1.0]], 0.02, Part, Parent).
 
 %% belief_at(+Obj:iri, ?Transform:list) is semidet.
 %% belief_at(+Obj:iri, ?Transform:list, +Instant:time) is semidet.

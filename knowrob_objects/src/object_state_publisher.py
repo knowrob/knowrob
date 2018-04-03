@@ -3,7 +3,7 @@
 import rospy
 from collections import defaultdict
 
-from geometry_msgs.msg import Vector3, Transform, TransformStamped
+from geometry_msgs.msg import Vector3, TransformStamped
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
 from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
@@ -11,24 +11,25 @@ from multiprocessing import Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
 from tf2_msgs.msg import TFMessage
-from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 from visualization_msgs.msg import MarkerArray
 from visualization_msgs.msg._Marker import Marker
 from json_prolog import json_prolog
-
+from random import random
 
 class PerceivedObject(object):
     def __init__(self):
         self.transform = None
         self.mesh_path = ''
+        self.object_name = ''
+        self.ref_frame = ''
         self.color = ColorRGBA(0, 0, 0, 1)
         self.initialized = False
         self.visualize = False
         self.scale = Vector3(0.05, 0.05, 0.05)
         self.static_transforms = dict()
-
-    def are_static_transforms_loaded(self):
-        return len(self.static_transforms) > 0
+        self.static_transforms_loaded = False
+        self.marker_id = int(random()*1000000000)
+        self.marker_ns = 'belief_state'
 
     def update_color(self, r, g, b, a):
         self.color = ColorRGBA()
@@ -52,8 +53,8 @@ class PerceivedObject(object):
         marker = Marker()
         marker.header.frame_id = self.ref_frame
         marker.action = Marker.ADD
-        marker.id = 1337
-        marker.ns = self.object_name
+        marker.id = self.marker_id
+        marker.ns = self.marker_ns
         marker.color = self.color
 
         marker.scale = Vector3(1, 1, 1)  # don't use self.scale because the meshes are already scaled.
@@ -72,9 +73,16 @@ class PerceivedObject(object):
     def get_del_marker(self):
         marker = Marker()
         marker.action = Marker.DELETE
-        marker.id = 1337
-        marker.ns = self.object_name
+        marker.id = self.marker_id
+        marker.ns = self.marker_ns
         return marker
+
+    def __repr__(self):
+        return 'obj('+str(self.visualize)+','+\
+                      str(self.object_name)+','+\
+                      str(self.mesh_path)+','+\
+                      str([self.scale.x,self.scale.y,self.scale.z])+','+\
+                      str([self.color.r,self.color.g,self.color.b,self.color.a])+')'
 
 
 class ObjectStatePublisher(object):
@@ -139,7 +147,7 @@ class ObjectStatePublisher(object):
         if object_ids is None:
             object_ids = self.get_object_ids()
         self.remove_old_markers()
-        self.load_objects_information(object_ids)
+        self.load_object_information(object_ids)
         self.publish_object_frames()
         self.publish_object_markers()
         self.publish_static_transforms()
@@ -152,24 +160,25 @@ class ObjectStatePublisher(object):
         rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in object_ids]))
         return object_ids
 
-    def load_objects_information(self, object_ids):
-        q = "member(Obj,['" + "','".join(object_ids) + "'])," \
-            "object_information(Obj,HasVisual,Color,Mesh,[D,W,H],Pose)," \
-            "object_affordance_static_transform(Obj,_,Static)"
+    def load_object_information(self, object_ids):
+        q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)"
         solutions = self.prolog_query(q, verbose=False)
+        # TODO: would be nice to use the INCREMENTAL mode of json_prolog here
         for x in solutions:
             object_id = str(x['Obj']).replace('\'', '')
             obj = self.objects[object_id]
+            obj.marker_ns = (str(x['Type']).replace('\'', ''))
+            obj.visualize = (str(x['HasVisual'])=="'true'")
             obj.update_transform(*x['Pose'])
-            obj.set_static_transform(*x['Static'])
-            obj.visualize = (str(x['HasVisual']) == "'true'")
+            for static_transform in x['StaticTransforms']:
+                obj.set_static_transform(*static_transform)
             if obj.visualize:
                 obj.update_color(*x['Color'])
                 obj.mesh_path = str(x['Mesh'])
                 obj.update_dimensions(depth=x['D'], width=x['W'], height=x['H'])
             obj.initialized = True
             obj.object_name = object_id
-        rospy.logdebug('Updated object ids: {}'.format(object_ids))
+            rospy.logdebug('Updated object: {}'.format(str(obj)))
 
     def publish_object_markers(self):
         ma = MarkerArray()
@@ -197,8 +206,8 @@ class ObjectStatePublisher(object):
         # we have to publish all tf static msg in one msg otherwise shit doesn't work for some reason
         tf_msgs = []
         stamp = rospy.get_rostime()
-        for object in self.objects.values():
-            for [ref_frame, object_frame, translation, rotation] in object.static_transforms.values():
+        for obj in self.objects.values():
+            for [ref_frame, object_frame, translation, rotation] in obj.static_transforms.values():
                 msg = TransformStamped()
                 msg.header.stamp = stamp
                 msg.header.frame_id = ref_frame
@@ -206,7 +215,8 @@ class ObjectStatePublisher(object):
                 msg.transform.translation = Vector3(*translation)
                 msg.transform.rotation = Quaternion(*rotation)
                 tf_msgs.append(msg)
-        self.tf_static.publish(TFMessage(tf_msgs))
+        if len(tf_msgs)>0:
+            self.tf_static.publish(TFMessage(tf_msgs))
 
     def loop(self):
         self.load_objects()

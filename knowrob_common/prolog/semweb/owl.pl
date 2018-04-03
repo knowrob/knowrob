@@ -638,6 +638,12 @@ owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:someValuesFrom, Class), !,
 	once(( owl_has(Resource, Property, Value, DB),
 	       owl_individual_of(Value, Class, DB) )).
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
+	rdf_has(Restriction, owl:hasSelf, literal(type(xsd:boolean,true))), !,
+	owl_has(Resource, Property, Resource, DB), !.
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
+	rdf_has(Restriction, owl:hasSelf, literal(type(xsd:boolean,false))), !,
+	\+ owl_has(Resource, Property, Resource, DB).
 owl_satisfies_restriction_internal(Resource, _, _, _) :-
 	rdf_subject(Resource).
 
@@ -954,7 +960,7 @@ owl_individual_of_description(Resource, Description, DB) :-
 	->  rdfs_member(Sub, Set),
 	    owl_individual_of(Resource, Sub, DB)
 	;   rdf_has(Description, owl:intersectionOf, Set)
-	->  intersection_of(Set, Resource)
+	->  intersection_of(Set, Resource, DB)
 	;   rdf_has(Description, owl:complementOf, Arg)
 	->  rdf_subject(Resource),
 	    \+ owl_individual_of(Resource, Arg, DB)
@@ -981,14 +987,14 @@ owl_individual_from_range(Resource, Class) :-
 	rdf_has(P, rdfs:range, Class),
 	rdf_has(_, P, Resource).	% owl_has?
 
-intersection_of(List, Resource) :-
+intersection_of(List, Resource, DB) :-
 	rdf_has(List, rdf:first, First),
-	owl_individual_of(Resource, First),
+	owl_individual_of(Resource, First, DB),
 	(   rdf_has(List, rdf:rest, Rest)
-	->  intersection_of(Rest, Resource)
+	->  intersection_of(Rest, Resource, DB)
 	;   true
 	).
-intersection_of(Nil, _) :-
+intersection_of(Nil, _, _) :-
 	rdf_equal(rdf:nil, Nil).
 
 		 /*******************************
