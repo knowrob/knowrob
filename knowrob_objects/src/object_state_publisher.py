@@ -56,7 +56,6 @@ class PerceivedObject(object):
         marker.action = Marker.ADD
         marker.id = self.marker_id
         marker.ns = self.marker_ns
-        marker.color = self.color
 
         marker.scale = Vector3(1, 1, 1) # don't use self.scale because the meshes are already scaled.
         marker.frame_locked = True
@@ -65,8 +64,9 @@ class PerceivedObject(object):
         if self.mesh_path != '' and self.mesh_path != "''":
             marker.type = marker.MESH_RESOURCE
             marker.mesh_resource = self.mesh_path.replace('\'', '')
+            marker.mesh_use_embedded_materials = True
         else:
-            # rospy.logdebug('{} has no mesh'.format(self.object_name))
+            marker.color = self.color
             marker.type = Marker.CUBE
             marker.scale = self.scale
         return marker
