@@ -277,7 +277,7 @@ object_mesh_path(Obj, FilePath) :-
 
 object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms) :-
   rdfs_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
-  (rdf_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
+  (owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
   (object_color(Obj,Color)),
   (object_mesh_path(Obj,Mesh);Mesh=''),
   (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
