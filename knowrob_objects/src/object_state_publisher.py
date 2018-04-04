@@ -3,7 +3,7 @@
 import rospy
 from collections import defaultdict
 
-from geometry_msgs.msg import Vector3, TransformStamped
+from geometry_msgs.msg import Vector3, Transform, TransformStamped
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
 from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
@@ -11,6 +11,7 @@ from multiprocessing import Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
 from tf2_msgs.msg import TFMessage
+from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 from visualization_msgs.msg import MarkerArray
 from visualization_msgs.msg._Marker import Marker
 from json_prolog import json_prolog
@@ -56,6 +57,7 @@ class PerceivedObject(object):
         marker.id = self.marker_id
         marker.ns = self.marker_ns
         marker.color = self.color
+
         marker.scale = Vector3(1, 1, 1) # don't use self.scale because the meshes are already scaled.
         marker.frame_locked = True
         marker.pose.position = Point(*self.transform[-2])
@@ -135,29 +137,30 @@ class ObjectStatePublisher(object):
         query.finish()
         return solutions
 
-    def remove_old_markers(self):
-        new_object_ids = self.get_object_ids()
-        for object_id_old in self.objects.keys():
-            if object_id_old not in new_object_ids:
-                self.marker_publisher.publish(self.objects[object_id_old].get_del_marker())
-                self.objects.pop(object_id_old)
-
     def load_objects(self, object_ids=None):
+        self.load_object_ids()
         if object_ids is None:
-            object_ids = self.get_object_ids()
-        self.remove_old_markers()
+            object_ids = self.objects.keys()
         self.load_object_information(object_ids)
+        # TODO: do we need to do this here? loop() is doing it anyway...
         self.publish_object_frames()
         self.publish_object_markers()
+        # TODO: I guess these don't need to be republished once published?
         self.publish_static_transforms()
 
-    def get_object_ids(self):
-        q = 'belief_existing_objects(A,[' + ','.join(self.object_types) + '])'
-        rospy.logdebug('belief_existing_objects: {}'.format(str(q)))
+    def load_object_ids(self):
+        # TODO: replace with service calls telling the publisher that objects were created/destroyed.
+        #       then this lookup has only to be done once initially
+        q = 'belief_existing_objects(A,['+','.join(self.object_types)+'])'
         solutions = self.prolog_query(q)
-        object_ids = set(solutions[0]['A'])
-        rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in object_ids]))
-        return object_ids
+        for object_id in solutions[0]['A']:
+            if object_id not in self.objects.keys():
+                self.objects[object_id] = PerceivedObject()
+        for object_id in self.objects.keys():
+            if object_id not in solutions[0]['A']:
+                self.marker_publisher.publish(self.objects[object_id].get_del_marker())
+                self.objects.pop(object_id)
+        rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
 
     def load_object_information(self, object_ids):
         q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)"
@@ -166,16 +169,15 @@ class ObjectStatePublisher(object):
         for x in solutions:
             object_id = str(x['Obj']).replace('\'', '')
             obj = self.objects[object_id]
-            obj.update_transform(*x['Pose'])
-            obj.visualize = (str(x['HasVisual']) == "'true'")
             obj.marker_ns = (str(x['Type']).replace('\'', ''))
+            obj.visualize = (str(x['HasVisual'])=="'true'")
             obj.update_transform(*x['Pose'])
             for static_transform in x['StaticTransforms']:
                 obj.set_static_transform(*static_transform)
             if obj.visualize:
                 obj.update_color(*x['Color'])
                 obj.mesh_path = str(x['Mesh'])
-                obj.update_dimensions(depth=x['D'], width=x['W'], height=x['H'])
+                obj.update_dimensions(depth=x['D'],width=x['W'],height=x['H'])
             obj.initialized = True
             obj.object_name = object_id
             rospy.logdebug('Updated object: {}'.format(str(obj)))
