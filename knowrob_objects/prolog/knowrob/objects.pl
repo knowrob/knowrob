@@ -41,6 +41,7 @@
       object_affordance/2,
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
+      object_perception_affordance_frame_name/2,
       object_information/8,
       storagePlaceFor/2,
       storagePlaceForBecause/3,
@@ -287,6 +288,13 @@ object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, Stati
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Object affordances
+
+%%
+object_perception_affordance_frame_name(Obj, AffFrameName) :-
+  object_instantiate_affordances(Obj), % HACK
+  owl_has(Obj, knowrob:hasAffordance, Aff),
+  rdfs_individual_of(Aff, knowrob:'PerceptionAffordance'),
+  object_frame_name(Aff, AffFrameName), !.
 
 %%
 object_affordance(Obj, Aff) :-
