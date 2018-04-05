@@ -220,6 +220,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/actions.owl#SemanticMapping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#SemanticMapping">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#AcquireGraspOfSomething -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AcquireGraspOfSomething">
