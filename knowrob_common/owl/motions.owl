@@ -289,6 +289,12 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob_common.owl#MobileBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob_common.owl#Smiling -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Smiling">
@@ -321,6 +327,20 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
                 <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#BaseMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#BaseMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VoluntaryBodyMovement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
