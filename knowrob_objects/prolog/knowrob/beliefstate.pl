@@ -344,9 +344,14 @@ belief_at_relative_to(Child, Parent, RelPose) :-
   current_time(Instant),
   belief_at_relative_to(Child, Parent, RelPose, Instant).
 
+belief_at_relative_to(Child, Parent, [ParentFrame, TargetFrame, Translation, Rotation], Instant) :-
+  object_frame_name(Parent, ParentFrame),
+  belief_at_id(Child, [ParentFrame, TargetFrame, Translation, Rotation], Instant), !.
+
 belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Child,  ChildGlobal, Instant),
   belief_at_global(Parent, ParentGlobal, Instant),
+  % FIXME: is there a bug in here?
   transform_between(ParentGlobal, ChildGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet.

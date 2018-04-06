@@ -353,8 +353,8 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
   rdf_assert(Pose, rdf:type, knowrob:'Pose'),
-  rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
-  rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))),
+  rdf_assert(Pose, knowrob:'translation', literal(type(xsd:string,Translation))),
+  rdf_assert(Pose, knowrob:'quaternion', literal(type(xsd:string,Quaternion))),
   rdf_assert(Pose, knowrob:'relativeTo', Frame).
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot)], Pose) :- !,
