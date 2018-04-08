@@ -73,7 +73,8 @@
 	    owl_find/5,			% +For, +Dom, ?Props, +Method, -Subj
 	    non_negative_integer/4,
 	    non_negative_int/2,
-	    rdf_assert_literal/3
+	    rdf_assert_literal/3,
+	    owl_property_range_clear_cache/2
 	  ]).
 :- use_module(library(lists)).
 :- use_module(library('semweb/rdf_db')).
@@ -254,28 +255,33 @@ restriction_facet(R, cardinality(Min, Max, Class)) :-
 owl_restriction_assert(restriction(P,all_values_from(Cls)), Id) :-
 	owl_description_assert(Cls, ClsId),
 	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
+	rdf_assert(Id, rdf:type, owl:'Restriction'),
 	rdf_assert(Id, owl:onProperty, P),
 	rdf_assert(Id, owl:allValuesFrom, ClsId), !.
 owl_restriction_assert(restriction(P,some_values_from(Cls)), Id) :-
 	owl_description_assert(Cls, ClsId),
 	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
+	rdf_assert(Id, rdf:type, owl:'Restriction'),
 	rdf_assert(Id, owl:onProperty, P),
 	rdf_assert(Id, owl:someValuesFrom, ClsId), !.
 owl_restriction_assert(restriction(P,cardinality(Card,Card,Cls)), Id) :- !,
 	owl_description_assert(Cls, ClsId),
 	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
+	rdf_assert(Id, rdf:type, owl:'Restriction'),
 	rdf_assert(Id, owl:onProperty, P),
 	rdf_assert(Id, owl:onClass, ClsId),
 	rdf_assert_literal(Id, owl:cardinality, Card), !.
 owl_restriction_assert(restriction(P,cardinality(Min,Max,Cls)), Id) :-
 	owl_description_assert(Cls, ClsId),
 	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
+	rdf_assert(Id, rdf:type, owl:'Restriction'),
 	rdf_assert(Id, owl:onProperty, P),
 	rdf_assert(Id, owl:onClass, ClsId),
 	once(( Min is 0 ;  rdf_assert_literal(Id, owl:minCardinality, Min) )),
 	once(( Max = inf ; rdf_assert_literal(Id, owl:maxCardinality, Max) )), !.
 owl_restriction_assert(restriction(P,has_value(V)), Id) :-
 	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
+	rdf_assert(Id, rdf:type, owl:'Restriction'),
 	rdf_assert(Id, owl:onProperty, P),
 	rdf_assert(Id, owl:hasValue, V), !.
 
@@ -427,6 +433,9 @@ owl_property_range_on_class_(Class, Predicate, Range) :-
 	), Ranges),
 	( range_on_cardinality_(Class, Predicate, Ranges, Range) *->
 		true ; Range='http://www.w3.org/2002/07/owl#Thing' ).
+
+owl_property_range_clear_cache(Class, Predicate) :-
+	retractall(owl_property_range_cached(Class,Predicate,_)).
 
 range_on_cardinality_(Class, Predicate, Ranges, Range) :-
 	owl_most_specific(Ranges, R_specific),
