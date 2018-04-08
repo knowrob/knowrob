@@ -205,12 +205,13 @@ belief_class_of(Obj, NewObjType) :-
 % @param Obj         the object id
 %
 belief_existing_object_at(_, Transform, Threshold, Obj) :-
-  rdf(Obj, _, _, belief_state),
-  rdfs_individual_of(Obj, 'EnduringThing-Localized'),
+  % FIXME: super slow for large belief state
+  rdf(Obj, rdf:type, owl:'NamedIndividual', belief_state),
+  rdfs_individual_of(Obj, knowrob:'EnduringThing-Localized'),
   belief_object_at_location(Obj, Transform, Threshold), !.
 
 belief_object_at_location(ObjectId, NewPose, Dmax) :-
-  belief_at(ObjectId, OldPose),
+  belief_at_id(ObjectId, OldPose),
   transform_close_to(NewPose, OldPose, Dmax).
 
 %% belief_perceived_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is det.
