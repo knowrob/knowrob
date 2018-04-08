@@ -17,7 +17,7 @@ class PrologQuery(object):
     def __init__(self, query_str):
         self.query_id = self._makeQueryId()
         self.finished = False
-        result = _simple_query_srv(id=self.query_id, query=query_str)
+        result = _simple_query_srv(id=self.query_id, query=query_str, mode=1)
         if not result.ok:
             raise PrologException('Prolog query failed: %s' % result.message)
 
