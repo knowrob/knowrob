@@ -311,8 +311,8 @@ marker_initialize_object(Identifier,MarkerObject) :-
   )),
   ignore((
     %not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
+    object_dimensions(Identifier, Depth, Width, Height),
+    marker_scale(MarkerObject, [Width, Depth, Height])
   )),
   ignore((
     object_mesh_path(Identifier, Path),
