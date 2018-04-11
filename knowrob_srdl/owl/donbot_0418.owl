@@ -1737,6 +1737,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>laser_reference_back</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">laser_reference_back</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -1747,6 +1748,7 @@
         <srdl2-comp:urdfName>odom</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">odom</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_donbot_odom_x_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -1757,6 +1759,7 @@
         <srdl2-comp:urdfName>odom_x_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">odom_x_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_donbot_odom_y_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -1767,6 +1770,7 @@
         <srdl2-comp:urdfName>odom_y_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">odom_y_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_donbot_odom_z_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
