@@ -380,7 +380,7 @@ temporal_part_during(Obj,TemporalPart,TemporalExtend) :-
 create_temporal_part(S, P, TemporalPart) :-
   create_temporal_part(S, P, TemporalPart, user).
 create_temporal_part(S, P, TemporalPart, Graph) :-
-  rdf_instance_from_class(knowrob:'TemporalPart', TemporalPart),
+  rdf_instance_from_class(knowrob:'TemporalPart', Graph, TemporalPart),
   rdf_assert(S, knowrob:'temporalParts', TemporalPart, Graph),
   rdf_assert(TemporalPart, knowrob:'temporalProperty', P, Graph).
 
