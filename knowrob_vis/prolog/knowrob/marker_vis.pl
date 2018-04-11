@@ -120,10 +120,10 @@ marker_has_visual(Identifier) :-
 marker_children(Parent, Children) :-
   findall(Child, (
     (
-      owl_has(Child, knowrob:describedInMap, Parent);
-      owl_has(Parent, knowrob:'parts', Child);
-      owl_has(Parent, srdl2comp:'subComponent', Child);
-      owl_has(Parent, srdl2comp:'successorInKinematicChain', Child)
+      rdf_has(Child, knowrob:describedInMap, Parent);
+      rdf_has(Parent, knowrob:'parts', Child);
+      rdf_has(Parent, srdl2comp:'subComponent', Child);
+      rdf_has(Parent, srdl2comp:'successorInKinematicChain', Child)
     ),
     not(Child = Parent)
   ), ChildrenList),
