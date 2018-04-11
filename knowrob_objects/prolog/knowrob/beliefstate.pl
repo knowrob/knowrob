@@ -442,7 +442,6 @@ belief_at_internal(Obj, TransformData) :-
 
 belief_at_internal_(Obj, RelativeTo, (Translation, Rotation), TransformId) :-
   belief_new_pose((Translation, Rotation), TransformId, RelativeTo),
-  owl_instance_from_class(knowrob:'Pose', [pose=(RelativeTo,Translation,Rotation)], TransformId),
   current_time(Now),
   ( rdf_has(Obj, knowrob:pose, OldPose) ->
     assert_temporal_part_end(Obj, knowrob:pose, OldPose, Now, belief_state) ;
@@ -451,17 +450,19 @@ belief_at_internal_(Obj, RelativeTo, (Translation, Rotation), TransformId) :-
   assert_temporal_part(Obj, knowrob:pose,
     nontemporal(TransformId), Now, belief_state).
 
-belief_new_pose((Translation, Rotation), TransformId, RelativeTo) :-
-  belief_new_pose((Translation, Rotation), TransformId),
-  rdf_assert(Pose, knowrob:'relativeTo', Frame, belief_state).
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId, 'http://knowrob.org/kb/knowrob.owl#MapFrame') :- !,
+  belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId).
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId, Frame) :-
+  belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId),
+  rdf_assert(TransformId, knowrob:'relativeTo', Frame, belief_state).
 
-belief_new_pose((Translation, Rotation), TransformId) :-
-  rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', Pose),
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId) :-
+  rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', TransformId),
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
-  rdf_assert(Pose, rdf:type, knowrob:'Pose', belief_state),
-  rdf_assert(Pose, knowrob:'translation', literal(type(xsd:string,Translation)), belief_state),
-  rdf_assert(Pose, knowrob:'quaternion', literal(type(xsd:string,Quaternion)), belief_state)
+  rdf_assert(TransformId, rdf:type, knowrob:'Pose', belief_state),
+  rdf_assert(TransformId, knowrob:'translation', literal(type(xsd:string,Translation)), belief_state),
+  rdf_assert(TransformId, knowrob:'quaternion', literal(type(xsd:string,Quaternion)), belief_state).
   
 
 %% belief_republish_objects(+ObjectIds) is det
