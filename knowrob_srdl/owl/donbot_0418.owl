@@ -1805,7 +1805,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_base_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/base.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">4.0</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00443333156</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1824,7 +1823,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_shoulder_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/shoulder.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.7</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.010267495893</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1842,7 +1840,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_upper_arm_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/upperarm.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">8.393</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.22689067591</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1860,7 +1857,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_forearm_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/forearm.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.275</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.049443313556</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1878,7 +1874,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_wrist_1_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/wrist1.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">1.219</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.111172755531</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1896,7 +1891,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_wrist_2_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/wrist2.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">1.219</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.111172755531</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -1914,7 +1908,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>ur5_wrist_3_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://ur_description/meshes/ur5/visual/wrist3.dae</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.1879</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0171364731454</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>

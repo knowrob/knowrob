@@ -327,6 +327,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
       marker_scale(MarkerObject, ScaleVec)
     ) ; true )
   )),
+  % FIXME: this is evil, will override mesh internal colors
   ignore(once((
     holds(Identifier, knowrob:mainColorOfObject, Color_rdf),
     rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Color),
