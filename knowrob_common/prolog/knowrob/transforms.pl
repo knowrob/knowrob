@@ -166,8 +166,8 @@ matrix_prolog(RDF, [M00, M01, M02, M03,
 % @param Transform A transform term [A,B,Pos,Rot]
 % @param Inverted A transform term [B,A,Pos',Rot']
 %
-transform_invert([X,Y,[TX,TY,TZ],Q],
-                 [Y,X,T_inv,Q_inv]) :-
+transform_invert([A,B,[TX,TY,TZ],Q],
+                 [B,A,T_inv,Q_inv]) :-
   quaternion_inverse(Q,Q_inv),
   X is -TX, Y is -TY, Z is -TZ,
   quaternion_transform(Q_inv,[X,Y,Z],T_inv).
