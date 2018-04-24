@@ -252,6 +252,7 @@ entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#EnduringThing-Loc
 entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#SpaceRegion').
 entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
 entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
+entity_type([a,thing],      'http://www.w3.org/2002/07/owl#Thing').
 
 entity_type(Entity, TypeBase, Entity) :-
   atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.

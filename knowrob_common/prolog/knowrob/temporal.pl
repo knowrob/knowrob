@@ -65,7 +65,8 @@
       interval_starts/2,
       interval_finishes/2,
       interval_overlaps/2,
-      interval_during/2
+      interval_during/2,
+      owl_temporal_db/2
     ]).
 /** <module> Predicates for temporal reasoning in KnowRob
 

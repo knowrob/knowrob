@@ -90,6 +90,11 @@ public class DataVisObject {
 		queueRepublish();
 	}
 	
+	public void setType(int type) {
+		dataVisMsg.setType(type);
+		queueRepublish();
+	}
+	
 	public void setData(String[][][] values, String[] labels) {
 		if(labels!=null && labels.length != values.length) {
 			System.err.println("ERROR: Number of labels and data rows differs.");

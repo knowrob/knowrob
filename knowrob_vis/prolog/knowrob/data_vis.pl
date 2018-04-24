@@ -45,6 +45,7 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
+:- use_module(library('knowrob/utility/jpl')).
 :- use_module(library('jpl')).
 
 %% data_vis(+Term:term, +Properties:list) is det
@@ -60,7 +61,7 @@
 % @param Properties list of data_vis properties
 %
 data_vis(Term, Properties) :-
-  data_vis_object(Term, Object),
+  data_vis_object(Term, Object), !,
   data_vis_set_properties(Object, Properties),
   data_vis_publish.
 
@@ -72,13 +73,30 @@ data_vis(Term, Properties) :-
 % @param Events list of temporal extended things
 %
 timeline(Events) :-
+  findall(EvtName, (
+    member(Evt,Events),
+    once((
+      rdfs_type_of(Evt,EvtType),
+      rdf_split_url(_,EvtName,EvtType))),
+      occurs(Evt, [_,_])
+  ), EvtNames),
   findall(Time, (
-     member(Evt, Events),
-     interval(Evt, Interval),
-     atomic_list_concat(Interval, '_', Time)
+    member(Evt, Events),
+    once((
+      occurs(Evt, [T0,T1]),
+      atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
+  %findall(_Y-(_T0-_T1), (
+    %rdfs_individual_of(_X, knowrob:'Action'),
+    %rdfs_type_of(_X, _T),
+    %rdf_split_url(_,_Y,_T),
+    %occurs(_X,[_T0,_T1])
+  %), _Actions),
+  %pairs_keys_values(_Actions, ClassNames, _Times),
+  %pairs_keys_values(_Times, StartTimes, EndTimes),
+  %add_timeline('actions', 'Logged Actions', ClassNames, StartTimes, EndTimes)
   data_vis(timeline(event_timeline),
-           data([[Events,EventExtends]])).
+          [data:[[EvtNames,EventExtends]]]).
 
 
 %% data_vis_remove(+Identifier) is det.
@@ -106,7 +124,8 @@ data_vis_object(timeline(Identifier), Object) :-
   data_vis_set_type(Object, 3),
   data_vis_set_property(Object, xlabel:'Time'),
   data_vis_set_property(Object, ylabel:'Events'),
-  data_vis_set_property(Object, fontsize:'12px').
+  data_vis_set_property(Object, fontsize:'12px'),
+  jpl_call(Object, setTitle, ['Logged Actions'], _).
 data_vis_object(linechart(Identifier), Object) :-
   data_vis_new_object(Identifier, Object),
   data_vis_set_type(Object, 4).
@@ -130,9 +149,9 @@ data_vis_set_property(DataVisObject, data:Data) :-
 data_vis_set_property(DataVisObject, title:Title) :-
   jpl_call(DataVisObject, setTitle, [Title], _), !.
 data_vis_set_property(DataVisObject, xlabel:Label) :-
-  jpl_call(DataVisObject, setXLabel, [Label], _), !.
+  jpl_call(DataVisObject, setXlabel, [Label], _), !.
 data_vis_set_property(DataVisObject, ylabel:Label) :-
-  jpl_call(DataVisObject, setYLabel, [Label], _), !.
+  jpl_call(DataVisObject, setYlabel, [Label], _), !.
 data_vis_set_property(DataVisObject, width:Label) :-
   jpl_call(DataVisObject, setWidth, [Label], _), !.
 data_vis_set_property(DataVisObject, height:Label) :-
@@ -144,7 +163,7 @@ data_vis_set_property(_, _).
 %% data_vis_set_properties
 data_vis_set_properties(_, []) :- !.
 data_vis_set_properties(DataVisObject, [Prop|Rest]) :-
-  data_vis_set_property(DataVisObject, Prop),
+  data_vis_set_property(DataVisObject, Prop), !,
   data_vis_set_properties(DataVisObject, Rest).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
