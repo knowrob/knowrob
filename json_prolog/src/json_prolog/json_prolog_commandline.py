@@ -59,7 +59,6 @@ def read_single_keypress():
 
 class PQ(object):
     def __init__(self):
-        rospy.wait_for_service('/json_prolog/query')
         self.prolog = Prolog()
         self.predicates = []
         self.load_namespace()
@@ -84,13 +83,10 @@ class PQ(object):
 
     def finish_prolog_query(self):
         self.query.finish()
+        # reload packages if a new one has been registered
         if self.q.startswith('register_ros_package'):
             self.load_namespace()
             self.load_all_predicates()
-
-    def next_solution(self):
-        for solution in self.query.solutions():
-            yield solution
 
     def print_solution(self, solution):
         if solution == dict():
@@ -110,7 +106,7 @@ class PQ(object):
                     try:
                         pq.start_prolog_query(cmd)
                         print_false = True
-                        for solution in self.next_solution():
+                        for solution in self.query.solutions():
                             if not print_false:
                                 print(' ;')
                                 print('')
