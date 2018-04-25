@@ -28,6 +28,12 @@ class PrologQuery(object):
         if not result.ok:
             raise PrologException('Prolog query failed: {}'.format(result.message))
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.finish()
+
     def solutions(self):
         try:
             while not self._finished:
