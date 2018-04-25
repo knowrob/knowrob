@@ -50,10 +50,12 @@ class PrologQuery(object):
 
     def finish(self):
         if not self._finished:
-            self._finish_query_srv(id=self._query_id)
-            global json_prolog_lock
-            json_prolog_lock.release()
-            self._finished = True
+            try:
+                self._finish_query_srv(id=self._query_id)
+            finally:
+                global json_prolog_lock
+                json_prolog_lock.release()
+                self._finished = True
 
     def _makeQueryId(self):
         return 'PYTHON_QUERY_{}'.format(rospy.Time.now().to_nsec())
