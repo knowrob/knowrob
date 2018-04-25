@@ -49,7 +49,9 @@
       belief_perceived_part_at/5,
       belief_perceived_part_at_axis/4,
       belief_republish_objects/1,   % causes marker messages to be generated
-      belief_forget/0
+      belief_forget/0,
+      belief_new_pose/3,
+      belief_new_pose/2
     ]).
 /** <module> Maintaining symbolic beliefs about perceived objects.
   
@@ -205,12 +207,13 @@ belief_class_of(Obj, NewObjType) :-
 % @param Obj         the object id
 %
 belief_existing_object_at(_, Transform, Threshold, Obj) :-
-  rdf(Obj, _, _, belief_state),
-  rdfs_individual_of(Obj, 'EnduringThing-Localized'),
+  % FIXME: super slow for large belief state
+  rdf(Obj, rdf:type, owl:'NamedIndividual', belief_state),
+  rdfs_individual_of(Obj, knowrob:'EnduringThing-Localized'),
   belief_object_at_location(Obj, Transform, Threshold), !.
 
 belief_object_at_location(ObjectId, NewPose, Dmax) :-
-  belief_at(ObjectId, OldPose),
+  belief_at_id(ObjectId, OldPose),
   transform_close_to(NewPose, OldPose, Dmax).
 
 %% belief_perceived_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is det.
@@ -344,9 +347,14 @@ belief_at_relative_to(Child, Parent, RelPose) :-
   current_time(Instant),
   belief_at_relative_to(Child, Parent, RelPose, Instant).
 
+belief_at_relative_to(Child, Parent, [ParentFrame, TargetFrame, Translation, Rotation], Instant) :-
+  object_frame_name(Parent, ParentFrame),
+  belief_at_id(Child, [ParentFrame, TargetFrame, Translation, Rotation], Instant), !.
+
 belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Child,  ChildGlobal, Instant),
   belief_at_global(Parent, ParentGlobal, Instant),
+  % FIXME: is there a bug in here?
   transform_between(ParentGlobal, ChildGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet.
@@ -433,7 +441,7 @@ belief_at_internal(Obj, TransformData) :-
   belief_at_internal_(Obj, 'http://knowrob.org/kb/knowrob.owl#MapFrame', TransformData, _), !.
 
 belief_at_internal_(Obj, RelativeTo, (Translation, Rotation), TransformId) :-
-  owl_instance_from_class(knowrob:'Pose', [pose=(RelativeTo,Translation,Rotation)], TransformId),
+  belief_new_pose((Translation, Rotation), TransformId, RelativeTo),
   current_time(Now),
   ( rdf_has(Obj, knowrob:pose, OldPose) ->
     assert_temporal_part_end(Obj, knowrob:pose, OldPose, Now, belief_state) ;
@@ -441,6 +449,21 @@ belief_at_internal_(Obj, RelativeTo, (Translation, Rotation), TransformId) :-
   ),
   assert_temporal_part(Obj, knowrob:pose,
     nontemporal(TransformId), Now, belief_state).
+
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId, 'http://knowrob.org/kb/knowrob.owl#MapFrame') :- !,
+  belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId).
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId, Frame) :-
+  belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId),
+  rdf_assert(TransformId, knowrob:'relativeTo', Frame, belief_state).
+
+belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId) :-
+  rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', TransformId),
+  atomic_list_concat([X,Y,Z], ' ', Translation),
+  atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
+  rdf_assert(TransformId, rdf:type, knowrob:'Pose', belief_state),
+  rdf_assert(TransformId, knowrob:'translation', literal(type(xsd:string,Translation)), belief_state),
+  rdf_assert(TransformId, knowrob:'quaternion', literal(type(xsd:string,Quaternion)), belief_state).
+  
 
 %% belief_republish_objects(+ObjectIds) is det
 %

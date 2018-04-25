@@ -127,6 +127,7 @@ owl_has_prolog(S,P,Val) :-
 % @param Prop  Property whose restrictions in Class are being considered
 % @param Val   Values that appear in a restriction of a superclass of Class on Property
 %
+% FIXME: this seems to be very slow! it shouldn't be
 owl_class_properties(Class, Prop, Val) :-
   rdfs_individual_of(Class, owl:'Class'), % make sure Class is bound before calling owl_subclass_of
   (owl_class_properties_some(Class, Prop, Val);
@@ -267,7 +268,7 @@ owl_inspect(Thing, P, O) :-
 %
 % @param Resource OWL resource
 %
-owl_write_readable(Resource) :- owl_readable(Resource,Readable), write(Readable).
+owl_write_readable(Resource) :- owl_readable(Resource,Readable), write(Readable), !.
 
 %% owl_readable(+Resource, -Readable).
 %
@@ -282,10 +283,11 @@ owl_readable_internal(P,P_readable) :-
   atom(P), rdf_has(P, owl:inverseOf, P_inv),
   owl_readable_internal(P_inv, P_inv_),
   atomic_list_concat(['inverse_of(',P_inv_,')'], '', P_readable), !.
-owl_readable_internal(class(X),Y) :- owl_readable_internal(X,Y).
+owl_readable_internal(class(X),Y) :- atom(X), owl_readable_internal(X,Y).
 owl_readable_internal(X,Y) :- atom(X), rdf_split_url(_, Y, X).
 owl_readable_internal(X,X) :- atom(X).
 owl_readable_internal(X,Y) :- compound(X), owl_readable(X,Y).
+owl_readable_internal(X,X).
 
 		 /*******************************
 		 *		  ABOX ASSERTIONS		*
@@ -353,8 +355,8 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
   rdf_assert(Pose, rdf:type, knowrob:'Pose'),
-  rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
-  rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))),
+  rdf_assert(Pose, knowrob:'translation', literal(type(xsd:string,Translation))),
+  rdf_assert(Pose, knowrob:'quaternion', literal(type(xsd:string,Quaternion))),
   rdf_assert(Pose, knowrob:'relativeTo', Frame).
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot)], Pose) :- !,

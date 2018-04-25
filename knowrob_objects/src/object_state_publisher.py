@@ -31,6 +31,14 @@ class PerceivedObject(object):
         self.static_transforms_loaded = False
         self.marker_id = int(random()*1000000000)
         self.marker_ns = 'belief_state'
+        self.marker = Marker()
+        self.marker.id = self.marker_id
+        self.marker.ns = self.marker_ns
+        self.marker.action = Marker.ADD
+        self.marker.scale = Vector3(1, 1, 1) # don't use self.scale because the meshes are already scaled.
+        # TODO: do we need to republish frame locked markers at all?
+        #       maybe only facings because they may change visual appearance
+        self.marker.frame_locked = True
 
     def update_color(self, r, g, b, a):
         self.color = ColorRGBA()
@@ -46,33 +54,26 @@ class PerceivedObject(object):
         self.ref_frame = str(ref_frame)
         self.object_name = str(object_name)
         self.transform = [self.ref_frame, self.object_name, translation, rotation]
+        self.marker.header.frame_id = self.ref_frame
+        self.marker.pose.position = Point(*self.transform[-2])
+        self.marker.pose.orientation = Quaternion(*self.transform[-1])
 
     def update_dimensions(self, depth, width, height):
         self.scale = Vector3(width, depth, height)
 
     def get_marker(self):
-        marker = Marker()
-        marker.header.frame_id = self.ref_frame
-        marker.action = Marker.ADD
-        marker.id = self.marker_id
-        marker.ns = self.marker_ns
-
-        marker.scale = Vector3(1, 1, 1) # don't use self.scale because the meshes are already scaled.
-        marker.frame_locked = True
-        marker.pose.position = Point(*self.transform[-2])
-        marker.pose.orientation = Quaternion(*self.transform[-1])
         if self.mesh_path != '' and self.mesh_path != "''":
-            marker.type = marker.MESH_RESOURCE
-            marker.mesh_resource = self.mesh_path.replace('\'', '')
-            marker.mesh_use_embedded_materials = True
-            if marker.mesh_resource.endswith('.stl'):
+            self.marker.type = self.marker.MESH_RESOURCE
+            self.marker.mesh_resource = self.mesh_path.replace('\'', '')
+            self.marker.mesh_use_embedded_materials = True
+            if self.marker.mesh_resource.endswith('.stl'):
                 # TODO I think we need this special case for stl meshes, try to remove this line if they are buggy
-                marker.color = self.color
+                self.marker.color = self.color
         else:
-            marker.color = self.color
-            marker.type = Marker.CUBE
-            marker.scale = self.scale
-        return marker
+            self.marker.color = self.color
+            self.marker.type = Marker.CUBE
+            self.marker.scale = self.scale
+        return self.marker
 
     def get_del_marker(self):
         marker = Marker()
@@ -147,7 +148,7 @@ class ObjectStatePublisher(object):
         self.load_object_information(object_ids)
         # TODO: do we need to do this here? loop() is doing it anyway...
         self.publish_object_frames()
-        self.publish_object_markers()
+        self.publish_object_markers(object_ids)
         # TODO: I guess these don't need to be republished once published?
         self.publish_static_transforms()
 
@@ -167,9 +168,8 @@ class ObjectStatePublisher(object):
 
     def load_object_information(self, object_ids):
         q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)"
-        solutions = self.prolog_query(q, verbose=False)
-        # TODO: would be nice to use the INCREMENTAL mode of json_prolog here
-        for x in solutions:
+        #solutions = self.prolog_query(q, verbose=False)
+        for x in self.prolog.query(q).solutions():
             object_id = str(x['Obj']).replace('\'', '')
             obj = self.objects[object_id]
             obj.marker_ns = (str(x['Type']).replace('\'', ''))
@@ -185,9 +185,10 @@ class ObjectStatePublisher(object):
             obj.object_name = object_id
             rospy.logdebug('Updated object: {}'.format(str(obj)))
 
-    def publish_object_markers(self):
+    def publish_object_markers(self, object_ids):
         ma = MarkerArray()
-        for object_id, v in self.objects.items():
+        for object_id in object_ids:
+            v = self.objects[object_id]
             if v.initialized and v.visualize:
                 ma.markers.append(v.get_marker())
         self.marker_array_publisher.publish(ma)

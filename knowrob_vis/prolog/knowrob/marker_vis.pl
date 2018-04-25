@@ -114,6 +114,7 @@ marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
   not(owl_individual_of(Identifier, knowrob:'RoomInAConstruction')),
   not(owl_individual_of(Identifier, knowrob:'SemanticEnvironmentMap')),
+  not(owl_individual_of(Identifier, knowrob:'TemporalPart')),
   not(rdf_has(Identifier, knowrob:'hasVisual', literal(type(_,false)))).
 
 marker_children(Parent, Children) :-
@@ -310,8 +311,8 @@ marker_initialize_object(Identifier,MarkerObject) :-
   )),
   ignore((
     %not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
+    object_dimensions(Identifier, Depth, Width, Height),
+    marker_scale(MarkerObject, [Width, Depth, Height])
   )),
   ignore((
     object_mesh_path(Identifier, Path),
@@ -326,6 +327,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
       marker_scale(MarkerObject, ScaleVec)
     ) ; true )
   )),
+  % FIXME: this is evil, will override mesh internal colors
   ignore(once((
     holds(Identifier, knowrob:mainColorOfObject, Color_rdf),
     rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Color),

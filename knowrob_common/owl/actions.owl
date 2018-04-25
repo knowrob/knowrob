@@ -232,7 +232,7 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AcquireGraspOfSomething">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAGripper"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
@@ -337,7 +337,7 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
     </owl:Class>
     
 
@@ -444,12 +444,6 @@
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingADrawer">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ClosingAGripper -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingAGripper"/>
     
 
 
@@ -987,7 +981,7 @@ PuttingDownAnObject.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingToLocation">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
@@ -1028,7 +1022,7 @@ PuttingDownAnObject.</rdfs:comment>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Reaching"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1048,7 +1042,7 @@ PuttingDownAnObject.</rdfs:comment>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Reaching"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1068,12 +1062,6 @@ PuttingDownAnObject.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningADrawer">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#OpeningAGripper -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningAGripper"/>
     
 
 
@@ -1142,7 +1130,7 @@ PuttingDownAnObject.</rdfs:comment>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching"/>
+                            <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#Reaching"/>
                             <owl:Restriction>
                                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#nextAction"/>
                                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
@@ -1321,12 +1309,6 @@ PuttingDownAnObject.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Reaching -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Reading -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reading">
@@ -1348,7 +1330,7 @@ PuttingDownAnObject.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAGripper"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#OpeningAGripper"/>
     </owl:Class>
     
 
@@ -1530,18 +1512,18 @@ PuttingDownAnObject.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ThrowingAnObject">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#ArmMovement"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob_common.owl#WindingUpAnArm"/>
+                            <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm"/>
                             <owl:Restriction>
                                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
                                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob_common.owl#SwingingAnArm"/>
+                                <owl:onClass rdf:resource="http://knowrob.org/kb/motions.owl#SwingingAnArm"/>
                             </owl:Restriction>
                         </owl:intersectionOf>
                     </owl:Class>
@@ -1713,27 +1695,45 @@ PuttingDownAnObject.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#ArmMovement -->
+    <!-- http://knowrob.org/kb/motions.owl#ArmMovement -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#ArmMovement"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#ArmMovement"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#BodyMovementEvent -->
+    <!-- http://knowrob.org/kb/motions.owl#BodyMovementEvent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#BodyMovementEvent"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#SwingingAnArm -->
+    <!-- http://knowrob.org/kb/motions.owl#ClosingAGripper -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#SwingingAnArm"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#WindingUpAnArm -->
+    <!-- http://knowrob.org/kb/motions.owl#OpeningAGripper -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#WindingUpAnArm"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#OpeningAGripper"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#Reaching -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Reaching"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#SwingingAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#SwingingAnArm"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#WindingUpAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm"/>
 </rdf:RDF>
 
 

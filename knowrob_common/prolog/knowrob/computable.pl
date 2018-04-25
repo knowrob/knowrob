@@ -310,7 +310,9 @@ rdfs_computable_triple_during(Property, Frame, Value) :-
 % Implementation of rdfs_computable_instance_of for PrologClasses.
 rdfs_computable_prolog_instance_of(Instance, Class) :-
   % get the associated prolog computable
-  rdfs_computable_prolog_class(Class, ComputableClass),
+  % FIXME: below does not exist!
+  %rdfs_computable_prolog_class(Class, ComputableClass),
+  fail,
   % get the Prolog predicate that is used for evaluation:
   rdf_has(ComputableClass, computable:command, literal(type(_, Cmd))),
   % handle the case that the predicate is defined in another module
