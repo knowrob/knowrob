@@ -217,7 +217,9 @@ entity_body(Entity, [A, Type|Descr]) :-
   entity_(Entity, Descr),
   % check general type last because it matches many entities
   entity_type([A,Type], TypeIri),
-  once(owl_individual_of(Entity, TypeIri)).
+  ( var(Entity) ->
+    owl_individual_of(Entity, TypeIri) ;
+    once(owl_individual_of(Entity, TypeIri))).
 
 
 %% "name" keys in the description
@@ -517,7 +519,8 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   % match rdf value with description value
   (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
   -> (var(Value) -> strip_literal_type(PropValue, Value) ; rdf_global_term(Value, PropValue))
-  ;  entity(PropValue, Value)
+  ;  PropValue = Value
+  %;  entity(PropValue, Value)
   ),
   entity_properties(Tail, DescrTail).
 
@@ -571,10 +574,12 @@ entity_head(Entity, _, Descr, TypeIri) :-
   ( Types=[]
   -> true
   ; (
+    current_time(Time),
+    owl_temporal_db(Time,DB),
     findall(E, (
       % TODO: it might not allways be best to early resolve the entities,
       %       also there could be many of them!
-      owl_individual_of_all(Types, E),
+      owl_individual_of_all(Types, E, DB),
       \+ owl_individual_of(E, knowrob:'TemporalPart')
     ), Entities),
     % avoid redundant results of owl_individual_of
