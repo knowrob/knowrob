@@ -1632,6 +1632,22 @@ See also the specialization cotemporal.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#avoidedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#avoidedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#movedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#movedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob_common.owl#nextMotion -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#nextMotion">

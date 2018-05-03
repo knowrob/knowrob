@@ -422,8 +422,11 @@ owl_property_range_on_class('http://www.w3.org/2002/07/owl#Thing', _,
 owl_property_range_on_class(Class, Predicate, Range) :-
 	owl_property_range_cached(Class, Predicate, Ranges_cached) ->
 	member(Range, Ranges_cached) ; (
+		% avoid cycles
+		assertz(owl_property_range_cached(Class,Predicate,['http://www.w3.org/2002/07/owl#Thing'])),
 		% cache miss -> infer range
 		findall(X, owl_property_range_on_class_(Class,Predicate,X), Ranges_inferred),
+		retractall(owl_property_range_cached(Class,Predicate,_)),
 		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred)),
 		member(Range, Ranges_inferred)
 	).
@@ -439,8 +442,8 @@ owl_property_range_on_class_(Class, Predicate, Range) :-
 owl_property_range_clear_cache(Class, Predicate) :-
 	retractall(owl_property_range_cached(Class,Predicate,_)).
 
-range_on_cardinality_(Class, Predicate, Ranges, Range) :-
-	owl_most_specific(Ranges, R_specific),
+range_on_cardinality_(Class, Predicate, [X|Xs], Range) :-
+	owl_most_specific([X|Xs], R_specific),
 	( range_on_cardinality(Class, Predicate, R_specific, Range) *->
 		true ; Range=R_specific ).
 
