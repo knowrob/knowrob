@@ -38,6 +38,7 @@
 	    owl_restriction/2,		% +Resource, -Restriction,
 	    owl_restriction_assert/2,		% +Restriction, -Resource,
 	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
+	    owl_unsatisfied_restriction/3,	% +Resource, ?Restriction, ?DB
 	    owl_description/2,		% +Resource, -Description
 	    owl_description_recursive/2,		% +Resource, -Description
 	    owl_description_assert/2,		% +Restriction, -Resource,
@@ -50,6 +51,7 @@
 	    owl_cardinality_on_class/4,	% idem BJW
 	    owl_cardinality/3,
 	    owl_cardinality/4,
+	    owl_cardinality/5,
 	    owl_satisfies/2,		% +Spec, +Resource
 	    owl_individual_of/2,	% ?Resource, +Description
 	    owl_individual_of/3,
@@ -107,6 +109,7 @@
 	owl_restriction(r, t),
 	owl_restriction_assert(t, r),
 	owl_unsatisfied_restriction(r, r),
+	owl_unsatisfied_restriction(r, r, +),
 	owl_description(r, -),
   owl_description_recursive(r, -),
 	owl_description_assert(t, t),
@@ -615,16 +618,20 @@ cardinality_from_sibling_range(Class, Predicate, Range, cardinality(0, Max)) :-
 %	
 
 owl_unsatisfied_restriction(Resource, Restriction) :-
+	owl_rdf_db(DB),
+	owl_unsatisfied_restriction(Resource, Restriction, DB).
+
+owl_unsatisfied_restriction(Resource, Restriction, DB) :-
 	ground(Restriction), ground(Resource), !,
-	\+ owl_satisfies_restriction(Resource, Restriction).
-owl_unsatisfied_restriction(Resource, Restriction) :-
+	\+ owl_satisfies_restriction(Resource, Restriction, DB).
+owl_unsatisfied_restriction(Resource, Restriction, DB) :-
 	ground(Resource),
 	bagof(Cls, (
 		rdfs_individual_of(Resource, Cls),
 		rdfs_individual_of(Cls, owl:'Restriction')
 	), Restrictions),
 	member(Restriction, Restrictions),
-	\+ owl_satisfies_restriction(Resource, Restriction).
+	\+ owl_satisfies_restriction(Resource, Restriction, DB).
 
 %%	owl_satisfies_restriction(?Resource, +Restriction)
 %
