@@ -86,15 +86,6 @@ timeline(Events) :-
       occurs(Evt, [T0,T1]),
       atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
-  %findall(_Y-(_T0-_T1), (
-    %rdfs_individual_of(_X, knowrob:'Action'),
-    %rdfs_type_of(_X, _T),
-    %rdf_split_url(_,_Y,_T),
-    %occurs(_X,[_T0,_T1])
-  %), _Actions),
-  %pairs_keys_values(_Actions, ClassNames, _Times),
-  %pairs_keys_values(_Times, StartTimes, EndTimes),
-  %add_timeline('actions', 'Logged Actions', ClassNames, StartTimes, EndTimes)
   data_vis(timeline(event_timeline),
           [data:[[EvtNames,EventExtends]]]).
 

@@ -337,9 +337,9 @@ object_instantiate_affordances(Obj, union_of(Classes)) :-
     ignore(object_instantiate_affordances(Obj,Cls_descr))
   )).
 
-object_instantiate_affordances(Obj, intersection_of(Classes)) :- fail.
-object_instantiate_affordances(Obj, one_of(Classes))          :- fail.
-object_instantiate_affordances(Obj, complement_of(Classes))   :- fail.
+object_instantiate_affordances(_Obj, intersection_of(_Classes)) :- fail.
+object_instantiate_affordances(_Obj, one_of(_Classes))          :- fail.
+object_instantiate_affordances(_Obj, complement_of(_Classes))   :- fail.
 
 object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
 object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-

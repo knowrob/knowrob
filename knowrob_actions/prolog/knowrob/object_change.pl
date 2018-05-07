@@ -108,12 +108,12 @@ transformed_into_transitive(From, To) :-
 % @param Obj1 Object instance
 % @param Obj2 Object instance
 %
-comp_thermicallyConnectedTo(Obj1, Obj2) :- false. %once(
+comp_thermicallyConnectedTo(_Obj1, _Obj2) :- false. %once(
   %rdf_triple(knowrob:'on-Physical', Obj1, Obj2);
   %rdf_triple(knowrob:'on-Physical', Obj2, Obj1)).
 
 % FIXME
-comp_thermicallyConnectedTo(Obj1, Obj2) :- false. %once(
+comp_thermicallyConnectedTo(_Obj1, _Obj2) :- false. %once(
   %rdf_triple(knowrob:'in-ContGeneric', Obj1, Obj2);
   %rdf_triple(knowrob:'in-ContGeneric', Obj2, Obj1)).
 
