@@ -6,7 +6,9 @@ from collections import defaultdict
 from geometry_msgs.msg import Vector3, Transform, TransformStamped
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
-from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
+#from knowrob_objects.srv._DirtyObject import DirtyObject, DirtyObjectResponse
+from knowrob_objects.srv._UpdateObjectState import UpdateObjectState, UpdateObjectStateResponse
+from knowrob_objects.msg._ObjectState import ObjectState
 from multiprocessing import Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
@@ -102,7 +104,8 @@ class ObjectStatePublisher(object):
         self.tf_static = rospy.Publisher("/tf_static", TFMessage, queue_size=100, latch=True)
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=100)
         self.marker_array_publisher = rospy.Publisher('/visualization_marker_array', MarkerArray, queue_size=100)
-        self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
+        #self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
+        self.dirty_object_srv = rospy.Service('~update_object_states', UpdateObjectState, self.update_state_cb)
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
         self.dirty_timer = rospy.Timer(rospy.Duration(.01), self.dirty_timer_cb)
         rospy.loginfo('object state publisher is running')
@@ -114,21 +117,37 @@ class ObjectStatePublisher(object):
         r.success = True
         return r
 
+    def update_state_cb(self, srv_msg):
+        self.dirty_object_requests.put(srv_msg)
+        r = UpdateObjectStateResponse()
+        r.error_code = r.SUCCESS
+        return r
+
     def dirty_timer_cb(self, _):
         # This is done in a different thread to prevent deadlocks in json prolog
         if self.dirty_object_requests.empty():
             return True
-        object_ids = set()
+        object_states = list()
         while not self.dirty_object_requests.empty():
             srv_msg = self.dirty_object_requests.get()
-            object_ids |= set(srv_msg.object_ids)
-        self.load_objects(object_ids)
+            object_states += list(srv_msg.object_states)
+        self.load_objects(object_states)
 
-    def dirty_cb(self, srv_msg):
-        self.dirty_object_requests.put(srv_msg)
-        r = DirtyObjectResponse()
-        r.error_code = r.SUCCESS
-        return r
+    #def dirty_timer_cb(self, _):
+        ## This is done in a different thread to prevent deadlocks in json prolog
+        #if self.dirty_object_requests.empty():
+            #return True
+        #object_ids = set()
+        #while not self.dirty_object_requests.empty():
+            #srv_msg = self.dirty_object_requests.get()
+            #object_ids |= set(srv_msg.object_ids)
+        #self.load_objects(object_ids)
+
+    #def dirty_cb(self, srv_msg):
+    #    self.dirty_object_requests.put(srv_msg)
+    #    r = DirtyObjectResponse()
+    #    r.error_code = r.SUCCESS
+    #    return r
 
     def prolog_query(self, q, verbose=False):
         query = self.prolog.query(q)
@@ -142,8 +161,9 @@ class ObjectStatePublisher(object):
         return solutions
 
     def load_objects(self, object_ids=None):
-        self.load_object_ids()
+        #self.load_object_ids()
         if object_ids is None:
+            self.load_object_ids()
             object_ids = self.objects.keys()
         self.load_object_information(object_ids)
         # TODO: do we need to do this here? loop() is doing it anyway...
@@ -166,7 +186,40 @@ class ObjectStatePublisher(object):
                 self.objects.pop(object_id)
         rospy.logdebug('Loaded object ids: {}'.format([str(x) for x in self.objects.keys()]))
 
-    def load_object_information(self, object_ids):
+    def load_object_information(self, objects):
+        if len(objects)>0 and isinstance(objects[0],ObjectState):
+            self.load_object_state(objects)
+        else:
+            self.query_object_information(objects)
+
+    def load_object_state(self, object_states):
+        rospy.loginfo('Updated object state')
+        for obj_state in object_states:
+            if obj_state.object_id not in self.objects.keys():
+                self.objects[obj_state.object_id] = PerceivedObject()
+            obj = self.objects[obj_state.object_id]
+            obj.marker_ns = (str(obj_state.object_type).replace('\'', ''))
+            obj.visualize = bool(obj_state.has_visual)
+            ###
+            position = obj_state.pose.pose.position
+            orientation = obj_state.pose.pose.orientation
+            obj.update_transform(
+                obj_state.pose.header.frame_id,
+                obj_state.frame_name,
+                [position.x,position.y,position.z],
+                [orientation.x,orientation.y,orientation.z,orientation.w])
+            #for static_transform in x['StaticTransforms']:
+            #    obj.set_static_transform(*static_transform)
+            if obj.visualize:
+                obj.update_color(obj_state.color.r,obj_state.color.g,obj_state.color.b,obj_state.color.a)
+                obj.mesh_path = obj_state.mesh_path
+                obj.update_dimensions(obj_state.size.x,obj_state.size.y,obj_state.size.z)
+            obj.initialized = True
+            obj.object_name = obj_state.object_id
+            rospy.logdebug('Updated object: {}'.format(str(obj)))
+
+    def query_object_information(self, object_ids):
+        rospy.loginfo('Query object information')
         q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)"
         #solutions = self.prolog_query(q, verbose=False)
         for x in self.prolog.query(q).solutions():
@@ -185,9 +238,13 @@ class ObjectStatePublisher(object):
             obj.object_name = object_id
             rospy.logdebug('Updated object: {}'.format(str(obj)))
 
-    def publish_object_markers(self, object_ids):
+    def publish_object_markers(self, objects):
         ma = MarkerArray()
-        for object_id in object_ids:
+        for o in objects:
+            if isinstance(o,ObjectState):
+                object_id = o.object_id
+            else:
+                object_id = o
             v = self.objects[object_id]
             if v.initialized and v.visualize:
                 ma.markers.append(v.get_marker())
