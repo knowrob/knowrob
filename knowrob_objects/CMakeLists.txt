@@ -17,8 +17,6 @@ pkg_check_modules(SWIPL REQUIRED swipl)
 message(STATUS "SWIPL found.")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
-message(STATUS "INCLUDE ${catkin_INCLUDE_DIRS}")
-message(STATUS "LIBS ${catkin_LIBRARIES}")
 
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_library(knowrob_objects SHARED src/knowrob_objects.cpp)
