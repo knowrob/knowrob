@@ -59,6 +59,10 @@
 owl_parse(URL)        :- owl_parse(URL,[URL],user).
 owl_parse(URL, Graph) :- owl_parse(URL,[URL],Graph).
 
+:- dynamic owl_file_loaded/1.
+
+owl_parse(URL,_,_) :-
+  owl_file_loaded(URL), !.
 owl_parse(URL,Imported,Graph) :-
   owl_parse_1(URL,Graph), !,
   (   rdf(_,'http://www.w3.org/2002/07/owl#imports',Import_URL),
