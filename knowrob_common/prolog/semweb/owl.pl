@@ -110,7 +110,7 @@
 	owl_restriction_assert(t, r),
 	owl_unsatisfied_restriction(r, r),
 	owl_unsatisfied_restriction(r, r, +),
-	owl_description(r, -),
+	owl_description(r, t),
   owl_description_recursive(r, -),
 	owl_description_assert(t, t),
 	owl_property_range_on_resource(r, r, -),
