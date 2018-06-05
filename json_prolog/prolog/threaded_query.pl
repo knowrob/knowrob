@@ -13,6 +13,7 @@
 :- thread_pool_create(queryt_pool, 6, [backlog(infinite)]).
 
 :- dynamic queryt_term/2.
+:- dynamic queryt_call_active/1.
 
 random_id(Id) :-
   randseq(8,25,Seq_random),
@@ -67,7 +68,8 @@ queryt_run_call_and_send(query(_,MsgQueue), GoalAtom) :-
     fail
   )),
   % Place solution(..) term in MsgQueue
-  thread_send_message(MsgQueue, solution(Args)).
+  findall([Name,Value], member(Name=Value,Args), ArgsList),
+  thread_send_message(MsgQueue, solution(ArgsList)).
 
 queryt_call_begin(query(QueryId,MsgQueue)) :-
   \+ queryt_finished(QueryId),
@@ -145,4 +147,3 @@ queryt_finish(QueryId) :-
   thread_send_message(MsgQueue, call_finished),
   %
   message_queue_destroy(MsgQueue).
-
