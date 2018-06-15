@@ -308,7 +308,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_scale(MarkerObject, [X, Y, Z])
   )),
   ignore((
-    get_model_path(Identifier, Path),
+    object_mesh_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
@@ -480,7 +480,7 @@ marker_new(MarkerName, link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, MarkerName, link(Link), MarkerObject, Parent).
 
 marker_new(MarkerName, trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(points, MarkerName, trajectory(Link), MarkerObject, Parent),
+  marker_primitive(sphere_list, MarkerName, trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]).
 
 marker_new(MarkerName, pointer(From,To), MarkerObject, Parent) :-
@@ -822,8 +822,8 @@ marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
   marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Dt)) :-
-  object_trajectory(Link, [T0,T1], TrajectoryData, Dt),
-  findall(P, member([P,_],TrajectoryData), TrajectoryPositions),
+  object_trajectory(Link, [T0,T1], Dt, TrajectoryData),
+  findall(P, member([_,_,P,_],TrajectoryData), TrajectoryPositions),
   marker_points(MarkerObject, TrajectoryPositions).
 
 %marker_update(speech(Id), MarkerObject, T) :-
@@ -1466,11 +1466,20 @@ set_marker_colors(MarkerObj, Colors) :-
 
 get_marker_points(MarkerObj, Points) :-
   jpl_call(MarkerObj, 'getPoints', [], PointsArray),
-  jpl_array_to_list(PointsArray,Points).
+  jpl_array_to_list(PointsArray,Points_flattened),
+  points_unflatten(Points_flattened, Points).
+
+points_unflatten([X,Y,Z|Tail0],[[X,Y,Z]|Tail1]) :- points_unflatten(Tail0,Tail1), !.
+points_unflatten([],[]).
 
 set_marker_points(MarkerObj, Points) :-
-  jpl_new(array(double), Points, PointsArray),
-  jpl_call(MarkerObj, 'setPoints', [PointsArray], _).
+writeln(set_marker_points0),
+  flatten(Points, Points_flattened),
+writeln(set_marker_points01),
+  jpl_new(array(double), Points_flattened, PointsArray),
+writeln(set_marker_points1),
+  jpl_call(MarkerObj, 'setPoints', [PointsArray], _),
+writeln(set_marker_points2).
 
 get_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
