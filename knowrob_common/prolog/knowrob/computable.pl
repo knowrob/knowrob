@@ -257,26 +257,20 @@ rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Fra
 % No caching is performed.
 %
 rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
-writeln('rdfs_computable_triple_during0'),
   rdfs_computable_property(Property, ComputableProperty),
-write('rdfs_computable_triple_during1 '), owl_write_readable(ComputableProperty), nl,
   ( rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty') -> 
     Args=[Frame, PrologValue, Interval];
     Args=[Frame, PrologValue] ),
-writeln('rdfs_computable_triple_during2'),
   % get the Prolog predicate that is used for computation
   rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
-writeln('rdfs_computable_triple_during3'),
   % handle the case that the predicate is defined in another module
   ( term_to_atom(Module:Pred, Cmd) ->
   ( Goal=..[Pred|Args], Command=Module:Goal ) ;
   ( Command=..[Cmd|Args] )),
-writeln('rdfs_computable_triple_during4'),
   % execute the Prolog predicate (namespace expansion etc.)
   ( nonvar(Value) ->
   ( PrologValue=Value, call(Command) );
-  ( call(Command), rdfs_prolog_to_rdf(Property, PrologValue, Value))),
-writeln('rdfs_computable_triple_during5').
+  ( call(Command), rdfs_prolog_to_rdf(Property, PrologValue, Value))).
 
 rdfs_computable_triple_during(Property, Frame, Value, _) :-
   rdf_equal(Property, rdfs:range),
