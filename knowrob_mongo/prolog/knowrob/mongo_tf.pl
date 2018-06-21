@@ -66,11 +66,10 @@
 mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Instant) :-
   mng_interface(Mongo),
   time_term(Instant, T),
-
-strip_literal_type(SourceFrame, SourceFrame_stripped),
-
+  strip_literal_type(TargetFrame, TargetFrame_stripped),
+  strip_literal_type(SourceFrame, SourceFrame_stripped),
   jpl_call(Mongo, 'lookupTransform',
-          [TargetFrame, SourceFrame_stripped, T], StampedTransform),
+          [TargetFrame_stripped, SourceFrame_stripped, T], StampedTransform),
   \+ jpl_null(StampedTransform),
   jpl_call(StampedTransform, 'getTranslation', [], Vector3d),
   \+ jpl_null(Vector3d),
