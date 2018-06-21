@@ -139,6 +139,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#avoidedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#avoidedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#beforeI -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#beforeI">
@@ -732,6 +740,14 @@ Many relative-location predicates can take any SpatialThings (or at least any in
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#meetsInvI">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#intervalRelations"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#movedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#movedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
     </owl:ObjectProperty>
     
 
@@ -1632,18 +1648,10 @@ See also the specialization cotemporal.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#avoidedObject -->
+    <!-- http://knowrob.org/kb/knowrob_common.owl#farAwayFrom -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#avoidedObject">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#movedObject -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#movedObject">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#farAwayFrom">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#locatedAtRelative"/>
     </owl:ObjectProperty>
     
 
