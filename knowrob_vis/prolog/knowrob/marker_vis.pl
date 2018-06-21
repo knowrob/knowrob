@@ -1473,13 +1473,9 @@ points_unflatten([X,Y,Z|Tail0],[[X,Y,Z]|Tail1]) :- points_unflatten(Tail0,Tail1)
 points_unflatten([],[]).
 
 set_marker_points(MarkerObj, Points) :-
-writeln(set_marker_points0),
   flatten(Points, Points_flattened),
-writeln(set_marker_points01),
   jpl_new(array(double), Points_flattened, PointsArray),
-writeln(set_marker_points1),
-  jpl_call(MarkerObj, 'setPoints', [PointsArray], _),
-writeln(set_marker_points2).
+  jpl_call(MarkerObj, 'setPoints', [PointsArray], _).
 
 get_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
