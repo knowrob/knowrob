@@ -12,9 +12,8 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-effects-devices.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_units.owl"/>
-        <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects.owl"/>
     </owl:Ontology>
     
 
