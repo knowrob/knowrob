@@ -314,7 +314,7 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
   %rdfs_computable_prolog_class(Class, ComputableClass),
   fail,
   % get the Prolog predicate that is used for evaluation:
-  rdf_has(ComputableClass, computable:command, literal(type(_, Cmd))),
+  rdf_has(_ComputableClass, computable:command, literal(type(_, Cmd))),
   % handle the case that the predicate is defined in another module
   ((term_to_atom(Module:Pred, Cmd)) ->
     (Command=Module:Pred) ;
