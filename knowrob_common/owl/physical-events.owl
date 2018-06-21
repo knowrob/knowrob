@@ -42,13 +42,16 @@
 
     <!-- http://knowrob.org/kb/knowrob.owl#objectOfStateChange -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/physical-events.owl#eventActor"/>
+    </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#objectsInContact -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectsInContact">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/physical-events.owl#eventActor"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation"/>
     </owl:ObjectProperty>
     
@@ -71,6 +74,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#transformedObject -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#transformedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/physical-events.owl#eventActor"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
     </owl:ObjectProperty>
     
@@ -79,6 +83,20 @@
     <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#contactRegion -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/physical-events.owl#contactRegion">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/physical-events.owl#eventActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#eventActor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/physical-events.owl#eventActor"/>
     
 
 
@@ -125,6 +143,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#AttachmentEvent -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AttachmentEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
     </owl:Class>
     
@@ -243,7 +262,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -318,9 +336,21 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Hand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hand"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#HeatingProcess -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingProcess"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
     
 
 
@@ -380,6 +410,20 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectsInContact"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/physical-events.owl#contactRegion"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceRegion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A collection of physical events in which two or more objects are in physical contact (see touches) for at least part of the event&apos;s duration. Note that, although most PhysicalEvents involve some kind of touching, only those for which contact is salient should be instances of PhysicalContactEvent.</rdfs:comment>
     </owl:Class>
     
@@ -459,7 +503,6 @@
     <!-- http://knowrob.org/kb/knowrob.owl#SeparationEvent -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SeparationEvent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
         <rdfs:comment>In each instance of SeparationEvent, an object is cut, scraped, broken, cracked or pulverized, so that part of the object is no longer attached where it once was. Note that the part need not be completely separated from the object; it may still be attached in places. See the specialization Separation-Complete for the case of complete separation.</rdfs:comment>
     </owl:Class>
@@ -469,6 +512,18 @@
     <!-- http://knowrob.org/kb/knowrob.owl#SolidTangibleThing -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpaceRegion -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpaceRegion"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
     
 
 
@@ -527,6 +582,29 @@
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vaporization">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StateOfMatterChangeEvent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#HandObjectContact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/physical-events.owl#HandObjectContact">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectsInContact"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectsInContact"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent"/>
     </owl:Class>
     
 

@@ -43,6 +43,18 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#subEvents -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#subEvents"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#nextMotion -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob_common.owl#subMotion -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
@@ -324,6 +336,27 @@
     <!-- http://knowrob.org/kb/motions.owl#Reaching -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Reaching">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#ArmMovement"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subEvents"/>
+                                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/physical-events.owl#HandObjectContact"/>
+                                    </owl:Restriction>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
     </owl:Class>
     
@@ -374,6 +407,12 @@
     <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/physical-events.owl#HandObjectContact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/physical-events.owl#HandObjectContact"/>
 </rdf:RDF>
 
 
