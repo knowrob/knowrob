@@ -194,6 +194,13 @@ occurs(Evt, Interval) :-
   -> interval_during(Interval, EvtI)
   ;  Interval = EvtI ).
 
+occurs(Evt, Interval, Type) :-
+  rdfs_individual_of(Evt, Type),
+  interval(Evt, EvtI),
+  (  ground(Interval)
+  -> interval_during(Interval, EvtI)
+  ;  Interval = EvtI ).
+
 		 /*******************************
 		 *	 	  OWL expansion			*
 		 *******************************/
@@ -458,6 +465,14 @@ retract_temporal_extend(TemporalPart, _Graph) :-
           rdf_retractall(Part, knowrob:'temporalExtend', _)
   ).
 
+assert_temporal_part_interval(Start, TimeInterval, Graph) :-
+  number(Start), !,
+  assert_temporal_part_interval([Start], TimeInterval, Graph).
+
+assert_temporal_part_interval(TimeInterval, TimeInterval, Graph) :-
+  atom(TimeInterval),
+  rdfs_individual_of(TimeInterval, knowrob:'TimeInterval'), !.
+
 assert_temporal_part_interval([Start], TimeInterval, Graph) :- !,
   time_term(Start, Start_v),
   assert_time_instant(Start_v, StartI, Graph),
@@ -473,7 +488,6 @@ assert_temporal_part_interval([Start,End], TimeInterval, Graph) :- !,
   rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval', Graph),
   rdf_assert(TimeInterval, knowrob:'startTime', StartI, Graph),
   rdf_assert(TimeInterval, knowrob:'endTime', EndI, Graph).
-  ).
 
 assert_time_instant(T, TimePoint, Graph) :-
   time_term(T,T_value),
