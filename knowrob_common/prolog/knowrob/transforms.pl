@@ -184,7 +184,7 @@ transform_invert([A,B,[TX,TY,TZ],Q],
 transform_reference_frame([Ref, _, _, _], Ref) :- !.
 transform_reference_frame(Transform, Ref) :-
   rdf_has(Transform, knowrob:'relativeTo', RefObjId),
-  rdf_has(RefObjId, knowrob:'frameName', literal(Ref)), !.
+  object_frame_name(RefObjId, Ref), !.
 transform_reference_frame(_TransformId, MapFrame) :-
   map_frame_name(MapFrame).
 

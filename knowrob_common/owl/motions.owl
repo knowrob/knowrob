@@ -84,15 +84,97 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ArmMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ArmMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Arm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BaseMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BaseMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FacialMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FacialMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FacialMovement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Hand -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hand"/>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#HandMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HandMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeadMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeadMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HeadMovement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -108,9 +190,55 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LegMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LegMovement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Leg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiftingAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiftingAnArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LoweringAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoweringAnArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MakingAGesture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MakingAGesture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#MovementEvent -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pulling -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pulling">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
     
 
 
@@ -120,9 +248,78 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Pushing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pushing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Reaching -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subEvents"/>
+                                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/physical-events.owl#HandObjectContact"/>
+                                    </owl:Restriction>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Retracting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Retracting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RevolvingAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RevolvingAnArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SlicingMotion -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SlicingMotion">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SwingingAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SwingingAnArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
     
 
 
@@ -148,10 +345,18 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#WindingUpAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WindingUpAnArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArmMovement"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob_common.owl#GripperMovement -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#GripperMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_motions.owl#HandMovement"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HandMovement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
@@ -168,73 +373,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#LiftingAnArm -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#LiftingAnArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_common.owl#LoweringAnArm -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#LoweringAnArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob_common.owl#MobileBase -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_motions.owl#HandMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_motions.owl#HandMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#ArmMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#ArmMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Arm"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#BaseMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#BaseMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
     
 
 
@@ -254,58 +395,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/motions.owl#FacialMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#FacialMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#FacialMovement"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#HeadMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#HeadMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#HeadMovement"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#LegMovement -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#LegMovement">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Leg"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/motions.owl#LookingAtLocation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#LookingAtLocation">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#HeadMovement"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HeadMovement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
@@ -313,14 +406,6 @@
                 <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#MakingAGesture -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#MakingAGesture">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
     </owl:Class>
     
 
@@ -333,79 +418,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/motions.owl#Reaching -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Reaching">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
-                        <owl:someValuesFrom>
-                            <owl:Class>
-                                <owl:intersectionOf rdf:parseType="Collection">
-                                    <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
-                                    <owl:Restriction>
-                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subEvents"/>
-                                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/physical-events.owl#HandObjectContact"/>
-                                    </owl:Restriction>
-                                </owl:intersectionOf>
-                            </owl:Class>
-                        </owl:someValuesFrom>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#Retracting -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Retracting">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#RevolvingAnArm -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#RevolvingAnArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#SlicingMotion -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#SlicingMotion">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/motions.owl#Smiling -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Smiling">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#FacialMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#SwingingAnArm -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#SwingingAnArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/motions.owl#WindingUpAnArm -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FacialMovement"/>
     </owl:Class>
     
 
