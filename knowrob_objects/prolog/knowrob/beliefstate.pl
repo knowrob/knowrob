@@ -135,7 +135,7 @@ belief_assign_frames :-
 %
 belief_forget :-
   forall( rdf(J, _, _, belief_state),
-          retractall(J,_,_) ).
+          rdf_retractall(J,_,_) ).
 
 %% belief_new_object(+ObjType:iri, -Obj:iri) is det.
 %
