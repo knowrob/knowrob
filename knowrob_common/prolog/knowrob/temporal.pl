@@ -188,11 +188,7 @@ occurs(Evt) :-
   current_time(CurrentTime),
   occurs(Evt, CurrentTime, knowrob:'Event').
 
-occurs(Evt, Time) :-
-  occurs(Evt, Time, knowrob:'Event').
-
-occurs(Evt, Interval, Type) :-
-  rdfs_individual_of(Evt, Type),
+occurs(Evt, Interval) :-
   interval(Evt, EvtI),
   (  ground(Interval)
   -> interval_during(Interval, EvtI)
@@ -443,7 +439,9 @@ assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
 assert_temporal_part_extend(TemporalPart, I) :-
   assert_temporal_part_extend(TemporalPart, I, user).
 assert_temporal_part_extend(TemporalPart, I, Graph) :-
-  owl_instance_from_class(knowrob:'TimeInterval', I, Interval),
+  % FIXME owl_instance_from_class needs graph parameter
+  %owl_instance_from_class(knowrob:'TimeInterval', I, Interval),
+  assert_temporal_part_interval(I, Interval, Graph),
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')
@@ -459,6 +457,28 @@ retract_temporal_extend(TemporalPart, _Graph) :-
   forall( member(Part, [TemporalPart|Parts]),
           rdf_retractall(Part, knowrob:'temporalExtend', _)
   ).
+
+assert_temporal_part_interval([Start], TimeInterval, Graph) :- !,
+  time_term(Start, Start_v),
+  assert_time_instant(Start_v, StartI, Graph),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v], '_', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval', Graph),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI, Graph).
+
+assert_temporal_part_interval([Start,End], TimeInterval, Graph) :- !,
+  time_term(Start, Start_v), time_term(End, End_v), 
+  assert_time_instant(Start_v, StartI, Graph),
+  assert_time_instant(End_v, EndI, Graph),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v,End_v], '_', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval', Graph),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI, Graph),
+  rdf_assert(TimeInterval, knowrob:'endTime', EndI, Graph).
+  ).
+
+assert_time_instant(T, TimePoint, Graph) :-
+  time_term(T,T_value),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T_value, TimePoint),
+  rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint', Graph).
 
 %% assert_temporal_part_end(+S,?P,?O) is nondet.
 %% assert_temporal_part_end(+S,?P,?O,+End) is nondet.
