@@ -101,7 +101,10 @@ show(VisualThing, Instant) :-
 
 show(VisualThing, Instant, Properties) :-
   marker_vis:marker_term(VisualThing, MarkerTerm), !,
-  marker(MarkerTerm, MarkerObj),
+  ( member(name:Name, Properties) ->
+    marker(MarkerTerm, MarkerObj, Name) ;
+    marker(MarkerTerm, MarkerObj)
+  ),
   marker_update(MarkerObj,Instant),
   marker_properties(MarkerObj, Properties).
 
