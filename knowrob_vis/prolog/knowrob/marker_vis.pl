@@ -35,6 +35,7 @@
       marker_update/0,
       marker_update/1,
       marker_update/2,
+      marker_update/3,
       marker_remove/1,
       marker_child/2,
       marker_object/4,
@@ -527,6 +528,7 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   marker_children(Identifier,Children),
   forall(
     member( Child,Children ), ignore((
+      %marker_has_visual( Child ),
       marker_term(Child, ChildTerm),
       marker_child_name(object(Identifier), MarkerName, ChildTerm, ChildName),
       marker(ChildName, ChildTerm, _, MarkerObject)
@@ -860,27 +862,27 @@ marker_update(MarkerTerm) :-
 marker_update(MarkerObject, T) :-
   jpl_is_object(MarkerObject),
   marker(MarkerTerm, MarkerObject),
-  marker_update(MarkerTerm, T).
+  marker_update(MarkerTerm, T), !.
 
 marker_update(MarkerTerm, T) :-
-  atom(T), time_term(T, T_Term),
+  atom(T), !, time_term(T, T_Term),
   marker_update(MarkerTerm, T_Term).
 
-marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  atom(T0), not(is_list(T0)), time_term(T0, T0_Term),
-  atom(T1), not(is_list(T1)), time_term(T1, T1_Term),
-  marker_update(MarkerTerm, interval(T0_Term,T1_Term,Interval)).
-
 marker_update(MarkerTerm, T) :-
-  number(T),
+  number(T), !,
   marker_update(MarkerTerm, time(T,T)).
 
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  number(T0), number(T1),
+  number(T0), number(T1), !,
   marker_update(MarkerTerm, time(T0,interval(T0,T1,Interval))).
 
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  is_list(T0), is_list(T1),
+  atom(T0), not(is_list(T0)), time_term(T0, T0_Term),
+  atom(T1), not(is_list(T1)), time_term(T1, T1_Term), !,
+  marker_update(MarkerTerm, interval(T0_Term,T1_Term,Interval)).
+
+marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
+  is_list(T0), is_list(T1), !,
   findall(T_Term, (member(T,T0), time_term(T, T_Term)), T0_Terms),
   findall(T_Term, (member(T,T1), time_term(T, T_Term)), T1_Terms),
   % Use no caching if list of start/end times provided
@@ -1210,7 +1212,7 @@ marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query
 %
 marker_properties(Marker, [Key:Val|Args]) :-
   Prop=..[Key,Val],
-  marker_property(Marker, Prop),
+  ignore(marker_property(Marker, Prop)),
   marker_properties(Marker, Args).
 marker_properties(_, []).
 
