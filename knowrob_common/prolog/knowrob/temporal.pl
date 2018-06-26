@@ -469,7 +469,7 @@ assert_temporal_part_interval(Start, TimeInterval, Graph) :-
   number(Start), !,
   assert_temporal_part_interval([Start], TimeInterval, Graph).
 
-assert_temporal_part_interval(TimeInterval, TimeInterval, Graph) :-
+assert_temporal_part_interval(TimeInterval, TimeInterval, _Graph) :-
   atom(TimeInterval),
   rdfs_individual_of(TimeInterval, knowrob:'TimeInterval'), !.
 
