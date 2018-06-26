@@ -46,7 +46,7 @@
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
     </owl:ObjectProperty>
 
-
+<!--
 
     <computable:PrologTemporalProperty rdf:about="#compute_baseLinkPose">
         <computable:command rdf:datatype="&xsd;string">knowrob_srdl:comp_baselink_pose</computable:command>
@@ -62,7 +62,7 @@
         <computable:target rdf:resource="&knowrob;inFieldOfView"/>
     </computable:PrologTemporalProperty>
 
-
+-->
 
 
 
