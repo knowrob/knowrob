@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(json_prolog)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools  rosjava_bootstrap knowrob_common json_prolog_msgs rosjava_messages rosprolog rosjava_build_tools rospy roscpp
-)
+add_compile_options(-std=c++11)
+set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 
+find_package(catkin REQUIRED COMPONENTS
+    rosjava_build_tools rosjava_bootstrap rosjava_messages rosjava_build_tools
+    rospy
+    roscpp
+    rosprolog
+    knowrob_common
+    json_prolog_msgs
+)
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
@@ -34,6 +42,10 @@ link_directories(${JSON_GLIB_LIBRARIY_DIRS})
 add_library(json_prolog src/prolog.cpp src/prolog_query_proxy.cpp src/prolog_bindings.cpp src/prolog_value.cpp)
 target_link_libraries(json_prolog ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(json_prolog ${catkin_EXPORTED_TARGETS})
+
+add_executable(cpl_interface_node src/cpl_interface.cpp)
+target_link_libraries(cpl_interface_node ${catkin_LIBRARIES} ${SWIPL_LIBRARIES})
+add_dependencies(cpl_interface_node cpl_gencpp)
 
 add_executable(test_json_prolog examples/test_json_prolog.cpp)
 target_link_libraries(test_json_prolog json_prolog ${catkin_LIBRARIES})
