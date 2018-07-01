@@ -123,6 +123,7 @@ belief_parse(File) :-
 
 belief_assign_frames :-
   belief_existing_objects(ObjectIds),
+  belief_republish_objects(ObjectIds),
   forall( member(Obj,ObjectIds), (
     rdf_split_url(_, ObjName, Obj),
     once(( rdf_has(Obj, knowrob:'frameName', _) ;
@@ -134,8 +135,7 @@ belief_assign_frames :-
 % Retracts all facts asserted to the "belief_state" RDF graph.
 %
 belief_forget :-
-  forall( rdf(J, _, _, belief_state),
-          rdf_retractall(J,_,_) ).
+  rdf_retractall(_, _, _, belief_state).
 
 %% belief_new_object(+ObjType:iri, -Obj:iri) is det.
 %

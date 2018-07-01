@@ -12,7 +12,7 @@ string mesh_path
 std_msgs/ColorRGBA color
 # bounding box
 geometry_msgs/Vector3 size
-# current pose
+# pose of the object
 geometry_msgs/PoseStamped pose
 # static transforms of affordances, etc.
-geometry_msgs/PoseStamped static_transforms
+geometry_msgs/PoseStamped[] static_transforms

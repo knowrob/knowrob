@@ -193,7 +193,6 @@ class ObjectStatePublisher(object):
             self.query_object_information(objects)
 
     def load_object_state(self, object_states):
-        rospy.loginfo('Updated object state')
         for obj_state in object_states:
             if obj_state.object_id not in self.objects.keys():
                 self.objects[obj_state.object_id] = PerceivedObject()
@@ -208,8 +207,8 @@ class ObjectStatePublisher(object):
                 obj_state.frame_name,
                 [position.x,position.y,position.z],
                 [orientation.x,orientation.y,orientation.z,orientation.w])
-            #for static_transform in x['StaticTransforms']:
-            #    obj.set_static_transform(*static_transform)
+            for static_transform in obj_state.staticTransforms:
+                obj.set_static_transform(*static_transform)
             if obj.visualize:
                 obj.update_color(obj_state.color.r,obj_state.color.g,obj_state.color.b,obj_state.color.a)
                 obj.mesh_path = obj_state.mesh_path
@@ -219,7 +218,6 @@ class ObjectStatePublisher(object):
             rospy.logdebug('Updated object: {}'.format(str(obj)))
 
     def query_object_information(self, object_ids):
-        rospy.loginfo('Query object information')
         q = "member(Obj,['"+"','".join(object_ids)+"']),object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)"
         #solutions = self.prolog_query(q, verbose=False)
         for x in self.prolog.query(q).solutions():
