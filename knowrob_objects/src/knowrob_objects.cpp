@@ -97,10 +97,21 @@ public:
 		std_msgs::pl_term_color(av[3], obj.color);
 		geometry_msgs::pl_term_vector3(av[5], obj.size);
 		geometry_msgs::pl_term_pose_stamped(av[6], obj.pose);
-		// extract frame name from pose
-		PlTail pose_list(av[6]); PlTerm e;
-		pose_list.next(e); // unused
-		pose_list.next(e); obj.frame_name = (char*)e;
+		{ // read static transforms
+			geometry_msgs::PoseStamped staticTransform;
+			PlTail staticTransforms(av[7]);
+			PlTerm e;
+			obj.static_transforms.clear();
+			while(staticTransforms.next(e)) {
+				geometry_msgs::pl_term_pose_stamped(e, staticTransform);
+				obj.static_transforms.push_back(staticTransform);
+			}
+		}
+		{ // extract frame name from pose
+			PlTail pose_list(av[6]); PlTerm e;
+			pose_list.next(e); // unused
+			pose_list.next(e); obj.frame_name = (char*)e;
+		}
 	}
 };
 
