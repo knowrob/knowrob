@@ -43,9 +43,9 @@ add_library(json_prolog src/prolog.cpp src/prolog_query_proxy.cpp src/prolog_bin
 target_link_libraries(json_prolog ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(json_prolog ${catkin_EXPORTED_TARGETS})
 
-add_executable(cpl_interface_node src/cpl_interface.cpp)
-target_link_libraries(cpl_interface_node ${catkin_LIBRARIES} ${SWIPL_LIBRARIES})
-add_dependencies(cpl_interface_node cpl_gencpp)
+add_executable(json_prolog_cpp src/cpl_interface.cpp)
+target_link_libraries(json_prolog_cpp ${catkin_LIBRARIES} ${SWIPL_LIBRARIES})
+add_dependencies(json_prolog_cpp ${catkin_EXPORTED_TARGETS})
 
 add_executable(test_json_prolog examples/test_json_prolog.cpp)
 target_link_libraries(test_json_prolog json_prolog ${catkin_LIBRARIES})
