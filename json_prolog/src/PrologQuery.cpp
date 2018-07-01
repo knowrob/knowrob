@@ -5,6 +5,13 @@ public:
 	BLOCKING=1;
 }
 
+void PrologQuery::wait_solution() {
+	query_lock.wait();
+}
+void PrologQuery::notify_solution() {
+	query_lock.notify_all();
+}
+
 PrologQuery::PrologQuery(const std::string &query_string, int mode) :
 		query_string(query_string),
 		thread_id(""),

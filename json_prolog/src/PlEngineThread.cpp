@@ -21,9 +21,7 @@ private:
 	void run();
 	void init_pl();
 	
-	void send_next_solution(const string &id, const PlQuerySolution &solution);
 	const PlQuerySolution& receive_next_solution(const string &id);
-	const PlQuerySolution& wait_next_solution(const string &id);
 }
 
 void PlEngineThread::run() {
@@ -35,9 +33,11 @@ void PlEngineThread::run() {
 		update_index = (int)!update_index;
 		XXX.unlock();
 		// start new queries
-		for(QueryDataMap::iterator it=new_queries[index].begin();
+		for(QueryDataMap::iterator
+					it=new_queries[index].begin();
 					it!=new_queries[index].end();
-					it=it->next()) {
+					it=it->next())
+		{
 			QueryData &d = it->second;
 			QueryMap::iterator jt = queries.insert({*it,
 				PrologQuery(d.query_string,d.mode)});
@@ -48,18 +48,19 @@ void PlEngineThread::run() {
 		for(QueryMap::iterator it=queries.begin(); it!=queries.end(); it=it->next()) {
 			PrologQuery &query = it->second;
 			if(query.has_more_solutions(PrologQuery.NON_BLOCKING)) {
-				send_next_solution(*it, query.nexr_solution());
+				query.notify_solution();
 			}
-			if(query.has_finished()) {
-				delete_queries.add(*it);
-			}
+			// TODO: maybe solution is forgotton like this
+			//if(query.has_finished()) {
+			//	delete_queries.add(*it);
+			//}
 		}
 		// delete finished queries
-		for(std::set<std::string>::iterator it=delete_queries.begin();
-											it!=delete_queries.end();
-											it=it->next()) {
-			queries.erase(*it);
-		}
+// 		for(std::set<std::string>::iterator it=delete_queries.begin();
+// 											it!=delete_queries.end();
+// 											it=it->next()) {
+// 			queries.erase(*it);
+// 		}
 	}
 }
 
@@ -92,27 +93,30 @@ void PlEngineThread::finish(const string &id) {
 	if(query!=null) {
 		query->finish();
 	}
+	// TODO also remove from new_queries
 }
 
 bool PlEngineThread::has_more_solutions(const string &id) {
-	wait_next_solution();
+	// TODO new_queries, no new solution
+	PrologQuery *query = get(*it);
+	if(query!=null) {
+		query->wait_solution();
+	}
+	else {
+		return false;
+	}
 }
 
 const PlQuerySolution& PlEngineThread::next_solution(const string &id) {
 	if(has_more_solutions(id)) {
-		return receive_next_solution(id);
+		return pop_next_solution(id);
 	}
 	else {
 		return null;
 	}
 }
 
-void PlEngineThread::send_next_solution(const string &id, const PlQuerySolution &solution) {
-	// TODO
-}
-const PlQuerySolution& PlEngineThread::receive_next_solution(const string &id) {
-	// TODO
-}
-const PlQuerySolution& PlEngineThread::wait_next_solution(const string &id) {
-	// TODO
+const PlQuerySolution& PlEngineThread::pop_next_solution(const string &id) {
+	PrologQuery *query = get(*it);
+	return query->pop_next_solution();
 }

@@ -53,7 +53,7 @@ bool JSONPrologNode::finish(PrologFinish::Request &req,
 bool JSONPrologNode::next_solution(PrologNextSolution::Request &req,
 								   PrologNextSolution::Response &res) {
 	res.solution = "";
-	if (queries.count(req.id) == 0) {
+	if(!pl_thread.exists(req.id)) {
 		res.status = PrologNextSolutionResponse::WRONG_ID;
 	}
 	else {
@@ -72,6 +72,7 @@ bool JSONPrologNode::encode_solution(
 		const PlQuerySolution &pl_solution,
 		string &json_encoded) {
 	// TODO
+	json_encoded = "TODO";
 }
 
 int main(int argc, char **argv) {
