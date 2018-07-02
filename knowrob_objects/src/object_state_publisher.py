@@ -207,8 +207,15 @@ class ObjectStatePublisher(object):
                 obj_state.frame_name,
                 [position.x,position.y,position.z],
                 [orientation.x,orientation.y,orientation.z,orientation.w])
-            for static_transform in obj_state.staticTransforms:
-                obj.set_static_transform(*static_transform)
+            for static_transform in obj_state.static_transforms:
+                obj.set_static_transform(static_transform.header.frame_id, static_transform.child_frame_id,
+                                         [static_transform.transform.translation.x,
+                                          static_transform.transform.translation.y,
+                                          static_transform.transform.translation.z],
+                                         [static_transform.transform.rotation.x,
+                                          static_transform.transform.rotation.y,
+                                          static_transform.transform.rotation.z,
+                                          static_transform.transform.rotation.w])
             if obj.visualize:
                 obj.update_color(obj_state.color.r,obj_state.color.g,obj_state.color.b,obj_state.color.a)
                 obj.mesh_path = obj_state.mesh_path
