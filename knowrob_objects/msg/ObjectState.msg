@@ -15,4 +15,4 @@ geometry_msgs/Vector3 size
 # pose of the object
 geometry_msgs/PoseStamped pose
 # static transforms of affordances, etc.
-geometry_msgs/PoseStamped[] static_transforms
+geometry_msgs/TransformStamped[] static_transforms

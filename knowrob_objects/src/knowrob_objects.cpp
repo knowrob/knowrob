@@ -98,12 +98,12 @@ public:
 		geometry_msgs::pl_term_vector3(av[5], obj.size);
 		geometry_msgs::pl_term_pose_stamped(av[6], obj.pose);
 		{ // read static transforms
-			geometry_msgs::PoseStamped staticTransform;
+			geometry_msgs::TransformStamped staticTransform;
 			PlTail staticTransforms(av[7]);
 			PlTerm e;
 			obj.static_transforms.clear();
 			while(staticTransforms.next(e)) {
-				geometry_msgs::pl_term_pose_stamped(e, staticTransform);
+				geometry_msgs::pl_term_transform_stamped(e, staticTransform);
 				obj.static_transforms.push_back(staticTransform);
 			}
 		}
