@@ -51,6 +51,13 @@ namespace geometry_msgs {
         list.next(e); value.z = (double)e;
         list.next(e); value.w = (double)e;
     }
+    void pl_term_transform_stamped(const PlTerm &pl_term, TransformStamped &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.header.frame_id = (char*)e;
+        list.next(e); value.child_frame_id = (char*)e;
+        list.next(e); pl_term_vector3(e, value.transform.translation);
+        list.next(e); pl_term_quaternion(e, value.transform.rotation);
+    }
     void pl_term_pose_stamped(const PlTerm &pl_term, PoseStamped &value) {
         PlTail list(pl_term); PlTerm e;
         list.next(e); value.header.frame_id = (char*)e;
