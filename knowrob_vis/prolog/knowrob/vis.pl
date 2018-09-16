@@ -120,10 +120,10 @@ show_next :-
 %
 % Visually highlights VisualThing in the respective canvas.
 highlight(VisualThing) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm).
 highlight(VisualThing,Color) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
