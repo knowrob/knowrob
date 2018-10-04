@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/buildings.owl#"
+     xml:base="http://knowrob.org/kb/buildings.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/buildings.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#containsCavity -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#containsCavity"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasLevels -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasLevels">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#physicalParts"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasRooms -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasRooms">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#containsCavity"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#physicalParts -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#physicalParts"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#floorNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#floorNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#numberOfLevels -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#numberOfLevels">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#numberOfStories -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#numberOfStories">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#roomNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#roomNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#streetNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#streetNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#buildingParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#buildingParameter"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AboveGroundLevelInAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AboveGroundLevelInAConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BasementLevelInAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BasementLevelInAConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Building -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Building">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanShelterConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Classroom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Classroom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Closet -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Closet">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ConstructionArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Doorway -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Doorway">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Elevator -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Elevator">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartOfABuilding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hallway -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hallway">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanOccupationConstruct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanOccupationConstruct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanShelterConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanShelterConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanOccupationConstruct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LevelOfAConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAFixedHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MechanicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OfficeRoom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OfficeRoom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PartOfABuilding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PartOfABuilding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartOfAnHSC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PartOfAnHSC -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PartOfAnHSC">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Place -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Place"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Restroom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Restroom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RoomInAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartOfABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAFixedHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpaceInAFixedHOC -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpaceInAFixedHOC">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpaceInAHOC -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpaceInAHOC">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanOccupationConstruct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stairway -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stairway">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpaceInAHOC"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StorageRoom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StorageRoom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WallOfAConstruction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WallOfAConstruction">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

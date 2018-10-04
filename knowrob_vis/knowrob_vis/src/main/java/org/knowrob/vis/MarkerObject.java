@@ -109,6 +109,11 @@ public class MarkerObject {
 	public MarkerObject[] getChildren() {
 		return children.toArray(new MarkerObject[children.size()]);
 	}
+        
+        
+        public int getId() {
+                return markerMsg.getId();
+        }
 	
 	
 	public int getType() {

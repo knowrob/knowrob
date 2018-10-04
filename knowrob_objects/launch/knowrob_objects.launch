@@ -1,0 +1,9 @@
+<launch>
+  <arg name="semantic_map" default="package://iai_semantic_maps/owl/kitchen.owl" />
+  
+  <param name="initial_package" type="string" value="knowrob_objects" />
+  <param name="initial_goal" type="string" value="belief_parse('$(arg semantic_map)')" />
+  <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" output="screen"/>
+  
+  <include file="$(find knowrob_objects)/launch/object_state_publisher.launch" />
+</launch>
