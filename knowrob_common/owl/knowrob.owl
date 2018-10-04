@@ -31,6 +31,7 @@
           thereof) in any natural or formal language, as well as to derivations
           of this content or inclusion of it in other ontologies.
         </rdfs:comment>
+        <owl:imports rdf:resource="package://knowrob_common/owl/EASE.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/physical-events.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/motions.owl"/>
