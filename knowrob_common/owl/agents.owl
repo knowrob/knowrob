@@ -1,0 +1,603 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/agents.owl#"
+     xml:base="http://knowrob.org/kb/agents.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/agents.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#agentActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#agentActedOn">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#causalActors -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causalActors">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#causes-Underspecified"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(causalActors EVENT ACTOR) means that ACTOR played a causal role in bringing about EVENT.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#causedBy -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causedBy">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#causalActors"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#causes-Underspecified -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causes-Underspecified"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedAgent -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedAgent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#agentActedOn"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedPerson -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedPerson">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#detectedAgent"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Person"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#doneBy -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#doneBy">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Action"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#performedBy -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#performedBy">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#doneBy"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#preActors -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#preActors"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#properPhysicalParts -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#firstName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#firstName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#fullName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fullName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lastName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lastName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#nameString -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#nameString"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Action -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Agent-Generic -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Agent-Generic">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In artificial intelligence, an intelligent agent is an autonomous entity which observes through sensors and acts upon an environment using actuators (i.e. it is an agent) and directs its activity towards achieving goals.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AgentBodyPart">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty>
+                    <rdf:Description>
+                        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                    </rdf:Description>
+                </owl:onProperty>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Appendage-AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Appendage-AgentBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Arm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Arm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Limb-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#B21 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#B21">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Digit-AnatomicalPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Digit-AnatomicalPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Appendage-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EmbodiedAgent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AgentBodyPart"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Event -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Event"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Digit-AnatomicalPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlyingRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FlyingRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Actuator-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Head-AgentBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AgentBodyPart"/>
+        <rdfs:comment>A specialization of ExternalAnatomicalPart, and AnimalBodyPart, and an instance of UniqueAnatomicalPartType: the collection of all heads of Animals. See also the more specialized Head_Vertebrate.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Head_AnimalBodyPart</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HolderGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HolderGripper">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Actuator-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IndexFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndexFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Arm"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightArm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftHand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightHand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftLeg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftLeg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Leg"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightLeg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Leg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Leg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Limb-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeggedRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeggedRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Leg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Limb-AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Limb-AgentBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Appendage-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LittleFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LittleFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MechanicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MiddleFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MiddleFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Organization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Organization">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Person -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Person">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalPartOfObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PurposefulAction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ResearchOrganization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ResearchOrganization">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Organization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightArm">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Arm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightHand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightLeg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightLeg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Leg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RingFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RingFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Robot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Robot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EmbodiedAgent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RobovieMR2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobovieMR2">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TUM_Rosie -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TUM_Rosie">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Thumb -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thumb">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Wheel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wheel"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WheeledRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WheeledRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Wheel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_common.owl#MobileBase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#Actuator-AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Actuator-AgentBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Appendage-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#Base-AgentBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Base-AgentBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#MobileBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#MobileBase">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Base-AgentBodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#SoftwareAgent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#SoftwareAgent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#IndexFinger"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LittleFinger"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#MiddleFinger"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#RingFinger"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Thumb"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

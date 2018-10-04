@@ -1,6 +1,7 @@
 package org.knowrob.vis;
 
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -60,7 +61,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 
 	private MarkerPublisher() {
-		markers =  new ConcurrentHashMap<String, MarkerObject>(8, 0.9f, 1);
+		markers =  new LinkedHashMap<String, MarkerObject>();
 		markersCache =  new ConcurrentHashMap<String, MarkerObject>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
 	}

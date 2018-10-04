@@ -19,6 +19,48 @@ PREDICATE(ros_init, 0) {
 }
 
 /*********************************/
+/********** ROS messages *********/
+/*********************************/
+
+namespace std_msgs {
+    void pl_term_color(const PlTerm &pl_term, ColorRGBA &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.r = (double)e;
+        list.next(e); value.g = (double)e;
+        list.next(e); value.b = (double)e;
+        list.next(e); value.a = (double)e;
+    }
+};
+namespace geometry_msgs {
+    void pl_term_vector3(const PlTerm &pl_term, Vector3 &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.x = (double)e;
+        list.next(e); value.y = (double)e;
+        list.next(e); value.z = (double)e;
+    }
+    void pl_term_point(const PlTerm &pl_term, Point &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.x = (double)e;
+        list.next(e); value.y = (double)e;
+        list.next(e); value.z = (double)e;
+    }
+    void pl_term_quaternion(const PlTerm &pl_term, Quaternion &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.x = (double)e;
+        list.next(e); value.y = (double)e;
+        list.next(e); value.z = (double)e;
+        list.next(e); value.w = (double)e;
+    }
+    void pl_term_pose_stamped(const PlTerm &pl_term, PoseStamped &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.header.frame_id = (char*)e;
+        list.next(e); // unused
+        list.next(e); pl_term_point(e, value.pose.position);
+        list.next(e); pl_term_quaternion(e, value.pose.orientation);
+    }
+};
+
+/*********************************/
 /********** Parameters ***********/
 /*********************************/
 

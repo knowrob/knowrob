@@ -93,17 +93,17 @@
         backgroundObjects : viewer.backgroundScene,
         markerClient : markerClient
       });
+      
+      window.onresize = function(event) {
+        viewer.resize($(window).width()  - 6,
+                      $(window).height() - 10);
+      };
+      window.onresize(null);
     };
 </script>
 </head>
 
-<body onload="init()" style="position:relative; left:20px;">
-  <h1>KnowRob Web Visualization</h1>
-
-  
-  <div id="markers"    style="position:absolute; left:0px;  top:75px; width:1000px; border: 1px black solid; "></div>
-
-  
-  
+<body onload="init()">
+  <div id="markers" style="position:absolute; left:1px; top:1px; border: 1px black solid; "></div>
 </body>
 </html>

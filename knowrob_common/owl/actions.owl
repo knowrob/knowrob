@@ -1,0 +1,1743 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/actions.owl#"
+     xml:base="http://knowrob.org/kb/actions.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/actions.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/physical-events.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/motions.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/objects.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#bodyPartsUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedObject">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#deviceUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#deviceUsed">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#fromLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fromLocation">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#goalLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#locationSearched -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#locationSearched">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LookingForAThingOrTypeOfThing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#nextAction -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#nextAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectAddedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectAddedTo">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectRemoved -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectRemoved">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#RemovingSomething"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectSought -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectSought">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LookingForAThingOrTypeOfThing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#on-Physical -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputs -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputs"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#primaryObjectMoving -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#primaryObjectMoving">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStarted -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStarted">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStopped -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStopped">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#subAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#thingIncorporated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#thingIncorporated">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toolUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toolUsed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#nextMotion -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob_common.owl#subMotion -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/actions.owl#SemanticMapping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#SemanticMapping">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AcquireGraspOfSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AcquireGraspOfSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Action -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ActionOnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ActionOnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A specialization of both Action and PhysicalEvent; the collection of physical events in which some doer acts on an object. Each instance of ActionOnObject is an action in which both the roles of doneBy and objectActedOn (qq.v.) are filled. Examples include someone typing on a keyboard, a dog scratching itself, and a tornado destroying a building. Non-examples include a person dancing and wind blowing.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwOf2ypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AddingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PickingUpAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ApplyingStuffToSurface -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ApplyingStuffToSurface">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ArrivingAtAPlace -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ArrivingAtAPlace">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+        <rdfs:comment>A physical transfer in which the performer moves to a location other than that from which she started. See also LeavingAPlace.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvyLZypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AscendingEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AscendingEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+        <rdfs:comment>An event is an AscendingEvent if and only if its object (objectMoving) has a higher altitude (altitudeAboveSeaLevel) at the end of the event than it did at the beginning of the event. Thus, some descent may occur during the ascent so long as the net affect is to increase altitude. Climbing stairs, walking down a hill to the top of a higher hill, being lifted, and airplane taking off are exemplars of AscendingEvent. Technically, a standing up or bread rising are not exemplars because the altitudeAboveSeaLevel of these objects is not higher at the end of the ascension. (altitudeAboveSeaLevel is based on the distance between the bottom of the object and the mean sea level.)</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwUX5YZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AttachmentEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AttachmentEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical"/>
+        <rdfs:comment>The collection of events in which one object becomes attached to another. This may involve fasteners of some sort in which case one should use the specialization ConnectingTogether or processes in which no fasteners are used, e.g. magnets moving together, two objects rusting together, chemical bonding.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwTvMaJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cleaning"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ChangingDeviceState -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ChangingDeviceState"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CheckingWhetherConditionObtains -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CheckingWhetherConditionObtains">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A collection of events in which an agent evaluates whether or not some condition obtains. For example, checking whether it is raining outside, checking whether the door is locked.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ChoppingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ChoppingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingInPieces"/>
+        <rdfs:comment>The process of cutting something with a chopping tool, using a chopping motion.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkIY5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RemovingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingABottle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingABottle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingACupboard -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingACupboard">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingADoor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingACupboardDrawer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingACupboardDrawer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingADrawer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingADoor -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingADoor">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingADrawer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingADrawer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ClosingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Collecting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Collecting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Colliding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Colliding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CollidingWithAnObstacle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CollidingWithAnObstacle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Colliding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Collision -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Collision">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of TemporalObjectType and a specialization of ContinuousPhysicalContactSituation and Translation_LocationChange. Each instance of Collision is an event in which two or more PartiallyTangibles bump into each other. Each instance of Collision is immediately preceded by an Approaching, during which at least one of the objectsInContact during the Collision is moving toward the location at which the collision takes place. (Some of the objects in contact during the colliding may already be occupying that location immediately before contact.) The Collision begins once the objects begin to be in contact, and ends once they are no longer in contact (think of two billiard balls bouncing off each other), or when the objects have come to rest in a stable contact position (think of an asteroid smashing into the earth and coming to rest at the bottom of the crater it has created).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Configuration -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Configuration"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ConnectingTogether -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ConnectingTogether">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AttachmentEvent"/>
+        <rdfs:comment>A specialization of both AttachmentEvent and ActionOnObject (q.v.). In a ConnectingTogether event, two or more tangible things get physically connected together (attached) by means of some sort of connector or fastener. Specializations of this collection include Riveting, Splicing, and ChemicalBonding. Note that a ConnectingTogether need not be a Movement_TranslationEvent, since the objects being connected may be already at rest with respect to each other.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVicbZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ControllingAPhysicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ControllingAPhysicalDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ControllingSomething"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the subcollection of actions of ControllingSomething in which the objectControlled is a PhysicalDevice.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ControllingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ControllingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of PurposefulPhysicalAction (q.v.). Each instance of ControllingSomething is a purposeful physical action in which an agent intentionally controls an object (i.e. instance of SomethingExisting). It is not necessary that the agent touch the object being controlled (see objectControlled), only that s/he exercise control over some of its movements, functioning, or actions. Specializations of ControllingSomething include GuidingAMovingObject (some instances of which involve a RemoteControlDevice), HandlingAnObject, Braking, SteeringADeviceByHand, PlayingAMusicalInstrument, CuttingFabric, CarryingWhileLocomoting, and FlushingAToilet. When a ControlDevice (q.v.) is being used by an agent for its primary function, a ControllingSomething event is typically taking place.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingInPieces -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingInPieces">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingSomething"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Separation-Complete"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toolUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Knife"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The collection of all cutting events [CuttingSomething] which are composed of repeated cuttings in which there is a complete separation [Separation_Complete]. As a result, several (or many more) distinct connected objects are created. The pieces may be of similar or vastly dissimilar size. For example, instances of DrillingSomething and SawingSomething have important subevents which are instances of CuttingInPieces, since small pieces (e.g. sawdust) are removed from the larger piece.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwDe-sZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:comment>A specialization of both HandlingADevice and SeparationEvent. Each instance of CuttingSomething is an event in which some piece of material stuff is cut, whether or not a complete separation of parts occurs. Specializations of CuttingSomething include CuttingNails, Butchering, and CuttingFabric.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVijypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DescendingEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DescendingEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Driving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Driving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ExtensionType -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ExtensionType">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PowerGrasp"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FetchAndDeliver -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FetchAndDeliver">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sequence of PickingUpAnObject and
+PuttingDownAnObject.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FillingProcess -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FillingProcess">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViY_JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlippingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FlippingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningAnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlowFromAContainer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlowFromAContainer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:comment>The collection of instances of FluidFlow_Translation in which some fluid flows from a container.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4ruAHBbpz6RGG_g3meuv8ZHw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Flying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flying">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Locomotion-Air"/>
+        <rdfs:comment>The collection of all events of sustainable locomotion of an object through the air or other piece of free space. The providerOfMotiveForce must be able to remain aloft as long as it doesn&apos;t tire out or exhaust its fuel supply. Thus jumping and falling do not count.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwO0KzZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Gliding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Gliding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Locomotion-Air"/>
+        <rdfs:comment>The collection of all instances of Locomotion_Air in which the primaryObjectMoving does not expend significant energy to go faster or higher, although energy may be expended to maintain tautness of its wings, etc.. The movement of air particles under it slow its fall or even push it upwards, while the pull of gravity is translated into forward motion. Such flight generally cannot be sustained for arbitrary lengths of time. The primaryObjectMoving may be an animal or other natural object, or an Artifact.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwPXonZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GraspingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GraspingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HoldingWithOneHand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hand"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HandlingADevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HandlingADevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ControllingAPhysicalDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of HandlingAnObject. Each instance of HandlingADevice is an event in which a device is manipulated (with the operator holding and touching the device) so that it can be used for its primaryFunction. Specializations of HandlingADevice include Pruning, PlayingAMusicalInstrument, OperatingAHouseholdAppliance, PumpingGasEvent, and WritingByHand.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatSource -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatSource"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HoldingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HoldingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Configuration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HoldingWithHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HoldingWithHand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HoldingAnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HoldingWithOneHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HoldingWithOneHand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HoldingWithHand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanWalkingProcess -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanWalkingProcess">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Walking-Generic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Incorporation-Physical -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Action of an agent in which an object or chunk of stuff comes to include, or acquire, or be joined to another object or chunk of stuff.&quot; (Cyc Incorporation-Physical)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Ingesting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ingesting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntermediateGrasp -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntermediateGrasp">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Intrusion -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Intrusion">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A subset of PurposefulAction and ActionOnObject, Intrusion is the collection of actions in which an agent purposefully and illicitly accesses an individual. Objects that can be the foci of instances of Intrusion include only objects that have a levelOfSecurity that is a specialization of the attribute LimitedAccess.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Knedding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knedding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Knife -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knife"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Landing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Landing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArrivingAtAPlace"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementThroughAir"/>
+        <rdfs:comment>An instance of TemporalObjectType and a specialization of ArrivingAtAPlace and PhysicalContactMakingEvent. Each instance of Landing is an event in which a (previously) Airborne object comes to rest on a flat, horizontal surface--often EarthsGround. Specializations include Landing_Aircraft and Perching.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViPP5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Landing-Aircraft -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Landing-Aircraft">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Landing"/>
+        <rdfs:comment>A type of Landing, air transportation, and DeviceFinishingARun. The collection Landing_Aircraft is an AccomplishmentType and a DurativeEventType.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvyClxJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LargeDiameter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LargeDiameter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PowerGrasp"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeavingAPlace -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeavingAPlace">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+        <rdfs:comment>A specialization of both TransferOut and Translation_LocationChange. Each instance of LeavingAPlace is an event in which the performer (see the predicate performedBy) moves, under its own control and often under its own power, from one location to another. Notable specializations of LeavingAPlace include EvacuatingAPlace and ExitingAContainer.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvWSHaJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiftingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiftingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AscendingEvent"/>
+        <rdfs:comment>A FirstOrderCollection and a specialization of AscendingEvent and CausingAnotherObjectsTranslationalMotion. Each instance of LiftingAnObject is a PurposefulPhysicalAction in which an agent lifts (i.e. raises the altitude of) a PartiallyTangible object. This includes lifting an object with a PhysicalDevice, e.g. Tongs or a Forklift.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjUkJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LocatingInIntendedPosition -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LocatingInIntendedPosition">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Locomotion-Air -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Locomotion-Air">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementThroughAir"/>
+        <rdfs:comment>The collection of all instances of LocomotionProcess in which the locomotor is in_ImmersedFully and supported by some GaseousTangibleThing. Includes both the movement of an airplane in flight, and the movement of birds and bats while flying.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv7arnpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LookingForAThingOrTypeOfThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LookingForAThingOrTypeOfThing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#locationSearched"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectSought"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LookingForSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LookingForSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LookingForAThingOrTypeOfThing"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LoweringAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoweringAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MaterialHandling -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MaterialHandling">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mixing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Incorporation-Physical"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AddingSomething"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Stirring"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">two or more substances are combined to form a Mixture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MixingFluids -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MixingFluids">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MixingPowders -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MixingPowders">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mounting-Installing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mounting-Installing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConnectingTogether"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwH8hLJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MountingOntoSurface -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MountingOntoSurface">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mounting-Installing"/>
+        <rdfs:comment>A collection of events. In each MountingOntoSurface event, a physical object is attached to a surface using physical connector(s). The connector(s) may be an adhesive substance or a fastener. Important subcollections of this are MountingOntoSurface, ApplyingAdhesiveBackedMaterialToSurface, and SpreadingSheetOntoSurface.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv3_guJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovementThroughAir -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementThroughAir">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+        <rdfs:comment>The collection of all instances of Movement_TranslationEvent that follow a complete trajectory through the air. [See TrajectoryThroughAir, trajectory_Complete.]</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rOZ0VJAZDQdeO5vqr4dGUkw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingToLocation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningABottle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningABottle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningACupboard -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningACupboard">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningADoor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#Reaching"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningACupboardDrawer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningACupboardDrawer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningADrawer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/motions.owl#Reaching"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningADoor -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningADoor">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningADrawer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningADrawer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PalmarPinch -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PalmarPinch">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrecisionGrasp"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ParallelExtension -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ParallelExtension">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntermediateGrasp"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SensoryEvent"/>
+        <rdfs:comment>A specialization of both SingleDoerAction and InformationTransferPhysicalEvent. Each instance of Perceiving is an event in which an agent (an instance of PerceptualAgent) acquires information through the exercise of its senses.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVjDHJwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:comment>A specialization of both Perceiving and PurposefulAction. Each instance of Perceiving_Voluntary is a perceptual event in which the perceiving agent does not merely passively receive sensory information, but actively filters or directs how it is perceiving. Thus, searching for a set of lost keys would be an instance of Perceiving_Voluntary, as would straining to hear something, but merely hearing a balloon pop next to one would _not_.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvneYtJwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PickingUpAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PickingUpAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#Reaching"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#nextAction"/>
+                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#TakingSomething"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Place -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Place"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pouring -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PouringSomethingInto -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PouringSomethingInto">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pouring"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pouring"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PowerGrasp -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PowerGrasp">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrecisionGrasp -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrecisionGrasp">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrecisionSphere -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrecisionSphere">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrecisionGrasp"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Proprioception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Proprioception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PullingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PullingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PurposefulAction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PushingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PushingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LoweringAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Place"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
+                                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingSomethingSomewhere">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PickingUpAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Reading -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reading">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving-Voluntary"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RegulatingFluidFlow -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RegulatingFluidFlow">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ControllingSomething"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Controlling the flow of a fluid by using a tap to either open or close a portal in the container which holds that fluid.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ReleasingGraspOfSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#OpeningAGripper"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Remembering -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Remembering"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RemovingMaterialFromAContainer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RemovingMaterialFromAContainer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RemovingSomething"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RemovingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RemovingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Separation-Complete"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RfidPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RfidPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SemanticMapPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SemanticMapPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Remembering"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VisualPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SensoryEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensoryEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Separation-Complete -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Separation-Complete"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SeparationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ServingFoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ServingFoodOrDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SinkingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SinkingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DescendingEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SlicingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SlicingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingInPieces"/>
+        <rdfs:comment>To cut as if with a knife; the process of cutting something with a slicing tool, using a slicing motion; cutting which breaks one object into two pieces.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMAJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Spraying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spraying">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:comment>Directing a FluidTangibleThing from one place to another by expelling it with force, rather than along a FluidConduit. However, typically, such a conduit is used to direct the fluid to the point where the Spraying begins.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQtzJZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpreadingOntoSurface -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpreadingOntoSurface">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StandingStill -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StandingStill">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stirring -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stirring">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TakeOff-Flight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakeOff-Flight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LeavingAPlace"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementThroughAir"/>
+        <rdfs:comment>Instances of TakeOff_Flight are events in which an object leaves the ground or other supporting surface and becomes airborne.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwF65FZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TakingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tap-PlumbingFixture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tap-PlumbingFixture"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ThrowingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ThrowingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/motions.owl#ArmMovement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#subMotion"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob_common.owl#nextMotion"/>
+                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                                <owl:onClass rdf:resource="http://knowrob.org/kb/motions.owl#SwingingAnArm"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>An instance of TemporalObjectType and a specialization of ProjectilePropelling. Each instance of ThrowingAnObject is a VoluntaryBodyMovement in which someone sends something flying through the air by quickly moving or straightening his Arm, and, in the process, releasing the object from his grasp.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TouchPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TouchPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransferOut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Translation-LocationChange -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransportationEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransportationEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOffHeatingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOffHeatingDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ChangingDeviceState"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ControllingAPhysicalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOffWater -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOffWater">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ChangingDeviceState"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RegulatingFluidFlow"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Tap-PlumbingFixture"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of events in which a tap is closed and water can no longer flow through it.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOnHeatingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOnHeatingDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingDevice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputs"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatSource"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ChangingDeviceState"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ControllingAPhysicalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOnWater -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TurningOnWater">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ChangingDeviceState"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RegulatingFluidFlow"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Tap-PlumbingFixture"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of events in which a tap is opened and water is permitted to flow through it.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#UsingAScalpel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UsingAScalpel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingSomething"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r0B7VwieLQdiJ1bdMGLqrkA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VisualPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VisualPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perceiving"/>
+        <rdfs:comment>A specialization of Perceiving. Each instance of VisualPerception is an event in which an agent (an instance of PerceptualAgent (q.v.)) sees something by means of an ElectroMagneticRadiationSensor (usually, the agent&apos;s own Eyes) detecting wavelengths of visible light.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVjwtpwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WaitForPredefinedTimeInterval -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WaitForPredefinedTimeInterval">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Waiting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Waiting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Waiting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Walking-Generic -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Walking-Generic">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#ArmMovement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#ArmMovement"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#BodyMovementEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#BodyMovementEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#ClosingAGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#ClosingAGripper"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#OpeningAGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#OpeningAGripper"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#Reaching -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#Reaching"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#SwingingAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#SwingingAnArm"/>
+    
+
+
+    <!-- http://knowrob.org/kb/motions.owl#WindingUpAnArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/motions.owl#WindingUpAnArm"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

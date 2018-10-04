@@ -2,9 +2,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosprolog)
 
-find_package(catkin REQUIRED COMPONENTS roscpp tf roslib rospack)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf roslib rospack)
 
-catkin_package(CATKIN_DEPENDS roscpp roslib rospack)
+catkin_package(
+      LIBRARIES rosprolog
+      INCLUDE_DIRS include
+      CATKIN_DEPENDS geometry_msgs roscpp roslib rospack)
 
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)

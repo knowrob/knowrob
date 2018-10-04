@@ -96,9 +96,10 @@ public class WebServer extends AbstractNodeMain {
 		def.setServeIcon(false);
 		
 		ROSHandler ros_pkg_handler = new ROSHandler();
+		VisWorkspaceHandler vis_ws_handler = new VisWorkspaceHandler();
 
 		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler[] { ros_pkg_handler, resource_handler,  def });
+		handlers.setHandlers(new Handler[] { vis_ws_handler, ros_pkg_handler, resource_handler,  def });
 		server.setHandler(handlers);
 
 		try {
@@ -110,6 +111,30 @@ public class WebServer extends AbstractNodeMain {
 		}
 	}
 	
+	public class VisWorkspaceHandler extends AbstractHandler {
+		public void handle(
+		                   String target,
+		                   Request baseRequest,
+		                   HttpServletRequest request,
+		                   HttpServletResponse response)
+		                   throws IOException, ServletException
+		{
+			String[] path = target.split("/");
+			if(path.length < 3) return;
+			String pkgName = path[1];
+			if(pkgName.equals("lib")) return;
+			String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
+			File visPkg = new File(RosUtilities.rospackFind(main_package));
+			File wsDir = visPkg.getParentFile().getParentFile();
+			File pkgDir = new File(wsDir, pkgName);
+			if(!pkgDir.exists()) return;
+			// pass to standard resource handler
+			ResourceHandler resource_handler = new ResourceHandler();
+			resource_handler.setResourceBase(wsDir.getAbsolutePath());
+			resource_handler.handle(target,baseRequest,request,response);
+		}
+	}
+	
 	public class ROSHandler extends AbstractHandler {
 		public void handle(String target,
 		                   Request baseRequest,
@@ -117,11 +142,11 @@ public class WebServer extends AbstractNodeMain {
 		                   HttpServletResponse response)
 		                   throws IOException, ServletException
 		{
-			// find the basepath for the resource handler
 			String[] path = target.split("/");
 			if(path.length < 3) return;
 			String pkgName = path[1];
 			if(pkgName.equals("lib")) return;
+			// find the basepath for the resource handler
 			String pkgPath = RosUtilities.rospackFind(pkgName);
 			if(pkgPath==null) return;
 			File file = new File(pkgPath);

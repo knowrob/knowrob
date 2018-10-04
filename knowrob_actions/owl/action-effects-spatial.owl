@@ -1,19 +1,32 @@
 <?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY qudt "http://qudt.org/schema/qudt#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY action-effects "http://knowrob.org/kb/action-effects.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
 <rdf:RDF xmlns="http://knowrob.org/kb/action-effects-spatial.owl#"
      xml:base="http://knowrob.org/kb/action-effects-spatial.owl"
-     xmlns:qudt="http://qudt.org/schema/qudt#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#">
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-effects-spatial.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_units.owl"/>
     </owl:Ontology>
     
@@ -32,19 +45,19 @@
 
     <!-- http://knowrob.org/kb/knowrob.owl#swrlActionConcept -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionConcept"/>
+    <owl:AnnotationProperty rdf:about="&knowrob;swrlActionConcept"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#swrlActionVariable -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionVariable"/>
+    <owl:AnnotationProperty rdf:about="&knowrob;swrlActionVariable"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#todo -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo"/>
+    <owl:AnnotationProperty rdf:about="&knowrob;todo"/>
     
 
 
@@ -61,31 +74,31 @@
 
     <!-- http://knowrob.org/kb/knowrob.owl#in-ContGeneric -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#in-ContGeneric"/>
+    <owl:ObjectProperty rdf:about="&knowrob;in-ContGeneric"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#on-Physical -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
+    <owl:ObjectProperty rdf:about="&knowrob;on-Physical"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#spatiallyRelated -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#spatiallyRelated"/>
+    <owl:ObjectProperty rdf:about="&knowrob;spatiallyRelated"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+    <owl:ObjectProperty rdf:about="&knowrob;toLocation"/>
     
 
 
@@ -102,368 +115,16 @@
 
     <!-- http://knowrob.org/kb/knowrob.owl#Action -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Action"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto"/>
+    <owl:Class rdf:about="&knowrob;Action"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Rules
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <rdf:Description rdf:about="urn:swrl#act">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="urn:swrl#obj">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="urn:swrl#to">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description>
-        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ApplyingSomethingToSurface</rdfs:label>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:body>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#spatiallyRelated"/>
-                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
-                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-                            </owl:Restriction>
-                        </swrl:classPredicate>
-                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:head>
-    </rdf:Description>
-    <rdf:Description>
-        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PouringSomethingOnto</rdfs:label>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:body>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#spatiallyRelated"/>
-                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
-                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-                            </owl:Restriction>
-                        </swrl:classPredicate>
-                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:head>
-    </rdf:Description>
-    <rdf:Description>
-        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PuttingSomethingIntoSomething</rdfs:label>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingIntoSomething"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:body>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#spatiallyRelated"/>
-                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
-                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-                            </owl:Restriction>
-                        </swrl:classPredicate>
-                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#in-ContGeneric"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:head>
-    </rdf:Description>
-    <rdf:Description>
-        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PuttingSomethingOnto</rdfs:label>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto"/>
-                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#obj"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
-                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
-                                        <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            </rdf:Description>
-                        </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:body>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#spatiallyRelated"/>
-                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
-                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-                            </owl:Restriction>
-                        </swrl:classPredicate>
-                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
-                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
-                                <swrl:argument2 rdf:resource="urn:swrl#to"/>
-                            </rdf:Description>
-                        </rdf:first>
-                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:head>
-    </rdf:Description>
+    <owl:Class rdf:about="&knowrob;SpatialThing"/>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
 

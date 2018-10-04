@@ -469,19 +469,28 @@ ROS3D.Marker = function(options) {
       var pointLight = new THREE.PointLight(htmlColor(this.msgColor), message.color.a);
       pointLight.position.set(0.0,0.0,0.0);
       this.add( pointLight );
+      //this.add( new THREE.Mesh(new THREE.CubeGeometry(0.2,0.2,0.2), colorMaterial) );
       break;
     case ROS3D.MARKER_SPOT_LIGHT:
       this.isSelectable = false;
       var spotLight = new THREE.SpotLight(htmlColor(this.msgColor), message.color.a);
       spotLight.position.set(0.0,0.0,0.0);
       spotLight.exponent = message.scale.x; // 1
-      spotLight.angle = message.scale.y;    // Math.PI
+      spotLight.angle    = message.scale.y; // Math.PI
+      spotLight.distance = message.scale.z;
       this.add( spotLight );
-      spotLight.target.position.set(0.0,0.0,-1.0);       // default to point down
+      spotLight.target.position.set(0.0,0.0,1.0);       // default to point down
       if(client.markers[message.text])
         spotLight.target = client.markers[message.text]; // look at the target marker
-      else
-        spotLight.add( spotLight.target );               // attach target to light
+      else {
+        var dir_str = message.text.split(" ");
+        if(dir_str.length==3) {
+          var dir = message.text.split(" ").map(parseFloat);
+          spotLight.target.position.set(dir[0],dir[1],dir[2]);
+        }
+        spotLight.add( spotLight.target ); // attach target to light
+      }
+      //this.add( new THREE.Mesh(new THREE.CubeGeometry(0.05,0.05,0.05), colorMaterial) );
       break;
     case ROS3D.MARKER_DIRECTIONAL_LIGHT:
       this.isSelectable = false;
