@@ -52,6 +52,8 @@
 
 :- rdf_meta rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
+            rdf_assert_prolog(r,r,r),
+            rdf_assert_prolog(r,r,r,+),
             rdfs_value_prolog(r,t,?),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
