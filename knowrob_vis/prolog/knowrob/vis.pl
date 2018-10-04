@@ -122,11 +122,16 @@ show_next :-
 %% highlight(+VisualThing,+Color) is det.
 %
 % Visually highlights VisualThing in the respective canvas.
+highlight(Objects) :-
+  ground(Objects),
+  is_list(Objects),!,
+  marker_highlight_remove(all),
+  forall(member(O,Objects), highlight(O)).
 highlight(VisualThing) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm).
 highlight(VisualThing,Color) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
