@@ -25,6 +25,7 @@
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/perception')).
 
+:- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').
 
@@ -64,10 +65,8 @@ test(object_dimensions) :-
 
 test(object_assert_color) :-
   object_assert_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1'),
-  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
-
-test(object_color) :-
-  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
+  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]),
+  !.
 
 test(object_assert_dimensions) :-
   object_assert_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),

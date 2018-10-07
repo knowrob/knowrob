@@ -107,7 +107,7 @@
 % @param ObjectIds the object names
 %
 belief_existing_objects(ObjectIds) :-
-  belief_existing_objects(ObjectIds, [knowrob:'EnduringThing-Localized']).
+  belief_existing_objects(ObjectIds, [dul:'PhysicalObject']).
 
 belief_existing_objects(ObjectIds, ObjectTypes) :-
   findall(J, (
@@ -209,7 +209,7 @@ belief_class_of(Obj, NewObjType) :-
 belief_existing_object_at(_, Transform, Threshold, Obj) :-
   % FIXME: super slow for large belief state
   rdf(Obj, rdf:type, owl:'NamedIndividual', belief_state),
-  rdfs_individual_of(Obj, knowrob:'EnduringThing-Localized'),
+  rdfs_individual_of(Obj, dul:'PhysicalObject'),
   belief_object_at_location(Obj, Transform, Threshold), !.
 
 belief_object_at_location(ObjectId, NewPose, Dmax) :-

@@ -176,10 +176,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#SemanticMapPerception1 -->
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#VisualPerception1 -->
 
-    <owl:NamedIndividual rdf:about="&test;SemanticMapPerception1">
-        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+    <owl:NamedIndividual rdf:about="&test;VisualPerception1">
+        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
         <knowrob:objectActedOn rdf:resource="&test;Cup1"/>
         <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_2"/>
         <knowrob:startTime rdf:resource="&knowrob;timepoint_1331040458"/>
@@ -187,10 +187,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#SemanticMapPerception2 -->
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#VisualPerception2 -->
 
-    <owl:NamedIndividual rdf:about="&test;SemanticMapPerception2">
-        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+    <owl:NamedIndividual rdf:about="&test;VisualPerception2">
+        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
         <knowrob:objectActedOn rdf:resource="&test;Dishwasher1"/>
         <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_1"/>
         <knowrob:startTime rdf:resource="&knowrob;timepoint_1331040458"/>

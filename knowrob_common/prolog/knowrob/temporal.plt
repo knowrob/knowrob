@@ -27,8 +27,8 @@
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/entity')).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal.owl').
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal_test.owl').
+%:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/test/temporal_test.owl').
 
 :- rdf_db:rdf_register_prefix(knowrob_temporal_test, 'http://knowrob.org/kb/knowrob_temporal_test.owl#', [keep(true)]).
 
@@ -122,18 +122,18 @@ test(temporal_part_has_S_P_O_unbound, [nondet]) :-
   O = literal(type(_,10.0)).
 
 test(temporal_part_has_type) :-
-  temporal_part_has(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, Type),
+  temporal_part_has(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', rdf:type, Type),
   rdf_equal(Type, knowrob:'Cup'), !.
 
 test(temporal_part_has_type_holds) :-
-  holds(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, knowrob:'Cup'), !.
+  holds(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', rdf:type, knowrob:'Cup'), !.
 
 test(temporal_part_has_type_descr) :-
-  entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', Descr),
+  entity(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', Descr),
   entity_has(Descr, type, cup), !.
 
 test(temporal_part_type_match) :-
-  entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', [an, object, [type, cup]]), !.
+  entity(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', [an, object, [type, cup]]), !.
 
 
 :- end_tests(knowrob_temporal).

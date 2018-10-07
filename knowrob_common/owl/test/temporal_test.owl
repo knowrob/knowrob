@@ -13,8 +13,8 @@
 ]>
 
 
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_temporal.owl#"
-     xml:base="http://knowrob.org/kb/knowrob_temporal.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_temporal_test.owl#"
+     xml:base="http://knowrob.org/kb/knowrob_temporal_test.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#"
@@ -23,10 +23,21 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_temporal.owl">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_temporal_test.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
     
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_temporal_test.owl#PhysicalArtifact_GSFgh4u6">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/knowrob_temporal_test.owl#TemporalPart_cxvn894t"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_temporal_test.owl#TemporalPart_cxvn894t">
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <rdf:type rdf:resource="&knowrob;Cup"/>
+        <knowrob:startTime rdf:datatype="&xsd;float">0</knowrob:startTime>  
+        <knowrob:temporalProperty rdf:resource="&rdf;type"/>
+    </owl:NamedIndividual>
 </rdf:RDF>
 
 

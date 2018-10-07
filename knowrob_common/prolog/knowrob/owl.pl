@@ -77,6 +77,7 @@
 :- multifile owl_instance_from_class/3.
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
 
 		 /*******************************
 		 *		  ABOX reasoning		*
@@ -127,7 +128,6 @@ owl_has_prolog(S,P,Val) :-
 % @param Prop  Property whose restrictions in Class are being considered
 % @param Val   Values that appear in a restriction of a superclass of Class on Property
 %
-% FIXME: this seems to be very slow! it shouldn't be
 owl_class_properties(Class, Prop, Val) :-
   rdfs_individual_of(Class, owl:'Class'), % make sure Class is bound before calling owl_subclass_of
   (owl_class_properties_some(Class, Prop, Val);
@@ -304,53 +304,9 @@ owl_instance_from_class(Class, Instance) :-
     rdf_instance_from_class(Class, Instance)), !.
 
 %%%%%%%%%%%%%%%%%%%
-%% knowrob:TimePoint
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [], TimePoint) :- !,
-  current_time(T),
-  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint) :- !,
-  time_term(T,T_value),
-  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T_value, TimePoint),
-  rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
-  
-%%%%%%%%%%%%%%%%%%%
-%% knowrob:TimeInterval
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start], TimeInterval) :- !,
-  time_term(Start, Start_v), 
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v], '_', TimeInterval),
-  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
-  rdf_assert(TimeInterval, knowrob:'startTime', StartI).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start,end=End], TimeInterval) :- !,
-  time_term(Start, Start_v), time_term(End, End_v), 
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=End_v], EndI),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v,End_v], '_', TimeInterval),
-  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
-  rdf_assert(TimeInterval, knowrob:'startTime', StartI),
-  rdf_assert(TimeInterval, knowrob:'endTime', EndI).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  number(I), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=I], TimeInterval).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  interval(I, [Start,End]), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start,end=End], TimeInterval).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  interval(I, [Start]), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start], TimeInterval).
-
-%%%%%%%%%%%%%%%%%%%
 %% knowrob:Pose
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[X,Y,Z],[QW,QX,QY,QZ])], Pose) :- !,
-  rdfs_individual_of(Frame, knowrob:'SpatialThing-Localized'),
   rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', Pose),
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
@@ -384,10 +340,10 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#FrameOfReference', [u
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:'SpaceRegion'
 
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#SpaceRegion', [axioms=Axioms], SpaceRegion) :- !,
+owl_instance_from_class('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl', [axioms=Axioms], SpaceRegion) :- !,
   location_name_args_(Axioms,Args),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', SpaceRegion),
-  rdf_assert(SpaceRegion, rdf:type, knowrob:'SpaceRegion'),
+  atomic_list_concat(['http://www.ontologydesignpatterns.org/ont/dul/DUL.owl'|Args], '_', SpaceRegion),
+  rdf_assert(SpaceRegion, rdf:type, dul:'Place'),
   forall( member([P,O], Axioms), rdf_assert(SpaceRegion, P, O) ).
 
 location_name_args_([[P,O]|Axioms], [P_name|[O_name|Args]]) :-

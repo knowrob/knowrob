@@ -8,6 +8,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
 
+:- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 
 :- dynamic test_object/1.

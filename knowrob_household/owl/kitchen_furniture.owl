@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
-     xml:base="http://knowrob.org/kb/knowrob.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/kitchen_furniture.owl#"
+     xml:base="http://knowrob.org/kb/kitchen_furniture.owl"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -11,34 +11,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/kitchen_furniture.owl">
-        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_activities.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/groceries.owl"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This ontology describes different furniture pieces regularly
-present in (western) kitchens.
-These are described by their functionality:
-What they are used for
-(typePrimaryFunction-deviceUsedFor)
-and what they most likely contain
-(typePrimaryFunction-containerFor).</rdfs:comment>
     </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Datatypes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://qudt.org/vocab/unit#DegreeCelsius -->
-
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#DegreeCelsius"/>
     
 
 
@@ -74,23 +49,6 @@ and what they most likely contain
     <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#workingTemperature -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
     
 
 
@@ -157,15 +115,15 @@ and what they most likely contain
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CoolingDevice -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoolingDevice"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CoolingProcess -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CoolingDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoolingProcess"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoolingDevice"/>
     
 
 
@@ -359,12 +317,6 @@ and what they most likely contain
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
-                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">150</owl:hasValue>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -413,13 +365,7 @@ and what they most likely contain
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CoolingProcess"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
-                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">6.0</owl:hasValue>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooling"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of devices used for cold storage, for example, knowrob refrigerators used for keeping food cold.</rdfs:comment>
@@ -445,12 +391,6 @@ and what they most likely contain
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Freezing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
-                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">-18.0</owl:hasValue>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -459,12 +399,6 @@ and what they most likely contain
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RegularOven">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
-                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">200</owl:hasValue>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -478,12 +412,6 @@ and what they most likely contain
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#workingTemperature"/>
-                <owl:hasValue rdf:datatype="http://qudt.org/vocab/unit#DegreeCelsius">150</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The part of a CookingRange (cf) that has the burners and is used for frying &amp; boiling in pots &amp; pans. Often called &apos;Stove&apos; in english..</rdfs:comment>
