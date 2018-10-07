@@ -26,8 +26,7 @@
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-effects-spatial.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_units.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
     
 

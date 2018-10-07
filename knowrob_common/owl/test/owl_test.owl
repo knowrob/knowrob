@@ -29,16 +29,18 @@
     
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th">
         <rdf:type rdf:resource="&knowrob;Cup"/>
+        <rdf:type rdf:resource="&knowrob;Container"/>
         <knowrob:nameString rdf:datatype="&xsd;string">cup_name</knowrob:nameString>  
         <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th@t"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543">
         <rdf:type rdf:resource="&knowrob;Refrigerator"/>
+        <rdf:type rdf:resource="&knowrob;Container"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&knowrob;Location_on-Physical_Refrigerator_fg45543">
-        <rdf:type rdf:resource="&knowrob;SpaceRegion"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place"/>
         <knowrob:on-Physical rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543"/>
     </owl:NamedIndividual>
     

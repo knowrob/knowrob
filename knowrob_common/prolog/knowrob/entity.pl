@@ -53,6 +53,7 @@
             with_owl_description(r,r,t).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -72,17 +73,18 @@ entity(Entity, EntityClass) :-
 
 entity(Entity, Descr) :-
   var(Descr), !,
-  rdfs_individual_of(Entity,owl:'Thing'),
+  rdfs_individual_of(Entity,dul:'Entity'),
   once(entity_head(Entity, [A,TypeBase], _, TypeIri)),
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
-  once(owl_individual_of(Entity, owl:'Thing')),
+  once(owl_individual_of(Entity, dul:'Entity')),
   \+ rdfs_individual_of(Entity, knowrob:'TemporalPart').
 
 %% Time point entities
+% @deprecated
 entity_(Entity, [a, timepoint, Time]) :-
   number(Time), 
   owl_instance_from_class(knowrob:'TimePoint', [instant=Time], Entity), !.
@@ -96,6 +98,7 @@ entity_(Entity, [a, timepoint, [name,Name]]) :-
   owl_instance_from_class(knowrob:'TimePoint', [instant=TimeValue], Entity), !.
 
 %% Time interval entities
+% @deprecated
 entity_(Entity, [an, interval, [Begin, End]]) :-
   owl_instance_from_class(knowrob:'TimeInterval', [begin=Begin,end=End], Entity), !.
 entity_(Entity, [an, interval, [Begin]]) :-
@@ -122,7 +125,7 @@ entity_(Entity, [a|[pose|Descr]]) :-
 entity_(Entity, [a, location|Descr]) :-
   entity_axioms(Descr, 'http://knowrob.org/kb/knowrob.owl#spatiallyRelated', Axioms),
   length(Axioms, L), (L > 0),
-  owl_instance_from_class(knowrob:'SpaceRegion', [axioms=Axioms], Entity), !.
+  owl_instance_from_class(dul:'Place', [axioms=Axioms], Entity), !.
 
 %% Entity type description `a|an pose|location|...`
 entity_(Entity, [a, Type|Descr]) :-
@@ -248,13 +251,13 @@ entity_has([_|Tail], Key, Val) :- entity_has(Tail, Key, Val).
 %
 entity_type([a,timepoint],  'http://knowrob.org/kb/knowrob.owl#TimePoint').
 entity_type([an,interval],  'http://knowrob.org/kb/knowrob.owl#TimeInterval').
-entity_type([an,action],    'http://knowrob.org/kb/knowrob.owl#Action').
-entity_type([an,event],     'http://knowrob.org/kb/knowrob.owl#Event').
-entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized').
-entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#SpaceRegion').
 entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
 entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
-entity_type([a,thing],      'http://www.w3.org/2002/07/owl#Thing').
+entity_type([an,action],    'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action').
+entity_type([an,event],     'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event').
+entity_type([an,object],    'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject').
+entity_type([a,location],   'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place').
+entity_type([a,thing],      'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity').
 
 entity_type(Entity, TypeBase, Entity) :-
   atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.
@@ -313,23 +316,23 @@ entity_assert(Entity, [[type,TypeDescr]|Descr]) :-
 entity_assert(Entity, [[Key,Value]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
   entity_iri(PropIri, Key, lower_camelcase),
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
-  ->  ( % nested entity
-      % TODO: support recursive asserting (i.e., call enity_assert instead)
-      entity(ValueEntity, Value),
-      rdf_assert(Entity, PropIri, ValueEntity)
-  ) ; ( % data property
-      rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
-      ( rdf_phas(PropIri, rdfs:range, Range) ->
-        rdf_assert(Entity, PropIri, literal(type(Range,Value))) ;
-        rdf_assert(Entity, PropIri, literal(Value)) )
+  once((
+    rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
+    % TODO: support recursive asserting (i.e., call enity_assert instead)
+    entity(ValueEntity, Value),
+    rdf_assert(Entity, PropIri, ValueEntity)
+  ) ; (
+    rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
+    ( rdf_phas(PropIri, rdfs:range, Range) ->
+      rdf_assert(Entity, PropIri, literal(type(Range,Value))) ;
+      rdf_assert(Entity, PropIri, literal(Value)) )
   )),
   entity_assert(Entity, Descr).
 
 entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
   entity_iri(PropIri, Key, lower_camelcase),
-  entity(Interval, IntervalDescr),
+  entity_interval(IntervalDescr, Interval),
   (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
   ->  ( % data property
       rdf_phas(PropIri, rdfs:range, Range) ->
@@ -343,6 +346,9 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   entity_assert(Entity, Descr).
 
 entity_assert(_, []).
+
+entity_interval([an,interval,I], I) :- !.
+entity_interval(Evt, I) :- interval(Evt,I).
 
 %% entity_retract(+Entity).
 %
@@ -499,6 +505,7 @@ entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Ta
 entity_properties([[inverse_of(_),_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
+% @deprecated
 entity_properties([[PropIri,TimeIri]|Tail],
                   [[Key, [a,timepoint,Time]]|DescrTail]) :-
   once((nonvar(TimeIri);nonvar(Time))),
@@ -536,12 +543,13 @@ entity_axioms([[P_descr,O_desc|_]|Descr], AxiomIri, [[P,O]|Axioms]) :-
 entity_axioms([], _, []).
 
 
+% @deprecated
 entity_generate(Entity, [a,timepoint], _, [a,timepoint,Time]) :-
   rdfs_individual_of(Entity, knowrob:'TimePoint'),
   time_term(Entity,Time), !.
 
 entity_generate(Entity, [an,interval], _, [an,interval,Interval]) :-
-  rdfs_individual_of(Entity, knowrob:'TemporalThing'),
+  rdfs_individual_of(Entity, dul:'Event'),
   interval(Entity,Interval), !.
 
 entity_generate(Pose, [a, pose], _, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
@@ -591,7 +599,7 @@ entity_head(Entity, [A,Type], _, TypeIri) :-
   nonvar(Entity),
   findall([A,Type,TypeIri], (
     ( entity_type([A,Type], TypeIri), rdfs_individual_of(Entity, TypeIri) );
-    [A,Type,TypeIri]=[a,thing,'http://www.w3.org/2002/07/owl#Thing']
+    [A,Type,TypeIri]=[a,thing,'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity']
   ), Types),
   member([A,Type,TypeIri], Types),
   % pick only the most special types

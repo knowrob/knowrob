@@ -40,7 +40,6 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
     
 
 
@@ -370,12 +369,6 @@
     
 
 
-    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#executesTask -->
-
-    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#executesTask"/>
-    
-
-
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
@@ -409,12 +402,6 @@
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent"/>
-    
-
-
-    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isAgentInvolvedIn -->
-
-    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isAgentInvolvedIn"/>
     
 
 
@@ -534,25 +521,41 @@
     
 
 
-    <!-- http://knowrob.org/ont/EASE.owl#Planning -->
+    <!-- http://www.ease.org/ont/EASE.owl#LookingAt -->
 
-    <owl:Class rdf:about="http://knowrob.org/ont/EASE.owl#Planning">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/ont/EASE.owl#Prospecting"/>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#LookingAt">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#NonCompositeAction"/>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/ont/EASE.owl#Prediction -->
+    <!-- http://www.ease.org/ont/EASE.owl#HeadMovement -->
 
-    <owl:Class rdf:about="http://knowrob.org/ont/EASE.owl#Prediction">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/ont/EASE.owl#Prospecting"/>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#HeadMovement">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Motion"/>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/ont/EASE.owl#Prospecting -->
+    <!-- http://www.ease.org/ont/EASE.owl#Planning -->
 
-    <owl:Class rdf:about="http://knowrob.org/ont/EASE.owl#Prospecting">
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Planning">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Prediction -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prediction">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Prospecting -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prospecting">
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#MentalAction"/>
     </owl:Class>
     
@@ -678,6 +681,14 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#Attaching -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Attaching">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Contact"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#Avoiding -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Avoiding">
@@ -689,6 +700,15 @@
                 <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Boiling -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Boiling">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Vaporization"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In each instance of this collection some liquid matter is raised to its boilingPoint and is thereby changed from being in the Liquid-StateOfMatter to being in the Gaseous-StateOfMatter.</rdfs:comment>
     </owl:Class>
     
 
@@ -860,6 +880,14 @@
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#NonCompositeAction"/>
         <rdfs:label>Composite action</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Condensing -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Condensing">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -1094,6 +1122,14 @@
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicsProcess"/>
         <rdfs:comment>&quot;Force dynamics is a semantic category that describes the way in which entities interact with reference to force. Force Dynamics gained a good deal of attention in cognitive linguistics due to its claims of psychological plausibility and the elegance with which it generalizes ideas not usually considered in the same context. The semantic category of force dynamics pervades language on several levels. Not only does it apply to expressions in the physical domain like leaning on or dragging, but it also plays an important role in expressions involving psychological forces (e.g. wanting or being urged). Furthermore, the concept of force dynamics can be extended to discourse. For example, the situation in which speakers A and B argue, after which speaker A gives in to speaker B, exhibits a force dynamic pattern.&quot; Wikipedia</rdfs:comment>
         <rdfs:label>Force dynamics process</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Freezing -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Freezing">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -1398,6 +1434,14 @@
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Locomotion">
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#DirectedMotion"/>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#PrehensileMotion"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Melting -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Melting">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -2161,7 +2205,7 @@
     <!-- http://www.ease.org/ont/EASE.owl#Simulating -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Simulating">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/ont/EASE.owl#Prospecting"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
     </owl:Class>
     
 
@@ -2226,6 +2270,31 @@
                 <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#StateOfMatter -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#StateOfMatter">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#State"/>
+        <rdfs:label>State of matter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Sublimating -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Sublimating">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#SublimatingToSolid -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#SublimatingToSolid">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -2367,6 +2436,15 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#Vaporization -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Vaporization">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#Walking -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Walking">
@@ -2385,48 +2463,13 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Abstract -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Abstract">
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Abstract"/>
     
 
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ease.org/ont/EASE.owl#MentalAction"/>
-                    <rdf:Description rdf:about="http://www.ease.org/ont/EASE.owl#PhysicalAction"/>
-                </owl:unionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
-                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#executesTask"/>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#performedBy"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Event with at least one Agent that isParticipantIn it, and that executes a Task that typically isDefinedIn a Plan, Workflow, Project, etc.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"/>
-        <rdfs:label xml:lang="en">Action</rdfs:label>
-        <rdfs:label xml:lang="it">Azione</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
     
 
 
@@ -2438,9 +2481,7 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Amount -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Amount">
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Amount"/>
     
 
 
@@ -2458,17 +2499,13 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event">
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
     
 
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object">
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
     
 
 
@@ -2486,21 +2523,7 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor"/>
-                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
-        <owl:disjointWith rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Physical value of a physical object, e.g. density, color, etc.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"/>
-        <rdfs:label xml:lang="it">Caratteristica fisica</rdfs:label>
-        <rdfs:label xml:lang="en">Physical attribute</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
     
 
 
@@ -2524,40 +2547,7 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
-                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf"/>
-                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
-                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
-                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any aspect of an Entity (but not a part of it), which cannot exist without that Entity. For example, the way the surface of a specific PhysicalObject looks like, or the specific light of a place at a certain time, are examples of Quality, while the encoding of a Quality into e.g. a PhysicalAttribute should be modeled as a Region. 
-From the design viewpoint, the Quality-Region distinction is useful only when individual aspects of an Entity are considered in a domain of discourse. 
-For example, in an automotive context, it would be irrelevant to consider the aspects of car windows for a specific car, unless the factory wants to check a specific window against design parameters (anomaly detection). 
-On the other hand, in an antiques context, the individual aspects for a specific piece of furniture are a major focus of attention, and may constitute the actual added value, because the design parameters for old furniture are often not fixed, and may not be viewed as &apos;anomalies&apos;.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"/>
-        <rdfs:label xml:lang="en">Quality</rdfs:label>
-        <rdfs:label xml:lang="it">Qualità</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality" />
     
 
 

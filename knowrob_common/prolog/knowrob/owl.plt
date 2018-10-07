@@ -27,51 +27,12 @@
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/temporal')).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_owl_test.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/test/owl_test.owl').
 
 :- rdf_db:rdf_register_prefix(test_owl, 'http://knowrob.org/kb/knowrob_owl_test.owl#', [keep(true)]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% OWL entity descriptions
-
-%% Intervals
-
-test(assert_timepoint) :-
-  entity_assert(knowrob:'timepoint_20.0', [a, timepoint, 20.0]).
-
-test(assert_timepoint_with_value_key) :-
-  entity_assert(knowrob:'timepoint_30.0', [a, timepoint, [value, 30.0]]).
-
-test(assert_timepoint_with_name_key) :-
-  entity_assert(knowrob:'timepoint_40.0', [a, timepoint, [name, knowrob:'timepoint_40.0']]).
-
-test(query_timepoint) :-
-  entity(knowrob:'timepoint_20.0', [a, timepoint, 20.0]).
-
-test(query_timepoint_with_value_key) :-
-  entity(knowrob:'timepoint_20.0', [a, timepoint, [value, '20.0']]).
-
-test(query_timepoint_with_name_key) :-
-  entity(knowrob:'timepoint_20.0', [a, timepoint, [name, knowrob:'timepoint_20.0']]).
-
-test(generate_timepoint_description) :-
-  entity(knowrob:'timepoint_20.0', X),
-  X = [a, timepoint, 20.0].
-
-test(generate_timepoint_description_unexisting, [fail]) :-
-  entity(knowrob:'timepoint_4530.0', X), X = [a, timepoint, 4530.0].
-
-test(assert_interval) :-
-  entity_assert(knowrob:'TimeInterval_20.0_40.0', [an, interval, [20.0,40.0]]).
-
-test(assert_interval_with_properties) :-
-  entity_assert(knowrob:'TimeInterval_20.0_40.0', [an, interval,
-      [start_time, [a, timepoint, 20.0]],
-      [end_time, [a, timepoint, 40.0]]]).
-
-test(generate_interval_description) :-
-  entity(knowrob:'TimeInterval_20.0_40.0', X), X = [an, interval, [20.0,40.0]].
-
 
 %% Events
 
@@ -80,9 +41,9 @@ test(assert_event) :-
   rdfs_individual_of(Evt, knowrob:'Thinking').
 
 test(assert_event_with_property) :-
-  entity_assert(Evt, [an, event, [type, thinking], [start_time, [a, timepoint, 20.0]]]),
-  rdfs_individual_of(Evt, knowrob:'Thinking'),
-  rdf_has(Evt, knowrob:'startTime', knowrob:'timepoint_20.0').
+  entity_assert(Evt, [an, event, [type, ease:'Prospecting'], [start_time, 20.0]]),
+  rdfs_individual_of(Evt, ease:'Prospecting'),
+  rdf_has_prolog(Evt, knowrob:'startTime', 20.0).
 
 
 %% Objects
@@ -94,27 +55,27 @@ test(assert_object) :-
 test(assert_object_with_property) :-
   entity_assert(Obj, [an, object, [type, dough], [volume_of_object, 10.0]]),
   rdfs_individual_of(Obj, knowrob:'Dough'),
-  rdf_has(Obj, knowrob:'volumeOfObject', literal(type(xsd:float,10.0))).
+  rdf_has_prolog(Obj, knowrob:'volumeOfObject', 10.0).
 
 test(generate_refrigerator_description) :-
   entity(test_owl:'Refrigerator_fg45543', X),
-  X = [an, object, [type, refrigerator]].
+  X = [an, object, [type, container]].
 
 test(query_refrigerator, [nondet]) :-
-  entity(Cont, [an, object, [type, refrigerator]]),
+  entity(Cont, [an, object, [type, container]]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 
-test(query_containerFo1, [nondet,fail]) :-
-  entity_assert(Obj, [an, object, [type, storage_construct]]),
+test(query_containerFor1, [nondet,fail]) :-
+  entity_assert(Obj, [an, object, [type, container]]),
   entity(Obj, [an, object,
-    [type, storage_construct],
+    [type, container],
     [type, restriction(
       knowrob:'typePrimaryFunction-containerFor',
       some_values_from(knowrob:'Perishable'))]]).
   
 test(query_containerFor2, [nondet]) :-
   entity(Obj, [an, object,
-    [type, storage_construct],
+    [type, container],
     [type, restriction(
       knowrob:'typePrimaryFunction-containerFor',
       some_values_from(knowrob:'Perishable'))]]),
@@ -122,7 +83,7 @@ test(query_containerFor2, [nondet]) :-
 
 test(query_primary_storage_place, [nondet]) :-
   entity(Obj, [an, object,
-    [type, storage_construct],
+    [type, container],
     [type, restriction(
         knowrob:'typePrimaryFunction-containerFor',
         some_values_from(knowrob:'Perishable'))]
@@ -155,11 +116,11 @@ test(query_cup, [nondet]) :-
 
 test(assert_pose) :-
   entity_assert(Pose, [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]]),
-  rdf_split_url(_, 'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', Pose),
-  rdfs_individual_of(knowrob:'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', knowrob:'Pose').
+  rdfs_individual_of(Pose, knowrob:'Pose').
 
 test(generate_pose_description) :-
-  entity(knowrob:'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', X),
+  entity_assert(Pose, [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]]),
+  entity(Pose, X),
   X = [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]].
 
 
@@ -167,11 +128,11 @@ test(generate_pose_description) :-
 
 test(assert_location) :-
   entity_assert(Loc, [a, location]),
-  rdfs_individual_of(Loc, knowrob:'SpaceRegion').
+  rdfs_individual_of(Loc, dul:'Place').
 
 test(assert_location_with_property) :-
   entity_assert(Loc, [a, location, [in-cont_generic, [an, object, [type, container]]]]),
-  rdfs_individual_of(Loc, knowrob:'SpaceRegion'),
+  rdfs_individual_of(Loc, dul:'Place'),
   rdf_has(Loc, knowrob:'in-ContGeneric', O),
   rdfs_individual_of(O, knowrob:'Container').
 
@@ -184,8 +145,8 @@ test(generate_location_description) :-
 %% Fluents
 
 test(assert_temporal_part) :-
-  entity_assert(Obj, [an, object, [type, dough], [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]]]),
-  atom(Obj), rdfs_individual_of(Obj, knowrob:'Dough'),
+  entity_assert(Obj, [an, object, [type, drawer], [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]]]),
+  atom(Obj), rdfs_individual_of(Obj, knowrob:'Drawer'),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), 5.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,20.0]),
   not( holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,21.0]) ).
@@ -202,9 +163,9 @@ test(assert_temporal_part_changing_value) :-
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), [20.0,30.0]).
 
 test(generate_temporal_part_description) :-
-  Descr=[an, object, [type, dough], [volume_of_object, 10.0, during, [an, interval, [60.0,70.0]]]],
+  Descr=[an, object, [type, drawer], [volume_of_object, 10.0, during, [an, interval, [60.0,70.0]]]],
   entity_assert(Obj, Descr),
-  rdfs_individual_of(Obj, knowrob:'Dough'),
+  rdfs_individual_of(Obj, knowrob:'Drawer'),
   entity(Obj, Descr_),
   Descr_=Descr.
   

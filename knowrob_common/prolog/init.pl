@@ -44,7 +44,7 @@
 
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('semweb/owl_export')).
+%:- use_module(library('semweb/owl_export')).
 
 :- use_module(library('knowrob/utility/delay')).
 :- use_module(library('knowrob/utility/atoms')).
@@ -61,12 +61,14 @@
 
 
 % parse OWL files, register name spaces
-:- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
+%:- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob.owl').
 
-:- rdf_db:rdf_register_ns(rdfs,    'http://www.w3.org/2000/01/rdf-schema#',     [keep(true)]).
-:- rdf_db:rdf_register_ns(owl,     'http://www.w3.org/2002/07/owl#',            [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',     [keep(true)]).
+:- rdf_db:rdf_register_ns(rdfs,    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(owl,     'http://www.w3.org/2002/07/owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(dul,     'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease,    'http://www.ease.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 
 % convenience: set some Prolog flags in order *not to* trim printed lists with [...]

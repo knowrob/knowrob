@@ -173,10 +173,10 @@ rdf_assert_prolog(S,P,O,Graph) :-
 %
 % @tbd convert to standard SI unit
 %
-rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
-  rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
-  rdf_vector_prolog(Val, Vec), !.
+%rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+  %rdf_vector_prolog(Val, Vec), !.
+%rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+  %rdf_vector_prolog(Val, Vec), !.
 rdfs_value_prolog(P, literal(type(_,Val)), Vec) :-
   rdfs_subproperty_of(P, knowrob:vector),
   rdf_vector_prolog(Val, Vec), !.

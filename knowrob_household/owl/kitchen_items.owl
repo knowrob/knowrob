@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
-     xml:base="http://knowrob.org/kb/knowrob.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/kitchen_items.owl#"
+     xml:base="http://knowrob.org/kb/kitchen_items.owl"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -12,16 +12,8 @@
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/kitchen_items.owl">
         <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_activities.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/groceries.owl"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This ontology describes items used in kitchens.
-These are mainly FoodVessels and FoodUtensils.
-FoodVessels describe what they usually contain and
-for which actions they are used
-(typeprimaryFunction-containerFor, typePrimaryFunction-itemUsedFor)
-and FoodUtensils describe with
-which objects they are usable and for which actions
-(typeprimaryFunction-usableWith, typePrimaryFunction-toolUsedFor).</rdfs:comment>
     </owl:Ontology>
     
 
@@ -189,7 +181,6 @@ which objects they are usable and for which actions
                 <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cake"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#StoveTopCookingPot"/>
     </owl:Class>
     
 
@@ -225,7 +216,7 @@ which objects they are usable and for which actions
 
     <!-- http://knowrob.org/kb/knowrob.owl#ContainerArtifact -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Container"/>
     
 
 
@@ -284,21 +275,6 @@ which objects they are usable and for which actions
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>The collection of all cutting boards -- movable flat surfaces, usually of wood or plastic, on which quantities of food can be cut up.</rdfs:comment>
-        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVil2JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -511,24 +487,10 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HandTool"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
     </owl:Class>
     
 
@@ -537,9 +499,8 @@ which objects they are usable and for which actions
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodVessel">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Basin"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Container"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TerrestrialFunctioningObject"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
@@ -569,14 +530,13 @@ which objects they are usable and for which actions
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Fork-SilverwarePiece">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Fork-Food"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SilverwarePiece"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#TableKnife"/>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#GraspingSomething -->
+    <!-- http://www.ease.org/ont/EASE.owl#Grasping -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Grasping"/>
     
 
 
@@ -633,9 +593,9 @@ which objects they are usable and for which actions
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing -->
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
     
 
 
@@ -757,19 +717,6 @@ which objects they are usable and for which actions
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Saucer">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingVessel"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -824,19 +771,6 @@ which objects they are usable and for which actions
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -845,7 +779,6 @@ which objects they are usable and for which actions
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoupSpoon">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spoon-SilverwarePiece"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#Teaspoon"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A spoon with a larger-than-normal basin, used for eating soup.</rdfs:comment>
     </owl:Class>
     
@@ -904,19 +837,6 @@ which objects they are usable and for which actions
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Stirring"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -960,12 +880,6 @@ which objects they are usable and for which actions
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#TerrestrialFunctioningObject -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TerrestrialFunctioningObject"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Thermos -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thermos">
@@ -993,7 +907,7 @@ which objects they are usable and for which actions
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingSomething"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease.org/ont/EASE.owl#Grasping"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1015,7 +929,7 @@ which objects they are usable and for which actions
     <!-- http://knowrob.org/kb/knowrob.owl#Tray -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tray">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ContainerArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Container"/>
     </owl:Class>
     
 
@@ -1036,19 +950,6 @@ which objects they are usable and for which actions
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WireWhisk">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 

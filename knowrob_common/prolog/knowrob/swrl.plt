@@ -27,7 +27,7 @@
 :- use_module(library('knowrob/entity')).
 :- use_module(library('knowrob/temporal')).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/swrl_test.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/test/swrl_test.owl').
 
 :- rdf_db:rdf_register_prefix(test_swrl, 'http://knowrob.org/kb/swrl_test#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
@@ -72,9 +72,9 @@ test(swrl_Driver_holds, [nondet]) :-
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Alex', test_swrl:'Person'),
+  \+ owl_individual_of_during(test_swrl:'Alex', dul:'Person'),
   rdf_swrl_load('Person'),
-  owl_individual_of_during(test_swrl:'Alex', test_swrl:'Person').
+  owl_individual_of_during(test_swrl:'Alex', dul:'Person').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person2, [nondet]) :-
@@ -158,9 +158,9 @@ test(swrl_projection_Driver, [nondet]) :-
   rdf_has(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
 test(swrl_projection_Person1, [nondet]) :-
-  \+ rdf_has(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
+  \+ rdf_has(test_swrl:'Alex', rdf:type, dul:'Person'),
   rdf_swrl_project('Person'),
-  rdf_has(test_swrl:'Alex', rdf:type, test_swrl:'Person').
+  rdf_has(test_swrl:'Alex', rdf:type, dul:'Person').
 
 test(swrl_projection_Person2, [nondet]) :-
   \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
@@ -219,7 +219,7 @@ test(swrl_parse_Driver, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasCar(?p, true)', '->', 'Driver(?p)'],
     [ class(test_swrl:'Driver',var(p)) ] :-
-      [ class(test_swrl:'Person',var(p)),
+      [ class(dul:'Person',var(p)),
       property(var(p), test_swrl:'hasCar', literal(type(xsd:'boolean',true))) ]
   ).
 
@@ -227,7 +227,7 @@ test(swrl_parse_DriverFred, [nondet]) :-
   test_swrl_parse(
     ['Person(Fred), hasCar(Fred, true)', '->', 'Driver(Fred)'],
     [ class(test_swrl:'Driver',test_swrl:'Fred') ] :-
-      [ class(test_swrl:'Person',test_swrl:'Fred'),
+      [ class(dul:'Person',test_swrl:'Fred'),
         property(test_swrl:'Fred', test_swrl:'hasCar', literal(type(xsd:'boolean',true))) ]
   ).
 
@@ -235,7 +235,7 @@ test(swrl_parse_brother, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasSibling(?p, ?s), Man(?s)', '->', 'hasBrother(?p, ?s)'],
     [ property(var(p), test_swrl:'hasBrother', var(s)) ] :-
-      [ class(test_swrl:'Person', var(p)),
+      [ class(dul:'Person', var(p)),
         property(var(p), test_swrl:'hasSibling', var(s)),
         class(test_swrl:'Man',var(s)) ]
   ).
@@ -246,7 +246,7 @@ test(swrl_parse_startsWith, [nondet]) :-
       '->',
       'hasInternationalNumber(?p, true)' ],
     [ property(var(p), test_swrl:'hasInternationalNumber', literal(type(xsd:boolean,true))) ] :-
-      [ class(test_swrl:'Person', var(p)),
+      [ class(dul:'Person', var(p)),
         property(var(p), test_swrl:'hasNumber', var(number)),
         startsWith(var(number),+) ]
   ).
@@ -255,14 +255,14 @@ test(swrl_parse_exactly, [nondet]) :-
   test_swrl_parse(
     ['Person(?x), (hasSibling exactly 0 Person)(?x)', '->', 'Singleton(?x)'],
     [ class(test_swrl:'Singleton', var(x)) ] :-
-      [ class(test_swrl:'Person', var(x)),
-        class(exactly(0, test_swrl:'hasSibling', test_swrl:'Person'), var(x)) ]
+      [ class(dul:'Person', var(x)),
+        class(exactly(0, test_swrl:'hasSibling', dul:'Person'), var(x)) ]
   ).
 
 test(swrl_parse_Person1, [nondet]) :-
   test_swrl_parse(
     ['(Man or Woman)(?x)', '->', 'Person(?x)'],
-    [ class(test_swrl:'Person', var(x)) ] :-
+    [ class(dul:'Person', var(x)) ] :-
       [ class(oneOf([test_swrl:'Man',test_swrl:'Woman']), var(x)) ]
   ).
 
@@ -270,14 +270,14 @@ test(swrl_parse_Person2, [nondet]) :-
   test_swrl_parse(
     ['(Man and Woman and Person)(?x)', '->', 'Hermaphrodite(?x)'],
     [ class(test_swrl:'Hermaphrodite', var(x)) ] :-
-      [ class(allOf([test_swrl:'Man',test_swrl:'Woman',test_swrl:'Person']), var(x)) ]
+      [ class(allOf([test_swrl:'Man',test_swrl:'Woman',dul:'Person']), var(x)) ]
   ).
 
 test(swrl_parse_NonHuman, [nondet]) :-
   test_swrl_parse(
     ['(not Person)(?x)', '->', 'NonHuman(?x)'],
     [ class(test_swrl:'NonHuman', var(x)) ] :-
-      [ class(not(test_swrl:'Person'), var(x)) ]
+      [ class(not(dul:'Person'), var(x)) ]
   ).
 
 test(swrl_parse_Adult1, [nondet]) :-
@@ -291,7 +291,7 @@ test(swrl_parse_Adult2, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasAge(?p, ?age), greaterThan(?age, 17)', '->', 'Adult(?p)'],
     [ class(test_swrl:'Adult', var(p)) ] :-
-      [ class(test_swrl:'Person', var(p)),
+      [ class(dul:'Person', var(p)),
         property(var(p), test_swrl:'hasAge', var(age)),
         greaterThan(var(age),17) ]
   ).
@@ -309,7 +309,7 @@ test(swrl_parse_Adult3, [nondet]) :-
 test(swrl_parse_nested, [nondet]) :-
   test_swrl_parse(
     ['(Driver or (not (Car and NonHuman)))(?x)', '->', 'Person(?x)'],
-    [ class(test_swrl:'Person', var(x)) ] :-
+    [ class(dul:'Person', var(x)) ] :-
       [ class(oneOf([test_swrl:'Driver', not(allOf(
           [test_swrl:'Car',test_swrl:'NonHuman'])) ]), var(x)) ]
   ).
