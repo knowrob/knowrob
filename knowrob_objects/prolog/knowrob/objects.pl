@@ -425,17 +425,22 @@ storagePlaceFor(St, ObjT) :-
 % @param ObjType  Class for which information about the storage place has been asserted
 %
 storagePlaceForBecause(St, Obj, ObjT) :-
-% FIXME: StorageConstruct does not exist anymore
-  owl_subclass_of(StT, knowrob:'StorageConstruct'),
-  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
-  owl_individual_of(Obj, ObjT),
-  owl_individual_of(St, StT).
+  ground(Obj),
+  \+ rdf_has(Obj,rdf:type,owl:'Class'), !,
+  rdf(Obj,rdf:type,ObjType),
+  storagePlaceForBecause(St,ObjType,ObjT).
 
-storagePlaceForBecause(St, ObjType, ObjT) :-
-  owl_subclass_of(StT, knowrob:'StorageConstruct'),
+storagePlaceForBecause(St,ObjType,ObjT) :-
+  ground(St),!,
+  rdf_has(St,rdf:type,StT),
   owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
-  owl_individual_of(St, StT),
   owl_subclass_of(ObjType, ObjT).
+
+storagePlaceForBecause(St,ObjType,ObjT) :-
+  %\+ ground(St),
+  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
+  owl_subclass_of(ObjType, ObjT),
+  owl_individual_of(St, StT).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
