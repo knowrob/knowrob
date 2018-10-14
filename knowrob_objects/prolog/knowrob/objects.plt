@@ -46,8 +46,7 @@ test(storagePlaceFor3) :-
 
 test(storagePlaceForBecause1) :-
   storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1',X),
-  owl_description(X,union_of([class('http://knowrob.org/kb/knowrob.owl#FoodUtensil'),
-                              class('http://knowrob.org/kb/knowrob.owl#FoodVessel')])), !.
+  owl_description(X,class('http://knowrob.org/kb/knowrob.owl#FoodVessel')), !.
 
 test(current_object_pose) :-
   current_object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',

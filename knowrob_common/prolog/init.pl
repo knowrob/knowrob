@@ -61,7 +61,7 @@
 
 
 % parse OWL files, register name spaces
-%:- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob.owl').
 
 :- rdf_db:rdf_register_ns(rdfs,    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
