@@ -11,12 +11,169 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/kitchen.owl">
-        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_activities.owl"/>
-        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_items.owl"/>
-        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen_furniture.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://knowrob_household/owl/groceries.owl"/>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://qudt.org/vocab/unit#DegreeCelsius -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#DegreeCelsius"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#contains -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#contains"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#deviceUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#deviceUsed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#in-ContGeneric -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#in-ContGeneric"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsCommitted -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsDestroyed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#madeOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#madeOf"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectAddedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectOfStateChange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#on-Physical -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#on-Physical"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#subAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toolUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toolUsed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
     
 
 
@@ -31,16 +188,466 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CardboardBox -->
+    <!-- http://knowrob.org/kb/kitchen.owl#FreezerCompartment -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CardboardBox"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/kitchen.owl#FreezerCompartment">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Refrigerator"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CardboardBox-Eggs -->
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingAnEgg -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CardboardBox-Eggs">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CardboardBox"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AddingAnEgg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AddingFoodIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CrackingAnEgg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingDrinkIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AddingDrinkIngredient">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AddingGroceryIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingFoodIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AddingFoodIngredient">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AddingGroceryIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingGroceryIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AddingGroceryIngredient">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectAddedTo"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Baked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Baked"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Baking-Hardening -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Baking-Hardening">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Heating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BakingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BakingFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baking-Hardening"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Boiled -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BoilingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BoilingFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cooking food by immersing it in boiling water.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BottleOpener -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BottleOpener">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bowl"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Eating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bowl-Eating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bowl"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Mixing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bowl-Mixing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bowl"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Serving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bowl-Serving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bowl"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ServingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bread -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bread"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cake -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cake"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CakePan -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CakePan">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cake"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CanOpener -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CanOpener">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CarvingKnife -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarvingKnife">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Knife-Food"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Meat"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cheese -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cheese"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Coffee-Beverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Coffee-Beverage"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoffeeMaker -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoffeeMaker">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Colander -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Colander">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StrainerForCooking"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ConsumingFoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ConsumingFoodOrDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Ingesting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Container -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Container"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cooked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CookingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CookingFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Heating"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CookingUtensil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CookingUtensil">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CookingVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CookingVessel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Containers used to cook food.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CrackingAnEgg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CrackingAnEgg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CrackingSolidFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EggYolk-Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Eggshell"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CrackingSolidFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CrackingSolidFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cutting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cutting"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cutting"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toolUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Knife-Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>This is the collection of actions in which the agent cuts food into pieces using an implement, that is, a knife or fork. So, biting off a piece of food is not an instance; see Biting.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVijjJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingBoard -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingBoard">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -48,7 +655,435 @@
     <!-- http://knowrob.org/kb/knowrob.owl#DiningRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DiningRoom">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DiningTable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DiningTable">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Table"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tables found in kitchens, restaurants, bars, etc, at which people eat or drink.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DinnerFork -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DinnerFork">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Fork-SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DinnerPlate">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dishwasher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dishwasher">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of devices designed to wash dishes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dough"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DoughRoll -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DoughRoll">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#RollingDough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Drink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingBottle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingBottle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingCan -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingCan">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConsumingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingVessel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingGlass -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingGlass">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingMug -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingMug">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DrinkingVessel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#DrinkingEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EatingEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EatingEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConsumingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EatingVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EatingVessel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Egg-Chickens"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EggYolk-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EggYolk-Food"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Eggshell -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Eggshell"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricMixer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricMixer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Food"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of PhysicalDevice. Each instance of FoodOrDrinkPreparationDevice is a device designed to be used in the preparation of food or drink. Specializations of FoodOrDrinkPreparationDevice include CoffeeMaker, SpiceMill, and ElectricalToaster.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodVessel">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Fork-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Fork-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Fork-SilverwarePiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Fork-SilverwarePiece">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Fork-Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Frozen -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Heated -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heated"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Heating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heating"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatingFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatingFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Heating"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Heated"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Ingesting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ingesting">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsDestroyed"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Kettle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Kettle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StoveTopCookingPot"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BoilingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -56,14 +1091,900 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Kitchen -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Kitchen">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#RoomInAConstruction -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Knedding -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RoomInAConstruction"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knedding"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KneddingDough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KneddingDough">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Knedding"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Knife -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knife"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Knife-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knife-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Knife"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LoadingADishwasher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoadingADishwasher">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#in-ContGeneric"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dishwasher"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MakingCoffee-TheBeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingABeverage"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Coffee-Beverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MakingTea-TheBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MakingTea-TheBeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingABeverage"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Tea-Beverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MeasuringCup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MeasuringCup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cup"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MeasuringCup-Big -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MeasuringCup-Big">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MeasuringCup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MeasuringCup-Small -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MeasuringCup-Small">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MeasuringCup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Meat -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Meat"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MicrowaveOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MicrowaveOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of appliances that cook food by using electromagnetic waves. Microwave ovens can generally cook or heat up food very quickly.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Microwaved -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Microwaved"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Microwaving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Microwaving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#MicrowaveOven"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Microwaved"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of CookingFood: a collection of events in which a MicrowaveOven is used to heat food (or drink).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mixing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OmelettePan -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OmelettePan">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StoveTopCookingPot"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OperateOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OperateOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OperatingAHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OperatingAHouseholdAppliance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OperatingAHouseholdAppliance">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of situations corresponding to the operation of household appliances. This should be the genls for all the situation types dealing with the operating of the different household appliances.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Oven">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#HeatingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMaker -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PancakeMaker">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perishable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pitcher -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pitcher">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ServingVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pizza -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pizza"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Platter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Platter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ServingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreheatOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreheatOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OperatingAHouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingABeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingABeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Making a batch of something drinkable.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingABeverage</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingAMeal -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingAMeal">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A specialization of PreparingFoodOrDrink. Each instance of PreparingFoodItem is an event in which a single item of Food is prepared to make it ready to eat. For example, instances of MakingToast, roasting a turkey, or BakingBread.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingFoodItem</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingAPizza -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingAPizza">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingAMeal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cheese"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Pizza"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingASandwich -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingASandwich">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingAMeal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingIntoARefrigerator -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingIntoARefrigerator">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#in-ContGeneric"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Refrigerator"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Refrigerator -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Refrigerator">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooling"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of devices used for cold storage, for example, knowrob refrigerators used for keeping food cold.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RegularOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RegularOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RollingDough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RollingDough">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toolUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#DoughRoll"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sandwich -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Saucer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Saucer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Serving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Serving"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ServingFoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ServingFoodOrDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Serving"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ServingVessel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ServingVessel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ServingFoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SilverwarePiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SilverwarePiece">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#EatingEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Skillet -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Skillet">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#BakingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SoupSpoon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoupSpoon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spoon-SilverwarePiece"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A spoon with a larger-than-normal basin, used for eating soup.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Spatula -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spatula">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Spoon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spoon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Stirring"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Spoon-SilverwarePiece -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spoon-SilverwarePiece">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SilverwarePiece"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spoon"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StirStick -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StirStick">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Stirring"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stirring -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stirring"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stirring-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stirring-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Stirring"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StoveTop -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StoveTop">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingFood"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The part of a CookingRange (cf) that has the burners and is used for frying &amp; boiling in pots &amp; pans. Often called &apos;Stove&apos; in english..</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StoveTopCookingPot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StoveTopCookingPot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingVessel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A container that maximizes volume rather than heated surface, used to hold food for cooking over a fire or stove.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StrainerForCooking -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StrainerForCooking">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SupportingPlane -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SupportingPlane"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TableKnife -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TableKnife">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Knife-Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SilverwarePiece"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tea-Beverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tea-Beverage"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Teaspoon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Teaspoon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spoon-SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Thermos -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thermos">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodVessel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ToasterOven -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToasterOven">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Oven"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small electric oevn that can be used to toast bread, heat up leftovers, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tongs -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tongs">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease.org/ont/EASE.owl#Grasping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tool -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tool"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tray -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tray">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishes -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishes">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cleaning"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of dishwashing events.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishesByHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishesByHand">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WashingDishes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WashingDishesByMachine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WashingDishes"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Dishwasher"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turning dirty dishes into clean dishes, by using a dishwasher to wash, rinse, and sometimes dry them.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Water -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Water"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WireWhisk -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WireWhisk">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WoodenSpoon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WoodenSpoon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spoon"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#CompositeAction -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Furniture -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Furniture"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Grasping -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Grasping"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#PhysicalPart -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#PickPlace -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#RoomInABuilding -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Table -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Table"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
 </rdf:RDF>
 
 
