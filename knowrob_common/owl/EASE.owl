@@ -6,6 +6,7 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#">
     <owl:Ontology rdf:about="http://www.ease.org/ont/EASE.owl">
@@ -25,6 +26,12 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#todo -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo"/>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#symbol -->
 
     <owl:AnnotationProperty rdf:about="http://www.ease.org/ont/EASE.owl#symbol">
@@ -40,6 +47,7 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
+
     
 
 
@@ -521,46 +529,6 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#LookingAt -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#LookingAt">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#NonCompositeAction"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#HeadMovement -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#HeadMovement">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Motion"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#Planning -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Planning">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#Prediction -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prediction">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#Prospecting -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prospecting">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#MentalAction"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.ease.org/ont/EASE.owl#Accident -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Accident">
@@ -681,14 +649,6 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Attaching -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Attaching">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Contact"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.ease.org/ont/EASE.owl#Avoiding -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Avoiding">
@@ -707,7 +667,7 @@
     <!-- http://www.ease.org/ont/EASE.owl#Boiling -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Boiling">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Vaporization"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Vaporizing"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In each instance of this collection some liquid matter is raised to its boilingPoint and is thereby changed from being in the Liquid-StateOfMatter to being in the Gaseous-StateOfMatter.</rdfs:comment>
     </owl:Class>
     
@@ -884,14 +844,6 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Condensing -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Condensing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.ease.org/ont/EASE.owl#Contact -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Contact">
@@ -932,16 +884,6 @@
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Motion"/>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#UndirectedMotion"/>
         <rdfs:label>Directed motion</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#DistalMotion -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#DistalMotion">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#LimbMotion"/>
-        <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#ProximalMotion"/>
-        <rdfs:label>Distal motion</rdfs:label>
     </owl:Class>
     
 
@@ -1120,16 +1062,7 @@
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#ForceDynamicsProcess">
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicsProcess"/>
-        <rdfs:comment>&quot;Force dynamics is a semantic category that describes the way in which entities interact with reference to force. Force Dynamics gained a good deal of attention in cognitive linguistics due to its claims of psychological plausibility and the elegance with which it generalizes ideas not usually considered in the same context. The semantic category of force dynamics pervades language on several levels. Not only does it apply to expressions in the physical domain like leaning on or dragging, but it also plays an important role in expressions involving psychological forces (e.g. wanting or being urged). Furthermore, the concept of force dynamics can be extended to discourse. For example, the situation in which speakers A and B argue, after which speaker A gives in to speaker B, exhibits a force dynamic pattern.&quot; Wikipedia</rdfs:comment>
         <rdfs:label>Force dynamics process</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#Freezing -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Freezing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -1138,6 +1071,14 @@
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Furniture">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Gaseous -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Gaseous">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -1343,6 +1284,14 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#HeadMovement -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#HeadMovement">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Motion"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#Imagining -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Imagining">
@@ -1423,8 +1372,15 @@
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#Locomotion"/>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#PrehensileMotion"/>
-        <rdfs:comment>todo: would like to state it&apos;s disjoint with Locomotion</rdfs:comment>
         <rdfs:label>Limb motion</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Liquid -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Liquid">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -1438,10 +1394,10 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Melting -->
+    <!-- http://www.ease.org/ont/EASE.owl#LookingAt -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Melting">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#LookingAt">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#NonCompositeAction"/>
     </owl:Class>
     
 
@@ -1451,6 +1407,7 @@
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#MentalAction">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
         <owl:disjointWith rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalAction"/>
+        <rdfs:comment>for now just a collection of ideas here... needs more discussion.</rdfs:comment>
         <rdfs:label>Mental action</rdfs:label>
     </owl:Class>
     
@@ -1634,7 +1591,6 @@
                 <owl:someValuesFrom rdf:resource="http://www.ease.org/ont/EASE.owl#OpeningAngleRegion"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: is there a better english word for &apos;Oeffnungsweite&apos;?</rdfs:comment>
     </owl:Class>
     
 
@@ -1938,6 +1894,14 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#Planning -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Planning">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#PowerGrasp -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PowerGrasp">
@@ -1953,6 +1917,14 @@
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PrecisionGrasp">
         <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#GraspingMotion"/>
         <rdfs:label>Precision grasp</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Prediction -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prediction">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Prospecting"/>
     </owl:Class>
     
 
@@ -1989,11 +1961,10 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#ProximalMotion -->
+    <!-- http://www.ease.org/ont/EASE.owl#Prospecting -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#ProximalMotion">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#LimbMotion"/>
-        <rdfs:label>Proximal motion</rdfs:label>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Prospecting">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#MentalAction"/>
     </owl:Class>
     
 
@@ -2219,6 +2190,14 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#Solid -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Solid">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#Squeezing -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Squeezing">
@@ -2270,6 +2249,7 @@
                 <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <knowrob:todo>how exactly do states relate to objects, qualities and regions?</knowrob:todo>
     </owl:Class>
     
 
@@ -2277,24 +2257,8 @@
     <!-- http://www.ease.org/ont/EASE.owl#StateOfMatter -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#StateOfMatter">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#State"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalState"/>
         <rdfs:label>State of matter</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#Sublimating -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Sublimating">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ease.org/ont/EASE.owl#SublimatingToSolid -->
-
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#SublimatingToSolid">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
     </owl:Class>
     
 
@@ -2436,12 +2400,9 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Vaporization -->
+    <!-- http://www.ease.org/ont/EASE.owl#Vaporizing -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Vaporization">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#StateOfMatter"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Vaporizing"/>
     
 
 
@@ -2547,7 +2508,7 @@
 
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality" />
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
     
 
 
