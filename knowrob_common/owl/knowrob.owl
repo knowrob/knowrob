@@ -2743,6 +2743,22 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#Condensing -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Condensing">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Freezing -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Freezing">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#Furniture -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Furniture"/>
@@ -2758,6 +2774,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease.org/ont/EASE.owl#Leg -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Leg"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Melting -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Melting">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    </owl:Class>
     
 
 
@@ -2794,6 +2818,15 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease.org/ont/EASE.owl#RoomInABuilding -->
 
     <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+    
+
+
+    <!-- http://www.ease.org/ont/EASE.owl#Vaporizing -->
+
+    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Vaporizing">
+        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
+    </owl:Class>
     
 
 
