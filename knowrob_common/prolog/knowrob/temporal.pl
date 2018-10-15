@@ -410,6 +410,7 @@ assert_temporal_part(S, P, O, I) :-
   %once(owl_individual_of(S, knowrob:'TemporalThing')),
   %assert_nontemporal_value(S,P,O,Graph), !.
 assert_temporal_part(S, P, O, I, Graph) :-
+  nonvar(S),
   create_temporal_part(S, P, TemporalPart, Graph),
   assert_temporal_part_value(TemporalPart, P, O, Graph),
   assert_temporal_part_extend(TemporalPart, I, Graph),

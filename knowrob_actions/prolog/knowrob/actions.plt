@@ -24,7 +24,7 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/action_effects')).
 
-:- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
+:- owl_parse('package://knowrob_actions/owl/pancake.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).

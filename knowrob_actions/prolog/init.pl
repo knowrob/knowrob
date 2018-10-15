@@ -55,13 +55,3 @@
 %:- owl_parser:owl_parse('package://flanagan/owl/actions.owl').
 
 %:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
-
-%:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/ease.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(allen, 'http://www.ease.org/ont/allen.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(actions, 'http://www.ease.org/ont/actions.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(motions, 'http://www.ease.org/ont/motions.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(states, 'http://www.ease.org/ont/states.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(qualities, 'http://www.ease.org/ont/qualities.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(objects, 'http://www.ease.org/ont/objects.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(force_dynamics, 'http://www.ease.org/ont/force-dynamics.owl#', [keep(true)]).
-
