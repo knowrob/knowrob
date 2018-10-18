@@ -654,6 +654,11 @@ swrl_atom_project(property(S,P,O), Vars) :-
   swrl_var(Vars, O_val, O_var),
   assert_temporal_part(S_var, P, O_var).
 
+% FIXME: this needs some revision.
+%          - it breaks SWRL compatibility (e.g. loading in Protege):
+%              variables in class atoms of implications must be bound before;
+%              here we just assume semantics "create a new symbol".
+%              better pre-create symbols based on action description.
 swrl_class_atom_project(S, allOf(Classes)) :-
   forall( member(Cls, Classes), swrl_class_atom_project(S, Cls) ).
 swrl_class_atom_project(S, not(allOf(Xs))) :-

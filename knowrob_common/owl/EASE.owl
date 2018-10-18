@@ -192,6 +192,15 @@
     
 
 
+    <!-- http://www.ease.org/ont/EASE.owl#hasPhysicalComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasPhysicalComponent">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+        <rdfs:label>has physical component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.ease.org/ont/EASE.owl#involvesArtifact -->
 
     <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#involvesArtifact">
@@ -374,6 +383,12 @@
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
     
 
 
