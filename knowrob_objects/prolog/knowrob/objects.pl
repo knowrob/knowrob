@@ -51,7 +51,8 @@
       comp_tf_pose/3,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
-      comp_heightOfObject/2
+      comp_heightOfObject/2,
+      comp_thermicallyConnectedTo/2
     ]).
 /** <module> Utilities for reasoning about objects
   
@@ -93,7 +94,8 @@
     object_queries(r,?),
     comp_depthOfObject(r,t),
     comp_widthOfObject(r,t),
-    comp_heightOfObject(r,t).
+    comp_heightOfObject(r,t),
+    comp_thermicallyConnectedTo(r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -426,6 +428,23 @@ storagePlaceForBecause(St,ObjType,ObjT) :-
   owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
   owl_subclass_of(ObjType, ObjT),
   owl_individual_of(St, StT).
+
+
+%% comp_thermicallyConnectedTo(?Obj1:iri, ?Obj2:iri)
+%
+% Compute if a heat path exists between two objects. This is the case if
+% they are either on top of each other or if one contains the other one
+%
+% @param Obj1 Object instance
+% @param Obj2 Object instance
+%
+comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
+  holds(Obj1, knowrob:'on-Physical',Obj2);
+  holds(Obj2, knowrob:'on-Physical',Obj1)).
+
+comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
+  holds(Obj1, knowrob:'in-ContGeneric', Obj2);
+  holds(Obj2, knowrob:'in-ContGeneric', Obj1)).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
