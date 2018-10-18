@@ -53,7 +53,9 @@
       action_fromLocation(r,r),
       action_inputs(r,r),
       action_missing_inputs(r,r),
-      action_outputs(r,r).
+      action_outputs(r,r),
+      transformed_into(r, r),
+      transformed_into_transitive(r, r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -143,6 +145,51 @@ resource_available(Resource) :-
   owl_individual_of(ObjInst, Resource),
   % HACK
   \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% object transformations
+%
+
+%% transformed_into(?From:iri, ?To:iri)
+%
+% Compute which objects have been transformed into which other ones
+% by actions or processes. This predicate operates on the object
+% modification graph created by the action projection rules
+%
+% @param From Input of some action
+% @param To   Output created by this action
+%
+transformed_into(From, To) :-
+  ( owl_has(Event, knowrob:thingIncorporated, From);
+    owl_has(Event, knowrob:objectAddedTo, From);
+    owl_has(Event, knowrob:inputsDestroyed, From);
+    owl_has(Event, knowrob:inputsCommitted, From);
+    owl_has(Event, knowrob:transformedObject, From);
+    owl_has(Event, knowrob:objectRemoved, From);
+    owl_has(Event, knowrob:objectOfStateChange, From);
+    owl_has(Event, knowrob:outputsRemaining, From) ),
+
+  ( owl_has(Event, knowrob:outputsRemaining, To);
+    owl_has(Event, knowrob:outputsCreated, To)).
+
+
+%% transformed_into_transitive(?From:iri, ?To:iri)
+%
+% Transitive version of the transformed_into predicate that tracks
+% in- and outputs of actions over several steps and different
+% properties
+%
+% @param From Input of some action
+% @param To   Output created by this action
+%
+transformed_into_transitive(From, To) :-
+  transformed_into(From, To).
+
+transformed_into_transitive(From, To) :-
+  transformed_into(From, Sth),
+  From\=Sth,
+  transformed_into_transitive(Sth, To).
 
 
 %% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.

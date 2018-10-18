@@ -1,4 +1,4 @@
-/*  parser.pl
+/*  MAP.pl
 
     Author:        Daniel Beßler
     E-mail:        danielb@informatik.uni-bremen.de
@@ -27,7 +27,7 @@
     the GNU General Public License.
 */
 
-:- module(parser, [
+:- module('MAP', [
      parser_create/1,
      parser_create/2,
      detect_activity/3,
@@ -75,8 +75,8 @@ TODO detect "silence" in long token streams
 :- use_module(library('debug')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('util')).
-:- use_module(library('flanagan')).
+:- use_module(library('knowrob/flanagan')).
+:- use_module(library('knowrob/temporal')). % `interval/2`
 
 :- rdf_db:rdf_register_ns(actions, 'http://www.ease.org/ont/actions.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(motions, 'http://www.ease.org/ont/motions.owl#', [keep(true)]).
@@ -89,9 +89,24 @@ TODO detect "silence" in long token streams
             parser_grammar(?,r,t),
             parser_create_grammar(+,r),
             detect_activity(+,t,t),
-            detect_activity2(+,t,t).
+            detect_activity2(+,t,t),
+            tokenize(r,t).
 
 :- dynamic parser_grammar/3. % Parser, Action, Sequence Graph
+
+% FIXME: not sure why this is needed. write should display simplified
+%        terms anyway. But it doesn't (always). What's the reason?
+write_concept(Concept) :-
+  rdf_has_prolog(Concept,rdfs:label,Label),!,
+  write(''''), write(Label), write('''').
+write_concept(Concept) :-
+  rdf_split_url(_,Name,Concept),!,
+  write(''''), write(Name), write('''').
+
+random_id(Id) :-
+  randseq(8, 25, Seq_random),
+  maplist(plus(65), Seq_random, Alpha_random),
+  atom_codes(Id, Alpha_random).
            
 % generate unique parser id
 parser_unique_id(Parser) :-
@@ -121,6 +136,65 @@ parser_grammar_(Parser,TypeIri,GraphChild) :-
   (( parser_grammar(Parser,X,GraphChild),
      once(rdfs_subclass_of(TypeIri,X)) ) *->
      true ; no_grammar(Parser,TypeIri) ).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Tokenization
+
+% TODO: remove
+interval_(Event, [Begin,End]) :- interval(Event,[Begin,End]),!.
+interval_(Event, [Begin,End]) :-
+  % KnowRob's `interval/2` does not work with dul:'TimeInterval' dul yet
+  rdf_has(Event,dul:hasTimeInterval,Interval),
+  rdf_has_prolog(Interval, allen:hasIntervalBegin, Begin),
+  rdf_has_prolog(Interval, allen:hasIntervalEnd, End).
+
+%% tokenize(+Episode,?Tokens).
+%
+% Tokenize given episode.
+% The structure of the episode symbol is that it links
+% all events via knowrob:subAction.
+% These are collected and mapped to a token representation.
+%
+% @param Episode VR episode symbol.
+% @param Tokens Tokenized episode.
+%
+tokenize(Episode,Tokens) :-
+  findall(Event, rdf_has(Episode,dul:hasConstituent,Event), Events),
+  tokenize_(Events,Unsorted),
+  filter_tokens(Unsorted,Filtered),
+  % first argument of each token is time such that we can use Prolog builtin `sort`
+  sort(Filtered,Tokens).
+
+filter_tokens([],[]) :- !.
+filter_tokens([Tok|Rest],[Tok|RestFiltered]) :-
+  filter_tokens(Rest,RestFiltered).
+
+tokenize_([], []).
+tokenize_([Evt|Rest],[Tok1,Tok2|RestTokens]) :-
+  tokenize_event(Evt,Tok1,Tok2),
+  tokenize_(Rest,RestTokens).
+
+tokenize_event(Event,
+    tok(Begin,Event,-(EvtType),Participants),
+    tok(End,  Event,+(EvtType),Participants)) :-
+  rdfs_individual_of(Event,dul:'Event'), !,
+  % Event types are disjoint
+  % TODO: is this really safe to assume? e.g., artifact contact and effector contact.
+  %       this needs special handling because different constituents may refer to
+  %       different event types.
+  %       Maybe would be better to stick to event individual in endpoints?
+  once((
+    rdf(Event,rdf:type,EvtType),
+    rdfs_subclass_of(EvtType,dul:'Event')
+  )),
+  findall(P, rdf_has(Event, dul:hasParticipant, P), Participants),
+  interval_(Event, [Begin,End]).
+
+tokenize_event(Event,_,_) :-
+  % should not happen, everything should be of type 'Event'.
+  % If not this would indicate some unknown event type in the log which is
+  % not mapped to flanagan ontology.
+  throw(error(type_error(dul:'Event',Event), _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Endpoint sequence graph stuff

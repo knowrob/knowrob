@@ -27,7 +27,7 @@
     the GNU General Public License.
 */
 
-:- module(esg, [
+:- module('ESG', [
      esg/4,
      esg_truncated/4,
      esg_assert/3,
@@ -53,7 +53,6 @@ a to another endpoint b implies that a < b (transitivity).
 */
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('util')).
 
 :- dynamic esg_endpoint/3,       % sequencer id, endpoint id, endpoint term
            esg_endpoint_node/3,  % sequencer id, endpoint id, node id
@@ -63,7 +62,14 @@ throw_unknown_endpoint(Endpoint) :-
   throw(model_error('Not a constituent',Endpoint)).
 throw_axiom_contradiction(Axiom) :-
   throw(model_error('Contradictory axiom',Axiom)).
-           
+
+append_dl(Xs-Ys,Ys-Zs,Xs-Zs).
+
+random_id(Id) :-
+  randseq(8, 25, Seq_random),
+  maplist(plus(65), Seq_random, Alpha_random),
+  atom_codes(Id, Alpha_random).
+
 %%%%%%%%%%%%%%
 
 esg_unique_id(ESG) :-
@@ -604,6 +610,15 @@ esg_truncate(ESG,Evt,PreESG,PostESG) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Debugging
+
+% FIXME: not sure why this is needed. write should display simplified
+%        terms anyway. But it doesn't (always). What's the reason?
+write_concept(Concept) :-
+  rdf_has_prolog(Concept,rdfs:label,Label),!,
+  write(''''), write(Label), write('''').
+write_concept(Concept) :-
+  rdf_split_url(_,Name,Concept),!,
+  write(''''), write(Name), write('''').
   
 endpoint_write(-(Iri)) :-
   write('-'), write_concept(Iri).
