@@ -37,7 +37,6 @@
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/action_planning')).
-:- use_module(library('knowrob/object_change')).
 
 :- owl_parser:owl_parse('package://knowrob_actions/owl/action-effects.owl').
 :- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').

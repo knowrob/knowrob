@@ -61,6 +61,9 @@
 
 % TODO: event system for processes started by actions and their effects
 %         - allow robot to react on predictable effects of processes
+% TODO: be SWRL conform. Use combination of Prolog rules and SWRL!
+%         - Prolog rules to add what we need beyond SWRL
+%             - especially symbol assertion and retraction
 
 %% comp_actionEffectRule(+Action:iri, ?Effect:iri)
 %
