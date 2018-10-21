@@ -27,22 +27,21 @@
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 
 test(plan_pancake_events, [nondet]) :-
   plan_subevents(pancake:'MakingPancakes', SubEvents),
-  member('http://knowrob.org/kb/pancake-making.owl#CrackingAnEgg', SubEvents),
-  member('http://knowrob.org/kb/pancake-making.owl#MixPancakeDough', SubEvents),
-  member('http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker', SubEvents),
-  member('http://knowrob.org/kb/pancake-making.owl#FlippingAPancake', SubEvents).
+  nth0(0, SubEvents, 'http://knowrob.org/kb/pancake.owl#CrackingAnEgg'),
+  nth0(1, SubEvents, 'http://knowrob.org/kb/pancake.owl#MixPancakeDough'),
+  nth0(2, SubEvents, 'http://knowrob.org/kb/pancake.owl#PourDoughOntoPancakeMaker'),
+  nth0(3, SubEvents, 'http://knowrob.org/kb/pancake.owl#FlippingAPancake').
 
 test(plan_pancake_objects, [nondet]) :-
   plan_objects(pancake:'MakingPancakes', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#Egg-Chickens', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#CowsMilk-Product', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#WheatFlour', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#EggYolk-Food', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#Dough', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#Baked', Objs).
+  member('http://knowrob.org/kb/pancake.owl#Egg-Chickens', Objs),
+  member('http://knowrob.org/kb/pancake.owl#Milk', Objs),
+  member('http://knowrob.org/kb/pancake.owl#WheatFlour', Objs),
+  member('http://knowrob.org/kb/pancake.owl#EggYolk', Objs),
+  member('http://knowrob.org/kb/pancake.owl#Dough', Objs).
 
 :- end_tests(knowrob_actions).

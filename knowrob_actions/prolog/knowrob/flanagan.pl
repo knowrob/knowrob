@@ -2,8 +2,6 @@
 % TODO: this should move to knoworb_common partly?
 
 :- module(flanagan, [
-     event_constituents/3,
-     event_boundary_constraints/2,
      assert_interval/3,
      assert_limb_motion/4,
      assert_grasping_motion/4,
@@ -21,13 +19,7 @@
 :- rdf_db:rdf_register_ns(actions, 'http://www.ease.org/ont/actions.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/ease.owl#', [keep(true)]).
 
-:- rdf_meta event_constituents(r,t,t),
-            event_boundary_constraints(r,t),
-            assert_motion(+,r,t,+,-).
-
-allen_constraint(S,P,O,Term) :-
-  rdf_has_prolog(P,allen:symbol,Sym),
-  Term=..[Sym,S,O].
+:- rdf_meta assert_motion(+,r,t,+,-).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% 'Time interval'
@@ -44,36 +36,6 @@ assert_interval(G, [Begin,End], Interval) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Event
 
-event_constituents(Evt,Constituents,Constraints) :-
-  findall(Type-Constraints, (
-    rdfs_subclass_of(Evt, Restr),
-    % NOTE this assumes particular structure of axioms
-    owl_description_recursive(Restr,
-        restriction(P, some_values_from(X))),
-    rdfs_subproperty_of(P,dul:hasConstituent),
-    ( X=intersection_of([Type|Constraints]) ;
-    ( Type=class(_), Type=X, Constraints=[] )),
-    % HACK better check which ones are subclass of each other and "merge"
-    Type=class(Iri),
-    \+ rdf_equal(Iri,ease:'PhysicsProcess'),
-    \+ rdf_equal(Iri,dul:'Action')),
-    TypeConstraints),
-  findall(Constituent,
-    member(class(Constituent)-_, TypeConstraints),
-    Constituents),
-  findall(Constraint, (
-    member(class(A)-Axioms, TypeConstraints),
-    member(restriction(P, some_values_from(B)),Axioms),
-    allen_constraint(A,P,B,Constraint)),
-    Constraints).
-
-event_boundary_constraints(Evt,Constraints) :-
-  findall(Constraint, (
-    rdfs_subclass_of(Evt, Restr),
-    owl_description(Restr, restriction(P, some_values_from(B))),
-    allen_constraint(Evt,P,B,Constraint)),
-    Constraints).
-
 % Event 'has interval' some 'Time interval'
 assert_has_interval(G, Event, [Begin,End]) :-
   assert_interval(G, [Begin,End], Interval),
@@ -86,6 +48,7 @@ assert_motion(G, MotionType, Participants, Interval, Motion) :-
   rdf_instance_from_class(MotionType,G,Motion),
   forall(member(P,Participants),
          rdf_assert(Motion,dul:hasParticipant,P,G)),
+  % TODO assert start/end instead ??
   assert_has_interval(G,Motion, Interval).
 
 assert_limb_motion(G, Limb, Interval, Motion) :-

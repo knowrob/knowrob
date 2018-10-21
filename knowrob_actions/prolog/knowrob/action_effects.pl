@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2011 Moritz Tenorth
-  Copyright (C) 2016-2017 Daniel Beßler
+  Copyright (C) 2018 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,18 @@
       action_precondition_check/2,
       comp_actionEffectRule/2
     ]).
-/** <module> Prediction of action effects
+/** <module> Reasoning about action effects.
+
+KnowRob mainly uses OWL as its knowledge representation language.
+While being very expressive OWL still has some limitations.
+First, action effects may establish new relations between objects.
+We use SWRL to express this (knowrob_common:swrl.pl).
+Second, actions may create/destroy objects. This can further not 
+be expressed in SWRL.
+Here, we use the computable mechanism of KnowRob and a set of Prolog 
+rules that compute processStared, outputCreated, ... relations.
+This has the nice side-effect that we can use computed relations
+in SWRL rules (i.e., relate what was created to something else).
 
 @author Moritz Tenorth
 @author Daniel Beßler
@@ -46,10 +57,11 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/actions')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/EASE.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(action_effects,  'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 
 :-  rdf_meta
     action_effects_apply(r),
@@ -57,13 +69,9 @@
     action_effect_on_object(r,t),
     action_precondition_check(r),
     action_precondition_check(r,r),
-    comp_actionEffectRule(r,r).
-
-% TODO: event system for processes started by actions and their effects
-%         - allow robot to react on predictable effects of processes
-% TODO: be SWRL conform. Use combination of Prolog rules and SWRL!
-%         - Prolog rules to add what we need beyond SWRL
-%             - especially symbol assertion and retraction
+    comp_actionEffectRule(r,r),
+    comp_processStarted(r,r),
+    comp_outputsCreated(r,r).
 
 %% comp_actionEffectRule(+Action:iri, ?Effect:iri)
 %
@@ -77,6 +85,13 @@
 comp_actionEffectRule(Action, Effect) :-
   rdfs_individual_of(Action, ActionClass),
   rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))).
+
+%% comp_actionEffectRule(+Action:iri, ?Process:iri)
+comp_processStarted(Action,Process) :-
+  comp_action_participant(Action,knowrob:processStarted,Process).
+%% comp_outputsCreated(+Action:iri, ?Output:iri)
+comp_outputsCreated(Action,Output) :-
+  comp_action_participant(Action,knowrob:outputsCreated,Output).
 
 %% action_effect_on_object(?ActionClass:iri, ?EffectTerm:term) is nondet
 %
@@ -96,15 +111,16 @@ comp_actionEffectRule(Action, Effect) :-
 % ==
 %     action_effect_on_object(knowrob:'TurningOnPoweredDevice',
 %            updated(knowrob:stateOfObject,knowrob:'DeviceStateOn'))
-%     action_effect_on_object(knowrob:'BakingFood',
-%            created(knowrob:'Baked'))
 %     action_effect_on_object(knowrob:'Cracking',
 %            destroyed)
 % ==
 %
 action_effect_on_object(ActionClass, updated(P,O)) :-
   % find SWRL action rule and the variable denoting the manipulated object within the rule
-  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- Body),
+  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))),
+  rdf_has(Effect, knowrob:swrlActionVariable, literal(type(_,ActVar))),
+  rdf_swrl_rule(Effect, Head :- Body),
+  member(property(ActVar, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', Var_objectActedOn), Body),
   % the implication of the rule must assert a new value for property P
   member(property(Var_objectActedOn, P_rule, O_rule), Head),
   rdfs_subproperty_of(P, P_rule),
@@ -112,18 +128,12 @@ action_effect_on_object(ActionClass, updated(P,O)) :-
   swrl_type_of(Head :- Body, O_rule, O).
 
 action_effect_on_object(ActionClass, created(Type)) :-
-  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- _Body),
-  member(class(Type_rule, Var_objectActedOn), Head),
-  % TODO: Type could be Prolog term representing owl_class! (same for destroy case below)
-  once(owl_subclass_of(Type, Type_rule)).
+  action_class_requires(ActionClass,knowrob:outputsCreated,Type).
 
 action_effect_on_object(ActionClass, destroyed) :-
-  action_effect_on_object(ActionClass, destroyed('http://knowrob.org/kb/knowrob.owl#SpatialThing')).
+  action_effect_on_object(ActionClass, destroyed(_)).
 action_effect_on_object(ActionClass, destroyed(Type)) :-
-  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- _Body),
-  member(class(X, Var_objectActedOn), Head),
-  rdf_has(X, owl:complementOf, Type_rule),
-  once(owl_subclass_of(Type, Type_rule)).
+  action_class_requires(ActionClass,knowrob:inputsDestroyed,Type).
 
 %% action_effects_apply(+Act:iri)
 %
@@ -132,9 +142,11 @@ action_effect_on_object(ActionClass, destroyed(Type)) :-
 % @param Act Instance of knowrob:'Action'
 %
 action_effects_apply(Act) :-
-  % NOTE: `ignore` is not nice here, but some effects may only be applied under certain conditions in the rule body.
+  % make sure cached computables are inferred
+  forall(rdfs_computable_has(Act, knowrob:processStarted, _), true),
+  forall(rdfs_computable_has(Act, knowrob:outputsCreated, _), true),
   forall( comp_actionEffectRule(Act, Descr),
-          ignore( action_effect_apply(Act, Descr) )).
+          action_effect_apply(Act, Descr) ).
 
 %% action_effect_apply(+Act:iri,+Effect:iri)
 %
@@ -151,32 +163,28 @@ action_effects_apply(Act) :-
 % @param Effect RDF description of SWRL action effect rule
 %
 action_effect_apply(Act,Effect) :-
-  rdf(Act, action_effects:actionEffectProjected, Effect, action_projection), !.
+  rdf(Act, knowrob:actionEffectProjected, Effect, action_projection), !.
 action_effect_apply(Act,Effect) :-
+  current_time(Now),
+  % call projection rules
   rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
   rdf_swrl_project(Effect, [var(Var,Act)]),
-  % start/stop processes
-  forall(rdf_has(Act, knowrob:processStarted, Started),
-         action_effect_start_process(Started)),
-  forall(rdf_has(Act, knowrob:processStopped, Stopped),
-         action_effect_stop_process(Stopped)),
+  % TODO: stop lifetime of inputs destroyed. i.e., making type a temporal property?
+  % start/stop processes.
+  forall(rdf_has(Act,knowrob:processStarted, Started),
+         start_process(Started,Now)),
+  forall(rdf_has(Act,knowrob:processStopped, Stopped),
+         stop_process(Stopped,Now)),
   % remember that this effect was projected before to avoid
   % that it is projected again.
-  rdf_assert(Act, action_effects:actionEffectProjected, Effect, action_projection), !.
+  rdf_assert(Act, knowrob:actionEffectProjected, Effect, action_projection),!.
 
-action_effect_start_process(Proc) :-
-  rdf_has(Proc, knowrob:startTime, _), !.
-action_effect_start_process(Proc) :-
-  current_time(Now),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
-  rdf_assert(Proc, knowrob:startTime, Timepoint).
-
-action_effect_stop_process(Proc) :-
-  rdf_has(Proc, knowrob:endTime, _), !.
-action_effect_stop_process(Proc) :-
-  current_time(Now),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
-  rdf_assert(Proc, knowrob:endTime, Timepoint).
+start_process(Proc,Now) :-
+  ( rdf_has(Proc, knowrob:startTime, _) ;
+    rdf_assert_prolog(Proc, knowrob:startTime, Now) ),!.
+start_process(Proc,Now) :-
+  ( rdf_has(Proc, knowrob:endTime, _) ;
+    rdf_assert_prolog(Proc, knowrob:endTime, Now) ),!.
 
 %% action_precondition_check(+Act:iri).
 %% action_precondition_check(+Act:iri,+Effect:iri).
@@ -194,14 +202,57 @@ action_precondition_check(Act, Effect) :-
   rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
   rdf_swrl_satisfied(Effect, [var(Var,Act)]).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% object transformations
+%
+
+%% transformed_into(?From:iri, ?To:iri)
+%
+% Compute which objects have been transformed into which other ones
+% by actions or processes. This predicate operates on the object
+% modification graph created by the action projection rules
+%
+% @param From Input of some action
+% @param To   Output created by this action
+%
+transformed_into(From, To) :-
+  ground(From),!,
+  ( owl_has(Event, knowrob:inputsDestroyed, From);
+    owl_has(Event, knowrob:objectRemoved, From);
+    owl_has(Event, knowrob:objectOfStateChange, From)
+  ),
+  ( owl_has(Event, knowrob:inputsRemaining, To);
+    owl_has(Event, knowrob:outputsCreated, To)
+  ).
+transformed_into(From, To) :-
+  ( owl_has(Event, knowrob:inputsRemaining, To);
+    owl_has(Event, knowrob:outputsCreated, To)
+  ),
+  ( owl_has(Event, knowrob:inputsDestroyed, From);
+    owl_has(Event, knowrob:objectRemoved, From);
+    owl_has(Event, knowrob:objectOfStateChange, From)
+  ).
+
+%% transformed_into_transitive(?From:iri, ?To:iri)
+%
+% Transitive version of the transformed_into predicate that tracks
+% in- and outputs of actions over several steps and different
+% properties
+%
+% @param From Input of some action
+% @param To   Output created by this action
+%
+transformed_into_transitive(From, To) :-
+  transformed_into(From, To).
+
+transformed_into_transitive(From, To) :-
+  transformed_into(From, Sth),
+  From\=Sth,
+  transformed_into_transitive(Sth, To).
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % %  Utility predicates
-
-action_effect_objectActedOn(ActionClass, ObjVar, Head :- Body) :-
-  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))),
-  rdf_swrl_rule(Effect, Head :- Body),
-  rdf_has(Effect, knowrob:swrlActionVariable, literal(type(_,ActVar))),
-  member(property(ActVar, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', ObjVar), Body).
 
 swrl_type_of(_, O, O) :- !.
 swrl_type_of(_, literal(type(_,X)), O) :- strip_literal_type(O,X),!.
