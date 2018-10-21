@@ -123,14 +123,14 @@ test(temporal_part_has_S_P_O_unbound, [nondet]) :-
 
 test(temporal_part_has_type) :-
   temporal_part_has(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', rdf:type, Type),
-  rdf_equal(Type, knowrob:'Cup'), !.
+  rdf_equal(Type, knowrob_temporal_test:'Cup'), !.
 
 test(temporal_part_has_type_holds) :-
-  holds(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', rdf:type, knowrob:'Cup'), !.
+  holds(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', rdf:type, knowrob_temporal_test:'Cup'), !.
 
 test(temporal_part_has_type_descr) :-
   entity(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', Descr),
-  entity_has(Descr, type, cup), !.
+  entity_has(Descr, type, knowrob_temporal_test:cup), !.
 
 test(temporal_part_type_match) :-
   entity(knowrob_temporal_test:'PhysicalArtifact_GSFgh4u6', [an, object, [type, cup]]), !.
