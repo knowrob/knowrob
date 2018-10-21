@@ -35,6 +35,7 @@
       occurs/1,  % ?Event
       occurs/2,  % ?Event, ?Time      
       occurs/3,  % ?Event, ?Time, ?Type
+      allen_constraint/4,
       owl_individual_of_during/3,  % ?Resource, ?Description, ?Interval
       owl_individual_of_during/2,  % ?Resource, ?Description
       owl_has_during/4,            % ?Subject, ?Predicate, ?Object, ?Interval
@@ -95,6 +96,7 @@
             occurs(r),
             occurs(r,?),
             occurs(r,?,r),
+            allen_constraint(r,r,r,t),
             interval(?,?),
             interval_start(?,?),
             interval_end(?,?),
@@ -118,6 +120,7 @@
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/EASE.owl#', [keep(true)]).
 
 		 /*******************************
 		 *	 high-level predicates		*
@@ -201,6 +204,11 @@ occurs(Evt, Interval, Type) :-
   (  ground(Interval)
   -> interval_during(Interval, EvtI)
   ;  Interval = EvtI ).
+
+%%
+allen_constraint(S,P,O,Term) :-
+  rdf_has_prolog(P,ease:symbol,Sym),
+  Term=..[Sym,S,O].
 
 		 /*******************************
 		 *	 	  OWL expansion			*
@@ -445,17 +453,24 @@ assert_temporal_part_extend(TemporalPart, I) :-
 assert_temporal_part_extend(TemporalPart, Num, Graph) :-
   number(Num),
   assert_temporal_part_extend(TemporalPart, [Num], Graph), !.
-assert_temporal_part_extend(TemporalPart, I, Graph) :-
-  findall(X, (
-      rdf_has(TemporalPart,_,X),
-      rdfs_individual_of(X, knowrob:'TemporalPart')
-  ), Parts),
-  forall( member(Part, [TemporalPart|Parts]), (
-    (( \+ rdf_has(Part, knowrob:'startTime', _), interval_start(I,Begin) ) ->
-      rdf_assert_prolog(Part, knowrob:'startTime', Begin, Graph) ; true ),
-    (( \+ rdf_has(Part, knowrob:'endTime', _), interval_end(I,End) ) ->
-      rdf_assert_prolog(Part, knowrob:'endTime', End, Graph) ; true )
-  )).
+assert_temporal_part_extend(TP, I, Graph) :-
+  rdfs_individual_of(TP, knowrob:'TemporalPart'),
+  (( \+ rdf_has(TP, knowrob:'startTime', _), interval_start(I,Begin) ) ->
+      rdf_assert_prolog(TP, knowrob:'startTime', Begin, Graph) ; true ),
+  (( \+ rdf_has(TP, knowrob:'endTime', _), interval_end(I,End) ) ->
+      rdf_assert_prolog(TP, knowrob:'endTime', End, Graph) ; true ).
+
+%assert_temporal_part_extend(TemporalPart, I, Graph) :-
+  %findall(X, (
+      %rdf_has(TemporalPart,_,X),
+      %rdfs_individual_of(X, knowrob:'TemporalPart')
+  %), Parts),
+  %forall( member(Part, [TemporalPart|Parts]), (
+    %(( \+ rdf_has(Part, knowrob:'startTime', _), interval_start(I,Begin) ) ->
+      %rdf_assert_prolog(Part, knowrob:'startTime', Begin, Graph) ; true ),
+    %(( \+ rdf_has(Part, knowrob:'endTime', _), interval_end(I,End) ) ->
+      %rdf_assert_prolog(Part, knowrob:'endTime', End, Graph) ; true )
+  %)).
 
 %% assert_temporal_part_end(+S,?P,?O) is nondet.
 %% assert_temporal_part_end(+S,?P,?O,+End) is nondet.
@@ -584,6 +599,11 @@ current_time(CurrentTime) :-
 %
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
+
+time_term(literal(type('http://www.w3.org/2001/XMLSchema#double',X)), Timepoint) :-
+  ( number(X) ->
+    Timepoint = X ;
+    atom_number(X, Timepoint) ), !.
 
 time_term(literal(type('http://www.w3.org/2001/XMLSchema#float',X)), Timepoint) :-
   ( number(X) ->
