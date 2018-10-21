@@ -633,11 +633,12 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
-  bagof( Binding,
+  findall( Binding,
     swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Binding),
     Bindings ),
-  member(Vars, Bindings),
-  swrl_project_([HeadAtom|Xs], Vars).
+  ( Bindings = [] ; (
+    member(Vars, Bindings),
+    swrl_project_([HeadAtom|Xs], Vars) )).
 
 swrl_project_([], _).
 swrl_project_([Atom|Xs], Vars) :-
@@ -655,10 +656,10 @@ swrl_atom_project(property(S,P,O), Vars) :-
   assert_temporal_part(S_var, P, O_var).
 
 % FIXME: this needs some revision.
-%          - it breaks SWRL compatibility (e.g. loading in Protege):
-%              variables in class atoms of implications must be bound before;
-%              here we just assume semantics "create a new symbol".
-%              better pre-create symbols based on action description.
+%          - there are some cases where random entities are assigned/removed
+%            probably the reasoner should just fail in these cases
+%          - I think it is rather intendend that e.g. asserting not(Cls) would
+%            only yield another rdf:type assertion while leaving potential inconsistencies.
 swrl_class_atom_project(S, allOf(Classes)) :-
   forall( member(Cls, Classes), swrl_class_atom_project(S, Cls) ).
 swrl_class_atom_project(S, not(allOf(Xs))) :-
@@ -703,6 +704,7 @@ swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
   once((
     nonvar(S);
+    % FIXME: this is not allowed in SWRL! (i.e., unbound variable in rule consequences)
     rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
@@ -879,8 +881,7 @@ swrl_value(Val)   --> swrl_data_object(Val).
 swrl_data_object(Var)                                                             --> swrl_var_expr(Var).
 swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#integer',Val)))   --> [Val], { integer(Val) }.
 swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#float',Val)))     --> [Val], { float(Val) }.
-swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#boolean',true)))  --> [true].
-swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#boolean',false))) --> [false].
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#boolean',Val)))   --> [Val].
 swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#string',Val)))    --> ['"'], [Val], ['"'].
 swrl_data_object(literal(Val)) --> [Val], { atom(Val) }.
 
