@@ -32,10 +32,14 @@
         <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/knowrob_temporal_test.owl#TemporalPart_cxvn894t"/>
     </owl:NamedIndividual>
     
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_temporal_test.owl#Cup">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
+    
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_temporal_test.owl#TemporalPart_cxvn894t">
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <rdf:type rdf:resource="&knowrob;Cup"/>
-        <knowrob:startTime rdf:datatype="&xsd;float">0</knowrob:startTime>  
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob_temporal_test.owl#Cup"/>
+        <knowrob:startTime rdf:datatype="&xsd;double">0</knowrob:startTime>  
         <knowrob:temporalProperty rdf:resource="&rdf;type"/>
     </owl:NamedIndividual>
 </rdf:RDF>
