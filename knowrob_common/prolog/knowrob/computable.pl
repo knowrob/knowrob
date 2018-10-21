@@ -63,7 +63,8 @@
   rdfs_instance_of(t,t),
   rdf_triple(t,t,t),
   rdfs_assert_prop_conc(t,-),
-  rdf_class_compare(?, r, r).
+  rdf_class_compare(?, r, r),
+  rdfs_computable_has(r,r,r).
 
 :- dynamic rdfs_computable_triple_during/4.
 :- multifile rdfs_computable_triple_during/4.
@@ -134,16 +135,16 @@ rdfs_computable_class(Class, ComputableClass) :-
   rdf_has(ComputableClass, computable:'target', Class),
   once(rdfs_individual_of(ComputableClass,computable:'PrologClass')).
 
-%% rdfs_computable_property(+Property, -ComputableProperty) is nondet.
+%% rdfs_computable_property(+Property, -CP) is nondet.
 %
-% Search ComputableProperty with the target Property.
+% Search CP with the target Property.
 %
-rdfs_computable_property(Property, ComputableProperty) :-
-  rdf_has(ComputableProperty,computable:'target',Property),
-  once(rdfs_individual_of(ComputableProperty,computable:'PrologProperty')).
-rdfs_computable_property(ComputableProperty, ComputableProperty) :-
-  ground(ComputableProperty),
-  rdfs_individual_of(ComputableProperty, computable:'PrologProperty'), !.
+rdfs_computable_property(Property, CP) :-
+  rdf_has(CP,computable:'target',Property),
+  once(rdfs_individual_of(CP,computable:'PrologProperty')).
+rdfs_computable_property(CP, CP) :-
+  ground(CP),
+  rdfs_individual_of(CP, computable:'PrologProperty'), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -198,71 +199,86 @@ rdfs_computable_instance_of(Instance, Class) :-
 rdfs_computable_triple(Property, _, _) :-
   var(Property),!,
   throw(error(instantiation_error, _)).
-  
-rdfs_computable_triple(Property, Frame, Value) :-
-  \+ rdfs_computable_cachable(Property),!,
-  rdfs_computable_triple_1(Property, Frame, Value).
 
 rdfs_computable_triple(Property, Frame, Value) :-
+  rdfs_computable_property(Property, CP),
+  rdfs_computable_triple(CP, Property, Frame, Value).
+  
+rdfs_computable_triple(CP, Property, Frame, Value) :-
+  \+ rdfs_computable_cachable(CP),!,
+  rdfs_computable_triple_1(CP, Property, Frame, Value).
+
+rdfs_computable_triple(CP, Property, Frame, Value) :-
   nonvar(Frame), nonvar(Value), % both frame and value bound
-  ( rdf(Property, Frame, Value, cache) -> true ; ( % cache miss
-    rdfs_computable_triple_1(Property, Frame, Value),
+  ( rdf(Frame, Property, Value, cache) -> fail ; ( % cache miss
+    rdfs_computable_triple_1(CP, Property, Frame, Value),
     rdfs_computable_cache_values(Property, Frame, Value)
   )).
 
-rdfs_computable_triple(Property, Frame, Value) :-
+rdfs_computable_triple(CP, Property, Frame, Value) :-
   nonvar(Frame), var(Value), % frame bound, value unbound
   (  rdf(computable:cachedAllValuesFor, Property, Frame, cache)
-  -> rdf(Property, Frame, Value, cache) ; (
+  -> fail ; (
      % compute values and cache them
-     setof(MyValue, rdfs_computable_triple_1(Property, Frame, MyValue), Values),
+     setof(MyValue, rdfs_computable_triple_1(CP, Property, Frame, MyValue), Values),
      rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
      maplist(rdfs_computable_cache_values(Property, Frame), Values),
      member(Value, Values)
   )).
       
-rdfs_computable_triple(Property, Frame, Value) :-
+rdfs_computable_triple(CP, Property, Frame, Value) :-
   var(Frame), nonvar(Value), % frame unbound, value bound
   (  rdf(Property, Value, computable:cachedAllFramesFor, cache)
-  -> rdf(Property, Frame, Value, cache) ; (
-     setof(MyFrame, rdfs_computable_triple_1(Property, MyFrame, Value), Frames),
+  -> fail ; (
+     setof(MyFrame, rdfs_computable_triple_1(CP, Property, MyFrame, Value), Frames),
      rdf_assert(Property, Value, computable:cachedAllFramesFor, cache),
      maplist(rdfs_computable_cache_frames(Property, Value), Frames),
      member(Frame, Frames)
   )).
 
-rdfs_computable_triple(Property, Frame, Value) :-
+rdfs_computable_triple(CP, Property, Frame, Value) :-
   var(Frame), var(Value), % both frame and value unbound -> no caching
-  rdfs_computable_triple_1(Property, Frame, Value).
+  rdfs_computable_triple_1(CP, Property, Frame, Value).
 
-rdfs_computable_triple_1(Property, Frame, Value) :-
-  nonvar(Property),
+rdfs_computable_triple_1(CP, Property, Frame, Value) :-
   catch(
-    rdfs_computable_triple_during(Property, Frame, Value),
+    rdfs_compute_triple(CP, Property, Frame, Value),
     error(instantiation_error, _),
     fail
   ).
 
 % Helpers for caching...
-rdfs_computable_cachable(Property) :-
-  rdf_has(CP, computable:target, Property),
+rdfs_computable_cachable(CP) :-
   \+ rdfs_individual_of(CP, computable:'PrologTemporalProperty'),
   rdf_has(CP, computable:cache, literal(type(_, cache))), !.
-rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Property, Frame, Value, cache).
-rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Frame, Value, cache).
+rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Frame, Property, Value, cache).
+rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Frame, Property, Value, cache).
 
-%% rdfs_computable_triple_during(?Property, ?Frame, ?Value, +Interval).
+
+
+rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
+  rdfs_computable_property(Property, CP),
+  rdfs_computable_triple_during_(CP, Property, Frame, Value, Interval).
+
+rdfs_computable_triple_during_(CP, Property, Frame, Value, Interval) :-
+  rdfs_individual_of(CP,computable:'PrologTemporalProperty'),!,
+  rdfs_compute_triple(CP, Property, Frame, Value, Interval).
+
+rdfs_computable_triple_during_(CP, Property, Frame, Value, _) :-
+  rdfs_computable_triple(CP, Property, Frame, Value).
+
+
+%% rdfs_compute_triple(CP, ?Property, ?Frame, ?Value, +Interval).
 %
 % Unify the property triple for a computable property.
 % No caching is performed.
 %
-rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
-  rdfs_computable_property(Property, ComputableProperty),
-  ( rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty') -> 
+rdfs_compute_triple(CP, Property, Frame, Value, Interval) :-
+  ( rdfs_individual_of(CP,computable:'PrologTemporalProperty') -> 
     Args=[Frame, PrologValue, Interval];
     Args=[Frame, PrologValue] ),
   % get the Prolog predicate that is used for computation
-  rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
+  rdf_has(CP, computable:command, literal(type(_, Cmd))),
   % handle the case that the predicate is defined in another module
   ( term_to_atom(Module:Pred, Cmd) ->
   ( Goal=..[Pred|Args], Command=Module:Goal ) ;
@@ -282,6 +298,22 @@ rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
   ( PrologValue=Value, call(Command) );
   ( call(Command), rdfs_prolog_to_rdf(Property, PrologValue, Value))).
 
+rdfs_compute_triple(_CP, Property, Frame, Value, _) :-
+  rdf_equal(Property, rdfs:range),
+  rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
+  rdf_has(Frame, computable:'rest', RestProperty),
+  rdf_triple(rdfs:range, RestProperty, Value).
+
+rdfs_compute_triple(_CP, Property, Frame, Value, _) :-
+  rdf_equal(Property, rdfs:domain),
+  rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
+  rdf_has(Frame, computable:'first', FirstProperty),
+  rdf_triple(rdfs:domain, FirstProperty, Value).
+
+rdfs_compute_triple(CP, Property, Frame, Value) :-
+  current_time(Instant),
+  rdfs_compute_triple(CP, Property, Frame, Value, [Instant,Instant]).
+
 computable_predicate(Command, Predicate) :-
   functor(Command, N, A),
   ( N=':' -> (
@@ -289,22 +321,6 @@ computable_predicate(Command, Predicate) :-
     functor(Command_i, N_i, A_i),
     Predicate=Module:N_i/A_i
   ) ; Predicate=N/A ).
-
-rdfs_computable_triple_during(Property, Frame, Value, _) :-
-  rdf_equal(Property, rdfs:range),
-  rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
-  rdf_has(Frame, computable:'rest', RestProperty),
-  rdf_triple(rdfs:range, RestProperty, Value).
-
-rdfs_computable_triple_during(Property, Frame, Value, _) :-
-  rdf_equal(Property, rdfs:domain),
-  rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
-  rdf_has(Frame, computable:'first', FirstProperty),
-  rdf_triple(rdfs:domain, FirstProperty, Value).
-
-rdfs_computable_triple_during(Property, Frame, Value) :-
-  current_time(Instant),
-  rdfs_computable_triple_during(Property, Frame, Value, [Instant,Instant]).
 
 
 % Implementation of rdfs_computable_instance_of for PrologClasses.
