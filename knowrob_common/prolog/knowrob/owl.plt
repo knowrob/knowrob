@@ -59,7 +59,7 @@ test(assert_object_with_property) :-
 
 test(generate_refrigerator_description) :-
   entity(test_owl:'Refrigerator_fg45543', X),
-  X = [an, object, [type, container]].
+  X = [an, object, [type, refrigerator]].
 
 test(query_refrigerator, [nondet]) :-
   entity(Cont, [an, object, [type, container]]),
