@@ -553,8 +553,12 @@ owl_cardinality_on_resource(Resource, Predicate, Range, Cardinality) :-
 %
 
 owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
+  ground(Range), !,
 	findall(C, cardinality_on_subject(Subject, Predicate, Range, C), L),
 	join_decls(L, [Cardinality]).
+
+owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
+  cardinality_on_subject(Subject, Predicate, Range, Cardinality).
 
 cardinality_on_subject(Subject, Predicate, Range, C) :-
 	rdf_has(Subject, rdf:type, Class),
@@ -567,22 +571,40 @@ cardinality_on_subject(Subject, Predicate, Range, C) :-
 %		--> accumulate max values and take difference to superclass min value (only if all direct subclasses restricted)
 %
 owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
-	owl_cardinality_cached(Class, Predicate, Range, Cardinality_cached) ->
+  ground(Range), !, (
+	owl_cardinality_cached(Class, Predicate, Range, Cardinality_cached) *->
 	Cardinality = Cardinality_cached; (
 		% cache miss -> infer cardinality
-		owl_cardinality_on_class_(Class,Predicate,Range,Cardinality_inferred),
-		assertz(owl_cardinality_cached(Class,Predicate,Range,Cardinality_inferred)),
-		Cardinality = Cardinality_inferred
+		  owl_cardinality_on_class_(Class,Predicate,Range,Cardinality),
+		  assertz(owl_cardinality_cached(Class,Predicate,Range,Cardinality))
+	)).
+  
+owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
+	owl_cardinality_cached(Class, Predicate, Range_cached, Cardinality_cached) *->
+	( Cardinality = Cardinality_cached, Range = Range_cached ); (
+		% cache miss -> infer cardinality
+		  forall(
+		    owl_cardinality_on_class_(Class,Predicate,R,C),
+		    assertz(owl_cardinality_cached(Class,Predicate,R,C))),
+		  owl_cardinality_cached(Class, Predicate, Range, Cardinality)
 	).
 
 owl_cardinality_on_class_(Class, Predicate, Range, Cardinality) :-
-	ground(Range),
+	ground(Range),!,
 	findall(C, (
 		  cardinality_on_property(Predicate, C)
 		; cardinality_on_class(Class, Predicate, Range, C)
 		; cardinality_from_sibling_range(Class, Predicate, Range, C)
 	), L),
 	join_decls(L, [Cardinality]).
+
+owl_cardinality_on_class_(Class, Predicate, Range, Cardinality) :-
+	%ground(Range),
+	%findall(C, (
+	cardinality_on_class(Class, Predicate, Range, Cardinality)
+	%), L),
+	%join_decls(L, [Cardinality])
+	.
 
 cardinality_on_class(Class, Predicate, Range, cardinality(Min, Max)) :-
 	rdfs_subclass_of(Class, RestrictionID),
