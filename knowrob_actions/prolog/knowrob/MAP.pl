@@ -239,9 +239,9 @@ parser_create(Parser,RDFGraph) :-
 
 parser_create_grammar(Parser,Act) :-
   % find constituents and their relation to each other
-  event_constituents(Act,Constituents,Constituent_Constraints),
+  action_constituents(Act,Constituents,Constituent_Constraints),
   % gather allen constraints about the occurance of Act
-  event_boundary_constraints(Act,Act_Constraints),
+  action_boundary_constraints(Act,Act_Constraints),
   append(Constituent_Constraints,Act_Constraints,Constraints),
   % compute the sequence graph
   write('      [parser.pl] '), write('Loading action '), write_concept(Act), nl,

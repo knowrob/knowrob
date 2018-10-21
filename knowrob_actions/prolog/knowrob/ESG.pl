@@ -30,6 +30,7 @@
 :- module('ESG', [
      esg/4,
      esg_truncated/4,
+     esg_events/2,
      esg_assert/3,
      esg_retract/1,
      esg_to_list/2,
@@ -588,6 +589,14 @@ esg_truncated(Act,Events,Constraints,[Sequence,PreESG,PostESG]) :-
   esg_write_info(ESG),
   esg_to_list(ESG,Sequence),
   esg_retract(ESG).
+
+esg_events(ESG0,[Evt|Xs]) :-
+  esg_pop(ESG0,-(Evt),ESG1),!,
+  esg_events(ESG1,Xs).
+esg_events(ESG0,Xs) :-
+  esg_pop(ESG0,+(_),ESG1),!,
+  esg_events(ESG1,Xs).
+esg_events([],[]).
 
 % NOTE: Actions MUST contain their sub-actions (i.e., no overlapping etc.).
 %       Else we may remove action endpoints here needed for the action parser.
