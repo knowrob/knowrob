@@ -358,7 +358,6 @@ belief_at_relative_to(Child, Parent, [ParentFrame, TargetFrame, Translation, Rot
 belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Child,  ChildGlobal, Instant),
   belief_at_global(Parent, ParentGlobal, Instant),
-  % FIXME: is there a bug in here?
   transform_between(ParentGlobal, ChildGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet.
@@ -465,8 +464,8 @@ belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId) :-
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
   rdf_assert(TransformId, rdf:type, knowrob:'Pose', belief_state),
-  rdf_assert(TransformId, knowrob:'translation', literal(type(xsd:string,Translation)), belief_state),
-  rdf_assert(TransformId, knowrob:'quaternion', literal(type(xsd:string,Quaternion)), belief_state).
+  rdf_assert(TransformId, knowrob:'translation', literal(type(knowrob:vec3,Translation)), belief_state),
+  rdf_assert(TransformId, knowrob:'quaternion', literal(type(knowrob:vec4,Quaternion)), belief_state).
   
 
 %% belief_republish_objects(+ObjectIds) is det

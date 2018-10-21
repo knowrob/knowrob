@@ -207,7 +207,7 @@ object_assert_color(Obj, [R,G,B,A]) :-
 object_assert_color(Obj, Col) :-
   atom(Col),
   rdf_retractall(Obj, knowrob:mainColorOfObject, _),
-  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(xsd:string, Col))), !.
+  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(knowrob:vec4, Col))), !.
 
 %% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
 %
@@ -282,7 +282,7 @@ comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', 
 object_assert_dimensions(Obj, Depth, Width, Height) :-
   atomic_list_concat([Depth, Width, Height], ' ', V),
   rdf_retractall(Obj, knowrob:boundingBoxSize, _),
-  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, V))).
+  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(knowrob:vec3, V))).
 
 %% object_mesh_path(+Obj:iri, -FilePath:atom) is det
 %
