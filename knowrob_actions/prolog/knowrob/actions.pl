@@ -37,7 +37,8 @@
       action_missing_inputs/2,
       action_requires/3,
       action_class_requires/3,
-      comp_action_participant/3
+      comp_action_participant/3,
+      physical_actions/2
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -61,8 +62,8 @@
       action_inputs(r,r),
       action_missing_inputs(r,r),
       action_outputs(r,r),
-action_requires(r,r,r),
-action_class_requires(r,r,r),
+      action_requires(r,r,r),
+      action_class_requires(r,r,r),
       transformed_into(r, r),
       transformed_into_transitive(r,r),
       comp_action_participant(r,r,r).
@@ -172,6 +173,23 @@ resource_available(Resource) :-
   owl_individual_of(ObjInst, Resource),
   % HACK
   \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% 'Physical action'
+
+% set of all 'Physical action' subclasses without subclass
+physical_actions(ActionSet) :-
+  physical_actions(ActionSet,user).
+
+physical_actions(ActionSet,RDFGraph) :-
+  findall(ActionClass, (
+    rdfs_subclass_of(ActionClass, ease:'PhysicalAction'),
+    once((
+      rdf(ActionClass, rdfs:subClassOf, _, RDFGraph),
+      \+ rdf(_, rdfs:subClassOf, ActionClass)
+    ))
+  ), Actions),
+  list_to_set(Actions, ActionSet).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
