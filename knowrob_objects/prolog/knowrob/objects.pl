@@ -225,6 +225,21 @@ object_dimensions(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),  atom_number(Width_,  Width),
   holds(Obj, knowrob:heightOfObject, literal(type(_, Height_))), atom_number(Height_, Height), !.
 
+% FIXME: holds should also cover class properties :/
+object_dimensions(Obj, Depth, Width, Height) :-
+  once((
+    rdf_has(Obj,rdf:type,TW),
+    owl_class_properties(TW,knowrob:widthOfObject,literal(type(_,W))),
+    atom_number(W, Width))),
+  once((
+    rdf_has(Obj,rdf:type,TH),
+    owl_class_properties(TH,knowrob:heightOfObject,literal(type(_,H))),
+    atom_number(H, Height))),
+  once((
+    rdf_has(Obj,rdf:type,TD),
+    owl_class_properties(TD,knowrob:depthOfObject,literal(type(_,D))),
+    atom_number(D, Depth))), !.
+
 object_dimensions(Obj, Depth, Width, Height) :-
   % The depth of a knob defaults to 3cm here. This information
   % should either be asserted somewhere else or be set as a property
