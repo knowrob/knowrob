@@ -68,6 +68,7 @@ class PerceivedObject(object):
             self.marker.type = self.marker.MESH_RESOURCE
             self.marker.mesh_resource = self.mesh_path.replace('\'', '')
             self.marker.mesh_use_embedded_materials = True
+            self.marker.scale = Vector3(1, 1, 1)
             if self.marker.mesh_resource.endswith('.stl'):
                 # TODO I think we need this special case for stl meshes, try to remove this line if they are buggy
                 self.marker.color = self.color
