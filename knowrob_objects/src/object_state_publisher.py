@@ -68,6 +68,7 @@ class PerceivedObject(object):
             self.marker.type = self.marker.MESH_RESOURCE
             self.marker.mesh_resource = self.mesh_path.replace('\'', '')
             self.marker.mesh_use_embedded_materials = True
+            self.marker.scale = Vector3(1, 1, 1)
             if self.marker.mesh_resource.endswith('.stl'):
                 # TODO I think we need this special case for stl meshes, try to remove this line if they are buggy
                 self.marker.color = self.color
@@ -197,6 +198,9 @@ class ObjectStatePublisher(object):
             if obj_state.object_id not in self.objects.keys():
                 self.objects[obj_state.object_id] = PerceivedObject()
             obj = self.objects[obj_state.object_id]
+            if obj.initialized:
+                # make sure markers are not added redundantly
+                obj.marker.action = Marker.MODIFY
             obj.marker_ns = (str(obj_state.object_type).replace('\'', ''))
             obj.visualize = bool(obj_state.has_visual)
             ###
@@ -230,6 +234,9 @@ class ObjectStatePublisher(object):
         for x in self.prolog.query(q).solutions():
             object_id = str(x['Obj']).replace('\'', '')
             obj = self.objects[object_id]
+            if obj.initialized:
+                # make sure markers are not added redundantly
+                obj.marker.action = Marker.MODIFY
             obj.marker_ns = (str(x['Type']).replace('\'', ''))
             obj.visualize = (str(x['HasVisual'])=="'true'")
             obj.update_transform(*x['Pose'])
