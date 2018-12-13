@@ -28,6 +28,7 @@
 :- module(knowrob_beliefstate,
     [
       belief_parse/1,
+      belief_export/1,
       belief_existing_objects/1,    % set of known objects in the belief state
       belief_existing_objects/2,
       belief_existing_object_at/4,  % query known object near some pose
@@ -120,6 +121,9 @@ belief_existing_objects(ObjectIds, ObjectTypes) :-
 belief_parse(File) :-
   owl_parser:owl_parse(File, belief_state),
   belief_assign_frames.
+
+belief_export(File) :-
+  rdf_save(File, [graph(belief_state),sorted(true)]).
 
 belief_assign_frames :-
   belief_existing_objects(ObjectIds),
