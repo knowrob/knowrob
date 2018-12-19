@@ -151,3 +151,4 @@ class Prolog(object):
         self._simple_query_srv.wait_for_service(timeout=timeout)
         self._next_solution_srv.wait_for_service(timeout=timeout)
         self._finish_query_srv.wait_for_service(timeout=timeout)
+        
