@@ -207,49 +207,5 @@ test(generate_temporal_part_description) :-
   rdfs_individual_of(Obj, knowrob:'Dough'),
   entity(Obj, Descr_),
   Descr_=Descr.
-
-%% TBOX
-test(assert_restrictions_and_check, [nondet]) :-
-  rdf_assert(knowrob:'MarsianTime', rdf:type, owl:'Class'),
-  rdf_assert(knowrob:'MarsianTime', rdfs:subClassOf, knowrob:'TimePoint'),
-  rdf_assert(knowrob:'MarsLocation', rdf:type, owl:'Class'),
-  owl_restriction_assert(restriction('http://knowrob.org/kb/knowrob.owl#locationOf', some_values_from(knowrob:'MarsLocation')), Rstr1),
-  rdf_assert(knowrob:'MarsianTime', rdfs:subClassOf, Rstr1),
-  findall( Val, owl_class_properties(knowrob:'MarsianTime', Prop, Val), ValuesA),
-  length(ValuesA, 1),
-  rdf_assert(knowrob:'MarsianCoreTime', rdf:type, owl:'Class'),
-  rdf_assert(knowrob:'MarsianCoreTime', rdfs:subClassOf, knowrob:'MarsianTime'),
-  rdf_assert(knowrob:'MarsOuterSpace', rdf:type, owl:'Class'),
-  owl_restriction_assert(restriction('http://knowrob.org/kb/knowrob.owl#toLocation', all_values_from(knowrob:'MarsOuterSpace')), Rstr2),
-  rdf_assert(knowrob:'MarsianCoreTime', rdfs:subClassOf, Rstr2),
-  findall( Val, owl_class_properties(knowrob:'MarsianCoreTime', Prop, Val), ValuesB),
-  length(ValuesB, 1),
-  findall( Val,owl_class_properties_some(knowrob:'MarsianCoreTime', Prop, Val), ValuesC),
-  length(ValuesC, 1),
-  findall( Val, owl_class_properties_all(knowrob:'MarsianCoreTime', Prop, Val), ValuesD),
-  length(ValuesD, 1),
-  findall( Val,owl_class_properties_value(knowrob:'MarsianCoreTime', Prop, Val), ValuesE),
-  length(ValuesE, 0),
-  findall( Val,owl_class_properties_nosup(knowrob:'MarsianCoreTime', Prop, Val), ValuesF),
-  length(ValuesF, 0),
-  rdf_instance_from_class(knowrob:'MarsianTime', MarsianTimeInst),
-  rdf_assert(MarsianTimeInst, rdf:type, knowrob:'MarsianTime'),
-  rdf_assert(MarsianTimeInst, rdf:type, owl:'NamedIndividual'),
-  rdf_instance_from_class(knowrob:'MarsianCoreTime', MarsianCoreTimeInst),
-  rdf_assert(MarsianCoreTimeInst, rdf:type, knowrob:'MarsianCoreTime'),
-  rdf_assert(MarsianTimeInst, knowrob:'afterI', MarsianCoreTimeInst),
-  owl_restriction_on(MarsianTimeInst, 'http://knowrob.org/kb/knowrob.owl#locationOf', Rstr1),
-  owl_restriction_on(MarsianCoreTimeInst, 'http://knowrob.org/kb/knowrob.owl#locationOf', Rstr1),
-  owl_restriction_on(MarsianCoreTimeInst, 'http://knowrob.org/kb/knowrob.owl#toLocation', Rstr2).
-
-%% Inspect, Input, Output
-test(inspect_individuals_and_classes, [nondet]) :-
-   owl_inspect(knowrob:'MarsianTime', 'http://knowrob.org/kb/knowrob.owl#locationOf', O),
-   rdfs_individual_of(MT, knowrob:'MarsianTime'),
-   owl_inspect(MT, knowrob:'afterI', CT),
-   owl_readable(MT, R_MT),
-   owl_readable(knowrob:'Knife', ['Knife']),
-   owl_readable(knowrob:'Joint-Physical', ['Joint-Physical']),
-   owl_readable(knowrob:'afterI', ['inverse_of(beforeI)']).
   
 :- end_tests(knowrob_owl).

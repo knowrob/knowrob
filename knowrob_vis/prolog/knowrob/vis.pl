@@ -101,7 +101,10 @@ show(VisualThing, Instant) :-
 
 show(VisualThing, Instant, Properties) :-
   marker_vis:marker_term(VisualThing, MarkerTerm), !,
-  marker(MarkerTerm, MarkerObj),
+  ( member(name:Name, Properties) ->
+    marker(MarkerTerm, MarkerObj, Name) ;
+    marker(MarkerTerm, MarkerObj)
+  ),
   marker_update(MarkerObj,Instant),
   marker_properties(MarkerObj, Properties).
 
@@ -119,11 +122,16 @@ show_next :-
 %% highlight(+VisualThing,+Color) is det.
 %
 % Visually highlights VisualThing in the respective canvas.
+highlight(Objects) :-
+  ground(Objects),
+  is_list(Objects),!,
+  marker_highlight_remove(all),
+  forall(member(O,Objects), highlight(O)).
 highlight(VisualThing) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm).
 highlight(VisualThing,Color) :-
-  marker_term(VisualThing, MarkerTerm),
+  marker_vis:marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -172,6 +180,7 @@ visualisation_server(WebServer) :-
     jpl_new('org.knowrob.vis.WebServer', [], WebServer),
     jpl_list_to_array(['org.knowrob.vis.WebServer'], Arr),
     jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [WebServer, Arr], _),
+    writeln('% (knowrob_vis) Minimal marker visualization client running at: http://localhost:1111'),
     assert(v_server(WebServer)),!.
 visualisation_server(WebServer) :-
     current_predicate(v_server, _),

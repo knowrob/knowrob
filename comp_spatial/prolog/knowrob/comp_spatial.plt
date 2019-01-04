@@ -33,13 +33,13 @@
 
 
 test(inCenterOf1) :-
+  rdf_triple(knowrob:inCenterOf, test_sp:'cup3', test_sp:'cupboard1'),!.
+test(inCenterOf2) :-
   rdf_triple(knowrob:inCenterOf, test_sp:'cup3', A),
   rdf_equal(A, test_sp:'cupboard1'),!.
-test(inCenterOf2) :-
+test(inCenterOf3) :-
   rdf_triple(knowrob:inCenterOf, A, test_sp:'cupboard1'),
   rdf_equal(A, test_sp:'cup3'),!.
-test(inCenterOf3) :-
-  rdf_triple(knowrob:inCenterOf, test_sp:'cup3', test_sp:'cupboard1'),!.
 
 
 test(in_ContGeneric1) :-
@@ -129,7 +129,7 @@ test(toTheSideOf3) :-
   rdf_triple(knowrob:'toTheSideOf', test_sp:'cup1', test_sp:'cup2'),!.
 test(toTheSideOf4) :-
   entity(A, [an, object, [type, cup], [to_the_side_of, [an, object, [name, test_sp:'cup2']]]]),
-  A = 'http://knowrob.org/kb/test_knowrob_objects.owl#Cup1',!.
+  rdf_equal(A, test_sp:'cup1'),!.
 
 
 :- end_tests(comp_spatial).

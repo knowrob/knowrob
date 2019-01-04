@@ -65,7 +65,8 @@
       interval_starts/2,
       interval_finishes/2,
       interval_overlaps/2,
-      interval_during/2
+      interval_during/2,
+      owl_temporal_db/2
     ]).
 /** <module> Predicates for temporal reasoning in KnowRob
 
@@ -187,8 +188,11 @@ occurs(Evt) :-
   current_time(CurrentTime),
   occurs(Evt, CurrentTime, knowrob:'Event').
 
-occurs(Evt, Time) :-
-  occurs(Evt, Time, knowrob:'Event').
+occurs(Evt, Interval) :-
+  interval(Evt, EvtI),
+  (  ground(Interval)
+  -> interval_during(Interval, EvtI)
+  ;  Interval = EvtI ).
 
 occurs(Evt, Interval, Type) :-
   rdfs_individual_of(Evt, Type),
@@ -380,7 +384,7 @@ temporal_part_during(Obj,TemporalPart,TemporalExtend) :-
 create_temporal_part(S, P, TemporalPart) :-
   create_temporal_part(S, P, TemporalPart, user).
 create_temporal_part(S, P, TemporalPart, Graph) :-
-  rdf_instance_from_class(knowrob:'TemporalPart', TemporalPart),
+  rdf_instance_from_class(knowrob:'TemporalPart', Graph, TemporalPart),
   rdf_assert(S, knowrob:'temporalParts', TemporalPart, Graph),
   rdf_assert(TemporalPart, knowrob:'temporalProperty', P, Graph).
 
@@ -442,7 +446,9 @@ assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
 assert_temporal_part_extend(TemporalPart, I) :-
   assert_temporal_part_extend(TemporalPart, I, user).
 assert_temporal_part_extend(TemporalPart, I, Graph) :-
-  owl_instance_from_class(knowrob:'TimeInterval', I, Interval),
+  % FIXME owl_instance_from_class needs graph parameter
+  %owl_instance_from_class(knowrob:'TimeInterval', I, Interval),
+  assert_temporal_part_interval(I, Interval, Graph),
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')
@@ -458,6 +464,35 @@ retract_temporal_extend(TemporalPart, _Graph) :-
   forall( member(Part, [TemporalPart|Parts]),
           rdf_retractall(Part, knowrob:'temporalExtend', _)
   ).
+
+assert_temporal_part_interval(Start, TimeInterval, Graph) :-
+  number(Start), !,
+  assert_temporal_part_interval([Start], TimeInterval, Graph).
+
+assert_temporal_part_interval(TimeInterval, TimeInterval, _Graph) :-
+  atom(TimeInterval),
+  rdfs_individual_of(TimeInterval, knowrob:'TimeInterval'), !.
+
+assert_temporal_part_interval([Start], TimeInterval, Graph) :- !,
+  time_term(Start, Start_v),
+  assert_time_instant(Start_v, StartI, Graph),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v], '_', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval', Graph),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI, Graph).
+
+assert_temporal_part_interval([Start,End], TimeInterval, Graph) :- !,
+  time_term(Start, Start_v), time_term(End, End_v), 
+  assert_time_instant(Start_v, StartI, Graph),
+  assert_time_instant(End_v, EndI, Graph),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v,End_v], '_', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval', Graph),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI, Graph),
+  rdf_assert(TimeInterval, knowrob:'endTime', EndI, Graph).
+
+assert_time_instant(T, TimePoint, Graph) :-
+  time_term(T,T_value),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T_value, TimePoint),
+  rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint', Graph).
 
 %% assert_temporal_part_end(+S,?P,?O) is nondet.
 %% assert_temporal_part_end(+S,?P,?O,+End) is nondet.
@@ -551,7 +586,7 @@ temporal_part_has(S, P, O, Interval, Lifespan) :-
   interval(Ext, Lifespan),
   ( ground(Interval) ->
     interval_during(Interval, Lifespan) ;
-    Interval=Lifespan ),
+    Interval=Lifespan ), % FIXME: also fine without exact match!
   % read from the triple store
   rdf_has(S, P, S_O),
   % ignore some specific type statements in case of

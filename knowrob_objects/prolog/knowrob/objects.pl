@@ -38,6 +38,11 @@
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
+      object_affordance/2,
+      object_instantiate_affordances/1,
+      object_affordance_static_transform/3,
+      object_perception_affordance_frame_name/2,
+      object_information/8,
       storagePlaceFor/2,
       storagePlaceForBecause/3,
       object_query/4,
@@ -79,6 +84,9 @@
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
+    object_affordance(r,r),
+    object_instantiate_affordances(r),
+    object_affordance_static_transform(r,r,?),
     storagePlaceFor(r,r),
     storagePlaceForBecause(r,r,r),
     object_query(r,?,?,?),
@@ -97,6 +105,7 @@
 % @param Pose  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
 current_object_pose(Obj, Pose) :- belief_at(Obj, Pose).
+
 
 %% object_pose_at_time(+Obj:iri, +Instant:float, ?Pose:term) is semidet
 %
@@ -216,6 +225,21 @@ object_dimensions(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),  atom_number(Width_,  Width),
   holds(Obj, knowrob:heightOfObject, literal(type(_, Height_))), atom_number(Height_, Height), !.
 
+% FIXME: holds should also cover class properties :/
+object_dimensions(Obj, Depth, Width, Height) :-
+  once((
+    rdf_has(Obj,rdf:type,TW),
+    owl_class_properties(TW,knowrob:widthOfObject,literal(type(_,W))),
+    atom_number(W, Width))),
+  once((
+    rdf_has(Obj,rdf:type,TH),
+    owl_class_properties(TH,knowrob:heightOfObject,literal(type(_,H))),
+    atom_number(H, Height))),
+  once((
+    rdf_has(Obj,rdf:type,TD),
+    owl_class_properties(TD,knowrob:depthOfObject,literal(type(_,D))),
+    atom_number(D, Depth))), !.
+
 object_dimensions(Obj, Depth, Width, Height) :-
   % The depth of a knob defaults to 3cm here. This information
   % should either be asserted somewhere else or be set as a property
@@ -264,8 +288,82 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 % @param FilePath   the path (usually a package:// path)
 %
 object_mesh_path(Obj, FilePath) :-
-  holds(Obj, knowrob:pathToCadModel, literal(type(xsd:string, FilePath))).
+  holds(Obj, knowrob:pathToCadModel, Val),
+  strip_literal_type(Val, FilePath).
 
+object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms) :-
+  rdfs_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
+  (owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
+  (object_color(Obj,Color)),
+  (object_mesh_path(Obj,Mesh);Mesh=''),
+  (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
+  (belief_at_id(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
+  findall(X, object_affordance_static_transform(Obj,_,X), StaticTransforms), !.
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Object affordances
+
+%%
+object_perception_affordance_frame_name(Obj, AffFrameName) :-
+  object_instantiate_affordances(Obj), % HACK
+  owl_has(Obj, knowrob:hasAffordance, Aff),
+  rdfs_individual_of(Aff, knowrob:'PerceptionAffordance'),
+  object_frame_name(Aff, AffFrameName), !.
+
+%%
+object_affordance(Obj, Aff) :-
+  object_instantiate_affordances(Obj), % HACK
+  owl_has(Obj, knowrob:hasAffordance, Aff).
+
+%%
+object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
+  object_instantiate_affordances(Obj), % HACK
+  object_frame_name(Obj, ObjFrame),
+  owl_has(Obj, knowrob:hasAffordance, Aff),
+  % TODO: StaticAffordanceTransform declares
+  %  ((relativeTo o hasAffordance o pose) Self)
+  % Use this to infer the relativeTo entity:
+  %    relativeTo value (Self.(inverse(pose)oinverse(hasAffordance)))
+  belief_at_id(Aff, [_,AffFrame,Pos,Rot]).
+
+%%
+object_instantiate_affordances(Obj) :-
+  findall(Type, (
+    owl_restriction_on(Obj, knowrob:hasAffordance, R),
+    owl_restriction_object_domain(R, Type)), Types),
+  list_to_set(Types, Types_set),
+  forall(
+    owl_most_specific(Types_set, Specific), (
+    owl_description(Specific, Specific_descr),
+    ignore(object_instantiate_affordances(Obj, Specific_descr))
+  )).
+
+object_instantiate_affordances(Obj, class(Cls)) :-
+  owl_cardinality_on_resource(Obj, knowrob:hasAffordance, Cls, cardinality(Desired,_)),
+  owl_cardinality(Obj, knowrob:hasAffordance, Cls, Actual),
+  Missing is Desired - Actual,
+  object_instantiate_affordances(Obj,[Cls],Missing).
+
+object_instantiate_affordances(Obj, union_of(Classes)) :-
+  forall(
+    member(Cls,Classes), (
+    owl_description(Cls,Cls_descr),
+    ignore(object_instantiate_affordances(Obj,Cls_descr))
+  )).
+
+object_instantiate_affordances(_Obj, intersection_of(_Classes)) :- fail.
+object_instantiate_affordances(_Obj, one_of(_Classes))          :- fail.
+object_instantiate_affordances(_Obj, complement_of(_Classes))   :- fail.
+
+object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
+object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
+  owl_instance_from_class(Cls, Affordance),
+  forall(member(X,Rest), rdf_assert(Affordance,rdf:type, X)),
+  rdf_assert(Obj, knowrob:hasAffordance, Affordance),
+  Next is Missing-1,
+  object_instantiate_affordances(Obj,[Cls|Rest],Next).
+  
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Pose from TF

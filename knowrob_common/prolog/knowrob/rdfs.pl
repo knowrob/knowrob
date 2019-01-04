@@ -52,6 +52,8 @@
 
 :- rdf_meta rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
+            rdf_assert_prolog(r,r,r),
+            rdf_assert_prolog(r,r,r,+),
             rdfs_value_prolog(r,t,?),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
@@ -156,9 +158,10 @@ rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
   strip_literal_type(O,Value),
+  term_to_atom(Value, Value_Atom),
   (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(S, P, literal(type(Range,Value)), Graph)
-  ;  rdf_assert(S, P, literal(Value), Graph)
+  -> rdf_assert(S, P, literal(type(Range,Value_Atom)), Graph)
+  ;  rdf_assert(S, P, literal(Value_Atom), Graph)
   ).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_assert(S,P,O,Graph).

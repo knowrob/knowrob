@@ -46,6 +46,7 @@ public:
   ros::ServiceClient prolog_finish;
   
   Prolog(const std::string &ns="/json_prolog");
+  Prolog(bool persistent, const std::string &ns="/json_prolog");
   PrologQueryProxy query(const std::string &query_str);
   PrologBindings once(const std::string &query_str);
   bool waitForServer(const ros::Duration &timeout=ros::Duration(-1));

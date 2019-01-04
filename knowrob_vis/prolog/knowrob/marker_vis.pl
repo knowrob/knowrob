@@ -35,9 +35,11 @@
       marker_update/0,
       marker_update/1,
       marker_update/2,
+      marker_update/3,
       marker_remove/1,
       marker_child/2,
       marker_object/4,
+      marker_term/2,
       
       marker_properties/2,
       marker_type/2,
@@ -72,6 +74,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
 :- use_module(library('lists')). % for sum_list
+:- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/transforms')).
 
@@ -81,6 +84,7 @@
             marker_show(t),
             marker_update(t),
             marker_update(t,r),
+            marker_term(t,?),
             marker_remove(t),
             marker_children(t,?),
             marker_type(t,?),
@@ -111,15 +115,16 @@ marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
   not(owl_individual_of(Identifier, knowrob:'RoomInAConstruction')),
   not(owl_individual_of(Identifier, knowrob:'SemanticEnvironmentMap')),
+  not(owl_individual_of(Identifier, knowrob:'TemporalPart')),
   not(rdf_has(Identifier, knowrob:'hasVisual', literal(type(_,false)))).
 
 marker_children(Parent, Children) :-
   findall(Child, (
-    rdf_reachable(Part, knowrob:describedInMap, Parent),
     (
-      rdf_reachable(Part, knowrob:'parts', Child);
-      rdf_reachable(Part, srdl2comp:'subComponent', Child);
-      rdf_reachable(Part, srdl2comp:'successorInKinematicChain', Child)
+      rdf_has(Child, knowrob:describedInMap, Parent);
+      rdf_has(Parent, knowrob:'parts', Child);
+      rdf_has(Parent, srdl2comp:'subComponent', Child);
+      rdf_has(Parent, srdl2comp:'successorInKinematicChain', Child)
     ),
     not(Child = Parent)
   ), ChildrenList),
@@ -190,6 +195,9 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(directional_light,999991).
+marker_prop_type(point_light,999992).
+marker_prop_type(spot_light,999993).
 marker_prop_type(sprite_scaled,999994).
 marker_prop_type(background_image,999995).
 marker_prop_type(hud_image,999996).
@@ -304,8 +312,8 @@ marker_initialize_object(Identifier,MarkerObject) :-
   )),
   ignore((
     %not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
+    object_dimensions(Identifier, Depth, Width, Height),
+    marker_scale(MarkerObject, [Width, Depth, Height])
   )),
   ignore((
     object_mesh_path(Identifier, Path),
@@ -320,10 +328,12 @@ marker_initialize_object(Identifier,MarkerObject) :-
       marker_scale(MarkerObject, ScaleVec)
     ) ; true )
   )),
-  ignore((
-    object_color(Identifier, Color),
+  % FIXME: this is evil, will override mesh internal colors
+  ignore(once((
+    holds(Identifier, knowrob:mainColorOfObject, Color_rdf),
+    rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Color),
     marker_color(MarkerObject, Color)
-  )).
+  ))).
 
 %% marker_primitive(+Type, +MarkerName, +MarkerTerm, -MarkerObject, +Parent) is det.
 %
@@ -518,11 +528,41 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   marker_children(Identifier,Children),
   forall(
     member( Child,Children ), ignore((
+      %marker_has_visual( Child ),
       marker_term(Child, ChildTerm),
       marker_child_name(object(Identifier), MarkerName, ChildTerm, ChildName),
       marker(ChildName, ChildTerm, _, MarkerObject)
     ))
   ).
+
+marker_new(MarkerName, spot_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(spot_light, MarkerName, spot_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject),
+  % get look at target object (more specific the name of the marker)
+  % this is a HACK that misuses the marker message text field
+  once(((
+    owl_has(Identifier, knowrob:lightTarget, LookAt),
+    marker_term(LookAt, LookAtMarker),
+    marker(LookAtMarker, LookAtMarkerObj),
+    jpl_call(LookAtMarkerObj, 'getId', [], LookAtId),
+    term_to_atom(LookAtMarker, LookAtMarkerAtom),
+    atom_concat(LookAtMarkerAtom, LookAtId, LookAtName)
+  ) ; (
+    owl_has(Identifier, knowrob:lightDirection, Direction),
+    strip_literal_type(Direction, LookAtName)
+  ) ; LookAtName='' )),
+  marker_text(MarkerObject, LookAtName),
+  % read spot properties from owl
+  ( owl_has_prolog(Identifier, knowrob:lightExponent, Exponent)   ; Exponent=2.0 ),
+  ( owl_has_prolog(Identifier, knowrob:lightConeAngle, ConeAngle) ; ConeAngle=1.4 ),
+  ( owl_has_prolog(Identifier, knowrob:lightDistance, Distance)   ; Distance=3.0 ),
+  marker_scale(MarkerObject, [Exponent,ConeAngle,Distance]).
+marker_new(MarkerName, point_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(point_light, MarkerName, point_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
+marker_new(MarkerName, directional_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(directional_light, MarkerName, directional_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
 
 marker_new(MarkerName, experiment(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
@@ -674,10 +714,109 @@ marker_show(Marker) :-
   marker(Marker, MarkerObject),
   marker_show(MarkerObject).
 
-%% marker_term
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Updating marker for given timepoint/timerange
+%
+
+show :- marker_update.
+
+show(X) :-
+  is_list(X), !,
+  show_next,
+  forall( member(MarkerDescr, X), (
+    T =.. [show|MarkerDescr], call(T)
+  )), !.
+
+show(X) :-
+  atom(X),
+  rdfs_individual_of(X, knowrob:'Designator'),
+  % TODO: also show object marker
+  %marker_term(X, MarkerTerm),
+  %marker_update(MarkerTerm)
+  designator_publish(X),
+  (( rdf_has(Act, knowrob:objectActedOn, X),
+     rdf_has(Act, knowrob:capturedImage, _) )
+  -> designator_publish_image(Act)
+  ;  true ), !.
+
+show(X) :-
+  get_timepoint(Instant),
+  show(X,Instant,[]), !.
+
+show(X, Properties) :-
+  is_list(Properties),
+  get_timepoint(Instant),
+  show(X,Instant,Properties), !.
+
+show(X, Instant) :-
+  show(X, Instant, []), !.
+
+show(X, Instant, Properties) :-
+  is_list(Properties),
+  
+  marker_term(X, MarkerTerm),
+  marker(MarkerTerm, MarkerObj),
+  marker_update(MarkerObj,Instant),
+  
+  % TODO: X could also be a term agent(?Identifier) or object(?Identifier)
+  (( atom(X), rdfs_individual_of(X, knowrob:'EmbodiedAgent') )
+  -> ignore(show_speech(X,Instant)) ; true ),
+  
+  marker_properties(MarkerObj, Properties).
+  
+
+show_speech(Agent,Instant) :-
+  rdf_has(Ev, knowrob:'sender', Agent),
+  rdfs_individual_of(Ev, knowrob:'SpeechAct'),
+  occurs(Ev, Instant),
+  rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
+  rdf_has(Ev, knowrob:'sender', Agent),
+  % find head
+  sub_component(pr2:'PR2Robot1', Head),
+  rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
+  rdf_has(Head, srdl2comp:urdfName, URDFVal),
+  strip_literal_type(URDFVal,URDF),
+  % FIXME: /map bad assumption
+  mng_lookup_transform('/map', URDF, Instant, Transform),
+  matrix_translation(Transform, [X,Y,Z]),
+  Z_Offset is Z + 0.2,
+  marker(sprite_text('PR2_SPEECH'), MarkerObj),
+  marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
+  marker_translation(MarkerObj, [X,Y,Z_Offset]),
+  % Create styled html text
+  format(atom(TextHtml), '<div style="font-size: 18px; font-style: italic; font-family: Oswald,Arial,Helvetica,sans-serif; text-align: center;">~w</div>', [Text]),
+  marker_text(MarkerObj, TextHtml),
+  marker_scale(MarkerObj, [1.0,1.0,1.0]).
+
+
+highlight(X) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm).
+highlight(X,Color) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm,Color).
+
+show_next :-
+  marker_highlight_remove(all),
+  marker_remove(trajectories).
+
 marker_term(X, experiment(X)) :-
   atom(X),
   rdfs_individual_of(X, knowrob:'Experiment'), !.
+marker_term(X, Term) :-
+  atom(X),
+  rdfs_individual_of(X, knowrob:'LightEmitter'),
+  once(((
+    rdf_has(X, knowrob:'lightType', knowrob:'LightTypePoint'),
+    Term = point_light(X)
+  ) ; (
+    rdf_has(X, knowrob:'lightType', knowrob:'LightTypeDirectional'),
+    Term = directional_light(X)
+  ) ; (
+    %rdf_has(X, knowrob:'lightType', knowrob:'LightTypeSpot'),
+    Term = spot_light(X)
+  ))), !.
 marker_term(X, MarkerTerm) :-
   atom(X),
   rdfs_individual_of(X, _), !,
@@ -723,27 +862,27 @@ marker_update(MarkerTerm) :-
 marker_update(MarkerObject, T) :-
   jpl_is_object(MarkerObject),
   marker(MarkerTerm, MarkerObject),
-  marker_update(MarkerTerm, T).
+  marker_update(MarkerTerm, T), !.
 
 marker_update(MarkerTerm, T) :-
-  atom(T), time_term(T, T_Term),
+  atom(T), !, time_term(T, T_Term),
   marker_update(MarkerTerm, T_Term).
 
-marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  atom(T0), not(is_list(T0)), time_term(T0, T0_Term),
-  atom(T1), not(is_list(T1)), time_term(T1, T1_Term),
-  marker_update(MarkerTerm, interval(T0_Term,T1_Term,Interval)).
-
 marker_update(MarkerTerm, T) :-
-  number(T),
+  number(T), !,
   marker_update(MarkerTerm, time(T,T)).
 
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  number(T0), number(T1),
+  number(T0), number(T1), !,
   marker_update(MarkerTerm, time(T0,interval(T0,T1,Interval))).
 
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  is_list(T0), is_list(T1),
+  atom(T0), not(is_list(T0)), time_term(T0, T0_Term),
+  atom(T1), not(is_list(T1)), time_term(T1, T1_Term), !,
+  marker_update(MarkerTerm, interval(T0_Term,T1_Term,Interval)).
+
+marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
+  is_list(T0), is_list(T1), !,
   findall(T_Term, (member(T,T0), time_term(T, T_Term)), T0_Terms),
   findall(T_Term, (member(T,T1), time_term(T, T_Term)), T1_Terms),
   % Use no caching if list of start/end times provided
@@ -772,6 +911,7 @@ marker_update(object_without_children(Identifier), MarkerObject, T) :-
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+    ground((Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -782,6 +922,17 @@ marker_update(object(Identifier), MarkerObject, T) :-
            marker_hide(ChildObject) )),
     marker_timestamp(MarkerObject, T) % FIXME: shouldn't it be ChildObject here?
   ))).
+
+
+marker_update(spot_light(Identifier), MarkerObject, T) :-
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
+marker_update(point_light(Identifier), MarkerObject, T) :-
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
+marker_update(directional_light(Identifier), MarkerObject, T) :-
+  marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(attached(Marker,AttachedTo), _, T) :-
   marker_update(AttachedTo,T),
@@ -1061,7 +1212,7 @@ marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query
 %
 marker_properties(Marker, [Key:Val|Args]) :-
   Prop=..[Key,Val],
-  marker_property(Marker, Prop),
+  ignore(marker_property(Marker, Prop)),
   marker_properties(Marker, Args).
 marker_properties(_, []).
 
