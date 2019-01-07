@@ -147,9 +147,9 @@ class PerceivedObject(object):
                 self.__marker.ns = 'belief_state'
                 self.__marker.action = Marker.ADD
                 self.__marker.frame_locked = True
-                self.__marker.header.frame_id = self.__transform.header.frame_id
-                self.__marker.pose.position = self.__transform.transform.translation
-                self.__marker.pose.orientation = self.__transform.transform.rotation
+            self.__marker.header.frame_id = self.__transform.header.frame_id
+            self.__marker.pose.position = self.__transform.transform.translation
+            self.__marker.pose.orientation = self.__transform.transform.rotation
 
             if self.__mesh_path != '' and self.__mesh_path != "''":
                 self.__marker.type = self.__marker.MESH_RESOURCE
