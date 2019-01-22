@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS rosjava_build_tools  rosjava_bootstrap k
 )
 
 
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(INCLUDE_DIRS include
   LIBRARIES json_prolog
