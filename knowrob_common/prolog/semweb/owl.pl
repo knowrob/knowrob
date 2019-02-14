@@ -37,12 +37,15 @@
 	    owl_merged_restriction/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction/2,		% +Resource, -Restriction,
 	    owl_restriction_assert/2,		% +Restriction, -Resource,
+	    owl_restriction_assert/3,
 	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
 	    owl_unsatisfied_restriction/3,	% +Resource, ?Restriction, ?DB
 	    owl_description/2,		% +Resource, -Description
 	    owl_description_recursive/2,		% +Resource, -Description
 	    owl_description_assert/2,		% +Restriction, -Resource,
+	    owl_description_assert/3,
 	    owl_description_list_assert/2,
+	    owl_description_list_assert/3,
 	    owl_property_range_on_resource/3,	% +Resource, +Pred, -Range
 	    owl_property_range_on_subject/3,	% +Subject, +Pred, -Range
 	    owl_property_range_on_class/3,		% +Class, +Pred, -Range
@@ -108,11 +111,13 @@
 	owl_merged_restriction(r, r, t),
 	owl_restriction(r, t),
 	owl_restriction_assert(t, r),
+	owl_restriction_assert(t, r, +),
 	owl_unsatisfied_restriction(r, r),
 	owl_unsatisfied_restriction(r, r, +),
 	owl_description(r, t),
   owl_description_recursive(r, -),
 	owl_description_assert(t, t),
+	owl_description_assert(t, t, +),
 	owl_property_range_on_resource(r, r, -),
 	owl_property_range_on_subject(r, r, -),
 	owl_property_range_on_class(r, r, -),
@@ -257,42 +262,46 @@ restriction_facet(R, cardinality(Min, Max, Class)) :-
 
 %%	owl_restriction_assert(+Prolog, -Resource) is det.
 %
-owl_restriction_assert(restriction(P,all_values_from(Cls)), Id) :-
-	owl_description_assert(Cls, ClsId),
-	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
-	rdf_assert(Id, rdf:type, owl:'Restriction'),
-	rdf_assert(Id, owl:onProperty, P),
-	rdf_assert(Id, owl:allValuesFrom, ClsId), !.
-owl_restriction_assert(restriction(P,some_values_from(Cls)), Id) :-
-	owl_description_assert(Cls, ClsId),
-	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
-	rdf_assert(Id, rdf:type, owl:'Restriction'),
-	rdf_assert(Id, owl:onProperty, P),
-	rdf_assert(Id, owl:someValuesFrom, ClsId), !.
-owl_restriction_assert(restriction(P,cardinality(Card,Card,Cls)), Id) :- !,
-	owl_description_assert(Cls, ClsId),
-	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
-	rdf_assert(Id, rdf:type, owl:'Restriction'),
-	rdf_assert(Id, owl:onProperty, P),
-	rdf_assert(Id, owl:onClass, ClsId),
-	rdf_assert_literal(Id, owl:cardinality, Card), !.
-owl_restriction_assert(restriction(P,cardinality(Min,Max,Cls)), Id) :-
-	owl_description_assert(Cls, ClsId),
-	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
-	rdf_assert(Id, rdf:type, owl:'Restriction'),
-	rdf_assert(Id, owl:onProperty, P),
-	rdf_assert(Id, owl:onClass, ClsId),
-	once(( Min is 0 ;  rdf_assert_literal(Id, owl:minCardinality, Min) )),
-	once(( Max = inf ; rdf_assert_literal(Id, owl:maxCardinality, Max) )), !.
-owl_restriction_assert(restriction(P,has_value(V)), Id) :-
-	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id),
-	rdf_assert(Id, rdf:type, owl:'Restriction'),
-	rdf_assert(Id, owl:onProperty, P),
-	rdf_assert(Id, owl:hasValue, V), !.
+owl_restriction_assert(R, Id) :-
+  owl_restriction_assert(R, Id, user).
+owl_restriction_assert(restriction(P,all_values_from(Cls)), Id, Graph) :-
+	owl_description_assert(Cls, ClsId, Graph),
+	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id, Graph),
+	rdf_assert(Id, rdf:type, owl:'Restriction', Graph),
+	rdf_assert(Id, owl:onProperty, P, Graph),
+	rdf_assert(Id, owl:allValuesFrom, ClsId, Graph), !.
+owl_restriction_assert(restriction(P,some_values_from(Cls)), Id, Graph) :-
+	owl_description_assert(Cls, ClsId, Graph),
+	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id, Graph),
+	rdf_assert(Id, rdf:type, owl:'Restriction', Graph),
+	rdf_assert(Id, owl:onProperty, P, Graph),
+	rdf_assert(Id, owl:someValuesFrom, ClsId, Graph), !.
+owl_restriction_assert(restriction(P,cardinality(Card,Card,Cls)), Id, Graph) :- !,
+	owl_description_assert(Cls, ClsId, Graph),
+	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id, Graph),
+	rdf_assert(Id, rdf:type, owl:'Restriction', Graph),
+	rdf_assert(Id, owl:onProperty, P, Graph),
+	rdf_assert(Id, owl:onClass, ClsId, Graph),
+	rdf_assert_literal(Id, owl:cardinality, Card, Graph), !.
+owl_restriction_assert(restriction(P,cardinality(Min,Max,Cls)), Id, Graph) :-
+	owl_description_assert(Cls, ClsId, Graph),
+	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id, Graph),
+	rdf_assert(Id, rdf:type, owl:'Restriction', Graph),
+	rdf_assert(Id, owl:onProperty, P, Graph),
+	rdf_assert(Id, owl:onClass, ClsId, Graph),
+	once(( Min is 0 ;  rdf_assert_literal(Id, owl:minCardinality, Min, Graph) )),
+	once(( Max = inf ; rdf_assert_literal(Id, owl:maxCardinality, Max, Graph) )), !.
+owl_restriction_assert(restriction(P,has_value(V)), Id, Graph) :-
+	owl_assert_description('http://www.w3.org/2002/07/owl#Restriction', Id, Graph),
+	rdf_assert(Id, rdf:type, owl:'Restriction', Graph),
+	rdf_assert(Id, owl:onProperty, P, Graph),
+	rdf_assert(Id, owl:hasValue, V, Graph), !.
 
 owl_assert_description(Type, Instance) :-
+  owl_assert_description(Type, Instance, user).
+owl_assert_description(Type, Instance, Graph) :-
 	knowrob_owl:rdf_unique_id(Type, Instance),
-	rdf_assert(Instance, rdf:type, Type).
+	rdf_assert(Instance, rdf:type, Type, Graph).
 
 %	non_negative_integer(+Atom, -Integer, +Subject, +Predicate)
 %
@@ -836,43 +845,49 @@ owl_description_recursive_(Cls, Cls).
 
 %%	owl_description_assert(+Prolog, -Resource) is det.
 %
-owl_description_assert(Cls, Cls) :- atom(Cls), !.
-owl_description_assert(class(Cls), Cls) :- !.
-owl_description_assert(thing, 'http://www.w3.org/2002/07/owl#Thing') :- !.
-owl_description_assert(nothing, 'http://www.w3.org/2002/07/owl#Nothing') :- !.
-owl_description_assert(restriction(P,Facet), Id) :-
-  owl_restriction_assert(restriction(P,Facet), Id), !.
-owl_description_assert(union_of(List), Id) :-
-  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id),
-  owl_description_list_assert(List,ListId),
-  rdf_assert(Id, owl:unionOf, ListId), !.
-owl_description_assert(intersection_of(List), Id) :-
-  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id),
-  owl_description_list_assert(List,ListId),
-  rdf_assert(Id, owl:intersectionOf, ListId), !.
-owl_description_assert(complement_of(Cls), Id) :-
-  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id),
-  owl_description_assert(Cls,ClsId),
-  rdf_assert(Id, owl:complementOf, ClsId), !.
-owl_description_assert(one_of(List), Id) :-
-  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id),
-  owl_description_list_assert(List,ListId),
-  rdf_assert(Id, owl:oneOf, ListId), !.
+owl_description_assert(X, Y) :-
+  owl_description_assert(X, Y, user).
+owl_description_assert(Cls, Cls, _Graph) :- atom(Cls), !.
+owl_description_assert(class(Cls), Cls, _Graph) :- !.
+owl_description_assert(thing, 'http://www.w3.org/2002/07/owl#Thing', _Graph) :- !.
+owl_description_assert(nothing, 'http://www.w3.org/2002/07/owl#Nothing', _Graph) :- !.
+owl_description_assert(restriction(P,Facet), Id, Graph) :-
+  owl_restriction_assert(restriction(P,Facet), Id, Graph), !.
+owl_description_assert(union_of(List), Id, Graph) :-
+  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id, Graph),
+  owl_description_list_assert(List,ListId, Graph),
+  rdf_assert(Id, owl:unionOf, ListId, Graph), !.
+owl_description_assert(intersection_of(List), Id, Graph) :-
+  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id, Graph),
+  owl_description_list_assert(List,ListId, Graph),
+  rdf_assert(Id, owl:intersectionOf, ListId, Graph), !.
+owl_description_assert(complement_of(Cls), Id, Graph) :-
+  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id, Graph),
+  owl_description_assert(Cls,ClsId, Graph),
+  rdf_assert(Id, owl:complementOf, ClsId, Graph), !.
+owl_description_assert(one_of(List), Id, Graph) :-
+  owl_assert_description('http://www.w3.org/2002/07/owl#Class', Id, Graph),
+  owl_description_list_assert(List,ListId, Graph),
+  rdf_assert(Id, owl:oneOf, ListId, Graph), !.
 
-owl_description_list_assert([], 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil') :- !.
-owl_description_list_assert(List, ListId) :-
-  owl_assert_description('http://www.w3.org/1999/02/22-rdf-syntax-ns#List', ListId),
-  owl_description_list_assert_(ListId, List).
+owl_description_list_assert(X, Y) :-
+  owl_description_list_assert(X,Y,user).
+owl_description_list_assert([], 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil', _Graph) :- !.
+owl_description_list_assert(List, ListId, Graph) :-
+  owl_assert_description('http://www.w3.org/1999/02/22-rdf-syntax-ns#List', ListId, Graph),
+  owl_description_list_assert_(ListId, List, Graph).
 
-owl_description_list_assert_(Id, [First|Rest]) :-
-  owl_description_assert(First, FirstId),
-  owl_description_list_assert(Rest, RestId),
-  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first', FirstId),
-  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest', RestId).
+owl_description_list_assert_(Id, [First|Rest], Graph) :-
+  owl_description_assert(First, FirstId, Graph),
+  owl_description_list_assert(Rest, RestId, Graph),
+  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first', FirstId, Graph),
+  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest', RestId, Graph).
 
 rdf_assert_literal(S,P,V) :-
+  rdf_assert_literal(S,P,V,user).
+rdf_assert_literal(S,P,V,Graph) :-
   once(( (atom(V), V_atom=V) ; atom_number(V_atom,V) )),
-  rdf_assert(S, P, literal(V_atom)).
+  rdf_assert(S, P, literal(V_atom),Graph).
 
 		 /*******************************
 		 *	   OWL_SATISFIES	*

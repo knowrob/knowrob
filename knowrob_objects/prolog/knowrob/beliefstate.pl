@@ -28,6 +28,7 @@
 :- module(knowrob_beliefstate,
     [
       belief_parse/1,
+      belief_export/1,
       belief_existing_objects/1,    % set of known objects in the belief state
       belief_existing_objects/2,
       belief_existing_object_at/4,  % query known object near some pose
@@ -120,6 +121,9 @@ belief_existing_objects(ObjectIds, ObjectTypes) :-
 belief_parse(File) :-
   owl_parser:owl_parse(File, belief_state),
   belief_assign_frames.
+
+belief_export(File) :-
+  rdf_save(File, [graph(belief_state),sorted(true)]).
 
 belief_assign_frames :-
   belief_existing_objects(ObjectIds),
@@ -267,13 +271,13 @@ center_part_pos(Obj, z, In, Out) :-
   object_dimensions(Obj,V,_,_),
   Out is In - 0.5*V.
 
-belief_part_offset(Parent, PartType, [DX,DY,DZ]) :-
+belief_part_offset(Parent, PartType, [DX,DY,DZ], Rotation) :-
   object_affordance(Parent,Affordance),
   rdfs_individual_of(Affordance, knowrob:'PartOffsetAffordance'),
   owl_property_range_on_subject(Affordance, knowrob:userOfAffordance, AllowedType),
   rdfs_subclass_of(PartType, AllowedType),
-  belief_at_id(Affordance, [_,_,[DX,DY,DZ],_]), !.
-belief_part_offset(_, _, [0,0,0]).
+  belief_at_id(Affordance, [_,_,[DX,DY,DZ],Rotation]), !.
+belief_part_offset(_, _, [0,0,0], [0,0,0,1]).
 
 belief_perceived_part_at_axis(Parent, PartType, norm(Axis,Pos), Part) :- !,
   denormalize_part_pos(Parent, Axis, Pos, Denormalized),
@@ -282,10 +286,10 @@ belief_perceived_part_at_axis(Parent, PartType, norm(Axis,Pos), Part) :- !,
 belief_perceived_part_at_axis(Parent, PartType, pos(Axis,Pos), Part) :-
   center_part_pos(Parent, Axis, Pos, Centered),
   object_frame_name(Parent,ParentFrame),
-  belief_part_offset(Parent, PartType, Offset),
+  belief_part_offset(Parent, PartType, Offset, Rotation),
   belief_perceived_pos(Offset, pos(Axis,Centered), PerceivedPos),
   belief_perceived_part_at(PartType, [ParentFrame,_,PerceivedPos,
-      [0.0, 0.0, 0.0, 1.0]], 0.02, Part, Parent).
+      Rotation], 0.02, Part, Parent).
 
 %% belief_at(+Obj:iri, ?Transform:list) is semidet.
 %% belief_at(+Obj:iri, ?Transform:list, +Instant:time) is semidet.
