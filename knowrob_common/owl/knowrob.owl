@@ -9,8 +9,7 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/DUL.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
           CreativeCommons Attribution 3.0, so you are granted to use, copy,
