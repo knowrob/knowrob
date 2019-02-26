@@ -295,6 +295,6 @@ class ObjectStatePublisher(object):
 if __name__ == '__main__':
     rospy.init_node('object_state_publisher')
     hz = rospy.get_param('~hz', default='1')
-    object_types = rospy.get_param('~object_types', default="knowrob:'EnduringThing-Localized'")
+    object_types = rospy.get_param('~object_types', default="dul:'PhysicalObject'")
     object_state_publisher = ObjectStatePublisher(int(hz), object_types.split(','))
     object_state_publisher.loop()
