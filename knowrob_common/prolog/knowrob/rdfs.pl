@@ -160,9 +160,7 @@ rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
   strip_literal_type(O,Value),
-  (  atom(Value) ->
-     Value_Atom = Value ;
-     term_to_atom(Value, Value_Atom) ),
+  term_to_atom(Value, Value_Atom),
   (  rdf_phas(P, rdfs:range, Range)
   -> rdf_assert(S, P, literal(type(Range,Value_Atom)), Graph)
   ;  rdf_assert(S, P, literal(Value_Atom), Graph)
@@ -204,6 +202,13 @@ rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom
   atom_number(Atom, Number), !.
 rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
   atom_number(Atom, Number), !.
+% TODO: remove this at some point
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :-
+  rdf_vector_prolog(Val, Vec), !.
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#quaternion', literal(type(_,Val)), Vec) :-
+  rdf_vector_prolog(Val, Vec), !.
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#translation', literal(type(_,Val)), Vec) :-
+  rdf_vector_prolog(Val, Vec), !.
 rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).

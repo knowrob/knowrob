@@ -470,4 +470,7 @@ belief_new_pose(([X,Y,Z], [QW,QX,QY,QZ]), TransformId) :-
 
 %% belief_republish_objects(+ObjectIds) is det
 %
-belief_republish_objects(ObjectIds) :- mark_dirty_objects(ObjectIds).
+belief_republish_objects([]) :- !.
+belief_republish_objects(ObjectIds) :-
+  is_list(ObjectIds),
+  mark_dirty_objects(ObjectIds).

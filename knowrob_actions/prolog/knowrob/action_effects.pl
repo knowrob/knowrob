@@ -60,7 +60,7 @@ in SWRL rules (i.e., relate what was created to something else).
 :- use_module(library('knowrob/actions')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
 :-  rdf_meta

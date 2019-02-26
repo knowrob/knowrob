@@ -191,7 +191,7 @@
     <!-- http://knowrob.org/kb/kitchen.owl#FreezerCompartment -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/kitchen.owl#FreezerCompartment">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
@@ -655,7 +655,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#DiningRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DiningRoom">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -663,7 +663,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#DiningTable -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DiningTable">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Table"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Table"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
@@ -700,7 +700,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Dishwasher -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dishwasher">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
@@ -1091,7 +1091,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Kitchen -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Kitchen">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -1140,7 +1140,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#LoadingADishwasher -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoadingADishwasher">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PickPlace"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#toLocation"/>
@@ -1481,7 +1481,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#inputsCommitted"/>
@@ -1507,7 +1507,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingGroceryIngredient">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
@@ -1521,7 +1521,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PuttingIntoARefrigerator -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingIntoARefrigerator">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PickPlace"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
@@ -1546,7 +1546,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Refrigerator -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Refrigerator">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
@@ -1751,7 +1751,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#StoveTop -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StoveTop">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor"/>
@@ -1846,7 +1846,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease.org/ont/EASE.owl#Grasping"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Grasping"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1928,45 +1928,45 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#CompositeAction -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#CompositeAction -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Furniture -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Furniture -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Furniture"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Grasping -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Grasping -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Grasping"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Grasping"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#PhysicalPart -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalPart -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#PickPlace -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#PickPlace -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PickPlace"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PickPlace"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#RoomInABuilding -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Table -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Table -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Table"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Table"/>
     
 
 

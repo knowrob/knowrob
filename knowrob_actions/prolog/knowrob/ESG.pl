@@ -2,7 +2,7 @@
 
     Author:        Daniel Beßler
     E-mail:        danielb@informatik.uni-bremen.de
-    WWW:           http://www.ease.org
+    WWW:           http://www.ease-crc.org
     Copyright (C): 2018, University of Bremen
 
     This program is free software; you can redistribute it and/or

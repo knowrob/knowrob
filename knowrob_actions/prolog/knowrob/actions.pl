@@ -69,7 +69,7 @@
       comp_action_participant(r,r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
 
 %%
 action_constituents(Evt,Constituents,Constraints) :-

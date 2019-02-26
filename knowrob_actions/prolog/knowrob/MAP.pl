@@ -2,7 +2,7 @@
 
     Author:        Daniel Beßler
     E-mail:        danielb@informatik.uni-bremen.de
-    WWW:           http://www.ease.org
+    WWW:           http://www.ease-crc.org
     Copyright (C): 2018, University of Bremen
 
     This program is free software; you can redistribute it and/or
@@ -78,10 +78,10 @@ TODO detect "silence" in long token streams
 :- use_module(library('knowrob/flanagan')).
 :- use_module(library('knowrob/temporal')). % `interval/2`
 
-:- rdf_db:rdf_register_ns(actions, 'http://www.ease.org/ont/actions.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(motions, 'http://www.ease.org/ont/motions.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(force_dynamics, 'http://www.ease.org/ont/force-dynamics.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease.org/ont/ease.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(actions, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(motions, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(force_dynamics, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
 
 :- debug(activity_parser).
 

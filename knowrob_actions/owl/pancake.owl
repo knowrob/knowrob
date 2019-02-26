@@ -123,33 +123,33 @@
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#afterI -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#afterI -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#afterI"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#afterI"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#beforeI -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#beforeI -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#beforeI"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#beforeI"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#finishedByI -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#finishedByI -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#finishedByI"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#finishedByI"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#hasAction -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasAction -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasAction"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#startedByI -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#startedByI -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#startedByI"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#startedByI"/>
     
 
 
@@ -325,19 +325,19 @@
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#finishedByI"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#finishedByI"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#FlippingAPancake"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#hasAction"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://knowrob.org/kb/pancake.owl#CrackingAnEgg"/>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#beforeI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#beforeI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#MixPancakeDough"/>
                             </owl:Restriction>
                         </owl:intersectionOf>
@@ -347,13 +347,13 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#hasAction"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://knowrob.org/kb/pancake.owl#FlippingAPancake"/>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#afterI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#afterI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#PourDoughOntoPancakeMaker"/>
                             </owl:Restriction>
                         </owl:intersectionOf>
@@ -363,17 +363,17 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#hasAction"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://knowrob.org/kb/pancake.owl#MixPancakeDough"/>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#afterI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#afterI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#CrackingAnEgg"/>
                             </owl:Restriction>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#beforeI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#beforeI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#PourDoughOntoPancakeMaker"/>
                             </owl:Restriction>
                         </owl:intersectionOf>
@@ -383,17 +383,17 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#hasAction"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://knowrob.org/kb/pancake.owl#PourDoughOntoPancakeMaker"/>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#afterI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#afterI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#MixPancakeDough"/>
                             </owl:Restriction>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#beforeI"/>
+                                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#beforeI"/>
                                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#FlippingAPancake"/>
                             </owl:Restriction>
                         </owl:intersectionOf>
@@ -403,7 +403,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease.org/ont/EASE.owl#startedByI"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#startedByI"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#CrackingAnEgg"/>
             </owl:Restriction>
         </rdfs:subClassOf>
