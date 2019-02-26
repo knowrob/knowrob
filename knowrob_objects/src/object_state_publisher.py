@@ -199,6 +199,7 @@ class ObjectStatePublisher(object):
         self.tf_broadcaster = rospy.Publisher("/tf", TFMessage, queue_size=100)
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=100)
         self.marker_array_publisher = rospy.Publisher('/visualization_marker_array', MarkerArray, queue_size=100)
+        self.object_state_publisher = rospy.Publisher('/object_state', ObjectState, queue_size=100)
         # self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
         self.dirty_object_srv = rospy.Service('~update_object_states', UpdateObjectState, self.update_state_cb)
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
@@ -252,6 +253,7 @@ class ObjectStatePublisher(object):
                                                                  obj_state.mesh_path,
                                                                  color,
                                                                  obj_state.size.x, obj_state.size.y, obj_state.size.z)
+            object_state_publisher.publish(obj_state)
             rospy.logdebug('Updated object: {}'.format(str(self.objects[obj_state.object_id])))
         self.publish_object_markers(object_ids)
         self.publish_static_transforms(object_ids)
