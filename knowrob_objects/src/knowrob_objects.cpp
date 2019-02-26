@@ -22,7 +22,6 @@ private:
 	std::thread thread;
 	int push_index = 0;
 	bool has_dirty_objects = false;
-	ros::NodeHandle *n_; // TODO: use boost ref_ptr
 	
 public:
 	MarkDirtyObjectClient() : 
@@ -47,8 +46,8 @@ public:
 	}
 	
 	void loop() {
-		n_ = new ros::NodeHandle();
-		ros::Publisher publisher_ = n_->advertise<knowrob_objects::ObjectStateArray>("/object_state", 10000);
+		ros::NodeHandle n_;
+		ros::Publisher publisher_ = n_.advertise<knowrob_objects::ObjectStateArray>("/object_state", 10000);
 		while(1) {
 			{
 				std::unique_lock<std::mutex> lk(loop_lock);
