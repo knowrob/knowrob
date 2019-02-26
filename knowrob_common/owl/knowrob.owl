@@ -9,8 +9,8 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/DUL.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-middle.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
           CreativeCommons Attribution 3.0, so you are granted to use, copy,
@@ -184,7 +184,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#dangerousPart -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dangerousPart">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
     </owl:ObjectProperty>
     
 
@@ -212,7 +212,7 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedArtifact">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#detectedObject"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#involvesArtifact"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
     </owl:ObjectProperty>
     
 
@@ -237,7 +237,7 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#deviceUsed">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#involvesArtifact"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
     </owl:ObjectProperty>
     
 
@@ -254,7 +254,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#electricalPart -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#electricalPart">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
     </owl:ObjectProperty>
     
 
@@ -274,7 +274,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fromLocation">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#involvesPlace"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
     </owl:ObjectProperty>
     
 
@@ -442,7 +442,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#performedBy">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#performedBy"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#performedBy"/>
     </owl:ObjectProperty>
     
 
@@ -561,7 +561,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toLocation">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#involvesPlace"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
     </owl:ObjectProperty>
     
 
@@ -606,7 +606,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toolUsed">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#involvesTool"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesTool"/>
     </owl:ObjectProperty>
     
 
@@ -719,33 +719,33 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#hasPhysicalComponent -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasPhysicalComponent"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#involvesArtifact -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#involvesArtifact -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#involvesArtifact"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#involvesPlace -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#involvesPlace -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#involvesPlace"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#involvesTool -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#involvesTool -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#involvesTool"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesTool"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#performedBy -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#performedBy -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease.org/ont/EASE.owl#performedBy"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#performedBy"/>
     
 
 
@@ -879,7 +879,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#duration -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#duration">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#hasEventTime"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventTime"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
     </owl:DatatypeProperty>
     
@@ -888,7 +888,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#endTime -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#endTime">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#hasEventEnd"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventEnd"/>
     </owl:DatatypeProperty>
     
 
@@ -1228,7 +1228,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#startTime -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#startTime">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease.org/ont/EASE.owl#hasEventBegin"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventBegin"/>
     </owl:DatatypeProperty>
     
 
@@ -1287,21 +1287,21 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#hasEventBegin -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventBegin -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasEventBegin"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventBegin"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#hasEventEnd -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventEnd -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasEventEnd"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventEnd"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#hasEventTime -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventTime -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease.org/ont/EASE.owl#hasEventTime"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventTime"/>
     
 
 
@@ -1337,7 +1337,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/actions.owl#Mapping -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#Mapping">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
@@ -1383,7 +1383,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#AgentPart -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AgentPart">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -1425,7 +1425,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Blade -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Blade">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -1497,7 +1497,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Classroom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Classroom">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -1505,7 +1505,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
@@ -1513,7 +1513,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Closet -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Closet">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -1529,7 +1529,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -1545,7 +1545,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#ChemicalProcess"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ChemicalProcess"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. Each instance of CoolingProcess is an event in which the temperature of some object (related to the instance of CoolingProcess by objectOfStateChange) is lowered.</rdfs:comment>
     </owl:Class>
     
@@ -1564,7 +1564,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#CounterTop -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CounterTop">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
@@ -1578,7 +1578,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Covering -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Covering">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of SolidTangibleThing. Each instance of PortalCovering is a solid tangible object that covers a portal. Instances of PortalCovering may be either flexible or rigid, and they may be either fixed in place or removable. Examples include windows (in buildings or automobiles), doors, shutters, screens, draperies, window blinds, convertible tops, lids, and corks.</rdfs:comment>
     </owl:Class>
     
@@ -1587,7 +1587,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Cupboard -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cupboard">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     </owl:Class>
     
 
@@ -1595,7 +1595,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Cutting -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cutting">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Actuating"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Actuating"/>
     </owl:Class>
     
 
@@ -1661,7 +1661,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricalComponent -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalComponent">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -1718,7 +1718,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalEffector"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
     </owl:Class>
     
 
@@ -1744,7 +1744,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Flipping -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flipping">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Actuating"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Actuating"/>
     </owl:Class>
     
 
@@ -1777,7 +1777,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Handle -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Handle">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -1795,7 +1795,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Heating -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heating">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#ChemicalProcess"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ChemicalProcess"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. During each HeatingProcess event, the temperature of the objectOfStateChange is increased by applying heat to the object. Any instance of IntrinsicStateChangeEvent in which an object temperature is increased is also an instance of this collection.</rdfs:comment>
     </owl:Class>
     
@@ -1887,7 +1887,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#LeftArm -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftArm">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Arm"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
         <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightArm"/>
     </owl:Class>
     
@@ -1896,7 +1896,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#LeftHand -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftHand">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Hand"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
         <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightHand"/>
     </owl:Class>
     
@@ -1905,7 +1905,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#LeftLeg -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftLeg">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Leg"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
         <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightLeg"/>
     </owl:Class>
     
@@ -1996,7 +1996,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Mirror-Wall -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mirror-Wall">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     </owl:Class>
     
 
@@ -2004,7 +2004,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mixing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Actuating"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Actuating"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">two or more substances are combined to form a Mixture</rdfs:comment>
     </owl:Class>
     
@@ -2029,7 +2029,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingToLocation">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Approaching"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Approaching"/>
     </owl:Class>
     
 
@@ -2046,7 +2046,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#OfficeRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OfficeRoom">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2110,7 +2110,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Pouring -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Actuating"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Actuating"/>
     </owl:Class>
     
 
@@ -2175,7 +2175,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Restroom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Restroom">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2191,7 +2191,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#RightArm -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightArm">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Arm"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
     </owl:Class>
     
 
@@ -2199,7 +2199,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#RightHand -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightHand">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Hand"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
     </owl:Class>
     
 
@@ -2207,7 +2207,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#RightLeg -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightLeg">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Leg"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
     </owl:Class>
     
 
@@ -2247,7 +2247,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Searching -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Searching">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
@@ -2263,7 +2263,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Serving -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Serving">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
@@ -2271,7 +2271,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Shelf -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Shelf">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This refers to any shelf that may be on the wall in a room, or part of a piece of furniture or appliance.</rdfs:comment>
     </owl:Class>
     
@@ -2320,7 +2320,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#StorageRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StorageRoom">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2441,7 +2441,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#WasteBasket -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WasteBasket">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     </owl:Class>
     
 
@@ -2457,7 +2457,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Wheel -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wheel">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     </owl:Class>
     
 
@@ -2470,118 +2470,118 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Actuating -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Actuating -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Actuating"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Actuating"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Approaching -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Approaching -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Approaching"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Approaching"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Arm -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Arm -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Arm"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#ChemicalProcess -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#ChemicalProcess -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#ChemicalProcess"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#ChemicalProcess"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#CompositeAction -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#CompositeAction -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Condensing -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Condensing -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Condensing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Condensing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Freezing -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Freezing -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Freezing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Freezing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Furniture -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Furniture -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Furniture"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Hand -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Hand -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Hand"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Leg -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Leg -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Leg"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Melting -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Melting -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Melting">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Melting">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
     </owl:Class>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#MentalAction -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#MentalAction -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#MentalAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#MentalAction"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Motion -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Motion -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Motion"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Motion"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#NonCompositeAction -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#NonCompositeAction -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#NonCompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#NonCompositeAction"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#PhysicalEffector -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PhysicalEffector"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#PhysicalPart -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalPart -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#PhysicalPart"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#RoomInABuilding -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#RoomInABuilding"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     
 
 
-    <!-- http://www.ease.org/ont/EASE.owl#Vaporizing -->
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Vaporizing -->
 
-    <owl:Class rdf:about="http://www.ease.org/ont/EASE.owl#Vaporizing">
-        <rdfs:subClassOf rdf:resource="http://www.ease.org/ont/EASE.owl#CompositeAction"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Vaporizing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
     </owl:Class>
     

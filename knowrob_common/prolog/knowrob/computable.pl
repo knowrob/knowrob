@@ -117,9 +117,11 @@ rdfs_instance_of(Resource, RDF_Type) :-
   rdfs_individual_of(Resource, RDF_Type);
   rdfs_computable_instance_of_subclass(Resource, RDF_Type)).
 
-rdfs_instance_of(Resource, RDF_Type) :-
-  rdf_equal(rdf:type, Property),
-  rdfs_computable_triple_during(Resource, Property, RDF_Type).
+% NOTE(DB): disabled for now. creating new entity symbols is very critical.
+%           need to have a more sophisticated concept for this...
+%rdfs_instance_of(Resource, RDF_Type) :-
+  %rdf_equal(rdf:type, Property),
+  %rdfs_computable_triple_during(Resource, Property, RDF_Type).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

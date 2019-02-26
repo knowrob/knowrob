@@ -438,9 +438,10 @@ owl_property_range_on_class(Class, Predicate, Range) :-
 		assertz(owl_property_range_cached(Class,Predicate,['http://www.w3.org/2002/07/owl#Thing'])),
 		% cache miss -> infer range
 		findall(X, owl_property_range_on_class_(Class,Predicate,X), Ranges_inferred),
+		list_to_set(Ranges_inferred,Ranges_inferred_s),
 		retractall(owl_property_range_cached(Class,Predicate,_)),
-		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred)),
-		member(Range, Ranges_inferred)
+		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred_s)),
+		member(Range, Ranges_inferred_s)
 	).
 
 owl_property_range_on_class_(Class, Predicate, Range) :-
@@ -534,12 +535,14 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	Cls_P_inv_range \= 'http://www.w3.org/2002/07/owl#Thing',
 	(  owl_property_range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
 	   true ; Range_inv = 'http://www.w3.org/2002/07/owl#Thing' ),
-	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
-	   Range=Range_inv ; (
-	   owl_inverse_property(Predicate, Predicate_inv),
-	   owl_description_assert(restriction(Predicate_inv,
-	                          some_values_from(Cls_P_inv_range)), Range)
-	)).
+	Range=Range_inv.
+	% NOTE(DB): disabled due to performance issues using DUL.
+	%(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
+	   %Range=Range_inv ; (
+	   %owl_inverse_property(Predicate, Predicate_inv),
+	   %owl_description_assert(restriction(Predicate_inv,
+	                          %some_values_from(Cls_P_inv_range)), Range)
+	%)).
 
 		 /*******************************
 		 *	    CARDINALITY		*
@@ -1408,8 +1411,12 @@ owl_inverse_property(P, P_inv) :-
 	( rdf_has(P, owl:inverseOf, P_inv) ;
 	  rdf_has(P_inv, owl:inverseOf, P) ), !.
 owl_inverse_property(P, P_inv) :-
-	owl_assert_description('http://www.w3.org/2002/07/owl#Description', P_inv),
-	rdf_assert(P_inv, owl:inverseOf, P).
+	%owl_assert_description('http://www.w3.org/2002/07/owl#Description', P_inv),
+	atomic_list_concat([P,'_inv'],P_inv),
+	( rdf_has(P,rdfs:domain,X) -> rdf_assert(P_inv,rdfs:range,X)  ; true ),
+	( rdf_has(P,rdfs:range,Y)  -> rdf_assert(P_inv,rdfs:domain,Y) ; true ),
+	rdf_assert(P_inv, owl:inverseOf, P),
+	rdf_assert(P_inv, rdf:type, owl:'ObjectProperty').
 
 %% owl_inverse_property_chain(?P, ?P_inv)
 %
