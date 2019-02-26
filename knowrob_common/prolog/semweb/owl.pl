@@ -1089,6 +1089,7 @@ owl_has_transitive(S, P, O) :-
 	owl_has_transitive(S, P, O, DB).
 
 owl_has_transitive(S, P, O, DB) :-
+	ground(P),
 	rdfs_individual_of(P, owl:'TransitiveProperty'), !,
 	owl_has_transitive_(S, P, O, DB, [P]).
 owl_has_transitive(S, P, O, DB) :-
