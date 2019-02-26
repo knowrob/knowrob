@@ -56,9 +56,10 @@ def prolog_to_transform(frame_id, child_frame_id, translation, rotation):
     :type rotation: list
     :rtype: TransformStamped
     """
+    if child_frame_id==None or translation==None or rotation==None: return None
     t = TransformStamped()
-    t.header.frame_id = frame_id
-    t.child_frame_id = child_frame_id
+    t.header.frame_id = frame_id.encode('utf-8')
+    t.child_frame_id = child_frame_id.encode('utf-8')
     t.transform.translation = Point(*translation)
     t.transform.rotation = Quaternion(*rotation)
     return t
@@ -264,11 +265,13 @@ class ObjectStatePublisher(object):
         object_ids = []
         for object_state in self.prolog_query(q):
             object_id = str(object_state['Obj']).replace('\'', '')
-            object_ids.append(object_id)
 
             marker_ns = (str(object_state['Type']).replace('\'', ''))
             visualize = (str(object_state['HasVisual']) == "'true'")
             transform = prolog_to_transform(*object_state['Pose'])
+            if transform==None:
+              rospy.logwarn('Object {} has no valid transform!'.format(','.join(object_id)))
+              continue
             static_transform = [prolog_to_transform(*x) for x in object_state['StaticTransforms']]
             color = object_state['Color']
             mesh = str(object_state['Mesh'])
@@ -276,6 +279,7 @@ class ObjectStatePublisher(object):
             width = object_state['W']
             height = object_state['H']
 
+            object_ids.append(object_id)
             self.objects[object_id].update_information(object_id, marker_ns, visualize, transform, static_transform,
                                                        mesh, color, depth, width, height)
             rospy.logdebug('Updated object: {}'.format(str(self.objects[object_id])))
