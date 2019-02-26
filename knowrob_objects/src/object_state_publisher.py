@@ -6,8 +6,8 @@ from collections import defaultdict
 from geometry_msgs.msg import Vector3, Transform, TransformStamped
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
-from knowrob_objects.srv._UpdateObjectState import UpdateObjectState, UpdateObjectStateResponse
 from knowrob_objects.msg._ObjectState import ObjectState
+from knowrob_objects.msg._ObjectStateArray import ObjectStateArray
 from multiprocessing import Queue
 from std_msgs.msg._ColorRGBA import ColorRGBA
 from std_srvs.srv._Trigger import Trigger, TriggerResponse
@@ -200,8 +200,7 @@ class ObjectStatePublisher(object):
         self.tf_broadcaster = rospy.Publisher("/tf", TFMessage, queue_size=100)
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=100)
         self.marker_array_publisher = rospy.Publisher('/visualization_marker_array', MarkerArray, queue_size=100)
-        # self.dirty_object_srv = rospy.Service('~mark_dirty_object', DirtyObject, self.dirty_cb)
-        self.dirty_object_srv = rospy.Service('~update_object_states', UpdateObjectState, self.update_state_cb)
+        self.object_state_subscriber = rospy.Subscriber('/object_state', ObjectStateArray, self.update_state_cb)
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
         self.dirty_timer = rospy.Timer(rospy.Duration(.01), self.dirty_timer_cb)
         rospy.loginfo('object state publisher is running')
@@ -215,9 +214,6 @@ class ObjectStatePublisher(object):
 
     def update_state_cb(self, srv_msg):
         self.dirty_object_requests.put(srv_msg)
-        r = UpdateObjectStateResponse()
-        r.error_code = r.SUCCESS
-        return r
 
     def dirty_timer_cb(self, _):
         # This is done in a different thread to prevent deadlocks in json prolog
@@ -260,37 +256,8 @@ class ObjectStatePublisher(object):
     # @profile
     def load_objects_from_prolog(self):
         q = "belief_existing_objects(Objects,[{}])," \
-            "member(Obj,Objects)," \
-            "object_information(Obj,Type,HasVisual,Color,Mesh,[D,W,H],Pose,StaticTransforms)".format(','.join(self.object_types))
-        object_ids = []
-        for object_state in self.prolog_query(q):
-            object_id = str(object_state['Obj']).replace('\'', '')
-
-            marker_ns = (str(object_state['Type']).replace('\'', ''))
-            visualize = (str(object_state['HasVisual']) == "'true'")
-            transform = prolog_to_transform(*object_state['Pose'])
-            if transform==None:
-              rospy.logwarn('Object {} has no valid transform!'.format(','.join(object_id)))
-              continue
-            static_transform = [prolog_to_transform(*x) for x in object_state['StaticTransforms']]
-            color = object_state['Color']
-            mesh = str(object_state['Mesh'])
-            depth = object_state['D']
-            width = object_state['W']
-            height = object_state['H']
-
-            object_ids.append(object_id)
-            self.objects[object_id].update_information(object_id, marker_ns, visualize, transform, static_transform,
-                                                       mesh, color, depth, width, height)
-            rospy.logdebug('Updated object: {}'.format(str(self.objects[object_id])))
-
-        for object_id in self.objects.keys():
-            if object_id not in object_ids:
-                self.marker_publisher.publish(self.objects[object_id].get_del_marker())
-                self.objects.pop(object_id)
-
-        self.publish_object_markers(object_ids)
-        self.publish_static_transforms(object_ids)
+            "belief_republish_objects(Objects)".format(','.join(self.object_types))
+        self.prolog_query(q)
 
     def publish_object_markers(self, object_ids):
         ma = MarkerArray()
