@@ -101,7 +101,6 @@ kb_querying(Action) :-
   pairs_values(Arguments,Arguments_),
   %kb_query(Functor, Arguments, Query),
   Query =.. [Functor|Arguments_],
-%writeln(Query),
   call(Query),
   %%%%%%%%%
   %%%%% Prolog -> OWL

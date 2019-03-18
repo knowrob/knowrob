@@ -58,8 +58,8 @@ test('rdf_has(obj1,hasConstituent,?)') :-
   rdf_assert(act_exec_test:'Object1',
              dul:isClassifiedBy,
              act_exec_test:'rdf_has1_Execution_S'),
-  rdf_assert(dul:'hasConstituent', % FIXME formal properties cannot be classified by roles, use ReifiedRelation
-             dul:isClassifiedBy,
+  owl_reified_relation(dul:'hasConstituent', HasConstituent),
+  rdf_assert(HasConstituent, dul:isClassifiedBy,
              act_exec_test:'rdf_has1_Execution_P'),
   % execute again
   execute_task(act_exec_test:'rdf_has1_Task',Action),
@@ -74,8 +74,8 @@ test('rdf_has(obj1,hasNameString,?)') :-
   rdf_assert(act_exec_test:'Object1',
              dul:isClassifiedBy,
              act_exec_test:'rdf_has1_Execution_S'),
-  rdf_assert(ease:'hasNameString', % FIXME use ReifiedRelation
-             dul:isClassifiedBy,
+  owl_reified_relation(ease:'hasNameString', HasNameString),
+  rdf_assert(HasNameString, dul:isClassifiedBy,
              act_exec_test:'rdf_has1_Execution_P'),
   % execute again
   execute_task(act_exec_test:'rdf_has1_Task',Action),

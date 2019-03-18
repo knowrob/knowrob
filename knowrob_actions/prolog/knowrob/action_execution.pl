@@ -173,6 +173,7 @@ assign_action_participants(Action,Task) :-
   %            not necessary have disjunctive (askedBy and answeredBy both Agent)
   %         - action implementation can do all sorts of hacks to get it done, here should be clean
   %
+  % rdfs_assert_specific <--
   forall((
     rdf_has(Task,dul:isTaskOf,Role),
     owl_has(X,dul:isClassifiedBy,Role)),
@@ -199,13 +200,12 @@ action_add_filler(Action,X) :-
     rdf_assert(Action,dul:hasRegion,X)
   ), !.
 action_add_filler(Action,X) :-
-  % TODO
-  %rdfs_individual_of(X,dul:'Object'),!,
+  rdfs_individual_of(X,dul:'Object'),!,
   ( rdf_has(Action,dul:hasParticipant,X);
     rdf_assert(Action,dul:hasParticipant,X) ).
-%action_add_filler(Action,X) :-
-  %writef('[WARN] %w is not a Region or Object!\n', [X]),
-  %fail.
+action_add_filler(_Action,X) :-
+  writef('[WARN] %w is not a Region or Object!\n', [X]),
+  fail.
 
 %% action_filler_for(Action,Entity,Filler)
 %

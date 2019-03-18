@@ -45,7 +45,9 @@
       owl_entity/2,
       create_owl_entity/2,
       owl_run_event/2,
-      owl_create_atomic_region/3
+      owl_create_atomic_region/3,
+      owl_reified_relation/2,
+      owl_reified_class/2
     ]).
 /** <module> Utilities for handling OWL information in KnowRob.
 
@@ -79,7 +81,9 @@
             owl_to_pl(r,-),
             pl_to_owl(+,-),
             owl_assert_now(r,r),
-            owl_create_atomic_region(r,t,-).
+            owl_create_atomic_region(r,t,-),
+            owl_reified_relation(r,r),
+            owl_reified_class(r,r).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -323,6 +327,38 @@ owl_run_event(Event, Goal) :-
   ).
 
 		 /*******************************
+		 *		  	*
+		 *******************************/
+
+owl_reified_relation(FormalRelation,ReifiedRelation) :-
+  rdf_has_prolog(ReifiedRelation,ease:describesFormalProperty,FormalRelation)
+  *-> true ; (
+    var(ReifiedRelation),
+    ground(FormalRelation),
+    owl_create_reified_relation(FormalRelation,ReifiedRelation)
+  ).
+
+owl_create_reified_relation(FormalRelation,ReifiedRelation) :-
+  ground(FormalRelation),
+  rdf_instance_from_class(ease:'ReifiedRelation',ReifiedRelation),
+  rdf_assert_prolog(ReifiedRelation, ease:describesFormalProperty,
+                    FormalRelation).
+
+owl_reified_class(FormalClass,ReifiedClass) :-
+  rdf_has_prolog(ReifiedClass,ease:describesFormalClass,FormalClass)
+  *-> true ; (
+    var(ReifiedClass),
+    ground(FormalClass),
+    owl_create_reified_class(FormalClass,ReifiedClass)
+  ).
+
+owl_create_reified_class(FormalClass,ReifiedClass) :-
+  ground(FormalClass),
+  rdf_instance_from_class(ease:'ReifiedClass',ReifiedClass),
+  rdf_assert_prolog(ReifiedClass, ease:describesFormalClass,
+                    FormalClass).
+
+		 /*******************************
 		 *		  converting between OWL / Prolog representation	*
 		 *******************************/
 
@@ -331,7 +367,7 @@ owl_list_to_pl(X,[X|Xs]) :-
   owl_list_to_pl(Y,Xs).
 owl_list_to_pl(X,[X]).
 
-%% TODO need to handle reified classes & properties here
+%% 
 owl_entity(Arg_owl,Arg_pl) :-
   rdfs_individual_of(Arg_owl,dul:'Collection'),!,
   findall(X, (
@@ -341,9 +377,15 @@ owl_entity(Arg_owl,Arg_pl) :-
 owl_entity(Arg_owl,Arg_pl) :-
   rdfs_individual_of(Arg_owl,dul:'Region'),
   rdf_has_prolog(Arg_owl,dul:hasDataValue,Arg_pl),!.
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,ease:'ReifiedRelation'),!,
+  rdf_has_prolog(Arg_owl,ease:describesFormalProperty,Arg_pl).
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,ease:'ReifiedClass'),!,
+  rdf_has_prolog(Arg_owl,ease:describesFormalClass,Arg_pl).
 owl_entity(Arg_owl,Arg_owl).
 
-%% TODO need to handle reified classes & properties here
+%% 
 create_owl_entity(List,Arg_owl) :-
   is_list(List),!,
   rdf_instance_from_class(dul:'Collection',Arg_owl),
@@ -351,8 +393,34 @@ create_owl_entity(List,Arg_owl) :-
     create_owl_entity(X,X_owl),
     rdf_assert(Arg_owl,dul:hasMember,X_owl)
   )).
+create_owl_entity(FormalRelation,ReifiedRelation) :-
+  atom(FormalRelation),
+  rdfs_individual_of(FormalRelation,rdf:'Property'),!,
+  owl_reified_relation(FormalRelation,ReifiedRelation).
+create_owl_entity(Iri,ReifiedRelation) :-
+  atom(Iri),
+  rdf_equal(Iri,rdf:type),!,
+  owl_reified_relation(Iri,ReifiedRelation).
+create_owl_entity(FormalClass,ReifiedClass) :-
+  atom(FormalClass),
+  rdfs_individual_of(FormalClass,owl:'Class'),!,
+  owl_reified_class(FormalClass,ReifiedClass).
+create_owl_entity(RDFClass,ReifiedClass) :-
+  atom(RDFClass),
+  rdfs_individual_of(RDFClass,rdfs:'Class'),!,
+  owl_reified_class(RDFClass,ReifiedClass).
 create_owl_entity(Iri,Iri) :-
+  atom(Iri),
+  rdfs_individual_of(Iri,owl:'NamedIndividual'),!,
   rdf_has(Iri,_,_),!.
+create_owl_entity(Ontology,_) :-
+  atom(Ontology),
+  rdfs_individual_of(Ontology,owl:'Ontology'),!,
+  fail.
+create_owl_entity(List,_) :-
+  atom(List),
+  rdfs_individual_of(List,rdf:'List'),!,
+  fail.
 create_owl_entity(literal(type(DataType,Atom)),Arg_owl) :-
   rdf_instance_from_class(dul:'Region',Arg_owl),
   rdf_assert(Arg_owl,dul:hasRegionDataValue,literal(type(DataType,Atom))),!.
