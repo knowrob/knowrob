@@ -39,5 +39,13 @@
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/action_planning')).
 
+:- use_module(library('knowrob/action_execution')).
+:- use_module(library('knowrob/kb_querying')).
+:- use_module(library('knowrob/ros_querying')).
+:- use_module(library('knowrob/ros_service')).
+:- use_module(library('knowrob/ros')).
+
+:- use_module(library('knowrob/workflow_execution')).
+
 :- owl_parser:owl_parse('package://knowrob_actions/owl/actions.owl').
 :- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').

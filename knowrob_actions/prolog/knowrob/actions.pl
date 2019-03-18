@@ -38,7 +38,9 @@
       action_requires/3,
       action_class_requires/3,
       comp_action_participant/3,
-      physical_actions/2
+      physical_actions/2,
+      task_role_filler/3,
+      action_participant_type/3
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -64,12 +66,25 @@
       action_outputs(r,r),
       action_requires(r,r,r),
       action_class_requires(r,r,r),
+      action_participant_type(r,r,r),
       transformed_into(r, r),
       transformed_into_transitive(r,r),
-      comp_action_participant(r,r,r).
+      comp_action_participant(r,r,r),
+      task_role_filler(r,r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+
+
+action_participant_type(Action,Participant,Class) :-
+  rdf_has(Action,dul:hasParticipant,Participant),
+  rdfs_individual_of(Participant,Class).
+
+%%
+task_role_filler(Task,Role,Filler) :-
+  rdf_has(Task,dul:definesRole,R),
+  rdfs_individual_of(R,Role),
+  rdf_has(Filler,dul:isClassifiedBy,R).
 
 %%
 action_constituents(Evt,Constituents,Constraints) :-
