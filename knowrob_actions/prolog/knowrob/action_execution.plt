@@ -18,6 +18,9 @@ test_task_reset :-
     rdf_retractall(_,dul:isClassifiedBy,Role)),
   forall(
     rdf_has(act_exec_test:'rdf_has1_Task',dul:hasParameter,Parameter),
+    rdf_retractall(_,dul:isClassifiedBy,Parameter)),
+  forall(
+    rdf_has(act_exec_test:'add_two_ints_Task',dul:hasParameter,Parameter),
     rdf_retractall(_,dul:isClassifiedBy,Parameter)).
 
 test(rdf_has_isExecutionPossible) :-
@@ -83,5 +86,39 @@ test('rdf_has(obj1,hasNameString,?)') :-
 %test(execute_task_CHOICEPOINTS) :-
   %test_task_reset,
   %fail.
+  
+test('add_two_ints(POSSIBLE)') :-
+  task_isExecutedIn(act_exec_test:'add_two_ints_Task',ros:'ServiceQuerying',_),!.
+
+test('add_two_ints(2,4)') :-
+  owl_create_atomic_region(xsd:long, 2, Region_a),
+  owl_create_atomic_region(xsd:long, 4, Region_b),
+  rdf_has_prolog(Region_a, dul:hasRegionDataValue, 2),
+  rdf_has_prolog(Region_b, dul:hasRegionDataValue, 4),
+  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_a'),
+  rdf_assert(Region_b, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_b'),
+  %%
+  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'add_two_ints_Task',Action),
+  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  rdf_has(Action, dul:hasRegion, Region_a),
+  rdf_has(Action, dul:hasRegion, Region_b).
+
+test('add_two_ints(2,4)[encoding]') :-
+  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  %%%%
+  create_ros_request(Action, act_exec_test:'add_two_ints_RequestType', Request),
+  rdf_has(Action, dul:hasParticipant, Request),
+  %%%
+  once((
+    rdf_has(Request, dul:hasPart, Slot_a),
+    rdf_has(Slot_a, dul:realizes, Slot_a_type),
+    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
+    rdf_has(Slot_a, dul:hasRegion, Region_a),
+    rdf_has_prolog(Region_a, dul:hasRegionDataValue, 2)
+  )),
+  %%%%
+  ros_request_encode(Request,Request_json),
+  writeln(Request_json),
+  Request_json = '{"a": ["int64", 2 ], "b": ["int64", 4 ]}'.
 
 :- end_tests(action_execution).

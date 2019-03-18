@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf roslib rospack m
 add_service_files(
   FILES
   JSONWrapper.srv
+  AddTwoInts.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)

@@ -27,7 +27,8 @@
 
 :- module(ros_querying,
     [
-      ros_querying/1
+      ros_querying/1,
+      create_ros_request/3
     ]).
 /** <module> The execution of ROS querying actions.
 
@@ -39,9 +40,28 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta ros_querying(r).
+:- rdf_meta ros_querying(r),
+            create_ros_request(r,r,r).
 
 action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ROSQuerying', ros_querying).
+
+create_ros_request(Action,ReqType,Request) :-
+  %%%%%%%%%
+  %%%%% Create request message
+  rdf_instance_from_class(ros:'Message',Request),
+  rdf_assert(Request,dul:realizes,ReqType),
+  rdf_assert(Action,ros:hasRequest,Request),
+  %%%%%%%%%
+  %%%%% Set request slots
+  forall(rdf_has(ReqType,dul:hasPart,DataSlot), once((
+    % for each data slot, find participant of the 
+    % action that is classified by the same parameter or role
+    action_filler_for(Action,DataSlot,Filler),
+    %rdf_has(DataSlot,dul:hasPart,SlotType),
+    create_ros_message_slot(DataSlot,Filler,Slot),
+    rdf_assert(Request,dul:hasPart,Slot),
+    rdf_assert(Slot,dul:realizes,DataSlot)
+  ))).
 
 %% ros_querying(+Action) is semidet.
 %
@@ -81,23 +101,10 @@ ros_querying(Action) :-
   ),
   %%%%%%%%%
   %%%%% Create request and response message
-  rdf_instance_from_class(ros:'Message',Request),
   rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Request,dul:realizes,ReqType),
   rdf_assert(Response,dul:realizes,ResType),
-  rdf_assert(Action,ros:hasRequest,Request),
   rdf_assert(Action,ros:hasResponse,Response),
-  %%%%%%%%%
-  %%%%% Set request slots
-  forall(rdf_has(ReqType,dul:hasPart,DataSlot), once((
-    % for each data slot, find participant of the 
-    % action that is classified by the same parameter or role
-    action_filler_for(Action,DataSlot,Filler),
-    rdf_has(DataSlot,dul:hasPart,SlotType),
-    create_ros_message_slot(SlotType,Filler,Slot),
-    rdf_assert(Request,dul:hasPart,Slot),
-    rdf_assert(Slot,dul:realizes,DataSlot)
-  ))),
+  create_ros_request(Action,ReqType,Request),
   %%%%%%%%%
   %%%%% Call the service
   catch(
@@ -140,12 +147,12 @@ ros_querying_set_status(Action,_,SlotRegion) :-
 %%
 create_ros_message_slot(SlotType, Region, Slot) :-
   rdfs_individual_of(SlotType,ros:'PrimitiveSlot'),!,
-  rdfs_individual_of(Region,ros:'Region'),
+  rdfs_individual_of(Region,dul:'Region'),
   rdf_instance_from_class(ros:'PrimitiveValue',Slot),
   rdf_assert(Slot, dul:hasRegion, Region).
 create_ros_message_slot(SlotType, Region, Slot) :-
   rdfs_individual_of(SlotType,ros:'ArraySlot'),!,
-  rdfs_individual_of(Region,ros:'Region'),
+  rdfs_individual_of(Region,dul:'Region'),
   rdf_instance_from_class(ros:'PrimitiveArray',Slot),
   rdf_assert(Slot, dul:hasRegion, Region).
 create_ros_message_slot(SlotType, Array, Array) :-

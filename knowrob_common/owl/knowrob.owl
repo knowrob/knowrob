@@ -1469,25 +1469,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
-                <owl:allValuesFrom>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
-                        <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Status"/>
-                    </owl:Restriction>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Affordance -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Affordance">
@@ -2153,7 +2134,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#KBQueryingExecution -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
@@ -2823,6 +2804,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WheeledRobot">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
     </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
     
 
 

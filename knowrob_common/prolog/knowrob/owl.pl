@@ -44,7 +44,8 @@
       owl_list_to_pl/2,
       owl_entity/2,
       create_owl_entity/2,
-      owl_run_event/2
+      owl_run_event/2,
+      owl_create_atomic_region/3
     ]).
 /** <module> Utilities for handling OWL information in KnowRob.
 
@@ -77,7 +78,8 @@
             owl_list_to_pl(r,t),
             owl_to_pl(r,-),
             pl_to_owl(+,-),
-            owl_assert_now(r,r).
+            owl_assert_now(r,r),
+            owl_create_atomic_region(r,t,-).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -374,7 +376,7 @@ owl_create_atomic_region(DataType, List, Region) :-
     AtomList),
   atomic_list_concat(AtomList, ' ', Atom),
   rdf_instance_from_class(dul:'Region',Region),
-  rdf_assert(Region,dul:hasDataVaue,literal(type(DataType,Atom))).
+  rdf_assert(Region,dul:hasRegionDataValue,literal(type(DataType,Atom))).
 %%
 owl_create_atomic_region(DataType, String, Region) :-
   string(String),!,
@@ -384,7 +386,7 @@ owl_create_atomic_region(DataType, String, Region) :-
 owl_create_atomic_region(DataType, Term, Region) :-
   term_to_atom(Term,Atom),
   rdf_instance_from_class(dul:'Region',Region),
-  rdf_assert(Region,dul:hasDataVaue,literal(type(DataType,Atom))).
+  rdf_assert(Region,dul:hasRegionDataValue,literal(type(DataType,Atom))).
 
 %% owl_create_array(List,Array)
 %

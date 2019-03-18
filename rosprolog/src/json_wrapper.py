@@ -41,6 +41,7 @@ class JSONWrapperService(object):
         rospy.loginfo('json_wrapper service is running')
     
     def json_wrapper_cb(self, wrapper_request):
+        # TODO: also include a status field in response
         rospy.logdebug('received: ' + wrapper_request.json_data)
         request_data = json.loads(wrapper_request.json_data)
         srv_module   = get_service_module(wrapper_request.service_path)

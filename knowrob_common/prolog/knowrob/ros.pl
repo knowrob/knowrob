@@ -34,7 +34,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-%:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/rdfs')).
 
 :- rdf_meta ros_type_path(r,?),
             ros_primitive_type(?,r).
@@ -46,7 +46,7 @@ ros_type_path(MessageType,TypePath) :-
   rdf_has_prolog(MessageType,ros:hasTypePath,TypePath).
 ros_type_path(PrimitiveType,TypePath) :-
   rdfs_individual_of(PrimitiveType,ros:'PrimitiveType'),!,
-  rdf_has_prolog(PrimitiveType,ease:hasNameString,TypePath).
+  rdf_split_url(_, TypePath, PrimitiveType).
 ros_type_path(ArrayType,array(T)) :-
   rdfs_individual_of(ArrayType,ros:'ArrayType'),!,
   once((

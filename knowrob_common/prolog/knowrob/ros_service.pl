@@ -28,17 +28,23 @@
 :- module(knowrob_ros_service,
     [
       ros_service/3,
-      ros_service_call/3
+      ros_service_call/3,
+      ros_request_encode/2,
+      ros_response_decode/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
+:- use_module(library('http/json')).
 :- use_module(library('knowrob/ros')).
+:- use_module(library('knowrob/rdfs')).
 
 :- rdf_db:rdf_register_ns(ros, 'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
 
 :- rdf_meta ros_service(r, ?, ?),
+            ros_request_encode(r, ?),
+            ros_response_decode(+, -),
             ros_service_call(r, r, r).
 
 %% ros_service(+Service,?Name,?Path) is det.
@@ -63,16 +69,16 @@ ros_message_slot_type(Msg,SlotName,SlotType) :-
 %
 ros_service_call(Service, Request, Response) :-
   ros_service(Service, ServicePath, ServiceName),
-  ( ros_request_encode(Service, Request, Request_json) ;
+  ( ros_request_encode(Request, Request_json) ;
     throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ),
   ( ros_json_wrapper(ServiceName, ServicePath, Request_json, Response_json) ;
     throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
   ( ros_response_decode(Response_json, Response) ;
     throw(ros_error(ros:'UNINTERPRETABLE_REQUEST')) ).
 
-%% ros_request_encode(+Service, +Request, -Request_json) is det.
+%% ros_request_encode(+Request, -Request_json) is det.
 %
-ros_request_encode(_Service, Request, Request_json) :-
+ros_request_encode(Request, Request_json) :-
   ros_entity_to_prolog(Request, Request_dict),
   %%%%%%%%%
   %%%%% encode as JSON dict
@@ -149,7 +155,7 @@ ros_message_to_prolog(_, Msg, Msg_dict) :-
     %%%%%%%%%
     once((
       rdf_has(Msg, dul:hasPart, Filler),
-      rdf_has(Filler, dul:realizes, SlotType)
+      rdf_has(Filler, dul:realizes, DataSlot)
     )),
     ros_entity_to_prolog(Filler, SValue)
   ), Pairs),

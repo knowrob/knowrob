@@ -35,7 +35,8 @@
       execute_task/2,
       action_call_or_failure/4,
       action_add_filler/2,
-      action_filler_for/3
+      action_filler_for/3,
+      create_action_symbol/3
     ]).
 /** <module> The execution of actions.
 
@@ -65,7 +66,8 @@ the task (if any).
             task_isExecutedIn(r,r,r),
             task_isExecutionPossible(r),
             handle_action_failure(r,r,+),
-            execute_task(r,r).
+            execute_task(r,r),
+            create_action_symbol(r,r,-).
 
 %% action_registry(ActionConcept, Goal)
 %
@@ -82,7 +84,7 @@ the task (if any).
 task_isExecutedIn(WF_Task,ActionConcept,ActionExecutionPlan) :-
   % individual tasks in workflows maybe defined by action execution plans
   rdf_has(ActionExecutionPlan, dul:definesTask, WF_Task),
-  rdfs_individual_of(ActionExecutionPlan,knowrob:'ActionExecutionPlan'),
+  rdfs_individual_of(ActionExecutionPlan,ease:'ActionExecutionPlan'),
   % TODO: avoid redundant results here
   owl_property_range_on_subject(ActionExecutionPlan,dul:definesTask,TaskClass),
   owl_property_range_on_class(TaskClass,dul:isExecutedIn,ActionConcept),
@@ -116,8 +118,6 @@ execute_task(WF_Task,Action) :-
   %%%%% Instantiate action concept
   %%%%%%%%%
   create_action_symbol(ActionConcept,WF_Task,Action),
-  assign_action_participants(Action,WF_Task),
-  assign_action_regions(Action,WF_Task),
   !, % TODO <-- this kills choicepoints for different ways to execute the task
   %%%%%%%%%
   %%%%% Run the action!
@@ -155,7 +155,10 @@ create_action_symbol(ActionConcept,Task,Action) :-
   % create status region
   rdf_instance_from_class(ease:'ActionStatus',ActionStatus),
   rdf_assert(Action, ease:hasStatus, ActionStatus),
-  rdf_assert(ActionStatus, dul:hasRegion, knowrob:'ACTION_OK').
+  rdf_assert(ActionStatus, dul:hasRegion, knowrob:'ACTION_OK'),
+  %%%%%%%%
+  assign_action_participants(Action,Task),
+  assign_action_regions(Action,Task).
 
 assign_action_participants(Action,Task) :-
   % TODO Classification of hasParticipant property?

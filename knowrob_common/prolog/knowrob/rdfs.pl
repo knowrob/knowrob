@@ -60,7 +60,9 @@
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
-            rdfs_common_ancestor(t,r).
+            rdfs_common_ancestor(t,r),
+            rdfs_number(r,?),
+            rdfs_list(r,?).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -192,17 +194,8 @@ rdfs_assert_specific(S,P,O) :-
 %
 % @tbd convert to standard SI unit
 %
-% TODO: needs other clauses
-rdfs_value_prolog(_, literal(type('http://knowrob.org/kb/knowrob.owl#vec3',Val)), Vec) :-
-  rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog(_, literal(type('http://knowrob.org/kb/knowrob.owl#vec4',Val)), Vec) :-
-  rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
-  atom_number(Atom, Number), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
-  atom_number(Atom, Number), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
-  atom_number(Atom, Number), !.
+rdfs_value_prolog(_, XSD_Type, Number) :- rdfs_number(XSD_Type, Number), !.
+rdfs_value_prolog(_, List_Type, List)  :- rdfs_list(List_Type, List), !.
 % TODO: remove this at some point
 rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
@@ -213,6 +206,30 @@ rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#translation', literal(type(
 rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).
+
+rdfs_list(literal(type(List_Type,Atom)), List) :-
+  ( rdf_equal(List_Type,knowrob:vec3) ;
+    rdf_equal(List_Type,knowrob:vec4) ;
+    rdf_equal(List_Type,knowrob:array_boolean) ;
+    rdf_equal(List_Type,knowrob:array_double) ;
+    rdf_equal(List_Type,knowrob:array_float) ;
+    rdf_equal(List_Type,knowrob:array_int) ;
+    rdf_equal(List_Type,knowrob:array_string) ), !,
+  rdf_vector_prolog(Atom, List).
+
+rdfs_number(literal(type(XSD_Type,Atom)), Number) :-
+  ( rdf_equal(XSD_Type,xsd:float) ;
+    rdf_equal(XSD_Type,xsd:double) ;
+    rdf_equal(XSD_Type,xsd:byte) ;
+    rdf_equal(XSD_Type,xsd:short) ;
+    rdf_equal(XSD_Type,xsd:int) ;
+    rdf_equal(XSD_Type,xsd:long) ;
+    rdf_equal(XSD_Type,xsd:unsignedByte) ;
+    rdf_equal(XSD_Type,xsd:unsignedShort) ;
+    rdf_equal(XSD_Type,xsd:unsignedInt) ;
+    rdf_equal(XSD_Type,xsd:unsignedLong) ), !,
+  atom_number(Atom, Number).
+  
 
 %% strip_literal_type(+Input,-Output).
 %
