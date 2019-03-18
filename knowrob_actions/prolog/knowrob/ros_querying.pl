@@ -121,9 +121,7 @@ ros_querying(Action) :-
   forall(rdf_has(ResType,dul:hasPart,DataSlot), (
     rdf_has(Response,dul:hasPart,Slot),
     rdf_has(Slot,dul:realizes,DataSlot),
-    ((rdfs_individual_of(Slot,ros:'PrimitiveValue');
-      rdfs_individual_of(Slot,ros:'PrimitiveArray'))-> 
-      rdf_has(Slot,dul:hasRegion,X) ; X=Slot ),
+    get_slot_filler(Slot,X),
     ( rdfs_individual_of(DataSlot,ros:'StatusSlot') ->
       % handle dedicated status field
       ros_querying_set_status(Action,DataSlot,X) ;
@@ -131,6 +129,16 @@ ros_querying(Action) :-
       action_add_filler(Action,X)
     )
   )).
+
+get_slot_filler(Slot,Obj) :-
+  ( rdfs_individual_of(Slot,ros:'PrimitiveValue') ;
+    rdfs_individual_of(Slot,ros:'PrimitiveArray') ), !,
+  rdf_has(Slot, dul:hasRegion, Obj).
+get_slot_filler(Slot,Obj) :-
+  % a message with a region value
+  rdfs_individual_of(Slot,ros:'Message'),
+  rdf_has(Slot, dul:hasRegion, Obj),!.
+get_slot_filler(Slot,Slot).
 
 % update action status according to
 % status field of response message
@@ -155,8 +163,8 @@ create_ros_message_slot(SlotType, Region, Slot) :-
   rdf_instance_from_class(ros:'PrimitiveValue',Slot),
   rdf_assert(Slot, dul:hasRegion, Region).
 create_ros_message_slot(SlotType, Region, Slot) :-
-  rdfs_individual_of(SlotType,ros:'ArraySlot'),!,
-  rdfs_individual_of(Region,dul:'Region'),
+  rdfs_individual_of(SlotType,ros:'ArraySlot'),
+  rdfs_individual_of(Region,dul:'Region'),!,
   rdf_instance_from_class(ros:'PrimitiveArray',Slot),
   rdf_assert(Slot, dul:hasRegion, Region).
 create_ros_message_slot(SlotType, Array, Array) :-

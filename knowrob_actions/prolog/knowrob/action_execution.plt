@@ -148,6 +148,7 @@ test('add_two_ints(DECODE)') :-
 
 % TODO: test arrays
 % TODO: test message fields
+% TODO: test messages with region representation
 % TODO: test status field
 
 :- end_tests(action_execution).
