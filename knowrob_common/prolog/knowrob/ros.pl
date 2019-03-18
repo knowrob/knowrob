@@ -42,16 +42,16 @@
 %% ros_type_path(+MessageType,?TypePath) is det.
 %
 ros_type_path(MessageType,TypePath) :-
-  rdfs_individual_of(MessageType,ros:'MessageType'),!,
-  rdf_has_prolog(MessageType,ros:hasTypePath,TypePath).
+  rdfs_individual_of(MessageType,ros:'MessageType'),
+  rdf_has_prolog(MessageType,ros:hasTypePath,TypePath),!.
 ros_type_path(PrimitiveType,TypePath) :-
-  rdfs_individual_of(PrimitiveType,ros:'PrimitiveType'),!,
-  rdf_split_url(_, TypePath, PrimitiveType).
+  rdfs_individual_of(PrimitiveType,ros:'PrimitiveType'),
+  rdf_split_url(_, TypePath, PrimitiveType),!.
 ros_type_path(ArrayType,array(T)) :-
-  rdfs_individual_of(ArrayType,ros:'ArrayType'),!,
+  rdfs_individual_of(ArrayType,ros:'ArrayType'),
   once((
     rdf_has(ArrayType,dul:hasPart,X),
-    ros_type_path(X,T))).
+    ros_type_path(X,T))),!.
 
 %% ros_primitive_type(?ROS_type, ?RDF_type) is det.
 %

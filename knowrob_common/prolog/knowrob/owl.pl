@@ -47,7 +47,10 @@
       owl_run_event/2,
       owl_create_atomic_region/3,
       owl_reified_relation/2,
-      owl_reified_class/2
+      owl_reified_class/2,
+      owl_sequence/2,
+      owl_create_ordered_collection/2,
+      owl_create_collection/2
     ]).
 /** <module> Utilities for handling OWL information in KnowRob.
 
@@ -83,7 +86,10 @@
             owl_assert_now(r,r),
             owl_create_atomic_region(r,t,-),
             owl_reified_relation(r,r),
-            owl_reified_class(r,r).
+            owl_reified_class(r,r),
+            owl_sequence(r,t),
+            owl_create_ordered_collection(t,+),
+            owl_create_collection(t,+).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -456,10 +462,30 @@ owl_create_atomic_region(DataType, Term, Region) :-
   rdf_instance_from_class(dul:'Region',Region),
   rdf_assert(Region,dul:hasRegionDataValue,literal(type(DataType,Atom))).
 
-%% owl_create_array(List,Array)
-%
-%
-owl_create_array(List, Array) :- fail. % TODO
+owl_sequence(First, [First|Rest]) :-
+  once( owl_has(Next,dul:follows,First) ), !,
+  owl_sequence(Next, Rest).
+owl_sequence(Last, [Last]).
+
+owl_create_sequence([X,Y|Rest]) :-
+  ( rdf_has(Y, dul:follows, X) ;
+    rdf_assert(Y, dul:follows, X) ),!,
+  owl_create_sequence([Y|Rest]).
+owl_create_sequence(_).
+
+owl_create_ordered_collection([First|Rest], Collection) :-
+  rdf_instance_from_class(dul:'Collection',Collection),
+  owl_create_sequence([First|Rest]),
+  rdf_assert(Collection, ease:firstMember, First),
+  forall(member(X,Rest),
+         rdf_assert(Collection,ease:hasMember,X)).
+
+owl_create_collection(List, Collection) :-
+  is_list(List),
+  rdf_instance_from_class(dul:'Collection',Collection),
+  forall(member(X,List),
+         rdf_assert(Collection,ease:hasMember,X)).
+  
 
 		 /*******************************
 		 *		  ABOX ASSERTIONS		*

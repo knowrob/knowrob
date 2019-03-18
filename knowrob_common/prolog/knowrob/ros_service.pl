@@ -208,13 +208,20 @@ ros_entity_to_prolog(PrimitiveValue_owl, PrimitiveValue_pl) :-
     rdf_has_prolog(Region,dul:hasRegionDataValue,PrimitiveValue_pl);
     PrimitiveValue_pl = Region )).
 
-ros_entity_to_prolog(Array_owl, Array_pl) :-
-  rdfs_individual_of(Array_owl,ros:'MessageArray'),!,
-  owl_array_to_list(Array_owl, Iri_List),
+ros_entity_to_prolog(Array, List) :-
+  rdfs_individual_of(Array,ros:'Array'),!,
+  rdf_has(Array, dul:concretelyExpresses, Collection),
+  ros_entity_to_prolog(Collection, List).
+
+ros_entity_to_prolog(Collection, List) :-
+  rdfs_individual_of(Collection,dul:'Collection'),!,
+  ( rdf_has(Collection, ease:firstMember, First) ->
+    owl_sequence(First, List) ; 
+    findall(M, rdf_has(Collection,dul:hasMember, M), Xs) ),
   findall(X, (
-    member(Iri,Iri_List),
+    member(Iri,Xs),
     ros_entity_to_prolog(Iri,X)),
-    Array_pl).
+    List).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % % % % % % % % % % % ROS message dict to OWL
@@ -259,10 +266,14 @@ owl_create_ros_entity(Array_type,Val_list,PrimitiveArray) :-
              literal(type(ArrayType,ArrayData))),
   rdf_assert(PrimitiveArray,dul:hasRegion,Region).
 
-owl_create_ros_entity(_Array_type,Val_list,Array_owl) :-
+owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
   is_list(Val_list),
+  ros_type_path(ArrayType,ArrayTypePath),
   findall(Val_owl, (
     member(X,Val_list),
     owl_create_ros_entity(X,Val_owl)),
     Msg_list),
-  owl_create_array(Msg_list, Array_owl).
+  owl_create_ordered_collection(Msg_list, Collection),
+  rdf_instance_from_class(ros:'MessageArray',MessageArray),
+  rdf_assert(MessageArray, dul:realizes, ArrayType),
+  rdf_assert(MessageArray, dul:concretelyExpresses, Collection).
