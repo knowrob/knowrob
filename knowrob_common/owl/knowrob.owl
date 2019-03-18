@@ -78,6 +78,42 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#array_boolean -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_boolean"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#array_double -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_double"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#array_float -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_float"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#array_int -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_int"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#array_string -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_string"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#array_uint -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#array_uint"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#vec3 -->
 
     <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#vec3"/>
@@ -270,6 +306,23 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#firstKBTerm -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#firstKBTerm">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#hasKBTerm"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBCompound"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#fromLocation -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fromLocation">
@@ -303,6 +356,23 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasKBTerm -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasKBTerm">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBCompound"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
     </owl:ObjectProperty>
     
 
@@ -755,6 +825,12 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
@@ -764,6 +840,18 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
     
 
 
@@ -788,6 +876,12 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn"/>
     
 
 
@@ -933,6 +1027,39 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fullName">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasArity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasArity">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>has arity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasFunctor -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasFunctor">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>has functor</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasModulePath -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasModulePath">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>has module path</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -1338,6 +1465,25 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#Mapping">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#CompositeAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+                        <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -1855,6 +2001,216 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Joint-Physical">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBAtom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBAtom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBAtomic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBAtomic -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBAtomic">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#KBCompound"/>
+        <rdfs:comment>An atomic term in the knowledge base.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBCompound -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBCompound">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasArity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasFunctor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A compound term in the knowledge base.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBFloat -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBFloat">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBNumber"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBInteger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBInteger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBNumber"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBNumber -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBNumber">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBAtomic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBPredicate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBPredicate">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DigitalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasArity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasFunctor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A predicate in the Prolog knowledge base with a specific functor and arity. The parts of the predicate are its arguments which are KBTerm&apos;s, i.e. variables, constant values, or complex terms.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBQuerying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBQuerying">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Querying"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE.owl#StatusRegion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A querying action where some predicate of the KB is called.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBQueryingExecution -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionExecutionPlan"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn"/>
+                        <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQuerying"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBString -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBString">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBAtomic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBTerm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBTerm">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBAtomic"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#KBCompound"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DigitalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#KBTerm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A term in the knowledge base.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBVariable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBVariable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KBAtomic"/>
     </owl:Class>
     
 
@@ -2508,6 +2864,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DigitalObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DigitalObject"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#Freezing -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Freezing">
@@ -2572,9 +2934,39 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Querying -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Querying"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Status -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#StatusFailure -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#StatusFailure"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#StatusOk -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#StatusOk"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#StatusRegion -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#StatusRegion"/>
     
 
 
@@ -2659,6 +3051,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
@@ -2709,6 +3107,39 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_INPUT_MISSING -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_INPUT_MISSING">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#StatusFailure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_MODEL_ERROR -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_MODEL_ERROR">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#StatusFailure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_OK -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_OK">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#StatusOk"/>
+        <rdfs:comment>the default action status in case nothing goes wrong</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_PREDICATE_ERROR -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_PREDICATE_ERROR">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#StatusFailure"/>
+    </owl:NamedIndividual>
     
 
 
