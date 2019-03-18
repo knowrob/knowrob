@@ -2,6 +2,7 @@
 
 import rospy
 import json
+import importlib
 
 from rosprolog.srv._JSONWrapper import JSONWrapper, JSONWrapperResponse
 
@@ -14,7 +15,7 @@ def get_ros_module(type_string, import_path):
     try:
         module = ros_modules[type_string]
     except:
-        module = importlib.import_module(type_string)
+        module = importlib.import_module(import_path)
         ros_modules[type_string] = module
     return module
 
@@ -39,11 +40,11 @@ class JSONWrapperService(object):
         self.update_positions_srv = rospy.Service('~json_wrapper', JSONWrapper, self.json_wrapper_cb)
         rospy.loginfo('json_wrapper service is running')
     
-    def json_wrapper_cb(self, request):
-        request_data = json.loads(request.json_data)
-        rospy.loginfo('received: ' + request_data)
-        srv_module   = get_service_module(request.service_path)
-        module_name  = request.service_path.split('/')[-1]
+    def json_wrapper_cb(self, wrapper_request):
+        rospy.logdebug('received: ' + wrapper_request.json_data)
+        request_data = json.loads(wrapper_request.json_data)
+        srv_module   = get_service_module(wrapper_request.service_path)
+        module_name  = wrapper_request.service_path.split('/')[-1]
         srv_cls = getattr(srv_module,module_name)
         req_cls = getattr(srv_module,module_name+'Request')
         res_cls = getattr(srv_module,module_name+'Response')
@@ -51,7 +52,7 @@ class JSONWrapperService(object):
         request = req_cls()
         self.assign_slots(request, request_data)
         # get a service handle
-        srv = get_service(request.service_name, srv_cls)
+        srv = get_service(wrapper_request.service_name, srv_cls)
         # send it
         response = JSONWrapperResponse()
         try:
@@ -59,36 +60,36 @@ class JSONWrapperService(object):
             response.json_data = self.read_slots(res_cls,srv_response)
         except:
             response.json_data = ''
-        rospy.loginfo('send: ' + response.json_data)
+        rospy.logdebug('send: ' + response.json_data)
         # return the json encoded response
         return response
     
     #######################
     ######### Type checking
     
-    def is_primitive_type(type_path):
+    def is_primitive_type(self,type_path):
         return type_path in ['bool',
                          'float32','float64',
                          'int8','int16','int32','int64',
                          'uint8','uint16','uint32','uint64',
                          'string']
     
-    def is_message_array_type(type_path):
+    def is_message_array_type(self,type_path):
         if not type_path.startswith('array('):
             return False
         array_type = type_path[6:-1]
-        return not is_primitive_type(array_type)
+        return not self.is_primitive_type(array_type)
     
-    def is_primitive_array_type(type_path):
+    def is_primitive_array_type(self,type_path):
         if not type_path.startswith('array('):
             return False
         array_type = type_path[6:-1]
-        return is_primitive_type(array_type)
+        return self.is_primitive_type(array_type)
     
-    def is_message_type(type_path):
+    def is_message_type(self,type_path):
         if type_path.startswith('array('):
             return False
-        return not is_primitive_type(type_path)
+        return not self.is_primitive_type(type_path)
     
     #######################
     ######### Decoding JSON into ROS messages
@@ -116,8 +117,8 @@ class JSONWrapperService(object):
         return out
     
     def assign_slots(self, request_message, json_data):
-        for name in json_data.keys():
-            value = self.decode_json_value(json_data[key])
+        for name in json_data:
+            value = self.decode_json_value(json_data[name])
             setattr(request_message, name, value)
     
     #######################
