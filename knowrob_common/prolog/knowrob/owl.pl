@@ -40,7 +40,11 @@
       owl_write_readable/1,             % +Resource
       owl_readable/2,                   % +Resource, -Readable
       owl_instance_from_class/2,
-      owl_instance_from_class/3
+      owl_instance_from_class/3,
+      owl_list_to_pl/2,
+      owl_entity/2,
+      create_owl_entity/2,
+      owl_run_event/2
     ]).
 /** <module> Utilities for handling OWL information in KnowRob.
 
@@ -69,7 +73,11 @@
             owl_readable(r,-),
             owl_write_readable(r),
             owl_instance_from_class(r,-),
-            owl_instance_from_class(r,t,-).
+            owl_instance_from_class(r,t,-),
+            owl_list_to_pl(r,t),
+            owl_to_pl(r,-),
+            pl_to_owl(+,-),
+            owl_assert_now(r,r).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -288,6 +296,100 @@ owl_readable_internal(X,Y) :- atom(X), rdf_split_url(_, Y, X).
 owl_readable_internal(X,X) :- atom(X).
 owl_readable_internal(X,Y) :- compound(X), owl_readable(X,Y).
 owl_readable_internal(X,X).
+
+		 /*******************************
+		 *		  Events	*
+		 *******************************/
+
+owl_assert_now(TimeInterval, Property) :-
+  get_time(CurrentTime),
+  term_to_atom(CurrentTime,X),
+  rdf_assert(TimeInterval, Property, literal(type(knowrob:double,X))).
+
+owl_event_time_interval(Event, TimeInterval):-
+  rdf_has(Event, dul:hasTimeInterval, TimeInterval),!.
+owl_event_time_interval(Event, TimeInterval):-
+  rdf_instance_from_class(dul:'TimeInterval',TimeInterval),
+  rdf_assert(Event, dul:hasTimeInterval, TimeInterval),!.
+
+owl_run_event(Event, Goal) :-
+  owl_event_time_interval(Event, TimeInterval),
+  setup_call_cleanup(
+    owl_assert_now(TimeInterval, ease:hasIntervalBegin),
+    call(Goal, Event),
+    owl_assert_now(TimeInterval, ease:hasIntervalEnd)
+  ).
+
+		 /*******************************
+		 *		  converting between OWL / Prolog representation	*
+		 *******************************/
+
+owl_list_to_pl(X,[X|Xs]) :-
+  rdf_has(Y,dul:follows,X),!,
+  owl_list_to_pl(Y,Xs).
+owl_list_to_pl(X,[X]).
+
+%% TODO need to handle reified classes & properties here
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,dul:'Collection'),!,
+  findall(X, (
+    rdf_has(Arg_owl,dul:hasMember,X_owl),
+    owl_entity(X_owl,X)),
+    Arg_pl).
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,dul:'Region'),
+  rdf_has_prolog(Arg_owl,dul:hasDataValue,Arg_pl),!.
+owl_entity(Arg_owl,Arg_owl).
+
+%% TODO need to handle reified classes & properties here
+create_owl_entity(List,Arg_owl) :-
+  is_list(List),!,
+  rdf_instance_from_class(dul:'Collection',Arg_owl),
+  forall(member(X,List),(
+    create_owl_entity(X,X_owl),
+    rdf_assert(Arg_owl,dul:hasMember,X_owl)
+  )).
+create_owl_entity(Iri,Iri) :-
+  rdf_has(Iri,_,_),!.
+create_owl_entity(literal(type(DataType,Atom)),Arg_owl) :-
+  rdf_instance_from_class(dul:'Region',Arg_owl),
+  rdf_assert(Arg_owl,dul:hasRegionDataValue,literal(type(DataType,Atom))),!.
+create_owl_entity(Atom,Arg_owl) :-
+  atom(Atom),
+  rdf_instance_from_class(dul:'Region',Arg_owl),
+  rdf_assert_prolog(Arg_owl,dul:hasRegionDataValue,Atom),!.
+
+		 /*******************************
+		 *		  Some common Prolog->OWL conversions		*
+		 *******************************/
+
+%% owl_create_atomic_region(DataType,Value,Region)
+%
+%
+owl_create_atomic_region(DataType, List, Region) :-
+  is_list(List),!,
+  findall(X, (
+    member(Y,List),
+    term_to_atom(Y,X)),
+    AtomList),
+  atomic_list_concat(AtomList, ' ', Atom),
+  rdf_instance_from_class(dul:'Region',Region),
+  rdf_assert(Region,dul:hasDataVaue,literal(type(DataType,Atom))).
+%%
+owl_create_atomic_region(DataType, String, Region) :-
+  string(String),!,
+  string_to_atom(String,Atom),
+  owl_create_atomic_region(DataType, Atom, Region).
+%%
+owl_create_atomic_region(DataType, Term, Region) :-
+  term_to_atom(Term,Atom),
+  rdf_instance_from_class(dul:'Region',Region),
+  rdf_assert(Region,dul:hasDataVaue,literal(type(DataType,Atom))).
+
+%% owl_create_array(List,Array)
+%
+%
+owl_create_array(List, Array) :- fail. % TODO
 
 		 /*******************************
 		 *		  ABOX ASSERTIONS		*
