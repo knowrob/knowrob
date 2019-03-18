@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <tf/transform_listener.h>
+#include <rosprolog/JSONWrapper.h>
 
 #define ROSPROLOG_TF_CACHE_TIME 10.0
 
@@ -314,5 +315,16 @@ PREDICATE(tf_transform_pose, 4) {
   tf_pl_position(pose, out.pose.position);
   tf_pl_quaternion(pose, out.pose.orientation);
   PL_A4 = PlCompound("pose", pose);
+  return TRUE;
+}
+
+PREDICATE(ros_json_wrapper, 4) {
+  rosprolog::JSONWrapper msg;
+  msg.request.service_name = std::string((char*)PL_A1);
+  msg.request.service_path = std::string((char*)PL_A2);
+  msg.request.json_data    = std::string((char*)PL_A3);
+  if (ros::service::call("json_wrapper", msg)) {
+      PL_A4 = msg.response.json_data.c_str();
+  }
   return TRUE;
 }

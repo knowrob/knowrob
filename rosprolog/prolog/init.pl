@@ -32,6 +32,7 @@
 */
 
 :- use_module(library('process')).
+
 :- use_module('roscpp').
 
 %% init_ros_package(+PackagePath) is nondet.

@@ -2,7 +2,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosprolog)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf roslib rospack)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf roslib rospack message_generation)
+
+add_service_files(
+  FILES
+  JSONWrapper.srv
+)
+
+generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
       LIBRARIES rosprolog

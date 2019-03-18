@@ -37,7 +37,8 @@
       ros_param_set_int/2,
       ros_info/1,
       ros_warn/1,
-      ros_error/1
+      ros_error/1,
+      ros_json_wrapper/4
     ]).
 /** <module> ROS CPP interface for Prolog
 
