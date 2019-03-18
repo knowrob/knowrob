@@ -38,13 +38,17 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
+:- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/action_execution')).
 
 :- rdf_meta ros_querying(r),
             create_ros_request(r,r,r).
 
-action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ROSQuerying', ros_querying).
+action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', ros_querying).
 
+%% create_ros_request(Action,ReqType,Request)
+%
+%
 create_ros_request(Action,ReqType,Request) :-
   %%%%%%%%%
   %%%%% Create request message
@@ -79,7 +83,7 @@ ros_querying(Action) :-
   %%%%% Find the ROS service (i.e. some object that concretely realizes
   %%%%% the interface.
   action_call_or_failure(Action, (
-      rdf_has(Service,dul:concretelyImplements,ServiceInterface)
+      rdf_has(Service,ros:concretelyImplements,ServiceInterface)
     ),
     ros:'SERVICE_NODE_UNREACHABLE',
     'OWL ROS Service missing'

@@ -42,7 +42,7 @@ class JSONWrapperService(object):
     
     def json_wrapper_cb(self, wrapper_request):
         # TODO: also include a status field in response
-        rospy.logdebug('received: ' + wrapper_request.json_data)
+        rospy.logdebug('JSON request: ' + wrapper_request.json_data)
         request_data = json.loads(wrapper_request.json_data)
         srv_module   = get_service_module(wrapper_request.service_path)
         module_name  = wrapper_request.service_path.split('/')[-1]
@@ -61,7 +61,7 @@ class JSONWrapperService(object):
             response.json_data = self.read_slots(res_cls,srv_response)
         except:
             response.json_data = ''
-        rospy.logdebug('send: ' + response.json_data)
+        rospy.logdebug('JSON response: ' + response.json_data)
         # return the json encoded response
         return response
     

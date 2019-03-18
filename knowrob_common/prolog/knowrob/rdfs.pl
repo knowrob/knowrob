@@ -214,6 +214,7 @@ rdfs_list(literal(type(List_Type,Atom)), List) :-
     rdf_equal(List_Type,knowrob:array_double) ;
     rdf_equal(List_Type,knowrob:array_float) ;
     rdf_equal(List_Type,knowrob:array_int) ;
+    rdf_equal(List_Type,knowrob:array_uint) ;
     rdf_equal(List_Type,knowrob:array_string) ), !,
   rdf_vector_prolog(Atom, List).
 

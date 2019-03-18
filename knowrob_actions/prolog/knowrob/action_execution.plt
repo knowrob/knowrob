@@ -11,7 +11,6 @@
 :- rdf_db:rdf_register_ns(act_exec_test,
    'http://knowrob.org/kb/action-test.owl#', [keep(true)]).
 
-% TODO: maybe this needs to go into a package
 test_task_reset :-
   forall(
     rdf_has(act_exec_test:'rdf_has1_Task',dul:isTaskOf,Role),
@@ -22,6 +21,10 @@ test_task_reset :-
   forall(
     rdf_has(act_exec_test:'add_two_ints_Task',dul:hasParameter,Parameter),
     rdf_retractall(_,dul:isClassifiedBy,Parameter)).
+
+		 /*******************************
+		 *	KB QUERYING		*
+		 *******************************/
 
 test(rdf_has_isExecutionPossible) :-
   task_isExecutionPossible(act_exec_test:'rdf_has1_Task').
@@ -86,11 +89,15 @@ test('rdf_has(obj1,hasNameString,?)') :-
 %test(execute_task_CHOICEPOINTS) :-
   %test_task_reset,
   %fail.
+
+		 /*******************************
+		 *	ROS QUERYING		*
+		 *******************************/
   
 test('add_two_ints(POSSIBLE)') :-
   task_isExecutedIn(act_exec_test:'add_two_ints_Task',ros:'ServiceQuerying',_),!.
 
-test('add_two_ints(2,4)') :-
+test('add_two_ints(CREATE)') :-
   owl_create_atomic_region(xsd:long, 2, Region_a),
   owl_create_atomic_region(xsd:long, 4, Region_b),
   rdf_has_prolog(Region_a, dul:hasRegionDataValue, 2),
@@ -103,7 +110,7 @@ test('add_two_ints(2,4)') :-
   rdf_has(Action, dul:hasRegion, Region_a),
   rdf_has(Action, dul:hasRegion, Region_b).
 
-test('add_two_ints(2,4)[encoding]') :-
+test('add_two_ints(ENCODE)') :-
   rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
   %%%%
   create_ros_request(Action, act_exec_test:'add_two_ints_RequestType', Request),
@@ -118,7 +125,29 @@ test('add_two_ints(2,4)[encoding]') :-
   )),
   %%%%
   ros_request_encode(Request,Request_json),
-  writeln(Request_json),
-  Request_json = '{"a": ["int64", 2 ], "b": ["int64", 4 ]}'.
+  Request_json='{"a": ["int64", 2 ], "b": ["int64", 4 ]}'.
+  
+test('add_two_ints(DECODE)') :-
+  Response_json='{"sum": 5}',
+  %%%%
+  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  %%%%
+  rdf_instance_from_class(ros:'Message',Response),
+  rdf_assert(Response,dul:realizes,act_exec_test:'add_two_ints_ResponseType'),
+  rdf_assert(Action,ros:hasResponse,Response),
+  %%%%
+  ros_response_decode(Response_json, Response),
+  %%%
+  once((
+    rdf_has(Response, dul:hasPart, Slot_sum),
+    rdf_has(Slot_sum, dul:realizes, Slot_sum_type),
+    rdf_has_prolog(Slot_sum_type, ros:hasSlotName, sum),
+    rdf_has(Slot_sum, dul:hasRegion, Region_sum),
+    rdf_has_prolog(Region_sum, dul:hasRegionDataValue, 5)
+  )).
+
+% TODO: test arrays
+% TODO: test message fields
+% TODO: test status field
 
 :- end_tests(action_execution).

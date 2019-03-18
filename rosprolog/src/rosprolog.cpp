@@ -323,7 +323,7 @@ PREDICATE(ros_json_wrapper, 4) {
   msg.request.service_name = std::string((char*)PL_A1);
   msg.request.service_path = std::string((char*)PL_A2);
   msg.request.json_data    = std::string((char*)PL_A3);
-  if (ros::service::call("json_wrapper", msg)) {
+  if (ros::service::call("/json_wrapper/json_wrapper", msg.request, msg.response)) {
       PL_A4 = msg.response.json_data.c_str();
   }
   return TRUE;

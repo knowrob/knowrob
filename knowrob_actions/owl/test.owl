@@ -16,6 +16,7 @@
      xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-test.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://ros_ontology/owl/ROS.owl"/>
     </owl:Ontology>
     
 
@@ -40,6 +41,12 @@
     <!-- http://knowrob.org/kb/knowrob.owl#hasKBTerm -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasKBTerm"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/ROS.owl#concretelyImplements -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/ROS.owl#concretelyImplements"/>
     
 
 
@@ -138,6 +145,12 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/ROS.owl#hasServiceName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/ROS.owl#hasServiceName"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/ROS.owl#hasSlotName -->
 
     <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/ROS.owl#hasSlotName"/>
@@ -215,9 +228,21 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/ROS.owl#SynchronousService -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/ROS.owl#SynchronousService"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
     
 
 
@@ -284,7 +309,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_a -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_a">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob_paramserver.owl#Parameter"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
         <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_a"/>
     </owl:NamedIndividual>
     
@@ -293,8 +318,17 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_b -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_b">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob_paramserver.owl#Parameter"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
         <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_iface -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_iface">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Interface"/>
     </owl:NamedIndividual>
     
 
@@ -302,7 +336,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_sum -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_sum">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob_paramserver.owl#Parameter"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
         <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_sum"/>
     </owl:NamedIndividual>
     
@@ -340,6 +374,16 @@
     
 
 
+    <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Service -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Service">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#SynchronousService"/>
+        <ROS:concretelyImplements rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Interface"/>
+        <ROS:hasServiceName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">add_two_ints</ROS:hasServiceName>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Task -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Task">
@@ -347,6 +391,7 @@
         <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_a"/>
         <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_b"/>
         <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_sum"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_iface"/>
     </owl:NamedIndividual>
     
 

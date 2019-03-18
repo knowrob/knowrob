@@ -57,6 +57,7 @@ the task (if any).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/rdfs')).
 
 :- rdf_meta action_registry(r,?),
             action_status(r,r),
@@ -148,6 +149,11 @@ execute_task(WF_Task,Action) :-
 		 *	ACTION SYMBOL		*
 		 *******************************/
 
+%% create_action_symbol(ActionConcept,Task,Action)
+%
+% Createsa new action symbols and assigns participants
+% and regions from roles and parameters of a task.
+%
 create_action_symbol(ActionConcept,Task,Action) :-
   % create action symbol
   rdf_instance_from_class(ActionConcept,Action),
@@ -211,9 +217,9 @@ action_filler_for(Action,Entity,Filler) :-
     rdf_has(Action,dul:hasParticipant,Filler) ),
   once((
     owl_has(Filler,dul:isClassifiedBy,Concept),
-    owl_has(Entity,dul:isClassifiedBy,Concept)
-  )),
-  Filler \= Entity.
+    owl_has(Entity,dul:isClassifiedBy,Concept),
+    Filler \= Entity
+  )).
 
 		 /*******************************
 		 *	ACTION STATUS		*

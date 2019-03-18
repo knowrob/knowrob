@@ -50,7 +50,7 @@
 %% ros_service(+Service,?Name,?Path) is det.
 %
 ros_service(Service,Name,Path) :-
-  rdf_has(Service,dul:concretelyImplements,ServiceInterface),
+  rdf_has(Service,ros:concretelyImplements,ServiceInterface),
   rdf_has_prolog(Service,ros:hasServiceName,Name),
   rdf_has_prolog(ServiceInterface,ros:hasTypePath,Path).
 
@@ -68,10 +68,12 @@ ros_message_slot_type(Msg,SlotName,SlotType) :-
 %% ros_service_call(+Service, +Request, +Response) is semidet.
 %
 ros_service_call(Service, Request, Response) :-
-  ros_service(Service, ServicePath, ServiceName),
+  ros_service(Service, ServiceName, ServicePath),
   ( ros_request_encode(Request, Request_json) ;
     throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ),
   ( ros_json_wrapper(ServiceName, ServicePath, Request_json, Response_json) ;
+    throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
+  ( ground(Response_json) ; % no response from service
     throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
   ( ros_response_decode(Response_json, Response) ;
     throw(ros_error(ros:'UNINTERPRETABLE_REQUEST')) ).
