@@ -173,6 +173,7 @@ rdf_assert_prolog(S,P,O,Graph) :-
   rdf_assert(S,P,O,Graph).
 
 %%
+% TODO: should be named owl_assert_specific
 rdfs_assert_specific(S,P,O) :-
   findall(P_restr, (
     rdfs_individual_of(S, Restr),

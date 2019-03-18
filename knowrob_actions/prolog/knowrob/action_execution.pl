@@ -167,19 +167,13 @@ create_action_symbol(ActionConcept,Task,Action) :-
   assign_action_regions(Action,Task).
 
 assign_action_participants(Action,Task) :-
-  % TODO Classification of hasParticipant property?
-  %         - some actions may want more specific roles e.g. askedBy or answeredBy
-  %         - but I think this is not safe to do, since different sup-properties
-  %            not necessary have disjunctive (askedBy and answeredBy both Agent)
-  %         - action implementation can do all sorts of hacks to get it done, here should be clean
-  %
-  % rdfs_assert_specific <--
   forall((
     rdf_has(Task,dul:isTaskOf,Role),
     owl_has(X,dul:isClassifiedBy,Role)),
     once((
       rdf_has(Action,dul:hasParticipant,X);
-      rdf_assert(Action,dul:hasParticipant,X)
+      rdfs_assert_specific(Action,dul:hasParticipant,X)
+      %rdf_assert(Action,dul:hasParticipant,X)
     ))
   ).
 assign_action_regions(Action,Task) :-
@@ -188,7 +182,7 @@ assign_action_regions(Action,Task) :-
     owl_has(X,dul:isClassifiedBy,Parameter)),
     once((
       rdf_has(Action,dul:hasRegion,X);
-      rdf_assert(Action,dul:hasRegion,X)
+      rdfs_assert_specific(Action,dul:hasRegion,X)
     ))
   ).
 
