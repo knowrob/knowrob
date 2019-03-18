@@ -192,6 +192,7 @@ rdfs_assert_specific(S,P,O) :-
 %
 % @tbd convert to standard SI unit
 %
+% TODO: needs other clauses
 rdfs_value_prolog(_, literal(type('http://knowrob.org/kb/knowrob.owl#vec3',Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
 rdfs_value_prolog(_, literal(type('http://knowrob.org/kb/knowrob.owl#vec4',Val)), Vec) :-

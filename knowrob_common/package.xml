@@ -20,5 +20,6 @@
   <build_depend>rosprolog</build_depend>
   <run_depend>rosprolog</run_depend>
   <run_depend>ease_ontology</run_depend>
+  <run_depend>ros_ontology</run_depend>
 
 </package>
