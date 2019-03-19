@@ -262,7 +262,7 @@ owl_create_ros_entity(Array_type,Val_list,PrimitiveArray) :-
   % create symbols
   rdf_instance_from_class(ros:'PrimitiveArray',PrimitiveArray),
   rdf_instance_from_class(dul:'Region',Region),
-  rdf_assert(Region,dul:hasRegionDataVaue,
+  rdf_assert(Region,dul:hasRegionDataValue,
              literal(type(ArrayType,ArrayData))),
   rdf_assert(PrimitiveArray,dul:hasRegion,Region).
 

@@ -47,11 +47,12 @@ ros_type_path(MessageType,TypePath) :-
 ros_type_path(PrimitiveType,TypePath) :-
   rdfs_individual_of(PrimitiveType,ros:'PrimitiveType'),
   rdf_split_url(_, TypePath, PrimitiveType),!.
-ros_type_path(ArrayType,array(T)) :-
+ros_type_path(ArrayType, ArrayType_atom) :-
   rdfs_individual_of(ArrayType,ros:'ArrayType'),
   once((
     rdf_has(ArrayType,dul:hasPart,X),
-    ros_type_path(X,T))),!.
+    ros_type_path(X,T))),!,
+  term_to_atom(array(T), ArrayType_atom).
 
 %% ros_primitive_type(?ROS_type, ?RDF_type) is det.
 %

@@ -100,8 +100,6 @@ test('add_two_ints(POSSIBLE)') :-
 test('add_two_ints(CREATE)') :-
   owl_create_atomic_region(xsd:long, 2, Region_a),
   owl_create_atomic_region(xsd:long, 4, Region_b),
-  rdf_has_prolog(Region_a, dul:hasRegionDataValue, 2),
-  rdf_has_prolog(Region_b, dul:hasRegionDataValue, 4),
   rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_a'),
   rdf_assert(Region_b, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_b'),
   %%
@@ -146,7 +144,31 @@ test('add_two_ints(DECODE)') :-
     rdf_has_prolog(Region_sum, dul:hasRegionDataValue, 5)
   )).
 
-% TODO: test arrays
+test('sum_array(CREATE)') :-
+  owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
+  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'sum_array_Execution_a'),
+  %%
+  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'sum_array_Task',Action),
+  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  rdf_has(Action, dul:hasRegion, Region_a).
+
+test('sum_array(ENCODE)') :-
+  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  %%%%
+  create_ros_request(Action, act_exec_test:'sum_array_RequestType', Request),
+  rdf_has(Action, dul:hasParticipant, Request),
+  %%%
+  once((
+    rdf_has(Request, dul:hasPart, Slot_a),
+    rdf_has(Slot_a, dul:realizes, Slot_a_type),
+    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
+    rdf_has(Slot_a, dul:hasRegion, Region_a),
+    rdf_has_prolog(Region_a, dul:hasRegionDataValue, [4.0, 5.0, 2.0])
+  )),
+  %%%%
+  ros_request_encode(Request,Request_json),
+  Request_json='{"a": ["array(float64)", [4.0, 5.0, 2.0 ] ]}'.
+
 % TODO: test message fields
 % TODO: test messages with region representation
 % TODO: test status field

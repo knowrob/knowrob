@@ -524,6 +524,120 @@
     
 
 
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Execution -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task"/>
+        <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Execution_a -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution_a">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_a"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Execution_iface -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution_iface">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Execution_sum -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution_sum">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_sum"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Interface -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Interface">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ServiceInterface"/>
+        <ROS:hasRequestType rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_RequestType"/>
+        <ROS:hasResponseType rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_ResponseType"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/AddTwoInts</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_RequestType -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_RequestType">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageType"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_a"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/SumArrayRequest</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_ResponseType -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_ResponseType">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageType"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_sum"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/SumArrayResponse</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Service -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Service">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#SynchronousService"/>
+        <ROS:concretelyImplements rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
+        <ROS:hasServiceName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sum_array</ROS:hasServiceName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_Task -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Task">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Execution_a"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Execution_sum"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Execution_iface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_slot_a -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_slot_a">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ArraySlot"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_double_a"/>
+        <ROS:hasSlotName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a</ROS:hasSlotName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_double_a">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ArrayType"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/ROS.owl#float64"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#sum_array_slot_sum -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_slot_sum">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#PrimitiveSlot"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/ROS.owl#float64"/>
+        <ROS:hasSlotName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sum</ROS:hasSlotName>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.ease-crc.org/ont/ROS.owl#int64 -->
 
     <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/ROS.owl#int64"/>
