@@ -4,6 +4,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/action_execution')).
+:- use_module(library('http/json')).
 
 :- owl_parse('package://knowrob_actions/owl/test.owl').
 
@@ -188,6 +189,29 @@ test('sum_array(DECODE)') :-
     rdf_has_prolog(Region_sum, dul:hasRegionDataValue, [9.0, 7.0])
   )).
 
+test_pose([
+    'geometry_msgs/Transform',
+    _{
+      rotation: [
+	'geometry_msgs/Quaternion',
+	_{
+	  w: [float64, 0.4 ],
+	  x: [float64, 0.8 ],
+	  y: [float64, 0.1 ],
+	  z: [float64, 0.0 ]
+	}
+      ],
+      translation: [
+	'geometry_msgs/Vector3',
+	_{
+	  x: [float64, 3.2 ],
+	  y: [float64, 0.1 ],
+	  z: [float64, 0.4 ]
+	}
+      ]
+    }
+]).
+
 test('pose_test(CREATE)') :-
   rdf_instance_from_class(dul:'Region',Region_a),
   rdf_assert(Region_a,knowrob:translation,
@@ -216,8 +240,33 @@ test('pose_test(ENCODE)') :-
   )),
   %%%%
   ros_request_encode(Request,Request_json),
-  % TODO: compare against expected string
-  writeln(Request_json).
+  test_pose(TestPose),
+  with_output_to(atom(Request_json), 
+    json_write_dict(current_output, _{a:TestPose})
+  ).
+
+test('pose_test(DECODE)') :-
+  test_pose(TestPose),
+  with_output_to(atom(Response_json), 
+    json_write_dict(current_output, _{b:TestPose})
+  )
+  %%%%
+  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  %%%%
+  rdf_instance_from_class(ros:'Message',Response),
+  rdf_assert(Response,dul:realizes,act_exec_test:'sum_array_ResponseType'),
+  rdf_assert(Action,ros:hasResponse,Response),
+  %%%%
+  ros_response_decode(Response_json, Response),
+  %%%
+  once((
+    rdf_has(Response, dul:hasPart, Slot_pose),
+    rdf_has(Slot_pose, dul:realizes, Slot_pose_type),
+    rdf_has_prolog(Slot_pose_type, ros:hasSlotName, b),
+    rdf_has(Slot_pose, dul:hasRegion, Region_pose),
+    rdf_has_prolog(Region_pose, knowrob:translation, [3.2, 0.1, 0.4]),
+    rdf_has_prolog(Region_pose, knowrob:quaternion, [0.8, 0.1, 0.0, 0.4])
+  )).
 
 % TODO: test message fields
 % TODO: test status field
