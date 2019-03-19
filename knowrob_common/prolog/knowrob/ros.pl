@@ -51,8 +51,8 @@ ros_type_path(ArrayType, ArrayType_atom) :-
   rdfs_individual_of(ArrayType,ros:'ArrayType'),
   once((
     rdf_has(ArrayType,dul:hasPart,X),
-    ros_type_path(X,T))),!,
-  term_to_atom(array(T), ArrayType_atom).
+    ros_type_path(X,T))),
+  term_to_atom(array(T), ArrayType_atom),!.
 
 %% ros_primitive_type(?ROS_type, ?RDF_type) is det.
 %

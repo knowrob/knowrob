@@ -638,6 +638,119 @@
     
 
 
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Execution -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task"/>
+        <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Execution_a -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution_a">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_a"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Execution_b -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution_b">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Execution_iface -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution_iface">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Interface -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Interface">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ServiceInterface"/>
+        <ROS:hasRequestType rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_RequestType"/>
+        <ROS:hasResponseType rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_ResponseType"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/PoseTest</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_RequestType -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_RequestType">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageType"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_a"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/PoseTestRequest</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_ResponseType -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_ResponseType">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageType"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_b"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rosprolog/PoseTestResponse</ROS:hasTypePath>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Service -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Service">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#SynchronousService"/>
+        <ROS:concretelyImplements rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
+        <ROS:hasServiceName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pose_test</ROS:hasServiceName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_Task -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Task">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Execution_a"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Execution_b"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Execution_iface"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_slot_a -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_slot_a">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageSlot"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_TransformType"/>
+        <ROS:hasSlotName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a</ROS:hasSlotName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#pose_test_slot_b -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_slot_b">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageSlot"/>
+        <DUL:hasPart rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_TransformType"/>
+        <ROS:hasSlotName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">b</ROS:hasSlotName>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_TransformType">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#MessageType"/>
+        <ROS:hasTypePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">geometry_msgs/Transform</ROS:hasTypePath>
+    </owl:NamedIndividual>
+
+
     <!-- http://www.ease-crc.org/ont/ROS.owl#int64 -->
 
     <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/ROS.owl#int64"/>

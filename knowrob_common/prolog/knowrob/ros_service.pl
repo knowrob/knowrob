@@ -146,20 +146,24 @@ ros_message_conversion('geometry_msgs/Transform',
                        get_transform_region).
 
 get_transform_dict(Message,_{
-      translation: ['geometry_msgs/Vector3',    _{x:Tx, y:Ty, z:Ty}],
-      rotation:    ['geometry_msgs/Quaternion', _{x:Qx, y:Qy, z:Qy, w:Qw}]
+      translation: ['geometry_msgs/Vector3',
+          _{x:['float64',Tx], y:['float64',Ty], z:['float64',Tz]}],
+      rotation:    ['geometry_msgs/Quaternion',
+          _{x:['float64',Qx], y:['float64',Qy], z:['float64',Qz], w:['float64',Qw]}]
   }) :-
   rdf_has(Message,dul:hasRegion,Region),
-  rdf_has_prolog(Region, knowrob:translation, [Tx,Ty,Ty]),
-  rdf_has_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qy,Qw]).
+  rdf_has_prolog(Region, knowrob:translation, [Tx,Ty,Tz]),
+  rdf_has_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
 get_transform_region(_{
-      translation: ['geometry_msgs/Vector3',    _{x:Tx, y:Ty, z:Ty}],
-      rotation:    ['geometry_msgs/Quaternion', _{x:Qx, y:Qy, z:Qy, w:Qw}]
+      translation: ['geometry_msgs/Vector3',
+          _{x:['float64',Tx], y:['float64',Ty], z:['float64',Tz]}],
+      rotation:    ['geometry_msgs/Quaternion',
+          _{x:['float64',Qx], y:['float64',Qy], z:['float64',Qz], w:['float64',Qw]}]
   }, Region) :-
   rdf_instance_from_class(dul:'Region',Region),
-  rdf_assert_prolog(Region, knowrob:translation, [Tx,Ty,Ty]),
-  rdf_assert_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qy,Qw]).
+  rdf_assert_prolog(Region, knowrob:translation, [Tx,Ty,Tz]),
+  rdf_assert_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % % % % % % % % % % % OWL to ROS message dict

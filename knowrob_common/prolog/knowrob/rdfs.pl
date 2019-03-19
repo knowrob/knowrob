@@ -61,8 +61,8 @@
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
             rdfs_common_ancestor(t,r),
-            rdfs_number(r,?),
-            rdfs_list(r,?).
+            rdfs_number(t,?),
+            rdfs_list(t,?).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 

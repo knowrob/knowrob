@@ -478,13 +478,13 @@ owl_create_ordered_collection([First|Rest], Collection) :-
   owl_create_sequence([First|Rest]),
   rdf_assert(Collection, ease:firstMember, First),
   forall(member(X,Rest),
-         rdf_assert(Collection,ease:hasMember,X)).
+         rdf_assert(Collection,dul:hasMember,X)).
 
 owl_create_collection(List, Collection) :-
   is_list(List),
   rdf_instance_from_class(dul:'Collection',Collection),
   forall(member(X,List),
-         rdf_assert(Collection,ease:hasMember,X)).
+         rdf_assert(Collection,dul:hasMember,X)).
   
 
 		 /*******************************

@@ -167,10 +167,40 @@ test('sum_array(ENCODE)') :-
   )),
   %%%%
   ros_request_encode(Request,Request_json),
-  Request_json='{"a": ["array(float64)", [4.0, 5.0, 2.0 ] ]}'.
+  Request_json='{"a": ["array(float64)",  [4.0, 5.0, 2.0 ] ]}'.
+
+test('pose_test(CREATE)') :-
+  rdf_instance_from_class(dul:'Region',Region_a),
+  rdf_assert(Region_a,knowrob:translation,
+        literal(type(knowrob:array_double,'3.2 0.1 0.4'))),
+  rdf_assert(Region_a,knowrob:quaternion,
+        literal(type(knowrob:array_double,'0.8 0.1 0.0 0.4'))),
+  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'pose_test_Execution_a'),
+  %%
+  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'pose_test_Task',Action),
+  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
+  rdf_has(Action, dul:hasRegion, Region_a).
+
+test('pose_test(ENCODE)') :-
+  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
+  %%%%
+  create_ros_request(Action, act_exec_test:'pose_test_RequestType', Request),
+  rdf_has(Action, dul:hasParticipant, Request),
+  %%%
+  once((
+    rdf_has(Request, dul:hasPart, Slot_a),
+    rdf_has(Slot_a, dul:realizes, Slot_a_type),
+    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
+    rdf_has(Slot_a, dul:hasRegion, Region_a),
+    rdf_has_prolog(Region_a, knowrob:translation, [3.2, 0.1, 0.4]),
+    rdf_has_prolog(Region_a, knowrob:quaternion, [0.8, 0.1, 0.0, 0.4])
+  )),
+  %%%%
+  ros_request_encode(Request,Request_json),
+  % TODO: compare against expected string
+  writeln(Request_json).
 
 % TODO: test message fields
-% TODO: test messages with region representation
 % TODO: test status field
 
 :- end_tests(action_execution).

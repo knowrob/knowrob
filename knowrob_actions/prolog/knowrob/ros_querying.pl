@@ -170,6 +170,13 @@ create_ros_message_slot(SlotType, Region, Slot) :-
 create_ros_message_slot(SlotType, Array, Array) :-
   rdfs_individual_of(SlotType,ros:'ArraySlot'),!,
   rdfs_individual_of(Array,ros:'Array').
+create_ros_message_slot(SlotType, Region, Message) :-
+  rdfs_individual_of(SlotType,ros:'MessageSlot'),
+  rdfs_individual_of(Region,dul:'Region'),!,
+  rdf_instance_from_class(ros:'Message',Message),
+  rdf_has(SlotType,dul:hasPart,MessageType),
+  rdf_assert(Message,dul:realizes,MessageType),
+  rdf_assert(Message,dul:hasRegion,Region).
 create_ros_message_slot(SlotType, Message, Message) :-
   rdfs_individual_of(SlotType,ros:'MessageSlot'),!,
   rdfs_individual_of(Message,ros:'Message').
