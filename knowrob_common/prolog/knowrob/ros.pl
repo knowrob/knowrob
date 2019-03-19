@@ -28,7 +28,8 @@
 :- module(knowrob_ros,
     [
       ros_type_path/2,
-      ros_primitive_type/2
+      ros_primitive_type/2,
+      ros_array_type/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).

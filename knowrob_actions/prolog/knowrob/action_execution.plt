@@ -168,6 +168,25 @@ test('sum_array(ENCODE)') :-
   %%%%
   ros_request_encode(Request,Request_json),
   Request_json='{"a": ["array(float64)",  [4.0, 5.0, 2.0 ] ]}'.
+  
+test('sum_array(DECODE)') :-
+  Response_json='{"b": [9.0, 7.0 ]}',
+  %%%%
+  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  %%%%
+  rdf_instance_from_class(ros:'Message',Response),
+  rdf_assert(Response,dul:realizes,act_exec_test:'sum_array_ResponseType'),
+  rdf_assert(Action,ros:hasResponse,Response),
+  %%%%
+  ros_response_decode(Response_json, Response),
+  %%%
+  once((
+    rdf_has(Response, dul:hasPart, Slot_sum),
+    rdf_has(Slot_sum, dul:realizes, Slot_sum_type),
+    rdf_has_prolog(Slot_sum_type, ros:hasSlotName, b),
+    rdf_has(Slot_sum, dul:hasRegion, Region_sum),
+    rdf_has_prolog(Region_sum, dul:hasRegionDataValue, [9.0, 7.0])
+  )).
 
 test('pose_test(CREATE)') :-
   rdf_instance_from_class(dul:'Region',Region_a),
