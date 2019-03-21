@@ -335,7 +335,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution_iface">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
-        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Interface"/>
     </owl:NamedIndividual>
     
 
@@ -477,7 +476,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Predicate">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
-        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose"/>
     </owl:NamedIndividual>
     
 
@@ -650,7 +648,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution_iface">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
-        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
     </owl:NamedIndividual>
     
 
@@ -773,7 +770,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution_iface">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
-        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
     </owl:NamedIndividual>
     
 
