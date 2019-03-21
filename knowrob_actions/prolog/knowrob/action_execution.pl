@@ -135,14 +135,6 @@ execute_task(Task,InputDict,Action,OutputDict) :-
       OutputDict=_{}
     )
   ),
-  %% TODO: think about choicepoints
-  %%          - task could be executable in different ways
-  %%          - action goal may return many results, one at a time
-  %%          - assignment to roles/parameters is problematic
-  %%          - maybe restrict task execution to use interface that does some bookkeeping,
-  %%              and can switch to next solution.
-  %% !!! talk to Mihai since he has same problems with workflow
-  !, % kill action goal choicepoints for now :(
   %%%%%%%%%
   %%%%% Handle action status
   %%%%%%%%%
@@ -244,6 +236,9 @@ log_action_failure(Action,Failure,Message) :-
 action_call_or_failure(Action,Goal,Failure,Message) :-
   call(Goal) *-> true ; throw(action_failure(Action,Failure,Message)).
 
+assign_status_region(Action,_OutputDict) :-
+  action_status(Action,StatusRegion),
+  rdf_has(Action,dul:hasRegion,StatusRegion),!.
 assign_status_region(Action,OutputDict) :-
   % assign current status as participant and classify it by Status parameter
   action_status(Action,StatusRegion),

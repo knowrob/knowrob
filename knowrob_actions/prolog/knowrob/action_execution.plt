@@ -36,7 +36,7 @@ test('rdf_has(ACTION_INPUT_MISSING)') :-
   action_status(Action,knowrob:'ACTION_INPUT_MISSING').
   
 %% all arguments unbound
-test('rdf_has(?,?,?)') :-
+test('rdf_has(?,?,?)', [nondet]) :-
   create_input_dict(InputDict,[
       [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
@@ -45,7 +45,7 @@ test('rdf_has(?,?,?)') :-
   action_status(Action,knowrob:'ACTION_OK').
 
 %% ObjectProperty, third argument unbound
-test('rdf_has(obj1,hasConstituent,?)') :-
+test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
   owl_reified_relation(dul:'hasConstituent', HasConstituent),
   create_input_dict(InputDict, [
       [acext:'rdf_has1_Task_S', acext:'Object1'],

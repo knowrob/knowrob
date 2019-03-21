@@ -118,25 +118,7 @@ ros_response_decode(Response_json, Response) :-
     owl_create_ros_entity(SType,SValue,Slot),
     rdf_assert(Response,dul:hasPart,Slot),
     rdf_assert(Slot,dul:realizes,DataSlot)
-    %,
-    %forall(
-      %rdf_has(DataSlot,dul:isClassifiedBy,R),
-      %classify_message_value(Slot,R)
-    %)
   )).
-
-%classify_message_value(Slot,R) :-
-  %( rdfs_individual_of(Slot,ros:'PrimitiveValue') ;
-    %rdfs_individual_of(Slot,ros:'PrimitiveArray') ), !,
-  %rdf_has(Slot, dul:hasRegion, Region),
-  %rdf_assert(Region,dul:isClassifiedBy,R).
-%classify_message_value(Slot,R) :-
-  %% handle message with region representation
-  %rdfs_individual_of(Slot,ros:'Message'),
-  %rdf_has(Slot,dul:hasRegion,Region),!,
-  %rdf_assert(Region,dul:isClassifiedBy,R).
-%classify_message_value(Slot,R) :-
-  %rdf_assert(Slot,dul:isClassifiedBy,R).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % % % % % % % % % % % geometry_msgs/Transform

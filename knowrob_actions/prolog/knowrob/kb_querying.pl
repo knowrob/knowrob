@@ -110,9 +110,9 @@ kb_querying(Action,InputDict,ActionDict,OutputPairs) :-
     member(KBVariable-OutAssignment,OutputVariables),
     % pl to owl
     create_owl_entity(OutAssignment,Assignment_owl),
-    get_dict(Role, ActionDict, KBVariable),
     % assign as participant/region of the action
-    action_add_filler(Action,Assignment_owl)
+    action_add_filler(Action,Assignment_owl),
+    get_dict(Role, ActionDict, KBVariable)
   ), OutputPairs).
 
 % predicate indicator atom '$functor/$arity'
