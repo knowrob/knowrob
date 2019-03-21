@@ -9,130 +9,113 @@
 :- owl_parse('package://knowrob_actions/owl/test.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(act_exec_test,
+:- rdf_db:rdf_register_ns(acext,
    'http://knowrob.org/kb/action-test.owl#', [keep(true)]).
 
-test_task_reset :-
-  forall(
-    rdf_has(act_exec_test:'current_object_pose_Task',dul:isTaskOf,Role),
-    rdf_retractall(_,dul:isClassifiedBy,Role)),
-  forall(
-    rdf_has(act_exec_test:'rdf_has1_Task',dul:isTaskOf,Role),
-    rdf_retractall(_,dul:isClassifiedBy,Role)),
-  forall(
-    rdf_has(act_exec_test:'rdf_has1_Task',dul:hasParameter,Parameter),
-    rdf_retractall(_,dul:isClassifiedBy,Parameter)),
-  forall(
-    rdf_has(act_exec_test:'add_two_ints_Task',dul:hasParameter,Parameter),
-    rdf_retractall(_,dul:isClassifiedBy,Parameter)).
+:- rdf_meta get_dict(r,+,r),
+            create_input_dict(t,t).
+
+create_input_dict(Dict,List) :-
+  findall(X-Y, member([X,Y],List),Pairs),
+  dict_pairs(Dict,_,Pairs).
 
 		 /*******************************
 		 *	KB QUERYING		*
 		 *******************************/
 
 test(rdf_has_isExecutionPossible) :-
-  task_isExecutionPossible(act_exec_test:'rdf_has1_Task').
+  task_isExecutionPossible(acext:'rdf_has1_Task').
 
 test(rdf_has_isExecutedIn) :-
-  test_task_reset,
-  task_isExecutedIn(act_exec_test:'rdf_has1_Task',
+  task_isExecutedIn(acext:'rdf_has1_Task',
        knowrob:'KBQuerying',
-       act_exec_test:'rdf_has1_Execution'), !.
+       acext:'rdf_has1_Execution'), !.
 
 test('rdf_has(ACTION_INPUT_MISSING)') :-
-  test_task_reset,
-  execute_task(act_exec_test:'rdf_has1_Task',Action),
+  execute_task(acext:'rdf_has1_Task',_{},Action,_),
   action_status(Action,knowrob:'ACTION_INPUT_MISSING').
   
 %% all arguments unbound
 test('rdf_has(?,?,?)') :-
-  %%% rdf_has(S,P,O)
-  test_task_reset,
-  % add missing input
-  rdf_instance_from_class(dul:'Role',Role),
-  rdf_assert(Role, dul:classifies, act_exec_test:'rdf_has1'),
-  rdf_assert(act_exec_test:'rdf_has1_Task',dul:isTaskOf,Role),
+  create_input_dict(InputDict,[
+      [acext:'rdf_has1_Execution_Predicate', acext:'rdf_has1']
+  ]),
   % execute again
-  execute_task(act_exec_test:'rdf_has1_Task',Action),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,_),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% ObjectProperty, third argument unbound
 test('rdf_has(obj1,hasConstituent,?)') :-
-  test_task_reset,
-  rdf_assert(act_exec_test:'Object1',
-             dul:isClassifiedBy,
-             act_exec_test:'rdf_has1_Execution_S'),
   owl_reified_relation(dul:'hasConstituent', HasConstituent),
-  rdf_assert(HasConstituent, dul:isClassifiedBy,
-             act_exec_test:'rdf_has1_Execution_P'),
+  create_input_dict(InputDict, [
+      [acext:'rdf_has1_Execution_S', acext:'Object1'],
+      [acext:'rdf_has1_Execution_P', HasConstituent],
+      [acext:'rdf_has1_Execution_Predicate', acext:'rdf_has1']
+  ]),
   % execute again
-  execute_task(act_exec_test:'rdf_has1_Task',Action),
-  rdf_has(act_exec_test:'Object2',
-          dul:isClassifiedBy,
-          act_exec_test:'rdf_has1_Execution_O'),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
+  get_dict(acext:'rdf_has1_Execution_O', OutputDict, acext:'Object2'),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% DataProperty, third argument unbound
 test('rdf_has(obj1,hasNameString,?)') :-
-  test_task_reset,
-  rdf_assert(act_exec_test:'Object1',
-             dul:isClassifiedBy,
-             act_exec_test:'rdf_has1_Execution_S'),
   owl_reified_relation(ease:'hasNameString', HasNameString),
-  rdf_assert(HasNameString, dul:isClassifiedBy,
-             act_exec_test:'rdf_has1_Execution_P'),
+  create_input_dict(InputDict, [
+      [acext:'rdf_has1_Execution_S',acext:'Object1'],
+      [acext:'rdf_has1_Execution_P',HasNameString],
+      [acext:'rdf_has1_Execution_Predicate',acext:'rdf_has1']
+  ]),
   % execute again
-  execute_task(act_exec_test:'rdf_has1_Task',Action),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
-  rdf_has(Region, dul:isClassifiedBy,
-          act_exec_test:'rdf_has1_Execution_O'),
+  get_dict(acext:'rdf_has1_Execution_O', OutputDict, Region),
   rdf_has_prolog(Region, dul:hasRegionDataValue, 'obj1'),
   action_status(Action,knowrob:'ACTION_OK').
 
 test('current_object_pose(obj1,?)') :-
-  test_task_reset,
-  rdf_assert(act_exec_test:'Object1',
-             dul:isClassifiedBy,
-             act_exec_test:'current_object_pose_Execution_O'),
-  current_object_pose(act_exec_test:'Object1',[
-    _, _,
-    [0.004, 0.003, 0.085],
-    [0.0, 0.0, 0.0, 1.0]
+  create_input_dict(InputDict, [
+      [acext:'current_object_pose_Execution_O',acext:'Object1'],
+      [acext:'current_object_pose_Execution_Predicate',acext:'current_object_pose']
   ]),
   % execute
-  execute_task(act_exec_test:'current_object_pose_Task',Action),
-  rdf_has(Transform, dul:isClassifiedBy,
-          act_exec_test:'current_object_pose_Execution_P'),
+  execute_task(acext:'current_object_pose_Task',InputDict,Action,OutputDict),
+  get_dict(acext:'current_object_pose_Execution_P', OutputDict, Transform),
   transform_data(Transform, ([0.004,0.003,0.085], [0.0,0.0,0.0,1.0])),
   action_status(Action,knowrob:'ACTION_OK').
-
-%test(execute_task_CHOICEPOINTS) :-
-  %test_task_reset,
-  %fail.
 
 		 /*******************************
 		 *	ROS QUERYING		*
 		 *******************************/
   
 test('add_two_ints(POSSIBLE)') :-
-  task_isExecutedIn(act_exec_test:'add_two_ints_Task',ros:'ServiceQuerying',_),!.
+  task_isExecutedIn(acext:'add_two_ints_Task',ros:'ServiceQuerying',_),!.
 
 test('add_two_ints(CREATE)') :-
   owl_create_atomic_region(xsd:long, 2, Region_a),
   owl_create_atomic_region(xsd:long, 4, Region_b),
-  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_a'),
-  rdf_assert(Region_b, dul:isClassifiedBy, act_exec_test:'add_two_ints_Execution_b'),
+  create_input_dict(InputDict, [
+      [acext:'add_two_ints_Execution_a',Region_a],
+      [acext:'add_two_ints_Execution_b',Region_b],
+      [acext:'add_two_ints_Execution_iface',acext:'add_two_ints_Interface']
+  ]),
   %%
-  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'add_two_ints_Task',Action),
-  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  create_action_symbol(ros:'ServiceQuerying',acext:'add_two_ints_Task',InputDict,Action),
+  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
   rdf_has(Action, dul:hasRegion, Region_a),
   rdf_has(Action, dul:hasRegion, Region_b).
 
 test('add_two_ints(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
+  owl_create_atomic_region(xsd:long, 2, Region_a),
+  owl_create_atomic_region(xsd:long, 4, Region_b),
+  create_input_dict(InputDict, [
+      [acext:'add_two_ints_Execution_a',Region_a],
+      [acext:'add_two_ints_Execution_b',Region_b],
+      [acext:'add_two_ints_Execution_iface',acext:'add_two_ints_Interface']
+  ]),
   %%%%
-  create_ros_request(Action, act_exec_test:'add_two_ints_RequestType', Request),
+  create_ros_request(Action, InputDict, acext:'add_two_ints_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((
@@ -149,10 +132,10 @@ test('add_two_ints(ENCODE)') :-
 test('add_two_ints(DECODE)') :-
   Response_json='{"sum": 5}',
   %%%%
-  rdf_has(Action, dul:executesTask, act_exec_test:'add_two_ints_Task'),
+  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
   %%%%
   rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,act_exec_test:'add_two_ints_ResponseType'),
+  rdf_assert(Response,dul:realizes,acext:'add_two_ints_ResponseType'),
   rdf_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
@@ -167,16 +150,23 @@ test('add_two_ints(DECODE)') :-
 
 test('sum_array(CREATE)') :-
   owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
-  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'sum_array_Execution_a'),
+  create_input_dict(InputDict, [
+      [acext:'sum_array_Execution_a',Region_a]
+  ]),
   %%
-  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'sum_array_Task',Action),
-  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  create_action_symbol(ros:'ServiceQuerying',acext:'sum_array_Task',InputDict,Action),
+  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
   rdf_has(Action, dul:hasRegion, Region_a).
 
 test('sum_array(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
+  owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
+  create_input_dict(InputDict, [
+      [acext:'sum_array_Execution_a',Region_a],
+      [acext:'sum_array_Execution_iface',acext:'sum_array_Interface']
+  ]),
   %%%%
-  create_ros_request(Action, act_exec_test:'sum_array_RequestType', Request),
+  create_ros_request(Action, InputDict, acext:'sum_array_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((
@@ -193,10 +183,10 @@ test('sum_array(ENCODE)') :-
 test('sum_array(DECODE)') :-
   Response_json='{"b": [9.0, 7.0 ]}',
   %%%%
-  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
   %%%%
   rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,act_exec_test:'sum_array_ResponseType'),
+  rdf_assert(Response,dul:realizes,acext:'sum_array_ResponseType'),
   rdf_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
@@ -236,22 +226,28 @@ test_pose_out(_{
   translation: _{x: 3.2, y: 0.1, z: 0.4 }
 }).
 
-test('pose_test(CREATE)') :-
+pose_test_input(Dict) :-
   rdf_instance_from_class(dul:'Region',Region_a),
   rdf_assert(Region_a,knowrob:translation,
         literal(type(knowrob:array_double,'3.2 0.1 0.4'))),
   rdf_assert(Region_a,knowrob:quaternion,
         literal(type(knowrob:array_double,'0.8 0.1 0.0 0.4'))),
-  rdf_assert(Region_a, dul:isClassifiedBy, act_exec_test:'pose_test_Execution_a'),
+  create_input_dict(Dict, [
+      [acext:'pose_test_Execution_a',Region_a]
+  ]).
+
+test('pose_test(CREATE)') :-
+  pose_test_input(InputDict),
   %%
-  create_action_symbol(ros:'ServiceQuerying',act_exec_test:'pose_test_Task',Action),
-  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
-  rdf_has(Action, dul:hasRegion, Region_a).
+  create_action_symbol(ros:'ServiceQuerying',acext:'pose_test_Task',InputDict,Action),
+  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
+  rdf_has(Action, dul:hasRegion, _).
 
 test('pose_test(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
+  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
+  pose_test_input(InputDict),
   %%%%
-  create_ros_request(Action, act_exec_test:'pose_test_RequestType', Request),
+  create_ros_request(Action, InputDict, acext:'pose_test_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((
@@ -275,10 +271,10 @@ test('pose_test(DECODE)') :-
     json_write_dict(current_output, _{b:TestPose})
   ),
   %%%%
-  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
+  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
   %%%%
   rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,act_exec_test:'pose_test_ResponseType'),
+  rdf_assert(Response,dul:realizes,acext:'pose_test_ResponseType'),
   rdf_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),

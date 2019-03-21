@@ -552,6 +552,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_Predicate -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_Predicate">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_P -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_P">
@@ -614,6 +622,7 @@
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_O"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_P"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_S"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution_Predicate"/>
     </owl:NamedIndividual>
     
 

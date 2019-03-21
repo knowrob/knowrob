@@ -27,7 +27,7 @@
 
 :- module(kb_querying,
     [
-      kb_querying/1
+      kb_querying/3
     ]).
 /** <module> The execution of KB querying actions.
 
@@ -40,7 +40,7 @@
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta kb_querying(r).
+:- rdf_meta kb_querying(r,t,-).
 
 % extend action library
 action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying', kb_querying).
@@ -53,8 +53,9 @@ action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying',
 % participants of the action
 %
 % @param Action IRI of querying action
+% @param OutputPairs
 % 
-kb_querying(Action) :-
+kb_querying(Action,InputDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find KBPredicate participant.
   %%%%%%%%%
@@ -72,7 +73,7 @@ kb_querying(Action) :-
   findall(KBVariable-Assignment, (
     member(KBVariable,KBVariables),
     once((
-      action_filler_for(Action,KBVariable,Filler),
+      action_filler_for(InputDict,KBVariable,Filler),
       owl_entity(Filler,Assignment));
       % argument is an unbound variable
       Assignment=_
@@ -105,16 +106,16 @@ kb_querying(Action) :-
   %%%%%%%%%
   %%%%% Prolog -> OWL
   %%%%%%%%%
-  %% FIXME: cleanup if forloop fails?
-  forall(member(KBVariable-OutAssignment,OutputVariables), (
+  findall(R-Assignment_owl, (
+    member(KBVariable-OutAssignment,OutputVariables),
     % pl to owl
     create_owl_entity(OutAssignment,Assignment_owl),
     % classify the argument
-    forall(rdf_has(R,dul:classifies,KBVariable),
-           rdf_assert(Assignment_owl,dul:isClassifiedBy,R)),
+    % TODO: come up with cleaner solution
+    once(rdf_has(R,dul:classifies,KBVariable)),
     % assign as participant/region of the action
     action_add_filler(Action,Assignment_owl)
-  )).
+  ), OutputPairs).
 
 % predicate indicator atom '$functor/$arity'
 kb_predicate_indicator(KBPredicate,Arguments,Functor,Indicator) :-

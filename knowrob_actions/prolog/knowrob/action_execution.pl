@@ -32,11 +32,11 @@
       set_action_status/2,
       task_isExecutionPossible/1,
       task_isExecutedIn/3,
-      execute_task/2,
+      execute_task/4,
       action_call_or_failure/4,
       action_add_filler/2,
       action_filler_for/3,
-      create_action_symbol/3
+      create_action_symbol/4
     ]).
 /** <module> The execution of actions.
 
@@ -61,14 +61,14 @@ the task (if any).
 
 :- rdf_meta action_registry(r,?),
             action_status(r,r),
-            action_filler_for(r,r,r),
+            action_filler_for(t,r,r),
             set_action_status(r,r),
             action_call_or_failure(r,t,r,+),
             task_isExecutedIn(r,r,r),
             task_isExecutionPossible(r),
             handle_action_failure(r,r,+),
-            execute_task(r,r),
-            create_action_symbol(r,r,-).
+            execute_task(r,t,r,t),
+            create_action_symbol(r,r,t,-).
 
 %% action_registry(ActionConcept, Goal)
 %
@@ -101,37 +101,37 @@ task_isExecutionPossible(Task) :-
   task_isExecutedIn(Task,ActionConcept,_),
   action_registry(ActionConcept,_),!.
 
-%% execute_task(+Task,-Action)
+%% execute_task(+Task,+InputDict,-Action,-OutputDict)
 %
-% The procedure as as follows:
-% (1) Find action concept that executes task
-% (2) Instantiate action concept
-% (3) Run action
-% (4) Handle action status
-%
-execute_task(WF_Task,Action) :-
+execute_task(Task,InputDict,Action,OutputDict) :-
   %%%%%%%%%
   %%%%% Find action concept
   %%%%%%%%%
-  task_isExecutedIn(WF_Task,ActionConcept,_ExecutionPlan),
+  task_isExecutedIn(Task,ActionConcept,_ExecutionPlan),
   action_registry(ActionConcept,ActionGoal),
   %%%%%%%%%
   %%%%% Instantiate action concept
   %%%%%%%%%
-  create_action_symbol(ActionConcept,WF_Task,Action),
+  create_action_symbol(ActionConcept,Task,InputDict,Action),
   !, % TODO <-- this kills choicepoints for different ways to execute the task
   %%%%%%%%%
   %%%%% Run the action!
   %%%%%%%%%
   ( catch(
-    owl_run_event(Action, ActionGoal),
+    owl_run_event(Action, ActionGoal, [InputDict,OutputPairs]),
     action_failure(Action, Failure, Message),
-    handle_action_failure(Action, Failure, Message)) *-> true ; (
-    % some unknown error occured
-    handle_action_failure(Action,
+    handle_action_failure(Action, Failure, Message)) *->
+    (
+      ( var(OutputPairs) -> OutputPairs=[] ; true ),
+      dict_pairs(OutputDict,_,OutputPairs)
+    ) ; (
+      % some unknown error occured
+      handle_action_failure(Action,
         knowrob:'ACTION_PREDICATE_ERROR',
-        'calling the action predicate failed')
-  )),
+        'calling the action predicate failed'),
+      OutputDict=_{}
+    )
+  ),
   %% TODO: think about choicepoints
   %%          - task could be executable in different ways
   %%          - action goal may return many results, one at a time
@@ -143,18 +143,18 @@ execute_task(WF_Task,Action) :-
   %%%%%%%%%
   %%%%% Handle action status
   %%%%%%%%%
-  assign_status_region(Action).
+  assign_status_region(Action,OutputDict).
 
 		 /*******************************
 		 *	ACTION SYMBOL		*
 		 *******************************/
 
-%% create_action_symbol(ActionConcept,Task,Action)
+%% create_action_symbol(ActionConcept,Task,InputDict,Action)
 %
 % Createsa new action symbols and assigns participants
 % and regions from roles and parameters of a task.
 %
-create_action_symbol(ActionConcept,Task,Action) :-
+create_action_symbol(ActionConcept,Task,InputDict,Action) :-
   % create action symbol
   rdf_instance_from_class(ActionConcept,Action),
   rdf_assert(Action,dul:executesTask,Task),
@@ -163,30 +163,13 @@ create_action_symbol(ActionConcept,Task,Action) :-
   rdf_assert(Action, ease:hasStatus, ActionStatus),
   rdf_assert(ActionStatus, dul:hasRegion, knowrob:'ACTION_OK'),
   %%%%%%%%
-  assign_action_participants(Action,Task),
-  assign_action_regions(Action,Task).
-
-assign_action_participants(Action,Task) :-
-  forall((
-    rdf_has(Task,dul:isTaskOf,Role),
-    owl_has(X,dul:isClassifiedBy,Role)),
-    once((
-      rdf_has(Action,dul:hasParticipant,X);
-      rdfs_assert_specific(Action,dul:hasParticipant,X)
-      %rdf_assert(Action,dul:hasParticipant,X)
-    ))
-  ).
-assign_action_regions(Action,Task) :-
-  forall((
-    rdf_has(Task,dul:hasParameter,Parameter),
-    owl_has(X,dul:isClassifiedBy,Parameter)),
-    once((
-      rdf_has(Action,dul:hasRegion,X);
-      rdfs_assert_specific(Action,dul:hasRegion,X)
-    ))
+  dict_pairs(InputDict,_,Pairs),
+  forall(
+    member(_Key-Value,Pairs),
+    action_add_filler(Action,Value)
   ).
 
-%% action_filler_for(Action,RegionOrObject)
+%% action_add_filler(Action,RegionOrObject)
 %
 action_add_filler(Action,X) :-
   rdfs_individual_of(X,dul:'Region'),!, (
@@ -201,19 +184,16 @@ action_add_filler(_Action,X) :-
   writef('[WARN] %w is not a Region or Object!\n', [X]),
   fail.
 
-%% action_filler_for(Action,Entity,Filler)
+%% action_filler_for(InputDict,Entity,Filler)
 %
 % Find region or participant of action that is classified
 % with the same concept as some other entity.
 %
-action_filler_for(Action,Entity,Filler) :-
-  ( rdf_has(Action,dul:hasRegion,Filler) ;
-    rdf_has(Action,dul:hasParticipant,Filler) ),
-  once((
-    owl_has(Filler,dul:isClassifiedBy,Concept),
-    owl_has(Entity,dul:isClassifiedBy,Concept),
-    Filler \= Entity
-  )).
+action_filler_for(InputDict,Entity,Filler) :-
+  get_dict(Concept,InputDict,Filler),
+  %% TODO handle this more elegant
+  owl_has(Entity,dul:isClassifiedBy,Concept),
+  Filler \= Entity.
 
 		 /*******************************
 		 *	ACTION STATUS		*
@@ -255,10 +235,10 @@ log_action_failure(Action,Failure,Message) :-
 action_call_or_failure(Action,Goal,Failure,Message) :-
   call(Goal) *-> true ; throw(action_failure(Action,Failure,Message)).
 
-assign_status_region(Action) :-
+assign_status_region(Action,OutputDict) :-
   % assign current status as participant and classify it by Status parameter
   action_status(Action,StatusRegion),
   rdf_assert(Action,dul:hasRegion,StatusRegion),
   rdf_has(Action,dul:executesTask,Task),
   ( get_task_status_parameter(Task,StatusParameter) ->
-    rdf_assert(StatusRegion,dul:isClassifiedBy,StatusParameter) ; true ).
+    b_set_dict(StatusParameter, OutputDict, StatusRegion) ; true ).

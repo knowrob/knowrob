@@ -44,7 +44,7 @@
       owl_list_to_pl/2,
       owl_entity/2,
       create_owl_entity/2,
-      owl_run_event/2,
+      owl_run_event/3,
       owl_create_atomic_region/3,
       owl_reified_relation/2,
       owl_reified_class/2,
@@ -324,11 +324,11 @@ owl_event_time_interval(Event, TimeInterval):-
   rdf_instance_from_class(dul:'TimeInterval',TimeInterval),
   rdf_assert(Event, dul:hasTimeInterval, TimeInterval),!.
 
-owl_run_event(Event, Goal) :-
+owl_run_event(Event, Goal, Args) :-
   owl_event_time_interval(Event, TimeInterval),
   setup_call_cleanup(
     owl_assert_now(TimeInterval, ease:hasIntervalBegin),
-    call(Goal, Event),
+    apply(Goal, [Event|Args]),
     owl_assert_now(TimeInterval, ease:hasIntervalEnd)
   ).
 
