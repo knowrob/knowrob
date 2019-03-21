@@ -38,7 +38,7 @@ test('rdf_has(ACTION_INPUT_MISSING)') :-
 %% all arguments unbound
 test('rdf_has(?,?,?)') :-
   create_input_dict(InputDict,[
-      [acext:'rdf_has1_Execution_Predicate', acext:'rdf_has1']
+      [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,_),
@@ -48,39 +48,39 @@ test('rdf_has(?,?,?)') :-
 test('rdf_has(obj1,hasConstituent,?)') :-
   owl_reified_relation(dul:'hasConstituent', HasConstituent),
   create_input_dict(InputDict, [
-      [acext:'rdf_has1_Execution_S', acext:'Object1'],
-      [acext:'rdf_has1_Execution_P', HasConstituent],
-      [acext:'rdf_has1_Execution_Predicate', acext:'rdf_has1']
+      [acext:'rdf_has1_Task_S', acext:'Object1'],
+      [acext:'rdf_has1_Task_P', HasConstituent],
+      [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
-  get_dict(acext:'rdf_has1_Execution_O', OutputDict, acext:'Object2'),
+  get_dict(acext:'rdf_has1_Task_O', OutputDict, acext:'Object2'),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% DataProperty, third argument unbound
 test('rdf_has(obj1,hasNameString,?)') :-
   owl_reified_relation(ease:'hasNameString', HasNameString),
   create_input_dict(InputDict, [
-      [acext:'rdf_has1_Execution_S',acext:'Object1'],
-      [acext:'rdf_has1_Execution_P',HasNameString],
-      [acext:'rdf_has1_Execution_Predicate',acext:'rdf_has1']
+      [acext:'rdf_has1_Task_S',acext:'Object1'],
+      [acext:'rdf_has1_Task_P',HasNameString],
+      [acext:'rdf_has1_Task_Predicate',acext:'rdf_has1']
   ]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
-  get_dict(acext:'rdf_has1_Execution_O', OutputDict, Region),
+  get_dict(acext:'rdf_has1_Task_O', OutputDict, Region),
   rdf_has_prolog(Region, dul:hasRegionDataValue, 'obj1'),
   action_status(Action,knowrob:'ACTION_OK').
 
 test('current_object_pose(obj1,?)') :-
   create_input_dict(InputDict, [
-      [acext:'current_object_pose_Execution_O',acext:'Object1'],
-      [acext:'current_object_pose_Execution_Predicate',acext:'current_object_pose']
+      [acext:'current_object_pose_Task_O',acext:'Object1'],
+      [acext:'current_object_pose_Task_Predicate',acext:'current_object_pose']
   ]),
   % execute
   execute_task(acext:'current_object_pose_Task',InputDict,Action,OutputDict),
-  get_dict(acext:'current_object_pose_Execution_P', OutputDict, Transform),
+  get_dict(acext:'current_object_pose_Task_P', OutputDict, Transform),
   transform_data(Transform, ([0.004,0.003,0.085], [0.0,0.0,0.0,1.0])),
   action_status(Action,knowrob:'ACTION_OK').
 
@@ -95,9 +95,9 @@ test('add_two_ints(CREATE)') :-
   owl_create_atomic_region(xsd:long, 2, Region_a),
   owl_create_atomic_region(xsd:long, 4, Region_b),
   create_input_dict(InputDict, [
-      [acext:'add_two_ints_Execution_a',Region_a],
-      [acext:'add_two_ints_Execution_b',Region_b],
-      [acext:'add_two_ints_Execution_iface',acext:'add_two_ints_Interface']
+      [acext:'add_two_ints_Task_a',Region_a],
+      [acext:'add_two_ints_Task_b',Region_b],
+      [acext:'add_two_ints_Task_iface',acext:'add_two_ints_Interface']
   ]),
   %%
   create_action_symbol(ros:'ServiceQuerying',acext:'add_two_ints_Task',InputDict,Action),
@@ -110,12 +110,13 @@ test('add_two_ints(ENCODE)') :-
   owl_create_atomic_region(xsd:long, 2, Region_a),
   owl_create_atomic_region(xsd:long, 4, Region_b),
   create_input_dict(InputDict, [
-      [acext:'add_two_ints_Execution_a',Region_a],
-      [acext:'add_two_ints_Execution_b',Region_b],
-      [acext:'add_two_ints_Execution_iface',acext:'add_two_ints_Interface']
+      [acext:'add_two_ints_Task_a',Region_a],
+      [acext:'add_two_ints_Task_b',Region_b],
+      [acext:'add_two_ints_Task_iface',acext:'add_two_ints_Interface']
   ]),
+  action_bindings(acext:'add_two_ints_Execution',ActionDict),
   %%%%
-  create_ros_request(Action, InputDict, acext:'add_two_ints_RequestType', Request),
+  create_ros_request(Action, InputDict, ActionDict, acext:'add_two_ints_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((
@@ -151,7 +152,7 @@ test('add_two_ints(DECODE)') :-
 test('sum_array(CREATE)') :-
   owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
   create_input_dict(InputDict, [
-      [acext:'sum_array_Execution_a',Region_a]
+      [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
   create_action_symbol(ros:'ServiceQuerying',acext:'sum_array_Task',InputDict,Action),
@@ -162,11 +163,12 @@ test('sum_array(ENCODE)') :-
   rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
   owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
   create_input_dict(InputDict, [
-      [acext:'sum_array_Execution_a',Region_a],
-      [acext:'sum_array_Execution_iface',acext:'sum_array_Interface']
+      [acext:'sum_array_Task_a',Region_a],
+      [acext:'sum_array_Task_iface',acext:'sum_array_Interface']
   ]),
+  action_bindings(acext:'sum_array_Execution',ActionDict),
   %%%%
-  create_ros_request(Action, InputDict, acext:'sum_array_RequestType', Request),
+  create_ros_request(Action, InputDict, ActionDict, acext:'sum_array_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((
@@ -233,7 +235,7 @@ pose_test_input(Dict) :-
   rdf_assert(Region_a,knowrob:quaternion,
         literal(type(knowrob:array_double,'0.8 0.1 0.0 0.4'))),
   create_input_dict(Dict, [
-      [acext:'pose_test_Execution_a',Region_a]
+      [acext:'pose_test_Task_a',Region_a]
   ]).
 
 test('pose_test(CREATE)') :-
@@ -246,8 +248,9 @@ test('pose_test(CREATE)') :-
 test('pose_test(ENCODE)') :-
   rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
   pose_test_input(InputDict),
+  action_bindings(acext:'pose_test_Execution',ActionDict),
   %%%%
-  create_ros_request(Action, InputDict, acext:'pose_test_RequestType', Request),
+  create_ros_request(Action, InputDict, ActionDict, acext:'pose_test_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
   %%%
   once((

@@ -35,8 +35,9 @@
       execute_task/4,
       action_call_or_failure/4,
       action_add_filler/2,
-      action_filler_for/3,
-      create_action_symbol/4
+      action_filler_for/2,
+      create_action_symbol/4,
+      action_bindings/2
     ]).
 /** <module> The execution of actions.
 
@@ -61,14 +62,15 @@ the task (if any).
 
 :- rdf_meta action_registry(r,?),
             action_status(r,r),
-            action_filler_for(t,r,r),
+            action_filler_for(t,t),
             set_action_status(r,r),
             action_call_or_failure(r,t,r,+),
             task_isExecutedIn(r,r,r),
             task_isExecutionPossible(r),
             handle_action_failure(r,r,+),
             execute_task(r,t,r,t),
-            create_action_symbol(r,r,t,-).
+            create_action_symbol(r,r,t,-),
+            action_bindings(r,t).
 
 %% action_registry(ActionConcept, Goal)
 %
@@ -107,8 +109,9 @@ execute_task(Task,InputDict,Action,OutputDict) :-
   %%%%%%%%%
   %%%%% Find action concept
   %%%%%%%%%
-  task_isExecutedIn(Task,ActionConcept,_ExecutionPlan),
+  task_isExecutedIn(Task,ActionConcept,ExecutionPlan),
   action_registry(ActionConcept,ActionGoal),
+  action_bindings(ExecutionPlan,ActionDict),
   %%%%%%%%%
   %%%%% Instantiate action concept
   %%%%%%%%%
@@ -118,7 +121,7 @@ execute_task(Task,InputDict,Action,OutputDict) :-
   %%%%% Run the action!
   %%%%%%%%%
   ( catch(
-    owl_run_event(Action, ActionGoal, [InputDict,OutputPairs]),
+    owl_run_event(Action, ActionGoal, [InputDict,ActionDict,OutputPairs]),
     action_failure(Action, Failure, Message),
     handle_action_failure(Action, Failure, Message)) *->
     (
@@ -184,16 +187,22 @@ action_add_filler(_Action,X) :-
   writef('[WARN] %w is not a Region or Object!\n', [X]),
   fail.
 
-%% action_filler_for(InputDict,Entity,Filler)
+%% action_filler_for(Filler:InputDict,Entity:ActionDict)
 %
 % Find region or participant of action that is classified
 % with the same concept as some other entity.
 %
-action_filler_for(InputDict,Entity,Filler) :-
+action_filler_for(Filler:InputDict,Entity:ActionDict) :-
   get_dict(Concept,InputDict,Filler),
-  %% TODO handle this more elegant
-  owl_has(Entity,dul:isClassifiedBy,Concept),
-  Filler \= Entity.
+  get_dict(Concept,ActionDict,Entity).
+
+action_bindings(ExecutionPlan,ActionDict) :-
+  findall(R-X, (
+    rdf_has(ExecutionPlan, ease_wf:hasBinding, B),
+    rdf_has(B, ease_wf:hasBindingFiller, X),
+    rdf_has(B, ease_wf:hasBindingRole, R)),
+    Pairs),
+  dict_pairs(ActionDict,_,Pairs).
 
 		 /*******************************
 		 *	ACTION STATUS		*

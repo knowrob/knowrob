@@ -27,8 +27,8 @@
 
 :- module(ros_querying,
     [
-      ros_querying/3,
-      create_ros_request/4
+      ros_querying/4,
+      create_ros_request/5
     ]).
 /** <module> The execution of ROS querying actions.
 
@@ -41,15 +41,15 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta ros_querying(r,t,-),
-            create_ros_request(r,t,r,r).
+:- rdf_meta ros_querying(r,t,t,-),
+            create_ros_request(r,t,t,r,r).
 
 action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', ros_querying).
 
 %% create_ros_request(Action,InputDict,ReqType,Request)
 %
 %
-create_ros_request(Action,InputDict,ReqType,Request) :-
+create_ros_request(Action,InputDict,ActionDict,ReqType,Request) :-
   %%%%%%%%%
   %%%%% Create request message
   rdf_instance_from_class(ros:'Message',Request),
@@ -60,7 +60,7 @@ create_ros_request(Action,InputDict,ReqType,Request) :-
   forall(rdf_has(ReqType,dul:hasPart,DataSlot), once((
     % for each data slot, find participant of the 
     % action that is classified by the same parameter or role
-    action_filler_for(InputDict,DataSlot,Filler),
+    action_filler_for(Filler:InputDict,DataSlot:ActionDict),
     %rdf_has(DataSlot,dul:hasPart,SlotType),
     create_ros_message_slot(DataSlot,Filler,Slot),
     rdf_assert(Request,dul:hasPart,Slot),
@@ -70,7 +70,7 @@ create_ros_request(Action,InputDict,ReqType,Request) :-
 %% ros_querying(+Action) is semidet.
 %
 %
-ros_querying(Action,InputDict,OutputPairs) :-
+ros_querying(Action,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find ServiceInterface participant.
   action_call_or_failure(Action, (
@@ -98,7 +98,7 @@ ros_querying(Action,InputDict,OutputPairs) :-
   ),
   action_call_or_failure(Action, (
     forall(rdf_has(ReqType,dul:hasPart,DataSlot), 
-      once(action_filler_for(InputDict,DataSlot,_)))
+      once(action_filler_for(_:InputDict,DataSlot:ActionDict)))
     ),
     knowrob:'ACTION_INPUT_MISSING',
     'request slot(s) missing'
@@ -108,7 +108,7 @@ ros_querying(Action,InputDict,OutputPairs) :-
   rdf_instance_from_class(ros:'Message',Response),
   rdf_assert(Response,dul:realizes,ResType),
   rdf_assert(Action,ros:hasResponse,Response),
-  create_ros_request(Action,InputDict,ReqType,Request),
+  create_ros_request(Action,InputDict,ActionDict,ReqType,Request),
   %%%%%%%%%
   %%%%% Call the service
   catch(
@@ -122,8 +122,7 @@ ros_querying(Action,InputDict,OutputPairs) :-
     rdf_has(ResType,dul:hasPart,DataSlot),
     rdf_has(Response,dul:hasPart,Slot),
     rdf_has(Slot,dul:realizes,DataSlot),
-    % TODO: come up with cleaner solution
-    once(rdf_has(R,dul:classifies,Slot)),
+    get_dict(R, ActionDict, Slot),
     get_slot_filler(Slot,X),
     ( rdfs_individual_of(DataSlot,ros:'StatusSlot') ->
       % handle dedicated status field

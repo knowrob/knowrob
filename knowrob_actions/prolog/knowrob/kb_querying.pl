@@ -27,7 +27,7 @@
 
 :- module(kb_querying,
     [
-      kb_querying/3
+      kb_querying/4
     ]).
 /** <module> The execution of KB querying actions.
 
@@ -40,7 +40,7 @@
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta kb_querying(r,t,-).
+:- rdf_meta kb_querying(r,t,t,-).
 
 % extend action library
 action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying', kb_querying).
@@ -55,7 +55,7 @@ action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying',
 % @param Action IRI of querying action
 % @param OutputPairs
 % 
-kb_querying(Action,InputDict,OutputPairs) :-
+kb_querying(Action,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find KBPredicate participant.
   %%%%%%%%%
@@ -73,7 +73,7 @@ kb_querying(Action,InputDict,OutputPairs) :-
   findall(KBVariable-Assignment, (
     member(KBVariable,KBVariables),
     once((
-      action_filler_for(InputDict,KBVariable,Filler),
+      action_filler_for(Filler:InputDict,KBVariable:ActionDict),
       owl_entity(Filler,Assignment));
       % argument is an unbound variable
       Assignment=_
@@ -106,13 +106,11 @@ kb_querying(Action,InputDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Prolog -> OWL
   %%%%%%%%%
-  findall(R-Assignment_owl, (
+  findall(Role-Assignment_owl, (
     member(KBVariable-OutAssignment,OutputVariables),
     % pl to owl
     create_owl_entity(OutAssignment,Assignment_owl),
-    % classify the argument
-    % TODO: come up with cleaner solution
-    once(rdf_has(R,dul:classifies,KBVariable)),
+    get_dict(Role, ActionDict, KBVariable),
     % assign as participant/region of the action
     action_add_filler(Action,Assignment_owl)
   ), OutputPairs).
