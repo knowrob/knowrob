@@ -53,8 +53,17 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
       [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
-  get_dict(acext:'rdf_has1_Task_O', OutputDict, acext:'Object2'),
+  % NOTE: here we retrieve all solutions with findall,
+  %       Os is the list of all different possible
+  %       output parametrization functions.
+  % TODO: look into pack list_utils. It declares *lazy_findall*
+  findall(O,
+    execute_task(acext:'rdf_has1_Task',InputDict,Action,O),
+    Os),
+  member(O1,Os),
+  get_dict(acext:'rdf_has1_Task_O', O1, acext:'Object2'),
+  member(O2,Os),
+  get_dict(acext:'rdf_has1_Task_O', O2, acext:'Object3'),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% DataProperty, third argument unbound
