@@ -159,6 +159,14 @@ rdf_has_prolog(S,P,O) :-
 % @param Value RDF iri or Prolog encoded data value
 %
 rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
+rdf_assert_prolog(S,P,literal(type(_ArrayType,Val)),Graph) :-
+  is_list(Val),!,
+  rdf_assert_prolog(S,P,Val,Graph).
+rdf_assert_prolog(S,P,O,Graph) :-
+  is_list(O),!,
+  findall(A, (member(V,O), term_to_atom(V,A)), Atoms),
+  atomic_list_concat(Atoms, ' ', Val_atom),
+  rdf_assert_prolog(S,P,Val_atom,Graph).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
   strip_literal_type(O,Value),

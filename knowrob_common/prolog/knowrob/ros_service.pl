@@ -156,12 +156,10 @@ get_transform_dict(Message,_{
   rdf_has_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
 get_transform_region(_{
-      translation: ['geometry_msgs/Vector3',
-          _{x:['float64',Tx], y:['float64',Ty], z:['float64',Tz]}],
-      rotation:    ['geometry_msgs/Quaternion',
-          _{x:['float64',Qx], y:['float64',Qy], z:['float64',Qz], w:['float64',Qw]}]
+      translation: _{x:Tx, y:Ty, z:Tz},
+      rotation:    _{x:Qx, y:Qy, z:Qz, w:Qw}
   }, Region) :-
-  rdf_instance_from_class(dul:'Region',Region),
+  rdf_instance_from_class(knowrob:'Pose',Region),
   rdf_assert_prolog(Region, knowrob:translation, [Tx,Ty,Tz]),
   rdf_assert_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
@@ -272,10 +270,11 @@ owl_create_ros_entity(Array_type,Val_list,PrimitiveArray) :-
 
 owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
   is_list(Val_list),
+  term_to_atom(array(Type),ArrayTypePath),
   ros_type_path(ArrayType,ArrayTypePath),
   findall(Val_owl, (
     member(X,Val_list),
-    owl_create_ros_entity(X,Val_owl)),
+    owl_create_ros_entity(Type,X,Val_owl)),
     Msg_list),
   owl_create_ordered_collection(Msg_list, Collection),
   rdf_instance_from_class(ros:'MessageArray',MessageArray),

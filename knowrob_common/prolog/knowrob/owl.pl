@@ -392,8 +392,18 @@ owl_entity(Arg_owl,Arg_pl) :-
 owl_entity(Arg_owl,Arg_owl).
 
 %% 
+create_owl_entity([
+    RefFrame, _TargetFrame,
+    [X,Y,Z],
+    [QX,QY,QZ,QW]],Transform) :- !,
+  rdf_instance_from_class(knowrob:'Pose',Transform),
+  ( object_frame_name(Parent,RefFrame) ->
+    rdf_assert(Transform, knowrob:'relativeTo', Parent) ; true ),
+  rdf_assert_prolog(Transform, knowrob:translation, [X,Y,Z]),
+  rdf_assert_prolog(Transform, knowrob:quaternion,  [QX,QY,QZ,QW]).
 create_owl_entity(List,Arg_owl) :-
   is_list(List),!,
+  % TODO: need to also support constructing e.g. pose regions here.
   rdf_instance_from_class(dul:'Collection',Arg_owl),
   forall(member(X,List),(
     create_owl_entity(X,X_owl),

@@ -114,9 +114,7 @@ kb_querying(Action) :-
            rdf_assert(Assignment_owl,dul:isClassifiedBy,R)),
     % assign as participant/region of the action
     action_add_filler(Action,Assignment_owl)
-  )),
-  
-  writeln(Query).
+  )).
 
 % predicate indicator atom '$functor/$arity'
 kb_predicate_indicator(KBPredicate,Arguments,Functor,Indicator) :-

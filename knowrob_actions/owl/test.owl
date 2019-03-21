@@ -272,10 +272,17 @@
     <!-- http://knowrob.org/kb/action-test.owl#Object1 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#Object1">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <DUL:hasConstituent rdf:resource="http://knowrob.org/kb/action-test.owl#Object2"/>
         <DUL:hasConstituent rdf:resource="http://knowrob.org/kb/action-test.owl#Object3"/>
         <EASE:hasNameString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">obj1</EASE:hasNameString>
+        <knowrob:pose rdf:resource="http://knowrob.org/kb/action-test.owl#Object1_pose"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#Object1_pose">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob_paramserver.owl#Transform"/>
+        <knowrob:quaternion rdf:datatype="http://knowrob.org/kb/knowrob.owl#vec4">0.0 0.0 0.0 1.0</knowrob:quaternion>
+        <knowrob:translation rdf:datatype="http://knowrob.org/kb/knowrob.owl#vec3">0.004 0.003 0.085</knowrob:translation>
     </owl:NamedIndividual>
     
 
@@ -283,7 +290,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#Object2 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#Object2">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     </owl:NamedIndividual>
     
 
@@ -291,7 +298,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#Object3 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#Object3">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     </owl:NamedIndividual>
     
 
@@ -422,6 +429,93 @@
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#PrimitiveSlot"/>
         <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/ROS.owl#int64"/>
         <ROS:hasSlotName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sum</ROS:hasSlotName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+        <knowrob:firstKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
+        <knowrob:hasKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
+        <knowrob:hasArity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</knowrob:hasArity>
+        <knowrob:hasFunctor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">current_object_pose</knowrob:hasFunctor>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Execution -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution"/>
+        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task"/>
+        <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_O -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_O">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_P -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_P">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
+    </owl:NamedIndividual>
+    
+
+    
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Predicate -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Predicate">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Status -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Status">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Object -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Object">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <DUL:precedes rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Predicate -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <DUL:follows rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Task -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Task">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Status"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_P"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_O"/>
+        <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution_Predicate"/>
     </owl:NamedIndividual>
     
 

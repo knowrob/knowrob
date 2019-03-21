@@ -14,6 +14,9 @@
 
 test_task_reset :-
   forall(
+    rdf_has(act_exec_test:'current_object_pose_Task',dul:isTaskOf,Role),
+    rdf_retractall(_,dul:isClassifiedBy,Role)),
+  forall(
     rdf_has(act_exec_test:'rdf_has1_Task',dul:isTaskOf,Role),
     rdf_retractall(_,dul:isClassifiedBy,Role)),
   forall(
@@ -85,6 +88,23 @@ test('rdf_has(obj1,hasNameString,?)') :-
   rdf_has(Region, dul:isClassifiedBy,
           act_exec_test:'rdf_has1_Execution_O'),
   rdf_has_prolog(Region, dul:hasRegionDataValue, 'obj1'),
+  action_status(Action,knowrob:'ACTION_OK').
+
+test('current_object_pose(obj1,?)') :-
+  test_task_reset,
+  rdf_assert(act_exec_test:'Object1',
+             dul:isClassifiedBy,
+             act_exec_test:'current_object_pose_Execution_O'),
+  current_object_pose(act_exec_test:'Object1',[
+    _, _,
+    [0.004, 0.003, 0.085],
+    [0.0, 0.0, 0.0, 1.0]
+  ]),
+  % execute
+  execute_task(act_exec_test:'current_object_pose_Task',Action),
+  rdf_has(Transform, dul:isClassifiedBy,
+          act_exec_test:'current_object_pose_Execution_P'),
+  transform_data(Transform, ([0.004,0.003,0.085], [0.0,0.0,0.0,1.0])),
   action_status(Action,knowrob:'ACTION_OK').
 
 %test(execute_task_CHOICEPOINTS) :-
@@ -189,7 +209,7 @@ test('sum_array(DECODE)') :-
     rdf_has_prolog(Region_sum, dul:hasRegionDataValue, [9.0, 7.0])
   )).
 
-test_pose([
+test_pose_in([
     'geometry_msgs/Transform',
     _{
       rotation: [
@@ -211,6 +231,10 @@ test_pose([
       ]
     }
 ]).
+test_pose_out(_{
+  rotation:    _{w: 0.4, x: 0.8, y: 0.1, z: 0.0 },
+  translation: _{x: 3.2, y: 0.1, z: 0.4 }
+}).
 
 test('pose_test(CREATE)') :-
   rdf_instance_from_class(dul:'Region',Region_a),
@@ -240,21 +264,21 @@ test('pose_test(ENCODE)') :-
   )),
   %%%%
   ros_request_encode(Request,Request_json),
-  test_pose(TestPose),
+  test_pose_in(TestPose),
   with_output_to(atom(Request_json), 
     json_write_dict(current_output, _{a:TestPose})
   ).
 
 test('pose_test(DECODE)') :-
-  test_pose(TestPose),
+  test_pose_out(TestPose),
   with_output_to(atom(Response_json), 
     json_write_dict(current_output, _{b:TestPose})
-  )
+  ),
   %%%%
-  rdf_has(Action, dul:executesTask, act_exec_test:'sum_array_Task'),
+  rdf_has(Action, dul:executesTask, act_exec_test:'pose_test_Task'),
   %%%%
   rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,act_exec_test:'sum_array_ResponseType'),
+  rdf_assert(Response,dul:realizes,act_exec_test:'pose_test_ResponseType'),
   rdf_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
