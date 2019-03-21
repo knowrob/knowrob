@@ -32,7 +32,7 @@ test(rdf_has_isExecutedIn) :-
        acext:'rdf_has1_Execution'), !.
 
 test('rdf_has(ACTION_INPUT_MISSING)') :-
-  execute_task(acext:'rdf_has1_Task',_{},Action,_),
+  execute_task(acext:'rdf_has1_Task',_{},Action,[_|_]),
   action_status(Action,knowrob:'ACTION_INPUT_MISSING').
   
 %% all arguments unbound
@@ -41,7 +41,7 @@ test('rdf_has(?,?,?)', [nondet]) :-
       [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,_),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,[_|_]),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% ObjectProperty, third argument unbound
@@ -53,17 +53,9 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
       [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
   ]),
   % execute again
-  % NOTE: here we retrieve all solutions with findall,
-  %       Os is the list of all different possible
-  %       output parametrization functions.
-  % TODO: look into pack list_utils. It declares *lazy_findall*
-  findall(O,
-    execute_task(acext:'rdf_has1_Task',InputDict,Action,O),
-    Os),
-  member(O1,Os),
-  get_dict(acext:'rdf_has1_Task_O', O1, acext:'Object2'),
-  member(O2,Os),
-  get_dict(acext:'rdf_has1_Task_O', O2, acext:'Object3'),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,Os),
+  member(O1,Os), get_dict(acext:'rdf_has1_Task_O', O1, acext:'Object2'),
+  member(O2,Os), get_dict(acext:'rdf_has1_Task_O', O2, acext:'Object3'),
   action_status(Action,knowrob:'ACTION_OK').
 
 %% DataProperty, third argument unbound
@@ -75,7 +67,7 @@ test('rdf_has(obj1,hasNameString,?)') :-
       [acext:'rdf_has1_Task_Predicate',acext:'rdf_has1']
   ]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,OutputDict),
+  execute_task(acext:'rdf_has1_Task',InputDict,Action,[OutputDict|_]),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
   get_dict(acext:'rdf_has1_Task_O', OutputDict, Region),
@@ -88,7 +80,7 @@ test('current_object_pose(obj1,?)') :-
       [acext:'current_object_pose_Task_Predicate',acext:'current_object_pose']
   ]),
   % execute
-  execute_task(acext:'current_object_pose_Task',InputDict,Action,OutputDict),
+  execute_task(acext:'current_object_pose_Task',InputDict,Action,[OutputDict]),
   get_dict(acext:'current_object_pose_Task_P', OutputDict, Transform),
   transform_data(Transform, ([0.004,0.003,0.085], [0.0,0.0,0.0,1.0])),
   action_status(Action,knowrob:'ACTION_OK').

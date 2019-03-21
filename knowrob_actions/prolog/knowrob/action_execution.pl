@@ -59,6 +59,7 @@ the task (if any).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
+:- use_module(library(list_util)).
 
 :- rdf_meta action_registry(r,?),
             action_status(r,r),
@@ -103,9 +104,9 @@ task_isExecutionPossible(Task) :-
   task_isExecutedIn(Task,ActionConcept,_),
   action_registry(ActionConcept,_),!.
 
-%% execute_task(+Task,+InputDict,-Action,-OutputDict)
+%% execute_task(+Task,+InputDict,-Action,-OutputDicts)
 %
-execute_task(Task,InputDict,Action,OutputDict) :-
+execute_task(Task,InputDict,Action,OutputDicts) :-
   %%%%%%%%%
   %%%%% Find action concept
   %%%%%%%%%
@@ -117,6 +118,11 @@ execute_task(Task,InputDict,Action,OutputDict) :-
   %%%%%%%%%
   create_action_symbol(ActionConcept,Task,InputDict,Action),
   !, % TODO <-- this kills choicepoints for different ways to execute the task
+  lazy_findall(OutputDict,
+    execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict),
+    OutputDicts).
+
+execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict) :-
   %%%%%%%%%
   %%%%% Run the action!
   %%%%%%%%%
