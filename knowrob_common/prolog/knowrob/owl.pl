@@ -336,33 +336,59 @@ owl_run_event(Event, Goal, Args) :-
 		 *		  	*
 		 *******************************/
 
+:- rdf_meta owl_formal_class(r,r),
+            owl_formal_property(r,r).
+
+%%
 owl_reified_relation(FormalRelation,ReifiedRelation) :-
-  rdf_has_prolog(ReifiedRelation,ease:describesFormalProperty,FormalRelation)
-  *-> true ; (
-    var(ReifiedRelation),
-    ground(FormalRelation),
-    owl_create_reified_relation(FormalRelation,ReifiedRelation)
-  ).
+  ground(ReifiedRelation),!,
+  rdf_has_prolog(ReifiedRelation,ease:describesFormalProperty,P_atom),
+  owl_formal_property(P_atom,FormalRelation).
+
+owl_reified_relation(P_atom,ReifiedRelation) :-
+  ground(P_atom),!,
+  owl_formal_property(P_atom,P),
+  (( rdfs_individual_of(ReifiedRelation,ease:'ReifiedRelation'),
+     owl_reified_relation(P,ReifiedRelation) )
+  ;  owl_create_reified_relation(P,ReifiedRelation) ),!.
 
 owl_create_reified_relation(FormalRelation,ReifiedRelation) :-
   ground(FormalRelation),
   rdf_instance_from_class(ease:'ReifiedRelation',ReifiedRelation),
-  rdf_assert_prolog(ReifiedRelation, ease:describesFormalProperty,
-                    FormalRelation).
+  rdf_assert_prolog(ReifiedRelation, ease:describesFormalProperty, FormalRelation).
 
+owl_formal_property(P_atom,P_owl) :-
+  ( rdf_split_url('',_,P_atom) -> (
+    term_to_atom(P_term,P_atom),
+    rdf_global_id(P_term,P_owl) )
+  ; P_owl = P_atom ).
+
+%%
 owl_reified_class(FormalClass,ReifiedClass) :-
-  rdf_has_prolog(ReifiedClass,ease:describesFormalClass,FormalClass)
-  *-> true ; (
-    var(ReifiedClass),
-    ground(FormalClass),
-    owl_create_reified_class(FormalClass,ReifiedClass)
-  ).
+  ground(ReifiedClass),!,
+  rdf_has_prolog(ReifiedClass,ease:describesFormalClass,C_atom),
+  owl_formal_class(C_atom,FormalClass).
+
+owl_reified_class(C_atom,ReifiedClass) :-
+  ground(C_atom),!,
+  owl_formal_class(C_atom,C),
+  (( rdfs_individual_of(ReifiedClass,ease:'ReifiedClass'),
+     owl_reified_class(C,ReifiedClass) )
+  ;  owl_create_reified_class(C,ReifiedClass) ),!.
 
 owl_create_reified_class(FormalClass,ReifiedClass) :-
   ground(FormalClass),
   rdf_instance_from_class(ease:'ReifiedClass',ReifiedClass),
   rdf_assert_prolog(ReifiedClass, ease:describesFormalClass,
                     FormalClass).
+
+owl_formal_class(C_atom,C_owl) :-
+  ( rdf_split_url('',_,C_atom) -> (
+    ( atomic_list_concat([NS,Name],':',C_atom) ->
+      C_term = NS:Name ;
+      C_term = C_atom ),
+    rdf_global_id(C_term,C_owl) ) ;
+    C_owl = C_atom ).
 
 		 /*******************************
 		 *		  converting between OWL / Prolog representation	*
