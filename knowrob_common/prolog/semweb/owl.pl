@@ -80,6 +80,7 @@
 	    non_negative_integer/4,
 	    non_negative_int/2,
 	    rdf_assert_literal/3,
+	    rdf_assert_literal/4,
 	    owl_property_range_clear_cache/2
 	  ]).
 :- use_module(library(lists)).
@@ -147,6 +148,7 @@
 	owl_disjoint_with(r, r),
 	owl_find(+, t, t, +, -),
 	rdf_assert_literal(r, r, +),
+	rdf_assert_literal(r, r, +, +),
 	owl_db_has(+,r,r,t).
 
 
