@@ -115,15 +115,19 @@ PREDICATE(ros_param_set_int, 2) {
 /*********************************/
 
 PREDICATE(ros_info, 1) {
-  ROS_INFO("%s\n", (char*)PL_A1);
+  ROS_INFO("%s", (char*)PL_A1);
   return TRUE;
 }
 PREDICATE(ros_warn, 1) {
-  ROS_WARN("%s\n", (char*)PL_A1);
+  ROS_WARN("%s", (char*)PL_A1);
   return TRUE;
 }
 PREDICATE(ros_error, 1) {
-  ROS_ERROR("%s\n", (char*)PL_A1);
+  ROS_ERROR("%s", (char*)PL_A1);
+  return TRUE;
+}
+PREDICATE(ros_debug, 1) {
+  ROS_DEBUG("%s", (char*)PL_A1);
   return TRUE;
 }
 
