@@ -36,7 +36,7 @@
       action_call_or_failure/4,
       action_add_filler/2,
       action_filler_for/2,
-      create_action_symbol/4,
+      create_action_symbol/5,
       action_bindings/2
     ]).
 /** <module> The execution of actions.
@@ -70,7 +70,7 @@ the task (if any).
             task_isExecutionPossible(r),
             handle_action_failure(r,r,+),
             execute_task(r,t,r,t),
-            create_action_symbol(r,r,t,-),
+            create_action_symbol(r,r,r,t,-),
             action_bindings(r,t).
 
 %% action_registry(ActionConcept, Goal)
@@ -116,7 +116,7 @@ execute_task(Task,InputDict,Action,OutputDicts) :-
   %%%%%%%%%
   %%%%% Instantiate action concept
   %%%%%%%%%
-  create_action_symbol(ActionConcept,Task,InputDict,Action),
+  create_action_symbol(ActionConcept,Task,ExecutionPlan,InputDict,Action),
   !, % TODO <-- this kills choicepoints for different ways to execute the task
   lazy_findall(OutputDict,
     execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict),
@@ -150,12 +150,12 @@ execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict) :-
 		 *	ACTION SYMBOL		*
 		 *******************************/
 
-%% create_action_symbol(ActionConcept,Task,InputDict,Action)
+%% create_action_symbol(ActionConcept,Task,ExecutionPlan,InputDict,Action)
 %
 % Createsa new action symbols and assigns participants
 % and regions from roles and parameters of a task.
 %
-create_action_symbol(ActionConcept,Task,InputDict,Action) :-
+create_action_symbol(ActionConcept,Task,ExecutionPlan,InputDict,Action) :-
   % create action symbol
   rdf_instance_from_class(ActionConcept,Action),
   rdf_assert(Action,dul:executesTask,Task),
@@ -163,6 +163,8 @@ create_action_symbol(ActionConcept,Task,InputDict,Action) :-
   rdf_instance_from_class(ease:'ActionStatus',ActionStatus),
   rdf_assert(Action, ease:hasStatus, ActionStatus),
   rdf_assert(ActionStatus, dul:hasRegion, knowrob:'ACTION_OK'),
+  ( rdf_has(ExecutionPlan,dul:describes,IFace) ->
+    rdf_assert(Action,dul:hasParticipant,IFace) ; true ),
   %%%%%%%%
   dict_pairs(InputDict,_,Pairs),
   forall(

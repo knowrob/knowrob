@@ -30,16 +30,10 @@ test(rdf_has_isExecutedIn) :-
   task_isExecutedIn(acext:'rdf_has1_Task',
        knowrob:'KBQuerying',
        acext:'rdf_has1_Execution'), !.
-
-test('rdf_has(ACTION_INPUT_MISSING)') :-
-  execute_task(acext:'rdf_has1_Task',_{},Action,[_|_]),
-  action_status(Action,knowrob:'ACTION_INPUT_MISSING').
   
 %% all arguments unbound
 test('rdf_has(?,?,?)', [nondet]) :-
-  create_input_dict(InputDict,[
-      [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
-  ]),
+  create_input_dict(InputDict,[]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,[_|_]),
   action_status(Action,knowrob:'ACTION_OK').
@@ -49,8 +43,7 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
   owl_reified_relation(dul:'hasConstituent', HasConstituent),
   create_input_dict(InputDict, [
       [acext:'rdf_has1_Task_S', acext:'Object1'],
-      [acext:'rdf_has1_Task_P', HasConstituent],
-      [acext:'rdf_has1_Task_Predicate', acext:'rdf_has1']
+      [acext:'rdf_has1_Task_P', HasConstituent]
   ]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,Os),
@@ -63,8 +56,7 @@ test('rdf_has(obj1,hasNameString,?)') :-
   owl_reified_relation(ease:'hasNameString', HasNameString),
   create_input_dict(InputDict, [
       [acext:'rdf_has1_Task_S',acext:'Object1'],
-      [acext:'rdf_has1_Task_P',HasNameString],
-      [acext:'rdf_has1_Task_Predicate',acext:'rdf_has1']
+      [acext:'rdf_has1_Task_P',HasNameString]
   ]),
   % execute again
   execute_task(acext:'rdf_has1_Task',InputDict,Action,[OutputDict|_]),
@@ -76,8 +68,7 @@ test('rdf_has(obj1,hasNameString,?)') :-
 
 test('current_object_pose(obj1,?)') :-
   create_input_dict(InputDict, [
-      [acext:'current_object_pose_Task_O',acext:'Object1'],
-      [acext:'current_object_pose_Task_Predicate',acext:'current_object_pose']
+      [acext:'current_object_pose_Task_O',acext:'Object1']
   ]),
   % execute
   execute_task(acext:'current_object_pose_Task',InputDict,Action,[OutputDict]),
@@ -97,11 +88,14 @@ test('add_two_ints(CREATE)') :-
   owl_create_atomic_region(xsd:long, 4, Region_b),
   create_input_dict(InputDict, [
       [acext:'add_two_ints_Task_a',Region_a],
-      [acext:'add_two_ints_Task_b',Region_b],
-      [acext:'add_two_ints_Task_iface',acext:'add_two_ints_Interface']
+      [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  create_action_symbol(ros:'ServiceQuerying',acext:'add_two_ints_Task',InputDict,Action),
+  create_action_symbol(
+      ros:'ServiceQuerying',
+      acext:'add_two_ints_Task',
+      acext:'add_two_ints_Execution',
+      InputDict,Action),
   rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
   rdf_has(Action, dul:hasRegion, Region_a),
   rdf_has(Action, dul:hasRegion, Region_b).
@@ -112,8 +106,7 @@ test('add_two_ints(ENCODE)') :-
   owl_create_atomic_region(xsd:long, 4, Region_b),
   create_input_dict(InputDict, [
       [acext:'add_two_ints_Task_a',Region_a],
-      [acext:'add_two_ints_Task_b',Region_b],
-      [acext:'add_two_ints_Task_iface',acext:'add_two_ints_Interface']
+      [acext:'add_two_ints_Task_b',Region_b]
   ]),
   action_bindings(acext:'add_two_ints_Execution',ActionDict),
   %%%%
@@ -156,7 +149,11 @@ test('sum_array(CREATE)') :-
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  create_action_symbol(ros:'ServiceQuerying',acext:'sum_array_Task',InputDict,Action),
+  create_action_symbol(
+      ros:'ServiceQuerying',
+      acext:'sum_array_Task',
+      acext:'sum_array_Execution',
+      InputDict,Action),
   rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
   rdf_has(Action, dul:hasRegion, Region_a).
 
@@ -164,8 +161,7 @@ test('sum_array(ENCODE)') :-
   rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
   owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
   create_input_dict(InputDict, [
-      [acext:'sum_array_Task_a',Region_a],
-      [acext:'sum_array_Task_iface',acext:'sum_array_Interface']
+      [acext:'sum_array_Task_a',Region_a]
   ]),
   action_bindings(acext:'sum_array_Execution',ActionDict),
   %%%%
@@ -242,7 +238,11 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  create_action_symbol(ros:'ServiceQuerying',acext:'pose_test_Task',InputDict,Action),
+  create_action_symbol(
+      ros:'ServiceQuerying',
+      acext:'pose_test_Task',
+      acext:'pose_test_Execution',
+      InputDict,Action),
   rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
   rdf_has(Action, dul:hasRegion, _).
 
