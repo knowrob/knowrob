@@ -156,7 +156,8 @@ ros_querying_set_status(Action,DataSlot,SlotRegion) :-
 ros_querying_set_status(Action,_,SlotRegion) :-
   rdf_has_prolog(SlotRegion,dul:hasDataValue,StatusCode),
   rdfs_split_url(_,AName,Action),
-  writef('[WARN] Action %w has unknown status %w.', [AName,StatusCode]).
+  writef('[WARN] Action %w has unknown status %w.', [AName,StatusCode]),
+  set_action_status(Action,SlotRegion).
 
 %%
 create_ros_message_slot(SlotType, Region, Slot) :-
