@@ -27,7 +27,7 @@
 
 :- module(kb_querying,
     [
-      kb_querying/4
+      kb_querying/5
     ]).
 /** <module> The execution of KB querying actions.
 
@@ -41,7 +41,7 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta kb_querying(r,t,t,-).
+:- rdf_meta kb_querying(r,r,t,t,-).
 
 % extend action library
 action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying', kb_querying).
@@ -56,7 +56,7 @@ action_execution:action_registry('http://knowrob.org/kb/knowrob.owl#KBQuerying',
 % @param Action IRI of querying action
 % @param OutputPairs
 % 
-kb_querying(Action,InputDict,ActionDict,OutputPairs) :-
+kb_querying(Action,_ExecutionPlan,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find KBPredicate participant.
   %%%%%%%%%

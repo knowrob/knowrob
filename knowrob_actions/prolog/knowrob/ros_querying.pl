@@ -27,7 +27,7 @@
 
 :- module(ros_querying,
     [
-      ros_querying/4,
+      ros_querying/5,
       create_ros_request/5
     ]).
 /** <module> The execution of ROS querying actions.
@@ -41,7 +41,7 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/action_execution')).
 
-:- rdf_meta ros_querying(r,t,t,-),
+:- rdf_meta ros_querying(r,r,t,t,-),
             create_ros_request(r,t,t,r,r).
 
 action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', ros_querying).
@@ -70,7 +70,7 @@ create_ros_request(Action,InputDict,ActionDict,ReqType,Request) :-
 %% ros_querying(+Action) is semidet.
 %
 %
-ros_querying(Action,InputDict,ActionDict,OutputPairs) :-
+ros_querying(Action,ExecutionPlan,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find ServiceInterface participant.
   action_call_or_failure(Action, (
@@ -83,7 +83,10 @@ ros_querying(Action,InputDict,ActionDict,OutputPairs) :-
   %%%%% Find the ROS service (i.e. some object that concretely realizes
   %%%%% the interface.
   action_call_or_failure(Action, (
-      rdf_has(Service,ros:concretelyImplements,ServiceInterface)
+      rdf_has(Service,ros:concretelyImplements,ServiceInterface),
+      ( rdf_has_prolog(ExecutionPlan,ros:hasServiceName,SName) ->
+        rdf_has_prolog(Service,ros:hasServiceName,SName) ;
+        true )
     ),
     ros:'SERVICE_NODE_UNREACHABLE',
     'OWL ROS Service missing'

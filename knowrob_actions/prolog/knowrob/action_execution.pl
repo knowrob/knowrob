@@ -119,15 +119,15 @@ execute_task(Task,InputDict,Action,OutputDicts) :-
   create_action_symbol(ActionConcept,Task,ExecutionPlan,InputDict,Action),
   !, % TODO <-- this kills choicepoints for different ways to execute the task
   lazy_findall(OutputDict,
-    execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict),
+    execute_task_(Action,ActionGoal,ExecutionPlan,InputDict,ActionDict,OutputDict),
     OutputDicts).
 
-execute_task_(Action,ActionGoal,InputDict,ActionDict,OutputDict) :-
+execute_task_(Action,ActionGoal,ExecutionPlan,InputDict,ActionDict,OutputDict) :-
   %%%%%%%%%
   %%%%% Run the action!
   %%%%%%%%%
   ( catch(
-    owl_run_event(Action, ActionGoal, [InputDict,ActionDict,OutputPairs]),
+    owl_run_event(Action, ActionGoal, [ExecutionPlan,InputDict,ActionDict,OutputPairs]),
     action_failure(Action, Failure, Message),
     handle_action_failure(Action, Failure, Message)) *->
     (
