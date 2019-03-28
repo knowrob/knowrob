@@ -38,6 +38,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/action_execution')).
 
 :- rdf_meta kb_querying(r,t,t,-).
