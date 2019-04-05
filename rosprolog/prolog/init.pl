@@ -43,7 +43,8 @@ user:message_hook(format(X,Args), debug(_Topic), _) :- ros_message_hook(X,Args,r
 ros_message_hook(Format,Args,Predicate) :-
   findall(X, (
     member(Arg,Args),
-    ( rdf_split_url('',_,Arg) ->
+    (( \+ atom(Arg) ;
+       rdf_split_url('',_,Arg) ) ->
       X = Arg ;
       rdf_split_url(_,X,Arg)
     )),
