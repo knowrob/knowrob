@@ -359,11 +359,12 @@ public class MarkerObject {
 		if(highlighted==null) {
 			highlighted = getColor();
 		}
-		markerMsg.getColor().setR(color[0]);
-		markerMsg.getColor().setG(color[1]);
-		markerMsg.getColor().setB(color[2]);
-		markerMsg.getColor().setA(color[3]);
-		queueRepublish();
+		//markerMsg.getColor().setR(color[0]);
+		//markerMsg.getColor().setG(color[1]);
+		//markerMsg.getColor().setB(color[2]);
+		//markerMsg.getColor().setA(color[3]);
+		//queueRepublish();
+		publisher.highlightMarker(this);
 	}
 	
 	public void removeHighlight() {
