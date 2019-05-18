@@ -9,6 +9,7 @@ from rosprolog.srv._JSONWrapper import JSONWrapper, JSONWrapperResponse
 # global handle to all imported ROS modules
 ros_modules = {}
 ros_services = {}
+ros_pubisher = {}
 
 # dynamic import of ROS modules by type string, e.g. 'std_srvs/Trigger'
 def get_ros_module(type_string, import_path):
@@ -34,6 +35,14 @@ def get_service(srv_name, srv_type):
         srv = rospy.ServiceProxy(srv_name, srv_type)
         ros_services[srv_name] = srv
     return srv
+    
+def get_publisher(topic_name, msg_class):
+    try:
+        publisher = ros_pubisher[topic_name]
+    except:
+        publisher = rospy.Publisher(topic_name, msg_class, queue_size=10)
+        ros_pubisher[topic_name] = publisher
+    return publisher
 
 class JSONWrapperService(object):
     def __init__(self):
@@ -41,11 +50,30 @@ class JSONWrapperService(object):
         rospy.loginfo('json_wrapper service is running')
     
     def json_wrapper_cb(self, wrapper_request):
-        # TODO: also include a status field in response
-        rospy.logdebug('JSON request: ' + wrapper_request.json_data)
         request_data = json.loads(wrapper_request.json_data)
-        srv_module   = get_service_module(wrapper_request.service_path)
-        module_name  = wrapper_request.service_path.split('/')[-1]
+        if wrapper_request.mode == 'service':
+            return self.service(request_data)
+        elif wrapper_request.mode == 'action':
+            return self.action(request_data)
+        elif wrapper_request.mode == 'publish':
+            return self.publish(request_data)
+        else:
+            pass
+    
+    def publish(self,msg_data):
+        (msg,msg_cls) = self.decode_json_message(msg_data['msg_path'],msg_data)
+        publisher = get_publisher(msg_data['topic_name'],msg_cls)
+        publisher.publish(msg)
+        return JSONWrapperResponse()
+    
+    def action(self,request_data):
+        # TODO implement
+        return JSONWrapperResponse()
+    
+    def service(self,request_data):
+        # TODO: also include a status field in response
+        srv_module   = get_service_module(request_data['service_path'])
+        module_name  = request_data['service_path'].split('/')[-1]
         srv_cls = getattr(srv_module,module_name)
         req_cls = getattr(srv_module,module_name+'Request')
         res_cls = getattr(srv_module,module_name+'Response')
@@ -53,7 +81,7 @@ class JSONWrapperService(object):
         request = req_cls()
         self.assign_slots(request, request_data)
         # get a service handle
-        srv = get_service(wrapper_request.service_name, srv_cls)
+        srv = get_service(request_data['service_name'], srv_cls)
         # send it
         response = JSONWrapperResponse()
         try:
@@ -61,7 +89,6 @@ class JSONWrapperService(object):
             response.json_data = self.read_slots(res_cls,srv_response)
         except:
             response.json_data = ''
-        rospy.logdebug('JSON response: ' + response.json_data)
         # return the json encoded response
         return response
     
@@ -99,28 +126,30 @@ class JSONWrapperService(object):
         [type_path,value] = json_value
         if self.is_primitive_type(type_path) or self.is_primitive_array_type(type_path):
             return value
-        elif self.is_message_array_type(type_path, element_type):
+        elif self.is_message_array_type(type_path):
+            element_type = type_path[6:-1]
             return self.decode_json_message_array(element_type, value)
         else:
-            return self.decode_json_message(type_path,value)
+            return self.decode_json_message(type_path,value)[0]
     
     def decode_json_message(self, type_path, msg_json):
         msg_module  = get_message_module(type_path)
         module_name = type_path.split('/')[-1]
-        msg         = getattr(msg_module,module_name)()
+        msg_class = getattr(msg_module,module_name)
+        msg = msg_class()
         self.assign_slots(msg, msg_json)
-        return msg
+        return (msg,msg_class)
     
     def decode_json_message_array(self, type_path, array_json):
         out = []
         for x in array_json:
-            out.append(self.decode_json_message(type_path,x))
+            out.append(self.decode_json_message(type_path,x)[0])
         return out
     
-    def assign_slots(self, request_message, json_data):
+    def assign_slots(self, msg, json_data):
         for name in json_data:
-            value = self.decode_json_value(json_data[name])
-            setattr(request_message, name, value)
+            if hasattr(msg, name):
+                setattr(msg, name, self.decode_json_value(json_data[name]))
     
     #######################
     ######### Encoding of ROS message into JSON

@@ -9,13 +9,46 @@
 
 #define ROSPROLOG_TF_CACHE_TIME 10.0
 
+class ROSProlog {
+public:
+    ros::NodeHandle _nh;
+    ros::ServiceClient _json_pub;
+    
+    static ROSProlog& get_rosprolog() {
+        static ROSProlog rosprolog;
+        return rosprolog;
+    }
+    
+    static ROSProlog& get() {
+        if(!ros::isInitialized()) {
+            int argc=0;
+            ros::init(argc, (char**)NULL, std::string("knowrob"));
+        }
+        return get_rosprolog();
+    };
+    
+    bool json_wrapper(rosprolog::JSONWrapper &msg) {
+        return _json_pub.call(msg);
+    }
+    
+private:
+    ROSProlog():
+      _nh(),
+      _json_pub(_nh.serviceClient<rosprolog::JSONWrapper>("/json_wrapper/json_wrapper", true))
+    {}
+    ~ROSProlog() {
+        ros::shutdown();
+    }
+    
+    ROSProlog(ROSProlog const&); // Don't Implement
+    void operator=(ROSProlog const&);     // Don't implement
+};
+
+ROSProlog *rospl = NULL;
 tf::TransformListener *listener = NULL;
 
 PREDICATE(ros_init, 0) {
-  if(!ros::isInitialized()) {
-    int argc=0;
-    ros::init(argc, (char**)NULL, std::string("knowrob"));
-  }
+  ROSProlog::get();
   return TRUE;
 }
 
@@ -322,13 +355,22 @@ PREDICATE(tf_transform_pose, 4) {
   return TRUE;
 }
 
-PREDICATE(ros_json_wrapper, 4) {
+PREDICATE(ros_json_service_call, 2) {
   rosprolog::JSONWrapper msg;
-  msg.request.service_name = std::string((char*)PL_A1);
-  msg.request.service_path = std::string((char*)PL_A2);
-  msg.request.json_data    = std::string((char*)PL_A3);
-  if (ros::service::call("/json_wrapper/json_wrapper", msg.request, msg.response)) {
-      PL_A4 = msg.response.json_data.c_str();
+  msg.request.mode = std::string("service");
+  msg.request.json_data = std::string((char*)PL_A1);
+  if(ROSProlog::get().json_wrapper(msg)) {
+      PL_A2 = msg.response.json_data.c_str();
+  }
+  return TRUE;
+}
+
+PREDICATE(ros_json_publish, 1) {
+  rosprolog::JSONWrapper msg;
+  msg.request.mode = std::string("publish");
+  msg.request.json_data = std::string((char*)PL_A1);
+  if(ROSProlog::get().json_wrapper(msg)) {
+      //PL_A2 = msg.response.json_data.c_str();
   }
   return TRUE;
 }

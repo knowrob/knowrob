@@ -115,7 +115,7 @@ ros_querying(Action,ExecutionPlan,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Call the service
   catch(
-    ros_service_call(Service, Request, Response),
+    rosowl_service_call(Service, Request, Response),
     ros_error(Error),
     throw(action_failure(Action, Error, 'ROS service call failed'))
   ),

@@ -27,6 +27,8 @@
 
 :- module(roscpp,
     [
+      ros_publish/3, % TopicName, MsgPath, MsgData
+      ros_service_call/4,
       ros_package_path/2,
       ros_package_command/2,
       ros_param_get_string/2,
@@ -38,8 +40,7 @@
       ros_info/1,
       ros_warn/1,
       ros_error/1,
-      ros_debug/1,
-      ros_json_wrapper/4
+      ros_debug/1
     ]).
 /** <module> ROS CPP interface for Prolog
 
@@ -47,8 +48,78 @@
 @license BSD
 */
 
+:- use_module(library('http/json')).
+
 :- use_foreign_library('librosprolog.so').
 :- ros_init.
+
+%% ros_publish(+TopicName,+MsgPath,+MsgData) is det.
+%
+% Publish a message on the topic given in the first argument.
+% The message data is supplied as dictionary, where
+% the values are pairs of type and value for the corresponding slots.
+%
+% To publish, for example, a string typed message on the topic
+% '/my_topic' one can write:
+%
+%    ros_publish('/my_topic', 'std_msgs/String', _{data: [string,test]}).
+%
+% Or by using a list of pairs instead of a dictionary:
+%
+%    ros_publish('/my_topic', 'std_msgs/String', [data-[string,test]]).
+%
+% Note that the lowercase *string* refers to the ROS basic datatype string.
+% This can be replaced with message types in case a slot refers
+% to another message.
+%
+% A special case is implemented for std_msgs, where the value can be
+% provided directly in the third argument:
+%
+%    ros_publish('/my_topic', 'std_msgs/String', test).
+%
+ros_publish(TopicName, MsgPath, Dict0) :-
+  is_dict(Dict0),!,
+  dict_pairs(Dict0,_,Pairs),
+  dict_pairs(Dict1,_,[
+    msg_path-MsgPath,
+    topic_name-TopicName|Pairs]),
+  ros_publish_dict(Dict1).
+
+ros_publish(TopicName, MsgPath, Pairs) :-
+  is_list(Pairs),
+  dict_pairs(Dict,_,Pairs),!,
+  ros_publish(TopicName, MsgPath, Dict).
+
+ros_publish(TopicName, StdMsg, Data) :-
+  atom_concat('std_msgs/',Type,StdMsg),
+  \+ atom_concat(_,'Array',StdMsg), !,
+  downcase_atom(Type,TypeLowerCase),
+  ros_publish_dict(_{
+      msg_path: StdMsg,
+      topic_name: TopicName,
+      data: [TypeLowerCase,Data]
+  }).
+
+ros_publish_dict(Msg_Dict) :-
+  with_output_to(atom(Msg_json), 
+    json_write_dict(current_output, Msg_Dict)
+  ),
+  ros_json_publish(Msg_json).
+
+%ros_subscribe(TopicName, Callback) :-
+%  fail.
+%ros_unsubscribe(TopicName, Callback) :-
+%  fail.
+
+ros_service_call(ServiceName, ServicePath, Request, Response) :-
+  with_output_to(atom(Request_json), 
+    json_write_dict(current_output, Request)
+  ),
+  ros_json_service_call(_{
+        service_name: ServiceName,
+        service_path: ServicePath,
+        json_data: Request_json
+  }, Response).
 
 %% ros_param_get_string(+Key,-Value) is semidet.
 %

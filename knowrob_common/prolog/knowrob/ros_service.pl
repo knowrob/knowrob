@@ -28,7 +28,7 @@
 :- module(knowrob_ros_service,
     [
       ros_service/3,
-      ros_service_call/3,
+      rosowl_service_call/3,
       ros_request_encode/2,
       ros_response_decode/2,
       ros_message_conversion/3
@@ -46,7 +46,7 @@
 :- rdf_meta ros_service(r, ?, ?),
             ros_request_encode(r, ?),
             ros_response_decode(+, -),
-            ros_service_call(r, r, r).
+            rosowl_service_call(r, r, r).
 
 :- multifile ros_message_conversion/3.
 
@@ -68,13 +68,17 @@ ros_message_slot_type(Msg,SlotName,SlotType) :-
 % % % % % % % % % % % call a service
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% ros_service_call(+Service, +Request, +Response) is semidet.
+%% rosowl_service_call(+Service, +Request, +Response) is semidet.
 %
-ros_service_call(Service, Request, Response) :-
+rosowl_service_call(Service, Request, Response) :-
   ros_service(Service, ServiceName, ServicePath),
   ( ros_request_encode(Request, Request_json) ;
     throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ),
-  ( ros_json_wrapper(ServiceName, ServicePath, Request_json, Response_json) ;
+  ( ros_json_service_call(_{
+        service_path: ServicePath,
+        service_name: ServiceName,
+        json_data: Request_json
+  }, Response_json) ;
     throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
   ( ground(Response_json) ; % no response from service
     throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
