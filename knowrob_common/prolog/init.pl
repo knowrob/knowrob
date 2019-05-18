@@ -58,7 +58,7 @@
 % parse OWL files, register name spaces
 :- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob.owl').
-:- owl_parser:owl_parse('package://ros_ontology/owl/ROS.owl').
+:- owl_parser:owl_parse('package://rosowl/owl/ROS.owl').
 
 :- use_module(library('knowrob/ros')).
 :- use_module(library('knowrob/ros_service')).
