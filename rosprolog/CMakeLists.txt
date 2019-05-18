@@ -22,6 +22,7 @@ message(STATUS "SWIPL found.")
 
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_library(rosprolog SHARED src/rosprolog.cpp)
+add_dependencies(rosprolog rosprolog_generate_messages_cpp)
 target_link_libraries(rosprolog ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 
 install(DIRECTORY prolog/
