@@ -113,6 +113,11 @@ public class MarkerObject {
         public int getId() {
                 return markerMsg.getId();
         }
+        
+        
+        public String getNS() {
+                return markerMsg.getNs();
+        }
 	
 	
 	public int getType() {
