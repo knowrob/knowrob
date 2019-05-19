@@ -46,7 +46,7 @@ def get_publisher(topic_name, msg_class):
 
 class JSONWrapperService(object):
     def __init__(self):
-        self.update_positions_srv = rospy.Service('~json_wrapper', JSONWrapper, self.json_wrapper_cb)
+        self.update_positions_srv = rospy.Service('json_wrapper', JSONWrapper, self.json_wrapper_cb)
         rospy.loginfo('json_wrapper service is running')
     
     def json_wrapper_cb(self, wrapper_request):

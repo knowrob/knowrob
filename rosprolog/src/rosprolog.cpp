@@ -34,7 +34,7 @@ public:
 private:
     ROSProlog():
       _nh(),
-      _json_pub(_nh.serviceClient<rosprolog::JSONWrapper>("/json_wrapper/json_wrapper", true))
+      _json_pub(_nh.serviceClient<rosprolog::JSONWrapper>("/json_wrapper"))
     {}
     ~ROSProlog() {
         ros::shutdown();
@@ -371,6 +371,9 @@ PREDICATE(ros_json_publish, 1) {
   msg.request.json_data = std::string((char*)PL_A1);
   if(ROSProlog::get().json_wrapper(msg)) {
       //PL_A2 = msg.response.json_data.c_str();
+    return TRUE;
   }
-  return TRUE;
+  else {
+    return FALSE;
+  }
 }
