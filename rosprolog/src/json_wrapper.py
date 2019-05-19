@@ -61,16 +61,19 @@ class JSONWrapperService(object):
             pass
     
     def publish(self,msg_data):
+        rospy.loginfo('json_wrapper publish ' + str(msg_data['topic_name']))
         (msg,msg_cls) = self.decode_json_message(msg_data['msg_path'],msg_data)
         publisher = get_publisher(msg_data['topic_name'],msg_cls)
         publisher.publish(msg)
         return JSONWrapperResponse()
     
     def action(self,request_data):
+        rospy.loginfo('json_wrapper action')
         # TODO implement
         return JSONWrapperResponse()
     
     def service(self,request_data):
+        rospy.loginfo('json_wrapper service')
         # TODO: also include a status field in response
         srv_module   = get_service_module(request_data['service_path'])
         module_name  = request_data['service_path'].split('/')[-1]
