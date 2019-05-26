@@ -32,7 +32,9 @@
 
     <!-- http://knowrob.org/kb/object-change.owl#transformedInto -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/object-change.owl#transformedInto"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/object-change.owl#transformedInto">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    </owl:ObjectProperty>
 
     <!-- http://knowrob.org/kb/object-change.owl#computeActionEffect -->
 

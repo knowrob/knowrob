@@ -17,7 +17,7 @@
      xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-test.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="package://ros_ontology/owl/ROS.owl"/>
+        <owl:imports rdf:resource="package://rosowl/owl/ROS.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-WF.owl"/>
     </owl:Ontology>
     

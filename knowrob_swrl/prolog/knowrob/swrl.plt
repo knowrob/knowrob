@@ -24,7 +24,6 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/swrl')).
-:- use_module(library('knowrob/entity')).
 :- use_module(library('knowrob/temporal')).
 
 :- owl_parser:owl_parse('package://knowrob_common/owl/test/swrl_test.owl').

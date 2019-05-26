@@ -56,6 +56,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('jpl')).
 :- use_module(library('knowrob/mongo')).
+:- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/computable')).
 
@@ -221,9 +222,9 @@ mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp) :-
         ['property_chain', 'is', Property],
         ['value', 'is', Value]
       ])
-      ; X=['begin', '<', Stamp]
+      ; X=['begin', '<=', Stamp]
       ; X=or([
-            ['end', '>', Stamp],
+            ['end', '>=', Stamp],
             ['end', 'exists', false]
           ])
       ),
@@ -234,10 +235,10 @@ mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp) :-
   mng_cursor_descending(DBCursor, 'begin', DBCursorDescending),
   mng_cursor_read(DBCursorDescending, DBObject),
   % bind output
+  ( ground(Property) -> true ; mng_get_string(DBObject,property,Property)),
   ( ground(Value)    -> true ; mem_triple_value(DBObject,Property,Value)),
   ( ground(Stamp)    -> true ; mng_get_long(DBObject,begin,Stamp)),
-  ( ground(Subject)  -> true ; mng_get_string(DBObject,subject,Subject)),
-  ( ground(Property) -> true ; mng_get_string(DBObject,property,Property)).
+  ( ground(Subject)  -> true ; mng_get_string(DBObject,subject,Subject)).
 
 %% mem_triple_value(+DBObj,+P,?Val)
 %
@@ -287,35 +288,15 @@ mem_triple_interval(DBObject,Interval) :-
 % Integration of triple memory into virtual KB.
 %
 rdfs_computable:rdfs_computable_triple_during(Property,Subject,Value,[Stamp]) :-
-  mem_subject(Subject),
-  mem_property(Property),
+  ( ground(Subject)  -> mem_subject(Subject) ; true ),
+  ( ground(Property) -> mem_property(Property) ; true ),
   mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp),
   \+ mng_get_long(DBObject,end,_).
 
 rdfs_computable:rdfs_computable_triple_during(Property,Subject,Value,[Begin,End]) :-
-  mem_subject(Subject),
-  mem_property(Property),
+  ( ground(Subject)  -> mem_subject(Subject) ; true ),
+  ( ground(Property) -> mem_property(Property) ; true ),
   mem_retrieve_triple(Subject,Property,Value,DBObject,Begin),
   ( mng_get_long(DBObject,end,X) -> 
   ( var(End) -> End=X ; X >= End )
   ; true ).
-
-%% TODO reimplement
-%entities:entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
-  %nonvar(Entity), nonvar(Key), nonvar(Value),
-  %entity_iri(PropIri, Key, lower_camelcase),
-  %entity_interval(IntervalDescr, Interval),
-  %(  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-  %->  ( % data property
-      %rdf_phas(PropIri, rdfs:range, Range) ->
-        %assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval) ;
-        %assert_temporal_part(Entity, PropIri, literal(Value), Interval)
-  %) ; ( % nested entity
-      %rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
-      %entity(ValueEntity, Value),
-      %assert_temporal_part(Entity, PropIri, ValueEntity, Interval)
-  %)),
-  %entity_assert(Entity, Descr).
-
-%entity_interval([an,interval,I], I) :- !.
-%entity_interval(Evt, I) :- interval(Evt,I).
