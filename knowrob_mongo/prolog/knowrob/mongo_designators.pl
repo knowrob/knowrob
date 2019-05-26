@@ -77,8 +77,8 @@ mng_designator(Designator, DesigJava) :-
 
 mng_designator(Designator, DesigJava) :-
   designator_id(Designator, DesigID),
-  mng_query('logged_designators', one(DBObj),
-           [['designator._id', 'is', DesigID]]),
+  mng_query('logged_designators', DBObj,
+           [['designator._id', 'is', DesigID]]),!,
   mng_db_call('designator', [DBObj], DesigJava).
 
 jpl_designator(Designator, DesigJava) :-

@@ -28,17 +28,16 @@
 
 :- module(knowrob_perception,
     [
-      comp_detected_pose/2,
-      comp_detected_pose/3,
       create_visual_perception/1,
       create_visual_perception/2,
       perception_set_object/2,
       perception_set_pose/2,
       object_detection/3,
-      create_joint_information/9,
-      update_joint_information/7,
-      read_joint_information/9,
-      delete_joint_information/1
+      object_detection/4
+      %create_joint_information/9,
+      %update_joint_information/7,
+      %read_joint_information/9,
+      %delete_joint_information/1
     ]).
 /** <module> Asserting and reasoning about perception events.
 
@@ -60,53 +59,15 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 :-  rdf_meta
-    create_joint_information(r, r, r, +, ?, +, +, +, r),
-    update_joint_information(r, r, +, ?, +, +, +),
-    read_joint_information(r, r, r, r, -, -, -, -, -),
-    delete_joint_information(r),
-    comp_detected_pose(r,-),
-    comp_detected_pose_at_time(r,-,+).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Pose of perceived objects
-
-%% comp_detected_pose(+Obj, -Pose).
-%% comp_detected_pose(+Obj, -Pose, +Interval).
-%
-% Computes the pose of Obj based on perception events
-% and where they occured.
-%
-comp_detected_pose(Obj, Pose) :-
-  current_time(Instant),
-  comp_detected_pose_at_time(Obj, Pose, [Instant,Instant]).
-
-comp_detected_pose(Obj, Pose, [Instant,Instant]) :-
-  ground(Instant), !,
-  comp_detected_pose_at_time(Obj, Pose, Instant).
-
-comp_detected_pose(Obj, Pose, [Begin,End]) :-
-  ground([Begin,End]), !,
-  object_detection(Obj, Begin, Detection),
-  ( rdf_triple(knowrob:eventOccursAt, Detection, Pose) ; (
-    detection_endtime(Detection, DetectionEnd),
-    DetectionEnd < End,
-    comp_detected_pose(Obj, Pose, [DetectionEnd,End])
-  )).
-
-comp_detected_pose(Obj, Pose, [Begin,End]) :-
-  % \+ ground([Begin,End]),
-  object_detection(Obj, Begin, Detection),
-  once((
-    rdf_triple(knowrob:eventOccursAt, Detection, Pose),
-    detection_endtime(Detection, End))).
-
-%% comp_detected_pose_at_time
-comp_detected_pose_at_time(Obj, Pose, Instant) :-
-  object_detection(Obj, Instant, Detection),
-  rdf_triple(knowrob:eventOccursAt, Detection, Pose), !.
-
-%% comp_detected_pose_during
+    %create_joint_information(r, r, r, +, ?, +, +, +, r),
+    %update_joint_information(r, r, +, ?, +, +, +),
+    %read_joint_information(r, r, r, r, -, -, -, -, -),
+    %delete_joint_information(r),
+    object_detection(r,?,?),
+    object_detection(r,?,?,+),
+    perception_set_pose(r,r),
+    perception_set_object(r,r),
+    create_visual_perception(-).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -119,6 +80,7 @@ comp_detected_pose_at_time(Obj, Pose, Instant) :-
 % and assigns its start time to the current time.
 %
 create_visual_perception(Perception) :-
+  %% FIXME VisualPerception not existing
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#VisualPerception', Perception),
   owl_instance_from_class(knowrob:'TimePoint', TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
@@ -173,7 +135,9 @@ perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
 % @param Detection  Detections of the object that are assumed to be valid at time Time
 %
 object_detection(Object, Time, Detection) :-
-    rdf_has(Detection, knowrob:objectActedOn, Object),
+    object_detection(Object, Time, Detection, user).
+object_detection(Object, Time, Detection, Graph) :-
+    rdf_has(Detection, knowrob:objectActedOn, Object, Graph),
     % FIXME VisualPerception not defined in knowrob.owl anymore
     %rdfs_individual_of(Detection,  knowrob:'VisualPerception'),
     detection_starttime(Detection, DetectionTime),
@@ -244,6 +208,7 @@ latest_detection_of_type(Type, LatestDetection) :-
 %
 latest_perception_of_type(Type, LatestPerception) :-
 
+  %% FIXME VisualPerception not existing
     findall([P_i,Object,St], (rdfs_individual_of(Object, Type),
                               rdf_has(P_i, knowrob:objectActedOn, Object),
                               rdfs_individual_of(P_i,  knowrob:'VisualPerception'),
@@ -267,6 +232,7 @@ latest_perceptions_of_types(Type, LatestPerceptions) :-
 
     findall(Obj, rdfs_individual_of(Obj, Type), Objs),
 
+  %% FIXME VisualPerception not existing
     findall(LatestDetection,
             ( member(Object, Objs),
               latest_detection_of_instance(Object, LatestDetection),
@@ -419,38 +385,38 @@ compare_object_detections(Delta, P1, P2) :-
 % @param Qmax       Minimal configuration value (joint limit)
 % @param Joint      Joint instance that has been created
 %
-create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joint) :-
+%create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joint) :-
 
-  % create individual
-  create_object_perception(Type, Pose, ['TouchPerception'], Joint),
+  %% create individual
+  %create_object_perception(Type, Pose, ['TouchPerception'], Joint),
 
-  % set parent and child
-  rdf_assert(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Child),
-  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  %% set parent and child
+  %rdf_assert(Parent, knowrob:'properPhysicalParts', Joint),
+  %rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Child),
+  %rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
 
-  % set joint limits
-  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+  %% set joint limits
+  %rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  %rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
 
-  % set joint-specific information
-  ( (Type = 'PrismaticJoint') -> (
+  %% set joint-specific information
+  %( (Type = 'PrismaticJoint') -> (
 
-      Dir = [DirX, DirY, DirZ],
+      %Dir = [DirX, DirY, DirZ],
 
-      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+      %rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
 
-      rdf_instance_from_class(knowrob:'Vector', DirVec),
-      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+      %rdf_instance_from_class(knowrob:'Vector', DirVec),
+      %rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      %rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      %rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
 
-      rdf_assert(Joint, knowrob:'direction', DirVec)
+      %rdf_assert(Joint, knowrob:'direction', DirVec)
 
-    ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
-      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
-    ) ).
+    %) ; (
+      %rdf_assert(Parent, knowrob:'hingedTo', Child),
+      %rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
+    %) ).
 
 %% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax).
 %
@@ -466,63 +432,63 @@ create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joi
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 %
-update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
+%update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
 
-  % % % % % % % % % % % % % % % % % % %
-  % update joint type
-  rdf_retractall(Joint, rdf:type, _),
-  rdf_assert(Joint, rdf:type, Type),
+  %% % % % % % % % % % % % % % % % % % %
+  %% update joint type
+  %rdf_retractall(Joint, rdf:type, _),
+  %rdf_assert(Joint, rdf:type, Type),
 
-  % % % % % % % % % % % % % % % % % % %
-  % update pose by creating a new perception instance (remembering the old data)
-  knowrob_perception:create_perception_instance(['TouchPerception'], Perception),
-  knowrob_perception:set_perception_pose(Perception, Pose),
-  knowrob_perception:set_object_perception(Joint, Perception),
+  %% % % % % % % % % % % % % % % % % % %
+  %% update pose by creating a new perception instance (remembering the old data)
+  %knowrob_perception:create_perception_instance(['TouchPerception'], Perception),
+  %knowrob_perception:set_perception_pose(Perception, Pose),
+  %knowrob_perception:set_object_perception(Joint, Perception),
 
-  % % % % % % % % % % % % % % % % % % %
-  % update joint limits
-  rdf_retractall(Joint, knowrob:'minJointValue', _),
-  rdf_retractall(Joint, knowrob:'maxJointValue', _),
-  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+  %% % % % % % % % % % % % % % % % % % %
+  %% update joint limits
+  %rdf_retractall(Joint, knowrob:'minJointValue', _),
+  %rdf_retractall(Joint, knowrob:'maxJointValue', _),
+  %rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  %rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
 
-  % % % % % % % % % % % % % % % % % % %
-  % update connectedTo:
+  %% % % % % % % % % % % % % % % % % % %
+  %% update connectedTo:
 
-  % determine parent/child
-  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),!,
+  %% determine parent/child
+  %rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  %rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  %rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),!,
 
-  % retract old connections between parent and child
-  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
-  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+  %% retract old connections between parent and child
+  %rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  %rdf_retractall(Parent, knowrob:'hingedTo', Child),
 
-  % remove direction vector if set
-  ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(OldDirVec, _, _),
-    rdf_retractall(_, _, OldDirVec)
-    ) ; true),
+  %% remove direction vector if set
+  %((rdf_has(Joint, knowrob:direction, OldDirVec),
+    %rdf_retractall(OldDirVec, _, _),
+    %rdf_retractall(_, _, OldDirVec)
+    %) ; true),
 
-  % set new articulation information
-  ( (Type = 'PrismaticJoint') -> (
+  %% set new articulation information
+  %( (Type = 'PrismaticJoint') -> (
 
-      Dir = [DirX, DirY, DirZ],
+      %Dir = [DirX, DirY, DirZ],
 
-      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+      %rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
 
-      rdf_instance_from_class(knowrob:'Vector', DirVec),
-      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+      %rdf_instance_from_class(knowrob:'Vector', DirVec),
+      %rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      %rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      %rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
 
-      rdf_assert(Joint, knowrob:'direction', DirVec)
+      %rdf_assert(Joint, knowrob:'direction', DirVec)
 
-    ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
-      (rdf_retractall(Joint, knowrob:'turnRadius', _); true),
-      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
-    ) ).
+    %) ; (
+      %rdf_assert(Parent, knowrob:'hingedTo', Child),
+      %(rdf_retractall(Joint, knowrob:'turnRadius', _); true),
+      %rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
+    %) ).
 
 %% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Radius, -Qmin, -Qmax) is nondet.
 %
@@ -538,27 +504,27 @@ update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 %
-read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin, Qmax) :-
+%read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin, Qmax) :-
 
-  rdf_has(Joint, rdf:type, Type),
+  %rdf_has(Joint, rdf:type, Type),
 
-  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo', Parent),
-  rdf_has(Joint, knowrob:'connectedTo', Child),
+  %rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  %rdf_has(Joint, knowrob:'connectedTo', Parent),
+  %rdf_has(Joint, knowrob:'connectedTo', Child),
 
-  current_object_pose(Joint, Pose),
+  %current_object_pose(Joint, Pose),
 
-  ((rdf_has(Joint, knowrob:'direction', DirVec),
-    rdf_has(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-    rdf_has(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-    rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
-    Direction=[DirX, DirY, DirZ]);
-    (Direction=[])),
+  %((rdf_has(Joint, knowrob:'direction', DirVec),
+    %rdf_has(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+    %rdf_has(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+    %rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+    %Direction=[DirX, DirY, DirZ]);
+    %(Direction=[])),
 
-  (rdf_has(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius))); (true,!)),
+  %(rdf_has(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius))); (true,!)),
 
-  rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
+  %rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  %rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
 
 %% delete_joint_information(Joint) is det.
 %
@@ -566,28 +532,28 @@ read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin
 %
 % @param Joint Joint instance to be deleted
 %
-delete_joint_information(Joint) :-
+%delete_joint_information(Joint) :-
 
-  % remove pose/perception instances
-  % removes timepoint, pose, perception itself
-  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Joint),
-                       rdf_retractall(Perception, _, _)), _),
+  %% remove pose/perception instances
+  %% removes timepoint, pose, perception itself
+  %findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Joint),
+                       %rdf_retractall(Perception, _, _)), _),
 
-  % remove connection between parent and child
-  rdf_retractall(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Child),
+  %% remove connection between parent and child
+  %rdf_retractall(Parent, knowrob:'properPhysicalParts', Joint),
+  %rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  %rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Child),
 
-  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
-  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+  %rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  %rdf_retractall(Parent, knowrob:'hingedTo', Child),
 
-  % remove direction vector if set
-  ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(OldDirVec, _, _),
-    rdf_retractall(_, _, OldDirVec)
-    ) ; true),
+  %% remove direction vector if set
+  %((rdf_has(Joint, knowrob:direction, OldDirVec),
+    %rdf_retractall(OldDirVec, _, _),
+    %rdf_retractall(_, _, OldDirVec)
+    %) ; true),
 
-  % remove everything directly connected to the joint instance
-  rdf_retractall(Joint, _, _),
-  rdf_retractall(_, _, Joint).
+  %% remove everything directly connected to the joint instance
+  %rdf_retractall(Joint, _, _),
+  %rdf_retractall(_, _, Joint).
 

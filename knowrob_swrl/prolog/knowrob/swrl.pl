@@ -61,6 +61,7 @@
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/triple_memory')).
 %:- use_module(library('knowrob/units')).
 
 :- rdf_meta swrl_project(r),
@@ -626,10 +627,7 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 % Project implications of a SWRL rule into the RDF triple store.
 % The rule is described by the individual `Descr` in the RDF triple store
-% or by the SWRL term `Rule`
-% Triples are not asserted to individuals directly but to their temporal parts.
-% Negative atoms such as `(not Driver)(?x)` are projected to the temporal parts
-% by specifying the end time of the corresponding time interval.
+% or by the SWRL term `Rule`.
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
@@ -653,7 +651,7 @@ swrl_atom_project(property(S,P,O), Vars) :-
   strip_literal_type(O, O_val),
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O_val, O_var),
-  assert_temporal_part(S_var, P, O_var).
+  mem_store_triple(S_var, P, O_var).
 
 % FIXME: this needs some revision.
 %          - there are some cases where random entities are assigned/removed
@@ -673,7 +671,7 @@ swrl_class_atom_project(S, not(oneOf(Xs))) :-
 
 swrl_class_atom_project(S, all(P,Cls)) :-
   forall(( rdf_has(S,P,O), \+ swrl_class_atom_satisfied(O,Cls) ),
-         ( assert_temporal_part_end(S,P,O) )).
+         ( mem_triple_stop(S,P,O) )).
 swrl_class_atom_project(S, some(P,Cls)) :-
   once(( swrl_class_atom_satisfied(S, some(P,Cls)) ;
          swrl_assert_random(S, P, Cls, 1) )).
@@ -681,10 +679,10 @@ swrl_class_atom_project(S, some(P,Cls)) :-
 swrl_class_atom_project(S, exactly(0,P,Cls)) :- !,
   % Retract all facts about objects fulfilling the class description
   swrl_relation_values(S,P,Cls,Values),
-  forall( member(O,Values), assert_temporal_part_end(S,P,O) ).
+  forall( member(O,Values), mem_triple_stop(S,P,O) ).
 swrl_class_atom_project(S, exactly(N,P,Cls)) :-
-  % End or begin some random temporal parts with temporal relation P so that the number of
-  % active temporal parts is equal to qualified cardinality.
+  % End or begin some random temporalized properties so that the number of
+  % active ones is equal to qualified cardinality.
   swrl_relation_count(S, P, Cls, M), Diff is M - N,
   ( Diff >= 0 ->
     swrl_retract_random(S, P, Cls, Diff) ;
@@ -697,8 +695,8 @@ swrl_class_atom_project(S, min(N,P,Cls)) :-
   swrl_relation_count(S, P, Cls, M), Diff is M - N,
   swrl_assert_random(S, P, Cls, Diff).
 
-swrl_class_atom_project(S, value(P,O))      :- assert_temporal_part(S,P,O).
-swrl_class_atom_project(S, not(value(P,O))) :- forall( assert_temporal_part_end(S,P,O), true ).
+swrl_class_atom_project(S, value(P,O))      :- mem_store_triple(S,P,O).
+swrl_class_atom_project(S, not(value(P,O))) :- forall( mem_triple_stop(S,P,O), true ).
 
 swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
@@ -708,22 +706,20 @@ swrl_class_atom_project(S, Cls) :-
     rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
-    assert_temporal_part(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', nontemporal(Cls_pl)) ;
+    mng_store_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls_pl) ;
     swrl_class_atom_project(S, Cls_pl) ).
 swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  assert_temporal_part_end(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
+  mem_triple_stop(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.
 swrl_retract_random(S, P, Cls, N) :-
   once((
-    current_temporal_part(S,TemporalPart),
-    rdf_has(TemporalPart, knowrob:'temporalProperty', P),
-    temporal_part_value(TemporalPart, P, O),
+    mem_retrieve_triple(S,P,O),
     atom(O),
     swrl_class_atom_satisfied(O,Cls),
-    assert_temporal_part_end(S,P,O)
+    mem_triple_stop(S,P,O)
   )),
   M is N - 1, swrl_retract_random(S, P, Cls, M).
 
@@ -731,12 +727,8 @@ swrl_retract_random(S, P, Cls, N) :-
 swrl_assert_random(_, _, _, N) :- N >= 0, !.
 swrl_assert_random(S, P, Cls, N) :-
   swrl_class_atom_satisfied(O,Cls),
-  \+ ( % only assert if temporal part with this relation does not exist
-    current_temporal_part(S,TemporalPart),
-    rdf_has(TemporalPart, knowrob:'temporalProperty', P),
-    temporal_part_value(TemporalPart, P, O)
-  ),
-  assert_temporal_part(S,P,O),
+  \+ mem_retrieve_triple(S,P,O),
+  mem_store_triple(S,P,O),
   M is N + 1, swrl_assert_random(S, P, Cls, M).
 
 swrl_relation_values(S,P,Cls,Values) :-

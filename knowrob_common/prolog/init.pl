@@ -33,6 +33,7 @@
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
 :- use_module(library(prolog_pack)).
+% FIXME: this requires internet each time knowrob is started
 :- pack_install(list_util,[url('https://github.com/mndrix/list_util/archive/v0.13.0.zip'),silent(true),interactive(false),upgrade(true)]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -71,7 +72,6 @@
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/entity')).
-:- use_module(library('knowrob/swrl')).
 % :- use_module(library('knowrob/units')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).

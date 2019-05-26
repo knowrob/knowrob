@@ -80,8 +80,7 @@ entity(Entity, Descr) :-
 entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
-  once(owl_individual_of(Entity, dul:'Entity')),
-  \+ rdfs_individual_of(Entity, knowrob:'TemporalPart').
+  once(owl_individual_of(Entity, dul:'Entity')).
 
 %% Time point entities
 % @deprecated
@@ -329,26 +328,7 @@ entity_assert(Entity, [[Key,Value]|Descr]) :-
   )),
   entity_assert(Entity, Descr).
 
-entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
-  nonvar(Entity), nonvar(Key), nonvar(Value),
-  entity_iri(PropIri, Key, lower_camelcase),
-  entity_interval(IntervalDescr, Interval),
-  (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-  ->  ( % data property
-      rdf_phas(PropIri, rdfs:range, Range) ->
-        assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval) ;
-        assert_temporal_part(Entity, PropIri, literal(Value), Interval)
-  ) ; ( % nested entity
-      rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
-      entity(ValueEntity, Value),
-      assert_temporal_part(Entity, PropIri, ValueEntity, Interval)
-  )),
-  entity_assert(Entity, Descr).
-
 entity_assert(_, []).
-
-entity_interval([an,interval,I], I) :- !.
-entity_interval(Evt, I) :- interval(Evt,I).
 
 %% entity_retract(+Entity).
 %
@@ -357,9 +337,8 @@ entity_interval(Evt, I) :- interval(Evt,I).
 % @param Entity IRI of matching entity
 %
 entity_retract(Entity) :-
+  % TODO: also whipe information from other sources, e.g. mongo DB?
   % Retract without recursion
-  forall( owl_has(Entity, knowrob:temporalParts, TemporalPart),
-          rdf_retractall(TemporalPart, _, _)),
   rdf_retractall(Entity, _, _).
 
 
@@ -587,8 +566,7 @@ entity_head(Entity, _, Descr, TypeIri) :-
     findall(E, (
       % TODO: it might not allways be best to early resolve the entities,
       %       also there could be many of them!
-      owl_individual_of_all(Types, E, DB),
-      \+ owl_individual_of(E, knowrob:'TemporalPart')
+      owl_individual_of_all(Types, E, DB)
     ), Entities),
     % avoid redundant results of owl_individual_of
     list_to_set(Entities, EntitiesUnique),

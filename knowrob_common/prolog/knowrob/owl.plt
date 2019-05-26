@@ -144,14 +144,14 @@ test(generate_location_description) :-
 
 %% Fluents
 
-test(assert_temporal_part) :-
+test(assert_temporalized) :-
   entity_assert(Obj, [an, object, [type, drawer], [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]]]),
   atom(Obj), rdfs_individual_of(Obj, knowrob:'Drawer'),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), 5.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,20.0]),
   not( holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,21.0]) ).
 
-test(assert_temporal_part_changing_value) :-
+test(assert_temporalized_volume) :-
   entity_assert(Obj, [an, object, [type, dough],
         [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]],
         [volume_of_object, 15.0, during, [an, interval, [20.0,30.0]]]]),
@@ -162,7 +162,7 @@ test(assert_temporal_part_changing_value) :-
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), 25.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), [20.0,30.0]).
 
-test(generate_temporal_part_description) :-
+test(generate_temporalized_description) :-
   Descr=[an, object, [type, drawer], [volume_of_object, 10.0, during, [an, interval, [60.0,70.0]]]],
   entity_assert(Obj, Descr),
   rdfs_individual_of(Obj, knowrob:'Drawer'),

@@ -28,8 +28,13 @@
 
 :- module(knowrob_objects,
     [
+      object_assert/3,
+      object_pose/2,
+      object_pose/3,
       current_object_pose/2,
-      object_pose_at_time/3,
+      current_object_pose_stamp/1,
+      object_pose_update/2,
+      object_pose_update/3,
       object_trajectory/4,
       object_distance/3,
       object_frame_name/2,
@@ -38,6 +43,7 @@
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
+      object_assert_frame_name/2,
       object_affordance/2,
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
@@ -47,8 +53,6 @@
       storagePlaceForBecause/3,
       object_query/4,
       object_queries/2,
-      comp_tf_pose/2,
-      comp_tf_pose/3,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
       comp_heightOfObject/2,
@@ -70,13 +74,16 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/beliefstate')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 
 :-  rdf_meta
     current_object_pose(r,-),
-    object_pose_at_time(r,r,?),
+    object_pose(r,+,r),
+    object_pose(r,+),
+    object_assert(r,r,+),
+    object_pose_update(r,+),
+    object_pose_update(r,+,+),
     object_trajectory(r,t,+,-),
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
@@ -85,6 +92,7 @@
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
+    object_assert_frame_name(r,+),
     object_affordance(r,r),
     object_instantiate_affordances(r),
     object_affordance_static_transform(r,r,?),
@@ -99,6 +107,54 @@
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
+:- dynamic object_pose_data/3,
+           current_object_pose_stamp/1.
+
+object_assert_frame_name(Obj,Graph) :-
+  rdf_split_url(_, ObjName, Obj),
+  ( rdf_has(Obj, knowrob:'frameName', _) ;
+    rdf_assert(Obj, knowrob:'frameName', literal(ObjName), Graph) ), !.
+
+%% object_assert(+ObjType:iri, -Obj:iri, +Graph) is det.
+%
+% Asserts a new object to the named RDF graph.
+%
+% @param ObjType the type of the new object
+% @param Obj the object asserted
+%
+object_assert(ObjType, Obj, Graph) :-
+  rdf_instance_from_class(ObjType, Graph, Obj),
+  rdf_assert(Obj, rdf:type, owl:'NamedIndividual', Graph),
+  % set TF frame to object name
+  rdf_split_url(_, ObjName, Obj),
+  rdf_assert(Obj, knowrob:'frameName', literal(ObjName), Graph),
+  ignore(once((
+    %% HACK get this info from somewhere else!
+    rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
+    rdf_assert(Obj, knowrob:'describedInMap', Map, Graph)
+  ))).
+
+%%
+object_pose_update(Obj,Pose) :-
+  current_time(Now),
+  object_pose_update(Obj,Pose,Now).
+
+object_pose_update(Obj,_,Stamp) :-
+  object_pose_data(Obj,_,LatestStamp),
+  LatestStamp >= Stamp, !.
+
+object_pose_update(Obj,Pose,Stamp) :-
+  ground(Pose),
+  %%
+  (( current_object_pose_stamp(Latest), Latest >= Stamp ) -> true ; (
+     retractall(current_object_pose_stamp(_)),
+     asserta(current_object_pose_stamp(Stamp))
+  )),
+  %%
+  retractall(object_pose_data(Obj,_,_)),
+  asserta(object_pose_data(Obj,Pose,Stamp)),
+  mark_dirty_objects([Obj]).
+
 %% current_object_pose(+Obj:iri, -Pose:list) is semidet
 %
 % Get the current pose of an object.
@@ -106,10 +162,34 @@
 % @param Obj   Instance of SpatialThing
 % @param Pose  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-current_object_pose(Obj, Pose) :- belief_at(Obj, Pose).
+current_object_pose(Obj,Pose) :- 
+  object_pose_data(Obj,Pose,_),!.
 
+current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :- 
+  ground(ParentFrame),
+  object_frame_name(Obj,ObjFrame),
+  current_map_pose(ObjFrame,MapPose0),
+  current_map_pose(ParentFrame,MapPose1),
+  transform_between(MapPose1,MapPose0,[ParentFrame,ObjFrame,T,Q]), !.
 
-%% object_pose_at_time(+Obj:iri, +Instant:float, ?Pose:term) is semidet
+current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :-
+  % try TF lookup in case above clauses failed.
+  (ground(ParentFrame) ; map_frame_name(ParentFrame)),
+  object_frame_name(Obj,ObjFrame),
+  tf_lookup_transform(ParentFrame,ObjFrame,pose(T,Q)),!.
+
+%%
+current_map_pose(ObjFrame,MapPose) :-
+  map_frame_name(MapFrame),
+  object_pose_data(_,[ParentFrame,ObjFrame,T,Q],_),
+  ( MapFrame = ParentFrame ->
+    MapPose=[MapFrame,ObjFrame,T,Q] ; (
+    current_map_pose(ParentFrame,MapParent),
+    transform_multiply(MapParent,
+      [ParentFrame,ObjFrame,T,Q], MapPose)
+  )).
+  
+%% object_pose(+Obj:iri, ?Pose:term, +Instant:float) is semidet
 %
 % True if Pose is the pose of Obj at time Instant.
 % Poses may be requested in particular reference frames
@@ -120,7 +200,12 @@ current_object_pose(Obj, Pose) :- belief_at(Obj, Pose).
 % @param Instant The time instant (float or Timepoint:iri)
 % @param Pose    The pose [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-object_pose_at_time(Obj, Instant, Pose) :- belief_at(Obj, Pose, [Instant,Instant]).
+object_pose(Obj, Pose) :-
+  current_time(Instant),
+  object_pose(Obj, Pose, Instant).
+
+object_pose(Obj, Pose, Instant) :-
+  holds(Obj, knowrob:pose, Pose, [Instant,Instant]).
 
 %% object_trajectory(+Obj, +Interval, +Density, -Trajectory) is semidet
 %
@@ -207,7 +292,8 @@ object_assert_color(Obj, [R,G,B,A]) :-
 object_assert_color(Obj, Col) :-
   atom(Col),
   rdf_retractall(Obj, knowrob:mainColorOfObject, _),
-  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(knowrob:vec4, Col))), !.
+  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(knowrob:vec4, Col))),
+  mark_dirty_objects([Obj]), !.
 
 %% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
 %
@@ -282,7 +368,8 @@ comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', 
 object_assert_dimensions(Obj, Depth, Width, Height) :-
   atomic_list_concat([Depth, Width, Height], ' ', V),
   rdf_retractall(Obj, knowrob:boundingBoxSize, _),
-  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(knowrob:vec3, V))).
+  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(knowrob:vec3, V))),
+  mark_dirty_objects([Obj]).
 
 %% object_mesh_path(+Obj:iri, -FilePath:atom) is det
 %
@@ -301,7 +388,7 @@ object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, Stati
   (object_color(Obj,Color)),
   (object_mesh_path(Obj,Mesh);Mesh=''),
   (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
-  (belief_at_id(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
+  (current_object_pose(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
   findall(X, object_affordance_static_transform(Obj,_,X), StaticTransforms), !.
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -329,7 +416,7 @@ object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
   %  ((relativeTo o hasAffordance o pose) Self)
   % Use this to infer the relativeTo entity:
   %    relativeTo value (Self.(inverse(pose)oinverse(hasAffordance)))
-  belief_at_id(Aff, [_,AffFrame,Pos,Rot]).
+  current_object_pose(Aff, [ObjFrame,AffFrame,Pos,Rot]).
 
 %%
 object_instantiate_affordances(Obj) :-
@@ -367,30 +454,6 @@ object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
   rdf_assert(Obj, knowrob:hasAffordance, Affordance),
   Next is Missing-1,
   object_instantiate_affordances(Obj,[Cls|Rest],Next).
-  
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Pose from TF
-
-%% comp_tf_pose(+Obj,-Pose).
-%% comp_tf_pose(+Obj,-Pose,+Interval).
-%
-% Computes the pose of Obj using a ROS TF
-% transform client.
-% This client caches transforms only for
-% about 20 seconds.
-%
-comp_tf_pose(Obj, Pose) :-
-  current_time(Instant),
-  comp_tf_pose(Obj, Pose, [Instant,Instant]).
-
-comp_tf_pose(Obj, Pose, [Instant,_]) :-
-  rdf_has(Obj, knowrob:frameName, ObjFrame),
-  current_time(Now),
-  ( var(Instant) -> Instant = Now ; 1 > abs(Now - Instant) ),
-  map_frame_name(MapFrameName),
-  tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
-  owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

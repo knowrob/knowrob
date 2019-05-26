@@ -1119,11 +1119,13 @@ owl_has_equivalent(S, P, O, DB) :-
 	owl_same_as(S, S1),
 	owl_has_direct(S1, P, O0, DB),
 	owl_same_as(O0, O).
+
 owl_has_equivalent(S, P, O, DB) :-
 	nonvar(O), !,
 	owl_same_as(O1, O),
 	owl_has_direct(S0, P, O1, DB),
 	owl_same_as(S0, S).
+
 owl_has_equivalent(S, P, O, DB) :-
 	owl_has_direct(S0, P, O0, DB),
 	owl_same_as(S0, S),
@@ -1144,6 +1146,7 @@ owl_same_as(X, Y) :-
 
 owl_same_as(X, X, _).
 owl_same_as(X, Y, Visited) :-
+	atom(X),
 	(   rdf_has(X, owl:sameAs, X1)
 	;   rdf_has(X1, owl:sameAs, X)
 	),

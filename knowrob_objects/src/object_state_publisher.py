@@ -256,7 +256,7 @@ class ObjectStatePublisher(object):
     # @profile
     def load_objects_from_prolog(self):
         q = "belief_existing_objects(Objects,[{}])," \
-            "belief_republish_objects(Objects)".format(','.join(self.object_types))
+            "mark_dirty_objects(Objects)".format(','.join(self.object_types))
         self.prolog_query(q)
 
     def publish_object_markers(self, object_ids):

@@ -9,17 +9,17 @@
 
 #define ROSPROLOG_TF_CACHE_TIME 10.0
 
-class ROSProlog {
+class ROSInterface {
 public:
     ros::NodeHandle _nh;
     ros::ServiceClient _json_pub;
     
-    static ROSProlog& get_rosprolog() {
-        static ROSProlog rosprolog;
+    static ROSInterface& get_rosprolog() {
+        static ROSInterface rosprolog;
         return rosprolog;
     }
     
-    static ROSProlog& get() {
+    static ROSInterface& get() {
         if(!ros::isInitialized()) {
             int argc=0;
             ros::init(argc, (char**)NULL, std::string("knowrob"));
@@ -27,28 +27,38 @@ public:
         return get_rosprolog();
     };
     
+    template <typename T>
+    static bool getParam(const std::string &key, T &value) {
+        return get()._nh.getParam(key,value);
+    };
+    
+    template <typename T>
+    static void setParam(const std::string &key, T &value) {
+        get()._nh.setParam(key,value);
+    };
+    
     bool json_wrapper(rosprolog::JSONWrapper &msg) {
         return _json_pub.call(msg);
     }
     
 private:
-    ROSProlog():
+    ROSInterface():
       _nh(),
       _json_pub(_nh.serviceClient<rosprolog::JSONWrapper>("/json_wrapper"))
     {}
-    ~ROSProlog() {
+    ~ROSInterface() {
         ros::shutdown();
     }
     
-    ROSProlog(ROSProlog const&); // Don't Implement
-    void operator=(ROSProlog const&);     // Don't implement
+    ROSInterface(ROSInterface const&); // Don't Implement
+    void operator=(ROSInterface const&);     // Don't implement
 };
 
-ROSProlog *rospl = NULL;
+ROSInterface *rospl = NULL;
 tf::TransformListener *listener = NULL;
 
 PREDICATE(ros_init, 0) {
-  ROSProlog::get();
+  ROSInterface::get();
   return TRUE;
 }
 
@@ -108,38 +118,53 @@ namespace geometry_msgs {
 PREDICATE(ros_param_get_string, 2) {
   std::string key((char*)PL_A1);
   std::string value;
-  ros::param::get(key, value);
-  PL_A2 = value.c_str();
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value.c_str();
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 PREDICATE(ros_param_get_int, 2) {
   std::string key((char*)PL_A1);
   int value;
-  ros::param::get(key, value);
-  PL_A2 = value;
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value;
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 PREDICATE(ros_param_get_double, 2) {
   std::string key((char*)PL_A1);
   double value;
-  ros::param::get(key, value);
-  PL_A2 = value;
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value;
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 
 PREDICATE(ros_param_set_string, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(char*)PL_A2);
+  char* v = (char*)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 PREDICATE(ros_param_set_double, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(double)PL_A2);
+  double v = (double)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 PREDICATE(ros_param_set_int, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(int)PL_A2);
+  int v = (int)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 
@@ -359,21 +384,25 @@ PREDICATE(ros_json_service_call, 2) {
   rosprolog::JSONWrapper msg;
   msg.request.mode = std::string("service");
   msg.request.json_data = std::string((char*)PL_A1);
-  if(ROSProlog::get().json_wrapper(msg)) {
-      PL_A2 = msg.response.json_data.c_str();
+  if(ROSInterface::get().json_wrapper(msg)) {
+    PL_A2 = msg.response.json_data.c_str();
+    return TRUE;
   }
-  return TRUE;
+  else {
+    ROS_ERROR("Failed to invoke json_wrapper, is it running?");
+    return FALSE;
+  }
 }
 
 PREDICATE(ros_json_publish, 1) {
   rosprolog::JSONWrapper msg;
   msg.request.mode = std::string("publish");
   msg.request.json_data = std::string((char*)PL_A1);
-  if(ROSProlog::get().json_wrapper(msg)) {
-      //PL_A2 = msg.response.json_data.c_str();
+  if(ROSInterface::get().json_wrapper(msg)) {
     return TRUE;
   }
   else {
+    ROS_ERROR("Failed to invoke json_wrapper, is it running?");
     return FALSE;
   }
 }

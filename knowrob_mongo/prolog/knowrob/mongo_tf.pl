@@ -29,8 +29,7 @@
 :- module(mongo_tf,
     [
       mng_lookup_transform/4,
-      mng_transform_pose/5,
-      mng_comp_pose/3
+      mng_transform_pose/5
     ]).
 /** <module> Looking up tf transforms in a mongo DB
 
@@ -117,21 +116,3 @@ mng_transform_pose(SourceFrame,
           [StampedMatOut], PoseOutArray),
   jpl_array_to_list(PoseOutArray, PoseOut),
   matrix(PoseOut,PosOut,RotOut).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% hook mongo TF data into computable property knowrob:pose by expanding `holds`
-
-%% mng_comp_pose(+Obj, -Pose, +Interval).
-%
-% Pose is an OWL individual of knowrob:'Pose' that represents logged tf data.
-%
-mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
-  nonvar(Obj), nonvar(Instant),
-  % only compute poses for time instants in the past
-  current_time(Now), Now > Instant + 20.0,
-  map_frame_name(MapFrame),
-  rdf_has(Obj, knowrob:frameName, ObjFrameP),
-  strip_literal_type(ObjFrameP,ObjFrame),
-  mng_lookup_transform(MapFrame,ObjFrame, PoseTerm, Instant),
-  owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose).

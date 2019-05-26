@@ -33,6 +33,7 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
+:- register_ros_package(knowrob_swrl).
 
 :- use_module(library('knowrob/ESG')).
 :- use_module(library('knowrob/actions')).

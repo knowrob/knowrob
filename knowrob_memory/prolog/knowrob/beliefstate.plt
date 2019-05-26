@@ -54,7 +54,7 @@ test(belief_at_update_class2) :-
   rdfs_individual_of(Cup, knowrob:'Cup'),
   \+ rdfs_individual_of(Cup, knowrob:'Milk'), !.
 
-test(belief_temporal_part) :-
+test(belief_temporalized_type) :-
   test_object(Cup),
   holds( rdf:type(Cup,knowrob:'Cup'), [0.0,T2]),
   holds( rdf:type(Cup,knowrob:'Milk'), [T2,T3]),

@@ -185,9 +185,7 @@ action_missing_inputs(Action, Missing) :-
 % @param Resource Resource whose availability is to be checked (e.g. object class, check if instance of that class exists)
 %
 resource_available(Resource) :-
-  owl_individual_of(ObjInst, Resource),
-  % HACK
-  \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
+  owl_individual_of(_ObjInst, Resource),!.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% 'Physical action'
