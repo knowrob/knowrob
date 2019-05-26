@@ -603,23 +603,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalParts -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalParts">
-        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isParticipantIn"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalProperty -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalProperty">
-        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo">

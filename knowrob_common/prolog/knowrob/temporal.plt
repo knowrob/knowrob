@@ -19,13 +19,7 @@
 
 :- begin_tests(knowrob_temporal).
 
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/entity')).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Interval algebra

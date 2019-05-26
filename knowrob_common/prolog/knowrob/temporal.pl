@@ -248,6 +248,9 @@ owl_has_during(S, P, O, Interval) :-
 % @param RDF_Type RDF type iri
 % @param Interval The interval during which RDF_Type is the type of Resource
 % 
+rdfs_instance_of_during(Resource, RDF_Type, _Interval) :-
+  rdfs_individual_of(Resource, RDF_Type).
+
 rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
   rdf_equal(rdf:type, Property),
   ( nonvar(RDF_Type) ->
@@ -279,6 +282,9 @@ rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
 % @param Value RDF resource iri or datatype value
 % @param Interval The interval during which the triple holds
 %
+rdf_triple_during(Property, Frame, Value, _Interval) :-
+  rdf_has_prolog(Frame, Property, Value).
+
 rdf_triple_during(Property, Frame, Value, Interval) :-
   ground(Property),
   rdfs_computable_triple_during(Property, Frame, Value, Interval).

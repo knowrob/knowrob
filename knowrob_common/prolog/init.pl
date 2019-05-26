@@ -71,7 +71,6 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/entity')).
 % :- use_module(library('knowrob/units')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
