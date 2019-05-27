@@ -165,6 +165,12 @@ object_pose_update(Obj,Pose,Stamp) :-
 current_object_pose(Obj,Pose) :- 
   object_pose_data(Obj,Pose,_),!.
 
+current_object_pose(Obj,[RefFrame,ObjFrame,T,Q]) :- 
+  rdf_has(Obj, knowrob:pose, Pose_iri),
+  transform_data(Pose_iri, (T,Q)),
+  object_frame_name(Obj,ObjFrame),
+  transform_reference_frame(Pose_iri, RefFrame),!.
+
 current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :- 
   ground(ParentFrame),
   object_frame_name(Obj,ObjFrame),
