@@ -43,9 +43,7 @@
 
 :- use_module(library('knowrob/action_execution')).
 :- use_module(library('knowrob/kb_querying')).
-:- use_module(library('knowrob/ros_querying')).
-:- use_module(library('knowrob/ros_service')).
-:- use_module(library('knowrob/ros')).
+:- use_module(library('knowrob/rosowl')).
 
 :- use_module(library('knowrob/workflow_execution')).
 

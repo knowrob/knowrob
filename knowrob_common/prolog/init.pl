@@ -61,9 +61,6 @@
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob.owl').
 :- owl_parser:owl_parse('package://rosowl/owl/ROS.owl').
 
-:- use_module(library('knowrob/ros')).
-:- use_module(library('knowrob/ros_service')).
-
 :- use_module(library('knowrob/utility/delay')).
 :- use_module(library('knowrob/utility/atoms')).
 
@@ -74,6 +71,7 @@
 % :- use_module(library('knowrob/units')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
+:- use_module(library('knowrob/rosowl')).
 
 % convenience: set some Prolog flags in order *not to* trim printed lists with [...]
 :- set_prolog_flag(toplevel_print_anon, false).
