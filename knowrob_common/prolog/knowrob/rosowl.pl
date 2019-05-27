@@ -324,10 +324,6 @@ owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
   rdf_assert(MessageArray, dul:realizes, ArrayType),
   rdf_assert(MessageArray, dul:concretelyExpresses, Collection).
 
-
-
-action_execution:action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', ros_querying).
-
 %% create_ros_request(Action,InputDict,ReqType,Request)
 %
 %
