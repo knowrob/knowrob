@@ -80,6 +80,8 @@ the task (if any).
 %
 :- multifile action_registry/2.
 
+action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', rosowl:ros_querying).
+
 %% task_isExecutedIn(Task, ActionConcept, ExecutionPlan)
 %
 % Finds actions that could execute a task.
