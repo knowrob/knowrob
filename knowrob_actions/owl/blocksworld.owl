@@ -55,7 +55,7 @@
     <!-- http://knowrob.org/kb/blocksworld.owl#graspedBy -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#graspedBy">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
     </owl:ObjectProperty>
     
@@ -65,8 +65,8 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#ontop">
         <owl:inverseOf rdf:resource="http://knowrob.org/kb/blocksworld.owl#underneath"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     </owl:ObjectProperty>
     
 
@@ -74,8 +74,8 @@
     <!-- http://knowrob.org/kb/blocksworld.owl#underneath -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#underneath">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     </owl:ObjectProperty>
     
 
@@ -124,7 +124,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -145,6 +145,14 @@
         </rdfs:subClassOf>
     </owl:Class>
     
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Table -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/blocksworld.owl#Table">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
 
 
     <!-- http://knowrob.org/kb/blocksworld.owl#Take -->
@@ -154,7 +162,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -163,7 +171,7 @@
                 <owl:allValuesFrom>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
-                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                        <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
                     </owl:Restriction>
                 </owl:allValuesFrom>
             </owl:Restriction>
@@ -200,45 +208,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#HoldingAnObject -->
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HoldingAnObject"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PickingUpAnObject -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PickingUpAnObject"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimePoint"/>
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     
 
 
@@ -327,7 +299,7 @@
     <!-- http://knowrob.org/kb/blocksworld.owl#Table_test0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Table_test0">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Table"/>
     </owl:NamedIndividual>
     
 
@@ -609,7 +581,7 @@
                                     <owl:Restriction>
                                         <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
                                         <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
-                                        <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                                        <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
                                     </owl:Restriction>
                                 </swrl:classPredicate>
                                 <swrl:argument1 rdf:resource="urn:swrl#obj"/>
@@ -653,7 +625,7 @@
                                 <rdf:first>
                                     <rdf:Description>
                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+                                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/blocksworld.owl#Table"/>
                                         <swrl:argument1 rdf:resource="urn:swrl#loc"/>
                                     </rdf:Description>
                                 </rdf:first>

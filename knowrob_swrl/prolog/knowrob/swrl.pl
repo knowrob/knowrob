@@ -42,7 +42,9 @@
       swrl_project/1,
       swrl_project/2,
       swrl_satisfied/1,
-      swrl_satisfied/2
+      swrl_satisfied/2,
+      swrl_has/3,
+      swrl_instance_of/2
     ]).
 /** <module> Integration of SWRL rules into KnowRob
 
@@ -339,6 +341,8 @@ swrl_assert([HeadAtom|Xs] :- Body, [Asserted|Rest]) :-
     Asserted=(Predicate:-Condition);
     Asserted=Predicate ),
   assertz( Asserted ),
+  % TODO consider expanding rdfs_computable_triple_during
+  %         instead of creating a RDF computable.
   % create computable property description
   atom_concat('swrl:', PredicateName, Command),
   swrl_create_computable(Command, P_X, _),
@@ -397,8 +401,9 @@ swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), V
   swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
 swrl_condition_pl(property(S,P,O), owl_has_during(S_var,P,O_var,I_var), Vars) :-
+  strip_literal_type(O,O_stripped),
   swrl_var(Vars, S, S_var),
-  swrl_var(Vars, O, O_var),
+  swrl_var(Vars, O_stripped, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
 swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
   swrl_builtin_pl(Builtin, Builtin_pl, Vars).
@@ -651,7 +656,7 @@ swrl_atom_project(property(S,P,O), Vars) :-
   strip_literal_type(O, O_val),
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O_val, O_var),
-  mem_store_triple(S_var, P, O_var).
+  swrl_assert_triple(S_var, P, O_var).
 
 % FIXME: this needs some revision.
 %          - there are some cases where random entities are assigned/removed
@@ -671,7 +676,7 @@ swrl_class_atom_project(S, not(oneOf(Xs))) :-
 
 swrl_class_atom_project(S, all(P,Cls)) :-
   forall(( rdf_has(S,P,O), \+ swrl_class_atom_satisfied(O,Cls) ),
-         ( mem_triple_stop(S,P,O) )).
+         ( swrl_retract_triple(S,P,O) )).
 swrl_class_atom_project(S, some(P,Cls)) :-
   once(( swrl_class_atom_satisfied(S, some(P,Cls)) ;
          swrl_assert_random(S, P, Cls, 1) )).
@@ -679,7 +684,7 @@ swrl_class_atom_project(S, some(P,Cls)) :-
 swrl_class_atom_project(S, exactly(0,P,Cls)) :- !,
   % Retract all facts about objects fulfilling the class description
   swrl_relation_values(S,P,Cls,Values),
-  forall( member(O,Values), mem_triple_stop(S,P,O) ).
+  forall( member(O,Values), swrl_retract_triple(S,P,O) ).
 swrl_class_atom_project(S, exactly(N,P,Cls)) :-
   % End or begin some random temporalized properties so that the number of
   % active ones is equal to qualified cardinality.
@@ -695,8 +700,8 @@ swrl_class_atom_project(S, min(N,P,Cls)) :-
   swrl_relation_count(S, P, Cls, M), Diff is M - N,
   swrl_assert_random(S, P, Cls, Diff).
 
-swrl_class_atom_project(S, value(P,O))      :- mem_store_triple(S,P,O).
-swrl_class_atom_project(S, not(value(P,O))) :- forall( mem_triple_stop(S,P,O), true ).
+swrl_class_atom_project(S, value(P,O))      :- swrl_assert_triple(S,P,O).
+swrl_class_atom_project(S, not(value(P,O))) :- swrl_retract_triple(S,P,O).
 
 swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
@@ -706,11 +711,34 @@ swrl_class_atom_project(S, Cls) :-
     rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
-    mng_store_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls_pl) ;
+    swrl_assert_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls_pl) ;
     swrl_class_atom_project(S, Cls_pl) ).
 swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  mem_triple_stop(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
+  swrl_retract_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
+
+swrl_retract_triple(S,P,O) :-
+  strip_literal_type(O,Stripped),
+  mem_triple_stop(S,P,Stripped),
+  %% TODO store to memory?
+  rdf_retractall(S,P,Stripped).
+
+swrl_assert_triple(S,P,O) :-
+  strip_literal_type(O,Stripped),
+  mem_store_triple(S,P,Stripped).
+
+%%
+swrl_has(S,P,O) :-
+  rdf_has(S,P,O) ;
+  mem_retrieve_triple(S,P,O).
+
+swrl_instance_of(S,Cls) :-
+  rdfs_individual_of(S,Cls) ; (
+    mem_retrieve_triple(S,rdf:type,S_Cls),
+    rdfs_subclass_of(S_Cls,Cls)
+  ).
+
+swrl_db(db(swrl_has, swrl_instance_of)).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.
@@ -719,7 +747,7 @@ swrl_retract_random(S, P, Cls, N) :-
     mem_retrieve_triple(S,P,O),
     atom(O),
     swrl_class_atom_satisfied(O,Cls),
-    mem_triple_stop(S,P,O)
+    swrl_retract_triple(S,P,O)
   )),
   M is N - 1, swrl_retract_random(S, P, Cls, M).
 
@@ -728,11 +756,12 @@ swrl_assert_random(_, _, _, N) :- N >= 0, !.
 swrl_assert_random(S, P, Cls, N) :-
   swrl_class_atom_satisfied(O,Cls),
   \+ mem_retrieve_triple(S,P,O),
-  mem_store_triple(S,P,O),
+  swrl_assert_triple(S,P,O),
   M is N + 1, swrl_assert_random(S, P, Cls, M).
 
 swrl_relation_values(S,P,Cls,Values) :-
-  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os),
+  swrl_db(DB),
+  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os),
   list_to_set(Os,Values).
 swrl_relation_count(S,P,Cls,Count) :-
   swrl_relation_values(S,P,Cls,Values), length(Values, Count).
@@ -741,30 +770,47 @@ swrl_atom_satisfied(class(Cls,S), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_class_atom_satisfied(S_var,Cls).
 swrl_atom_satisfied(property(S,P,O), Vars) :-
+  swrl_db(DB),
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O, O_var),
-  owl_has(S_var,P,O_var).
+  owl_has(S_var,P,O_var,DB).
+
 swrl_class_atom_satisfied(S, not(Cls)) :-
   \+ swrl_class_atom_satisfied(S,Cls).
+
 swrl_class_atom_satisfied(S, allOf(Cls)) :-
   forall( member(X,Cls), swrl_class_atom_satisfied(S, X) ).
+
 swrl_class_atom_satisfied(S, oneOf(Cls)) :-
   once(( member(X,Cls), swrl_class_atom_satisfied(S, X) )).
+
 swrl_class_atom_satisfied(S, some(P,Cls)) :-
-  once(( owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls) )).
+  swrl_db(DB),
+  once(( owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls) )).
+
 swrl_class_atom_satisfied(S, all(P,Cls)) :-
-  forall( owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls) ).
+  swrl_db(DB),
+  forall( owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls) ).
+
 swrl_class_atom_satisfied(S, min(N,P,Cls)) :-
-  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  swrl_db(DB),
+  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
   length(Os, Os_length), atom_number(N,N_val), Os_length >= N_val.
+
 swrl_class_atom_satisfied(S, max(N,P,Cls)) :-
-  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  swrl_db(DB),
+  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
   length(Os, Os_length), atom_number(N,N_val), Os_length =< N_val.
+
 swrl_class_atom_satisfied(S, exactly(N,P,Cls)) :-
-  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  swrl_db(DB),
+  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
   atom_number(N,N_val), length(Os,N_val).
+
 swrl_class_atom_satisfied(S, Cls) :-
-  atom(Cls), owl_individual_of(S, Cls).
+  atom(Cls),
+  swrl_db(DB),
+  owl_individual_of(S, Cls, DB).
 
 		 /************************************
 		  *            SWRL phrases          *

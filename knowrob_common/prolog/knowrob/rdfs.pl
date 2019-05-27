@@ -247,9 +247,10 @@ rdfs_number(literal(type(XSD_Type,Atom)), Number) :-
 %
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 %
+strip_literal_type(Value,Value) :- var(Value), !.
 strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(literal(Value), Value) :- !.
-strip_literal_type(Value, Value).
+strip_literal_type(Value,Value).
 
 %% rdf_vector_prolog(+In, -Out) is semidet.
 rdf_vector_prolog([X|Y], [X|Y]).

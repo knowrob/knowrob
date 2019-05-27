@@ -57,7 +57,9 @@ in SWRL rules (i.e., relate what was created to something else).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/triple_memory')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).

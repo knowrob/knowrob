@@ -185,6 +185,10 @@ rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Frame, Proper
 rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Frame, Property, Value, cache).
 
 %%
+rdfs_computable_triple_during(Property,Subject,Value,Stamp) :-
+  number(Stamp),!,
+  rdfs_computable_triple_during(Property,Subject,Value,[Stamp,Stamp]).
+
 rdfs_computable_triple_during(Property, Frame, Value, Interval) :-
   rdfs_subproperty_of(SubProperty, Property),
   rdfs_computable_property(SubProperty, CP),

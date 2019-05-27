@@ -1131,17 +1131,20 @@ owl_has_equivalent(S, P, O, DB) :-
 	owl_same_as(S0, S),
 	owl_same_as(O0, O).
 
-
 %%	owl_same_as(?X, ?Y) is nondet.
 %
 %	True if X and Y are  identical   or  connected by the owl:sameAs
 %	relation. Considers owl:sameAs transitive and symetric.
 
-owl_same_as(literal(X), literal(X)) :- !.
-owl_same_as(X, Y) :-
+owl_same_as(X,Y) :-
+  strip_data_value(X,X_),
+  strip_data_value(Y,Y_),!,
+  owl_same_as_(X_,Y_).
+
+owl_same_as_(X, Y) :-
 	nonvar(X), !,
 	owl_same_as(X, Y, [X]).
-owl_same_as(X, Y) :-
+owl_same_as_(X, Y) :-
 	owl_same_as(Y, X, [X]).
 
 owl_same_as(X, X, _).
@@ -1153,6 +1156,12 @@ owl_same_as(X, Y, Visited) :-
 	X1 \= literal(_),
 	\+ memberchk(X1, Visited),
 	owl_same_as(X1, Y, [X1|Visited]).
+
+% FIXME redundant
+strip_data_value(Value, Value) :- var(Value), !.
+strip_data_value(literal(type(_, Value)), Value) :- !.
+strip_data_value(literal(Value), Value) :- !.
+strip_data_value(Value, Value).
 
 
 %%	owl_has_direct(?Subject, ?Predicate, ?Object)

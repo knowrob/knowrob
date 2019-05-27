@@ -23,7 +23,9 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/action_effects')).
+:- use_module(library('knowrob/triple_memory')).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
@@ -44,6 +46,7 @@ red_in_hand   :- holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', bloc
 blue_in_hand  :- holds( blocksworld:graspedBy(blocksworld:'BlockBlue_test0', blocksworld:'Hand_test0') ), !.
 
 test(take_red0) :-
+  mem_drop,
   \+ red_in_hand,
   red_on_table,
   action_effects_apply(blocksworld:'Take_red'),

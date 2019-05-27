@@ -257,7 +257,9 @@
 
     <!-- http://knowrob.org/kb/swrl_test#TestThing -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#TestThing"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#TestThing">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+    </owl:Class>
     
 
 

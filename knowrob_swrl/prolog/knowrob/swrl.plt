@@ -25,12 +25,13 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/triple_memory')).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/test/swrl_test.owl').
+:- owl_parser:owl_parse('package://knowrob_swrl/owl/test.owl').
 
 :- rdf_db:rdf_register_prefix(test_swrl, 'http://knowrob.org/kb/swrl_test#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
-:- rdf_db:rdf_register_prefix(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing RDF/XML representation of SWRL rules
@@ -145,61 +146,63 @@ test(swrl_exactly, [nondet]) :-
   \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(test_rdf_swrl_unload, [nondet]) :- rdf_swrl_unload.
+test(test_rdf_swrl_unload, [nondet]) :-
+  rdf_swrl_unload,
+  mem_drop.
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Projection of SWRL rule implications into the RDF triple store
 % % % % % % % % % % % % % % % % % % % % % % % %
 
 test(swrl_projection_Driver, [nondet]) :-
-  \+ rdf_has(test_swrl:'Fred', rdf:type, test_swrl:'Driver'),
+  \+ mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver'),
   rdf_swrl_project('Driver'),
-  rdf_has(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
+  mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
 test(swrl_projection_Person1, [nondet]) :-
-  \+ rdf_has(test_swrl:'Alex', rdf:type, dul:'Person'),
+  \+ mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person'),
   rdf_swrl_project('Person'),
-  rdf_has(test_swrl:'Alex', rdf:type, dul:'Person').
+  mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person').
 
 test(swrl_projection_Person2, [nondet]) :-
-  \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
+  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
   rdf_swrl_project('Person2'),
-  rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite').
+  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite').
 
 test(swrl_projection_area, [nondet]) :-
-  \+ rdf_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  \+ mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
   rdf_swrl_project('area'),
-  rdf_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+  mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 test(swrl_projection_startsWith, [nondet]) :-
-  \+ rdf_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
   rdf_swrl_project('startsWith'),
-  rdf_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
 
 test(swrl_projection_BigRectangle1, [nondet]) :-
-  \+ rdf_has(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle'),
+  \+ mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle'),
   rdf_swrl_project('BigRectangle'),
-  rdf_has(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle').
+  mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle').
 
 test(swrl_projection_greaterThen, [nondet]) :-
-  \+ rdf_has(test_swrl:'Ernest', rdf:type, test_swrl:'Adult'),
+  \+ mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult'),
   rdf_swrl_project('greaterThen'),
-  rdf_has(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
+  mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
 
 test(swrl_projection_hasBrother, [nondet]) :-
-  \+ rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', _),
   rdf_swrl_project('brother'),
-  rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
 test(swrl_projection_exactly, [nondet]) :-
-  \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
+  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
   rdf_swrl_project('exactly'),
-  rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
+  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
 
 test(swrl_projection_NonHuman1, [nondet]) :-
-  \+ rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
+  \+ mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
   rdf_swrl_project('NonHuman'),
-  rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
+  mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
 
 % % % % % % % % % % % % % % % % % % % % % % % %
