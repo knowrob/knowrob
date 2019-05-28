@@ -41,8 +41,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('jpl')).
-:- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/mongo')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).

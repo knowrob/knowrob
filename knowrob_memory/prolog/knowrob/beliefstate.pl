@@ -128,9 +128,12 @@ belief_class_of(Obj, NewObjType) :-
       rdfs_type_of(Obj, CurrObjType),
       rdfs_subclass_of(CurrObjType, Parent),
       rdfs_subclass_of(NewObjType, Parent),
-      mng_triple_stop(Obj,rdf:type,CurrObjType,Now)
+      %%
+      mem_triple_stop(Obj,rdf:type,CurrObjType,Now),
+      rdf_retractall(Obj,rdf:type,CurrObjType)
   ))),
-  mng_store_triple(Obj,rdf:type,NewObjType,_,Now).
+  mem_store_triple(Obj,rdf:type,NewObjType,_,Now),
+  rdf_assert(Obj,rdf:type,NewObjType).
 
 %% belief_at_update(+Obj:iri, +Transform:list) is semidet.
 %
