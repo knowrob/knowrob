@@ -56,17 +56,24 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ros,     'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
 
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_actions).
-
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 %:- use_module(library('semweb/owl_export')).
 
+% URI to ROS package name.
+owl_parser:registry('http://www.ontologydesignpatterns.org/ont/dul', dul).
+owl_parser:registry('http://www.ease-crc.org/ont', ease_ontology).
+owl_parser:registry('http://www.ease-crc.org/ont', rosowl).
+owl_parser:registry('http://knowrob.org/kb', knowrob_common).
+
+:- register_ros_package(knowrob_common).
+:- register_ros_package(knowrob_actions).
+
 % parse OWL files, register name spaces
 :- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob.owl').
-:- owl_parser:owl_parse('package://rosowl/owl/ROS.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/ROS.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE.owl').
+:- owl_parser:owl_parse('http://knowrob.org/kb/knowrob.owl').
 
 :- use_module(library('knowrob/utility/delay')).
 :- use_module(library('knowrob/utility/atoms')).
