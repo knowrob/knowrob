@@ -298,7 +298,7 @@ object_assert_color(Obj, [R,G,B,A]) :-
 object_assert_color(Obj, Col) :-
   atom(Col),
   rdf_retractall(Obj, knowrob:mainColorOfObject, _),
-  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(knowrob:vec4, Col))),
+  rdf_assert_prolog(Obj, knowrob:mainColorOfObject, Col),
   mark_dirty_objects([Obj]), !.
 
 %% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
@@ -316,9 +316,9 @@ object_dimensions(Obj, Depth, Width, Height) :-
   object_boundingBox(Obj, Depth, Width, Height),!.
   
 object_dimensions(Obj, Depth, Width, Height) :-
-  holds(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),  atom_number(Depth_,  Depth),
-  holds(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),  atom_number(Width_,  Width),
-  holds(Obj, knowrob:heightOfObject, literal(type(_, Height_))), atom_number(Height_, Height), !.
+  holds(Obj, knowrob:depthOfObject,  Depth),
+  holds(Obj, knowrob:widthOfObject,  Width),
+  holds(Obj, knowrob:heightOfObject, Height), !.
 
 % FIXME: holds should also cover class properties :/
 object_dimensions(Obj, Depth, Width, Height) :-

@@ -46,16 +46,6 @@ test(storagePlaceForBecause1) :-
   storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1',X),
   owl_description(X,class('http://knowrob.org/kb/knowrob.owl#FoodVessel')), !.
 
-test(current_object_pose) :-
-  current_object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',
-      [1.1277804,2.6304414,0.816479],
-      [0.0,0.0,0.04428184028938965,0.9990190820981245]]).
-
-test(object_pose_at_time) :-
-  object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',
-      [1.1277804,2.6304414,0.816479],
-      [0.0,0.0,0.04428184028938965,0.9990190820981245]], 1331040458).
-
 test(object_dimensions) :-
   object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
   !.
