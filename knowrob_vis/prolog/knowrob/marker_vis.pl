@@ -40,6 +40,7 @@
       marker_child/2,
       marker_object/4,
       marker_term/2,
+      marker_name/2,
       
       marker_properties/2,
       marker_type/2,
@@ -56,11 +57,6 @@
       
       marker_hide/1,
       marker_show/1,
-      
-      marker_highlight/1,
-      marker_highlight/2,
-      marker_highlight_remove/1,
-      marker_highlight_toggle/1,
       
       marker_primitive/5,
       marker_queries/2
@@ -80,6 +76,7 @@
 
 :- rdf_meta marker(t,?),
             marker(t,?,?),
+            marker_name(t,?),
             marker_hide(t),
             marker_show(t),
             marker_update(t),
@@ -91,9 +88,6 @@
             marker_scale(t,?),
             marker_color(t,?),
             marker_has_visual(t,?),
-            marker_highlight(t,?),
-            marker_highlight_remove(t),
-            marker_highlight_toggle(t),
             marker_mesh_resource(t,?),
             marker_pose(t,?),
             marker_translation(t,?),
@@ -109,13 +103,14 @@
 :- multifile marker_new/4,
              marker_update/3.
 
+:- dynamic v_marker_object/4.
+             
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
   not(owl_individual_of(Identifier, knowrob:'RoomInAConstruction')),
   not(owl_individual_of(Identifier, knowrob:'SemanticEnvironmentMap')),
-  not(owl_individual_of(Identifier, knowrob:'TemporalPart')),
   not(rdf_has(Identifier, knowrob:'hasVisual', literal(type(_,false)))).
 
 marker_children(Parent, Children) :-
@@ -789,16 +784,7 @@ show_speech(Agent,Instant) :-
   marker_text(MarkerObj, TextHtml),
   marker_scale(MarkerObj, [1.0,1.0,1.0]).
 
-
-highlight(X) :-
-  marker_term(X, MarkerTerm),
-  marker_highlight(MarkerTerm).
-highlight(X,Color) :-
-  marker_term(X, MarkerTerm),
-  marker_highlight(MarkerTerm,Color).
-
 show_next :-
-  marker_highlight_remove(all),
   marker_remove(trajectories).
 
 marker_term(X, experiment(X)) :-
@@ -1032,116 +1018,6 @@ marker_update_children(MarkerObject, T) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
-% Highlighting marker
-%
-
-%% marker_highlight(+MarkerObject) is det.
-%% marker_highlight(+MarkerObject, +Color) is det.
-%
-% Highlight markers identified by MarkerObject with given highlight color Color
-% or the default color.
-%
-% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
-% @param Color 3D/4D number list or HTML color atom (e.g., '#ff0000')
-%
-marker_highlight(MarkerObject) :-
-  jpl_list_to_array([1.0,0.0,0.0,1.0], ColorArray),
-  marker_highlight(MarkerObject, ColorArray).
-
-marker_highlight(MarkerObject, [R,G,B]) :-
-  jpl_list_to_array([R,G,B,1.0], ColorArray),
-  marker_highlight(MarkerObject, ColorArray).
-
-marker_highlight(MarkerObject, [R,G,B,A]) :-
-  jpl_list_to_array([R,G,B,A], ColorArray),
-  marker_highlight(MarkerObject, ColorArray).
-
-marker_highlight(MarkerTerm, ColorArg) :-
-  v_marker_object(_, MarkerTerm, MarkerObject, _),
-  marker_highlight(MarkerObject, ColorArg).
-
-marker_highlight(MarkerName, ColorArg) :-
-  v_marker_object(MarkerName, _, MarkerObject, _),
-  marker_highlight(MarkerObject, ColorArg).
-
-marker_highlight(interval(MarkerTerm,Start,Stop), ColorArg) :-
-  v_marker_object(_, MarkerTerm, MarkerObject, _),
-  marker_highlight(interval(MarkerObject,Start,Stop), ColorArg).
-
-marker_highlight(interval(MarkerName,Start,Stop), ColorArg) :-
-  v_marker_object(MarkerName, _, MarkerObject, _),
-  marker_highlight(interval(MarkerObject,Start,Stop), ColorArg).
-
-marker_highlight(interval(MarkerObject,Start,Stop), ColorArg) :-
-  v_marker_object(_, _, MarkerObject, _),
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  forall(
-    member(ChildObject,Children), (
-      marker_timestamp(ChildObject, MarkerTime),
-      T is MarkerTime/1000000.0,
-      (  time_between(T,Start,Stop)
-      -> marker_highlight(ChildObject,ColorArg)
-      ;  true
-      )
-  )).
-
-marker_highlight(MarkerObject, ColorArg) :-
-  v_marker_object(_, _, MarkerObject, _),
-  once(( jpl_is_object(ColorArg) ; number(ColorArg) ; atom(ColorArg) )),
-  jpl_call(MarkerObject, 'highlight', [ColorArg], _),
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  forall(
-    member(ChildObject,Children), 
-    marker_highlight(ChildObject,ColorArg)
-  ).
-
-%% marker_highlight_remove(+MarkerObject) is det.
-%
-% Removes highlights from markers identified by MarkerObject.
-%
-% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
-%
-marker_highlight_remove(all) :-
-  ignore( forall(
-    v_marker_object(_, _, MarkerObject, _),
-    ignore(marker_highlight_remove(MarkerObject))
-  )), !.
-
-marker_highlight_remove(MarkerTerm) :-
-  v_marker_object(_, MarkerTerm, MarkerObject, _),
-  marker_highlight_remove(MarkerObject), !.
-
-marker_highlight_remove(MarkerName) :-
-  v_marker_object(MarkerName, _, MarkerObject, _),
-  marker_highlight_remove(MarkerObject), !.
-
-marker_highlight_remove(MarkerObject) :-
-  v_marker_object(_, _, MarkerObject, _),
-  jpl_call(MarkerObject, 'hasHighlight', [], @(true)),
-  jpl_call(MarkerObject, 'removeHighlight', [], _),
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  forall(member(ChildObject,Children), ignore((
-    marker_highlight_remove(ChildObject)
-  ))).
-
-%% marker_highlight_toggle(+MarkerName) is det.
-%
-% Toggles marker highlighted state.
-%
-% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
-%
-marker_highlight_toggle(MarkerName) :-
-  v_marker_object(MarkerName, _, MarkerObject, _),
-  (  jpl_call(MarkerObject, 'hasHighlight', [], @(true))
-  -> marker_highlight_remove(MarkerObject)
-  ;  marker_highlight(MarkerObject)
-  ).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
 % Marker queries
 %
 
@@ -1164,10 +1040,6 @@ marker_query(MarkerName, object_without_children(Individual), QueryGroup, QueryT
 
 marker_query(MarkerName, _, 'Marker Visualization', 'What is the name of this marker?', QueryAtom) :-
   atom_concat('Name = ', MarkerName, QueryAtom).
-
-marker_query(MarkerName, _, 'Marker Visualization', 'Toggle marker highlight.', QueryAtom) :-
-  QueryTerm=(marker_highlight_toggle(MarkerName), marker_publish),
-  term_to_atom(QueryTerm,QueryAtom).
 
 marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', QueryAtom) :-
   QueryTerm=(marker_remove(MarkerName), marker_publish),
@@ -1425,6 +1297,15 @@ marker_text(Marker, Text) :-
 %
 marker_has_visual(Marker, V) :-
   marker_call(Marker,V,(get_marker_has_visual,set_marker_has_visual)).
+
+marker_name(Marker, Name) :-
+  ( v_marker_object(Marker,_,MarkerObj,_) ;
+    v_marker_object(_,Marker,MarkerObj,_) ),
+  jpl_call(MarkerObj, 'getId', [], Id),
+  jpl_call(MarkerObj, 'getNS', [], NS),
+  atom_number(Id_atom,Id),
+  atom_concat(NS,Id_atom,Name).
+  
 
 %% marker_call(+Marker, ?Value, +GetterSetter) is det.
 %

@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
     json_prolog_msgs
 )
 
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(INCLUDE_DIRS include
   LIBRARIES json_prolog

@@ -27,12 +27,20 @@
 
 :- module(knowrob_actions,
     [
+      action_constituents/3,
+      action_boundary_constraints/2,
       action_objectActedOn/2,
       action_toLocation/2,
       action_fromLocation/2,
       action_inputs/2,
       action_outputs/2,
-      action_missing_inputs/2
+      action_missing_inputs/2,
+      action_requires/3,
+      action_class_requires/3,
+      comp_action_participant/3,
+      physical_actions/2,
+      task_role_filler/3,
+      action_participant_type/3
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -48,14 +56,67 @@
 
 
 :- rdf_meta
+      action_constituents(r,t,t),
+      action_boundary_constraints(r,t),
       action_objectActedOn(r,r),
       action_toLocation(r,r),
       action_fromLocation(r,r),
       action_inputs(r,r),
       action_missing_inputs(r,r),
-      action_outputs(r,r).
+      action_outputs(r,r),
+      action_requires(r,r,r),
+      action_class_requires(r,r,r),
+      action_participant_type(r,r,r),
+      transformed_into(r, r),
+      transformed_into_transitive(r,r),
+      comp_action_participant(r,r,r),
+      task_role_filler(r,r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+
+
+action_participant_type(Action,Participant,Class) :-
+  rdf_has(Action,dul:hasParticipant,Participant),
+  rdfs_individual_of(Participant,Class).
+
+%%
+task_role_filler(Task,Role,Filler) :-
+  rdf_has(Task,dul:definesRole,R),
+  rdfs_individual_of(R,Role),
+  rdf_has(Filler,dul:isClassifiedBy,R).
+
+%%
+action_constituents(Evt,Constituents,Constraints) :-
+  findall(Type-Constraints, (
+    rdfs_subclass_of(Evt, Restr),
+    % FIXME this assumes particular structure of axioms
+    owl_description_recursive(Restr,
+        restriction(P, some_values_from(X))),
+    rdfs_subproperty_of(P,dul:hasConstituent),
+    ( X=intersection_of([Type|Constraints]) ;
+    ( Type=class(_), Type=X, Constraints=[] )),
+    % HACK better check which ones are subclass of each other and "merge"
+    Type=class(Iri),
+    \+ rdf_equal(Iri,ease:'PhysicsProcess'),
+    \+ rdf_equal(Iri,dul:'Action')),
+    TypeConstraints),
+  findall(Constituent,
+    member(class(Constituent)-_, TypeConstraints),
+    Constituents),
+  findall(Constraint, (
+    member(class(A)-Axioms, TypeConstraints),
+    member(restriction(P, some_values_from(B)),Axioms),
+    allen_constraint(A,P,B,Constraint)),
+    Constraints).
+
+%%
+action_boundary_constraints(Evt,Constraints) :-
+  findall(Constraint, (
+    rdfs_subclass_of(Evt, Restr),
+    owl_description(Restr, restriction(P, some_values_from(B))),
+    allen_constraint(Evt,P,B,Constraint)),
+    Constraints).
 
 %% action_objectActedOn(?Action, ?Object) is nondet.
 %
@@ -65,12 +126,7 @@
 % @param Object  Value set as objectActedOn for this action
 % 
 action_objectActedOn(Action, Object) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
-action_objectActedOn(Action, Object) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
+  action_class_requires(Action,knowrob:objectActedOn,Object).
 
 %% action_toLocation(?Action, ?Loc) is nondet.
 %
@@ -80,12 +136,7 @@ action_objectActedOn(Action, Object) :-
 % @param Loc    Value set as toLocation for this action
 % 
 action_toLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
-action_toLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
+  action_class_requires(Action,knowrob:toLocation,Loc).
 
 %% action_fromLocation(?Action, ?Loc) is nondet.
 %
@@ -95,12 +146,7 @@ action_toLocation(Action, Loc) :-
 % @param Loc    Value set as fromLocation for this action
 % 
 action_fromLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
-action_fromLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
+  action_class_requires(Action,knowrob:fromLocation,Loc).
 
 %% action_inputs(+Action, -Input)
 %
@@ -110,7 +156,17 @@ action_fromLocation(Action, Loc) :-
 % @param Input    Input linked via a preActors restriction
 %
 action_inputs(Action, Input) :-
-  owl_class_properties(Action, knowrob:'preActors', Input).
+  action_class_requires(Action,knowrob:preActor,Input).
+
+%% action_outputs(+Action, -Output)
+%
+% Outputs of an action
+%
+% @param Action   Action class
+% @param Output   Output linked via a postActors restriction
+%
+action_outputs(Action, Output) :-
+  action_class_requires(Action,knowrob:postActor,Output).
 
 %% action_missing_inputs(+Action, -Missing)
 %
@@ -122,17 +178,6 @@ action_inputs(Action, Input) :-
 action_missing_inputs(Action, Missing) :-
   findall(Pre, (action_inputs(Action, Pre), \+ resource_available(Pre)), Missing).
 
-%% action_outputs(+Action, -Output)
-%
-% Outputs of an action
-%
-% @param Action   Action class
-% @param Output   Output linked via a postActors restriction
-%
-action_outputs(Action, Output) :-
-  owl_class_properties(Action, knowrob:'postActors', Output).
-%TODO: check class subsumption (allow more complex requirements)
-
 %% resource_available(+Resource)
 %
 % Resource is available
@@ -140,29 +185,47 @@ action_outputs(Action, Output) :-
 % @param Resource Resource whose availability is to be checked (e.g. object class, check if instance of that class exists)
 %
 resource_available(Resource) :-
-  owl_individual_of(ObjInst, Resource),
-  % HACK
-  \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
+  owl_individual_of(_ObjInst, Resource),!.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% 'Physical action'
+
+% set of all 'Physical action' subclasses without subclass
+physical_actions(ActionSet) :-
+  physical_actions(ActionSet,user).
+
+physical_actions(ActionSet,RDFGraph) :-
+  findall(ActionClass, (
+    rdfs_subclass_of(ActionClass, ease:'PhysicalAction'),
+    once((
+      rdf(ActionClass, rdfs:subClassOf, _, RDFGraph),
+      \+ rdf(_, rdfs:subClassOf, ActionClass)
+    ))
+  ), Actions),
+  list_to_set(Actions, ActionSet).
 
 
-%% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
-%
-% Compare predicate to be used in predsort for sorting a list of actions
-% based on partial-order constraints. Checks if there is an ordering
-% constraint that has these two actions as before/after
-% 
-% @tbd can we check if these constraints belong to the current task?
-% @param Rel   Relation operator, i.e. either '<' or '>'
-% @param Act1  Action class
-% @param Act2  Action class
-% 
-compare_actions_partial_order('<', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act2),!.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % %  TODO Below could be moved into common module.
+% % % %    - assert_triple_most_specific is redundant with code in knowrob_planning
 
-compare_actions_partial_order('>', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act1),!.
+% FIXME: owl_cardinality_on_* could include
+%   general and specific axioms! prefer specific axioms
 
-% default: keep ordering if there are no matching ordering constraints
-compare_actions_partial_order('<', _, _).
+%%
+action_requires(S,P,O) :-
+  owl_cardinality_on_subject(S,P,O,cardinality(Min,_)),
+  Min > 0.
+
+%%
+action_class_requires(S,P,O) :-
+  owl_cardinality_on_class(S,P,O,cardinality(Min,_)),
+  Min > 0.
+
+%%
+comp_action_participant(Entity,P,Symbol) :-
+  ground(Entity),
+  owl_cardinality_on_subject(Entity, P, Type, cardinality(Min,_)),
+  % TODO: only Min - Actual choicepoints!
+  between(1,Min,_), % gen `Min` choicepoints
+  rdf_instance_from_class(Type,Symbol).

@@ -33,8 +33,6 @@
       show/2,
       show/3,
       show_next/0,
-      highlight/1,
-      highlight/2,
       camera_pose/2,
       visualisation_server/0
     ]).
@@ -112,22 +110,9 @@ show(DataVisTerm, _, Properties) :-
   data_vis(DataVisTerm, Properties), !.
 
 %% show_next is det
-%
-% Unhighlights objects and removes displayed trajectories.
+%removes displayed trajectories.
 show_next :-
-  marker_highlight_remove(all),
   marker_remove(trajectories).
-
-%% highlight(+VisualThing) is det.
-%% highlight(+VisualThing,+Color) is det.
-%
-% Visually highlights VisualThing in the respective canvas.
-highlight(VisualThing) :-
-  marker_term(VisualThing, MarkerTerm),
-  marker_highlight(MarkerTerm).
-highlight(VisualThing,Color) :-
-  marker_term(VisualThing, MarkerTerm),
-  marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Canvas camera manipulation

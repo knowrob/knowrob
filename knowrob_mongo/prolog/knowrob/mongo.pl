@@ -28,20 +28,30 @@
 :- module(knowrob_mongo,
     [
       mng_interface/1,      % get handle to the java object of the mongo client
+      mng_create_index/2,
+      mng_dump/1,
+      mng_restore/1,
       mng_db/1,             % set the database state
       mng_timestamp/2,
       mng_distinct_values/3,
       mng_value_object/2,   % converts between mongo and prolog representations
+      mng_store/3,
+      mng_update/3,
+      mng_collection/1,
+      mng_drop/1,
+      mng_get_boolean/3,
+      mng_get_double/3,
+      mng_get_int/3,
+      mng_get_long/3,
+      mng_get_string/3,
       mng_query/2,          % querying the db based on patterns of data records
       mng_query/3,
       mng_query_latest/4,
       mng_query_latest/5,
       mng_query_earliest/4,
       mng_query_earliest/5,
-      mng_query_incremental/3,
       mng_cursor/3,         % get a cursor to your query for some advanced processing beyond the mng_query* predicates
       mng_cursor_read/2,
-      mng_cursor_process/2,
       mng_cursor_descending/3,
       mng_cursor_ascending/3,
       mng_cursor_limit/3,
@@ -57,9 +67,12 @@
 @author Daniel Beßler
 @license BSD
 */
+:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
+:- use_module(library('http/json')).
 :- use_module(library('jpl')).
+:- use_module(library('knowrob/utility/filesystem')).
 
 :-  rdf_meta
     mng_interface(-),
@@ -73,7 +86,13 @@
     mng_query_earliest(+,?,+,r,+),
     mng_query(+,?),
     mng_query(+,?,+),
-    mng_query_incremental(+,+,+),
+    mng_store(+,t,-),
+    mng_update(+,+,t),
+    mng_get_boolean(+,+,-),
+    mng_get_double(+,+,-),
+    mng_get_int(+,+,-),
+    mng_get_long(+,+,-),
+    mng_get_string(+,+,-),
     mng_value_object(+,-),
     mng_ros_message(t,-),
     mng_ros_message(+,+,+,-),
@@ -98,6 +117,46 @@ mng_interface(Mongo) :-
     current_predicate(v_mng_interface, _),
     v_mng_interface(Mongo).
 
+%% mng_create_index(+Collection,+Keys) is det
+%
+% Creates search index.
+%
+mng_create_index(_,[]) :- !.
+mng_create_index(Collection,Keys) :-
+  mng_interface(Mongo),
+  jpl_list_to_array(Keys, KeysArr),
+  jpl_call(Mongo, 'createIndex', [Collection,KeysArr], _).
+
+%% mng_collection(?Collection) is det
+%
+% True iff *Collection* is an existing collection
+% in the current DB.
+%
+mng_collection(Collection) :-
+  mng_interface(Mongo),
+  jpl_call(Mongo, 'getCollections', [], CollectionsArr),
+  jpl_array_to_list(CollectionsArr, Collections),
+  member(Collection, Collections).
+
+%% mng_dump(+Dir) is det.
+%
+% Dump mongo DB.
+%
+mng_dump(Dir) :-
+  mkdir(Dir),
+  exists_directory(Dir),
+  mng_interface(Mongo),
+  jpl_call(Mongo, 'dump', [Dir], _).
+
+%% mng_restore(+Dir) is det.
+%
+% Restore mongo DB.
+%
+mng_restore(Dir) :-
+  exists_directory(Dir),
+  mng_interface(Mongo),
+  jpl_call(Mongo, 'restore', [Dir], _).
+
 %% mng_db(+DBName) is nondet.
 %
 % Change mongo database state used by KnowRob.
@@ -106,8 +165,14 @@ mng_interface(Mongo) :-
 % @param DBName  The name of the db (e.g., 'roslog')
 %
 mng_db(DBName) :-
+  ground(DBName),
   mng_interface(Mongo),
   jpl_call(Mongo, 'setDatabase', [DBName], _).
+
+mng_db(DBName) :-
+  var(DBName),
+  mng_interface(Mongo),
+  jpl_call(Mongo, 'getDatabaseName', [], DBName).
 
 %% mng_timestamp(+Date, -Stamp) is nondet.
 %
@@ -134,6 +199,18 @@ mng_distinct_values(Collection, Key, Values) :-
   jpl_call(DB, 'distinctValues', [Collection,Key], ValuesArr),
   jpl_array_to_list(ValuesArr, Values).
 
+%%
+mng_keys_relations_values(Pattern,KeysArray,RelationsArray,ValuesArray) :-
+  findall(Key, member([Key,_,_],Pattern), Keys),
+  findall(Rel, member([_,Rel,_],Pattern), Relations),
+  findall(Obj, (
+      member([_,_,Val], Pattern),
+      once(mng_value_object(Val, Obj))
+  ), Values),
+  jpl_list_to_array(Keys, KeysArray),
+  jpl_list_to_array(Relations, RelationsArray),
+  jpl_list_to_array(Values, ValuesArray).
+
 %% mng_cursor(+Collection, +Pattern, -DBCursor)
 %
 % Create a DB cursor of query results for records in
@@ -146,18 +223,55 @@ mng_distinct_values(Collection, Key, Values) :-
 %
 mng_cursor(Collection, Pattern, DBCursor) :-
   mng_interface(DB),
-  findall(Key, member([Key,_,_],Pattern), Keys),
-  findall(Rel, member([_,Rel,_],Pattern), Relations),
-  findall(Obj, (
-      member([_,_,Val], Pattern),
-      once(mng_value_object(Val, Obj))
-  ), Values),
-  jpl_list_to_array(Keys, KeysArray),
-  jpl_list_to_array(Relations, RelationsArray),
-  jpl_list_to_array(Values, ValuesArray),
-  
-  jpl_call(DB, 'query', [Collection, KeysArray, RelationsArray, ValuesArray], DBCursor),
+  flatten_pattern(DB,Pattern,Flattened),
+  mng_keys_relations_values(Flattened,Keys,Relations,Values),
+  jpl_call(DB, 'query', [Collection,Keys,Relations,Values], DBCursor),
   not(DBCursor = @(null)).
+
+%%
+flatten_pattern(_,[],[]) :- !.
+
+flatten_pattern(DB, [or(List)|Xs],[['',or,DBObject]|Ys]) :- !,
+  mng_keys_relations_values(List,Keys,Relations,Values),
+  jpl_call(DB,'disjunction',[Keys,Relations,Values], DBObject),
+  not(DBObject = @(null)),
+  flatten_pattern(DB, Xs, Ys).
+
+flatten_pattern(DB, [X|Xs],[X|Ys]) :-
+  flatten_pattern(DB, Xs, Ys).
+
+%% mng_store(+Collection, +Dict, -DBObject)
+%
+% Stores a dictionary in a mongo DB collection
+% with the provided name.
+%
+mng_store(Collection, Dict, DBObject) :-
+  mng_interface(DB),
+  with_output_to(atom(JSON), 
+    json_write_dict(current_output, Dict)
+  ),
+  jpl_call(DB, 'store', [Collection, JSON], DBObject).
+
+%% mng_update(+Collection,+DBObject, +Dict)
+%
+% Puts all key-value pairs into the given document
+% *DBObject*, possibly overwriting old values.
+% *Dict* is a Prolog dictionary.
+%
+mng_update(Collection, DBObject, Dict) :-
+  mng_interface(DB),
+  with_output_to(atom(JSON), 
+    json_write_dict(current_output, Dict)
+  ),
+  jpl_call(DB, 'update', [Collection,DBObject,JSON], _).
+
+%% mng_drop(+Collection)
+%
+% Drop a collection.
+%
+mng_drop(Collection) :-
+  mng_interface(DB),
+  jpl_call(DB, 'drop', [Collection], _).
 
 %% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue).
 %% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue, +Pattern).
@@ -213,18 +327,6 @@ mng_query(Collection, DBObj, Pattern) :-
   mng_cursor(Collection, Pattern, DBCursor),
   mng_cursor_read(DBCursor, DBObj).
 
-%% mng_query_incremental(+Collection, +Goal, +Pattern) is semidet
-%
-% Incrementally compute DB objects matching Pattern, and
-% call Goal for each result.
-% The DBObject is appended as last argument to Goal.
-% For example `Goal=my_predicate(X)` turns to `call(my_predicate(X,DBObject))`
-% for each resulting DB object.
-%
-mng_query_incremental(Collection, Goal, Pattern) :-
-  mng_cursor(Collection, Pattern, DBCursor),
-  mng_cursor_process(DBCursor, Goal).
-
 %% mng_cursor_descending(+In, +Key, -Out).
 %% mng_cursor_ascending(+In, +Key, -Out).
 %
@@ -259,30 +361,15 @@ mng_cursor_limit(DBCursor, N, DBCursorLimited) :-
 % @param DBObj The resulting DB object(s)
 %
 mng_cursor_read(DBCursor, DBObj) :-
-  (  mng_db_object(DBCursor, DBObj)
-  -> ( % close cursor and succeed
-    jpl_call(DBCursor, 'close', [], _)
-  ) ; ( % close cursor and fail
-     jpl_call(DBCursor, 'close', [], _),
-     fail
-  )).
+  setup_call_cleanup(
+    mng_interface(DB),
+    mng_cursor_read__(DB, DBCursor, DBObj),
+    jpl_call(DBCursor, 'close', [], _)).
 
-%% mng_cursor_process(+DBCursor, +Goal) is semidet
-%
-% Incrementally compute DB objects from DBCursor, and
-% call Goal for each result.
-% The DBObject is appended as last argument to Goal.
-% For example `Goal=my_predicate(X)` turns to `call(my_predicate(X,DBObject))`
-% for each resulting DB object.
-%
-mng_cursor_process(DBCursor, Goal) :-
-  repeat,
-  (( mng_db_object(DBCursor, one(DBObj)),
-     call(Goal, DBObj) )
-  -> fail % jump back to repeat
-  ;  !    % continue and don't jump back again
-  ),
-  jpl_call(DBCursor, 'close', [], _).
+mng_cursor_read__(DB, DBCursor,DBObj) :-
+  jpl_call(DB, 'one', [DBCursor], O1),
+  not(O1 = @(null)),
+  ( DBObj=O1 ; mng_cursor_read__(DB,DBCursor,DBObj) ).
 
 %% mng_cursor_read(+DBCursor, +DBObjects).
 %
@@ -338,11 +425,46 @@ mng_value_object(Val, ObjJava) :-
   number(Val),
   jpl_new('java.lang.Double', [Val], ObjJava), !.
 
+mng_value_object(true, ObjJava) :-
+  jpl_new('java.lang.Boolean', [@(true)], ObjJava), !.
+
+mng_value_object(false, ObjJava) :-
+  jpl_new('java.lang.Boolean', [@(false)], ObjJava), !.
+
 mng_value_object(Val, Val) :-
   (atom(Val) ; jpl_is_object(Val)), !.
 
 mng_value_object(Val, _) :-
   print_message(warning, domain_error(mng_value_object, [Val])), fail.
+
+%% mng_get_boolean(+DBObject,+Key,?Value)
+%% mng_get_double(+DBObject,+Key,?Value)
+%% mng_get_int(+DBObject,+Key,?Value)
+%% mng_get_long(+DBObject,+Key,?Value)
+%% mng_get_string(+DBObject,+Key,?Value)
+%
+% Retrieve typed value of a field in
+% a mongo DB document.
+%
+mng_get_boolean(DBObject,Key,Value) :-
+  atom(Key), jpl_is_object(DBObject),
+  catch(jpl_call(DBObject, 'getBoolean', [Key], Value),_,fail).
+
+mng_get_double(DBObject,Key,Value) :-
+  atom(Key), jpl_is_object(DBObject),
+  catch(jpl_call(DBObject, 'getDouble', [Key], Value),_,fail).
+
+mng_get_int(DBObject,Key,Value) :-
+  atom(Key), jpl_is_object(DBObject),
+  catch(jpl_call(DBObject, 'getInt', [Key], Value),_,fail).
+
+mng_get_long(DBObject,Key,Value) :-
+  atom(Key), jpl_is_object(DBObject),
+  catch(jpl_call(DBObject, 'getLong', [Key], Value),_,fail).
+
+mng_get_string(DBObject,Key,Value) :-
+  atom(Key), jpl_is_object(DBObject),
+  catch(jpl_call(DBObject, 'getString', [Key], Value),_,fail).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

@@ -38,5 +38,4 @@
 :- register_ros_package(knowrob_objects).
 
 :- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/beliefstate')).
 :- use_module(library('knowrob/perception')).

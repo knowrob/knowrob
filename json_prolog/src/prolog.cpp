@@ -46,6 +46,14 @@ Prolog::Prolog(const std::string &ns)
   prolog_finish = nh_.serviceClient<PrologFinish>(ns + "/finish");
 }
 
+//This method is more optimal for sending queries through json
+Prolog::Prolog(bool persistent, const std::string &ns)
+{
+  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/simple_query", persistent);
+  next_solution = nh_.serviceClient<PrologNextSolution>(ns + "/next_solution", persistent);
+  prolog_finish = nh_.serviceClient<PrologFinish>(ns + "/finish", persistent);
+}
+
 PrologQueryProxy Prolog::query(const std::string &query_str)
 {
   return PrologQueryProxy(*this, query_str);

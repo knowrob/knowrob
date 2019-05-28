@@ -54,24 +54,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#hingedTo -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;hingedTo"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#orientation -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;orientation"/>
-    
-
-
     
 
 
@@ -200,12 +185,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#radius -->
-
-    <owl:DatatypeProperty rdf:about="&knowrob;radius"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#widthOfObject -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;widthOfObject"/>
@@ -219,85 +198,6 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ControlKnob -->
-
-    <owl:Class rdf:about="&knowrob;ControlKnob"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#CookingVessel -->
-
-    <owl:Class rdf:about="&knowrob;CookingVessel"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Cupboard -->
-
-    <owl:Class rdf:about="&knowrob;Cupboard"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#DinnerPlate -->
-
-    <owl:Class rdf:about="&knowrob;DinnerPlate"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Dishwasher -->
-
-    <owl:Class rdf:about="&knowrob;Dishwasher"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Door -->
-
-    <owl:Class rdf:about="&knowrob;Door"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Drawer -->
-
-    <owl:Class rdf:about="&knowrob;Drawer"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#DrinkingBottle -->
-
-    <owl:Class rdf:about="&knowrob;DrinkingBottle"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Handle -->
-
-    <owl:Class rdf:about="&knowrob;Handle"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#HingedJoint -->
-
-    <owl:Class rdf:about="&knowrob;HingedJoint"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#KitchenTable -->
-
-    <owl:Class rdf:about="&knowrob;KitchenTable"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Oven -->
-
-    <owl:Class rdf:about="&knowrob;Oven"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMix -->
-
-    <owl:Class rdf:about="&knowrob;PancakeMix"/>
     
 
 
@@ -319,31 +219,38 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Spatula -->
-
-    <owl:Class rdf:about="&knowrob;Spatula"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
 
     <owl:Class rdf:about="&knowrob;TimePoint"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#WallOfAConstruction -->
-
-    <owl:Class rdf:about="&knowrob;WallOfAConstruction"/>
-    
-
-
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#PancakeMaker -->
 
     <owl:Class rdf:about="&semRoom_semantic_map;PancakeMaker">
-        <rdfs:subClassOf rdf:resource="&knowrob;CookingVessel"/>
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&semRoom_semantic_map;DinnerPlate">
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&semRoom_semantic_map;PancakeMix">
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&semRoom_semantic_map;Drawer">
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&semRoom_semantic_map;Table">
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&semRoom_semantic_map;Spatula">
+        <rdfs:subClassOf rdf:resource="&dul;PhysicalObject"/>
     </owl:Class>
     
-
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -455,7 +362,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#drawer0 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;drawer0">
-        <rdf:type rdf:resource="&knowrob;Drawer"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;Drawer"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.13</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.47</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">1</knowrob:widthOfObject>
@@ -467,7 +374,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#pancake_mix1 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;pancake_mix1">
-        <rdf:type rdf:resource="&knowrob;PancakeMix"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;PancakeMix"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.22</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">6</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">7</knowrob:widthOfObject>
@@ -491,7 +398,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#plate1 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;plate1">
-        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;DinnerPlate"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.02</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.20</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.20</knowrob:widthOfObject>
@@ -695,7 +602,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#spatula1 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;spatula1">
-        <rdf:type rdf:resource="&knowrob;Spatula"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;Spatula"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.015</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.03</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.05</knowrob:widthOfObject>
@@ -707,7 +614,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#table1 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;table1">
-        <rdf:type rdf:resource="&knowrob;KitchenTable"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;Table"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.130</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.47</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">1.00</knowrob:widthOfObject>
@@ -719,7 +626,7 @@
     <!-- http://knowrob.org/kb/semRoom_semantic_map.owl#table2 -->
 
     <owl:NamedIndividual rdf:about="&semRoom_semantic_map;table2">
-        <rdf:type rdf:resource="&knowrob;KitchenTable"/>
+        <rdf:type rdf:resource="&semRoom_semantic_map;Table"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">0.75</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">1.40</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">1.80</knowrob:depthOfObject>

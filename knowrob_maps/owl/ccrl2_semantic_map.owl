@@ -18,6 +18,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:ccrl2_semantic_map="http://knowrob.org/kb/ccrl2_semantic_map.owl#"
@@ -475,9 +476,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.59053993</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.723777</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door40"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door40"/>
         <knowrob:hingedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door40"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge40"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge40"/>
         <srdl2-comp:urdfName>drawer_sink_col2_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -490,7 +491,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.3104254</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.31567</knowrob:heightOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle130"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle130"/>
         <srdl2-comp:urdfName>drawer_oven_right_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -503,7 +504,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.26929498</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle175"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle175"/>
         <srdl2-comp:urdfName>drawer_island_col3_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -516,7 +517,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14406002</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle178"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle178"/>
         <srdl2-comp:urdfName>drawer_island_col3_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -529,7 +530,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.267237</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle181"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle181"/>
         <srdl2-comp:urdfName>drawer_island_col2_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -542,7 +543,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.26929498</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle184"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle184"/>
         <srdl2-comp:urdfName>drawer_island_col2_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -555,7 +556,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14406002</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle187"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle187"/>
         <srdl2-comp:urdfName>drawer_island_col2_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -568,7 +569,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.289617</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.318202</knowrob:heightOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle133"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle133"/>
         <srdl2-comp:urdfName>drawer_oven_left_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -581,12 +582,12 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.5742007</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60763</knowrob:heightOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob190"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob193"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob196"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob199"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob202"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle136"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob190"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob193"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob196"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob199"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#ControlKnob202"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle136"/>
         <srdl2-comp:urdfName>drawer_oven_oven_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -599,7 +600,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.567465</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.5742007</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle139"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle139"/>
         <srdl2-comp:urdfName>drawer_oven_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -612,7 +613,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.5971915</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.61296</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle142"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle142"/>
         <srdl2-comp:urdfName>drawer_sink_col3_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -625,7 +626,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.338121</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.58045006</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle127"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle127"/>
         <srdl2-comp:urdfName>drawer_fridge_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -638,7 +639,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.59053993</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.723777</knowrob:heightOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle145"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle145"/>
         <srdl2-comp:urdfName>drawer_sink_col2_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -651,7 +652,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.267237</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.78538793</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle148"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle148"/>
         <srdl2-comp:urdfName>drawer_sink_col1_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -664,7 +665,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.26929498</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.7862201</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle151"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle151"/>
         <srdl2-comp:urdfName>drawer_sink_col1_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -677,7 +678,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14406002</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.784871</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle154"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle154"/>
         <srdl2-comp:urdfName>drawer_sink_col1_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -690,7 +691,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.110000014</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.5742007</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle157"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle157"/>
         <srdl2-comp:urdfName>drawer_oven_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -703,7 +704,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.58045006</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.98</knowrob:heightOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle160"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle160"/>
     </owl:NamedIndividual>
 
 
@@ -715,7 +716,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.267237</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle163"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle163"/>
         <srdl2-comp:urdfName>drawer_island_col2_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -728,7 +729,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.26929498</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle166"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle166"/>
         <srdl2-comp:urdfName>drawer_island_col2_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -741,7 +742,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14406002</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle169"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle169"/>
         <srdl2-comp:urdfName>drawer_island_col2_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -754,7 +755,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.267237</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle172"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Handle172"/>
         <srdl2-comp:urdfName>drawer_island_col3_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -769,8 +770,8 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.58045006</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door4"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door4"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider4"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door4"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider4"/>
         <srdl2-comp:urdfName>drawer_fridge_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -784,9 +785,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door106"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door106"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door106"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider106"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider106"/>
         <srdl2-comp:urdfName>drawer_island_col3_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -800,9 +801,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door112"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door112"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door112"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider112"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider112"/>
         <srdl2-comp:urdfName>drawer_island_col1_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -816,9 +817,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door118"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door118"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door118"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider118"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider118"/>
         <srdl2-comp:urdfName>drawer_island_col1_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -832,9 +833,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door124"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door124"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door124"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider124"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider124"/>
         <srdl2-comp:urdfName>drawer_island_col1_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -849,8 +850,8 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.318202</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door16"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door16"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider16"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door16"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider16"/>
         <srdl2-comp:urdfName>drawer_oven_left_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -864,9 +865,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.570865</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.5742007</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door28"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door28"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door28"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider28"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider28"/>
         <srdl2-comp:urdfName>drawer_oven_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -881,8 +882,8 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.61296</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door34"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door34"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider34"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door34"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider34"/>
         <srdl2-comp:urdfName>drawer_sink_col3_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -896,9 +897,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.58227104</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.78538793</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door46"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door46"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door46"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider46"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider46"/>
         <srdl2-comp:urdfName>drawer_sink_col1_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -913,8 +914,8 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.7862201</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door52"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door52"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider52"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door52"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider52"/>
         <srdl2-comp:urdfName>drawer_sink_col1_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -928,9 +929,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.582328</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.784871</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door58"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door58"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door58"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider58"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider58"/>
         <srdl2-comp:urdfName>drawer_sink_col1_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -945,8 +946,8 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.574795</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door64"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door64"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider64"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door64"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider64"/>
         <srdl2-comp:urdfName>drawer_oven_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -961,8 +962,8 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.31567</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door10"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door10"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider10"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door10"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider10"/>
         <srdl2-comp:urdfName>drawer_oven_right_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -976,9 +977,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door76"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door76"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door76"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider76"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider76"/>
         <srdl2-comp:urdfName>drawer_island_col2_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -992,9 +993,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door82"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door82"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door82"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider82"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider82"/>
         <srdl2-comp:urdfName>drawer_island_col2_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -1008,9 +1009,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door88"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door88"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door88"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider88"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider88"/>
         <srdl2-comp:urdfName>drawer_island_col2_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -1024,9 +1025,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door94"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door94"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door94"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider94"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider94"/>
         <srdl2-comp:urdfName>drawer_island_col3_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -1040,9 +1041,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6000001</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door100"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door100"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door100"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider100"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Slider100"/>
         <srdl2-comp:urdfName>drawer_island_col3_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -1338,9 +1339,9 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.574795</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60763</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door22"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door22"/>
         <knowrob:hingedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door22"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge22"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge22"/>
         <srdl2-comp:urdfName>drawer_oven_oven_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -1355,8 +1356,8 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.98</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:hingedTo rdf:resource="http://knowrob.org/kb/knowrob.owl#Door70"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Door70"/>
-        <knowrob:properPhysicalParts rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge70"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Door70"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/knowrob.owl#Hinge70"/>
         <srdl2-comp:urdfName>fridge_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
