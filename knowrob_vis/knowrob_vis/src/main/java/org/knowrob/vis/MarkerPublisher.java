@@ -26,6 +26,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	 * The ROS message publisher if connected, else null
 	 */
 	private Publisher<MarkerArray> pub = null;
+	private Publisher<MarkerArray> highlighter = null;
 	/**
 	 * The ROS node if connected, else null
 	 */
@@ -65,6 +66,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+		highlighter = connectedNode.newPublisher("/marker_highlight", visualization_msgs.MarkerArray._TYPE);
 		log = connectedNode.getLog();
 	}
 
@@ -153,6 +155,19 @@ public class MarkerPublisher extends AbstractNodeMain {
 		}
 		catch (Exception exc) {
 			log.error("Failed to publish marker.", exc);
+		}
+	}
+	
+	public void highlightMarker(MarkerObject mrk) {
+		try {
+			waitForNode();
+
+			MarkerArray arr = pub.newMessage();
+			arr.getMarkers().add(mrk.getMessage());
+			highlighter.publish(arr);
+		}
+		catch (Exception exc) {
+			log.error("Failed to highlight marker.", exc);
 		}
 	}
 	
