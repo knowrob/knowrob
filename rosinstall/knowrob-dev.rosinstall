@@ -1,9 +1,0 @@
-#
-# Note: some of the following repositories are private and have restricted
-#       access. Please contact the KnowRob developers if you think you
-#       should have access to those.
-#
-- git: {local-name: knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: master }
-- git: {local-name: knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: master }
-- git: {local-name: knowrob_dev, uri: 'https://github.com/code-iai/knowrob_dev.git', version: indigo-devel }
-- git: {local-name: iai_common_msgs, uri: 'https://github.com/code-iai/iai_common_msgs.git', version: master }
