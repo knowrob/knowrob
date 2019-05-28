@@ -681,7 +681,7 @@ esg_write_info(ESG) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Unit tests
 
-:- begin_tests(esg).
+:- begin_tests('ESG').
 
 test('merge_sequences(equal0)') :-
   merge_sequences(
@@ -845,4 +845,4 @@ test('esg_join(parallel path)') :-
     [z,[[-z],[-b],[+b],[+z]]],
     [[-z],[[[-b],[+b]],[[-a],[+a]]],[+z]]).
 
-:- end_tests(esg).
+:- end_tests('ESG').

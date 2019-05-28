@@ -820,7 +820,7 @@ debug_list_size(Msg,L) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Unit tests
 
-:- begin_tests(activity_parser).
+:- begin_tests('MAP').
 :- dynamic test_parser/1.
 
 test('parser_assert') :-
@@ -923,4 +923,4 @@ test('parser_retract') :-
   rdf_retractall('TestObject',_,_),
   rdf_retractall('TestHand',_,_).
 
-:- end_tests(activity_parser).
+:- end_tests('MAP').
