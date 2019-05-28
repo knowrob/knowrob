@@ -33,8 +33,15 @@
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
 :- use_module(library(prolog_pack)).
-% FIXME: this requires internet each time knowrob is started
-:- pack_install(list_util,[url('https://github.com/mndrix/list_util/archive/v0.13.0.zip'),silent(true),interactive(false),upgrade(true)]).
+:- once(
+     use_module(library(list_util)) ;
+     pack_install(list_util,[
+       url('https://github.com/mndrix/list_util/archive/v0.13.0.zip'),
+       silent(true),
+       interactive(false),
+       upgrade(true)]
+     )
+).
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdf_edit')).
