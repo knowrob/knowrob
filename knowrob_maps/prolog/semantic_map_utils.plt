@@ -63,7 +63,8 @@ test(map_child_objects) :-
   map_child_objects(knowrob:'Dishwasher37', Objects),
   member('http://knowrob.org/kb/knowrob.owl#Door40', Objects),
   member('http://knowrob.org/kb/knowrob.owl#Handle145', Objects),
-  length(Objects, 2), !.
+  member('http://knowrob.org/kb/knowrob.owl#Hinge40', Objects),
+  length(Objects, 3), !.
 
 
 test(map_object_info) :-
