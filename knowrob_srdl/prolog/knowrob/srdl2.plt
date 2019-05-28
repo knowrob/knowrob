@@ -26,7 +26,7 @@
 
 :- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-action.owl').
 :- owl_parser:owl_parse('package://knowrob_srdl/owl/PR2.owl').
-:- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
+:- owl_parse('package://knowrob_actions/owl/pancake.owl').
 
 :- rdf_db:rdf_register_ns(rdf,  'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).

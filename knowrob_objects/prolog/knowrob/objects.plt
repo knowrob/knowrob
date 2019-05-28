@@ -19,19 +19,18 @@
 
 :- begin_tests(knowrob_objects).
 
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/perception')).
 
+:- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').
 
-:- rdf_db:rdf_register_prefix(rdf,  'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_prefix(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(test_knowrob_objects, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
 test(storagePlaceFor1) :-
@@ -45,8 +44,7 @@ test(storagePlaceFor3) :-
 
 test(storagePlaceForBecause1) :-
   storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1',X),
-  owl_description(X,union_of([class('http://knowrob.org/kb/knowrob.owl#FoodUtensil'),
-                              class('http://knowrob.org/kb/knowrob.owl#FoodVessel')])), !.
+  owl_description(X,class('http://knowrob.org/kb/knowrob.owl#FoodVessel')), !.
 
 test(current_object_pose) :-
   current_object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',
@@ -54,9 +52,9 @@ test(current_object_pose) :-
       [0.0,0.0,0.04428184028938965,0.9990190820981245]]).
 
 test(object_pose_at_time) :-
-  object_pose_at_time(test_knowrob_objects:'Cup1', knowrob:'timepoint_1331040458', ['map','Cup1',
+  object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',
       [1.1277804,2.6304414,0.816479],
-      [0.0,0.0,0.04428184028938965,0.9990190820981245]]).
+      [0.0,0.0,0.04428184028938965,0.9990190820981245]], 1331040458).
 
 test(object_dimensions) :-
   object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
@@ -64,10 +62,8 @@ test(object_dimensions) :-
 
 test(object_assert_color) :-
   object_assert_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1'),
-  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
-
-test(object_color) :-
-  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
+  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]),
+  !.
 
 test(object_assert_dimensions) :-
   object_assert_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),

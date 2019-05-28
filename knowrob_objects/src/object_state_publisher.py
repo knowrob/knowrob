@@ -256,7 +256,7 @@ class ObjectStatePublisher(object):
     # @profile
     def load_objects_from_prolog(self):
         q = "belief_existing_objects(Objects,[{}])," \
-            "belief_republish_objects(Objects)".format(','.join(self.object_types))
+            "mark_dirty_objects(Objects)".format(','.join(self.object_types))
         self.prolog_query(q)
 
     def publish_object_markers(self, object_ids):
@@ -295,6 +295,6 @@ class ObjectStatePublisher(object):
 if __name__ == '__main__':
     rospy.init_node('object_state_publisher')
     hz = rospy.get_param('~hz', default='1')
-    object_types = rospy.get_param('~object_types', default="knowrob:'EnduringThing-Localized'")
+    object_types = rospy.get_param('~object_types', default="dul:'PhysicalObject'")
     object_state_publisher = ObjectStatePublisher(int(hz), object_types.split(','))
     object_state_publisher.loop()

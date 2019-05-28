@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/actions.owl#"
+     xml:base="http://knowrob.org/kb/actions.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
+     xmlns:actions="http://knowrob.org/kb/actions.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/actions.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/computable.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#cache -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#cache"/>
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#command -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#command"/>
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#target -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#target"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionConcept -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionConcept">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionVariable -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionVariable">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlAnnotation -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#actionEffectProjected -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#actionEffectProjected"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#actionEffectRule -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#actionEffectRule"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#visible -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/computable.owl#visible"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#compute_actionEffectRule -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#compute_actionEffectRule">
+        <rdf:type rdf:resource="http://knowrob.org/kb/computable.owl#PrologProperty"/>
+        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
+        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dontCache</computable:cache>
+        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">action_effects:comp_actionEffectRule</computable:command>
+        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#actionEffectRule"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#compute_processStarted">
+        <rdf:type rdf:resource="http://knowrob.org/kb/computable.owl#PrologProperty"/>
+        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
+        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cache</computable:cache>
+        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">action_effects:comp_processStarted</computable:command>
+        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#processStarted"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#compute_outputsCreated">
+        <rdf:type rdf:resource="http://knowrob.org/kb/computable.owl#PrologProperty"/>
+        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
+        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cache</computable:cache>
+        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">action_effects:comp_outputsCreated</computable:command>
+        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#outputsCreated"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

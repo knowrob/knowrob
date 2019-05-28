@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
-     xml:base="http://knowrob.org/kb/knowrob.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/household.owl#"
+     xml:base="http://knowrob.org/kb/household.owl"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -12,7 +12,7 @@
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/household.owl">
         <owl:imports rdf:resource="package://knowrob_household/owl/kitchen.owl"/>
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
     
 
@@ -416,23 +416,11 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#TakingABath -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakingABath"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#TakingOutTheGarbage -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TakingOutTheGarbage">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#BuildingCleaningChore"/>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#TeethCleaning -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TeethCleaning"/>
     
 
 

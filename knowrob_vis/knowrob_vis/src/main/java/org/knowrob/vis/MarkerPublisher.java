@@ -41,13 +41,9 @@ public class MarkerPublisher extends AbstractNodeMain {
 	 */
 	protected Map<String, MarkerObject> markers;
 	/**
-	 * Store all added markers (for highlighting)
+	 * Store all added markers
 	 */
 	protected Map<String, MarkerObject> markersCache;
-	/**
-	 * Stores original colors of highlighted objects
-	 */
-	protected Map<String, float[]> highlighted;
 	
 	/**
 	 * Counter for marker IDs
@@ -64,7 +60,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 	private MarkerPublisher() {
 		markers =  new LinkedHashMap<String, MarkerObject>();
 		markersCache =  new ConcurrentHashMap<String, MarkerObject>(8, 0.9f, 1);
-		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
 	}
 
 	@Override
@@ -122,7 +117,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 			MarkerObject m = markersCache.remove(identifier);
 			if(m!=null) {
 				m.getMessage().setAction(Marker.DELETE);
-				highlighted.remove(identifier);
 				markers.put(identifier,m);
 			}
 		}

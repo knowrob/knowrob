@@ -1,0 +1,26 @@
+<package>
+  <name>knowrob_memory</name>
+  <version>1.0.0</version>
+  <description>Storage and retrieval of episodic memories.</description>
+   <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://knowrob.org</url>
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+  <author email="danielb@uni-bremen.de">Daniel Beßler</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>knowrob_common</build_depend>
+  <build_depend>knowrob_mongo</build_depend>
+  <build_depend>knowrob_objects</build_depend>
+  <build_depend>mongodb_log</build_depend>
+
+  <run_depend>knowrob_common</run_depend>
+  <run_depend>knowrob_mongo</run_depend>
+  <run_depend>knowrob_objects</run_depend>
+  <run_depend>mongodb_log</run_depend>
+
+</package>

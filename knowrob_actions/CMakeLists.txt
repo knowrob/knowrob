@@ -2,10 +2,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_actions)
 
-find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects)
+find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects knowrob_swrl)
 
 catkin_package(
-    CATKIN_DEPENDS knowrob_common knowrob_objects
+    CATKIN_DEPENDS knowrob_common knowrob_objects knowrob_swrl
 )
 
 install(DIRECTORY owl/

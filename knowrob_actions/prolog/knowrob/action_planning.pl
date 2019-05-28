@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2011 Moritz Tenorth
-  Copyright (C) 2017 Daniel Beßler
+  Copyright (C) 2018 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 
 :- module(action_planning,
     [
-      plan_step/1,                % update active processes
       plan_start_action/2,        % create new action instance and assign startTime
       plan_finish_action/1,       % assign endTime and project action effects
       plan_subevents/2,           % ordered list of sub-actions
@@ -49,10 +48,10 @@
 
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/ESG')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
 
 :-  rdf_meta
       plan_subevents(r,-),
@@ -64,28 +63,30 @@
 %
 % Read all sub-event classes of the imported plan, i.e. single actions that need to be taken
 %
-% @tbd  Unify with plan_subevents_recursive (return list or single instances)
 % @param Plan Plan identifier
 % @param SubEvents List of sub-events of the plan
 %
-plan_subevents(Plan, SubEvents) :-
-  findall(SubAction, (owl_class_properties(Plan, knowrob:subAction, SubAction)), Sub),
-  predsort(knowrob_actions:compare_actions_partial_order, Sub, SubEvents).
+plan_subevents(Act, SubEvents) :-
+  % find constituents and their relation to each other
+  action_constituents(Act,Constituents,Constituent_Constraints),
+  % gather allen constraints about the occurance of Act
+  action_boundary_constraints(Act,Act_Constraints),
+  append(Constituent_Constraints,Act_Constraints,Constraints),
+  esg_truncated(Act,Constituents,Constraints,[Sequence,_,_]),
+  esg_events(Sequence,[_|SubEvents]).
 
 %% plan_subevents_recursive(+Plan:iri, ?SubEvents:list) is semidet.
 %
-% Recursively read all sub-action classes of the imported plan, i.e. single actions that need to be taken
+% Yield recursive sub-actions in the order they should be performed.
 %
-% @param Plan      Plan identifier
-% @param SubEvents Sub-events of the plan
+% @param Act       Action class
+% @param SubAction The next sub-action
 %
-plan_subevents_recursive(Plan, SubAction) :-
-  owl_class_properties(Plan, knowrob:subAction, SubAction).
-
-plan_subevents_recursive(Plan, SubAction) :-
-  owl_class_properties(Plan, knowrob:subAction, Sub),
-  Sub \= Plan,
-  plan_subevents_recursive(Sub, SubAction).
+plan_subevents_recursive(Act, SubAction) :-
+  plan_subevents(Act, Xs),
+  member(X,Xs),
+  ( SubAction=X ;
+    plan_subevents_recursive(X,SubAction) ).
 
 %% plan_constrained_objects(+Plan:iri, +Action:iri, +PrevActions:list)
 %
@@ -97,26 +98,20 @@ plan_subevents_recursive(Plan, SubAction) :-
 % @param PrevActions List of previous actions performed within the plan
 %
 plan_constrained_objects(Plan, Action, PrevActions) :-
-  findall(Obj, plan_constrained_objects(Plan, Action, PrevActions, Obj), Objs),
-  forall(member(Obj,Objs), rdf_assert(Action, knowrob:objectActedOn, Obj)).
+  forall(
+    plan_constrained_objects(Plan, Action, PrevActions, Obj),
+    rdfs_assert_specific(Action, knowrob:objectActedOn, Obj)
+  ).
   
-plan_constrained_objects(_Plan, Action, PrevActions, Obj) :-
-  % TODO: check if this constraint is part of plan!
-  %owl_class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
-  rdfs_individual_of(Action, Cls),
-  rdf_has(Constraint, knowrob:requiresInput, Cls),
-  % read the outputs created by previous actions
-  plan_constrained_object(Constraint, PrevActions, Obj).
+plan_constrained_objects(_Plan, Action, _PrevActions, Obj) :-
+  % TODO: only use outputs from prev actions!
+  action_requires(Action,knowrob:objectActedOn,OutputType),
+  plan_constrained_object(OutputType, Obj).
 
-plan_constrained_object(Constraint, PrevActions, Object) :-
-  rdf_has(Constraint, knowrob:createsOutput, OtherCls),
-  member(OtherAction, PrevActions),
-  rdfs_individual_of(OtherAction, OtherCls), !,
-  % query the (typed) output created
-  rdf_has(OtherAction, knowrob:outputsCreated, Object),
-  (  rdf_has(Constraint, knowrob:resourceType, OutputType)
-  -> owl_individual_of(Object, OutputType)
-  ;  true ).
+plan_constrained_object(OutputType, Object) :-
+  rdf_has(_, knowrob:outputsCreated, Object),
+  \+ rdf_has(_, knowrob:inputsDestroyed, Object),
+  owl_individual_of(Object, OutputType), !.
 
 %% plan_objects(+Plan:iri, -Objects:list) is semidet.
 %
@@ -125,11 +120,12 @@ plan_constrained_object(Constraint, PrevActions, Object) :-
 % @param Plan Plan identifier
 % @param SubEvents List of objects of the plan
 % 
-plan_objects(Plan, Objects) :-
+plan_objects(Plan, Objects_set) :-
   plan_subevents(Plan, SubEvents),
   findall(Obj,
     (member(SubEvent, SubEvents),
-     action_objectActedOn(SubEvent, Obj)), Objects).
+     action_objectActedOn(SubEvent, Obj)), Objects),
+  list_to_set(Objects,Objects_set).
 
 %% plan_start_action(+ActionClass:iri, -ActionInstance:iri) is semidet.
 %
@@ -139,11 +135,10 @@ plan_objects(Plan, Objects) :-
 % @param ActionInstance Instance of ActionClass
 % 
 plan_start_action(ActionClass, ActionInstance) :-
-  plan_step(Now),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
+  current_time(Now),
   % create instance of the action
   rdf_instance_from_class(ActionClass, ActionInstance),
-  rdf_assert(ActionInstance, knowrob:'startTime', Timepoint).
+  rdf_assert_prolog(ActionInstance, knowrob:'startTime', Now).
 
 %% plan_finish_action(+ActionInstance:iri) is semidet.
 %
@@ -152,27 +147,7 @@ plan_start_action(ActionClass, ActionInstance) :-
 % @param ActionInstance Instance of ActionClass
 % 
 plan_finish_action(ActionInstance) :-
-  plan_step(Now),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
-  % specify endTime and project the action effects
-  rdf_assert(ActionInstance, knowrob:'endTime', Timepoint),
-  action_effects_apply(ActionInstance).
-
-%% plan_step(-Now:float) is semidet.
-%
-% Updates ongoing processes.
-%
-plan_step(Now) :-
   current_time(Now),
-  forall(plan_active_process(Process),
-         action_effects_apply(Process)).
-
-plan_active_process(Process) :-
-  findall(Process, (
-      % processes are started by some action
-      rdf_has(_, knowrob:processStarted, Process),
-      % processes are active if no endTime is specified
-      \+ rdf_has(Process, knowrob:'endTime', _)
-  ), X),
-  list_to_set(X, Processes),
-  member(Process, Processes).
+  % specify endTime and project the action effects
+  rdf_assert_prolog(ActionInstance, knowrob:'endTime', Now),
+  action_effects_apply(ActionInstance).
