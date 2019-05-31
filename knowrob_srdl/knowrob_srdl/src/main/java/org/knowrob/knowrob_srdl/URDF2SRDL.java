@@ -54,6 +54,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -71,8 +72,6 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-
-import org.knowrob.owl.OWLThing;
 
 
 public class URDF2SRDL {
@@ -111,6 +110,26 @@ public class URDF2SRDL {
 		urdf = null;
 		srdl = null;
 	}
+
+	/**
+	 * Generate unique identifiers by adding a quasi-unique suffix to an IRI.
+	 * 
+	 * @param iri Base IRI to be extended
+	 * @return Concatenation of iri with unique suffix
+	 */
+	public static String getUniqueID(String iri) {
+		
+		char[] chars = "abcdefghijklmnopqrstuvwxyzABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+		Random r = new Random(System.currentTimeMillis());
+		char[] id = new char[8];
+		for (int i = 0;  i < 8;  i++) {
+		    id[i] = chars[r.nextInt(chars.length)];
+		}
+		try { Thread.sleep(5); } catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return iri + "_" + new String(id);
+	} 
 	
 	
 	public boolean loadURDF(String filename) {
@@ -447,7 +466,7 @@ public class URDF2SRDL {
 			
 			// create Proprioception instance for this joint
 			
-			String proprio = OWLThing.getUniqueID("&robot;Proprioception");
+			String proprio = URDF2SRDL.getUniqueID("&robot;Proprioception");
 			
 			s.append("\n\n");
 			s.append(i1+"<!-- " + proprio + " -->\n\n");
@@ -712,7 +731,7 @@ public class URDF2SRDL {
 			}
 
 			// fill mapping of link to preceding joint's rotational matrix
-			jointPoses.put(mCount, OWLThing.getUniqueID("&robot;RotationMatrix3D"));
+			jointPoses.put(mCount, URDF2SRDL.getUniqueID("&robot;RotationMatrix3D"));
 			precMatrices.put(childLink, jointPoses.get(mCount++));
 			
 		}

@@ -40,7 +40,6 @@ import java.util.Vector;
 
 import com.google.common.base.Joiner;
 
-import org.knowrob.owl.OWLThing;
 import org.knowrob.utils.ros.RosUtilities;
 
 import org.jpl7.fli.Prolog;
@@ -232,7 +231,6 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://...#value
      * @return The identifier value
-     * @deprecated use {@link OWLThing} valueFromIRI instead
      */
     public static String valueFromIRI(String iri) {
         String[] ks = iri.split("#");
@@ -249,7 +247,6 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://...#value
      * @return The IRI base
-     * @deprecated use {@link OWLThing} prefixFromIRI instead
      */
 	public static String prefixFromIRI(String iri) {
 		
@@ -267,7 +264,6 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://.../file.name
      * @return The filename file.name
-     * @deprecated use {@link OWLThing} fileNameFromIRI instead
      */
 	public static String fileNameFromIRI(String iri) {
 		
