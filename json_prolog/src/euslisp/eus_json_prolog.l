@@ -36,7 +36,7 @@
 
 (defclass json_prolog
   :super propertied-object
-  :slots (query-srv next-srv finish-srv simple-srv finished attribute id))
+  :slots (query-srv next-srv finish-srv finished attribute id))
 
 (defmethod json_prolog
   (:init
@@ -45,8 +45,7 @@
 		 finished t
 		 query-srv  (format nil "/~a/query" name)
 		 next-srv   (format nil "/~a/next_solution" name)
-		 finish-srv (format nil "/~a/finish" name)
-		 simple-srv (format nil "/~a/simple_query" name)))
+		 finish-srv (format nil "/~a/finish" name)))
   (:make-query-id
    ()
    (let ((tm (ros::time-now)))
@@ -67,7 +66,7 @@
 	   (setq query (send self :attribute-pose query pose)))
 	 (send req :id (setq id (send self :make-query-id)))
 	 (send req :query query)
-	 (setq res (ros::service-call simple-srv req))
+	 (setq res (ros::service-call query-srv req))
 	 (ros::ros-info "prolog query> ~A" query)
 	 (setq finished nil
 		   attribute (if pose (append '(:pose) pose)))

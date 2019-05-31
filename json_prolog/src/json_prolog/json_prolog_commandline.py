@@ -155,7 +155,7 @@ class PQ(object):
 
 
 if __name__ == '__main__':
-    rospy.init_node('json_prolog_commandline')
+    rospy.init_node('json_prolog_commandline', anonymous=True)
     if os.path.isfile(HISTORY_NAME):
         readline.read_history_file(HISTORY_NAME)
     readline.set_history_length(HISTORY_LENGTH)

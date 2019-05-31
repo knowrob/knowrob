@@ -41,7 +41,7 @@ namespace json_prolog
 Prolog::Prolog(const std::string &ns)
   : nh_("~")
 {
-  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/simple_query");
+  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/query");
   next_solution = nh_.serviceClient<PrologNextSolution>(ns + "/next_solution");
   prolog_finish = nh_.serviceClient<PrologFinish>(ns + "/finish");
 }
