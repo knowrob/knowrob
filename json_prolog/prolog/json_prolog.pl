@@ -71,18 +71,12 @@ json_prolog_encode([X|Xs],[Y|Ys]) :-
   json_prolog_encode(X,Y),
   json_prolog_encode(Xs,Ys),!.
 
-json_prolog_encode(Number,Number) :-
-  number(Number), !.
-
 json_prolog_encode(String,String) :-
+  % FIXME: need to wrap string in "" ?
   string(String), !.
 
-json_prolog_encode(Atom,Atom) :-
-  atom(Atom), !.
-
-%json_prolog_encode(Atom,Atom_json) :-
-  %atom(Atom), !,
-  %atomic_list_concat(['\'',Atom,'\''], '', Atom_json), !.
+json_prolog_encode(X,X) :-
+  ( atom(X) ; is_dict(X) ; number(X) ), !.
 
 json_prolog_encode(Term,_{term: [Functor|Args_json]}) :-
   compound(Term), !,
