@@ -13,10 +13,9 @@
   <url type="website">http://wiki.ros.org/json_prolog</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
+  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
   <author>Lorenz Moesenlechner</author>
   <author>Moritz Tenorth</author>
-  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
-
   
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -36,5 +35,4 @@
   <run_depend>roslib</run_depend>
   <run_depend>rospack</run_depend>
   <run_depend>json_prolog_msgs</run_depend>
-  
 </package>
