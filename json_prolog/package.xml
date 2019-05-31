@@ -6,14 +6,14 @@
     through ROS services. It is implemented in C++.
   </description>
 
-  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
+  <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/json_prolog</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
-  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
+  <author email="danielb@uni-bremen.de">Daniel Beßler</author>
   <author>Lorenz Moesenlechner</author>
   <author>Moritz Tenorth</author>
   
