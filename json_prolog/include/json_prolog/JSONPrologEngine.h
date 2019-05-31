@@ -12,18 +12,6 @@
 // SWI Prolog
 #include <SWI-Prolog.h>
 
-class JSONPrologException : public std::exception
-{
-	std::string _msg;
-public:
-	JSONPrologException(const std::string& msg) : _msg(msg){}
-	
-	virtual const char* what() const noexcept override
-	{
-		return _msg.c_str();
-	}
-}; 
-
 /**
  * Encapsulates an interface to a Prolog engine.
  * The engine runs in its own thread that can be claimed exclusively
@@ -103,5 +91,17 @@ private:
 	
 	void run();
 };
+
+class JSONPrologException : public std::exception
+{
+	std::string _msg;
+public:
+	JSONPrologException(const std::string& msg) : _msg(msg){}
+	
+	virtual const char* what() const noexcept override
+	{
+		return _msg.c_str();
+	}
+}; 
 
 #endif //__JSON_PROLOG_ENGINE_H__
