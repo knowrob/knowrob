@@ -23,6 +23,8 @@
      xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2.owl">
+        <owl:imports rdf:resource="package://dul/owl/DUL.owl"/>
+        <owl:imports rdf:resource="package://dul/owl/IOLite.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 

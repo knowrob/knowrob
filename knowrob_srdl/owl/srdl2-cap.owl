@@ -83,6 +83,7 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
+
     
 
 
@@ -170,12 +171,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -527,12 +522,6 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ArmComponent -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController"/>
     
 
 

@@ -89,7 +89,7 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;KukaLWR4"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_left_arm_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_l_wrist_roll_link"/>
@@ -99,7 +99,7 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;KukaLWR4"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;RightArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_right_arm_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_7_link"/>
@@ -109,7 +109,7 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_hand">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <rdf:type rdf:resource="&srdl2-comp;HandComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_hand_link"/>
     </owl:NamedIndividual>
@@ -118,7 +118,7 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_hand">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <rdf:type rdf:resource="&srdl2-comp;HandComponent"/>
         <rdf:type rdf:resource="&knowrob;RightHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_r_gripper_palm_link"/>
     </owl:NamedIndividual>
@@ -127,7 +127,7 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Base"/>
+        <rdf:type rdf:resource="&srdl2-comp;WheeledBase"/>
 
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_left_front_wheel_link"/>
