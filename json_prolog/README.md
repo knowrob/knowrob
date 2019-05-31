@@ -10,7 +10,7 @@ you need a way to send queries from your program.
 This functionality is provided by the json_prolog package.
 It provides a service that exposes a Prolog shell via ROS.
 You can run the json_prolog service using a launch file such as the following
-==
+```
 <launch>
   <arg name="initial_package" default="knowrob_common" />
   <arg name="initial_goal" default="knowrob_common" />
@@ -25,7 +25,7 @@ You can run the json_prolog service using a launch file such as the following
   
   <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
 </launch>
-==
+```
 
 The json_prolog_node reads some optional ROS parameters for the initial package
 to be loaded (that you also give as argument when starting rosprolog)
