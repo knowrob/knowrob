@@ -73,7 +73,8 @@ in SWRL rules (i.e., relate what was created to something else).
     action_precondition_check(r,r),
     comp_actionEffectRule(r,r),
     comp_processStarted(r,r),
-    comp_outputsCreated(r,r).
+    comp_outputsCreated(r,r),
+    task_class_has_role(r,r,r).
 
 %% comp_actionEffectRule(+Action:iri, ?Effect:iri)
 %
@@ -90,15 +91,17 @@ comp_actionEffectRule(Action, Effect) :-
 
 %% comp_actionEffectRule(+Action:iri, ?Process:iri)
 comp_processStarted(Action,Process) :-
-  comp_action_participant(Action,knowrob:processStarted,Process).
+  %comp_action_participant(Action,knowrob:processStarted,Process).
+  fail.
 %% comp_outputsCreated(+Action:iri, ?Output:iri)
 comp_outputsCreated(Action,Output) :-
-  comp_action_participant(Action,knowrob:outputsCreated,Output).
+  %comp_action_participant(Action,knowrob:outputsCreated,Output).
+  fail.
 
-%% action_effect_on_object(?ActionClass:iri, ?EffectTerm:term) is nondet
+%% action_effect_on_object(?Task:iri, ?EffectTerm:term) is nondet
 %
-% Reasoning about which ActionClass (when the action is successfully performed)
-% will have a desired effect on the object manipulated during the action.
+% Reasoning about which Task
+% has a desired effect on the object manipulated during the action.
 % EffectTerm is a Prolog term describing the effect:
 %
 %	| updated(P,O)		   | If value O is specified for property P	  |
@@ -117,25 +120,31 @@ comp_outputsCreated(Action,Output) :-
 %            destroyed)
 % ==
 %
-action_effect_on_object(ActionClass, updated(P,O)) :-
-  % find SWRL action rule and the variable denoting the manipulated object within the rule
-  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))),
-  rdf_has(Effect, knowrob:swrlActionVariable, literal(type(_,ActVar))),
-  rdf_swrl_rule(Effect, Head :- Body),
-  member(property(ActVar, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', Var_objectActedOn), Body),
-  % the implication of the rule must assert a new value for property P
-  member(property(Var_objectActedOn, P_rule, O_rule), Head),
-  rdfs_subproperty_of(P, P_rule),
-  % and the value type must match the specified value/type O
-  swrl_type_of(Head :- Body, O_rule, O).
+action_effect_on_object(Task, commited(Type)) :-
+  task_class_has_role(Task,ease_obj:'CommitedObject',Type).
+action_effect_on_object(Task, moved(Type)) :-
+  task_class_has_role(Task,ease_obj:'MovedObject',Type).
+action_effect_on_object(Task, operated(Type)) :-
+  task_class_has_role(Task,ease_obj:'OperatedObject',Type).
+action_effect_on_object(Task, removed(Type)) :-
+  task_class_has_role(Task,ease_obj:'RemovedObject',Type).
+action_effect_on_object(Task, transformed(Type)) :-
+  task_class_has_role(Task,ease_obj:'TransformedObject',Type).
+action_effect_on_object(Task, created(Type)) :-
+  task_class_has_role(Task,ease_obj:'CreatedObject',Type).
+action_effect_on_object(Task, destroyed(Type)) :-
+  task_class_has_role(Task,ease_obj:'DestroyedObject',Type).
 
-action_effect_on_object(ActionClass, created(Type)) :-
-  action_class_requires(ActionClass,knowrob:outputsCreated,Type).
-
-action_effect_on_object(ActionClass, destroyed) :-
-  action_effect_on_object(ActionClass, destroyed(_)).
-action_effect_on_object(ActionClass, destroyed(Type)) :-
-  action_class_requires(ActionClass,knowrob:inputsDestroyed,Type).
+%%
+task_class_has_role(Task,Role,ObjectType) :-
+  owl_subclass_of(Task,Restr),
+  rdf_has(Restr,owl:onProperty,dul:isTaskOf),
+  owl_restriction_object_domain(Restr,RoleDescr),
+  once((
+    (\+ ground(Role) ; owl_subclass_of(RoleDescr,Role)),
+    owl_property_range_on_class(RoleDescr,dul:classifies,ObjectType),
+    rdfs_individual_of(ObjectType,owl:'Class')
+  )).
 
 %% action_effects_apply(+Act:iri)
 %
@@ -203,55 +212,6 @@ action_precondition_check(Act) :-
 action_precondition_check(Act, Effect) :-
   rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
   rdf_swrl_satisfied(Effect, [var(Var,Act)]).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% object transformations
-%
-
-%% transformed_into(?From:iri, ?To:iri)
-%
-% Compute which objects have been transformed into which other ones
-% by actions or processes. This predicate operates on the object
-% modification graph created by the action projection rules
-%
-% @param From Input of some action
-% @param To   Output created by this action
-%
-transformed_into(From, To) :-
-  ground(From),!,
-  ( owl_has(Event, knowrob:inputsDestroyed, From);
-    owl_has(Event, knowrob:objectRemoved, From);
-    owl_has(Event, knowrob:objectOfStateChange, From)
-  ),
-  ( owl_has(Event, knowrob:inputsRemaining, To);
-    owl_has(Event, knowrob:outputsCreated, To)
-  ).
-transformed_into(From, To) :-
-  ( owl_has(Event, knowrob:inputsRemaining, To);
-    owl_has(Event, knowrob:outputsCreated, To)
-  ),
-  ( owl_has(Event, knowrob:inputsDestroyed, From);
-    owl_has(Event, knowrob:objectRemoved, From);
-    owl_has(Event, knowrob:objectOfStateChange, From)
-  ).
-
-%% transformed_into_transitive(?From:iri, ?To:iri)
-%
-% Transitive version of the transformed_into predicate that tracks
-% in- and outputs of actions over several steps and different
-% properties
-%
-% @param From Input of some action
-% @param To   Output created by this action
-%
-transformed_into_transitive(From, To) :-
-  transformed_into(From, To).
-
-transformed_into_transitive(From, To) :-
-  transformed_into(From, Sth),
-  From\=Sth,
-  transformed_into_transitive(Sth, To).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % %  Utility predicates

@@ -95,12 +95,9 @@ test(put_blue_on_red) :-
 %%%%%% Pancake Making
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(turning_on_effect_device_state_on, [nondet]) :-
-  action_effect_on_object(knowrob:'TurningOnHeatingDevice',
-    updated(knowrob:stateOfObject,knowrob:'DeviceStateOn')).
-
 test(cracking_effect_destroyed_egg, [nondet]) :-
-  action_effect_on_object(pancake:'CrackingAnEgg', destroyed).
+  action_effect_on_object(pancake:'CrackingAnEgg', destroyed(Egg)),
+  rdf_equal(Egg,pancake:'Egg').
 
 test(pancake_making_turn_on_maker) :-
   % turning on the pancake maker creates heating process

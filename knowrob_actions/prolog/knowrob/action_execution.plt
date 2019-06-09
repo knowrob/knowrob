@@ -91,7 +91,7 @@ test('add_two_ints(CREATE)') :-
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  create_action_symbol(
+  action_execution:create_action_symbol(
       ros:'ServiceQuerying',
       acext:'add_two_ints_Task',
       acext:'add_two_ints_Execution',
@@ -108,7 +108,7 @@ test('add_two_ints(ENCODE)') :-
       [acext:'add_two_ints_Task_a',Region_a],
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
-  action_bindings(acext:'add_two_ints_Execution',ActionDict),
+  action_execution:action_bindings(acext:'add_two_ints_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'add_two_ints_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
@@ -149,7 +149,7 @@ test('sum_array(CREATE)') :-
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  create_action_symbol(
+  action_execution:create_action_symbol(
       ros:'ServiceQuerying',
       acext:'sum_array_Task',
       acext:'sum_array_Execution',
@@ -163,7 +163,7 @@ test('sum_array(ENCODE)') :-
   create_input_dict(InputDict, [
       [acext:'sum_array_Task_a',Region_a]
   ]),
-  action_bindings(acext:'sum_array_Execution',ActionDict),
+  action_execution:action_bindings(acext:'sum_array_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'sum_array_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),
@@ -238,7 +238,7 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  create_action_symbol(
+  action_execution:create_action_symbol(
       ros:'ServiceQuerying',
       acext:'pose_test_Task',
       acext:'pose_test_Execution',
@@ -249,7 +249,7 @@ test('pose_test(CREATE)') :-
 test('pose_test(ENCODE)') :-
   rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
   pose_test_input(InputDict),
-  action_bindings(acext:'pose_test_Execution',ActionDict),
+  action_execution:action_bindings(acext:'pose_test_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'pose_test_RequestType', Request),
   rdf_has(Action, dul:hasParticipant, Request),

@@ -26,10 +26,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(action_planning,
+:- module(task_planning,
     [
-      plan_start_action/2,        % create new action instance and assign startTime
-      plan_finish_action/1,       % assign endTime and project action effects
       plan_subevents/2,           % ordered list of sub-actions
       plan_subevents_recursive/2,
       plan_objects/2,             % all object types involved in performing a complexaction
@@ -48,32 +46,40 @@
 
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/actions')).
-:- use_module(library('knowrob/ESG')).
+:- use_module(library('knowrob/event_graph')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
       plan_subevents(r,-),
+      plan_subevents(r,r,-),
       plan_subevents_recursive(r,r),
       plan_objects(r,r),
       plan_constrained_objects(r,r,t).
 
-%% plan_subevents(+Plan:iri, ?SubEvents:list) is semidet.
+%% plan_subevents(+Tsk:iri, ?SubTasks:list) is semidet.
 %
 % Read all sub-event classes of the imported plan, i.e. single actions that need to be taken
 %
-% @param Plan Plan identifier
-% @param SubEvents List of sub-events of the plan
+% @param Tsk Task identifier
+% @param WF A workflow
+% @param SubTasks List of sub-tasks of the plan
 %
-plan_subevents(Act, SubEvents) :-
-  % find constituents and their relation to each other
-  action_constituents(Act,Constituents,Constituent_Constraints),
+plan_subevents(Tsk, SubTasks) :-
+  rdfs_individual_of(Tsk0,Tsk),
+  rdf_has(WF,dul:definesTask,Tsk0),
+  rdfs_individual_of(WF,dul:'Workflow'),
+  plan_subevents(Tsk0, WF, SubTasks).
+
+plan_subevents(Tsk, WF, SubTasks) :-
+  % find steps and their relation to each other
+  worklfow_steps(WF,Steps,Step_Constraints),
   % gather allen constraints about the occurance of Act
-  action_boundary_constraints(Act,Act_Constraints),
-  append(Constituent_Constraints,Act_Constraints,Constraints),
-  esg_truncated(Act,Constituents,Constraints,[Sequence,_,_]),
-  esg_events(Sequence,[_|SubEvents]).
+  findall(X, allen_constraint(Tsk,X), Task_Constraints),
+  append(Step_Constraints,Task_Constraints,Constraints),
+  esg_truncated(Tsk,Steps,Constraints,[Sequence,_,_]),
+  esg_events(Sequence,[_|SubTasks]).
 
 %% plan_subevents_recursive(+Plan:iri, ?SubEvents:list) is semidet.
 %
@@ -87,6 +93,26 @@ plan_subevents_recursive(Act, SubAction) :-
   member(X,Xs),
   ( SubAction=X ;
     plan_subevents_recursive(X,SubAction) ).
+
+%% plan_objects(+Plan:iri, -Objects:list) is semidet.
+%
+% Read all objects mentioned in sub-actions of the imported plan
+%
+% @param Plan Plan identifier
+% @param SubEvents List of objects of the plan
+% 
+plan_objects(Tsk, ObjectTypes) :-
+  plan_subevents(Tsk, SubEvents),
+  findall(ObjectType, (
+    member(SubEvent, SubEvents),
+    plan_object(SubEvent, ObjectType)
+  ), X),
+  list_to_set(X,ObjectTypes).
+
+plan_object(Tsk,ObjectType) :-
+  rdf_has(Tsk,rdf:type,TskType),
+  action_effects:task_class_has_role(TskType,_Role,ObjectType),
+  \+ rdf_equal(ObjectType,dul:'Object').
 
 %% plan_constrained_objects(+Plan:iri, +Action:iri, +PrevActions:list)
 %
@@ -113,41 +139,22 @@ plan_constrained_object(OutputType, Object) :-
   \+ rdf_has(_, knowrob:inputsDestroyed, Object),
   owl_individual_of(Object, OutputType), !.
 
-%% plan_objects(+Plan:iri, -Objects:list) is semidet.
-%
-% Read all objects mentioned in sub-actions of the imported plan
-%
-% @param Plan Plan identifier
-% @param SubEvents List of objects of the plan
-% 
-plan_objects(Plan, Objects_set) :-
-  plan_subevents(Plan, SubEvents),
-  findall(Obj,
-    (member(SubEvent, SubEvents),
-     action_objectActedOn(SubEvent, Obj)), Objects),
-  list_to_set(Objects,Objects_set).
+		 /*******************************
+		 *	Workflows		*
+		 *******************************/
 
-%% plan_start_action(+ActionClass:iri, -ActionInstance:iri) is semidet.
-%
-% ActionInstance is a newly created instance of type ActionClass.
-%
-% @param ActionClass Some sublcass of knowrob:'Action'
-% @param ActionInstance Instance of ActionClass
-% 
-plan_start_action(ActionClass, ActionInstance) :-
-  current_time(Now),
-  % create instance of the action
-  rdf_instance_from_class(ActionClass, ActionInstance),
-  rdf_assert_prolog(ActionInstance, knowrob:'startTime', Now).
+%%
+worklfow_steps(WF,Steps,Constraints) :-
+  findall(X, rdf_has(WF, ease_wf:hasStep, X), Steps), 
+  findall(Constraint, (
+    member(Step,Steps),
+    allen_constraint(Step,Constraint)
+  ), Constraints).
 
-%% plan_finish_action(+ActionInstance:iri) is semidet.
-%
-% Specify the endTime of ActionInstance and project its effects.
-%
-% @param ActionInstance Instance of ActionClass
-% 
-plan_finish_action(ActionInstance) :-
-  current_time(Now),
-  % specify endTime and project the action effects
-  rdf_assert_prolog(ActionInstance, knowrob:'endTime', Now),
-  action_effects_apply(ActionInstance).
+%%
+allen_constraint(Tsk,Constraint) :-
+  rdf_has(Tsk,Relation,Other),
+  atom(Relation),
+  rdfs_individual_of(Other,dul:'Task'),
+  rdf_has_prolog(Relation,ease:symbol,Symbol),
+  Constraint =.. [Symbol,Tsk,Other].

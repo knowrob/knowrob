@@ -36,16 +36,14 @@
 :- register_ros_package(knowrob_memory).
 :- register_ros_package(knowrob_swrl).
 
-:- use_module(library('knowrob/ESG')).
+:- use_module(library('knowrob/event_graph')).
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/action_effects')).
-:- use_module(library('knowrob/action_planning')).
+:- use_module(library('knowrob/task_planning')).
 
 :- use_module(library('knowrob/action_execution')).
 :- use_module(library('knowrob/kb_querying')).
 :- use_module(library('knowrob/rosowl')).
-
-:- use_module(library('knowrob/workflow_execution')).
 
 :- owl_parser:owl_parse('package://knowrob_actions/owl/actions.owl').
 :- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').

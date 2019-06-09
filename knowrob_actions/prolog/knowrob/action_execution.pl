@@ -27,17 +27,16 @@
 
 :- module(action_execution,
     [
+      plan_start_action/2,        % create new action instance and assign startTime
+      plan_finish_action/1,       % assign endTime and project action effects
       action_registry/2,
-      action_status/2,
-      set_action_status/2,
       task_isExecutionPossible/1,
       task_isExecutedIn/3,
       execute_task/4,
       action_call_or_failure/4,
-      action_add_filler/2,
       action_filler_for/2,
-      create_action_symbol/5,
-      action_bindings/2
+      action_add_filler/2,
+      action_status/2
     ]).
 /** <module> The execution of actions.
 
@@ -62,16 +61,15 @@ the task (if any).
 :- use_module(library(list_util)).
 
 :- rdf_meta action_registry(r,?),
-            action_status(r,r),
             action_filler_for(t,t),
-            set_action_status(r,r),
             action_call_or_failure(r,t,r,+),
-            task_isExecutedIn(r,r,r),
+            action_status(r,r),
+            action_bindings(r,t),
             task_isExecutionPossible(r),
+            task_isExecutedIn(r,r,r),
             handle_action_failure(r,r,+),
             execute_task(r,t,r,t),
-            create_action_symbol(r,r,r,t,-),
-            action_bindings(r,t).
+            create_action_symbol(r,r,r,t,r).
 
 %% action_registry(ActionConcept, Goal)
 %
@@ -82,7 +80,7 @@ the task (if any).
 
 action_registry('http://www.ease-crc.org/ont/ROS.owl#ServiceQuerying', rosowl:ros_querying).
 
-%% task_isExecutedIn(Task, ActionConcept, ExecutionPlan)
+%% task_is_executed_in(Task, ActionConcept, ExecutionPlan)
 %
 % Finds actions that could execute a task.
 % - ActionExecutionPlan may define tasks and restricts how they are to be exectued
@@ -174,6 +172,7 @@ create_action_symbol(ActionConcept,Task,ExecutionPlan,InputDict,Action) :-
     action_add_filler(Action,Value)
   ).
 
+
 %% action_add_filler(Action,RegionOrObject)
 %
 action_add_filler(Action,X) :-
@@ -218,15 +217,6 @@ action_status(Action,Region) :-
   rdf_has(Action,ease:hasStatus,ActionStatus),
   rdf_has(ActionStatus,dul:hasRegion,Region).
 
-%% set_action_status(Action,Region)
-%
-% update the quale of the ActionStatus quality
-set_action_status(Action,Region) :-
-  rdfs_individual_of(Region,dul:'Region'),
-  rdf_has(Action,ease:hasStatus,ActionStatus),
-  rdf_retractall(ActionStatus,dul:hasRegion,_),
-  rdf_assert(ActionStatus,dul:hasRegion,Region).
-
 % tasks may have a Status parameter that wants to
 % classify the region of the final status of the action
 get_task_status_parameter(Task,Parameter) :-
@@ -235,7 +225,7 @@ get_task_status_parameter(Task,Parameter) :-
 
 handle_action_failure(Action,Failure,Message) :-
   log_action_failure(Action,Failure,Message),
-  set_action_status(Action,Failure).
+  action_set_status(Action,Failure).
 
 log_action_failure(Action,Failure,Message) :-
   rdf_split_url(_, A_name, Action),
@@ -256,3 +246,28 @@ assign_status_region(Action,OutputDict) :-
   rdf_has(Action,dul:executesTask,Task),
   ( get_task_status_parameter(Task,StatusParameter) ->
     b_set_dict(StatusParameter, OutputDict, StatusRegion) ; true ).
+
+%% plan_start_action(+ActionClass:iri, -ActionInstance:iri) is semidet.
+%
+% ActionInstance is a newly created instance of type ActionClass.
+%
+% @param ActionClass Some sublcass of knowrob:'Action'
+% @param ActionInstance Instance of ActionClass
+% 
+plan_start_action(ActionClass, ActionInstance) :-
+  current_time(Now),
+  % create instance of the action
+  rdf_instance_from_class(ActionClass, ActionInstance),
+  rdf_assert_prolog(ActionInstance, knowrob:'startTime', Now).
+
+%% plan_finish_action(+ActionInstance:iri) is semidet.
+%
+% Specify the endTime of ActionInstance and project its effects.
+%
+% @param ActionInstance Instance of ActionClass
+% 
+plan_finish_action(ActionInstance) :-
+  current_time(Now),
+  % specify endTime and project the action effects
+  rdf_assert_prolog(ActionInstance, knowrob:'endTime', Now),
+  action_effects_apply(ActionInstance).
