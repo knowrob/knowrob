@@ -48,13 +48,15 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_portray')).
 
-:- rdf_db:rdf_register_ns(rdfs,    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl,     'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(dul,     'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease,    'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease_wf, 'http://www.ease-crc.org/ont/EASE-WF.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ros,     'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(rdfs,      'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(owl,       'http://www.w3.org/2002/07/owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(dul,       'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease,      'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease_wf,   'http://www.ease-crc.org/ont/EASE-WF.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease_obj,  'http://www.ease-crc.org/ont/EASE-OBJ.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease_proc, 'http://www.ease-crc.org/ont/EASE-PROC.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,   'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ros,       'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
 
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
