@@ -7,9 +7,9 @@
       mem_export/1,
       mem_import/1,
       mem_import_latest/0,
-      mem_episode_start/1,
       mem_episode_start/2,
-      mem_episode_stop/0,
+      mem_episode_start/3,
+      mem_episode_stop/1,
       mem_dir/1
     ]).
 
