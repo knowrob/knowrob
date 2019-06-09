@@ -152,33 +152,15 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#afterI -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#afterI"/>
-    
-
-
     <!-- http://www.ease-crc.org/ont/EASE.owl#before -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#before"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#beforeI -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#beforeI"/>
-    
-
-
     <!-- http://www.ease-crc.org/ont/EASE.owl#finishedBy -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#finishedBy"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#finishedByI -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#finishedByI"/>
     
 
 
@@ -191,12 +173,6 @@
     <!-- http://www.ease-crc.org/ont/EASE.owl#startedBy -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#startedBy"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#startedByI -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#startedByI"/>
     
 
 
@@ -469,23 +445,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/pancake.owl#MakingPancakes">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CreatedObject"/>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies"/>
-                                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#Pancake"/>
-                            </owl:Restriction>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:onClass>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -570,14 +529,6 @@
                 </owl:onClass>
             </owl:Restriction>
         </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/pancake.owl#Pancake -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/pancake.owl#Pancake">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalBody"/>
     </owl:Class>
     
 
