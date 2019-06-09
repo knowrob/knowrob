@@ -16,24 +16,28 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('knowrob/mongo')).
+:- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/utility/filesystem')).
 
 :- dynamic mem_is_initialized/0,
-           current_episode/2.
+           current_episode/1.
 
-%% mem_episode_start(+SemanticMap)
-%% mem_episode_start(+SemanticMap,+Topics)
+%% mem_episode_start(+SemanticMap,-Episode)
+%% mem_episode_start(+SemanticMap,-Episode,+Topics)
 %
 % Start recording an episdic memory.
 %
-mem_episode_start(SemanticMap) :-
-  mem_episode_start(SemanticMap,[['tf',[]]]).
+mem_episode_start(SemanticMap,Episode) :-
+  mem_episode_start(SemanticMap,Episode,[['tf',[]]]).
 
-mem_episode_start(SemanticMap,Topics) :-
-  \+ current_episode(_,_),
+mem_episode_start(SemanticMap,Episode,Topics) :-
+  \+ current_episode(_),
   current_time(Stamp),
-  %% TODO store the episode individual
-  asserta(current_episode(SemanticMap,Stamp)),
+  %% 
+  mem_episode_create(Episode),
+  mem_episode_set_map(Episode,SemanticMap),
+  mem_event_begin(Episode,Stamp),
+  asserta(current_episode(Episode)),
   %%
   mem_drop,
   mem_init,
@@ -45,19 +49,19 @@ mem_episode_start(SemanticMap,Topics) :-
 %
 % Stop recording episode, and export episode data to filesystem.
 %
-mem_episode_stop :-
+mem_episode_stop(Episode) :-
   %% get episode time extend
-  current_episode(_SemanticMap,Begin),
-  %current_time(End),
+  current_episode(Episode),
   %%
   ros_logger_stop,
-  retractall(current_episode(_,_)),
-  %% TODO store the episode individual
-  true,
+  retractall(current_episode(_)),
+  %% 
+  current_time(Stamp),
+  mem_event_end(Episode,Stamp),
   %%
-  atom_number(Begin_atom,Begin),
+  atom_number(Stamp_atom,Stamp),
   mem_dir(MemDir),
-  path_concat(MemDir,Begin_atom,EpisodeDir),
+  path_concat(MemDir,Stamp_atom,EpisodeDir),
   mem_export(EpisodeDir).
 
 %% mem_init
