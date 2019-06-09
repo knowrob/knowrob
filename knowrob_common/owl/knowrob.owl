@@ -1657,7 +1657,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. Each instance of CoolingProcess is an event in which the temperature of some object (related to the instance of CoolingProcess by objectOfStateChange) is lowered.</rdfs:comment>
     </owl:Class>
     
@@ -1715,7 +1715,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#CuttingTool -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingTool">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tool"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
     </owl:Class>
     
 
@@ -1819,14 +1819,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Experiment -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Experiment">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger">
@@ -1839,7 +1831,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flashlight">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tool"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
         <rdfs:comment>A small portable electric lamp powered by batteries.</rdfs:comment>
     </owl:Class>
     
@@ -1907,7 +1899,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Heating -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heating">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. During each HeatingProcess event, the temperature of the objectOfStateChange is increased by applying heat to the object. Any instance of IntrinsicStateChangeEvent in which an object temperature is increased is also an instance of this collection.</rdfs:comment>
     </owl:Class>
     
@@ -1951,14 +1943,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndicatorLight">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
         <rdfs:comment>The collection of all indicator lights.</rdfs:comment>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Intrusion -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Intrusion">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VisualPerception"/>
     </owl:Class>
     
 
@@ -2293,20 +2277,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Material -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Material">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#MiddleFinger -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MiddleFinger">
@@ -2351,7 +2321,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingToLocation">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
     </owl:Class>
     
 
@@ -2698,14 +2668,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Tool -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tool">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#TopGraspAffordance -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TopGraspAffordance">
@@ -2927,6 +2889,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
@@ -2942,15 +2910,21 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease-crc.org/ont/EASE.owl#Condensing -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Condensing">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
     </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedTool -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
     
 
 
     <!-- http://www.ease-crc.org/ont/EASE.owl#Freezing -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Freezing">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
     </owl:Class>
     
 
@@ -2976,7 +2950,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease-crc.org/ont/EASE.owl#Melting -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Melting">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
     </owl:Class>
     
 
@@ -3032,7 +3006,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease-crc.org/ont/EASE.owl#Vaporizing -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Vaporizing">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Vaporization is an event in which a liquid or solid transforms into its gaseous state.</rdfs:comment>
     </owl:Class>
     
@@ -3143,6 +3117,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
     
 
 
