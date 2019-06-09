@@ -18,7 +18,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(knowrob_actions).
+:- begin_tests(task_planning).
 
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
@@ -31,17 +31,18 @@
 
 test(plan_pancake_events, [nondet]) :-
   plan_subevents(pancake:'MakingPancakes', SubEvents),
-  nth0(0, SubEvents, 'http://knowrob.org/kb/pancake.owl#CrackingAnEgg'),
-  nth0(1, SubEvents, 'http://knowrob.org/kb/pancake.owl#MixPancakeDough'),
-  nth0(2, SubEvents, 'http://knowrob.org/kb/pancake.owl#PourDoughOntoPancakeMaker'),
-  nth0(3, SubEvents, 'http://knowrob.org/kb/pancake.owl#FlippingAPancake').
+  nth0(0, SubEvents, 'http://knowrob.org/kb/pancake.owl#Cracking_0'),
+  nth0(1, SubEvents, 'http://knowrob.org/kb/pancake.owl#Mixing_0'),
+  nth0(2, SubEvents, 'http://knowrob.org/kb/pancake.owl#TurningOn_0'),
+  nth0(3, SubEvents, 'http://knowrob.org/kb/pancake.owl#Pouring_0'),
+  nth0(4, SubEvents, 'http://knowrob.org/kb/pancake.owl#FlippingAPancake_0').
 
 test(plan_pancake_objects, [nondet]) :-
   plan_objects(pancake:'MakingPancakes', Objs),
-  member('http://knowrob.org/kb/pancake.owl#Egg-Chickens', Objs),
+  member('http://knowrob.org/kb/pancake.owl#Egg', Objs),
   member('http://knowrob.org/kb/pancake.owl#Milk', Objs),
   member('http://knowrob.org/kb/pancake.owl#WheatFlour', Objs),
   member('http://knowrob.org/kb/pancake.owl#EggYolk', Objs),
   member('http://knowrob.org/kb/pancake.owl#Dough', Objs).
 
-:- end_tests(knowrob_actions).
+:- end_tests(task_planning).
