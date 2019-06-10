@@ -1,0 +1,22 @@
+
+[Put,act,'ontop']:-
+   Put(act),
+   goalLocation(act,loc),
+   objectActedOn(act,obj)
+-> ontop(obj,loc).
+
+[Take,act,'graspedBy']:-
+   Take(act),
+   objectActedOn(act,obj),
+   bodyPartsUsed(act,hand)
+-> graspedBy(obj,hand).
+
+[Take,act,'ontop']:-
+   Take(act),
+   objectActedOn(act,obj)
+-> (ontop exactly 0 Thing)(obj).
+
+[Put,act,'graspedBy']:-
+   Put(act),
+   objectActedOn(act,obj)
+-> (graspedBy exactly 0 Thing)(obj).
