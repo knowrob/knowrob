@@ -421,15 +421,22 @@ interval(I, I) :- is_list(I), !.
 interval(Time, [Time,Time]) :- number(Time), !.
 interval(I, Interval) :-
   atom(I),
-  rdf_has(I, knowrob:'startTime', T0),
+  ( rdf_has(I, knowrob:'startTime', T0) ;
+    rdf_has(I, ease:'hasIntervalBegin', T0) ),
   time_term(T0, T0_val),
-  (  rdf_has(I, knowrob:'endTime', T1)
+  (( rdf_has(I, knowrob:'endTime', T1) ;
+     rdf_has(I, ease:'hasIntervalEnd', T1) )
   -> (time_term(T1, T1_val), Interval=[T0_val,T1_val])
   ;  Interval=[T0_val] ), !.
-interval(I, Interval) :-
-  var(I),
-  rdfs_individual_of(I, dul:'Event'),
-  interval(I,Interval).
+interval(Event, Interval) :-
+  var(Event),
+  rdfs_individual_of(Event, dul:'Event'),
+  interval(Event,Interval).
+interval(Situation, Interval) :-
+  atom(Situation),
+  rdfs_individual_of(Situation, dul:'Situation'),
+  rdf_has(Situation,dul:includesTime,X),
+  interval(X,Interval), !.
 % @deprecated
 interval(TimePoint, [Time,Time]) :-
   atom(TimePoint),
