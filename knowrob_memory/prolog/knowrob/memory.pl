@@ -7,9 +7,10 @@
       mem_export/1,
       mem_import/1,
       mem_import_latest/0,
+      mem_episode_start/1,
       mem_episode_start/2,
-      mem_episode_start/3,
       mem_episode_stop/1,
+      mem_episode_set_map/2,  % +Episode::iri, +Map::iri
       mem_dir/1
     ]).
 
@@ -22,20 +23,19 @@
 :- dynamic mem_is_initialized/0,
            current_episode/1.
 
-%% mem_episode_start(+SemanticMap,-Episode)
-%% mem_episode_start(+SemanticMap,-Episode,+Topics)
+%% mem_episode_start(-Episode)
+%% mem_episode_start(-Episode,+Topics)
 %
 % Start recording an episdic memory.
 %
-mem_episode_start(SemanticMap,Episode) :-
-  mem_episode_start(SemanticMap,Episode,[['tf',[]]]).
+mem_episode_start(Episode) :-
+  mem_episode_start(Episode,[['tf',[]]]).
 
-mem_episode_start(SemanticMap,Episode,Topics) :-
+mem_episode_start(Episode,Topics) :-
   \+ current_episode(_),
   current_time(Stamp),
   %% 
   mem_episode_create(Episode),
-  mem_episode_set_map(Episode,SemanticMap),
   mem_event_begin(Episode,Stamp),
   asserta(current_episode(Episode)),
   %%
@@ -63,6 +63,10 @@ mem_episode_stop(Episode) :-
   mem_dir(MemDir),
   path_concat(MemDir,Stamp_atom,EpisodeDir),
   mem_export(EpisodeDir).
+
+%%
+mem_episode_set_map(Episode,Map) :-
+  mem_event_includes_(Episode,Map).
 
 %% mem_init
 %% mem_init(+Dir)

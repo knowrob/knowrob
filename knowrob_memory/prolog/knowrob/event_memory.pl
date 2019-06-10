@@ -28,7 +28,6 @@
 :- module(event_memory,
     [
       mem_episode_create/1,           % -EpisodeNode::iri
-      mem_episode_set_map/2,          % +EpisodeNode::iri, +Map::iri
       mem_event_create/3,             % +ParentNode::iri, -EventType::iri, -Node::iri
       mem_event_begin/2,              % +Node::iri, +BeginTime::number
       mem_event_end/2,                % +Node::iri, +EndTime::number
@@ -73,10 +72,6 @@ mem_episode_create(Episode) :-
   mem_new_individual(ease:'Episode',Episode),
   mem_new_individual(dul:'TimeInterval',I),
   mem_assert(Episode,dul:includesTime,I).
-
-%%
-mem_episode_set_map(Episode,Map) :-
-  mem_event_includes_(Episode,Map).
 
 %% mem_event_create(+Parent0,+EventType,-Node0) is det.
 %
