@@ -81,11 +81,13 @@ mem_episode_create(Episode) :-
 %
 mem_event_create(Parent0,EventType,Node0) :-
   rdfs_individual_of(Parent0,dul:'Situation'),
-  rdfs_subclass_of(EventType,dul:'Concept'),
+  rdfs_subclass_of(EventType,dul:'Concept'),!,
   %% create an avent that is classified by EventType
   mem_new_individual(EventType,EventType0),
   mem_event_create_(EventType,Event),
-  mem_assert(EventType0,dul:classifies,Event),
+  ( rdfs_individual_of(Event,dul:'Action')
+  -> mem_assert(EventType0,dul:isExecutedIn,Event);
+     mem_assert(EventType0,dul:classifies,Event)),
   %% create a situation that includes the event
   mem_new_individual(dul:'Situation',Node0),
   mem_assert(Parent0,ease:includesSituation,Node0),
@@ -95,11 +97,11 @@ mem_event_create(Parent0,EventType,Node0) :-
   mem_assert(Event,dul:hasTimeInterval,I),
   mem_assert(Node0,dul:includesTime,I),
   %%
-  mem_event_node_(Parent0,ParentEvent0),
+  (  mem_event_node_(Parent0,ParentEvent0) -> 
   (( rdfs_individual_of(ParentEvent0,dul:'Action'),
   \+ rdfs_individual_of(Event,dul:'Action') ) ->
      mem_assert(ParentEvent0,ease:hasPhase,Event) ;
-     mem_assert(ParentEvent0,dul:hasConstituent,Event) ).
+     mem_assert(ParentEvent0,dul:hasConstituent,Event) ) ; true ).
 
 %% mem_event_begin(+Node0,+Begin) is det.
 %
@@ -193,6 +195,10 @@ mem_event_classifies_(Node,Entity,Concept) :-
   mem_event_includes_(X,Concept0),
   mem_event_includes_(X,Entity).
 
+mem_event_node_(Node,Event) :-
+  % TODO
+  rdf_has(Node,dul:includesEvent,Event),!.
+
 %%
 mem_event_create_(Task,Action) :-
   rdfs_subclass_of(Task,dul:'Task'),!,
@@ -218,21 +224,25 @@ mem_event_create_(_,Evt) :-
   mem_new_individual(dul:'Event',Evt).
 
 %%
+mem_event_includes_(N,Action) :-
+  rdfs_individual_of(Action,dul:'Action'),!,
+  mem_assert(N,dul:includesAction,Action).
+
 mem_event_includes_(N,Event) :-
   rdfs_individual_of(Event,dul:'Event'),!,
-  ( owl_indiviual_of(Event,dul:'Action') ->
-    mem_assert(N,dul:includesAction,Event) ;
-    mem_assert(N,dul:includesEvent,Event) ).
-
-mem_event_includes_(N,Object) :-
-  rdfs_individual_of(Object,dul:'Object'),!,
-  ( owl_indiviual_of(Object,dul:'Agent') ->
-    mem_assert(N,dul:includesAgent,Object) ;
-    mem_assert(N,dul:includesObject,Object) ).
+  mem_assert(N,dul:includesEvent,Event).
 
 mem_event_includes_(N,Concept) :-
   rdfs_individual_of(Concept,dul:'Concept'),!,
-  mem_assert(N,dul:includesConcept,Concept).
+  mem_assert(N,ease:includesConcept,Concept).
+
+mem_event_includes_(N,Agent) :-
+  rdfs_individual_of(Agent,dul:'Agent'),!,
+  mem_assert(N,ease:includesAgent,Agent).
+
+mem_event_includes_(N,Object) :-
+  rdfs_individual_of(Object,dul:'Object'),!,
+  mem_assert(N,dul:includesObject,Object).
 
 %% get individual quality of an objecz
 mem_individual_quality_(Object,Quality,IndividualQuality) :-
@@ -276,7 +286,7 @@ mem_is_related_to_concept_(Concept0,Concept1) :-
 
 %%
 mem_new_individual(Type,Entity) :-
-  rdfs_instance_from_class(Type,Entity,belief_state).
+  rdf_instance_from_class(Type,belief_state,Entity).
 
 %%
 mem_assert(S,P,O) :-
@@ -284,6 +294,7 @@ mem_assert(S,P,O) :-
 
 %%
 mem_update(S,P,O) :-
+  atom(O),
   rdf(S,P,O,belief_state),!.
 
 mem_update(S,P,O) :-
