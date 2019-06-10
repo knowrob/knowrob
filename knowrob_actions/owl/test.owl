@@ -301,9 +301,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution -->
+    <!-- http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
     
 
 
@@ -401,7 +401,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_Execution -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b"/>
@@ -667,7 +667,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#pose_test_Execution -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_b"/>
@@ -942,7 +942,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#sum_array_Execution -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSQueryingExecution"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_b"/>

@@ -36,18 +36,6 @@
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
     </owl:ObjectProperty>
 
-    <!-- http://knowrob.org/kb/object-change.owl#computeActionEffect -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/object-change.owl#computeActionEffect">
-        <rdf:type rdf:resource="&computable;PrologProperty"/>
-        <computable:command rdf:datatype="&xsd;string">action_effects</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;postActors"/>
-    </owl:NamedIndividual>
-
-
-
     <!-- http://knowrob.org/kb/object-change.owl#computeTransformedInto -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/object-change.owl#computeTransformedInto">
