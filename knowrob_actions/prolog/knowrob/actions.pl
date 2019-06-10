@@ -27,7 +27,6 @@
 
 :- module(knowrob_actions,
     [
-      physical_actions/2,
       task_role_filler/3,
       action_participant_type/3
     ]).
@@ -60,20 +59,3 @@ task_role_filler(Task,Role,Filler) :-
   rdf_has(Task,dul:definesRole,R),
   rdfs_individual_of(R,Role),
   rdf_has(Filler,dul:isClassifiedBy,R).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% 'Physical action'
-
-% set of all 'Physical action' subclasses without subclass
-physical_actions(ActionSet) :-
-  physical_actions(ActionSet,user).
-
-physical_actions(ActionSet,RDFGraph) :-
-  findall(ActionClass, (
-    rdfs_subclass_of(ActionClass, ease:'PhysicalAction'),
-    once((
-      rdf(ActionClass, rdfs:subClassOf, _, RDFGraph),
-      \+ rdf(_, rdfs:subClassOf, ActionClass)
-    ))
-  ), Actions),
-  list_to_set(Actions, ActionSet).

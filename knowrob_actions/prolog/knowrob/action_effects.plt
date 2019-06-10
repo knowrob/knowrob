@@ -99,49 +99,49 @@ test(cracking_effect_destroyed_egg, [nondet]) :-
   action_effect_on_object(pancake:'CrackingAnEgg', destroyed(Egg)),
   rdf_equal(Egg,pancake:'Egg').
 
-test(pancake_making_turn_on_maker) :-
-  % turning on the pancake maker creates heating process
-  action_effects_apply(pancake:'TurningOnPancakeMaker_0'),
-  rdf_has(pancake:'TurningOnPancakeMaker_0', knowrob:processStarted, Heating),
-  rdfs_individual_of(Heating, pancake:'HeatingProcess').
+%test(pancake_making_turn_on_maker) :-
+  %% turning on the pancake maker creates heating process
+  %action_effects_apply(pancake:'TurningOnPancakeMaker_0'),
+  %rdf_has(pancake:'TurningOnPancakeMaker_0', knowrob:processStarted, Heating),
+  %rdfs_individual_of(Heating, pancake:'HeatingProcess').
   
-test(pancake_making_crack_egg) :-
-  % create some egg yolk and egg shells
-  action_effects_apply(pancake:'CrackingAnEgg_0'),
-  once((rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
-        rdfs_individual_of(Yolk, pancake:'EggYolk'))).
+%test(pancake_making_crack_egg) :-
+  %% create some egg yolk and egg shells
+  %action_effects_apply(pancake:'CrackingAnEgg_0'),
+  %once((rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
+        %rdfs_individual_of(Yolk, pancake:'EggYolk'))).
 
-:- rdf_meta test_unsattisifed_restriction(r, t).
-test_unsattisifed_restriction(Resource, Restr) :-
-  owl_unsatisfied_restriction(Resource, RestrId),
-  owl_restriction(RestrId, Restr), !.
+%:- rdf_meta test_unsattisifed_restriction(r, t).
+%test_unsattisifed_restriction(Resource, Restr) :-
+  %owl_unsatisfied_restriction(Resource, RestrId),
+  %owl_restriction(RestrId, Restr), !.
   
-test(pancake_making_mix_dough) :-
-  % objectActedOn restriction not satisfied yet!
-  test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
-      restriction(knowrob:'inputsDestroyed', cardinality(1,1,pancake:'EggYolk'))),
-  % create dough by mixing flour and milk
-  plan_constrained_objects(pancake:'MakingPancakes', pancake:'MixPancakeDough_0',
-        [pancake:'CrackingAnEgg_0']),
-  % objectActedOn restriction now satisfied!
-  \+ test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
-      restriction(knowrob:'inputsDestroyed', cardinality(1,1,pancake:'EggYolk'))),
-  % Check projection in store
-  once((rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
-        rdfs_individual_of(Yolk, pancake:'EggYolk'))),
-  action_effects_apply(pancake:'MixPancakeDough_0'),
-  once((rdf_has(pancake:'MixPancakeDough_0', knowrob:outputsCreated, Dough),
-        rdfs_individual_of(Dough, pancake:'Dough'))).
+%test(pancake_making_mix_dough) :-
+  %% objectActedOn restriction not satisfied yet!
+  %test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
+      %restriction(knowrob:'inputsDestroyed', cardinality(1,1,pancake:'EggYolk'))),
+  %% create dough by mixing flour and milk
+  %plan_constrained_objects(pancake:'MakingPancakes', pancake:'MixPancakeDough_0',
+        %[pancake:'CrackingAnEgg_0']),
+  %% objectActedOn restriction now satisfied!
+  %\+ test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
+      %restriction(knowrob:'inputsDestroyed', cardinality(1,1,pancake:'EggYolk'))),
+  %% Check projection in store
+  %once((rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
+        %rdfs_individual_of(Yolk, pancake:'EggYolk'))),
+  %action_effects_apply(pancake:'MixPancakeDough_0'),
+  %once((rdf_has(pancake:'MixPancakeDough_0', knowrob:outputsCreated, Dough),
+        %rdfs_individual_of(Dough, pancake:'Dough'))).
   
-test(pancake_making_pour_dough) :-
-  % pour ontop of pancake maker
-  plan_constrained_objects(pancake:'MakingPancakes', pancake:'PourDoughOntoPancakeMaker_0',
-        [pancake:'CrackingAnEgg_0', pancake:'MixPancakeDough_0']),
-  rdf_has(pancake:'PourDoughOntoPancakeMaker_0', knowrob:objectTransported, Dough),
-  rdfs_individual_of(Dough, pancake:'Dough'),
-  action_effects_apply(pancake:'PourDoughOntoPancakeMaker_0'),
-  % just assert that dough is on pancake maker as required by baking rules
-  rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
-  rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).
+%test(pancake_making_pour_dough) :-
+  %% pour ontop of pancake maker
+  %plan_constrained_objects(pancake:'MakingPancakes', pancake:'PourDoughOntoPancakeMaker_0',
+        %[pancake:'CrackingAnEgg_0', pancake:'MixPancakeDough_0']),
+  %rdf_has(pancake:'PourDoughOntoPancakeMaker_0', knowrob:objectTransported, Dough),
+  %rdfs_individual_of(Dough, pancake:'Dough'),
+  %action_effects_apply(pancake:'PourDoughOntoPancakeMaker_0'),
+  %% just assert that dough is on pancake maker as required by baking rules
+  %rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
+  %rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).
 
 :- end_tests(action_effects).

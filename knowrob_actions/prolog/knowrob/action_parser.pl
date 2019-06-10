@@ -237,6 +237,17 @@ parser_create(Parser,RDFGraph) :-
     write('ERROR: Failed to build sequence graph for '), write_concept(Act), nl
   ))).
 
+% set of all 'Physical action' subclasses without subclass
+physical_actions(ActionSet,RDFGraph) :-
+  findall(ActionClass, (
+    rdfs_subclass_of(ActionClass, ease:'PhysicalAction'),
+    once((
+      rdf(ActionClass, rdfs:subClassOf, _, RDFGraph),
+      \+ rdf(_, rdfs:subClassOf, ActionClass)
+    ))
+  ), Actions),
+  list_to_set(Actions, ActionSet).
+
 parser_create_grammar(Parser,Act) :-
   % find constituents and their relation to each other
   action_constituents(Act,Constituents,Constituent_Constraints),

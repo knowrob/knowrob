@@ -72,8 +72,6 @@ in SWRL rules (i.e., relate what was created to something else).
     action_precondition_check(r),
     action_precondition_check(r,r),
     comp_actionEffectRule(r,r),
-    comp_processStarted(r,r),
-    comp_outputsCreated(r,r),
     task_class_has_role(r,r,r).
 
 %% comp_actionEffectRule(+Action:iri, ?Effect:iri)
@@ -88,15 +86,6 @@ in SWRL rules (i.e., relate what was created to something else).
 comp_actionEffectRule(Action, Effect) :-
   rdfs_individual_of(Action, ActionClass),
   rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))).
-
-%% comp_actionEffectRule(+Action:iri, ?Process:iri)
-comp_processStarted(Action,Process) :-
-  %comp_action_participant(Action,knowrob:processStarted,Process).
-  fail.
-%% comp_outputsCreated(+Action:iri, ?Output:iri)
-comp_outputsCreated(Action,Output) :-
-  %comp_action_participant(Action,knowrob:outputsCreated,Output).
-  fail.
 
 %% action_effect_on_object(?Task:iri, ?EffectTerm:term) is nondet
 %
