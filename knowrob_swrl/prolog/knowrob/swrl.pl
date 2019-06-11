@@ -37,6 +37,14 @@
       rdf_swrl_satisfied/1,
       rdf_swrl_satisfied/2,
       swrl_assert/1,
+      swrl_file_parse/3,
+      swrl_file_load/1,
+      swrl_file_load/2,
+      swrl_file_unload/1,
+      swrl_file_unload/2,
+      swrl_file_project/2,
+      swrl_file_project/3,
+      swrl_file_path/3,
       swrl_phrase/2,
       swrl_phrase_assert/1,
       swrl_project/1,
@@ -56,6 +64,7 @@
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
 
+:- use_module(library('dcg/basics')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
@@ -64,12 +73,14 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/triple_memory')).
+:- use_module(library('knowrob/utility/filesystem')).
 %:- use_module(library('knowrob/units')).
 
 :- rdf_meta swrl_project(r),
             swrl_match_instance(r,r,r).
 :- dynamic  call_mutex/2,
-            rdf_swrl_store/2.
+            rdf_swrl_store/2,
+            swrl_file_store/3.
 
 		 /********************************
 		 * RDF-based SWRL representation *
@@ -494,42 +505,58 @@ assert_rdf_class(Expr, Descr)  :-
   assert_rdf_class_(Expr, Descr).
 assert_rdf_class_(some(P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
   rdf_assert(Descr, owl:someValuesFrom, ClsDescr),
   rdf_assert(Descr, owl:onProperty, P).
 assert_rdf_class_(all(P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
   rdf_assert(Descr, owl:allValuesFrom, ClsDescr),
   rdf_assert(Descr, owl:onProperty, P).
 assert_rdf_class_(value(Value,P), Descr) :-
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
   rdf_assert(Descr, owl:hasValue, Value),
   rdf_assert(Descr, owl:onProperty, P).
 assert_rdf_class_(exactly(Num,P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_assert(Descr, owl:cardinality, Num),
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
+  rdf_number_literal_(Num,Num_RDF),
+  rdf_assert(Descr, owl:cardinality, Num_RDF),
   rdf_assert(Descr, owl:onProperty, P),
   rdf_assert(Descr, owl:onClass, ClsDescr).
 assert_rdf_class_(min(Num,P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_assert(Descr, owl:minQualifiedCardinality, Num),
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
+  rdf_number_literal_(Num,Num_RDF),
+  rdf_assert(Descr, owl:minQualifiedCardinality, Num_RDF),
   rdf_assert(Descr, owl:onProperty, P),
   rdf_assert(Descr, owl:onClass, ClsDescr).
 assert_rdf_class_(max(Num,P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_assert(Descr, owl:maxQualifiedCardinality, Num),
+  rdf_assert(Descr, rdf:type, owl:'Restriction'),
+  rdf_number_literal_(Num,Num_RDF),
+  rdf_assert(Descr, owl:maxQualifiedCardinality, Num_RDF),
   rdf_assert(Descr, owl:onProperty, P),
   rdf_assert(Descr, owl:onClass, ClsDescr).
 assert_rdf_class_(allOf(Cls), Descr) :-
   assert_rdf_list(Cls, ClsDescr),
+  rdf_assert(Descr, rdf:type, owl:'Class'),
   rdf_assert(Descr, owl:intersectionOf, ClsDescr).
 assert_rdf_class_(oneOf(Cls), Descr) :-
   assert_rdf_list(Cls, ClsDescr),
+  rdf_assert(Descr, rdf:type, owl:'Class'),
   rdf_assert(Descr, owl:unionOf, ClsDescr).
 assert_rdf_class_(not(Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
+  rdf_assert(Descr, rdf:type, owl:'Class'),
   rdf_assert(Descr, owl:complementOf, ClsDescr).
 
+rdf_number_literal_(Num,
+  literal(type('http://www.w3.org/2001/XMLSchema#nonNegativeInteger',Atom))) :-
+  ( atom(Num) -> Atom = Num ; term_to_atom(Num, Atom) ).
+
 %% assert_rdf_list: assert list description in RDF triple store
-assert_rdf_list([], rdf:nil).
+assert_rdf_list([], Nil) :- rdf_equal(rdf:nil,Nil).
 assert_rdf_list([X|Xs], Descr) :-
   rdf_node(Descr),
   assert_rdf_class(X, X_descr),
@@ -585,6 +612,8 @@ swrl_atom(literal(A), A, _).
 swrl_atom(var(A), A_val, Vars) :-
   swrl_var(Vars, A, A_var),
   swrl_atom(A_var,A_val,Vars).
+swrl_atom(Atom, Atom, _) :-
+  atom(Atom).
 swrl_atoms([], [], _).
 swrl_atoms([X|Xs], [Y|Ys], Vars) :-
   swrl_atom(X,Y,Vars),
@@ -813,8 +842,114 @@ swrl_class_atom_satisfied(S, Cls) :-
   owl_individual_of(S, Cls, DB).
 
 		 /************************************
-		  *            SWRL phrases          *
+		  *            SWRL parsing          *
 		  ************************************/
+
+
+%% swrl_file_path(+Pkg,+Filename,-Filepath) is det.
+%
+% *Filepath* is an absoulte path pointing to SWRL file in ROS package.
+%
+swrl_file_path(Pkg,Filename,Filepath) :-
+  ros_package_path(Pkg,PkgPath),
+  path_concat(PkgPath,'swrl',X0),
+  path_concat(X0,Filename,Filepath).
+
+%% swrl_file_project(+Filepath,+Label) is det.
+%% swrl_file_project(+Filepath,+Label,+Vars) is det.
+%
+% Project the consequences of a rule into the KB.
+%
+swrl_file_project(Filepath,Label) :-
+  swrl_file_project(Filepath,Label, []).
+swrl_file_project(Filepath,Label,Vars) :-
+  swrl_file_parse(Filepath,Rule,Args),
+  get_dict(label,Args,Label),
+  swrl_project(Rule,Vars).
+
+%%
+swrl_file_assert(Filepath,Rule,Args) :-
+  swrl_assert(Rule),
+  assertz(swrl_file_store(Filepath,Rule,Args)).
+
+%% swrl_file_unload(+Filepath) is det.
+%% swrl_file_unload(+Filepath,+Label) is det.
+%
+% Unload previously loaded SWRL file,
+% retracting all the rules that have been asserted
+% so far.
+%
+swrl_file_unload(Filepath) :-
+  forall( swrl_file_store(Filepath,Rule,_), (
+      retract( swrl_file_store(Filepath,Rule,_) ),
+      ignore(retract( Rule ))
+  )).
+
+swrl_file_unload(Filepath,Label) :-
+  forall(
+    ( swrl_file_store(Filepath, Rule, Args),
+      get_dict(label,Args,Label) ),
+    ( retract( swrl_file_store(Filepath,Rule) ),
+      ignore(retract( Rule ))
+  )).
+
+%% swrl_file_unload(+Filepath) is det.
+%% swrl_file_unload(+Filepath,+Label) is det.
+%
+% Loads all or one rule(s) from a SWRL file.
+%
+swrl_file_load(Filepath,Label) :-
+  swrl_file_store(Filepath, _Rule, Args),
+  get_dict(label,Args,Label),!.
+
+swrl_file_load(Filepath,Label) :-
+  swrl_file_parse(Filepath,Rule,Args),
+  get_dict(label,Args,Label),
+  swrl_file_assert(Filepath,Rule,Args).
+
+swrl_file_load(Filepath) :-
+  forall(
+    swrl_file_parse(Filepath,Rule,Args),
+    swrl_file_assert(Filepath,Rule,Args)
+  ).
+
+%% swrl_file_parse(+Filepath,-Rule,-Args) is det.
+%
+% Parses a SWRL file.
+%
+swrl_file_parse(Filepath,Rule,Args) :-
+  phrase_from_file(swrl_file_rules(Xs), Filepath),
+  member([Pairs,Rule],Xs),
+  dict_pairs(Args,_,Pairs).
+
+%%
+swrl_file_rules([])           --> call(eos), !.
+swrl_file_rules([Rule|Rules]) --> swrl_file_rule(Rule), swrl_file_rules(Rules).
+
+%%
+swrl_file_rule([])          --> call(eos), !.
+swrl_file_rule([Args,Rule]) --> ":-", swrl_file_args(Args), ",", swrl_file_rule_(Rule), !.
+swrl_file_rule([[],Rule])   --> ":-", swrl_file_rule_(Rule), !.
+swrl_file_rule(Rule)        --> [_], swrl_file_rule(Rule).
+swrl_file_rule_(RuleTerm) -->
+  blanks, string(RulesCodes), ".",
+  { atom_codes(RuleAtom, RulesCodes),
+    swrl_phrase(RuleTerm, RuleAtom) }, !.
+
+%%
+swrl_file_args(Args) --> blanks, "{", !, swrl_file_args_(Args), blanks.
+swrl_file_args([])   --> "".
+swrl_file_args_([Key-Value|Xs]) -->
+  blanks, ("'";""), string(KeyCodes), ("'";""), 
+  blanks, ":",
+  blanks, ("'";""), string(ValueCodes), ("'";""), 
+  blanks,
+  ( (",", swrl_file_args_(Xs)) ;
+    ("}", {Xs=[]}) ), !,
+  { atom_codes(Key, KeyCodes),
+    atom_codes(Value, ValueCodes)
+  }.
+swrl_file_args_([]) --> "".
 
 %% swrl_phrase(?Term, ?Expr).
 %

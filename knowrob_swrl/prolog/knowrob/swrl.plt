@@ -34,180 +34,15 @@
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % Parsing RDF/XML representation of SWRL rules
+% % % % Parsing
 % % % % % % % % % % % % % % % % % % % % % % % %
 
 test(swrl_parse_rules) :-
-  forall( rdf_has(Descr, rdf:type, swrl:'Imp'), (
-    rdf_swrl_rule(Descr, Head :- Body),
-    Head \= [], Body \= []
-  )).
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-% % % % Asserting RDF/XML SWRL rules as Prolog rules
-% % % % % % % % % % % % % % % % % % % % % % % %
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Driver_load, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver'),
-  rdf_swrl_load('Driver').
-
-test(swrl_Driver, [nondet]) :-
-  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver').
-
-test(swrl_Driver_class_unbound, [nondet]) :-
-  owl_individual_of_during(test_swrl:'Fred', X),
-  rdf_equal(X, test_swrl:'Driver').
-
-test(swrl_Driver_subject_unbound, [nondet]) :-
-  owl_individual_of_during(X, test_swrl:'Driver'),
-  rdf_equal(X, test_swrl:'Fred').
-
-test(swrl_Driver_during, [nondet]) :-
-  current_time(Now),
-  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver', Now).
-
-test(swrl_Driver_holds, [nondet]) :-
-  holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
-
-%% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Person1, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Alex', dul:'Person'),
-  rdf_swrl_load('Person'),
-  owl_individual_of_during(test_swrl:'Alex', dul:'Person').
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Person2, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
-  rdf_swrl_load('Person2'),
-  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite').
-
-%% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_NonHuman, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
-  rdf_swrl_load('NonHuman'),
-  owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
-  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'NonHuman').
-
-test(swrl_NonHuman_class_unbound, [nondet]) :-
-  owl_individual_of_during(test_swrl:'RedCar', X),
-  rdf_equal(X, test_swrl:'NonHuman').
-
-test(swrl_NonHuman_subject_unbound, [nondet]) :-
-  owl_individual_of_during(X, test_swrl:'NonHuman'),
-  rdf_equal(X, test_swrl:'RedCar').
-
-test(swrl_NonHuman_holds, [nondet]) :-
-  holds(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
-
-%% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_area, [nondet]) :-
-  \+ holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
-  rdf_swrl_load('area'),
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-%% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_startsWith_load, [nondet]) :-
-  \+ holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  rdf_swrl_load('startsWith').
-
-test(swrl_startsWith_holds, [nondet]) :-
-  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_hasBrother_load, [nondet]) :-
-  \+ holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  rdf_swrl_load('brother').
-
-test(swrl_hasBrother_holds, [nondet]) :-
-  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_BigRectangle1, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
-  rdf_swrl_load('BigRectangle'),
-  owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-test(swrl_BigRectangle_holds, [nondet]) :-
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_greaterThen, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult'),
-  rdf_swrl_load('greaterThen'),
-  owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult').
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_exactly, [nondet]) :-
-  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
-  rdf_swrl_load('exactly'),
-  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
-  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(test_rdf_swrl_unload, [nondet]) :-
-  rdf_swrl_unload,
-  mem_drop.
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-% % % % Projection of SWRL rule implications into the RDF triple store
-% % % % % % % % % % % % % % % % % % % % % % % %
-
-test(swrl_projection_Driver, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver'),
-  rdf_swrl_project('Driver'),
-  mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
-
-test(swrl_projection_Person1, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person'),
-  rdf_swrl_project('Person'),
-  mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person').
-
-test(swrl_projection_Person2, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
-  rdf_swrl_project('Person2'),
-  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite').
-
-test(swrl_projection_area, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
-  rdf_swrl_project('area'),
-  mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-test(swrl_projection_startsWith, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  rdf_swrl_project('startsWith'),
-  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
-
-test(swrl_projection_BigRectangle1, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle'),
-  rdf_swrl_project('BigRectangle'),
-  mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle').
-
-test(swrl_projection_greaterThen, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult'),
-  rdf_swrl_project('greaterThen'),
-  mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
-
-test(swrl_projection_hasBrother, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  rdf_swrl_project('brother'),
-  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
-
-test(swrl_projection_exactly, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
-  rdf_swrl_project('exactly'),
-  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
-
-test(swrl_projection_NonHuman1, [nondet]) :-
-  \+ mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
-  rdf_swrl_project('NonHuman'),
-  mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
-
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-% % % % Parsing of human readable SWRL expressions into Prolog-based representation
-% % % % % % % % % % % % % % % % % % % % % % % %
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  forall(
+    swrl_file_parse(Filepath,Rule,_),
+    ( Rule=(Head:-Body), Head \= [], Body \= [] )
+  ).
 :- rdf_meta test_swrl_parse(?,t).
 
 test_swrl_parse(ExprList, Term) :-
@@ -327,6 +162,188 @@ test(swrl_parse_area, [nondet]) :-
         property(var(r), test_swrl:'hasHeightInMeters', var(h)),
         multiply(var(areaInSquareMeters),var(w),var(h)) ]
   ).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Asserting RDF/XML SWRL rules as Prolog rules
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_Driver_load, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'Driver').
+
+test(swrl_Driver, [nondet]) :-
+  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver').
+
+test(swrl_Driver_class_unbound, [nondet]) :-
+  owl_individual_of_during(test_swrl:'Fred', X),
+  rdf_equal(X, test_swrl:'Driver').
+
+test(swrl_Driver_subject_unbound, [nondet]) :-
+  owl_individual_of_during(X, test_swrl:'Driver'),
+  rdf_equal(X, test_swrl:'Fred').
+
+test(swrl_Driver_during, [nondet]) :-
+  current_time(Now),
+  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver', Now).
+
+test(swrl_Driver_holds, [nondet]) :-
+  holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
+
+%% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_Person1, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'Alex', dul:'Person'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'Person'),
+  owl_individual_of_during(test_swrl:'Alex', dul:'Person').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_Person2, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'Hermaphrodite'),
+  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite').
+
+%% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_NonHuman, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'NonHuman'),
+  owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'NonHuman').
+
+test(swrl_NonHuman_class_unbound, [nondet]) :-
+  owl_individual_of_during(test_swrl:'RedCar', X),
+  rdf_equal(X, test_swrl:'NonHuman').
+
+test(swrl_NonHuman_subject_unbound, [nondet]) :-
+  owl_individual_of_during(X, test_swrl:'NonHuman'),
+  rdf_equal(X, test_swrl:'RedCar').
+
+test(swrl_NonHuman_holds, [nondet]) :-
+  holds(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
+
+%% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_area, [nondet]) :-
+  \+ holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'area'),
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+
+%% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_startsWith_load, [nondet]) :-
+  \+ holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'startsWith').
+
+test(swrl_startsWith_holds, [nondet]) :-
+  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_hasBrother_load, [nondet]) :-
+  \+ holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'brother').
+
+test(swrl_hasBrother_holds, [nondet]) :-
+  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_BigRectangle1, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'BigRectangle'),
+  owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+
+test(swrl_BigRectangle_holds, [nondet]) :-
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_greaterThen, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'greaterThen'),
+  owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_exactly, [nondet]) :-
+  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_load(Filepath,'exactly'),
+  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(test_rdf_swrl_unload, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  swrl_file_unload(Filepath),
+  mem_drop.
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Projection of SWRL rule implications into the RDF triple store
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+test(swrl_projection_Driver, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver'),
+  swrl_file_project(Filepath,'Driver'),
+  mem_retrieve_triple(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
+
+test(swrl_projection_Person1, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person'),
+  swrl_file_project(Filepath,'Person'),
+  mem_retrieve_triple(test_swrl:'Alex', rdf:type, dul:'Person').
+
+test(swrl_projection_Person2, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
+  swrl_file_project(Filepath,'Hermaphrodite'),
+  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite').
+
+test(swrl_projection_area, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  swrl_file_project(Filepath,'area'),
+  mem_retrieve_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+
+test(swrl_projection_startsWith, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  swrl_file_project(Filepath,'startsWith'),
+  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+
+test(swrl_projection_BigRectangle1, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle'),
+  swrl_file_project(Filepath,'BigRectangle'),
+  mem_retrieve_triple(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle').
+
+test(swrl_projection_greaterThen, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult'),
+  swrl_file_project(Filepath,'greaterThen'),
+  mem_retrieve_triple(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
+
+test(swrl_projection_hasBrother, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  swrl_file_project(Filepath,'brother'),
+  mem_retrieve_triple(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+
+test(swrl_projection_exactly, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
+  swrl_file_project(Filepath,'exactly'),
+  mem_retrieve_triple(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
+
+test(swrl_projection_NonHuman1, [nondet]) :-
+  swrl_file_path(knowrob_swrl,'test.swrl',Filepath),
+  \+ mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
+  swrl_file_project(Filepath,'NonHuman'),
+  mem_retrieve_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % SWRL rules asserted from human readable expressions
