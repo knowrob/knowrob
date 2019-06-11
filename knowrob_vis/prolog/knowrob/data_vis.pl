@@ -78,12 +78,12 @@ timeline(Events) :-
     once((
       rdfs_type_of(Evt,EvtType),
       rdf_split_url(_,EvtName,EvtType))),
-      occurs(Evt, [_,_])
+    interval(Evt, [_,_])
   ), EvtNames),
   findall(Time, (
     member(Evt, Events),
     once((
-      occurs(Evt, [T0,T1]),
+      interval(Evt, [T0,T1]),
       atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
   data_vis(timeline(event_timeline),

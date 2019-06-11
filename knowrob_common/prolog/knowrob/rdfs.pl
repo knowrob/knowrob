@@ -39,6 +39,7 @@
       rdfs_value_prolog/3,
       rdfs_type_of/2,
       rdfs_common_ancestor/2,
+      rdfs_assert_specific/3,
       strip_literal_type/2
     ]).
 /** <module> Reasoning using procedural attachments, called "computables"
@@ -52,11 +53,16 @@
 
 :- rdf_meta rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
+            rdf_assert_prolog(r,r,r),
+            rdf_assert_prolog(r,r,r,+),
+            rdfs_assert_specific(r,r,r),
             rdfs_value_prolog(r,t,?),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
-            rdfs_common_ancestor(t,r).
+            rdfs_common_ancestor(t,r),
+            rdfs_number(t,?),
+            rdfs_list(t,?).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -153,15 +159,44 @@ rdf_has_prolog(S,P,O) :-
 % @param Value RDF iri or Prolog encoded data value
 %
 rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
+rdf_assert_prolog(S,P,literal(type(_ArrayType,Val)),Graph) :-
+  is_list(Val),!,
+  rdf_assert_prolog(S,P,Val,Graph).
+rdf_assert_prolog(S,P,O,Graph) :-
+  is_list(O),!,
+  findall(A, (member(V,O), term_to_atom(V,A)), Atoms),
+  atomic_list_concat(Atoms, ' ', Val_atom),
+  rdf_assert_prolog(S,P,Val_atom,Graph).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
   strip_literal_type(O,Value),
+  ( atom(Value) ->
+    Value_Atom = Value ;
+    term_to_atom(Value, Value_Atom) ),
   (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(S, P, literal(type(Range,Value)), Graph)
-  ;  rdf_assert(S, P, literal(Value), Graph)
+  -> rdf_assert(S, P, literal(type(Range,Value_Atom)), Graph)
+  ;  rdf_assert(S, P, literal(Value_Atom), Graph)
   ).
 rdf_assert_prolog(S,P,O,Graph) :-
   rdf_assert(S,P,O,Graph).
+
+%%
+% TODO: should be named owl_assert_specific
+rdfs_assert_specific(S,P,O) :-
+  findall(P_restr, (
+    rdfs_individual_of(S, Restr),
+    once((
+      rdfs_individual_of(Restr, owl:'Restriction'),
+      % restriction on subproperty of P
+      rdf_has(Restr, owl:'onProperty', P_restr),
+      rdfs_subproperty_of(P_restr, P),
+      % and O is an individual of the restricted range
+      owl_restriction_object_domain(Restr, Restr_cls),
+      owl_individual_of(O, Restr_cls)
+    ))
+  ), Predicates),
+  owl_most_specific_predicate([P|Predicates], P_specific),
+  rdf_assert(S,P_specific,O).
   
 
 %% rdfs_value_prolog(+Property, +RDFValue, -PrologValue).
@@ -170,30 +205,52 @@ rdf_assert_prolog(S,P,O,Graph) :-
 %
 % @tbd convert to standard SI unit
 %
-rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+rdfs_value_prolog(_, XSD_Type, Number) :- rdfs_number(XSD_Type, Number), !.
+rdfs_value_prolog(_, List_Type, List)  :- rdfs_list(List_Type, List), !.
+% TODO: remove this at some point
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#quaternion', literal(type(_,Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog(P, literal(type(_,Val)), Vec) :-
-  rdfs_subproperty_of(P, knowrob:vector),
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#translation', literal(type(_,Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
-  atom_number(Atom, Number), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
-  atom_number(Atom, Number), !.
-rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
-  atom_number(Atom, Number), !.
 rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).
+
+rdfs_list(literal(type(List_Type,Atom)), List) :-
+  ( rdf_equal(List_Type,knowrob:vec3) ;
+    rdf_equal(List_Type,knowrob:vec4) ;
+    rdf_equal(List_Type,knowrob:array_boolean) ;
+    rdf_equal(List_Type,knowrob:array_double) ;
+    rdf_equal(List_Type,knowrob:array_float) ;
+    rdf_equal(List_Type,knowrob:array_int) ;
+    rdf_equal(List_Type,knowrob:array_uint) ;
+    rdf_equal(List_Type,knowrob:array_string) ), !,
+  rdf_vector_prolog(Atom, List).
+
+rdfs_number(literal(type(XSD_Type,Atom)), Number) :-
+  ( rdf_equal(XSD_Type,xsd:float) ;
+    rdf_equal(XSD_Type,xsd:double) ;
+    rdf_equal(XSD_Type,xsd:byte) ;
+    rdf_equal(XSD_Type,xsd:short) ;
+    rdf_equal(XSD_Type,xsd:int) ;
+    rdf_equal(XSD_Type,xsd:long) ;
+    rdf_equal(XSD_Type,xsd:unsignedByte) ;
+    rdf_equal(XSD_Type,xsd:unsignedShort) ;
+    rdf_equal(XSD_Type,xsd:unsignedInt) ;
+    rdf_equal(XSD_Type,xsd:unsignedLong) ), !,
+  atom_number(Atom, Number).
+  
 
 %% strip_literal_type(+Input,-Output).
 %
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 %
+strip_literal_type(Value,Value) :- var(Value), !.
 strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(literal(Value), Value) :- !.
-strip_literal_type(Value, Value).
+strip_literal_type(Value,Value).
 
 %% rdf_vector_prolog(+In, -Out) is semidet.
 rdf_vector_prolog([X|Y], [X|Y]).

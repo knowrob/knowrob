@@ -25,7 +25,6 @@ public class MarkerObject {
 	
 	private final List<MarkerObject> children = new LinkedList<MarkerObject>();
 	
-	private float[] highlighted;
 	private String tfPrefix = "/";
 	
 	boolean isHidden = false;
@@ -113,6 +112,11 @@ public class MarkerObject {
         
         public int getId() {
                 return markerMsg.getId();
+        }
+        
+        
+        public String getNS() {
+                return markerMsg.getNs();
         }
 	
 	
@@ -213,60 +217,60 @@ public class MarkerObject {
 		queueRepublish();
 	}
 	
-	public double[][] getPoints() {
+	public double[] getPoints() {
 		List<geometry_msgs.Point> points = markerMsg.getPoints();
 		if(points == null) return null;
-		double[][] out = new double[points.size()][3];
+		double[] out = new double[points.size()*3];
 		int i = 0;
 		for(geometry_msgs.Point p : points) {
-			out[i] = new double[3];
-			out[i][0] = p.getX();
-			out[i][1] = p.getY();
-			out[i][2] = p.getZ();
-			i += 1;
+			out[i+0] = p.getX();
+			out[i+1] = p.getY();
+			out[i+2] = p.getZ();
+			i += 3;
 		}
 		return out;
 	}
 	
-	public void setPoints(double[][] in) {
+	public void setPoints(double[] in) {
 		List<geometry_msgs.Point> points = new LinkedList<geometry_msgs.Point>();
-		for(int i=0; i<points.size(); ++i) {
+		for(int i=0; i<in.length; i+=3) {
 			geometry_msgs.Point p = publisher.node.getTopicMessageFactory().newFromType(geometry_msgs.Point._TYPE);
-			p.setX(in[i][0]);
-			p.setY(in[i][1]);
-			p.setZ(in[i][2]);
+			p.setX(in[i+0]);
+			p.setY(in[i+1]);
+			p.setZ(in[i+2]);
 			points.add(p);
 		}
 		markerMsg.setPoints(points);
+		queueRepublish();
 	}
 	
-	public float[][] getColors() {
+	public float[] getColors() {
 		List<std_msgs.ColorRGBA> colors = markerMsg.getColors();
 		if(colors == null) return null;
-		float[][] out = new float[colors.size()][4];
+		float[] out = new float[colors.size()*4];
 		int i = 0;
 		for(std_msgs.ColorRGBA c : colors) {
-			out[i] = new float[4];
-			out[i][0] = c.getR();
-			out[i][1] = c.getG();
-			out[i][2] = c.getB();
-			out[i][3] = c.getA();
-			i += 1;
+			out[i+0] = c.getR();
+			out[i+1] = c.getG();
+			out[i+2] = c.getB();
+			out[i+3] = c.getA();
+			i += 4;
 		}
 		return out;
 	}
 	
-	public void setColors(float[][] in) {
+	public void setColors(float[] in) {
 		List<std_msgs.ColorRGBA> colors = new LinkedList<std_msgs.ColorRGBA>();
-		for(int i=0; i<colors.size(); ++i) {
+		for(int i=0; i<in.length; i+=4) {
 			std_msgs.ColorRGBA c = publisher.node.getTopicMessageFactory().newFromType(std_msgs.ColorRGBA._TYPE);
-			c.setR(in[i][0]);
-			c.setG(in[i][1]);
-			c.setB(in[i][2]);
-			c.setA(in[i][3]);
+			c.setR(in[i+0]);
+			c.setG(in[i+1]);
+			c.setB(in[i+2]);
+			c.setA(in[i+3]);
 			colors.add(c);
 		}
 		markerMsg.setColors(colors);
+		queueRepublish();
 	}
 	
 	public double[] getTranslation() {
@@ -339,42 +343,6 @@ public class MarkerObject {
 		markerMsg.setLifetime(new Duration(value));
 		for(MarkerObject child : children) child.setLifetime(value);
 		queueRepublish();
-	}
-
-	public void highlight(String color) {
-		highlight(Integer.valueOf(color, 16));
-	}
-
-	public void highlight(int col) {
-		// TODO: What about the alpha channel?
-		int r = (col & 0xff0000) >> 16;
-		int g = (col & 0x00ff00) >> 8;
-		int b = (col & 0x0000ff);
-		highlight(new float[] {
-			r/255.0f, g/255.0f, b/255.0f, 1.0f
-		});
-	}
-	
-	public void highlight(float color[]) {
-		if(highlighted==null) {
-			highlighted = getColor();
-		}
-		markerMsg.getColor().setR(color[0]);
-		markerMsg.getColor().setG(color[1]);
-		markerMsg.getColor().setB(color[2]);
-		markerMsg.getColor().setA(color[3]);
-		queueRepublish();
-	}
-	
-	public void removeHighlight() {
-		if(highlighted != null) {
-			setColor(highlighted);
-			highlighted = null;
-		}
-	}
-	
-	public boolean hasHighlight() {
-		return highlighted != null;
 	}
 
 	private void queueRepublish() {

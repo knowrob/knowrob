@@ -46,6 +46,7 @@ import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
 import org.knowrob.interfaces.mongo.types.ISODate;
+import org.knowrob.interfaces.mongo.MongoDBInterface;
 import org.ros.message.Duration;
 import org.ros.message.MessageFactory;
 import org.ros.message.Time;
@@ -122,32 +123,14 @@ public class TFMemory {
 	 * Class constructor.
 	 */
 	protected TFMemory() {
-
-		String host = "localhost";
-		int port = 27017;
-		
-		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
-		// environment variables are set
-		Map<String, String> env = System.getenv();
-		if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
-			host = env.get("MONGO_PORT_27017_TCP_ADDR");
-		}
-		if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
-			port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
-		}
-        
 		try {
-			mongoClient = new MongoClient(host, port);
-			db = mongoClient.getDB("roslog");
+			mongoClient = MongoDBInterface.connect();
 			
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			e.printStackTrace(); // FIXME bad exception handling
 		}
-
 		frames = new HashMap<String, Frame>();
-
 		tfTableName = "tf";
-
 	}
 
 	public String getTfTableName() {
@@ -156,10 +139,6 @@ public class TFMemory {
 	
 	public void setTfTableName(String tfTableName) {
 		this.tfTableName = tfTableName;
-	}
-	
-	public DB getDatabase() {
-		return db;
 	}
 	
 	public DB setDatabase(String name) {
@@ -397,42 +376,52 @@ public class TFMemory {
 	 * @return
 	 */
 	private StampedTransform loadTransformFromDB(String childFrameID, Date date) {
-
 		DBCollection coll = db.getCollection(tfTableName);
 		DBObject query = new BasicDBObject();
+		
+		// FIXME: the estimate to load frames within a time duration
+		//        does not work when frames are only rarely published.
+		//        but it seems hard to avoid splitting this up into multiple queries.
+		// NOTE(daniel): another way would be to use graphLookup to find only
+		//       the frames that connect childFrameID to map.
+		//       But it seems not possible to first filter and sort the
+		//       collection that holds the records of interest.
+		//       In the aggregation pipeline, previous steps only provide 
+		//       "entry point" documents for graphSearch (these must not even
+		//       be part of the searched collection).
+		//       Also note that only java mongo client >= 3 provides an interface
+		//       to aggregation.
+		// TODO: idea: introduce a pre-processing step where the documents are 
+		//       linked to each other by id, such that searching for them is easier.
+		//       then try to use graphSearch to obtain the TF path.
 
 		// select time slice from BUFFER_SIZE seconds before to half a second after given time
-		Date start = new Date((long) (date.getTime() - ((int) (BUFFER_SIZE * 1000) ) ));
+		//Date start = new Date((long) (date.getTime() - ((int) (BUFFER_SIZE * 1000) ) ));
+		long start = (long) (date.getTime() - ((int) (BUFFER_SIZE * 1000) ) );
 		Date end   = new Date((long) (date.getTime() + 500));
-
-		// read all frames in time slice
-		// FIXME: Lookup is to slow.
-		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
-							.and("transforms.header.stamp").lessThan( end )
-							.get();
-		// TODO: This 'quick' lookup is ok for Yuen's experiment
-		//DBObject query = new BasicDBObject("transforms.header.stamp", start);
-
-		// TODO: check if we can read only the latest transforms for the child frame
-		// -> should be feasible since verifyDataAvailable should load data when needed,
-		//    maybe needs to be made recursive
-		// query = QueryBuilder.start("transforms")
-		// 		.elemMatch(new BasicDBObject("child_frame_id", childFrameID))
-		// 		.and("__recorded").greaterThanEquals( start )
-		// 		.and("__recorded").lessThan( end )
-		// 		.get();
-
+		
+// 		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
+// 							.and("transforms.header.stamp").lessThan( end )
+// 							.get();
+		query = QueryBuilder.start("transforms.header.stamp").lessThan( end ).get();
 
 		// read only transforms
 		DBObject cols  = new BasicDBObject();
 		cols.put("transforms",  1);
 
-		DBCursor cursor = coll.find(query, cols );
+		//DBCursor cursor = coll.find(query, cols );
+		DBCursor cursor = coll.find(query, cols).sort(
+			new BasicDBObject("transforms.header.stamp", -1));
 
-		StampedTransform res = null;
+		StampedTransform res = null; // FIXME this is never assigned below
 		try {
 			while(cursor.hasNext()) {
-				setTransforms((BasicDBList) cursor.next().get("transforms"));
+				BasicDBList dblist = (BasicDBList) cursor.next().get("transforms");
+				BasicDBObject dbobj = (BasicDBObject) dblist.get(0);
+				long timeStamp = (long) (((Date) ((BasicDBObject)
+				    dbobj.get("header")).get("stamp")).getTime() );
+				setTransforms(dblist);
+				if( timeStamp < start ) break;
 			}
 		} finally {
 			cursor.close();

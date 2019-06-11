@@ -16,6 +16,7 @@
 #include <std_msgs/ColorRGBA.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/TransformStamped.h>
 
 namespace std_msgs {
     void pl_term_color(const PlTerm &pl_term, ColorRGBA &value);
@@ -25,6 +26,7 @@ namespace geometry_msgs {
     void pl_term_point(const PlTerm &pl_term, Point &value);
     void pl_term_quaternion(const PlTerm &pl_term, Quaternion &value);
     void pl_term_pose_stamped(const PlTerm &pl_term, PoseStamped &value);
+    void pl_term_transform_stamped(const PlTerm &pl_term, TransformStamped &value);
 };
 
 #endif

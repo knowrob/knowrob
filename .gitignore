@@ -5,3 +5,8 @@ bin
 build
 .gradle
 doc
+*.pyc
+.idea
+cmake-build-debug
+knowrob_srdl/owl/sim-hand.owl
+knowrob_srdl/owl/xsens-human.owl
