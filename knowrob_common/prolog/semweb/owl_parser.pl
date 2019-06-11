@@ -59,7 +59,13 @@
 owl_parse(URL)        :- owl_parse(URL,[URL],user).
 owl_parse(URL, Graph) :- owl_parse(URL,[URL],Graph).
 
-:- dynamic owl_file_loaded/1.
+:- dynamic owl_file_loaded/1,
+           registry/2.
+
+%% registry(?URI,?PkgName) nondet.
+%
+% URI to ROS package name. Ontology files local to the package are preferred.
+%
 
 owl_parse(URL,_,_) :-
   owl_file_loaded(URL), !.
@@ -69,6 +75,17 @@ owl_parse(URL,Imported,Graph) :-
       not( owl_file_loaded(Import_URL)),!,
       owl_parse(Import_URL,[Import_URL|Imported],Graph)
     ; true).
+
+owl_parse_1(URL,Graph) :-
+  file_base_name(URL,FileName),
+  file_directory_name(URL,Prefix),
+  owl_parser:registry(Prefix,Pkg),
+  ros_package_path(Pkg,PkgPath),
+  atomic_list_concat([PkgPath,owl,FileName],'/',LocalPath),
+  exists_file(LocalPath),
+  owl_parse_1(LocalPath,Graph),
+  assertz(owl_file_loaded(URL)),
+  !.
 
 owl_parse_1(URL,Graph) :-
   sub_string(URL,0,4,_,'http'), !,
@@ -86,7 +103,8 @@ owl_parse_1(URL,Graph) :-
   ros_package_path(Pkg, PkgPath),
   % build global path and load OWL file
   atomic_list_concat([PkgPath|LocalPath], '/',  GlobalPath),
-  owl_load(URL,GlobalPath,Graph).
+  owl_parse(GlobalPath,Graph),
+  assert(owl_file_loaded(URL)).
 
 owl_parse_1(URL,Graph) :-
   owl_load(URL,URL,Graph).

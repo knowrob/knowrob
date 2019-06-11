@@ -41,15 +41,14 @@ namespace json_prolog
 Prolog::Prolog(const std::string &ns)
   : nh_("~")
 {
-  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/simple_query");
+  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/query");
   next_solution = nh_.serviceClient<PrologNextSolution>(ns + "/next_solution");
   prolog_finish = nh_.serviceClient<PrologFinish>(ns + "/finish");
 }
 
-//This method is more optimal for sending queries through json
 Prolog::Prolog(bool persistent, const std::string &ns)
 {
-  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/simple_query", persistent);
+  prolog_query = nh_.serviceClient<PrologQuery>(ns + "/query", persistent);
   next_solution = nh_.serviceClient<PrologNextSolution>(ns + "/next_solution", persistent);
   prolog_finish = nh_.serviceClient<PrologFinish>(ns + "/finish", persistent);
 }

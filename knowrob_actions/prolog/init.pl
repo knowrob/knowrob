@@ -33,15 +33,17 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
+:- register_ros_package(knowrob_memory).
+:- register_ros_package(knowrob_swrl).
 
+:- use_module(library('knowrob/event_graph')).
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/action_effects')).
-:- use_module(library('knowrob/action_planning')).
-:- use_module(library('knowrob/object_change')).
+:- use_module(library('knowrob/task_planning')).
 
-:- owl_parser:owl_parse('package://knowrob_actions/owl/action-effects.owl').
+:- use_module(library('knowrob/action_execution')).
+:- use_module(library('knowrob/kb_querying')).
+:- use_module(library('knowrob/rosowl')).
+
+:- owl_parser:owl_parse('package://knowrob_actions/owl/actions.owl').
 :- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').
-
-:- rdf_db:rdf_register_ns(make_pancakes, 'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(action_effects, 'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
-

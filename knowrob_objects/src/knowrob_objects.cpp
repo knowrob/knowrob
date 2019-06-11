@@ -8,9 +8,8 @@
 
 #include <ros/ros.h>
 #include <rosprolog.h>
-// #include <knowrob_objects/DirtyObject.h>
 #include <knowrob_objects/ObjectState.h>
-#include <knowrob_objects/UpdateObjectState.h>
+#include <knowrob_objects/ObjectStateArray.h>
 
 class MarkDirtyObjectClient {
 private:
@@ -29,7 +28,7 @@ public:
 	    thread(&MarkDirtyObjectClient::loop, this)
 	{}
 	
-	void broadcast() {
+	void broadcast(ros::Publisher &publisher) {
 		ObjectStateMap &objects = dirty_objects[push_index];
 		if(objects.empty()) return;
 		// ping-pong, less locking
@@ -37,31 +36,25 @@ public:
 		push_index = (int)!push_index;
 		push_lock.unlock();
 		// fill message
-		knowrob_objects::UpdateObjectState msg;
+		knowrob_objects::ObjectStateArray msg;
 		for(ObjectStateMap::iterator it = objects.begin(); it != objects.end(); ++it) {
-			msg.request.object_states.push_back(it->second);
+			msg.object_states.push_back(it->second);
 		}
 		// send message
-		if (!ros::service::call("/object_state_publisher/update_object_states", msg)) {
-			static bool complainedMarkDirtyNotAvailable = false;
-			if(!complainedMarkDirtyNotAvailable) {
-				std::cerr << "Failed to call service " <<
-						"/object_state_publisher/update_object_states. " <<
-						"Is it running?" << std::endl;
-				complainedMarkDirtyNotAvailable = true;
-			}
-		}
+		publisher.publish(msg);
 		objects.clear();
 	}
 	
 	void loop() {
+		ros::NodeHandle n_;
+		ros::Publisher publisher_ = n_.advertise<knowrob_objects::ObjectStateArray>("/object_state", 10000);
 		while(1) {
 			{
 				std::unique_lock<std::mutex> lk(loop_lock);
 				loop_cv.wait(lk, [this]{ return has_dirty_objects; });
 				has_dirty_objects = false;
 			}
-			broadcast();
+			broadcast(publisher_);
 			std::this_thread::sleep_for(std::chrono::milliseconds(60));
 		}
 	}

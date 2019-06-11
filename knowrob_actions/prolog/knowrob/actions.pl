@@ -27,12 +27,8 @@
 
 :- module(knowrob_actions,
     [
-      action_objectActedOn/2,
-      action_toLocation/2,
-      action_fromLocation/2,
-      action_inputs/2,
-      action_outputs/2,
-      action_missing_inputs/2
+      task_role_filler/3,
+      action_participant_type/3
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -48,121 +44,18 @@
 
 
 :- rdf_meta
-      action_objectActedOn(r,r),
-      action_toLocation(r,r),
-      action_fromLocation(r,r),
-      action_inputs(r,r),
-      action_missing_inputs(r,r),
-      action_outputs(r,r).
+      task_role_filler(r,r,r),
+      action_participant_type(r,r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
 
-%% action_objectActedOn(?Action, ?Object) is nondet.
-%
-% Reads the objectActedOn for a TBOX action description
-%
-% @param Action  Action class with a restriction on the objectActedOn
-% @param Object  Value set as objectActedOn for this action
-% 
-action_objectActedOn(Action, Object) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
-action_objectActedOn(Action, Object) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
+action_participant_type(Action,Participant,Class) :-
+  rdf_has(Action,dul:hasParticipant,Participant),
+  rdfs_individual_of(Participant,Class).
 
-%% action_toLocation(?Action, ?Loc) is nondet.
-%
-% Reads the toLocation for a TBOX action description
-%
-% @param Action Action class with a restriction on the toLocation
-% @param Loc    Value set as toLocation for this action
-% 
-action_toLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
-action_toLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
-
-%% action_fromLocation(?Action, ?Loc) is nondet.
-%
-% Reads the fromLocation for a TBOX action description
-%
-% @param Action Action class with a restriction on the fromLocation
-% @param Loc    Value set as fromLocation for this action
-% 
-action_fromLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
-action_fromLocation(Action, Loc) :-
-        owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
-
-%% action_inputs(+Action, -Input)
-%
-% Required inputs for an action
-%
-% @param Action   Action class
-% @param Input    Input linked via a preActors restriction
-%
-action_inputs(Action, Input) :-
-  owl_class_properties(Action, knowrob:'preActors', Input).
-
-%% action_missing_inputs(+Action, -Missing)
-%
-% Missing inputs of an action (required, but not available)
-%
-% @param Action   Action class
-% @param Missing  Input linked via a preActors restriction, but not available
-%
-action_missing_inputs(Action, Missing) :-
-  findall(Pre, (action_inputs(Action, Pre), \+ resource_available(Pre)), Missing).
-
-%% action_outputs(+Action, -Output)
-%
-% Outputs of an action
-%
-% @param Action   Action class
-% @param Output   Output linked via a postActors restriction
-%
-action_outputs(Action, Output) :-
-  owl_class_properties(Action, knowrob:'postActors', Output).
-%TODO: check class subsumption (allow more complex requirements)
-
-%% resource_available(+Resource)
-%
-% Resource is available
-%
-% @param Resource Resource whose availability is to be checked (e.g. object class, check if instance of that class exists)
-%
-resource_available(Resource) :-
-  owl_individual_of(ObjInst, Resource),
-  % HACK
-  \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
-
-
-%% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
-%
-% Compare predicate to be used in predsort for sorting a list of actions
-% based on partial-order constraints. Checks if there is an ordering
-% constraint that has these two actions as before/after
-% 
-% @tbd can we check if these constraints belong to the current task?
-% @param Rel   Relation operator, i.e. either '<' or '>'
-% @param Act1  Action class
-% @param Act2  Action class
-% 
-compare_actions_partial_order('<', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act2),!.
-
-compare_actions_partial_order('>', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act1),!.
-
-% default: keep ordering if there are no matching ordering constraints
-compare_actions_partial_order('<', _, _).
+%%
+task_role_filler(Task,Role,Filler) :-
+  rdf_has(Task,dul:definesRole,R),
+  rdfs_individual_of(R,Role),
+  rdf_has(Filler,dul:isClassifiedBy,R).

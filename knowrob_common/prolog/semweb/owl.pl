@@ -80,6 +80,7 @@
 	    non_negative_integer/4,
 	    non_negative_int/2,
 	    rdf_assert_literal/3,
+	    rdf_assert_literal/4,
 	    owl_property_range_clear_cache/2
 	  ]).
 :- use_module(library(lists)).
@@ -147,6 +148,7 @@
 	owl_disjoint_with(r, r),
 	owl_find(+, t, t, +, -),
 	rdf_assert_literal(r, r, +),
+	rdf_assert_literal(r, r, +, +),
 	owl_db_has(+,r,r,t).
 
 
@@ -438,9 +440,10 @@ owl_property_range_on_class(Class, Predicate, Range) :-
 		assertz(owl_property_range_cached(Class,Predicate,['http://www.w3.org/2002/07/owl#Thing'])),
 		% cache miss -> infer range
 		findall(X, owl_property_range_on_class_(Class,Predicate,X), Ranges_inferred),
+		list_to_set(Ranges_inferred,Ranges_inferred_s),
 		retractall(owl_property_range_cached(Class,Predicate,_)),
-		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred)),
-		member(Range, Ranges_inferred)
+		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred_s)),
+		member(Range, Ranges_inferred_s)
 	).
 
 owl_property_range_on_class_(Class, Predicate, Range) :-
@@ -534,12 +537,14 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	Cls_P_inv_range \= 'http://www.w3.org/2002/07/owl#Thing',
 	(  owl_property_range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
 	   true ; Range_inv = 'http://www.w3.org/2002/07/owl#Thing' ),
-	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
-	   Range=Range_inv ; (
-	   owl_inverse_property(Predicate, Predicate_inv),
-	   owl_description_assert(restriction(Predicate_inv,
-	                          some_values_from(Cls_P_inv_range)), Range)
-	)).
+	Range=Range_inv.
+	% NOTE(DB): disabled due to performance issues using DUL.
+	%(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
+	   %Range=Range_inv ; (
+	   %owl_inverse_property(Predicate, Predicate_inv),
+	   %owl_description_assert(restriction(Predicate_inv,
+	                          %some_values_from(Cls_P_inv_range)), Range)
+	%)).
 
 		 /*******************************
 		 *	    CARDINALITY		*
@@ -562,8 +567,12 @@ owl_cardinality_on_resource(Resource, Predicate, Range, Cardinality) :-
 %
 
 owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
+  ground(Range), !,
 	findall(C, cardinality_on_subject(Subject, Predicate, Range, C), L),
 	join_decls(L, [Cardinality]).
+
+owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
+  cardinality_on_subject(Subject, Predicate, Range, Cardinality).
 
 cardinality_on_subject(Subject, Predicate, Range, C) :-
 	rdf_has(Subject, rdf:type, Class),
@@ -576,22 +585,40 @@ cardinality_on_subject(Subject, Predicate, Range, C) :-
 %		--> accumulate max values and take difference to superclass min value (only if all direct subclasses restricted)
 %
 owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
-	owl_cardinality_cached(Class, Predicate, Range, Cardinality_cached) ->
+  ground(Range), !, (
+	owl_cardinality_cached(Class, Predicate, Range, Cardinality_cached) *->
 	Cardinality = Cardinality_cached; (
 		% cache miss -> infer cardinality
-		owl_cardinality_on_class_(Class,Predicate,Range,Cardinality_inferred),
-		assertz(owl_cardinality_cached(Class,Predicate,Range,Cardinality_inferred)),
-		Cardinality = Cardinality_inferred
+		  owl_cardinality_on_class_(Class,Predicate,Range,Cardinality),
+		  assertz(owl_cardinality_cached(Class,Predicate,Range,Cardinality))
+	)).
+  
+owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
+	owl_cardinality_cached(Class, Predicate, Range_cached, Cardinality_cached) *->
+	( Cardinality = Cardinality_cached, Range = Range_cached ); (
+		% cache miss -> infer cardinality
+		  forall(
+		    owl_cardinality_on_class_(Class,Predicate,R,C),
+		    assertz(owl_cardinality_cached(Class,Predicate,R,C))),
+		  owl_cardinality_cached(Class, Predicate, Range, Cardinality)
 	).
 
 owl_cardinality_on_class_(Class, Predicate, Range, Cardinality) :-
-	ground(Range),
+	ground(Range),!,
 	findall(C, (
 		  cardinality_on_property(Predicate, C)
 		; cardinality_on_class(Class, Predicate, Range, C)
 		; cardinality_from_sibling_range(Class, Predicate, Range, C)
 	), L),
 	join_decls(L, [Cardinality]).
+
+owl_cardinality_on_class_(Class, Predicate, Range, Cardinality) :-
+	%ground(Range),
+	%findall(C, (
+	cardinality_on_class(Class, Predicate, Range, Cardinality)
+	%), L),
+	%join_decls(L, [Cardinality])
+	.
 
 cardinality_on_class(Class, Predicate, Range, cardinality(Min, Max)) :-
 	rdfs_subclass_of(Class, RestrictionID),
@@ -1092,37 +1119,49 @@ owl_has_equivalent(S, P, O, DB) :-
 	owl_same_as(S, S1),
 	owl_has_direct(S1, P, O0, DB),
 	owl_same_as(O0, O).
+
 owl_has_equivalent(S, P, O, DB) :-
 	nonvar(O), !,
 	owl_same_as(O1, O),
 	owl_has_direct(S0, P, O1, DB),
 	owl_same_as(S0, S).
+
 owl_has_equivalent(S, P, O, DB) :-
 	owl_has_direct(S0, P, O0, DB),
 	owl_same_as(S0, S),
 	owl_same_as(O0, O).
-
 
 %%	owl_same_as(?X, ?Y) is nondet.
 %
 %	True if X and Y are  identical   or  connected by the owl:sameAs
 %	relation. Considers owl:sameAs transitive and symetric.
 
-owl_same_as(literal(X), literal(X)) :- !.
-owl_same_as(X, Y) :-
+owl_same_as(X,Y) :-
+  strip_data_value(X,X_),
+  strip_data_value(Y,Y_),!,
+  owl_same_as_(X_,Y_).
+
+owl_same_as_(X, Y) :-
 	nonvar(X), !,
 	owl_same_as(X, Y, [X]).
-owl_same_as(X, Y) :-
+owl_same_as_(X, Y) :-
 	owl_same_as(Y, X, [X]).
 
 owl_same_as(X, X, _).
 owl_same_as(X, Y, Visited) :-
+	atom(X),
 	(   rdf_has(X, owl:sameAs, X1)
 	;   rdf_has(X1, owl:sameAs, X)
 	),
 	X1 \= literal(_),
 	\+ memberchk(X1, Visited),
 	owl_same_as(X1, Y, [X1|Visited]).
+
+% FIXME redundant
+strip_data_value(Value, Value) :- var(Value), !.
+strip_data_value(literal(type(_, Value)), Value) :- !.
+strip_data_value(literal(Value), Value) :- !.
+strip_data_value(Value, Value).
 
 
 %%	owl_has_direct(?Subject, ?Predicate, ?Object)
@@ -1387,8 +1426,12 @@ owl_inverse_property(P, P_inv) :-
 	( rdf_has(P, owl:inverseOf, P_inv) ;
 	  rdf_has(P_inv, owl:inverseOf, P) ), !.
 owl_inverse_property(P, P_inv) :-
-	owl_assert_description('http://www.w3.org/2002/07/owl#Description', P_inv),
-	rdf_assert(P_inv, owl:inverseOf, P).
+	%owl_assert_description('http://www.w3.org/2002/07/owl#Description', P_inv),
+	atomic_list_concat([P,'_inv'],P_inv),
+	( rdf_has(P,rdfs:domain,X) -> rdf_assert(P_inv,rdfs:range,X)  ; true ),
+	( rdf_has(P,rdfs:range,Y)  -> rdf_assert(P_inv,rdfs:domain,Y) ; true ),
+	rdf_assert(P_inv, owl:inverseOf, P),
+	rdf_assert(P_inv, rdf:type, owl:'ObjectProperty').
 
 %% owl_inverse_property_chain(?P, ?P_inv)
 %

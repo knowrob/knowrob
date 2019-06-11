@@ -23,6 +23,8 @@
      xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2.owl">
+        <owl:imports rdf:resource="package://dul/owl/DUL.owl"/>
+        <owl:imports rdf:resource="package://dul/owl/IOLite.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
@@ -37,36 +39,79 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
-
-
     <!-- http://knowrob.org/kb/srdl2.owl#dependsOn -->
 
     <owl:ObjectProperty rdf:about="&srdl2;dependsOn">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
     </owl:ObjectProperty>
-
-<!--
-
-    <computable:PrologTemporalProperty rdf:about="#compute_baseLinkPose">
-        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:comp_baselink_pose</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;pose"/>
-    </computable:PrologTemporalProperty>
-
-    <computable:PrologTemporalProperty rdf:about="#compute_inFieldOfView">
-        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:srdl_inFieldOfView</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;inFieldOfView"/>
-    </computable:PrologTemporalProperty>
-
--->
+    
 
 
+    <!-- http://knowrob.org/kb/srdl2.owl#dependsOnCapability -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;dependsOnCapability">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
+    </owl:ObjectProperty>
+    
 
 
+    <!-- http://knowrob.org/kb/srdl2.owl#dependsOnComponent -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;dependsOnComponent">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#providesModelFor -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;providesModelFor">
+        <rdfs:domain rdf:resource="&srdl2;ObjectRecognitionModel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;subAction">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#subCapability -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;subCapability">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#subComponent -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;subComponent">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#successorInKinematicChain -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;successorInKinematicChain">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2;subComponent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2.owl#superComponent -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;superComponent">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <owl:inverseOf rdf:resource="&srdl2;subComponent"/>
+    </owl:ObjectProperty>
 </rdf:RDF>
 
 

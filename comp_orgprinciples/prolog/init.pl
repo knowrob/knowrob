@@ -36,9 +36,3 @@
 
 :- use_module(library('knowrob/comp_similarity')).
 :- use_module(library('knowrob/comp_orgprinciples')).
-
-
-% parse OWL files, register name spaces
-% entities for testing, includes ias_semantic_map:ccrl2_semantic_map.owl to define the locations
-% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orgprinciples_demo.owl', false, false, true).
-% :- rdf_db:rdf_register_ns(orgprinciples_demo, 'http://knowrob.org/kb/orgprinciples_demo.owl#', [keep(true)]).

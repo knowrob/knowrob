@@ -87,7 +87,7 @@ class Prolog(object):
         :type timeout: int
         """
         rospy.loginfo('waiting for {} services'.format(name_space))
-        self._simple_query_srv = rospy.ServiceProxy('{}/simple_query'.format(name_space), srv.PrologQuery)
+        self._simple_query_srv = rospy.ServiceProxy('{}/query'.format(name_space), srv.PrologQuery)
         self._simple_query_srv.wait_for_service(timeout=timeout)
         self._next_solution_srv = rospy.ServiceProxy('{}/next_solution'.format(name_space), srv.PrologNextSolution)
         self._next_solution_srv.wait_for_service(timeout=timeout)

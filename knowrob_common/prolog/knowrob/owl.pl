@@ -40,7 +40,17 @@
       owl_write_readable/1,             % +Resource
       owl_readable/2,                   % +Resource, -Readable
       owl_instance_from_class/2,
-      owl_instance_from_class/3
+      owl_instance_from_class/3,
+      owl_list_to_pl/2,
+      owl_entity/2,
+      create_owl_entity/2,
+      owl_run_event/3,
+      owl_create_atomic_region/3,
+      owl_reified_relation/2,
+      owl_reified_class/2,
+      owl_sequence/2,
+      owl_create_ordered_collection/2,
+      owl_create_collection/2
     ]).
 /** <module> Utilities for handling OWL information in KnowRob.
 
@@ -69,7 +79,17 @@
             owl_readable(r,-),
             owl_write_readable(r),
             owl_instance_from_class(r,-),
-            owl_instance_from_class(r,t,-).
+            owl_instance_from_class(r,t,-),
+            owl_list_to_pl(r,t),
+            owl_to_pl(r,-),
+            pl_to_owl(+,-),
+            owl_assert_now(r,r),
+            owl_create_atomic_region(r,t,-),
+            owl_reified_relation(r,r),
+            owl_reified_class(r,r),
+            owl_sequence(r,t),
+            owl_create_ordered_collection(t,+),
+            owl_create_collection(t,+).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -77,6 +97,7 @@
 :- multifile owl_instance_from_class/3.
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
 
 		 /*******************************
 		 *		  ABOX reasoning		*
@@ -127,7 +148,6 @@ owl_has_prolog(S,P,Val) :-
 % @param Prop  Property whose restrictions in Class are being considered
 % @param Val   Values that appear in a restriction of a superclass of Class on Property
 %
-% FIXME: this seems to be very slow! it shouldn't be
 owl_class_properties(Class, Prop, Val) :-
   rdfs_individual_of(Class, owl:'Class'), % make sure Class is bound before calling owl_subclass_of
   (owl_class_properties_some(Class, Prop, Val);
@@ -290,6 +310,220 @@ owl_readable_internal(X,Y) :- compound(X), owl_readable(X,Y).
 owl_readable_internal(X,X).
 
 		 /*******************************
+		 *		  Events	*
+		 *******************************/
+
+owl_assert_now(TimeInterval, Property) :-
+  get_time(CurrentTime),
+  term_to_atom(CurrentTime,X),
+  rdf_assert(TimeInterval, Property, literal(type(knowrob:double,X))).
+
+owl_event_time_interval(Event, TimeInterval):-
+  rdf_has(Event, dul:hasTimeInterval, TimeInterval),!.
+owl_event_time_interval(Event, TimeInterval):-
+  rdf_instance_from_class(dul:'TimeInterval',TimeInterval),
+  rdf_assert(Event, dul:hasTimeInterval, TimeInterval),!.
+
+owl_run_event(Event, Goal, Args) :-
+  owl_event_time_interval(Event, TimeInterval),
+  setup_call_cleanup(
+    owl_assert_now(TimeInterval, ease:hasIntervalBegin),
+    apply(Goal, [Event|Args]),
+    owl_assert_now(TimeInterval, ease:hasIntervalEnd)
+  ).
+
+		 /*******************************
+		 *		  	*
+		 *******************************/
+
+:- rdf_meta owl_formal_class(r,r),
+            owl_formal_property(r,r).
+
+%%
+owl_reified_relation(FormalRelation,ReifiedRelation) :-
+  ground(ReifiedRelation),!,
+  rdf_has_prolog(ReifiedRelation,ease:describesFormalProperty,P_atom),
+  owl_formal_property(P_atom,FormalRelation).
+
+owl_reified_relation(P_atom,ReifiedRelation) :-
+  ground(P_atom),!,
+  owl_formal_property(P_atom,P),
+  (( rdfs_individual_of(ReifiedRelation,ease:'ReifiedRelation'),
+     owl_reified_relation(P,ReifiedRelation) )
+  ;  owl_create_reified_relation(P,ReifiedRelation) ),!.
+
+owl_create_reified_relation(FormalRelation,ReifiedRelation) :-
+  ground(FormalRelation),
+  rdf_instance_from_class(ease:'ReifiedRelation',ReifiedRelation),
+  rdf_assert_prolog(ReifiedRelation, ease:describesFormalProperty, FormalRelation).
+
+owl_formal_property(P_atom,P_owl) :-
+  ( rdf_split_url('',_,P_atom) -> (
+    term_to_atom(P_term,P_atom),
+    rdf_global_id(P_term,P_owl) )
+  ; P_owl = P_atom ).
+
+%%
+owl_reified_class(FormalClass,ReifiedClass) :-
+  ground(ReifiedClass),!,
+  rdf_has_prolog(ReifiedClass,ease:describesFormalClass,C_atom),
+  owl_formal_class(C_atom,FormalClass).
+
+owl_reified_class(C_atom,ReifiedClass) :-
+  ground(C_atom),!,
+  owl_formal_class(C_atom,C),
+  (( rdfs_individual_of(ReifiedClass,ease:'ReifiedClass'),
+     owl_reified_class(C,ReifiedClass) )
+  ;  owl_create_reified_class(C,ReifiedClass) ),!.
+
+owl_create_reified_class(FormalClass,ReifiedClass) :-
+  ground(FormalClass),
+  rdf_instance_from_class(ease:'ReifiedClass',ReifiedClass),
+  rdf_assert_prolog(ReifiedClass, ease:describesFormalClass,
+                    FormalClass).
+
+owl_formal_class(C_atom,C_owl) :-
+  ( rdf_split_url('',_,C_atom) -> (
+    ( atomic_list_concat([NS,Name],':',C_atom) ->
+      C_term = NS:Name ;
+      C_term = C_atom ),
+    rdf_global_id(C_term,C_owl) ) ;
+    C_owl = C_atom ).
+
+		 /*******************************
+		 *		  converting between OWL / Prolog representation	*
+		 *******************************/
+
+owl_list_to_pl(X,[X|Xs]) :-
+  rdf_has(Y,dul:follows,X),!,
+  owl_list_to_pl(Y,Xs).
+owl_list_to_pl(X,[X]).
+
+%% 
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,dul:'Collection'),!,
+  findall(X, (
+    rdf_has(Arg_owl,dul:hasMember,X_owl),
+    owl_entity(X_owl,X)),
+    Arg_pl).
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,dul:'Region'),
+  rdf_has_prolog(Arg_owl,dul:hasDataValue,Arg_pl),!.
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,ease:'ReifiedRelation'),!,
+  rdf_has_prolog(Arg_owl,ease:describesFormalProperty,Arg_pl).
+owl_entity(Arg_owl,Arg_pl) :-
+  rdfs_individual_of(Arg_owl,ease:'ReifiedClass'),!,
+  rdf_has_prolog(Arg_owl,ease:describesFormalClass,Arg_pl).
+owl_entity(Arg_owl,Arg_owl).
+
+%% 
+create_owl_entity([
+    RefFrame, _TargetFrame,
+    [X,Y,Z],
+    [QX,QY,QZ,QW]],Transform) :- !,
+  rdf_instance_from_class(knowrob:'Pose',Transform),
+  ( object_frame_name(Parent,RefFrame) ->
+    rdf_assert(Transform, knowrob:'relativeTo', Parent) ; true ),
+  rdf_assert_prolog(Transform, knowrob:translation, [X,Y,Z]),
+  rdf_assert_prolog(Transform, knowrob:quaternion,  [QX,QY,QZ,QW]).
+create_owl_entity(List,Arg_owl) :-
+  is_list(List),!,
+  % TODO: need to also support constructing e.g. pose regions here.
+  rdf_instance_from_class(dul:'Collection',Arg_owl),
+  forall(member(X,List),(
+    create_owl_entity(X,X_owl),
+    rdf_assert(Arg_owl,dul:hasMember,X_owl)
+  )).
+create_owl_entity(FormalRelation,ReifiedRelation) :-
+  atom(FormalRelation),
+  rdfs_individual_of(FormalRelation,rdf:'Property'),!,
+  owl_reified_relation(FormalRelation,ReifiedRelation).
+create_owl_entity(Iri,ReifiedRelation) :-
+  atom(Iri),
+  rdf_equal(Iri,rdf:type),!,
+  owl_reified_relation(Iri,ReifiedRelation).
+create_owl_entity(FormalClass,ReifiedClass) :-
+  atom(FormalClass),
+  rdfs_individual_of(FormalClass,owl:'Class'),!,
+  owl_reified_class(FormalClass,ReifiedClass).
+create_owl_entity(RDFClass,ReifiedClass) :-
+  atom(RDFClass),
+  rdfs_individual_of(RDFClass,rdfs:'Class'),!,
+  owl_reified_class(RDFClass,ReifiedClass).
+create_owl_entity(Iri,Iri) :-
+  atom(Iri),
+  rdfs_individual_of(Iri,owl:'NamedIndividual'),!,
+  rdf_has(Iri,_,_),!.
+create_owl_entity(Ontology,_) :-
+  atom(Ontology),
+  rdfs_individual_of(Ontology,owl:'Ontology'),!,
+  fail.
+create_owl_entity(List,_) :-
+  atom(List),
+  rdfs_individual_of(List,rdf:'List'),!,
+  fail.
+create_owl_entity(literal(type(DataType,Atom)),Arg_owl) :-
+  rdf_instance_from_class(dul:'Region',Arg_owl),
+  rdf_assert(Arg_owl,dul:hasRegionDataValue,literal(type(DataType,Atom))),!.
+create_owl_entity(Atom,Arg_owl) :-
+  atom(Atom),
+  rdf_instance_from_class(dul:'Region',Arg_owl),
+  rdf_assert_prolog(Arg_owl,dul:hasRegionDataValue,Atom),!.
+
+		 /*******************************
+		 *		  Some common Prolog->OWL conversions		*
+		 *******************************/
+
+%% owl_create_atomic_region(DataType,Value,Region)
+%
+%
+owl_create_atomic_region(DataType, List, Region) :-
+  is_list(List),!,
+  findall(X, (
+    member(Y,List),
+    term_to_atom(Y,X)),
+    AtomList),
+  atomic_list_concat(AtomList, ' ', Atom),
+  rdf_instance_from_class(dul:'Region',Region),
+  rdf_assert(Region,dul:hasRegionDataValue,literal(type(DataType,Atom))).
+%%
+owl_create_atomic_region(DataType, String, Region) :-
+  string(String),!,
+  string_to_atom(String,Atom),
+  owl_create_atomic_region(DataType, Atom, Region).
+%%
+owl_create_atomic_region(DataType, Term, Region) :-
+  term_to_atom(Term,Atom),
+  rdf_instance_from_class(dul:'Region',Region),
+  rdf_assert(Region,dul:hasRegionDataValue,literal(type(DataType,Atom))).
+
+owl_sequence(First, [First|Rest]) :-
+  once( owl_has(Next,dul:follows,First) ), !,
+  owl_sequence(Next, Rest).
+owl_sequence(Last, [Last]).
+
+owl_create_sequence([X,Y|Rest]) :-
+  ( rdf_has(Y, dul:follows, X) ;
+    rdf_assert(Y, dul:follows, X) ),!,
+  owl_create_sequence([Y|Rest]).
+owl_create_sequence(_).
+
+owl_create_ordered_collection([First|Rest], Collection) :-
+  rdf_instance_from_class(dul:'Collection',Collection),
+  owl_create_sequence([First|Rest]),
+  rdf_assert(Collection, ease:firstMember, First),
+  forall(member(X,Rest),
+         rdf_assert(Collection,dul:hasMember,X)).
+
+owl_create_collection(List, Collection) :-
+  is_list(List),
+  rdf_instance_from_class(dul:'Collection',Collection),
+  forall(member(X,List),
+         rdf_assert(Collection,dul:hasMember,X)).
+  
+
+		 /*******************************
 		 *		  ABOX ASSERTIONS		*
 		 *******************************/
 
@@ -304,59 +538,15 @@ owl_instance_from_class(Class, Instance) :-
     rdf_instance_from_class(Class, Instance)), !.
 
 %%%%%%%%%%%%%%%%%%%
-%% knowrob:TimePoint
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [], TimePoint) :- !,
-  current_time(T),
-  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint) :- !,
-  time_term(T,T_value),
-  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T_value, TimePoint),
-  rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
-  
-%%%%%%%%%%%%%%%%%%%
-%% knowrob:TimeInterval
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start], TimeInterval) :- !,
-  time_term(Start, Start_v), 
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v], '_', TimeInterval),
-  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
-  rdf_assert(TimeInterval, knowrob:'startTime', StartI).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start,end=End], TimeInterval) :- !,
-  time_term(Start, Start_v), time_term(End, End_v), 
-  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
-  owl_instance_from_class(knowrob:'TimePoint', [instant=End_v], EndI),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v,End_v], '_', TimeInterval),
-  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
-  rdf_assert(TimeInterval, knowrob:'startTime', StartI),
-  rdf_assert(TimeInterval, knowrob:'endTime', EndI).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  number(I), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=I], TimeInterval).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  interval(I, [Start,End]), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start,end=End], TimeInterval).
-
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
-  interval(I, [Start]), !,
-  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start], TimeInterval).
-
-%%%%%%%%%%%%%%%%%%%
 %% knowrob:Pose
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[X,Y,Z],[QW,QX,QY,QZ])], Pose) :- !,
-  rdfs_individual_of(Frame, knowrob:'SpatialThing-Localized'),
   rdf_unique_id('http://knowrob.org/kb/knowrob.owl#Pose', Pose),
   atomic_list_concat([X,Y,Z], ' ', Translation),
   atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
   rdf_assert(Pose, rdf:type, knowrob:'Pose'),
-  rdf_assert(Pose, knowrob:'translation', literal(type(xsd:string,Translation))),
-  rdf_assert(Pose, knowrob:'quaternion', literal(type(xsd:string,Quaternion))),
+  rdf_assert(Pose, knowrob:'translation', literal(type(knowrob:vec3,Translation))),
+  rdf_assert(Pose, knowrob:'quaternion', literal(type(knowrob:vec4,Quaternion))),
   rdf_assert(Pose, knowrob:'relativeTo', Frame).
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot)], Pose) :- !,
@@ -384,10 +574,10 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#FrameOfReference', [u
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:'SpaceRegion'
 
-owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#SpaceRegion', [axioms=Axioms], SpaceRegion) :- !,
+owl_instance_from_class('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl', [axioms=Axioms], SpaceRegion) :- !,
   location_name_args_(Axioms,Args),
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', SpaceRegion),
-  rdf_assert(SpaceRegion, rdf:type, knowrob:'SpaceRegion'),
+  atomic_list_concat(['http://www.ontologydesignpatterns.org/ont/dul/DUL.owl'|Args], '_', SpaceRegion),
+  rdf_assert(SpaceRegion, rdf:type, dul:'Place'),
   forall( member([P,O], Axioms), rdf_assert(SpaceRegion, P, O) ).
 
 location_name_args_([[P,O]|Axioms], [P_name|[O_name|Args]]) :-
