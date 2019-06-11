@@ -1,3 +1,3 @@
-- git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: indigo-devel }
-- git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: indigo-devel }
-- git: {local-name: stacks/knowrob_gui, uri: 'https://github.com/knowrob/knowrob_gui.git', version: indigo-devel }
+- git: {local-name: knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: master }
+- git: {local-name: knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: master }
+- git: {local-name: iai_common_msgs, uri: 'https://github.com/code-iai/iai_common_msgs.git', version: master }

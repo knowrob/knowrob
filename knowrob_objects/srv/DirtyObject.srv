@@ -1,0 +1,7 @@
+#name of object that needs to be queried again
+string[] object_ids
+---
+int32 SUCCESS=0
+int32 UNKNOWN_OBJECT=1
+#response fields
+int32 error_code

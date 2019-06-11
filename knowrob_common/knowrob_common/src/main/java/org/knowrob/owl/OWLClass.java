@@ -369,9 +369,9 @@ public class OWLClass extends OWLThing {
 		try {
 
 			HashMap<String, Vector<String>> qProp = 
-				PrologInterface.executeQuery("((class_properties_some('"+iri+"', Prop, V), Type='some'); " +
-						"(class_properties_all('"+iri+"', Prop, V), Type='all'); " +
-						"(class_properties_value('"+iri+"', Prop, V), Type='value')), " +
+				PrologInterface.executeQuery("((owl_class_properties_some('"+iri+"', Prop, V), Type='some'); " +
+						"(owl_class_properties_all('"+iri+"', Prop, V), Type='all'); " +
+						"(owl_class_properties_value('"+iri+"', Prop, V), Type='value')), " +
 				"util:strip_literal_type(V,Val)");
 
 			if(qProp != null) {
@@ -453,9 +453,9 @@ public class OWLClass extends OWLThing {
 		
 		// Read class properties and check for removed ones
 		HashMap<String, Vector<String>> qProp = 
-			PrologInterface.executeQuery("((class_properties_some('"+iri+"', Prop, V), Type='some'); " +
-					"(class_properties_all('"+iri+"', Prop, V), Type='all'); " +
-					"(class_properties_value('"+iri+"', Prop, V), Type='value')), " +
+			PrologInterface.executeQuery("((owl_class_properties_some('"+iri+"', Prop, V), Type='some'); " +
+					"(owl_class_properties_all('"+iri+"', Prop, V), Type='all'); " +
+					"(owl_class_properties_value('"+iri+"', Prop, V), Type='value')), " +
 			"util:strip_literal_type(V,Val)");
 
 		if(qProp != null) {

@@ -1,0 +1,2014 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
+     xml:base="http://knowrob.org/kb/knowrob.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/groceries.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#endTime -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#endTime"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasDaytimeOpeningHours -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasDaytimeOpeningHours"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasIngredient -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#restaurantTypeSpecializingInCuisine -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#restaurantTypeSpecializingInCuisine">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#servesCuisine -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#servesCuisine">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#servesCuisineAtLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#servesCuisineAtLocation">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#startTime -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#startTime"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#storedAtPlace -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#storedAtPlace"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AlcoholicBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AlcoholicBeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AleBeer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AleBeer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Beer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AmericanStyleFastFoodCuisine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AmericanStyleFastFoodCuisine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cuisine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Apple -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Apple">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AssembledFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AssembledFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all assembled food. A type of FoodComposite. AssembledFood is a FoodTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rgbVqXilGEdqAAAACs2IMmw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Baked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Baked">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>A specialization of Cooked. Food that is Baked has been prepared in an event of BakingFood, using a RegularOven.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rA3QnUHS6EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BakingSoda -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BakingSoda">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Banana -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Banana">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BarbecueSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BarbecueSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Basil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Basil">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Basin -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Basin"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Beer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Beer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AlcoholicBeverage"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BentoBox -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BentoBox">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BlackTea -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BlackTea">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tea-Beverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Boiled -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Boiled">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The subcollection of Food whose instances been boiled; a specialization of Cooked.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rEaxgmnS-EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BoiledEgg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BoiledEgg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Bread -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bread">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:comment>An instance of ProductType, and a specialization of Baked. Each instance of Bread is a baked food made of a dough or batter containing some instance of FlourOrMeal, and usually water or milk. The dough from which the bread is made will often (but not always) contain some leavening agent, such as Yeast.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMeZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Breakfast -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Breakfast">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BreakfastCereal -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BreakfastCereal">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Granular"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Brunch -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Brunch">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Butter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Butter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Buttermilk -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Buttermilk">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cake -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cake">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CakeMix -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CakeMix">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MixForBakedGoods"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Candy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Candy">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sugar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The collection of all candy. A type of SolidFoodArtifact, Food_ReadyToEat, and SweetTaste. The collection Candy is a SnackFoodType and an ExistingStuffType. Each instance of Candy is a relatively small and very sugary confection. Representative specializations of Candy include Jellybean, Lollipop and CandyBar.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwPfsL5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CandyBar -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CandyBar">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CannedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CannedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Caramel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Caramel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Carrot-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Carrot-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible root of the carrot.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCF3JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cashew-TheSeed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cashew-TheSeed">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CerealFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CerealFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>A specialization of EdibleStuff and an instance of FoodGroup. Each instance of CerealFood is food that consists of a significant amount of grain products, such as breads and cereals. Note that CerealFood is not a specialization of VegetableMatter because some breads contain non-plant constituents such as salt.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMvZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Champagne -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Champagne">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Wine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Champignon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Champignon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleMushroom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cheese -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cheese">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ChewingGum -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ChewingGum">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Chip-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Chip-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:comment>The collection of all chips. A type of SnackFood, SolidFoodArtifact, and Flaky_CoherentPhysicalStructure. The collection Chip_Snack is a SnackFoodType and a SpatiallyDisjointObjectType. Each instance of Chip_Snack is a thin, crispy and fairly small snack food object, often prepared through baking or deep-frying.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViEfZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ChocolateCandy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ChocolateCandy">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Clove-Spice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Clove-Spice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cocoa-ThePowder -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cocoa-ThePowder">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Coffee-Beverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Coffee-Beverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HotBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoffeeHouse-Organization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoffeeHouse-Organization">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#restaurantTypeSpecializingInCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Coffee-Beverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Coffee-Beverage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisineAtLocation"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CoffeeShopSpace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoffeeShopSpace -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoffeeShopSpace"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ColaSoftDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ColaSoftDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftDrink-Flavored"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ColorlessThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ColorlessThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Container -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Container"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ConvenienceFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ConvenienceFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ConvenienceStore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ConvenienceStore">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cooked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooked">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The subcollection of EdibleStuff whose instances have been cooked. Food becomes Cooked as the result of an event of CookingFood. Specialized forms of Cooked include Steamed, Baked, Microwaved and Grilled.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rQoMFtHTAEdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cookie -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cookie">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:comment>An instance of DefaultDisjointEdibleStuffType and a specialization of DessertFood and Baked. Each instance of Cookie is a small, sweet, baked good--usually relatively flat, often Disc shaped. Typical ingredients include FlourOrMeal, Sweetener, and EdibleFat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViDSJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CottageCheese -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CottageCheese">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cheese"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CowsMilk-Product -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CowsMilk-Product">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cracker-FoodItem -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cracker-FoodItem">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:comment>The collection of all crackers. A type of Biscuit, SolidFoodArtifact, SaltyTaste, Flaky_CoherentPhysicalStructure, and SnackFood. The collection Cracker_FoodItem is a SnackFoodType and a SpatiallyDisjointObjectType. Each instance of Cracker_FoodItem is a thin and crisp biscuit.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVi5n5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cream-Dairy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cream-Dairy">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cuisine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cuisine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Curd -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Curd">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DairyProduct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DairyProduct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:comment>A specialization of FoodOrDrink and an instance of FoodGroup. Each instance of DairyProduct is a foodstuff that is milk or processed milk. Important specializations of DairyProduct include CowsMilk_Product, Cheese, Butter, and IceCream.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/DairyProduct</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DehydratedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DehydratedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DessertFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DessertFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>A collection of tangible stuff. Each instance of DessertFood is an item of food which, in its prepared state, is customarily eaten by people as part of the DessertCourse of a meal. For example, (in NorthAmericanCuisine,) ice cream, cake, pie.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkKypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dough">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dried -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dried">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all dried food. A type of PreparedFood. The collection Dried is a FoodTypeByPreparationStyle and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rU0xmUHS8EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Drink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Drink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleFruit -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleFruit">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of individual edible fruits, often eaten whole by people or used in cooking. Note that this is the common-sense notion of fruit, so tomatoes, olives, legumes are NOT EdibleFruit. See also Fruit.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjllZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleMushroom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleMushroom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>The collection of all mushrooms that are edible.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4roRldbqk1R9KrcBKVumiVQQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleNut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleNut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>The nuts that people typically eat.This is the commonsense, not botanical definition, so EdibleNut has specializations such as (SeedFn PeanutPlant).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjrDZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleStuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleStuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Egg-Chickens">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EggSalad -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EggSalad">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Salad"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EggYolk-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EggYolk-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Eggshell -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Eggshell">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Container"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EnergyDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnergyDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftDrink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FastFoodRestaurant-Organization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FastFoodRestaurant-Organization">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RestaurantOrg-WithoutWaitstaff"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#restaurantTypeSpecializingInCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AmericanStyleFastFoodCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AmericanStyleFastFoodCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisineAtLocation"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FastFoodRestaurantSpace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FastFoodRestaurantSpace -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FastFoodRestaurantSpace"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Feast -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Feast">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FingerFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FingerFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:comment>This is the collection of foods normally eaten using the fingers rather than utensils, that is, one&apos;s fingers directly touch the food and this is not considered rude in the cultural context of the eating.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvnnq_JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Fish -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Fish">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of ExistingStuffType, and a specialization of FoodOrDrink. Each instance of Food is a particular portion of food of a type which can be, and habitually is, eaten by humans or other animals. Here the notion of _eating_ is important; eating an instance of Food will generally require biting or chewing, but if placed into the mouth (e.g. with a utensil) in a manner not considered to be drinking, it is still considered eating. Thus, edible stuff normally taken in via drinking, inhalation, or osmosis is excluded from this collection. A borderline example is a bowl of bouillon, which, although it can be drunk from the bowl is normally ``eaten&apos;&apos; with a spoon; a borderline non-example is a very thick milkshake, which may be eaten with a spoon, but is normally drunk (possibly using a straw) from a glass. Instances of Food provide calories and/or nutrients that humans or animals need.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVi9i5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:comment>A specialization of (FoodOrDrinkForFn Person). Each instance of Food_ReadyToEat is food that is edible more or less in its current state, without further elaborate preparation. Instances of Food_ReadyToEat can require unwrapping, cutting, pouring, buttering, or cooling before being consumed, but not cooking or other complex or sophisticated preparation that is typically done in a kitchen or other food-preparation area rather than at the table or site of consumption. If a cook would inspect an item and pronounce it &quot;done,&quot; that item is probably an instance of Food_ReadyToEat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMlJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Organization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodArrangement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodArrangement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/FoodArrangement</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodComposite -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodComposite">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>This is the collection of food items that have been prepared and which contain two or more ingredients. It includes almost anything that is served as a dish at a meal. FoodComposite needn&apos;t be cooked, nor do the ingredients have to form a Mixture. The collection excludes beverages, and is thus a proper spec of EdibleStuffComposite.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwPqcnZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+        <rdfs:comment>A specialization of EdibleStuff. Each instance of FoodIngredientOnly is an edible substance that is used in making other food but isn&apos;t eaten by itself. Instances of FoodIngredientOnly may or may not require some preparation. For example, TableSalt, VegetableOil, and Ketchup are specializations of FoodIngredientOnly, since all of their instances are used only as ingredients or condiments. In contrast, Egg_Chickens is not a specialization of FoodIngredientOnly; some of its instances serve as ingredients in cooking other dishes, but other instances are simply eaten after poaching or frying. Types of food, such as Pizza, whose instances are never merely ingredients, are specializations of Food.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjaKpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FreshFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FreshFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The subcollection of EdibleStuff whose members are relatively fresh. This collection applies particularly to food items, such as vegetables, but can also apply to some FoodComposites, such as uncooked nondried pasta. Being FreshFood means not having been cooked and having been harvested or made in the quite recent past.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rRHFS0HS8EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Frosting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frosting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dt Zuckerguss</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Frozen -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frozen">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all frozen food. A type of ConvenienceFood and PreparedFood. The collection Frozen is a FoodTypeByPreparationStyle and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rllf_ZHS7EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#UnpreparedFood"/>
+        <rdfs:comment>A specialization of EdibleStuff and an instance of FoodGroup. Each instance of FruitOrVegetableFood is a fruit or a vegetable.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjmFpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Fudge -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Fudge">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Gin -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Gin">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Liquor-Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Granular -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Granular"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Gravy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Gravy">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GreenSalad -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GreenSalad">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Salad"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GreenTea -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GreenTea">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tea-Beverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Grilled -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Grilled">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The subcollection of food whose instances have been grilled - a specialization of Cooked. Food that is Grilled has been prepared in an event of GrillingFood, using a BBQGrill or an ElectricGrill.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rLTN07nS9EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HamburgerSandwich -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HamburgerSandwich">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Meat"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HawaiianPizza -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HawaiianPizza">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pizza"/>
+        <rdfs:comment>A specialization of Pizza. Each instance of Pizza_HawaiianStyle is a pizza with at least ham and pineapple as its ingredients.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMytTYrkwEd2AAAAhm0vLxw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hazelnut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hazelnut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HeatSensitive -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HeatSensitive">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Heated -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heated">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HotBeverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HotBeverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IceCream -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IceCream">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>A specialization of DairyProduct and DessertFood. Each instance of IceCream is some ice cream.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj1EpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InfusionDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InfusionDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HotBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InstantFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InstantFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InstantRamenNoodles -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InstantRamenNoodles">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DehydratedFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ItalianCuisine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ItalianCuisine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cuisine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Jam-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Jam-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#JapaneseCuisine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#JapaneseCuisine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cuisine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Juice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Juice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Ketchup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ketchup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LagerBeer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LagerBeer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Beer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Lawson -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lawson">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceStore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LemonLimeSoftDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LemonLimeSoftDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftDrink-Flavored"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightBeer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightBeer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Beer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Liquor-Drink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Liquor-Drink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AlcoholicBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LoafOfBread -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoafOfBread">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+        <rdfs:comment>A specialization of Bread and Food_ReadyToEat. Each instance of LoafOfBread is a loaf of baked bread, which may be either sliced or unsliced, but is otherwise ready to eat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rTdOzf9lKQZC_2kenYwUCDQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Lunch -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lunch">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mango -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mango">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Meal -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Meal">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Meat -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Meat">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Microwaved -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Microwaved">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of Food that has been microwaved; a specialization of Cooked. Food that is Microwaved has been prepared in an event of Microwaving, using a MicrowaveOven.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rzuaylnS-EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Milk -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Milk">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MixForBakedGoods -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MixForBakedGoods">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MustardSeed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MustardSeed">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Noodle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Noodle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Nutmeg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Nutmeg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Onion-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Onion-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible bulb of the onion plant.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCWWZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Oregano -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Oregano">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Organization -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Organization"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pancake -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pancake">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMix -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PancakeMix">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MixForBakedGoods"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PartiallyTangible -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pasta -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pasta">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Noodle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Peanut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Peanut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pepper-TheSpice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pepper-TheSpice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perishable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perishable">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PestoSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PestoSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pineapple -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pineapple">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pizza -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pizza">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ItalianCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cheese"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The collection of flat baked pie crusts topped with tomato sauce, cheese, spices, and various other ingredients, including anchovies.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVibapwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Potato-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Potato-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Potato in any of its edible forms.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQB_TpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PotatoSalad -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PotatoSalad">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Salad"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrecookedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrecookedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>The collection of all prepared foods. A type of Food. The collection PreparedFood is a FoodTypeByPreparationStatus and a SpatiallyDisjointObjectType.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rWY_N1ibjEdqAAAACs2IMmw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pretzel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pretzel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:seeAlso>This is the collection of pretzels. A pretzel is a wheat flour based baked good which is in the shape of a narrow cylinder, often twisted into the familiar pretzel shape.</rdfs:seeAlso>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv-bhIJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pudding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pudding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RedWine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedWine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Wine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RestaurantOrg-WithoutWaitstaff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RestaurantOrg-WithoutWaitstaff"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Rice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Rice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Riceball -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Riceball">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RoastBeef -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RoastBeef">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Roasted"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Roasted -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Roasted">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of all roasted food. A type of Cooked. The collection Roasted is a FoodTypeByPreparationStyle, a SpatiallyDisjointObjectType, and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r0qMEknS6EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Rum -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Rum">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Liquor-Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Saffron -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Saffron">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Salad -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Salad">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#VegetarianCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Different kinds of salads. Green salad, potato salad, etc.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViX8ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Salsa-TheCondiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Salsa-TheCondiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sandwich -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sandwich">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AmericanStyleFastFoodCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GreenSalad"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A DefaultDisjointEdibleStuffType and specialization of FingerFood. Each instance of Sandwich is a SolidFoodArtifact consisting of a bun or roll or a couple of slices of bread with food (e.g. meat, cheese, vegetables, peanut butter, jelly) in between.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQB8jpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SandwichShop-FastFoodRestaurant -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SandwichShop-FastFoodRestaurant">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FastFoodRestaurant-Organization"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#restaurantTypeSpecializingInCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#servesCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+        <rdfs:comment>The collection of sauces: liquids that aren&apos;t eaten by themselves, but only if applied to other foods, as a coating or dip for them.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVirapwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sausage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sausage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SeltzerWater -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SeltzerWater">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftDrink"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Water"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SevenElevenStore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SevenElevenStore">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConvenienceStore"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Snack -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Snack">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SnackFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SnackFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:comment>The collection of all snack food. A type of Food. The collection SnackFood is a FoodTypeByEatingPurpose, a SpatiallyDisjointObjectType, and a DefaultDisjointEdibleStuffType.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwNOVSJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SoftDrink -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoftDrink">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SoftDrink-Flavored -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoftDrink-Flavored">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftDrink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sugar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SolidFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+        <rdfs:comment>This is the subcollection of Food that is normally in a Solid_StateOfMatter when eaten.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvplbE5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SolidTangibleThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Soup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Soup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+        <rdfs:comment>The food soup.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj2XJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Spice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Starbucks-CoffeeShop -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Starbucks-CoffeeShop">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CoffeeHouse-Organization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Steamed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Steamed">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The attribute Steamed is a specialized form of Cooked. Food that is Steamed has been prepared in an event of SteamingFood.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4royB9onS7EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Strawberry -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Strawberry">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Subway-Restaurant -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Subway-Restaurant">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SandwichShop-FastFoodRestaurant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sugar -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sugar">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Granular"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Supper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Supper">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sushi -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sushi">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#JapaneseCuisine"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Fish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasIngredient"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>In Japanese cooking, cold boiled rice moistened with rice vinegar, usually shaped into bite-size pieces and topped with raw seafood (nigiri-zushi) or formed into a long seaweed-wrapped roll, often around strips of vegetable or raw fish, and sliced into bite-size pieces (maki-zushi).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvu69v5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TableSalt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TableSalt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tea-Beverage -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tea-Beverage">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InfusionDrink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tea-Iced -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tea-Iced">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Tea-Beverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tequila -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tequila">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Liquor-Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TerrestrialFunctioningObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TerrestrialFunctioningObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Thyme -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thyme">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimeOfDay -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimeOfDay"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimePoint"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Toast -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Toast">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Toasted"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Toasted -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Toasted">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of food that has been toasted. A specialization of Cooked.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r29LACHS-EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tomato-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tomato-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible fruit of tomato plants.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCF_pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#UnpreparedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UnpreparedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rWvJqTibjEdqAAAACs2IMmw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VanillaExtract -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VanillaExtract">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Vegetable-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vegetable-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood"/>
+        <rdfs:comment>A specialization of FoodOrDrink. Each instance of Vegetable_Food is a foodstuff which is derived from a plant and is ordinarily considered a vegetable; e.g., a carrot (an instance of Carrot_Foodstuff), a potato (an instance of Potato_Foodstuff), a lima bean (an instance of Bean_Foodstuff), or a tomato (an instance of Tomato_Foodstuff). Note that Vegetable_Food includes certain plant parts, such as tomatoes, that are technically classified as fruits by botanists, but which are treated as vegetables in food classification.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjqzZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VegetableOil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VegetableOil">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VegetarianCuisine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VegetarianCuisine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cuisine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Vodka -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vodka">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Liquor-Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Water -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Water">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WheatFlour -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WheatFlour">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Whey -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Whey">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of Whey is some amount of the watery liquid that separates from the solid part of milk when it turns sour or when enzymes are added in cheesemaking.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WhippedCream -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WhippedCream">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Whisky -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Whisky">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Liquor-Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WhiteWine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WhiteWine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Wine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Wine -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wine">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AlcoholicBeverage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Wrap-Sandwich -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wrap-Sandwich">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sandwich"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Yogurt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Yogurt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

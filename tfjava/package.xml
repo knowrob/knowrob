@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+  <name>tfjava</name>
+  <version>0.1.0</version>
+  <description>
+    The tfjava package provides Java and Prolog client libraries for the
+    tf system.
+  </description>
+
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
+
+  <author>Moritz Tenorth</author>
+  <author>Sjoerd van den Dries</author>
+  
+  <license>BSD</license>
+  
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+ 
+  <build_depend>rosjava_bootstrap</build_depend>
+  <build_depend>rosjava_build_tools</build_depend>
+  <build_depend>rosjava_messages</build_depend>
+  
+  <build_depend>rosprolog</build_depend>
+  <run_depend>rosprolog</run_depend>
+
+</package>

@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY srdl2 "http://knowrob.org/kb/srdl2.owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY srdl2-cap "http://knowrob.org/kb/srdl2-cap.owl#" >
+    <!ENTITY srdl2-comp "http://knowrob.org/kb/srdl2-comp.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://knowrob.org/kb/temporal-part-example.owl#"
+     xml:base="http://knowrob.org/kb/temporal-part-example.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
+     xmlns:qudt-unit="http://qudt.org/vocab/unit#"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/temporal-part-example.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#Drawer_bsdgwe8trg -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#Drawer_bsdgwe8trg">
+        <rdf:type rdf:resource="&knowrob;Drawer"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4">
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">10.0</knowrob:volumeOfObject>
+        <knowrob:insideOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds"/>
+        <knowrob:temporalProperty rdf:resource="&knowrob;volumeOfObject"/>
+        <knowrob:temporalProperty rdf:resource="&knowrob;insideOf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds">
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">33.0</knowrob:volumeOfObject>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5"/>
+        <knowrob:temporalProperty rdf:resource="&knowrob;volumeOfObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454">
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5">
+        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds">
+        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_0"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_9999"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_0">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_9999 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_9999">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

@@ -1,0 +1,2316 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://knowrob.org/kb/ias_semantic_map.owl#"
+     xml:base="http://knowrob.org/kb/ias_semantic_map.owl"
+     xmlns:ias_map="http://knowrob.org/kb/ias_semantic_map.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl2="http://www.w3.org/2006/12/owl2#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="">
+      <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#orientation -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;orientation"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#properPhysicalParts -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalParts"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#depthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;depthOfObject"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#heightOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;heightOfObject"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m00 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m00"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m01 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m01"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m02 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m02"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m03 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m03"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m10 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m10"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m11 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m11"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m12 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m12"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m13 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m13"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m20 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m20"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m21 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m21"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m22 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m22"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m23 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m23"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m30 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m30"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m31 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m31"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m32 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m32"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#m33 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m33"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#widthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;widthOfObject"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#Cupboard -->
+
+    <owl:Class rdf:about="&knowrob;Cupboard"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#Door -->
+
+    <owl:Class rdf:about="&knowrob;Door"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#Drawer -->
+
+    <owl:Class rdf:about="&knowrob;Drawer"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#Handle -->
+
+    <owl:Class rdf:about="&knowrob;Handle"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="&knowrob;Oven"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#RotationMatrix3D -->
+
+    <owl:Class rdf:about="&knowrob;RotationMatrix3D"/>
+    
+
+
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#SemanticEnvironmentMap -->
+
+    <owl:Class rdf:about="&knowrob;SemanticEnvironmentMap"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard01 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard01">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.593</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door19"/>
+        <knowrob:properPhysicalParts rdf:resource="#door20"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_1"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard02 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard02">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.593</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door21"/>
+        <knowrob:properPhysicalParts rdf:resource="#door22"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_2"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard03 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard03">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.399</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door23"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_3"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard11 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard11">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door16"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_4"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard12 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard12">
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-1.255</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door18"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_6"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard21 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard21">
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door0"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_7"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#cupboard31 -->
+
+    <knowrob:Cupboard rdf:about="#cupboard31">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door7"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_14"/>
+    </knowrob:Cupboard>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door0 -->
+
+    <knowrob:Door rdf:about="#door0">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_31"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door1 -->
+
+    <knowrob:Door rdf:about="#door1">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_32"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door10 -->
+
+    <knowrob:Door rdf:about="#door10">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_41"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door11 -->
+
+    <knowrob:Door rdf:about="#door11">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.135</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_42"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door12 -->
+
+    <knowrob:Door rdf:about="#door12">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17003"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_43"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door13 -->
+
+    <knowrob:Door rdf:about="#door13">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_44"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door14 -->
+
+    <knowrob:Door rdf:about="#door14">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_45"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door15 -->
+
+    <knowrob:Door rdf:about="#door15">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_46"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door16 -->
+
+    <knowrob:Door rdf:about="#door16">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_28"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door17 -->
+
+    <knowrob:Door rdf:about="#door17">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.345</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17004"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_29"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door18 -->
+
+    <knowrob:Door rdf:about="#door18">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-1.255</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_30"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door19 -->
+
+    <knowrob:Door rdf:about="#door19">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.0135</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17005"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_23"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door2 -->
+
+    <knowrob:Door rdf:about="#door2">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_33"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door20 -->
+
+    <knowrob:Door rdf:about="#door20">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.6065</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17006"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_24"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door21 -->
+
+    <knowrob:Door rdf:about="#door21">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.2965</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17007"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_25"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door22 -->
+
+    <knowrob:Door rdf:about="#door22">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.2965</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17008"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_26"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door23 -->
+
+    <knowrob:Door rdf:about="#door23">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.399</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_27"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door3 -->
+
+    <knowrob:Door rdf:about="#door3">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_34"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door4 -->
+
+    <knowrob:Door rdf:about="#door4">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17000"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_35"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door5 -->
+
+    <knowrob:Door rdf:about="#door5">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17001"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_36"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door6 -->
+
+    <knowrob:Door rdf:about="#door6">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_37"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door7 -->
+
+    <knowrob:Door rdf:about="#door7">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_38"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door8 -->
+
+    <knowrob:Door rdf:about="#door8">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_39"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#door9 -->
+
+    <knowrob:Door rdf:about="#door9">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#handle17002"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_40"/>
+    </knowrob:Door>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer0cb22 -->
+
+    <knowrob:Drawer rdf:about="#drawer0cb22">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door1"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_8"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer0cb23 -->
+
+    <knowrob:Drawer rdf:about="#drawer0cb23">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door4"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_11"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer0cb32 -->
+
+    <knowrob:Drawer rdf:about="#drawer0cb32">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door8"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_15"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer0cb33 -->
+
+    <knowrob:Drawer rdf:about="#drawer0cb33">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.135</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door11"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_18"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer0cb34 -->
+
+    <knowrob:Drawer rdf:about="#drawer0cb34">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door13"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_20"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer1cb22 -->
+
+    <knowrob:Drawer rdf:about="#drawer1cb22">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door2"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_9"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer1cb23 -->
+
+    <knowrob:Drawer rdf:about="#drawer1cb23">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door5"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_12"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer1cb32 -->
+
+    <knowrob:Drawer rdf:about="#drawer1cb32">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door9"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_16"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer1cb33 -->
+
+    <knowrob:Drawer rdf:about="#drawer1cb33">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door12"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_19"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer1cb34 -->
+
+    <knowrob:Drawer rdf:about="#drawer1cb34">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door14"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_21"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer2cb22 -->
+
+    <knowrob:Drawer rdf:about="#drawer2cb22">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door3"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_10"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer2cb23 -->
+
+    <knowrob:Drawer rdf:about="#drawer2cb23">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door6"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_13"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer2cb32 -->
+
+    <knowrob:Drawer rdf:about="#drawer2cb32">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door10"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_17"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#drawer2cb34 -->
+
+    <knowrob:Drawer rdf:about="#drawer2cb34">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door15"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_22"/>
+    </knowrob:Drawer>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17000 -->
+
+    <knowrob:Handle rdf:about="#handle17000">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.01</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.34</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_52"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17001 -->
+
+    <knowrob:Handle rdf:about="#handle17001">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.01</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.34</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_53"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17002 -->
+
+    <knowrob:Handle rdf:about="#handle17002">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.01</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.443</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_54"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17003 -->
+
+    <knowrob:Handle rdf:about="#handle17003">
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.01</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.443</knowrob:heightOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_55"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17004 -->
+
+    <knowrob:Handle rdf:about="#handle17004">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.013</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.013</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.34</knowrob:widthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_51"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17005 -->
+
+    <knowrob:Handle rdf:about="#handle17005">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.243</knowrob:depthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_47"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17006 -->
+
+    <knowrob:Handle rdf:about="#handle17006">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.243</knowrob:depthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_48"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17007 -->
+
+    <knowrob:Handle rdf:about="#handle17007">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.243</knowrob:depthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_49"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#handle17008 -->
+
+    <knowrob:Handle rdf:about="#handle17008">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.01</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.01</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.243</knowrob:depthOfObject>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_50"/>
+    </knowrob:Handle>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#oven0 -->
+
+    <knowrob:Oven rdf:about="#oven0">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.345</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
+        <knowrob:properPhysicalParts rdf:resource="#door17"/>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_5"/>
+    </knowrob:Oven>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_0 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_0">
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.0</knowrob:m03>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.0</knowrob:m23>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.0</knowrob:m13>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_1 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_1">
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.1875</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.60649997</knowrob:m03>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_10 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_10">
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_11 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_11">
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_12 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_12">
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_13 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_13">
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_14 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_14">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.55</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.77</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_15 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_15">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_16 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_16">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_17 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_17">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_18 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_18">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8325</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.8125</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_19 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_19">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.4825</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.8125</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_2 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_2">
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.1875</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.1995</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_20 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_20">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_21 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_21">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_22 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_22">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.31</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_23 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_23">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.30325</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.375</knowrob:m13>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_24 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_24">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.375</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.59975004</knowrob:m03>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_25 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_25">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.375</knowrob:m13>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.05125</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_26 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_26">
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.375</knowrob:m13>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.34775</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_27 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_27">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.375</knowrob:m13>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.6955</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_28 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_28">
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.6</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0825</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_29 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_29">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.6</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.6275</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_3 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_3">
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.1875</knowrob:m13>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.6955</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0175</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_30 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_30">
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.6</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8275</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_31 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_31">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.55</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.76</knowrob:m03>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_32 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_32">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_33 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_33">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_34 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_34">
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_35 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_35">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_36 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_36">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_37 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_37">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.62</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_38 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_38">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.55</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.77</knowrob:m13>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_39 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_39">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_4 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_4">
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.3</knowrob:m13>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m23 rdf:datatype="&xsd;float">2.0825</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_40 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_40">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_41 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_41">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_42 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_42">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8325</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.8125</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_43 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_43">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.4825</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.8125</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_44 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_44">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_45 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_45">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_46 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_46">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.35999998</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.62</knowrob:m03>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.4075</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_47 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_47">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.41</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.577</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.8115</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_48 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_48">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.41</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.648</knowrob:m03>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.8115</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_49 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_49">
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.41</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.17</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.8115</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_5 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_5">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.3</knowrob:m13>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.6275</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_50 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_50">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.41</knowrob:m13>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2409999</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.8115</knowrob:m23>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_51 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_51">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.64000005</knowrob:m13>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.482</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.1925</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_52 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_52">
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.65500003</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.825</knowrob:m23>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_53 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_53">
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.57</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.65500003</knowrob:m13>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.7025</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_54 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_54">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.65500003</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.7</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.2175</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_55 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_55">
+        <knowrob:m00 rdf:datatype="&xsd;float">-1.0</knowrob:m00>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.65500003</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.69</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.8125</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_6 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_6">
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.3</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8275</knowrob:m23>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">2.191</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_7 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_7">
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.55</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.76</knowrob:m03>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_8 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_8">
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.8375</knowrob:m23>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_9 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_9">
+        <knowrob:m11 rdf:datatype="&xsd;float">0.0</knowrob:m11>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m00 rdf:datatype="&xsd;float">0.0</knowrob:m00>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.31</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.6475</knowrob:m23>
+        <knowrob:m10 rdf:datatype="&xsd;float">1.0</knowrob:m10>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m01 rdf:datatype="&xsd;float">1.0</knowrob:m01>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.2075</knowrob:m03>
+    </knowrob:RotationMatrix3D>
+    
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#semantic_map_h -->
+
+    <knowrob:SemanticEnvironmentMap rdf:about="#semantic_map_h">
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_0"/>
+    </knowrob:SemanticEnvironmentMap>
+
+
+
+
+    <!-- http://knowrob.org/kb/ias_entities.owl#cup1 -->
+
+    <knowrob:Cup rdf:about="#cup1">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.1</knowrob:heightOfObject>
+        <knowrob:lispInstance rdf:datatype="&xsd;string">cup-1</knowrob:lispInstance>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_113"/>
+	<knowrob:dirtynessOfObject rdf:resource="&knowrob;Clean"/>
+	<knowrob:usageStatus rdf:datatype="&xsd;string">used</knowrob:usageStatus>
+    </knowrob:Cup>
+
+
+
+    <!-- http://knowrob.org/kb/ias_entities.owl#cup2 -->
+
+    <knowrob:Cup rdf:about="#cup2">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.1</knowrob:heightOfObject>
+        <knowrob:lispInstance rdf:datatype="&xsd;string">cup-2</knowrob:lispInstance>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_114"/>
+	<knowrob:dirtynessOfObject rdf:resource="&knowrob;Clean"/>
+	<knowrob:usageStatus rdf:datatype="&xsd;string">unused</knowrob:usageStatus>
+    </knowrob:Cup>
+
+
+
+    <!-- http://knowrob.org/kb/ias_entities.owl#cup3 -->
+
+    <knowrob:Cup rdf:about="#cup3">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.1</knowrob:heightOfObject>
+        <knowrob:lispInstance rdf:datatype="&xsd;string">cup-3</knowrob:lispInstance>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_115"/>
+	<knowrob:usageStatus rdf:datatype="&xsd;string">unused</knowrob:usageStatus>
+	<knowrob:dirtynessOfObject rdf:resource="&knowrob;Dirty"/>
+    </knowrob:Cup>
+
+
+
+    <!-- http://knowrob.org/kb/ias_entities.owl#cup4 -->
+
+    <knowrob:Cup rdf:about="#cup4">
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.1</knowrob:heightOfObject>
+        <knowrob:lispInstance rdf:datatype="&xsd;string">cup-4</knowrob:lispInstance>
+        <knowrob:orientation rdf:resource="#rotationmatrix3d_116"/>
+	<knowrob:usageStatus rdf:datatype="&xsd;string">used</knowrob:usageStatus>
+	<knowrob:dirtynessOfObject rdf:resource="&knowrob;Dirty"/>
+    </knowrob:Cup>
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_113 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_113">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.32918194</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.9</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.983585</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_114 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_114">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.418194</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.9</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.1</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_115 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_115"> 
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">3.2</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.75</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.0</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+
+
+    <!-- http://knowrob.org/kb/ias_semantic_map.owl#rotationmatrix3d_116 -->
+
+    <knowrob:RotationMatrix3D rdf:about="#rotationmatrix3d_116">
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.52918194</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.9</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m13 rdf:datatype="&xsd;float">2.285</knowrob:m13>
+    </knowrob:RotationMatrix3D>
+
+
+
+</rdf:RDF>

@@ -6,7 +6,7 @@ output=""
 is_first=1
 for ROS_PATH in `echo $ROS_PACKAGE_PATH | tr ":" "\n"`
 do
-    for CLASS_PATH_FILE in `find $ROS_PATH -path '*/build/classpath.txt' 2> /dev/null`; do
+    for CLASS_PATH_FILE in `find -L $ROS_PATH -path '*/build/classpath.txt' 2> /dev/null`; do
         if [ $is_first -eq 0 ]; then
             output="$output:"
         fi

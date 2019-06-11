@@ -18,11 +18,6 @@
 
   
   <buildtool_depend>catkin</buildtool_depend>
-
-  <build_depend>swi-prolog</build_depend>
-  <build_depend>swi-prolog-java</build_depend>
-  <build_depend>libjson-java</build_depend>
-  <build_depend>libjson-glib</build_depend>
   
   <run_depend>swi-prolog</run_depend>
   <run_depend>swi-prolog-java</run_depend>
@@ -36,13 +31,14 @@
   <run_depend>json_prolog_msgs</run_depend>
   <run_depend>knowrob_actions</run_depend>
   <run_depend>knowrob_common</run_depend>
-  <run_depend>knowrob_map_data</run_depend>
-  <run_depend>knowrob_map_tools</run_depend>
+  <run_depend>knowrob_maps</run_depend>
   <run_depend>knowrob_mongo</run_depend>
   <run_depend>knowrob_objects</run_depend>
   <run_depend>knowrob_srdl</run_depend>
   <run_depend>knowrob_vis</run_depend>
   <run_depend>rosprolog</run_depend>
-  <run_depend>tf_prolog</run_depend>
-
+  
+  <export>
+    <metapackage />
+  </export>
 </package>

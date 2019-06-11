@@ -78,10 +78,15 @@ public class JSONQuery {
           result.put(e.getKey(), encodeList(e.getValue()));
         else
           result.put(e.getKey(), encodeCompoundTerm(e.getValue()));
-      }
-      else
+      } else if (e.getValue().name().equals("[]")){
         result.put(e.getKey(), e.getValue().name());
+      } else {
+        // Wrap atom in single quotes in order to avoid that the value is
+        // converted to some JSON data structure (e.g., JSONObject, JSONArray, ...)
+        result.put(e.getKey(), "'"+e.getValue().name()+"'");
+      }
     }
+    
     return result;
   }
 	

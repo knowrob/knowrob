@@ -101,6 +101,8 @@ public class TFMemory {
 	MongoClient mongoClient;
 	DB db;
 
+	private String tfTableName;
+
 	/* **********************************************************************
 	 * *                           INITIALIZATION                           *
 	 * ********************************************************************** */
@@ -126,15 +128,13 @@ public class TFMemory {
 		
 		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
 		// environment variables are set
-		
-        Map<String, String> env = System.getenv();
-        if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
-        	host = env.get("MONGO_PORT_27017_TCP_ADDR");
-        }
-        
-        if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
-        	port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
-        }
+		Map<String, String> env = System.getenv();
+		if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
+			host = env.get("MONGO_PORT_27017_TCP_ADDR");
+		}
+		if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
+			port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
+		}
         
 		try {
 			mongoClient = new MongoClient(host, port);
@@ -146,6 +146,16 @@ public class TFMemory {
 
 		frames = new HashMap<String, Frame>();
 
+		tfTableName = "tf";
+
+	}
+
+	public String getTfTableName() {
+		return tfTableName;
+	}
+	
+	public void setTfTableName(String tfTableName) {
+		this.tfTableName = tfTableName;
 	}
 	
 	public DB getDatabase() {
@@ -388,7 +398,7 @@ public class TFMemory {
 	 */
 	private StampedTransform loadTransformFromDB(String childFrameID, Date date) {
 
-		DBCollection coll = db.getCollection("tf");
+		DBCollection coll = db.getCollection(tfTableName);
 		DBObject query = new BasicDBObject();
 
 		// select time slice from BUFFER_SIZE seconds before to half a second after given time
@@ -678,8 +688,8 @@ public class TFMemory {
 	 * was not fully resolved.
 	 */
 	private String assertResolved(String prefix, String frameID) {
-		if (!frameID.startsWith("/"))
-			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
+		//if (!frameID.startsWith("/"))
+		//	System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
 		return resolve(prefix, frameID);
 	}
 

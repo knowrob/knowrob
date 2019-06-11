@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Moritz Tenorth
+ * Copyright (C) 2017 Asil Kaan Bozcuoglu
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,27 +15,16 @@
  */
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+  gradleVersion = '2.2.1'
 }
 
 buildscript {
-    def rosMavenPath = "$System.env.ROS_MAVEN_PATH".split(':').collect { 'file://' + it }
-    def rosMavenRepository = "$System.env.ROS_MAVEN_REPOSITORY"
-    repositories {
-        rosMavenPath.each { p ->
-            maven {
-                url p
-            }
-        }
-        mavenLocal()
-        maven {
-            url rosMavenRepository
-        }
-    }
-    dependencies {
-        classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '[0.1,0.2)'
-    }
+  apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/indigo/buildscript.gradle"
+  dependencies {
+       classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
+  }
 }
+
 
 apply plugin: 'catkin'
 

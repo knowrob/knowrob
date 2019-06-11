@@ -1,5 +1,6 @@
 /*
   Copyright (C) 2009-14 Lorenz Mösenlechner, Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -24,33 +25,21 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Lorenz Mösenlechner, Moritz Tenorth
-@license BSD
-
+  @author Lorenz Mösenlechner
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
 */
 
 :- use_module(library('process')).
-
-%% rospack_package_path(+Package, -Path) is nondet.
-%
-% Locate ROS packages on the harddisk using 'rospack find'
-% 
-% @param Package  Name of a ROS package
-% @param Path     Global path of Package determined by 'rospack find'
-% 
-rospack_package_path(Package, Path) :-
-  nonvar(Package),
-  process_create(path('rospack'), ['find', Package], [stdout(pipe(RospackOutput)), process(PID)]),
-  read_line_to_codes(RospackOutput, C),
-  string_to_list(Path, C),
-  process_wait(PID, _).
+:- use_module('roscpp').
 
 %% init_ros_package(+PackagePath) is nondet.
 %
-% Initialize a KnowRob package by consulting the prolog/init.pl file
+% Initialize a KnowRob package by consulting the init.pl file.
 % 
 % @param PackagePath  Path towards the package to be initialized
-% 
+%
 init_ros_package( PackagePath ) :-
   atom_concat(PackagePath, 'init.pl', InitFile),
   exists_file(InitFile),
@@ -61,8 +50,9 @@ init_ros_package( _ ).
 %% register_ros_package(+Package) is nondet.
 %% register_ros_package(+Package, ?AbsoluteDirectory) is nondet.
 %
-% Find and initialize a KnowRob package, i.e. locate the package on the
-% harddisk, add the path to the library search path, and consult the init.pl
+% Find and initialize a KnowRob package.
+% Locate the package on the harddisk, add the path
+% to the library search path, and consult the init.pl
 % file that (recursively) initializes the package and its dependencies.
 % 
 % @param Package            Name of a ROS package
@@ -73,20 +63,21 @@ register_ros_package(Package, _) :-
   ros_package_initialized(Package), !.
 
 register_ros_package(Package, AbsoluteDirectory) :-
-  rospack_package_path(Package, PackagePath),
+  ros_package_path(Package, PackagePath),
   nonvar(PackagePath),
   atom_concat(PackagePath, '/prolog/', AbsoluteDirectory),
   asserta(library_directory(AbsoluteDirectory)),
   assert(user:file_search_path(ros, AbsoluteDirectory)),
   assert( ros_package_initialized(Package) ),
   init_classpath,
-  %add_ros_package_to_classpath(Package),
   init_ros_package( AbsoluteDirectory ).
-
 
 register_ros_package(Package) :-
   register_ros_package(Package, _).
 
+%% use_ros_module(+Package, +FilePath) is nondet.
+%
+% Registers Package and uses the module at FilePath.
 use_ros_module(Package, FilePath) :-
   register_ros_package(Package, AbsoluteDirectory),
   atom_concat(AbsoluteDirectory, FilePath, AbsoluteFilePath),
@@ -94,7 +85,7 @@ use_ros_module(Package, FilePath) :-
 
 :- assert(classpath_initialized(false)).
 init_classpath :-
-  classpath_initialized(true).
+  classpath_initialized(true), !.
 init_classpath :-
   classpath_initialized(false),
   retract(classpath_initialized(false)),
@@ -105,6 +96,7 @@ init_classpath :-
 %% rosprolog_classpaths(+Paths) is nondet.
 % 
 % Read all classpath files from workspaces referenced in ROS_PACKAGE_PATH
+% to set up Java environment.
 %
 % @param Paths The CLASSPATH environment variable
 % 
@@ -113,39 +105,3 @@ rosprolog_classpaths(Paths) :-
   read_line_to_codes(Out, C),
   string_to_list(Paths, C),
   process_wait(PID, _).
-
-%% add_ros_package_to_classpath(+Package) is nondet.
-% 
-% Adds Java dependencies of Package to the CLASSPATH environment variable
-%
-% @param Package Name of a ROS package
-% 
-% TODO(daniel): Remove, it's not needed with `rosprolog_classpaths`
-%add_ros_package_to_classpath(Package):-
-%  rospack_package_classpath(Package, Path),
-%  atom_concat(':',Path,PackagePath),
-%  setenv("CLASSPATH",PackagePath).
-
-%% rospack_package_classpath(+Package, -Path) is nondet.
-% 
-% Calculates the Java dependencies of Package and returns a string to be appended to the CLASSPATH
-%
-% @param Package  Name of a ROS package
-% @param Path     String with the dependencies to be added to the CLASSPATH
-% 
-% TODO(daniel): Remove, it's not needed with `rosprolog_classpaths`
-%rospack_package_classpath(Package, Path) :-
-%  nonvar(Package),
-%  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
-%  read_line_to_codes(RospackOutput, C),
-%  string_to_list(Path, C),
-%  process_wait(PID, _).
-
-% concat a value to an environment varible
-% please note: delimiters have to be set within Val, e.g.:
-% ':/path/to/lib:/path/to/lib2'
-concat_env(Var,Val):-
-  (getenv(Var,OldVal)
-  ->  (atom_concat(OldVal,Val,NewVal))
-  ;   (NewVal = Val)),
-  setenv(Var,NewVal).

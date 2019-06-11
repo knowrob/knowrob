@@ -26,8 +26,8 @@
 
 
   <owl:ObjectProperty rdf:about="#after">
-    <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
-    <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:range rdf:resource="&knowrob;#TimeInterval"/>
+    <rdfs:domain rdf:resource="&knowrob;#TimeInterval"/>
     <rdfs:subPropertyOf rdf:resource="&knowrob;#after"/>
   </owl:ObjectProperty>
 
@@ -62,7 +62,7 @@
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeAfter">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_after</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_after</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#after"/>
@@ -73,20 +73,6 @@
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#temporallySubsumes"/>
-  </computable:PrologProperty>
-
-  <computable:PrologProperty rdf:about="#computeTimePointStartTime">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_start_time</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="#timePointStartTime"/>
-  </computable:PrologProperty>
-
-  <computable:PrologProperty rdf:about="#computeTimePointEndTime">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_end_time</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="#timePointEndTime"/>
   </computable:PrologProperty>
 
   <!-- Allen's 13 temporal relations for intervals -->
@@ -170,21 +156,21 @@
   </owl:ObjectProperty>
 
   <computable:PrologProperty rdf:about="#computeAfterI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_afterI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_after</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#afterI"/>
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeBeforeI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_beforeI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_before</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#beforeI"/>
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeMeetsI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_meetsI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_meets</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#meetsI"/>
@@ -198,7 +184,7 @@
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeOverlapsI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_overlapsI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_overlaps</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#overlapsI"/>
@@ -212,7 +198,7 @@
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeStartsI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_startsI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_starts</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#startsI"/>
@@ -226,7 +212,7 @@
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeDuringI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_duringI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_during</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#duringI"/>
@@ -240,7 +226,7 @@
   </computable:PrologProperty>
 
   <computable:PrologProperty rdf:about="#computeFinihesI">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_finishesI</computable:command>
+    <computable:command rdf:datatype="&xsd;string">interval_finishes</computable:command>
     <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
     <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
     <computable:target rdf:resource="#finishesI"/>

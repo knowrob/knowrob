@@ -168,6 +168,7 @@ public class FileUtil {
 				dest.close();
 				is.close();
 			}
+			zipfile.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			System.err.println("Couldn't unzip file: " + zipFile);

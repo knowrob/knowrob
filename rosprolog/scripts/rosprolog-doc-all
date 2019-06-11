@@ -1,0 +1,29 @@
+#!/bin/bash
+
+PL_ARGS=$@
+PL_INIT_FILE=$(rospack find rosprolog)/prolog/init.pl
+PLDOC_INIT_FILE=$(rospack find rosprolog)/prolog/doc-init.pl
+SCRIPT_FILE=""
+
+KNOWROB_DIR=`readlink -f $(rospack find rosprolog)/..`
+
+for p in `ls $KNOWROB_DIR`; do
+  if [ -e "$KNOWROB_DIR/$p/prolog/init.pl" ]; then
+    PACKAGES="register_ros_package('$p'),$PACKAGES"
+  fi
+done
+PACKAGES=`echo "${PACKAGES::-1}"`
+echo $PACKAGES
+
+# if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
+#     ROS_EXPORT_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $1`
+#     export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
+# 
+#     if [ -f $(rospack find $1)/prolog/init.pl ]; then
+SCRIPT_FILE="-g ensure_loaded('${PL_INIT_FILE}'),$PACKAGES,doc_save('$KNOWROB_DIR',[format(html),recursive(true),doc_root('$KNOWROB_DIR/doc')]) -t halt"
+#     fi
+PL_ARGS=${@:1}
+# fi
+# 
+cd "$KNOWROB_DIR"
+exec /usr/bin/swipl -q -f ${PLDOC_INIT_FILE}  ${SCRIPT_FILE} ${PL_ARGS}
