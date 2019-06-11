@@ -5,16 +5,60 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <tf/transform_listener.h>
+#include <rosprolog/JSONWrapper.h>
 
 #define ROSPROLOG_TF_CACHE_TIME 10.0
 
+class ROSInterface {
+public:
+    ros::NodeHandle _nh;
+    ros::ServiceClient _json_pub;
+    
+    static ROSInterface& get_rosprolog() {
+        static ROSInterface rosprolog;
+        return rosprolog;
+    }
+    
+    static ROSInterface& get() {
+        if(!ros::isInitialized()) {
+            int argc=0;
+            ros::init(argc, (char**)NULL, std::string("knowrob"));
+        }
+        return get_rosprolog();
+    };
+    
+    template <typename T>
+    static bool getParam(const std::string &key, T &value) {
+        return get()._nh.getParam(key,value);
+    };
+    
+    template <typename T>
+    static void setParam(const std::string &key, T &value) {
+        get()._nh.setParam(key,value);
+    };
+    
+    bool json_wrapper(rosprolog::JSONWrapper &msg) {
+        return _json_pub.call(msg);
+    }
+    
+private:
+    ROSInterface():
+      _nh(),
+      _json_pub(_nh.serviceClient<rosprolog::JSONWrapper>("/json_wrapper"))
+    {}
+    ~ROSInterface() {
+        ros::shutdown();
+    }
+    
+    ROSInterface(ROSInterface const&); // Don't Implement
+    void operator=(ROSInterface const&);     // Don't implement
+};
+
+ROSInterface *rospl = NULL;
 tf::TransformListener *listener = NULL;
 
 PREDICATE(ros_init, 0) {
-  if(!ros::isInitialized()) {
-    int argc=0;
-    ros::init(argc, (char**)NULL, std::string("knowrob"));
-  }
+  ROSInterface::get();
   return TRUE;
 }
 
@@ -51,6 +95,13 @@ namespace geometry_msgs {
         list.next(e); value.z = (double)e;
         list.next(e); value.w = (double)e;
     }
+    void pl_term_transform_stamped(const PlTerm &pl_term, TransformStamped &value) {
+        PlTail list(pl_term); PlTerm e;
+        list.next(e); value.header.frame_id = (char*)e;
+        list.next(e); value.child_frame_id = (char*)e;
+        list.next(e); pl_term_vector3(e, value.transform.translation);
+        list.next(e); pl_term_quaternion(e, value.transform.rotation);
+    }
     void pl_term_pose_stamped(const PlTerm &pl_term, PoseStamped &value) {
         PlTail list(pl_term); PlTerm e;
         list.next(e); value.header.frame_id = (char*)e;
@@ -67,38 +118,53 @@ namespace geometry_msgs {
 PREDICATE(ros_param_get_string, 2) {
   std::string key((char*)PL_A1);
   std::string value;
-  ros::param::get(key, value);
-  PL_A2 = value.c_str();
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value.c_str();
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 PREDICATE(ros_param_get_int, 2) {
   std::string key((char*)PL_A1);
   int value;
-  ros::param::get(key, value);
-  PL_A2 = value;
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value;
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 PREDICATE(ros_param_get_double, 2) {
   std::string key((char*)PL_A1);
   double value;
-  ros::param::get(key, value);
-  PL_A2 = value;
-  return TRUE;
+  if(ROSInterface::getParam(key,value)) {
+    PL_A2 = value;
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 
 PREDICATE(ros_param_set_string, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(char*)PL_A2);
+  char* v = (char*)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 PREDICATE(ros_param_set_double, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(double)PL_A2);
+  double v = (double)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 PREDICATE(ros_param_set_int, 2) {
   std::string key((char*)PL_A1);
-  ros::param::set(key,(int)PL_A2);
+  int v = (int)PL_A2;
+  ROSInterface::setParam(key,v);
   return TRUE;
 }
 
@@ -107,15 +173,19 @@ PREDICATE(ros_param_set_int, 2) {
 /*********************************/
 
 PREDICATE(ros_info, 1) {
-  ROS_INFO("%s\n", (char*)PL_A1);
+  ROS_INFO("%s", (char*)PL_A1);
   return TRUE;
 }
 PREDICATE(ros_warn, 1) {
-  ROS_WARN("%s\n", (char*)PL_A1);
+  ROS_WARN("%s", (char*)PL_A1);
   return TRUE;
 }
 PREDICATE(ros_error, 1) {
-  ROS_ERROR("%s\n", (char*)PL_A1);
+  ROS_ERROR("%s", (char*)PL_A1);
+  return TRUE;
+}
+PREDICATE(ros_debug, 1) {
+  ROS_DEBUG("%s", (char*)PL_A1);
   return TRUE;
 }
 
@@ -308,4 +378,31 @@ PREDICATE(tf_transform_pose, 4) {
   tf_pl_quaternion(pose, out.pose.orientation);
   PL_A4 = PlCompound("pose", pose);
   return TRUE;
+}
+
+PREDICATE(ros_json_service_call, 2) {
+  rosprolog::JSONWrapper msg;
+  msg.request.mode = std::string("service");
+  msg.request.json_data = std::string((char*)PL_A1);
+  if(ROSInterface::get().json_wrapper(msg)) {
+    PL_A2 = msg.response.json_data.c_str();
+    return TRUE;
+  }
+  else {
+    ROS_ERROR("Failed to invoke json_wrapper, is it running?");
+    return FALSE;
+  }
+}
+
+PREDICATE(ros_json_publish, 1) {
+  rosprolog::JSONWrapper msg;
+  msg.request.mode = std::string("publish");
+  msg.request.json_data = std::string((char*)PL_A1);
+  if(ROSInterface::get().json_wrapper(msg)) {
+    return TRUE;
+  }
+  else {
+    ROS_ERROR("Failed to invoke json_wrapper, is it running?");
+    return FALSE;
+  }
 }

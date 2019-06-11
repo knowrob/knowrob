@@ -114,9 +114,9 @@ map_child_objects(Parent, Children) :-
 % @param Child    Object instance
 % 
 map_child_object(Parent, Child) :-
-    rdf_reachable(Parent, knowrob:properPhysicalParts, Child),
+    rdf_reachable(Parent, dul:hasPart, Child),
     Parent \= Child,
-    not( owl_individual_of(Child, knowrob:'Connection-Physical') ).
+    once(owl_individual_of(Child, dul:'PhysicalObject')).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read object properties
@@ -131,7 +131,7 @@ map_child_object(Parent, Child) :-
 % @param Inst  Object instance
 % 
 map_object_info([Inst, Type, Pose, [D, W, H]]) :-
-    owl_individual_of(Inst, knowrob:'SpatialThing'),
+    owl_individual_of(Inst, dul:'PhysicalObject'),
     map_object_type(Inst, Type),
     current_object_pose(Inst, Pose),
     map_object_dimensions(Inst, D, W, H).
@@ -145,7 +145,7 @@ map_object_info([Inst, Type, Pose, [D, W, H]]) :-
 %  
 map_object_type(Obj, Type) :-
     holds(Obj, rdf:type, Type),
-    once(owl_subclass_of(Type, knowrob:'SpatialThing')).
+    once(owl_subclass_of(Type, dul:'PhysicalObject')).
 
 %% map_object_label(?Obj, ?Label) is nondet.
 %
@@ -185,15 +185,15 @@ map_object_dimensions(Obj, D, W, H) :-
 %       are to do after all, so I let them like this for now (MT).
 % 
 map_connection_type( Parent, Child, 'HingedJoint' ) :-
-    holds( Parent, knowrob:'properPhysicalParts', Child ),
-    holds( Child, knowrob:'properPhysicalParts', Joint ),
+    holds( Parent, dul:'hasPart', Child ),
+    holds( Child, dul:'hasPart', Joint ),
     owl_individual_of(Joint, knowrob:'HingedJoint'), !.
 
 map_connection_type( Parent, Parent, 'PrismaticJoint' ) :-
     holds( Parent, rdf:type, knowrob:'Drawer' ), !.
 
 map_connection_type( Parent, Child, 'Fixed' ) :-
-    holds( Parent, knowrob:'properPhysicalParts', Child ).
+    holds( Parent, dul:'hasPart', Child ).
 
 %% map_joint_name(Parent, Child, Name) is nondet.
 %
@@ -204,8 +204,8 @@ map_connection_type( Parent, Child, 'Fixed' ) :-
 % @param Instance of a Connection-Physical
 % 
 map_joint_name( Parent, Child, Name ) :-
-    holds( Parent, knowrob:'properPhysicalParts', Child ),
-    holds( Child, knowrob:'properPhysicalParts', Name ),
+    holds( Parent, dul:'hasPart', Child ),
+    holds( Child, dul:'hasPart', Name ),
     owl_individual_of( Name, knowrob:'Connection-Physical' ).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

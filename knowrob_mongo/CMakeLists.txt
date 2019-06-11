@@ -2,9 +2,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_mongo)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools tfjava rosprolog knowrob_common knowrob_objects)
+find_package(catkin REQUIRED COMPONENTS rosjava_build_tools tfjava rosprolog knowrob_common)
 
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(CATKIN_DEPENDS tfjava)
 

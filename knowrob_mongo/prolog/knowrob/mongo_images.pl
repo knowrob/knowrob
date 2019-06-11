@@ -51,7 +51,7 @@
 % and unify DBObj with the Java object that holds the image information.
 %
 mng_kinect_head_rgb_image_color(Instant, DBObj) :-
-  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
+  mng_query_latest('kinect_head_rgb_image_color', DBObj, 'header.stamp', Instant), !.
 
 %% mng_image_base64(+DBObj, -Base64) is semidet
 %

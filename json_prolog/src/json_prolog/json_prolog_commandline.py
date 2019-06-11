@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import re
 import os
+import traceback
+
 import rospy
 import readline
 import sys
@@ -59,7 +61,6 @@ def read_single_keypress():
 
 class PQ(object):
     def __init__(self):
-        rospy.wait_for_service('/json_prolog/query')
         self.prolog = Prolog()
         self.predicates = []
         self.load_namespace()
@@ -78,20 +79,6 @@ class PQ(object):
         solution = self.prolog.once(q)
         self.predicates = [str(x) for x in solution['L']]
 
-    def start_prolog_query(self, q):
-        self.q = q
-        self.query = self.prolog.query(q)
-
-    def finish_prolog_query(self):
-        self.query.finish()
-        if self.q.startswith('register_ros_package'):
-            self.load_namespace()
-            self.load_all_predicates()
-
-    def next_solution(self):
-        for solution in self.query.solutions():
-            yield solution
-
     def print_solution(self, solution):
         if solution == dict():
             sys.stdout.write('true')
@@ -108,28 +95,28 @@ class PQ(object):
                     continue
                 else:
                     try:
-                        pq.start_prolog_query(cmd)
                         print_false = True
-                        for solution in self.next_solution():
-                            if not print_false:
-                                print(' ;')
-                                print('')
-                            print_false = False
-                            self.print_solution(solution)
-                            if solution == dict():
-                                break
-                            cmd = read_single_keypress()
-                            if cmd == '.':
-                                break
-                        pq.finish_prolog_query()
+                        with self.prolog.query(cmd) as query:
+                            for solution in query.solutions():
+                                if not print_false:
+                                    print(' ;')
+                                    print('')
+                                print_false = False
+                                self.print_solution(solution)
+                                if solution == dict():
+                                    break
+                                cmd = read_single_keypress()
+                                if cmd == '.':
+                                    break
+                        if cmd.startswith('register_ros_package'):
+                            self.load_namespace()
+                            self.load_all_predicates()
                         if print_false:
                             print('false.')
                         else:
                             print('.')
                     except PrologException as e:
                         print(e)
-        except Exception as e:
-            print(e)
         finally:
             readline.write_history_file(HISTORY_NAME)
 
@@ -168,7 +155,7 @@ class PQ(object):
 
 
 if __name__ == '__main__':
-    rospy.init_node('json_prolog_commandline')
+    rospy.init_node('json_prolog_commandline', anonymous=True)
     if os.path.isfile(HISTORY_NAME):
         readline.read_history_file(HISTORY_NAME)
     readline.set_history_length(HISTORY_LENGTH)

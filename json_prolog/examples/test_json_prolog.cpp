@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
       it != bdgs.end(); it++)
   {
     PrologBindings bdg = *it;
-    cout << "Found solution: " << (bool)(it == bdgs.end()) << endl;
+    cout << "Found solution: " << endl;
     cout << "A = "<< bdg["A"] << endl;
     cout << "B = " << bdg["B"] << endl;
     cout << "C = " << bdg["C"] << endl;

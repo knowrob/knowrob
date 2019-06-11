@@ -6,8 +6,7 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common geometry_msgs message_gen
 
 catkin_python_setup()
 
-add_message_files(FILES ObjectState.msg)
-add_service_files(FILES UpdateObjectState.srv DirtyObject.srv)
+add_message_files(FILES ObjectState.msg ObjectStateArray.msg)
 generate_messages(DEPENDENCIES geometry_msgs)
 
 catkin_package(CATKIN_DEPENDS knowrob_common rosprolog roscpp roslib)

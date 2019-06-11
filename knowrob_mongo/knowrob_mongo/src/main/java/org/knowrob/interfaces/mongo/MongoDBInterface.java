@@ -31,13 +31,16 @@
 
 package org.knowrob.interfaces.mongo;
 
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+import java.io.IOException;
 
 import javax.vecmath.Matrix4d;
 
@@ -54,6 +57,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
+import com.mongodb.MongoClient;
+import com.mongodb.util.JSON;
 
 import org.apache.log4j.Logger;
 
@@ -66,6 +71,26 @@ public class MongoDBInterface {
 	
 	public static final String COLLECTION_TF = "tf";
 	public static final String COLLECTION_LOGGED_DESIGNATORS = "logged_designators";
+
+	MongoClient mongoClient;
+	DB db;
+	
+	public static MongoClient connect() throws UnknownHostException {
+		String host = "localhost";
+		int port = 27017;
+		
+		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
+		// environment variables are set
+		Map<String, String> env = System.getenv();
+		if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
+			host = env.get("MONGO_PORT_27017_TCP_ADDR");
+		}
+		if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
+			port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
+		}
+        
+		return new MongoClient(host, port);
+	};
 	
 	/**
 	 * Constructor
@@ -74,18 +99,31 @@ public class MongoDBInterface {
 	 *
 	 */
 	public MongoDBInterface() {
+		try {
+			mongoClient = MongoDBInterface.connect();
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace(); // FIXME bad exception handling
+		}
+		
 		// Format of dates as saved in mongo
 		mongoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		mongoDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         
 		mem = TFMemory.getInstance();
+		
+		setDatabase("roslog");
 	}
 	
 	/**
 	 * @return DB handle of currently active DB
 	 */
 	public DB getDatabase() {
-		return mem.getDatabase();
+		return db;
+	}
+	
+	public String getDatabaseName() {
+		return db.getName();
 	}
 	
 	/**
@@ -94,11 +132,72 @@ public class MongoDBInterface {
 	 * @return DB handle
 	 */
 	public DB setDatabase(String name) {
+		db = mongoClient.getDB(name);
 		mem.setDatabase(name);
 		return getDatabase();
 	}
-
-
+	
+	public String[] getCollections() {
+		List<String> out = new LinkedList<String>();
+		for(String name : db.getCollectionNames()) {
+			out.add(name);
+		}
+		return (String[]) out.toArray(new String[out.size()]);
+	}
+	
+	public void createIndex(String collection, String keys[]) {
+		DBCollection coll = db.getCollection(collection);
+		for(String k : keys) {
+			coll.createIndex(new BasicDBObject(k,1));
+		}
+	}
+	
+	public void dump(String path) {
+		try {
+			Runtime.getRuntime().exec("mongodump --db " + getDatabaseName() + " --out " + path);
+		} catch (IOException ex) {
+			logger.error(ex.getMessage());
+		}
+	}
+	
+	public void restore(String path) {
+		try {
+			Runtime.getRuntime().exec("mongorestore " + path);
+		} catch (IOException ex) {
+			logger.error(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Store a JSON encoded string in a mongo collection with
+	 * the given name.
+	 */
+	public DBObject store(String collection, String json_string) {
+		DBCollection coll = db.getCollection(collection);
+		DBObject dbObject = (DBObject)JSON.parse(json_string);
+		coll.insert(dbObject);
+		return dbObject;
+	}
+	
+	/**
+	 * Drop a collection.
+	 */
+	public void drop(String collection) {
+		db.getCollection(collection).drop();
+	}
+	
+	/**
+	 * Update an existing document with the JSON encoded data provided.
+	 */
+	public void update(String collection, BasicDBObject a, String json_string) {
+		DBCollection coll = db.getCollection(collection);
+		DBObject b = (DBObject)JSON.parse(json_string);
+		coll.update(
+			new BasicDBObject("_id", a.getObjectId("_id")),
+			new BasicDBObject("$set", b)
+		);
+	}
+	
 	/**
 	 * Wrapper around the lookupTransform method of the TFMemory class
 	 *
@@ -138,38 +237,80 @@ public class MongoDBInterface {
 		return all( query(collection, keys, relations, values) );
 	}
 	
-	public DBCursor query(String collection, String[] keys, String[] relations, Object[] values) {
-		try {
-			QueryBuilder query = QueryBuilder.start();
-			// Parse the query
-			if(relations!=null && keys!=null && values!=null &&
-			   relations.length==keys.length && keys.length==values.length)
-			{
-				for(int i=0; i<relations.length; ++i) {
-					String rel = relations[i];
-					String key = keys[i];
-					Object val = values[i];
-					if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
-						query = query.and(key).is(val);
-					else if("!=".equals(rel))
-						query = query.and(key).notEquals(val);
-					else if("<".equals(rel))
-						query = query.and(key).lessThan(val);
-					else if("<=".equals(rel))
-						query = query.and(key).lessThanEquals(val);
-					else if(">".equals(rel))
-						query = query.and(key).greaterThan(val);
-					else if(">=".equals(rel))
-						query = query.and(key).greaterThanEquals(val);
-					else if("exist".equals(rel) || "exists".equals(rel))
-						query = query.and(key).exists(val);
-					else {
-						logger.error("Unknown mongo relation: " + rel);
-					}
+	public DBObject queryBuildConjunction(String[] keys, String[] relations, Object[] values) {
+		QueryBuilder query = QueryBuilder.start();
+		// Parse the query
+		if(relations!=null && keys!=null && values!=null &&
+		   relations.length==keys.length && keys.length==values.length)
+		{
+			for(int i=0; i<relations.length; ++i) {
+				String rel = relations[i];
+				String key = keys[i];
+				Object val = values[i];
+				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
+					query = query.and(key).is(val);
+				else if("!=".equals(rel))
+					query = query.and(key).notEquals(val);
+				else if("<".equals(rel))
+					query = query.and(key).lessThan(val);
+				else if("<=".equals(rel))
+					query = query.and(key).lessThanEquals(val);
+				else if(">".equals(rel))
+					query = query.and(key).greaterThan(val);
+				else if(">=".equals(rel))
+					query = query.and(key).greaterThanEquals(val);
+				else if("exist".equals(rel) || "exists".equals(rel))
+					query = query.and(key).exists(val);
+				else if("or".equals(rel))
+					query = query.and((DBObject)val);
+				else {
+					logger.error("Unknown mongo relation: " + rel);
 				}
 			}
-			
-			return query(collection, query);
+		}
+		return query.get();
+	}
+	
+	public DBObject disjunction(String[] keys, String[] relations, Object[] values) {
+		QueryBuilder query = QueryBuilder.start();
+		List<DBObject> ors = new LinkedList<DBObject>();
+		
+		// Parse the query
+		if(relations!=null && keys!=null && values!=null &&
+		   relations.length==keys.length && keys.length==values.length)
+		{
+			for(int i=0; i<relations.length; ++i) {
+				String rel = relations[i];
+				String key = keys[i];
+				Object val = values[i];
+				
+				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
+					ors.add(QueryBuilder.start(key).is(val).get());
+				else if("!=".equals(rel))
+					ors.add(QueryBuilder.start(key).notEquals(val).get());
+				else if("<".equals(rel))
+					ors.add(QueryBuilder.start(key).lessThan(val).get());
+				else if("<=".equals(rel))
+					ors.add(QueryBuilder.start(key).lessThanEquals(val).get());
+				else if(">".equals(rel))
+					ors.add(QueryBuilder.start(key).greaterThan(val).get());
+				else if(">=".equals(rel))
+					ors.add(QueryBuilder.start(key).greaterThanEquals(val).get());
+				else if("exist".equals(rel) || "exists".equals(rel))
+					ors.add(QueryBuilder.start(key).exists(val).get());
+				else {
+					logger.error("Unknown mongo relation: " + rel);
+				}
+			}
+		}
+		
+		return query.or((DBObject[])
+			ors.toArray(new DBObject[ors.size()])).get();
+	}
+	
+	public DBCursor query(String collection, String[] keys, String[] relations, Object[] values) {
+		try {
+			return query(collection, queryBuildConjunction(keys, relations, values));
 		}
 		catch (Exception e) {
 			// TODO: throw exception
@@ -180,15 +321,14 @@ public class MongoDBInterface {
 	}
 	
 	public DBCursor query(String collection) {
-		return query(collection, QueryBuilder.start());
+		return query(collection, QueryBuilder.start().get());
 	}
 	
-	public DBCursor query(String collection, QueryBuilder query) {
+	public DBCursor query(String collection, DBObject query) {
 		try {
 			DBCollection coll = getDatabase().getCollection(collection);
-			DBObject queryInstance = query.get();
 			DBObject cols  = new BasicDBObject();
-			DBCursor cursor = coll.find(queryInstance, cols);
+			DBCursor cursor = coll.find(query, cols);
 			return cursor;
 		}
 		catch (Exception e) {

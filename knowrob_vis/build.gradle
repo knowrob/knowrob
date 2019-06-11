@@ -19,10 +19,7 @@ task wrapper(type: Wrapper) {
 }
 
 buildscript {
-  apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/indigo/buildscript.gradle"
-  dependencies {
-       classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
-  }
+  apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/kinetic/buildscript.gradle"
 }
 
 

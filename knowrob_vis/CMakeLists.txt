@@ -4,7 +4,7 @@ project(knowrob_vis)
 
 find_package(catkin REQUIRED COMPONENTS rosjava_build_tools data_vis_msgs knowrob_common knowrob_srdl)
 
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(CATKIN_DEPENDS knowrob_common)
 

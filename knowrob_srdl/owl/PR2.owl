@@ -100,7 +100,7 @@
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftArm"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;pr2_l_shoulder_pan_link"/>
@@ -111,7 +111,7 @@
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;RightArm"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;pr2_r_shoulder_pan_link"/>
@@ -122,7 +122,7 @@
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_left_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;GripperComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftHand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_gripper_led_frame"/>
@@ -136,7 +136,7 @@
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_right_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;GripperComponent"/>
         <rdf:type rdf:resource="&knowrob;RightHand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_gripper_led_frame"/>
@@ -150,7 +150,7 @@
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_base">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Base"/>
+        <rdf:type rdf:resource="&srdl2-comp;WheeledBase"/>
 
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;pr2_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_bl_caster_l_wheel_link"/>
