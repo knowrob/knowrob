@@ -71,6 +71,10 @@ json_prolog_encode([X|Xs],[Y|Ys]) :-
   json_prolog_encode(X,Y),
   json_prolog_encode(Xs,Ys),!.
 
+json_prolog_encode(String,Atom) :-
+  string(String),
+  term_to_atom(String,Atom), !.
+
 json_prolog_encode(X,X) :-
   ( atom(X) ; is_dict(X) ; number(X) ; string(X) ), !.
 
