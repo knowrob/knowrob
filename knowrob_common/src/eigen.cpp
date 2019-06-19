@@ -25,7 +25,7 @@ void eigen2pl(const Eigen::Matrix4d &m, const PlTerm &out) {
 	PlTail l(out);
 	for(int i=0; i<4; ++i) {
 		for(int j=0; j<4; ++j) {
-			l.append(m(i,j));
+			l.append(m(j,i));
 		}
 	}
 	l.close();
@@ -51,7 +51,7 @@ void pl2eigen(const PlTerm &arg, Eigen::Matrix4d &m) {
 	for(int i=0; i<4; ++i) {
 		for(int j=0; j<4; ++j) {
 			list.next(value);
-			m(i,j) = value;
+			m(j,i) = value;
 		}
 	}
 }
