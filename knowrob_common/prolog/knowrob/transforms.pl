@@ -50,7 +50,7 @@
 @license BSD
 */
 
-:- use_foreign_library('libeigen.so').
+:- use_foreign_library('libpl_eigen.so').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).

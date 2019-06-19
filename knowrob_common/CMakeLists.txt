@@ -15,9 +15,9 @@ catkin_package(
 )
 
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
-add_library(eigen SHARED src/eigen.cpp)
-target_link_libraries(eigen ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(eigen ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_library(pl_eigen SHARED src/pl_eigen.cpp)
+target_link_libraries(pl_eigen ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(pl_eigen ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
         DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
