@@ -50,6 +50,8 @@
 @license BSD
 */
 
+:- use_foreign_library('libeigen.so').
+
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
@@ -217,20 +219,13 @@ transform_close_to(
 % @param Quaternion A quaternion [number qx,qy,qz,qw]
 %
 matrix(Matrix, Translation, Quaternion) :-
-  ground([Translation,Quaternion]), !,
-  jpl_list_to_array(Translation, TranslationArr),
-  jpl_list_to_array(Quaternion, OrientationArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrix', [TranslationArr,OrientationArr], MatrixArr),
-  jpl_array_to_list(MatrixArr, Matrix).
-
-matrix(Matrix, [X,Y,Z], Quaternion) :-
   ground(Matrix), !,
-  nth0( 3, Matrix, X),
-  nth0( 7, Matrix, Y),
-  nth0(11, Matrix, Z),
-  jpl_list_to_array(Matrix, MatrixArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
-  jpl_array_to_list(QuaternionArr, Quaternion).
+  matrix_translation(Matrix,Translation),
+  matrix_quaternion(Matrix,Quaternion).
+
+matrix(Matrix, Translation, Quaternion) :-
+  ground([Translation,Quaternion]), !,
+  matrix_create(Translation, Quaternion, Matrix).
 
 %% matrix_translate(+In:list, +Offset:list, ?Out:list) is semidet.
 %
@@ -262,34 +257,20 @@ matrix_translate([M00, M01, M02, MX,
 % @param Quaternion2 A quaternion [number qx,qy,qt,qw]
 % @param Multiplied A quaternion [number qx,qy,qt,qw]
 %
-quaternion_multiply(Quaternion1, Quaternion2, Multiplied) :-
-  jpl_list_to_array(Quaternion1, Q0_array),
-  jpl_list_to_array(Quaternion2, Q1_array),
-  jpl_call('org.knowrob.utils.MathUtil', 'quaternionMultiply', [Q0_array, Q1_array], Out_array),
-  jpl_array_to_list(Out_array, Multiplied).
 
-%% quaternion_inverse(+Quaternion:list, ?Inverse:list) is semidet.
-%
-% True if Inverse is the inverse of Quaternion.
-%
-% @param Quaternion A quaternion [number qx,qy,qt,qw]
-% @param Inverse A quaternion [number qx,qy,qt,qw]
-%
-quaternion_inverse(Quaternion, Inverse) :-
-  jpl_list_to_array(Quaternion, Q_array),
-  jpl_call('org.knowrob.utils.MathUtil', 'quaternionInverse', [Q_array], Out_array),
-  jpl_array_to_list(Out_array, Inverse).
+%%% quaternion_inverse(+Quaternion:list, ?Inverse:list) is semidet.
+%%
+%% True if Inverse is the inverse of Quaternion.
+%%
+%% @param Quaternion A quaternion [number qx,qy,qt,qw]
+%% @param Inverse A quaternion [number qx,qy,qt,qw]
+%%
 
-%% quaternion_transform(+Quaternion:list, +Vector:list, ?Transformed:list) is semidet.
-%
-% True if Transformed unifies with Vector rotated by Quaternion.
-%
-% @param Quaternion A quaternion [number qx,qy,qt,qw]
-% @param Vector A position vector [number x,y,z]
-% @param Transformed A position vector [number x,y,z]
-%
-quaternion_transform(Quaternion, Vector, Transformed) :-
-  jpl_list_to_array(Quaternion, Q_array),
-  jpl_list_to_array(Vector, T_array),
-  jpl_call('org.knowrob.utils.MathUtil', 'quaternionTransform', [Q_array,T_array], Out_array),
-  jpl_array_to_list(Out_array, Transformed).
+%%% quaternion_transform(+Quaternion:list, +Vector:list, ?Transformed:list) is semidet.
+%%
+%% True if Transformed unifies with Vector rotated by Quaternion.
+%%
+%% @param Quaternion A quaternion [number qx,qy,qt,qw]
+%% @param Vector A position vector [number x,y,z]
+%% @param Transformed A position vector [number x,y,z]
+%%

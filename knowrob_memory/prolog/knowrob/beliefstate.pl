@@ -52,8 +52,6 @@
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/objects')).
 
-:- use_foreign_library('libknowrob_objects.so').
-
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 
 :-  rdf_meta

@@ -100,8 +100,7 @@ mng_transform_pose(SourceFrame,
   % create StampedMatIn
   jpl_list_to_array(PosIn,PosInArr),
   jpl_list_to_array(RotIn,RotInArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrix',
-          [PosInArr,RotInArr], PoseInArray),
+  matrix(PoseInArray,PosInArr,RotInArr),
   jpl_call('tfjava.Utils', 'poseArrayToStampedMatrix4d',
           [PoseInArray, SourceFrame, T], StampedMatIn),
   % create StampedMatOut
