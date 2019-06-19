@@ -1,7 +1,7 @@
 /*  json_prolog.pl
 
     Author:        Daniel Beßler
-    E-mail:        danielb@informatik.uni-bremen.de
+    E-mail:        danielb@uni-bremen.de
     WWW:           http://www.ease-crc.org
     Copyright (C): 2019, University of Bremen
 
@@ -71,12 +71,8 @@ json_prolog_encode([X|Xs],[Y|Ys]) :-
   json_prolog_encode(X,Y),
   json_prolog_encode(Xs,Ys),!.
 
-json_prolog_encode(String,String) :-
-  % FIXME: need to wrap string in "" ?
-  string(String), !.
-
 json_prolog_encode(X,X) :-
-  ( atom(X) ; is_dict(X) ; number(X) ), !.
+  ( atom(X) ; is_dict(X) ; number(X) ; string(X) ), !.
 
 json_prolog_encode(Term,_{term: [Functor|Args_json]}) :-
   compound(Term), !,
