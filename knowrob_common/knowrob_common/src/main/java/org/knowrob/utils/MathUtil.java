@@ -211,39 +211,4 @@ public class MathUtil {
 		q.set(mat);
 		return new double[] { q.x, q.y, q.z, q.w };
 	}
-	
-	/**
-	 * Read double array from input string.
-	 * @param in The input string
-	 * @param separator Separator character of numbers in input string
-	 * @return The vector represented as double array
-	 */
-	public static double[] parseVector(String in, String separator) {
-		try {
-			String[] elements = in.split(separator);
-			LinkedList<Double> outList = new LinkedList<Double>();
-			for(int i=0; i<elements.length; ++i) {
-				String elem = elements[i].trim();
-				if(!elem.isEmpty()) {
-					outList.add(Double.valueOf(elem));
-				}
-			}
-			double[] p = new double[outList.size()];
-			for(int i=0; i<outList.size(); ++i) {
-				p[i] = outList.get(i);
-			}
-			return p;
-		}
-		catch (Exception e) {
-			System.err.println("Failed to parse vector: " + e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public static void main(String[] args) {
-		Vector3d dir = new Vector3d(1.0, 2.0, 3.0);
-		double[] q = orientationToQuaternion(dir);
-		System.out.println("q: " + q[0] + " " + q[1] + " " + q[2] + " " + q[3]);
-	}
 }
