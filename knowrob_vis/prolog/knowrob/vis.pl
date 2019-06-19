@@ -33,7 +33,6 @@
       show/2,
       show/3,
       show_next/0,
-      camera_pose/2,
       visualisation_server/0
     ]).
 /** <module> Methods for visualizing parts of the knowledge base
@@ -113,33 +112,6 @@ show(DataVisTerm, _, Properties) :-
 %removes displayed trajectories.
 show_next :-
   marker_remove(trajectories).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % Canvas camera manipulation
-
-%% camera_pose(+Position:list, +Orientation:list) is det
-%
-% Sends a pose via the ROS topic _|/camera/pose|_.
-% Visualization clients may choose to manipulate some 3D camera accordingly.
-%
-% @param Position [float x,y,z]
-% @param Orientation [float qx,qy,qz,qw]
-%
-camera_pose(Position, Orientation) :-
-    camera_interface(Camera),
-    lists_to_arrays(Position, PositionArr),
-    lists_to_arrays(Orientation, OrientationArr),
-    jpl_call(Camera, 'setCameraPose', [PositionArr, OrientationArr], _).
-
-camera_interface(Camera) :-
-    (\+ current_predicate(v_camera_interface, _)),
-    jpl_new('org.knowrob.vis.Camera', [], Camera),
-    jpl_list_to_array(['org.knowrob.vis.Camera'], Arr),
-    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Camera, Arr], _),
-    assert(v_camera_interface(Camera)),!.
-camera_interface(Camera) :-
-    current_predicate(v_camera_interface, _),
-    v_camera_interface(Camera).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Visualization server management
