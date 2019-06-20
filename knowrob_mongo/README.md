@@ -93,5 +93,5 @@ be published.
 
 For example, camera info messages could be republished like this:
 
-    mng_republish(DBObj, 'sensor_msgs.CameraInfo', 'sensor_msgs/CameraInfo', 'camera_info', Msg).
+    mng_republish(DBObj, 'camera_info', Msg, 'sensor_msgs/CameraInfo').
 

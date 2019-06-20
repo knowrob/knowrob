@@ -55,11 +55,9 @@
       mng_cursor_descending/3,
       mng_cursor_ascending/3,
       mng_cursor_limit/3,
-      mng_republisher/1,    % get handle to the java object of the mongo republisher
       mng_republish/3,
-      mng_republish/5,
-      mng_ros_message/2,
-      mng_ros_message/4
+      mng_republish/4,
+      mng_ros_message/2
     ]).
 /** <module> Integration of mongo data into symbolic reasoning in KnowRob
 
@@ -76,7 +74,6 @@
 
 :-  rdf_meta
     mng_interface(-),
-    mng_republisher(-),
     mng_db(+),
     mng_timestamp(r,r),
     mng_distinct_values(+,+,-),
@@ -95,9 +92,8 @@
     mng_get_string(+,+,-),
     mng_value_object(+,-),
     mng_ros_message(t,-),
-    mng_ros_message(+,+,+,-),
     mng_republish(t,+,-),
-    mng_republish(+,+,+,+,-).
+    mng_republish(+,+,-,+).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -398,6 +394,29 @@ mng_db_object(DBCursor, all(DBObjs)) :-
   not(DBObjsArray = @(null)),
   jpl_array_to_list(DBObjsArray, DBObjs).
 
+%% mng2pl(+Obj_mng,?Obj_pl)
+mng2pl(DBObject,Dict) :-
+  jpl_object_to_class(DBObject, C),
+  jpl_class_to_classname(DBObject, 'com.mongodb.DBObject'),!,
+  %%
+  catch(jpl_call(DBObject, 'keySet', [], KeySet),_,fail),
+  findall(Key-Val, (
+    jpl_set_element(KeySet,Key),
+    catch(jpl_call(DBObject, 'get', [Key], Val_mng),_,fail),
+    mng2pl(Val_mng,Val)
+  ), Pairs),
+  dict_pairs(Dict,_,Pairs).
+  
+mng2pl(Array,List) :-
+  jpl_object_to_type(Array,array(_)), !,
+  jpl_array_to_list(Array,Xs),
+  findall(Y, (
+    member(X,Xs),
+    mng2pl(X,Y)
+  ), List).
+
+mng2pl(X,X) :- !.
+
 %% mng_value_object(+Val, ObjJava).
 %
 % Convert value to Java type compatible with MONGO queries.
@@ -470,22 +489,8 @@ mng_get_string(DBObject,Key,Value) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % republishing of stored messages
 
-%% mng_republisher(-Republisher) is det
-%
-% Get handle to the java object of mongo republisher.
-%
-mng_republisher(Republisher) :-
-    (\+ current_predicate(v_mng_republisher, _)),
-    jpl_call('org.knowrob.interfaces.mongo.MongoMessages', get, [], Republisher),
-    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoMessages'], Arr),
-    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Republisher, Arr], _),
-    assert(v_mng_republisher(Republisher)),!.
-mng_republisher(Republisher) :-
-    current_predicate(v_mng_republisher, _),
-    v_mng_republisher(Republisher).
-
 %% mng_republish(+TypedDBObj, +Topic, -Msg).
-%% mng_republish(+DBObj, +TypeJava, +TypeString, +Topic, -Msg).
+%% mng_republish(+DBObj, +Topic, -Msg, +TypeString).
 %
 % Generate a ROS message based on Mongo DB object
 % and publish the message on a specified topic.
@@ -495,65 +500,52 @@ mng_republisher(Republisher) :-
 %
 % @param TypedDBObj The DB object (result of a query)
 % @param Topic The message topic
-% @param TypeJava The Java class of the message (e.g., 'std_msgs.Bool')
 % @param TypeString The message type identifier (e.g., 'std_msgs/Bool')
 % @param Msg The generated message
 %
 mng_republish(bool(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.Bool', 'std_msgs/Bool', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/Bool').
 
 mng_republish(str(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.String', 'std_msgs/String', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/String').
 
 mng_republish(float32(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.Float32', 'std_msgs/Float32', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/Float32').
 
 mng_republish(float64(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.Float64', 'std_msgs/Float64', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/Float64').
 
 mng_republish(int32(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.Int32', 'std_msgs/Int32', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/Int32').
 
 mng_republish(int64(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'std_msgs.Int64', 'std_msgs/Int64', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'std_msgs/Int64').
 
 mng_republish(image(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'sensor_msgs.Image', 'sensor_msgs/Image', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'sensor_msgs/Image').
 
 mng_republish(compressed_image(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'sensor_msgs.CompressedImage', 'sensor_msgs/CompressedImage', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'sensor_msgs/CompressedImage').
 
 mng_republish(pcl(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'sensor_msgs.PointCloud', 'sensor_msgs/PointCloud', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'sensor_msgs/PointCloud').
 
 mng_republish(camera(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'sensor_msgs.CameraInfo', 'sensor_msgs/CameraInfo', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'sensor_msgs/CameraInfo').
 
 mng_republish(tf(DBObj), Topic, Msg) :-
-  mng_republish(DBObj, 'tf.tfMessage', 'tf/tfMessage', Topic, Msg).
+  mng_republish(DBObj, Topic, Msg, 'tf/tfMessage').
 
-mng_republish(DBObj, TypeJava, TypeString, '', Msg) :- !,
-  mng_republisher(Republisher),
-  jpl_classname_to_class(TypeJava, MsgClass),
-  jpl_call(Republisher, 'create', [DBObj,MsgClass,TypeString], Msg).
-
-mng_republish(DBObj, TypeJava, TypeString, Topic, Msg) :-
-  mng_republisher(Republisher),
-  jpl_classname_to_class(TypeJava, MsgClass),
-  jpl_call(Republisher, 'publish', [DBObj,MsgClass,TypeString,Topic], Msg).
+mng_republish(DBObj, Topic, Msg, TypeString) :-
+  mng2pl(DBObj,Msg),
+  ros_publish(Topic, TypeString, Msg).
 
 %% mng_ros_message(+DBObj, -Msg).
-%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg).
 %
 % Generate a ROS message based on Mongo DB object.
 %
 % @param DBObj The DB object (result of a query)
-% @param TypeJava The Java class of the message (e.g., 'std_msgs.Bool')
-% @param TypeString The message type identifier (e.g., 'std_msgs/Bool')
 % @param Msg The generated message
 %
 mng_ros_message(DBObj, Msg) :-
-  mng_republish(DBObj, '', Msg).
-
-mng_ros_message(DBObj, TypeJava, TypeString, Msg) :-
-  mng_republish(DBObj, TypeJava, TypeString, '', Msg).
+  mng2pl(DBObj,Msg).
