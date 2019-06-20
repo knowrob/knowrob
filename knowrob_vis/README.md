@@ -38,10 +38,6 @@ First, setup the rosbridge communication interface and initialize the `knowrob_v
     roslaunch rosbridge_server rosbridge_websocket.launch
     rosrun rosprolog rosprolog knowrob_vis
 
-Start the local visualization server, and connect to it with your browser (port 1111).
-
-    ?- visualisation_server.
-
 Create some visualization markers, and publish them to be displayed by visualization clients:
 
     ?- marker(cube(a),X),

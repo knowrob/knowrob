@@ -2,17 +2,14 @@
 <package>
   <name>knowrob_vis</name>
   <version>0.1.0</version>
-  <description>
-    Web-based visualization tools for displaying the contents of the knowledge
-    base.
-  </description>
+  <description>Visualization tools for displaying the contents of the knowledge base.</description>
 
-  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
+  <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD</license>
 
   <author>Moritz Tenorth</author>
-  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
+  <author>Daniel Beßler</author>
   
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
