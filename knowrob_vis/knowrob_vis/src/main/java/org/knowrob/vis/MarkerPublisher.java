@@ -10,6 +10,11 @@ import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
+import org.ros.internal.loader.CommandLineLoader;
+import org.ros.node.DefaultNodeMainExecutor;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
+import com.google.common.collect.Lists;
 
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
