@@ -1,4 +1,4 @@
-package tfjava;
+package org.knowrob.utils;
 /*
  * Copyright (c) 2011, Sjoerd van den Dries, Moritz Tenorth
  * All rights reserved.
@@ -32,6 +32,9 @@ import org.ros.message.Time;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
+
+import org.knowrob.tfmemory.Stamped;
+import org.knowrob.tfmemory.StampedTransform;
 
 
 

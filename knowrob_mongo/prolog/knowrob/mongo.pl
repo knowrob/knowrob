@@ -397,7 +397,7 @@ mng_db_object(DBCursor, all(DBObjs)) :-
 %% mng2pl(+Obj_mng,?Obj_pl)
 mng2pl(DBObject,Dict) :-
   jpl_object_to_class(DBObject, C),
-  jpl_class_to_classname(DBObject, 'com.mongodb.DBObject'),!,
+  jpl_class_to_classname(C, 'com.mongodb.DBObject'),!,
   %%
   catch(jpl_call(DBObject, 'keySet', [], KeySet),_,fail),
   findall(Key-Val, (

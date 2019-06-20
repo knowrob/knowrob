@@ -35,7 +35,7 @@ import java.util.Date;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
-import tfjava.StampedTransform;
+import org.knowrob.tfmemory.StampedTransform;
 
 import com.mongodb.BasicDBObject;
 
