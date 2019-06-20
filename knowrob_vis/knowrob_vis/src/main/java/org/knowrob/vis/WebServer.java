@@ -33,6 +33,8 @@ package org.knowrob.vis;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
 import org.eclipse.jetty.server.Handler;
