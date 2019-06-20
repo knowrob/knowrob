@@ -90,7 +90,7 @@ public class WebServer extends AbstractNodeMain {
 
 		resource_handler.setDirectoriesListed(true);
 		resource_handler.setWelcomeFiles(new String[]{ "index.html", welcome_file });
-		resource_handler.setResourceBase(RosUtilities.rospackFind(main_package) + "/html");
+		resource_handler.setResourceBase(WebServer.rospackFind(main_package) + "/html");
 
 		DefaultHandler def = new DefaultHandler();
 		def.setServeIcon(false);
@@ -124,7 +124,7 @@ public class WebServer extends AbstractNodeMain {
 			String pkgName = path[1];
 			if(pkgName.equals("lib")) return;
 			String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
-			File visPkg = new File(RosUtilities.rospackFind(main_package));
+			File visPkg = new File(WebServer.rospackFind(main_package));
 			File wsDir = visPkg.getParentFile().getParentFile();
 			File pkgDir = new File(wsDir, pkgName);
 			if(!pkgDir.exists()) return;
@@ -147,7 +147,7 @@ public class WebServer extends AbstractNodeMain {
 			String pkgName = path[1];
 			if(pkgName.equals("lib")) return;
 			// find the basepath for the resource handler
-			String pkgPath = RosUtilities.rospackFind(pkgName);
+			String pkgPath = WebServer.rospackFind(pkgName);
 			if(pkgPath==null) return;
 			File file = new File(pkgPath);
 			String parentDirectory = file.getParentFile().getAbsolutePath();
@@ -157,4 +157,37 @@ public class WebServer extends AbstractNodeMain {
 			resource_handler.handle(target,baseRequest,request,response);
 		}
 	}
+	
+	public static String rospackFind(String pkg) {
+	  String path = null;
+        try {
+        	
+       	
+            Process p = Runtime.getRuntime().exec("rospack find " + pkg);
+            
+            if(p.waitFor()==127) {
+            //	throw new RuntimeException("External program 'rospack' not found");
+            }
+
+            BufferedReader out = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            if ((path = out.readLine()) != null){
+                ;//System.out.println("Package: " + pkg + ", Path: " + path);                    
+            } else {
+            	
+            	// print error output
+            	String l = null;
+            	while ( (l = err.readLine()) != null)
+                    System.out.println(l);
+            	
+                ;//System.out.println("Package: " + pkg + ", Error: package not found!");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return path;
+    }
 }
