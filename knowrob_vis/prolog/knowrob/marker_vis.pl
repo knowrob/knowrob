@@ -212,7 +212,7 @@ marker_visualisation(MarkerVis) :-
   (\+ current_predicate(v_marker_vis, _)),
   jpl_call('org.knowrob.vis.MarkerPublisher', get, [], MarkerVis),
   jpl_list_to_array(['org.knowrob.vis.MarkerPublisher'], Arr),
-  jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [MarkerVis, Arr], _),
+  jpl_call('org.knowrob.vis.MarkerPublisher', runNode, [MarkerVis, Arr], _),
   assert(v_marker_vis(MarkerVis)),!.
 
 marker_visualisation(MarkerVis) :-

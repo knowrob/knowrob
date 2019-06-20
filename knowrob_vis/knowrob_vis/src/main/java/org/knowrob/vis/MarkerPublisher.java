@@ -215,4 +215,12 @@ public class MarkerPublisher extends AbstractNodeMain {
 			e.printStackTrace();
 		}
 	}
+    
+    public static void runNode(AbstractNodeMain node, String[] args) {
+        CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList(args));
+        NodeConfiguration nodeConfiguration = loader.build();
+
+        NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+        nodeMainExecutor.execute(node, nodeConfiguration);
+    }
 }
