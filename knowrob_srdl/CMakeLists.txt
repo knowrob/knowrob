@@ -4,9 +4,7 @@ project(knowrob_srdl)
 
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools knowrob_common knowrob_actions urdf xacro rosprolog)
-
-catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
+find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_actions urdf xacro rosprolog)
 
 catkin_package(
   CATKIN_DEPENDS knowrob_common urdf rosprolog
@@ -34,13 +32,6 @@ foreach(it ${xacro_files_in})
   set(xacro_files_out ${xacro_files_out} ${expanded_file})
 endforeach(it)
 add_custom_target(srdl_media_files ALL DEPENDS ${xacro_files_out})
-
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/ 
-        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
-
-FILE(GLOB sh_files "scripts/*")
-install(PROGRAMS ${sh_files}
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts/)
         
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
@@ -50,6 +41,3 @@ install(DIRECTORY prolog/
   
 install(DIRECTORY urdf/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/urdf)
-
-install(FILES knowrob_srdl/build/classpath.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )
