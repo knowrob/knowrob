@@ -139,7 +139,7 @@ mng_designator_interval(Designator, Interval) :-
 mng_designator_location(Designator, pose(Pos,Rot)) :-
   jpl_designator(Designator, DesigJava),
   mng_db_call('location', [DesigJava], StampedMat),
-  jpl_call('tfjava.Utils', 'stampedMatrix4dToPoseArray',
+  jpl_call('org.knowrob.utils.Utils', 'stampedMatrix4dToPoseArray',
           [StampedMat], TransformationArray),
   jpl_array_to_list(TransformationArray, Transformation),
   matrix(Transformation,Pos,Rot).

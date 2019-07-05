@@ -53,8 +53,8 @@ import org.ros.message.Time;
 import org.ros.node.NodeConfiguration;
 
 import geometry_msgs.TransformStamped;
-import tfjava.Stamped;
-import tfjava.StampedTransform;
+import org.knowrob.tfmemory.Stamped;
+import org.knowrob.tfmemory.StampedTransform;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;

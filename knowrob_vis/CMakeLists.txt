@@ -2,23 +2,22 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_vis)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools data_vis_msgs knowrob_common knowrob_srdl)
+find_package(catkin REQUIRED COMPONENTS data_vis_msgs roscpp knowrob_common knowrob_srdl)
 
-catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_package(CATKIN_DEPENDS roscpp knowrob_common)
 
-catkin_package(CATKIN_DEPENDS knowrob_common)
+find_package(PkgConfig)
+pkg_check_modules(SWIPL REQUIRED swipl)
 
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
+set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
-install(DIRECTORY html/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/html)
+include_directories(include ${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+add_library(marker_vis SHARED src/marker_vis.cpp)
+target_link_libraries(marker_vis ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(marker_vis ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
   
 install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
   
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
-
-install(FILES knowrob_vis/build/classpath.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )

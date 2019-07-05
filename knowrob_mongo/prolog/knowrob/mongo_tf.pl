@@ -100,18 +100,17 @@ mng_transform_pose(SourceFrame,
   % create StampedMatIn
   jpl_list_to_array(PosIn,PosInArr),
   jpl_list_to_array(RotIn,RotInArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrix',
-          [PosInArr,RotInArr], PoseInArray),
-  jpl_call('tfjava.Utils', 'poseArrayToStampedMatrix4d',
+  matrix(PoseInArray,PosInArr,RotInArr),
+  jpl_call('org.knowrob.utils.Utils', 'poseArrayToStampedMatrix4d',
           [PoseInArray, SourceFrame, T], StampedMatIn),
   % create StampedMatOut
-  jpl_call('tfjava.Utils', 'getStampedIdentityMatrix4d',
+  jpl_call('org.knowrob.utils.Utils', 'getStampedIdentityMatrix4d',
           [], StampedMatOut),
   % transform the pose
   jpl_call(Mongo, 'transformPose',
           [TargetFrame, StampedMatIn, StampedMatOut], @(true)),
   % read position and orientation
-  jpl_call('tfjava.Utils', 'stampedMatrix4dToPoseArray',
+  jpl_call('org.knowrob.utils.Utils', 'stampedMatrix4dToPoseArray',
           [StampedMatOut], PoseOutArray),
   jpl_array_to_list(PoseOutArray, PoseOut),
   matrix(PoseOut,PosOut,RotOut).

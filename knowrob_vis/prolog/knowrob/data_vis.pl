@@ -63,7 +63,7 @@
 data_vis(Term, Properties) :-
   data_vis_object(Term, Object), !,
   data_vis_set_properties(Object, Properties),
-  data_vis_publish.
+  data_vis_publish(Object).
 
 %% timeline(+Events:list) is det
 %
@@ -89,106 +89,63 @@ timeline(Events) :-
   data_vis(timeline(event_timeline),
           [data:[[EvtNames,EventExtends]]]).
 
+%% data_vis_object
+data_vis_object(piechart(Identifier), Object) :-
+  data_vis_(Identifier,0,Object).
+data_vis_object(barchart(Identifier), Object) :-
+  data_vis_(Identifier,1,Object).
+data_vis_object(treechart(Identifier), Object) :-
+  data_vis_(Identifier,2,Object).
+data_vis_object(timeline(Identifier), Object) :-
+  data_vis_(Identifier,3,Object),
+  b_set_dict(title, Object, 'Logged Actions'),
+  b_set_dict(xlabel, Object, 'Time'),
+  b_set_dict(ylabel, Object, 'Events').
+data_vis_object(linechart(Identifier), Object) :-
+  data_vis_(Identifier,4,Object).
+
+data_vis_(Identitier, Type, _{
+  id: Identitier,
+  type: Type,
+  title: '',
+  xlabel: '',
+  ylabel: '',
+  width: 200,
+  height: 200,
+  fontsize: '12px',
+  values: []
+}).
+
+%% data_vis_set_data
+data_vis_set_data(Object, Data) :-
+  data_vis_set_property(Object, data:Data).
+
+%% data_vis_set_property
+data_vis_set_property(Object, data:[Data,Labels]) :-
+  lists_to_arrays(Data, DataArr),
+  lists_to_arrays(Labels, LabelsArr),!,
+  b_set_dict(data, Object, [DataArr,LabelsArr]).
+data_vis_set_property(Object, data:Data) :-
+  lists_to_arrays(Data, DataArr),!,
+  b_set_dict(data, Object, DataArr).
+data_vis_set_property(Object, Key:Value) :-
+  b_set_dict(Key, Object, Value).
+
+%% data_vis_set_properties
+data_vis_set_properties(_, []) :- !.
+data_vis_set_properties(Object, [Prop|Rest]) :-
+  data_vis_set_property(Object, Prop), !,
+  data_vis_set_properties(Object, Rest).
+
+%%
+data_vis_publish(Object) :-
+  ros_publish('/data_vis_msgs', 'data_vis_msgs/DataVis', Object).
 
 %% data_vis_remove(+Identifier) is det.
 %
 % Republishes a data_vis object with empty data
 % so that visualization clients can remove it.
 %
-data_vis_remove(all) :- !,
-  data_vis_remove_objects.
 data_vis_remove(Identifier) :-
-  data_vis_remove_object(Identifier).
-
-%% data_vis_object
-data_vis_object(piechart(Identifier), Object) :-
-  data_vis_new_object(Identifier, Object),
-  data_vis_set_type(Object, 0).
-data_vis_object(barchart(Identifier), Object) :-
-  data_vis_new_object(Identifier, Object),
-  data_vis_set_type(Object, 1).
-data_vis_object(treechart(Identifier), Object) :-
-  data_vis_new_object(Identifier, Object),
-  data_vis_set_type(Object, 2).
-data_vis_object(timeline(Identifier), Object) :-
-  data_vis_new_object(Identifier, Object),
-  data_vis_set_type(Object, 3),
-  data_vis_set_property(Object, xlabel:'Time'),
-  data_vis_set_property(Object, ylabel:'Events'),
-  data_vis_set_property(Object, fontsize:'12px'),
-  jpl_call(Object, setTitle, ['Logged Actions'], _).
-data_vis_object(linechart(Identifier), Object) :-
-  data_vis_new_object(Identifier, Object),
-  data_vis_set_type(Object, 4).
-
-%% data_vis_set_type
-data_vis_set_type(DataVisObject, Type) :-
-  jpl_call(DataVisObject, setType, [Type], _).
-
-%% data_vis_set_data
-data_vis_set_data(DataVisObject, Data) :-
-  data_vis_set_property(DataVisObject, data:Data).
-
-%% data_vis_set_property
-data_vis_set_property(DataVisObject, data:[Data,Labels]) :-
-  lists_to_arrays(Data, DataArr),
-  lists_to_arrays(Labels, LabelsArr),
-  jpl_call(DataVisObject, setData, [DataArr,LabelsArr], _), !.
-data_vis_set_property(DataVisObject, data:Data) :-
-  lists_to_arrays(Data, DataArr),
-  jpl_call(DataVisObject, setData, [DataArr], _), !.
-data_vis_set_property(DataVisObject, title:Title) :-
-  jpl_call(DataVisObject, setTitle, [Title], _), !.
-data_vis_set_property(DataVisObject, xlabel:Label) :-
-  jpl_call(DataVisObject, setXlabel, [Label], _), !.
-data_vis_set_property(DataVisObject, ylabel:Label) :-
-  jpl_call(DataVisObject, setYlabel, [Label], _), !.
-data_vis_set_property(DataVisObject, width:Label) :-
-  jpl_call(DataVisObject, setWidth, [Label], _), !.
-data_vis_set_property(DataVisObject, height:Label) :-
-  jpl_call(DataVisObject, setHeight, [Label], _), !.
-data_vis_set_property(DataVisObject, fontsize:Label) :-
-  jpl_call(DataVisObject, setFontsize, [Label], _), !.
-data_vis_set_property(_, _).
-
-%% data_vis_set_properties
-data_vis_set_properties(_, []) :- !.
-data_vis_set_properties(DataVisObject, [Prop|Rest]) :-
-  data_vis_set_property(DataVisObject, Prop), !,
-  data_vis_set_properties(DataVisObject, Rest).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% ROS node for marker visualization
-%
-
-data_visualisation :-
-  data_visualisation(_).
-  
-data_visualisation(DataVis) :-
-  (\+ current_predicate(v_data_vis, _)),
-  jpl_call('org.knowrob.vis.DataVisPublisher', get, [], DataVis),
-  jpl_list_to_array(['org.knowrob.vis.DataVisPublisher'], Arr),
-  jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [DataVis, Arr], _),
-  assert(v_data_vis(DataVis)),!.
-
-data_visualisation(DataVis) :-
-  current_predicate(v_data_vis, _),
-  v_data_vis(DataVis).
-
-data_vis_publish :-
-  data_visualisation(DataVis),
-  jpl_call(DataVis, publish, [], _).
-
-data_vis_new_object(Identifier, DataVisObject):-
-  data_visualisation(DataVis),
-  jpl_call(DataVis, createDataVisObject, [Identifier], DataVisObject).
-
-data_vis_remove_object(Identifier):-
-  data_visualisation(DataVis),
-  jpl_call(DataVis, removeDataVisObject, [Identifier], _).
-
-data_vis_remove_objects :-
-  data_visualisation(DataVis),
-  jpl_call(DataVis, removeDataVisObjects, [], _).
-
+  data_vis_(Identifier,0,Object),
+  data_vis_publish(Object).

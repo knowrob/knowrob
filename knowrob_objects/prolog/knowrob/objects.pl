@@ -65,6 +65,8 @@
   @license BSD
 */
 
+:- use_foreign_library('libknowrob_objects.so').
+
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).

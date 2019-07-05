@@ -60,7 +60,6 @@ mng_kinect_head_rgb_image_color(Instant, DBObj) :-
 % DBObject is a recorded message of type sensor_msgs/Image.
 %
 mng_image_base64(DBObj, Base64) :-
-  mng_republisher(_),
   jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64', [DBObj], Base64).
 
 %% mng_image_base64_compresssed(+DBObj, -Base64) is semidet
@@ -70,5 +69,4 @@ mng_image_base64(DBObj, Base64) :-
 % DBObject is a recorded message of type sensor_msgs/CompressedImage.
 %
 mng_image_base64_compresssed(DBObj, Base64) :-
-  mng_republisher(_),
   jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).

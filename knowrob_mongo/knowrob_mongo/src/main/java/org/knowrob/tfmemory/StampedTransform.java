@@ -27,8 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-package tfjava;
+package org.knowrob.tfmemory;
 
 import org.ros.message.Time;
 
@@ -54,7 +53,7 @@ public class StampedTransform {
     /** Time stamp */
     public Time timeStamp;
     /** Transformation matrix representing the transform */ 
-    protected Matrix4d transform;
+    public Matrix4d transform;
         
     /**
      * Class constructor.

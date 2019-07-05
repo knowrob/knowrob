@@ -28,7 +28,7 @@
  */
 
 
-package tfjava;
+package org.knowrob.tfmemory;
 
 import org.ros.message.Time;
 
@@ -41,7 +41,7 @@ import org.ros.message.Time;
 public class Stamped<T> {
     
     /** Data to be stamped. */
-    protected T data;        
+    public T data;        
     /** Frame ID of the data. */
     public String frameID;
     /** Time stamp of the data. */

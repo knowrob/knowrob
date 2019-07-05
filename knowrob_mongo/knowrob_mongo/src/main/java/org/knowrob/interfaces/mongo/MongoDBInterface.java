@@ -48,8 +48,8 @@ import org.knowrob.interfaces.mongo.types.Designator;
 import org.knowrob.tfmemory.TFMemory;
 import org.ros.message.Time;
 
-import tfjava.Stamped;
-import tfjava.StampedTransform;
+import org.knowrob.tfmemory.Stamped;
+import org.knowrob.tfmemory.StampedTransform;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
