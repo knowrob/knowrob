@@ -48,20 +48,12 @@
 */
 :-  rdf_meta
     comp_temporallySubsumes(r, r),
-    comp_after(r, r),
     comp_duration(r, r),
     comp_equalI(r, r),
-    comp_afterI(r, r),
-    comp_beforeI(r, r),
-    comp_meetsI(r, r),
     comp_meetsInvI(r, r),
-    comp_overlapsI(r, r),
     comp_overlapsInvI(r, r),
-    comp_startsI(r, r),
     comp_startsInvI(r, r),
-    comp_duringI(r, r),
     comp_duringInvI(r, r),
-    comp_finishesI(r, r),
     comp_finishesInvI(r, r).
 
 :- use_module(library('semweb/rdfs')).
@@ -69,9 +61,10 @@
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/temporal')).
 
+:- owl_parser:owl_parse('package://knowrob_common/owl/comp_temporal.owl').
+
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_temporal, 'http://knowrob.org/kb/comp_temporal.owl#', [keep(true)]).
-
 
 %% comp_temporallySubsumes(?Long, ?Short) is nondet.
 %

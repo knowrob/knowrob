@@ -15,18 +15,13 @@
 
   <url type="website">http://www.knowrob.org</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
-
   
   <buildtool_depend>catkin</buildtool_depend>
   
   <run_depend>swi-prolog</run_depend>
   <run_depend>swi-prolog-java</run_depend>
-  <run_depend>libjson-java</run_depend>
-  <run_depend>libjson-glib</run_depend>
   
-  <run_depend>comp_orgprinciples</run_depend>
   <run_depend>comp_spatial</run_depend>
-  <run_depend>comp_temporal</run_depend>
   <run_depend>json_prolog</run_depend>
   <run_depend>json_prolog_msgs</run_depend>
   <run_depend>knowrob_actions</run_depend>

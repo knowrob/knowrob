@@ -20,20 +20,14 @@
 
 :- begin_tests(comp_temporal).
 
-
-
-
 % :- register_ros_package('knowrob_common').
 % :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/comp_temporal')).
 
-:- owl_parser:owl_parse('package://comp_temporal/owl/comp_temporal.owl').
 :- owl_parser:owl_parse('package://comp_temporal/owl/test_comp_temporal.owl').
 
-
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_comp_temporal, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
 
 
