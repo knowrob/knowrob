@@ -48,14 +48,20 @@
       time_later_then/2,
       time_earlier_then/2,
       interval/2,
+      interval_duration/2,
+      interval_equal/2,
       interval_start/2,
       interval_end/2,
       interval_before/2,
       interval_after/2,
       interval_meets/2,
+      interval_met_by/2,
       interval_starts/2,
+      interval_started_by/2,
       interval_finishes/2,
+      interval_finished_by/2,
       interval_overlaps/2,
+      interval_overlapped_by/2,
       interval_during/2,
       owl_temporal_db/2
     ]).
@@ -88,16 +94,21 @@
             occurs(r,?),
             occurs(r,?,r),
             allen_constraint(r,r,r,t),
-            interval(?,?),
-            interval_start(?,?),
-            interval_end(?,?),
-            interval_before(?,?),
-            interval_after(?,?),
-            interval_meets(?,?),
-            interval_starts(?,?),
-            interval_finishes(?,?),
-            interval_overlaps(?,?),
-            interval_during(?,?).
+            interval(t,?),
+            interval_duration(t,?),
+            interval_start(t,?),
+            interval_end(t,?),
+            interval_before(t,t),
+            interval_after(t,t),
+            interval_meets(t,t),
+            interval_met_by(t,t),
+            interval_starts(t,t),
+            interval_started_by(t,t),
+            interval_finishes(t,t),
+            interval_finished_by(t,t),
+            interval_overlaps(t,t),
+            interval_overlapped_by(t,t),
+            interval_during(t,t).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
@@ -443,6 +454,30 @@ interval(TimePoint, [Time,Time]) :-
   rdfs_individual_of(TimePoint, knowrob:'TimePoint'),
   time_term(TimePoint, Time), !.
 
+%% interval_equal(?I1,?I2) is semidet.
+%
+% Interval I1 is equal to I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+interval_equal(I1,I2) :-
+   interval(I1,[ST,ET]),
+   interval(I2,[ST,ET]).
+
+%%  interval_duration(Event, Duration) is nondet.
+%
+% Calculate the duration of the the TemporalThing Event
+%
+% @param Event Identifier of a TemporalThing
+% @param Duration Duration of the event
+%
+% @tbd Duration should be literal(type(qudt:'MinuteTime', Duration))
+%
+interval_duration(Event, Duration) :-
+  interval(Event, [ST,ET]),
+  Duration is (ET-ST).
+
 %% interval_start(I,End) is semidet.
 %
 % The start time of I 
@@ -499,6 +534,16 @@ interval_meets(I0, I1) :-
   interval_end(I0, Time),
   interval_start(I1, Time).
 
+%% interval_met_by(I1,I2) is semidet.
+%
+% Intervals I1 and I2 meet, i.e. the end time of I2 is equal to the start time of I1
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+interval_met_by(I1,I2) :-
+   interval_meets(I2,I1).
+
 %% interval_starts(I0,I1) is semidet.
 %
 % Interval I0 starts interval I1, i.e. both have the same start time, but I0 finishes earlier
@@ -512,6 +557,16 @@ interval_starts(I0, I1) :-
   once(( I1_val = [T_start,End1], End0 < End1 ) ;
          I1_val = [T_start] ).
 
+%% interval_started_by(I1,I2) is semidet.
+%
+% Interval I2 starts interval I1, i.e. both have the same start time, but I2 finishes earlier
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+interval_started_by(I1,I2) :-
+   interval_starts(I2,I1).
+
 %% interval_finishes(I0,I1) is semidet.
 %
 % Interval I0 finishes interval I1, i.e. both have the same end time, but I0 starts later
@@ -524,6 +579,16 @@ interval_finishes(I0, I1) :-
   interval(I1, [Begin1,T_end]),
   Begin0 > Begin1.
 
+%% interval_finished_by(I1,I2) is semidet.
+%
+% Interval I2 finishes interval I1, i.e. both have the same end time, but I2 starts later
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+interval_finished_by(I1,I2):-
+   interval_finishes(I2,I1).
+
 %% interval_overlaps(I0,I1) is semidet.
 %
 % Interval I0  overlaps temporally with I1
@@ -532,17 +597,20 @@ interval_finishes(I0, I1) :-
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_overlaps(I0, I1) :-
-  interval(I0, I0_val),
-  interval(I1, I1_val),
-  interval_start(I0_val, Begin0),
-  interval_start(I1_val, Begin1),
-  ignore(interval_end(I0_val, End0)),
-  ignore(interval_end(I1_val, End1)),
-  ((var(End0), var(End1));
-   (var(End0) -> Begin0 < End1;
-   (var(End1) -> Begin1 < End0;
-   (Begin0=<End1, End0>=Begin1)
-   ))).
+  interval(I0, [Begin0,End0]),
+  interval(I1, [Begin1,End1]),
+  Begin0 =< Begin1,
+  End0 =< End1.
+
+%% interval_overlapped_by(I1,I2) is semidet.
+%
+% Interval I2  overlaps temporally with I1
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+interval_overlapped_by(I1,I2) :-
+   interval_overlaps(I2,I1).
 
 %% interval_during(I0,I1) is semidet.
 %
@@ -569,95 +637,3 @@ interval_during(I0, I1) :-
     interval_end(I0_val, End0),
     End0 =< End1
   ) ; true).
-
-%% comp_temporallySubsumes(?Long, ?Short) is nondet.
-%
-% Check if the time segment Long contains the segment or time point Short.
-%
-% @param Long Identifier of the longer time segment
-% @param Short Identifier of the contained time segment or time point
-%
-comp_temporallySubsumes(Long, Short) :-
-  interval(Long, [Long_ST,Long_ET]),
-  interval(Short, [Short_ST,Short_ET]),
-  % compare the start and end times
-  (Short_ST=<Short_ET),
-  (Long_ST=<Short_ST), (Short_ST=<Long_ET),
-  (Long_ST=<Short_ET), (Short_ET=<Long_ET).
-
-%%  comp_duration(Event, Duration) is nondet.
-%
-% Calculate the duration of the the TemporalThing Event
-%
-% @param Event Identifier of a TemporalThing
-% @param Duration Duration of the event
-%
-% @tbd Duration should be literal(type(qudt:'MinuteTime', Duration))
-%
-comp_duration(Event, Duration) :-
-  interval(Event, [ST,ET]),
-  Duration is (ET-ST).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Allen's 13 temporal relations for intervals
-
-%% comp_equalI(?I1,?I2) is semidet.
-%
-% Interval I1 is equal to I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_equalI(I1,I2) :-
-   interval(I1,[ST,ET]),
-   interval(I2,[ST,ET]).
-
-%% comp_overlapsInvI(I1,I2) is semidet.
-%
-% Interval I2  overlaps temporally with I1
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_overlapsInvI(I1,I2) :-
-   interval_overlaps(I2,I1).
-
-%% comp_meetsInvI(I1,I2) is semidet.
-%
-% Intervals I1 and I2 meet, i.e. the end time of I2 is equal to the start time of I1
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_meetsInvI(I1,I2) :-
-   interval_meets(I2,I1).
-
-%% comp_duringInvI(I1,I2) is semidet.
-%
-% Interval I2 is inside interval I1, i.e. it starts later and finishes earlier than I1.
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_duringInvI(I1,I2) :-
-   interval_during(I2,I1).
-
-%% comp_startsInvI(I1,I2) is semidet.
-%
-% Interval I2 starts interval I1, i.e. both have the same start time, but I2 finishes earlier
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_startsInvI(I1,I2) :-
-   interval_starts(I2,I1).
-
-%% comp_finishesInvI(I1,I2) is semidet.
-%
-% Interval I2 finishes interval I1, i.e. both have the same end time, but I2 starts later
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_finishesInvI(I1,I2):-
-   interval_finishes(I2,I1).

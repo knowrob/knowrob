@@ -1088,23 +1088,21 @@ owl_has(S, P, O, DB) :-
 
 owl_has_transitive(S, P, O) :-
 	owl_rdf_db(DB),
-	owl_has_transitive(S, P, O, DB).
+	owl_has_transitive_(S, P, O, DB, [O]).
 
 owl_has_transitive(S, P, O, DB) :-
-	ground(P),
-	rdfs_individual_of(P, owl:'TransitiveProperty'), !,
-	owl_has_transitive_(S, P, O, DB, [P]).
-owl_has_transitive(S, P, O, DB) :-
+	owl_has_transitive_(S, P, O, DB, [O]).
+
+owl_has_transitive_(S, P, O, DB, _) :-
 	owl_has_equivalent(S, P, O, DB).
 
 owl_has_transitive_(S, P, O, DB, Visited) :-
-  rdf_reachable(SP, rdfs:subPropertyOf, P),
+	rdfs_individual_of(P, owl:'TransitiveProperty'),
+	rdf_reachable(SP, rdfs:subPropertyOf, P),
 	owl_has_equivalent(S, SP, O1, DB),          % MT: pulled the rdfs_subprop_of in here to allow transitive sup-property chains
-	O1 \= literal(_),                       %     of the form P -> SP1 -> SP2 -> P ->... with SP1, SP2 transitive sub-properties of P
+	atom(O1),                       %     of the form P -> SP1 -> SP2 -> P ->... with SP1, SP2 transitive sub-properties of P
 	\+ memberchk(O1, Visited),
-	(   O = O1
-	;   owl_has_transitive_(O1, P, O, DB, [O1|Visited])
-	).
+	owl_has_transitive_(O1, P, O, DB, [O1|Visited]).
 
 %	owl_has_equivalent(?Subject, ?Predicate, ?Object)
 %
@@ -1113,6 +1111,13 @@ owl_has_transitive_(S, P, O, DB, Visited) :-
 owl_has_equivalent(S, P, O) :-
 	owl_rdf_db(DB),
 	owl_has_equivalent(S, P, O, DB).
+
+owl_has_equivalent(S, P, O, DB) :-
+	nonvar(O),
+	nonvar(S), !,
+	owl_same_as(S, S1),
+	owl_same_as(O, O1),
+	owl_has_direct(S1, P, O1, DB).
 
 owl_has_equivalent(S, P, O, DB) :-
 	nonvar(S), !,
@@ -1125,11 +1130,6 @@ owl_has_equivalent(S, P, O, DB) :-
 	owl_same_as(O1, O),
 	owl_has_direct(S0, P, O1, DB),
 	owl_same_as(S0, S).
-
-owl_has_equivalent(S, P, O, DB) :-
-	owl_has_direct(S0, P, O0, DB),
-	owl_same_as(S0, S),
-	owl_same_as(O0, O).
 
 %%	owl_same_as(?X, ?Y) is nondet.
 %
