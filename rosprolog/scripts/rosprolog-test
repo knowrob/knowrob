@@ -12,13 +12,20 @@ if [ -n "$1" ]; then
    for PKG in $1; do
      IFS=' '
      G_ARGS="$G_ARGS,register_ros_package($PKG)"
-     if [ -f $(rospack find $PKG)/prolog/init.pl ]; then
+     PKG_PATH=`rospack find $PKG`
+     if [ -f $PKG_PATH/prolog/init.pl ]; then
        ROS_EXPORT_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $PKG`
        export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
      else
        exit 1
      fi
      IFS=','
+     for MOD in $2; do
+       MOD_PATH=`find $PKG_PATH/prolog -name "$MOD.pl"`
+       if [ ! -z "$MOD_PATH" ]; then
+         G_ARGS="$G_ARGS,use_module('$MOD_PATH')"
+       fi
+     done
    done
    SCRIPT_FILE="-g $G_ARGS,load_test_files(_) -t ignore(run_tests([$2])),halt"
 fi
