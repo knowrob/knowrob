@@ -39,8 +39,8 @@
 @license BSD
 */
 
-:- use_module(library('clpfd')).
-:- use_module(library('knowrob/utility/delay')).
+:- use_module(library(clpfd)).
+:- use_module(library(delay)).
 
 %% atom_ensure_prefix(?Atom:atom, ?Prefix:atom, -AtomResolved:atom) is semidet.
 atom_ensure_prefix(Atom, Prefix, Atom) :-
