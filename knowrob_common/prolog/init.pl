@@ -42,6 +42,14 @@
        upgrade(true)]
      )
 ).
+:- once(
+     use_module(library(delay)) ;
+     pack_install(delay,[
+       silent(true),
+       interactive(false),
+       upgrade(true)]
+     )
+).
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdf_edit')).
@@ -69,7 +77,6 @@ owl_parser:registry('http://www.ease-crc.org/ont', rosowl).
 owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 
 :- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_actions).
 
 % parse OWL files, register name spaces
 :- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
@@ -77,7 +84,6 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 :- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE.owl').
 :- owl_parser:owl_parse('http://knowrob.org/kb/knowrob.owl').
 
-:- use_module(library('knowrob/utility/delay')).
 :- use_module(library('knowrob/utility/atoms')).
 
 :- use_module(library('knowrob/comp_similarity')).
@@ -96,8 +102,8 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 :- set_prolog_flag(float_format, '%.12g').
 
 % load and configure unit testing environment
-:- use_module(library('knowrob/utility/plunit')).
-:- set_test_options([load('always'),
-                     run('make'),
+:- use_module(library(plunit)).
+:- set_test_options([load(always),
+                     run(make),
                      silent(false),
                      cleanup(true)]).

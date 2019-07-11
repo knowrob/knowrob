@@ -7,6 +7,9 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/beliefstate')).
 
 :- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).

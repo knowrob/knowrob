@@ -17,16 +17,24 @@ private:
 	typedef std::pair<std::string,knowrob_objects::ObjectState> ObjectStateMapItem;
 	ObjectStateMap dirty_objects[2];
 	std::mutex push_lock;
-	std::mutex loop_lock;
-	std::condition_variable loop_cv;
-	std::thread thread;
+	std::mutex loop_lock_;
+	std::condition_variable loop_cv_;
+	std::thread thread_;
 	int push_index = 0;
 	bool has_dirty_objects = false;
+	bool is_terminated_ = false;
 	
 public:
 	MarkDirtyObjectClient() : 
-	    thread(&MarkDirtyObjectClient::loop, this)
+	    thread_(&MarkDirtyObjectClient::loop, this)
 	{}
+	
+	~MarkDirtyObjectClient()
+	{
+		is_terminated_ = true;
+		loop_cv_.notify_one();
+		thread_.join();
+	}
 	
 	void broadcast(ros::Publisher &publisher) {
 		ObjectStateMap &objects = dirty_objects[push_index];
@@ -48,11 +56,13 @@ public:
 	void loop() {
 		ros::NodeHandle n_;
 		ros::Publisher publisher_ = n_.advertise<knowrob_objects::ObjectStateArray>("/object_state", 10000);
-		while(1) {
+		while(ros::ok()) {
 			{
-				std::unique_lock<std::mutex> lk(loop_lock);
-				loop_cv.wait(lk, [this]{ return has_dirty_objects; });
+				std::unique_lock<std::mutex> lk(loop_lock_);
+				if(is_terminated_) break;
+				loop_cv_.wait(lk, [this]{ return has_dirty_objects || is_terminated_; });
 				has_dirty_objects = false;
+				if(is_terminated_) break;
 			}
 			broadcast(publisher_);
 			std::this_thread::sleep_for(std::chrono::milliseconds(60));
@@ -63,10 +73,10 @@ public:
 	void push_end()   {
 		push_lock.unlock();
 		{
-			std::lock_guard<std::mutex> lk(loop_lock);
+			std::lock_guard<std::mutex> lk(loop_lock_);
 			has_dirty_objects = true;
 		}
-		loop_cv.notify_one();
+		loop_cv_.notify_one();
 	}
 	
 	void push(const std::string &object_id) {
