@@ -1,8 +1,12 @@
 
 :- begin_tests(knowrob_memory).
 
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/event_memory')).
+:- use_module(library('knowrob/temporal')).
 
 :- owl_parse('package://knowrob_memory/owl/test.owl').
 
