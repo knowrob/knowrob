@@ -138,11 +138,11 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#above-Generally -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isAboveOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#above-Generally">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isAboveOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#below-Generally"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isBelowOf"/>
         <rdfs:comment>(above_Generally OVER-OBJ UNDER-OBJ) means that the SpatialThing_Localized OVER-OBJ is more or less above the SpatialThing_Localized UNDER-OBJ. To be more precise: if OVER-OBJ is within a cone-shaped set of vectors within about 45 degrees of Up_Directly pointing up from UNDER-OBJ (see Up_Generally), then (above_Generally OVER-OBJ UNDER-OBJ) holds. This is a more general predicate than above_Directly (q.v.), but it is a more specialized predicate than above_Higher (q.v.). It probably most closely conforms to the English word &quot;above.&quot;</rdfs:comment>
         <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvmnGI5wpEbGdrcN5Y29ycA"/>
     </owl:ObjectProperty>
@@ -170,15 +170,15 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#behind-Generally">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isInFrontOf"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of SpatialPredicate. (behind-Generally AFT FORE) means that AFT is behind FORE. More precisely, a line originating at the center of FORE projecting away from the front side of FORE and parallel to the intrinsic front-to-back axis of FORE forms an angle of less than 45 degrees with a line intersecting both AFT and FORE. Note that AFT may be intangible (e.g., a shadow), although FORE must be tangible.</rdfs:comment>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#below-Generally -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isBelowOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#below-Generally">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isBelowOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
     </owl:ObjectProperty>
     
@@ -388,16 +388,15 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <!-- http://knowrob.org/kb/knowrob.owl#in-ContGeneric -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#in-ContGeneric">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInsideOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
-        <rdfs:comment>(in_ContGeneric OBJ CONT) means that OBJ is contained, confined, or held in CONT. OBJ is not a part of CONT. CONT has a cavity (see CavityWithWalls) and OBJ is at least partly within (see spatiallyIntersects) the interior of this cavity. If CONT moves, OBJ is, by default, caused to move so as to remain within that cavity (see movesWith). If OBJ leaves the confines of CONT, then either OBJ passes through some appropriately sized portal of CONT, or OBJ breaks into smaller pieces that themselves pass through appropriately sized portals of CONT, or OBJ breaks through a wall of CONT. CONT may function as an open or closed container with respect to objects of the size of OBJ. If CONT is closed with respect to OBJ, then in_ContClosed is the preferred more specific predicate. If CONT is open with respect to OBJ, in_ContOpen is preferred. If OBJ is a fluid which completely fills CONT (for example, a cup of coffee brimming over) then in_ContFullOf is more precise.</rdfs:comment>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#inCenterOf -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isInCenterOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inCenterOf">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInCenterOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
     </owl:ObjectProperty>
     
@@ -411,9 +410,9 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isInFrontOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInFrontOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(inFrontOf_Generally FORE AFT) means that FORE is in front of the tangible object AFT. More precisely, the intrinsic back-to-front axis of AFT is within 45 degrees of some line intersecting both FORE and AFT. Note that FORE may be an intangible spatial object, such as an image projected onto a screen.</rdfs:comment>
     </owl:ObjectProperty>
@@ -493,9 +492,9 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#on-Physical -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isOntopOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#on-Physical">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isOntopOf">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
     </owl:ObjectProperty>
     
@@ -629,30 +628,27 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#toTheLeftOf -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isLeftOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toTheLeftOf">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#toTheSideOf"/>
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#toTheRightOf"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(toTheLeftOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s left. Thus the arg2 of toTheLeftOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing-Localized. Because of this asymmetry in argument restrictions, toTheRightOf is not sufficient for representing all cases in which one object is to the right of another (see toTheRightOf). Note that this predicate cannot be used to state that an object is to the left of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isLeftOf">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isNextTo"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isRightOf"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#toTheRightOf -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isRightOf -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toTheRightOf">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#toTheSideOf"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(toTheRightOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s right. Thus the arg2 of toTheRightOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing-Localized. Because of this asymmetry in argument restrictions, toTheRightOf is not sufficient for representing all cases in which one object is to the left of another (see toTheLeftOf). Note that this predicate cannot be used to state that an object is to the right of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isRightOf">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isNextTo"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#toTheSideOf -->
+    <!-- http://knowrob.org/kb/knowrob.owl#isNextTo -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toTheSideOf">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isNextTo">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(toTheSideOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s left or right side. Thus the arg2 of toTheSideOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing_Localized. Because of this asymmetry in argument restrictions, toTheSideOf is not sufficient for representing all cases in which one object is to the right or left of another (see toTheRightOf and toTheLeftOf). Note that this predicate cannot be used to state that an object is to the side of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
     </owl:ObjectProperty>
     
 
