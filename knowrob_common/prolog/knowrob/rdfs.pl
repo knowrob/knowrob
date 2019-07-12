@@ -146,11 +146,13 @@ rdf_phas(Property, P, O) :-
 %
 rdf_has_prolog(S,P,O) :-
   ground(S),!,
+  atom(S),
   rdf_has(S,P,O_rdf),
   rdfs_value_prolog(P,O_rdf,O).
 
 rdf_has_prolog(S,P,O) :-
   nonvar(O),!,
+  once(( var(S) ; atom(S) )),
   rdfs_value_prolog(P,O_rdf,O),
   rdf_has(S,P,O_rdf).
 
