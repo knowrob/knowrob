@@ -90,11 +90,8 @@
     comp_inCenterOf_at_time(r, r,+),
     comp_center(r, r).
 
-spatial_thing(Thing) :-
-  % if unbound limit search to human scale objects
-  ground(Thing)
-  -> rdfs_individual_of(Thing, knowrob:'SpatialThing')
-  ;  rdfs_individual_of(Thing, knowrob:'HumanScaleObject').
+physical_object(Thing) :-
+  rdfs_individual_of(Thing, dul:'PhysicalObject').
 
 %% on_Physical(?Top, ?Bottom) is nondet.
 %% on_Physical(?Top, ?Bottom, +Interval) is nondet.
@@ -115,17 +112,17 @@ on_Physical(Top, Bottom, Interval) :-
     spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
     
 on_Physical_at_time(Top, Bottom, Instant) :-
-    spatial_thing(Top),
+    physical_object(Top),
     map_frame_name(MapFrame),
     % get object center for Top
-    object_pose_at_time(Top, Instant, [MapFrame, _, [TX,TY,TZ], _]),
+    object_pose(Top, [MapFrame, _, [TX,TY,TZ], _], Instant),
     
-    spatial_thing(Bottom),
+    physical_object(Bottom),
     Top \= Bottom,
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom,Instant),
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, [MapFrame, _, [_,_,BZ], _]),
+    object_pose(Bottom, [MapFrame, _, [_,_,BZ], _], Instant),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -149,20 +146,20 @@ comp_above_of(Top, Bottom, Interval) :-
     spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 comp_above_of_at_time(Top, Bottom, Instant) :-
-    spatial_thing(Top),
+    physical_object(Top),
     map_frame_name(MapFrame),
     
     % get object center for Top
-    object_pose_at_time(Top, Instant, [MapFrame, _, [TX,TY,TZ], _]),
+    object_pose(Top, [MapFrame, _, [TX,TY,TZ], _], Instant),
     
-    spatial_thing(Bottom),
+    physical_object(Bottom),
     Top \= Bottom,
 
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom,Instant),
 
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, [MapFrame, _, [_,_,BZ], _]),
+    object_pose(Bottom, [MapFrame, _, [_,_,BZ], _], Instant),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -205,13 +202,13 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
-    spatial_thing(Left),
+    physical_object(Left),
     map_frame_name(MapFrame),
-    object_pose_at_time(Left, Instant, [MapFrame, _, [LX,LY,LZ], _]),
+    object_pose(Left, [MapFrame, _, [LX,LY,LZ], _], Instant),
     
-    spatial_thing(Right),
+    physical_object(Right),
     Left \= Right,
-    object_pose_at_time(Right, Instant, [MapFrame, _, [RX,RY,RZ], _]),
+    object_pose(Right, [MapFrame, _, [RX,RY,RZ], _], Instant),
 
     =<( abs( LX - RX), 0.30),  % less than 30cm y diff
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
@@ -277,13 +274,13 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
-    spatial_thing(Front),
+    physical_object(Front),
     map_frame_name(MapFrame),
-    object_pose_at_time(Front, Instant, [MapFrame, _, [FX,_,_], _]),
+    object_pose(Front, [MapFrame, _, [FX,_,_], _], Instant),
     
-    spatial_thing(Back),
+    physical_object(Back),
     Front \= Back,
-    object_pose_at_time(Back, Instant, [MapFrame, _, [BX,_,_], _]),
+    object_pose(Back, [MapFrame, _, [BX,_,_], _], Instant),
 
     =<( BX, FX ).      % front obj has a higher x coord.
 
@@ -308,13 +305,13 @@ comp_inCenterOf(Inner, Outer, Interval) :-
     spatially_holds_interval(Inner, comp_inCenterOf_at_time, Outer, Interval).
 
 comp_inCenterOf_at_time(Inner, Outer, Instant) :-
-    spatial_thing(Inner),
+    physical_object(Inner),
     map_frame_name(MapFrame),
-    object_pose_at_time(Inner, Instant, [MapFrame, _, [IX,IY,IZ], _]),
+    object_pose(Inner, [MapFrame, _, [IX,IY,IZ], _], Instant),
     
-    spatial_thing(Outer),
+    physical_object(Outer),
     Inner \= Outer,
-    object_pose_at_time(Outer, Instant, [MapFrame, _, [OX,OY,OZ], _]),
+    object_pose(Outer, [MapFrame, _, [OX,OY,OZ], _], Instant),
 
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
@@ -342,14 +339,14 @@ in_ContGeneric(InnerObj, OuterObj, Interval) :-
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     
-    spatial_thing(InnerObj),
+    physical_object(InnerObj),
     map_frame_name(MapFrame),
-    object_pose_at_time(InnerObj, Instant, [MapFrame, _, [IX,IY,IZ], _]),
+    object_pose(InnerObj, [MapFrame, _, [IX,IY,IZ], _], Instant),
     object_dimensions(InnerObj, ID, IW, IH),
     
-    rdfs_individual_of(OuterObj, knowrob:'Container'),
+    physical_object(OuterObj),
     InnerObj \= OuterObj,
-    object_pose_at_time(OuterObj, Instant, [MapFrame, _, [OX,OY,OZ], _]),
+    object_pose(OuterObj, [MapFrame, _, [OX,OY,OZ], _], Instant),
     object_dimensions(OuterObj, OD, OW, OH),
     
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
@@ -406,7 +403,7 @@ objectAtPoint2D(PX, PY, Obj, Instant) :-
     % get information of potential objects at positon point2d (x/y)
     object_dimensions(Obj, OD, OW, _),
     
-    object_pose_at_time(Obj, Instant, [map,_,Pos,Rot]),
+    object_pose(Obj, [map,_,Pos,Rot], Instant),
     matrix([M00,M01,_,OX, M10,M11,_,OY|_], Pos, Rot),
 
     % object must have an extension

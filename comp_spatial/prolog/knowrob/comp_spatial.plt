@@ -20,6 +20,8 @@
 
 :- begin_tests(comp_spatial).
 
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/comp_spatial')).
@@ -36,7 +38,7 @@
 test(inCenterOf1) :-
   holds(test_sp:'cup3', knowrob:isInCenterOf, test_sp:'cupboard1'),!.
 test(inCenterOf2) :-
-  holds(knowrob:isInCenterOf, test_sp:'cup3', A),
+  holds(test_sp:'cup3', knowrob:isInCenterOf, A),
   rdf_equal(A, test_sp:'cupboard1'),!.
 test(inCenterOf3) :-
   holds(A, knowrob:isInCenterOf, test_sp:'cupboard1'),
