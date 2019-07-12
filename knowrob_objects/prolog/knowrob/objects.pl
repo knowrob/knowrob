@@ -209,11 +209,29 @@ current_map_pose(ObjFrame,MapPose) :-
 % @param Pose    The pose [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
 object_pose(Obj, Pose) :-
-  current_time(Instant),
-  object_pose(Obj, Pose, Instant).
+  current_object_pose(Obj, Pose).
 
-object_pose(Obj, Pose, Instant) :-
-  holds(Obj, knowrob:pose, Pose, [Instant,Instant]).
+object_pose(Obj, [RefFrame,ObjFrame,T,Q], Instant) :- 
+  object_frame_name(Obj,ObjFrame),
+  holds(Obj, knowrob:pose, [RefFrame,ObjFrame,T,Q], Instant),!.
+
+object_pose(Obj, [RefFrame,ObjFrame,T,Q], Instant) :- 
+  ground(RefFrame),
+  object_frame_name(Obj,ObjFrame),
+  object_map_pose(ObjFrame,MapPose0,Instant),
+  object_map_pose(RefFrame,MapPose1,Instant),
+  transform_between(MapPose1,MapPose0,[RefFrame,ObjFrame,T,Q]), !.
+
+object_map_pose(ObjFrame,MapPose,Instant) :-
+  map_frame_name(MapFrame),
+  object_frame_name(Obj,ObjFrame),
+  holds(Obj, knowrob:pose, [ParentFrame,ObjFrame,T,Q], Instant),
+  ( MapFrame = ParentFrame ->
+    MapPose=[MapFrame,ObjFrame,T,Q] ; (
+    object_map_pose(ParentFrame,MapParent,Instant),
+    transform_multiply(MapParent,
+      [ParentFrame,ObjFrame,T,Q], MapPose)
+  )).
 
 %% object_trajectory(+Obj, +Interval, +Density, -Trajectory) is semidet
 %
