@@ -29,6 +29,7 @@
 :- module(knowrob_objects,
     [
       object_assert/3,
+      object_lifetime/2,
       object_pose/2,
       object_pose/3,
       current_object_pose/2,
@@ -53,6 +54,8 @@
       storagePlaceForBecause/3,
       object_query/4,
       object_queries/2,
+      object_set_lifetime_begin/2,
+      object_set_lifetime_end/2,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
       comp_heightOfObject/2,
@@ -81,6 +84,7 @@
 
 :-  rdf_meta
     current_object_pose(r,-),
+    object_lifetime(r,?),
     object_pose(r,+,r),
     object_pose(r,+),
     object_assert(r,r,+),
@@ -102,6 +106,8 @@
     storagePlaceForBecause(r,r,r),
     object_query(r,?,?,?),
     object_queries(r,?),
+    object_set_lifetime_begin(r,+),
+    object_set_lifetime_end(r,+),
     comp_depthOfObject(r,t),
     comp_widthOfObject(r,t),
     comp_heightOfObject(r,t),
@@ -135,6 +141,31 @@ object_assert(ObjType, Obj, Graph) :-
     rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
     rdf_assert(Obj, knowrob:'describedInMap', Map, Graph)
   ))).
+
+%%
+object_lifetime(Obj,Interval) :-
+  object_lifetime_(Obj,LT),
+  inteval(LT,Interval).
+
+object_lifetime_(Obj,LT) :-
+  rdf_has(Obj,dul:hasTimeInterval,LT),!.
+
+object_lifetime_(Obj,LT) :-
+  once(rdf(Obj,rdf:type,_,G)),
+  rdfs_instance_from_class(dul:'TimeInterval',G,LT),
+  rdf_assert(Obj,dul:hasTimeInterval,LT,G).
+
+%%
+object_set_lifetime_begin(Obj,Stamp) :-
+  once(rdf(Obj,rdf:type,_,G)),
+  object_lifetime_(Obj,LT),
+  rdf_assert_prolog(LT,ease:hasIntervalBegin,Stamp,G).
+
+%%
+object_set_lifetime_end(Obj,Stamp) :-
+  once(rdf(Obj,rdf:type,_,G)),
+  object_lifetime_(Obj,LT),
+  rdf_assert_prolog(LT,ease:hasIntervalEnd,Stamp,G).
 
 %%
 object_pose_update(Obj,Pose) :-
@@ -210,6 +241,10 @@ current_map_pose(ObjFrame,MapPose) :-
 % 
 object_pose(Obj, Pose) :-
   current_object_pose(Obj, Pose).
+
+object_pose(Obj, Pose, Stamp0) :- 
+  object_pose_data(Obj,Pose,Stamp1),
+  Stamp1 < Stamp0, !.
 
 object_pose(Obj, [RefFrame,ObjFrame,T,Q], Instant) :- 
   object_frame_name(Obj,ObjFrame),
