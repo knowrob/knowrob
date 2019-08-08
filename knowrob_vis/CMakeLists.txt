@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_vis)
 
-find_package(catkin REQUIRED COMPONENTS data_vis_msgs roscpp knowrob_common knowrob_srdl)
+find_package(catkin REQUIRED COMPONENTS data_vis_msgs roscpp knowrob_common)
 
 catkin_package(CATKIN_DEPENDS roscpp knowrob_common)
 
