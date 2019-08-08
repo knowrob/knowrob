@@ -23,6 +23,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/action_effects')).
+:- use_module(library('knowrob/task_planning')).
 
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
 

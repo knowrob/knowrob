@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2019 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,15 +25,17 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(knowrob_actions,
+:- module(knowrob_events,
     [
-      task_role/3,
-      task_parameter/3,
-      action_task/2,
-      action_set_task/2,
+      event_create/2,
+      event_create/3,
+      event_begin_time/2,
+      event_end_time/2,
+      event_set_begin_time/2,
+      event_set_end_time/2,
       event_participant/3
     ]).
-/** <module> Methods for reasoning about action descriptions
+/** <module> Methods for reasoning about event descriptions
 
 @author Moritz Tenorth
 @license BSD
@@ -45,53 +47,45 @@
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/owl')).
 
-
 :- rdf_meta
-      task_role(r,r,r),
-      task_parameter(r,r,r),
-      action_task(r,r),
+      event_create(r,r),
+      event_create(r,r,+),
+      event_begin_time(r,?),
+      event_end_time(r,?),
+      event_set_begin_time(r,?),
+      event_set_end_time(r,?),
       event_participant(r,r,r).
 
 %%
-task_role(Tsk,Role,ObjectType) :-
-  rdfs_individual_of(Tsk,dul:'Task'),!,
-  rdfs_type_of(Tsk,TskType),
-  task_role(TskType,Role,ObjectType).
+event_create(EvtType,Evt) :-
+  event_create(EvtType,Evt,events).
 
-task_role(Tsk,Role,ObjectType) :-
-  owl_subclass_of(Tsk,Restr),
-  rdf_has(Restr,owl:onProperty,dul:isTaskOf),
-  owl_restriction_object_domain(Restr,RoleDescr),
-  once((
-    (\+ ground(Role) ; owl_subclass_of(RoleDescr,Role)),
-    owl_property_range_on_class(RoleDescr,dul:classifies,ObjectType),
-    rdfs_individual_of(ObjectType,owl:'Class')
-  )).
+event_create(EvtType,Evt,Graph) :-
+  rdfs_instance_from_class(EvtType,Graph,Evt),
+  rdfs_instance_from_class(dul:'TimeInterval',Graph,I),
+  rdf_assert(Evt,dul:hasTimeInterval,I,Graph).
 
 %%
-task_role(Tsk,Role,ObjectType) :-
-  rdfs_individual_of(Tsk,dul:'Task'),!,
-  rdfs_type_of(Tsk,TskType),
-  task_parameter(TskType,Param,Type).
-
-task_parameter(Tsk,Param,Type) :-
-  owl_subclass_of(Tsk,Restr),
-  rdf_has(Restr,owl:onProperty,dul:hasParameter),
-  owl_restriction_object_domain(Restr,ParamDescr),
-  once((
-    (\+ ground(Param) ; owl_subclass_of(ParamDescr,Param)),
-    owl_property_range_on_class(ParamDescr,dul:classifies,Type),
-    rdfs_individual_of(Type,owl:'Class')
-  )).
+event_begin_time(Evt,Stamp) :-
+  interval(Evt,[Stamp|_]).
 
 %%
-action_task(Act,Tsk) :-
-  rdfs_individual_of(Act,dul:'Action'),
-  rdf_has(Act,dul:isClassifiedBy,Tsk_individual),
-  rdfs_type_of(Tsk_individual,dul:'Task',Tsk).
+event_end_time(Evt,Stamp) :-
+  interval(Evt,[_,Stamp]).
 
 %%
-action_set_task(Action,Tsk) :-
-  rdfs_individual_of(Act,dul:'Action'),
-  rdfs_individual_of(Tsk,dul:'Task'),
-  rdf_assert(Action,dul:isClassifiedBy,Tsk).
+event_set_begin_time(Evt,Stamp) :-
+  rdf(Evt,dul:hasTimeInterval,I,G),
+  rdf_retractall(I,ease:hasIntervalBegin,_),
+  rdf_assert_prolog(I,ease:hasIntervalBegin,Stamp,G).
+
+%%
+event_set_end_time(Evt,Stamp) :-
+  rdf(Evt,dul:hasTimeInterval,I,G),
+  rdf_retractall(I,ease:hasIntervalEnd,_),
+  rdf_assert_prolog(I,ease:hasIntervalEnd,Stamp,G).
+
+%%
+event_participant(Action,Participant,Class) :-
+  rdf_has(Action,dul:hasParticipant,Participant),
+  rdfs_individual_of(Participant,Class).

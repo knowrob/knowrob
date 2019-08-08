@@ -61,7 +61,7 @@ kb_querying(Action,_ExecutionPlan,InputDict,ActionDict,OutputPairs) :-
   %%%%% Find KBPredicate participant.
   %%%%%%%%%
   action_call_or_failure(Action, (
-      action_participant_type(Action,KBPredicate,knowrob:'KBPredicate')
+      event_participant(Action,KBPredicate,knowrob:'KBPredicate')
     ),
     knowrob:'ACTION_INPUT_MISSING',
     'no KBPredicate participant'

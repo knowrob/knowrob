@@ -1,9 +1,15 @@
 
 :- begin_tests(action_execution).
 
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/action_execution')).
+:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/transforms')).
+:- use_module(library('knowrob/rosowl')).
 :- use_module(library('http/json')).
 
 :- owl_parse('package://knowrob_actions/owl/test.owl').
