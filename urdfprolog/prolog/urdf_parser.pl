@@ -78,6 +78,7 @@
 @author Georg Bartels
 @license BSD
 */
+% FIXME: this won't work multithreaded
 
 :- use_foreign_library('liburdf_parser.so').
 

@@ -31,7 +31,7 @@
 :- use_module(library('roscpp')).
 
 test(load_urdf_file_pr2) :-
-  ros_package_path('knowrob_srdl', X),
+  ros_package_path('urdfprolog', X),
   atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', Filename),
   load_urdf_file(Filename).
 
