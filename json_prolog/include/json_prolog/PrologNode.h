@@ -11,7 +11,7 @@
 #include <SWI-Prolog.h>
 // #include <SWI-cpp.h>
 // json_prolog
-#include <json_prolog/JSONPrologPool.h>
+#include <json_prolog/PrologPool.h>
 #include <json_prolog_msgs/PrologFinish.h>
 #include <json_prolog_msgs/PrologNextSolution.h>
 #include <json_prolog_msgs/PrologQuery.h>
@@ -21,9 +21,9 @@
  *
  * @author Daniel Beßler
  */
-class JSONPrologNode {
+class PrologNode {
 public:
-	JSONPrologNode(ros::NodeHandle *node);
+	PrologNode(ros::NodeHandle *node);
 	
 	bool query(
 		json_prolog_msgs::PrologQuery::Request &req,
@@ -40,8 +40,8 @@ public:
 	bool is_initialized() { return is_initialized_; }
 	
 private:
-	std::map< std::string, boost::shared_ptr<JSONPrologEngine> > claimed_engines_;
-	JSONPrologPool thread_pool_;
+	std::map< std::string, boost::shared_ptr<PrologEngine> > claimed_engines_;
+	PrologPool thread_pool_;
 	
 	bool is_initialized_;
 	

@@ -27,52 +27,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sstream>
-#include <iterator>
-#include <algorithm>
+#include <json_prolog/PrologClient.h>
 
-#include <boost/lexical_cast.hpp>
+#include <json_prolog_msgs/PrologQuery.h>
+#include <json_prolog_msgs/PrologNextSolution.h>
+#include <json_prolog_msgs/PrologFinish.h>
 
-#include <json_prolog/prolog_value.h>
-
-namespace json_prolog
+PrologClient::PrologClient(const std::string &ns) : nh_("~")
 {
-
-std::ostream &operator<<(std::ostream &strm, const PrologValue &v)
-{
-  return (strm << v.toString());
+	prolog_query = nh_.serviceClient<json_prolog_msgs::PrologQuery>(ns + "/query");
+	next_solution = nh_.serviceClient<json_prolog_msgs::PrologNextSolution>(ns + "/next_solution");
+	prolog_finish = nh_.serviceClient<json_prolog_msgs::PrologFinish>(ns + "/finish");
 }
 
-std::string PrologValue::toString() const
+PrologClient::PrologClient(const std::string &ns, bool persistent)
 {
-  switch(type_)
-  {
-    case DOUBLE:
-      return boost::lexical_cast<std::string>(as<double>());
-    case INT:
-      return boost::lexical_cast<std::string>(as<int64_t>());
-    case STRING:
-      return as<std::string>();
-    case TERM:
-    {
-      const PrologTerm &trm = as<PrologTerm>();
-      std::ostringstream strm;
-      strm << trm.name() << "(";
-      std::copy(trm.values().begin(), trm.values().end(),
-        std::ostream_iterator<PrologValue>(strm, ", "));
-      return strm.str().substr(0, strm.str().size()-2) + ")";
-    }
-    case LIST:
-    {
-      std::ostringstream strm;
-      std::vector<PrologValue> values = as<std::vector<PrologValue> >();
-      std::copy(values.begin(), values.end(),
-        std::ostream_iterator<PrologValue>(strm, ", "));
-      return "[" + strm.str().substr(0, strm.str().size()-2) + "]";
-    }
-    default:
-      return "";
-  }
+	prolog_query = nh_.serviceClient<json_prolog_msgs::PrologQuery>(ns + "/query", persistent);
+	next_solution = nh_.serviceClient<json_prolog_msgs::PrologNextSolution>(ns + "/next_solution", persistent);
+	prolog_finish = nh_.serviceClient<json_prolog_msgs::PrologFinish>(ns + "/finish", persistent);
 }
 
+PrologQuery PrologClient::query(const std::string &query_str)
+{
+	return PrologQuery(*this, query_str);
+}
+
+PrologBindings PrologClient::once(const std::string &query_str)
+{
+	PrologQuery query(PrologQuery(*this, query_str));
+	PrologBindings result = *query.begin();
+	query.finish();
+	return result;
+}
+
+bool PrologClient::waitForServer(const ros::Duration &timeout)
+{
+	return prolog_query.waitForExistence(timeout) &&
+	    next_solution.waitForExistence(timeout) &&
+	    prolog_finish.waitForExistence(timeout);
 }

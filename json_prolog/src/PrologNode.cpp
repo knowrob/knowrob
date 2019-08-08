@@ -3,7 +3,7 @@
 #include <ros/console.h>
 #include <ros/package.h>
 
-#include <json_prolog/JSONPrologNode.h>
+#include <json_prolog/PrologNode.h>
 
 #define PARAM_INITIAL_PACKAGE "initial_package"
 #define PARAM_INITIAL_GOAL "initial_goal"
@@ -13,8 +13,8 @@
 #define NUM_PL_THREADS_DEFAULT 2
 #define NUM_ROS_THREADS_DEFAULT 2
 
-JSONPrologNode::JSONPrologNode(ros::NodeHandle *node)
-	: thread_pool_(JSONPrologNode::num_pl_threads(node)),
+PrologNode::PrologNode(ros::NodeHandle *node)
+	: thread_pool_(PrologNode::num_pl_threads(node)),
 	  is_initialized_(false)
 {
 	if(!ensure_loaded("rosprolog") ||
@@ -35,7 +35,7 @@ JSONPrologNode::JSONPrologNode(ros::NodeHandle *node)
 	}
 	// execute initial goal
 	{
-		boost::shared_ptr<JSONPrologEngine> engine = thread_pool_.claim();
+		boost::shared_ptr<PrologEngine> engine = thread_pool_.claim();
 		if (node->getParam(PARAM_INITIAL_GOAL, param)) {
 			engine->one_solution(param);
 		}
@@ -44,7 +44,7 @@ JSONPrologNode::JSONPrologNode(ros::NodeHandle *node)
 	is_initialized_ = true;
 }
 
-int JSONPrologNode::num_pl_threads(ros::NodeHandle *node)
+int PrologNode::num_pl_threads(ros::NodeHandle *node)
 {
 	int count=0;
 	if(node->getParam(PARAM_NUM_PL_THREADS, count)) {
@@ -53,7 +53,7 @@ int JSONPrologNode::num_pl_threads(ros::NodeHandle *node)
 	return NUM_PL_THREADS_DEFAULT;
 }
 
-int JSONPrologNode::call1(const std::string &p, const std::string &arg1)
+int PrologNode::call1(const std::string &p, const std::string &arg1)
 {
 	term_t a1 = PL_new_term_refs(1); {
 		PL_put_atom_chars(a1, arg1.c_str());
@@ -65,7 +65,7 @@ int JSONPrologNode::call1(const std::string &p, const std::string &arg1)
 	
 	if(!PL_next_solution(qid)) {
 		std::string error_msg;
-		if(JSONPrologEngine::pl_exception(qid,error_msg)) {
+		if(PrologEngine::pl_exception(qid,error_msg)) {
 			ROS_ERROR("%s", error_msg.c_str());
 		}
 		status = FALSE;
@@ -77,7 +77,7 @@ int JSONPrologNode::call1(const std::string &p, const std::string &arg1)
 	return status;
 }
 
-int JSONPrologNode::ensure_loaded(const char *ros_pkg)
+int PrologNode::ensure_loaded(const char *ros_pkg)
 {
 	std::stringstream ss;
 	ss << ros::package::getPath(ros_pkg) << "/prolog/init.pl";
@@ -88,17 +88,17 @@ int JSONPrologNode::ensure_loaded(const char *ros_pkg)
 	return TRUE;
 }
 
-bool JSONPrologNode::exists(const std::string &id)
+bool PrologNode::exists(const std::string &id)
 {
 	return claimed_engines_.find(id) != claimed_engines_.end();
 }
 
-bool JSONPrologNode::has_more_solutions(const std::string &id)
+bool PrologNode::has_more_solutions(const std::string &id)
 {
 	return claimed_engines_.find(id)->second->has_more_solutions();
 }
 
-void JSONPrologNode::finish(const std::string &id)
+void PrologNode::finish(const std::string &id)
 {
 	auto it = claimed_engines_.find(id);
 	it->second->release(true);
@@ -106,7 +106,7 @@ void JSONPrologNode::finish(const std::string &id)
 	claimed_engines_.erase(it);
 }
 
-void JSONPrologNode::finish()
+void PrologNode::finish()
 {
 	auto it = claimed_engines_.begin();
 	while (it != claimed_engines_.end()) {
@@ -115,7 +115,7 @@ void JSONPrologNode::finish()
 	}
 }
 
-bool JSONPrologNode::query(json_prolog_msgs::PrologQuery::Request &req,
+bool PrologNode::query(json_prolog_msgs::PrologQuery::Request &req,
 			   json_prolog_msgs::PrologQuery::Response &res)
 {
 	if (exists(req.id)) {
@@ -124,7 +124,7 @@ bool JSONPrologNode::query(json_prolog_msgs::PrologQuery::Request &req,
 		res.ok = false;
 		res.message = ss.str();
 	} else {
-		boost::shared_ptr<JSONPrologEngine> engine = thread_pool_.claim();
+		boost::shared_ptr<PrologEngine> engine = thread_pool_.claim();
 		engine->claim(req.query,
 			(req.mode == json_prolog_msgs::PrologQuery::Request::INCREMENTAL));
 		claimed_engines_[req.id] = engine;
@@ -134,7 +134,7 @@ bool JSONPrologNode::query(json_prolog_msgs::PrologQuery::Request &req,
 	return true;
 }
 
-bool JSONPrologNode::finish(json_prolog_msgs::PrologFinish::Request &req,
+bool PrologNode::finish(json_prolog_msgs::PrologFinish::Request &req,
 			    json_prolog_msgs::PrologFinish::Response &res)
 {
 	if (req.id == "*"){
@@ -146,7 +146,7 @@ bool JSONPrologNode::finish(json_prolog_msgs::PrologFinish::Request &req,
 	return true;
 }
 
-bool JSONPrologNode::next_solution(json_prolog_msgs::PrologNextSolution::Request &req,
+bool PrologNode::next_solution(json_prolog_msgs::PrologNextSolution::Request &req,
 				   json_prolog_msgs::PrologNextSolution::Response &res)
 {
 	if(!exists(req.id)) {
@@ -155,7 +155,7 @@ bool JSONPrologNode::next_solution(json_prolog_msgs::PrologNextSolution::Request
 	}
 	else {
 		if (!has_more_solutions(req.id)){
-			boost::shared_ptr<JSONPrologEngine> x = claimed_engines_.find(req.id)->second;
+			boost::shared_ptr<PrologEngine> x = claimed_engines_.find(req.id)->second;
 			if(x->has_error()) {
 				res.status = json_prolog_msgs::PrologNextSolution::Response::QUERY_FAILED;
 				res.solution = x->error();
@@ -208,14 +208,14 @@ int main(int argc, char **argv)
 	}
 	PL_initialise(pl_ac, pl_av);
 	//
-	JSONPrologNode json_prolog(&n);
+	PrologNode json_prolog(&n);
 	if(json_prolog.is_initialized()) {
 		ros::ServiceServer service_query = n.advertiseService(
-		    "/json_prolog/query", &JSONPrologNode::query, &json_prolog);
+		    "/json_prolog/query", &PrologNode::query, &json_prolog);
 		ros::ServiceServer service_next_solution = n.advertiseService(
-		    "/json_prolog/next_solution", &JSONPrologNode::next_solution, &json_prolog);
+		    "/json_prolog/next_solution", &PrologNode::next_solution, &json_prolog);
 		ros::ServiceServer service_finish = n.advertiseService(
-		    "/json_prolog/finish", &JSONPrologNode::finish, &json_prolog);
+		    "/json_prolog/finish", &PrologNode::finish, &json_prolog);
 		
 		ROS_INFO("json_prolog service is running.");
 		while (ros::ok()) {

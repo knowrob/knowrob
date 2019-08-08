@@ -8,7 +8,7 @@
 // BOOST
 #include <boost/shared_ptr.hpp>
 // json_prolog
-#include <json_prolog/JSONPrologEngine.h>
+#include <json_prolog/PrologEngine.h>
 
 /**
  * A simple thread pool implementation for Prolog engines.
@@ -17,24 +17,24 @@
  * 
  * @author Daniel Beßler
  */
-class JSONPrologPool {
+class PrologPool {
 public:
-	JSONPrologPool(int num_initial_engines);
+	PrologPool(int num_initial_engines);
 	
 	/**
 	 * Claim a Prolog engine. This claim is exclusive.
 	 * To allow others using the engine again, the
 	 * claim needs to be lifted by calling *release*.
 	 */
-	boost::shared_ptr<JSONPrologEngine> claim();
+	boost::shared_ptr<PrologEngine> claim();
 	
 	/**
 	 * Release the claim for an engine thread.
 	 */
-	void release(boost::shared_ptr<JSONPrologEngine> &thread);
+	void release(boost::shared_ptr<PrologEngine> &thread);
 
 private:
-	std::list< boost::shared_ptr<JSONPrologEngine> > available_engines_;
+	std::list< boost::shared_ptr<PrologEngine> > available_engines_;
 	
 	std::mutex pool_mutex_;
 };

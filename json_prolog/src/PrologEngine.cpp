@@ -1,9 +1,9 @@
 
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <json_prolog/JSONPrologEngine.h>
+#include <json_prolog/PrologEngine.h>
 
-JSONPrologEngine::JSONPrologEngine() :
+PrologEngine::PrologEngine() :
 	is_claimed_(false),
 	is_finished_(false),
 	is_terminated_(false),
@@ -12,13 +12,13 @@ JSONPrologEngine::JSONPrologEngine() :
 	has_solution_request_(false),
 	has_finish_request_(false),
 	has_error_(false),
-	thread_(&JSONPrologEngine::run, this),
+	thread_(&PrologEngine::run, this),
 	goal_(""),
 	error_("")
 {
 }
 
-JSONPrologEngine::~JSONPrologEngine()
+PrologEngine::~PrologEngine()
 {
 	{
 		std::unique_lock<std::mutex> lk(thread_m_);
@@ -28,7 +28,7 @@ JSONPrologEngine::~JSONPrologEngine()
 	thread_.join();
 }
 
-int JSONPrologEngine::pl_exception(qid_t qid, std::string &x)
+int PrologEngine::pl_exception(qid_t qid, std::string &x)
 {
 	term_t except;
 	char *except_msg = NULL;
@@ -46,7 +46,7 @@ int JSONPrologEngine::pl_exception(qid_t qid, std::string &x)
 	return TRUE;
 }
 
-void JSONPrologEngine::run()
+void PrologEngine::run()
 {
 	std::string thread_id; {
 		std::stringstream ss;
@@ -82,7 +82,7 @@ void JSONPrologEngine::run()
 		while(ros::ok()) {
 			// here is where the main work is done
 			if(!PL_next_solution(qid)) {
-				has_error_ = JSONPrologEngine::pl_exception(qid,error_);
+				has_error_ = PrologEngine::pl_exception(qid,error_);
 				break;
 			}
 			// read the JSON encoded solution into std:string
@@ -135,7 +135,7 @@ void JSONPrologEngine::run()
 	PL_thread_destroy_engine();
 }
 
-boost::shared_ptr<std::string> JSONPrologEngine::one_solution(const std::string &goal)
+boost::shared_ptr<std::string> PrologEngine::one_solution(const std::string &goal)
 {
 	boost::shared_ptr<std::string> solution;
 	claim(goal,true);
@@ -146,7 +146,7 @@ boost::shared_ptr<std::string> JSONPrologEngine::one_solution(const std::string 
 	return solution;
 }
 
-void JSONPrologEngine::claim(const std::string &goal, bool is_incremental)
+void PrologEngine::claim(const std::string &goal, bool is_incremental)
 {
 	{
 		std::lock_guard<std::mutex> lk(thread_m_);
@@ -169,7 +169,7 @@ void JSONPrologEngine::claim(const std::string &goal, bool is_incremental)
 	thread_cv_.notify_one();
 }
 
-void JSONPrologEngine::release(bool wait)
+void PrologEngine::release(bool wait)
 {
 	{
 		std::lock_guard<std::mutex> lk(thread_m_);
@@ -189,17 +189,17 @@ void JSONPrologEngine::release(bool wait)
 	}
 }
 
-bool JSONPrologEngine::has_error()
+bool PrologEngine::has_error()
 {
 	return has_error_;
 }
 
-const std::string& JSONPrologEngine::error()
+const std::string& PrologEngine::error()
 {
 	return error_;
 }
 
-bool JSONPrologEngine::has_more_solutions()
+bool PrologEngine::has_more_solutions()
 {
 	{
 		std::unique_lock<std::mutex> lk(thread_m_);
@@ -212,7 +212,7 @@ bool JSONPrologEngine::has_more_solutions()
 	return !solutions_.empty();
 }
 
-boost::shared_ptr<std::string> JSONPrologEngine::next_solution()
+boost::shared_ptr<std::string> PrologEngine::next_solution()
 {
 	if(!has_more_solutions()) {
 		throw JSONPrologException("no next solution.");
@@ -229,7 +229,7 @@ boost::shared_ptr<std::string> JSONPrologEngine::next_solution()
 	return solution;
 }
 
-boost::shared_ptr<std::string> JSONPrologEngine::pop_solution()
+boost::shared_ptr<std::string> PrologEngine::pop_solution()
 {
 	std::lock_guard<std::mutex> lk(thread_m_);
 	boost::shared_ptr<std::string> head = solutions_.front();

@@ -35,76 +35,63 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 
-#include <json_prolog/prolog_bindings.h>
+#include <json_prolog/PrologBindings.h>
 
-namespace json_prolog
-{
+class PrologClient;
 
-class Prolog;
-
-class PrologQueryProxy
+class PrologQuery
 {
 public:
-  class QueryError
-    : public std::runtime_error
-  {
-  public:
-    QueryError(const std::string &msg)
-      : std::runtime_error(msg) {}
-  };
+	class QueryError : public std::runtime_error {
+	public:
+		QueryError(const std::string &msg)
+		: std::runtime_error(msg) {}
+	};
+	
+	class ServerNotFound : public std::runtime_error
+	{
+	public:
+		ServerNotFound(const std::string &msg)
+		: std::runtime_error(msg) {}
+	};
+	
+	class iterator
+	: public boost::iterator_facade<iterator, PrologBindings, boost::single_pass_traversal_tag>
+	{
+		friend class PrologQuery;
+		friend class boost::iterator_core_access;
+	public:
+		iterator() : query_(0) {}
+		iterator(const iterator &src)
+		: query_(src.query_), data_(src.data_) {}
+	private:
+		PrologQuery *query_;
+		std::list<PrologBindings>::iterator data_;
 
-  class ServerNotFound
-    : public std::runtime_error
-  {
-  public:
-    ServerNotFound(const std::string &msg)
-      : std::runtime_error(msg) {}
-  };
-  
-  class iterator
-    : public boost::iterator_facade<iterator,
-                                    PrologBindings,
-                                    boost::single_pass_traversal_tag>
-  {
-    friend class PrologQueryProxy;
-    friend class boost::iterator_core_access;
-    
-  public:
-    iterator()
-      : query_(0) {}
-    iterator(const iterator &src)
-      : query_(src.query_), data_(src.data_) {}
-
-  private:
-    PrologQueryProxy *query_;
-    std::list<PrologBindings>::iterator data_;
-
-    iterator(PrologQueryProxy &query)
-      : query_(&query), data_(query.bindings_.begin()) {}
-    
-    void increment();
-    bool requestNextSolution();
-    bool equal(const iterator &other) const;
-    PrologBindings &dereference() const { return *data_; }
-  };
-
-  PrologQueryProxy(Prolog &prolog, const std::string &query_str);
-
-  iterator begin();
-  iterator end() const { return iterator(); }
-  void finish();
-
+		iterator(PrologQuery &query)
+		: query_(&query), data_(query.bindings_.begin()) {}
+		
+		void increment();
+		bool requestNextSolution();
+		bool equal(const iterator &other) const;
+		PrologBindings &dereference() const { return *data_; }
+	};
+	
+	PrologQuery(PrologClient &prolog, const std::string &query_str);
+	
+	iterator begin();
+	iterator end() const { return iterator(); }
+	void finish();
+	
 private:
-  // We support only single traversal. This variable is used to throw
-  // an error when begin is executed more than once.
-  bool finished_;
-  Prolog *prolog_;
-  std::string query_id_;
-  std::list<PrologBindings> bindings_;
-  
-  static std::string makeQueryId();
+	// We support only single traversal. This variable is used to throw
+	// an error when begin is executed more than once.
+	bool finished_;
+	PrologClient *prolog_;
+	std::string query_id_;
+	std::list<PrologBindings> bindings_;
+	
+	static std::string makeQueryId();
 };
-
-}
 
 #endif

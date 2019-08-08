@@ -20,10 +20,10 @@
  *
  * @author Daniel Beßler
  */
-class JSONPrologEngine {
+class PrologEngine {
 public:
-	JSONPrologEngine();
-	~JSONPrologEngine();
+	PrologEngine();
+	~PrologEngine();
 	
 	static int pl_exception(qid_t qid, std::string &exception_string);
 	

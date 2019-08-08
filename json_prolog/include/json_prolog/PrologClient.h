@@ -33,28 +33,23 @@
 #include <string>
 
 #include <ros/ros.h>
-#include <json_prolog/prolog_query_proxy.h>
+#include <json_prolog/PrologQuery.h>
 
-namespace json_prolog
-{
-
-class Prolog
-{
+class PrologClient {
 public:
-  ros::ServiceClient prolog_query;
-  ros::ServiceClient next_solution;
-  ros::ServiceClient prolog_finish;
-  
-  Prolog(const std::string &ns="/json_prolog");
-  Prolog(bool persistent, const std::string &ns="/json_prolog");
-  PrologQueryProxy query(const std::string &query_str);
-  PrologBindings once(const std::string &query_str);
-  bool waitForServer(const ros::Duration &timeout=ros::Duration(-1));
-  
+	ros::ServiceClient prolog_query;
+	ros::ServiceClient next_solution;
+	ros::ServiceClient prolog_finish;
+	
+	PrologClient(const std::string &ns="/json_prolog");
+	PrologClient(const std::string &ns, bool persistent);
+	
+	PrologQuery query(const std::string &query_str);
+	PrologBindings once(const std::string &query_str);
+	
+	bool waitForServer(const ros::Duration &timeout=ros::Duration(-1));
 private:
-  ros::NodeHandle nh_;
+	ros::NodeHandle nh_;
 };
-  
-}
 
 #endif

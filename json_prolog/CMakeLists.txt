@@ -35,18 +35,17 @@ add_definitions(${JSON_GLIB_CFLAGS})
 link_directories(${JSON_GLIB_LIBRARIY_DIRS})
 
 add_executable(json_prolog_node
-	src/JSONPrologNode.cpp
-	src/JSONPrologEngine.cpp
-	src/JSONPrologPool.cpp
+	src/PrologNode.cpp
+	src/PrologEngine.cpp
+	src/PrologPool.cpp
 )
 target_link_libraries(json_prolog_node ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(json_prolog_node ${catkin_EXPORTED_TARGETS})
 
 add_library(json_prolog_client
-	src/prolog.cpp
-	src/prolog_query_proxy.cpp
-	src/prolog_bindings.cpp
-	src/prolog_value.cpp)
+	src/PrologClient.cpp
+	src/PrologQuery.cpp
+	src/PrologBindings.cpp)
 target_link_libraries(json_prolog_client ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(json_prolog_client ${catkin_EXPORTED_TARGETS})
 
