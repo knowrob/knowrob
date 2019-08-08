@@ -137,7 +137,7 @@ perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
 object_detection(Object, Time, Detection) :-
     object_detection(Object, Time, Detection, user).
 object_detection(Object, Time, Detection, Graph) :-
-    rdf_has(Detection, knowrob:objectActedOn, Object, Graph),
+    rdf(Detection, knowrob:objectActedOn, Object, Graph),
     % FIXME VisualPerception not defined in knowrob.owl anymore
     %rdfs_individual_of(Detection,  knowrob:'VisualPerception'),
     detection_starttime(Detection, DetectionTime),
