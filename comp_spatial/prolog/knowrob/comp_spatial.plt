@@ -27,13 +27,11 @@
 :- use_module(library('knowrob/comp_spatial')).
 :- use_module(library('knowrob/temporal')).
 
-:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/test_comp_spatial.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
-
 
 test(inCenterOf1) :-
   holds(test_sp:'cup3', knowrob:isInCenterOf, test_sp:'cupboard1'),!.
