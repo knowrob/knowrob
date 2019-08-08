@@ -13,7 +13,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:qudt-unit="http://qudt.org/vocab/unit#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-comp.owl">
-        <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2.owl"/>
+        <owl:imports rdf:resource="package://srdl/owl/srdl2.owl"/>
     </owl:Ontology>
     
 

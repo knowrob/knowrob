@@ -27,7 +27,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xacro="http://www.ros.org/wiki/xacro">
     <owl:Ontology rdf:about="http://knowrob.org/kb/sim-hand.owl">
-        <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
   <!-- =========================================== -->

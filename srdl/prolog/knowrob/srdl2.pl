@@ -133,7 +133,7 @@ robot_part_tf_prefix(_, '/').
   
 robot_tf_prefix(Robot, TfPrefix) :-
   owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)).
-  
+
 robot_tf_prefix(_, '/').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

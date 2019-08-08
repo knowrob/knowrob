@@ -39,7 +39,7 @@
 
 
     <owl:Ontology rdf:about="http://knowrob.org/kb/forth_human.owl">
-        <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
 
