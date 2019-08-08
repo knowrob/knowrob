@@ -28,7 +28,7 @@ class URDF2SEM(object):
             "qudt-unit": "http://qudt.org/vocab/unit#",
         }
         self.imports = [
-            "package://knowrob_srdl/owl/srdl2-comp.owl",
+            "package://srdl/owl/srdl2-comp.owl",
             "package://knowrob_common/owl/knowrob.owl",
         ]
         self.id_gen = UniqueStringGenerator()
