@@ -38,6 +38,7 @@
       rdf_vector_prolog/2,
       rdfs_value_prolog/3,
       rdfs_type_of/2,
+      rdfs_type_of/3,
       rdfs_common_ancestor/2,
       rdfs_assert_specific/3,
       strip_literal_type/2
@@ -60,6 +61,7 @@
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
+            rdfs_type_of(r,r,r),
             rdfs_common_ancestor(t,r),
             rdfs_number(t,?),
             rdfs_list(t,?).
@@ -300,6 +302,14 @@ rdfs_type_of(Resource, Type) :-
      rdf_has(Resource, rdf:type, Cls_other),
      Type \= Cls_other
   ), \+ rdfs_subclass_of(Cls_other, Type)).
+
+rdfs_type_of(Type, BaseType, Type) :-
+  rdfs_individual_of(Type, owl:'Class'),!,
+  rdfs_subclass_of(Type,BaseType).
+
+rdfs_type_of(Resource, BaseType, Type) :-
+  rdf_has(Resource, rdf:type, Type),
+  rdfs_subclass_of(Type,BaseType).
 
 %% rdfs_common_ancestor(+Classes, ?Ancestor).
 %
