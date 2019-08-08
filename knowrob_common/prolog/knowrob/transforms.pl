@@ -131,6 +131,21 @@ transform_between([F,TgFrame, [T1x,T1y,T1z],Q1],
 %
 transform_data([_,_,Pos,Rot], (Pos,Rot)) :- !.
 
+transform_data(Transform, ([X,Y,Z],[QX,QY,QZ,QW])) :-
+  rdf_has(Transform, dul:hasPart, Q),
+  rdfs_individual_of(Q,ease:'Quaternion'),
+  rdf_has(Transform, dul:hasPart, P),
+  rdfs_individual_of(P,ease:'3DPosition'), !,
+  %
+  rdf_has_prolog(Q,ease:hasXComponent,QX),
+  rdf_has_prolog(Q,ease:hasYComponent,QY),
+  rdf_has_prolog(Q,ease:hasZComponent,QZ),
+  rdf_has_prolog(Q,ease:hasWComponent,QW),
+  %
+  rdf_has_prolog(P,ease:hasXComponent,X),
+  rdf_has_prolog(P,ease:hasYComponent,Y),
+  rdf_has_prolog(P,ease:hasZComponent,Z).
+
 transform_data(Transform, (Pos,Rot)) :-
   rdf_has_prolog(Transform, knowrob:translation, Pos),
   rdf_has_prolog(Transform, knowrob:quaternion, Rot), !.
@@ -225,7 +240,7 @@ matrix(Matrix, Translation, Quaternion) :-
 
 matrix(Matrix, Translation, Quaternion) :-
   ground([Translation,Quaternion]), !,
-  matrix_create(Translation, Quaternion, Matrix).
+  matrix_create(Quaternion, Translation, Matrix).
 
 %% matrix_translate(+In:list, +Offset:list, ?Out:list) is semidet.
 %
