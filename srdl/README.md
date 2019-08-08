@@ -1,4 +1,4 @@
-knowrob_srdl
+srdl
 ===
 
 The Semantic Robot Description Language (SRDL) extends KnowRob with representations for robot hardware,

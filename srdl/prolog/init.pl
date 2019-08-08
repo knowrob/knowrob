@@ -1,6 +1,5 @@
 /*
   Copyright (C) 2014 Moritz Tenorth
-  Copyright (C) 2018 Georg Bartels
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -26,28 +25,23 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @author Moritz Tenorth
-@author Georg Bartels
 @license BSD
 
 */
 
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_actions).
-:- register_ros_package(knowrob_srdl).
+:- register_ros_package(srdl).
 :- register_ros_package(rosprolog).
 
 :- use_module(library('knowrob/srdl2')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')). % needed for computables in restricted actions
-:- use_module('knowrob/urdf_parser').
-
-:- rdf_db:rdf_register_ns(pr2,    'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(baxter, 'http://knowrob.org/kb/baxter.owl#', [keep(true)]).
 
 :- rdf_db:rdf_register_ns(srdl2, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2cap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
 %:- rdf_db:rdf_register_ns(srdl2act, 'http://knowrob.org/kb/srdl2-action.owl#', [keep(true)]).
 
-:- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-action.owl').
+:- owl_parser:owl_parse('package://srdl/owl/srdl2-action.owl').
 

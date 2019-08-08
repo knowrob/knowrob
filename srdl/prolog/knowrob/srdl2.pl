@@ -120,7 +120,7 @@ robot_part_tf_prefix(RobotPart, TfPrefix) :-
   owl_individual_of(Robot, knowrob:'Agent-Generic'),
   sub_component(Robot, RobotPart),
   owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)). 
-  
+
 robot_part_tf_prefix(_, '/').
 %% robot_tf_prefix(?Robot, ?TfPrefix).
 %
