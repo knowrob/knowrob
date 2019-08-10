@@ -12,6 +12,8 @@
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-middle.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-ACT.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
           CreativeCommons Attribution 3.0, so you are granted to use, copy,
