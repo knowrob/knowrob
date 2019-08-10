@@ -27,50 +27,51 @@
 
 :- module(urdf_parser,
     [
-      load_urdf_file/1,
-      load_urdf_param/1,
-      load_urdf_string/1,
-      robot_name/1,
-      root_link_name/1,
-      link_names/1,
-      link_parent_joint/2,
-      link_child_joints/2,
-      link_inertial_origin/2,
-      link_inertial_mass/2,
-      link_inertial_inertia/2,
-      link_num_visuals/2,
-      link_visual_type/3,
-      link_visual_origin/3,
-      link_visual_geometry/3,
-      link_material_name/3,
-      link_material_color/3,
-      link_material_texture/3,
-      link_num_collisions/2,
-      link_collision_type/3,
-      link_collision_name/3,
-      link_collision_origin/3,
-      link_collision_geometry/3,
-      joint_names/1,
-      joint_type/2,
-      joint_child_link/2,
-      joint_parent_link/2,
-      joint_axis/2,
-      joint_origin/2,
-      joint_lower_pos_limit/2,
-      joint_upper_pos_limit/2,
-      joint_velocity_limit/2,
-      joint_effort_limit/2,
-      joint_calibration_rising/2,
-      joint_calibration_falling/2,
-      joint_dynamics_damping/2,
-      joint_dynamics_friction/2,
-      joint_mimic_joint_name/2,
-      joint_mimic_multiplier/2,
-      joint_mimic_offset/2,
-      joint_safety_lower_limit/2,
-      joint_safety_upper_limit/2,
-      joint_safety_kp/2,
-      joint_safety_kv/2
+      load_urdf_file/2,
+      unload_urdf_file/1,
+      load_urdf_param/2,
+      load_urdf_string/2,
+      robot_name/2,
+      root_link_name/2,
+      link_names/2,
+      link_parent_joint/3,
+      link_child_joints/3,
+      link_inertial_origin/3,
+      link_inertial_mass/3,
+      link_inertial_inertia/3,
+      link_num_visuals/3,
+      link_visual_type/4,
+      link_visual_origin/4,
+      link_visual_geometry/4,
+      link_material_name/4,
+      link_material_color/4,
+      link_material_texture/4,
+      link_num_collisions/3,
+      link_collision_type/4,
+      link_collision_name/4,
+      link_collision_origin/4,
+      link_collision_geometry/4,
+      joint_names/2,
+      joint_type/3,
+      joint_child_link/3,
+      joint_parent_link/3,
+      joint_axis/3,
+      joint_origin/3,
+      joint_lower_pos_limit/3,
+      joint_upper_pos_limit/3,
+      joint_velocity_limit/3,
+      joint_effort_limit/3,
+      joint_calibration_rising/3,
+      joint_calibration_falling/3,
+      joint_dynamics_damping/3,
+      joint_dynamics_friction/3,
+      joint_mimic_joint_name/3,
+      joint_mimic_multiplier/3,
+      joint_mimic_offset/3,
+      joint_safety_lower_limit/3,
+      joint_safety_upper_limit/3,
+      joint_safety_kp/3,
+      joint_safety_kv/3
     ]).
 
 /** <module> Prolog-wrapping for the C++ URDF Parser.
@@ -78,51 +79,46 @@
 @author Georg Bartels
 @license BSD
 */
-% FIXME: this won't work multithreaded
 
 :- use_foreign_library('liburdf_parser.so').
 
-%% ros_param_get_string(+Key,-Value) is semidet.
-%
-% Read parameter from ROS parameter server.
-
-%% ros_info(+Msg) is det.
-%
-% Debug via ROS master.
-
-%% load_urdf_file(+Filename) is semidet.
+%% load_urdf_file(+Id,+Filename) is semidet.
 %
 % Load URDF from disc using global filename.
 
-%% load_urdf_param(+Param) is semidet.
+%% unload_urdf_file(+Id) is semidet.
+%
+% Unloads a previously loaded URDF.
+
+%% load_urdf_param(+Id,+Param) is semidet.
 %
 % Load URDF from ROS parameter server using public parameter name.
 
-%% load_urdf_string(+String) is semidet.
+%% load_urdf_string(+Id,+String) is semidet.
 %
 % Load URDF from given XML string.
 
-%% robot_name(-Name) is semidet.
+%% robot_name(+Id,-Name) is semidet.
 %
 % Get the name of the currently loaded robot.
 
-%% root_link_name(-Name) is semidet.
+%% root_link_name(+Id,-Name) is semidet.
 %
 % Get the name of the root link of the robot.
 
-%% link_names(-Names) is semidet.
+%% link_names(+Id,-Names) is semidet.
 %
 % Get the list of all link names of this robot.
 
-%% link_parent_joint(+LinkName, -JointName) is semidet.
+%% link_parent_joint(+Id,+LinkName, -JointName) is semidet.
 %
 % Get the name of the parent joint of a link.
 
-%% link_child_joints(+LinkName, -JointNames) is semidet.
+%% link_child_joints(+Id,+LinkName, -JointNames) is semidet.
 %
 % Get the list of joint names of all child joints of a link.
 
-%% link_inertial_origin(+LinkName, -Origin) is semidet.
+%% link_inertial_origin(+Id,+LinkName, -Origin) is semidet.
 %
 % Get the inertial origin of a link as a pose w.r.t.
 % the origin frame of a link.
@@ -130,11 +126,11 @@
 % Poses are coded as a compound term: pose([X,Y,Z],[QX,QY,QZ,QW]),
 % with the orientation represented as Quaternion.
 
-%% link_inertial_mass(+LinkName, -Mass) is semidet.
+%% link_inertial_mass(+Id,+LinkName, -Mass) is semidet.
 %
 % Get the inertial mass of a link in kg.
 
-%% link_inertial_inertia(+LinkName, -InertiaMat) is semidet.
+%% link_inertial_inertia(+Id,+LinkName, -InertiaMat) is semidet.
 %
 % Get the relevant parts of a links inertia matrix w.r.t.
 % the origin frame of a link.
@@ -143,11 +139,11 @@
 % [XX, XY, XZ, YY, YZ, ZZ].
 % For an explanation, visit: http://wiki.ros.org/urdf/XML/link
 
-%% link_num_visuals(+LinkName, -Num) is semidet.
+%% link_num_visuals(+Id,+LinkName, -Num) is semidet.
 %
 % Get the number of visual elements of a link.
 
-%% link_visual_type(+LinkName, +Index, -Type) is semidet.
+%% link_visual_type(+Id,+LinkName, +Index, -Type) is semidet.
 %
 % Get the type of a particular visual element of a link.
 % Possible types: box, sphere, cylinder, mesh
@@ -155,7 +151,7 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_visual_origin(+LinkName, +Index, -Origin) is semidet.
+%% link_visual_origin(+Id,+LinkName, +Index, -Origin) is semidet.
 %
 % Get the origin of a particular visual element of a link
 % as a pose w.r.t. to the link frame.
@@ -166,7 +162,7 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_visual_geometry(+LinkName, +Index, -Geometry) is semidet.
+%% link_visual_geometry(+Id,+LinkName, +Index, -Geometry) is semidet.
 %
 % Get the geometry of a particular visual element of a link.
 %
@@ -180,7 +176,7 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_material_name(+LinkName, +Index, -Name) is semidet.
+%% link_material_name(+Id,+LinkName, +Index, -Name) is semidet.
 %
 % Get the name of a material of a particular visual element
 % of a link.
@@ -188,7 +184,7 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_material_color(+LinkName, +Index, -Color) is semidet.
+%% link_material_color(+Id,+LinkName, +Index, -Color) is semidet.
 %
 % Get the color of a material of a particular visual element
 % of a link.
@@ -198,7 +194,7 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_material_texture(+LinkName, +Index, -FileName) is semidet.
+%% link_material_texture(+Id,+LinkName, +Index, -FileName) is semidet.
 %
 % Get the filename of a texture of a particular visual element
 % of a link.
@@ -206,11 +202,11 @@
 % Note: Links can have several visuals elements, the first
 % one has index 0.
 
-%% link_num_collisions(+LinkName, -Num) is semidet.
+%% link_num_collisions(+Id,+LinkName, -Num) is semidet.
 %
 % Get the number of collision elements of a link.
 
-%% link_collision_type(+LinkName, +Index, -Type) is semidet.
+%% link_collision_type(+Id,+LinkName, +Index, -Type) is semidet.
 %
 % Get the type of a particular collision element of a link.
 % Possible types: box, sphere, cylinder, and mesh.
@@ -218,14 +214,14 @@
 % Note: Links can have several collision elements, the first
 % one has index 0.
 
-%% link_collision_name(+LinkName, +Index, -Name) is semidet.
+%% link_collision_name(+Id,+LinkName, +Index, -Name) is semidet.
 %
 % Get the name of a particular collision element of a link.
 %
 % Note: Links can have several collision elements, the first
 % one has index 0.
 
-%% link_collision_origin(+LinkName, +Index, -Origin) is semidet.
+%% link_collision_origin(+Id,+LinkName, +Index, -Origin) is semidet.
 %
 % Get the origin of a particular collision element of a link,
 % expressed as a pose w.r.t. to the link frame.
@@ -236,7 +232,7 @@
 % Note: Links can have several collision elements, the first
 % one has index 0.
 
-%% link_collision_geometry(+LinkName, +Index, -Geometry) is semidet.
+%% link_collision_geometry(+Id,+LinkName, +Index, -Geometry) is semidet.
 %
 % Get the geometry of a particular collision element of a link.
 %
@@ -250,29 +246,29 @@
 % Note: Links can have several collision elements, the first
 % one has index 0.
 
-%% joint_names(-Names) is semidet.
+%% joint_names(+Id,-Names) is semidet.
 %
 % Get the list of joint names of the currently loaded robot.
 
-%% joint_type(+JointName, Type) is semidet.
+%% joint_type(+Id,+JointName, Type) is semidet.
 %
 % Get the type of a joint.
 % Possible types: revolute, prismatic, continuous, fixed,
 % floating, planar, and unknown.
 
-%% joint_child_link(+JointName, -LinkName) is semidet.
+%% joint_child_link(+Id,+JointName, -LinkName) is semidet.
 %
 % Get the name of the link of a joint.
 
-%% joint_parent_link(+JointName, -LinkName) is semidet.
+%% joint_parent_link(+Id,+JointName, -LinkName) is semidet.
 %
 % Get the name the parent link of a joint.
 
-%% joint_axis(+JointName, -Axis) is semidet.
+%% joint_axis(+Id,+JointName, -Axis) is semidet.
 %
 % Get the axis of a joint, expressed as a list [X, Y, Z].
 
-%% joint_origin(+JointName, -Origin) is semidet.
+%% joint_origin(+Id,+JointName, -Origin) is semidet.
 %
 % Get the origin of a joint, expressed as a pose
 % w.r.t. the link frame of its parent link.
@@ -280,77 +276,77 @@
 % Poses are coded as a compound term: pose([X,Y,Z],[QX,QY,QZ,QW]),
 % with the orientation represented as Quaternion.
 
-%% joint_lower_pos_limit(+JointName, -Lower) is semidet.
+%% joint_lower_pos_limit(+Id,+JointName, -Lower) is semidet.
 %
 % Read the lower position limit of a joint.
 %
 % Note: Only valid for prismatic and revolute joints.
 
 
-%% joint_upper_pos_limit(+JointName, -Upper) is semidet.
+%% joint_upper_pos_limit(+Id,+JointName, -Upper) is semidet.
 %
 % Read the upper position limit of a joint.
 %
 % Note: Only valid for prismatic and revolute joints.
 
-%% joint_velocity_limit(+JointName, -VelLimit) is semidet.
+%% joint_velocity_limit(+Id,+JointName, -VelLimit) is semidet.
 %
 % Read the velocity limit of a joint.
 %
 % Note: Only valid for prismatic, revolute, and continuous joints.
 
-%% joint_effort_limit(+JointName, -EffLimit) is semidet.
+%% joint_effort_limit(+Id,+JointName, -EffLimit) is semidet.
 %
 % Read the effort limit of a joint.
 %
 % Note: Only valid for prismatic, revolute, and continuous joints.
 
-%% joint_calibration_rising(+JointName, -Rising) is semidet.
+%% joint_calibration_rising(+Id,+JointName, -Rising) is semidet.
 %
 % Read the rising reference position of a joint.
 
-%% joint_calibration_falling(+JointName, -Falling) is semidet.
+%% joint_calibration_falling(+Id,+JointName, -Falling) is semidet.
 %
 % Read the falling reference position of a joint.
 
-%% joint_dynamics_damping(+JointName, -Damping) is semidet.
+%% joint_dynamics_damping(+Id,+JointName, -Damping) is semidet.
 %
 % Read the damping value of a joint.
 
-%% joint_dynamics_friction(+JointName, -Friction) is semidet.
+%% joint_dynamics_friction(+Id,+JointName, -Friction) is semidet.
 %
 % Get the static friction value of a joint.
 
-%% joint_mimic_joint_name(+JointName, -MimickedJointName) ist semidet.
+%% joint_mimic_joint_name(+Id,+JointName, -MimickedJointName) ist semidet.
 %
 % Get the name of a joint that a mimic joint mimicks.
 
-%% joint_mimic_multiplier(+JointName, -Multiplier) is semidet.
+%% joint_mimic_multiplier(+Id,+JointName, -Multiplier) is semidet.
 %
 % Get the multiplication factor of a mimic joint.
 
-%% joint_mimic_offset(+JointName, -Offset) is semidet.
+%% joint_mimic_offset(+Id,+JointName, -Offset) is semidet.
 %
 % Get the offset value of a mimic joint.
 
-%% joint_safety_lower_limit(+JointName, -Lower) is semidet.
+%% joint_safety_lower_limit(+Id,+JointName, -Lower) is semidet.
 %
 % Get the lower position limit of the safety controller
 % of a joint.
 
-%% joint_safety_upper_limit(+JointName, -Upper) is semidet.
+%% joint_safety_upper_limit(+Id,+JointName, -Upper) is semidet.
 %
 % Get the upper position limit of the safety controller
 % of a joint.
 
-%% joint_safety_kp(+JointName, -Kp) is semidet.
+%% joint_safety_kp(+Id,+JointName, -Kp) is semidet.
 %
 % Get the relation between position and velocity
 % limits of the safety controller of a joint. For
 % more details, visit:
 % http://wiki.ros.org/pr2_controller_manager/safety_limits
 
-%% joint_safety_kv(+JointName, -Kv) is semidet.
+%% joint_safety_kv(+Id,+JointName, -Kv) is semidet.
 %
 % Get the relation between position and velocity
 % limits of the safety controller of a joint. For
