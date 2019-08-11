@@ -350,6 +350,39 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#hasResolution -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasResolution">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Resolution"/>
+        <rdfs:label>has resolution</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasSamplingRate -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasSamplingRate">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorDevice"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SamplingRate"/>
+        <rdfs:label>has sampling rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasSensorRange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasSensorRange">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorDevice"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorRange"/>
+        <rdfs:label>has sensor range</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#hingedTo -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hingedTo">
@@ -931,15 +964,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#boundingBoxSize -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#boundingBoxSize">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#sizeParameterOfObject"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#vec3"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#buildingParameter -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#buildingParameter">
@@ -1095,15 +1119,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#lengthOfObject -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lengthOfObject">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#extensionParametersOfObject"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#lightConeAngle -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightConeAngle">
@@ -1211,15 +1226,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#massOfObject -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#massOfObject">
-        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#maxJointValue -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#maxJointValue">
@@ -1231,7 +1237,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#maxRadius -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#maxRadius">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#radius"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Largest radius, e.g. of a cone</rdfs:comment>
     </owl:DatatypeProperty>
@@ -1249,7 +1254,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#minRadius -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#minRadius">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#radius"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Smallest radius, e.g. of a cone</rdfs:comment>
     </owl:DatatypeProperty>
@@ -1307,16 +1311,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#quaternion">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#vec4"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#radius -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#radius">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#sizeParameterOfObject"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The radius of an object with a circular shape.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -1461,6 +1455,14 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#Mapping">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Accuracy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Accuracy">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
     </owl:Class>
     
 
@@ -2343,6 +2345,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Precision -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Precision">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PrismaticJoint -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrismaticJoint">
@@ -2380,6 +2390,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ResearchOrganization">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Organization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Resolution -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Resolution">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
     </owl:Class>
     
 
@@ -2440,6 +2458,15 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#SamplingRate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SamplingRate">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:comment>The frequency at which a sensor takes measurements.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Scissors -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Scissors">
@@ -2464,10 +2491,49 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Sensitivity -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sensitivity">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#SensorDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensorDevice">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasResolution"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Resolution"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasSamplingRate"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SamplingRate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasSensorRange"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorRange"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: axiomatize measured quantitiy.</rdfs:comment>
+        <rdfs:label>Sensor device</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SensorRange -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensorRange">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:label>Sensor range</rdfs:label>
     </owl:Class>
     
 
@@ -2907,12 +2973,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#MentalAction -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#MentalAction"/>
-    
-
-
     <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
@@ -3039,6 +3099,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
     
 
 
