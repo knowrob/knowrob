@@ -42,6 +42,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
+:- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/temporal')).
