@@ -10,3 +10,4 @@ doc
 cmake-build-debug
 srdl/owl/sim-hand.owl
 srdl/owl/xsens-human.owl
+*catalog-v001.xml
