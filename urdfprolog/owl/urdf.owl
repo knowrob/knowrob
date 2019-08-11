@@ -118,7 +118,7 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointPosition">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Joint"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointPosition"/>
         <owl:propertyChainAxiom rdf:parseType="Collection">
             <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#hasConfiguration"/>
@@ -458,12 +458,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#Joint -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Joint"/>
     
 
 
