@@ -60,6 +60,7 @@ the task (if any).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/rosowl')).
+:- use_module(library('knowrob/events')).
 :- use_module(library(list_util)).
 
 :- rdf_meta action_registry(r,?),

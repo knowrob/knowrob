@@ -54,17 +54,17 @@ red_on_table    :- \+ holds( blocksworld:ontop(blocksworld:'BlockRed_0', _) ), !
 test('Unstack_Y') :-
   mem_drop,
   yellow_on_blue,
-  action_effects_apply(blocksworld:'Unstack_Y'),
+  action_effects_apply(blocksworld:'Unstack_Y'), % FIXME Unstack_Y is not an action, but a task
   yellow_on_table.
 
 test('Stack_RB') :-
   red_on_table,
-  action_effects_apply(blocksworld:'Stack_RB'),
+  action_effects_apply(blocksworld:'Stack_RB'), % FIXME Stack_RB is not an action, but a task
   red_on_blue.
 
 test('Stack_YR') :-
   yellow_on_table,
-  action_effects_apply(blocksworld:'Stack_YR'),
+  action_effects_apply(blocksworld:'Stack_YR'), % FIXME Stack_YR is not an action, but a task
   yellow_on_red.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,7 +76,7 @@ test('Stack_YR') :-
    %swrl_file_parse(Filepath,_,_).
 
 test(cracking_effect_destroyed_egg, [nondet]) :-
-  action_effect_on_object(pancake:'CrackingAnEgg', destroyed(Egg)),
+  action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
   rdf_equal(Egg,pancake:'Egg').
 
 test(pancake_making_turn_on_maker) :-

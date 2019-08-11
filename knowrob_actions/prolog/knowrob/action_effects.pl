@@ -56,6 +56,7 @@ in SWRL rules (i.e., relate what was created to something else).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/events')).
 :- use_module(library('knowrob/actions')).
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/triple_memory')).
@@ -88,7 +89,11 @@ in SWRL rules (i.e., relate what was created to something else).
 %	| stopped(Type)		| A process has been stopped.	|
 %
 action_effect(Act,Effect) :-
+  rdfs_individual_of(Act,dul:'Action'),
   rdf_has(Act,dul:isClassifiedBy,Tsk),
+  action_effect_(Tsk,Effect).
+
+action_effect(Tsk,Effect) :-
   action_effect_(Tsk,Effect).
 
 action_effect_(Tsk, commited(Type)) :-
@@ -202,11 +207,11 @@ assign_role_(Act,Role,RoleConcept,RoleRelation) :-
 action_precondition_check(Act) :-
   action_precondition_check(Act, _), !.
 
-action_precondition_check(Act, Effect) :-
+action_precondition_check(Act, _Effect) :-
   event_type(Act,Tsk),
   task_effect_rule(Tsk,Rule,Args),
-  swrl_rule_arg(Rule,Args,task,TskName)
-  swrl_satisfied(Rule,[var(Var,Act)]).
+  swrl_rule_arg(Rule,Args,task,TskName),
+  swrl_satisfied(Rule,[var(TskName,Act)]).
 
 		 /*******************************
 		 *	Computables		*

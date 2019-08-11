@@ -116,7 +116,7 @@ plan_objects(Tsk, ObjectTypes) :-
 
 plan_object(Tsk,ObjectType) :-
   rdf_has(Tsk,rdf:type,TskType),
-  action_effects:task_class_has_role(TskType,_Role,ObjectType),
+  task_role(TskType,_Role,ObjectType),
   \+ rdf_equal(ObjectType,dul:'Object').
 
 %% plan_constrained_objects(+Plan:iri, +Action:iri, +PrevActions:list)
@@ -172,7 +172,7 @@ workflow_event_graph(WF,ESG) :-
   findall(Constraint, (
     member(EventType,EventTypes),
     allen_constraint(EventType,Constraint)
-  ), Constraints).
+  ), Constraints),
   %
   esg_truncated(Tsk,EventTypes,Constraints,ESG).
   
@@ -182,7 +182,9 @@ workflow_steps(WF,Steps,Constraints) :-
   findall(X, rdf_has(WF, ease_wf:hasStep, X), Steps), 
   findall(Constraint, (
     member(Step,Steps),
-    allen_constraint(Step,Constraint)
+    allen_constraint(Step,Constraint),
+    Constraint =.. [_,_,Other],
+    member(Other, Steps)
   ), Constraints).
 
 workflow_processes(WF,Procs,Constraints) :-

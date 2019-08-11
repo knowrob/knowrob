@@ -30,8 +30,7 @@
       task_role/3,
       task_parameter/3,
       action_task/2,
-      action_set_task/2,
-      event_participant/3
+      action_set_task/2
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -49,8 +48,7 @@
 :- rdf_meta
       task_role(r,r,r),
       task_parameter(r,r,r),
-      action_task(r,r),
-      event_participant(r,r,r).
+      action_task(r,r).
 
 %%
 task_role(Tsk,Role,ObjectType) :-
@@ -69,8 +67,8 @@ task_role(Tsk,Role,ObjectType) :-
   )).
 
 %%
-task_role(Tsk,Role,ObjectType) :-
-  rdfs_individual_of(Tsk,dul:'Task'),!,
+task_parameter(Tsk,Param,Type) :-
+  rdfs_individual_of(Tsk,dul:'Task'),
   rdfs_type_of(Tsk,TskType),
   task_parameter(TskType,Param,Type).
 
@@ -91,7 +89,7 @@ action_task(Act,Tsk) :-
   rdfs_type_of(Tsk_individual,dul:'Task',Tsk).
 
 %%
-action_set_task(Action,Tsk) :-
+action_set_task(Act,Tsk) :-
   rdfs_individual_of(Act,dul:'Action'),
   rdfs_individual_of(Tsk,dul:'Task'),
-  rdf_assert(Action,dul:isClassifiedBy,Tsk).
+  rdf_assert(Act,dul:isClassifiedBy,Tsk).
