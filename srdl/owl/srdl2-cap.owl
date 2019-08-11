@@ -12,6 +12,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-cap.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
     
@@ -48,7 +49,8 @@
     <!-- http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2.owl#dependsOn"/>
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#hasRequirement"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
     </owl:ObjectProperty>
     
@@ -57,7 +59,19 @@
     <!-- http://knowrob.org/kb/srdl2-cap.owl#hasCapability -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#hasCapability">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
+        <rdfs:label>has capability</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#hasRequirement -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#hasRequirement">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+        <rdfs:label>has requirement</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -65,14 +79,22 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#hasRequirement"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://knowrob.org/kb/srdl2.owl#dependsOn -->
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2.owl#dependsOn"/>
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
     
 
 
@@ -112,12 +134,6 @@
     <!-- http://knowrob.org/kb/knowrob.owl#MobileBase -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MobileBase"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Robot -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Robot"/>
     
 
 
@@ -167,12 +183,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ArmMotionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#BodyMotionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -239,12 +249,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ArmCollisionCheckCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -370,7 +374,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -393,12 +397,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#LocalizationCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -435,12 +433,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ObjectRecognitionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -489,12 +481,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -503,31 +489,7 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMappingComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#ArmComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#Camera -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
     
 
 
@@ -543,33 +505,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent -->
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent"/>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMappingComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMappingComponent"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware"/>
     
 
 
@@ -582,6 +520,18 @@
     <!-- http://www.ease-crc.org/ont/EASE.owl#PrehensileEffector -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PrehensileEffector"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
     
 
 
