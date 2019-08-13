@@ -37,6 +37,7 @@
       rdf_swrl_satisfied/1,
       rdf_swrl_satisfied/2,
       swrl_assert/1,
+      swrl_rule_arg/4,
       swrl_file_parse/3,
       swrl_file_load/1,
       swrl_file_load/2,
@@ -80,7 +81,8 @@
             swrl_match_instance(r,r,r).
 :- dynamic  call_mutex/2,
             rdf_swrl_store/2,
-            swrl_file_store/3.
+            swrl_file_store/3,
+            swrl_assertion_store/3.
 
 		 /********************************
 		 * RDF-based SWRL representation *
@@ -824,17 +826,22 @@ swrl_class_atom_satisfied(S, all(P,Cls)) :-
 swrl_class_atom_satisfied(S, min(N,P,Cls)) :-
   swrl_db(DB),
   findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  length(Os, Os_length), atom_number(N,N_val), Os_length >= N_val.
+  length(Os, Os_length),
+  (number(N) -> N_val=N ; atom_number(N,N_val)),
+  Os_length >= N_val.
 
 swrl_class_atom_satisfied(S, max(N,P,Cls)) :-
   swrl_db(DB),
   findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  length(Os, Os_length), atom_number(N,N_val), Os_length =< N_val.
+  length(Os, Os_length),
+  (number(N) -> N_val=N ; atom_number(N,N_val)),
+  Os_length =< N_val.
 
 swrl_class_atom_satisfied(S, exactly(N,P,Cls)) :-
   swrl_db(DB),
   findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  atom_number(N,N_val), length(Os,N_val).
+  (number(N) -> N_val=N ; atom_number(N,N_val)),
+  length(Os,N_val).
 
 swrl_class_atom_satisfied(S, Cls) :-
   atom(Cls),
@@ -867,11 +874,6 @@ swrl_file_project(Filepath,Label,Vars) :-
   get_dict(label,Args,Label),
   swrl_project(Rule,Vars).
 
-%%
-swrl_file_assert(Filepath,Rule,Args) :-
-  swrl_assert(Rule),
-  assertz(swrl_file_store(Filepath,Rule,Args)).
-
 %% swrl_file_unload(+Filepath) is det.
 %% swrl_file_unload(+Filepath,+Label) is det.
 %
@@ -893,35 +895,49 @@ swrl_file_unload(Filepath,Label) :-
       ignore(retract( Rule ))
   )).
 
-%% swrl_file_unload(+Filepath) is det.
-%% swrl_file_unload(+Filepath,+Label) is det.
+%% swrl_file_load(+Filepath) is det.
+%% swrl_file_load(+Filepath,+Label) is det.
 %
 % Loads all or one rule(s) from a SWRL file.
 %
 swrl_file_load(Filepath,Label) :-
-  swrl_file_store(Filepath, _Rule, Args),
+  swrl_assertion_store(Filepath, _Rule, Args),
   get_dict(label,Args,Label),!.
 
 swrl_file_load(Filepath,Label) :-
   swrl_file_parse(Filepath,Rule,Args),
   get_dict(label,Args,Label),
-  swrl_file_assert(Filepath,Rule,Args).
+  swrl_assert(Rule),
+  assertz(swrl_assertion_store(Filepath, _Rule, Args)).
 
 swrl_file_load(Filepath) :-
   forall(
-    swrl_file_parse(Filepath,Rule,Args),
-    swrl_file_assert(Filepath,Rule,Args)
-  ).
+  ( swrl_file_parse(Filepath,Rule,Args),
+    \+ swrl_assertion_store(Filepath,Rule,Args) ),
+  ( swrl_assert(Rule),
+    assertz(swrl_assertion_store(Filepath,Rule,Args))
+  )).
 
 %% swrl_file_parse(+Filepath,-Rule,-Args) is det.
 %
 % Parses a SWRL file.
-%
+% 
 swrl_file_parse(Filepath,Rule,Args) :-
-  phrase_from_file(swrl_file_rules(Xs), Filepath),
-  member([Pairs,Rule],Xs),
-  dict_pairs(Args,_,Pairs).
+  swrl_file_store(Filepath,Rule,Args) *-> true ; (
+    phrase_from_file(swrl_file_rules(Xs), Filepath),
+    findall([R,A], (
+      member([Pairs,R],Xs),
+      dict_pairs(A,_,Pairs),
+      assertz(swrl_file_store(Filepath,R,A))
+    ), Rules),
+    member([Rule,Args],Rules)
+  ).
 
+%%
+swrl_rule_arg(Rule,Args,Key,Value) :-
+  swrl_file_store(_,Rule,Args),
+  get_dict(Key,Args,Value).
+  
 %%
 swrl_file_rules([])           --> call(eos), !.
 swrl_file_rules([Rule|Rules]) --> swrl_file_rule(Rule), swrl_file_rules(Rules).

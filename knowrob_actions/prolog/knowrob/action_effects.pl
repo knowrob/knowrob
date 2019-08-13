@@ -28,11 +28,9 @@
 :- module(action_effects,
     [
       action_effects_apply/1,
-      action_effect_apply/2,
-      action_effect_on_object/2,
+      action_effect/2,
       action_precondition_check/1,
-      action_precondition_check/2,
-      comp_actionEffectRule/2
+      action_precondition_check/2
     ]).
 /** <module> Reasoning about action effects.
 
@@ -58,82 +56,66 @@ in SWRL rules (i.e., relate what was created to something else).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/events')).
 :- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/triple_memory')).
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
-
 :-  rdf_meta
+    action_effect(r,t),
     action_effects_apply(r),
-    action_effect_apply(r,r),
-    action_effect_on_object(r,t),
     action_precondition_check(r),
     action_precondition_check(r,r),
-    comp_actionEffectRule(r,r),
-    task_class_has_role(r,r,r).
+    comp_processStarted(r,r),
+    comp_outputsCreated(r,r).
 
-%% comp_actionEffectRule(+Action:iri, ?Effect:iri)
-%
-% Effect is a RDF description of a SWRL rule that 
-% describes how the effect of Action can be projected
-% into the knowledge base.
-%
-% @param Action Instance of knowrob:Action
-% @param Effect RDF name of SWRL rule
-%
-comp_actionEffectRule(Action, Effect) :-
-  rdfs_individual_of(Action, ActionClass),
-  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))).
+		 /*******************************
+		 *	Action post-conditions	*
+		 *******************************/
 
-%% action_effect_on_object(?Task:iri, ?EffectTerm:term) is nondet
+%% action_effect(?Tsk:iri, ?EffectTerm:term) is nondet
 %
-% Reasoning about which Task
-% has a desired effect on the object manipulated during the action.
+% Reasoning about which Task has a desired effect.
 % EffectTerm is a Prolog term describing the effect:
 %
-%	| updated(P,O)		   | If value O is specified for property P	  |
-%	| created(Type)		   | If Type is a new type of the manipulated object	|
-%	| destroyed(Type)	   | If Type is not a type of the manipulated object anymore after the action was performed	  |
-%	| destroyed			   | If the object is not spatially existing anymore	  |
+%	| commited(Type)	| An object has been commited. 	|
+%	| moved(Type)		| An object has been moved.	|
+%	| operated(Type)	| An object has been operated.	|
+%	| removed(Type)		| An object has been removed from a whole.	|
+%	| transformed(Type)	| An object has been transformed.	|
+%	| created(Type)		| An object has been created.	|
+%	| destroyed(Type)	| An object has been destroyed.	|
+%	| started(Type)		| A process has been started.	|
+%	| stopped(Type)		| A process has been stopped.	|
 %
-% `created` and `destroyed` effect terms follow the convention that type assertions
-% are represented in rule heads as `Type(?obj)`, and type retractions as `(not Type)(?obj)`.
-% 
-% For example:
-% ==
-%     action_effect_on_object(knowrob:'TurningOnPoweredDevice',
-%            updated(knowrob:stateOfObject,knowrob:'DeviceStateOn'))
-%     action_effect_on_object(knowrob:'Cracking',
-%            destroyed)
-% ==
-%
-action_effect_on_object(Task, commited(Type)) :-
-  task_class_has_role(Task,ease_obj:'CommitedObject',Type).
-action_effect_on_object(Task, moved(Type)) :-
-  task_class_has_role(Task,ease_obj:'MovedObject',Type).
-action_effect_on_object(Task, operated(Type)) :-
-  task_class_has_role(Task,ease_obj:'OperatedObject',Type).
-action_effect_on_object(Task, removed(Type)) :-
-  task_class_has_role(Task,ease_obj:'RemovedObject',Type).
-action_effect_on_object(Task, transformed(Type)) :-
-  task_class_has_role(Task,ease_obj:'TransformedObject',Type).
-action_effect_on_object(Task, created(Type)) :-
-  task_class_has_role(Task,ease_obj:'CreatedObject',Type).
-action_effect_on_object(Task, destroyed(Type)) :-
-  task_class_has_role(Task,ease_obj:'DestroyedObject',Type).
+action_effect(Act,Effect) :-
+  rdfs_individual_of(Act,dul:'Action'),
+  rdf_has(Act,dul:isClassifiedBy,Tsk),
+  action_effect_(Tsk,Effect).
 
-%%
-task_class_has_role(Task,Role,ObjectType) :-
-  owl_subclass_of(Task,Restr),
-  rdf_has(Restr,owl:onProperty,dul:isTaskOf),
-  owl_restriction_object_domain(Restr,RoleDescr),
-  once((
-    (\+ ground(Role) ; owl_subclass_of(RoleDescr,Role)),
-    owl_property_range_on_class(RoleDescr,dul:classifies,ObjectType),
-    rdfs_individual_of(ObjectType,owl:'Class')
-  )).
+action_effect(Tsk,Effect) :-
+  action_effect_(Tsk,Effect).
+
+action_effect_(Tsk, commited(Type)) :-
+  task_role(Tsk,ease_obj:'CommitedObject',Type).
+action_effect_(Tsk, moved(Type)) :-
+  task_role(Tsk,ease_obj:'MovedObject',Type).
+action_effect_(Tsk, operated(Type)) :-
+  task_role(Tsk,ease_obj:'OperatedObject',Type).
+action_effect_(Tsk, removed(Type)) :-
+  task_role(Tsk,ease_obj:'RemovedObject',Type).
+action_effect_(Tsk, transformed(Type)) :-
+  task_role(Tsk,ease_obj:'TransformedObject',Type).
+action_effect_(Tsk, created(Type)) :-
+  task_role(Tsk,ease_obj:'CreatedObject',Type).
+action_effect_(Tsk, destroyed(Type)) :-
+  task_role(Tsk,ease_obj:'DestroyedObject',Type).
+action_effect_(Tsk, started(ProcType)) :-
+  rdf_has(Tsk,ease:starts,X),
+  rdfs_type_of(X,dul:'Process',ProcType).
+action_effect_(Tsk, stopped(ProcType)) :-
+  rdf_has(Tsk,ease:finishes,X),
+  rdfs_type_of(X,dul:'Process',ProcType).
 
 %% action_effects_apply(+Act:iri)
 %
@@ -142,49 +124,75 @@ task_class_has_role(Task,Role,ObjectType) :-
 % @param Act Instance of knowrob:'Action'
 %
 action_effects_apply(Act) :-
+  event_end_time(Act,Stamp),
   % make sure cached computables are inferred
   forall(rdfs_computable_has(Act, knowrob:processStarted, _), true),
   forall(rdfs_computable_has(Act, knowrob:outputsCreated, _), true),
-  forall( comp_actionEffectRule(Act, Descr),
-          action_effect_apply(Act, Descr) ).
+  % assign roles
+  forall(
+    ( rdf_has(Act,dul:isClassifiedBy,Tsk), rdf_has(Tsk,dul:isTaskOf,Role) ),
+    assign_role(Act,Role)),
+  % use swrl for projection of action effects
+  forall(
+    ( event_type(Act,Tsk), task_effect_rule(Tsk,Rule,Args) ),
+    ( action_effect_rule_project(Act,Rule,Args) ; (
+      print_message(warning, action_effect_failed(Act,Tsk,Args))
+    ))
+  ),
+  % start/stop lifetime of objects
+  forall(
+    rdf(Act, knowrob:outputsCreated, Started),
+    object_set_lifetime_begin(Started,Stamp)),
+  forall(
+    rdf(Act, knowrob:inputsDestroyed, Started),
+    object_set_lifetime_end(Started,Stamp)),
+  % start/stop processes
+  forall(
+    rdf(Act, knowrob:processStarted, Started),
+    event_set_begin_time(Started,Stamp)),
+  forall(
+    rdf(Act, knowrob:processStopped, Stopped),
+    event_set_end_time(Stopped,Stamp)),!.
 
-%% action_effect_apply(+Act:iri,+Effect:iri)
-%
-% Effect is a RDF SWRL rule that expresses an effect of Act.
-% The implications of the rule (i.e., the rule head) is
-% projected to the RDF triple store with this call.
-%
-% SWRL action effect rules have additional annotations used to
-% reason about the context in which the rule applies (i.e., the action class).
-% These rules usually start with a statement `Action(?act)` which assigns an action instance
-% to the rule. The action instance Act provided will be bound to this action variable in the rule.
-%
-% @param Act Instance of knowrob:'Action'
-% @param Effect RDF description of SWRL action effect rule
-%
-action_effect_apply(Act,Effect) :-
-  rdf(Act, knowrob:actionEffectProjected, Effect, action_projection), !.
-action_effect_apply(Act,Effect) :-
-  current_time(Now),
-  % call projection rules
-  rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
-  rdf_swrl_project(Effect, [var(Var,Act)]),
-  % TODO: stop lifetime of inputs destroyed. i.e., making type a temporal property?
-  % start/stop processes.
-  forall(rdf_has(Act,knowrob:processStarted, Started),
-         start_process(Started,Now)),
-  forall(rdf_has(Act,knowrob:processStopped, Stopped),
-         stop_process(Stopped,Now)),
-  % remember that this effect was projected before to avoid
-  % that it is projected again.
-  rdf_assert(Act, knowrob:actionEffectProjected, Effect, action_projection),!.
+%%
+action_effect_rule_project(Act,Rule,Args) :-
+  swrl_rule_arg(Rule,Args,action_var,Var),
+  swrl_project(Rule,[var(Var,Act)]).
 
-start_process(Proc,Now) :-
-  ( rdf_has(Proc, knowrob:startTime, _) ;
-    rdf_assert_prolog(Proc, knowrob:startTime, Now) ),!.
-start_process(Proc,Now) :-
-  ( rdf_has(Proc, knowrob:endTime, _) ;
-    rdf_assert_prolog(Proc, knowrob:endTime, Now) ),!.
+%% 
+task_effect_rule(Tsk,Rule,Args) :-
+  rdf_split_url(_,TskName,Tsk),
+  swrl_rule_arg(Rule,Args,task,TskName).
+
+%%
+%assign_role(Act,Role) :-
+  %assign_role_(Act, Role, ease_obj:'CommitedObject', knowrob:?),!.
+assign_role(Act,Role) :-
+  assign_role_(Act,Role, ease_obj:'MovedObject', knowrob:objectTransported),!.
+%assign_role(Act,Role) :-
+  %assign_role_(Act, Role, ease_obj:'OperatedObject', knowrob:?),!.
+assign_role(Act,Role) :-
+  assign_role_(Act, Role, ease_obj:'RemovedObject', knowrob:objectRemoved),!.
+%assign_role(Act,Role) :-
+  %assign_role_(Act, Role, ease_obj:'TransformedObject', knowrob:?),!.
+assign_role(Act,Role) :-
+  assign_role_(Act, Role, ease_obj:'DestroyedObject', knowrob:inputsDestroyed),!.
+assign_role(Act,Role) :-
+  assign_role_(Act, Role, ease_obj:'Tool', knowrob:toolUsed),!.
+assign_role(Act,Role) :-
+  assign_role_(Act, Role, ease_obj:'Destination', knowrob:goalLocation),!.
+
+assign_role_(Act,Role,RoleConcept,RoleRelation) :-
+  rdfs_individual_of(Role,RoleConcept),!,
+  once(rdf(Act,rdf:type,_,G)),
+  forall(rdf_has(Role,dul:classifies,Obj),(
+    rdf_retractall(Act,dul:hasParticipant,Obj),
+    rdf_assert(Act,RoleRelation,Obj,G)
+  )).
+
+		 /*******************************
+		 *	Action pre-conditions	*
+		 *******************************/
 
 %% action_precondition_check(+Act:iri).
 %% action_precondition_check(+Act:iri,+Effect:iri).
@@ -195,19 +203,26 @@ start_process(Proc,Now) :-
 % @param Act Instance of knowrob:'Action'
 % @param Effect RDF description of SWRL action effect rule
 %
+% TODO: this seems strange. revise it
 action_precondition_check(Act) :-
   action_precondition_check(Act, _), !.
 
-action_precondition_check(Act, Effect) :-
-  rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
-  rdf_swrl_satisfied(Effect, [var(Var,Act)]).
+action_precondition_check(Act, _Effect) :-
+  event_type(Act,Tsk),
+  task_effect_rule(Tsk,Rule,Args),
+  swrl_rule_arg(Rule,Args,task,TskName),
+  swrl_satisfied(Rule,[var(TskName,Act)]).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % %  Utility predicates
+		 /*******************************
+		 *	Computables		*
+		 *******************************/
 
-swrl_type_of(_, O, O) :- !.
-swrl_type_of(_, literal(type(_,X)), O) :- strip_literal_type(O,X),!.
-swrl_type_of(_, O, literal(type(_,X))) :- strip_literal_type(O,X),!.
-swrl_type_of(_Head :- Body, Var, Type) :-
-  member(class(Type_rule, Var), Body),
-  once(owl_subclass_of(Type, Type_rule)).
+%% 
+comp_processStarted(Act,Proc) :-
+  action_effect(Act,started(ProcType)),
+  rdfs_instance_from_class(ProcType,Proc).
+
+%% 
+comp_outputsCreated(Act,Obj) :-
+  action_effect(Act,created(ObjType)),
+  rdfs_instance_from_class(ObjType,Obj).

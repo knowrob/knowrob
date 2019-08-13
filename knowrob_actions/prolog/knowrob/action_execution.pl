@@ -59,6 +59,8 @@ the task (if any).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/rosowl')).
+:- use_module(library('knowrob/events')).
 :- use_module(library(list_util)).
 
 :- rdf_meta action_registry(r,?),
@@ -89,7 +91,7 @@ ros_querying(Action,ExecutionPlan,InputDict,ActionDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find ServiceInterface participant.
   action_call_or_failure(Action, (
-      action_participant_type(Action,ServiceInterface,ros:'ServiceInterface')
+      event_participant(Action,ServiceInterface,ros:'ServiceInterface')
     ),
     knowrob:'ACTION_INPUT_MISSING',
     'no service interface participant'

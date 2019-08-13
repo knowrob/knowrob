@@ -1,6 +1,6 @@
 <launch>
   <arg name="initial_package" default="knowrob_common" />
-  <arg name="initial_goal" default="knowrob_common" />
+  <arg name="initial_goal" default="" />
   <arg name="num_pl_threads" default="2" />
   <arg name="num_ros_threads" default="4" />
   

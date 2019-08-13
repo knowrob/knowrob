@@ -1,4 +1,4 @@
-/*  MAP.pl
+/*  action_parser.pl
 
     Author:        Daniel Beßler
     E-mail:        danielb@informatik.uni-bremen.de

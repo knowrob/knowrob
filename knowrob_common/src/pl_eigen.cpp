@@ -103,6 +103,7 @@ PREDICATE(matrix_create, 3) {
 	m.block(0,0,3,3) = q.toRotationMatrix();
 	// 3x1 block starting at (0,3)
 	m.block(0,3,3,1) = v;
+	eigen2pl(m,PL_A3);
 	return TRUE;
 }
 

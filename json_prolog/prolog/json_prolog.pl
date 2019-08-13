@@ -76,7 +76,7 @@ json_prolog_encode(String,Atom) :-
   term_to_atom(String,Atom), !.
 
 json_prolog_encode(X,X) :-
-  ( atom(X) ; is_dict(X) ; number(X) ; string(X) ), !.
+  ( atom(X) ; is_dict(X) ; number(X) ), !.
 
 json_prolog_encode(Term,_{term: [Functor|Args_json]}) :-
   compound(Term), !,

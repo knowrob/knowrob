@@ -31,7 +31,10 @@
       plan_subevents/2,           % ordered list of sub-actions
       plan_subevents_recursive/2,
       plan_objects/2,             % all object types involved in performing a complexaction
-      plan_constrained_objects/3  % link outputs of previous actions as inputs of another action
+      plan_constrained_objects/3, % link outputs of previous actions as inputs of another action
+      workflow_steps/3,
+      workflow_processes/3,
+      process_flow_steps/3
     ]).
 /** <module> Methods for reasoning about object changes caused by actions
 
@@ -56,7 +59,9 @@
       plan_subevents(r,r,-),
       plan_subevents_recursive(r,r),
       plan_objects(r,r),
-      plan_constrained_objects(r,r,t).
+      plan_constrained_objects(r,r,t),
+      workflow_steps(r,t,t),
+      workflow_processes(r,t,t).
 
 %% plan_subevents(+Tsk:iri, ?SubTasks:list) is semidet.
 %
@@ -68,13 +73,13 @@
 %
 plan_subevents(Tsk, SubTasks) :-
   rdfs_individual_of(Tsk0,Tsk),
-  rdf_has(WF,dul:definesTask,Tsk0),
+  rdf_has(WF,dul:definesTask,Tsk0),% FIXME definesTask too general
   rdfs_individual_of(WF,dul:'Workflow'),
   plan_subevents(Tsk0, WF, SubTasks).
 
 plan_subevents(Tsk, WF, SubTasks) :-
   % find steps and their relation to each other
-  worklfow_steps(WF,Steps,Step_Constraints),
+  workflow_steps(WF,Steps,Step_Constraints),
   % gather allen constraints about the occurance of Act
   findall(X, allen_constraint(Tsk,X), Task_Constraints),
   append(Step_Constraints,Task_Constraints,Constraints),
@@ -111,7 +116,7 @@ plan_objects(Tsk, ObjectTypes) :-
 
 plan_object(Tsk,ObjectType) :-
   rdf_has(Tsk,rdf:type,TskType),
-  action_effects:task_class_has_role(TskType,_Role,ObjectType),
+  task_role(TskType,_Role,ObjectType),
   \+ rdf_equal(ObjectType,dul:'Object').
 
 %% plan_constrained_objects(+Plan:iri, +Action:iri, +PrevActions:list)
@@ -140,21 +145,59 @@ plan_constrained_object(OutputType, Object) :-
   owl_individual_of(Object, OutputType), !.
 
 		 /*******************************
-		 *	Workflows		*
+		 *	Process flows		*
 		 *******************************/
 
 %%
-worklfow_steps(WF,Steps,Constraints) :-
-  findall(X, rdf_has(WF, ease_wf:hasStep, X), Steps), 
+process_flow_steps(WF,Steps,Constraints) :-
+  findall(X, rdf_has(WF, ease_proc:hasStage, X), Steps), 
   findall(Constraint, (
     member(Step,Steps),
     allen_constraint(Step,Constraint)
   ), Constraints).
 
+		 /*******************************
+		 *	Workflows		*
+		 *******************************/
+
+workflow_is_for_task(WF,Tsk) :- fail. % TODO
+
 %%
-allen_constraint(Tsk,Constraint) :-
-  rdf_has(Tsk,Relation,Other),
+workflow_event_graph(WF,ESG) :-
+  workflow_is_for_task(WF,Tsk),
+  findall(X, (
+    rdf_has(WF, dul:defines, X),
+    rdfs_individual_of(X, dul:'EventType')
+  ), EventTypes), 
+  findall(Constraint, (
+    member(EventType,EventTypes),
+    allen_constraint(EventType,Constraint)
+  ), Constraints),
+  %
+  esg_truncated(Tsk,EventTypes,Constraints,ESG).
+  
+
+%%
+workflow_steps(WF,Steps,Constraints) :-
+  findall(X, rdf_has(WF, ease_wf:hasStep, X), Steps), 
+  findall(Constraint, (
+    member(Step,Steps),
+    allen_constraint(Step,Constraint),
+    Constraint =.. [_,_,Other],
+    member(Other, Steps)
+  ), Constraints).
+
+workflow_processes(WF,Procs,Constraints) :-
+  findall(X, rdf_has(WF, ease_proc:definesProcess, X), Procs), 
+  findall(Constraint, (
+    member(Proc,Procs),
+    allen_constraint(Proc,Constraint)
+  ), Constraints).
+
+%%
+allen_constraint(X,Constraint) :-
+  rdf_has(X,Relation,Other),
   atom(Relation),
-  rdfs_individual_of(Other,dul:'Task'),
-  rdf_has_prolog(Relation,ease:symbol,Symbol),
-  Constraint =.. [Symbol,Tsk,Other].
+  %rdfs_individual_of(Other,dul:'Task'),
+  rdf_has_prolog(Relation,ease:symbol,Symbol), % FIXME: bad test
+  Constraint =.. [Symbol,X,Other].

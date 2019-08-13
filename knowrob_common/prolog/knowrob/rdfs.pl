@@ -38,6 +38,7 @@
       rdf_vector_prolog/2,
       rdfs_value_prolog/3,
       rdfs_type_of/2,
+      rdfs_type_of/3,
       rdfs_common_ancestor/2,
       rdfs_assert_specific/3,
       strip_literal_type/2
@@ -60,6 +61,7 @@
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
+            rdfs_type_of(r,r,r),
             rdfs_common_ancestor(t,r),
             rdfs_number(t,?),
             rdfs_list(t,?).
@@ -145,8 +147,16 @@ rdf_phas(Property, P, O) :-
 % @param Value RDF iri or Prolog encoded data value
 %
 rdf_has_prolog(S,P,O) :-
+  ground(S),!,
+  atom(S),
   rdf_has(S,P,O_rdf),
   rdfs_value_prolog(P,O_rdf,O).
+
+rdf_has_prolog(S,P,O) :-
+  nonvar(O),!,
+  once(( var(S) ; atom(S) )),
+  rdfs_value_prolog(P,O_rdf,O),
+  rdf_has(S,P,O_rdf).
 
 %% rdf_assert_prolog(?Subject,?Predicate,?Value).
 %% rdf_assert_prolog(?Subject,?Predicate,?Value,+Graph).
@@ -214,10 +224,17 @@ rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#quaternion', literal(type(_
   rdf_vector_prolog(Val, Vec), !.
 rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#translation', literal(type(_,Val)), Vec) :-
   rdf_vector_prolog(Val, Vec), !.
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#pose', Pose, [Ref,_,Pos,Rot]) :-
+  transform_data(Pose,(Pos,Rot)),
+  transform_reference_frame(Pose,Ref), !.
 rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).
 
+rdfs_list(literal(type(_,Atom)), List) :-
+  ground(List), !,
+  is_list(List),
+  rdf_vector_prolog(Atom, List).
 rdfs_list(literal(type(List_Type,Atom)), List) :-
   ( rdf_equal(List_Type,knowrob:vec3) ;
     rdf_equal(List_Type,knowrob:vec4) ;
@@ -229,6 +246,10 @@ rdfs_list(literal(type(List_Type,Atom)), List) :-
     rdf_equal(List_Type,knowrob:array_string) ), !,
   rdf_vector_prolog(Atom, List).
 
+rdfs_number(literal(type(_,Atom)), Number) :-
+  ground(Number), !,
+  number(Number),
+  atom_number(Atom, Number).
 rdfs_number(literal(type(XSD_Type,Atom)), Number) :-
   ( rdf_equal(XSD_Type,xsd:float) ;
     rdf_equal(XSD_Type,xsd:double) ;
@@ -281,6 +302,14 @@ rdfs_type_of(Resource, Type) :-
      rdf_has(Resource, rdf:type, Cls_other),
      Type \= Cls_other
   ), \+ rdfs_subclass_of(Cls_other, Type)).
+
+rdfs_type_of(Type, BaseType, Type) :-
+  rdfs_individual_of(Type, owl:'Class'),!,
+  rdfs_subclass_of(Type,BaseType).
+
+rdfs_type_of(Resource, BaseType, Type) :-
+  rdf_has(Resource, rdf:type, Type),
+  rdfs_subclass_of(Type,BaseType).
 
 %% rdfs_common_ancestor(+Classes, ?Ancestor).
 %

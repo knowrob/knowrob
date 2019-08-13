@@ -27,8 +27,10 @@
 
 :- module(knowrob_actions,
     [
-      task_role_filler/3,
-      action_participant_type/3
+      task_role/3,
+      task_parameter/3,
+      action_task/2,
+      action_set_task/2
     ]).
 /** <module> Methods for reasoning about action descriptions
 
@@ -44,18 +46,50 @@
 
 
 :- rdf_meta
-      task_role_filler(r,r,r),
-      action_participant_type(r,r,r).
-
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-
-action_participant_type(Action,Participant,Class) :-
-  rdf_has(Action,dul:hasParticipant,Participant),
-  rdfs_individual_of(Participant,Class).
+      task_role(r,r,r),
+      task_parameter(r,r,r),
+      action_task(r,r).
 
 %%
-task_role_filler(Task,Role,Filler) :-
-  rdf_has(Task,dul:definesRole,R),
-  rdfs_individual_of(R,Role),
-  rdf_has(Filler,dul:isClassifiedBy,R).
+task_role(Tsk,Role,ObjectType) :-
+  rdfs_individual_of(Tsk,dul:'Task'),!,
+  rdfs_type_of(Tsk,TskType),
+  task_role(TskType,Role,ObjectType).
+
+task_role(Tsk,Role,ObjectType) :-
+  owl_subclass_of(Tsk,Restr),
+  rdf_has(Restr,owl:onProperty,dul:isTaskOf),
+  owl_restriction_object_domain(Restr,RoleDescr),
+  once((
+    (\+ ground(Role) ; owl_subclass_of(RoleDescr,Role)),
+    owl_property_range_on_class(RoleDescr,dul:classifies,ObjectType),
+    rdfs_individual_of(ObjectType,owl:'Class')
+  )).
+
+%%
+task_parameter(Tsk,Param,Type) :-
+  rdfs_individual_of(Tsk,dul:'Task'),
+  rdfs_type_of(Tsk,TskType),
+  task_parameter(TskType,Param,Type).
+
+task_parameter(Tsk,Param,Type) :-
+  owl_subclass_of(Tsk,Restr),
+  rdf_has(Restr,owl:onProperty,dul:hasParameter),
+  owl_restriction_object_domain(Restr,ParamDescr),
+  once((
+    (\+ ground(Param) ; owl_subclass_of(ParamDescr,Param)),
+    owl_property_range_on_class(ParamDescr,dul:classifies,Type),
+    rdfs_individual_of(Type,owl:'Class')
+  )).
+
+%%
+action_task(Act,Tsk) :-
+  rdfs_individual_of(Act,dul:'Action'),
+  rdf_has(Act,dul:isClassifiedBy,Tsk_individual),
+  rdfs_type_of(Tsk_individual,dul:'Task',Tsk).
+
+%%
+action_set_task(Act,Tsk) :-
+  rdfs_individual_of(Act,dul:'Action'),
+  rdfs_individual_of(Tsk,dul:'Task'),
+  rdf_assert(Act,dul:isClassifiedBy,Tsk).

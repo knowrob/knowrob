@@ -1,0 +1,972 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/urdf.owl#"
+     xml:base="http://knowrob.org/kb/urdf.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/urdf.owl">
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasChildLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasChildLink">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+        <rdfs:label>has child link</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasCollisionShape -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasCollisionShape">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape"/>
+        <rdfs:label>has collision shape</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasConfiguration -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasConfiguration">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Configuration"/>
+        <rdfs:comment>A relation between entities and their configuration.</rdfs:comment>
+        <rdfs:label>has configuration</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasDamping -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasDamping">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Damping"/>
+        <rdfs:label>has damping</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:label>has inertia</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJoint -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJoint">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:label>has joint</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJointAxis -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointAxis">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointAxis"/>
+        <rdfs:label>has joint axis</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJointLimits -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointLimits">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointLimits"/>
+        <rdfs:label>has joint limits</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJointPosition -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointPosition">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointPosition"/>
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#hasConfiguration"/>
+            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        </owl:propertyChainAxiom>
+        <rdfs:label>has joint position</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJointReferencePositions -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointReferencePositions">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointReferencePositions"/>
+        <rdfs:label>has joint reference positions</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasJointSoftLimits -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJointSoftLimits">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#JointSoftLimits"/>
+        <rdfs:label>has joint soft limits</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasLink">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+        <rdfs:label>has link</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasOrigin -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasOrigin">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE.owl#6DPose"/>
+        <rdfs:label>has origin</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasParentLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasParentLink">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+        <rdfs:label>has parent link</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasRootLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasRootLink">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/urdf.owl#hasLink"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+        <rdfs:label>has root link</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShape -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShape"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasDampingValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasDampingValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Damping"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has damping value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasFallingEdge -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasFallingEdge">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointReferencePositions"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has falling edge</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_ixx -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_ixx">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia ixx</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_ixy -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_ixy">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia ixy</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_ixz -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_ixz">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia ixz</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_iyy -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_iyy">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia iyy</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_iyz -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_iyz">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia iyz</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasInertia_izz -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasInertia_izz">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#Inertia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label>has inertia izz</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasKPosition -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasKPosition">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointSoftLimits"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has k position</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasKVelocity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasKVelocity">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointSoftLimits"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has k velocity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasLowerLimit -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasLowerLimit">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has lower limit</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasMaxJointEffort -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasMaxJointEffort">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointLimits"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has max joint effort</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasMaxJointVelocity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasMaxJointVelocity">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointLimits"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has max joint velocity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasRisingEdge -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasRisingEdge">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointReferencePositions"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has rising edge</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasURDFName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasURDFName">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#Joint"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#Link"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The name of the link or joint.</rdfs:comment>
+        <rdfs:label>has urdf name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasUpperLimit -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasUpperLimit">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointReferencePositions"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label>has upper limit</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasNameString -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Configuration -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Configuration">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#ContinuousJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#ContinuousJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#HingeJoint"/>
+        <rdfs:comment>a continuous hinge joint that rotates around the axis and has no upper and lower limits.</rdfs:comment>
+        <rdfs:label>Continuous joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Damping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Damping">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasDampingValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#FixedJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#FixedJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+        <rdfs:comment>A joint that cannot move, designed to fixiate links.</rdfs:comment>
+        <rdfs:label>Fixed joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#FloatingJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#FloatingJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+        <rdfs:comment>A joint that allows motion for all 6 degrees of freedom.</rdfs:comment>
+        <rdfs:label>Floating joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#HingeJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#HingeJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasJointAxis"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/urdf.owl#JointAxis"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A joint that rotates along an axis.</rdfs:comment>
+        <rdfs:label>Hinge joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Inertia -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Inertia">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_ixx"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_ixy"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_ixz"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_iyy"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_iyz"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasInertia_izz"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A property of physical objects to continue the current motion or state of rest unless external force is applied.</rdfs:comment>
+        <rdfs:label>Inertia</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Joint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Joint">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#FixedJoint"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasChildLink"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasParentLink"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A joint is an object that is designed to articulate links in a kinematic structure.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointAttribute -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointAttribute">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:comment>An attribute of a joint.</rdfs:comment>
+        <rdfs:label>Joint attribute</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointAxis -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointAxis">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#JointAttribute"/>
+        <rdfs:comment>The joint axis specified in the joint frame. This is the axis of rotation for revolute joints, the axis of translation for prismatic joints, and the surface normal for planar joints. The axis is specified in the joint frame of reference. Fixed and floating joints do not use the axis field.</rdfs:comment>
+        <rdfs:label>Joint axis</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointLimits -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointLimits">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#JointAttribute"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasLowerLimit"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasMaxJointEffort"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasMaxJointVelocity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasUpperLimit"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Quantifies position, velocity and effort limit.</rdfs:comment>
+        <rdfs:label>Joint limits</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointPosition -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointPosition">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+        <rdfs:comment>The position of a joint that moves connected links relative to each other.</rdfs:comment>
+        <rdfs:label>Joint position</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointReferencePositions -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointReferencePositions">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#JointAttribute"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasFallingEdge"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasRisingEdge"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Reference joint positions indicating at which position a falling and raising edge are expected.</rdfs:comment>
+        <rdfs:label>Joint reference positions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#JointSoftLimits -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#JointSoftLimits">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#JointAttribute"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasKVelocity"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasKPosition"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasLowerLimit"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasUpperLimit"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The limits of a joint where the safety controller starts limiting the joint position.</rdfs:comment>
+        <rdfs:label>Joint soft limits</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Link -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Link">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A Link describes a rigid body with inertia, visual features, and collision properties.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#MovableJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#MovableJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasConfiguration"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/urdf.owl#JointPosition"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasConfiguration"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Configuration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A joint where the two connected links can move relative to each other in some dimension.</rdfs:comment>
+        <rdfs:label>Movable joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#PlanarJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#PlanarJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasJointAxis"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/urdf.owl#JointAxis"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A joint that allows motion in a plane perpendicular to the axis.</rdfs:comment>
+        <rdfs:label>Planar joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#PrismaticJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#PrismaticJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#MovableJoint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasJointAxis"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/urdf.owl#JointAxis"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasJointLimits"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/urdf.owl#JointLimits"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.</rdfs:comment>
+        <rdfs:label>Prismatic joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#RevoluteJoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#RevoluteJoint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#HingeJoint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasJointLimits"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/urdf.owl#JointLimits"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.</rdfs:comment>
+        <rdfs:label>Revolute joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Robot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Robot">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasRootLink"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/urdf.owl#Link"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#BoxShape -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#BoxShape"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#CylinderShape -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CylinderShape"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Friction -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Friction"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Mass -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Mass"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MeshAttribute -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MeshAttribute"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#SphereShape -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#SphereShape"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#6DPose -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#6DPose"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Configuration -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Configuration"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
