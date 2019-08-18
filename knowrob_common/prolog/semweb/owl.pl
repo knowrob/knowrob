@@ -464,6 +464,8 @@ range_on_cardinality_(Class, Predicate, [X|Xs], Range) :-
 
 range_on_cardinality(_, _, 'http://www.w3.org/2002/07/owl#Thing',
                            'http://www.w3.org/2002/07/owl#Thing') :- !.
+range_on_cardinality(_, _, literal(X), literal(X)) :- !.
+range_on_cardinality(_, _, literal(type(X,Y)), literal(type(X,Y))) :- !.
 range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	% for each range, find terminal classes that are subclass of range
 	bagof(X, owl_terminal_subclass_of(RangeIn, X), Terminals),
@@ -1354,7 +1356,8 @@ owl_subproperty_of(Sub,Super) :-
 %%	owl_most_specific(+Types, -Specific) is semidet.
 %
 owl_most_specific(Types, Specific) :-
-	member(Specific, ['http://www.w3.org/2002/07/owl#Thing'|Types]),
+	member(Specific, Types),
+	%member(Specific, ['http://www.w3.org/2002/07/owl#Thing'|Types]),
 	forall(( % ensure there is no class in Types that is more specific then Cls
 		member(Cls_other, Types),
 		Specific \= Cls_other
