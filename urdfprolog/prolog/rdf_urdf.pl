@@ -128,13 +128,13 @@ rdf_urdf_joint_axis(J,[X,Y,Z]) :-
 %% rdf_urdf_has_child(?Joint,?Friction) is semidet.
 %
 rdf_urdf_joint_friction(J, Friction) :-
-  rdf_has(J,ease_obj:hasFriction,X),
+  rdf_has(J,ease_obj:hasFrictionAttribute,X),
   rdf_has_prolog(X,ease_obj:hasFrictionValue,Friction).
   
 %% rdf_urdf_has_child(?Joint,?Damping) is semidet.
 %
 rdf_urdf_joint_damping(J, Damping) :-
-  rdf_has(J,urdf:hasDamping,X),
+  rdf_has(J,urdf:hasDampingAttribute,X),
   rdf_has_prolog(X,urdf:hasDampingValue,Damping).
 
 %% rdf_urdf_has_child(?Joint,?Link) is semidet.
@@ -156,18 +156,18 @@ rdf_urdf_origin(_Entity,RefFrame,[_,RefFrame,
   
 %%
 rdf_urdf_shape(Shape,box(X, Y, Z)) :-
-  rdfs_individual_of(Shape,ease_obj:'BoxShape'),
+  rdfs_individual_of(Shape,ease_obj:'BoxShapeAttribute'),
   rdf_has_prolog(Shape, ease_obj:hasWidth, X),
   rdf_has_prolog(Shape, ease_obj:hasHeight, Y),
   rdf_has_prolog(Shape, ease_obj:hasDepth, Z).
 
 rdf_urdf_shape(Shape,cylinder(Radius, Length)) :-
-  rdfs_individual_of(Shape,ease_obj:'CylinderShape'),
+  rdfs_individual_of(Shape,ease_obj:'CylinderShapeAttribute'),
   rdf_has_prolog(Shape, ease_obj:hasRadius, Radius),
   rdf_has_prolog(Shape, ease_obj:hasLength, Length).
 
 rdf_urdf_shape(Shape,sphere(Radius)) :-
-  rdfs_individual_of(Shape,ease_obj:'SphereShape'),
+  rdfs_individual_of(Shape,ease_obj:'SphereShapeAttribute'),
   rdf_has_prolog(Shape, ease_obj:hasRadius, Radius).
 
 rdf_urdf_shape(Shape,mesh(Filename,Scale)) :-
@@ -176,22 +176,22 @@ rdf_urdf_shape(Shape,mesh(Filename,Scale)) :-
   mesh_scale_(Shape, Scale).
 
 mesh_scale_(Shape, [X,Y,Z]) :-
-  rdf_has_prolog(Shape, ease_obj:hasXScale, X),
-  rdf_has_prolog(Shape, ease_obj:hasYScale, Y),
-  rdf_has_prolog(Shape, ease_obj:hasZScale, Z),!.
+  rdf_has_prolog(Shape, knowrob:hasXScale, X),
+  rdf_has_prolog(Shape, knowrob:hasYScale, Y),
+  rdf_has_prolog(Shape, knowrob:hasZScale, Z),!.
 mesh_scale_(_Shape, [1.0,1.0,1.0]).
 
 %% rdf_urdf_link_mass(+Link, ?MassValue) is semidet.
 %
 rdf_urdf_link_mass(Link,MassValue) :-
-  rdf_has(Link,ease_obj:hasMass,Mass),
+  rdf_has(Link,ease_obj:hasMassAttribute,Mass),
   rdf_has_prolog(Mass,ease_obj:hasMassValue,MassValue).
 
 %% rdf_urdf_link_visual(+Link, ?ShapeTerm, ?Origin) is semidet.
 %
 rdf_urdf_link_visual(Link,ShapeTerm,Origin) :-
   rdf_urdf_name(Link,RefFrame),
-  rdf_has(Link,ease_obj:hasShape,Shape),
+  rdf_has(Link,ease_obj:hasShapeAttribute,Shape),
   rdf_urdf_shape(Shape,ShapeTerm),
   rdf_urdf_origin(Shape,RefFrame,Origin).
 
@@ -300,8 +300,8 @@ urdf_link_to_owl(Robot_Id,Name,Link,Graph) :-
   %link_material_texture/3
   %%
   ( link_inertial_mass(Robot_Id,Name,MassValue) -> (
-    rdf_instance_from_class(ease_obj:'Mass', Graph, Mass),
-    rdf_assert(Link,ease_obj:hasMass,Mass,Graph),
+    rdf_instance_from_class(ease_obj:'MassAttribute', Graph, Mass),
+    rdf_assert(Link,ease_obj:hasMassAttribute,Mass,Graph),
     rdf_assert_prolog(Mass,ease_obj:hasMassValue,MassValue,Graph)
   ) ; true ),
   %%
@@ -342,7 +342,7 @@ urdf_link_visual_to_owl(Robot_Id,Name,Index,Link,Graph) :-
   %%
   link_visual_geometry(Robot_Id,Name,Index,Geom),
   urdf_shape_to_owl(Geom,Shape,Graph),
-  rdf_assert(Link,ease_obj:hasShape,Shape,Graph),
+  rdf_assert(Link,ease_obj:hasShapeAttribute,Shape,Graph),
   %%
   ( link_visual_origin(Robot_Id,Name,Index,Pose_data) -> (
     urdf_pose_to_owl(Name,Pose_data,Pose,Graph),
@@ -431,14 +431,14 @@ owl_joint_create(planar,Joint,Graph) :-
 urdf_joint_dynamics_to_owl(Robot_Id,Name,Joint,Graph) :-
   %%
   ( joint_dynamics_damping(Robot_Id,Name,DampingValue) -> (
-    rdf_instance_from_class(urdf:'Damping', Graph, Damping),
-    rdf_assert(Joint, urdf:hasDamping, Damping, Graph),
+    rdf_instance_from_class(urdf:'DampingAttribute', Graph, Damping),
+    rdf_assert(Joint, urdf:hasDampingAttribute, Damping, Graph),
     rdf_assert_prolog(Damping,urdf:hasDampingValue,DampingValue,Graph)
   ) ; true ),
   %%
   ( joint_dynamics_friction(Robot_Id,Name,FrictionValue) ->(
-    rdf_instance_from_class(ease_obj:'StaticFriction', Graph, Friction),
-    rdf_assert(Joint, ease_obj:hasFriction, Friction, Graph),
+    rdf_instance_from_class(ease_obj:'StaticFrictionAttribute', Graph, Friction),
+    rdf_assert(Joint, ease_obj:hasFrictionAttribute, Friction, Graph),
     rdf_assert_prolog(Friction,ease_obj:hasFrictionValue,FrictionValue,Graph)
   ) ; true ).
 
@@ -508,18 +508,18 @@ urdf_joint_safety_to_owl(Robot_Id,Name,Pos,Graph) :-
 %% create shape region symbol. URDF only supports the following:
 %%    Box, Sphere, Cylinder, and Mesh
 urdf_shape_to_owl(box(X, Y, Z),Shape,Graph) :-
-  rdf_instance_from_class(ease_obj:'BoxShape', Graph, Shape),
+  rdf_instance_from_class(ease_obj:'BoxShapeAttribute', Graph, Shape),
   rdf_assert_prolog(Shape, ease_obj:hasWidth, X, Graph),
   rdf_assert_prolog(Shape, ease_obj:hasHeight, Y, Graph),
   rdf_assert_prolog(Shape, ease_obj:hasDepth, Z, Graph).
 
 urdf_shape_to_owl(cylinder(Radius, Length),Shape,Graph) :-
-  rdf_instance_from_class(ease_obj:'CircularCylinderShape', Graph, Shape),
+  rdf_instance_from_class(ease_obj:'CircularCylinderShapeAttribute', Graph, Shape),
   rdf_assert_prolog(Shape, ease_obj:hasRadius, Radius, Graph),
   rdf_assert_prolog(Shape, ease_obj:hasLength, Length, Graph).
 
 urdf_shape_to_owl(sphere(Radius),Shape,Graph) :-
-  rdf_instance_from_class(ease_obj:'SphereShape', Graph, Shape),
+  rdf_instance_from_class(ease_obj:'SphereShapeAttribute', Graph, Shape),
   rdf_assert_prolog(Shape, ease_obj:hasRadius, Radius, Graph).
 
 urdf_shape_to_owl(mesh(Filename,Scale),Shape,Graph) :-
@@ -527,7 +527,7 @@ urdf_shape_to_owl(mesh(Filename,Scale),Shape,Graph) :-
   rdf_assert_prolog(Shape, ease_obj:hasFilePath, Filename, Graph),
   ( Scale=[1,1,1] -> true ; (
     Scale=[Scale_X,Scale_Y,Scale_Z],
-    rdf_assert_prolog(Shape, ease_obj:hasXScale, Scale_X, Graph),
-    rdf_assert_prolog(Shape, ease_obj:hasYScale, Scale_Y, Graph),
-    rdf_assert_prolog(Shape, ease_obj:hasZScale, Scale_Z, Graph)
+    rdf_assert_prolog(Shape, knowrob:hasXScale, Scale_X, Graph),
+    rdf_assert_prolog(Shape, knowrob:hasYScale, Scale_Y, Graph),
+    rdf_assert_prolog(Shape, knowrob:hasZScale, Scale_Z, Graph)
   )).
