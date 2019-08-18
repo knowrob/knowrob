@@ -25,7 +25,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(srdl2,
+:- module(srdl_cap,
     [
         action_feasible_on_robot/2,
         action_feasible_on_robot/3,
@@ -39,19 +39,7 @@
         unsatisfied_restr_for_action/5,
         unsatisfied_restr_for_required_comp/5,
         unsatisfied_restr_for_comp/5,
-        cap_available_on_robot/2,
-        comp_type_available/2,
-        comp_restricted_action/3,
-        comp_installable_for_action/4,
-        comp_installable_on_robot/3,
-        comp_baselink_pose/2,
-        comp_baselink_pose/3,
-        sub_component/2,
-        succeeding_link/2,
-        robot_tf_prefix/2,
-        robot_part_tf_prefix/2,
-        srdl_inFieldOfView/2,
-        srdl_inFieldOfView/3
+        cap_available_on_robot/2
   ]).
 /** <module> Reasoning about robot components and capabilities
 
@@ -86,55 +74,7 @@
         unsatisfied_restr_for_required_comp(r,r,r,r,-),
         unsatisfied_restr_for_comp(r,r,r,r,-),
         restricted_act_on_robot(r,r,r),
-        robot_tf_prefix(r,r),
-        robot_part_tf_prefix(r,r),
-        cap_available_on_robot(r,r),
-        comp_type_available(r,r),
-        comp_restricted_action(r,r,r),
-        comp_installable_for_action(r,r,r,-),
-        comp_installable_on_robot(r,r,r),
-        comp_baselink_pose(r,-),
-        comp_baselink_pose_at_time(r,-,+),
-        srdl_inFieldOfView(r,-),
-        srdl_inFieldOfView_at_time(r,-,+),
-        sub_component(r,r),
-        succeeding_link(r,r).
-
-
-        
-  
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% TfPrefix
-
-%% robot_part_tf_prefix(?RobotPart, ?TfPrefix).
-%
-% Checks if the Agent individual that belongs to this Part (URDF Link) has a tf Prefix assigned 
-% TfPrefix defaults to '/'
-%
-% @param RobotPart   The part of the robot that should be checked(URDF Link)
-% @param TfPrefix The TfPrefix
-%       
-        
-robot_part_tf_prefix(RobotPart, TfPrefix) :-
-  owl_individual_of(RobotPart,srdl2comp:'UrdfLink'),
-  owl_individual_of(Robot, knowrob:'Agent-Generic'),
-  sub_component(Robot, RobotPart),
-  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)). 
-
-robot_part_tf_prefix(_, '/').
-%% robot_tf_prefix(?Robot, ?TfPrefix).
-%
-% Checks if an Agent individual  has a tf Prefix assigned 
-% TfPrefix defaults to '/'
-%
-% @param RobotPart   The robot individual 
-% @param TfPrefix The TfPrefix
-%       
-  
-robot_tf_prefix(Robot, TfPrefix) :-
-  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)).
-
-robot_tf_prefix(_, '/').
+        cap_available_on_robot(r,r).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Actions
@@ -462,176 +402,3 @@ comp_restricted_action(Comp, ActionC, RestrictedC) :-
   ), Rs),
   list_to_set(Rs, RestrictedSet),
   member(RestrictedC, RestrictedSet).
-
-
-%% comp_type_available(+Super, +SubT) is nondet.
-%
-% Check if Super has a sub-component Sub of type SubT
-% (i.e. if a component of that type is available as part of Super)
-%
-% @param Super  Upper component
-% @param SubT   Type of a Component that is part of the Super component
-%
-comp_type_available(Super, SubT) :-
-  % TODO(daniel): would like to make subComponent transitive here, use rdf_reachable?
-  sub_component(Super, Sub),
-  owl_individual_of(Sub, SubT).
-
-
-%% sub_component(?Super, ?Sub) is nondet.
-%
-% Recursively read all sub-components of a robot or a component
-%
-% @param Super  Upper component
-% @param Sub    Component that is part of the Super component
-%
-
-% Directly asserted sub-component (subComponent is not transitive because
-% this would allow predecessor/successor loops
-sub_component(Super, Sub) :-
-  \+ owl_individual_of(Super, srdl2comp:'ComponentComposition'),
-  owl_has(Super, srdl2comp:'subComponent', Sub).
-
-% Transitive: successorInKinematicChain, which is transitive and allows
-% to step over link/joint chains
-sub_component(Super, Sub) :-
-  \+ owl_individual_of(Super, srdl2comp:'ComponentComposition'),
-  owl_has(Super, srdl2comp:'successorInKinematicChain', Sub).
-
-% Handle component compositions: subcomponents are those between their
-% baseLink and endLinks
-%
-% Note: Compositions are only considered as annotations, i.e. all sub-
-%       components of this composition are supposed to already be part
-%       of the main kinematic chain, thus the case distinction in the
-%       beginning.
-% 
-sub_component(Super, Sub) :-
-  owl_individual_of(Super, srdl2comp:'ComponentComposition'),
-  owl_has(Super, srdl2comp:'baseLinkOfComposition', Base),
-  owl_has(Super, srdl2comp:'endLinkOfComposition', End),
-  sub_component(Base, Sub),
-  sub_component(Sub, End).
-
-%% succeeding_link(+BaseLink, +SucceedingLink) is nondet.
-%
-% Check if SucceedingLink is successor link of BaseLink
-%
-% @param BaseLink         The base UrdfLink
-% @param SucceedingLink   The succeeding UrdfLink
-%
-succeeding_link(BaseLink, SucceedingLink) :-
-  owl_has(BaseLink, srdl2comp:'succeedingJoint', ConnectionJoint),
-  owl_has(ConnectionJoint, srdl2comp:'succeedingLink', SucceedingLink).
-
-
-%% comp_installable_for_action(+ActionC, +ActionD, +Robot, -Components).
-%
-% For each insufficient component for the action, obtain a set of
-% sufficient component individuals that could be installed on the robot.
-%
-% @param ActionC   Action class to be checked
-% @param ActionD   Action individual or description to be checked
-% @param Robot   Robot instance to be checked
-% @param Components    Sequence of installation candidates for each insufficient component
-%
-comp_installable_for_action(ActionC, ActionD, Robot, Components) :-
-  with_action_description(ActionD, ActionI, Robot, (
-    findall((CompC,Xs), (
-      insufficient_comp_for_action(ActionC, ActionI, Robot, CompC),
-      % TODO(daniel): also check that component is sufficient for the action description!
-      findall(X, comp_installable_on_robot(X, CompC, Robot), Xs)
-    ), Components)
-  )).
-
-
-%% comp_installable_on_robot(+Comp, +CompC, +Robot).
-%
-% True for components Comp of type CompC that can be installed on the robot.
-%
-% @param CompC   Component class to be checked
-% @param Comp   Component individual to be checked
-% @param Robot   Robot instance to be checked
-%
-comp_installable_on_robot(Comp, CompC, Robot) :-
-  once(owl_individual_of(Comp, CompC)),
-  ActionD = [an, action,
-      [type, srdl2act:installing_hardware_component],
-      [object_acted_on, [an, object, [name, Comp] ]]
-  ],
-  action_feasible_on_robot(srdl2act:'InstallingHardwareComponent', ActionD, Robot).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Pose of semantic components
-
-%% comp_baselink_pose(+Obj,-Pose) is nondet.
-%% comp_baselink_pose(+Obj,-Pose,+Interval) is nondet.
-%
-% Computes the pose of a component composition as the 
-% pose of one of its base links.
-%
-comp_baselink_pose(Obj, Pose) :-
-  current_time(Instant),
-  comp_baselink_pose_at_time(Obj, Pose, [Instant,Instant]).
-
-comp_baselink_pose(Obj, Pose, Interval) :-
-  nonvar(Obj),
-  rdf_has(Obj, srdl2comp:baseLinkOfComposition, BaseLink),
-  holds(BaseLink, knowrob:pose, Pose, Interval), !.
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Higher-level reasoning methods
-%
-
-%% srdl_inFieldOfView(+Agent, ?Object) is nondet.
-%% srdl_inFieldOfView(+Agent, ?Object, +Instant) is nondet.
-%
-% Check if Obj is visible by Agent at time Instant by reading the camera
-% properties from the robot's SRDL description and computing whether the
-% object center is inside the view frustrum.
-%
-% @param Agent      Some agent with a srdl:Camera component
-% @param Obj        Instance of an object in the scene
-% @param Instant    The time instant
-% 
-srdl_inFieldOfView(Agent, Object) :-
-  current_time(Instant),
-  srdl_inFieldOfView_at_time(Agent, Object, Instant).
-
-srdl_inFieldOfView(Agent, Object, [Instant,Instant]) :-
-  srdl_inFieldOfView_at_time(Agent, Object, Instant).
-
-srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
-  nonvar(Agent),
-  map_frame_name(MapFrame),
-  % read camera properties
-  agent_camera(Agent, Camera),
-  camera_image_size(Camera, [ImgX,ImgY]),
-  camera_hfov(Camera, HFOV),
-  VFOV is ImgY / ImgX * HFOV,
-  % find object pose in camera frame
-  rdf_has(Camera, knowrob:frameName, CameraFrame),
-  object_pose_at_time(Camera, Instant, [MapFrame, _, CamPos_world, CamRot_world]),
-  rdf_has(Object, knowrob:frameName, ObjectFrame),
-  object_pose_at_time(Object, Instant, [MapFrame, _, ObjPos_world, ObjRot_world]),
-  transform_between(
-      [x,ObjectFrame, ObjPos_world, ObjRot_world],
-      [x,CameraFrame, CamPos_world, CamRot_world],
-      [CameraFrame, ObjectFrame, [ObjX,ObjY,ObjZ], _]),
-  % make the visibility test
-  BearingX is atan2(ObjY, ObjX),
-  BearingY is atan2(ObjZ, ObjX),
-  abs(BearingX) < HFOV/2,
-  abs(BearingY) < VFOV/2.
-
-agent_camera(Agent, Camera) :-
-  sub_component(Agent, Camera),
-  owl_individual_of(Camera, srdl2comp:'Camera'), !.
-
-camera_image_size(Camera, [ImgX,ImgY,ImgZ]) :-
-  owl_has(Camera, srdl2comp:imageSizeX, literal(type(_, ImgXa))), atom_number(ImgXa, ImgX),
-  owl_has(Camera, srdl2comp:imageSizeY, literal(type(_, ImgYa))), atom_number(ImgYa, ImgY),
-  owl_has(Camera, srdl2comp:imageSizeZ, literal(type(_, ImgZa))), atom_number(ImgZa, ImgZ), !.
-camera_hfov(Camera, HFOV) :-
-  owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa))), atom_number(HFOVa, HFOV), !.
-    

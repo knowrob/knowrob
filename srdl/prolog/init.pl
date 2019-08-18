@@ -31,17 +31,14 @@
 
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_actions).
+:- register_ros_package(urdfprolog).
 :- register_ros_package(srdl).
 :- register_ros_package(rosprolog).
 
-:- use_module(library('knowrob/srdl2')).
-:- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/computable')). % needed for computables in restricted actions
+:- rdf_db:rdf_register_ns(srdl, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(srdlcomp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(srdlcap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
 
-:- rdf_db:rdf_register_ns(srdl2, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2cap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
-%:- rdf_db:rdf_register_ns(srdl2act, 'http://knowrob.org/kb/srdl2-action.owl#', [keep(true)]).
+:- owl_parser:owl_parse('package://srdl/owl/srdl2.owl').
 
-:- owl_parser:owl_parse('package://srdl/owl/srdl2-action.owl').
-
+:- use_module(library('srdl')).
