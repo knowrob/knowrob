@@ -28,6 +28,10 @@
 
 :- module(knowrob_rdfs,
     [
+      kb_create/2,
+      kb_create/3,
+      kb_assert/3,
+      kb_assert/4,
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
       rdf_unique_id/2,
@@ -52,7 +56,11 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 
-:- rdf_meta rdf_phas(r,r,o),
+:- rdf_meta kb_create(r,-),
+            kb_create(r,-,+),
+            kb_assert(r,r,t),
+            kb_assert(r,r,t,-),
+            rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
             rdf_assert_prolog(r,r,r),
             rdf_assert_prolog(r,r,r,+),
@@ -68,9 +76,76 @@
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
+%%
+kb_exists(Res) :-
+  rdf(Res,rdf:type,_),!.
+
+kb_exists(Res) :-
+  rdf_equal(Res,rdf:type),!.
+
+kb_exists(Res) :-
+  print_message(warning, unknown_resource(Res)),
+  fail.
+
 		 /*******************************
 		 *		  ASSERTIONS			*
 		 *******************************/
+
+%% kb_create(+Class,-Instance) is det.
+%
+% Instantiate an known class. This will
+% fail in case no subclassOf axioms are asserted
+% for the class.
+%
+% @param Class The RDF name of the class.
+% @param Instance The instance created.
+%
+kb_create(Class, Instance) :-
+    kb_create(Class, Instance, user).
+
+%% kb_create(+Class,-Instance,+RDF_graph) is det.
+%
+% Instantiate an known class. This will
+% fail in case no subclassOf axioms are asserted
+% for the class.
+% The instance will be asserted into given RDF graph.
+%
+% @param Class The RDF name of the class.
+% @param Instance The instance created.
+% @param RDF_graph The iRDF graph.
+%
+kb_create(Class, Instance, RDF_graph) :-
+    kb_exists(Class),
+    rdf_instance_from_class(Class, RDF_graph, Instance).
+
+%% kb_assert(+S,+P,+O) is det.
+%
+% Assert a triple in the RDF store. This will
+% fail in case P is not a known property.
+%
+% @param S The subject of the triple.
+% @param P The predicate of the triple.
+% @param O The object of the triple.
+%
+kb_assert(S, P, O) :-
+    ( rdf(S, rdf:type, _, RDF_graph) ;
+      RDF_graph = user ), !,
+    kb_assert(S, P, O, RDF_graph).
+
+%% kb_assert(+S,+P,+O,+RDF_graph) is det.
+%
+% Assert a triple in the RDF store. This will
+% fail in case P is not a known property.
+% The triple will be asserted into given RDF graph.
+%
+% @param S The subject of the triple.
+% @param P The predicate of the triple.
+% @param O The object of the triple.
+% @param RDF_graph The iRDF graph.
+%
+kb_assert(S, P, O, RDF_graph) :-
+    kb_exists(P),
+    rdf_assert(S, P, O, RDF_graph).
 
 %% rdf_instance_from_class(+Class, -Inst) is nondet.
 %
