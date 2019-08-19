@@ -29,7 +29,9 @@
     [
       mem_episode_create/1,           % -EpisodeNode::iri
       mem_event_create/3,             % +ParentNode::iri, -EventType::iri, -Node::iri
+      mem_event_begin/1,              % +Node::iri
       mem_event_begin/2,              % +Node::iri, +BeginTime::number
+      mem_event_end/1,                % +Node::iri
       mem_event_end/2,                % +Node::iri, +EndTime::number
       mem_event_interval/3,           % +Node::iri, +BeginTime::number, +EndTime::number
       mem_event_includes/2,           % +Node::iri, +EntityConcepts::list
@@ -113,6 +115,10 @@ mem_event_begin(Node0,Begin) :-
       mem_event_begin(Parent,Begin) ; true )
   )),!.
 
+mem_event_begin(Node0) :-
+  current_time(Begin),
+  mem_event_begin(Node0, Begin).
+
 %% mem_event_end(+Node0,+End) is det.
 %
 mem_event_end(Node0,End) :-
@@ -122,6 +128,10 @@ mem_event_end(Node0,End) :-
     ( rdf_has(Parent,ease:includesSituation,Node0) ->
       mem_event_end(Parent,End) ; true )
   )),!.
+
+mem_event_end(Node0) :-
+  current_time(End),
+  mem_event_end(Node0, End).
 
 %% mem_event_interval(+Node0,+Begin,+End) is det.
 %
