@@ -319,7 +319,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Classifier -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Classifier">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -364,7 +364,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FeatureExtractor -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FeatureExtractor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -453,7 +453,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#KnowledgeBase -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#KnowledgeBase">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -502,7 +502,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
         <rdfs:comment>Software components that allow the robot to localize itself</rdfs:comment>
     </owl:Class>
     
@@ -520,7 +520,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MappingSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MappingSoftware">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
         <rdfs:comment>Software components that build environment maps from sensor data</rdfs:comment>
     </owl:Class>
     
@@ -589,7 +589,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MotionController -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MotionController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
         <rdfs:comment>Software components for planning motions of components of the robot (arms, hands,...)</rdfs:comment>
     </owl:Class>
     
@@ -598,7 +598,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#NaturalLanguageSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NaturalLanguageSoftware">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -632,7 +632,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PathPlanner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PathPlanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -648,7 +648,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptionSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptionSoftware">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
         <rdfs:comment>Software components that interpret sensor data to perceive the environment</rdfs:comment>
     </owl:Class>
     
@@ -657,7 +657,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -700,7 +700,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Reasoner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Reasoner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -732,16 +732,8 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Simulator -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Simulator">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
         <rdfs:comment>Software components that allow the robot to simulate its environment or its actions</rdfs:comment>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
     </owl:Class>
     
 
@@ -776,7 +768,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TaskPlanner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TaskPlanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwarePackage"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -876,6 +868,12 @@
     <!-- http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
     
 
 
