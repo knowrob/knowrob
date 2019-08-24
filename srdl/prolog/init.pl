@@ -34,6 +34,7 @@
 :- register_ros_package(urdfprolog).
 :- register_ros_package(srdl).
 :- register_ros_package(rosprolog).
+:- register_ros_package(rosowl).
 
 :- rdf_db:rdf_register_ns(srdl, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdlcomp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
