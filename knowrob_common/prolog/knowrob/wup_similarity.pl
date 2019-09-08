@@ -25,7 +25,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(comp_similarity,
+:- module(wup_similarity,
     [
       rdf_wup_similarity/3,
       rdf_wup_similarity_given_LCS/4,
@@ -33,7 +33,8 @@
       rdf_shortest_path/3,
       rdf_paths/3,
       rdf_most_similar/4,
-      rdf_all_similar/3
+      rdf_all_similar/3,
+      rdf_common_ancestor/2
     ]).
 /** <module> Computables that calculate semantic similarities between objects.
 
@@ -50,7 +51,10 @@
       rdf_shortest_path(r,r,-),
       rdf_paths(r,r,t),
       rdf_most_similar(r,r,+,-),
-      rdf_all_similar(r,r,-).
+      rdf_all_similar(r,r,-),
+      rdfs_common_ancestor(t,r),
+      rdf_shortest_dist_up(r,r,?),
+      rdf_paths_up(r,r,t).
 
 %% rdf_wup_similarity(+A:rdf_class, +B:rdf_class, -Sim:float).
 %
@@ -66,7 +70,7 @@
 % 
 rdf_wup_similarity(A, A, 1) :- !.
 rdf_wup_similarity(A, B, Sim) :-
-    rdfs_common_ancestor([A, B], LCS),
+    rdf_common_ancestor([A, B], LCS),!,
     rdf_wup_similarity_given_LCS(A, B, LCS, Sim).
 
 
@@ -84,7 +88,7 @@ rdf_wup_similarity(A, B, Sim) :-
 % @param Sim similarty measure between 0 (not similar) and 1 (most similar)
 % 
 rdf_wup_similarity_given_LCS(A, B, LCS, Sim) :-
-    rdf_shortest_dist_up(LCS, 'http://www.w3.org/2002/07/owl#Thing', DepthLCS),
+    rdf_shortest_dist_up(LCS, dul:'Entity', DepthLCS),
     rdf_shortest_dist_up(A,   LCS, DepthA),
     rdf_shortest_dist_up(B,   LCS, DepthB),
     Sim is 2*DepthLCS / (DepthA + DepthB + 2*DepthLCS).
@@ -117,6 +121,7 @@ rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
         member(Class, SearchList),
         findall(SuperClass, (
                               rdf_has(Class, rdfs:subClassOf, SuperClass),
+                              \+ rdfs_individual_of(SuperClass, owl:'Restriction'),
                               \+ member(SuperClass, DoneList)
                             ), NewSuperClasses)
     ), NewSuperClassesLists),
@@ -150,9 +155,10 @@ rdf_path_distance(A, B, Dist) :-
 % 
 rdf_shortest_path(A, B, Dist) :-
   findall(Path, rdf_paths(A, B, Path), Paths),
-  maplist(length, Paths, Ls),
-  util:min_list(Ls, Dist).
+  maplist(length, Paths, [L|Ls]),
+  foldl(num_num_min, Ls, L, Dist).
 
+num_num_min(X,Y,Min) :- Min is min(X,Y).
 
 %% rdf_paths(+A, +B, -Paths).
 %
@@ -165,7 +171,7 @@ rdf_shortest_path(A, B, Dist) :-
 rdf_paths(A, B, [A|Path]) :-
 
   % go upwards, and for all paths check if you have a direct way down to the goal
-  rdf_paths_up(A, 'http://www.w3.org/2002/07/owl#Thing', U),
+  rdf_paths_up(A, dul:'Entity', U),
   rdf_find_path_down(U, B, Path).
 
 rdf_find_path_down([UPa|_], B, [UPa|D]) :-
@@ -177,21 +183,15 @@ rdf_find_path_down([UPa|Up], B, [UPa|D]) :-
 
 rdf_find_path_down([], _, []).
 
-
-
 rdf_paths_up(A, A, []).
 rdf_paths_up(A, B, [Super|Path]) :-
   findall(C, rdf_has(A, rdfs:subClassOf, C), Cs), member(Super, Cs),
   rdf_paths_up(Super, B, Path).
 
-
 rdf_paths_down(A, A, []).
 rdf_paths_down(A, B, [Sub|Path]) :-
   findall(C, rdf_has(C, rdfs:subClassOf, A), Cs), member(Sub, Cs),
   rdf_paths_down(Sub, B, Path).
-
-
-
 
 %% rdf_most_similar(Class, Super, N, NMostSim).
 %
@@ -209,6 +209,40 @@ rdf_most_similar(Class, Super, N, NMostSim) :-
   first_n_elem(MostSim, N, NMostSim).
 
 
+
+%% rdf_common_ancestor(+Classes, ?Ancestor).
+%
+% Get one of the most specific common ancestors of rdf_classes.
+%
+rdf_common_ancestor([C], C).
+rdf_common_ancestor([C1, C2| Cs], C) :-
+  rdf_superclass_list([C1, C2| Cs], SCs),
+  intersection_of_sets(SCs, CSCs),
+  most_specific_class(CSCs, C0),
+  C = C0.
+
+		 /*******************************
+		 *	  Utility predicates		*
+		 *******************************/
+
+rdf_superclass_list([], []).
+rdf_superclass_list([C|CRest], [SCs| SCRest]) :-
+  findall(SC, rdfs_subclass_of(C, SC), SCs),
+  rdf_superclass_list(CRest, SCRest).
+
+intersection_of_sets([], []).
+intersection_of_sets([L], L).
+intersection_of_sets([L0, L1|LRest], Intersection) :-
+  intersection(L0, L1, L),
+  intersection_of_sets([L|LRest], Intersection).
+
+most_specific_class([C], C).
+most_specific_class([C1,C2|Cs], C) :-
+  rdfs_subclass_of(C2, C1)
+  -> most_specific_class([C2|Cs], C)
+  ; most_specific_class([C1|Cs], C). % Either not comparable or C2 is superclass of C1
+
+
 rdf_all_similar(Class, Super, MostSim) :-
   findall([A, D], (rdfs_subclass_of(A, Super),
                    rdf_wup_similarity(A, Class, D)), Dists),
@@ -222,13 +256,10 @@ first_n_elem([F|In], N, [F|Out]) :-
 first_n_elem(_, N, []) :-
     N=<0,!.
 
-
-
 compare_inference_probs('>', [_, P1], [_, P2]) :-
     term_to_atom(N1, P1),
     term_to_atom(N2, P2),
     N1 < N2.
-
 
 compare_inference_probs('<', [_, P1], [_, P2]) :-
     term_to_atom(N1, P1),

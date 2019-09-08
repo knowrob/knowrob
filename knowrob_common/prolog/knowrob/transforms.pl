@@ -30,7 +30,6 @@
 
 :- module(knowrob_transforms,
     [
-      map_frame/1,
       map_frame_name/1,             % +Name
       transform_reference_frame/2,  % +Transform, ?ReferenceFrame
       transform_data/2,             % +Transform, ?(Translation, Rotation)
@@ -55,17 +54,13 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 
 :-  rdf_meta
     transform_reference_frame(r,?),
     transform_data(r,?).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-
-%% map_frame(?MapFrame).
-% True if MapFrame is the OWL individual that corresponds to the global coordinate system.
-map_frame('http://knowrob.org/kb/knowrob.owl#MapFrame').
 
 %% map_frame_name(?Name:atom) is det.
 %
@@ -132,48 +127,8 @@ transform_between([F,TgFrame, [T1x,T1y,T1z],Q1],
 transform_data([_,_,Pos,Rot], (Pos,Rot)) :- !.
 
 transform_data(Transform, ([X,Y,Z],[QX,QY,QZ,QW])) :-
-  rdf_has(Transform, dul:hasPart, Q),
-  rdfs_individual_of(Q,ease:'Quaternion'),
-  rdf_has(Transform, dul:hasPart, P),
-  rdfs_individual_of(P,ease:'3DPosition'), !,
-  %
-  rdf_has_prolog(Q,ease:hasXComponent,QX),
-  rdf_has_prolog(Q,ease:hasYComponent,QY),
-  rdf_has_prolog(Q,ease:hasZComponent,QZ),
-  rdf_has_prolog(Q,ease:hasWComponent,QW),
-  %
-  rdf_has_prolog(P,ease:hasXComponent,X),
-  rdf_has_prolog(P,ease:hasYComponent,Y),
-  rdf_has_prolog(P,ease:hasZComponent,Z).
-
-transform_data(Transform, (Pos,Rot)) :-
-  rdf_has_prolog(Transform, knowrob:translation, Pos),
-  rdf_has_prolog(Transform, knowrob:quaternion, Rot), !.
-
-transform_data(Transform, (Pos, Rot)) :-
-  matrix_prolog(Transform, Matrix),
-  matrix(Matrix, Pos, Rot).
-
-matrix_prolog(RDF, [M00, M01, M02, M03,
-                    M10, M11, M12, M13,
-                    M20, M21, M22, M23,
-                    M30, M31, M32, M33]) :-
-  rdf_has_prolog(RDF, knowrob:m00, M00),
-  rdf_has_prolog(RDF, knowrob:m01, M01),
-  rdf_has_prolog(RDF, knowrob:m02, M02),
-  rdf_has_prolog(RDF, knowrob:m03, M03),
-  rdf_has_prolog(RDF, knowrob:m10, M10),
-  rdf_has_prolog(RDF, knowrob:m11, M11),
-  rdf_has_prolog(RDF, knowrob:m12, M12),
-  rdf_has_prolog(RDF, knowrob:m13, M13),
-  rdf_has_prolog(RDF, knowrob:m20, M20),
-  rdf_has_prolog(RDF, knowrob:m21, M21),
-  rdf_has_prolog(RDF, knowrob:m22, M22),
-  rdf_has_prolog(RDF, knowrob:m23, M23),
-  rdf_has_prolog(RDF, knowrob:m30, M30),
-  rdf_has_prolog(RDF, knowrob:m31, M31),
-  rdf_has_prolog(RDF, knowrob:m32, M32),
-  rdf_has_prolog(RDF, knowrob:m33, M33).
+  kb_triple(Transform, ease_obj:hasPositionVector, [X,Y,Z]),
+  kb_triple(Transform, ease_obj:hasOrientationVector, [QX,QY,QZ,QW]),!.
 
 %% transform_invert(+Transform:term, ?Inverted:term) is det.
 %
@@ -200,8 +155,7 @@ transform_invert([A,B,[TX,TY,TZ],Q],
 %
 transform_reference_frame([Ref, _, _, _], Ref) :- !.
 transform_reference_frame(Transform, Ref) :-
-  rdf_has(Transform, knowrob:'relativeTo', RefObjId),
-  object_frame_name(RefObjId, Ref), !.
+  kb_triple(Transform, ease_obj:hasReferenceFrame, Ref), !.
 transform_reference_frame(_TransformId, MapFrame) :-
   map_frame_name(MapFrame).
 

@@ -28,21 +28,10 @@
 :- module(knowrob_temporal,
     [
       current_time/1,  % -CurrentTime
-      holds/1,   % ?Predicate(?Subject,?Object)
-      holds/2,   % ?Predicate(?Subject,?Object), +Interval
-      holds/3,   % ?Subject, ?Predicate, ?Object
-      holds/4,   % ?Subject, ?Predicate, ?Object, +Interval
       occurs/1,  % ?Event
       occurs/2,  % ?Event, ?Time      
       occurs/3,  % ?Event, ?Time, ?Type
-      allen_constraint/4,
-      owl_individual_of_during/3,  % ?Resource, ?Description, ?Interval
-      owl_individual_of_during/2,  % ?Resource, ?Description
-      owl_has_during/4,            % ?Subject, ?Predicate, ?Object, ?Interval
-      rdfs_instance_of_during/3,   % ?Resource, ?Description, ?Interval
-      rdfs_has_during/4,           % ?Subject, ?Predicate, ?Object, ?Interval
-      rdf_triple_during/4,         % ?Predicate, ?Subject, ?Object, ?Interval
-      time_term/2,
+      allen_constraint/2,
       time_between/3,
       time_between/2,
       time_later_then/2,
@@ -62,8 +51,7 @@
       interval_finished_by/2,
       interval_overlaps/2,
       interval_overlapped_by/2,
-      interval_during/2,
-      owl_temporal_db/2
+      interval_during/2
     ]).
 /** <module> Predicates for temporal reasoning in KnowRob
 
@@ -75,25 +63,14 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
-:- rdf_meta rdf_triple_during(r,r,t),
-            rdfs_instance_of_during(r,r,t),
-            owl_individual_of_during(r,r),
-            owl_individual_of_during(r,r,?),
-            owl_has_during(r,r,t,?),
-            rdfs_has_during(r,r,t,?),
-            holds(t),
-            holds(t,?),
-            holds(r,r,t),
-            holds(r,r,t,?),
-            occurs(r),
+:- rdf_meta occurs(r),
             occurs(r,?),
             occurs(r,?,r),
-            allen_constraint(r,r,r,t),
+            allen_constraint(r,t),
             interval(t,?),
             interval_duration(t,?),
             interval_start(t,?),
@@ -110,64 +87,9 @@
             interval_overlapped_by(t,t),
             interval_during(t,t).
 
-:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-
 		 /*******************************
 		 *	 high-level predicates		*
 		 *******************************/
-
-%% holds(+Term).
-%% holds(+Term, ?Interval).
-%% holds(?S, ?P, ?O).
-%% holds(?S, ?P, ?O, ?Interval).
-%
-% True iff relation `P(S,O)` holds during Interval, and with Term=P(S,O).
-% Where Interval is a TimeInterval or TimePoint individual,
-% a number or a list of two numbers representing a time interval.
-%
-% @param Term Must be of the form: PROPERTY(SUBJECT, OBJECT).
-% @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers representing a time interval.
-%
-holds(Term) :-
-  current_time(T),
-  holds(Term, [T,T]).
-
-holds(Term, I) :-
-  var(Term),
-  holds(S, P, O, I),
-  Term =.. [':', P, (S,O)].
-
-holds(Term, I) :-
-  nonvar(Term),
-  (  Term =.. [':', Namespace, Tail]
-  -> (
-     Tail =.. [P,S,O],
-     % unpack namespace
-     rdf_current_ns(Namespace, NamespaceUri),
-     atom_concat(NamespaceUri, P, PropertyUri),
-     holds(S, PropertyUri, O, I)
-  ) ; (
-     Term =.. [P,S,O],
-     holds(S, P, O, I)
-  )).
-
-holds(S, P, O) :-
-  current_time(T),
-  holds(S, P, O, [T,T]).
-
-holds(S, P, O, T) :-
-  atom(T), !,
-  interval(T,I),
-  owl_has_during(S, P, O, I).
-
-holds(S, P, O, T) :-
-  number(T), !,
-  owl_has_during(S, P, O, [T,T]).
-
-holds(S, P, O, I) :-
-  owl_has_during(S, P, O, I).
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?Time) is nondet.
@@ -181,8 +103,7 @@ holds(S, P, O, I) :-
 % @param Type The event type iri
 % 
 occurs(Evt) :-
-  current_time(CurrentTime),
-  occurs(Evt, CurrentTime, dul:'Event').
+  occurs(Evt, _, dul:'Event').
 
 occurs(Evt, Interval) :-
   interval(Evt, EvtI),
@@ -191,114 +112,11 @@ occurs(Evt, Interval) :-
   ;  Interval = EvtI ).
 
 occurs(Evt, Interval, Type) :-
-  rdfs_individual_of(Evt, Type),
+  kb_type_of(Evt, Type),
   interval(Evt, EvtI),
   (  ground(Interval)
   -> interval_during(Interval, EvtI)
   ;  Interval = EvtI ).
-
-%%
-allen_constraint(S,P,O,Term) :-
-  rdf_has_prolog(P,ease:symbol,Sym),
-  Term=..[Sym,S,O].
-
-		 /*******************************
-		 *	 	  OWL expansion			*
-		 *******************************/
-
-owl_temporal_db(I, db(rdfs_has_during(I),
-                      rdfs_instance_of_during(I))).
-
-%% owl_individual_of_during(?Resource,?Description) is nondet.
-%% owl_individual_of_during(?Resource,?Description,+Interval) is nondet.
-%
-% True if Resource satisfies Description during Interval
-% (or at the moment if not specified)
-% according the the OWL-Description entailment rules,
-% with additional computable and temporal semantics.
-%
-% @param Resource OWL resource identifier
-% @param Description OWL class description
-% @param Interval The interval during which the Resource satisfies Description
-% 
-owl_individual_of_during(Resource, Description) :-
-  current_time(Now),
-  owl_individual_of_during(Resource, Description, [Now,Now]).
-
-owl_individual_of_during(Resource, Description, Interval) :-
-  owl_temporal_db(Interval, DB),
-  ( ground([Resource,Description,Interval]) ->
-    once(owl_individual_of(Resource, Description, DB)) ; 
-    owl_individual_of(Resource, Description, DB) ).
-
-%% owl_has_during(?Subject, ?Predicate, ?Object, ?Interval).
-%
-% True if this relation is specified, or can be deduced using OWL
-% inference rules, computable semantics, or temporal semantics.
-%
-% @param Subject OWL resource iri
-% @param Predicate Property iri
-% @param Object OWL resource iri or datatype value
-% @param Interval The interval during which the relation holds
-%
-owl_has_during(S, P, O, Interval) :-
-  owl_temporal_db(Interval, DB),
-  ( ground([S,P,O,Interval]) ->
-    once(owl_has(S, P, O, DB)) ; 
-    owl_has(S, P, O, DB) ).
-
-		 /*******************************
-		 *	   Temporal semantics		*
-		 *******************************/
-
-%% rdfs_instance_of_during(?Resource, ?RDF_Type, Interval) is nondet.
-%
-% True if RDF_Type is the type of Resource during Interval.
-%
-% @param Resource RDF resource iri
-% @param RDF_Type RDF type iri
-% @param Interval The interval during which RDF_Type is the type of Resource
-% 
-rdfs_instance_of_during(Resource, RDF_Type, _Interval) :-
-  rdfs_individual_of(Resource, RDF_Type).
-
-rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
-  rdf_equal(rdf:type, Property),
-  ( nonvar(RDF_Type) ->
-    rdfs_subclass_of(Type, RDF_Type) ;
-    Type = RDF_Type ),
-  rdfs_computable_triple_during(Property, Resource, Type, Interval).
-
-%% rdfs_has_during(?Subject, ?Predicate, ?Object, ?Interval) is nondet.
-%
-% True if the RDF triple store contains (Subject Predicate Object),
-% or if the triple can be derived from computable predicates,
-% or temporal semantics.
-%
-% @param Property The property iri
-% @param Frame RDF resource iri
-% @param Value RDF resource iri or datatype value
-% @param Interval The interval during which the triple holds
-%
-rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
-
-%% rdf_triple_during(?Property, ?Frame, ?Value, ?Interval) is nondet.
-%
-% True if the RDF triple store contains (Frame Property Value),
-% or if the triple can be derived from computable predicates,
-% or temporal semantics.
-%
-% @param Property The property iri
-% @param Frame RDF resource iri
-% @param Value RDF resource iri or datatype value
-% @param Interval The interval during which the triple holds
-%
-rdf_triple_during(Property, Frame, Value, _Interval) :-
-  rdf_has_prolog(Frame, Property, Value).
-
-rdf_triple_during(Property, Frame, Value, Interval) :-
-  ground(Property),
-  rdfs_computable_triple_during(Property, Frame, Value, Interval).
 
 		 /*******************************
 		 *		Time instants			*
@@ -336,14 +154,14 @@ time_term([Begin,End], [Begin_v,End_v]) :-
 time_term([Begin], [Begin_v]) :-
   time_term(Begin,Begin_v), !.
 
-time_term(Event, Interval) :-
-  atom(Event),
-  rdf_has(Event, knowrob:'startTime', Timepoint0),
-  time_term(Timepoint0, Begin),
-  (  rdf_has(Event, knowrob:'endTime', Timepoint1)
-  -> (time_term(Timepoint1, End), Interval=[Begin,End])
-  ;  Interval=[Begin]
-  ), !.
+%time_term(Event, Interval) :-
+  %atom(Event),
+  %kb_triple(Event, knowrob:'startTime', Timepoint0),
+  %time_term(Timepoint0, Begin),
+  %(  kb_triple(Event, knowrob:'endTime', Timepoint1)
+  %-> (time_term(Timepoint1, End), Interval=[Begin,End])
+  %;  Interval=[Begin]
+  %), !.
 
 % @deprecated
 time_term(Timepoint, Time) :-
@@ -365,7 +183,7 @@ time_term(Timepoint, Time) :-
 %
 time_between(Timeinterval, T0, T1) :-
   atom(Timeinterval),
-  time_term(Timeinterval, Interval),
+  interval(Timeinterval, Interval),
   time_between(Interval, T0, T1), !.
 
 time_between([T2,T3], T0, T1) :-
@@ -379,7 +197,7 @@ time_between(T, T0, T1) :-
 
 time_between(T, Timeinterval) :-
   atom(Timeinterval),
-  time_term(Timeinterval , Interval),
+  interval(Timeinterval , Interval),
   time_between(T, Interval), !.
 
 time_between(T, [Begin,End]) :-
@@ -394,8 +212,8 @@ time_between(T, [Begin]) :-
 % True iff T0 >= T1
 %
 time_later_then(T0, T1) :-
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
+  interval(T0, T0_term),
+  interval(T1, T1_term),
   time_later_then_(T0_term, T1_term), !.
 time_later_then_([_], [_])       :- fail.
 time_later_then_([T0], [_,T1])   :- T1 =< T0, !.
@@ -408,8 +226,8 @@ time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
 % True iff T0 <= T1
 %
 time_earlier_then(T0, T1) :-
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
+  interval(T0, T0_term),
+  interval(T1, T1_term),
   time_earlier_then_(T0_term, T1_term), !.
 time_earlier_then_([_], [_])       :- fail.
 time_earlier_then_([T0], [_,T1])   :- T0 =< T1, !.
@@ -421,6 +239,16 @@ time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 		 *	Allen's interval algebra	*
 		 *******************************/
 
+%%
+allen_constraint(Resource,Constraint) :-
+  rdf_has(Resource,Relation,Other),
+  atom(Relation),
+  %rdfs_individual_of(Other,dul:'Task'),
+  rdf_has(Relation,ease:symbol,X),
+  kb_rdf_data_atom(X,Symbol),
+  % FIXME: bad test
+  Constraint =.. [Symbol,Resource,Other].
+
 %% interval(+In,-Out) is semidet.
 %
 % True if Out is the interval of In.
@@ -430,6 +258,10 @@ time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 % 
 interval(I, I) :- is_list(I), !.
 interval(Time, [Time,Time]) :- number(Time), !.
+interval(Event, Interval) :-
+  atom(Event),
+  rdf_has(Event,dul:hasTimeInterval,X),!,
+  interval(X, Interval).
 interval(I, Interval) :-
   atom(I),
   ( rdf_has(I, knowrob:'startTime', T0) ;

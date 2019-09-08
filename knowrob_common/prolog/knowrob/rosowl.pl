@@ -42,9 +42,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('http/json')).
-:- use_module(library('knowrob/rdfs')).
-
-:- rdf_db:rdf_register_ns(ros, 'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
+:- use_module(library('knowrob/knowrob')).
 
 :- rdf_meta ros_type_path(r,?),
             ros_primitive_type(?,r),
@@ -59,15 +57,15 @@
 %% ros_type_path(+MessageType,?TypePath) is det.
 %
 ros_type_path(MessageType,TypePath) :-
-  rdfs_individual_of(MessageType,ros:'MessageType'),
-  rdf_has_prolog(MessageType,ros:hasTypePath,TypePath),!.
+  kb_type_of(MessageType,ros:'MessageType'),
+  kb_triple(MessageType,ros:hasTypePath,TypePath),!.
 ros_type_path(PrimitiveType,TypePath) :-
-  rdfs_individual_of(PrimitiveType,ros:'PrimitiveType'),
+  kb_type_of(PrimitiveType,ros:'PrimitiveType'),
   rdf_split_url(_, TypePath, PrimitiveType),!.
 ros_type_path(ArrayType, ArrayType_atom) :-
-  rdfs_individual_of(ArrayType,ros:'ArrayType'),
+  kb_type_of(ArrayType,ros:'ArrayType'),
   once((
-    rdf_has(ArrayType,dul:hasPart,X),
+    kb_triple(ArrayType,dul:hasPart,X),
     ros_type_path(X,T))),
   term_to_atom(array(T), ArrayType_atom),!.
 
@@ -91,32 +89,32 @@ ros_primitive_type('string',  'http://www.w3.org/2001/XMLSchema#string').
 %ros_primitive_type('duration',_).
 %ros_primitive_type('time',xsd:dateTime).
 
-ros_array_type('bool',    'http://knowrob.org/kb/knowrob.owl#array_boolean').
-ros_array_type('float32', 'http://knowrob.org/kb/knowrob.owl#array_float').
-ros_array_type('float64', 'http://knowrob.org/kb/knowrob.owl#array_double').
-ros_array_type('int8',    'http://knowrob.org/kb/knowrob.owl#array_int').
-ros_array_type('int16',   'http://knowrob.org/kb/knowrob.owl#array_int').
-ros_array_type('int32',   'http://knowrob.org/kb/knowrob.owl#array_int').
-ros_array_type('int64',   'http://knowrob.org/kb/knowrob.owl#array_int').
-ros_array_type('uint8',   'http://knowrob.org/kb/knowrob.owl#array_uint').
-ros_array_type('uint16',  'http://knowrob.org/kb/knowrob.owl#array_uint').
-ros_array_type('uint32',  'http://knowrob.org/kb/knowrob.owl#array_uint').
-ros_array_type('uint64',  'http://knowrob.org/kb/knowrob.owl#array_uint').
-ros_array_type('string',  'http://knowrob.org/kb/knowrob.owl#array_string').
+ros_array_type('bool',    'http://www.ease-crc.org/ont/EASE.owl#array_boolean').
+ros_array_type('float32', 'http://www.ease-crc.org/ont/EASE.owl#array_float').
+ros_array_type('float64', 'http://www.ease-crc.org/ont/EASE.owl#array_double').
+ros_array_type('int8',    'http://www.ease-crc.org/ont/EASE.owl#array_int').
+ros_array_type('int16',   'http://www.ease-crc.org/ont/EASE.owl#array_int').
+ros_array_type('int32',   'http://www.ease-crc.org/ont/EASE.owl#array_int').
+ros_array_type('int64',   'http://www.ease-crc.org/ont/EASE.owl#array_int').
+ros_array_type('uint8',   'http://www.ease-crc.org/ont/EASE.owl#array_uint').
+ros_array_type('uint16',  'http://www.ease-crc.org/ont/EASE.owl#array_uint').
+ros_array_type('uint32',  'http://www.ease-crc.org/ont/EASE.owl#array_uint').
+ros_array_type('uint64',  'http://www.ease-crc.org/ont/EASE.owl#array_uint').
+ros_array_type('string',  'http://www.ease-crc.org/ont/EASE.owl#array_string').
 
 %% ros_service(+Service,?Name,?Path) is det.
 %
 ros_service(Service,Name,Path) :-
-  rdf_has(Service,ros:concretelyImplements,ServiceInterface),
-  rdf_has_prolog(Service,ros:hasServiceName,Name),
-  rdf_has_prolog(ServiceInterface,ros:hasTypePath,Path).
+  kb_triple(Service,ros:concretelyImplements,ServiceInterface),
+  kb_triple(Service,ros:hasServiceName,Name),
+  kb_triple(ServiceInterface,ros:hasTypePath,Path).
 
 %% ros_message_slot_type(+Msg,?SlotName,?SlotType) is det.
 %
 ros_message_slot_type(Msg,SlotName,SlotType) :-
-  rdf_has(Msg,dul:realizes,Msg_Type),
-  rdf_has(Msg_Type,dul:hasPart,SlotType),
-  rdf_has_prolog(SlotType,ros:hasSlotName,SlotName),!.
+  kb_triple(Msg,dul:realizes,Msg_Type),
+  kb_triple(Msg_Type,dul:hasPart,SlotType),
+  kb_triple(SlotType,ros:hasSlotName,SlotName),!.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % % % % % % % % % % % call a service
@@ -127,22 +125,22 @@ ros_message_slot_type(Msg,SlotName,SlotType) :-
 rosowl_service_call(Service, Request, Response) :-
   ros_service(Service, ServiceName, ServicePath),
   ( ros_request_encode(Request, Request_json) ;
-    throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ),
+    throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ), % TODO
   ( ros_json_service_call(_{
         service_path: ServicePath,
         service_name: ServiceName,
         json_data: Request_json
   }, Response_json) ;
-    throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
+    throw(ros_error(ros:'ServiceNodeUnreachable')) ),
   ( ground(Response_json) ; % no response from service
-    throw(ros_error(ros:'SERVICE_NODE_UNREACHABLE')) ),
+    throw(ros_error(ros:'ServiceNodeUnreachable')) ),
   ( ros_response_decode(Response_json, Response) ;
-    throw(ros_error(ros:'UNINTERPRETABLE_REQUEST')) ).
+    throw(ros_error(ros:'UNINTERPRETABLE_REQUEST')) ). % TODO
 
 %% ros_request_encode(+Request, -Request_json) is det.
 %
 ros_request_encode(Request, Request_json) :-
-  ros_entity_to_prolog(Request, Request_dict),
+  ros_entity_to_prolog(Request, Request_dict),!,
   %%%%%%%%%
   %%%%% encode as JSON dict
   %%%%%%%%%
@@ -170,12 +168,12 @@ ros_response_decode(Response_json, Response) :-
     %%%%% Create symbolic representation for response field
     %%%%%%%%%
     once((
-      rdf_has(DataSlot,dul:hasPart,SlotType),
+      kb_triple(DataSlot,dul:hasPart,SlotType),
       ros_type_path(SlotType,SType)
     )),
     owl_create_ros_entity(SType,SValue,Slot),
-    rdf_assert(Response,dul:hasPart,Slot),
-    rdf_assert(Slot,dul:realizes,DataSlot)
+    kb_assert(Response,dul:hasPart,Slot),
+    kb_assert(Slot,dul:realizes,DataSlot)
   )).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -192,75 +190,76 @@ get_transform_dict(Message,_{
       rotation:    ['geometry_msgs/Quaternion',
           _{x:['float64',Qx], y:['float64',Qy], z:['float64',Qz], w:['float64',Qw]}]
   }) :-
-  rdf_has(Message,dul:hasRegion,Region),
-  rdf_has_prolog(Region, knowrob:translation, [Tx,Ty,Tz]),
-  rdf_has_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
+  kb_triple(Message,dul:hasRegion,Region),
+  kb_triple(Region, knowrob:translation, [Tx,Ty,Tz]),
+  kb_triple(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
 get_transform_region(_{
       translation: _{x:Tx, y:Ty, z:Tz},
       rotation:    _{x:Qx, y:Qy, z:Qz, w:Qw}
   }, Region) :-
-  rdf_instance_from_class(knowrob:'Pose',Region),
-  rdf_assert_prolog(Region, knowrob:translation, [Tx,Ty,Tz]),
-  rdf_assert_prolog(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
+  kb_create(knowrob:'Pose',Region),
+  kb_assert(Region, knowrob:translation, [Tx,Ty,Tz]),
+  kb_assert(Region, knowrob:quaternion,  [Qx,Qy,Qz,Qw]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % % % % % % % % % % % OWL to ROS message dict
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 ros_message_to_prolog(_, Msg, Msg_dict) :-
-  rdf_has(Msg,dul:realizes,Msg_Type),
+  kb_triple(Msg,dul:realizes,Msg_Type),
   findall(SName-[SType,SValue], (
     %%%%%%%%%
     %%%%% For each slot of the message type
     %%%%%%%%%
-    rdf_has(Msg_Type,dul:hasPart,DataSlot),
-    rdf_has_prolog(DataSlot, ros:hasSlotName, SName),
+    kb_triple(Msg_Type,dul:hasPart,DataSlot),
     once((
-      rdf_has(DataSlot,dul:hasPart,SlotType),
+      kb_triple(DataSlot, ros:hasSlotName, SName),
+      kb_triple(DataSlot,dul:hasPart,SlotType),
       ros_type_path(SlotType,SType)
     )),
     %%%%%%%%%
     %%%%% Infer the value of the slot
     %%%%%%%%%
     once((
-      rdf_has(Msg, dul:hasPart, Filler),
-      rdf_has(Filler, dul:realizes, DataSlot)
-    )),
-    ros_entity_to_prolog(Filler, SValue)
+      kb_triple(Msg, dul:hasPart, Filler),
+      kb_triple(Filler, dul:realizes, DataSlot),
+      ros_entity_to_prolog(Filler, SValue)
+    ))
   ), Pairs),
   % create a dict 'msg{key1:[type1,value1],...}'
   dict_pairs(Msg_dict,msg,Pairs).
 
 ros_entity_to_prolog(Msg, Msg_dict) :-
-  rdfs_individual_of(Msg,ros:'Message'),!,
-  rdf_has(Msg,dul:realizes,Msg_Type),
-  rdf_has_prolog(Msg_Type,ros:hasTypePath,TypePath),
-  once((
+  kb_type_of(Msg,ros:'Message'),!,
+  kb_triple(Msg,dul:realizes,Msg_Type),
+  kb_triple(Msg_Type,ros:hasTypePath,TypePath),
+  once(((
     % first check if message is represented as region
     ros_message_conversion(TypePath, GetDictGoal, _),
     call(GetDictGoal, Msg, Msg_dict)) ; 
     % elese traverse message parts
-    ros_message_to_prolog(TypePath, Msg, Msg_dict)).
+    ros_message_to_prolog(TypePath, Msg, Msg_dict))).
 
 ros_entity_to_prolog(PrimitiveValue_owl, PrimitiveValue_pl) :-
-  ( rdfs_individual_of(PrimitiveValue_owl,ros:'PrimitiveValue') ;
-    rdfs_individual_of(PrimitiveValue_owl,ros:'PrimitiveArray') ),!,
-  rdf_has(PrimitiveValue_owl,dul:hasRegion,Region),
-  once((
-    rdf_has_prolog(Region,dul:hasRegionDataValue,PrimitiveValue_pl);
-    PrimitiveValue_pl = Region )).
+  ( kb_type_of(PrimitiveValue_owl,ros:'PrimitiveValue') ;
+    kb_type_of(PrimitiveValue_owl,ros:'PrimitiveArray') ),!,
+  kb_triple(PrimitiveValue_owl,dul:hasRegion,Region),
+  (( rdf_has(Region,dul:hasRegionDataValue,X),
+     kb_rdf_pl(dul:hasRegionDataValue,X,PrimitiveValue_pl)
+  ); PrimitiveValue_pl = Region
+  ), !.
 
 ros_entity_to_prolog(Array, List) :-
-  rdfs_individual_of(Array,ros:'Array'),!,
-  rdf_has(Array, dul:concretelyExpresses, Collection),
+  kb_type_of(Array,ros:'Array'),!,
+  kb_triple(Array, dul:concretelyExpresses, Collection),
   ros_entity_to_prolog(Collection, List).
 
 ros_entity_to_prolog(Collection, List) :-
-  rdfs_individual_of(Collection,dul:'Collection'),!,
-  ( rdf_has(Collection, ease:firstMember, First) ->
+  kb_type_of(Collection,dul:'Collection'),!,
+  ( kb_triple(Collection, ease:firstMember, First) ->
     owl_sequence(First, List) ; 
-    findall(M, rdf_has(Collection,dul:hasMember, M), Xs) ),
+    findall(M, kb_triple(Collection,dul:hasMember, M), Xs) ),
   findall(X, (
     member(Iri,Xs),
     ros_entity_to_prolog(Iri,X)),
@@ -272,27 +271,30 @@ ros_entity_to_prolog(Collection, List) :-
 
 owl_create_ros_entity(Msg_TypePath,Msg_dict,Msg_owl) :-
   is_dict(Msg_dict),!,
-  rdf_instance_from_class(ros:'Message',Msg_owl),
-  ( rdf_has(Msg_Type,ros:hasTypePath,literal(type(_,Msg_TypePath))) ->
-    rdf_assert(Msg_owl,dul:realizes,Msg_Type) ; true ),
+  kb_create(ros:'Message',Msg_owl),
+  ( kb_triple(Msg_Type,ros:hasTypePath,Msg_TypePath) ->
+    kb_assert(Msg_owl,dul:realizes,Msg_Type) ; true ),
   once((
     ros_message_conversion(Msg_TypePath, _, GetRegionGoal),
     call(GetRegionGoal,Msg_dict,Region_owl),
-    rdf_assert(Msg_owl,dul:hasRegion,Region_owl)
+    kb_assert(Msg_owl,dul:hasRegion,Region_owl)
   );(
     dict_pairs(Msg_dict,_,Msg_pairs),
     forall(member(SName-[SType,SValue], Msg_pairs),(
       owl_create_ros_entity(SType,SValue,Val_owl),
-      rdf_assert_prolog(Val_owl,ease:hasNameString,SName),
-      rdf_assert(Msg_owl,dul:hasPart,Val_owl)
+      kb_assert(Val_owl,ease:hasNameString,SName),
+      kb_assert(Msg_owl,dul:hasPart,Val_owl)
     ))
   )).
 
 owl_create_ros_entity(Type,Value,PrimitiveValue) :-
   ros_primitive_type(Type, XSDType),!,
-  owl_create_atomic_region(XSDType, Value, Region),
-  rdf_instance_from_class(ros:'PrimitiveValue',PrimitiveValue),
-  rdf_assert(PrimitiveValue,dul:hasRegion,Region).
+  kb_create(dul:'Region',Region),
+  ( atom(Value) -> Atom = Value ; term_to_atom(Value,Atom) ),
+  kb_assert(Region,dul:hasRegionDataValue,
+            literal(type(XSDType,Atom))),
+  kb_create(ros:'PrimitiveValue',PrimitiveValue),
+  kb_assert(PrimitiveValue,dul:hasRegion,Region).
 
 owl_create_ros_entity(Array_type,Val_list,PrimitiveArray) :-
   is_list(Val_list),
@@ -303,11 +305,11 @@ owl_create_ros_entity(Array_type,Val_list,PrimitiveArray) :-
   findall(A, (member(X,Val_list), term_to_atom(X,A)), Atoms),
   atomic_list_concat(Atoms, ' ', ArrayData),
   % create symbols
-  rdf_instance_from_class(ros:'PrimitiveArray',PrimitiveArray),
-  rdf_instance_from_class(dul:'Region',Region),
-  rdf_assert(Region,dul:hasRegionDataValue,
+  kb_create(ros:'PrimitiveArray',PrimitiveArray),
+  kb_create(dul:'Region',Region),
+  kb_assert(Region,dul:hasRegionDataValue,
              literal(type(ArrayType,ArrayData))),
-  rdf_assert(PrimitiveArray,dul:hasRegion,Region).
+  kb_assert(PrimitiveArray,dul:hasRegion,Region).
 
 owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
   is_list(Val_list),
@@ -316,11 +318,12 @@ owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
   findall(Val_owl, (
     member(X,Val_list),
     owl_create_ros_entity(Type,X,Val_owl)),
-    Msg_list),
-  owl_create_ordered_collection(Msg_list, Collection),
-  rdf_instance_from_class(ros:'MessageArray',MessageArray),
-  rdf_assert(MessageArray, dul:realizes, ArrayType),
-  rdf_assert(MessageArray, dul:concretelyExpresses, Collection).
+    Msgs),
+  kb_create(dul:'Collection',Collection),
+  forall( member(X,Msgs), kb_assert(Collection,dul:hasMember,X) ),
+  kb_create(ros:'MessageArray',MessageArray),
+  kb_assert(MessageArray, dul:realizes, ArrayType),
+  kb_assert(MessageArray, dul:concretelyExpresses, Collection).
 
 %% create_ros_request(Action,InputDict,ReqType,Request)
 %
@@ -328,42 +331,47 @@ owl_create_ros_entity(ArrayTypePath,Val_list,MessageArray) :-
 create_ros_request(Action,InputDict,ActionDict,ReqType,Request) :-
   %%%%%%%%%
   %%%%% Create request message
-  rdf_instance_from_class(ros:'Message',Request),
-  rdf_assert(Request,dul:realizes,ReqType),
-  rdf_assert(Action,ros:hasRequest,Request),
+  kb_create(ros:'Message',Request),
+  kb_assert(Request,dul:realizes,ReqType),
+  kb_assert(Action,ros:hasRequest,Request),
   %%%%%%%%%
   %%%%% Set request slots
-  forall(rdf_has(ReqType,dul:hasPart,DataSlot), once((
+  forall(kb_triple(ReqType,dul:hasPart,DataSlot), once((
     % for each data slot, find participant of the 
     % action that is classified by the same parameter or role
-    action_filler_for(Filler:InputDict,DataSlot:ActionDict),
-    %rdf_has(DataSlot,dul:hasPart,SlotType),
+    get_dict(Concept,InputDict,Filler),
+    get_dict(Concept,ActionDict,DataSlot),
+    %kb_triple(DataSlot,dul:hasPart,SlotType),
     create_ros_message_slot(DataSlot,Filler,Slot),
-    rdf_assert(Request,dul:hasPart,Slot),
-    rdf_assert(Slot,dul:realizes,DataSlot)
+    kb_assert(Request,dul:hasPart,Slot),
+    kb_assert(Slot,dul:realizes,DataSlot)
   ))).
 
 %%
 create_ros_message_slot(SlotType, Region, Slot) :-
   rdfs_individual_of(SlotType,ros:'PrimitiveSlot'),!,
   rdfs_individual_of(Region,dul:'Region'),
-  rdf_instance_from_class(ros:'PrimitiveValue',Slot),
-  rdf_assert(Slot, dul:hasRegion, Region).
+  kb_create(ros:'PrimitiveValue',Slot),
+  kb_assert(Slot, dul:hasRegion, Region).
+
 create_ros_message_slot(SlotType, Region, Slot) :-
   rdfs_individual_of(SlotType,ros:'ArraySlot'),
   rdfs_individual_of(Region,dul:'Region'),!,
-  rdf_instance_from_class(ros:'PrimitiveArray',Slot),
-  rdf_assert(Slot, dul:hasRegion, Region).
+  kb_create(ros:'PrimitiveArray',Slot),
+  kb_assert(Slot, dul:hasRegion, Region).
+
 create_ros_message_slot(SlotType, Array, Array) :-
   rdfs_individual_of(SlotType,ros:'ArraySlot'),!,
   rdfs_individual_of(Array,ros:'Array').
+
 create_ros_message_slot(SlotType, Region, Message) :-
   rdfs_individual_of(SlotType,ros:'MessageSlot'),
-  rdfs_individual_of(Region,dul:'Region'),!,
-  rdf_instance_from_class(ros:'Message',Message),
-  rdf_has(SlotType,dul:hasPart,MessageType),
-  rdf_assert(Message,dul:realizes,MessageType),
-  rdf_assert(Message,dul:hasRegion,Region).
+  rdfs_individual_of(Region,dul:'Region'),
+  kb_triple(SlotType,dul:hasPart,MessageType),!,
+  kb_create(ros:'Message',Message),
+  kb_assert(Message,dul:realizes,MessageType),
+  kb_assert(Message,dul:hasRegion,Region).
+
 create_ros_message_slot(SlotType, Message, Message) :-
   rdfs_individual_of(SlotType,ros:'MessageSlot'),!,
   rdfs_individual_of(Message,ros:'Message').

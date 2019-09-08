@@ -81,6 +81,7 @@
 	    non_negative_int/2,
 	    rdf_assert_literal/3,
 	    rdf_assert_literal/4,
+	    rdf_phas/3,
 	    owl_property_range_clear_cache/2
 	  ]).
 :- use_module(library(lists)).
@@ -302,7 +303,7 @@ owl_restriction_assert(restriction(P,has_value(V)), Id, Graph) :-
 owl_assert_description(Type, Instance) :-
   owl_assert_description(Type, Instance, user).
 owl_assert_description(Type, Instance, Graph) :-
-	knowrob_owl:rdf_unique_id(Type, Instance),
+	rdf_node(Instance),
 	rdf_assert(Instance, rdf:type, Type, Graph).
 
 %	non_negative_integer(+Atom, -Integer, +Subject, +Predicate)
@@ -451,7 +452,8 @@ owl_property_range_on_class_(Class, Predicate, Range) :-
 		range_on_class(Class, Predicate, R) ;
 		rdf_phas(Predicate, rdfs:range, R)
 	), Ranges),
-	( range_on_cardinality_(Class, Predicate, Ranges, Range) *->
+	list_to_set(Ranges,Set),
+	( range_on_cardinality_(Class, Predicate, Set, Range) *->
 		true ; Range='http://www.w3.org/2002/07/owl#Thing' ).
 
 owl_property_range_clear_cache(Class, Predicate) :-
