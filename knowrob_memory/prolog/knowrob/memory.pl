@@ -19,6 +19,7 @@
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/perception')).
+:- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/utility/filesystem')).
 
 :- dynamic mem_is_initialized/0,
@@ -207,10 +208,7 @@ mem_import_latest_tf(Obj) :-
 mem_pose_pl(Obj,Pose,[ObjFrame,RefFrame,T,Q]) :-
   transform_data(Pose,(T,Q)),
   object_frame_name(Obj,ObjFrame),
-  % FIXME: dulify
-  (  rdf_has(Pose, knowrob:'relativeTo', Ref)
-  -> object_frame_name(Ref,RefFrame)
-  ;  map_frame_name(RefFrame) ).
+  transform_reference_frame(Pose,RefFrame),
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
