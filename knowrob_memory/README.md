@@ -5,7 +5,7 @@ An interface for the acquisition of *experiential knowledge*.
 Such knowledge is generally acquired by the *monitored*
 execution of some plan.
 This package provides predicates that create descriptions
-of the plan execution, and to load previous experiences
+of the plan execution, and that are used to load previous experiences
 into the knowledge base.
 
 The main usecase is to create a library of episodic memories
