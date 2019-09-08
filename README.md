@@ -13,7 +13,7 @@ and for the declaration of rules that realize KnowRob's QA interface.
 Several C++ libraries are wrapped into Prolog rules to make them available
 in the QA interface.
 RDF data may be loaded from file, or gathered from computational methods
-such as webstores, or commensense rules.
+such as webstore crawling, or commensense rules.
 This concept is called *virtual knowledge base* in KnowRob.
 
 One of the tasks KnowRob was originally designed for is to bridge the gap between abstract instructions
