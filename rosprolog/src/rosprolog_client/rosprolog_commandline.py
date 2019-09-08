@@ -6,7 +6,7 @@ import traceback
 import rospy
 import readline
 import sys
-from rosprolog import PrologException, Prolog
+from rosprolog_client import PrologException, Prolog
 
 HISTORY_NAME = os.path.expanduser('~/.rosprolog_commandline_history')
 HISTORY_LENGTH = 300

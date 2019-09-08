@@ -15,7 +15,7 @@ from tf2_msgs.msg import TFMessage
 from tf2_ros import StaticTransformBroadcaster
 from visualization_msgs.msg import MarkerArray
 from visualization_msgs.msg._Marker import Marker
-from rosprolog import rosprolog
+import rosprolog_client as rosprolog
 from random import random
 
 # fix to allow multiple latched publisher on the same topic

@@ -14,13 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
     message_generation
 )
 
+# export Python libraries
+catkin_python_setup()
+
 add_service_files(
   FILES
   JSONWrapper.srv
 )
-
-# export Python libraries
-catkin_python_setup()
 
 generate_messages(DEPENDENCIES std_msgs)
 
@@ -70,15 +70,22 @@ add_executable(test_rosprolog examples/test_rosprolog.cpp)
 target_link_libraries(test_rosprolog rosprolog_client ${catkin_LIBRARIES})
 add_dependencies(test_rosprolog ${catkin_EXPORTED_TARGETS})
 
-install(DIRECTORY prolog/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
-
-install(DIRECTORY include/${PROJECT_NAME}/
+install(
+  DIRECTORY prolog/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog
+)
+install(
+  DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-  
-install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch )
+install(
+  DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+install(
+  PROGRAMS src/rosprolog_client/rosprolog_client.py
+  DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
+)
   
 FILE(GLOB sh_files "scripts/*")
 install(PROGRAMS ${sh_files}
