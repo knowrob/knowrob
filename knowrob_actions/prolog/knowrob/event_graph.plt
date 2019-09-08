@@ -3,37 +3,37 @@
 :- use_module(library('knowrob/event_graph')).
 
 test('merge_sequences(equal0)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [a,b],
     [a,b],
     [a,b]).
 test('merge_sequences(equal1)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [[a],[b]],
     [[a],[b]],
     [[a],[b]]).
 test('merge_sequences(prefix)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [[a]],
     [[a],[b]],
     [[a],[b]]).
 test('merge_sequences(suffix)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [[x],[[[a],[b]],[c]]],
     [[y],[[[a],[b]],[c]]],
     [[[[x]],[[y]]],[[[a],[b]],[c]]]).
 test('merge_sequences(prefix+suffix_1)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [[a],[x],[[[a],[b]],[c]]],
     [[a],[y],[[[a],[b]],[c]]],
     [[a],[[[x]],[[y]]],[[[a],[b]],[c]]]).
 test('merge_sequences(prefix+suffix_2)') :-
-  event_graph:merge_sequences2([
+  esg:merge_sequences2([
     [a,     b,c,   z],
     [a,      d,    z]],
     [a,[[b,c],[d]],z]).
 test('merge_sequences(prefix+suffix_3)') :-
-  event_graph:merge_sequences(
+  esg:merge_sequences(
     [a,b,c],
     [a,  c],
     [a,b,c]).
@@ -132,19 +132,19 @@ test('esg_pop(nested2)') :-
        [[-a,-r],[+a,+r]]],[-b],[+b,+z]]],Es)).
 
 test('path_to_endpoint(-b)') :-
-  event_graph:path_to_endpoint(
+  esg:path_to_endpoint(
     [[-a,-z],[+a],[-b],[+b,+z]],
     -b,
     [[-a,-z],[+a]],
     [[-b],[+b,+z]]).
 test('path_to_endpoint(+b)') :-
-  event_graph:path_to_endpoint(
+  esg:path_to_endpoint(
     [[-a,-z],[+a],[-b],[+b,+z]],
     +b,
     [[-a,-z],[+a],[-b]],
     [[+b,+z]]).
 test('path_to_endpoint(+k,fail)',fail) :-
-  event_graph:path_to_endpoint(
+  esg:path_to_endpoint(
     [[-a,-z],[+a],[-b],[+b,+z]],
     +k,_,_).
 

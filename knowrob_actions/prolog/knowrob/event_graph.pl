@@ -1,33 +1,5 @@
-/*  esg.pl
 
-    Author:        Daniel Beßler
-    E-mail:        danielb@informatik.uni-bremen.de
-    WWW:           http://www.ease-crc.org
-    Copyright (C): 2018, University of Bremen
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-    As a special exception, if you link this library with other files,
-    compiled with a Free Software compiler, to produce an executable, this
-    library does not by itself cause the resulting executable to be covered
-    by the GNU General Public License. This exception does not however
-    invalidate any other reasons why the executable file might be covered by
-    the GNU General Public License.
-*/
-
-:- module(event_graph, [
+:- module(esg, [
      esg/4,
      esg_truncated/4,
      esg_events/2,
@@ -50,10 +22,7 @@ to another endpoint b if a < b holds. Any path from endpoint
 a to another endpoint b implies that a < b (transitivity).
 
 @author Daniel Beßler
-@license GPL
 */
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs')).
 
 :- dynamic esg_endpoint/3,       % sequencer id, endpoint id, endpoint term
            esg_endpoint_node/3,  % sequencer id, endpoint id, node id
@@ -579,14 +548,14 @@ esg_retract(ESG) :-
 %
 esg(Act,Events,Constraints,Sequence) :-
   esg_assert([Act|Events],Constraints,ESG),
-  esg_write_info(ESG),
+  %esg_write_info(ESG),
   esg_to_list(ESG,Sequence),
   esg_retract(ESG).
 
 esg_truncated(Act,Events,Constraints,[Sequence,PreESG,PostESG]) :-
   esg_assert([Act|Events],Constraints,ESG),
   esg_truncate(ESG,Act,PreESG,PostESG),
-  esg_write_info(ESG),
+  %esg_write_info(ESG),
   esg_to_list(ESG,Sequence),
   esg_retract(ESG).
 
@@ -620,14 +589,7 @@ esg_truncate(ESG,Evt,PreESG,PostESG) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Debugging
 
-% FIXME: not sure why this is needed. write should display simplified
-%        terms anyway. But it doesn't (always). What's the reason?
-write_concept(Concept) :-
-  rdf_has_prolog(Concept,rdfs:label,Label),!,
-  write(''''), write(Label), write('''').
-write_concept(Concept) :-
-  rdf_split_url(_,Name,Concept),!,
-  write(''''), write(Name), write('''').
+write_concept(Concept) :- write(Concept).
   
 endpoint_write(-(Iri)) :-
   write('-'), write_concept(Iri).

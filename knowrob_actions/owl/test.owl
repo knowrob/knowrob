@@ -406,7 +406,7 @@
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_sum"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task"/>
+        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Interface"/>
     </owl:NamedIndividual>
     
@@ -671,7 +671,7 @@
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_b"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task"/>
+        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
     </owl:NamedIndividual>
     
@@ -819,7 +819,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task"/>
+        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_S"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_P"/>
@@ -946,7 +946,7 @@
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_a"/>
         <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_b"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task"/>
+        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
     </owl:NamedIndividual>
     

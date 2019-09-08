@@ -830,7 +830,7 @@
         <EASE-WF:hasStep rdf:resource="http://knowrob.org/kb/pancake.owl#Mixing_0"/>
         <EASE-WF:hasStep rdf:resource="http://knowrob.org/kb/pancake.owl#Pouring_0"/>
         <EASE-WF:hasStep rdf:resource="http://knowrob.org/kb/pancake.owl#TurningOn_0"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/pancake.owl#MakingPancakes_0"/>
+        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/pancake.owl#MakingPancakes_0"/>
     </owl:NamedIndividual>
     
 

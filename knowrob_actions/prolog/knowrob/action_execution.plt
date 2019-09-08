@@ -5,12 +5,15 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_execution')).
-:- use_module(library('knowrob/rdfs')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/rosowl')).
 :- use_module(library('http/json')).
+
+:- use_module(library('knowrob/action_execution_pl')).
+:- use_module(library('knowrob/action_execution_ros')).
 
 :- owl_parse('package://knowrob_actions/owl/test.owl').
 
@@ -19,7 +22,14 @@
    'http://knowrob.org/kb/action-test.owl#', [keep(true)]).
 
 :- rdf_meta get_dict(r,+,r),
-            create_input_dict(t,t).
+            create_input_dict(t,t),
+            create_region_(t,r,r).
+
+create_region_(Data_pl,Data_type,Region) :-
+  kb_create(dul:'Region',Region),
+  kb_rdf_data(Data_atom,Data_type,Data_pl),
+  rdf_assert(Region,dul:hasRegionDataValue,
+             literal(type(Data_type,Data_atom))).
 
 create_input_dict(Dict,List) :-
   findall(X-Y, member([X,Y],List),Pairs),
@@ -29,102 +39,100 @@ create_input_dict(Dict,List) :-
 		 *	KB QUERYING		*
 		 *******************************/
 
-test(rdf_has_isExecutionPossible) :-
-  task_isExecutionPossible(acext:'rdf_has1_Task').
-
-test(rdf_has_isExecutedIn) :-
-  task_isExecutedIn(acext:'rdf_has1_Task',
-       knowrob:'KBQuerying',
-       acext:'rdf_has1_Execution'), !.
+test(rdf_has_execution_goal) :-
+  plan_execution_goal(
+    acext:'rdf_has1_Execution',
+    _,
+    knowrob:'KBQuerying'
+    ,_), !.
   
 %% all arguments unbound
 test('rdf_has(?,?,?)', [nondet]) :-
   create_input_dict(InputDict,[]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,[_|_]),
-  action_status(Action,knowrob:'ACTION_OK').
+  execute_plan(acext:'rdf_has1_Execution',InputDict,_,Situation),
+  kb_triple(Situation,dul:includesAction,Action),
+  action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 %% ObjectProperty, third argument unbound
 test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
-  owl_reified_relation(dul:'hasConstituent', HasConstituent),
+  kb_reification(dul:'hasConstituent', HasConstituent),
   create_input_dict(InputDict, [
       [acext:'rdf_has1_Task_S', acext:'Object1'],
       [acext:'rdf_has1_Task_P', HasConstituent]
   ]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,Os),
-  member(O1,Os), get_dict(acext:'rdf_has1_Task_O', O1, acext:'Object2'),
-  member(O2,Os), get_dict(acext:'rdf_has1_Task_O', O2, acext:'Object3'),
-  action_status(Action,knowrob:'ACTION_OK').
+  execute_plan(acext:'rdf_has1_Execution',InputDict,OutputDicts,Situation),
+  kb_triple(Situation,dul:includesAction,Action),
+  member(OD2,OutputDicts),
+  get_dict(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
+  member(OD3,OutputDicts), get_dict(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
+  action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 %% DataProperty, third argument unbound
-test('rdf_has(obj1,hasNameString,?)') :-
-  owl_reified_relation(ease:'hasNameString', HasNameString),
+test('rdf_has(obj1,hasNameString,?)', [nondet]) :-
+  kb_reification(ease:'hasNameString', HasNameString),
   create_input_dict(InputDict, [
       [acext:'rdf_has1_Task_S',acext:'Object1'],
       [acext:'rdf_has1_Task_P',HasNameString]
   ]),
   % execute again
-  execute_task(acext:'rdf_has1_Task',InputDict,Action,[OutputDict|_]),
+  execute_plan(acext:'rdf_has1_Execution',InputDict,[OutputDict|_],Situation),
+  kb_triple(Situation,dul:includesAction,Action),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
   get_dict(acext:'rdf_has1_Task_O', OutputDict, Region),
-  rdf_has_prolog(Region, dul:hasRegionDataValue, 'obj1'),
-  action_status(Action,knowrob:'ACTION_OK').
-
-test('current_object_pose(obj1,?)') :-
-  create_input_dict(InputDict, [
-      [acext:'current_object_pose_Task_O',acext:'Object1']
-  ]),
-  % execute
-  execute_task(acext:'current_object_pose_Task',InputDict,Action,[OutputDict]),
-  get_dict(acext:'current_object_pose_Task_P', OutputDict, Transform),
-  transform_data(Transform, ([0.004,0.003,0.085], [0.0,0.0,0.0,1.0])),
-  action_status(Action,knowrob:'ACTION_OK').
+  kb_triple(Region, dul:hasRegionDataValue, 'obj1'),
+  action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 		 /*******************************
 		 *	ROS QUERYING		*
 		 *******************************/
   
-test('add_two_ints(POSSIBLE)') :-
-  task_isExecutedIn(acext:'add_two_ints_Task',ros:'ServiceQuerying',_),!.
+test(add_two_ints_execution_goal) :-
+  plan_execution_goal(
+    acext:'add_two_ints_Execution',
+    _,
+    ros:'ServiceInvokation'
+    ,_), !.
 
 test('add_two_ints(CREATE)') :-
-  owl_create_atomic_region(xsd:long, 2, Region_a),
-  owl_create_atomic_region(xsd:long, 4, Region_b),
+  create_region_(2, xsd:long, Region_a),
+  create_region_(4, xsd:long, Region_b),
   create_input_dict(InputDict, [
       [acext:'add_two_ints_Task_a',Region_a],
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  action_execution:create_action_symbol(
-      ros:'ServiceQuerying',
+  knowrob_action_execution:plan_execution_create(
+      ros:'ServiceInvokation',
       acext:'add_two_ints_Task',
       acext:'add_two_ints_Execution',
-      InputDict,Action),
-  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
-  rdf_has(Action, dul:hasRegion, Region_a),
-  rdf_has(Action, dul:hasRegion, Region_b).
+      InputDict,Action,_),
+  kb_triple(Action, dul:executesTask, acext:'add_two_ints_Task'),
+  kb_triple(Action, dul:hasRegion, Region_a),
+  kb_triple(Action, dul:hasRegion, Region_b).
 
 test('add_two_ints(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
-  owl_create_atomic_region(xsd:long, 2, Region_a),
-  owl_create_atomic_region(xsd:long, 4, Region_b),
+  once(kb_triple(Action, dul:executesTask, acext:'add_two_ints_Task')),
+  create_region_(2, xsd:long, Region_a),
+  create_region_(4, xsd:long, Region_b),
   create_input_dict(InputDict, [
       [acext:'add_two_ints_Task_a',Region_a],
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
-  action_execution:action_bindings(acext:'add_two_ints_Execution',ActionDict),
+  knowrob_action_execution:action_bindings(acext:'add_two_ints_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'add_two_ints_RequestType', Request),
-  rdf_has(Action, dul:hasParticipant, Request),
+  kb_triple(Action, dul:hasParticipant, Request),
   %%%
   once((
-    rdf_has(Request, dul:hasPart, Slot_a),
-    rdf_has(Slot_a, dul:realizes, Slot_a_type),
-    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
-    rdf_has(Slot_a, dul:hasRegion, Region_a),
-    rdf_has_prolog(Region_a, dul:hasRegionDataValue, 2)
+    kb_triple(Request, dul:hasPart, Slot_a),
+    kb_triple(Slot_a, dul:realizes, Slot_a_type),
+    kb_triple(Slot_a_type, ros:hasSlotName, a),
+    kb_triple(Slot_a, dul:hasRegion, Region_a),
+    % FIXME: warning here. Might be due to owl_same_as stripping the type!
+    kb_triple(Region_a, dul:hasRegionDataValue, 2)
   )),
   %%%%
   ros_request_encode(Request,Request_json),
@@ -133,53 +141,54 @@ test('add_two_ints(ENCODE)') :-
 test('add_two_ints(DECODE)') :-
   Response_json='{"sum": 5}',
   %%%%
-  rdf_has(Action, dul:executesTask, acext:'add_two_ints_Task'),
+  once(kb_triple(Action, dul:executesTask, acext:'add_two_ints_Task')),
   %%%%
-  rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,acext:'add_two_ints_ResponseType'),
-  rdf_assert(Action,ros:hasResponse,Response),
+  kb_create(ros:'Message',Response),
+  kb_assert(Response,dul:realizes,acext:'add_two_ints_ResponseType'),
+  kb_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
   %%%
   once((
-    rdf_has(Response, dul:hasPart, Slot_sum),
-    rdf_has(Slot_sum, dul:realizes, Slot_sum_type),
-    rdf_has_prolog(Slot_sum_type, ros:hasSlotName, sum),
-    rdf_has(Slot_sum, dul:hasRegion, Region_sum),
-    rdf_has_prolog(Region_sum, dul:hasRegionDataValue, 5)
+    kb_triple(Response, dul:hasPart, Slot_sum),
+    kb_triple(Slot_sum, dul:realizes, Slot_sum_type),
+    kb_triple(Slot_sum_type, ros:hasSlotName, sum),
+    kb_triple(Slot_sum, dul:hasRegion, Region_sum),
+    % FIXME: warning here. Might be due to owl_same_as stripping the type!
+    kb_triple(Region_sum, dul:hasRegionDataValue, 5)
   )).
 
 test('sum_array(CREATE)') :-
-  owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
+  create_region_([4.0, 5.0, 2.0], ease:array_double, Region_a),
   create_input_dict(InputDict, [
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  action_execution:create_action_symbol(
-      ros:'ServiceQuerying',
+  knowrob_action_execution:plan_execution_create(
+      ros:'ServiceInvokation',
       acext:'sum_array_Task',
       acext:'sum_array_Execution',
-      InputDict,Action),
-  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
-  rdf_has(Action, dul:hasRegion, Region_a).
+      InputDict,Action,_),
+  kb_triple(Action, dul:executesTask, acext:'sum_array_Task'),
+  kb_triple(Action, dul:hasRegion, Region_a).
 
 test('sum_array(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
-  owl_create_atomic_region(knowrob:array_double, [4.0, 5.0, 2.0], Region_a),
+  once(kb_triple(Action, dul:executesTask, acext:'sum_array_Task')),
+  create_region_([4.0, 5.0, 2.0], ease:array_double, Region_a),
   create_input_dict(InputDict, [
       [acext:'sum_array_Task_a',Region_a]
   ]),
-  action_execution:action_bindings(acext:'sum_array_Execution',ActionDict),
+  knowrob_action_execution:action_bindings(acext:'sum_array_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'sum_array_RequestType', Request),
-  rdf_has(Action, dul:hasParticipant, Request),
+  kb_triple(Action, dul:hasParticipant, Request),
   %%%
   once((
-    rdf_has(Request, dul:hasPart, Slot_a),
-    rdf_has(Slot_a, dul:realizes, Slot_a_type),
-    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
-    rdf_has(Slot_a, dul:hasRegion, Region_a),
-    rdf_has_prolog(Region_a, dul:hasRegionDataValue, [4.0, 5.0, 2.0])
+    kb_triple(Request, dul:hasPart, Slot_a),
+    kb_triple(Slot_a, dul:realizes, Slot_a_type),
+    kb_triple(Slot_a_type, ros:hasSlotName, a),
+    kb_triple(Slot_a, dul:hasRegion, Region_a),
+    kb_triple(Region_a, dul:hasRegionDataValue, [4.0, 5.0, 2.0])
   )),
   %%%%
   ros_request_encode(Request,Request_json),
@@ -188,20 +197,20 @@ test('sum_array(ENCODE)') :-
 test('sum_array(DECODE)') :-
   Response_json='{"b": [9.0, 7.0 ]}',
   %%%%
-  rdf_has(Action, dul:executesTask, acext:'sum_array_Task'),
+  once(kb_triple(Action, dul:executesTask, acext:'sum_array_Task')),
   %%%%
-  rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,acext:'sum_array_ResponseType'),
-  rdf_assert(Action,ros:hasResponse,Response),
+  kb_create(ros:'Message',Response),
+  kb_assert(Response,dul:realizes,acext:'sum_array_ResponseType'),
+  kb_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
   %%%
   once((
-    rdf_has(Response, dul:hasPart, Slot_sum),
-    rdf_has(Slot_sum, dul:realizes, Slot_sum_type),
-    rdf_has_prolog(Slot_sum_type, ros:hasSlotName, b),
-    rdf_has(Slot_sum, dul:hasRegion, Region_sum),
-    rdf_has_prolog(Region_sum, dul:hasRegionDataValue, [9.0, 7.0])
+    kb_triple(Response, dul:hasPart, Slot_sum),
+    kb_triple(Slot_sum, dul:realizes, Slot_sum_type),
+    kb_triple(Slot_sum_type, ros:hasSlotName, b),
+    kb_triple(Slot_sum, dul:hasRegion, Region_sum),
+    kb_triple(Region_sum, dul:hasRegionDataValue, [9.0, 7.0])
   )).
 
 test_pose_in([
@@ -232,11 +241,11 @@ test_pose_out(_{
 }).
 
 pose_test_input(Dict) :-
-  rdf_instance_from_class(dul:'Region',Region_a),
-  rdf_assert(Region_a,knowrob:translation,
-        literal(type(knowrob:array_double,'3.2 0.1 0.4'))),
-  rdf_assert(Region_a,knowrob:quaternion,
-        literal(type(knowrob:array_double,'0.8 0.1 0.0 0.4'))),
+  kb_create(dul:'Region',Region_a),
+  kb_assert(Region_a,knowrob:translation,
+        literal(type(ease:array_double,'3.2 0.1 0.4'))),
+  kb_assert(Region_a,knowrob:quaternion,
+        literal(type(ease:array_double,'0.8 0.1 0.0 0.4'))),
   create_input_dict(Dict, [
       [acext:'pose_test_Task_a',Region_a]
   ]).
@@ -244,29 +253,29 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  action_execution:create_action_symbol(
-      ros:'ServiceQuerying',
+  knowrob_action_execution:plan_execution_create(
+      ros:'ServiceInvokation',
       acext:'pose_test_Task',
       acext:'pose_test_Execution',
-      InputDict,Action),
-  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
-  rdf_has(Action, dul:hasRegion, _).
+      InputDict,Action,_),
+  once( kb_triple(Action, dul:executesTask, acext:'pose_test_Task') ),
+  once( kb_triple(Action, dul:hasRegion, _) ).
 
 test('pose_test(ENCODE)') :-
-  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
+  once(kb_triple(Action, dul:executesTask, acext:'pose_test_Task')),
   pose_test_input(InputDict),
-  action_execution:action_bindings(acext:'pose_test_Execution',ActionDict),
+  knowrob_action_execution:action_bindings(acext:'pose_test_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'pose_test_RequestType', Request),
-  rdf_has(Action, dul:hasParticipant, Request),
+  kb_triple(Action, dul:hasParticipant, Request),
   %%%
   once((
-    rdf_has(Request, dul:hasPart, Slot_a),
-    rdf_has(Slot_a, dul:realizes, Slot_a_type),
-    rdf_has_prolog(Slot_a_type, ros:hasSlotName, a),
-    rdf_has(Slot_a, dul:hasRegion, Region_a),
-    rdf_has_prolog(Region_a, knowrob:translation, [3.2, 0.1, 0.4]),
-    rdf_has_prolog(Region_a, knowrob:quaternion, [0.8, 0.1, 0.0, 0.4])
+    kb_triple(Request, dul:hasPart, Slot_a),
+    kb_triple(Slot_a, dul:realizes, Slot_a_type),
+    kb_triple(Slot_a_type, ros:hasSlotName, a),
+    kb_triple(Slot_a, dul:hasRegion, Region_a),
+    kb_triple(Region_a, knowrob:translation, [3.2, 0.1, 0.4]),
+    kb_triple(Region_a, knowrob:quaternion, [0.8, 0.1, 0.0, 0.4])
   )),
   %%%%
   ros_request_encode(Request,Request_json),
@@ -281,21 +290,22 @@ test('pose_test(DECODE)') :-
     json_write_dict(current_output, _{b:TestPose})
   ),
   %%%%
-  rdf_has(Action, dul:executesTask, acext:'pose_test_Task'),
+  once(kb_triple(Action, dul:executesTask, acext:'pose_test_Task')),
   %%%%
-  rdf_instance_from_class(ros:'Message',Response),
-  rdf_assert(Response,dul:realizes,acext:'pose_test_ResponseType'),
-  rdf_assert(Action,ros:hasResponse,Response),
+  kb_create(ros:'Message',Response),
+  kb_assert(Response,dul:realizes,acext:'pose_test_ResponseType'),
+  kb_assert(Action,ros:hasResponse,Response),
   %%%%
   ros_response_decode(Response_json, Response),
   %%%
   once((
-    rdf_has(Response, dul:hasPart, Slot_pose),
-    rdf_has(Slot_pose, dul:realizes, Slot_pose_type),
-    rdf_has_prolog(Slot_pose_type, ros:hasSlotName, b),
-    rdf_has(Slot_pose, dul:hasRegion, Region_pose),
-    rdf_has_prolog(Region_pose, knowrob:translation, [3.2, 0.1, 0.4]),
-    rdf_has_prolog(Region_pose, knowrob:quaternion, [0.8, 0.1, 0.0, 0.4])
+    kb_triple(Response, dul:hasPart, Slot_pose),
+    kb_triple(Slot_pose, dul:realizes, Slot_pose_type),
+    kb_triple(Slot_pose_type, ros:hasSlotName, b),
+    kb_triple(Slot_pose, dul:hasRegion, [map,_,
+        [3.2, 0.1, 0.4],
+        [0.8, 0.1, 0.0, 0.4]
+    ])
   )).
 
 % TODO: test message fields

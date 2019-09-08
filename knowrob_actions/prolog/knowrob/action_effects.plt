@@ -23,12 +23,13 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
-:- use_module(library('knowrob/triple_memory')).
-:- use_module(library('knowrob/memory')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/swrl')).
+:- use_module(library('swrl')).
+:- use_module(library('swrl_parser')).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
@@ -51,20 +52,37 @@ yellow_on_table :- \+ holds( blocksworld:ontop(blocksworld:'BlockYellow_0', _) )
 red_on_blue     :- holds( blocksworld:ontop(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
 red_on_table    :- \+ holds( blocksworld:ontop(blocksworld:'BlockRed_0', _) ), !.
 
+:- rdf_meta create_action_for_task(r,r).
+
+create_action_for_task(Tsk,Act) :-
+  current_time(T0),
+  action_create(dul:'Action',Act,belief_state),
+  action_set_task(Act,Tsk),
+  event_set_begin_time(Act,T0),
+  event_set_end_time(Act,T0),
+  forall(
+  ( kb_triple(Tsk, dul:isTaskOf, Role),
+    kb_triple(Role, dul:classifies, Obj) ),
+    action_add_filler(Act,Obj)
+  ).
+  
+  
 test('Unstack_Y') :-
-  mem_drop,
   yellow_on_blue,
-  action_effects_apply(blocksworld:'Unstack_Y'), % FIXME Unstack_Y is not an action, but a task
+  create_action_for_task(blocksworld:'Unstack_Y',Act),
+  action_effects_apply(Act,blocksworld:'Unstack_Y'),
   yellow_on_table.
 
 test('Stack_RB') :-
   red_on_table,
-  action_effects_apply(blocksworld:'Stack_RB'), % FIXME Stack_RB is not an action, but a task
+  create_action_for_task(blocksworld:'Stack_RB',Act),
+  action_effects_apply(Act,blocksworld:'Stack_RB'),
   red_on_blue.
 
 test('Stack_YR') :-
   yellow_on_table,
-  action_effects_apply(blocksworld:'Stack_YR'), % FIXME Stack_YR is not an action, but a task
+  create_action_for_task(blocksworld:'Stack_YR',Act),
+  action_effects_apply(Act,blocksworld:'Stack_YR'),
   yellow_on_red.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,11 +99,12 @@ test(cracking_effect_destroyed_egg, [nondet]) :-
 
 test(pancake_making_turn_on_maker) :-
   %
+  %create_action_for_task(blocksworld:'Stack_RB',Act),
   action_effects_apply(pancake:'TurningOn_Act_0'),
   % TODO: test that the device state has changed
   % test that a heating process was started
-  rdf_has(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
-  rdf_has(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
+  kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
+  kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
   
 %test(pancake_making_crack_egg) :-
   %% create some egg yolk and egg shells

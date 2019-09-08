@@ -22,6 +22,7 @@
 
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/task_planning')).
 
@@ -31,7 +32,7 @@
 :- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 
 test(plan_pancake_events, [nondet]) :-
-  plan_subevents(pancake:'MakingPancakes', SubEvents),
+  workflow_sequence(pancake:'MakingPancakes_0_WF', SubEvents),
   nth0(0, SubEvents, 'http://knowrob.org/kb/pancake.owl#Cracking_0'),
   nth0(1, SubEvents, 'http://knowrob.org/kb/pancake.owl#Mixing_0'),
   nth0(2, SubEvents, 'http://knowrob.org/kb/pancake.owl#TurningOn_0'),
@@ -39,11 +40,10 @@ test(plan_pancake_events, [nondet]) :-
   nth0(4, SubEvents, 'http://knowrob.org/kb/pancake.owl#FlippingAPancake_0').
 
 test(plan_pancake_objects, [nondet]) :-
-  plan_objects(pancake:'MakingPancakes', Objs),
-  member('http://knowrob.org/kb/pancake.owl#Egg', Objs),
-  member('http://knowrob.org/kb/pancake.owl#Milk', Objs),
-  member('http://knowrob.org/kb/pancake.owl#WheatFlour', Objs),
-  member('http://knowrob.org/kb/pancake.owl#EggYolk', Objs),
-  member('http://knowrob.org/kb/pancake.owl#Dough', Objs).
+  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Egg'),
+  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Milk'),
+  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'WheatFlour'),
+  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'EggYolk'),
+  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Dough').
 
 :- end_tests(task_planning).
