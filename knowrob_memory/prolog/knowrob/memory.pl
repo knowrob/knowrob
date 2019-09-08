@@ -34,6 +34,9 @@ mem_episode_start(Episode) :-
   mem_episode_start(Episode,[['tf',[]]]).
 
 mem_episode_start(Episode,Topics) :-
+  mem_drop,
+  mem_init,
+  %
   \+ current_episode(_),
   current_time(Stamp),
   %% 
@@ -41,8 +44,6 @@ mem_episode_start(Episode,Topics) :-
   mem_event_begin(Episode,Stamp),
   asserta(current_episode(Episode)),
   %%
-  mem_drop,
-  mem_init,
   mem_create_default_index,
   mem_create_index(Topics),
   ros_logger_start(Topics).
