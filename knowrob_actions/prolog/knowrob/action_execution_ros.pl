@@ -23,10 +23,6 @@ knowrob_action_execution:action_registry(
   knowrob_action_execution_ros:ros_service_query
 ).
 
-%%
-is_status_error(Status) :-
-  rdfs_individual_of(X,ros:'Failure'),!. % TODO
-
 %% ros_service_query(PlanExecution,BindingDict,InputDict,OutputPairs) is semidet.
 %
 %
@@ -66,8 +62,10 @@ ros_service_query(PlanExecution,BindingDict,InputDict,OutputPairs) :-
     ros_error(Error),
     throw(action_failure(Error))
   ),
-  (( get_query_status(Response,Status), is_status_error(Status) ) ->
-     throw(action_failure(Status)) ; true ),
+  % TODO: special handling for message status field in case
+  %        the field value indicates an error.
+  %(( get_query_status(Response,Status), is_status_error(Status) ) ->
+  %   throw(action_failure(Status)) ; true ),
   %%%%%%%%%
   %%%%% Assign roles of response slots
   findall(R-X, (
