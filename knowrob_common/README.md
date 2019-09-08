@@ -4,6 +4,21 @@ knowrob_common
 This package provides the core ontologies and reasoning rules
 of the KnowRob knowledge processing system for robots.
 
+### Representation
+
+KnowRob equips robots with a terminology.
+A common meaning of terms is substantial when information
+is to be transferred from one robot to another,
+or within the control system of a single robot.
+This terminology is represented as OWL ontology in KnowRob.
+
+KnowRob builds ontop of the DOLCE+DnS Ultralite (DUL) foundational ontology
+which is an ontology with a cognitive bias trying to capture categories
+underlying natural language.
+The DUL ontology is extended by categories underlying everyday activities (ease_ontology)
+that are interdisciplinary applicable, and not specific to robotic agents.
+KnowRob extends these ontologies by categories underlying robot control.
+
 ### Reasoning
 
 KnowRob uses the Web Ontology Language (OWL) in combination with
@@ -20,7 +35,7 @@ and owl_has/3 checks if a relation can be deduced using OWL inference rules.
 Some OWL2 features such as property chains are also supported,
 but the reasoner is not OWL2 complete.
 
-RDF triples may concretely by represented in the RDF triple store of SWI Prolog.
+RDF triples may concretely be represented in the RDF triple store of SWI Prolog.
 But KnowRob supports multiple sources for triples including
 computational methods that ground relations in the data structures of the robot's
 control program, or in its senses.
@@ -46,7 +61,7 @@ specified is used as parameter for the triple store
 In case of the default RDF triple store of SWI Prolog,
 all triples are assumed to hold forever.
 However, a dedicated *temporalized* triple store can be used
-to represent triples that change over time.
+to represent triples that only hold limited time.
 The time value specified in the query is used as parameter
 for the triple store in that case.
 knowrob_mem implements such a temporalized triple store.
@@ -54,8 +69,4 @@ The main interface to access temporalized triples is the
 holds/2 predicate:
 
     holds(knowrob:volumeOfObject(Obj, 15.0), 25.0)
-
-### Ontologies
-
-![Upper ontology](img/ontology.png)
 
