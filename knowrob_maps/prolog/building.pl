@@ -39,10 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
      map_object_in_level/2,        % true if object is inside of level bounding box
      map_object_in_level/3,
      map_object_in_room/2,         % true if object is inside of room bounding box
-     map_object_in_room/3,
-     map_object_most_similar/2,    % find (most) similar object
-     map_object_similar/2,
-     map_object_similar/3
+     map_object_in_room/3
      ]).
 /** <module> Computables related to a semantic map.
 
@@ -52,12 +49,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/computable')).
-
-:- owl_parser:owl_parse('package://knowrob_maps/owl/comp_semantic_map.owl', false, false, true).
-
-:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(comp_sem_map, 'http://knowrob.org/kb/comp_semantic_map.owl#', [keep(true)]).
+:- use_module(library('knowrob/knowrob')).
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
@@ -67,11 +59,10 @@ POSSIBILITY OF SUCH DAMAGE.
   building_has_rooms(r,-),
   building_path_cost(r,r,-),
   building_best_path_cost(r,t,-),
-  map_object_in_room(r, r),
-  map_object_in_level(r, r),
-  map_object_most_similar(r,r),
-  map_object_similar(r,r),
-  map_object_similar(r,r,+).
+  map_object_in_room(r,r),
+  map_object_in_level(r,r),
+  map_object_in_room(r,r,t),
+  map_object_in_level(r,r,t).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Spatial layout of maps
@@ -84,8 +75,8 @@ POSSIBILITY OF SUCH DAMAGE.
 % @param N The number of levels
 %
 building_number_of_levels(Map, N):-
-  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
-  setof(L, rdf_triple(knowrob:'hasLevels', Map, L), Ls),
+  kb_type_of(Map, knowrob:'Building'),
+  setof(L, kb_triple(Map, knowrob:'hasLevels', L), Ls),
   length(Ls, N).
 
 %% building_number_of_stories(?Map:iri, ?N:int) is semidet
@@ -96,9 +87,9 @@ building_number_of_levels(Map, N):-
 % @param N The number of stories
 %
 building_number_of_stories(Map, N) :-
-  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
-  setof(L, (rdf_triple(knowrob:'hasLevels', Map, L),
-            owl_has(L, rdf:type, knowrob:'AboveGroundLevelInAConstruction')), Ls),
+  kb_type_of(Map, knowrob:'Building'),
+  setof(L, (kb_triple(Map, knowrob:'hasLevels', L),
+            kb_type_of(L, knowrob:'AboveGroundLevelInAConstruction')), Ls),
   length(Ls, N).
 
 %% building_has_rooms(+Map:iri, ?Room:iri) is semidet
@@ -109,16 +100,15 @@ building_number_of_stories(Map, N) :-
 % @param Room The room in Map
 %
 building_has_rooms(Map, Room) :-
-  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
+  kb_type_of(Map, knowrob:'Building'),
   once((
-    rdf_triple(knowrob:'hasLevels', Map, Level),
-    rdf_triple(knowrob:'hasRooms', Level, Room))).
+    kb_triple(Map, knowrob:'hasLevels', Level),
+    kb_triple(Level, knowrob:'hasRooms', Room)
+  )).
 
 building_floor_number(Floor, Number):-
-  rdfs_individual_of(Floor, knowrob:'LevelOfAConstruction'),
-  rdf_triple(knowrob:floorNumber, Floor, NA),
-  strip_literal_type(NA, AtomA),
-  atom_number(AtomA, Number).
+  kb_type_of(Floor, knowrob:'LevelOfAConstruction'),
+  kb_triple(Floor, knowrob:floorNumber, Number).
 
 %% building_path_cost(+From:iri, +To:iri, -Cost:float) is semidet
 %
@@ -133,7 +123,7 @@ building_path_cost(From, To, Cost):-
   intra_level_cost(From, To, Cost).
 
 building_path_cost(From, To, Cost):-
-  setof(E, owl_individual_of(E,knowrob:'Elevator'), Es),
+  setof(E, kb_type_of(E,knowrob:'Elevator'), Es),
   member(E1, Es), map_objects_same_level(From,E1),
   member(E2, Es), map_objects_same_level(To,E2),
   building_path_cost(From,E1,C1),
@@ -181,14 +171,12 @@ inter_level_cost(A,B,Cost) :-
 % @param Room Instance of knowrob:RoomInAConstruction
 %
 map_object_in_room(Object, Room):-
-  rdfs_individual_of(Room, knowrob:'RoomInAConstruction'),
-  rdfs_individual_of(Object, knowrob:'HumanScaleObject'),
-  holds(Object, knowrob:'in-ContGeneric', Room).
+  kb_type_of(Room, knowrob:'RoomInAConstruction'),
+  in_ContGeneric(Object, Room).
 
-map_object_in_room(Object, Room, Interval):-
-  rdfs_individual_of(Room, knowrob:'RoomInAConstruction'),
-  rdfs_individual_of(Object, knowrob:'HumanScaleObject'),
-  holds(Object, knowrob:'in-ContGeneric', Room, Interval).
+map_object_in_room(Object, Room, Time):-
+  kb_type_of(Room, knowrob:'RoomInAConstruction'),
+  in_ContGeneric(Object, Room, Time).
 
 %% map_object_in_level(?Object:iri, ?Level:iri) is nondet
 %
@@ -198,70 +186,12 @@ map_object_in_room(Object, Room, Interval):-
 % @param Level Instance of knowrob:LevelOfAConstruction
 %
 map_object_in_level(Place, Level):-
-  rdfs_individual_of(Level, knowrob:'LevelOfAConstruction'),
-  rdfs_individual_of(Place, knowrob:'SpatialThing-Localized'),
-  holds(Object, knowrob:'in-ContGeneric', Level).
+  kb_type_of(Level, knowrob:'LevelOfAConstruction'),
+  in_ContGeneric(Place, Level).
 
-map_object_in_level(Place, Level):-
-  rdfs_individual_of(Level, knowrob:'LevelOfAConstruction'),
-  rdfs_individual_of(Place, knowrob:'SpatialThing-Localized'),
-  holds(Object, knowrob:'in-ContGeneric', Level, Interval).
+map_object_in_level(Place, Level, Time):-
+  kb_type_of(Level, knowrob:'LevelOfAConstruction'),
+  in_ContGeneric(Place, Level, Time).
 
 map_objects_same_room(A, B)  :- map_object_in_room(A,R),  map_object_in_room(B,R).
 map_objects_same_level(A, B) :- map_object_in_level(A,L), map_object_in_level(B,L).
-
-%% map_object_most_similar(+Object:iri, -MostSimilarObject:iri) is semidet
-%
-% True if MostSimilarObject is the most similar semantic map object
-% compared to Object.
-%
-% @param Object Instance of knowrob:HumanScaleObject
-% @param MostSimilarObject Instance of knowrob:HumanScaleObject
-%
-map_object_most_similar(Object, MostSimilarObject) :-
-  map_object_similar(Object, [_,SimilarObject], 0), !.
-
-%% map_object_similar(+Object:iri, -SimilarObject:iri) is semidet
-%
-% True if SimilarObject is a similar to Object.
-%
-% @param Object Instance of knowrob:HumanScaleObject
-% @param SimilarObject Instance of knowrob:HumanScaleObject
-%
-map_object_similar(Object, SimilarObject) :-
-  map_object_similar(Object, [_,SimilarObject], 1).
-
-%% map_object_similar(+Object:iri, -Similar:term, +Threshold:float) is semidet
-%
-% True if Similar is a list [Similarity,SimilarObject] and Similarity is
-% the similarity estimate between Object and SimilarObject.
-% Similarity must be higher then Threshold.
-% This predicate will yield the most similar objects first.
-%
-% @param Object Instance of knowrob:HumanScaleObject
-% @param SimilarObject Instance of knowrob:HumanScaleObject
-%
-map_object_similar(Object, [Similarity,SimilarObject], Threshold) :-
-  map_root_object(Map, Object),
-  map_object_type(Object, Type), !,
-  % for each similar type
-  map_object_wup_similarity(Type, Threshold, SimilarTypes),
-  member([Similarity,SimilarType], SimilarTypes),
-  rdfs_individual_of(SimilarObject, SimilarType),
-  map_root_object(Map, SimilarObject).
-
-%% map_object_wup_similarity
-map_object_wup_similarity(ObjT, Threshold, DecreasingSimTypes) :-
-  % find existing types
-  findall(T, (
-    map_root_object(_, O),
-    map_object_type(O, T)), TypesL),
-  list_to_set(TypesL, TypesS),
-  % compute similarity
-  findall([Sim,T], (
-    member(T,TypesS),
-    rdf_wup_similarity(ObjT, T, Sim),
-    Sim > Threshold
-  ), SimTypes),
-  sort(SimTypes, IncreasingSimTypes),
-  reverse(IncreasingSimTypes, DecreasingSimTypes).

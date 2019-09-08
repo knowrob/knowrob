@@ -25,11 +25,9 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(semantic_map_utils,
+:- module(semmap,
     [
       map_instance/1,
-      map_name/1,
-      map_read_all/2,
       map_object_info/1,
       map_object_type/2,
       map_root_objects/2,
@@ -38,8 +36,9 @@
       map_child_object/2,
       map_child_objects/2,
       map_object_label/2,
-      map_connection_type/3,
-      map_joint_name/3
+      map_object_most_similar/2,
+      map_object_similar/2,
+      map_object_similar/3
     ]).
 /** <module> Predicates for reading elements of a semantic map
 
@@ -50,16 +49,12 @@
 */
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/perception')).
+:- use_module(library('knowrob/wup_similarity')).
 
 :-  rdf_meta
       map_instance(r),
-      map_name(r),
-      map_read_all(-,r),
       map_root_object(r,r),
       map_root_objects(r,?),
       map_child_object(r,r),
@@ -68,8 +63,9 @@
       map_object_type(r,r),
       map_object_dimensions(r,?,?,?),
       map_object_label(r,?),
-      map_connection_type(r,r,+),
-      map_joint_name(r,r,r).
+      map_object_most_similar(r,r),
+      map_object_similar(r,r),
+      map_object_similar(r,r,+).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Map root and child objects
@@ -94,7 +90,7 @@ map_root_objects(Map, Objs) :-
 % @param Objs Instance of a root object in the map
 % 
 map_root_object(Map, Obj) :-
-    owl_has(Obj, knowrob:describedInMap, Map).
+    kb_triple(Obj, knowrob:describedInMap, Map).
     
 %% map_child_objects(+Parent, -Children) is nondet.
 %
@@ -115,8 +111,7 @@ map_child_objects(Parent, Children) :-
 % 
 map_child_object(Parent, Child) :-
     rdf_reachable(Parent, dul:hasPart, Child),
-    Parent \= Child,
-    once(owl_individual_of(Child, dul:'PhysicalObject')).
+    Parent \= Child.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read object properties
@@ -131,7 +126,6 @@ map_child_object(Parent, Child) :-
 % @param Inst  Object instance
 % 
 map_object_info([Inst, Type, Pose, [D, W, H]]) :-
-    owl_individual_of(Inst, dul:'PhysicalObject'),
     map_object_type(Inst, Type),
     current_object_pose(Inst, Pose),
     map_object_dimensions(Inst, D, W, H).
@@ -144,8 +138,7 @@ map_object_info([Inst, Type, Pose, [D, W, H]]) :-
 % @param Type  Class of Obj
 %  
 map_object_type(Obj, Type) :-
-    holds(Obj, rdf:type, Type),
-    once(owl_subclass_of(Type, dul:'PhysicalObject')).
+    kb_type_of(Obj, Type).
 
 %% map_object_label(?Obj, ?Label) is nondet.
 %
@@ -155,7 +148,7 @@ map_object_type(Obj, Type) :-
 % @param Label  Value of the rdfs:label annotation
 %  
 map_object_label(Obj, Label) :-
-    owl_has(Obj, rdfs:label, literal(type(_, Label)) ).
+    kb_triple(Obj, rdfs:label, Label).
 
 %% map_object_dimensions(Obj, D, W, H)is nondet.
 %
@@ -170,45 +163,6 @@ map_object_dimensions(Obj, D, W, H) :-
     object_dimensions(Obj, D, W, H).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Read joints and connections between object parts
-
-
-%% map_connection_type( Parent, Child, ConnectionType ) is nondet.
-%
-% Determine the type of connection between Parent and Child, e.g. the type of joint.
-%
-% @param Parent   Object instance
-% @param Child    Object instance
-% @param ConnectionType Type of the connecting element, e.g. 'HingedJoint', 'PrismaticJoint', or 'Fixed'
-% 
-% @tbd The computation does not seem correct, but I am not sure what these predicates
-%       are to do after all, so I let them like this for now (MT).
-% 
-map_connection_type( Parent, Child, 'HingedJoint' ) :-
-    holds( Parent, dul:'hasPart', Child ),
-    holds( Child, dul:'hasPart', Joint ),
-    owl_individual_of(Joint, knowrob:'HingedJoint'), !.
-
-map_connection_type( Parent, Parent, 'PrismaticJoint' ) :-
-    holds( Parent, rdf:type, knowrob:'Drawer' ), !.
-
-map_connection_type( Parent, Child, 'Fixed' ) :-
-    holds( Parent, dul:'hasPart', Child ).
-
-%% map_joint_name(Parent, Child, Name) is nondet.
-%
-% Read the ID Name of a joint connecting Parent and Child
-%
-% @param Object instance
-% @param Object instance
-% @param Instance of a Connection-Physical
-% 
-map_joint_name( Parent, Child, Name ) :-
-    holds( Parent, dul:'hasPart', Child ),
-    holds( Child, dul:'hasPart', Name ),
-    owl_individual_of( Name, knowrob:'Connection-Physical' ).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read map instance and content
 
 %% map_instance(Map) is nondet.
@@ -218,46 +172,61 @@ map_joint_name( Parent, Child, Name ) :-
 % @param Map  Instance of a knowrob:SemanticEnvironmentMap
 % 
 map_instance(Map) :-
-    rdf_has(Map, rdf:type, knowrob:'SemanticEnvironmentMap').
+    kb_type_of(Map, knowrob:'SemanticEnvironmentMap').
 
-%% map_name(Map) is nondet.
+%% map_object_most_similar(+Object:iri, -MostSimilarObject:iri) is semidet
 %
-% Read the 'map_name' out of the map,
-% 
-% @param Map  Instance of a knowrob:SemanticEnvironmentMap
-% 
-map_name(Map) :-
-    rdf_has(Map,rdf:type,knowrob:'SemanticEnvironmentMap').
-
-%% map_read_all(-MapElems, ?MapInstance) is nondet.
+% True if MostSimilarObject is the most similar semantic map object
+% compared to Object.
 %
-% Read all objects in a map into a list of lists of form [Element, Parent,
-% PoseList].
-% 
-% @param ObjList  List of all objects
-% @param Map      Instance of a knowrob:SemanticEnvironmentMap
-% 
-map_read_all([R0|EntityList], MapInstance) :-
-    map_read_entity(MapInstance, 'null', R0),
-    setof(TopLevelObj, owl_has(TopLevelObj, knowrob:describedInMap, MapInstance), TopLevelObjs),
-    map_read_entities(TopLevelObjs, MapInstance, EntityList).
+% @param Object Instance of knowrob:HumanScaleObject
+% @param MostSimilarObject Instance of knowrob:HumanScaleObject
+%
+map_object_most_similar(Object, MostSimilarObject) :-
+  map_object_similar(Object, [_,MostSimilarObject], 0), !.
 
-map_read_entities([], _, []).
-map_read_entities([E|Es], P, Res) :-
-  ((setof(Part, holds(E, knowrob:properPhysicalParts, Part), Parts)) -> (
-    map_read_entity(E, P, R0),
-    map_read_entities(Parts, E, Rs),
-    append([R0], Rs, R)
-  );(
-    map_read_entity(E, P, R1),
-    R=[R1]
-  )),
-  map_read_entities(Es, P, Res1),
-  append(R, Res1, Res).
+%% map_object_similar(+Object:iri, -SimilarObject:iri) is semidet
+%
+% True if SimilarObject is a similar to Object.
+%
+% @param Object Instance of knowrob:HumanScaleObject
+% @param SimilarObject Instance of knowrob:HumanScaleObject
+%
+map_object_similar(Object, SimilarObject) :-
+  map_object_similar(Object, [_,SimilarObject], 1).
 
-map_read_entity(E, Parent, [E_no_ns, Parent_no_ns, Pose]) :-
-    rdf_split_url(_, E_no_ns, E),
-    ((Parent = 'null') ->
-     (Parent_no_ns = Parent) ;
-     rdf_split_url(_, Parent_no_ns, Parent)),
-    current_object_pose( E, Pose ).
+%% map_object_similar(+Object:iri, -Similar:term, +Threshold:float) is semidet
+%
+% True if Similar is a list [Similarity,SimilarObject] and Similarity is
+% the similarity estimate between Object and SimilarObject.
+% Similarity must be higher then Threshold.
+% This predicate will yield the most similar objects first.
+%
+% @param Object Instance of knowrob:HumanScaleObject
+% @param SimilarObject Instance of knowrob:HumanScaleObject
+%
+map_object_similar(Object, [Similarity,SimilarObject], Threshold) :-
+  map_root_object(Map, Object),
+  map_object_type(Object, Type), !,
+  % for each similar type
+  map_object_wup_similarity(Map, Object, Type, Threshold, SimilarTypes),
+  member([Similarity,SimilarType], SimilarTypes),
+  rdfs_individual_of(SimilarObject, SimilarType),
+  map_root_object(Map, SimilarObject).
+
+%% map_object_wup_similarity
+map_object_wup_similarity(Map, Object, ObjT, Threshold, DecreasingSimTypes) :-
+  % find existing types
+  findall(T, (
+    map_root_object(Map, O),
+    O \= Object,
+    map_object_type(O, T)), TypesL),
+  list_to_set(TypesL, TypesS),
+  % compute similarity
+  findall([Sim,T], (
+    member(T,TypesS),
+    rdf_wup_similarity(ObjT, T, Sim),
+    Sim > Threshold
+  ), SimTypes),
+  sort(SimTypes, IncreasingSimTypes),
+  reverse(IncreasingSimTypes, DecreasingSimTypes).

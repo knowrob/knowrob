@@ -5,22 +5,16 @@
           <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
           <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
           <!ENTITY knowrob 'http://knowrob.org/kb/knowrob.owl'>
-          <!ENTITY actionmodel 'http://knowrob.org/kb/actionmodel.owl'>
 ]>
 
 <rdf:RDF
     xmlns:computable="http://knowrob.org/kb/computable.owl#"
-    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns="http://knowrob.org/kb/comp_semantic_map.owl#"
+    xmlns="http://knowrob.org/kb/comp_building.owl#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns:am="&actionmodel;#"
     xmlns:knowrob="&knowrob;#"
-    xml:base="http://knowrob.org/kb/comp_semantic_map.owl">
-  <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
-  </owl:Ontology>
+    xml:base="http://knowrob.org/kb/comp_building.owl">
 
     <computable:PrologProperty rdf:about="#computeNumberOfLevels">
         <computable:command rdf:datatype="&xsd;string">building_number_of_levels</computable:command>
@@ -57,6 +51,7 @@
       <computable:target rdf:resource="&knowrob;#in-BuildingLevel"/>
     </computable:PrologTemporalProperty>
 
+<!--
     <owl:ObjectProperty rdf:about="&knowrob;#in-BuildingRoom">
         <rdfs:range rdf:resource="&knowrob_common;RoomInAConstruction"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;in-ContGeneric"/>
@@ -66,4 +61,5 @@
         <rdfs:range rdf:resource="&knowrob_common;LevelOfAConstruction"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;in-ContGeneric"/>
     </owl:ObjectProperty>
+-->
 </rdf:RDF>
