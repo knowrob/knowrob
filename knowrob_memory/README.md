@@ -43,6 +43,6 @@ Here, *TskNode* is the new node in the episode tree, and
 that classifies the action that is executed.
 
 Once the execution has finished, the acquired experiential knowledge
-can be stored on harddrive
+can be stored on harddrive which is triggered by calling
 
     mem_episode_stop(Episode)
