@@ -5,6 +5,8 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/temporal')).
 
@@ -13,6 +15,8 @@
 :- rdf_db:rdf_register_ns(mem_test,  'http://knowrob.org/kb/mem-test.owl#', [keep(true)]).
 
 :- dynamic test_episode/1.
+
+:- mem_init, mem_drop.
 
 test(mem_episode_create) :-
   mem_episode_create(Episode),
@@ -97,11 +101,11 @@ test(mem_event_causes_transition) :-
   rdf_has(Transition,ease:hasInitialState,T0),
   rdf_has(T0,dul:satisfies,QR0),
   rdf_has(QR0,dul:hasQuality,Q),
-  rdf_has(QR0,dul:hasRegion,mem_test:'TEST_GREEN'),
+  kb_triple(QR0,dul:hasRegion,mem_test:'TEST_GREEN'),
   % transition has terminal state
   rdf_has(Transition,ease:hasTerminalState,T1),
   rdf_has(T1,dul:satisfies,QR1),
   rdf_has(QR1,dul:hasQuality,Q),
-  rdf_has(QR1,dul:hasRegion,mem_test:'TEST_RED').
+  kb_triple(QR1,dul:hasRegion,mem_test:'TEST_RED').
 
 :- end_tests(knowrob_memory).
