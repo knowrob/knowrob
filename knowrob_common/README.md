@@ -53,7 +53,7 @@ knowrob_mem implements such a temporalized triple store.
 The main interface to access temporalized triples is the
 holds/2 predicate:
 
-    holds(knowrob:volumeOfObject(Obj, literal(type(xsd:float,15.0))), 25.0)
+    holds(knowrob:volumeOfObject(Obj, 15.0), 25.0)
 
 ### Ontologies
 
