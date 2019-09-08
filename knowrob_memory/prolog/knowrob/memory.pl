@@ -208,7 +208,7 @@ mem_import_latest_tf(Obj) :-
 mem_pose_pl(Obj,Pose,[ObjFrame,RefFrame,T,Q]) :-
   transform_data(Pose,(T,Q)),
   object_frame_name(Obj,ObjFrame),
-  transform_reference_frame(Pose,RefFrame),
+  transform_reference_frame(Pose,RefFrame).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

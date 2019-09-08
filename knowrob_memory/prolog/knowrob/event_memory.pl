@@ -169,8 +169,14 @@ mem_event_set_cancelled(Node) :-
   rdf_has(Node, ease:includesAction, Act),
   action_set_cancelled(Act).
 
+%%
+mem_event_add_diagnosis(Node,DiagnosisType) :-
+  rdfs_individual_of(DiagnosisType,owl:'Class'),!,
+  mem_new_individual(DiagnosisType,Diagnosis),
+  situation_add_satisfies(Node,Diagnosis).
+
 mem_event_add_diagnosis(Node,Diagnosis) :-
-  situation_add_sattisfies(Node,Diagnosis).
+  situation_add_satisfies(Node,Diagnosis).
 
 %% mem_event_causes_transition(+Node0,+Object0,+Quality,+FromRegion0,+ToRegion0) is det.
 %

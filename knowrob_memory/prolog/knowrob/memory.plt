@@ -63,6 +63,14 @@ test(mem_event_create0) :-
   rdf_has(Tsk,dul:isExecutedIn,Act),
   rdfs_individual_of(Tsk,mem_test:'TestTask').
 
+test(mem_event_diagnosis0) :-
+  test_episode(Episode),
+  rdf_has(Episode,ease:includesSituation,TskNode),
+  mem_event_add_diagnosis(TskNode,ease:'Clumsiness'),
+  % TskNode satisfies a description of Clumsiness
+  rdf_has(TskNode,dul:satisfies,Clumsiness),
+  rdfs_individual_of(Clumsiness,ease:'Clumsiness').
+
 test(mem_subevent_interval) :-
   test_episode(Episode),
   rdf_has(Episode,ease:includesSituation,TskNode),
