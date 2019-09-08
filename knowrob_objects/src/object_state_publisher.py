@@ -15,7 +15,7 @@ from tf2_msgs.msg import TFMessage
 from tf2_ros import StaticTransformBroadcaster
 from visualization_msgs.msg import MarkerArray
 from visualization_msgs.msg._Marker import Marker
-from json_prolog import json_prolog
+from rosprolog import rosprolog
 from random import random
 
 # fix to allow multiple latched publisher on the same topic
@@ -191,11 +191,11 @@ class PerceivedObject(object):
 
 class ObjectStatePublisher(object):
     def __init__(self, tf_frequency, object_types):
-        rospy.wait_for_service('/json_prolog/query')
+        rospy.wait_for_service('/rosprolog/query')
         self.tf_frequency = tf_frequency
         self.object_types = object_types
         self.dirty_object_requests = Queue()
-        self.prolog = json_prolog.Prolog()
+        self.prolog = rosprolog.Prolog()
         self.objects = defaultdict(lambda: PerceivedObject())
         self.tf_broadcaster = rospy.Publisher("/tf", TFMessage, queue_size=100)
         self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=100)

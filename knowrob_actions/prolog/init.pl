@@ -33,7 +33,7 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
-:- register_ros_package(swrl_prolog).
+:- register_ros_package(swrlprolog).
 
 :- use_module(library('knowrob/event_graph')).
 :- use_module(library('knowrob/action_model')).

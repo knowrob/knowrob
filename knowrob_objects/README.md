@@ -28,7 +28,7 @@ perception.pl.
 An additional script is provided that is used to publish 
 object transforms on the ROS tf topic along with
 marker visualization messages.
-This is realized as a json_prolog client that 
+This is realized as a rosprolog client that 
 initially loads all known objects, and
 provides a service to mark objects as "dirty" which causes
 the script to reload the dirty objects, and

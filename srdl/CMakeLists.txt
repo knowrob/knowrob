@@ -4,10 +4,10 @@ project(srdl)
 
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_actions urdf_prolog rosprolog rosowl)
+find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_actions urdfprolog rosprolog rosowl)
 
 catkin_package(
-  CATKIN_DEPENDS knowrob_common urdf_prolog rosprolog rosowl
+  CATKIN_DEPENDS knowrob_common urdfprolog rosprolog rosowl
 )
 
 # find SWI-Prolog package configuration

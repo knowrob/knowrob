@@ -43,7 +43,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('rdf_urdf')).
 
 :- rdf_meta
@@ -76,13 +76,21 @@ robot_tf_prefix(Robot,TF_prefix) :-
 
 %%
 subcomponents_create(Comp, CompType) :-
-  forall(
+  findall(Range-Count,
     ( property_cardinality(CompType,
          ease:hasPhysicalComponent, Range, Count, _),
       Count > 0
     ),
-    component_create(Comp, Range, Count)
-  ).
+    Pairs
+  ),
+  % FIXME: also take into account cardinality
+  dict_pairs(Dict,_,Pairs),
+  pairs_keys(Pairs, Ranges),
+  forall(
+    owl_most_specific(Ranges, X), (
+    get_dict(X, Dict, C),
+    component_create(Comp, X, C)
+  )).
 
 %%
 component_create(PartType,Part) :-
@@ -226,7 +234,8 @@ has_component(Obj,Comp,CompType) :-
 % @param CompType The RDF name of a body part type.
 %
 component_type(Comp,CompType) :-
-  rdfs_type_of(Comp,dul:'PhysicalObject',CompType),
+  kb_type_of(Comp,CompType),
+  rdfs_subclass_of(CompType,dul:'PhysicalObject'),
   \+ rdfs_subclass_of(CompType,urdf:'Joint'),
   \+ rdfs_subclass_of(CompType,urdf:'Link').
 

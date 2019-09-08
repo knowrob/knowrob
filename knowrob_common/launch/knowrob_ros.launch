@@ -1,7 +1,7 @@
 <launch>
   <arg name="initial_package" default="knowrob_common" />
   <param name="initial_package" type="string" value="$(arg initial_package)" />
-  <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
+  <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" cwd="node" output="screen" />
   
   <node pkg="rosprolog" name="json_wrapper" type="json_wrapper.py" output="screen"/> 
 </launch>

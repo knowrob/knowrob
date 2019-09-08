@@ -2,31 +2,83 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosprolog)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf roslib rospack message_generation)
+add_compile_options(-std=c++11)
+set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
+
+find_package(catkin REQUIRED COMPONENTS
+    rospy
+    roscpp roslib rospack 
+    tf
+    json_prolog_msgs
+    geometry_msgs
+    message_generation
+)
 
 add_service_files(
   FILES
   JSONWrapper.srv
 )
 
+# export Python libraries
+catkin_python_setup()
+
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
       LIBRARIES rosprolog
       INCLUDE_DIRS include
-      CATKIN_DEPENDS geometry_msgs roscpp roslib rospack)
+      CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack)
 
+# find SWI Prolog libraries
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
-message(STATUS "SWIPL found.")
+include_directories(${SWIPL_INCLUDE_DIRS})
+link_directories(${SWIPL_LIBRARY_DIRS})
 
-include_directories(include ${SWIPL_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+# TODO: get rid of this
+pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
+add_definitions(${JSON_GLIB_CFLAGS})
+link_directories(${JSON_GLIB_LIBRARIY_DIRS})
+
+# C++ client library
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+######
 add_library(rosprolog SHARED src/rosprolog.cpp)
 add_dependencies(rosprolog rosprolog_generate_messages_cpp)
 target_link_libraries(rosprolog ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 
+######
+add_executable(rosprolog_node
+	src/PrologNode.cpp
+	src/PrologEngine.cpp
+	src/PrologPool.cpp
+)
+target_link_libraries(rosprolog_node ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(rosprolog_node ${catkin_EXPORTED_TARGETS})
+
+######
+add_library(rosprolog_client
+	src/PrologClient.cpp
+	src/PrologQuery.cpp
+	src/PrologBindings.cpp)
+target_link_libraries(rosprolog_client ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(rosprolog_client ${catkin_EXPORTED_TARGETS})
+
+######
+add_executable(test_rosprolog examples/test_rosprolog.cpp)
+target_link_libraries(test_rosprolog rosprolog_client ${catkin_LIBRARIES})
+add_dependencies(test_rosprolog ${catkin_EXPORTED_TARGETS})
+
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+  
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch )
   
 FILE(GLOB sh_files "scripts/*")
 install(PROGRAMS ${sh_files}

@@ -1,3 +1,0 @@
-swrl_prolog
-===
-
