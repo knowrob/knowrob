@@ -4,7 +4,7 @@ knowrob_common
 This package provides the core ontologies and reasoning rules
 of the KnowRob knowledge processing system for robots.
 
-### Semantics
+### Reasoning
 
 KnowRob uses the Web Ontology Language (OWL) in combination with
 rule based reasoning powered by SWI Prolog.
