@@ -14,3 +14,6 @@ of a PR2 robot are generated:
     kb_create(urdf:'Robot', Robot),
     rdf_urdf_load(Robot, FileURL).
   
+  The result is a RDF description of the robot's links and joints.
+  However, components are not considered in URDF.
+  For components please have a look at the SRDL package.
