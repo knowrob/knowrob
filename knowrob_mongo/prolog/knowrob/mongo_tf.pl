@@ -51,7 +51,7 @@
     mng_transform_pose(+,+,+,-,+),
     mng_comp_pose(r,r,+).
 
-%% mng_lookup_transform(+TargetFrame, +SourceFrame, -Pose, +Instant) is nondet.
+%% mng_lookup_transform(+TargetFrame, +SourceFrame, -Pose, +Time) is nondet.
 %
 % Determine the transform from Source to Target at time Instant based on the logged
 % tf data.
@@ -59,15 +59,12 @@
 % @param TargetFrame  Target frame ID
 % @param SourceFrame  Source frame ID
 % @param Pose         The pose in the form of pose([float x,y,z],[float qx,qy,qz,qw])
-% @param Instant      The time instant
+% @param Time         The time instant
 %
-mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Instant) :-
+mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Time) :-
   mng_interface(Mongo),
-  time_term(Instant, T),
-  strip_literal_type(TargetFrame, TargetFrame_stripped),
-  strip_literal_type(SourceFrame, SourceFrame_stripped),
   jpl_call(Mongo, 'lookupTransform',
-          [TargetFrame_stripped, SourceFrame_stripped, T], StampedTransform),
+          [TargetFrame, SourceFrame, Time], StampedTransform),
   \+ jpl_null(StampedTransform),
   jpl_call(StampedTransform, 'getTranslation', [], Vector3d),
   \+ jpl_null(Vector3d),
@@ -80,7 +77,7 @@ mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Inst
   jpl_get(Quat4d, 'z', QZ),
   jpl_get(Quat4d, 'w', QW).
 
-%% mng_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Instant) is nondet
+%% mng_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Time) is nondet
 %
 % Transform a pose into TargetFrame at time Instant.
 %
@@ -88,21 +85,20 @@ mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Inst
 % @param TargetFrame     Tf frame the source matrix is to be transformed into
 % @param PoseIn          Term of form pose([float x,y,z],[float qx,qy,qz,qw])
 % @param PoseOut         Term of form pose([float x,y,z],[float qx,qy,qz,qw])
-% @param Instant         Time point at which the transformation is to be determined
+% @param Time            Time point at which the transformation is to be determined
 %
 mng_transform_pose(SourceFrame,
                    TargetFrame,
                    pose(PosIn,RotIn),
                    pose(PosOut,RotOut),
-                   Instant) :-
+                   Time) :-
   mng_interface(Mongo),
-  time_term(Instant, T),
   % create StampedMatIn
   jpl_list_to_array(PosIn,PosInArr),
   jpl_list_to_array(RotIn,RotInArr),
   matrix(PoseInArray,PosInArr,RotInArr),
   jpl_call('org.knowrob.utils.Utils', 'poseArrayToStampedMatrix4d',
-          [PoseInArray, SourceFrame, T], StampedMatIn),
+          [PoseInArray, SourceFrame, Time], StampedMatIn),
   % create StampedMatOut
   jpl_call('org.knowrob.utils.Utils', 'getStampedIdentityMatrix4d',
           [], StampedMatOut),
