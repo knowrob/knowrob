@@ -7,6 +7,7 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/memory')).
 :- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/action_model'), [action_status/2]).
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/temporal')).
 
@@ -63,7 +64,14 @@ test(mem_event_create0) :-
   rdf_has(Tsk,dul:isExecutedIn,Act),
   rdfs_individual_of(Tsk,mem_test:'TestTask').
 
-test(mem_event_diagnosis0) :-
+test(mem_event_set_active) :-
+  test_episode(Episode),
+  rdf_has(Episode,ease:includesSituation,TskNode),
+  rdf_has(TskNode,dul:includesEvent,Act),
+  mem_event_set_active(TskNode),
+  action_status(Act,ease_act:'ExecutionState_Active').
+
+test(mem_event_set_diagnosis) :-
   test_episode(Episode),
   rdf_has(Episode,ease:includesSituation,TskNode),
   mem_event_add_diagnosis(TskNode,ease:'Clumsiness'),

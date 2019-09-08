@@ -146,27 +146,33 @@ mem_event_interval(Node0,Begin,End) :-
 
 %%
 mem_event_set_succeeded(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_succeeded(Act).
 %%
 mem_event_set_failed(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_failed(Act).
 %%
 mem_event_set_active(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_active(Act).
 %%
 mem_event_set_paused(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_paused(Act).
 %%
 mem_event_set_pending(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_pending(Act).
 %%
 mem_event_set_cancelled(Node) :-
-  rdf_has(Node, ease:includesAction, Act),
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
   action_set_cancelled(Act).
 
 %%

@@ -24,6 +24,7 @@
       kb_assert/3,
       kb_assert/4,
       kb_retract/3,
+      kb_retract/4,
       %% RDF
       kb_unique_id/2,
       kb_rdf_pl/3,
@@ -53,6 +54,7 @@
             kb_assert(r,r,t),
             kb_assert(r,r,t,-),
             kb_retract(r,r,t),
+            kb_retract(r,r,t,-),
             kb_triple(r,r,t),
             kb_triple(r,r,t,-),
             kb_classify(r,t),
@@ -173,17 +175,20 @@ kb_assert_(S,P,O,DBArgs) :-
   triple_db_assert(S,P,O,DBArgs).
 
 kb_retract(S,P,O) :-
+  kb_retract(S,P,O,_{}).
+
+kb_retract(S,P,O,DBArgs) :-
   is_temporalized_property(P),!,
   temporalized_db(_,Goal),
-  ( call(Goal,S,P,O) ; (
+  ( call(Goal,S,P,O,DBArgs) ; (
     print_message(warning, temporalized_db(retract_failed)),
     fail
   )),!.
 
 %%
-kb_retract(S,P,O) :-
+kb_retract(S,P,O,DBArgs) :-
   % retract from RDF triple store.
-  triple_db_retract(S,P,O),!.
+  triple_db_retract(S,P,O,DBArgs),!.
 
 		 /*******************************
 		 *	ASK INTERFACE		*
@@ -323,7 +328,7 @@ triple_db_assert(S,P,O,DBArgs) :-
   rdf_assert(S,P,O_ground,G).
 
 %%
-triple_db_retract(S,P,O) :-
+triple_db_retract(S,P,O,_DBArgs) :-
   rdf_retractall(S,P,O).
 
 %%
