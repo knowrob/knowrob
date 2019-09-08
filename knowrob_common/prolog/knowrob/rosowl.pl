@@ -125,7 +125,7 @@ ros_message_slot_type(Msg,SlotName,SlotType) :-
 rosowl_service_call(Service, Request, Response) :-
   ros_service(Service, ServiceName, ServicePath),
   ( ros_request_encode(Request, Request_json) ;
-    throw(ros_error(ros:'UNGROUNDABLE_REQUEST')) ), % TODO
+    throw(ros_error(ros:'SerializationFailure')) ),
   ( ros_json_service_call(_{
         service_path: ServicePath,
         service_name: ServiceName,
@@ -135,7 +135,7 @@ rosowl_service_call(Service, Request, Response) :-
   ( ground(Response_json) ; % no response from service
     throw(ros_error(ros:'ServiceNodeUnreachable')) ),
   ( ros_response_decode(Response_json, Response) ;
-    throw(ros_error(ros:'UNINTERPRETABLE_REQUEST')) ). % TODO
+    throw(ros_error(ros:'SerializationFailure')) ).
 
 %% ros_request_encode(+Request, -Request_json) is det.
 %

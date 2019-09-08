@@ -3370,32 +3370,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_INPUT_MISSING -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_INPUT_MISSING"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_MODEL_ERROR -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_MODEL_ERROR"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_OK -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_OK">
-        <rdfs:comment>the default action status in case nothing goes wrong</rdfs:comment>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#ACTION_PREDICATE_ERROR -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#ACTION_PREDICATE_ERROR"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#LightTypeAmbient -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeAmbient">
