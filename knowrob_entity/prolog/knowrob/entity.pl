@@ -29,9 +29,7 @@
     [
       entity/2,
       entity_has/3,
-      entity_assert/2,
-      entity_write/1,
-      with_owl_description/3
+      entity_write/1
     ]).
 /** <module> Reasoning via partial descriptions of entities.
 
@@ -42,18 +40,13 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/temporal')).
 
 :- rdf_meta entity(r,?),
-            entity_property(+,?,?),
-            entity_assert(r,?),
-            with_owl_description(r,r,t).
-
-:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(dul, 'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+            entity_property(+,?,?).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -67,10 +60,6 @@
 % @param Entity IRI of matching entity
 % @param Descr An entity description, OWL individual or class IRI
 %
-entity(Entity, EntityClass) :-
-  atom(EntityClass),
-  owl_individual_of(Entity, EntityClass), !.
-
 entity(Entity, Descr) :-
   var(Descr), !,
   rdfs_individual_of(Entity,dul:'Entity'),
@@ -81,22 +70,6 @@ entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
   once(owl_individual_of(Entity, dul:'Entity')).
-
-%% Pose entities
-entity_(Entity, [a, pose, Pos, Rot]) :-
-  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
-entity_(Entity, [a|[pose|Descr]]) :-
-  entity_has(Descr, translation, Pos),
-  entity_has(Descr, quaternion, Rot),
-  (  entity_has(Descr, reference_frame, Frame)
-  -> owl_instance_from_class(knowrob:'Pose', [pose=(Frame,Pos,Rot)], Entity)
-  ;  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) ), !.
-
-%% Location entities
-entity_(Entity, [a, location|Descr]) :-
-  entity_axioms(Descr, 'http://knowrob.org/kb/knowrob.owl#spatiallyRelated', Axioms),
-  length(Axioms, L), (L > 0),
-  owl_instance_from_class(dul:'Place', [axioms=Axioms], Entity), !.
 
 %% Entity type description `a|an object|...`
 entity_(Entity, [a, Type|Descr]) :-
@@ -113,20 +86,30 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
-entity_(Entity, [[type,restriction(P,Facet2)|_]|Descr]) :-
-  nonvar(P), nonvar(Facet2), !,
-  rdf_global_term(P,P_glob),
-  % find restrictions on P
-  owl_restriction_on(Entity, Q_glob, Restr),
-  rdfs_subproperty_of(P_glob, Q_glob),
-  % unify the facets
-  owl_description(Restr, restriction(_,Facet1)),
-  match_facet(Facet1,Facet2),
-  entity_(Entity, Descr).
-
 %% ignore type, types are handled in `entity_head`
 entity_(Entity, [[type,Type|_]|Descr]) :-
   nonvar(Type), !,
+  entity_(Entity, Descr).
+
+%%
+entity_(Entity, [[P,only(Type)]|Descr]) :-
+  property_range(Entity,P,Type),
+  entity_(Entity, Descr).
+
+entity_(Entity, [[P,some(Type)]|Descr]) :-
+  property_cardinality(Entity,P,Type,Min,_), Min > 0,
+  entity_(Entity, Descr).
+
+entity_(Entity, [[P,exactly(Count,Type)]|Descr]) :-
+  property_cardinality(Entity,P,Type,Count,Count),
+  entity_(Entity, Descr).
+
+entity_(Entity, [[P,min(Count,Type)]|Descr]) :-
+  property_cardinality(Entity,P,Type,Count,_),
+  entity_(Entity, Descr).
+
+entity_(Entity, [[P,max(Count,Type)]|Descr]) :-
+  property_cardinality(Entity,P,Type,_,Count),
   entity_(Entity, Descr).
 
 %% key-value property
@@ -137,32 +120,20 @@ entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
   nonvar(Key),
   entity_iri(PropIri, Key, lower_camelcase),
   
-  % use temporal axioms to restrict Interval var before calling holds
   (nonvar(ValDescr)
-  -> (
-    entity_interval_axioms(ValDescr, Axioms),
-    entity_intersection_interval(Axioms, RestrictedInterval),
-    (RestrictedInterval=[] -> true ; Interval=RestrictedInterval)
-  ) ; true),
+  -> entity_time_(ValDescr, Time) ;
+     true
+  ),
   
   (nonvar(Value)
   -> (
     rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-    -> (
-      strip_literal_type(Value, X),
-      holds(Entity,PropIri,PropValue,Interval),
-      % ignore literal(type(..)) terms, just extract value
-      strip_literal_type(PropValue, X)
-    ) ; (
-      entity_object_value(PropValue, Value),
-      holds(Entity,PropIri,PropValue,Interval)
+    -> holds(Entity,PropIri,Value,Time) ; (
+       entity_object_value(PropValue, Value),
+       holds(Entity,PropIri,PropValue,Time)
     )
-  ) ; (
-    holds(Entity,PropIri,PropValue,Interval), (
-    rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-    -> strip_literal_type(PropValue, Value)
-    ;  Value = PropValue)
-  )),
+  ) ; holds(Entity,PropIri,Value,Time)
+  ),
   
   entity_(Entity, Descr).
 
@@ -225,7 +196,6 @@ entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
 entity_type([an,action],    'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action').
 entity_type([an,event],     'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event').
 entity_type([an,object],    'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject').
-entity_type([a,location],   'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place').
 entity_type([a,thing],      'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity').
 
 entity_type(Entity, TypeBase, Entity) :-
@@ -234,111 +204,6 @@ entity_type(Entity, TypeBase, Entity) :-
 entity_type(Entity, TypeBase, Type) :-
   rdf_has(Entity, rdf:type, Type),
   rdf_reachable(Type, rdfs:subClassOf, TypeBase).
-
-
-%% entity_assert(-Entity, +Descr).
-%
-% Assert entity description in RDF triple store as new individual.
-%
-% @param Entity IRI of matching entity
-% @param Descr An entity description
-%
-entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr]), !.
-
-entity_assert(Entity, [a, pose, Pos, Rot]) :-
-  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
-entity_assert(Entity, [a, pose|Descr]) :-
-  entity_has(Descr, translation, Pos),
-  entity_has(Descr, quaternion, Rot),
-  (  entity_has(Descr, relative_to, RelObjDescr)
-  -> (
-    entity(RelObj, RelObjDescr),
-    owl_instance_from_class(knowrob:'Pose', [pose=(RelObj,Pos,Rot)], Entity)
-  ) ; (
-    owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) )
-  ), !.
-
-entity_assert(Entity, [A,Type|Descr]) :-
-  nonvar(Type),
-  entity_type([A,Type], TypeIri_),
-  (( entity_has(Descr,type,AType),
-     entity_iri(ATypeIri, AType, camelcase),
-     rdf_reachable(ATypeIri, rdfs:subClassOf, TypeIri_) )
-  -> TypeIri = ATypeIri
-  ;  TypeIri = TypeIri_ ),
-  (( entity_has(Descr, name, Entity_),
-     rdf_global_term(Entity_, Entity),
-     rdf_assert(Entity, rdf:type, TypeIri) );
-     rdf_instance_from_class(TypeIri, Entity) ),
-  entity_assert(Entity, Descr), !.
-
-entity_assert(Entity, [[name,_]|Descr]) :- entity_assert(Entity, Descr), !.
-
-entity_assert(Entity, [[type,TypeDescr]|Descr]) :-
-  nonvar(Entity), nonvar(TypeDescr),
-  entity_iri(TypeIri, TypeDescr, camelcase),
-  rdf_assert(Entity, rdf:type, TypeIri),
-  entity_assert(Entity, Descr), !.
-
-entity_assert(Entity, [[Key,Value]|Descr]) :-
-  nonvar(Entity), nonvar(Key), nonvar(Value),
-  entity_iri(PropIri, Key, lower_camelcase),
-  once((
-    rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
-    % TODO: support recursive asserting (i.e., call enity_assert instead)
-    entity(ValueEntity, Value),
-    rdf_assert(Entity, PropIri, ValueEntity)
-  ) ; (
-    rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
-    ( rdf_phas(PropIri, rdfs:range, Range) ->
-      rdf_assert(Entity, PropIri, literal(type(Range,Value))) ;
-      rdf_assert(Entity, PropIri, literal(Value)) )
-  )),
-  entity_assert(Entity, Descr).
-
-entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
-  nonvar(Entity), nonvar(Key), nonvar(Value),
-  entity_iri(PropIri, Key, lower_camelcase),
-  interval(IntervalDescr, Interval),
-  (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-  ->  ( % data property
-      X=Value
-  ) ; ( % nested entity
-      rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
-      entity(X,Value)
-  )),
-  interval_start(Interval,Begin),
-  ( interval_end(Interval,End) ->
-    mem_store_triple(Entity,PropIri,X,_,Begin,End) ;
-    mem_store_triple(Entity,PropIri,X,_,Begin) ),
-  entity_assert(Entity, Descr).
-
-entity_assert(_, []).
-
-
-%% with_owl_description(+Description, ?Individual, +Goal).
-%
-% Ensures entity description is asserted and binds the name to
-% Individual before goal is called.
-% Temporary assertions are retracted in a cleanup goal.
-%
-% @param Description Entity description or individual
-% @param Individual Entity individual
-% Goal The goal with OWL entity asserted
-%
-with_owl_description(Description, Individual, Goal) :-
-  atom(Description)
-  -> (
-    Individual = Description,
-    call( Goal )
-  ) ; (
-    is_list(Description),
-    setup_call_cleanup(
-      entity_assert(Individual, Description),
-      call( Goal ),
-      rdf_retractall(Individual, _, _)
-    )
-  ).
 
 %% entity_write(+Descr) is nondet.
 %
@@ -379,54 +244,9 @@ entity_write([], _).
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % helper
 
-
-interval_operator(during, interval_during)   :- !.
-interval_operator(before, interval_before)   :- !.
-interval_operator(after,  interval_after)    :- !.
-
-entity_interval_axioms([Operator,Value|Axioms], [[Operator,Interval_val]|Tail]) :-
-  interval_operator(Operator, _), !,
-  entity(Interval, Value),
-  interval(Interval, Interval_val),
-  entity_interval_axioms(Axioms, Tail).
-entity_interval_axioms([_|Axioms], Tail) :-
-  entity_interval_axioms(Axioms, Tail).
-entity_interval_axioms([], []).
-
-entity_intersection_interval([[during,I1]|Tail], Intersection) :-
-  entity_intersection_interval(Tail, I_Tail),
-  interval_intersect(I1, I_Tail, Intersection).
-entity_intersection_interval([[after,I1]|Tail], Intersection) :-
-  entity_intersection_interval(Tail, I_Tail),
-  interval_end(I1, End),
-  interval_intersect([End], I_Tail, Intersection).
-entity_intersection_interval([[before,I1]|Tail], Intersection) :-
-  entity_intersection_interval(Tail, I_Tail),
-  interval_start(I1, Begin),
-  interval_intersect([0.0,Begin], I_Tail, Intersection).
-entity_intersection_interval([], []).
-
-interval_intersect([], I, I).
-interval_intersect(I, [], I).
-interval_intersect([Begin0,End0], [Begin1,End1], [Begin,End]) :-
-  Begin is max(Begin0, Begin1),
-  End is min(End0, End1).
-interval_intersect([Begin0], [Begin1,End], [Begin,End]) :-
-  Begin is max(Begin0, Begin1).
-interval_intersect([Begin0,End], [Begin1], [Begin,End]) :-
-  Begin is max(Begin0, Begin1).
-
-
-%% Fluent properties that match temporal relation.
-entity_temporally_holds(_, []).
-entity_temporally_holds(FluentInterval, [TemporalRelation,IntervalDescr|Tail]) :-
-  (  interval_operator(TemporalRelation,Operator)
-  -> (
-    interval(IntervalDescr, IntervalDescr_val),
-    call(Operator, FluentInterval, IntervalDescr_val)
-  ) ; true ),
-  entity_temporally_holds(FluentInterval, [IntervalDescr|Tail]).
-
+entity_time_([during,Time|_], Time) :- !.
+entity_time_([_|Xs], Time) :-
+  entity_time_(Xs, Time).
 
 entity_properties([['http://www.w3.org/1999/02/22-rdf-syntax-ns#type',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
@@ -470,23 +290,10 @@ entity_mng_triple(Obj, [Key,Value,during,Interval]) :-
      Interval=[Begin,End] ; Interval=[Begin] ),
   entity_iri(PropIri, Key, lower_camelcase).
 
-
-entity_axioms([[P_descr,O_desc|_]|Descr], AxiomIri, [[P,O]|Axioms]) :-
-  entity_iri(P, P_descr, lower_camelcase),
-  rdfs_subproperty_of(P, AxiomIri),
-  entity(O, O_desc),
-  entity_axioms(Descr, AxiomIri, Axioms).
-
-entity_axioms([], _, []).
-
-
-entity_generate(Entity, [an,interval], _, [an,interval,Interval]) :-
-  rdfs_individual_of(Entity, dul:'Event'),
-  interval(Entity,Interval), !.
-
+%%
 entity_generate(Pose, [a, pose], _, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
-  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
-  rdf_has_prolog(Pose, knowrob:quaternion, [QW,QX,QY,QZ]), !.
+  kb_triple(Pose, knowrob:translation, [X,Y,Z]),
+  kb_triple(Pose, knowrob:quaternion, [QW,QX,QY,QZ]), !.
 
 entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|PropDescr]]) :-
   (( rdf_has(Entity, rdf:type, Type),
@@ -517,7 +324,7 @@ entity_head(Entity, _, Descr, TypeIri) :-
   -> true
   ; (
     current_time(Time),
-    owl_temporal_db(Time,DB),
+    knowrob:vkb(_{during:Time},DB),
     findall(E, (
       % TODO: it might not allways be best to early resolve the entities,
       %       also there could be many of them!
@@ -583,12 +390,3 @@ entity_iri(Entity, Type) :-
 
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
-
-match_facet(some_values_from(A1), some_values_from(A2)) :-
-  rdf_global_term(A1,A1_glob),
-  rdf_global_term(A2,A2_glob),
-  rdfs_subclass_of(A1_glob,A2_glob), !.
-match_facet(all_values_from(A1), all_values_from(A2)) :-
-  rdf_global_term(A1,A1_glob),
-  rdf_global_term(A2,A2_glob),
-  rdfs_subclass_of(A1_glob,A2_glob), !.
