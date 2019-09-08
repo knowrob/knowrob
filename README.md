@@ -3,6 +3,9 @@ KnowRob
 
 [![Build Status](https://travis-ci.org/knowrob/knowrob.svg?branch=master)](https://travis-ci.org/knowrob/knowrob)
 
+This repository contains
+KnowRob core packages and general issue tracker for the KnowRob knowledge base.
+
 KnowRob is a knowledge base for robots.
 It equips robots with the capability to organize information in re-usable
 knowledge chunks, and to perform reasoning in an expressive logic formalism.
@@ -27,9 +30,6 @@ Another crucial functionality KnowRob provides is the acquisition of *experienti
 These are situation-dependant knowledge chunks that describe an epsiode of a robot (or human) executing a task.
 Formal descriptions are combined with sensor data which allows to use an expressive language for
 the selection of training examples for training a model over the experiences of a robot or human.
-
-This repository contains
-KnowRob core packages and general issue tracker for the KnowRob knowledge base.
 
 Please visit http://www.knowrob.org for
 more information and [installation instructions](http://www.knowrob.org/installation).
