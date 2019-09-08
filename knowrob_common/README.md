@@ -28,7 +28,7 @@ This concept is called *virtual knowledge base* in KnowRob.
 Several virtual triple sources are pre-defined in KnowRob
 including computable properties for
 qualitative spatial reasoning (comp_spatial),
-temporal reasoning about events (knowrob_common),
+temporal reasoning (knowrob_common),
 ROS tf data (knowrob_memory, knowrob_mongo),
 and SWRL rules (swrl).
 
