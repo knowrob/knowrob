@@ -16,4 +16,4 @@ of a PR2 robot are generated:
   
   The result is a RDF description of the robot's links and joints.
   However, components are not considered in URDF.
-  For components please have a look at the SRDL package.
+  For component descriptions, please have a look at the SRDL package.
