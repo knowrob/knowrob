@@ -1,11 +1,14 @@
 rosprolog
 ===
 
-rosprolog is a [SWI Prolog](http://www.swi-prolog.org/) interface to ROS,
+rosprolog is a bidirectional interface between
+[SWI Prolog](http://www.swi-prolog.org/) and ROS,
 and a wrapper around [roscpp](http://wiki.ros.org/roscpp).
 It provides predicates that enable Prolog programmers
 to quickly interface with ROS subsystems, and to maintain dependencies
 to other ROS packages.
+It further implements a ROS node that enables other ROS components
+to query a Prolog engine.
 
 ### Packages
 
