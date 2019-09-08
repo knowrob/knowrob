@@ -33,7 +33,7 @@
       object_pose/2,
       object_pose/3,
       current_object_pose/2,
-      current_object_pose_stamp/1,
+      current_object_pose_stamp/2,
       object_pose_update/2,
       object_pose_update/3,
       object_trajectory/4,
@@ -44,22 +44,16 @@
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
-      object_assert_frame_name/2,
+      object_assert_frame_name/1,
       object_affordance/2,
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
       object_perception_affordance_frame_name/2,
       object_information/8,
-      storagePlaceFor/2,
-      storagePlaceForBecause/3,
-      object_query/4,
-      object_queries/2,
+      storage_place_for/2,
+      storage_place_for_because/3,
       object_set_lifetime_begin/2,
-      object_set_lifetime_end/2,
-      comp_depthOfObject/2,
-      comp_widthOfObject/2,
-      comp_heightOfObject/2,
-      comp_thermicallyConnectedTo/2
+      object_set_lifetime_end/2
     ]).
 /** <module> Utilities for reasoning about objects
   
@@ -73,14 +67,9 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/temporal')).
-
-:- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 
 :-  rdf_meta
     current_object_pose(r,-),
@@ -98,30 +87,25 @@
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
-    object_assert_frame_name(r,+),
+    object_assert_frame_name(r),
     object_affordance(r,r),
     object_instantiate_affordances(r),
     object_affordance_static_transform(r,r,?),
-    storagePlaceFor(r,r),
-    storagePlaceForBecause(r,r,r),
-    object_query(r,?,?,?),
-    object_queries(r,?),
+    storage_place_for(r,r),
+    storage_place_for_because(r,r,r),
     object_set_lifetime_begin(r,+),
     object_set_lifetime_end(r,+),
-    comp_depthOfObject(r,t),
-    comp_widthOfObject(r,t),
-    comp_heightOfObject(r,t),
-    comp_thermicallyConnectedTo(r,r).
+    object_quality_(r,r,r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 :- dynamic object_pose_data/3,
-           current_object_pose_stamp/1.
+           current_object_pose_stamp/2.
 
-object_assert_frame_name(Obj,Graph) :-
+object_assert_frame_name(Obj) :-
   rdf_split_url(_, ObjName, Obj),
   ( rdf_has(Obj, knowrob:'frameName', _) ;
-    rdf_assert(Obj, knowrob:'frameName', literal(ObjName), Graph) ), !.
+    kb_assert(Obj, knowrob:'frameName', literal(ObjName)) ), !.
 
 %% object_assert(+ObjType:iri, -Obj:iri, +Graph) is det.
 %
@@ -131,16 +115,10 @@ object_assert_frame_name(Obj,Graph) :-
 % @param Obj the object asserted
 %
 object_assert(ObjType, Obj, Graph) :-
-  rdf_instance_from_class(ObjType, Graph, Obj),
-  rdf_assert(Obj, rdf:type, owl:'NamedIndividual', Graph),
+  kb_create(ObjType, Obj, _{graph:Graph}),
   % set TF frame to object name
   rdf_split_url(_, ObjName, Obj),
-  rdf_assert(Obj, knowrob:'frameName', literal(ObjName), Graph),
-  ignore(once((
-    %% HACK get this info from somewhere else!
-    rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
-    rdf_assert(Obj, knowrob:'describedInMap', Map, Graph)
-  ))).
+  kb_assert(Obj, knowrob:'frameName', literal(ObjName)).
 
 %%
 object_lifetime(Obj,Interval) :-
@@ -152,22 +130,24 @@ object_lifetime_(Obj,LT) :-
 
 object_lifetime_(Obj,LT) :-
   once(rdf(Obj,rdf:type,_,G)),
-  rdfs_instance_from_class(dul:'TimeInterval',G,LT),
+  kb_create(dul:'TimeInterval',LT,G),
   rdf_assert(Obj,dul:hasTimeInterval,LT,G).
 
 %%
 object_set_lifetime_begin(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  rdf_assert_prolog(LT,ease:hasIntervalBegin,Stamp,G).
+  kb_assert(LT,ease:hasIntervalBegin,Stamp,G).
 
 %%
 object_set_lifetime_end(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  rdf_assert_prolog(LT,ease:hasIntervalEnd,Stamp,G).
+  kb_assert(LT,ease:hasIntervalEnd,Stamp,G).
 
 %%
+%% TODO: also assert Localization region to trigger
+%%        mem to store it?
 object_pose_update(Obj,Pose) :-
   current_time(Now),
   object_pose_update(Obj,Pose,Now).
@@ -178,15 +158,20 @@ object_pose_update(Obj,_,Stamp) :-
 
 object_pose_update(Obj,Pose,Stamp) :-
   ground(Pose),
+  Pose = [_,_,_,_],
   %%
-  (( current_object_pose_stamp(Latest), Latest >= Stamp ) -> true ; (
-     retractall(current_object_pose_stamp(_)),
-     asserta(current_object_pose_stamp(Stamp))
+  (( current_object_pose_stamp(Obj,Latest), Latest >= Stamp ) -> true ; (
+     retractall(current_object_pose_stamp(Obj,_)),
+     asserta(current_object_pose_stamp(Obj,Stamp))
   )),
   %%
   retractall(object_pose_data(Obj,_,_)),
   asserta(object_pose_data(Obj,Pose,Stamp)),
-  mark_dirty_objects([Obj]).
+  mark_dirty_objects([Obj]), !.
+
+object_pose_update(Obj,Pose,_) :-
+  print_message(warning, pose_update_failed(Obj,Pose)),
+  fail.
 
 %% current_object_pose(+Obj:iri, -Pose:list) is semidet
 %
@@ -198,18 +183,17 @@ object_pose_update(Obj,Pose,Stamp) :-
 current_object_pose(Obj,Pose) :- 
   object_pose_data(Obj,Pose,_),!.
 
-current_object_pose(Obj,[RefFrame,ObjFrame,T,Q]) :- 
-  rdf_has(Obj, knowrob:pose, Pose_iri),
-  transform_data(Pose_iri, (T,Q)),
-  object_frame_name(Obj,ObjFrame),
-  transform_reference_frame(Pose_iri, RefFrame),!.
-
 current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :- 
   ground(ParentFrame),
   object_frame_name(Obj,ObjFrame),
   current_map_pose(ObjFrame,MapPose0),
   current_map_pose(ParentFrame,MapPose1),
   transform_between(MapPose1,MapPose0,[ParentFrame,ObjFrame,T,Q]), !.
+
+current_object_pose(Obj,[RefFrame,ObjFrame,T,Q]) :-
+  get_localization(Obj,Loc),
+  kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
+  object_frame_name(Obj,ObjFrame),!.
 
 current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :-
   % try TF lookup in case above clauses failed.
@@ -246,27 +230,47 @@ object_pose(Obj, Pose, Stamp0) :-
   object_pose_data(Obj,Pose,Stamp1),
   Stamp1 < Stamp0, !.
 
-object_pose(Obj, [RefFrame,ObjFrame,T,Q], Instant) :- 
-  object_frame_name(Obj,ObjFrame),
-  holds(Obj, knowrob:pose, [RefFrame,ObjFrame,T,Q], Instant),!.
-
-object_pose(Obj, [RefFrame,ObjFrame,T,Q], Instant) :- 
+object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :- 
   ground(RefFrame),
   object_frame_name(Obj,ObjFrame),
-  object_map_pose(ObjFrame,MapPose0,Instant),
-  object_map_pose(RefFrame,MapPose1,Instant),
+  object_map_pose(ObjFrame,MapPose0,Time),
+  object_map_pose(RefFrame,MapPose1,Time),
   transform_between(MapPose1,MapPose0,[RefFrame,ObjFrame,T,Q]), !.
 
-object_map_pose(ObjFrame,MapPose,Instant) :-
+object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :- 
+  object_frame_name(Obj,ObjFrame),
+  get_localization(Obj,Loc),
+  holds(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q], Time),!.
+
+object_map_pose(ObjFrame,MapPose,Time) :-
   map_frame_name(MapFrame),
   object_frame_name(Obj,ObjFrame),
-  holds(Obj, knowrob:pose, [ParentFrame,ObjFrame,T,Q], Instant),
+  get_localization(Obj,Loc),
+  holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,_,T,Q], Time),
   ( MapFrame = ParentFrame ->
     MapPose=[MapFrame,ObjFrame,T,Q] ; (
-    object_map_pose(ParentFrame,MapParent,Instant),
+    object_map_pose(ParentFrame,MapParent,Time),
     transform_multiply(MapParent,
       [ParentFrame,ObjFrame,T,Q], MapPose)
   )).
+
+get_localization(Obj,Obj) :-
+  atom(Obj),
+  rdfs_individual_of(Obj,ease_obj:'Localization'),!.
+get_localization(Obj,Obj) :-
+  atom(Obj),
+  rdf_has(Obj, ease_obj:hasSpaceRegion, _),!.
+get_localization(Obj,Loc) :-
+  object_localization_(Obj,Loc).
+
+%%
+% Map RDF transform to Prolog list representation.
+%
+knowrob:kb_rdf_object(SpaceRegion,[Ref_frame,_,Pos,Rot]) :-
+  ground(SpaceRegion),
+  rdfs_individual_of(SpaceRegion,ease_obj:'6DPose'),!,
+  transform_reference_frame(SpaceRegion,Ref_frame),
+  transform_data(SpaceRegion,(Pos,Rot)).
 
 %% object_trajectory(+Obj, +Interval, +Density, -Trajectory) is semidet
 %
@@ -303,7 +307,12 @@ object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
 % @param FrameName The frame name
 %
 object_frame_name(Obj,FrameName) :-
-  rdf_has_prolog(Obj,knowrob:frameName,FrameName), !.
+  kb_triple(Obj,knowrob:frameName,FrameName), !.
+
+object_frame_name(Localization,FrameName) :-
+  rdf_has(Obj,ease_obj:hasLocalization,Localization),
+  object_frame_name(Obj,FrameName), !.
+
 object_frame_name(Obj,FrameName) :-
   atom(Obj), rdf_split_url(_,FrameName,Obj).
 
@@ -328,15 +337,19 @@ object_distance(A,B,Distance):-
 %
 % True if Col is the main color of Obj.
 % Col is encoded as as [float red, green, blue, alpha], on a scale of 0-1.
-% Fallback color is [0.5, 0.5, 0.5, 1].
 %
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
 % 
-object_color(Obj, Col) :-
-  holds(Obj, knowrob:mainColorOfObject, Color_rdf),
-  rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Col),!.
-object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
+object_color(Obj, [R,G,B,A]) :-
+  kb_triple(Obj,ease_obj:hasColor,Color),
+  kb_triple(Color,dul:hasRegion,ColorRegion),
+  kb_triple(ColorRegion, ease_obj:hasRGBValue, [R,G,B|Rest]),
+  ( Rest=[A] ; A is 1.0 ),!.
+
+object_color(Obj, [R,G,B,A]) :-
+  kb_triple(Obj, ease_obj:hasRGBValue, [R,G,B|Rest]),
+  ( Rest=[A] ; A is 1.0 ),!.
 
 %% object_assert_color(+Obj:iri, +Col:list) is det
 %
@@ -345,16 +358,15 @@ object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
 % 
-object_assert_color(Obj, [R,G,B]) :-
-  object_assert_color(Obj, [R,G,B,1.0]), !.
-object_assert_color(Obj, [R,G,B,A]) :-
-  atomic_list_concat([R,G,B,A], ' ', ColRGBA),
-  object_assert_color(Obj, ColRGBA), !.
-object_assert_color(Obj, Col) :-
-  atom(Col),
-  rdf_retractall(Obj, knowrob:mainColorOfObject, _),
-  rdf_assert_prolog(Obj, knowrob:mainColorOfObject, Col),
-  mark_dirty_objects([Obj]), !.
+object_assert_color(Obj,ColorValue) :-
+  once(rdf(Obj,_,_,G)),
+  object_color_(Obj,Color),
+  %%
+  kb_create(ease_obj:'ColorRegion',ColorRegion,_{graph: G}),
+  kb_assert(ColorRegion,ease_obj:hasRGBValue,ColorValue),
+  %%
+  kb_retract(Color,dul:hasRegion,_),
+  kb_assert(Color,dul:hasRegion,ColorRegion).
 
 %% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
 %
@@ -368,54 +380,24 @@ object_assert_color(Obj, Col) :-
 % @param Height Height of the bounding box (z-dimension)
 % 
 object_dimensions(Obj, Depth, Width, Height) :-
-  object_boundingBox(Obj, Depth, Width, Height),!.
-  
-object_dimensions(Obj, Depth, Width, Height) :-
-  holds(Obj, knowrob:depthOfObject,  Depth),
-  holds(Obj, knowrob:widthOfObject,  Width),
-  holds(Obj, knowrob:heightOfObject, Height), !.
-
-% FIXME: holds should also cover class properties :/
-object_dimensions(Obj, Depth, Width, Height) :-
-  once((
-    rdf_has(Obj,rdf:type,TW),
-    owl_class_properties(TW,knowrob:widthOfObject,literal(type(_,W))),
-    atom_number(W, Width))),
-  once((
-    rdf_has(Obj,rdf:type,TH),
-    owl_class_properties(TH,knowrob:heightOfObject,literal(type(_,H))),
-    atom_number(H, Height))),
-  once((
-    rdf_has(Obj,rdf:type,TD),
-    owl_class_properties(TD,knowrob:depthOfObject,literal(type(_,D))),
-    atom_number(D, Depth))), !.
+  kb_triple(Obj,ease_obj:hasShape,Shape),
+  kb_triple(Shape,dul:hasRegion,ShapeRegion),
+  shape_bbox(ShapeRegion, Depth, Width, Height),!.
 
 object_dimensions(Obj, Depth, Width, Height) :-
-  % The depth of a knob defaults to 3cm here. This information
-  % should either be asserted somewhere else or be set as a property
-  % when importing the semantic map.
-  holds( Obj, knowrob:radius, literal(type(_, Radius_)) ),
-  atom_number(Radius_, Radius),
-  Width is 2 * Radius,
-  Height is Width,
-  Depth is Height.
+  shape_bbox(Obj, Depth, Width, Height),!.
 
-object_boundingBox(Obj, Depth, Width, Height) :-
-  holds(Obj, knowrob:boundingBoxSize, Size_rdf),
-  rdfs_value_prolog(knowrob:boundingBoxSize, Size_rdf, [Depth, Width, Height]),!.
+%%
+shape_bbox(ShapeRegion, Depth, Width, Height) :-
+  kb_triple(ShapeRegion, ease_obj:hasDepth, Depth),
+  kb_triple(ShapeRegion, ease_obj:hasWidth, Width),
+  kb_triple(ShapeRegion, ease_obj:hasHeight, Height), !.
 
-%% comp_depthOfObject(+Obj:iri, ?Depth:number) is semidet.
-% Computes the depth of Obj from its bounding box.
-comp_depthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Depth))) :-
-  object_boundingBox(Obj, Val, _, _), atom_number(Depth, Val).
-%% comp_widthOfObject(+Obj:iri, ?Width:number) is semidet.
-% Computes the width of Obj from its bounding box.
-comp_widthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Width))) :-
-  object_boundingBox(Obj, _, Val, _), atom_number(Width, Val).
-%% comp_heightOfObject(+Obj:iri, ?Height:number) is semidet.
-% Computes the height of Obj from its bounding box.
-comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Height))) :-
-  object_boundingBox(Obj, _, _, Val), atom_number(Height, Val).
+shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) :-
+  kb_type_of(ShapeRegion,ease_obj:'SphereShape'),
+  kb_triple(ShapeRegion, ease_obj:hasRadius, Radius), !,
+  number(Radius),
+  Diameter is 2 * Radius.
 
 %% object_assert_dimensions(+Obj:iri, +Depth:float, +Width:float, +Height:float) is det
 %
@@ -427,9 +409,20 @@ comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', 
 % @param Height Height of the bounding box (z-dimension)
 % 
 object_assert_dimensions(Obj, Depth, Width, Height) :-
-  atomic_list_concat([Depth, Width, Height], ' ', V),
-  rdf_retractall(Obj, knowrob:boundingBoxSize, _),
-  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(knowrob:vec3, V))),
+  once(rdf(Obj,_,_,G)),
+  object_shape_(Obj, Shape),
+  % create a new region
+  kb_create(ease_obj:'BoxShape',ShapeRegion,_{graph: G}),
+  kb_assert(ShapeRegion, ease_obj:hasDepth, Depth),
+  kb_assert(ShapeRegion, ease_obj:hasWidth, Width),
+  kb_assert(ShapeRegion, ease_obj:hasHeight, Height),
+  % unlink previous box shapes
+  forall((
+    kb_triple(Shape,dul:hasRegion,X),
+    kb_type_of(X,ease_obj:'BoxShape')),
+    kb_retract(Shape,dul:hasRegion,X)
+  ),
+  kb_assert(Shape,dul:hasRegion,ShapeRegion),
   mark_dirty_objects([Obj]).
 
 %% object_mesh_path(+Obj:iri, -FilePath:atom) is det
@@ -440,13 +433,18 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 % @param FilePath   the path (usually a package:// path)
 %
 object_mesh_path(Obj, FilePath) :-
-  holds(Obj, knowrob:pathToCadModel, Val),
-  strip_literal_type(Val, FilePath).
+  kb_triple(Obj,ease_obj:hasShape,Shape),
+  kb_triple(Shape,dul:hasRegion,ShapeRegion),
+  kb_triple(ShapeRegion,ease_obj:hasFilePath,FilePath),!.
 
+object_mesh_path(Obj, FilePath) :-
+  kb_triple(Obj,ease_obj:hasFilePath,FilePath),!.
+
+%%
 object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms) :-
-  rdfs_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
+  kb_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
   (owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
-  (object_color(Obj,Color)),
+  (object_color(Obj,Color);(Color=[0.5,0.5,0.5,1.0])),
   (object_mesh_path(Obj,Mesh);Mesh=''),
   (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
   (current_object_pose(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
@@ -454,7 +452,33 @@ object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, Stati
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Object qualities
+
+%%
+object_quality_(Obj,HasQuality,QualityType,Quality) :-
+  atom(Obj),
+  rdfs_individual_of(Obj,dul:'PhysicalObject'),
+  ( kb_triple(Obj,HasQuality,Quality) ; (
+    once(rdf(Obj,_,_,G)),
+    kb_create(QualityType,Quality,_{graph: G}),
+    kb_assert(Obj,HasQuality,Quality)
+  )), !.
+
+%%
+object_color_(Obj,Color) :-
+  object_quality_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
+%%
+object_shape_(Obj,Shape) :-
+  object_quality_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
+%%
+object_localization_(Obj,Localization) :-
+  object_quality_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Object affordances
+%% TODO: need to revise affordances. Consider using
+%%       disposition model.
 
 %%
 object_perception_affordance_frame_name(Obj, AffFrameName) :-
@@ -510,7 +534,7 @@ object_instantiate_affordances(_Obj, complement_of(_Classes))   :- fail.
 
 object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
 object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
-  owl_instance_from_class(Cls, Affordance),
+  kb_create(Cls, Affordance),
   forall(member(X,Rest), rdf_assert(Affordance,rdf:type, X)),
   rdf_assert(Obj, knowrob:hasAffordance, Affordance),
   Next is Missing-1,
@@ -519,9 +543,9 @@ object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Reasoning about function and storage location of objects
-% TODO: add utility rules resoning about object function (i.e., how to use it for action?)
 
-%% storagePlaceFor(St, ObjT) is nondet
+
+%% storage_place_for(St, ObjT) is nondet
 %
 % Computes the nominal storage location of an object based on assertions for
 % typePrimaryFunction-containerFor for any of its superclasses. For example,
@@ -532,10 +556,10 @@ object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
 % @param St       Instance of a knowrob:'StorageConstruct'
 % @param Obj      Object class or instance
 % 
-storagePlaceFor(St, ObjT) :-
-  storagePlaceForBecause(St, ObjT, _).
+storage_place_for(St, ObjT) :-
+  storage_place_for_because(St, ObjT, _).
 
-%% storagePlaceForBecause(St, ObjType, ObjT) is nondet
+%% storage_place_for_because(St, ObjType, ObjT) is nondet
 %
 % Computes the nominal storage location of an object based on assertions for
 % typePrimaryFunction-containerFor for any of its superclasses. For example,
@@ -550,89 +574,30 @@ storagePlaceFor(St, ObjT) :-
 % @param Obj      Object class or instance
 % @param ObjType  Class for which information about the storage place has been asserted
 %
-storagePlaceForBecause(St, Obj, ObjT) :-
-  ground(Obj),
-  \+ rdf_has(Obj,rdf:type,owl:'Class'), !,
-  rdf(Obj,rdf:type,ObjType),
-  storagePlaceForBecause(St,ObjType,ObjT).
+storage_place_for_because(Container,Object,PatientType) :-
+  ground([Container,Object]) ->
+  once(storage_place_for_because_(Container,Object,PatientType)) ;
+  storage_place_for_because_(Container,Object,PatientType).
 
-storagePlaceForBecause(St,ObjType,ObjT) :-
-  ground(St),!,
-  rdf_has(St,rdf:type,StT),
-  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
-  owl_subclass_of(ObjType, ObjT).
+storage_place_for_because_(Container,Object,PatientType) :-
+  atom(Object),
+  rdfs_individual_of(Object,dul:'Entity'),!,
+  kb_type_of(Object,ObjType),
+  storage_place_for_because_(Container,ObjType,PatientType).
 
-storagePlaceForBecause(St,ObjType,ObjT) :-
-  %\+ ground(St),
-  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
-  owl_subclass_of(ObjType, ObjT),
-  owl_individual_of(St, StT).
+storage_place_for_because_(Container,ObjType,PatientType) :-
+  atom(Container),
+  kb_triple(Container,ease_obj:hasDesign,Design),
+  kb_type_of(Design,ease_obj:'Containment'),
+  storage_place_for_because__(Design,ObjType,PatientType).
 
+storage_place_for_because_(Container,ObjType,PatientType) :-
+  atom(Container),
+  property_cardinality(Container,ease_obj:hasDesign,Design,Min,_), Min>0,
+  rdfs_subclass_of(Design,ease_obj:'Containment'),
+  storage_place_for_because__(Design,ObjType,PatientType).
 
-%% comp_thermicallyConnectedTo(?Obj1:iri, ?Obj2:iri)
-%
-% Compute if a heat path exists between two objects. This is the case if
-% they are either on top of each other or if one contains the other one
-%
-% @param Obj1 Object instance
-% @param Obj2 Object instance
-%
-comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
-  holds(Obj1, knowrob:'on-Physical',Obj2);
-  holds(Obj2, knowrob:'on-Physical',Obj1)).
-
-comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
-  holds(Obj1, knowrob:'in-ContGeneric', Obj2);
-  holds(Obj2, knowrob:'in-ContGeneric', Obj1)).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Asking queries about objects.
-
-%% object_queries(+Obj:iri, -Queries:list) is det
-%
-% Gather facts about queries that can be asked about an object.
-% Queries are represented as [atom category, atom title, atom query].
-% Category and title are primary used for displaying possible queries
-% to the user.
-%
-% @param Obj the object name
-% @param Queries list of queries that can be asked about Obj
-%
-object_queries(Obj, Queries) :-
-  findall([Category,Title,Query],
-          object_query(Obj,Category,Title,Query),
-          QueriesUnsorted),
-  sort(QueriesUnsorted, Queries).
-
-%% object_query(+Obj:iri, ?QueryGroup:atom, ?QueryTitle:atom, ?Query:atom) is det
-%
-% True for objects Obj for which a query exists belonging to the group QueryGroup
-% and labeled with QueryTitle.
-%
-% @param Obj the object name
-% @param QueryGroup category of query
-% @param QueryTitle name of the query
-% @param Query the Prolog-encoded query string
-%
-object_query(Obj, QueryGroup, QueryTitle, Query) :-
-  atom(Obj),
-  % queries about specific individuals
-  rdf_has(QueryIndividual, knowrob:'queryAbout', Obj),
-  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
-  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
-  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
-  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
-
-object_query(Obj, QueryGroup, QueryTitle, Query) :-
-  atom(Obj),
-  % queries about specific types
-  rdfs_individual_of(Obj, IndividualClass),
-  % FIXME: queryAbout some Class is non OWL! use restrictions instead!
-  rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
-  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
-  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
-  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
-  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+storage_place_for_because__(Design,ObjType,PatientType) :-
+  property_range(Design,ease_obj:hasDesignatedPatient,PatientType),
+  rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
+  rdfs_subclass_of(ObjType,PatientType).
