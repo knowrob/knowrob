@@ -24,6 +24,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/comp_spatial')).
 :- use_module(library('knowrob/temporal')).
 
@@ -33,6 +34,8 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
 
+test(inCenterOf0) :-
+  comp_inCenterOf(test_sp:'cup3', test_sp:'cupboard1'),!.
 test(inCenterOf1) :-
   holds(test_sp:'cup3', knowrob:isInCenterOf, test_sp:'cupboard1'),!.
 test(inCenterOf2) :-

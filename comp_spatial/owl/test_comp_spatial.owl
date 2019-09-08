@@ -41,7 +41,6 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
     
@@ -58,7 +57,6 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.25 0.75 1.05</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
 
@@ -75,7 +73,6 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 1.05</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
     
 
@@ -92,7 +89,6 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
 </rdf:RDF>
