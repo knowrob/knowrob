@@ -5,7 +5,7 @@
     Script to execute Prolog and set the Prolog library paths
     to other ROS Prolog packages.
   </description>
-  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
+  <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD, GPL</license>
 
@@ -13,7 +13,7 @@
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
   <author>Lorenz Moesenlechner</author>
-  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
+  <author email="danielb@uni-bremen.de">Daniel Beßler</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
