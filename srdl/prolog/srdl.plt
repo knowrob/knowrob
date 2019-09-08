@@ -54,7 +54,7 @@ test(robot_create) :-
   )).
 
 test(robot_set_urdf) :-
-  ros_package_path('urdfprolog', X),
+  ros_package_path('urdf_prolog', X),
   atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', FileURL),
   %% load the URDF
   testbot(PR2),

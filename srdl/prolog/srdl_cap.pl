@@ -50,7 +50,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/action_planning')).
 

@@ -44,7 +44,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/action_planning')).
 
@@ -167,9 +167,9 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   camera_hfov(Camera, HFOV),
   VFOV is ImgY / ImgX * HFOV,
   % find object pose in camera frame
-  rdf_has(Camera, knowrob:frameName, CameraFrame),
+  object_frame_name(Camera, CameraFrame),
   object_pose_at_time(Camera, Instant, [MapFrame, _, CamPos_world, CamRot_world]),
-  rdf_has(Object, knowrob:frameName, ObjectFrame),
+  object_frame_name(Object, ObjectFrame),
   object_pose_at_time(Object, Instant, [MapFrame, _, ObjPos_world, ObjRot_world]),
   transform_between(
       [x,ObjectFrame, ObjPos_world, ObjRot_world],

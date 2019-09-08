@@ -54,8 +54,7 @@
         has_direct_component(r,r,r),
         has_component(r,r,r),
         component_type(r,r),
-        urdf_name_of_range(r,r,?),
-        owl_cardinality_unique(r,r,r,?).
+        urdf_name_of_range(r,r,?).
 
 %% robot_create(RobotType,Robot) is det.
 %
@@ -78,8 +77,10 @@ robot_tf_prefix(Robot,TF_prefix) :-
 %%
 subcomponents_create(Comp, CompType) :-
   forall(
-    owl_cardinality_unique(CompType,
-       ease:hasPhysicalComponent, Range, Count),
+    ( property_cardinality(CompType,
+         ease:hasPhysicalComponent, Range, Count, _),
+      Count > 0
+    ),
     component_create(Comp, Range, Count)
   ).
 
@@ -129,7 +130,20 @@ robot_set_urdf(Robot,URDF) :-
     is_link_of_component(L,_) ;
     ( rdf_urdf_name(L, LName),
       print_message(warning, orphan_link(Robot,LName)) )
-  )).
+  )),
+  forall( has_direct_component(Robot,BodyPart,_), once((
+    is_composition(BodyPart) ;
+    is_classified_link(BodyPart) ;
+    print_message(warning, orphan_component(Robot,BodyPart))
+  ))).
+
+is_composition(Comp) :-
+  rdf_has(Comp,srdlcomp:hasBaseLink,_),
+  rdf_has(Comp,srdlcomp:hasEndLink,_),!.
+
+is_classified_link(Comp) :-
+  rdfs_individual_of(Comp,urdf:'Link'),
+  component_type(Comp,_),!.
 
 %% assert hasBaseLink / hasEndLink
 robot_set_kinematic_(Robot,BodyPart,BL,ELs) :-
@@ -170,7 +184,7 @@ kinematic_chain(BodyPart,BL,ELs) :-
 
 %% infer urdf name of a property range class
 urdf_name_of_range(Class,P,Name) :-
-  owl_cardinality_unique(Class,P,Restr,_),
+  property_cardinality(Class,P,Restr,C,_), C > 0,
   owl_property_range_on_class(Restr,urdf:hasURDFName,literal(type(_,Name))),!.
 
 %% has_direct_component(?Obj,?Comp,?CompType) is nondet.
@@ -224,23 +238,3 @@ is_link_of_component(Link,Comp) :-
   rdf_has(Joint,urdf:hasChildLink,Link),
   rdf_has(Joint,urdf:hasParentLink,ParentLink),
   is_link_of_component(ParentLink,Comp).
-
-% TODO: move this to knowrob_common, seems usefull
-owl_cardinality_unique(Res,P,Range,Card) :-
-  findall(X0-C0, (
-    owl_cardinality_on_class(Res, P, X0, cardinality(C0,_)),
-    C0 > 0
-  ), R0),
-  %%
-  member(Range-Range_card, R0),
-  %%
-  findall(MSR_card, (
-    member(MoreSpecificRange-MSR_card, R0),
-    MoreSpecificRange \= Range,
-    once(owl_subclass_of(MoreSpecificRange,Range))
-    %rdfs_subclass_of(MoreSpecificRange,Range)
-  ), Cs),
-  sumlist(Cs,Sum),
-  %%
-  Card is Range_card - Sum,
-  Card > 0.
