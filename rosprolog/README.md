@@ -27,7 +27,7 @@ This common structure allows to automatically load the package and all its depen
           |- your_module.pl
           |- your_module.plt
 
-### Usage
+### rosprolog console
 
 To run rosprolog, use:
 
@@ -40,8 +40,7 @@ To start a prolog package within rosprolog (incl. calling its init.pl file and a
 
 ### rosprolog node
 
-The interactive Prolog shell that [rosprolog](http://ros.org/wiki/rosprolog|rosprolog)
-provides is good for exploring KnowRob, visualizing knowledge,
+The interactive Prolog shell is good for exploring KnowRob, visualizing knowledge,
 developing new functions and debugging Prolog code.
 
 However, if you would like to use KnowRob in your robot's control program,
@@ -69,6 +68,12 @@ You can run the rosprolog service using a launch file such as the following
 The rosprolog_node reads some optional ROS parameters for the initial package
 to be loaded (that you also give as argument when starting rosprolog)
 and a command to be executed at startup.
+
+### rosprolog node console
+
+You can get an interactive console for a running rosprolog node with
+
+    rosrun rosprolog rosprolog_commandline.py
 
 ### Unit testing
 
