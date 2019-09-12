@@ -20,48 +20,37 @@
 :- begin_tests(knowrob_objects).
 
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/perception')).
 
 :- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
-:- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').
 
-:- rdf_db:rdf_register_prefix(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_prefix(test_knowrob_objects, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
+:- rdf_db:rdf_register_prefix(test_obj, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
-test(storagePlaceFor1) :-
-  storagePlaceFor(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1'), !.
+test(storage_place_for1) :-
+  storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup1').
 
-test(storagePlaceFor2) :-
-  storagePlaceFor(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup2'), !.
+test(storage_place_for2) :-
+  storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup2').
 
-test(storagePlaceFor3) :-
-  storagePlaceFor(test_knowrob_objects:'Dishwasher1', knowrob:'FoodVessel'), !.
+test(storage_place_for3) :-
+  storage_place_for(test_obj:'Dishwasher1', test_obj:'FoodVessel').
 
-test(storagePlaceForBecause1) :-
-  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1',X),
-  owl_description(X,class('http://knowrob.org/kb/knowrob.owl#FoodVessel')), !.
+test(storage_place_for_because1) :-
+  storage_place_for_because(test_obj:'Dishwasher1',test_obj:'Cup1',X),
+  rdf_equal(X, test_obj:'FoodVessel').
 
 test(object_dimensions) :-
-  object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
-  !.
+  object_dimensions(test_obj:'Handle1', 0.015, 0.015, 0.015).
 
 test(object_assert_color) :-
-  object_assert_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1'),
-  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]),
-  !.
+  object_assert_color(test_obj:'Cup1', [0.3, 0.5, 0.6, 1]),
+  object_color(test_obj:'Cup1', [0.3, 0.5, 0.6, 1]).
 
 test(object_assert_dimensions) :-
-  object_assert_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),
-  object_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),
-  !.
-
-%test(object_detection, fixme) :-
-%  object_detection(test_knowrob_objects:'Cup1', test_knowrob_objects:'timepoint_1331040458', test_knowrob_objects:'SemanticMapPerception2').
+  object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
+  object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
 
 :- end_tests(knowrob_objects).
 

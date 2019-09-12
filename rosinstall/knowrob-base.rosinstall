@@ -1,7 +1,7 @@
-- git: {local-name: knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: kinetic }
+- git: {local-name: knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: master }
 - git: {local-name: genowl, uri: 'https://github.com/knowrob/genowl.git', version: master }
 - git: {local-name: rosowl, uri: 'https://github.com/knowrob/rosowl.git', version: master }
-- git: {local-name: ease_ontology, uri: 'https://github.com/ease-crc/ease_ontology.git', version: master }
+- git: {local-name: ease_ontology, uri: 'https://github.com/knowrob/ease_ontology.git', version: master }
 - git: {local-name: dul, uri: 'https://github.com/ease-crc/dul.git', version: master }
 - git: {local-name: ros-mongodb_log, uri: 'https://github.com/code-iai/ros-mongodb_log.git', version: master }
 - git: {local-name: iai_common_msgs, uri: 'https://github.com/code-iai/iai_common_msgs.git', version: master }

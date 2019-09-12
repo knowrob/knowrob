@@ -1,0 +1,1254 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/PR2.owl#"
+     xml:base="http://knowrob.org/kb/PR2.owl"
+     xmlns:pr2="http://knowrob.org/kb/PR2.owl#"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
+     xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:qudt-unit="http://qudt.org/vocab/unit#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/PR2.owl">
+        <owl:imports rdf:resource="package://srdl/owl/srdl2.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasEndLink -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasGripForceAttribute -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasGripForceAttribute"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasKinematicChain -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasKinematicChain"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasPayloadAttribute -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasPayloadAttribute"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasBaseLinkName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLinkName"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasEndLinkName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasEndLinkName"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasGripForceValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasGripForceValue"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeedValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeedValue"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#hasPayloadValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasPayloadValue"/>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasURDFName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Arm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Arm">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2ArmL"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2ArmR"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasPayloadAttribute"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: 4 DoF</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2ArmL -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2ArmL">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_shoulder_pan_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_forearm_cam_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_wrist_roll_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ArmR"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2ArmR -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2ArmR">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_shoulder_pan_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_forearm_cam_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_wrist_roll_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Base -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Base">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Wheel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeed"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed_PR2"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bl_caster_l_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bl_caster_r_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">br_caster_l_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">br_caster_r_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fl_caster_l_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fl_caster_r_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fr_caster_l_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fr_caster_r_wheel_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">8</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Wheel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">8</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Wheel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: base widht&amp;depth 668mm</rdfs:comment>
+        <rdfs:comment>todo: speed 1 m/s</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Finger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Finger">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerLL"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerLR"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerRL"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerRR"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2FingerLL -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerLL">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerLR"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRL"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRR"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2FingerLR -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerLR">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRL"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRR"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2FingerRL -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerRL">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRR"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2FingerRR -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2FingerRR">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Gripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Gripper">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperL"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperR"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasGripForceAttribute"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/PR2.owl#GripForceAttribute_PR2"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: 1 DoF</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
+        <rdfs:comment>A three-axis accelerometer.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2GripperL -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperL">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_palm_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_accelerometer_link</owl:hasValue>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_tip_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_led_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_screw_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_tool_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerLL"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerLR"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperR"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2GripperR -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperR">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_palm_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_accelerometer_link</owl:hasValue>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_tip_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_led_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_screw_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_tool_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRL"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2FingerRR"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Head -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Head">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_pan_link</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_ir_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_rgb_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">high_def_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_l_stereo_camera_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_r_stereo_camera_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">projector_wg6802418_child_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_l_stereo_camera_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasEndLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_r_stereo_camera_optical_frame</owl:hasValue>
+                    </owl:Restriction>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Kinect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: describe projector</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Kinect -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Kinect">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Kinect"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_link</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/urdf.owl#hasURDFName"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Wheel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Wheel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#OmniWheel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MobileBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MobileBase"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ArmL"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ArmR"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Base"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperL"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperR"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Head"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#MobileBase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: desccribe torso lift</rdfs:comment>
+        <rdfs:comment>todo: wrist torque 4 Nm</rdfs:comment>
+        <rdfs:seeAlso>http://www.willowgarage.com/pages/pr2/specs</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Wheel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wheel"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#Accelerometer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#Kinect -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Kinect"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#KinematicChain -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#KinematicChain"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#OmniWheel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#OmniWheel"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#PayloadAttribute -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PayloadAttribute"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCamera -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#WheeledBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#GripForceAttribute -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#GripForceAttribute"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Arm -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Gripper -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#GripForceAttribute_PR2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#GripForceAttribute_PR2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/urdf.owl#GripForceAttribute"/>
+        <srdl2-comp:hasGripForceValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">80.0</srdl2-comp:hasGripForceValue>
+        <rdfs:comment>In Newton</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PayloadAttribute"/>
+        <srdl2-comp:hasPayloadValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.8</srdl2-comp:hasPayloadValue>
+        <rdfs:comment>in kilogram</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed_PR2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed_PR2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed"/>
+        <srdl2-comp:hasMaximumSpeedValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</srdl2-comp:hasMaximumSpeedValue>
+        <rdfs:comment>in m/s</rdfs:comment>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

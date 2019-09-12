@@ -46,8 +46,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/objects')).
@@ -118,12 +117,12 @@ belief_existing_objects(ObjectIds, ObjectTypes) :-
 %
 belief_class_of(Obj, ObjType) :-
   % nothing to do if current classification matches beliefs
-  rdfs_type_of(Obj, ObjType), !.
+  kb_type_of(Obj, ObjType), !.
 belief_class_of(Obj, NewObjType) :-
   current_time(Now),
   ignore(once((
       % withdraw old beliefs about object type
-      rdfs_type_of(Obj, CurrObjType),
+      kb_type_of(Obj, CurrObjType),
       rdfs_subclass_of(CurrObjType, Parent),
       rdfs_subclass_of(NewObjType, Parent),
       %%

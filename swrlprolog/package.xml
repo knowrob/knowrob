@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <name>swrlprolog</name>
+  <version>0.1.0</version>
+  <description>
+    Semantic Web Rule Language (SWRL) interface for Prolog.
+  </description>
+
+  <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
+
+  <author email="danielb@uni-bremen.de">Daniel Beßler</author>
+ 
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>knowrob_common</build_depend>
+
+  <run_depend>knowrob_common</run_depend>
+
+</package>

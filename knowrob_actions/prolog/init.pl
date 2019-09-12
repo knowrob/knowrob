@@ -33,16 +33,15 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
-:- register_ros_package(knowrob_memory).
-:- register_ros_package(knowrob_swrl).
+:- register_ros_package(swrlprolog).
 
 :- use_module(library('knowrob/event_graph')).
-:- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/task_planning')).
 
 :- use_module(library('knowrob/action_execution')).
-:- use_module(library('knowrob/kb_querying')).
+:- use_module(library('knowrob/action_execution_pl')).
 :- use_module(library('knowrob/rosowl')).
 
 :- owl_parser:owl_parse('package://knowrob_actions/owl/actions.owl').

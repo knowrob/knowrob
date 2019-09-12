@@ -50,7 +50,6 @@ for instance object definitions, environment maps, or task specifications.
 :- use_module(library('semweb/owl')).
 % TODO 'knowrob/*' modules should not be used here
 :- use_module(library('knowrob/utility/filesystem')).
-:- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/actions')).
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -61,23 +60,7 @@ for instance object definitions, environment maps, or task specifications.
 :- rdf_meta export_object(r,r),
       export_object_class(r,r),
       export_map(r,r),
-      export_action(r,r),
-      rdf_unique_class_id(r, +, r).
-
-
-:- assert(instance_nr(0)).
-rdf_unique_class_id(BaseClass, SourceRef, ID) :-
-
-  instance_nr(Index),
-  atom_concat(BaseClass, Index, ID),
-
-  ( ( nonvar(SourceRef), rdf_assert(ID, rdf:type, owl:'Class', SourceRef),!);
-    ( rdf_assert(ID, rdf:type, owl:'Class')) ),
-
-  % update index
-  retract(instance_nr(_)),
-  Index1 is Index+1,
-  assert(instance_nr(Index1)),!.
+      export_action(r,r).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

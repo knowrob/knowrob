@@ -29,8 +29,17 @@
     [
       mem_episode_create/1,           % -EpisodeNode::iri
       mem_event_create/3,             % +ParentNode::iri, -EventType::iri, -Node::iri
+      mem_event_begin/1,              % +Node::iri
       mem_event_begin/2,              % +Node::iri, +BeginTime::number
+      mem_event_end/1,                % +Node::iri
       mem_event_end/2,                % +Node::iri, +EndTime::number
+      mem_event_set_succeeded/1,
+      mem_event_set_failed/1,
+      mem_event_set_active/1,
+      mem_event_set_paused/1,
+      mem_event_set_pending/1,
+      mem_event_set_cancelled/1,
+      mem_event_add_diagnosis/2,
       mem_event_interval/3,           % +Node::iri, +BeginTime::number, +EndTime::number
       mem_event_includes/2,           % +Node::iri, +EntityConcepts::list
       mem_event_includes/3,           % +Node::iri, +Entity::iri, +Concept::iri
@@ -46,7 +55,8 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/action_model')).
 
 :-  rdf_meta
     mem_episode_create(r),
@@ -54,6 +64,13 @@
     mem_event_create(r,r,r),
     mem_event_begin(r,+),
     mem_event_end(r,+),
+    mem_event_set_succeeded(r),
+    mem_event_set_failed(r),
+    mem_event_set_active(r),
+    mem_event_set_paused(r),
+    mem_event_set_pending(r),
+    mem_event_set_cancelled(r),
+    mem_event_add_diagnosis(r,r),
     mem_event_interval(r,+,+),
     mem_event_causes_transition(r,r,r,r,r),
     mem_event_includes(r,t),
@@ -69,7 +86,7 @@
 % node in a task execution graph.
 %
 mem_episode_create(Episode) :-
-  mem_new_individual(ease:'Episode',Episode),
+  situation_create(ease:'Episode',Episode,belief_state),
   mem_new_individual(dul:'TimeInterval',I),
   mem_assert(Episode,dul:includesTime,I).
 
@@ -89,9 +106,9 @@ mem_event_create(Parent0,EventType,Node0) :-
   -> mem_assert(EventType0,dul:isExecutedIn,Event);
      mem_assert(EventType0,dul:classifies,Event)),
   %% create a situation that includes the event
-  mem_new_individual(dul:'Situation',Node0),
-  mem_assert(Parent0,ease:includesSituation,Node0),
-  mem_event_includes_(Node0,Event),
+  situation_create(dul:'PlanExecution',Node0,belief_state),
+  situation_add(Parent0,Node0),
+  situation_add(Node0,Event),
   %% initialize the time extend of the event+situation
   mem_new_individual(dul:'TimeInterval',I),
   mem_assert(Event,dul:hasTimeInterval,I),
@@ -107,27 +124,75 @@ mem_event_create(Parent0,EventType,Node0) :-
 %
 mem_event_begin(Node0,Begin) :-
   rdf_has(Node0,dul:includesTime,Interval), (
-  ( rdf_has_prolog(Interval,ease:hasIntervalBegin,X), X=<Begin ) ;
+  ( kb_triple(Interval,ease:hasIntervalBegin,X), X=<Begin ) ;
   ( mem_update(Interval,ease:hasIntervalBegin,Begin),
     ( rdf_has(Parent,ease:includesSituation,Node0) ->
       mem_event_begin(Parent,Begin) ; true )
   )),!.
 
+mem_event_begin(Node0) :-
+  current_time(Begin),
+  mem_event_begin(Node0, Begin).
+
 %% mem_event_end(+Node0,+End) is det.
 %
 mem_event_end(Node0,End) :-
   rdf_has(Node0,dul:includesTime,Interval), (
-  ( rdf_has_prolog(Interval,ease:hasIntervalEnd,X), X>=End ) ;
+  ( kb_triple(Interval,ease:hasIntervalEnd,X), X>=End ) ;
   ( mem_update(Interval,ease:hasIntervalEnd,End),
     ( rdf_has(Parent,ease:includesSituation,Node0) ->
       mem_event_end(Parent,End) ; true )
   )),!.
+
+mem_event_end(Node0) :-
+  current_time(End),
+  mem_event_end(Node0, End).
 
 %% mem_event_interval(+Node0,+Begin,+End) is det.
 %
 mem_event_interval(Node0,Begin,End) :-
   mem_event_begin(Node0,Begin),
   mem_event_end(Node0,End).
+
+%%
+mem_event_set_succeeded(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_succeeded(Act).
+%%
+mem_event_set_failed(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_failed(Act).
+%%
+mem_event_set_active(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_active(Act).
+%%
+mem_event_set_paused(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_paused(Act).
+%%
+mem_event_set_pending(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_pending(Act).
+%%
+mem_event_set_cancelled(Node) :-
+  rdf_has(Node, dul:includesEvent, Act),
+  rdfs_individual_of(Act,dul:'Action'),
+  action_set_cancelled(Act).
+
+%%
+mem_event_add_diagnosis(Node,DiagnosisType) :-
+  rdfs_individual_of(DiagnosisType,owl:'Class'),!,
+  mem_new_individual(DiagnosisType,Diagnosis),
+  situation_add_satisfies(Node,Diagnosis).
+
+mem_event_add_diagnosis(Node,Diagnosis) :-
+  situation_add_satisfies(Node,Diagnosis).
 
 %% mem_event_causes_transition(+Node0,+Object0,+Quality,+FromRegion0,+ToRegion0) is det.
 %
@@ -161,14 +226,14 @@ mem_event_includes(Node0,[[Entity,Concept]|Xs]) :-
 %
 mem_event_includes(Node0,Object0,Role) :-
   rdfs_individual_of(Object0,dul:'Object'),!,
-  mem_event_includes_(Node0,Object0),
+  situation_add(Node0,Object0),
   mem_event_node_(Node0,Event0),
   mem_assert(Event0,dul:hasParticipant,Object0),
   mem_event_classifies_(Node0,Object0,Role).
 
 mem_event_includes(Node0,Region0,Parameter) :-
   rdfs_individual_of(Region0,dul:'Region'),!,
-  %mem_event_includes_(Node0,Region0),
+  %situation_add(Node0,Region0),
   mem_event_node_(Node0,Event0),
   mem_assert(Event0,dul:hasRegion,Region0),
   mem_event_classifies_(Node0,Region0,Parameter).
@@ -190,10 +255,10 @@ mem_event_classifies_(Node,Entity,Concept) :-
   mem_new_individual(Concept,Concept0),
   mem_is_related_to_concept_(EventType0,Concept0),
   %%
-  mem_new_individual(dul:'Classification',X),
-  mem_assert(Node,ease:includesSituation,X),
-  mem_event_includes_(X,Concept0),
-  mem_event_includes_(X,Entity).
+  situation_create(dul:'Classification',X,belief_state),
+  situation_add(Node,X),
+  situation_add(X,Concept0),
+  situation_add(X,Entity).
 
 mem_event_node_(Node,Event) :-
   % TODO
@@ -222,27 +287,6 @@ mem_event_create_(StateType,State) :-
 
 mem_event_create_(_,Evt) :-
   mem_new_individual(dul:'Event',Evt).
-
-%%
-mem_event_includes_(N,Action) :-
-  rdfs_individual_of(Action,dul:'Action'),!,
-  mem_assert(N,dul:includesAction,Action).
-
-mem_event_includes_(N,Event) :-
-  rdfs_individual_of(Event,dul:'Event'),!,
-  mem_assert(N,dul:includesEvent,Event).
-
-mem_event_includes_(N,Concept) :-
-  rdfs_individual_of(Concept,dul:'Concept'),!,
-  mem_assert(N,ease:includesConcept,Concept).
-
-mem_event_includes_(N,Agent) :-
-  rdfs_individual_of(Agent,dul:'Agent'),!,
-  mem_assert(N,ease:includesAgent,Agent).
-
-mem_event_includes_(N,Object) :-
-  rdfs_individual_of(Object,dul:'Object'),!,
-  mem_assert(N,dul:includesObject,Object).
 
 %% get individual quality of an objecz
 mem_individual_quality_(Object,Quality,IndividualQuality) :-
@@ -286,17 +330,13 @@ mem_is_related_to_concept_(Concept0,Concept1) :-
 
 %%
 mem_new_individual(Type,Entity) :-
-  rdf_instance_from_class(Type,belief_state,Entity).
+  kb_create(Type,Entity,_{graph:belief_state}).
 
 %%
 mem_assert(S,P,O) :-
-  rdf_assert_prolog(S,P,O,belief_state).
+  kb_assert(S,P,O,_{graph:belief_state}).
 
 %%
 mem_update(S,P,O) :-
-  atom(O),
-  rdf(S,P,O,belief_state),!.
-
-mem_update(S,P,O) :-
-  rdf_retractall(S,P,_),
-  mem_assert(S,P,O).
+  kb_retract(S,P,_),
+  kb_assert(S,P,O).

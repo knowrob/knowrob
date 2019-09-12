@@ -4,6 +4,7 @@
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY dul "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
     <!ENTITY test "http://knowrob.org/kb/test_comp_spatial.owl#" >
@@ -14,6 +15,7 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:test="http://knowrob.org/kb/test_comp_spatial.owl#">
@@ -28,7 +30,7 @@
     <!-- Cupboard of 1x1x1m with its center at position (1,1,0.5) -->
 
     <owl:NamedIndividual rdf:about="&test;cupboard1">
-        <rdf:type rdf:resource="&knowrob;Cupboard"/>
+        <rdf:type rdf:resource="&dul;PhysicalArtifact"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">1.0</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">1.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">1.0</knowrob:widthOfObject>
@@ -39,13 +41,12 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
     
     
     <owl:NamedIndividual rdf:about="&test;cup1">
-        <rdf:type rdf:resource="&knowrob;Cup"/>
+        <rdf:type rdf:resource="&dul;PhysicalArtifact"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
@@ -56,13 +57,12 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.25 0.75 1.05</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
 
 
     <owl:NamedIndividual rdf:about="&test;cup2">
-        <rdf:type rdf:resource="&knowrob;Cup"/>
+        <rdf:type rdf:resource="&dul;PhysicalArtifact"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
@@ -73,13 +73,12 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 1.05</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
     
 
 
     <owl:NamedIndividual rdf:about="&test;cup3">
-        <rdf:type rdf:resource="&knowrob;Cup"/>
+        <rdf:type rdf:resource="&dul;PhysicalArtifact"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
@@ -90,7 +89,6 @@
         <rdf:type rdf:resource="&knowrob;Pose"/>
         <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
         <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
-        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
 </rdf:RDF>

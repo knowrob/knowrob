@@ -112,19 +112,17 @@ ros_store_tf([RefFrame,ObjFrame,[X,Y,Z],[QX,QY,QZ,QW]],Stamp) :-
 %% comp_object_pose(+Obj, ?Pose).
 %% comp_object_pose(+Obj, ?Pose, +Interval).
 %
-% Compute pose from memory.
-%
-comp_object_pose(Obj, Pose) :-
-  ground(Obj),
-  current_object_pose(Obj,Pose),!.
+comp_object_pose(Subject, Pose) :-
+  current_time(Time),
+  comp_object_pose(Subject, Pose, Time).
 
-comp_object_pose(Obj, Pose, [Stamp,Stamp]) :-
-  ground(Obj),
-  current_object_pose_stamp(X), X < Stamp,
-  current_object_pose(Obj,Pose),!.
-
-comp_object_pose(Obj, [RefFrame,ObjFrame,T,Q], [Stamp,Stamp]) :-
-  ground(Obj),
+comp_object_pose(Subject, [RefFrame,ObjFrame,T,Q], Time) :-
+  ground(Subject),
+  once((
+    rdf_has(Obj,ease_obj:hasLocalization,Subject);
+    Obj = Subject
+  )),
+  current_object_pose_stamp(Obj,X), X < Time,
   object_frame_name(Obj,ObjFrame),
   ( ground(RefFrame) ; map_frame_name(RefFrame) ),
-  mng_lookup_transform(RefFrame,ObjFrame,pose(T,Q),Stamp),!.
+  mng_lookup_transform(RefFrame,ObjFrame,pose(T,Q),Time),!.

@@ -33,6 +33,7 @@
 
 :- use_module(library('process')).
 
+:- use_module('rosprolog_node').
 :- use_module('roscpp').
 
 user:message_hook(format(X,Args), error, _)         :- ros_message_hook(X,Args,ros_error).

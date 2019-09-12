@@ -18,6 +18,8 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/event_memory')).
+:- use_module(library('knowrob/perception')).
+:- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/utility/filesystem')).
 
 :- dynamic mem_is_initialized/0,
@@ -166,7 +168,7 @@ mem_import_owl(OWLFile) :-
   % make sure object frames are asserted
   forall(
     member(Obj,ObjectIds),
-    object_assert_frame_name(Obj,belief_state)
+    object_assert_frame_name(Obj)
   ),
   % make sure object detections are stored in mongo.
   % this is to have just one central place where historical poses
@@ -174,7 +176,7 @@ mem_import_owl(OWLFile) :-
   % sources/queries to find out whether a pose is valid.
   forall(
     member(Obj,ObjectIds),(
-    mem_import_detections(Obj),
+    object_import_detections(Obj),
     mem_import_fixed_pose(Obj)
   )),
   %%
@@ -186,23 +188,6 @@ mem_import_fixed_pose(Obj) :-
     mem_pose_pl(Obj,Pose,X),
     object_pose_update(Obj,X,0)
   ) ; true.
-
-%%
-mem_import_detections(Obj) :-
-  findall(Stamp-Pose, (
-    object_detection(Obj,Stamp,Detection,belief_state),
-    once((
-      rdf_triple(knowrob:eventOccursAt,Detection,Pose),
-      mem_pose_pl(Obj,Pose,[RefFrame,ObjFrame,T,Q])
-    )),
-    ros_store_tf([RefFrame,ObjFrame,T,Q],Stamp)
-  ), StampedDetections),
-  %% find latest
-  ( StampedDetections=[] -> true ; (
-    sort(StampedDetections,Sorted),
-    reverse(Sorted,[LatestStamp-LatestPose|_]),
-    object_pose_update(Obj,LatestPose,LatestStamp)
-  )).
 
 %%
 mem_import_latest_tf :-
@@ -224,10 +209,7 @@ mem_import_latest_tf(Obj) :-
 mem_pose_pl(Obj,Pose,[ObjFrame,RefFrame,T,Q]) :-
   transform_data(Pose,(T,Q)),
   object_frame_name(Obj,ObjFrame),
-  % FIXME: dulify
-  (  rdf_has(Pose, knowrob:'relativeTo', Ref)
-  -> object_frame_name(Ref,RefFrame)
-  ;  map_frame_name(RefFrame) ).
+  transform_reference_frame(Pose,RefFrame).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

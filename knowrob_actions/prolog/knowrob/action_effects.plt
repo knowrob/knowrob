@@ -23,9 +23,13 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
-:- use_module(library('knowrob/triple_memory')).
+:- use_module(library('knowrob/temporal')).
+:- use_module(library('swrl')).
+:- use_module(library('swrl_parser')).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
@@ -38,72 +42,69 @@
 %%%%%% Blocksworld
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-red_on_blue   :- holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
-blue_on_red   :- holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'BlockRed_test0') ), !.
-red_on_table  :- holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'Table_test0') ), !.
-blue_on_table :- holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'Table_test0') ), !.
-red_in_hand   :- holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
-blue_in_hand  :- holds( blocksworld:graspedBy(blocksworld:'BlockBlue_test0', blocksworld:'Hand_test0') ), !.
+% Load blocksworld SWRL rules
+:- swrl_file_path(knowrob_actions,'blocksworld.swrl',Filepath),
+   swrl_file_parse(Filepath,_,_).
 
-test(take_red0) :-
-  mem_drop,
-  \+ red_in_hand,
+yellow_on_blue  :- holds( blocksworld:ontop(blocksworld:'BlockYellow_0', blocksworld:'BlockBlue_0') ), !.
+yellow_on_red   :- holds( blocksworld:ontop(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
+yellow_on_table :- \+ holds( blocksworld:ontop(blocksworld:'BlockYellow_0', _) ), !.
+red_on_blue     :- holds( blocksworld:ontop(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
+red_on_table    :- \+ holds( blocksworld:ontop(blocksworld:'BlockRed_0', _) ), !.
+
+:- rdf_meta create_action_for_task(r,r).
+
+create_action_for_task(Tsk,Act) :-
+  current_time(T0),
+  action_create(dul:'Action',Act,belief_state),
+  action_set_task(Act,Tsk),
+  event_set_begin_time(Act,T0),
+  event_set_end_time(Act,T0),
+  forall(
+  ( kb_triple(Tsk, dul:isTaskOf, Role),
+    kb_triple(Role, dul:classifies, Obj) ),
+    action_add_filler(Act,Obj)
+  ).
+  
+  
+test('Unstack_Y') :-
+  yellow_on_blue,
+  create_action_for_task(blocksworld:'Unstack_Y',Act),
+  action_effects_apply(Act,blocksworld:'Unstack_Y'),
+  yellow_on_table.
+
+test('Stack_RB') :-
   red_on_table,
-  action_effects_apply(blocksworld:'Take_red'),
-  red_in_hand,
-  \+ red_on_table.
+  create_action_for_task(blocksworld:'Stack_RB',Act),
+  action_effects_apply(Act,blocksworld:'Stack_RB'),
+  red_on_blue.
 
-test(put_red_on_blue) :-
-  \+ red_on_blue,
-  red_in_hand,
-  blue_on_table,
-  action_effects_apply(blocksworld:'Put_red_on_blue'),
-  red_on_blue,
-  \+ red_in_hand.
-
-test(take_red1) :-
-  red_on_blue,
-  \+ red_in_hand,
-  rdf_retractall(blocksworld:'Take_red', _, _, action_projection), % force re-projection
-  action_effects_apply(blocksworld:'Take_red'),
-  red_in_hand,
-  \+ red_on_blue.
-
-test(put_red_on_table) :-
-  \+ red_on_table,
-  red_in_hand,
-  action_effects_apply(blocksworld:'Put_red_on_table'),
-  \+ red_in_hand,
-  red_on_table.
-
-test(take_blue) :-
-  blue_on_table,
-  \+ blue_in_hand,
-  action_effects_apply(blocksworld:'Take_blue'),
-  blue_in_hand,
-  \+ blue_on_table.
-
-test(put_blue_on_red) :-
-  \+ blue_on_red,
-  blue_in_hand,
-  red_on_table,
-  action_effects_apply(blocksworld:'Put_blue_on_red'),
-  blue_on_red,
-  \+ blue_in_hand.
+test('Stack_YR') :-
+  yellow_on_table,
+  create_action_for_task(blocksworld:'Stack_YR',Act),
+  action_effects_apply(Act,blocksworld:'Stack_YR'),
+  yellow_on_red.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Pancake Making
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Load blocksworld SWRL rules
+%:- swrl_file_path(knowrob_actions,'pancake.swrl',Filepath),
+   %swrl_file_parse(Filepath,_,_).
+
 test(cracking_effect_destroyed_egg, [nondet]) :-
-  action_effect_on_object(pancake:'CrackingAnEgg', destroyed(Egg)),
+  action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
   rdf_equal(Egg,pancake:'Egg').
 
-%test(pancake_making_turn_on_maker) :-
-  %% turning on the pancake maker creates heating process
-  %action_effects_apply(pancake:'TurningOnPancakeMaker_0'),
-  %rdf_has(pancake:'TurningOnPancakeMaker_0', knowrob:processStarted, Heating),
-  %rdfs_individual_of(Heating, pancake:'HeatingProcess').
+test(pancake_making_turn_on_maker) :-
+  %
+  %create_action_for_task(blocksworld:'Stack_RB',Act),
+  action_effects_apply(pancake:'TurningOn_Act_0'),
+  % TODO: test that the device state has changed
+  % test that a heating process was started
+  kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
+  kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
   
 %test(pancake_making_crack_egg) :-
   %% create some egg yolk and egg shells

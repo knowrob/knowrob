@@ -28,6 +28,7 @@
 
 :- module(knowrob_perception,
     [
+      object_import_detections/1,
       create_visual_perception/1,
       create_visual_perception/2,
       perception_set_object/2,
@@ -54,7 +55,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -67,7 +68,21 @@
     object_detection(r,?,?,+),
     perception_set_pose(r,r),
     perception_set_object(r,r),
-    create_visual_perception(-).
+    create_visual_perception(-),
+    object_import_detections(r).
+
+%%
+object_import_detections(Obj) :-
+  findall(Stamp-Pose, (
+    object_detection(Obj,Stamp,Detection,belief_state),
+    once(kb_triple(Detection,knowrob:eventOccursAt,Pose))
+  ), StampedDetections),
+  %% find latest
+  ( StampedDetections=[] -> true ; (
+    sort(StampedDetections,Sorted),
+    reverse(Sorted,[LatestStamp-LatestPose|_]),
+    object_pose_update(Obj,LatestPose,LatestStamp)
+  )).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -81,8 +96,8 @@
 %
 create_visual_perception(Perception) :-
   %% FIXME VisualPerception not existing
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#VisualPerception', Perception),
-  owl_instance_from_class(knowrob:'TimePoint', TimePoint),
+  kb_create(knowrob:'VisualPerception', Perception),
+  kb_create(knowrob:'TimePoint', TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
 create_visual_perception(Perception, ModelType) :-
   create_visual_perception(Perception),
@@ -117,7 +132,7 @@ perception_set_pose(Pose, Pose) :-
   atom(Pose),
   rdfs_individual_of(Pose, knowrob:'Pose'), !.
 perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
-  rdf_has(Ref, knowrob:'frameName', literal(ReferenceFrame)),
+  object_frame_name(Ref, ReferenceFrame),
   create_transform(Translation, Rotation, TransformId),
   rdf_assert(TransformId, knowrob:'relativeTo', Ref),
   rdf_assert(Perception, knowrob:'eventOccursAt', TransformId), !.
@@ -137,17 +152,17 @@ perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
 object_detection(Object, Time, Detection) :-
     object_detection(Object, Time, Detection, user).
 object_detection(Object, Time, Detection, Graph) :-
-    rdf_has(Detection, knowrob:objectActedOn, Object, Graph),
+    rdf(Detection, knowrob:objectActedOn, Object, Graph),
     % FIXME VisualPerception not defined in knowrob.owl anymore
     %rdfs_individual_of(Detection,  knowrob:'VisualPerception'),
-    detection_starttime(Detection, DetectionTime),
+    interval_start(Detection, DetectionTime),
     ( var(Time)
       -> Time = DetectionTime
       ; (
-         time_term(Time,Time_v),
-         Time_v >= DetectionTime,
+         number(Time),
+         Time >= DetectionTime,
          detection_endtime(Detection, DetectionEndTime),
-         Time_v =< DetectionEndTime
+         Time =< DetectionEndTime
         )
     ).
 
@@ -168,7 +183,7 @@ latest_detection_of_instance(Object, LatestDetection) :-
    (% old version without linked list of detections
     findall([D_i,Object,St], (rdf_has(D_i, knowrob:objectActedOn, Object),
                               rdfs_individual_of(D_i,  knowrob:'MentalEvent'),
-                              detection_starttime(D_i, St)), Detections),
+                              interval_start(D_i, St)), Detections),
 
     predsort(compare_object_detections, Detections, Dsorted),
 
@@ -190,7 +205,7 @@ latest_detection_of_type(Type, LatestDetection) :-
 
     findall([D_i,Object,St], (rdfs_individual_of(Object, Type),
                               latest_detection_of_instance(Object, D_i),
-                              detection_starttime(D_i, St)), Detections),
+                              interval_start(D_i, St)), Detections),
 
     predsort(compare_object_detections, Detections, Dsorted),
 
@@ -212,7 +227,7 @@ latest_perception_of_type(Type, LatestPerception) :-
     findall([P_i,Object,St], (rdfs_individual_of(Object, Type),
                               rdf_has(P_i, knowrob:objectActedOn, Object),
                               rdfs_individual_of(P_i,  knowrob:'VisualPerception'),
-                              detection_starttime(P_i, St)), Perceptions),
+                              interval_start(P_i, St)), Perceptions),
 
     predsort(compare_object_detections, Perceptions, Psorted),
 
@@ -253,7 +268,7 @@ latest_inferred_object_set(Objects) :-
                           rdf_has(Inf, knowrob:probability, InfProb),
                           term_to_atom(Prob, InfProb),
                           >(Prob, 0),
-                          detection_starttime(D_i, St)), Inferences),
+                          interval_start(D_i, St)), Inferences),
 
     predsort(compare_object_detections, Inferences, Psorted),
 
@@ -279,28 +294,6 @@ latest_inferred_object_types(ObjectTypes) :-
 
     latest_inferred_object_set(Objects),
     findall(ObjT, (member(Obj, Objects), rdf_has(Obj, rdf:type, ObjT)), ObjectTypes).
-
-%% detection_starttime(+Detection, -StartTime) is nondet.
-%
-% Determine the start time of an object detection as numerical value.
-% Simply reads the asserted knowrob:startTime and transforms the timepoint
-% into a numeric value.
-%
-% @param Detection  Instance of an event with asserted startTime
-% @param StartTime  Numeric value describing the start time
-%
-detection_starttime(Detection, StartTime) :-
-  number(Detection), StartTime = Detection ;
-  
-  % start time is asserted
-  rdf_triple(knowrob:startTime, Detection, StartTtG),
-  rdf_split_url(_, StartTt, StartTtG),
-  atom_concat('timepoint_', StartTAtom, StartTt),
-  term_to_atom(StartTime, StartTAtom),! ;
-
-  rdf_split_url(_, StartTt, Detection),
-  atom_concat('timepoint_', StartTAtom, StartTt),
-  term_to_atom(StartTime, StartTAtom).
 
 
 %% detection_endtime(+Detection, -EndTime) is nondet.

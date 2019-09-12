@@ -56,7 +56,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('jpl')).
 :- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/computable')).
 
@@ -285,18 +285,30 @@ mem_triple_interval(DBObject,Interval) :-
     Interval=[Begin] ).
 
 %%
-% Integration of triple memory into virtual KB.
+% expand knowrob:vkb_has_triple
 %
-rdfs_computable:rdfs_computable_triple_during(Property,Subject,Value,[Stamp]) :-
-  ( ground(Subject)  -> mem_subject(Subject) ; true ),
-  ( ground(Property) -> mem_property(Property) ; true ),
-  mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp),
-  \+ mng_get_long(DBObject,end,_).
+knowrob:vkb_has_triple(S,P,O,DBArgs) :-
+  ( ground(S) -> mem_subject(S) ; true ),
+  ( ground(P) -> mem_property(P) ; true ),
+  ( get_dict(during,DBArgs,Stamp) ->
+    mem_retrieve_triple(S,P,O,_,Stamp) ;
+    mem_retrieve_triple(S,P,O,_)
+  ).
 
-rdfs_computable:rdfs_computable_triple_during(Property,Subject,Value,[Begin,End]) :-
-  ( ground(Subject)  -> mem_subject(Subject) ; true ),
-  ( ground(Property) -> mem_property(Property) ; true ),
-  mem_retrieve_triple(Subject,Property,Value,DBObject,Begin),
-  ( mng_get_long(DBObject,end,X) -> 
-  ( var(End) -> End=X ; X >= End )
-  ; true ).
+%%
+:- knowrob:set_temporalized_db(
+      triple_memory:mem_triple_start_,
+      triple_memory:mem_triple_stop_).
+
+%%
+mem_triple_start_(S,P,O,DBArgs) :-
+  ( get_dict(during,DBArgs,Stamp) ->
+    mem_store_triple(S,P,O,_,Stamp) ;
+    mem_store_triple(S,P,O)
+  ).
+
+mem_triple_stop_(S,P,O,DBArgs) :-
+  ( get_dict(during,DBArgs,Stamp) ->
+    mem_triple_stop(S,P,O,Stamp) ;
+    mem_triple_stop(S,P,O)
+  ).

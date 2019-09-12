@@ -379,6 +379,8 @@ public class TFMemory {
 		DBCollection coll = db.getCollection(tfTableName);
 		DBObject query = new BasicDBObject();
 		
+		// FIXME: childFrameID is ignored, and it is not ensured that it is loaded
+		//        at all
 		// FIXME: the estimate to load frames within a time duration
 		//        does not work when frames are only rarely published.
 		//        but it seems hard to avoid splitting this up into multiple queries.

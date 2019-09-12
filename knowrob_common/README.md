@@ -4,7 +4,22 @@ knowrob_common
 This package provides the core ontologies and reasoning rules
 of the KnowRob knowledge processing system for robots.
 
-### Semantics
+### Representation
+
+KnowRob equips robots with a terminology.
+A common meaning of terms is substantial when information
+is to be transferred from one robot to another,
+or within the control system of a single robot.
+This terminology is represented as OWL ontology in KnowRob.
+
+KnowRob builds ontop of the DOLCE+DnS Ultralite (DUL) foundational ontology
+which is an ontology with a cognitive bias trying to capture categories
+underlying natural language.
+The DUL ontology is extended by categories underlying everyday activities (ease_ontology)
+that are interdisciplinary applicable, and not specific to robotic agents.
+KnowRob extends these ontologies by categories underlying robot control.
+
+### Reasoning
 
 KnowRob uses the Web Ontology Language (OWL) in combination with
 rule based reasoning powered by SWI Prolog.
@@ -20,48 +35,38 @@ and owl_has/3 checks if a relation can be deduced using OWL inference rules.
 Some OWL2 features such as property chains are also supported,
 but the reasoner is not OWL2 complete.
 
-Between the RDFS and OWL layer KnowRob implements the computable semantics layer.
-OWL ontologies may describe how the existence of a relation can be computed
-in a given situation, and KnowRob uses the computation rules at query time
-to allow data abstraction on demand.
-The current implementation includes computable properties for
+RDF triples may concretely be represented in the RDF triple store of SWI Prolog.
+But KnowRob supports multiple sources for triples including
+computational methods that ground relations in the data structures of the robot's
+control program, or in its senses.
+This concept is called *virtual knowledge base* in KnowRob.
+Several virtual triple sources are pre-defined in KnowRob
+including computable properties for
 qualitative spatial reasoning (comp_spatial),
-temporal reasoning about events (comp_temporal),
-object pose computation from tf message channel and mongo DB (knowrob_objects, knowrob_mongo),
-and SWRL rules (swrl.pl).
-owl_compute_individual_of/2 expands owl_individual_of/2,
-and owl_compute_has/3 expands owl_has/3 with computable semantics.
+temporal reasoning (knowrob_common),
+ROS tf data (knowrob_memory, knowrob_mongo),
+and SWRL rules (swrl).
 
-Another additional semantic layer is added by KnowRob to integrate
-temporal information in the reasoning process,
+KnowRob is also capable to handle temporal information,
 allowing robots to reason about past events.
-KnowRob follows the convention that objects generally can have
-temporal parts, which describe relations that only hold
-during the lifespan of the temporal part.
-temporal.pl provides interfaces to maintain the temporal parts
-of an object.
-owl_individual_of_during/3 expands owl_compute_individual_of/2,
-and owl_has_has/4 expands owl_compute_has/3 with temporal semantics.
-Finally, holds/2 allows to put triples in a term Predicate(Subject,Object):
+Please note that OWL is generally considered inappropriate for
+explicating time because it is limited to binary relations.
+One approach to handle time is to *reify* relations to concepts
+that also have time parameters.
+The ontology used by KnowRob comes with a few reification concepts
+that are handled within KnowRob.
+However, KnowRob also supports explicit time in its QA interface. The time
+specified is used as parameter for the triple store
+(or to select appropiate reifications of relations).
+In case of the default RDF triple store of SWI Prolog,
+all triples are assumed to hold forever.
+However, a dedicated *temporalized* triple store can be used
+to represent triples that only hold limited time.
+The time value specified in the query is used as parameter
+for the triple store in that case.
+knowrob_mem implements such a temporalized triple store.
+The main interface to access temporalized triples is the
+holds/2 predicate:
 
-    holds(knowrob:volumeOfObject(Obj, literal(type(xsd:float,15.0))), 25.0)
-
-### Ontologies
-
-![Upper ontology](img/ontology.png)
-
-### Entity descriptions
-
-    entity(Cont, [an, object,
-        [type, container]]).
-
-    entity(Loc, [a, location, [in-cont_generic,
-        [an, object, [type, container]]]]).
-    
-    entity(Obj, [an, object,
-        [type, storage_construct],
-        [type, restriction(
-            knowrob:'typePrimaryFunction-containerFor',
-            some_values_from(knowrob:'Perishable'))]
-    ])
+    holds(knowrob:volumeOfObject(Obj, 15.0), 25.0)
 

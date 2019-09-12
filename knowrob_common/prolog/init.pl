@@ -33,6 +33,7 @@
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
 :- use_module(library(prolog_pack)).
+%% FIXME: need to downoad this build time in catkin!
 :- once(
      use_module(library(list_util)) ;
      pack_install(list_util,[
@@ -60,6 +61,7 @@
 :- rdf_db:rdf_register_ns(owl,       'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(dul,       'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease,      'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease_act,  'http://www.ease-crc.org/ont/EASE-ACT.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease_wf,   'http://www.ease-crc.org/ont/EASE-WF.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease_obj,  'http://www.ease-crc.org/ont/EASE-OBJ.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease_proc, 'http://www.ease-crc.org/ont/EASE-PROC.owl#', [keep(true)]).
@@ -82,18 +84,22 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 :- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').
 :- owl_parser:owl_parse('http://www.ease-crc.org/ont/ROS.owl').
 :- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE-ACT.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE-WF.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE-IO.owl').
+:- owl_parser:owl_parse('http://www.ease-crc.org/ont/EASE-OBJ.owl').
 :- owl_parser:owl_parse('http://knowrob.org/kb/knowrob.owl').
 
 :- use_module(library('knowrob/utility/atoms')).
 
-:- use_module(library('knowrob/comp_similarity')).
-:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/xsd')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/owl')).
 % :- use_module(library('knowrob/units')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/rosowl')).
+:- use_module(library('knowrob/wup_similarity')).
 
 % convenience: set some Prolog flags in order *not to* trim printed lists with [...]
 :- set_prolog_flag(toplevel_print_anon, false).

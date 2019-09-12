@@ -62,7 +62,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
 :- use_module(library('lists')). % for sum_list
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/transforms')).
 
@@ -133,7 +133,7 @@ marker_succeeding_links(Link0, Links) :-
   ), Links).
 
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  rdf_has(Identifier, knowrob:'frameName', literal(UrdfName)), !.
+  object_frame_name(Identifier, UrdfName), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.

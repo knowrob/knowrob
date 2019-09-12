@@ -6,15 +6,18 @@
 :- use_module(library('random')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/beliefstate')).
+:- use_module(library('knowrob/memory')).
 
 :- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 
 :- dynamic test_object/1.
+
+:- mem_init, mem_drop.
 
 test(belief_new_object) :-
   belief_new_object(knowrob:'Cup', Cup),
@@ -49,19 +52,13 @@ test(belief_at_update_class) :-
   test_object(Cup),
   belief_perceived_at(knowrob:'Milk', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
   \+ rdfs_individual_of(Cup, knowrob:'Cup'),
-  owl_individual_of_during(Cup, knowrob:'Milk'), !.
+  kb_type_of(Cup, knowrob:'Milk'), !.
 
 test(belief_at_update_class2) :-
   test_object(Cup),
   belief_perceived_at(knowrob:'Cup', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
-  owl_individual_of_during(Cup, knowrob:'Cup'),
-  \+ owl_individual_of_during(Cup, knowrob:'Milk'), !.
-
-test(belief_temporalized_type) :-
-  test_object(Cup),
-  owl_individual_of_during(Cup,knowrob:'Cup', [0.0,T2]),
-  owl_individual_of_during(Cup,knowrob:'Milk', [T2,T3]),
-  owl_individual_of_during(Cup,knowrob:'Cup', [T3]), !.
+  kb_type_of(Cup, knowrob:'Cup'),
+  \+ kb_type_of(Cup, knowrob:'Milk'), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- end_tests(knowrob_beliefstate).

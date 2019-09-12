@@ -35,6 +35,8 @@
 @license BSD
 */
 
+%% TODO: QUDT does not work with OWL. Either wait for a OWL version or find another ontology.
+
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('semweb/owl')).
