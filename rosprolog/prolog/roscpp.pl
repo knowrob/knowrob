@@ -104,7 +104,6 @@ ros_publish_dict(Msg_Dict) :-
   with_output_to(atom(Msg_json), 
     json_write_dict(current_output, Msg_Dict)
   ),
-  writeln([publish,Msg_json]),
   ros_json_publish(Msg_json).
 
 %ros_subscribe(TopicName, Callback) :-
