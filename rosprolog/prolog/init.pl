@@ -103,6 +103,10 @@ use_ros_module(Package, FilePath) :-
   atom_concat(AbsoluteDirectory, FilePath, AbsoluteFilePath),
   use_module( AbsoluteFilePath ).
 
+%% ros_path(+URL, +GlobalPath) is semidet.
+%
+% Resolve ROS URI to a locale absolute path.
+%
 ros_path(URL, GlobalPath) :-
   sub_string(URL,0,7,_,'package'), !,
   % retrieve part after package://
