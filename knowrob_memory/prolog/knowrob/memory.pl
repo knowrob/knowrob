@@ -140,6 +140,11 @@ mem_import(Dir) :-
   %%
   mem_triples_init.
 
+mem_import(URL) :-
+  atom(URL),
+  ros_path(URL,GlobalPath), !,
+  mem_import(GlobalPath).
+
 mem_import(OWLFile) :-
   atom(OWLFile),
   exists_file(OWLFile),
@@ -206,7 +211,7 @@ mem_import_latest_tf(Obj) :-
   object_pose_update(Obj,[RefFrame,ObjFrame,T,Q],1).
   
 
-mem_pose_pl(Obj,Pose,[ObjFrame,RefFrame,T,Q]) :-
+mem_pose_pl(Obj,Pose,[RefFrame,ObjFrame,T,Q]) :-
   transform_data(Pose,(T,Q)),
   object_frame_name(Obj,ObjFrame),
   transform_reference_frame(Pose,RefFrame).
