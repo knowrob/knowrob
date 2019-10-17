@@ -103,6 +103,17 @@ use_ros_module(Package, FilePath) :-
   atom_concat(AbsoluteDirectory, FilePath, AbsoluteFilePath),
   use_module( AbsoluteFilePath ).
 
+ros_path(URL, GlobalPath) :-
+  sub_string(URL,0,7,_,'package'), !,
+  % retrieve part after package://
+  sub_atom(URL, 10, _, 0, Path),
+  atomic_list_concat(PathList, '/', Path),
+  % determine package name and resolve path
+  selectchk(Pkg, PathList, LocalPath),
+  ros_package_path(Pkg, PkgPath),
+  % build global path and load OWL file
+  atomic_list_concat([PkgPath|LocalPath], '/',  GlobalPath).
+
 :- assert(classpath_initialized(false)).
 init_classpath :-
   classpath_initialized(true), !.
