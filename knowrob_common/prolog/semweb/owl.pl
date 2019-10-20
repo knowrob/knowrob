@@ -82,6 +82,7 @@
 	    rdf_assert_literal/3,
 	    rdf_assert_literal/4,
 	    rdf_phas/3,
+owl_has_direct_type/2,
 	    owl_property_range_clear_cache/2
 	  ]).
 :- use_module(library(lists)).
@@ -1232,8 +1233,7 @@ owl_has_property_chain_O2S(O, [P|RestChain], S, DB) :-
 %% owl_use_has_value
 owl_use_has_value(S, P, O) :-
 	ground(S), !,
-	rdfs_individual_of(S,Type), % this won't allow to find has-values of inferred types
-	%owl_individual_of(S,Type),
+	owl_has_direct_type(S,Type), % this won't allow to find has-values of inferred types, except of intersection classes
 	( ground(P) -> (
 	  rdf(Type, owl:onProperty, P_sub),
 	  rdf(Type, owl:hasValue, O),
@@ -1250,6 +1250,23 @@ owl_use_has_value(S, P, O) :-
 	  rdf_has(Type, owl:onProperty, P)
 	),
 	rdfs_individual_of(S,Type).
+
+owl_has_direct_type(S,Type) :-
+	findall(X, (
+		rdfs_individual_of(S,Class),
+		owl_has_direct_type_(S,Class,X)
+	), Types),
+	list_to_set(Types,Set),
+	member(Type,Set).
+
+owl_has_direct_type_(S,Class,Type) :-
+	rdf_has(Class, owl:intersectionOf, List) ->
+	% if it is an intersection class
+	( rdfs_member(R, List),
+	  rdfs_subclass_of(R, Class2),
+	  owl_has_direct_type_(S,Class2,Type) ) ;
+	% else
+	( Type = Class ).
 
 		 /*******************************
 		 *	   DB ACCESS	*
