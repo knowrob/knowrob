@@ -25,7 +25,7 @@ add_service_files(
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
-      LIBRARIES rosprolog
+      LIBRARIES rosprolog rosprolog_client
       INCLUDE_DIRS include
       CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack)
 
