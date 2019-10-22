@@ -8,6 +8,11 @@ find_package(Eigen3 REQUIRED)
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
 
+install_prolog_pack(list_util
+  URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")
+install_prolog_pack(delay
+  URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
+
 catkin_package(
     CATKIN_DEPENDS rosprolog
 )

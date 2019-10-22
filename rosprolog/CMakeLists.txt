@@ -27,7 +27,9 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
       LIBRARIES rosprolog rosprolog_client
       INCLUDE_DIRS include
-      CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack)
+      CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack
+      CFG_EXTRAS pack.cmake
+)
 
 # find SWI Prolog libraries
 find_package(PkgConfig)
