@@ -1,35 +1,29 @@
-#!/bin/bash
+#!/bin/sh
 
 PL_ARGS=$@
 PL_INIT_FILE=$(rospack find rosprolog)/prolog/init.pl
-SCRIPT_FILE=""
+ROSTEST_FILE=$(rospack find rosprolog)/prolog/rostest.pl
 
+# A POSIX variable
+OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
-if [ -n "$1" ]; then
-   G_ARGS="ensure_loaded('${PL_INIT_FILE}')"
-   
-   IFS=','
-   for PKG in $1; do
-     IFS=' '
-     G_ARGS="$G_ARGS,register_ros_package($PKG)"
-     PKG_PATH=`rospack find $PKG`
-     if [ -f $PKG_PATH/prolog/init.pl ]; then
-       ROS_EXPORT_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $PKG`
-       export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
-     else
-       exit 1
-     fi
-     IFS=','
-     for MOD in $2; do
-       MOD_PATH=`find $PKG_PATH/prolog -name "$MOD.pl"`
-       if [ ! -z "$MOD_PATH" ]; then
-         G_ARGS="$G_ARGS,use_module('$MOD_PATH')"
-       fi
-     done
-   done
-   SCRIPT_FILE="-g $G_ARGS,load_test_files(_) -t ignore(run_tests([$2])),halt"
-fi
+opts="report"
 
-IFS=' '
-cd "$(rospack find knowrob_common)"
-exec /usr/bin/swipl -q -f ${PL_INIT_FILE}  ${SCRIPT_FILE} knowrob_common
+while getopts "o:" opt; do
+    case "$opt" in
+    o)  opts="${opts},xunit('$OPTARG')"
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "${1:-}" = "--" ] && shift
+
+for target in "$@"
+do
+    /usr/bin/swipl -q \
+        -f ${PL_INIT_FILE} \
+        -g "ensure_loaded('${PL_INIT_FILE}'),ensure_loaded('${ROSTEST_FILE}')" \
+        -t "setup_call_cleanup(true, rospl_run_tests($target,[${opts}]), halt)"
+done

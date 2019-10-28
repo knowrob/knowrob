@@ -28,7 +28,7 @@ catkin_package(
       LIBRARIES rosprolog rosprolog_client
       INCLUDE_DIRS include
       CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack
-      CFG_EXTRAS pack.cmake
+      CFG_EXTRAS pack.cmake plunit.cmake
 )
 
 # find SWI Prolog libraries
