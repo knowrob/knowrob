@@ -8,6 +8,10 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects comp_spat
 catkin_package(
     CATKIN_DEPENDS knowrob_common knowrob_objects comp_spatial
 )
+catkin_add_plunit(
+    building
+    semmap
+)
 
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)

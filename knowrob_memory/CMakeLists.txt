@@ -6,6 +6,10 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_mongo knowrob_obj
 catkin_package(
     CATKIN_DEPENDS knowrob_common knowrob_mongo knowrob_objects knowrob_actions mongodb_log
 )
+catkin_add_plunit(
+    knowrob/beliefstate
+    knowrob/memory
+)
   
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)

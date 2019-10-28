@@ -7,6 +7,13 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects swrlprolo
 catkin_package(
     CATKIN_DEPENDS knowrob_common knowrob_objects swrlprolog
 )
+catkin_add_plunit(
+  knowrob/action_effects
+  knowrob/action_excution
+  knowrob/action_parser
+  knowrob/event_graph
+  knowrob/task_planning
+)
 
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)

@@ -244,7 +244,7 @@ object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :-
 
 object_map_pose(ObjFrame,MapPose,Time) :-
   map_frame_name(MapFrame),
-  object_frame_name(Obj,ObjFrame),
+  object_frame_name(Obj,ObjFrame), % FIXME: only works with Obj Bound
   get_localization(Obj,Loc),
   holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,_,T,Q], Time),
   ( MapFrame = ParentFrame ->

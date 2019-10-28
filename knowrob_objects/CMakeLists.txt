@@ -10,6 +10,7 @@ add_message_files(FILES ObjectState.msg ObjectStateArray.msg)
 generate_messages(DEPENDENCIES geometry_msgs)
 
 catkin_package(CATKIN_DEPENDS knowrob_common rosprolog roscpp roslib)
+catkin_add_plunit(knowrob/objects)
 
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)

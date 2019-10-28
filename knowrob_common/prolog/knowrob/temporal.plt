@@ -1,5 +1,5 @@
 
-:- begin_tests(knowrob_temporal).
+:- begin_tests('knowrob/temporal').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -49,4 +49,4 @@ test(interval_during10, [fail]) :-
 test(rdf_interval) :-
   interval(test_comp_temporal:'Short1', [1377777000,1377777002]).
 
-:- end_tests(knowrob_temporal).
+:- end_tests('knowrob/temporal').

@@ -288,7 +288,7 @@ comp_inFrontOf(Front, Back, Time) :-
 %
 comp_inCenterOf(Inner, Outer) :-
     current_time(Time),
-    comp_inFrontOf(Inner, Outer, Time).
+    comp_inCenterOf(Inner, Outer, Time).
 
 comp_inCenterOf(Inner, Outer, Time) :-
     physical_object(Inner),

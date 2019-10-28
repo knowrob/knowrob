@@ -86,10 +86,3 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 :- set_prolog_flag(toplevel_print_options, [quoted(true), portray(true), max_depth(0), attributes(portray)]).
 
 :- set_prolog_flag(float_format, '%.12g').
-
-% load and configure unit testing environment
-:- use_module(library(plunit)).
-:- set_test_options([load(always),
-                     run(make),
-                     silent(false),
-                     cleanup(true)]).

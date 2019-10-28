@@ -1,5 +1,5 @@
 
-:- begin_tests(knowrob_beliefstate).
+:- begin_tests('knowrob/beliefstate').
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- use_module(library('lists')).
@@ -61,4 +61,4 @@ test(belief_at_update_class2) :-
   \+ kb_type_of(Cup, knowrob:'Milk'), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-:- end_tests(knowrob_beliefstate).
+:- end_tests('knowrob/beliefstate').

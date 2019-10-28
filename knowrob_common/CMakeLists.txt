@@ -13,9 +13,12 @@ install_prolog_pack(list_util
 install_prolog_pack(delay
   URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
 
-catkin_package(
-    CATKIN_DEPENDS rosprolog
-)
+catkin_package(CATKIN_DEPENDS rosprolog)
+catkin_add_plunit(
+  knowrob/computable
+  knowrob/knowrob
+  knowrob/temporal
+  knowrob/wup_similarity)
 
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 add_library(pl_eigen SHARED src/pl_eigen.cpp)

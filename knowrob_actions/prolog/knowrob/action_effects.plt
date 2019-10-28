@@ -18,7 +18,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(action_effects).
+:- begin_tests('knowrob/action_effects').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
@@ -145,4 +145,4 @@ test(pancake_making_turn_on_maker) :-
   %rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
   %rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).
 
-:- end_tests(action_effects).
+:- end_tests('knowrob/action_effects').

@@ -1,5 +1,5 @@
 
-:- begin_tests(wup_similarity).
+:- begin_tests('knowrob/wup_similarity').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -13,4 +13,4 @@ test('rdf_wup_similarity2') :-
   rdf_wup_similarity(dul:'PhysicalObject', dul:'Object', Sim),
   rdf_wup_similarity(dul:'Object', dul:'PhysicalObject', Sim).
 
-:- end_tests(wup_similarity).
+:- end_tests('knowrob/wup_similarity').

@@ -18,7 +18,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(task_planning).
+:- begin_tests('knowrob/task_planning').
 
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
@@ -46,4 +46,4 @@ test(plan_pancake_objects, [nondet]) :-
   workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'EggYolk'),
   workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Dough').
 
-:- end_tests(task_planning).
+:- end_tests('knowrob/task_planning').
