@@ -110,6 +110,7 @@ rospl_run_tests_(Pkg, Module, Opts) :-
   forall(test_report_(Module,Opts),true).
 
 %% retract dynamic facts
+test_suite_retract_(Module) :-
   retractall(test_suite_begin(Module,_)),
   retractall(test_suite_end(Module,_)),
   retractall(test_case_begin(Module,_,_)),
