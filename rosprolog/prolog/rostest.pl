@@ -89,8 +89,12 @@ rospl_run_tests(Pkg:Module, Opts) :-
   % enforce atom
   ( atom(Module) -> ModAtom = Module ; term_to_atom(Module,ModAtom) ),
   setup_call_cleanup(true,
-    ( rospl_run_tests_(Pkg, ModAtom, Opts) ),
-    ( test_suite_retract_(ModAtom) )
+    catch(
+      rospl_run_tests_(Pkg, ModAtom, Opts),
+      Error,
+      print_message(information,test_failed(ModAtom, '*', Error))
+    ),
+    test_suite_retract_(ModAtom)
   ).
 
 rospl_run_tests_(Pkg, Module, Opts) :-
@@ -101,11 +105,13 @@ rospl_run_tests_(Pkg, Module, Opts) :-
   stream_property(OldOut, alias(user_output)),
   retractall(out_stream_(_)),
   assertz(out_stream_(OldOut)),
-  % silence plunit (avoid that it displays dots)
-  open_null_stream(NullStream),
-  % finall call *rubn_tests*
-  with_error_to_(NullStream, ignore(run_tests([Module]))),
-  close(NullStream),
+  % finall call *run_tests*
+  % but silence plunit (avoid that it displays dots)
+  setup_call_cleanup(
+    open_null_stream(NullStream),
+    with_error_to_(NullStream, ignore(run_tests([Module]))),
+    close(NullStream)
+  ),
   % make a custom report
   forall(test_report_(Module,Opts),true).
 
