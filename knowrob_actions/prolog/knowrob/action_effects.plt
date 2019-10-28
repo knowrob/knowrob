@@ -97,14 +97,14 @@ test(cracking_effect_destroyed_egg, [nondet]) :-
   action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
   rdf_equal(Egg,pancake:'Egg').
 
-test(pancake_making_turn_on_maker) :-
-  %
-  %create_action_for_task(blocksworld:'Stack_RB',Act),
-  action_effects_apply(pancake:'TurningOn_Act_0'),
-  % TODO: test that the device state has changed
-  % test that a heating process was started
-  kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
-  kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
+%test(pancake_making_turn_on_maker) :-
+  %%
+  %%create_action_for_task(blocksworld:'Stack_RB',Act),
+  %action_effects_apply(pancake:'TurningOn_Act_0'),
+  %% TODO: test that the device state has changed
+  %% test that a heating process was started
+  %kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
+  %kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
   
 %test(pancake_making_crack_egg) :-
   %% create some egg yolk and egg shells

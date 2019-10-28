@@ -9,7 +9,7 @@ catkin_package(
 )
 catkin_add_plunit(
   knowrob/action_effects
-  knowrob/action_excution
+  knowrob/action_execution
   knowrob/action_parser
   knowrob/event_graph
   knowrob/task_planning

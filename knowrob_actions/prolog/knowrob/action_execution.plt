@@ -1,5 +1,5 @@
 
-:- begin_tests('knowrob/action_excution').
+:- begin_tests('knowrob/action_execution').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -311,4 +311,4 @@ test('pose_test(DECODE)') :-
 % TODO: test message fields
 % TODO: test status field
 
-:- end_tests('knowrob/action_excution').
+:- end_tests('knowrob/action_execution').
