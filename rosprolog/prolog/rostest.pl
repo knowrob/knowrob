@@ -60,9 +60,11 @@ plunit_message_hook(begin(Unit)) :-
 plunit_message_hook(end(Unit)) :-
   get_time(Time), assertz(test_suite_end(Unit,Time)).
 plunit_message_hook(begin(Unit:Test, _File:_Line, _STO)) :-
-  get_time(Time), assertz(test_case_begin(Unit,Test,Time)).
+  unpack_test_(Test,TestA),
+  get_time(Time), assertz(test_case_begin(Unit,TestA,Time)).
 plunit_message_hook(end(Unit:Test, _File:_Line, _STO)) :-
-  get_time(Time), assertz(test_case_end(Unit,Test,Time)).
+  unpack_test_(Test,TestA),
+  get_time(Time), assertz(test_case_end(Unit,TestA,Time)).
 plunit_message_hook(failed(Unit, Name, _Line, Error)) :-
   % need to select the output stream for print_message explicitely in the
   % the scope of *run_tests*.
@@ -70,6 +72,10 @@ plunit_message_hook(failed(Unit, Name, _Line, Error)) :-
   with_error_to_(OS,
     print_message(information,test_failed(Unit, Name, Error))),
   assertz(test_case_failure(Unit,Name,Error)).
+
+%% NOTE: @(Test,Args) is used when *forall* is used in test options.
+unpack_test_(@(Test,_),Test) :- !.
+unpack_test_(Test,Test) :- !.
 
 %% rospl_run_tests(+Target, +Opts) is det.
 %
