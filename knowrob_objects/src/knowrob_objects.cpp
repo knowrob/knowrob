@@ -79,30 +79,26 @@ public:
 		loop_cv_.notify_one();
 	}
 	
-	void push(const std::string &object_id) {
-		// Create a new array of term-references, all holding variables.
-		PlTermv av(8);
-		av[0] = object_id.c_str(); // assign first argument
-		// object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms)
-		PlQuery q("object_information",av);
-		if(!q.next_solution()) {
-			std::cout << "object_information returned nothing for " << object_id << std::endl;
-			return;
-		}
+	void push(const PlTerm &data) {
+		PlTail l_data(data); PlTerm e;
+		l_data.next(e); // object_id
+		std::string object_id((char*)e);
 		////////////////////////
 		ObjectStateMap::iterator it = dirty_objects[push_index].insert(
 				ObjectStateMapItem(object_id,knowrob_objects::ObjectState())).first;
 		knowrob_objects::ObjectState &obj = it->second;
 		obj.object_id   = object_id.c_str();
-		obj.object_type = (char*)av[1];
-		obj.has_visual  = (std::string((char*)av[2]) == "true");
-		obj.mesh_path   = (char*)av[4];
-		std_msgs::pl_term_color(av[3], obj.color);
-		geometry_msgs::pl_term_vector3(av[5], obj.size);
-		geometry_msgs::pl_term_pose_stamped(av[6], obj.pose);
+		l_data.next(e); obj.frame_name  = (char*)e;
+		l_data.next(e); obj.object_type = (char*)e;
+		l_data.next(e); obj.has_visual  = (std::string((char*)e) == "true");
+		l_data.next(e); obj.mesh_path   = (char*)e;
+		l_data.next(e); std_msgs::pl_term_color(e, obj.color);
+		l_data.next(e); geometry_msgs::pl_term_vector3(e, obj.size);
+		l_data.next(e); geometry_msgs::pl_term_pose_stamped(e, obj.pose);
+		l_data.next(e);
 		{ // read static transforms
 			geometry_msgs::TransformStamped staticTransform;
-			PlTail staticTransforms(av[7]);
+			PlTail staticTransforms(e);
 			PlTerm e;
 			obj.static_transforms.clear();
 			while(staticTransforms.next(e)) {
@@ -110,21 +106,16 @@ public:
 				obj.static_transforms.push_back(staticTransform);
 			}
 		}
-		{ // extract frame name from pose
-			PlTail pose_list(av[6]); PlTerm e;
-			pose_list.next(e); // unused
-			pose_list.next(e); obj.frame_name = (char*)e;
-		}
 	}
 };
 
-PREDICATE(mark_dirty_objects, 1) {
+PREDICATE(mark_dirty_objects_cpp, 1) {
 	static MarkDirtyObjectClient mark_dirty_client;
 	PlTail tail(PL_A1); PlTerm e;
 	
 	mark_dirty_client.push_begin();
 	while(tail.next(e)) {
-		mark_dirty_client.push(std::string((char*)e));
+		mark_dirty_client.push(e);
         };
 	mark_dirty_client.push_end();
 	

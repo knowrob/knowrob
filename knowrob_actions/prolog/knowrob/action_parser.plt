@@ -1,4 +1,4 @@
-:- begin_tests(action_parser).
+:- begin_tests('knowrob/action_parser').
 
 :- use_module(library('knowrob/action_parser')).
 
@@ -104,4 +104,4 @@ test('parser_retract') :-
   rdf_retractall('TestObject',_,_),
   rdf_retractall('TestHand',_,_).
 
-:- end_tests(action_parser).
+:- end_tests('knowrob/action_parser').

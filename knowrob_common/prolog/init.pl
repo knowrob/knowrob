@@ -32,26 +32,6 @@
 :- use_module(library('jpl')).
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
-:- use_module(library(prolog_pack)).
-%% FIXME: need to downoad this build time in catkin!
-:- once(
-     use_module(library(list_util)) ;
-     pack_install(list_util,[
-       url('https://github.com/mndrix/list_util/archive/v0.13.0.zip'),
-       silent(true),
-       interactive(false),
-       upgrade(true)]
-     )
-).
-:- once(
-     use_module(library(delay)) ;
-     pack_install(delay,[
-       silent(true),
-       interactive(false),
-       upgrade(true)]
-     )
-).
-
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdf_edit')).
 :- use_module(library('semweb/rdfs')).
@@ -106,10 +86,3 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 :- set_prolog_flag(toplevel_print_options, [quoted(true), portray(true), max_depth(0), attributes(portray)]).
 
 :- set_prolog_flag(float_format, '%.12g').
-
-% load and configure unit testing environment
-:- use_module(library(plunit)).
-:- set_test_options([load(always),
-                     run(make),
-                     silent(false),
-                     cleanup(true)]).

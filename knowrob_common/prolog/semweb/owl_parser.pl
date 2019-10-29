@@ -94,15 +94,7 @@ owl_parse_1(URL,Graph) :-
   close(RDF_Stream).
 
 owl_parse_1(URL,Graph) :-
-  sub_string(URL,0,7,_,'package'), !,
-  % retrieve part after package://
-  sub_atom(URL, 10, _, 0, Path),
-  atomic_list_concat(PathList, '/', Path),
-  % determine package name and resolve path
-  selectchk(Pkg, PathList, LocalPath),
-  ros_package_path(Pkg, PkgPath),
-  % build global path and load OWL file
-  atomic_list_concat([PkgPath|LocalPath], '/',  GlobalPath),
+  ros_path(URL,GlobalPath), !,
   owl_parse(GlobalPath,Graph),
   assert(owl_file_loaded(URL)).
 

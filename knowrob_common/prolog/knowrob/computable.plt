@@ -1,5 +1,5 @@
 
-:- begin_tests(knowrob_computable).
+:- begin_tests('knowrob/computable').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -72,4 +72,4 @@ test(comp_finishedBy) :-
 % TODO: test caching
 % TODO: test temporal properties
 
-:- end_tests(knowrob_computable).
+:- end_tests('knowrob/computable').

@@ -81,7 +81,10 @@ object_import_detections(Obj) :-
   ( StampedDetections=[] -> true ; (
     sort(StampedDetections,Sorted),
     reverse(Sorted,[LatestStamp-LatestPose|_]),
-    object_pose_update(Obj,LatestPose,LatestStamp)
+    transform_data(LatestPose, (Pos,Rot)),
+    transform_reference_frame(LatestPose, RefFrame),
+    object_frame_name(Obj, ObjFrame),
+    object_pose_update(Obj,[RefFrame,ObjFrame,Pos,Rot],LatestStamp)
   )).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

@@ -18,7 +18,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(action_effects).
+:- begin_tests('knowrob/action_effects').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
@@ -97,14 +97,14 @@ test(cracking_effect_destroyed_egg, [nondet]) :-
   action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
   rdf_equal(Egg,pancake:'Egg').
 
-test(pancake_making_turn_on_maker) :-
-  %
-  %create_action_for_task(blocksworld:'Stack_RB',Act),
-  action_effects_apply(pancake:'TurningOn_Act_0'),
-  % TODO: test that the device state has changed
-  % test that a heating process was started
-  kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
-  kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
+%test(pancake_making_turn_on_maker) :-
+  %%
+  %%create_action_for_task(blocksworld:'Stack_RB',Act),
+  %action_effects_apply(pancake:'TurningOn_Act_0'),
+  %% TODO: test that the device state has changed
+  %% test that a heating process was started
+  %kb_triple(pancake:'TurningOn_Act_0', knowrob:processStarted, Heating),
+  %kb_triple(Heating, dul:isClassifiedBy, pancake:'HeatingProcess').
   
 %test(pancake_making_crack_egg) :-
   %% create some egg yolk and egg shells
@@ -145,4 +145,4 @@ test(pancake_making_turn_on_maker) :-
   %rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
   %rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).
 
-:- end_tests(action_effects).
+:- end_tests('knowrob/action_effects').

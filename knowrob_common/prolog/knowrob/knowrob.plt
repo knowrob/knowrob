@@ -1,5 +1,5 @@
 
-:- begin_tests(knowrob).
+:- begin_tests('knowrob/knowrob').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -135,4 +135,4 @@ test('kb_rdf_pl(float,rdf ungrounded1)') :-
 %% TODO test property_cardinality
 %%%%%%%%%%%%%%%%%
 
-:- end_tests(knowrob).
+:- end_tests('knowrob/knowrob').

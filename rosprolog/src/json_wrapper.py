@@ -61,19 +61,19 @@ class JSONWrapperService(object):
             pass
     
     def publish(self,msg_data):
-        rospy.loginfo('json_wrapper publish ' + str(msg_data['topic_name']))
+        #rospy.loginfo('json_wrapper publish ' + str(msg_data['topic_name']))
         (msg,msg_cls) = self.decode_json_message(msg_data['msg_path'],msg_data)
         publisher = get_publisher(msg_data['topic_name'],msg_cls)
         publisher.publish(msg)
         return JSONWrapperResponse()
     
     def action(self,request_data):
-        rospy.loginfo('json_wrapper action')
+        #rospy.loginfo('json_wrapper action')
         # TODO implement
         return JSONWrapperResponse()
     
     def service(self,request_data):
-        rospy.loginfo('json_wrapper service')
+        #rospy.loginfo('json_wrapper service')
         # TODO: also include a status field in response
         srv_module   = get_service_module(request_data['service_path'])
         module_name  = request_data['service_path'].split('/')[-1]
@@ -99,6 +99,7 @@ class JSONWrapperService(object):
     ######### Type checking
     
     def is_primitive_type(self,type_path):
+        # TODO: what about time?
         return type_path in ['bool',
                          'float32','float64',
                          'int8','int16','int32','int64',
@@ -125,8 +126,7 @@ class JSONWrapperService(object):
     #######################
     ######### Decoding JSON into ROS messages
     
-    def decode_json_value(self, json_value):
-        [type_path,value] = json_value
+    def decode_json_value(self, type_path, value):
         if self.is_primitive_type(type_path) or self.is_primitive_array_type(type_path):
             return value
         elif self.is_message_array_type(type_path):
@@ -151,8 +151,14 @@ class JSONWrapperService(object):
     
     def assign_slots(self, msg, json_data):
         for name in json_data:
-            if hasattr(msg, name):
-                setattr(msg, name, self.decode_json_value(json_data[name]))
+            json_value = json_data[name]
+            if not type(json_value) is list:
+                continue
+            [type_path,value] = json_data[name]
+            if type_path in ['time']:
+                setattr(msg, name, rospy.Time.from_sec(value))
+            elif hasattr(msg, name):
+                setattr(msg, name, self.decode_json_value(type_path,value))
     
     #######################
     ######### Encoding of ROS message into JSON

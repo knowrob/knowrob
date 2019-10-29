@@ -10,6 +10,7 @@ catkin_package(
   CATKIN_DEPENDS knowrob_common urdf rosprolog
   LIBRARIES urdf_parser
 )
+catkin_add_plunit(rdf_urdf urdf_parser)
 
 # find SWI-Prolog package configuration
 find_package(PkgConfig)

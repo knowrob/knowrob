@@ -8,9 +8,17 @@ find_package(Eigen3 REQUIRED)
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
 
-catkin_package(
-    CATKIN_DEPENDS rosprolog
-)
+install_prolog_pack(list_util
+  URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")
+install_prolog_pack(delay
+  URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
+
+catkin_package(CATKIN_DEPENDS rosprolog)
+catkin_add_plunit(
+  knowrob/computable
+  knowrob/knowrob
+  knowrob/temporal
+  knowrob/wup_similarity)
 
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 add_library(pl_eigen SHARED src/pl_eigen.cpp)

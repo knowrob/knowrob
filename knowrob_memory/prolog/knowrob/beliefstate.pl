@@ -74,7 +74,7 @@ belief_new_object(ObjType, Obj) :-
 
 %%
 belief_new_part(PartType, Part, Parent) :-
-  object_assert(PartType, Part),
+  object_assert(PartType, Part, belief_state),
   % FIXME: dulify
   rdf_assert(Parent, knowrob:properPhysicalParts, Part, belief_state).
   

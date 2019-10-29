@@ -49,11 +49,11 @@
       object_instantiate_affordances/1,
       object_affordance_static_transform/3,
       object_perception_affordance_frame_name/2,
-      object_information/8,
       storage_place_for/2,
       storage_place_for_because/3,
       object_set_lifetime_begin/2,
-      object_set_lifetime_end/2
+      object_set_lifetime_end/2,
+      mark_dirty_objects/1
     ]).
 /** <module> Utilities for reasoning about objects
   
@@ -244,7 +244,7 @@ object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :-
 
 object_map_pose(ObjFrame,MapPose,Time) :-
   map_frame_name(MapFrame),
-  object_frame_name(Obj,ObjFrame),
+  object_frame_name(Obj,ObjFrame), % FIXME: only works with Obj Bound
   get_localization(Obj,Loc),
   holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,_,T,Q], Time),
   ( MapFrame = ParentFrame ->
@@ -262,6 +262,53 @@ get_localization(Obj,Obj) :-
   rdf_has(Obj, ease_obj:hasSpaceRegion, _),!.
 get_localization(Obj,Loc) :-
   object_localization_(Obj,Loc).
+
+mark_dirty_objects([]) :- !.
+mark_dirty_objects(Objects) :-
+  %
+  findall(ObjState, (
+    member(Obj,Objects),
+    object_state_(Obj,ObjState)
+  ), ObjStates),
+  mark_dirty_objects_cpp(ObjStates).
+
+object_state_(Obj, [
+   Obj,       % object_id
+   FrameName, % frame_name
+   TypeName,  % object_type
+   Flag,      % has_visual
+   Mesh,      % mesh_path
+   [R,G,B,A], % color
+   [D,W,H],   % size
+   Pose, % pose
+   StaticTransforms % static_transforms
+]) :-
+  %
+  object_frame_name(Obj,FrameName),
+  kb_type_of(Obj,Type),
+  rdf_split_url(_,TypeName,Type),
+  % TODO: can we get rid of this flag?
+  ( owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));
+    HasVisual=true ),
+  ( HasVisual=true -> Flag = true ; Flag = false ),
+  % get the color, default to grey color
+  ( object_color(Obj,[R,G,B,A]);
+    [R,G,B,A]=[0.5,0.5,0.5,1.0] ),
+  % get mesh path or empty string
+  ( object_mesh_path(Obj,Mesh);
+    Mesh='' ),
+  % get the object bounding box
+  ( object_dimensions(Obj,D,W,H);
+    [D,W,H] = [0.05,0.05,0.05] ), !,
+  % handle transforms
+  ( current_object_pose(Obj, Pose); (
+    print_message(warning, unlocalized(Obj)),
+    fail
+  )),
+  findall(X, (
+    object_affordance_static_transform(Obj,_,X)
+  ), StaticTransforms),
+  !.
 
 %%
 % Map RDF transform to Prolog list representation.
@@ -439,16 +486,6 @@ object_mesh_path(Obj, FilePath) :-
 
 object_mesh_path(Obj, FilePath) :-
   kb_triple(Obj,ease_obj:hasFilePath,FilePath),!.
-
-%%
-object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, StaticTransforms) :-
-  kb_type_of(Obj,Type), rdf_split_url(_,TypeName,Type),
-  (owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));HasVisual=true),
-  (object_color(Obj,Color);(Color=[0.5,0.5,0.5,1.0])),
-  (object_mesh_path(Obj,Mesh);Mesh=''),
-  (object_dimensions(Obj,D,W,H);(D=0.05,W=0.05,H=0.05)),
-  (current_object_pose(Obj, Pose);Pose=[map,null,[0,0,0],[0,0,0,1]]),
-  findall(X, object_affordance_static_transform(Obj,_,X), StaticTransforms), !.
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -457,7 +494,7 @@ object_information(Obj, TypeName, HasVisual, Color, Mesh, [D, W, H], Pose, Stati
 %%
 object_quality_(Obj,HasQuality,QualityType,Quality) :-
   atom(Obj),
-  rdfs_individual_of(Obj,dul:'PhysicalObject'),
+  rdfs_individual_of(Obj,dul:'Object'),
   ( kb_triple(Obj,HasQuality,Quality) ; (
     once(rdf(Obj,_,_,G)),
     kb_create(QualityType,Quality,_{graph: G}),
@@ -497,11 +534,9 @@ object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
   object_instantiate_affordances(Obj), % HACK
   object_frame_name(Obj, ObjFrame),
   owl_has(Obj, knowrob:hasAffordance, Aff),
-  % TODO: StaticAffordanceTransform declares
-  %  ((relativeTo o hasAffordance o pose) Self)
-  % Use this to infer the relativeTo entity:
-  %    relativeTo value (Self.(inverse(pose)oinverse(hasAffordance)))
-  current_object_pose(Aff, [ObjFrame,AffFrame,Pos,Rot]).
+  object_frame_name(Aff, AffFrame),
+  kb_triple(Aff,knowrob:pose,Pose),
+  transform_data(Pose,(Pos,Rot)).
 
 %%
 object_instantiate_affordances(Obj) :-

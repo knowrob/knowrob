@@ -17,7 +17,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(knowrob_objects).
+:- begin_tests('knowrob/objects').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl_parser')).
@@ -52,5 +52,5 @@ test(object_assert_dimensions) :-
   object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
 
-:- end_tests(knowrob_objects).
+:- end_tests('knowrob/objects').
 

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_actions urdfprolo
 catkin_package(
   CATKIN_DEPENDS knowrob_common urdfprolog rosprolog rosowl
 )
+catkin_add_plunit(srdl)
 
 # find SWI-Prolog package configuration
 find_package(PkgConfig)

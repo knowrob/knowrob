@@ -18,13 +18,14 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(comp_spatial).
+:- begin_tests('knowrob/comp_spatial').
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/comp_spatial')).
 :- use_module(library('knowrob/temporal')).
 
@@ -125,5 +126,5 @@ test(toTheSideOf2) :-
 test(toTheSideOf3) :-
   holds(test_sp:'cup1', knowrob:'isNextTo', test_sp:'cup2'),!.
 
-:- end_tests(comp_spatial).
+:- end_tests('knowrob/comp_spatial').
 

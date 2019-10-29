@@ -1,5 +1,5 @@
 
-:- begin_tests(knowrob_memory).
+:- begin_tests('knowrob/memory').
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
@@ -124,4 +124,4 @@ test(mem_event_causes_transition) :-
   rdf_has(QR1,dul:hasQuality,Q),
   kb_triple(QR1,dul:hasRegion,mem_test:'TEST_RED').
 
-:- end_tests(knowrob_memory).
+:- end_tests('knowrob/memory').

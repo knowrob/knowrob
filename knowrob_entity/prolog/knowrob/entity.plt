@@ -17,7 +17,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(knowrob_entity).
+:- begin_tests('knowrob/entity').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -83,4 +83,4 @@ test(query_cup, [nondet]) :-
   entity(Cup, [an, object, [type, cup]]),
   rdf_equal(Cup, entity_test:'Cup_sfd498th').
   
-:- end_tests(knowrob_entity).
+:- end_tests('knowrob/entity').

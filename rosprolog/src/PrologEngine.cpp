@@ -35,14 +35,12 @@ int PrologEngine::pl_exception(qid_t qid, std::string &x)
 	if(!(except = PL_exception(qid))) {
 		return FALSE;
 	}
-	if(PL_get_chars(except, &except_msg, CVT_WRITE | BUF_MALLOC)) {
+	if(PL_get_chars(except, &except_msg, CVT_WRITE | BUF_RING)) {
 		// TODO: also JSON encode the error? Would require to change
 		//        all the clients though.
 		x = std::string(except_msg);
 	}
-	if(except_msg != NULL) {
-		PL_free(except_msg);
-	}
+	PL_clear_exception();
 	return TRUE;
 }
 

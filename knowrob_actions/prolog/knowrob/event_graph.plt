@@ -1,4 +1,4 @@
-:- begin_tests(event_graph).
+:- begin_tests('knowrob/event_graph').
 
 :- use_module(library('knowrob/event_graph')).
 
@@ -164,4 +164,4 @@ test('esg_join(parallel path)') :-
     [z,[[-z],[-b],[+b],[+z]]],
     [[-z],[[[-b],[+b]],[[-a],[+a]]],[+z]]).
 
-:- end_tests(event_graph).
+:- end_tests('knowrob/event_graph').
