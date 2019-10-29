@@ -46,7 +46,6 @@ TODO detect "silence" in long token streams
 :- use_module(library('debug')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('knowrob/flanagan')).
 :- use_module(library('knowrob/temporal')). % `interval/2`
 
 :- rdf_db:rdf_register_ns(actions, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
