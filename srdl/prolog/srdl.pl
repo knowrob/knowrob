@@ -103,7 +103,7 @@ component_create(_,PartType,_) :-
 
 component_create(_,PartType,_) :-
   ( rdfs_subclass_of(PartType,urdf:'Link') ;
-    rdfs_subclass_of(PartType,urdf:'Joint') ), !.
+    rdf_equal(PartType,dul:'PhysicalObject') ), !.
 
 component_create(_,_,0) :- !.
 
@@ -150,7 +150,8 @@ is_composition(Comp) :-
   rdf_has(Comp,srdlcomp:hasEndLink,_),!.
 
 is_classified_link(Comp) :-
-  rdfs_individual_of(Comp,urdf:'Link'),
+  rdfs_individual_of(Comp,dul:'PhysicalObject'),
+  \+ rdfs_individual_of(Comp,urdf:'Joint'),
   component_type(Comp,_),!.
 
 %% assert hasBaseLink / hasEndLink
@@ -237,7 +238,7 @@ component_type(Comp,CompType) :-
   kb_type_of(Comp,CompType),
   rdfs_subclass_of(CompType,dul:'PhysicalObject'),
   \+ rdfs_subclass_of(CompType,urdf:'Joint'),
-  \+ rdfs_subclass_of(CompType,urdf:'Link').
+  \+ rdf_equal(CompType,dul:'PhysicalObject').
 
 %%
 is_link_of_component(Link,Comp) :-

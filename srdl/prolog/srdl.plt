@@ -37,10 +37,6 @@ is_composition(Comp) :-
   rdf_has(Comp,srdlcomp:hasBaseLink,_),
   rdf_has(Comp,srdlcomp:hasEndLink,_),!.
 
-is_classified_link(Comp) :-
-  rdfs_individual_of(Comp,urdf:'Link'),
-  component_type(Comp,_),!.
-
 test(robot_create) :-
   robot_create(knowrob:'PR2',PR2),
   asserta(testbot(PR2)),
@@ -62,7 +58,7 @@ test(robot_set_urdf) :-
   %% test link-component association
   forall(
     has_direct_component(PR2,BodyPart,_),
-    ( is_composition(BodyPart) ; is_classified_link(BodyPart) )
+    ( is_composition(BodyPart) ; component_type(BodyPart,_) )
   ).
 
 %test(comp_unknown_action) :-
