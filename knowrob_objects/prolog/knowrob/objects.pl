@@ -40,6 +40,7 @@
       object_distance/3,
       object_frame_name/2,
       object_color/2,
+      object_localization/2,
       object_dimensions/4,
       object_mesh_path/2,
       object_assert_dimensions/4,
@@ -83,6 +84,7 @@
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
     object_color(r, ?),
+    object_localization(r,r),
     object_frame_name(r,?),
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
@@ -191,7 +193,7 @@ current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :-
   transform_between(MapPose1,MapPose0,[ParentFrame,ObjFrame,T,Q]), !.
 
 current_object_pose(Obj,[RefFrame,ObjFrame,T,Q]) :-
-  get_localization(Obj,Loc),
+  object_localization(Obj,Loc),
   kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
   object_frame_name(Obj,ObjFrame),!.
 
@@ -239,13 +241,13 @@ object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :-
 
 object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :- 
   object_frame_name(Obj,ObjFrame),
-  get_localization(Obj,Loc),
+  object_localization(Obj,Loc),
   holds(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q], Time),!.
 
 object_map_pose(ObjFrame,MapPose,Time) :-
   map_frame_name(MapFrame),
   object_frame_name(Obj,ObjFrame), % FIXME: only works with Obj Bound
-  get_localization(Obj,Loc),
+  object_localization(Obj,Loc),
   holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,_,T,Q], Time),
   ( MapFrame = ParentFrame ->
     MapPose=[MapFrame,ObjFrame,T,Q] ; (
@@ -254,13 +256,13 @@ object_map_pose(ObjFrame,MapPose,Time) :-
       [ParentFrame,ObjFrame,T,Q], MapPose)
   )).
 
-get_localization(Obj,Obj) :-
+object_localization(Obj,Obj) :-
   atom(Obj),
   rdfs_individual_of(Obj,ease_obj:'Localization'),!.
-get_localization(Obj,Obj) :-
+object_localization(Obj,Obj) :-
   atom(Obj),
   rdf_has(Obj, ease_obj:hasSpaceRegion, _),!.
-get_localization(Obj,Loc) :-
+object_localization(Obj,Loc) :-
   object_localization_(Obj,Loc).
 
 mark_dirty_objects([]) :- !.
@@ -268,6 +270,7 @@ mark_dirty_objects(Objects) :-
   %
   findall(ObjState, (
     member(Obj,Objects),
+    object_pose_data(Obj,_,_),
     object_state_(Obj,ObjState)
   ), ObjStates),
   mark_dirty_objects_cpp(ObjStates).
