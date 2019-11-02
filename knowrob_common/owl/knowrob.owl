@@ -11,8 +11,10 @@
     <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob.owl">
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-ACT.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-PROC.owl"/>
+        <owl:imports rdf:resource="package://urdfprolog/owl/urdf.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-STATE.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
-        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-middle.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
@@ -1544,46 +1546,10 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Blade -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Blade">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Bottle -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bottle">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedContainer"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDesign"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#LiquidContainment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#BottleCap -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BottleCap">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Bowl -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bowl">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedContainer"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDesign"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#LiquidContainment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
     </owl:Class>
     
 
@@ -1628,26 +1594,10 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Classroom -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Classroom">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Closet -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Closet">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -1663,7 +1613,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
     </owl:Class>
     
 
@@ -1687,28 +1637,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CounterTop -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CounterTop">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SupportingPlane"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Cupboard -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cupboard">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Cutting -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cutting">
@@ -1721,23 +1649,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Date">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Door -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Door">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Drawer -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Drawer">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedContainer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of drawers</rdfs:comment>
     </owl:Class>
     
 
@@ -1762,7 +1673,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
     </owl:Class>
     
 
@@ -1876,15 +1787,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#HingedJoint -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HingedJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Joint-Physical"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The hinged connection</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Hook -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hook">
@@ -1938,14 +1840,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InvalidArgument">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Joint-Physical -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Joint-Physical">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
     </owl:Class>
     
 
@@ -2292,7 +2186,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#MobileBase -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MobileBase">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
     </owl:Class>
     
 
@@ -2326,14 +2220,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ObjectOverlooked">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#FailedAttempt"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#OfficeRoom -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OfficeRoom">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2434,14 +2320,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#PrismaticJoint -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrismaticJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Joint-Physical"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Proprioception -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Proprioception">
@@ -2495,14 +2373,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ResourceNotFound">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#FailedAttempt"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Restroom -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Restroom">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2599,7 +2469,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#SensorDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensorDevice">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasResolution"/>
@@ -2643,15 +2513,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Shelf -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Shelf">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This refers to any shelf that may be on the wall in a room, or part of a piece of furniture or appliance.</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#SideGraspAffordance -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SideGraspAffordance">
@@ -2688,14 +2549,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stirring">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mixing"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#StorageRoom -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StorageRoom">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     </owl:Class>
     
 
@@ -2848,7 +2701,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#WallMirror -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WallMirror">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
     </owl:Class>
     
 
@@ -2856,7 +2709,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#WasteBasket -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WasteBasket">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
     </owl:Class>
     
 
@@ -2872,7 +2725,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Wheel -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wheel">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
     </owl:Class>
     
 
@@ -3038,9 +2891,21 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
     
 
 
@@ -3094,6 +2959,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedTool -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
@@ -3111,12 +2982,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Freezing">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
     </owl:Class>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Furniture -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Furniture"/>
     
 
 
@@ -3167,18 +3032,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalPart -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalPart"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#RoomInABuilding"/>
     
 
 
