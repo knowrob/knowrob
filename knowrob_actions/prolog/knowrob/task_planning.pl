@@ -1,7 +1,8 @@
 
 :- module(knowrob_task_planning,
     [
-      workflow_sequence/2
+      workflow_sequence/2,
+      workflow_constituents/3
     ]).
 /** <module> Reasoning about plans.
 
@@ -41,3 +42,18 @@ workflow_sequence(Steps, StepSequence) :-
   %
   esg_truncated(tsk, Steps, Constraints, [Sequence,_,_]),
   esg_events(Sequence, [_|StepSequence]).
+
+%%
+workflow_constituents(WF, Constituents, Constraints) :-
+  findall(X0, (
+    rdf_has(WF,ease:isPlanFor,X0);
+    rdf_has(WF,dul:definesTask,X0);
+    rdf_has(WF,ease_proc:definesProcess,X0)
+  ), Constituents),
+  findall(Constraint, (
+    member(X1,Constituents),
+    allen_constraint(X1,Constraint),
+    Constraint =.. [_,_,Other],
+    member(Other,Constituents)
+  ), Constraints).
+  
