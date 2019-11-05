@@ -36,7 +36,7 @@ kb_query(PlanExecution,BindingDict,InputDict,OutputPairs) :-
   %%%%%%%%%
   %%%%% Find KBPredicate participant.
   %%%%%%%%%
-  ( event_participant(Action,KBPredicate,knowrob:'KBPredicate') ;
+  ( event_participant(Action,KBPredicate,knowrob:'ComputationalPredicate') ;
     throw(action_failure(knowrob:'MissingArgument'))
   ),
   %%%%%%%%%
@@ -98,7 +98,7 @@ kb_predicate_indicator(KBPredicate,Arguments,Functor,Indicator) :-
 % collect sequence of arguments
 kb_predicate_arguments(KBPredicate,VarAssignments,Arguments) :-
   %findall(X,member([_,X],SlotArgs),Arguments),
-  kb_triple(KBPredicate,knowrob:firstKBTerm,FirstTerm),!,
+  kb_triple(KBPredicate,knowrob:hasFirstProcedureArgument,FirstTerm),!,
   dul_sequence(FirstTerm,Terms),
   bagof(T-Arg, (
     member(T,Terms),
@@ -107,20 +107,20 @@ kb_predicate_arguments(KBPredicate,VarAssignments,Arguments) :-
 
 % 
 kb_term_argument(Term,Vars,Arg) :-
-  kb_type_of(Term,knowrob:'KBVariable'),!,
+  kb_type_of(Term,knowrob:'VariableArgument'),!,
   member(Term-Arg,Vars).
 kb_term_argument(Term,_Vars,Arg) :-
-  kb_type_of(Term,knowrob:'KBAtomic'),!,
+  kb_type_of(Term,knowrob:'AtomicArgument'),!,
   kb_triple(Term,dul:hasDataValue,Arg).
 kb_term_argument(T_compound,Vars,Arg) :-
   kb_triple(T_compound,knowrob:hasFunctor,Functor),
-  kb_triple(T_compound,knowrob:firstKBTerm,_),!,
+  kb_triple(T_compound,knowrob:hasFirstProcedureArgument,_),!,
   kb_predicate_arguments(T_compound,Vars,T_args),
   Arg =.. [Functor|T_args].
 
 % collect sequence of variables
 kb_predicate_variables(KBPredicate,Vars_set) :-
-  kb_triple(KBPredicate,knowrob:firstKBTerm,FirstTerm),!,
+  kb_triple(KBPredicate,knowrob:hasFirstProcedureArgument,FirstTerm),!,
   dul_sequence(FirstTerm,Terms),
   findall(Var, (
     member(T,Terms),
@@ -131,9 +131,9 @@ kb_predicate_variables(_,[]). % 0-ary clause
 
 % 
 kb_term_variable(T_var,T_var) :-
-  kb_type_of(T_var,knowrob:'KBVariable'),!.
+  kb_type_of(T_var,knowrob:'VariableArgument'),!.
 kb_term_variable(T_compound,Var) :-
-  kb_triple(T_compound,knowrob:firstKBTerm,FirstTerm),!,
+  kb_triple(T_compound,knowrob:hasFirstProcedureArgument,FirstTerm),!,
   dul_sequence(FirstTerm,Terms),
   member(T,Terms),
   kb_term_variable(T,Var).
