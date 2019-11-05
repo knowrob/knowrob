@@ -143,6 +143,12 @@ test('path_to_endpoint(+b)') :-
     +b,
     [[-a,-z],[+a],[-b]],
     [[+b,+z]]).
+test('path_to_endpoint(+z)') :-
+  esg:path_to_endpoint(
+    [[-z],[-b,+z]],
+    +z,
+    [[-z]],
+    [[-b,+z]]).
 test('path_to_endpoint(+k,fail)',fail) :-
   esg:path_to_endpoint(
     [[-a,-z],[+a],[-b],[+b,+z]],
@@ -163,5 +169,19 @@ test('esg_join(parallel path)') :-
     [[-z],[-a],[+a],[+z]],
     [z,[[-z],[-b],[+b],[+z]]],
     [[-z],[[[-b],[+b]],[[-a],[+a]]],[+z]]).
+test('esg_join(parallel goal)') :-
+  esg_join(
+    [[-z],[+z]],
+    [z,[[-z],[-b,+z]]],
+    [[-z],[-b,+z]]).
+test('esg_join(parallel goal)') :-
+  esg_join(
+    [[-z],[+z],[+b]],
+    [z, [
+          [-z],
+          [+a, +z]
+        ]
+    ],
+    [[-z],[+a,+z],[+b]]).
 
 :- end_tests('knowrob/event_graph').
