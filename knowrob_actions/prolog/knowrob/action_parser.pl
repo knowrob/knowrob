@@ -35,10 +35,6 @@ endpoints of motions are often not observable nor do they co-
 occur with force dynamics endpoints which are observable
 by an external viewer.
 
-TODO detect non terminal concepts
-TODO constituents with same type
-TODO optional constituents
-TODO repeatable constituents
 TODO detect "silence" in long token streams
 @author Daniel Beßler
 */
@@ -48,26 +44,21 @@ TODO detect "silence" in long token streams
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/temporal')). % `interval/2`
 
-:- rdf_db:rdf_register_ns(actions, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(motions, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(force_dynamics, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ease, 'http://www.ease-crc.org/ont/EASE.owl#', [keep(true)]).
-
 :- debug(activity_parser).
 
 :- rdf_meta is_typed_endpoint(t,r),
-            parser_grammar(?,r,t),
+            parser_grammar(?,r,r,t),
             parser_create_grammar(+,r),
+            parser_create(-,t),
             detect_activity(+,t,t),
-            detect_activity2(+,t,t),
-            tokenize(r,t).
+            detect_activity2(+,t,t).
 
-:- dynamic parser_grammar/3. % Parser, Action, Sequence Graph
+:- dynamic parser_grammar/4. % Parser, Workflow, Task Concept, Sequence Graph
 
 % FIXME: not sure why this is needed. write should display simplified
 %        terms anyway. But it doesn't (always). What's the reason?
 write_concept(Concept) :-
-  rdf_has_prolog(Concept,rdfs:label,Label),!,
+  kb_triple(Concept,rdfs:label,Label),!,
   write(''''), write(Label), write('''').
 write_concept(Concept) :-
   rdf_split_url(_,Name,Concept),!,
@@ -81,7 +72,7 @@ random_id(Id) :-
 % generate unique parser id
 parser_unique_id(Parser) :-
   random_id(P),
-  ( parser_grammar(P,_,_) ->
+  ( parser_grammar(P,_,_,_) ->
     parser_unique_id(Parser) ;
     Parser = P ).
 
@@ -90,33 +81,25 @@ no_grammar(Parser) :-
     write('ERROR: no grammars loaded for parser '),
     write(Parser), nl,
     fail.
-no_grammar(Parser,Act) :-
+no_grammar(Parser,Tsk) :-
     write('[parser.pl] '),
     write('ERROR: no '),
-    write_concept(Act),
+    write_concept(Tsk),
     write(' grammar loaded for parser '),
     write(Parser), nl,
     fail.
 
-parser_grammar_(Parser,TypeIri,GraphChild) :-
-  var(TypeIri), !,
-  ( parser_grammar(Parser,TypeIri,GraphChild) *->
+parser_grammar_(Parser,WF,Tsk,GraphChild) :-
+  var(Tsk), !,
+  ( parser_grammar(Parser,WF,Tsk,GraphChild) *->
     true ; no_grammar(Parser) ).
-parser_grammar_(Parser,TypeIri,GraphChild) :-
-  (( parser_grammar(Parser,X,GraphChild),
-     once(rdfs_subclass_of(TypeIri,X)) ) *->
-     true ; no_grammar(Parser,TypeIri) ).
+parser_grammar_(Parser,WF,Tsk,GraphChild) :-
+  (( parser_grammar(Parser,WF,X,GraphChild),
+     once(rdfs_subclass_of(Tsk,X)) ) *->
+     true ; no_grammar(Parser,Tsk) ).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Tokenization
-
-% TODO: remove
-interval_(Event, [Begin,End]) :- interval(Event,[Begin,End]),!.
-interval_(Event, [Begin,End]) :-
-  % KnowRob's `interval/2` does not work with dul:'TimeInterval' dul yet
-  rdf_has(Event,dul:hasTimeInterval,Interval),
-  rdf_has_prolog(Interval, allen:hasIntervalBegin, Begin),
-  rdf_has_prolog(Interval, allen:hasIntervalEnd, End).
 
 %% tokenize(+Episode,?Tokens).
 %
@@ -128,43 +111,43 @@ interval_(Event, [Begin,End]) :-
 % @param Episode VR episode symbol.
 % @param Tokens Tokenized episode.
 %
-tokenize(Episode,Tokens) :-
-  findall(Event, rdf_has(Episode,dul:hasConstituent,Event), Events),
-  tokenize_(Events,Unsorted),
-  filter_tokens(Unsorted,Filtered),
-  % first argument of each token is time such that we can use Prolog builtin `sort`
-  sort(Filtered,Tokens).
+%tokenize(Episode,Tokens) :-
+  %findall(Event, rdf_has(Episode,dul:includesEvent,Event), Events),
+  %tokenize_(Events,Unsorted),
+  %filter_tokens(Unsorted,Filtered),
+  %% first argument of each token is time such that we can use Prolog builtin `sort`
+  %sort(Filtered,Tokens).
 
-filter_tokens([],[]) :- !.
-filter_tokens([Tok|Rest],[Tok|RestFiltered]) :-
-  filter_tokens(Rest,RestFiltered).
+%filter_tokens([],[]) :- !.
+%filter_tokens([Tok|Rest],[Tok|RestFiltered]) :-
+  %filter_tokens(Rest,RestFiltered).
 
-tokenize_([], []).
-tokenize_([Evt|Rest],[Tok1,Tok2|RestTokens]) :-
-  tokenize_event(Evt,Tok1,Tok2),
-  tokenize_(Rest,RestTokens).
+%tokenize_([], []).
+%tokenize_([Evt|Rest],[Tok1,Tok2|RestTokens]) :-
+  %tokenize_event(Evt,Tok1,Tok2),
+  %tokenize_(Rest,RestTokens).
 
-tokenize_event(Event,
-    tok(Begin,Event,-(EvtType),Participants),
-    tok(End,  Event,+(EvtType),Participants)) :-
-  rdfs_individual_of(Event,dul:'Event'), !,
-  % Event types are disjoint
-  % TODO: is this really safe to assume? e.g., artifact contact and effector contact.
-  %       this needs special handling because different constituents may refer to
-  %       different event types.
-  %       Maybe would be better to stick to event individual in endpoints?
-  once((
-    rdf(Event,rdf:type,EvtType),
-    rdfs_subclass_of(EvtType,dul:'Event')
-  )),
-  findall(P, rdf_has(Event, dul:hasParticipant, P), Participants),
-  interval_(Event, [Begin,End]).
+%tokenize_event(Event,
+    %tok(Begin,Event,-(EvtType),Participants),
+    %tok(End,  Event,+(EvtType),Participants)) :-
+  %rdfs_individual_of(Event,dul:'Event'), !,
+  %% Event types are disjoint
+  %% TODO: is this really safe to assume? e.g., artifact contact and effector contact.
+  %%       this needs special handling because different constituents may refer to
+  %%       different event types.
+  %%       Maybe would be better to stick to event individual in endpoints?
+  %once((
+    %rdf(Event,rdf:type,EvtType),
+    %rdfs_subclass_of(EvtType,dul:'Event')
+  %)),
+  %findall(P, rdf_has(Event, dul:hasParticipant, P), Participants),
+  %interval_(Event, [Begin,End]).
 
-tokenize_event(Event,_,_) :-
-  % should not happen, everything should be of type 'Event'.
-  % If not this would indicate some unknown event type in the log which is
-  % not mapped to flanagan ontology.
-  throw(error(type_error(dul:'Event',Event), _)).
+%tokenize_event(Event,_,_) :-
+  %% should not happen, everything should be of type 'Event'.
+  %% If not this would indicate some unknown event type in the log which is
+  %% not mapped to flanagan ontology.
+  %throw(error(type_error(dul:'Event',Event), _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Endpoint sequence graph stuff
@@ -173,14 +156,9 @@ is_typed_endpoint(-(Iri),Type) :- rdfs_subclass_of(Iri,Type),!.
 is_typed_endpoint(+(Iri),Type) :- rdfs_subclass_of(Iri,Type),!.
 is_typed_endpoint(Iri,Type)    :- atom(Iri), rdfs_subclass_of(Iri,Type),!.
 
-is_action_endpoint(E)  :- is_typed_endpoint(E,dul:'Action'),!.
-is_state_endpoint(E)   :- is_typed_endpoint(E,ease:'State'),!.
-is_process_endpoint(E) :- is_typed_endpoint(E,ease:'PhysicsProcess'),!.
-
-is_prehensile_motion_endpoint(E) :-
-  is_typed_endpoint(E,motions:'PrehensileMotion'),!.
-is_composite_action_endpoint(E) :-
-  is_typed_endpoint(E,actions:'ComplexPhysicalAction'),!.
+is_action_endpoint(E)  :- is_typed_endpoint(E,dul:'Task'),!.
+is_state_endpoint(E)   :- is_typed_endpoint(E,ease_state:'Gestallt'),!.
+is_process_endpoint(E) :- is_typed_endpoint(E,ease_proc:'ProcessType'),!.
 
 %% parser_create(-Parser).
 %% parser_create(-Parser,+RDFGraph).
@@ -196,42 +174,33 @@ is_composite_action_endpoint(E) :-
 % @param RDFGraph RDF graph name (defaults to 'user').
 %
 parser_create(Parser) :-
-  parser_create(Parser,user).
+  parser_create(Parser,[]).
 
-parser_create(Parser,RDFGraph) :-
+parser_create(Parser,Workflows) :-
   parser_unique_id(Parser),
-  physical_actions(Actions,RDFGraph),
-  forall(member(Act,Actions),(
-    parser_create_grammar(Parser,Act);(
+  forall(member(WF,Workflows),(
+    parser_create_grammar(Parser,WF);(
     write('      [parser.pl] '),
-    write('ERROR: Failed to build sequence graph for '), write_concept(Act), nl
+    write('ERROR: Failed to build sequence graph for worklfow: '), write_concept(WF), nl
   ))).
 
-% set of all 'Physical action' subclasses without subclass
-physical_actions(ActionSet,RDFGraph) :-
-  findall(ActionClass, (
-    rdfs_subclass_of(ActionClass, ease:'PhysicalAction'),
-    once((
-      rdf(ActionClass, rdfs:subClassOf, _, RDFGraph),
-      \+ rdf(_, rdfs:subClassOf, ActionClass)
-    ))
-  ), Actions),
-  list_to_set(Actions, ActionSet).
-
-parser_create_grammar(Parser,Act) :-
+parser_create_grammar(Parser,WF) :-
   % find constituents and their relation to each other
-  action_constituents(Act,Constituents,Constituent_Constraints),
-  % gather allen constraints about the occurance of Act
-  action_boundary_constraints(Act,Act_Constraints),
-  append(Constituent_Constraints,Act_Constraints,Constraints),
+  plan_defines_task(WF,Tsk),
+  ( rdfs_individual_of(Tsk,owl:'Class') ->
+    TskType = Tsk ;
+    kb_type_of(Tsk,TskType)
+  ),
+  workflow_constituents(WF,Constituents,Constraints),
   % compute the sequence graph
-  write('      [parser.pl] '), write('Loading action '), write_concept(Act), nl,
-  esg_truncated(Act,Constituents,Constraints,[Sequence,
+  % TODO: why pre-compute all sequences here?
+  write('      [parser.pl] '), write('Loading task '), write_concept(TskType), nl,
+  esg_truncated(Tsk,Constituents,Constraints,[Sequence,
                            PreConditions, PostConditions]),
   write('      [parser.pl] '),
-  write_concept(Act), write(' -> '), esg_write(Sequence), nl,
+  write_concept(TskType), write(' -> '), esg_write(Sequence), nl,
   % assert to Prolog KB
-  assertz(parser_grammar(Parser,Act,[Sequence,PreConditions,PostConditions])).
+  assertz(parser_grammar(Parser,WF,TskType,[Sequence,PreConditions,PostConditions])).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -263,28 +232,33 @@ expand_esg_term(_P,G_0->G_1,S_0->S_0,A_0->A_0,
 
 expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
   {'peak'(Endpoint)},
+  {esg_peak(G_0,E), concept_endpoint_(E,Endpoint)}) :- !.
+
+% FIXME: ugly peak1/peak2
+expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
+  {'peak2'(Endpoint)},
   {esg_peak(G_0,Endpoint)}) :- !.
+
+expand_esg_term(_P,G_0->G_1,S_0->S_0,A_0->A_0,
+  {'pop'(Endpoint)},
+  {esg_pop(G_0,E,G_1), concept_endpoint_(E,Endpoint)}) :- !.
 
 % FIXME: causes a warning?!?
 expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
   {'peak_token'(Token)},
   peak_token(Token)) :- !.
 
-expand_esg_term(_P,G_0->G_1,S_0->S_0,A_0->A_0,
-  {'pop'(Endpoint)},
-  {esg_pop(G_0,Endpoint,G_1)}) :- !.
-
 expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_1,
-  {'preceded_by'(Act,Pre,Confidence)},
-  {activity_preceded_by(Act,Pre,S_0,A_0->A_1,Confidence)}) :- !.
+  {'preceded_by'(WF,Pre,Confidence)},
+  {activity_preceded_by(WF,Pre,S_0,A_0->A_1,Confidence)}) :- !.
 
 expand_esg_term(_P,G_0->G_0,S_0->S_0,Actors,
-  {'proceed_with'(Act,Endpoint,Participants)},
-  {proceed_with_participants(Act,Endpoint,Actors,Participants)}) :- !.
+  {'proceed_with'(WF,Endpoint,Participants)},
+  {proceed_with_participants(WF,Endpoint,Actors,Participants)}) :- !.
 
 expand_esg_term(_P,G_0->G_0,S_0->S_0,Actors,
-  {'proceed_without'(Act,Endpoint,Participants)},
-  {proceed_without_participants(Act,Endpoint,Actors,Participants)}) :- !.
+  {'proceed_without'(WF,Endpoint,Participants)},
+  {proceed_without_participants(WF,Endpoint,Actors,Participants)}) :- !.
   
 
 expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,{X},{X}) :- !.
@@ -303,9 +277,11 @@ expand_esg_term(P,G,S,A,Term,Expanded) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% entity states
 
-update_states(States_0->States_1,tok(_Time,Event,-(EvtType),Participants)) :- !,
+update_states(States_0->States_1,tok(_Time,_,-(Event),Participants)) :- !,
+  kb_type_of(Event,EvtType),
   set_entity_states(States_0->States_1,Participants,[EvtType,Event,Participants]).
-update_states(States_0->States_1,tok(_Time,Event,+(EvtType),Participants)) :- !,
+update_states(States_0->States_1,tok(_Time,_,+(Event),Participants)) :- !,
+  kb_type_of(Event,EvtType),
   unset_entity_states(States_0->States_1,Participants,[EvtType,Event,Participants]).
 
 unset_state(States_0->States_1,Key,Value) :-
@@ -372,224 +348,207 @@ delete_previous_events([[X,P_X]|Xs]->Events_n,P_0) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% activity context
-
-% TODO: do this with annotations in ontology
-%   - what if multiple types are context?
-%   - what if no context type specified?
-context_type(Act,Type) :-
-  rdfs_subclass_of(Act,actions:'ComplexPhysicalAction'),!,
-  rdf_equal(Type,dul:'PhysicalArtifact').
-context_type(Act,Type) :-
-  rdfs_subclass_of(Act,actions:'Actuating'),!,
-  rdf_equal(Type,ease:'PhysicalArtifact').
-context_type(Act,Type) :-
-  rdfs_subclass_of(Act,actions:'Grasping'),!,
-  rdf_equal(Type,ease:'PhysicalEffector').
-context_type(Act,Type) :-
-  rdfs_subclass_of(Act,actions:'ReleasingGrasp'),!,
-  rdf_equal(Type,ease:'PhysicalEffector').
-
-context_entities(Actors_0->Actors_1,Activity) :-
-  % filter out any actors which are no potential candidate for
-  % being activity context
-  context_type(Activity,CtxType),!,
-  filter_actors(Actors_0->Actors_1,CtxType).
-context_entities(_->[],_).
-
-context_test(A_0,A_1,Act) :-
-  context_entities(A_0->Ctx_0,Act),
-  context_entities(A_1->Ctx_1,Act),
-  flatten_actors(Ctx_0, X_0),
-  flatten_actors(Ctx_1, X_1),
-  once((
-    ( X_0=[] ; X_1=[] ) ;
-    ( member(Needle,X_0),
-      member(Needle,X_1)))).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% activity actors
 
-filter_actors([]->[],_EntityType) :- !.
-filter_actors([A0|As0]->Out,EntityType) :-
-  filter_actors_endpoint(A0->A1,EntityType),
-  filter_actors(As0->As1,EntityType),
-  ( A1=[] -> Out=As1 ; Out=[A1|As1] ).
+proceed_with_participants(WF,Endpoint,A0->A1,Participants) :-
+  % find all roles of the concept associated to an endpoint
+  endpoint_type(Endpoint,Concept),
+  concept_roles_(Concept,C_Roles),
+  % create a binding and try to apply it in current context
+  binding_create_(Participants,C_Roles,Binding),
+  proceed_with_binding(WF,A0->A1,Binding).
 
-filter_actors_endpoint([]->[],_EntityType) :- !.
-filter_actors_endpoint([E0|Es0]->Out,EntityType) :-
-  filter_actors_participants(E0->E1,EntityType),
-  filter_actors_endpoint(Es0->Es1,EntityType),
-  ( E1=[] -> Out=Es1 ; Out=[E1|Es1] ).
+proceed_without_participants(_WF,_Endpoint,A_0->A_0,Participants) :-
+  % allow skipping endpoint in case none of the
+  % participants is bound to the activity context.
+  forall(
+    member(O,Participants),
+    \+ member([O,_],A_0)
+  ).
 
-filter_actors_participants([]->[],_EntityType) :- !.
-filter_actors_participants([X0|Xs0]->[X0|Xs1],EntityType) :-
-  rdfs_individual_of(X0,EntityType), !,
-  filter_actors_participants(Xs0->Xs1,EntityType).
-filter_actors_participants([_|Xs0]->Xs1,EntityType) :-
-  filter_actors_participants(Xs0->Xs1,EntityType).
+proceed_with_binding(_WF,[]->A_new,A_new) :- !.
+proceed_with_binding(_WF,A_0->A_1,A_new) :-
+  apply_role_assignments_(A_new,A_0->A_1).
 
 
-flatten_actors(X,Set) :-
-  flatten_actors_(X,[]->Flat),
-  list_to_set(Flat,Set).
-flatten_actors_([],Flat_0->Flat_0) :- !.
-flatten_actors_([X|Rest],Flat_0->Flat_n) :-
-  ( is_list(X) ->
-    flatten_actors_(X,Flat_0->Flat_1) ;
-    Flat_1=[X|Flat_0] ),
-  flatten_actors_(Rest,Flat_1->Flat_n).
+apply_role_assignments_([],A_0->A_0) :- !.
+apply_role_assignments_([First|Rest],A_0->A_X) :-
+  apply_role_assignment_(First,A_0->A_1),
+  apply_role_assignments_(Rest,A_1->A_X).
+
+apply_role_assignment_([O0,O0_R],A_0->_) :-
+  % avoid conflicting assignment
+  member(R_dup,O0_R),
+  member([O1,O1_R],A_0),
+  O0 \= O1,
+  member(R_dup,O1_R),!,
+  fail.
+apply_role_assignment_([O,O_R0],A_0->A_1) :-
+  member([O,O_R1],A_0),!,
+  append(O_R0,O_R1,O_R),
+  list_to_set(O_R,O_R_Set),
+  binding_update_([O,O_R_Set],A_0->A_1).
+apply_role_assignment_(NewBinding,
+  A_0->[NewBinding|A_0]).
+
+
+binding_create_(Objects,Roles,Bindings) :-
+  % find object-role pairs
+  binding_create__(Objects,Roles,ObjectRole),
+  % merge pairs to object-list(role) pairs
+  findall([O,OR], (
+    member(O,Objects),
+    findall(OR0, member([O,OR0],ObjectRole), OR),
+    OR \= []
+  ), Bindings).
+binding_create__(_,[],[]) :- !.
+binding_create__(Objects,[R|Rs],[[O,R]|Rest]) :-
+  member(O,Objects),
+  once((
+    property_range(R, dul:classifies, O_Type),
+    kb_type_of(O, O_Type)
+  )),
+  binding_create__(Objects,Rs,Rest).
+
+binding_update_(_,[]->[]) :- !.
+binding_update_([O,OR],[[O,_]|Xs]->[[O,OR]|Ys]) :-
+  !, binding_update_([O,OR],Xs->Ys).
+binding_update_(New,[X|Xs]->[X|Ys]) :-
+  binding_update_(New,Xs->Ys).
+
+apply_role_bindings_(_Plan, _Tsk, _Bindings, []->[]) :- !.
+apply_role_bindings_(Plan, Tsk, Bindings, [B0|Rest0]->[B1|Rest1]) :-
+  apply_role_binding_(Plan, Tsk, Bindings, B0->B1),
+  apply_role_bindings_(Plan, Tsk, Bindings, Rest0->Rest1).
+
+apply_role_binding_(Plan, _Tsk,
+    Bindings, [Obj,Roles0]->[Obj,Roles1]) :-
+  findall(Role, (
+    member(Role,Roles0) ;
+    ( rdf_has(Plan, ease_wf:hasBinding, Binding),
+      rdf_has(Binding, ease_wf:hasBindingRole, X0),
+      rdf_has(Binding, ease_wf:hasBindingFiller, X1),
+      ( member(X0,Roles0) -> Role = X1 ;
+      ( member(X1,Roles0) -> Role = X0 ; fail )),
+      % avoid duplicates
+      \+ member(Role,Roles0),
+      % avoid conflicting assignment
+      \+ (
+        member([_,Roles2], Bindings),
+        member(Role,Roles2)
+      )
+    )
+  ), Roles1).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+activity_preceded_by(WF,ESG,S,A,C) :-
+  esg_endpoints(ESG,Endpoints),
+  activity_preceded_by_(WF,Endpoints,S,A,C).
+
+activity_preceded_by_(_,[],_,A0->A0,1.0) :- !.
+activity_preceded_by_(WF,Endpoints,S,A0->A1,C) :-
+  % check how many endpoints were observed that would sattisfy
+  % the pre-conditionsz
+  findall([Participants,C_Roles], (
+    member(Endpoint,Endpoints),
+    endpoint_type(Endpoint,Concept),
+    %%
+    kb_type_of(Concept,ConceptType),
+    entity_state(S,_,ConceptType, [Evt,Participants]),
+    endpoint_polarization(Evt,Endpoint),
+    %%
+    concept_roles_(Concept,C_Roles)
+  ), ParticipantsAndRoles),
+  %% confidence
+  length(Endpoints,Total),
+  length(ParticipantsAndRoles,Actual),
+  C is Actual / Total,
+  %%%
+  binding_create2_(ParticipantsAndRoles,Bindings_pre),
+  proceed_with_binding(WF,A0->A1,Bindings_pre).
+
+binding_create2_([],[]) :- !.
+binding_create2_([[P,R]|Rest],[B|B_Rest]) :-
+  binding_create_(P,R,B),
+  binding_create2_(Rest,B_Rest).
   
-
-restrict_actors(A0->A0,[]) :- !.
-restrict_actors(Actors,EA_new) :-
-  restrict_actors_(Actors,EA_new).
-restrict_actors_([]->[],_) :- !.
-restrict_actors_([EA_0|Xs_0]->Out,EA_new) :-
-  restrict_endpoint_actors(EA_0->EA_1,EA_new),
-  restrict_actors_(Xs_0->Xs_1,EA_new),
-  ( EA_1=[] -> Out=Xs_1 ; Out=[EA_1|Xs_1] ).
-
-restrict_endpoint_actors([]->[], _) :- !.
-restrict_endpoint_actors(EA_0->EA_1, EA_new) :-
-  flatten_actors(EA_new, Actors_new),
-  findall(X, (
-    member(X,EA_0),
-    once((member(X_actor,Actors_new),
-          member(X_actor,X)))),
-    Xs),
-  ( Xs=[] -> EA_1=EA_0 ; EA_1=Xs ).
-
-
-proceed_with_actors(_Act,[]->A_selected,A_selected) :- !.
-proceed_with_actors(Act,A_0->A_n,A_selected) :-
-  % proceed is not possible if the event is about some other
-  % contextual thing
-  context_test(A_0,A_selected,Act),
-  % current actors may have options that
-  % can be restricted by the selection
-  restrict_actors(A_0->A_1,A_selected),
-  % append A_selected as new endpoints
-  append(A_selected,A_1,A_n).
-
-proceed_with_participants(Act,_Endpoint,Actors,Participants) :-
-  proceed_with_actors(Act,Actors,[[Participants]]).
-
-
-proceed_without_participants(Act,_Endpoint,A_0->A_0,Participants) :-
-  % don't skip if next token has matching context
-  \+ context_test(A_0,[[Participants]],Act).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 endpoint_polarization(-(_),-(_)).
 endpoint_polarization(+(_),+(_)).
-
-endpoint_state_actors(States_0,Endpoint,Actors_e) :-
-  endpoint_type(Endpoint,EventType),
-  % find set of events in which typed endpoint occured
-  findall(Event_participants, (
-    entity_state(States_0,_Entity,EventType,
-        [Event,Event_participants]),
-    endpoint_polarization(Event,Endpoint)),
-    AllParticipants),
-  list_to_set(AllParticipants,Actors_e).
-
-activity_preceded_by(Act,Pre,
-    States_0,
-    Actors_0->Actors_1,
-    Confidence) :-
-  % check how many endpoints were observed that would sattisfy
-  % the pre-conditions
-  esg_endpoints(Pre,PreEndpoints),
-  ( PreEndpoints=[] -> (
-    Actors_1=Actors_0,
-    Confidence=1.0
-  );(
-    findall(Actors_e, (
-      member(Endpoint,PreEndpoints),
-      endpoint_state_actors(States_0,Endpoint,Actors_e),
-      Actors_e \= []
-    ), Actors_pre),
-    %% confidence
-    length(PreEndpoints,Total),
-    length(Actors_pre,Actual),
-    Confidence is Actual / Total,
-    %%%
-    proceed_with_actors(Act,Actors_0->Actors_1,Actors_pre)
-  )).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % parse a single typed phase endpoint.
-phase_endpoint(Act,Endpoint,[phase(Endpoint,Event,Participants)]) :->
+phase_endpoint(WF,Endpoint,[phase(Endpoint,Event,Participants)]) :->
   % next token has matching endpoint and context
   [ tok(_Time,Event,Endpoint,Participants) ],
-  { 'proceed_with'(Act,Endpoint,Participants) }.
+  { 'peak2'(Endpoint2) },
+  { 'proceed_with'(WF,Endpoint2,Participants) }.
 
-phase_endpoint(Act,Endpoint,ParseTree) :->
+phase_endpoint(WF,Endpoint,ParseTree) :->
   % skip tokens of some other activity context
   [ tok(_Time,_Event,Endpoint1,Participants) ],
-  { 'proceed_without'(Act,Endpoint1,Participants) },
-  phase_endpoint(Act,Endpoint,ParseTree).
+  { 'proceed_without'(WF,Endpoint1,Participants) },
+  phase_endpoint(WF,Endpoint,ParseTree).
 
-phase_endpoint(_Act,Endpoint,[skipped]) :->
-  % skip ESG endpoints, i.e., endpoints which were not observed.
-  % - only allow skipping if next token is not matching endpoint
-  % TODO: only not skip if same type and same context
-  { 'peak_token'(tok(_,_,Endpoint1,Participants)) },
-  { Endpoint1 \= Endpoint }.
+%phase_endpoint(_WF,Endpoint,[skipped]) :->
+  %% skip ESG endpoints, i.e., endpoints which were not observed.
+  %% - only allow skipping if next token is not matching endpoint
+  %% TODO: allow to disable skipping by a flag
+  %{ 'peak_token'(tok(_,_,E1,_Participants)) },
+  %{ concept_endpoint_(E1,E2) },
+  %{ E2 \= Endpoint }.
 
-constituent(Parent,-(Act),[action(Act,Term,Confidence)]) :->
-  { is_action_endpoint(Act) },
-  sub_activity(Parent,action(Act,Term,Confidence)).
+constituent(WF,-(Tsk),[action(SubWF,Tsk,Term,Confidence)]) :->
+  { is_action_endpoint(Tsk) },
+  sub_activity(WF, action(SubWF,Tsk,Term,Confidence)).
 
-constituent(Parent,Endpoint,PhaseTerm) :->
+constituent(WF,Endpoint,PhaseTerm) :->
   { is_state_endpoint(Endpoint) ;
     is_process_endpoint(Endpoint) },
-  phase_endpoint(Parent,Endpoint, PhaseTerm),
+  phase_endpoint(WF, Endpoint, PhaseTerm),
   { 'pop'(Endpoint) }.
 
 % parse endpoints of action constituents
-constituents(_,[])   :-> { 'esg'([]->[]) }.  % stop if graph is empty
-constituents(Act,[]) :-> { 'peak'(+(Act)) }. % stop at +(Act0) endpoint
-constituents(Act,[X|Xs]) :->
+constituents(_,[])        :-> { 'esg'([]->[]) }.  % stop if graph is empty
+constituents(_WF, Tsk,[]) :-> { 'peak'(+(Tsk)) }. % stop at +(Act0) endpoint
+constituents(WF, Tsk,[X|Xs]) :->
   { 'peak'(Endpoint) },
-  { \+ endpoint_type(Endpoint,Act) },
-  constituent(Act,Endpoint,[X]),
-  constituents(Act,Xs).
+  { \+ endpoint_type(Endpoint,Tsk) },
+  constituent(WF,Endpoint,[X]),
+  constituents(WF,Tsk,Xs).
 
 
-% parse {PreConditions}[-(Act),...,+(Act)]
-activity(action(Act,Constituents,Confidence),[Pre,_Post]) :->
-  { 'pop'(-(Act)) },
-  { 'preceded_by'(Act,Pre,PreConfidence) },
-  constituents(Act,X),
+% parse {PreConditions}[-(Tsk),...,+(Tsk)]
+activity(action(WF,Tsk,Constituents,Confidence),[Pre,_Post]) :->
+  { 'pop'(-(Tsk)) },
+  { 'preceded_by'(WF,Pre,PreConfidence) },
+  constituents(WF,Tsk,X),
   { delete(X,skipped,Constituents) },
   { Constituents \= [] },
-  { activity_confidence(Act,Constituents,PreConfidence,Confidence) },
+  { activity_confidence(WF,Constituents,PreConfidence,Confidence) },
   % TODO: can we handle post conditions? e.g. surface contact after dropping.
   %       these are ignored at the moment. maybe these could be used to imply tokens which were not observed.
-  %{ 'post_conditions'(Act,_Post) },
-  { 'pop'(+(Act)) }.
+  %{ 'post_conditions'(Tsk,_Post) },
+  { 'pop'(+(Tsk)) }.
 
 
-sub_activity(P,ESG_0->ESG_n,States,A_0->A_n,
-             Parent,action(Act,Term,Confidence)) -->
-  { parser_grammar_(P,Act,[Act_ESG|ActConditions]) },
-  { esg_join(ESG_0,[Act,Act_ESG],ESG_1) },
-  % parent actions may restrict what actors are used in sub-actions
-  { context_entities(A_0->A_1,Parent) },
-  activity(P,ESG_1->ESG_n,States,A_1->A_x,
-           action(Act,Term,Confidence),
-           ActConditions),
-  % sub-activities may specify the activity context of parent actions
-  { context_entities(A_x->A_y,Parent) },
-  { proceed_with_actors(Parent,A_0->A_n,A_y) }.
-
+sub_activity(Parser,ESG_0->ESG_n,States,A_0->A_n,
+             Parent_WF,action(WF,Tsk,Term,Confidence)) -->
+  { parser_grammar_(Parser,WF,Tsk,[ESG_1|TskConditions]) },
+  { rdf_has(WF,ease:isPlanFor,Tsk_1) },
+  { esg_join(ESG_0,[Tsk_1,ESG_1],ESG_2) },
+  % assign roles of WF/ACT given bindings from the parent workflow
+  { apply_role_bindings_(Parent_WF, Tsk, A_0, A_0->A_1) },
+  activity(Parser,ESG_2->ESG_n,States,A_1->A_x,
+           action(WF,Tsk,Term,Confidence),
+           TskConditions),
+  % assign roles of parent TSK/WF given role assignments
+  % inferred in activity predicate, and bindings from WF.
+  % this will fail in case there are conflicting instantiations!
+  { apply_role_bindings_(WF, Tsk, A_x, A_x->A_n) }.
 
 % parse [*,-(Act),...,+(Act),*]
 % TODO idea: re-start parser after each composite action
@@ -600,15 +559,15 @@ sub_activity(P,ESG_0->ESG_n,States,A_0->A_n,
 %           - diffeent graphs used, at different stages,and different actors
 %           - also at different stages in token sequence
 %        - can re-parsing allprevious tokens be avoided?
-some_activity(Parser, Act, States, action(Act,ActTerm,Confidence)) -->
-  { parser_grammar_(Parser,Act,[Graph|ActConditions]) },
+some_activity(Parser, Tsk, States, action(WF,Tsk,ActTerm,Confidence)) -->
+  { parser_grammar_(Parser,WF,Tsk,[Graph|ActConditions]) },
   activity(Parser,Graph->[],States,[]->_,
-           action(Act,ActTerm,Confidence),
+           action(WF,Tsk,ActTerm,Confidence),
            ActConditions).
-some_activity(Parser, Act, States_0->States_n, Action) -->
+some_activity(Parser, Tsk, States_0->States_n, ActTerm) -->
   [T], % skip token
   { update_states(States_0->States_1,T) },
-  some_activity(Parser, Act, States_1->States_n, Action).
+  some_activity(Parser, Tsk, States_1->States_n, ActTerm).
 
 %% detect_activity(+Parser,+Tokens,-Interpretation).
 %
@@ -619,7 +578,6 @@ some_activity(Parser, Act, States_0->States_n, Action) -->
 % @param Interpretation An interpretation of the activity represented by the tokens.
 %
 %detect_activity(Parser,Tokens,Output) :-
-  %debug_list_size('the number of input tokens is', Tokens),
   %dsg_new(DSG),
   %forall(
     %phrase(some_activity(Parser,_,states{}->_,ActionTerm), Tokens, _),
@@ -632,13 +590,10 @@ some_activity(Parser, Act, States_0->States_n, Action) -->
 
 % TODO to be removed
 detect_activity(Parser,Tokens,Output) :-
-  debug_list_size('the number of input tokens is', Tokens),
   findall(ActionTerm,
     phrase(some_activity(Parser,_,states{}->_,ActionTerm), Tokens, _),
     Unfiltered),
-  filter_detections(Unfiltered,[]->Output),
-  debug_list_size('the number of detected actions is',Output),
-  debug_parse_tree(Output).
+  filter_detections(Unfiltered,[]->Output).
 
 % TODO to be removed
 detect_activity2(Parser,Tokens,Interpretation) :-
@@ -648,7 +603,8 @@ detect_activity2(Parser,Tokens,Interpretation) :-
     length(E,L0_), L0 is -L0_,
     length(X,L1)
   ), Xs),
-  debug_list_size('the number of combinations is',Xs),
+  %print_term(Xs,[indent_arguments(true)]),
+  % FIXME
   sort(Xs, [[_,_,Interpretation]|_]).
 
 % TODO to be removed
@@ -688,7 +644,7 @@ term_endpoints(E_0->E_1,Term) :-
 
 term_endpoint(phase(-(_),Event,_),-(Event)) :- !.
 term_endpoint(phase(+(_),Event,_),+(Event)) :- !.
-term_endpoint(action(_,Xs,_),E) :-
+term_endpoint(action(_,_,Xs,_),E) :-
   member(X,Xs),
   term_endpoint(X,E).
 
@@ -720,9 +676,9 @@ filter_detections([T|Rest],X0->Xn) :-
 
 detection_contains([],_) :- fail, !.
 detection_contains([X|_], X) :- !.
-detection_contains([action(Act,Xs,_)|_], action(Act,Ys,_)) :-
+detection_contains([action(_,Tsk,Xs,_)|_], action(_,Tsk,Ys,_)) :-
   forall(member(Y,Ys), detection_contains(Xs,Y)), !.
-detection_contains([action(_,Xs,_)|_],Inner) :-
+detection_contains([action(_,_,Xs,_)|_],Inner) :-
   detection_contains(Xs,Inner), !.
 detection_contains([_|Rest],Inner) :-
   detection_contains(Rest,Inner), !.
@@ -730,8 +686,8 @@ detection_contains([_|Rest],Inner) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% confidence
 
-activity_confidence(Act,DetectedConstituents,PreConfidence,Confidence) :-
-  event_constituents(Act,AllConstituents,_),
+activity_confidence(WF,DetectedConstituents,PreConfidence,Confidence) :-
+  workflow_constituents(WF,AllConstituents,_),
   length(AllConstituents,Max), Max>0,
   findall(Event-Weighted, (
     member(Detected,DetectedConstituents),
@@ -753,7 +709,7 @@ activity_confidence(Act,DetectedConstituents,PreConfidence,Confidence) :-
   Confidence is 0.2 * PreConfidence + 0.8 * ConstituentConfidence.
 
 activity_confidence(phase(_,Event,_),Event,1.0) :- !.
-activity_confidence(action(Act,_,Confidence),Act,Confidence) :- !.
+activity_confidence(action(_,Tsk,_,Confidence),Tsk,Confidence) :- !.
 
 accumulate_confidence([], 1) :- !.
 accumulate_confidence(Xs, Confidence) :-
@@ -765,33 +721,13 @@ accumulate_confidence(Xs, Confidence) :-
   sumlist(Cs,Cs_sum),
   Confidence is Cs_sum / Cs_length.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% debugging
 
-debug_parse_tree([]) :- !.
-debug_parse_tree([X|Xs]) :-
-  debug_parse_tree_('',X),
-  debug_parse_tree(Xs).
-debug_parse_tree_(Space,action(Act,Xs,Confidence)) :-
-  atom_concat(Space,'  ',NextSpace),
-  rdf_split_url(_,ActName,Act),
-  debug(activity_parser, '~waction(~w,~f)', [Space,ActName,Confidence]),
-  ( Xs=[action(_,_,_)|_] ->
-  ( forall(member(X,Xs), debug_parse_tree_(NextSpace,X)) ) ;
-  ( findall(Y, (
-      member(X,Xs),
-      phase_debug_atom(X,Y)),
-      Ys),
-    atomic_list_concat(Ys,',',Endpoints),
-    debug(activity_parser, '~w[~w]', [NextSpace,Endpoints])
-  )).
-phase_debug_atom(phase(-(E),_,_),Atom) :-
-  rdf_split_url(_,TypeName,E),
-  term_to_atom(-(TypeName),Atom),!.
-phase_debug_atom(phase(+(E),_,_),Atom) :-
-  rdf_split_url(_,TypeName,E),
-  term_to_atom(+(TypeName),Atom),!.
+concept_roles_(Concept,C_Roles_Set) :-
+  findall(CR, (
+    kb_triple(Concept,dul:isRelatedToConcept,CR),
+    kb_type_of(CR,dul:'Role')
+  ),C_Roles),
+  list_to_set(C_Roles,C_Roles_Set).
 
-debug_list_size(Msg,L) :-
-  length(L,S),
-  debug(activity_parser, '[activity_parser] ~w ~d', [Msg, S]).
+concept_endpoint_(-(X),-(Y)) :- !, kb_type_of(X,Y).
+concept_endpoint_(+(X),+(Y)) :- !, kb_type_of(X,Y).
