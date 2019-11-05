@@ -55,15 +55,6 @@ TODO detect "silence" in long token streams
 
 :- dynamic parser_grammar/4. % Parser, Workflow, Task Concept, Sequence Graph
 
-% FIXME: not sure why this is needed. write should display simplified
-%        terms anyway. But it doesn't (always). What's the reason?
-write_concept(Concept) :-
-  kb_triple(Concept,rdfs:label,Label),!,
-  write(''''), write(Label), write('''').
-write_concept(Concept) :-
-  rdf_split_url(_,Name,Concept),!,
-  write(''''), write(Name), write('''').
-
 random_id(Id) :-
   randseq(8, 25, Seq_random),
   maplist(plus(65), Seq_random, Alpha_random),
@@ -77,16 +68,10 @@ parser_unique_id(Parser) :-
     Parser = P ).
 
 no_grammar(Parser) :-
-    write('[parser.pl] '),
-    write('ERROR: no grammars loaded for parser '),
-    write(Parser), nl,
+    print_message(warning, no_grammar(Parser)),
     fail.
 no_grammar(Parser,Tsk) :-
-    write('[parser.pl] '),
-    write('ERROR: no '),
-    write_concept(Tsk),
-    write(' grammar loaded for parser '),
-    write(Parser), nl,
+    print_message(warning, no_grammar(Parser,Tsk)),
     fail.
 
 parser_grammar_(Parser,WF,Tsk,GraphChild) :-
@@ -97,57 +82,6 @@ parser_grammar_(Parser,WF,Tsk,GraphChild) :-
   (( parser_grammar(Parser,WF,X,GraphChild),
      once(rdfs_subclass_of(Tsk,X)) ) *->
      true ; no_grammar(Parser,Tsk) ).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Tokenization
-
-%% tokenize(+Episode,?Tokens).
-%
-% Tokenize given episode.
-% The structure of the episode symbol is that it links
-% all events via knowrob:subAction.
-% These are collected and mapped to a token representation.
-%
-% @param Episode VR episode symbol.
-% @param Tokens Tokenized episode.
-%
-%tokenize(Episode,Tokens) :-
-  %findall(Event, rdf_has(Episode,dul:includesEvent,Event), Events),
-  %tokenize_(Events,Unsorted),
-  %filter_tokens(Unsorted,Filtered),
-  %% first argument of each token is time such that we can use Prolog builtin `sort`
-  %sort(Filtered,Tokens).
-
-%filter_tokens([],[]) :- !.
-%filter_tokens([Tok|Rest],[Tok|RestFiltered]) :-
-  %filter_tokens(Rest,RestFiltered).
-
-%tokenize_([], []).
-%tokenize_([Evt|Rest],[Tok1,Tok2|RestTokens]) :-
-  %tokenize_event(Evt,Tok1,Tok2),
-  %tokenize_(Rest,RestTokens).
-
-%tokenize_event(Event,
-    %tok(Begin,Event,-(EvtType),Participants),
-    %tok(End,  Event,+(EvtType),Participants)) :-
-  %rdfs_individual_of(Event,dul:'Event'), !,
-  %% Event types are disjoint
-  %% TODO: is this really safe to assume? e.g., artifact contact and effector contact.
-  %%       this needs special handling because different constituents may refer to
-  %%       different event types.
-  %%       Maybe would be better to stick to event individual in endpoints?
-  %once((
-    %rdf(Event,rdf:type,EvtType),
-    %rdfs_subclass_of(EvtType,dul:'Event')
-  %)),
-  %findall(P, rdf_has(Event, dul:hasParticipant, P), Participants),
-  %interval_(Event, [Begin,End]).
-
-%tokenize_event(Event,_,_) :-
-  %% should not happen, everything should be of type 'Event'.
-  %% If not this would indicate some unknown event type in the log which is
-  %% not mapped to flanagan ontology.
-  %throw(error(type_error(dul:'Event',Event), _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Endpoint sequence graph stuff
@@ -179,10 +113,9 @@ parser_create(Parser) :-
 parser_create(Parser,Workflows) :-
   parser_unique_id(Parser),
   forall(member(WF,Workflows),(
-    parser_create_grammar(Parser,WF);(
-    write('      [parser.pl] '),
-    write('ERROR: Failed to build sequence graph for worklfow: '), write_concept(WF), nl
-  ))).
+    parser_create_grammar(Parser,WF);
+    print_message(warning, invalid_grammar(WF))
+  )).
 
 parser_create_grammar(Parser,WF) :-
   % find constituents and their relation to each other
@@ -193,12 +126,10 @@ parser_create_grammar(Parser,WF) :-
   ),
   workflow_constituents(WF,Constituents,Constraints),
   % compute the sequence graph
-  % TODO: why pre-compute all sequences here?
-  write('      [parser.pl] '), write('Loading task '), write_concept(TskType), nl,
+  print_message(informational, loading_grammar(TskType)),
   esg_truncated(Tsk,Constituents,Constraints,[Sequence,
                            PreConditions, PostConditions]),
-  write('      [parser.pl] '),
-  write_concept(TskType), write(' -> '), esg_write(Sequence), nl,
+  print_message(informational, grammar(TskType,Sequence)),
   % assert to Prolog KB
   assertz(parser_grammar(Parser,WF,TskType,[Sequence,PreConditions,PostConditions])).
 
@@ -603,8 +534,6 @@ detect_activity2(Parser,Tokens,Interpretation) :-
     length(E,L0_), L0 is -L0_,
     length(X,L1)
   ), Xs),
-  %print_term(Xs,[indent_arguments(true)]),
-  % FIXME
   sort(Xs, [[_,_,Interpretation]|_]).
 
 % TODO to be removed
