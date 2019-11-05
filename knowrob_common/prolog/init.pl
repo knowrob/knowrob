@@ -45,6 +45,7 @@
 :- rdf_db:rdf_register_ns(ease_wf,   'http://www.ease-crc.org/ont/EASE-WF.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease_obj,  'http://www.ease-crc.org/ont/EASE-OBJ.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ease_proc, 'http://www.ease-crc.org/ont/EASE-PROC.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ease_state, 'http://www.ease-crc.org/ont/EASE-STATE.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,   'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ros,       'http://www.ease-crc.org/ont/ROS.owl#', [keep(true)]).
 
