@@ -2,27 +2,14 @@
 :- module(knowrob_action_parser, [
      parser_create/1,
      parser_create/2,
-     detect_activity/3,
-     detect_activity2/3
+     detect_activity/2,
+     detect_activity2/2
 ]).
 /** <module> Manipulation Activity Parser.
 
-We exploit our action model to detect activities in streams
-of observed processes. Observed processes are force dynam-
-ics, states, and motions that are used to define actions in
-our model. We use temporal constraints in action definitions
-to build an endpoint sequence graph (ESG) of constituent
-endpoints that represents their temporal ordering. Activity
-detection is implemented through a top-down depth-first
-parser that uses ESGs as grammar. An activity is detected
-whenever the parser is able to reach an ESG endnode
-following only nodes that can be unified with the stream
-of observed event endpoints which are used as tokens by the
-parser.
-
-The parser, named Manipulation Activity Parser (MAP),
-builds a parse tree of detected action terms. We say that MAP
-parse trees are interpretations of observed event endpoints.
+The parser builds a parse tree of detected action terms.
+We say that MAP parse trees are interpretations of observed
+event endpoints.
 Multiple interpretations may be provided by the parser. In-
 terpretations are scored according to the number of observed
 endpoints they explain. We select the interpretation that
@@ -35,7 +22,9 @@ endpoints of motions are often not observable nor do they co-
 occur with force dynamics endpoints which are observable
 by an external viewer.
 
-TODO detect "silence" in long token streams
+TODO make it work with long token streams
+       - provide partial results to monitor the process 
+       - detect "silence" and come up with other means to exit a parse
 @author Daniel Beßler
 */
 
@@ -46,12 +35,12 @@ TODO detect "silence" in long token streams
 
 :- debug(activity_parser).
 
-:- rdf_meta is_typed_endpoint(t,r),
+:- rdf_meta endpoint_type_(t,r),
             parser_grammar(?,r,r,t),
             parser_create_grammar(+,r),
             parser_create(-,t),
-            detect_activity(+,t,t),
-            detect_activity2(+,t,t).
+            detect_activity(t,t),
+            detect_activity2(t,t).
 
 :- dynamic parser_grammar/4. % Parser, Workflow, Task Concept, Sequence Graph
 
@@ -82,17 +71,6 @@ parser_grammar_(Parser,WF,Tsk,GraphChild) :-
   (( parser_grammar(Parser,WF,X,GraphChild),
      once(rdfs_subclass_of(Tsk,X)) ) *->
      true ; no_grammar(Parser,Tsk) ).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Endpoint sequence graph stuff
-
-is_typed_endpoint(-(Iri),Type) :- rdfs_subclass_of(Iri,Type),!.
-is_typed_endpoint(+(Iri),Type) :- rdfs_subclass_of(Iri,Type),!.
-is_typed_endpoint(Iri,Type)    :- atom(Iri), rdfs_subclass_of(Iri,Type),!.
-
-is_action_endpoint(E)  :- is_typed_endpoint(E,dul:'Task'),!.
-is_state_endpoint(E)   :- is_typed_endpoint(E,ease_state:'Gestallt'),!.
-is_process_endpoint(E) :- is_typed_endpoint(E,ease_proc:'ProcessType'),!.
 
 %% parser_create(-Parser).
 %% parser_create(-Parser,+RDFGraph).
@@ -144,138 +122,131 @@ peak_token(X,[X|Xs],[X|Xs]) :- !.
 
 term_expansion(Head_0 :-> Body_0, Head_1 --> Body_n) :-
   Head_0=..[Functor|Args],
-  Head_1=..[Functor,P,G,S,A|Args],
-  expand_esg(P,G,S,A, Body_0, Body_n).
+  Head_1=..[Functor,G,S,A|Args],
+  expand_esg(G,S,A, Body_0, Body_n).
 
-expand_esg(P,G_0->G_n,S_0->S_n,A_0->A_n,(X1,X2),Expanded) :-
+expand_esg(G_0->G_n,S_0->S_n,A_0->A_n,(X1,X2),Expanded) :-
   !,
-  expand_esg_term(P,G_0->G_1,S_0->S_1,A_0->A_1,X1,Y1),
-  expand_esg(P,G_1->G_n,S_1->S_n,A_1->A_n,X2,Y2),
+  expand_esg_term(G_0->G_1,S_0->S_1,A_0->A_1,X1,Y1),
+  expand_esg(G_1->G_n,S_1->S_n,A_1->A_n,X2,Y2),
   ( Y1 = (Z1,Z2) ->
     Expanded=(Z1,(Z2,Y2)) ;
     Expanded=(Y1,Y2) ).
-expand_esg(P,G,S,A,X1,Y1) :-
-  expand_esg_term(P,G,S,A,X1,Y1).
+expand_esg(G,S,A,X1,Y1) :-
+  expand_esg_term(G,S,A,X1,Y1).
   
-expand_esg_term(_P,G_0->G_1,S_0->S_0,A_0->A_0,
+expand_esg_term(G_0->G_1,S_0->S_0,A_0->A_0,
   {'esg'(X->Y)},
   {G_0=X,G_1=Y}) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_0,
   {'peak'(Endpoint)},
   {esg_peak(G_0,E), concept_endpoint_(E,Endpoint)}) :- !.
 
 % FIXME: ugly peak1/peak2
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_0,
   {'peak2'(Endpoint)},
   {esg_peak(G_0,Endpoint)}) :- !.
 
-expand_esg_term(_P,G_0->G_1,S_0->S_0,A_0->A_0,
+expand_esg_term(G_0->G_1,S_0->S_0,A_0->A_0,
   {'pop'(Endpoint)},
   {esg_pop(G_0,E,G_1), concept_endpoint_(E,Endpoint)}) :- !.
 
 % FIXME: causes a warning?!?
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_0,
   {'peak_token'(Token)},
   peak_token(Token)) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_1,
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_1,
   {'preceded_by'(WF,Pre,Confidence)},
   {activity_preceded_by(WF,Pre,S_0,A_0->A_1,Confidence)}) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,Actors,
+expand_esg_term(G_0->G_0,S_0->S_0,Actors,
   {'proceed_with'(WF,Endpoint,Participants)},
   {proceed_with_participants(WF,Endpoint,Actors,Participants)}) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,Actors,
+expand_esg_term(G_0->G_0,S_0->S_0,Actors,
   {'proceed_without'(WF,Endpoint,Participants)},
   {proceed_without_participants(WF,Endpoint,Actors,Participants)}) :- !.
   
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,{X},{X}) :- !.
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_0,{X},{X}) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_1,A_0->A_0,
+expand_esg_term(G_0->G_0,S_0->S_1,A_0->A_0,
                [Token],
                ([X],{X=Token,update_states(S_0->S_1,X)})) :- !.
 
-expand_esg_term(_P,G_0->G_0,S_0->S_0,A_0->A_0,[],[]) :- !.
+expand_esg_term(G_0->G_0,S_0->S_0,A_0->A_0,[],[]) :- !.
 
-expand_esg_term(P,G,S,A,Term,Expanded) :-
+expand_esg_term(G,S,A,Term,Expanded) :-
   Term=..[Functor|Args],
-  Expanded=..[Functor,P,G,S,A|Args].
+  Expanded=..[Functor,G,S,A|Args].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% entity states
+%%%%%%%%% States that represent active events where
+%%%%%%%%% some object plays a role.
 
-update_states(States_0->States_1,tok(_Time,_,-(Event),Participants)) :- !,
+update_states(States,tok(_Time,_,-(Event),Participants)) :- !,
   kb_type_of(Event,EvtType),
-  set_entity_states(States_0->States_1,Participants,[EvtType,Event,Participants]).
-update_states(States_0->States_1,tok(_Time,_,+(Event),Participants)) :- !,
+  set_states_(States,Participants,[EvtType,Event,Participants]).
+update_states(States,tok(_Time,_,+(Event),Participants)) :- !,
   kb_type_of(Event,EvtType),
-  unset_entity_states(States_0->States_1,Participants,[EvtType,Event,Participants]).
+  unset_states_(States,Participants,[EvtType,Event,Participants]).
 
-unset_state(States_0->States_1,Key,Value) :-
-  del_dict(Key,States_0,Value,States_1).
-set_state(States_0->States_1,Key,Value) :-
-  put_dict(Key,States_0,Value,States_1).
-get_state(States,Key,Value) :-
-  get_dict(Key,States,Value).
+get_state_(States,E,EvtType,[Event,Participants]) :-
+  get_dict(E,States,ES),
+  get_dict(EvtType,ES,Events),
+  member([Event,Participants],Events),!.
 
-get_or_create_state(States,Key,Default,Value) :-
-  once(
-    get_state(States,Key,Value) ;
-    Value = Default ).
+%% SET STATES
+set_states_(S_0->S_0,[],_) :- !.
+set_states_(S_0->S_n,[X|Xs],Val) :-
+  set_state_(S_0->S_1,X,Val),
+  set_states_(S_1->S_n,Xs,Val).
 
-
-unset_entity_states(S_0->S_0,[],_) :- !.
-unset_entity_states(S_0->S_n,[X|Xs],Val) :-
-  unset_entity_state(S_0->S_1,X,Val),
-  unset_entity_states(S_1->S_n,Xs,Val).
-
-unset_entity_state(States_0->States_0,E,[EvtType,Event,Participants]) :-
-  \+ (
-    entity_state(States_0,E,EvtType,[-(Event),PE]),
-    subset(Participants,PE)
-  ), !.
-unset_entity_state(States_0->States_1,E,[EvtType,Event,Participants]) :-
-  get_state(States_0,E,ES_0),
-  get_state(ES_0,EvtType,Events_0),
-  delete(Events_0,[-(Event),_],Events_1),
-  set_state(ES_0->ES_1,EvtType,[[+(Event),Participants]|Events_1]),
-  set_state(States_0->States_1,E,ES_1), !.
-
-
-set_entity_states(S_0->S_0,[],_) :- !.
-set_entity_states(S_0->S_n,[X|Xs],Val) :-
-  set_entity_state(S_0->S_1,X,Val),
-  set_entity_states(S_1->S_n,Xs,Val).
-
-set_entity_state(S_0->S_0, E, [EvtType,Event,Participants]) :-
-  entity_state(S_0,E,EvtType,[-(Event),PE]),
+set_state_(S_0->S_0, E, [EvtType,Event,Participants]) :-
+  get_state_(S_0,E,EvtType,[-(Event),PE]),
   subset(Participants,PE), !.
-set_entity_state(S_0->S_1, E,[EvtType,Event,Participants]) :-
-  get_or_create_state(S_0,E,states{},ES_0),
-  get_or_create_state(ES_0,EvtType,[],Events_0),
+set_state_(S_0->S_1, E,[EvtType,Event,Participants]) :-
+  get_or_create_state_(S_0,E,states{},ES_0),
+  get_or_create_state_(ES_0,EvtType,[],Events_0),
   ( member([Event,_],Events_0) ->
     S_1 = S_0 ; (
     delete_previous_events(Events_0->Events_1,Participants),
-    set_state(ES_0->ES_1,EvtType,[[-(Event),Participants]|Events_1]),
-    set_state(S_0->S_1,E,ES_1)
+    put_dict(EvtType,ES_0,[[-(Event),Participants]|Events_1],ES_1),
+    put_dict(E,S_0,ES_1,S_1)
   )).
 
-entity_state(States_0,E,EvtType,[Event,Participants]) :-
-  get_state(States_0,E,ES),
-  get_state(ES,EvtType,Events),
-  member([Event,Participants],Events),!.
+get_or_create_state_(States,Key,Default,Value) :-
+  once( get_dict(Key,States,Value) ; Value = Default ).
   
 delete_previous_events([]->[],_) :- !.
 delete_previous_events([[X,P_X]|Xs]->Events_n,P_0) :-
   % delete events with identical participants!
+  % TODO: what is going on here?
   delete_previous_events(Xs->Events_1,P_0),
   ( subset(P_X,P_0) ->
     Events_n=Events_1 ;
     Events_n=[[X,P_X]|Events_1] ).
+
+%% UNSET STATES
+unset_states_(S_0->S_0,[],_) :- !.
+unset_states_(S_0->S_n,[X|Xs],Val) :-
+  unset_state_(S_0->S_1,X,Val),
+  unset_states_(S_1->S_n,Xs,Val).
+
+unset_state_(States_0->States_0,E,[EvtType,Event,Participants]) :-
+  \+ (
+    get_state_(States_0,E,EvtType,[-(Event),PE]),
+    subset(Participants,PE)
+  ), !.
+unset_state_(States_0->States_1,E,[EvtType,Event,Participants]) :-
+  get_dict(E,States_0,ES_0),
+  get_dict(EvtType,ES_0,Events_0),
+  delete(Events_0,[-(Event),_],Events_1),
+  put_dict(EvtType,ES_0,[[+(Event),Participants]|Events_1],ES_1),
+  put_dict(E,States_0,ES_1,States_1), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,6 +263,8 @@ proceed_with_participants(WF,Endpoint,A0->A1,Participants) :-
 proceed_without_participants(_WF,_Endpoint,A_0->A_0,Participants) :-
   % allow skipping endpoint in case none of the
   % participants is bound to the activity context.
+  % TODO: this is too restrictive, e.g. bumping the object
+  %           into another object, dropping it and picking it up again, etc.
   forall(
     member(O,Participants),
     \+ member([O,_],A_0)
@@ -387,7 +360,7 @@ activity_preceded_by_(WF,Endpoints,S,A0->A1,C) :-
     endpoint_type(Endpoint,Concept),
     %%
     kb_type_of(Concept,ConceptType),
-    entity_state(S,_,ConceptType, [Evt,Participants]),
+    get_state_(S,_,ConceptType, [Evt,Participants]),
     endpoint_polarization(Evt,Endpoint),
     %%
     concept_roles_(Concept,C_Roles)
@@ -407,6 +380,10 @@ binding_create2_([[P,R]|Rest],[B|B_Rest]) :-
   
 endpoint_polarization(-(_),-(_)).
 endpoint_polarization(+(_),+(_)).
+
+endpoint_type_(E,Type) :-
+  endpoint_type(E,Iri),
+  rdfs_subclass_of(Iri,Type),!.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -433,12 +410,12 @@ phase_endpoint(WF,Endpoint,ParseTree) :->
   %{ E2 \= Endpoint }.
 
 constituent(WF,-(Tsk),[action(SubWF,Tsk,Term,Confidence)]) :->
-  { is_action_endpoint(Tsk) },
+  { endpoint_type_(Tsk,dul:'Task') },
   sub_activity(WF, action(SubWF,Tsk,Term,Confidence)).
 
 constituent(WF,Endpoint,PhaseTerm) :->
-  { is_state_endpoint(Endpoint) ;
-    is_process_endpoint(Endpoint) },
+  { endpoint_type_(Endpoint,ease_state:'Gestallt') ;
+    endpoint_type_(Endpoint,ease_proc:'ProcessType') },
   phase_endpoint(WF, Endpoint, PhaseTerm),
   { 'pop'(Endpoint) }.
 
@@ -466,14 +443,14 @@ activity(action(WF,Tsk,Constituents,Confidence),[Pre,_Post]) :->
   { 'pop'(+(Tsk)) }.
 
 
-sub_activity(Parser,ESG_0->ESG_n,States,A_0->A_n,
+sub_activity(ESG_0->ESG_n,States,A_0->A_n,
              Parent_WF,action(WF,Tsk,Term,Confidence)) -->
-  { parser_grammar_(Parser,WF,Tsk,[ESG_1|TskConditions]) },
+  { parser_grammar_(_,WF,Tsk,[ESG_1|TskConditions]) },
   { rdf_has(WF,ease:isPlanFor,Tsk_1) },
   { esg_join(ESG_0,[Tsk_1,ESG_1],ESG_2) },
   % assign roles of WF/ACT given bindings from the parent workflow
   { apply_role_bindings_(Parent_WF, Tsk, A_0, A_0->A_1) },
-  activity(Parser,ESG_2->ESG_n,States,A_1->A_x,
+  activity(ESG_2->ESG_n,States,A_1->A_x,
            action(WF,Tsk,Term,Confidence),
            TskConditions),
   % assign roles of parent TSK/WF given role assignments
@@ -482,53 +459,32 @@ sub_activity(Parser,ESG_0->ESG_n,States,A_0->A_n,
   { apply_role_bindings_(WF, Tsk, A_x, A_x->A_n) }.
 
 % parse [*,-(Act),...,+(Act),*]
-% TODO idea: re-start parser after each composite action
-%        - implement "parsing" states, or prepend state tokens
-%        - then yield only actions up to some token, which are complete then?
-%        - could be hard to recoverparser state
-%           - tokens,graph,states,actors
-%           - diffeent graphs used, at different stages,and different actors
-%           - also at different stages in token sequence
-%        - can re-parsing allprevious tokens be avoided?
-some_activity(Parser, Tsk, States, action(WF,Tsk,ActTerm,Confidence)) -->
-  { parser_grammar_(Parser,WF,Tsk,[Graph|ActConditions]) },
-  activity(Parser,Graph->[],States,[]->_,
+some_activity(Tsk, States, action(WF,Tsk,ActTerm,Confidence)) -->
+  { parser_grammar_(_,WF,Tsk,[Graph|ActConditions]) },
+  activity(Graph->[],States,[]->_,
            action(WF,Tsk,ActTerm,Confidence),
            ActConditions).
-some_activity(Parser, Tsk, States_0->States_n, ActTerm) -->
+some_activity(Tsk, States_0->States_n, ActTerm) -->
   [T], % skip token
   { update_states(States_0->States_1,T) },
-  some_activity(Parser, Tsk, States_1->States_n, ActTerm).
+  some_activity(Tsk, States_1->States_n, ActTerm).
 
-%% detect_activity(+Parser,+Tokens,-Interpretation).
+%% detect_activity(+Tokens,-Interpretation).
 %
 % Detects activities in given token sequence.
 %
-% @param Parser Parser id.
 % @param Tokens Token sequence.
 % @param Interpretation An interpretation of the activity represented by the tokens.
 %
-%detect_activity(Parser,Tokens,Output) :-
-  %dsg_new(DSG),
-  %forall(
-    %phrase(some_activity(Parser,_,states{}->_,ActionTerm), Tokens, _),
-    %dsg_push(DSG,ActionTerm)),
-  %dsg_count(DSG,Count),
-  %debug(activity_parser,
-    %'the number of detected actions is ~d', [Count]),
-  %dsg_best(DSG,BestDetection),
-  %dsg_free(DSG).
-
-% TODO to be removed
-detect_activity(Parser,Tokens,Output) :-
+% TODO this needs a revision
+detect_activity(Tokens,Output) :-
   findall(ActionTerm,
-    phrase(some_activity(Parser,_,states{}->_,ActionTerm), Tokens, _),
+    phrase(some_activity(_,states{}->_,ActionTerm), Tokens, _),
     Unfiltered),
   filter_detections(Unfiltered,[]->Output).
 
-% TODO to be removed
-detect_activity2(Parser,Tokens,Interpretation) :-
-  detect_activity(Parser,Tokens,ActionTerms),
+detect_activity2(Tokens,Interpretation) :-
+  detect_activity(Tokens,ActionTerms),
   findall([L0,L1,X], (
     phrase(interpretation([]->E,[]->X),ActionTerms,[]),
     length(E,L0_), L0 is -L0_,
@@ -536,27 +492,25 @@ detect_activity2(Parser,Tokens,Interpretation) :-
   ), Xs),
   sort(Xs, [[_,_,Interpretation]|_]).
 
-% TODO to be removed
-detect_activity2(Parser,Tokens,Interpretation) :-
-  detect_activity(Parser,Tokens,ActionTerms), !,
-  assertz(best_interpretation(Parser,0,1,0,x)),
+detect_activity2(Tokens,Interpretation) :-
+  detect_activity(Tokens,ActionTerms), !,
+  assertz(best_interpretation(0,1,0,x)),
   forall(phrase(interpretation([]->E,[]->X),ActionTerms,[]), (
     length(E,L0),
     length(X,L1),
     accumulate_confidence(X,L2),
-    once(best_interpretation(Parser,Best0,Best1,Best2,_)),
+    once(best_interpretation(Best0,Best1,Best2,_)),
     (( L0 > Best0 ;
      ( L0 is Best0 , L1 < Best1 ) ;
      ( L0 is Best0 , L1 is Best1, L2 < Best2 )) -> (
-      %retractall(best_interpretation(Parser,_,_,_)),
-      asserta(best_interpretation(Parser,L0,L1,L2,X)) );
+      %retractall(best_interpretation(_,_,_)),
+      asserta(best_interpretation(L0,L1,L2,X)) );
       true )
   )),
-  once(best_interpretation(Parser,_,_,_,Interpretation)),
+  once(best_interpretation(_,_,_,Interpretation)),
   Interpretation \= x,
-  retractall(best_interpretation(Parser,_,_,_,_)).
+  retractall(best_interpretation(_,_,_,_)).
 
-% TODO to be removed
 interpretation(E_0->E_n,S_0->S_n) -->
   [Term],
   { combinable(E_0,Term) },
@@ -585,14 +539,6 @@ combinable(Es,T_1) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% 
-% TODO: it seems a good idea to build a tree where the nodes on each level are
-%       temporally distinct regions.
-%       the node itself is either an action term or a
-%       subtree with distinct regions contained in the parent graph.
-%       the temporally distinct regions would provide 'cut' points during
-%       parsing, e.g. for storing events to disk and clear them from memory.
-%       duplications or specializations of terms should be detected at the leaf nodes
-%       to replace/skip etc.
 
 % delete interpretations which are subsumed by others.
 filter_detections([],X0->X0) :- !.

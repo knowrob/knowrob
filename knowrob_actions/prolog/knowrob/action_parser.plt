@@ -27,8 +27,8 @@ test('parser_assert') :-
   rdf_assert('TestHand', rdf:type, ease:'PhysicalEffector').
 
 test_detect_activity(Tokens,Expected) :-
-  test_parser(Parser),
-  detect_activity2(Parser,Tokens,Actual),
+  %test_parser(Parser),
+  detect_activity2(Tokens,Actual),
   ( Actual = Expected -> true ; (
     print_term(
        '!='(Expected,Actual),
@@ -58,8 +58,7 @@ test('detect_activity(PickingUp)', [nondet]) :-
     [action(_,ptest:'PickingUp',_,_)]).
 
 test('detect_activity(not PickingUp)', [fail]) :-
-  test_parser(Parser),
-  detect_activity2(Parser,[
+  detect_activity2([
     tok(0.0,a, -(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(0.5,a, +(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),    ['TestHand']),
@@ -69,8 +68,7 @@ test('detect_activity(not PickingUp)', [fail]) :-
     [action(_,ptest:'PickingUp',_,_)]).
 
 test('detect_activity(PickPlace1)', [nondet]) :-
-  test_parser(Parser),
-  detect_activity2(Parser,[
+  detect_activity2([
     tok(0.0,a, -(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),    ['TestHand']),
     tok(3.0,c, -(ptest:'Touching'),       ['TestHand','TestObject']),
@@ -84,8 +82,7 @@ test('detect_activity(PickPlace1)', [nondet]) :-
     [action(_,ptest:'PickPlace',_,_)]).
 
 test('detect_activity(PickPlace2)', [nondet]) :-
-  test_parser(Parser),
-  detect_activity2(Parser,[
+  detect_activity2([
     %%%% first
     tok(0.0,a, -(ptest:'Supporting'),    ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),   ['TestHand']),
