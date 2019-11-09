@@ -37,7 +37,8 @@ pkg_check_modules(SWIPL REQUIRED swipl)
 include_directories(${SWIPL_INCLUDE_DIRS})
 link_directories(${SWIPL_LIBRARY_DIRS})
 
-# TODO: get rid of this
+# used to parse JSON strings in the C++ client
+# TODO: better use RapidJSON
 pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 add_definitions(${JSON_GLIB_CFLAGS})
 link_directories(${JSON_GLIB_LIBRARIY_DIRS})
