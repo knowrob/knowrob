@@ -182,17 +182,24 @@ mem_import_owl(OWLFile) :-
   forall(
     member(Obj,ObjectIds),(
     object_import_detections(Obj),
-    mem_import_fixed_pose(Obj)
+    ignore(mem_import_fixed_pose(Obj))
   )),
   %%
   mark_dirty_objects(ObjectIds).
 
 %%
 mem_import_fixed_pose(Obj) :-
-  rdf_has(Obj, knowrob:pose, Pose) -> (
-    mem_pose_pl(Obj,Pose,X),
-    object_pose_update(Obj,X,0)
-  ) ; true.
+  object_localization__(Obj,Loc),
+  kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
+  object_frame_name(Obj,ObjFrame),
+  object_pose_update(Obj,[RefFrame,ObjFrame,T,Q],0),!.
+
+object_localization__(Obj,Loc) :-
+  atom(Obj),
+  rdf_has(Obj,ease_obj:hasLocalization,Loc),!.
+object_localization__(Obj,Obj) :-
+  atom(Obj),
+  rdf_has(Obj,ease_obj:hasSpaceRegion,_),!.
 
 %%
 mem_import_latest_tf :-

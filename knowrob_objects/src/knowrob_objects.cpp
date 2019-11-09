@@ -16,6 +16,7 @@ private:
 	typedef std::map<std::string,knowrob_objects::ObjectState> ObjectStateMap;
 	typedef std::pair<std::string,knowrob_objects::ObjectState> ObjectStateMapItem;
 	ObjectStateMap dirty_objects[2];
+	std::set<std::string> deleted_objects[2];
 	std::mutex push_lock;
 	std::mutex loop_lock_;
 	std::condition_variable loop_cv_;
@@ -38,19 +39,32 @@ public:
 	
 	void broadcast(ros::Publisher &publisher) {
 		ObjectStateMap &objects = dirty_objects[push_index];
-		if(objects.empty()) return;
+		std::set<std::string> &deleted = deleted_objects[push_index];
+		if(objects.empty() && deleted.empty()) return;
 		// ping-pong, less locking
 		push_lock.lock();
 		push_index = (int)!push_index;
 		push_lock.unlock();
-		// fill message
-		knowrob_objects::ObjectStateArray msg;
-		for(ObjectStateMap::iterator it = objects.begin(); it != objects.end(); ++it) {
-			msg.object_states.push_back(it->second);
+		if(!objects.empty()) {
+			knowrob_objects::ObjectStateArray msg;
+			msg.action = knowrob_objects::ObjectStateArray::ADD;
+			for(ObjectStateMap::iterator it = objects.begin(); it != objects.end(); ++it) {
+				msg.object_states.push_back(it->second);
+			}
+			publisher.publish(msg);
+			objects.clear();
 		}
-		// send message
-		publisher.publish(msg);
-		objects.clear();
+		if(!deleted.empty()) {
+			knowrob_objects::ObjectStateArray msg;
+			msg.action = knowrob_objects::ObjectStateArray::DELETE;
+			for(std::set<std::string>::iterator it = deleted.begin(); it != deleted.end(); ++it) {
+				knowrob_objects::ObjectState os_msg;
+				os_msg.object_id = (*it).c_str();
+				msg.object_states.push_back(os_msg);
+			}
+			publisher.publish(msg);
+			deleted.clear();
+		}
 	}
 	
 	void loop() {
@@ -90,7 +104,7 @@ public:
 		obj.object_id   = object_id.c_str();
 		l_data.next(e); obj.frame_name  = (char*)e;
 		l_data.next(e); obj.object_type = (char*)e;
-		l_data.next(e); obj.has_visual  = (std::string((char*)e) == "true");
+		l_data.next(e); obj.shape       = (int)e;
 		l_data.next(e); obj.mesh_path   = (char*)e;
 		l_data.next(e); std_msgs::pl_term_color(e, obj.color);
 		l_data.next(e); geometry_msgs::pl_term_vector3(e, obj.size);
@@ -107,15 +121,33 @@ public:
 			}
 		}
 	}
+	
+	void push_deleted(const PlTerm &data) {
+		std::string object_id((char*)data);
+		deleted_objects[push_index].insert(object_id);
+	}
 };
 
-PREDICATE(mark_dirty_objects_cpp, 1) {
+PREDICATE(object_state_add_cpp, 1) {
 	static MarkDirtyObjectClient mark_dirty_client;
 	PlTail tail(PL_A1); PlTerm e;
 	
 	mark_dirty_client.push_begin();
 	while(tail.next(e)) {
 		mark_dirty_client.push(e);
+        };
+	mark_dirty_client.push_end();
+	
+	return TRUE;
+}
+
+PREDICATE(object_state_remove_cpp, 1) {
+	static MarkDirtyObjectClient mark_dirty_client;
+	PlTail tail(PL_A1); PlTerm e;
+	
+	mark_dirty_client.push_begin();
+	while(tail.next(e)) {
+		mark_dirty_client.push_deleted(e);
         };
 	mark_dirty_client.push_end();
 	

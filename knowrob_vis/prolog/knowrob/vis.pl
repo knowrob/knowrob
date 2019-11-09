@@ -1,5 +1,4 @@
 /*
-  Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
@@ -28,86 +27,82 @@
 
 :- module(knowrob_vis,
     [
-      show/0,
       show/1,
       show/2,
-      show/3,
-      show_next/0
+      hide/1
     ]).
 /** <module> Methods for visualizing parts of the knowledge base
 
-  @author Moritz Tenorth
   @author Daniel Beßler
   @license BSD
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('jpl')).
-:- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/marker_vis')).
 :- use_module(library('knowrob/data_vis')).
 
 :- rdf_meta 
+      hide(t),
       show(t),
-      show(t,r),
-      show(t,r,t),
-      camera_pose(r,r),
-      camera_transform(r).
+      show(t,t),
+      hide_marker(t),
+      show_marker(t,t).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % Convinience predicate for different types of visualizations
+:- multifile show/2,
+             hide/1,
+             show_marker/2,
+             hide_marker/1.
 
-%% show is det.
-%% show(+VisualThing) is det.
-%% show(+VisualThing, +Instant) is det.
-%% show(+VisualThing, +Instant, +Properties) is det.
+%% show(+Thing) is det.
+%% show(+Thing, +Properties) is det.
 %
-% VisualThing is a thing with a visual interpretation
-% and some way to generate a ROS visualization message for it.
-% This includes marker_visualization messages and data_vis messages.
-% VisualThing may be a RDF IRI of some OWL individual,
-% a marker term (e.g., object(Iri)), or a data vis object (e.g., timeline(Identifier)).
-% All existing markers are updated for the current timepoint if
-% VisualThing is left unspecified.
-% Properties is a list of properties passed to
-% the respective submodules (i.e., marker or data visualization).
-% If VisualThing is a list then each element is expected to be a term
-% describing one visualization artifact.
+% This is a non-logical predicate used to invoke
+% external clients such us RViz
+% to visualize objects in the knowledge base.
+% Custom visualization back-ends may be used
+% by defining another clause of this multifile
+% predicate.
 %
-show :- marker_update.
-
-show(VisualThing) :-
-  is_list(VisualThing), !,
-  show_next,
-  forall( member(MarkerDescr, VisualThing), (
-    T =.. [show|MarkerDescr], call(T)
+show(Things) :-
+  is_list(Things), !,
+  show_next_,
+  forall( member(Thing, Things), (
+    T =.. [show|Thing], call(T)
   )), !.
-
-show(VisualThing) :-
-  current_time(Instant),
-  show(VisualThing,Instant,[]), !.
-
-show(VisualThing, Properties) :-
-  is_list(Properties),
-  current_time(Instant),
-  show(VisualThing,Instant,Properties), !.
-
-show(VisualThing, Instant) :-
-  show(VisualThing, Instant, []), !.
-
-show(VisualThing, Instant, Properties) :-
-  marker_vis:marker_term(VisualThing, MarkerTerm), !,
-  ( member(name:Name, Properties) ->
-    marker(MarkerTerm, MarkerObj, Name) ;
-    marker(MarkerTerm, MarkerObj)
-  ),
-  marker_update(MarkerObj,Instant),
-  marker_properties(MarkerObj, Properties).
-
-show(DataVisTerm, _, Properties) :-
-  data_vis(DataVisTerm, Properties), !.
+show(Thing) :-
+  show(Thing,[]).
+show(Thing, Properties) :-
+  show_marker(Thing,Properties).
 
 %% show_next is det
-%removes displayed trajectories.
-show_next :-
-  marker_remove(trajectories).
+show_next_ :-
+  true.
+
+%% hide(+Thing) is det.
+%
+% This is a non-logical predicate used to invoke
+% external clients such us RViz
+% to remove visualizations of objects.
+%
+hide(Things) :-
+  is_list(Things), !,
+  forall( member(Thing, Things), (
+    T =.. [hide|Thing], call(T)
+  )), !.
+hide(Thing) :-
+  hide_marker(Thing).
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Marker visualization
+
+%%
+show_marker(Thing, Properties) :-
+  atom(Thing),
+  rdf_resource(Thing),
+  object_state(Thing, State, Properties),
+  object_state_add_cpp([State]).
+%%
+hide_marker(Thing) :-
+  atom(Thing),
+  rdf_resource(Thing),
+  object_state_remove_cpp([Thing]).

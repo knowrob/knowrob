@@ -1,9 +1,0 @@
-<launch>
-
-  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-
-  <param name="initial_package" type="string" value="knowrob_vis" />
-  <param name="initial_goal" type="string" value="visualisation_server" />
-  <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" cwd="node" output="screen" />
-
-</launch>

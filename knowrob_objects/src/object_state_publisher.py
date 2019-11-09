@@ -71,8 +71,8 @@ class PerceivedObject(object):
     __object_name = ''
     __scale = None
     __color = None
+    __shape = Marker.CUBE
     __initialized = False
-    __has_visual = False
     __marker = None
 
     def __init__(self):
@@ -80,11 +80,11 @@ class PerceivedObject(object):
         self.__static_transform_publisher = LatchPublisher('/tf_static', TFMessage, queue_size=500)
 
     # @profile
-    def update_information(self, object_id, marker_ns, visualize, transform, static_transforms, mesh, color,
+    def update_information(self, object_id, marker_ns, shape, transform, static_transforms, mesh, color,
                            depth, width, height):
         """
         :type marker_ns: str
-        :type visualize: bool
+        :type shape: int
         :type transform: TransformStamped
         :param static_transforms: [TransformStamped]
         :type static_transforms: list
@@ -96,17 +96,13 @@ class PerceivedObject(object):
         :type height: float
         """
         self.__marker_ns = marker_ns
-        self.__has_visual = visualize
+        self.__has_shape = shape
         self.update_transform(transform)
         for static_transform in static_transforms:
             self.set_static_transform(static_transform)
-        if visualize:
-            self.update_color(*color)
-            self.__mesh_path = mesh
-            self.update_dimensions(depth, width, height)
-        else:
-            self.__color = ColorRGBA(0, 0, 0, 1)
-            self.update_dimensions(1, 1, 1)
+        self.update_color(*color)
+        self.__mesh_path = mesh
+        self.update_dimensions(depth, width, height)
         self.__initialized = True
         self.__object_name = object_id
         # self.publish_static_transforms()
@@ -114,8 +110,8 @@ class PerceivedObject(object):
     def is_initialized(self):
         return self.__initialized
 
-    def has_visual(self):
-        return self.__has_visual
+    def get_shape(self):
+        return self.__shape
 
     def update_color(self, r, g, b, a):
         self.__color = ColorRGBA()
@@ -137,7 +133,7 @@ class PerceivedObject(object):
         self.__transform = transform
 
     def update_dimensions(self, depth, width, height):
-        self.__scale = Vector3(width, depth, height)
+        self.__scale = Vector3(depth, width, height)
 
 
     def get_marker(self):
@@ -162,7 +158,7 @@ class PerceivedObject(object):
                     self.__marker.color = self.__color
             else:
                 self.__marker.color = self.__color
-                self.__marker.type = Marker.CUBE
+                self.__marker.type = self.__shape
                 self.__marker.scale = self.__scale
             return self.__marker
 
@@ -182,7 +178,7 @@ class PerceivedObject(object):
             self.__static_transform_publisher.publish(TFMessage(self.__static_transforms.values()))
 
     def __repr__(self):
-        return 'obj(' + str(self.__has_visual) + ',' + \
+        return 'obj(' + str(self.__shape) + ',' + \
                str(self.__object_name) + ',' + \
                str(self.__mesh_path) + ',' + \
                str([self.__scale.x, self.__scale.y, self.__scale.z]) + ',' + \
@@ -190,15 +186,13 @@ class PerceivedObject(object):
 
 
 class ObjectStatePublisher(object):
-    def __init__(self, tf_frequency, object_types):
+    def __init__(self, tf_frequency):
         rospy.wait_for_service('/rosprolog/query')
         self.tf_frequency = tf_frequency
-        self.object_types = object_types
         self.dirty_object_requests = Queue()
         self.prolog = rosprolog.Prolog()
         self.objects = defaultdict(lambda: PerceivedObject())
         self.tf_broadcaster = rospy.Publisher("/tf", TFMessage, queue_size=100)
-        self.marker_publisher = rospy.Publisher('/visualization_marker', Marker, queue_size=100)
         self.marker_array_publisher = rospy.Publisher('/visualization_marker_array', MarkerArray, queue_size=100)
         self.object_state_subscriber = rospy.Subscriber('/object_state', ObjectStateArray, self.update_state_cb)
         self.update_positions_srv = rospy.Service('~update_object_positions', Trigger, self.update_object_positions_cb)
@@ -219,19 +213,28 @@ class ObjectStatePublisher(object):
         # This is done in a different thread to prevent deadlocks in json prolog
         if self.dirty_object_requests.empty():
             return True
-        object_states = []
+        added_states = {}
+        removed_states = {}
         while not self.dirty_object_requests.empty():
             srv_msg = self.dirty_object_requests.get()
-            object_states.extend(srv_msg.object_states)
-        self.update_objects(object_states)
+            if srv_msg.action is ObjectStateArray.ADD:
+                for s in srv_msg.object_states:
+                    added_states[s.object_id] = s
+                    removed_states.pop(s.object_id,None)
+            elif srv_msg.action is ObjectStateArray.DELETE:
+                for s in srv_msg.object_states:
+                    removed_states[s.object_id] = s
+                    added_states.pop(s.object_id,None)
+        self.update_objects(added_states.values(),removed_states.values())
 
     def prolog_query(self, q):
         return self.prolog.all_solutions(q)
 
     # @profile
-    def update_objects(self, object_states):
+    def update_objects(self, added_states, removed_states):
         object_ids = []
-        for obj_state in object_states:
+        removed_ids = []
+        for obj_state in added_states:
             object_ids.append(obj_state.object_id)
             marker_ns = (str(obj_state.object_type).replace('\'', ''))
             transform = TransformStamped()
@@ -243,28 +246,36 @@ class ObjectStatePublisher(object):
             color = [obj_state.color.r, obj_state.color.g, obj_state.color.b, obj_state.color.a]
             self.objects[obj_state.object_id].update_information(obj_state.object_id,
                                                                  marker_ns,
-                                                                 obj_state.has_visual,
+                                                                 obj_state.shape,
                                                                  transform,
                                                                  obj_state.static_transforms,
                                                                  obj_state.mesh_path,
                                                                  color,
                                                                  obj_state.size.x, obj_state.size.y, obj_state.size.z)
             rospy.logdebug('Updated object: {}'.format(str(self.objects[obj_state.object_id])))
-        self.publish_object_markers(object_ids)
+        for obj_state in removed_states:
+            removed_ids.append(obj_state.object_id)
+            rospy.logdebug('Removed object: {}'.format(str(self.objects[obj_state.object_id])))
+        self.publish_object_markers(object_ids,removed_ids)
         self.publish_static_transforms(object_ids)
 
     # @profile
     def load_objects_from_prolog(self):
-        q = "belief_existing_objects(Objects,[{}])," \
-            "mark_dirty_objects(Objects)".format(','.join(self.object_types))
+        rospy.loginfo('object state publisher load_objects_from_prolog')
+        q = "belief_existing_objects(Objects)," \
+            "mark_dirty_objects(Objects)"
         self.prolog_query(q)
 
-    def publish_object_markers(self, object_ids):
+    def publish_object_markers(self, object_ids, removed_ids):
         ma = MarkerArray()
         for object_id in object_ids:
             v = self.objects[object_id]
-            if v.is_initialized() and v.has_visual():
+            if v.is_initialized():
                 ma.markers.append(v.get_marker())
+        for object_id in removed_ids:
+            v = self.objects[object_id]
+            ma.markers.append(v.get_del_marker())
+            del self.objects[object_id]
         self.marker_array_publisher.publish(ma)
 
     # @profile
@@ -295,6 +306,5 @@ class ObjectStatePublisher(object):
 if __name__ == '__main__':
     rospy.init_node('object_state_publisher')
     hz = rospy.get_param('~hz', default='1')
-    object_types = rospy.get_param('~object_types', default="dul:'PhysicalObject'")
-    object_state_publisher = ObjectStatePublisher(int(hz), object_types.split(','))
+    object_state_publisher = ObjectStatePublisher(int(hz))
     object_state_publisher.loop()

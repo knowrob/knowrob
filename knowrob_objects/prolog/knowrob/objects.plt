@@ -23,7 +23,6 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/objects')).
 
-:- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').
 
 :- rdf_db:rdf_register_prefix(test_obj, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).

@@ -277,7 +277,7 @@ urdf_pose_to_owl(ParentFrame,pose([X,Y,Z],[QX,QY,QZ,QW]),Pose,Graph) :-
 
 %%
 urdf_link_to_owl(Robot_Id,Name,Link,Graph) :-
-  kb_create(urdf:'Link', Link, _{graph:Graph}),
+  kb_create(dul:'PhysicalObject', Link, _{graph:Graph}),
   urdf_name_to_owl(Link,Name),
   % TODO: handle material?
   %link_material_name/3,
@@ -364,13 +364,6 @@ urdf_assert_collision_shape(Resource,ShapeRegion,G) :-
   kb_create(ease_obj:'Shape',Shape,_{graph: G}),
   kb_assert(Resource,urdf:hasCollisionShape,Shape),
   kb_assert(Shape,dul:hasRegion,ShapeRegion).
-
-%%
-object_color_(Obj,Color) :-
-  object_quality_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
-%%
-object_shape_(Obj,Shape) :-
-  object_quality_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
 
 		 /*******************************
 		 *		  Joints	*

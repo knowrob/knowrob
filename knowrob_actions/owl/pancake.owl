@@ -523,7 +523,7 @@
                 <owl:onClass>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#OperatedObject"/>
+                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Tool"/>
                             <owl:Restriction>
                                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies"/>
                                 <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#PancakeMaker"/>
@@ -597,12 +597,6 @@
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#OperatedObject -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#OperatedObject"/>
     
 
 
@@ -1049,7 +1043,7 @@
     <!-- http://knowrob.org/kb/pancake.owl#TurningOn_0_PancakeMaker -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#TurningOn_0_PancakeMaker">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#OperatedObject"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Tool"/>
     </owl:NamedIndividual>
     
 

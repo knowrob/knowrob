@@ -23,6 +23,8 @@ a to another endpoint b implies that a < b (transitivity).
 
 @author Daniel Beßler
 */
+%TODO optional constituents
+%TODO repeatable constituents
 
 :- dynamic esg_endpoint/3,       % sequencer id, endpoint id, endpoint term
            esg_endpoint_node/3,  % sequencer id, endpoint id, node id
@@ -120,9 +122,10 @@ merge_nodes(ESG,N0,N1) :-
 % push `E0 < E1`
 push_edge(ESG,Term0,Term1) :-
   % do not add if there is already a path from E0 to E1
-  esg_endpoint(ESG,_,Term0,N0),
-  esg_endpoint(ESG,_,Term1,N1),
-  esg_path(ESG,N0,N1,_), !.
+  esg_endpoint(ESG,E0,Term0,N0),
+  esg_endpoint(ESG,E1,Term1,N1),
+  ( esg_edge(ESG,E0,E1) ; 
+    esg_path(ESG,N0,N1,_) ), !.
 push_edge(ESG,Term0,Term1) :-
   % contradiction in axiomatization
   esg_endpoint(ESG,_,Term0,N0),
@@ -163,6 +166,10 @@ push_event_endpoints(ESG,EvtType) :-
 % push another constraint on the ESG.
 % this is either that two endpoints are equal,
 % or that one is smaller then the other.
+push_constraint(ESG,=(Term0,Term1)) :-
+  % do not add if both are already in the same node
+  esg_endpoint(ESG,_,Term0,N),
+  esg_endpoint(ESG,_,Term1,N),!.
 push_constraint(ESG,=(Term0,Term1)) :-
   % TODO: contradiction if there is a path E0->E1 or E1->E0
   %       - make unit test for this case
@@ -340,10 +347,8 @@ esg_peak([Node|_],Endpoint) :-
     Endpoint=X ).
 
 % Find path to the next Endpoint. This fails if there is none.
-% It could be that it is a "parallel node" -- in this case multiple results are yielded
-% with different combinations of endpoints occurring before Endpoint.
-path_to_endpoint_dl([X|Xs],Endpoint,Zs-Zs,[X|Xs]) :-
-  select(Endpoint,X,_), !.
+path_to_endpoint_dl(ESG,Endpoint,Zs-Zs,ESG) :-
+  esg_peak(ESG,Endpoint),!.
 path_to_endpoint_dl([X|Xs],Endpoint,[X|Ys]-Zs,RestESG) :-
   path_to_endpoint_dl(Xs,Endpoint,Ys-Zs,RestESG).
 
@@ -353,33 +358,42 @@ path_to_endpoint(ESG,Endpoint,Path,RestESG) :-
 
 % ESG starts with -(Act), ActESG is a ESG
 % from -(Act) to +(Act). 'join' both ESGs.
-esg_join(ESG,[Act,ActESG],Joined) :-
-  % pop out the -(Act) node, avoiding complications if -(Act)
+esg_join(ESG,[Tsk0,TskESG0],Joined) :-
+  % pop out the -(Tsk) node, avoiding complications if -(Act)
   % is in a parallel node in one of the ESGs.
-  esg_pop(ActESG,-(Act),ActESG1),
-  esg_pop(ESG,-(Act),ESG1),
+  esg_pop(TskESG0,-(Tsk0),TskESG1),
+  esg_pop(ESG,-(Tsk1),ESG1),
+  once(
+    ( Tsk0 = Tsk1 );
+    ( kb_type_of(Tsk0,TskType), kb_type_of(Tsk1,TskType) )
+  ),
   % find a path to +(Act) in both ESGs
   % NOTE: the paths are represented as difference list to allow
   %       for performing `append` in constant time.
-  path_to_endpoint_dl(ActESG1,+(Act),Path0_dl-Zs0,_),
-  path_to_endpoint_dl(ESG1,   +(Act),Path1_dl-Zs1,RestESG),
+  path_to_endpoint_dl(TskESG1,+(Tsk0),Path0_dl-Zs0,[TskNode1|_]),
+  path_to_endpoint_dl(ESG1,   +(Tsk1),Path1_dl-Zs1,[TskNode2|Rest]),
+  % Merge nodes of both graphs that contain +(Tsk).
+  % This is needed in case +(Tsk) is in a "parallel node" in at least
+  % one of the graphs.
+  % TODO: I am not 100% confident that this will work in all cases.
+  append(TskNode1,TskNode2,TskNode3),
+  select(+(Tsk1),TskNode3,TskNode4),
+  RestESG=[TskNode4|Rest],
   % prefix ESG is -(Act) followed by a path to +(Act),
   % here represented as difference list
-  ( Path0_dl=[Zs0] -> PrefixESG=[[-(Act)]|Path1_dl]-Zs1 ;
-    Path1_dl=[Zs1] -> PrefixESG=[[-(Act)]|Path0_dl]-Zs0 ; (
+  ( Path0_dl=[Zs0] -> PrefixESG=[[-(Tsk0)]|Path1_dl]-Zs1 ;
+    Path1_dl=[Zs1] -> PrefixESG=[[-(Tsk0)]|Path0_dl]-Zs0 ; (
     % eliminate variables of difference lists
     Zs0=[],Zs1=[],
     % parallelize the paths
     % NOTE: we assume here that there are no shared endpoints in both paths.
     %       This requires that:
     %       - actions must not be axiomatized by what action follows or preceeds.
-    %         this would make it impossible anyway to use the action in different
-    %         activity contexts.
     %       - complex actions only have sub-actions, simple actions only have phases.
     %         i.e., NO has-phase axioms for complex-actions, and also
     %         NO allen constraints to processes, only to sub-actions.
     Path=[Path0_dl,Path1_dl],
-    PrefixESG=[[-(Act)],Path|Zs2]-Zs2 )),
+    PrefixESG=[[-(Tsk0)],Path|Zs2]-Zs2 )),
   % constant time append
   append_dl(PrefixESG, RestESG-[], Joined-[]).
 
@@ -547,13 +561,15 @@ esg_retract(ESG) :-
 %% esg(+Act,+Events,+Constraints,?Sequence).
 %
 esg(Act,Events,Constraints,Sequence) :-
-  esg_assert([Act|Events],Constraints,ESG),
+  list_to_set([Act|Events],EvSet),
+  esg_assert(EvSet,Constraints,ESG),
   %esg_write_info(ESG),
   esg_to_list(ESG,Sequence),
   esg_retract(ESG).
 
 esg_truncated(Act,Events,Constraints,[Sequence,PreESG,PostESG]) :-
-  esg_assert([Act|Events],Constraints,ESG),
+  list_to_set([Act|Events],EvSet),
+  esg_assert(EvSet,Constraints,ESG),
   esg_truncate(ESG,Act,PreESG,PostESG),
   %esg_write_info(ESG),
   esg_to_list(ESG,Sequence),

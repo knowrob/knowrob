@@ -27,7 +27,6 @@
 
 :- module(semmap,
     [
-      map_instance/1,
       map_object_info/1,
       map_object_type/2,
       map_root_objects/2,
@@ -54,12 +53,11 @@
 :- use_module(library('knowrob/wup_similarity')).
 
 :-  rdf_meta
-      map_instance(r),
       map_root_object(r,r),
       map_root_objects(r,?),
       map_child_object(r,r),
       map_child_objects(r,?),
-      map_object_info(?),
+      map_object_info(t),
       map_object_type(r,r),
       map_object_dimensions(r,?,?,?),
       map_object_label(r,?),
@@ -90,8 +88,17 @@ map_root_objects(Map, Objs) :-
 % @param Objs Instance of a root object in the map
 % 
 map_root_object(Map, Obj) :-
-    kb_triple(Obj, knowrob:describedInMap, Map).
-    
+    ground(Map),!,
+    rdf_current_prefix(Map, Map_URI),
+    rdf_subject(Obj),
+    rdf_split_url(Map_URI,_,Obj),
+    \+ kb_triple(_,dul:hasComponent,Obj).
+
+map_root_object(Map, Obj) :-
+    ground(Obj),
+    rdf_split_url(Map_URI,_,Obj),
+    rdf_current_prefix(Map, Map_URI).
+
 %% map_child_objects(+Parent, -Children) is nondet.
 %
 % Read all object instances asserted as properPhysicalParts of Parent
@@ -161,18 +168,6 @@ map_object_label(Obj, Label) :-
 %  
 map_object_dimensions(Obj, D, W, H) :-
     object_dimensions(Obj, D, W, H).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Read map instance and content
-
-%% map_instance(Map) is nondet.
-%
-% Read instances of a SemanticEnvironmentMap
-% 
-% @param Map  Instance of a knowrob:SemanticEnvironmentMap
-% 
-map_instance(Map) :-
-    kb_type_of(Map, knowrob:'SemanticEnvironmentMap').
 
 %% map_object_most_similar(+Object:iri, -MostSimilarObject:iri) is semidet
 %

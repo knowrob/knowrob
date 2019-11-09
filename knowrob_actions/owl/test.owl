@@ -57,15 +57,15 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#firstKBTerm -->
+    <!-- http://knowrob.org/kb/knowrob.owl#hasFirstProcedureArgument -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#firstKBTerm"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasFirstProcedureArgument"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#hasKBTerm -->
+    <!-- http://knowrob.org/kb/knowrob.owl#hasProcedureArgument -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasKBTerm"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasProcedureArgument"/>
     
 
 
@@ -229,9 +229,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#KBPredicate -->
+    <!-- http://knowrob.org/kb/knowrob.owl#ComputationalPredicate -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
     
 
 
@@ -241,9 +241,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#KBVariable -->
+    <!-- http://knowrob.org/kb/knowrob.owl#VariableArgument -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
     
 
 
@@ -561,9 +561,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
-        <knowrob:firstKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
-        <knowrob:hasKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <knowrob:hasFirstProcedureArgument rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
+        <knowrob:hasProcedureArgument rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
         <knowrob:hasArity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</knowrob:hasArity>
         <knowrob:hasFunctor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">current_object_pose</knowrob:hasFunctor>
     </owl:NamedIndividual>
@@ -585,7 +585,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Object -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Object">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
         <DUL:precedes rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
     </owl:NamedIndividual>
     
@@ -594,7 +594,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Pose -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
         <DUL:follows rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
     </owl:NamedIndividual>
     
@@ -805,10 +805,10 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBPredicate"/>
-        <knowrob:firstKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject"/>
-        <knowrob:hasKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Object"/>
-        <knowrob:hasKBTerm rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <knowrob:hasFirstProcedureArgument rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject"/>
+        <knowrob:hasProcedureArgument rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Object"/>
+        <knowrob:hasProcedureArgument rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
         <knowrob:hasArity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</knowrob:hasArity>
         <knowrob:hasFunctor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rdf_has</knowrob:hasFunctor>
     </owl:NamedIndividual>
@@ -831,7 +831,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Object -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Object">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
         <DUL:follows rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
     </owl:NamedIndividual>
     
@@ -840,7 +840,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
         <DUL:follows rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject"/>
         <DUL:precedes rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Object"/>
     </owl:NamedIndividual>
@@ -850,7 +850,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Subject -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBVariable"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
         <DUL:precedes rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
     </owl:NamedIndividual>
     
