@@ -77,7 +77,17 @@ You can get an interactive console for a running rosprolog node with
 
 ### Unit testing
 
-To run unit tests for some modules in a rosprolog package, use:
+Unit testing in Prolog is done via the library *plunit*.
+*rosprolog* defines a CMake macro that allows adding *plunit*
+testcases to the *rostest* suite.
 
-    rosrun rosprolog rosprolog-test <pkgname> <modulenames>
+    catkin_add_plunit(knowrob/comp_spatial)
 
+Test files should by placed next to the source file that is tested
+but with a *plt* file extension.
+The testcase must be named exactly like the path to the module,
+i.e., in above case "knowrob/comp_spatial".
+
+Another way to run the tests is by invoking the *rosprolog-test*:
+
+    rosrun rosprolog rosprolog-test comp_spatial:"knowrob/comp_spatial"
