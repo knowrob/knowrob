@@ -277,13 +277,14 @@ mark_dirty_objects(Objects) :-
     object_pose_data(Obj,_,_),
     object_state(Obj,ObjState)
   ), ObjStates),
-  mark_dirty_objects_cpp(ObjStates).
+  object_state_add_cpp(ObjStates).
 
-%% object_state(Obj, State)
+%% object_state(+Obj:iri, ?State:list) is semidet
+%% object_state(+Obj:iri, ?State:list, +Properties:dict) is semidet
+%
 object_state(Obj, State) :-
   object_state(Obj, State, _{}).
 
-%% object_state(Obj, State, Properties)
 object_state(Obj, State, Properties_list) :-
   is_list(Properties_list),!,
   findall(Key-Val, (
