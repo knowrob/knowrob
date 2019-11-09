@@ -29,9 +29,6 @@
 
 */
 
-:- use_module(library('jpl')).
-:- jpl_set_default_jvm_opts(['-Xmx2048M']).
-
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdf_edit')).
 :- use_module(library('semweb/rdfs')).
