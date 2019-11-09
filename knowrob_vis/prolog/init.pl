@@ -36,6 +36,5 @@
 
 :- register_ros_package(knowrob_vis).
 :- use_module(library('knowrob/vis')).
-:- use_module(library('knowrob/marker_vis')).
 :- use_module(library('knowrob/data_vis')).
 

@@ -1,5 +1,4 @@
 /*
-  Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
@@ -28,15 +27,12 @@
 
 :- module(knowrob_vis,
     [
-      show/0,
       show/1,
       show/2,
-      show/3,
       show_next/0
     ]).
 /** <module> Methods for visualizing parts of the knowledge base
 
-  @author Moritz Tenorth
   @author Daniel Beßler
   @license BSD
 */
@@ -44,20 +40,16 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
 :- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/marker_vis')).
+%:- use_module(library('knowrob/marker_vis')).
 :- use_module(library('knowrob/data_vis')).
 
 :- rdf_meta 
       show(t),
-      show(t,r),
-      show(t,r,t),
-      camera_pose(r,r),
-      camera_transform(r).
+      show(t,t).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Convinience predicate for different types of visualizations
 
-%% show is det.
 %% show(+VisualThing) is det.
 %% show(+VisualThing, +Instant) is det.
 %% show(+VisualThing, +Instant, +Properties) is det.
@@ -74,40 +66,29 @@
 % If VisualThing is a list then each element is expected to be a term
 % describing one visualization artifact.
 %
-show :- marker_update.
-
-show(VisualThing) :-
-  is_list(VisualThing), !,
+show(Things) :-
+  is_list(Things), !,
   show_next,
-  forall( member(MarkerDescr, VisualThing), (
-    T =.. [show|MarkerDescr], call(T)
+  forall( member(Thing, Things), (
+    T =.. [show|Thing], call(T)
   )), !.
 
-show(VisualThing) :-
-  current_time(Instant),
-  show(VisualThing,Instant,[]), !.
+show(Thing) :-
+  show(Thing,[]).
 
-show(VisualThing, Properties) :-
-  is_list(Properties),
-  current_time(Instant),
-  show(VisualThing,Instant,Properties), !.
+show(Thing, Properties) :-
+  atom(Thing),
+  rdf_resource(Thing),!,
+  show_entity(Thing, Properties).
 
-show(VisualThing, Instant) :-
-  show(VisualThing, Instant, []), !.
+%show(DataVisTerm, Properties) :-
+  %data_vis(DataVisTerm, Properties), !.
 
-show(VisualThing, Instant, Properties) :-
-  marker_vis:marker_term(VisualThing, MarkerTerm), !,
-  ( member(name:Name, Properties) ->
-    marker(MarkerTerm, MarkerObj, Name) ;
-    marker(MarkerTerm, MarkerObj)
-  ),
-  marker_update(MarkerObj,Instant),
-  marker_properties(MarkerObj, Properties).
-
-show(DataVisTerm, _, Properties) :-
-  data_vis(DataVisTerm, Properties), !.
+show_entity(Thing, Properties) :-
+  object_state(Thing, State, Properties),
+  mark_dirty_objects_cpp([State]).
 
 %% show_next is det
-%removes displayed trajectories.
 show_next :-
-  marker_remove(trajectories).
+  %marker_remove(trajectories).
+  true.
