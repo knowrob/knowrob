@@ -39,6 +39,8 @@
       object_trajectory/4,
       object_distance/3,
       object_frame_name/2,
+      object_state/2,
+      object_state/3,
       object_color/2,
       object_localization/2,
       object_dimensions/4,
@@ -83,6 +85,8 @@
     object_trajectory(r,t,+,-),
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
+    object_state(r,t),
+    object_state(r,t,t),
     object_color(r, ?),
     object_localization(r,r),
     object_frame_name(r,?),
@@ -271,40 +275,65 @@ mark_dirty_objects(Objects) :-
   findall(ObjState, (
     member(Obj,Objects),
     object_pose_data(Obj,_,_),
-    object_state_(Obj,ObjState)
+    object_state(Obj,ObjState)
   ), ObjStates),
   mark_dirty_objects_cpp(ObjStates).
 
-object_state_(Obj, [
+%% object_state(Obj, State)
+object_state(Obj, State) :-
+  object_state(Obj, State, _{}).
+
+%% object_state(Obj, State, Properties)
+object_state(Obj, State, Properties_list) :-
+  is_list(Properties_list),!,
+  findall(Key-Val, (
+    member(X,Properties_list),
+    X=..[Key,Val]
+  ), Pairs),
+  dict_pairs(Dict, _, Pairs),
+  object_state(Obj, State, Dict).
+
+object_state(Obj, [
    Obj,       % object_id
    FrameName, % frame_name
    TypeName,  % object_type
-   Flag,      % has_visual
+   Shape,     % shape
    Mesh,      % mesh_path
    [R,G,B,A], % color
    [D,W,H],   % size
-   Pose, % pose
+   Pose,      % pose
    StaticTransforms % static_transforms
-]) :-
+], Properties) :-
+  ( get_dict(timestamp,Properties,Time) ;
+    current_time(Time)
+  ),
   %
   object_frame_name(Obj,FrameName),
   kb_type_of(Obj,Type),
   rdf_split_url(_,TypeName,Type),
-  % TODO: can we get rid of this flag?
-  ( owl_has(Obj, knowrob:'hasVisual', literal(type(_,HasVisual)));
-    HasVisual=true ),
-  ( HasVisual=true -> Flag = true ; Flag = false ),
+  % get the shape, default to BoxShape
+  ( get_dict(shape,Properties,ShapeIri) ;
+    object_shape_type(Obj,ShapeIri);
+    rdf_equal(ShapeIri,ease_obj:'BoxShape')
+  ),
+  object_state_shape_(ShapeIri,Shape),
   % get the color, default to grey color
-  ( object_color(Obj,[R,G,B,A]);
-    [R,G,B,A]=[0.5,0.5,0.5,1.0] ),
+  ( get_dict(color,Properties,[R,G,B,A]) ;
+    object_color(Obj,[R,G,B,A]);
+    [R,G,B,A]=[0.5,0.5,0.5,1.0]
+  ),
   % get mesh path or empty string
-  ( object_mesh_path(Obj,Mesh);
-    Mesh='' ),
+  ( get_dict(mesh,Properties,Mesh) ;
+    object_mesh_path(Obj,Mesh);
+    Mesh=''
+  ),
   % get the object bounding box
-  ( object_dimensions(Obj,D,W,H);
-    [D,W,H] = [0.05,0.05,0.05] ), !,
+  ( get_dict(bbox,Properties,[D,W,H]) ;
+    object_dimensions(Obj,D,W,H);
+    [D,W,H] = [0.05,0.05,0.05]
+  ), !,
   % handle transforms
-  ( current_object_pose(Obj, Pose); (
+  ( object_pose(Obj, Pose, Time); (
     print_message(warning, unlocalized(Obj)),
     fail
   )),
@@ -312,6 +341,11 @@ object_state_(Obj, [
     object_affordance_static_transform(Obj,_,X)
   ), StaticTransforms),
   !.
+
+%object_state_shape_(Iri,0) :- rdfs_subclass_of(Iri,ease_obj:'Arrow'),!.
+object_state_shape_(Iri,1) :- rdfs_subclass_of(Iri,ease_obj:'BoxShape'),!.
+object_state_shape_(Iri,2) :- rdfs_subclass_of(Iri,ease_obj:'SphereShape'),!.
+object_state_shape_(Iri,3) :- rdfs_subclass_of(Iri,ease_obj:'CylinderShape'),!.
 
 %%
 % Map RDF transform to Prolog list representation.
@@ -436,6 +470,12 @@ object_dimensions(Obj, Depth, Width, Height) :-
 
 object_dimensions(Obj, Depth, Width, Height) :-
   shape_bbox(Obj, Depth, Width, Height),!.
+
+%% object_shape_type(?Obj:iri, ?Shape:iri) is semidet
+%
+object_shape_type(Obj,ShapeType) :-
+  kb_triple(Obj,ease_obj:hasShape,Shape),
+  kb_type_of(Shape,ShapeType).
 
 %%
 shape_bbox(ShapeRegion, Depth, Width, Height) :-
