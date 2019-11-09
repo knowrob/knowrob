@@ -45,6 +45,7 @@ public:
 		push_lock.unlock();
 		// fill message
 		knowrob_objects::ObjectStateArray msg;
+		msg.action = knowrob_objects::ObjectStateArray::ADD;
 		for(ObjectStateMap::iterator it = objects.begin(); it != objects.end(); ++it) {
 			msg.object_states.push_back(it->second);
 		}
@@ -90,7 +91,7 @@ public:
 		obj.object_id   = object_id.c_str();
 		l_data.next(e); obj.frame_name  = (char*)e;
 		l_data.next(e); obj.object_type = (char*)e;
-		l_data.next(e); obj.has_visual  = (std::string((char*)e) == "true");
+		l_data.next(e); obj.shape       = (int)e;
 		l_data.next(e); obj.mesh_path   = (char*)e;
 		l_data.next(e); std_msgs::pl_term_color(e, obj.color);
 		l_data.next(e); geometry_msgs::pl_term_vector3(e, obj.size);
