@@ -29,7 +29,7 @@
     [
       show/1,
       show/2,
-      show_next/0
+      hide/1
     ]).
 /** <module> Methods for visualizing parts of the knowledge base
 
@@ -38,57 +38,71 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('jpl')).
-:- use_module(library('knowrob/computable')).
-%:- use_module(library('knowrob/marker_vis')).
 :- use_module(library('knowrob/data_vis')).
 
 :- rdf_meta 
+      hide(t),
       show(t),
-      show(t,t).
+      show(t,t),
+      hide_marker(t),
+      show_marker(t,t).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % Convinience predicate for different types of visualizations
+:- multifile show/2,
+             hide/1,
+             show_marker/2,
+             hide_marker/1.
 
-%% show(+VisualThing) is det.
-%% show(+VisualThing, +Instant) is det.
-%% show(+VisualThing, +Instant, +Properties) is det.
+%% show(+Thing) is det.
+%% show(+Thing, +Properties) is det.
 %
-% VisualThing is a thing with a visual interpretation
-% and some way to generate a ROS visualization message for it.
-% This includes marker_visualization messages and data_vis messages.
-% VisualThing may be a RDF IRI of some OWL individual,
-% a marker term (e.g., object(Iri)), or a data vis object (e.g., timeline(Identifier)).
-% All existing markers are updated for the current timepoint if
-% VisualThing is left unspecified.
-% Properties is a list of properties passed to
-% the respective submodules (i.e., marker or data visualization).
-% If VisualThing is a list then each element is expected to be a term
-% describing one visualization artifact.
+% This is a non-logical predicate used to invoke
+% external clients such us RViz
+% to visualize objects in the knowledge base.
+% Custom visualization back-ends may be used
+% by defining another clause of this multifile
+% predicate.
 %
 show(Things) :-
   is_list(Things), !,
-  show_next,
+  show_next_,
   forall( member(Thing, Things), (
     T =.. [show|Thing], call(T)
   )), !.
-
 show(Thing) :-
   show(Thing,[]).
-
 show(Thing, Properties) :-
-  atom(Thing),
-  rdf_resource(Thing),!,
-  show_entity(Thing, Properties).
-
-%show(DataVisTerm, Properties) :-
-  %data_vis(DataVisTerm, Properties), !.
-
-show_entity(Thing, Properties) :-
-  object_state(Thing, State, Properties),
-  mark_dirty_objects_cpp([State]).
+  show_marker(Thing,Properties).
 
 %% show_next is det
-show_next :-
-  %marker_remove(trajectories).
+show_next_ :-
   true.
+
+%% hide(+Thing) is det.
+%
+% This is a non-logical predicate used to invoke
+% external clients such us RViz
+% to remove visualizations of objects.
+%
+hide(Things) :-
+  is_list(Things), !,
+  forall( member(Thing, Things), (
+    T =.. [hide|Thing], call(T)
+  )), !.
+hide(Thing) :-
+  hide_marker(Thing).
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Marker visualization
+
+%%
+show_marker(Thing, Properties) :-
+  atom(Thing),
+  rdf_resource(Thing),
+  object_state(Thing, State, Properties),
+  object_state_add_cpp([State]).
+%%
+hide_marker(Thing) :-
+  atom(Thing),
+  rdf_resource(Thing),
+  object_state_remove_cpp([Thing]).
