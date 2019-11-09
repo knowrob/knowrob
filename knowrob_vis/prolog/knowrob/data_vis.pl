@@ -45,8 +45,6 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/utility/jpl')).
-:- use_module(library('jpl')).
 
 %% data_vis(+Term:term, +Properties:list) is det
 %
