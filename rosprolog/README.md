@@ -88,6 +88,6 @@ but with a *plt* file extension.
 The testcase must be named exactly like the path to the module,
 i.e., in above case "knowrob/comp_spatial".
 
-Another way to run the tests is by invoking the *rosprolog-test*:
+Another way to run the tests is by invoking the *rosprolog-test* script:
 
     rosrun rosprolog rosprolog-test comp_spatial:"knowrob/comp_spatial"
