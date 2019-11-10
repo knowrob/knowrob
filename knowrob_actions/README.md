@@ -26,12 +26,17 @@ In KnowRob, an *Action* is defined as an *Event* where at least one agent that p
 
 ### Action planning
 
-Complex tasks may be decomposed into more atomic steps executable by the robot,
-such as different motion phases that a robot performs to grasp an object
-from a table.
-The [subAction](http://knowrob.org/kb/knowrob.owl#subAction) relation is used to describe this hierarchy,
-and additional partial ordering constraints can be used to restrict
-possible sequences of sub actions.
+The action model asserts the structure of tasks via plans that decompose them into different steps and phases. Plans further assert a partial ordering between these constituents from which possible sequences of step and phase occurences that would manifest a plan execution can be derived.
+
+To infer possible sequences of steps for a given plan, the following can be used:
+
+    workflow_sequence(Plan, Steps)
+
+More generally, to read all the steps and phases of a plan, and temporal constraints between them, the following can be used:
+
+    workflow_constituents(Plan, Constituents, Constraints)
+
+Where *Constraints* is a list of binary relations between steps/phases of the plan, for example, the constraint `<(A,B)` means that the occurance of an event of type *A* is strictly before the occurance of an event of type *B*.
 
 #### Preconditions
 
