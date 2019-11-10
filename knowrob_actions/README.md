@@ -40,12 +40,29 @@ More generally, to read all the steps and phases of a plan, and temporal constra
 
 Where *Constraints* is a list of binary relations between steps/phases of the plan, for example, the constraint `<(A,B)` means that the occurance of an event of type *A* is strictly before the occurance of an event of type *B*.
 
-#### Preconditions
+### Action detection
 
-Preconditions are expressed with preactor restrictions.
-The fulfillment of the restrictions can simply be checked with owl_individual_of/2.
+The model of plans can be casted as grammar for a parser that yields actions from observed event endpoints which are used as tokens for the parser. This can be used to classify activities given evidence that is more easy to observe such as state changes, contact events, and motions.
 
-#### Effects
+A parser can be created given a list of plans:
+
+    parser_create(Parser,[
+        ptest:'Grasping_WF0',
+        ptest:'Lifting_WF0',
+        ....
+    ])
+
+Which will create ESG's for each of the plans.
+
+The parser can then be used to detect an activity by invoking it with a sequence of tokens:
+
+    detect_activity([
+        tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
+        tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
+        ...],
+        DetectedActivity).
+
+### Action effects
 
 Action effects are implemented using SWRL rules represented in an OWL ontology.
 They can be projected into the knowledge base after all preactors were specified,
