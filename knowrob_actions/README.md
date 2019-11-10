@@ -68,7 +68,7 @@ Let's say we have an execution plan *rdf_has_plan* defined for the `rdf_has/3` p
 
     execute_plan('rdf_has_plan',_{},OutputDicts,_)
 
-In this case, the `rdf_has/3` predicate would be called with none of the arguments grounded since an empty dict is provided as second argument (which provides an initial grounding). *OutputDicts* is a lazy list of all possible groundings, i.e., triples in the knowledge base in this case. The keys in each dict are concepts, and the values are the objects they classify.
+In this case, the `rdf_has/3` predicate would be called with none of the arguments grounded since an empty dict is provided as second argument (which provides an initial grounding). *OutputDicts* is a lazy list of all possible groundings, i.e., triples in the knowledge base in this case. The keys in each dict are concepts, and the values are the entities they classify.
 
 ### Action effects
 
