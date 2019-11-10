@@ -118,13 +118,14 @@ test('Stack_YR') :-
 %%%%%% Pancake Making
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Load blocksworld SWRL rules
-%:- swrl_file_path(knowrob_actions,'pancake.swrl',Filepath),
-   %swrl_file_parse(Filepath,_,_).
+test(cracking_effect_destroyed_egg) :-
+  action_effect(pancake:'CrackingAnEgg', destroyed(pancake:'Egg')).
 
-%test(cracking_effect_destroyed_egg, [nondet]) :-
-  %action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
-  %rdf_equal(Egg,pancake:'Egg').
+test(cracking_effect_created_egg_yolk) :-
+  action_effect(pancake:'CrackingAnEgg', created(pancake:'EggYolk')).
+
+test(cracking_effect_created_egg_shell) :-
+  action_effect(pancake:'CrackingAnEgg', created(pancake:'EggShell')).
 
 %test(pancake_making_turn_on_maker) :-
   %%
