@@ -20,16 +20,13 @@
 
 :- begin_tests('knowrob/task_planning').
 
-:- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/action_model')).
-:- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/task_planning')).
 
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 
 test(plan_pancake_events, [nondet]) :-
   workflow_sequence(pancake:'MakingPancakes_0_WF', SubEvents),
