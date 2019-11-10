@@ -32,6 +32,8 @@ To infer possible sequences of steps for a given plan, the following can be used
 
     workflow_sequence(Plan, Steps)
 
+This will internally build up a, so called, endpoint sequence graph (ESG), a datastructure that captures temporal relations between event endpoints (i.e. when they start and when they end), and from which all possible sequences can be sampled.
+
 More generally, to read all the steps and phases of a plan, and temporal constraints between them, the following can be used:
 
     workflow_constituents(Plan, Constituents, Constraints)
