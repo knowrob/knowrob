@@ -155,15 +155,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#contains -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#contains">
-        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Containers can contain contents; or more strictly, containers have a cavity that can contain contents. We will use our own slot named contains (instead of the Cyc slot named in-cont-generic) to relate a Container to the objects of interest that are currently within the Cavity of that Container. (We ignore for now the problem of objects that are only part-way inside a container.)</rdfs:comment>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#dangerousPart -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dangerousPart">
