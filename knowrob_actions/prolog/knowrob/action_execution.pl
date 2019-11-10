@@ -19,6 +19,7 @@
 :- rdf_meta action_registry(r,?),
             action_filler_binding(t,t),
             execute_plan(r,t,+,+),
+            action_bindings_(r,t),
             plan_execution_create_(r,r,r,t,-,-).
 
 %% action_registry(?ActionConcept, ?Goal) is semidet.
