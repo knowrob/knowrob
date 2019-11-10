@@ -293,6 +293,7 @@ property_range(Res,P,Range) :-
 %%
 property_cardinality(Res,P,Range,Min,Max) :-
   % TODO use VKB
+  % FIXME: there is a bug here that *some* restrictions are ignored
   owl_cardinality_on_resource(Res, P, Range, cardinality(Min,Max)).
 
 		 /*******************************
