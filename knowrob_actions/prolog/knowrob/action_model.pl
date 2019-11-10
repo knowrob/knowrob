@@ -351,22 +351,16 @@ task_role(Tsk,Role,RoleType) :-
 
 %%
 task_role_range(Tsk,Role,Obj) :-
-  %%
   property_cardinality(Tsk,dul:isTaskOf,RoleDescr,CR,_), CR>0,
-  owl_subclass_of(RoleDescr,Role),
-  rdfs_subclass_of(Role,dul:'Role'),
-  %%
-  property_range(RoleDescr,dul:classifies,ObjectDescr),
-  owl_subclass_of(ObjectDescr,Obj),
-  rdfs_subclass_of(Obj,dul:'Object'),
-  !.
-task_role_range(_Tsk,Role,Obj) :-
-  property_range(Role,dul:classifies,ObjectDescr),
-  owl_subclass_of(ObjectDescr,Obj),
-  rdfs_subclass_of(Obj,dul:'Object'),
-  !.
-task_role_range(_Tsk,_Role,Obj) :-
-  rdf_equal(Obj,dul:'Object').
+  property_range(RoleDescr,dul:classifies,ObjDescr),
+  once((
+    %%
+    owl_subclass_of(RoleDescr,Role),
+    rdfs_subclass_of(Role,dul:'Role'),
+    %%
+    owl_subclass_of(ObjDescr,Obj),
+    rdfs_subclass_of(Obj,dul:'Object')
+  )).
 
 %%
 task_parameter_range(Tsk,Parameter,Region) :-
