@@ -133,9 +133,7 @@ object_effects_apply_(_Act,Grounding,Concept,Filler) :-
 
 object_effects_apply_(_Act,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'SupportedObject'),!,
-writeln(supportee(Filler)),
   action_supporter_(Grounding,Supporter),
-writeln(supporter(Supporter)),
   object_set_supported_by_(Filler,Supporter).
 
 
