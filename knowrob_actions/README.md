@@ -1,12 +1,7 @@
 knowrob_actions
 ===
 
-Methods for reasoning about OWL action descriptions,
-and instances.
-Actions are organized in a subsumption hierarchy
-and their class description can further include 
-information about sub-actions, preconditions,
-effects, and actors (i.e., inputs and outputs).
+The pupose of this module is (1) to provide a Prolog interface to access knowledge encoded using KnowRob's action model; and (2) to provide some inference rules that exploit knowledge encoded using this model.
 
 ### Action model
 
