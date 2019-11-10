@@ -62,13 +62,13 @@ The parser can then be used to detect an activity by invoking it with a sequence
 From the perspective of the knowledge base, some steps in plans may be atomic, meaning that there is no plan further structuring them. KnowRob further allows to specify how such tasks are to be executed by calling a computational method such as a predicate in the knowledge base, or a service within a ROS communication graph.
 This is useful in case the knowledge base needs to send commands to remote methods, or to support the parametrization of such calls by relating the arguments of the method to situational context.
 
-The execution "atomic" actions is axiomatized using a particular type of plan called *ActionExecutionPlan*. Action execution plans are used to relate roles and parameters of the situational context to inputs and outputs of the computational method that realizes the execution.
+The execution of "atomic" actions is axiomatized using a particular type of plan called *ActionExecutionPlan*. Action execution plans are used to relate roles and parameters of the situational context to inputs and outputs of the computational method that performs the execution.
 
 Let's say we have an execution plan *rdf_has_plan* defined for the `rdf_has/3` predicate. To execute the plan, the following code can be used:
 
     execute_plan('rdf_has_plan',_{},OutputDicts,_)
 
-In this case, the `rdf_has/3` predicate would be called with none of the arguments grounded since an empty dict is provided as second argument (which provides an initial grounding). *OutputDicts* is a lazy list of all possible groundings, i.e., triples in the knowledge base.
+In this case, the `rdf_has/3` predicate would be called with none of the arguments grounded since an empty dict is provided as second argument (which provides an initial grounding). *OutputDicts* is a lazy list of all possible groundings, i.e., triples in the knowledge base in this case. The keys in each dict are concepts, and the values are the objects they classify.
 
 ### Action effects
 
