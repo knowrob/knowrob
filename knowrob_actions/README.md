@@ -68,13 +68,4 @@ To execute a plan, the following code can be used:
 
 ### Action effects
 
-Action effects are implemented using SWRL rules represented in an OWL ontology.
-They can be projected into the knowledge base after all preactors were specified,
-and the action was performed.
-The predicate action_effects_apply/2 checks the condition of
-each rule associated to the action class,
-and if satisfied projects the implications into the RDF triple store.
-This builds up the Object Transformation Graph, but also does explicit
-assertions, if some relation of an involved object changed according to the SWRL rule.
-Rule implications may also create processes that are ongoing until some criterion
-is fulfilled.
+The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the *AlteredObject* one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which may be automatically updated by KnowRob after the action has been executed. Other distinct cases are objects being destroyed or created in which case KnowRob updates the lifetime of them, and objects being combined, included, or excluded in which case KnowRob may update the compositional relations between these objects.
