@@ -30,13 +30,13 @@ The action model asserts the structure of tasks via plans that decompose them in
 
 To infer possible sequences of steps for a given plan, the following can be used:
 
-    workflow_sequence(Plan, Steps)
+    workflow_sequence(+Plan, ?Steps)
 
 This will internally build up a, so called, endpoint sequence graph (ESG), a datastructure that captures temporal relations between event endpoints (i.e. when they start and when they end), and from which all possible sequences can be sampled.
 
 More generally, to read all the steps and phases of a plan, and temporal constraints between them, the following can be used:
 
-    workflow_constituents(Plan, Constituents, Constraints)
+    workflow_constituents(+Plan, -Constituents, -Constraints)
 
 Where *Constraints* is a list of binary relations between steps/phases of the plan, for example, the constraint `<(A,B)` means that the occurance of an event of type *A* is strictly before the occurance of an event of type *B*.
 
@@ -61,6 +61,15 @@ The parser can then be used to detect an activity by invoking it with a sequence
         tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
         ...],
         DetectedActivity).
+
+### Action execution
+
+From the perspective of the knowledge base, some steps in plans may be atomic, meaning that there is no plan further structuring them. KnowRob further allows to specify how such tasks are to be executed by calling a computational method such as a predicate in the knowledge base, or a service within a ROS communication graph.
+This is useful in case the knowledge base is used for planning and needs to automatically send commands to remote methods in order to manifest the execution of a task, or to support the parametrization of such calls by relating the arguments of the method to parameters of previous steps of the plan execution.
+
+To execute a plan, the following code can be used:
+
+    execute_plan(+Plan,+InputDict,-OutputDicts,-Situation)
 
 ### Action effects
 
