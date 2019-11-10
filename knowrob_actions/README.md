@@ -51,7 +51,7 @@ Which will create ESG's for each of the plans.
 
 The parser can then be used to detect an activity by invoking it with a sequence of tokens:
 
-    detect_activity([
+    detect_activity(Parser,[
         tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
         tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
         ...],
