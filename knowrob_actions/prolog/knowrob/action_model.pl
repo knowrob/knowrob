@@ -344,7 +344,14 @@ action_set_performed_by(Act,Agent) :-
 		 *	dul:'Task		*
 		 *******************************/
 
-%%
+%% task_role(?Tsk,?Role,?RoleType) is semidet.
+%
+% Relates a task to roles of objects related to the tasks.
+%
+% @param Tsk An individual of type dul:'Task'.
+% @param Role An individual of type dul:'Role'.
+% @param RoleType A sub-class of dul:'Role'.
+%
 task_role(Tsk,Role,RoleType) :-
   kb_triple(Tsk,dul:isTaskOf,Role),
   kb_type_of(Role,RoleType).
