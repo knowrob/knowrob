@@ -8,32 +8,13 @@ and their class description can further include
 information about sub-actions, preconditions,
 effects, and actors (i.e., inputs and outputs).
 
-### Changing objects
+### Action model
 
-Actions may change, create, or destroy objects.
-Robots may reason about which action has a desired
-effect, and if an action can be instantiated to be performed
-in the current situation.
+In KnowRob, an *Action* is defined as an *Event* where at least one agent that participates in the event executes a *Task* which is typically defined in a *Plan*. Tasks are used to classify actions, similar to how roles are used to classify objects within some situational context. There may be multiple plans defining the same task which is useful to capture different ways to achieve the same goal. The distinction between *Action* and *Task* is further important as it enables us to put individual tasks into discourse without referring to a particular execution of them (i.e. an *Action*). This is needed because a *Plan* is a generalization of action executions, abstracting away from individual objects that were involved by only referring to the roles they have played.
 
-Information about object change is expressed as preactors (i.e., entities available prior action execution),
-and postactors (i.e., entities that changed in some way during the action).
-Action actors span an "Object Transformation Graph" that (implicitly) describes how objects
-changed over time under the influence of action.
-Following OWL properties express the actors of an action:
-[objectActedOn](http://knowrob.org/kb/knowrob.owl#objectActedOn),
-[thingIncorporated](http://knowrob.org/kb/knowrob.owl#thingIncorporated),
-[objectAddedTo](http://knowrob.org/kb/knowrob.owl#objectAddedTo),
-[inputsCommitted](http://knowrob.org/kb/knowrob.owl#inputsCommitted),
-[inputsDestroyed](http://knowrob.org/kb/knowrob.owl#inputsDestroyed),
-[transformedObject](http://knowrob.org/kb/knowrob.owl#transformedObject),
-[objectRemoved](http://knowrob.org/kb/knowrob.owl#objectRemoved),
-[objectOfStateChange](http://knowrob.org/kb/knowrob.owl#objectOfStateChange),
-[outputsRemaining](http://knowrob.org/kb/knowrob.owl#outputsRemaining),
-[outputsCreated](http://knowrob.org/kb/knowrob.owl#outputsCreated)
+**Plans** are used to structure tasks, asserting how they are composed of steps and in which order they should be executed. KnowRob supports relations from Allen's Interval Algebra to assert ordering constraints between steps, and also allows to only specify partial ordering. Each step of a plan is a task itself, and may also be defined by some plan(s). However, the action model of KnowRob allows to go deeper by decomposing a task into *phases*. A phase is a *Process* or *State* that occurs during task execution which includes force dynamic events, and motions. Processes are classified by one of the *ProcessType* concepts, and states are classified by one of the *Gestallt* concepts defined in the model.
 
-Action class descriptions may restrict preactors to describe action preconditions,
-for instance, that an object of a particular type must be used or
-that it needs to satisfy some relation.
+**Roles** are used to classify objects that participate in some event. This includes the agent that performed the action, tools that were used, objects that were affected, as well as locations of interest. KnowRob defines a taxonomy of roles with the most general concepts being *AffectedObject*, *Location*, and *Tool*. The list of concepts defined below is comprehensive but might not be complete. However, it provides a rich labelset to classify objects in the scope of an activity. They are further used to implicitely encode pre-conditions of plan executions as the existence of objects that are potential filler of the roles is required.
 
 ### Action planning
 
