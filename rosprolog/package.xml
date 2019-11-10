@@ -2,8 +2,8 @@
   <name>rosprolog</name>
   <version>1.0.0</version>
   <description>
-    Script to execute Prolog and set the Prolog library paths
-    to other ROS Prolog packages.
+    rosprolog is a Prolog client for ROS, and also implements a
+    ROS node that exposes Prolog engines to other ROS nodes.
   </description>
   <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
 
