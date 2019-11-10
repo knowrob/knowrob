@@ -8,22 +8,35 @@ and their class description can further include
 information about sub-actions, preconditions,
 effects, and actors (i.e., inputs and outputs).
 
-### Action model
+### Action model</summary>
 
 In KnowRob, an *Action* is defined as an *Event* where at least one agent that participates in the event executes a *Task* which is typically defined in a *Plan*. Tasks are used to classify actions, similar to how roles are used to classify objects within some situational context. There may be multiple plans defining the same task which is useful to capture different ways to achieve the same goal. The distinction between *Action* and *Task* is further important as it enables us to put individual tasks into discourse without referring to a particular execution of them (i.e. an *Action*). This is needed because a *Plan* is a generalization of action executions, abstracting away from individual objects that were involved by only referring to the roles they have played.
 
 **Plans** are used to structure tasks, asserting how they are composed of steps and in which order they should be executed. KnowRob supports relations from Allen's Interval Algebra to assert ordering constraints between steps, and also allows to only specify partial ordering. Each step of a plan is a task itself, and may also be defined by some plan(s). However, the action model of KnowRob allows to go deeper by decomposing a task into *phases*. A phase is a *Process* or *State* that occurs during task execution which includes force dynamic events, and motions. Processes are classified by one of the *ProcessType* concepts, and states are classified by one of the *Gestallt* concepts defined in the model.
 
+<p align="center">
+<img src="img/plan.png" width="500">
+</p>
+
 **Roles** are used to classify objects that participate in some event. This includes the agent that performed the action, tools that were used, objects that were affected, as well as locations of interest. KnowRob defines a taxonomy of roles with the most general concepts being *AffectedObject*, *Location*, and *Tool*. The list of concepts defined below is comprehensive but might not be complete. However, it provides a rich labelset to classify objects in the scope of an activity. They are further used to implicitely encode pre-conditions of plan executions as the existence of objects that are potential filler of the roles is required.
+
+<p align="center">
+<img src="img/classification.png" width="400">
+</p>
 
 ### Action planning
 
-Complex tasks may be decomposed into more atomic steps executable by the robot,
-such as different motion phases that a robot performs to grasp an object
-from a table.
-The [subAction](http://knowrob.org/kb/knowrob.owl#subAction) relation is used to describe this hierarchy,
-and additional partial ordering constraints can be used to restrict
-possible sequences of sub actions.
+The action model asserts the structure of tasks via plans that decompose them into different steps and phases. Plans further assert a partial ordering between these constituents from which possible sequences of step and phase occurences that would manifest a plan execution can be derived.
+
+To infer possible sequences of steps for a given plan, the following can be used:
+
+    workflow_sequence(Plan, Steps)
+
+More generally, to read all the steps and phases of a plan, and temporal constraints between them, the following can be used:
+
+    workflow_constituents(Plan, Constituents, Constraints)
+
+Where *Constraints* is a list of binary relations between steps/phases of the plan, for example, the constraint `<(A,B)` means that the occurance of an event of type *A* is strictly before the occurance of an event of type *B*.
 
 #### Preconditions
 
