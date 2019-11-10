@@ -40,10 +40,10 @@ create_input_dict(Dict,List) :-
 		 *******************************/
 
 test(rdf_has_execution_goal) :-
-  plan_execution_goal(
-    acext:'rdf_has1_Execution',
+  knowrob_action_execution:plan_execution_goal_(
+    'http://knowrob.org/kb/action-test.owl#rdf_has1_Execution',
     _,
-    knowrob:'KBQuerying'
+    'http://knowrob.org/kb/knowrob.owl#KBQuerying'
     ,_), !.
   
 %% all arguments unbound
@@ -90,10 +90,10 @@ test('rdf_has(obj1,hasNameString,?)', [nondet]) :-
 		 *******************************/
   
 test(add_two_ints_execution_goal) :-
-  plan_execution_goal(
-    acext:'add_two_ints_Execution',
+  knowrob_action_execution:plan_execution_goal_(
+    'http://knowrob.org/kb/action-test.owl#add_two_ints_Execution',
     _,
-    ros:'ServiceInvokation'
+    'http://www.ease-crc.org/ont/ROS.owl#ServiceInvokation'
     ,_), !.
 
 test('add_two_ints(CREATE)') :-
