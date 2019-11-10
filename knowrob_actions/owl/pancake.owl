@@ -88,6 +88,12 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE.owl#isPlanFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#overlappedBy -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#overlappedBy"/>
@@ -213,7 +219,8 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
-                <owl:someValuesFrom>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CreatedObject"/>
@@ -223,13 +230,14 @@
                             </owl:Restriction>
                         </owl:intersectionOf>
                     </owl:Class>
-                </owl:someValuesFrom>
+                </owl:onClass>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
-                <owl:someValuesFrom>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CreatedObject"/>
@@ -239,7 +247,7 @@
                             </owl:Restriction>
                         </owl:intersectionOf>
                     </owl:Class>
-                </owl:someValuesFrom>
+                </owl:onClass>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
