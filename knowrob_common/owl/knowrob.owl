@@ -536,15 +536,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#performedBy -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#performedBy">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#performedBy"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#performedInMap -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#performedInMap">
@@ -811,12 +802,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://www.ease-crc.org/ont/EASE.owl#involvesPlace -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE.owl#performedBy -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#performedBy"/>
     
 
 
