@@ -21,15 +21,13 @@
 :- begin_tests('knowrob/action_effects').
 
 :- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('swrl')).
-:- use_module(library('swrl_parser')).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
@@ -37,51 +35,83 @@
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 
+:- rdf_meta create_input_dict(t,t).
+
+create_input_dict(Dict,List) :-
+  findall(X-Y, member([X,Y],List),Pairs),
+  dict_pairs(Dict,_,Pairs).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Blocksworld
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Load blocksworld SWRL rules
-:- swrl_file_path(knowrob_actions,'blocksworld.swrl',Filepath),
-   swrl_file_parse(Filepath,_,_).
+yellow_on_blue  :- holds( ease_obj:isSupportedBy(blocksworld:'BlockYellow_0', blocksworld:'BlockBlue_0') ), !.
+yellow_on_red   :- holds( ease_obj:isSupportedBy(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
+red_on_blue     :- holds( ease_obj:isSupportedBy(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
 
-yellow_on_blue  :- holds( blocksworld:ontop(blocksworld:'BlockYellow_0', blocksworld:'BlockBlue_0') ), !.
-yellow_on_red   :- holds( blocksworld:ontop(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
-yellow_on_table :- \+ holds( blocksworld:ontop(blocksworld:'BlockYellow_0', _) ), !.
-red_on_blue     :- holds( blocksworld:ontop(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
-red_on_table    :- \+ holds( blocksworld:ontop(blocksworld:'BlockRed_0', _) ), !.
+:- rdf_meta create_action_for_task(r,r,r).
 
-:- rdf_meta create_action_for_task(r,r).
+create_task_(TskType,Tsk) :-
+  kb_create(TskType,Tsk,_{graph:belief_state}),
+  forall(
+    ( property_cardinality(TskType,dul:isTaskOf,RoleType,CR,_), CR>0,
+      rdfs_subclass_of(RoleType,dul:'Role')
+    ),
+    ( kb_create(RoleType,Role,_{graph:belief_state}),
+      kb_assert(Tsk,dul:isTaskOf,Role)
+    )
+  ).
 
-create_action_for_task(Tsk,Act) :-
+create_action_for_task(TskType,Act,Tsk) :-
   current_time(T0),
+  %%
+  create_task_(TskType,Tsk),
+  %%
   action_create(dul:'Action',Act,belief_state),
   action_set_task(Act,Tsk),
   event_set_begin_time(Act,T0),
-  event_set_end_time(Act,T0),
-  forall(
-  ( kb_triple(Tsk, dul:isTaskOf, Role),
-    kb_triple(Role, dul:classifies, Obj) ),
-    action_add_filler(Act,Obj)
-  ).
-  
+  event_set_end_time(Act,T0).
+
+test('blocksworld support1') :-
+  action_effect(blocksworld:'Stack', supported(dul:'Object')).
+
+test('blocksworld support2') :-
+  action_effect(blocksworld:'Unstack', supported(dul:'Object')).
   
 test('Unstack_Y') :-
   yellow_on_blue,
-  create_action_for_task(blocksworld:'Unstack_Y',Act),
-  action_effects_apply(Act,blocksworld:'Unstack_Y'),
-  yellow_on_table.
+  create_action_for_task(blocksworld:'Unstack',Act,Tsk),
+  task_role(Tsk,Supporter,ease_obj:'Supporter'),
+  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  create_input_dict(Dict,[
+      [Supporter,blocksworld:'Hand_0'],
+      [Supportee,blocksworld:'BlockYellow_0']
+  ]),
+  action_effects_apply(Act,Dict),
+  \+ yellow_on_blue.
 
 test('Stack_RB') :-
-  red_on_table,
-  create_action_for_task(blocksworld:'Stack_RB',Act),
-  action_effects_apply(Act,blocksworld:'Stack_RB'),
+  \+ red_on_blue,
+  create_action_for_task(blocksworld:'Stack',Act,Tsk),
+  task_role(Tsk,Supporter,ease_obj:'Supporter'),
+  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  create_input_dict(Dict,[
+      [Supporter,blocksworld:'BlockBlue_0'],
+      [Supportee,blocksworld:'BlockRed_0']
+  ]),
+  action_effects_apply(Act,Dict),
   red_on_blue.
 
 test('Stack_YR') :-
-  yellow_on_table,
-  create_action_for_task(blocksworld:'Stack_YR',Act),
-  action_effects_apply(Act,blocksworld:'Stack_YR'),
+  \+ yellow_on_red,
+  create_action_for_task(blocksworld:'Stack',Act,Tsk),
+  task_role(Tsk,Supporter,ease_obj:'Supporter'),
+  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  create_input_dict(Dict,[
+      [Supporter,blocksworld:'BlockRed_0'],
+      [Supportee,blocksworld:'BlockYellow_0']
+  ]),
+  action_effects_apply(Act,Dict),
   yellow_on_red.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,9 +122,9 @@ test('Stack_YR') :-
 %:- swrl_file_path(knowrob_actions,'pancake.swrl',Filepath),
    %swrl_file_parse(Filepath,_,_).
 
-test(cracking_effect_destroyed_egg, [nondet]) :-
-  action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
-  rdf_equal(Egg,pancake:'Egg').
+%test(cracking_effect_destroyed_egg, [nondet]) :-
+  %action_effect(pancake:'CrackingAnEgg', destroyed(Egg)),
+  %rdf_equal(Egg,pancake:'Egg').
 
 %test(pancake_making_turn_on_maker) :-
   %%
