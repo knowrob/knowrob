@@ -72,4 +72,19 @@ In this case, the `rdf_has/3` predicate would be called with none of the argumen
 
 ### Action effects
 
-The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the *AlteredObject* one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which may be automatically updated by KnowRob after the action has been executed. Other distinct cases are objects being destroyed or created in which case KnowRob updates the lifetime of them, and objects being combined, included, or excluded in which case KnowRob may update the compositional relations between these objects.
+The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the *AlteredObject* one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which can be automatically updated after the action has been executed. Other distinct cases are objects being destroyed or created, and objects being combined, included, excluded, etc.
+
+The predicate `action_effect/2` relates an action (or task) to its effects, for example:
+
+    action_effect(pancake:'CrackingAnEgg', destroyed(pancake:'Egg'))
+
+Some action effects may imply new relations, for example,
+that one object is supported by another as a consequence of the action.
+To infer and assert these relations, the predicate `action_effects_apply/2`
+can be used:
+
+    action_effects_apply(Act,_{
+      'Supporter':       'Table_0',
+      'SupportedObject': 'Object_0'
+    }),
+    rdf_has('Table_0',ease_obj:supports,'Object_0').

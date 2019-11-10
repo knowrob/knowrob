@@ -25,6 +25,7 @@
       action_performed_by/2,
       action_set_performed_by/2,
       %%
+      task_role/3,
       task_role_range/3,
       task_parameter_range/3,
       %%
@@ -71,6 +72,7 @@
       action_set_task(r,r),
       action_performed_by(r,r),
       action_set_performed_by(r,r),
+      task_role(r,r,r),
       task_role_range(r,r,r),
       task_parameter_range(r,r,r),
       workflow_step(r,r),
@@ -343,17 +345,28 @@ action_set_performed_by(Act,Agent) :-
 		 *******************************/
 
 %%
+task_role(Tsk,Role,RoleType) :-
+  kb_triple(Tsk,dul:isTaskOf,Role),
+  kb_type_of(Role,RoleType).
+
+%%
 task_role_range(Tsk,Role,Obj) :-
+  %%
   property_cardinality(Tsk,dul:isTaskOf,RoleDescr,CR,_), CR>0,
+  owl_subclass_of(RoleDescr,Role),
+  rdfs_subclass_of(Role,dul:'Role'),
+  %%
   property_range(RoleDescr,dul:classifies,ObjectDescr),
-  once((
-    %%
-    owl_subclass_of(RoleDescr,Role),
-    rdfs_subclass_of(Role,dul:'Role'),
-    %%
-    owl_subclass_of(ObjectDescr,Obj),
-    rdfs_subclass_of(Obj,dul:'Object')
-  )).
+  owl_subclass_of(ObjectDescr,Obj),
+  rdfs_subclass_of(Obj,dul:'Object'),
+  !.
+task_role_range(_Tsk,Role,Obj) :-
+  property_range(Role,dul:classifies,ObjectDescr),
+  owl_subclass_of(ObjectDescr,Obj),
+  rdfs_subclass_of(Obj,dul:'Object'),
+  !.
+task_role_range(_Tsk,_Role,Obj) :-
+  rdf_equal(Obj,dul:'Object').
 
 %%
 task_parameter_range(Tsk,Parameter,Region) :-
