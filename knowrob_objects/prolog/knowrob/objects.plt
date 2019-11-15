@@ -34,11 +34,11 @@ test(storage_place_for2) :-
   storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup2').
 
 test(storage_place_for3) :-
-  storage_place_for(test_obj:'Dishwasher1', test_obj:'FoodVessel').
+  storage_place_for(test_obj:'Dishwasher1', ease_obj:'Tableware').
 
 test(storage_place_for_because1) :-
   storage_place_for_because(test_obj:'Dishwasher1',test_obj:'Cup1',X),
-  rdf_equal(X, test_obj:'FoodVessel').
+  rdf_equal(X, ease_obj:'Tableware').
 
 test(object_dimensions) :-
   object_dimensions(test_obj:'Handle1', 0.015, 0.015, 0.015).

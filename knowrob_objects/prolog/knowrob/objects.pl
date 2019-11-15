@@ -666,17 +666,18 @@ storage_place_for_because_(Container,Object,PatientType) :-
 
 storage_place_for_because_(Container,ObjType,PatientType) :-
   atom(Container),
-  kb_triple(Container,ease_obj:hasDesign,Design),
-  kb_type_of(Design,ease_obj:'Containment'),
-  storage_place_for_because__(Design,ObjType,PatientType).
+  kb_triple(Container,ease_obj:hasDisposition,Disposition),
+  kb_type_of(Disposition,ease_obj:'Containment'),
+  storage_place_for_because__(Disposition,ObjType,PatientType).
 
 storage_place_for_because_(Container,ObjType,PatientType) :-
   atom(Container),
-  property_cardinality(Container,ease_obj:hasDesign,Design,Min,_), Min>0,
-  rdfs_subclass_of(Design,ease_obj:'Containment'),
-  storage_place_for_because__(Design,ObjType,PatientType).
+  property_cardinality(Container,ease_obj:hasDisposition,Disposition,Min,_), Min>0,
+  owl_subclass_of(Disposition,ease_obj:'Containment'),
+  storage_place_for_because__(Disposition,ObjType,PatientType).
 
-storage_place_for_because__(Design,ObjType,PatientType) :-
-  property_range(Design,ease_obj:hasDesignatedPatient,PatientType),
+storage_place_for_because__(Disposition,ObjType,PatientType) :-
+  property_range(Disposition,ease_obj:hasTrigger,Concept),
+  property_range(Concept,dul:classifies,PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).

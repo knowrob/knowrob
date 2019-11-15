@@ -6,6 +6,7 @@
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY ease_obj "http://www.ease-crc.org/ont/EASE-OBJ.owl#" >
+    <!ENTITY ease "http://www.ease-crc.org/ont/EASE.owl#" >
     <!ENTITY dul "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#" >
     <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
@@ -22,41 +23,20 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:ease="http://www.ease-crc.org/ont/EASE.owl#"
      xmlns:ease_obj="http://www.ease-crc.org/ont/EASE-OBJ.owl#"
      xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/test_knowrob_objects.owl#">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
-    
-
-    <owl:Class rdf:about="&test;FoodVessel">
-        <rdfs:subClassOf rdf:resource="&dul;DesignedArtifact"/>
-    </owl:Class>
 
     <owl:Class rdf:about="&test;Cup">
-        <rdfs:subClassOf rdf:resource="&test;FoodVessel"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="&test;FoodVesselContainment">
-        <rdfs:subClassOf rdf:resource="&ease_obj;Containment"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&ease_obj;hasDesignatedPatient"/>
-                <owl:allValuesFrom rdf:resource="&test;FoodVessel"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="&ease_obj;Crockery"/>
     </owl:Class>
 
     <owl:Class rdf:about="&test;Dishwasher">
-        <rdfs:subClassOf rdf:resource="&dul;DesignedArtifact"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&ease_obj;hasDesign"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="&test;FoodVesselContainment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="&ease;Dishwasher"/>
     </owl:Class>
 
 
