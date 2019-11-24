@@ -560,6 +560,23 @@ object_localization_(Obj,Localization) :-
 % % % % % Object affordances
 %% TODO: need to revise affordances. Consider using
 %%       disposition model.
+%% - PerceptionAffordance is a feature localized relative to the object
+%% - OffsetAffordance is something different
+
+%%
+%object_feature(Obj, Feature) :-
+  %atom(Feature),!,
+  %rdf_has(Obj,ease_obj:hasFeature,Feature).
+%object_feature(Obj, Feature) :-
+  %property_cardinality(Obj,ease_obj:hasFeature,Feature,Min,_),
+  %Min>0.
+
+%%%
+%object_feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
+  %object_feature(Obj,Feature),
+  %feature_frame_name(Feature, FeatureFrame),
+  %object_frame_name(Obj, ObjFrame),
+  %feature_transform(Feature, [ObjFrame,FeatureFrame,Pos,Rot]).
 
 %%
 object_perception_affordance_frame_name(Obj, AffFrameName) :-
@@ -677,7 +694,7 @@ storage_place_for_because_(Container,ObjType,PatientType) :-
   storage_place_for_because__(Disposition,ObjType,PatientType).
 
 storage_place_for_because__(Disposition,ObjType,PatientType) :-
-  property_range(Disposition,ease_obj:hasTrigger,Concept),
+  property_range(Disposition,ease_obj:affordsTrigger,Concept),
   property_range(Concept,dul:classifies,PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).
