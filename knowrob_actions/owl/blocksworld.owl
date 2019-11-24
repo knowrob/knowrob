@@ -24,50 +24,12 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
     
 
 
-    <!-- http://knowrob.org/kb/blocksworld.owl#ontop -->
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDeposit -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#ontop">
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/blocksworld.owl#underneath"/>
-        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#underneath -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#underneath">
-        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#goalLocation -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#supports -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#supports"/>
-    
-
-
-    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies -->
-
-    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDeposit"/>
     
 
 
@@ -96,14 +58,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/blocksworld.owl#Hand -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand">
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/blocksworld.owl#Stack -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack">
@@ -112,14 +66,14 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#SupportedObject"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Deposit"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Supporter"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DepositedObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -134,41 +88,17 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#SupportedObject"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Deposit"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Supporter"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#ExtractedObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Destination -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Destination"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#SupportedObject -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#SupportedObject"/>
-    
-
-
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Supporter -->
-
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Supporter"/>
     
 
 
@@ -211,7 +141,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Block"/>
-        <EASE-OBJ:supports rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockYellow_0"/>
     </owl:NamedIndividual>
     
 
@@ -228,14 +157,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockYellow_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Block"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_0 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_0">
-        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand"/>
+        <EASE-OBJ:isOntopOf rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_0"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

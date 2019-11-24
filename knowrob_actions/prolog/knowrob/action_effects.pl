@@ -21,7 +21,8 @@ The effects of actions on objects are derived from the roles the objects play du
 
 :-  rdf_meta
     action_effect(r,t),
-    action_effects_apply(r,t).
+    action_effects_apply(r,t),
+    action_grounding_(r,r,r).
 
 		 /*******************************
 		 *	Action post-conditions	*
@@ -36,10 +37,11 @@ The effects of actions on objects are derived from the roles the objects play du
 %	| created(Type)			| An object has been created.	|
 %	| destroyed(Type)		| An object has been destroyed.	|
 %	| altered(Type,QualityType)	| An object has been changed.	|
-%	| combined(Type)		| An object has been combined. 	|
-%	| extracted(Type)		| An object has been extracted.	|
+%	| linked(Type)			| An object has been linked. 	|
+%	| deposited(Type)		| An object has been deposited. |
+%	| commited(Type)		| An object has been commited. 	|
 %	| included(Type)		| An object has been included.	|
-%	| supported(Type)		| An object has been supported.	|
+%	| extracted(Type)		| An object has been extracted.	|
 %
 action_effect(Act,Effect) :-
   action_has_task(Act,Tsk),
@@ -55,14 +57,16 @@ action_effect_(Tsk, destroyed(Type)) :-
 action_effect_(Tsk, altered(Type,QualityType)) :-
   task_role_range(Tsk,ease_obj:'AlteredObject',Type),
   get_altered_quality_type_(Type,QualityType).
-action_effect_(Tsk, combined(Type)) :-
-  task_role_range(Tsk,ease_obj:'CombinedObject',Type).
+action_effect_(Tsk, linked(Type)) :-
+  task_role_range(Tsk,ease_obj:'LinkedObject',Type).
+action_effect_(Tsk, commited(Type)) :-
+  task_role_range(Tsk,ease_obj:'CommitedObject',Type).
+action_effect_(Tsk, deposited(Type)) :-
+  task_role_range(Tsk,ease_obj:'DepositedObject',Type).
 action_effect_(Tsk, extracted(Type)) :-
   task_role_range(Tsk,ease_obj:'ExtractedObject',Type).
 action_effect_(Tsk, included(Type)) :-
   task_role_range(Tsk,ease_obj:'IncludedObject',Type).
-action_effect_(Tsk, supported(Type)) :-
-  task_role_range(Tsk,ease_obj:'SupportedObject',Type).
 
 %% action_effects_apply(+Act,+Grounding) is det.
 %
@@ -107,34 +111,47 @@ object_effects_apply_(_Act,_Grounding,Concept,Filler) :-
 
 object_effects_apply_(Act,_Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'AlteredObject'),!,
-  get_altered_quality_(Concept,Filler,Quality),
+  get_altered_quality_(Concept,Filler,Quality), % TODO: better use parameter here!?!
+  %action_grounding_(Grounding,ease_obj:'AchievedValue',Region),
   kb_triple(Act,ease_obj:hasAlterationResult,Region),
   quality_set_region_(Quality,Region).
 
 object_effects_apply_(_Act,Grounding,Concept,Filler) :-
-  rdfs_individual_of(Concept,ease_obj:'CombinedObject'),!,
-  action_component_system_(Grounding,Parent),
+  rdfs_individual_of(Concept,ease_obj:'CommitedObject'),!,
+  action_grounding_(Grounding,ease_obj:'AlteredObject',Parent),
   object_add_part_(Parent,Filler).
 
 object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+  rdfs_individual_of(Concept,ease_obj:'IncludedObject'),!,
+  action_grounding_(Grounding,ease_obj:'Container',Parent),
+  object_add_content_(Parent,Filler).
+
+object_effects_apply_(_Act,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'ExtractedObject'),!,
-  action_component_system_(Grounding,Parent),
-  % try to remove both part-of and contains relations
-  % as 'Extracted' is not specific here
-  % TODO: use a more specific concept then *Extracted* to distinguish
-  %        between parts and content.
+  ( action_grounding_(Grounding,ease_obj:'AlteredObject',Parent);
+    action_grounding_(Grounding,ease_obj:'Container',Parent);
+    action_grounding_(Grounding,ease_obj:'Deposit',Parent)
+  ),
+  object_remove_deposit_(Parent,Filler),
+  object_remove_link_(Parent,Filler),
   object_remove_part_(Parent,Filler),
   object_remove_content_(Parent,Filler).
 
 object_effects_apply_(_Act,Grounding,Concept,Filler) :-
-  rdfs_individual_of(Concept,ease_obj:'IncludedObject'),!,
-  action_component_system_(Grounding,Parent),
-  object_add_content_(Parent,Filler).
+  rdfs_individual_of(Concept,ease_obj:'LinkedObject'),!,
+  forall(
+    action_grounding_(Grounding,ease_obj:'LinkedObject',Linked),
+    object_create_link_(Filler,Linked)
+  ),
+  forall(
+    action_grounding_(Grounding,ease_obj:'CreatedObject',Parent),
+    object_add_part_(Parent,Filler)
+  ).
 
 object_effects_apply_(_Act,Grounding,Concept,Filler) :-
-  rdfs_individual_of(Concept,ease_obj:'SupportedObject'),!,
-  action_supporter_(Grounding,Supporter),
-  object_set_supported_by_(Filler,Supporter).
+  rdfs_individual_of(Concept,ease_obj:'DepositedObject'),!,
+  action_grounding_(Grounding,ease_obj:'Deposit',Deposit),
+  object_add_deposit_(Deposit,Filler).
 
 
 		 /*******************************
@@ -143,31 +160,19 @@ object_effects_apply_(_Act,Grounding,Concept,Filler) :-
 
 %%
 get_altered_quality_type_(Concept,Quality_type) :-
-  rdf_has(Concept,ease_obj:hasAlteredQuality,Quality),
-  kb_type_of(Quality,Quality_type).
+  property_range(Concept,ease_obj:isTriggerDefinedIn,Affordance),
+  property_range(Affordance,ease_obj:describesQuality,Quality_type),
+  rdfs_subclass_of(Quality_type,dul:'Quality'),
+  \+ rdf_equal(Quality_type,dul:'Quality'),!.
 
 get_altered_quality_(Concept,Filler,Quality) :-
-  get_altered_quality_type_(Concept,Quality_type),!,
+  get_altered_quality_type_(Concept,Quality_type),
   object_quality(Filler,Quality_type,Quality).
 
-get_altered_quality_(Concept,Filler,Quality) :-
-  property_range(Concept,ease_obj:hasAlteredQuality,Q0_type),
-  object_quality(Filler,Q0_type,Quality).
-
 %%
-action_supporter_(Grounding,Supporter) :-
-  get_dict(Concept,Grounding,Supporter),
-  rdfs_individual_of(Concept,ease_obj:'Supporter'),!.
-
-%%
-action_component_system_(Grounding,Parent) :-
-  get_dict(Concept,Grounding,Parent),
-  ( rdfs_individual_of(Concept,ease_obj:'CreatedObject');
-    % TODO: there is no good match for the object that incorporated the other one.
-    %       for now using the general *AlteredObject* here but something more specific
-    %       should be used.
-    rdfs_individual_of(Concept,ease_obj:'AlteredObject')
-  ),!.
+action_grounding_(Grounding,Concept,Filler) :-
+  get_dict(C,Grounding,Filler),
+  rdfs_individual_of(C,Concept),!.
 
 %%
 action_create_objects_(Act,Tsk,Grounding,Pairs) :-
@@ -204,15 +209,20 @@ object_remove_part_(Parent,Filler) :-
 
 %%
 object_add_content_(Parent,Filler) :-
-  kb_assert(Parent,ease_obj:contains,Filler).
+  kb_assert(Parent,ease_obj:containsObject,Filler).
 object_remove_content_(Parent,Filler) :-
-  kb_retract(Parent,ease_obj:contains,Filler).
+  kb_retract(Parent,ease_obj:containsObject,Filler).
 
 %%
-object_set_supported_by_(Supportee,Supporter) :-
-  % HACK just retract any previous support. Better would
-  %      be to infer this from actions.
-  %      this hack also makes it impossible to be supported 
-  %      multiple times.
-  kb_retract(_,ease_obj:supports,Supportee),
-  kb_assert(Supporter,ease_obj:supports,Supportee).
+object_add_deposit_(Parent,Filler) :-
+  kb_assert(Filler,ease_obj:isOntopOf,Parent).
+object_remove_deposit_(Parent,Filler) :-
+  kb_retract(Filler,ease_obj:isOntopOf,Parent).
+
+%%
+object_create_link_(L,L) :- !.
+object_create_link_(L0,L1) :-
+  kb_assert(L0,ease_obj:isLinkedTo,L1).
+object_remove_link_(L,L) :- !.
+object_remove_link_(L0,L1) :-
+  kb_retract(L0,ease_obj:isLinkedTo,L1).

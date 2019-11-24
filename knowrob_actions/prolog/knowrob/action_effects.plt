@@ -45,9 +45,9 @@ create_input_dict(Dict,List) :-
 %%%%%% Blocksworld
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-yellow_on_blue  :- holds( ease_obj:isSupportedBy(blocksworld:'BlockYellow_0', blocksworld:'BlockBlue_0') ), !.
-yellow_on_red   :- holds( ease_obj:isSupportedBy(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
-red_on_blue     :- holds( ease_obj:isSupportedBy(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
+yellow_on_blue  :- holds( ease_obj:isOntopOf(blocksworld:'BlockYellow_0', blocksworld:'BlockBlue_0') ), !.
+yellow_on_red   :- holds( ease_obj:isOntopOf(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
+red_on_blue     :- holds( ease_obj:isOntopOf(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
 
 :- rdf_meta create_action_for_task(r,r,r).
 
@@ -73,19 +73,19 @@ create_action_for_task(TskType,Act,Tsk) :-
   event_set_end_time(Act,T0).
 
 test('blocksworld support1') :-
-  action_effect(blocksworld:'Stack', supported(dul:'Object')).
+  action_effect(blocksworld:'Stack', deposited(dul:'Object')).
 
 test('blocksworld support2') :-
-  action_effect(blocksworld:'Unstack', supported(dul:'Object')).
+  action_effect(blocksworld:'Unstack', extracted(dul:'Object')).
   
 test('Unstack_Y') :-
   yellow_on_blue,
   create_action_for_task(blocksworld:'Unstack',Act,Tsk),
-  task_role(Tsk,Supporter,ease_obj:'Supporter'),
-  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  task_role(Tsk,Deposit,ease_obj:'Deposit'),
+  task_role(Tsk,Extracted,ease_obj:'ExtractedObject'),
   create_input_dict(Dict,[
-      [Supporter,blocksworld:'Hand_0'],
-      [Supportee,blocksworld:'BlockYellow_0']
+      [Deposit,blocksworld:'BlockBlue_0'],
+      [Extracted,blocksworld:'BlockYellow_0']
   ]),
   action_effects_apply(Act,Dict),
   \+ yellow_on_blue.
@@ -93,11 +93,11 @@ test('Unstack_Y') :-
 test('Stack_RB') :-
   \+ red_on_blue,
   create_action_for_task(blocksworld:'Stack',Act,Tsk),
-  task_role(Tsk,Supporter,ease_obj:'Supporter'),
-  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  task_role(Tsk,Deposit,ease_obj:'Deposit'),
+  task_role(Tsk,Deposited,ease_obj:'DepositedObject'),
   create_input_dict(Dict,[
-      [Supporter,blocksworld:'BlockBlue_0'],
-      [Supportee,blocksworld:'BlockRed_0']
+      [Deposit,blocksworld:'BlockBlue_0'],
+      [Deposited,blocksworld:'BlockRed_0']
   ]),
   action_effects_apply(Act,Dict),
   red_on_blue.
@@ -105,11 +105,11 @@ test('Stack_RB') :-
 test('Stack_YR') :-
   \+ yellow_on_red,
   create_action_for_task(blocksworld:'Stack',Act,Tsk),
-  task_role(Tsk,Supporter,ease_obj:'Supporter'),
-  task_role(Tsk,Supportee,ease_obj:'SupportedObject'),
+  task_role(Tsk,Deposit,ease_obj:'Deposit'),
+  task_role(Tsk,Deposited,ease_obj:'DepositedObject'),
   create_input_dict(Dict,[
-      [Supporter,blocksworld:'BlockRed_0'],
-      [Supportee,blocksworld:'BlockYellow_0']
+      [Deposit,blocksworld:'BlockRed_0'],
+      [Deposited,blocksworld:'BlockYellow_0']
   ]),
   action_effects_apply(Act,Dict),
   yellow_on_red.
