@@ -469,6 +469,48 @@ some_activity(Tsk, States_0->States_n, ActTerm) -->
   { update_states(States_0->States_1,T) },
   some_activity(Tsk, States_1->States_n, ActTerm).
 
+%% TODO create a thread for each parse and 
+%% use a custom stream to feed in tokens via a lazy list
+%% 
+%% meta parser that streams tokens into different
+%% parse processes
+%some_activity(ActTerm) -->
+  %% first empty queue of results before pushing next token
+  %{ read_all_(ActTerm) }.
+%some_activity(ActTerm) -->
+  %[Tok],
+  %{ push_token_(Tok) },
+  %some_activity(ActTerm).
+
+%read_all_(Stream,ActTerm) :-
+  %read(Stream,ActTerm);
+  %read_all_(ActTerm).
+
+%push_token_(Tok) :-
+  %% token may indicate the start of a new action verb
+%  forall(
+%    triggered_verb_(Grammar),
+%    thread_create(parse_verb_(Grammar),_)
+%  )
+  %% add token to each phrase
+%  forall(
+%    input_stream_(InputStream),
+%    write(InputStream,Tok)
+% ).
+
+%triggered_verb_(Grammar) :-
+  %parser_grammar_(Parser,WF,Tsk,[Graph|ActConditions]),
+  %fail.
+
+%parse_verb_(Grammar, Tokens)
+  %%% create lazy list of tokens from input stream
+  %stream_to_lazy_list(InputStream, Tokens),
+  %%% run the parser for given action verb
+  %( phrase(xxx(Grammar,Result), Tokens) ->
+  %  write(OutputStream, Result);
+  %  true
+  %).
+
 %% detect_activity(+Tokens,-Interpretation).
 %
 % Detects activities in given token sequence.
