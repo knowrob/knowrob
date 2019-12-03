@@ -27,6 +27,13 @@
 
 :- rdf_db:rdf_register_prefix(test_obj, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
+test(object_disposition) :-
+  object_disposition(test_obj:'Dishwasher1', _, ease_obj:'Insertion').
+
+test(disposition_trigger_type) :-
+  object_disposition(test_obj:'Dishwasher1', D, ease_obj:'Insertion'),!,
+  disposition_trigger_type(D, ease_obj:'Tableware').
+
 test(storage_place_for1) :-
   storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup1').
 

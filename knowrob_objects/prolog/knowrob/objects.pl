@@ -42,21 +42,22 @@
       object_state/2,
       object_state/3,
       object_color/2,
+      object_feature/2,
+      object_disposition/2,
+      object_disposition/3,
       object_localization/2,
       object_dimensions/4,
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
       object_assert_frame_name/1,
-      object_affordance/2,
-      object_instantiate_affordances/1,
-      object_affordance_static_transform/3,
-      object_perception_affordance_frame_name/2,
       storage_place_for/2,
       storage_place_for_because/3,
       object_set_lifetime_begin/2,
       object_set_lifetime_end/2,
-      mark_dirty_objects/1
+      mark_dirty_objects/1,
+      %%
+      disposition_trigger_type/2
     ]).
 /** <module> Utilities for reasoning about objects
   
@@ -94,14 +95,15 @@
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
     object_assert_frame_name(r),
-    object_affordance(r,r),
-    object_instantiate_affordances(r),
-    object_affordance_static_transform(r,r,?),
+    object_feature(r,r),
+    object_disposition(r,r),
+    object_disposition(r,r,r),
     storage_place_for(r,r),
     storage_place_for_because(r,r,r),
     object_set_lifetime_begin(r,+),
     object_set_lifetime_end(r,+),
-    object_quality_(r,r,r,r).
+    object_quality_(r,r,r,r),
+    disposition_trigger_type(r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -339,7 +341,8 @@ object_state(Obj, [
     fail
   )),
   findall(X, (
-    object_affordance_static_transform(Obj,_,X)
+    object_feature(Obj,Feature),
+    feature_transform(Obj,Feature,X)
   ), StaticTransforms),
   !.
 
@@ -539,7 +542,10 @@ object_mesh_path(Obj, FilePath) :-
 object_quality_(Obj,HasQuality,QualityType,Quality) :-
   atom(Obj),
   rdfs_individual_of(Obj,dul:'Object'),
-  ( kb_triple(Obj,HasQuality,Quality) ; (
+  (( 
+    kb_triple(Obj,HasQuality,Quality),
+    kb_type_of(Quality,QualityType)
+  ) ; (
     once(rdf(Obj,_,_,G)),
     kb_create(QualityType,Quality,_{graph: G}),
     kb_assert(Obj,HasQuality,Quality)
@@ -557,84 +563,86 @@ object_localization_(Obj,Localization) :-
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Object affordances
-%% TODO: need to revise affordances. Consider using
-%%       disposition model.
-%% - PerceptionAffordance is a feature localized relative to the object
-%% - OffsetAffordance is something different
+% % % % % Object dispositions
+
+%% object_disposition(?Obj:iri, ?Disposition:iri) is nondet.
+%
+% Relates an object to one of its dispositions.
+%
+% @param Obj           An individual of type dul:'Object'.
+% @param Disposition   An individual of type ease_obj:'Disposition'.
+%
+object_disposition(Obj, Disposition) :-
+  rdf_has(Obj, ease_obj:hasDisposition, Disposition).
+
+object_disposition(Obj, Disposition) :-
+  property_cardinality(Obj,ease_obj:hasDisposition,DispositionType,Min,_),
+  Min>0,
+  object_disposition(Obj, Disposition, DispositionType),
+  % avoid repeated results
+  \+ rdf_has(Obj, ease_obj:hasDisposition, Disposition).
+
+%% object_disposition(?Obj:iri, ?Disposition:iri, +DispositionType:iri) is nondet.
+%
+% Relates an object to one of its dispositions that is an instance
+% of given disposition type.
+%
+% @param Obj               An individual of type dul:'Object'.
+% @param Disposition       An individual of type ease_obj:'Disposition'.
+% @param DispositionType   A sub-class of ease_obj:'Disposition'.
+%
+object_disposition(Obj, Disposition, DispositionType) :-
+  property_cardinality(Obj, ease_obj:hasDisposition, X, Min,_),
+  Min>0,
+  once(owl_subclass_of(X,DispositionType)),
+  object_quality_(Obj, ease_obj:hasDisposition, DispositionType, Disposition).
+
+%% disposition_trigger_type(?Disposition:iri, ?TriggerType:iri) is nondet.
+%
+% Relates a disposition to the type of objects that can be the 
+% trigger of the disposition.
+%
+% @param Disposition   An individual of type ease_obj:'Disposition'.
+% @param TriggerType   A sub-class of dul:'Object'.
+%
+disposition_trigger_type(Disposition,TriggerType) :-
+  property_range(Disposition,ease_obj:affordsTrigger,TriggerRole),
+  property_range(TriggerRole,ease_obj:classifies,ClassifiedType),
+  ( var(TriggerType) -> TriggerType=ClassifiedType ;
+    once(owl_subclass_of(TriggerType,ClassifiedType))
+  ),
+  rdfs_subclass_of(TriggerType,dul:'Object'),!.
+  
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Object features
 
 %%
-%object_feature(Obj, Feature) :-
-  %atom(Feature),!,
-  %rdf_has(Obj,ease_obj:hasFeature,Feature).
-%object_feature(Obj, Feature) :-
-  %property_cardinality(Obj,ease_obj:hasFeature,Feature,Min,_),
-  %Min>0.
-
-%%%
-%object_feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
-  %object_feature(Obj,Feature),
-  %feature_frame_name(Feature, FeatureFrame),
-  %object_frame_name(Obj, ObjFrame),
-  %feature_transform(Feature, [ObjFrame,FeatureFrame,Pos,Rot]).
+object_feature(Obj, Feature) :-
+  atom(Feature),!,
+  rdf_has(Obj,ease_obj:hasFeature,Feature).
+object_feature(Obj, Feature) :-
+  property_cardinality(Obj,ease_obj:hasFeature,Feature,Min,_), Min>0.
 
 %%
-object_perception_affordance_frame_name(Obj, AffFrameName) :-
-  object_instantiate_affordances(Obj), % HACK
-  owl_has(Obj, knowrob:hasAffordance, Aff),
-  rdfs_individual_of(Aff, knowrob:'PerceptionAffordance'),
-  object_frame_name(Aff, AffFrameName), !.
-
-%%
-object_affordance(Obj, Aff) :-
-  object_instantiate_affordances(Obj), % HACK
-  owl_has(Obj, knowrob:hasAffordance, Aff).
-
-%%
-object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
-  object_instantiate_affordances(Obj), % HACK
+feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
+  %%
   object_frame_name(Obj, ObjFrame),
-  owl_has(Obj, knowrob:hasAffordance, Aff),
-  object_frame_name(Aff, AffFrame),
-  kb_triple(Aff,knowrob:pose,Pose),
-  transform_data(Pose,(Pos,Rot)).
+  feature_frame_name(Feature, FeatureFrame),
+  %%
+  %% TODO: reconsider this. e.g. rather use localization qaulity?
+  %%       - need to axiomatize that the object carrying the feature is the parent of transform
+  ( rdf_has(Feature,knowrob:pose,Pose) ;
+    property_range(Feature,knowrob:pose,Pose)
+  ),
+  rdfs_individual_of(Pose,dul:'Entity'),
+  transform_data(Pose,(Pos,Rot)), !.
 
 %%
-object_instantiate_affordances(Obj) :-
-  findall(Type, (
-    owl_restriction_on(Obj, knowrob:hasAffordance, R),
-    owl_restriction_object_domain(R, Type)), Types),
-  list_to_set(Types, Types_set),
-  forall(
-    owl_most_specific(Types_set, Specific), (
-    owl_description(Specific, Specific_descr),
-    ignore(object_instantiate_affordances(Obj, Specific_descr))
-  )).
-
-object_instantiate_affordances(Obj, class(Cls)) :-
-  owl_cardinality_on_resource(Obj, knowrob:hasAffordance, Cls, cardinality(Desired,_)),
-  owl_cardinality(Obj, knowrob:hasAffordance, Cls, Actual),
-  Missing is Desired - Actual,
-  object_instantiate_affordances(Obj,[Cls],Missing).
-
-object_instantiate_affordances(Obj, union_of(Classes)) :-
-  forall(
-    member(Cls,Classes), (
-    owl_description(Cls,Cls_descr),
-    ignore(object_instantiate_affordances(Obj,Cls_descr))
-  )).
-
-object_instantiate_affordances(_Obj, intersection_of(_Classes)) :- fail.
-object_instantiate_affordances(_Obj, one_of(_Classes))          :- fail.
-object_instantiate_affordances(_Obj, complement_of(_Classes))   :- fail.
-
-object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
-object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
-  kb_create(Cls, Affordance),
-  forall(member(X,Rest), rdf_assert(Affordance,rdf:type, X)),
-  rdf_assert(Obj, knowrob:hasAffordance, Affordance),
-  Next is Missing-1,
-  object_instantiate_affordances(Obj,[Cls|Rest],Next).
+feature_frame_name(Feature, FrameName) :-
+  % TODO: make readable name from type of feature
+  object_frame_name(Feature, FrameName).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -683,18 +691,11 @@ storage_place_for_because_(Container,Object,PatientType) :-
 
 storage_place_for_because_(Container,ObjType,PatientType) :-
   atom(Container),
-  kb_triple(Container,ease_obj:hasDisposition,Disposition),
-  kb_type_of(Disposition,ease_obj:'Containment'),
-  storage_place_for_because__(Disposition,ObjType,PatientType).
-
-storage_place_for_because_(Container,ObjType,PatientType) :-
-  atom(Container),
-  property_cardinality(Container,ease_obj:hasDisposition,Disposition,Min,_), Min>0,
-  owl_subclass_of(Disposition,ease_obj:'Containment'),
+  object_disposition(Container, Disposition, ease_obj:'Containment'),
   storage_place_for_because__(Disposition,ObjType,PatientType).
 
 storage_place_for_because__(Disposition,ObjType,PatientType) :-
-  property_range(Disposition,ease_obj:affordsTrigger,Concept),
+  property_cardinality(Disposition,ease_obj:affordsTrigger,Concept,Min,_), Min>0,
   property_range(Concept,dul:classifies,PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).
