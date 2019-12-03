@@ -196,7 +196,8 @@ int main(int argc, char **argv)
 		pl_av[pl_ac++] = (char *) "-g";
 		pl_av[pl_ac++] = (char *) "true";
 		// Inhibit any signal handling by Prolog
-		pl_av[pl_ac++] = (char *) "-nosignals";
+		// pl_av[pl_ac++] = (char *) "-nosignals";
+                pl_av[pl_ac++] = (char *) "--signals=false";
 		// Limit the combined size of the Prolog stacks to the indicated size.
 		//pl_av[pl_ac++] = (char *) "--stack_limit=32g";
 		// Limit for the table space.
