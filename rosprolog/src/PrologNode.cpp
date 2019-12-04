@@ -37,6 +37,9 @@ PrologNode::PrologNode(ros::NodeHandle *node)
 		boost::shared_ptr<PrologEngine> engine = thread_pool_.claim();
 		if (node->getParam(PARAM_INITIAL_GOAL, param)) {
 			engine->one_solution(param);
+			if(engine->has_error()) {
+				ROS_WARN("initial goal failed: %s", engine->error().c_str());
+			}
 		}
 		thread_pool_.release(engine);
 	}
@@ -197,7 +200,7 @@ int main(int argc, char **argv)
 		pl_av[pl_ac++] = (char *) "true";
 		// Inhibit any signal handling by Prolog
 		// pl_av[pl_ac++] = (char *) "-nosignals";
-                pl_av[pl_ac++] = (char *) "--signals=false";
+		pl_av[pl_ac++] = (char *) "--signals=false";
 		// Limit the combined size of the Prolog stacks to the indicated size.
 		//pl_av[pl_ac++] = (char *) "--stack_limit=32g";
 		// Limit for the table space.
