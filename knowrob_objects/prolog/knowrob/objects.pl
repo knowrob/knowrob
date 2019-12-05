@@ -102,7 +102,7 @@
     storage_place_for_because(r,r,r),
     object_set_lifetime_begin(r,+),
     object_set_lifetime_end(r,+),
-    object_quality_(r,r,r,r),
+    object_aspect_(r,r,r,r),
     disposition_trigger_type(r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
@@ -539,27 +539,39 @@ object_mesh_path(Obj, FilePath) :-
 % % % % % Object qualities
 
 %%
-object_quality_(Obj,HasQuality,QualityType,Quality) :-
-  atom(Obj),
-  rdfs_individual_of(Obj,dul:'Object'),
+object_aspect_(Object,Relation,AspectType,Aspect) :-
+  atom(Object),
+  rdfs_individual_of(Object,dul:'Object'),
   (( 
-    kb_triple(Obj,HasQuality,Quality),
-    kb_type_of(Quality,QualityType)
+    kb_triple(Object,Relation,Aspect),
+    kb_type_of(Aspect,AspectType)
   ) ; (
-    once(rdf(Obj,_,_,G)),
-    kb_create(QualityType,Quality,_{graph: G}),
-    kb_assert(Obj,HasQuality,Quality)
+    once(rdf(Object,_,_,G)),
+    kb_create(AspectType,Aspect,_{graph: G}),
+    kb_assert(Object,Relation,Aspect),
+    % FIXME: below is a bit hacked, shouldn't e.g. owl_individual_of
+    %         draw restrictions from related things?
+    %       - this is problematic when AspectType is something general and
+    %         there are multiple aspects with that type!
+    %         probably best to take max cardinality and disjointness into account.
+    forall((
+      property_cardinality(Object,Relation,X,Min,_),
+      Min>0,
+      once(owl_subclass_of(X,AspectType))
+    ), (
+      kb_assert(Aspect,rdf:type,X)
+    ))
   )), !.
 
 %%
 object_color_(Obj,Color) :-
-  object_quality_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
+  object_aspect_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
 %%
 object_shape_(Obj,Shape) :-
-  object_quality_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
+  object_aspect_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
 %%
 object_localization_(Obj,Localization) :-
-  object_quality_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
+  object_aspect_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -573,14 +585,11 @@ object_localization_(Obj,Localization) :-
 % @param Disposition   An individual of type ease_obj:'Disposition'.
 %
 object_disposition(Obj, Disposition) :-
-  rdf_has(Obj, ease_obj:hasDisposition, Disposition).
-
+  atom(Disposition),!,
+  rdf_has(Obj,ease_obj:hasDisposition,Disposition).
 object_disposition(Obj, Disposition) :-
-  property_cardinality(Obj,ease_obj:hasDisposition,DispositionType,Min,_),
-  Min>0,
-  object_disposition(Obj, Disposition, DispositionType),
-  % avoid repeated results
-  \+ rdf_has(Obj, ease_obj:hasDisposition, Disposition).
+  kb_some(Obj,ease_obj:hasDisposition,DispositionType),
+  object_aspect_(Obj,ease_obj:hasDisposition,DispositionType,Disposition).
 
 %% object_disposition(?Obj:iri, ?Disposition:iri, +DispositionType:iri) is nondet.
 %
@@ -592,10 +601,15 @@ object_disposition(Obj, Disposition) :-
 % @param DispositionType   A sub-class of ease_obj:'Disposition'.
 %
 object_disposition(Obj, Disposition, DispositionType) :-
-  property_cardinality(Obj, ease_obj:hasDisposition, X, Min,_),
-  Min>0,
-  once(owl_subclass_of(X,DispositionType)),
-  object_quality_(Obj, ease_obj:hasDisposition, DispositionType, Disposition).
+  ground(DispositionType),!,
+  object_aspect_(Obj,ease_obj:hasDisposition,DispositionType,Disposition).
+object_disposition(Obj, Disposition, DispositionType) :-
+  object_disposition(Obj, Disposition),
+  % get the Disposition type
+  once((
+    kb_type_of(Disposition,DispositionType),
+    owl_subclass_of(DispositionType,ease_obj:'Disposition')
+  )).
 
 %% disposition_trigger_type(?Disposition:iri, ?TriggerType:iri) is nondet.
 %
@@ -606,8 +620,8 @@ object_disposition(Obj, Disposition, DispositionType) :-
 % @param TriggerType   A sub-class of dul:'Object'.
 %
 disposition_trigger_type(Disposition,TriggerType) :-
-  property_range(Disposition,ease_obj:affordsTrigger,TriggerRole),
-  property_range(TriggerRole,ease_obj:classifies,ClassifiedType),
+  property_range(Disposition,ease_obj:affordsTrigger,TriggerRole),!,
+  property_range(TriggerRole,dul:classifies,ClassifiedType),
   ( var(TriggerType) -> TriggerType=ClassifiedType ;
     once(owl_subclass_of(TriggerType,ClassifiedType))
   ),
@@ -623,26 +637,26 @@ object_feature(Obj, Feature) :-
   atom(Feature),!,
   rdf_has(Obj,ease_obj:hasFeature,Feature).
 object_feature(Obj, Feature) :-
-  property_cardinality(Obj,ease_obj:hasFeature,Feature,Min,_), Min>0.
+  kb_some(Obj,ease_obj:hasFeature,FeatureType),
+  object_aspect_(Obj,ease_obj:hasFeature,FeatureType,Feature).
+
+%%
+object_feature(Obj, Feature, FeatureType) :-
+  ground(FeatureType),!,
+  object_aspect_(Obj,ease_obj:hasFeature,FeatureType,Feature).
+object_feature(Obj, Feature, FeatureType) :-
+  object_feature(Obj, Feature),
+  % get the feature type
+  once((
+    kb_type_of(Feature,FeatureType),
+    owl_subclass_of(FeatureType,ease_obj:'Feature')
+  )).
 
 %%
 feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
   %%
   object_frame_name(Obj, ObjFrame),
-  feature_frame_name(Feature, FeatureFrame),
-  %%
-  %% TODO: reconsider this. e.g. rather use localization qaulity?
-  %%       - need to axiomatize that the object carrying the feature is the parent of transform
-  ( rdf_has(Feature,knowrob:pose,Pose) ;
-    property_range(Feature,knowrob:pose,Pose)
-  ),
-  rdfs_individual_of(Pose,dul:'Entity'),
-  transform_data(Pose,(Pos,Rot)), !.
-
-%%
-feature_frame_name(Feature, FrameName) :-
-  % TODO: make readable name from type of feature
-  object_frame_name(Feature, FrameName).
+  current_object_pose(Feature, [ObjFrame,FeatureFrame,Pos,Rot]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
