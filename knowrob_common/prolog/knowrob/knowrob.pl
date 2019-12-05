@@ -9,6 +9,7 @@
       kb_classify/3,
       kb_type_of/2,
       kb_type_of/3,
+      kb_some/3,
       holds/1,         % ?Predicate(?Subject,?Object)
       holds/2,         % ?Predicate(?Subject,?Object), +Time
       holds/3,         % ?Subject, ?Predicate, ?Object
@@ -61,6 +62,7 @@
             kb_classify(r,t,-),
             kb_type_of(r,t),
             kb_type_of(r,t,-),
+            kb_some(r,r,r),
             kb_reification(r,t),
             holds(t),
             holds(t,?),
@@ -295,6 +297,15 @@ property_cardinality(Res,P,Range,Min,Max) :-
   % TODO use VKB
   % FIXME: there is a bug here that *some* restrictions are ignored
   owl_cardinality_on_resource(Res, P, Range, cardinality(Min,Max)).
+
+%% kb_some(?Res,?P,?Range) is nondet.
+%
+% True if there must be at least one instance of Range linked
+% with Res via the relation P.
+%
+kb_some(Res,P,Range) :-
+  property_cardinality(Res,P,Range,Min,_),
+  Min > 0.
 
 		 /*******************************
 		 *	TRIPLE DB		*
