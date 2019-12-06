@@ -26,6 +26,7 @@
       action_set_performed_by/2,
       %%
       task_role/3,
+      task_parameter/3,
       task_role_range/3,
       task_parameter_range/3,
       %%
@@ -73,6 +74,7 @@
       action_performed_by(r,r),
       action_set_performed_by(r,r),
       task_role(r,r,r),
+      task_parameter(r,r,r),
       task_role_range(r,r,r),
       task_parameter_range(r,r,r),
       workflow_step(r,r),
@@ -355,6 +357,10 @@ action_set_performed_by(Act,Agent) :-
 task_role(Tsk,Role,RoleType) :-
   kb_triple(Tsk,dul:isTaskOf,Role),
   kb_type_of(Role,RoleType).
+
+task_parameter(Tsk,Param,ParamType) :-
+  kb_triple(Tsk,dul:hasParameter,Param),
+  kb_type_of(Param,ParamType).
 
 %%
 task_role_range(Tsk,Role,Obj) :-

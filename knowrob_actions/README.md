@@ -72,19 +72,22 @@ In this case, the `rdf_has/3` predicate would be called with none of the argumen
 
 ### Action effects
 
-The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the *AlteredObject* one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which can be automatically updated after the action has been executed. Other distinct cases are objects being destroyed or created, and objects being combined, included, excluded, etc.
+The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the *AlteredObject* one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which may be automatically updated by KnowRob after the action has been executed. Other distinct cases are objects being destroyed or created in which case KnowRob updates the lifetime of them, and objects being combined, included, or excluded in which case KnowRob may update relations between these objects.
 
 The predicate `action_effect/2` relates an action (or task) to its effects, for example:
 
     action_effect(pancake:'CrackingAnEgg', destroyed(pancake:'Egg'))
 
-Some action effects may imply new relations, for example,
-that one object is supported by another as a consequence of the action.
-To infer and assert these relations, the predicate `action_effects_apply/2`
-can be used:
+This states that some *Egg* is destroyed when *CrackingAnEgg* tasks are executed. It is also possible to query for tasks that have certain effects by calling this predicate with the first argument ungrounded:
 
-    action_effects_apply(Act,_{
-      'Supporter':       'Table_0',
-      'SupportedObject': 'Object_0'
-    }),
-    rdf_has('Table_0',ease_obj:supports,'Object_0').
+    action_effect(Tsk, destroyed(pancake:'Egg'))
+
+Which corresponds to the question *how can eggs be destroyed*. Finally, with the second argument ungrounded, all known effects of the task are inferred.
+
+Some action effects may imply new relations, for example, that one object is part of another after the action has been performed. Consequently, KnowRob also provides a predicate to maintain these relations automatically based on the roles objects play during the action. To infer and assert these relations, the predicate `action_effects_apply/2` can be used, for example:
+
+    action_effects_apply(pancake:'CrackingAnEgg',_{
+      'DestroyedObject': 'Egg_0'
+    })
+
+Note that "destroying" an object in KnowRob does not mean that knowledge about it disappears. Each object has an associated lifetime, and an event that destroys some object determines the end of its lifetime rather then vanishing its existence in the knwoledge base.

@@ -22,17 +22,12 @@ The effects of actions on objects are derived from the roles the objects play du
 :-  rdf_meta
     action_effect(r,t),
     action_effects_apply(r,t),
-    action_grounding_(r,r,r).
+    action_grounding_(r,r,r,r).
 
-		 /*******************************
-		 *	Action post-conditions	*
-		 *******************************/
-
-%% action_effect(?Act:iri, ?Effect:term) is nondet
+%% action_effect(?ActOrTsk:iri, ?Effect:term) is nondet
 %
-% Relates an action or task to roles that imply chang
-% and to their range.
-% Effect is one of the following terms:
+% Relates an action or task to roles that imply change,
+% and that need to be taken by some object when the task is executed.
 %
 %	| created(Type)			| An object has been created.	|
 %	| destroyed(Type)		| An object has been destroyed.	|
@@ -43,11 +38,22 @@ The effects of actions on objects are derived from the roles the objects play du
 %	| included(Type)		| An object has been included.	|
 %	| extracted(Type)		| An object has been extracted.	|
 %
+% @param ActOrTsk An individual of type dul:'Action' or dul:'Task', or a subclass of dul:'Task'.
+%
 action_effect(Act,Effect) :-
+  atom(Act),
   action_has_task(Act,Tsk),
-  action_effect_(Tsk,Effect).
-
+  action_effect__(Tsk,Effect).
 action_effect(Tsk,Effect) :-
+  var(Tsk),!,
+  rdfs_subclass_of(Tsk,dul:'Task'),
+  action_effect__(Tsk,Effect).
+action_effect(Tsk,Effect) :-
+  action_effect__(Tsk,Effect).
+
+action_effect__(Tsk,Effect) :-
+  ground(Effect) ->
+  once(action_effect_(Tsk,Effect));
   action_effect_(Tsk,Effect).
 
 action_effect_(Tsk, created(Type)) :-
@@ -56,7 +62,8 @@ action_effect_(Tsk, destroyed(Type)) :-
   task_role_range(Tsk,ease_obj:'DestroyedObject',Type).
 action_effect_(Tsk, altered(Type,QualityType)) :-
   task_role_range(Tsk,ease_obj:'AlteredObject',Type),
-  get_altered_quality_type_(Type,QualityType).
+  task_parameter_range(Tsk,ease_obj:'Setpoint',Region),
+  get_altered_quality_type_(Type,Region,QualityType).
 action_effect_(Tsk, linked(Type)) :-
   task_role_range(Tsk,ease_obj:'LinkedObject',Type).
 action_effect_(Tsk, commited(Type)) :-
@@ -68,9 +75,20 @@ action_effect_(Tsk, extracted(Type)) :-
 action_effect_(Tsk, included(Type)) :-
   task_role_range(Tsk,ease_obj:'IncludedObject',Type).
 
-%% action_effects_apply(+Act,+Grounding) is det.
+%% action_effects_apply(+ActOrTsk::iri,+Grounding::dict) is det.
 %
-% @param Act An individual of type dul:'Action'
+% Some action effects may imply new relations, for example, that
+% one object is part of another after the action has been performed.
+% Consequently, *action_effects_apply* maintains these relations automatically
+% based on the roles objects play during the action.
+% Note that this predicate should be used carefully as it may create new entity
+% symbols in case objects were created during the action.
+%
+%    action_effects_apply(pancake:'CrackingAnEgg',
+%      _{'DestroyedObject': 'Egg_0'})
+%
+% @param ActOrTsk An individual of type dul:'Action' or dul:'Task', or a subclass of dul:'Task'.
+% @param Grounding A dict that encodes a mapping from roles and parameters (key) to objects and regions (value) that are classified by the role or parameter during the action.
 %
 action_effects_apply(Act,Pairs) :-
   is_list(Pairs), !,
@@ -78,7 +96,7 @@ action_effects_apply(Act,Pairs) :-
   action_effects_apply(Act,Grounding).
 
 action_effects_apply(Act,Grounding0) :-
-  action_has_task(Act,Tsk),
+  action_has_task(Act,Tsk),!,
   dict_pairs(Grounding0,_,Pairs0),
   % make sure groundings are participants in the action
   forall(
@@ -92,66 +110,69 @@ action_effects_apply(Act,Grounding0) :-
   %% apply effects based on roles of objects
   forall(
     get_dict(Concept,Grounding1,Filler),
-    ( object_effects_apply_(Act,Grounding1,Concept,Filler) -> true ; (
+    ( object_effects_apply_(Tsk,Grounding1,Concept,Filler) -> true ; (
       print_message(warning,
         runtime_error(cannot_apply_effects_of(Act,Concept)))
     ))
   ).
 
 %%
-object_effects_apply_(_Act,_Grounding,Concept,Filler) :-
+object_effects_apply_(_Tsk,_Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'DestroyedObject'),!,
   current_time(Now),
   object_set_lifetime_end(Filler,Now).
 
-object_effects_apply_(_Act,_Grounding,Concept,Filler) :-
+object_effects_apply_(_Tsk,_Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'CreatedObject'),!,
   current_time(Now),
   object_set_lifetime_begin(Filler,Now).
 
-object_effects_apply_(Act,_Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'AlteredObject'),!,
-  get_altered_quality_(Concept,Filler,Quality), % TODO: better use parameter here!?!
-  %action_grounding_(Grounding,ease_obj:'AchievedValue',Region),
-  kb_triple(Act,ease_obj:hasAlterationResult,Region),
+  action_grounding_(Tsk,Grounding,ease_obj:'Setpoint',Region),
+  get_altered_quality_(Concept,Filler,Quality,Region),
   quality_set_region_(Quality,Region).
 
-object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'CommitedObject'),!,
-  action_grounding_(Grounding,ease_obj:'AlteredObject',Parent),
+  ( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent) ;
+    action_grounding_(Tsk,Grounding,ease_obj:'CreatedObject',Parent)
+  ),
   object_add_part_(Parent,Filler).
 
-object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'IncludedObject'),!,
-  action_grounding_(Grounding,ease_obj:'Container',Parent),
+  action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent),
   object_add_content_(Parent,Filler).
 
-object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'ExtractedObject'),!,
-  ( action_grounding_(Grounding,ease_obj:'AlteredObject',Parent);
-    action_grounding_(Grounding,ease_obj:'Container',Parent);
-    action_grounding_(Grounding,ease_obj:'Deposit',Parent)
+  ( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent);
+    action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent);
+    action_grounding_(Tsk,Grounding,ease_obj:'Deposit',Parent)
   ),
   object_remove_deposit_(Parent,Filler),
   object_remove_link_(Parent,Filler),
   object_remove_part_(Parent,Filler),
   object_remove_content_(Parent,Filler).
 
-object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'LinkedObject'),!,
   forall(
-    action_grounding_(Grounding,ease_obj:'LinkedObject',Linked),
+    action_grounding_(Tsk,Grounding,ease_obj:'LinkedObject',Linked),
     object_create_link_(Filler,Linked)
   ),
   forall(
-    action_grounding_(Grounding,ease_obj:'CreatedObject',Parent),
+    action_grounding_(Tsk,Grounding,ease_obj:'CreatedObject',Parent),
     object_add_part_(Parent,Filler)
   ).
 
-object_effects_apply_(_Act,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   rdfs_individual_of(Concept,ease_obj:'DepositedObject'),!,
-  action_grounding_(Grounding,ease_obj:'Deposit',Deposit),
+  action_grounding_(Tsk,Grounding,ease_obj:'Deposit',Deposit),
   object_add_deposit_(Deposit,Filler).
+
+object_effects_apply_(_,_,_,_).
 
 
 		 /*******************************
@@ -159,20 +180,30 @@ object_effects_apply_(_Act,Grounding,Concept,Filler) :-
 		 *******************************/
 
 %%
-get_altered_quality_type_(Concept,Quality_type) :-
-  property_range(Concept,ease_obj:isTriggerDefinedIn,Affordance),
-  property_range(Affordance,ease_obj:describesQuality,Quality_type),
+get_altered_quality_type_(Concept,Region,Quality_type) :-
+  get_altered_quality_type__(Concept,Region,Quality_type),
   rdfs_subclass_of(Quality_type,dul:'Quality'),
   \+ rdf_equal(Quality_type,dul:'Quality'),!.
 
-get_altered_quality_(Concept,Filler,Quality) :-
-  get_altered_quality_type_(Concept,Quality_type),
-  object_quality(Filler,Quality_type,Quality).
+get_altered_quality_type__(_Concept,Region,Quality_type) :-
+  property_range(Region,dul:isRegionFor,Quality_type).
+get_altered_quality_type__(Concept,_Region,Quality_type) :-
+  property_range(Concept,ease_obj:isTriggerDefinedIn,Affordance),
+  property_range(Affordance,ease_obj:describesQuality,Quality_type).
+
+get_altered_quality_(Concept,Object,Quality,Region) :-
+  get_altered_quality_type_(Concept,Region,Quality_type),
+  object_quality(Object,Quality_type,Quality).
 
 %%
-action_grounding_(Grounding,Concept,Filler) :-
+action_grounding_(_Tsk,Grounding,Concept,Filler) :-
   get_dict(C,Grounding,Filler),
   rdfs_individual_of(C,Concept),!.
+action_grounding_(Tsk,_Grounding,Concept,Filler) :-
+  ( kb_triple(Tsk,dul:isTaskOf,X);
+    kb_triple(Tsk,dul:hasParameter,X) ),
+  kb_type_of(X,Concept),
+  kb_triple(X,dul:classifies,Filler).
 
 %%
 action_create_objects_(Act,Tsk,Grounding,Pairs) :-
@@ -187,9 +218,8 @@ action_create_objects_(Act,Tsk,Grounding,Pairs) :-
 
 %%
 action_create_object_(Act,Grounding,Type,Obj) :-
-  action_participant(Act,Obj),
-  kb_type_of(Obj,Type),
-  get(Concept,Grounding,Obj),
+  event_participant(Act,Obj,Type),
+  get_dict(Concept,Grounding,Obj),
   rdfs_individual_of(Concept,ease_obj:'CreatedObject'),!,
   fail.
 action_create_object_(Act,_Grounding,Type,Obj) :-

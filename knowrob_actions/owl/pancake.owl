@@ -124,6 +124,12 @@
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
@@ -151,6 +157,12 @@
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isClassifiedBy -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isClassifiedBy"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor"/>
     
 
 
@@ -526,12 +538,29 @@
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Setpoint"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies"/>
+                                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceTurnedOn"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Tool"/>
+                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#AlteredObject"/>
                             <owl:Restriction>
                                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#classifies"/>
                                 <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/pancake.owl#PancakeMaker"/>
@@ -551,6 +580,12 @@
     <owl:Class rdf:about="http://knowrob.org/kb/pancake.owl#WheatFlour">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
     </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#AlteredObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#AlteredObject"/>
     
 
 
@@ -584,6 +619,19 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceStateRange -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceStateRange">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceState"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceTurnedOff -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceTurnedOff"/>
@@ -605,6 +653,12 @@
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MovedObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Setpoint -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Setpoint"/>
     
 
 
@@ -763,6 +817,22 @@
     
 
 
+    <!-- http://knowrob.org/kb/pancake.owl#Dough_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#Dough_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/pancake.owl#Dough"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/pancake.owl#EggYolk_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#EggYolk_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/pancake.owl#EggYolk"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/pancake.owl#Egg_0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#Egg_0">
@@ -904,6 +974,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#PancakeMaker_0_DeviceState">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DeviceState"/>
+        <DUL:hasRegion rdf:resource="http://knowrob.org/kb/pancake.owl#PancakeMaker_0_RegionOff"/>
     </owl:NamedIndividual>
     
 
@@ -1033,6 +1104,7 @@
         <rdf:type rdf:resource="http://knowrob.org/kb/pancake.owl#TurningOnHeatingDevice"/>
         <EASE:before rdf:resource="http://knowrob.org/kb/pancake.owl#Pouring_0"/>
         <EASE:starts rdf:resource="http://knowrob.org/kb/pancake.owl#Heating_0"/>
+        <DUL:hasParameter rdf:resource="http://knowrob.org/kb/pancake.owl#TurningOn_0_Setpoint"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/pancake.owl#TurningOn_0_PancakeMaker"/>
     </owl:NamedIndividual>
     
@@ -1052,6 +1124,15 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#TurningOn_0_PancakeMaker">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Tool"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/pancake.owl#TurningOn_0_Setpoint -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake.owl#TurningOn_0_Setpoint">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Setpoint"/>
+        <DUL:classifies rdf:resource="http://knowrob.org/kb/pancake.owl#PancakeMaker_0_RegionOn"/>
     </owl:NamedIndividual>
     
 
