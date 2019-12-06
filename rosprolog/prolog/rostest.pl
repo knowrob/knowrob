@@ -47,6 +47,8 @@
 %% pretty print some messages
 prolog:message(test_failed(Unit, Name, Error)) -->
     [ '[plunit] ~p failed:~p msg:"~p"'-[Unit,Name,Error] ].
+prolog:message(test_nondet(Name)) -->
+    [ '[plunit] Warning: ~p succeeded with choicepoint'-[Name] ].
 prolog:message(test_report(name=N,tests=C0,failures=C1,errors=C2,time=Time)) -->
     [ '[plunit] ~p pass:~p/~p time:~p'-[N,Count,C0,Time] ],
     { Count is C0 - (C1 + C2) }.
@@ -72,6 +74,8 @@ plunit_message_hook(failed(Unit, Name, _Line, Error)) :-
   with_error_to_(OS,
     print_message(information,test_failed(Unit, Name, Error))),
   assertz(test_case_failure(Unit,Name,Error)).
+plunit_message_hook(nondet(_,_,Name)) :-
+  print_message(information,test_nondet(Name)).
 
 %% NOTE: @(Test,Args) is used when *forall* is used in test options.
 unpack_test_(@(Test,_),Test) :- !.
@@ -113,11 +117,12 @@ rospl_run_tests_(Pkg, Module, Opts) :-
   assertz(out_stream_(OldOut)),
   % finall call *run_tests*
   % but silence plunit (avoid that it displays dots)
-  setup_call_cleanup(
-    open_null_stream(NullStream),
-    with_error_to_(NullStream, ignore(run_tests([Module]))),
-    close(NullStream)
-  ),
+  %setup_call_cleanup(
+    %open_null_stream(NullStream),
+    %with_error_to_(NullStream, ignore(run_tests([Module]))),
+    %close(NullStream)
+  %),
+  ignore(run_tests([Module])),
   % make a custom report
   forall(test_report_(Module,Opts),true).
 
