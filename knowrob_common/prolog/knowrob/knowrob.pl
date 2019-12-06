@@ -129,6 +129,20 @@ kb_create(Type,Instance) :-
   kb_create(Type,Instance,_{}).
 
 kb_create(Type,Instance,DBArgs) :-
+  % create instance of intersection class
+  rdf_has(Type,owl:intersectionOf,Set),
+  rdfs_list_to_prolog_list(Set,Members),
+  % find concept name
+  member(AtomicType,Members),
+  rdfs_subclass_of(AtomicType,dul:'Entity'),!,
+  kb_create(AtomicType,Instance,DBArgs),
+  % assert the other types
+  forall(
+    (member(X,Members), X \= AtomicType),
+    kb_assert(Instance,rdf:type,X)
+  ).
+
+kb_create(Type,Instance,DBArgs) :-
   kb_resource(Type),
   triple_db_create(Type,Instance,DBArgs).
 
@@ -279,16 +293,20 @@ kb_type_of(Resource,Type,DBArgs) :-
   is_most_specific(Type,Set).
 
 %%
-property_range(Res,[Px],Range) :-
+property_range(Res,P,Range) :-
+  findall(R, property_range_(Res,P,R), Ranges),
+  owl_most_specific(Ranges,Range).
+
+property_range_(Res,[Px],Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, Px, Range), !.
 
-property_range(Res,[P1|Ps],Range) :-
+property_range_(Res,[P1|Ps],Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, P1, Y),!,
-  property_range(Y,Ps,Range).
+  property_range_(Y,Ps,Range).
 
-property_range(Res,P,Range) :-
+property_range_(Res,P,Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, P, Range).
 
