@@ -46,7 +46,7 @@
 
 %% pretty print some messages
 prolog:message(test_failed(Unit, Name, Error)) -->
-    [ '[plunit] ~p failed:~p msg:"~p"'-[Unit,Name,Error] ].
+    [ '[plunit] ~p:~p failed. msg:"~p"'-[Unit,Name,Error] ].
 prolog:message(test_nondet(Name)) -->
     [ '[plunit] Warning: ~p succeeded with choicepoint'-[Name] ].
 prolog:message(test_report(name=N,tests=C0,failures=C1,errors=C2,time=Time)) -->
