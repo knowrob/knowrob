@@ -21,9 +21,11 @@
 :- rdf_db:rdf_register_ns(acext,
    'http://knowrob.org/kb/action-test.owl#', [keep(true)]).
 
-:- rdf_meta get_dict(r,+,r),
+:- rdf_meta get_dict_(r,+,r),
             create_input_dict(t,t),
             create_region_(t,r,r).
+
+get_dict_(X,Y,Z) :- get_dict(X,Y,Z).
 
 create_region_(Data_pl,Data_type,Region) :-
   kb_create(dul:'Region',Region),
@@ -65,8 +67,8 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
   execute_plan(acext:'rdf_has1_Execution',InputDict,OutputDicts,Situation),
   kb_triple(Situation,dul:includesAction,Action),
   member(OD2,OutputDicts),
-  get_dict(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
-  member(OD3,OutputDicts), get_dict(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
+  get_dict_(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
+  member(OD3,OutputDicts), get_dict_(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
   action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 %% DataProperty, third argument unbound
@@ -81,7 +83,7 @@ test('rdf_has(obj1,hasNameString,?)', [nondet]) :-
   kb_triple(Situation,dul:includesAction,Action),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
-  get_dict(acext:'rdf_has1_Task_O', OutputDict, Region),
+  get_dict_(acext:'rdf_has1_Task_O', OutputDict, Region),
   kb_triple(Region, dul:hasRegionDataValue, 'obj1'),
   action_status(Action,ease_act:'ExecutionState_Succeeded').
 
