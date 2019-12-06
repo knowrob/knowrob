@@ -1,7 +1,7 @@
 knowrob_actions
 ===
 
-The pupose of this module is (1) to provide a Prolog interface to access knowledge encoded using KnowRob's action model; and (2) to provide some inference rules that exploit knowledge encoded using this model.
+The purpose of this module is (1) to provide a Prolog interface to access knowledge encoded using KnowRob's action model; and (2) to provide some inference rules that exploit knowledge encoded using this model.
 
 ### Action model
 
@@ -13,7 +13,7 @@ In KnowRob, an *Action* is defined as an *Event* where at least one agent that p
 <img src="img/plan.png" width="500">
 </p>
 
-**Roles** are used to classify objects that participate in some event. This includes the agent that performed the action, tools that were used, objects that were affected, as well as locations of interest. KnowRob defines a taxonomy of roles with the most general concepts being *AffectedObject*, *Location*, and *Tool*. The list of concepts defined below is comprehensive but might not be complete. However, it provides a rich labelset to classify objects in the scope of an activity. They are further used to implicitely encode pre-conditions of plan executions as the existence of objects that are potential filler of the roles is required.
+**Roles** are used to classify objects that participate in some event. This includes the agent that performed the action, tools that were used, objects that were affected, as well as locations of interest. KnowRob defines a taxonomy of roles with the most general concepts being *Patient*, *Instrument*, and *Location*. The list of concepts defined below is comprehensive but might not be complete. However, it provides a rich labelset to classify objects in the scope of an activity. They are further used to implicitely encode pre-conditions of plan executions as the existence of objects that are potential filler of the roles is required.
 
 <p align="center">
 <img src="img/classification.png" width="400">
