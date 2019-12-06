@@ -42,6 +42,7 @@
       object_state/2,
       object_state/3,
       object_color/2,
+      object_quality/3,
       object_feature/2,
       object_disposition/2,
       object_disposition/3,
@@ -55,6 +56,7 @@
       storage_place_for_because/3,
       object_set_lifetime_begin/2,
       object_set_lifetime_end/2,
+      object_is_alive/1,
       mark_dirty_objects/1,
       %%
       disposition_trigger_type/2
@@ -96,10 +98,12 @@
     object_assert_color(r, +),
     object_assert_frame_name(r),
     object_feature(r,r),
+    object_quality(r,r,r),
     object_disposition(r,r),
     object_disposition(r,r,r),
     storage_place_for(r,r),
     storage_place_for_because(r,r,r),
+    object_is_alive(r),
     object_set_lifetime_begin(r,+),
     object_set_lifetime_end(r,+),
     object_aspect_(r,r,r,r),
@@ -129,6 +133,11 @@ object_assert(ObjType, Obj, Graph) :-
   kb_assert(Obj, knowrob:'frameName', literal(ObjName)).
 
 %%
+object_is_alive(Obj) :-
+  object_lifetime_(Obj,LT),
+  \+ rdf_has(LT,ease:hasIntervalEnd,_).
+
+%%
 object_lifetime(Obj,Interval) :-
   object_lifetime_(Obj,LT),
   inteval(LT,Interval).
@@ -138,20 +147,20 @@ object_lifetime_(Obj,LT) :-
 
 object_lifetime_(Obj,LT) :-
   once(rdf(Obj,rdf:type,_,G)),
-  kb_create(dul:'TimeInterval',LT,G),
+  kb_create(dul:'TimeInterval',LT,_{graph:G}),
   rdf_assert(Obj,dul:hasTimeInterval,LT,G).
 
 %%
 object_set_lifetime_begin(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  kb_assert(LT,ease:hasIntervalBegin,Stamp,G).
+  kb_assert(LT,ease:hasIntervalBegin,Stamp,_{graph:G}).
 
 %%
 object_set_lifetime_end(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  kb_assert(LT,ease:hasIntervalEnd,Stamp,G).
+  kb_assert(LT,ease:hasIntervalEnd,Stamp,_{graph:G}).
 
 %%
 %% TODO: also assert Localization region to trigger
@@ -572,6 +581,9 @@ object_shape_(Obj,Shape) :-
 %%
 object_localization_(Obj,Localization) :-
   object_aspect_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
+
+object_quality(Obj, QualityType, Quality) :-
+  object_aspect_(Obj, dul:hasQuality, QualityType, Quality).
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
