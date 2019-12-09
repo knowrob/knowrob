@@ -507,7 +507,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_GraspMotion">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#GraspMotion"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_MovedGripper"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_MovedGripper"/>
         <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Touching"/>
         <EASE:simultaneous rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Tsk"/>
     </owl:NamedIndividual>
@@ -542,8 +542,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Touching">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Touching"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Touchee"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Toucher"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Touchee"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Toucher"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_GraspMotion"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Grasping_WF0_Tsk"/>
     </owl:NamedIndividual>
@@ -626,8 +626,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Support">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Supporting"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Supported"/>
-        <EASE:finishedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Tsk"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Supported"/>
+        <EASE:meets rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Tsk"/>
         <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Touching"/>
     </owl:NamedIndividual>
     
@@ -661,9 +661,9 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Touching">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Touching"/>
-        <knowrob:contains rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Tsk"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Touchee"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Toucher"/>
+        <EASE:containsEvent rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Tsk"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Touchee"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Toucher"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Support"/>
     </owl:NamedIndividual>
     
@@ -674,7 +674,7 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Tsk">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting"/>
         <EASE:during rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Touching"/>
-        <EASE:finishes rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Support"/>
+        <EASE:metBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Support"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Actuated"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Lifting_WF0_Actuator"/>
     </owl:NamedIndividual>
@@ -937,7 +937,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Placing_WF0_ReleaseMotion">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#ReleaseMotion"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_MovedGripper"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_MovedGripper"/>
         <EASE:during rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Support"/>
         <EASE:finishes rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Tsk"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Touching"/>
@@ -949,8 +949,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Support">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Supporting"/>
-        <knowrob:contains rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_ReleaseMotion"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Supported"/>
+        <EASE:containsEvent rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_ReleaseMotion"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Supported"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Touching"/>
         <EASE:overlappedBy rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Tsk"/>
     </owl:NamedIndividual>
@@ -985,8 +985,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Touching">
         <rdf:type rdf:resource="http://knowrob.org/kb/parser-test.owl#Touching"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Touchee"/>
-        <EASE-PROC:isProcessOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Toucher"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Touchee"/>
+        <DUL:isRelatedToConcept rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Toucher"/>
         <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_ReleaseMotion"/>
         <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Support"/>
         <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Tsk"/>
