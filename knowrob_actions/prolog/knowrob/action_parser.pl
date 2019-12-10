@@ -739,7 +739,7 @@ same_polarization_(+(_),+(_)).
 %%
 term_endpoint(phase(-(_),Event,_),-(Event)) :- !.
 term_endpoint(phase(+(_),Event,_),+(Event)) :- !.
-term_endpoint(action(_,_,Xs,_),E) :-
+term_endpoint(action(_,_,Xs),E) :-
   member(X,Xs),
   term_endpoint(X,E).
 
