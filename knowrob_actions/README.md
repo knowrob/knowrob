@@ -49,7 +49,7 @@ A parser can be created given a list of plans:
 
 Which will create ESG's for each of the plans.
 
-The parser runs in its own thread which can be started by calling `parser_start/1`. Once started, tokens can be added to the parser using the predicate `parser_push_token/2`. When done, the parser can be stopped again by calling `parser_stop/1`. This will synchronize all threads, and block until the parser thread exits. A second vatriant `parser_stop/2` provides the remaining parser output in its second argument.
+The parser runs in its own thread which can be started by calling `parser_start/1`. Once started, tokens can be added to the parser using the predicate `parser_push_token/2`. When done, the parser can be stopped again by calling `parser_stop/1`. This will synchronize all threads, and block until the parser thread exits. A second variant `parser_stop/2` provides the remaining parser output in its second argument.
 
     parser_start(Parser),
     parser_push_token(Parser,tok(0.0,c, -(ptest:'Touching'), ['TestHand','TestObject']),
