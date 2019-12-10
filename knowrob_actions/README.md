@@ -37,7 +37,7 @@ Where *Constraints* is a list of binary relations between steps/phases of the pl
 
 ### Action detection
 
-The model of plans can be casted as grammar for a parser that yields actions from observed event endpoints which are used as tokens for the parser. This can be used to classify activities given evidence that is more easy to observe such as state changes, contact events, and motions.
+A library of plans can be casted as grammar for a parser that yields actions from observed event endpoints which are used as tokens for the parser. This can be used to classify activities given evidence that is more easy to observe such as state changes, contact events, and motions.
 
 A parser can be created given a list of plans:
 
