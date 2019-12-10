@@ -21,9 +21,11 @@
 :- rdf_db:rdf_register_ns(acext,
    'http://knowrob.org/kb/action-test.owl#', [keep(true)]).
 
-:- rdf_meta get_dict(r,+,r),
+:- rdf_meta get_dict_(r,+,r),
             create_input_dict(t,t),
             create_region_(t,r,r).
+
+get_dict_(X,Y,Z) :- get_dict(X,Y,Z).
 
 create_region_(Data_pl,Data_type,Region) :-
   kb_create(dul:'Region',Region),
@@ -40,10 +42,10 @@ create_input_dict(Dict,List) :-
 		 *******************************/
 
 test(rdf_has_execution_goal) :-
-  plan_execution_goal(
-    acext:'rdf_has1_Execution',
+  knowrob_action_execution:plan_execution_goal_(
+    'http://knowrob.org/kb/action-test.owl#rdf_has1_Execution',
     _,
-    knowrob:'KBQuerying'
+    'http://knowrob.org/kb/knowrob.owl#KBQuerying'
     ,_), !.
   
 %% all arguments unbound
@@ -65,8 +67,8 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
   execute_plan(acext:'rdf_has1_Execution',InputDict,OutputDicts,Situation),
   kb_triple(Situation,dul:includesAction,Action),
   member(OD2,OutputDicts),
-  get_dict(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
-  member(OD3,OutputDicts), get_dict(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
+  get_dict_(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
+  member(OD3,OutputDicts), get_dict_(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
   action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 %% DataProperty, third argument unbound
@@ -81,7 +83,7 @@ test('rdf_has(obj1,hasNameString,?)', [nondet]) :-
   kb_triple(Situation,dul:includesAction,Action),
   % FIXME: it should actually not work to classify Region by rdf_has1_Execution_O,
   %           because it is a role! however, types of predicate arguments are not fixed!
-  get_dict(acext:'rdf_has1_Task_O', OutputDict, Region),
+  get_dict_(acext:'rdf_has1_Task_O', OutputDict, Region),
   kb_triple(Region, dul:hasRegionDataValue, 'obj1'),
   action_status(Action,ease_act:'ExecutionState_Succeeded').
 
@@ -90,10 +92,10 @@ test('rdf_has(obj1,hasNameString,?)', [nondet]) :-
 		 *******************************/
   
 test(add_two_ints_execution_goal) :-
-  plan_execution_goal(
-    acext:'add_two_ints_Execution',
+  knowrob_action_execution:plan_execution_goal_(
+    'http://knowrob.org/kb/action-test.owl#add_two_ints_Execution',
     _,
-    ros:'ServiceInvokation'
+    'http://www.ease-crc.org/ont/ROS.owl#ServiceInvokation'
     ,_), !.
 
 test('add_two_ints(CREATE)') :-
@@ -104,7 +106,7 @@ test('add_two_ints(CREATE)') :-
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  knowrob_action_execution:plan_execution_create(
+  knowrob_action_execution:plan_execution_create_(
       ros:'ServiceInvokation',
       acext:'add_two_ints_Task',
       acext:'add_two_ints_Execution',
@@ -121,7 +123,7 @@ test('add_two_ints(ENCODE)') :-
       [acext:'add_two_ints_Task_a',Region_a],
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
-  knowrob_action_execution:action_bindings(acext:'add_two_ints_Execution',ActionDict),
+  knowrob_action_execution:action_bindings_(acext:'add_two_ints_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'add_two_ints_RequestType', Request),
   kb_triple(Action, dul:hasParticipant, Request),
@@ -164,7 +166,7 @@ test('sum_array(CREATE)') :-
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  knowrob_action_execution:plan_execution_create(
+  knowrob_action_execution:plan_execution_create_(
       ros:'ServiceInvokation',
       acext:'sum_array_Task',
       acext:'sum_array_Execution',
@@ -178,7 +180,7 @@ test('sum_array(ENCODE)') :-
   create_input_dict(InputDict, [
       [acext:'sum_array_Task_a',Region_a]
   ]),
-  knowrob_action_execution:action_bindings(acext:'sum_array_Execution',ActionDict),
+  knowrob_action_execution:action_bindings_(acext:'sum_array_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'sum_array_RequestType', Request),
   kb_triple(Action, dul:hasParticipant, Request),
@@ -253,7 +255,7 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  knowrob_action_execution:plan_execution_create(
+  knowrob_action_execution:plan_execution_create_(
       ros:'ServiceInvokation',
       acext:'pose_test_Task',
       acext:'pose_test_Execution',
@@ -264,7 +266,7 @@ test('pose_test(CREATE)') :-
 test('pose_test(ENCODE)') :-
   once(kb_triple(Action, dul:executesTask, acext:'pose_test_Task')),
   pose_test_input(InputDict),
-  knowrob_action_execution:action_bindings(acext:'pose_test_Execution',ActionDict),
+  knowrob_action_execution:action_bindings_(acext:'pose_test_Execution',ActionDict),
   %%%%
   create_ros_request(Action, InputDict, ActionDict, acext:'pose_test_RequestType', Request),
   kb_triple(Action, dul:hasParticipant, Request),

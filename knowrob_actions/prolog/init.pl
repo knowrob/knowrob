@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2010-2014 Moritz Tenorth
-  Copyright (C) 2017 Daniel Beßler
+  Copyright (C) 2017-2019 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
-:- register_ros_package(swrlprolog).
 
 :- use_module(library('knowrob/event_graph')).
 :- use_module(library('knowrob/action_model')).

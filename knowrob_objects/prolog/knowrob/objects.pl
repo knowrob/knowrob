@@ -42,21 +42,24 @@
       object_state/2,
       object_state/3,
       object_color/2,
+      object_quality/3,
+      object_feature/2,
+      object_disposition/2,
+      object_disposition/3,
       object_localization/2,
       object_dimensions/4,
       object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
       object_assert_frame_name/1,
-      object_affordance/2,
-      object_instantiate_affordances/1,
-      object_affordance_static_transform/3,
-      object_perception_affordance_frame_name/2,
       storage_place_for/2,
       storage_place_for_because/3,
       object_set_lifetime_begin/2,
       object_set_lifetime_end/2,
-      mark_dirty_objects/1
+      object_is_alive/1,
+      mark_dirty_objects/1,
+      %%
+      disposition_trigger_type/2
     ]).
 /** <module> Utilities for reasoning about objects
   
@@ -94,14 +97,17 @@
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
     object_assert_frame_name(r),
-    object_affordance(r,r),
-    object_instantiate_affordances(r),
-    object_affordance_static_transform(r,r,?),
+    object_feature(r,r),
+    object_quality(r,r,r),
+    object_disposition(r,r),
+    object_disposition(r,r,r),
     storage_place_for(r,r),
     storage_place_for_because(r,r,r),
+    object_is_alive(r),
     object_set_lifetime_begin(r,+),
     object_set_lifetime_end(r,+),
-    object_quality_(r,r,r,r).
+    object_aspect_(r,r,r,r),
+    disposition_trigger_type(r,r).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -127,6 +133,11 @@ object_assert(ObjType, Obj, Graph) :-
   kb_assert(Obj, knowrob:'frameName', literal(ObjName)).
 
 %%
+object_is_alive(Obj) :-
+  object_lifetime_(Obj,LT),
+  \+ rdf_has(LT,ease:hasIntervalEnd,_).
+
+%%
 object_lifetime(Obj,Interval) :-
   object_lifetime_(Obj,LT),
   inteval(LT,Interval).
@@ -136,20 +147,20 @@ object_lifetime_(Obj,LT) :-
 
 object_lifetime_(Obj,LT) :-
   once(rdf(Obj,rdf:type,_,G)),
-  kb_create(dul:'TimeInterval',LT,G),
+  kb_create(dul:'TimeInterval',LT,_{graph:G}),
   rdf_assert(Obj,dul:hasTimeInterval,LT,G).
 
 %%
 object_set_lifetime_begin(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  kb_assert(LT,ease:hasIntervalBegin,Stamp,G).
+  kb_assert(LT,ease:hasIntervalBegin,Stamp,_{graph:G}).
 
 %%
 object_set_lifetime_end(Obj,Stamp) :-
   once(rdf(Obj,rdf:type,_,G)),
   object_lifetime_(Obj,LT),
-  kb_assert(LT,ease:hasIntervalEnd,Stamp,G).
+  kb_assert(LT,ease:hasIntervalEnd,Stamp,_{graph:G}).
 
 %%
 %% TODO: also assert Localization region to trigger
@@ -339,7 +350,8 @@ object_state(Obj, [
     fail
   )),
   findall(X, (
-    object_affordance_static_transform(Obj,_,X)
+    object_feature(Obj,Feature),
+    feature_transform(Obj,Feature,X)
   ), StaticTransforms),
   !.
 
@@ -536,88 +548,127 @@ object_mesh_path(Obj, FilePath) :-
 % % % % % Object qualities
 
 %%
-object_quality_(Obj,HasQuality,QualityType,Quality) :-
-  atom(Obj),
-  rdfs_individual_of(Obj,dul:'Object'),
-  ( kb_triple(Obj,HasQuality,Quality) ; (
-    once(rdf(Obj,_,_,G)),
-    kb_create(QualityType,Quality,_{graph: G}),
-    kb_assert(Obj,HasQuality,Quality)
+object_aspect_(Object,Relation,AspectType,Aspect) :-
+  atom(Object),
+  rdfs_individual_of(Object,dul:'Object'),
+  (( 
+    kb_triple(Object,Relation,Aspect),
+    kb_type_of(Aspect,AspectType)
+  ) ; (
+    once(rdf(Object,_,_,G)),
+    kb_create(AspectType,Aspect,_{graph: G}),
+    kb_assert(Object,Relation,Aspect),
+    % FIXME: below is a bit hacked, shouldn't e.g. owl_individual_of
+    %         draw restrictions from related things?
+    %       - this is problematic when AspectType is something general and
+    %         there are multiple aspects with that type!
+    %         probably best to take max cardinality and disjointness into account.
+    forall((
+      property_cardinality(Object,Relation,X,Min,_),
+      Min>0,
+      once(owl_subclass_of(X,AspectType))
+    ), (
+      kb_assert(Aspect,rdf:type,X)
+    ))
   )), !.
 
 %%
 object_color_(Obj,Color) :-
-  object_quality_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
+  object_aspect_(Obj, ease_obj:hasColor, ease_obj:'Color', Color).
 %%
 object_shape_(Obj,Shape) :-
-  object_quality_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
+  object_aspect_(Obj, ease_obj:hasShape, ease_obj:'Shape', Shape).
 %%
 object_localization_(Obj,Localization) :-
-  object_quality_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
+  object_aspect_(Obj, ease_obj:hasLocalization, ease_obj:'Localization', Localization).
+
+object_quality(Obj, QualityType, Quality) :-
+  object_aspect_(Obj, dul:hasQuality, QualityType, Quality).
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Object affordances
-%% TODO: need to revise affordances. Consider using
-%%       disposition model.
+% % % % % Object dispositions
+
+%% object_disposition(?Obj:iri, ?Disposition:iri) is nondet.
+%
+% Relates an object to one of its dispositions.
+%
+% @param Obj           An individual of type dul:'Object'.
+% @param Disposition   An individual of type ease_obj:'Disposition'.
+%
+object_disposition(Obj, Disposition) :-
+  atom(Disposition),!,
+  rdf_has(Obj,ease_obj:hasDisposition,Disposition).
+object_disposition(Obj, Disposition) :-
+  kb_some(Obj,ease_obj:hasDisposition,DispositionType),
+  object_aspect_(Obj,ease_obj:hasDisposition,DispositionType,Disposition).
+
+%% object_disposition(?Obj:iri, ?Disposition:iri, +DispositionType:iri) is nondet.
+%
+% Relates an object to one of its dispositions that is an instance
+% of given disposition type.
+%
+% @param Obj               An individual of type dul:'Object'.
+% @param Disposition       An individual of type ease_obj:'Disposition'.
+% @param DispositionType   A sub-class of ease_obj:'Disposition'.
+%
+object_disposition(Obj, Disposition, DispositionType) :-
+  ground(DispositionType),!,
+  object_aspect_(Obj,ease_obj:hasDisposition,DispositionType,Disposition).
+object_disposition(Obj, Disposition, DispositionType) :-
+  object_disposition(Obj, Disposition),
+  % get the Disposition type
+  once((
+    kb_type_of(Disposition,DispositionType),
+    owl_subclass_of(DispositionType,ease_obj:'Disposition')
+  )).
+
+%% disposition_trigger_type(?Disposition:iri, ?TriggerType:iri) is nondet.
+%
+% Relates a disposition to the type of objects that can be the 
+% trigger of the disposition.
+%
+% @param Disposition   An individual of type ease_obj:'Disposition'.
+% @param TriggerType   A sub-class of dul:'Object'.
+%
+disposition_trigger_type(Disposition,TriggerType) :-
+  property_range(Disposition,ease_obj:affordsTrigger,TriggerRole),!,
+  property_range(TriggerRole,dul:classifies,ClassifiedType),
+  ( var(TriggerType) -> TriggerType=ClassifiedType ;
+    once(owl_subclass_of(TriggerType,ClassifiedType))
+  ),
+  rdfs_subclass_of(TriggerType,dul:'Object'),!.
+  
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Object features
 
 %%
-object_perception_affordance_frame_name(Obj, AffFrameName) :-
-  object_instantiate_affordances(Obj), % HACK
-  owl_has(Obj, knowrob:hasAffordance, Aff),
-  rdfs_individual_of(Aff, knowrob:'PerceptionAffordance'),
-  object_frame_name(Aff, AffFrameName), !.
+object_feature(Obj, Feature) :-
+  atom(Feature),!,
+  rdf_has(Obj,ease_obj:hasFeature,Feature).
+object_feature(Obj, Feature) :-
+  kb_some(Obj,ease_obj:hasFeature,FeatureType),
+  object_aspect_(Obj,ease_obj:hasFeature,FeatureType,Feature).
 
 %%
-object_affordance(Obj, Aff) :-
-  object_instantiate_affordances(Obj), % HACK
-  owl_has(Obj, knowrob:hasAffordance, Aff).
+object_feature(Obj, Feature, FeatureType) :-
+  ground(FeatureType),!,
+  object_aspect_(Obj,ease_obj:hasFeature,FeatureType,Feature).
+object_feature(Obj, Feature, FeatureType) :-
+  object_feature(Obj, Feature),
+  % get the feature type
+  once((
+    kb_type_of(Feature,FeatureType),
+    owl_subclass_of(FeatureType,ease_obj:'Feature')
+  )).
 
 %%
-object_affordance_static_transform(Obj, Aff, [ObjFrame,AffFrame,Pos,Rot]) :-
-  object_instantiate_affordances(Obj), % HACK
+feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
+  %%
   object_frame_name(Obj, ObjFrame),
-  owl_has(Obj, knowrob:hasAffordance, Aff),
-  object_frame_name(Aff, AffFrame),
-  kb_triple(Aff,knowrob:pose,Pose),
-  transform_data(Pose,(Pos,Rot)).
-
-%%
-object_instantiate_affordances(Obj) :-
-  findall(Type, (
-    owl_restriction_on(Obj, knowrob:hasAffordance, R),
-    owl_restriction_object_domain(R, Type)), Types),
-  list_to_set(Types, Types_set),
-  forall(
-    owl_most_specific(Types_set, Specific), (
-    owl_description(Specific, Specific_descr),
-    ignore(object_instantiate_affordances(Obj, Specific_descr))
-  )).
-
-object_instantiate_affordances(Obj, class(Cls)) :-
-  owl_cardinality_on_resource(Obj, knowrob:hasAffordance, Cls, cardinality(Desired,_)),
-  owl_cardinality(Obj, knowrob:hasAffordance, Cls, Actual),
-  Missing is Desired - Actual,
-  object_instantiate_affordances(Obj,[Cls],Missing).
-
-object_instantiate_affordances(Obj, union_of(Classes)) :-
-  forall(
-    member(Cls,Classes), (
-    owl_description(Cls,Cls_descr),
-    ignore(object_instantiate_affordances(Obj,Cls_descr))
-  )).
-
-object_instantiate_affordances(_Obj, intersection_of(_Classes)) :- fail.
-object_instantiate_affordances(_Obj, one_of(_Classes))          :- fail.
-object_instantiate_affordances(_Obj, complement_of(_Classes))   :- fail.
-
-object_instantiate_affordances(_,_,Missing) :- Missing =< 0, !.
-object_instantiate_affordances(Obj,[Cls|Rest],Missing) :-
-  kb_create(Cls, Affordance),
-  forall(member(X,Rest), rdf_assert(Affordance,rdf:type, X)),
-  rdf_assert(Obj, knowrob:hasAffordance, Affordance),
-  Next is Missing-1,
-  object_instantiate_affordances(Obj,[Cls|Rest],Next).
+  current_object_pose(Feature, [ObjFrame,FeatureFrame,Pos,Rot]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -666,17 +717,10 @@ storage_place_for_because_(Container,Object,PatientType) :-
 
 storage_place_for_because_(Container,ObjType,PatientType) :-
   atom(Container),
-  kb_triple(Container,ease_obj:hasDesign,Design),
-  kb_type_of(Design,ease_obj:'Containment'),
-  storage_place_for_because__(Design,ObjType,PatientType).
+  object_disposition(Container, Disposition, ease_obj:'Insertion'),
+  storage_place_for_because__(Disposition,ObjType,PatientType).
 
-storage_place_for_because_(Container,ObjType,PatientType) :-
-  atom(Container),
-  property_cardinality(Container,ease_obj:hasDesign,Design,Min,_), Min>0,
-  rdfs_subclass_of(Design,ease_obj:'Containment'),
-  storage_place_for_because__(Design,ObjType,PatientType).
-
-storage_place_for_because__(Design,ObjType,PatientType) :-
-  property_range(Design,ease_obj:hasDesignatedPatient,PatientType),
+storage_place_for_because__(Disposition,ObjType,PatientType) :-
+  property_range(Disposition,[ease_obj:affordsTrigger,dul:classifies],PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).

@@ -11,7 +11,9 @@
 :- rdf_db:rdf_register_ns(ptest, 'http://knowrob.org/kb/parser-test.owl#', [keep(true)]).
 
 :- dynamic test_parser/1.
-:- rdf_meta test_detect_activity(t,t).
+:- rdf_meta test_parser_run(t,t),
+            test_composer_run(t,t),
+            test_parser_run_asynch(t,t).
 
 test('parser_assert') :-
   parser_create(Parser, [
@@ -26,49 +28,78 @@ test('parser_assert') :-
   rdf_assert('TestObject', rdf:type, dul:'PhysicalArtifact'),
   rdf_assert('TestHand', rdf:type, ease:'PhysicalEffector').
 
-test_detect_activity(Tokens,Expected) :-
-  %test_parser(Parser),
-  detect_activity2(Tokens,Actual),
-  ( Actual = Expected -> true ; (
-    print_term(
-       '!='(Expected,Actual),
-       [indent_arguments(true)]
-    ),
-    fail
-  )).
+test_parser_run(Tokens,Expected) :-
+  test_parser(Parser),
+  parser_run(Parser,Tokens,Actual),
+  Actual = Expected.
 
-test('detect_activity(Placing)', [nondet]) :-
-  test_detect_activity([
+test_parser_run_asynch(Tokens,Expected) :-
+  test_parser(Parser),
+  parser_start(Parser),
+  forall(member(Tok,Tokens), parser_push_token(Parser,Tok)),
+  parser_stop(Parser,Outputs),
+  member(Actual,Outputs),
+  Actual = Expected.
+
+test_composer_run(Tokens,Expected) :-
+  test_parser(Parser),
+  parser_start(Parser,[compose]),
+  forall(member(Tok,Tokens), parser_push_token(Parser,Tok)),
+  parser_stop(Parser,Actual),
+  Actual = Expected.
+
+test('action_parser(Placing)', [nondet]) :-
+  test_parser_run([
     tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
     tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'ReleaseMotion'),   ['TestHand']),
     tok(3.0,c, +(ptest:'Touching'),        ['TestHand','TestObject']),
     tok(4.0,b, +(ptest:'ReleaseMotion'),   ['TestHand'])
     ],
-    [action(_,ptest:'Placing',_,_)]).
+    action(_,ptest:'Placing',_)).
 
-test('detect_activity(PickingUp)', [nondet]) :-
-  test_detect_activity([
+test('action_parser(asynch)', [nondet]) :-
+  test_parser_run_asynch([
+    tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
+    tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
+    tok(1.0,b, -(ptest:'ReleaseMotion'),   ['TestHand']),
+    tok(3.0,c, +(ptest:'Touching'),        ['TestHand','TestObject']),
+    tok(4.0,b, +(ptest:'ReleaseMotion'),   ['TestHand'])
+    ],
+    action(_,ptest:'Placing',_)).
+
+test('activity_composer(Placing)', [nondet]) :-
+  test_composer_run([
+    tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
+    tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
+    tok(1.0,b, -(ptest:'ReleaseMotion'),   ['TestHand']),
+    tok(3.0,c, +(ptest:'Touching'),        ['TestHand','TestObject']),
+    tok(4.0,b, +(ptest:'ReleaseMotion'),   ['TestHand'])
+    ],
+    [action(_,ptest:'Placing',_)]).
+
+test('action_parser(PickingUp)', [nondet]) :-
+  test_parser_run([
     tok(0.0,a,-(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(1.0,b,-(ptest:'GraspMotion'),    ['TestHand']),
     tok(3.0,c,-(ptest:'Touching'),       ['TestHand','TestObject']),
     tok(4.0,d,+(ptest:'GraspMotion'),    ['TestHand']),
     tok(5.0,f,+(ptest:'Supporting'),     ['TestTable','TestObject'])
     ],
-    [action(_,ptest:'PickingUp',_,_)]).
+    action(_,ptest:'PickingUp',_)).
 
-test('detect_activity(not PickingUp)', [fail]) :-
-  detect_activity2([
+test('action_parser(not PickingUp)', [fail]) :-
+  test_parser_run([
     tok(0.0,a, -(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(0.5,a, +(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),    ['TestHand']),
     tok(3.0,c, -(ptest:'Touching'),       ['TestHand','TestObject']),
     tok(4.0,d, +(ptest:'GraspMotion'),    ['TestHand'])
     ],
-    [action(_,ptest:'PickingUp',_,_)]).
+    action(_,ptest:'PickingUp',_)).
 
-test('detect_activity(PickPlace1)', [nondet]) :-
-  detect_activity2([
+test('action_parser(PickPlace)', [nondet]) :-
+  test_parser_run([
     tok(0.0,a, -(ptest:'Supporting'),     ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),    ['TestHand']),
     tok(3.0,c, -(ptest:'Touching'),       ['TestHand','TestObject']),
@@ -79,10 +110,10 @@ test('detect_activity(PickPlace1)', [nondet]) :-
     tok(9.5,c, +(ptest:'Touching'),       ['TestHand','TestObject']),
     tok(10.0,g,+(ptest:'ReleaseMotion'),  ['TestHand'])
     ],
-    [action(_,ptest:'PickPlace',_,_)]).
+    action(_,ptest:'PickPlace',_)).
 
-test('detect_activity(PickPlace2)', [nondet]) :-
-  detect_activity2([
+test('action_parser(PickPlace2)', [nondet]) :-
+  test_composer_run([
     %%%% first
     tok(0.0,a, -(ptest:'Supporting'),    ['TestTable','TestObject']),
     tok(1.0,b, -(ptest:'GraspMotion'),   ['TestHand']),
@@ -103,7 +134,8 @@ test('detect_activity(PickPlace2)', [nondet]) :-
     tok(29.5,l, +(ptest:'Touching'),      ['TestHand','TestObject']),
     tok(30.0,u, +(ptest:'ReleaseMotion'), ['TestHand'])
     ],
-    [action(_,ptest:'PickPlace',_,_),action(_,ptest:'PickPlace',_,_)]).
+    [action(_,ptest:'PickPlace',_),action(_,ptest:'PickPlace',_)]
+  ).
 
 test('parser_retract') :-
   test_parser(Parser),

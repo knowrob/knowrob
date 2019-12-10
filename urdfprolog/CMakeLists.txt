@@ -15,6 +15,7 @@ catkin_add_plunit(rdf_urdf urdf_parser)
 # find SWI-Prolog package configuration
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
+link_directories(${SWIPL_LIBRARY_DIRS})
 message(STATUS "SWIPL found.")
 
 # build C++ library with predicates to parse URDF files

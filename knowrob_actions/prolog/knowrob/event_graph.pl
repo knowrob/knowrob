@@ -377,7 +377,7 @@ esg_join(ESG,[Tsk0,TskESG0],Joined) :-
   % one of the graphs.
   % TODO: I am not 100% confident that this will work in all cases.
   append(TskNode1,TskNode2,TskNode3),
-  select(+(Tsk1),TskNode3,TskNode4),
+  once(select(+(Tsk1),TskNode3,TskNode4)),
   RestESG=[TskNode4|Rest],
   % prefix ESG is -(Act) followed by a path to +(Act),
   % here represented as difference list

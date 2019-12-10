@@ -2,10 +2,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_actions)
 
-find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects swrlprolog)
+find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects)
 
 catkin_package(
-    CATKIN_DEPENDS knowrob_common knowrob_objects swrlprolog
+    CATKIN_DEPENDS knowrob_common knowrob_objects
 )
 catkin_add_plunit(
   knowrob/action_effects

@@ -6,7 +6,9 @@ find_package(catkin REQUIRED COMPONENTS rosprolog rosowl)
 
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig)
+
 pkg_check_modules(SWIPL REQUIRED swipl)
+link_directories(${SWIPL_LIBRARY_DIRS})
 
 install_prolog_pack(list_util
   URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")

@@ -1,8 +1,0 @@
-
-:- { label: 'stack', task: 'Stack', action_var: 'act' },
-   Action(?act), goalLocation(?act,?loc), objectTransported(?act,?obj)
--> ontop(?obj,?loc).
-
-:- { label: 'unstack', task: 'Unstack', action_var: 'act' },
-   Action(?act), objectTransported(?act,?obj)
--> (ontop exactly 0 Thing)(?obj).

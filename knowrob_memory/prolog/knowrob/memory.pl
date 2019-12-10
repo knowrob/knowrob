@@ -127,6 +127,13 @@ mem_export(Dir) :-
 %
 % Import a memory dump.
 %
+mem_import(URL) :-
+  atom(URL),
+  atom_concat('package://',_,URL),!,
+  print_message(informational, memory_import(URL)),
+  ros_path(URL,GlobalPath),
+  mem_import(GlobalPath).
+
 mem_import(Dir) :-
   atom(Dir),
   exists_directory(Dir),!,
@@ -139,11 +146,6 @@ mem_import(Dir) :-
   mem_import_latest_tf,
   %%
   mem_triples_init.
-
-mem_import(URL) :-
-  atom(URL),
-  ros_path(URL,GlobalPath), !,
-  mem_import(GlobalPath).
 
 mem_import(OWLFile) :-
   atom(OWLFile),

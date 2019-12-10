@@ -9,6 +9,7 @@
       kb_classify/3,
       kb_type_of/2,
       kb_type_of/3,
+      kb_some/3,
       holds/1,         % ?Predicate(?Subject,?Object)
       holds/2,         % ?Predicate(?Subject,?Object), +Time
       holds/3,         % ?Subject, ?Predicate, ?Object
@@ -61,6 +62,7 @@
             kb_classify(r,t,-),
             kb_type_of(r,t),
             kb_type_of(r,t,-),
+            kb_some(r,r,r),
             kb_reification(r,t),
             holds(t),
             holds(t,?),
@@ -125,6 +127,20 @@ set_temporalized_db(Goal_assert,Goal_retract) :-
 %
 kb_create(Type,Instance) :-
   kb_create(Type,Instance,_{}).
+
+kb_create(Type,Instance,DBArgs) :-
+  % create instance of intersection class
+  rdf_has(Type,owl:intersectionOf,Set),
+  rdfs_list_to_prolog_list(Set,Members),
+  % find concept name
+  member(AtomicType,Members),
+  rdfs_subclass_of(AtomicType,dul:'Entity'),!,
+  kb_create(AtomicType,Instance,DBArgs),
+  % assert the other types
+  forall(
+    (member(X,Members), X \= AtomicType),
+    kb_assert(Instance,rdf:type,X)
+  ).
 
 kb_create(Type,Instance,DBArgs) :-
   kb_resource(Type),
@@ -277,23 +293,42 @@ kb_type_of(Resource,Type,DBArgs) :-
   is_most_specific(Type,Set).
 
 %%
-property_range(Res,[Px],Range) :-
+property_range(R,[],R) :- !.
+property_range(Res,[P0|Ps],Range) :- !,
+  property_range(Res,P0,Range1),
+  property_range(Range1,Ps,Range).
+
+property_range(Res,P,Range) :-
+  findall(R, property_range_(Res,P,R), Ranges),
+  owl_most_specific(Ranges,Range).
+
+property_range_(Res,[Px],Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, Px, Range), !.
 
-property_range(Res,[P1|Ps],Range) :-
+property_range_(Res,[P1|Ps],Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, P1, Y),!,
-  property_range(Y,Ps,Range).
+  property_range_(Y,Ps,Range).
 
-property_range(Res,P,Range) :-
+property_range_(Res,P,Range) :-
   % TODO use VKB
   owl_property_range_on_resource(Res, P, Range).
 
 %%
 property_cardinality(Res,P,Range,Min,Max) :-
   % TODO use VKB
+  % FIXME: there is a bug here that *some* restrictions are ignored
   owl_cardinality_on_resource(Res, P, Range, cardinality(Min,Max)).
+
+%% kb_some(?Res,?P,?Range) is nondet.
+%
+% True if there must be at least one instance of Range linked
+% with Res via the relation P.
+%
+kb_some(Res,P,Range) :-
+  property_cardinality(Res,P,Range,Min,_),
+  Min > 0.
 
 		 /*******************************
 		 *	TRIPLE DB		*

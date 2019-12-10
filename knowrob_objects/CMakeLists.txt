@@ -14,6 +14,7 @@ catkin_add_plunit(knowrob/objects)
 
 find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
+link_directories(${SWIPL_LIBRARY_DIRS})
 message(STATUS "SWIPL found.")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
