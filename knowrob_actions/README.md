@@ -49,13 +49,14 @@ A parser can be created given a list of plans:
 
 Which will create ESG's for each of the plans.
 
-The parser can then be used to detect an activity by invoking it with a sequence of tokens:
+The parser runs in its own thread which can be started by calling `parser_start/1`. Once started, tokens can be added to the parser using the predicate `parser_push_token/2`. When done, the parser can be stopped again by calling `parser_stop/1`. This will synchronize all threads, and block until the parser thread exits. A second vatriant `parser_stop/2` provides the remaining parser output in its second argument.
 
-    detect_activity([
-        tok(0.0,c, -(ptest:'Touching'),        ['TestHand','TestObject']),
-        tok(0.9,a, -(ptest:'Supporting'),      ['TestTable','TestObject']),
-        ...],
-        DetectedActivity).
+    parser_start(Parser),
+    parser_push_token(Parser,tok(0.0,c, -(ptest:'Touching'), ['TestHand','TestObject']),
+    ...
+    parser_stop(Parser,Outputs).
+
+The default mode of the parser is that the parser yields all actions that are detected no matter if they conflict with each other (i.e. because they provide different interpretations of the same event). Howver, the predicate `parser_start/2` allows to switch to another mode by setting the *compose* flag in the option list which is the second argument of the predicate. This flag causes the parser to compose individual actions into an activity without conflicting actions.
 
 ### Action execution
 
