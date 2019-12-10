@@ -293,6 +293,11 @@ kb_type_of(Resource,Type,DBArgs) :-
   is_most_specific(Type,Set).
 
 %%
+property_range(R,[],R) :- !.
+property_range(Res,[P0|Ps],Range) :- !,
+  property_range(Res,P0,Range1),
+  property_range(Range1,Ps,Range).
+
 property_range(Res,P,Range) :-
   findall(R, property_range_(Res,P,R), Ranges),
   owl_most_specific(Ranges,Range).
