@@ -43,22 +43,24 @@
 
 test(generate_refrigerator_description) :-
   entity(entity_test:'Refrigerator_fg45543', X),
-  X = [an, object, [type, refrigerator]].
+  X = [an, object, [type, ease:refrigerator]].
 
 test(query_refrigerator, [nondet]) :-
-  entity(Cont, [an, object, [type, container]]),
+  entity(Cont, [an, object, [type, ease:refrigerator]]),
   rdf_equal(Cont, entity_test:'Refrigerator_fg45543').
-  
-test(query_containerFor2, [nondet]) :-
-  entity(Obj, [an, object,
-    [type, container],
-    [knowrob:'typePrimaryFunction-containerFor', some(knowrob:'Perishable')]]),
-  rdf_equal(Obj, entity_test:'Refrigerator_fg45543').
 
-test(query_primary_storage_place, [nondet]) :-
+test(query_cup, [nondet]) :-
+  entity(Cup, [an, object, [type, ease_obj:'Crockery']]),
+  rdf_equal(Cup, entity_test:'Cup_sfd498th').
+
+test(query_containerFor, [nondet]) :-
   entity(Obj, [an, object,
-    [type, container],
-    [knowrob:'typePrimaryFunction-containerFor', some(knowrob:'Perishable')]
+    [ease_obj:hasDisposition, [
+      [type,ease_obj:'Insertion'],
+      [ease_obj:affordsTrigger, [
+        [classifies, only(ease:'DesignedContainer')]
+      ]]
+    ]]
   ]),
   rdf_equal(Obj, entity_test:'Refrigerator_fg45543').
 
@@ -67,20 +69,12 @@ test(query_cup_by_name, [nondet]) :-
   rdf_equal(Cont, entity_test:'Cup_sfd498th').
 
 test(query_cup_by_nameString_prop, [nondet]) :-
-  entity(Cont, [an, object, [name_string, 'cup_name']]),
+  entity(Cont, [an, object, [label, 'cup_name']]),
   rdf_equal(Cont, entity_test:'Cup_sfd498th').
 
 test(query_cup_by_nameString_prop_2, [nondet]) :-
-  entity(Cont, [an, object, [name_string, X]]),
+  entity(Cont, [an, object, [label, X]]),
   X = 'cup_name',
   rdf_equal(Cont, entity_test:'Cup_sfd498th').
-
-test(query_container, [nondet]) :-
-  entity(Cont, [an, object, [type, container]]),
-  rdf_equal(Cont, entity_test:'Refrigerator_fg45543').
-
-test(query_cup, [nondet]) :-
-  entity(Cup, [an, object, [type, cup]]),
-  rdf_equal(Cup, entity_test:'Cup_sfd498th').
   
 :- end_tests('knowrob/entity').

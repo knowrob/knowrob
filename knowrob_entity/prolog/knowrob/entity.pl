@@ -86,6 +86,10 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
+entity_(Entity, [[label,EntityLabel]|Descr]) :-
+  rdf_has(Entity,rdfs:label,literal(EntityLabel)),
+  entity_(Entity, Descr).
+
 %% ignore type, types are handled in `entity_head`
 entity_(Entity, [[type,Type|_]|Descr]) :-
   nonvar(Type), !,
