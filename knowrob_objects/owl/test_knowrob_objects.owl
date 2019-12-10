@@ -32,7 +32,7 @@
     </owl:Ontology>
 
     <owl:Class rdf:about="&test;Cup">
-        <rdfs:subClassOf rdf:resource="&ease_obj;Crockery"/>
+        <rdfs:subClassOf rdf:resource="&ease_obj;Tableware"/>
     </owl:Class>
 
     <owl:Class rdf:about="&test;Dishwasher">

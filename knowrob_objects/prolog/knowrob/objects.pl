@@ -717,11 +717,10 @@ storage_place_for_because_(Container,Object,PatientType) :-
 
 storage_place_for_because_(Container,ObjType,PatientType) :-
   atom(Container),
-  object_disposition(Container, Disposition, ease_obj:'Containment'),
+  object_disposition(Container, Disposition, ease_obj:'Insertion'),
   storage_place_for_because__(Disposition,ObjType,PatientType).
 
 storage_place_for_because__(Disposition,ObjType,PatientType) :-
-  property_cardinality(Disposition,ease_obj:affordsTrigger,Concept,Min,_), Min>0,
-  property_range(Concept,dul:classifies,PatientType),
+  property_range(Disposition,[ease_obj:affordsTrigger,dul:classifies],PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).
