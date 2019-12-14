@@ -856,6 +856,12 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent -->
 
     <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent"/>
@@ -1502,6 +1508,21 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AssemblyAffordance">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
         <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Assignment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Assignment">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -3135,6 +3156,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation"/>
     
 
 
