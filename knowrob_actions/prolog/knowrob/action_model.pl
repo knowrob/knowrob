@@ -37,9 +37,14 @@
       workflow_first_step/2,
       workflow_role_range/3,
       %%
+      situation_satisfies/2,
+      situation_includes_classification/3,
+      situation_includes_assignment/3,
       situation_create/3,
       situation_add/2,
-      situation_add_satisfies/2
+      situation_add_satisfies/2,
+      situation_add_classification/3,
+      situation_add_assignment/3
     ]).
 /** <module> Interface to RDF model of actions, tasks, plans, and plan executions.
 
@@ -80,9 +85,14 @@
       workflow_step(r,r),
       workflow_first_step(r,r),
       workflow_role_range(r,r,r),
+      situation_satisfies(r,r),
+      situation_includes_classification(r,r,r),
+      situation_includes_assignment(r,r,r),
       situation_create(r,-,+),
       situation_add(r,r),
       situation_add_satisfies(r,r),
+      situation_add_classification(r,r,r),
+      situation_add_assignment(r,r,r),
       action_set_status_(r,r).
 
 		 /*******************************
@@ -495,13 +505,120 @@ situation_add(Sit,Concept) :-
   kb_type_of(Concept,dul:'Concept'),!,
   kb_assert(Sit,ease:includesConcept,Concept).
 
+situation_add(Sit,Region) :-
+  kb_type_of(Region,dul:'Region'),!,
+  % TODO: use more specific relation
+  kb_assert(Sit,dul:isSettingFor,Region).
+
 situation_add(Sit,Object) :-
   kb_type_of(Object,dul:'Object'),!,
   kb_assert(Sit,dul:includesObject,Object).
 
+
+%% situation_includes_assignment(?Sit,?Argument,?Value) is nondet.
+%
+% Associates a situation to an argument assignment that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Argument An individual of type knowrob:'ProcedureArgument'.
+% @param Value The RDF value of the argument.
+%
+situation_includes_assignment(Sit,Argument,Value) :-
+  kb_triple(Sit,ease:includesSituation,Assignment),
+  rdfs_individual_of(Assignment,knowrob:'Assignment'),
+  ( ground(Argument) ->
+  ( kb_triple(Assignment,dul:includesObject,Argument),
+    kb_triple(Assignment,dul:isSettingFor,Value) ) ;
+  ( kb_triple(Assignment,dul:isSettingFor,Value),
+    kb_triple(Assignment,dul:includesObject,Argument) )
+  ),
+  Argument \= Value.
+
+%% situation_add_assignment(?Sit,?Argument,?Value) is nondet.
+%
+% Associates a situation to an argument assignment that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Argument An individual of type knowrob:'ProcedureArgument'.
+% @param Value The RDF value of the argument.
+%
+situation_add_assignment(Sit,Argument,Value) :-
+  situation_create(knowrob:'Assignment',Assignment,belief_state),
+  situation_add(Sit,Assignment),
+  situation_add(Assignment,Argument),
+  situation_add(Assignment,Value).
+
+%% situation_includes_classification(?Sit,?Entity,?Concept) is nondet.
+%
+% Associates a situation to a classification that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Entity The classified entity.
+% @param Concept The dul:'Concept' that classifies the entity.
+%
+situation_includes_classification(Sit,Entity,Concept) :-
+  kb_triple(Sit,ease:includesSituation,Classification),
+  rdfs_individual_of(Classification,dul:'Classification'),
+  ( ground(Concept) ->
+  ( kb_triple(Classification,ease:includesConcept,Concept),
+    kb_triple(Classification,dul:isSettingFor,Entity) ) ;
+  ( kb_triple(Classification,dul:isSettingFor,Entity),
+    kb_triple(Classification,ease:includesConcept,Concept) )
+  ),
+  Entity \= Concept.
+
+%% situation_add_classification(?Sit,?Entity,?Concept) is nondet.
+%
+% Associates a situation to a classification that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Entity The classified entity.
+% @param Concept The dul:'Concept' that classifies the entity.
+%
+situation_add_classification(Sit,Entity,Concept) :-
+  is_class(Concept),!,
+  ( situation_event_concept_(Sit,Concept,Concept0) ;
+    mem_new_individual(Concept,Concept0)
+  ),!,
+  situation_add_classification(Sit,Entity,Concept0).
+
+situation_add_classification(Sit,Entity,Concept0) :-
+  is_individual(Concept0),
+  situation_create(dul:'Classification',Classification,belief_state),
+  situation_add(Sit,Classification),
+  situation_add(Classification,Concept0),
+  situation_add(Classification,Entity).
+
+situation_event_concept_(Sit,Concept,Concept0) :-
+  kb_triple(Sit,dul:includesEvent,Evt),
+  ( action_has_task(Evt,EvtType) ;
+    situation_classifies(Sit,Evt,EvtType)
+  ),
+  ( kb_triple(EvtType,dul:isTaskOf,Concept0) ;
+    kb_triple(EvtType,dul:hasParameter,Concept0)
+  ),
+  kb_type_of(Concept0,Concept), !.
+
+%% situation_satisfies(?Sit,?Descr) is nondet.
+%
+% Associates a situation to a description that is
+% satisfied by the situation.
+% An example is that the execution of a plan (a situation)
+% satisfies the plan (a description).
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Descr An individual of type dul:'Description'.
+%
+situation_satisfies(Sit,Descr) :-
+  kb_triple(Sit,dul:satisfies,Descr).
+
 %% situation_add_satisfies(+Sit,+Descr) is det.
 %
-% Asserts that a situation sattisfies some description
+% Asserts that a situation satisfies some description
 % (such as a plan).
 %
 % @param Sit An individual of type dul:'Situation'.
