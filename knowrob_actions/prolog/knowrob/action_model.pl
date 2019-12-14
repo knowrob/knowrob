@@ -580,14 +580,14 @@ situation_includes_classification(Sit,Entity,Concept) :-
 % @param Concept The dul:'Concept' that classifies the entity.
 %
 situation_add_classification(Sit,Entity,Concept) :-
-  is_class(Concept),!,
+  kb_is_class(Concept),!,
   ( situation_event_concept_(Sit,Concept,Concept0) ;
     mem_new_individual(Concept,Concept0)
   ),!,
   situation_add_classification(Sit,Entity,Concept0).
 
 situation_add_classification(Sit,Entity,Concept0) :-
-  is_individual(Concept0),
+  kb_is_individual(Concept0),
   situation_create(dul:'Classification',Classification,belief_state),
   situation_add(Sit,Classification),
   situation_add(Classification,Concept0),
