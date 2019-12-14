@@ -778,6 +778,24 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#definesInput -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
@@ -793,6 +811,12 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <!-- http://www.ease-crc.org/ont/EASE.owl#involvesPlace -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#isPlanFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
     
 
 
@@ -2919,6 +2943,159 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow"/>
+        <rdfs:comment>Note: equality constraints between parameter sets for Entry/Exit points and the OGPTask defined by a RobotWorkflow might suggest that the OGPTask defined by the workflow can be used as an entry/exit point.
+
+This however is not the case, as these tasks have different meanings for the KnowRob workflow interpreter.
+
+-- work-flow defined task: any general purpose task, such as some robot behavior, described by a workflow. Encountering such a task during a run of the interpreter will evoke the defining workflow.
+-- entry point task: bind roles and parameters in the workflow to values obtained from the evoker of the workflow
+-- exit point task: bind roles and parameters in the workflow to outputs, and return control to the workflow&apos;s evoker.</rdfs:comment>
+        <rdfs:comment>The first Task in a RobotWorkflow, which is simply to receive the inputs and bind them to the appropriate roles defined in the workflow.
+
+A RobotWorkflow has only 1 entry point.
+
+This task has no outputs.</rdfs:comment>
+        <rdfs:comment>WARNING: the following constraint was not modelled in the Tbox, but it is expected that RobotWorkflows will implement it.
+
+The EntryRobotWorkflow should have the same inputs as the RobotTask defined by the RobotWorkflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A final Task in a OGPWorkflow, which is simply to return some information as a &quot;result&quot; of the workflow&apos;s execution.
+
+This task only uses outputs. The values for the outputs are calculated by the KnowRob workflow interpreter based on the Bindings between roles that exist in the workflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A Task to be interpreted by the KnowRob Workflow interpreter.
+
+Usually, has a non-empty set of input (Role or Parameter)s, and a non-empty set of output (Role or Parameter)s-- however, eiter or both of these sets may be empty in the case of tasks with trivial input/outputs.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#OGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#OGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A natural exit of an OGPWorkflow is the arrival at an ExitOGPWorkflow task.
+
+A premature exit will however happen when an OGPTask is completed, which is not an ExitOGPWorkflow, and which has no triggerable ConditionalSuccedence relations for which it is the predecessor task.
+
+This situation can occur when
+
+-- the OGPTask in question is not a predecessor task for any ConditionalSuccedence in the workflow;
+-- none of the ConditionalSuccedence relations that have the task as predecessor can fire, because neither of their conditions are met.
+
+Both of these situations are errors: they signal that the workflow is incompletely described.</rdfs:comment>
+        <rdfs:comment>A workflow meant to guide the action of a robot agent and interpreted by the KnowRob workflow interpreter.
+
+It is a workflow for exactly one OGPTask, but may contain several invocations of OGPTasks linked by ConditionalSuccedence relations.
+
+It has at most one entry point, which is the first OGPTask to execute when enacting the Workflow. If no first task is present, then the Workflow is empty.
+
+It may have several exit points. When an exit point is reached, the Workflow execution has completed. They result in a termination of the workflow, and a return to its invoker, with a special error status and a record of the output of the last task.</rdfs:comment>
+        <rdfs:comment>WARNING: not all constraints are easy to enforce in OWL Tboxes; in particular, the following constraints have not been modelled in the Tbox. It is required however that OGPWorkflows obey them.
+
+-- the input parameters of the OGPTask defined by the OGPWorkflow are exactly the same as the input parameters of the EntryOGPWorkflow belonging to the OGPWorkflow;
+-- the output parameters of the OGPTask defined by the OGPWorkflow are exactly the same as the output parameters defined by every ExitOGPWorkflow belonging to the OGPWorkflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
@@ -3099,6 +3276,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
@@ -3192,6 +3375,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow"/>
     
 
 
