@@ -1,6 +1,14 @@
 
 :- module(knowrob,
     [
+      kb_is_class/1,
+      kb_is_individual/1,
+      kb_is_object_property/1,
+      kb_is_data_property/1,
+      kb_is_event/1,
+      kb_is_object/1,
+      kb_is_region/1,
+      kb_is_quality/1,
       kb_resource/1,
       %% ASK
       kb_triple/3,
@@ -64,6 +72,14 @@
             kb_type_of(r,t,-),
             kb_some(r,r,r),
             kb_reification(r,t),
+            kb_is_class(r),
+            kb_is_individual(r),
+            kb_is_object_property(r),
+            kb_is_data_property(r),
+            kb_is_event(r),
+            kb_is_object(r),
+            kb_is_region(r),
+            kb_is_quality(r),
             holds(t),
             holds(t,?),
             holds(r,r,t),
@@ -293,11 +309,6 @@ kb_type_of(Resource,Type,DBArgs) :-
   is_most_specific(Type,Set).
 
 %%
-property_range(R,[],R) :- !.
-property_range(Res,[P0|Ps],Range) :- !,
-  property_range(Res,P0,Range1),
-  property_range(Range1,Ps,Range).
-
 property_range(Res,P,Range) :-
   findall(R, property_range_(Res,P,R), Ranges),
   owl_most_specific(Ranges,Range).
@@ -643,13 +654,81 @@ kb_reification(Resource,Reification) :-
 		 *	HELPER			*
 		 *******************************/
 
-is_object_property(P,_O) :-
-  atom(P),
-  rdf_has(P, rdf:type, owl:'ObjectProperty'),!.
+%% kb_is_class(+Entity) is semidet.
+%
+% True iff Entity is a class IRI.
+%
+% @param Entity An entity IRI.
+%
+kb_is_class(Entity) :-
+  atom(Entity),
+  rdfs_individual_of(Entity, owl:'Class'),!.
 
-is_object_property(_P,O) :-
-  atom(O),
-  rdf_has(O, rdf:type, owl:'NamedIndividual'),!.
+%% kb_is_individual(+Entity) is semidet.
+%
+% True iff Entity is an individual IRI.
+%
+% @param Entity An entity IRI.
+%
+kb_is_individual(Entity) :-
+  atom(Entity),
+  rdfs_individual_of(Entity, owl:'NamedIndividual'),!.
+
+%% kb_is_object_property(+Entity) is semidet.
+%
+% True iff Entity is an object property IRI.
+%
+% @param Entity An entity IRI.
+%
+kb_is_object_property(Entity) :-
+  atom(Entity),
+  rdfs_individual_of(Entity, owl:'ObjectProperty'),!.
+
+%% kb_is_data_property(+Entity) is semidet.
+%
+% True iff Entity is an datatype property IRI.
+%
+% @param Entity An entity IRI.
+%
+kb_is_data_property(Entity) :-
+  atom(Entity),
+  rdfs_individual_of(Entity, owl:'DatatypeProperty'),!.
+
+%% kb_is_event(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Event'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_event(Entity) :-
+  kb_type_of(Entity,dul:'Event'),!.
+
+%% kb_is_object(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Object'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_object(Entity) :-
+  kb_type_of(Entity,dul:'Object'),!.
+
+%% kb_is_region(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Region'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_region(Entity) :-
+  kb_type_of(Entity,dul:'Region'),!.
+
+%% kb_is_quality(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Quality'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_quality(Entity) :-
+  kb_type_of(Entity,dul:'Quality'),!.
 
 %%
 is_temporalized_property(P) :-
