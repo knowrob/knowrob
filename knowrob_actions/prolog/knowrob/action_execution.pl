@@ -20,7 +20,8 @@
             action_filler_binding(t,t),
             execute_plan(r,t,+,+),
             action_bindings_(r,t),
-            plan_execution_create_(r,r,r,t,-,-).
+            plan_execution_create_(r,r,t,-),
+            action_create_(r,r,-).
 
 %% action_registry(?ActionConcept, ?Goal) is semidet.
 %
@@ -52,7 +53,9 @@ execute_plan(Plan,InputDict,OutputDicts,PlanExecution) :-
      %           this case should be handled more careful. e.g. can we just ignore
      %           it, or do we need to react?
   action_bindings_(Plan,BindingDict),
-  plan_execution_create_(ActType,Tsk,Plan,InputDict,Act,PlanExecution),
+  action_create_(ActType,Tsk,Act),
+  plan_execution_create_(Act,Plan,InputDict,PlanExecution),
+  add_classifications_(PlanExecution,InputDict),
   %%%%%%%%%
   %%%%% ...
   %%%%%%%%%
@@ -87,7 +90,9 @@ execute_plan_(Act,Tsk,Goal,PlanExecution,InputDict,BindingDict,OutputDict) :-
   ( var(OutputPairs) -> OutputPairs=[] ; true ),
   dict_pairs(OutputDict,_,OutputPairs),
   %%
-  assign_status_parameter_(Act,Tsk,OutputDict).
+  assign_status_parameter_(Act,Tsk,OutputDict),
+  %% add classifications to the situation
+  add_classifications_(PlanExecution,OutputDict).
 
 plan_execution_goal_(Plan,Tsk,ActType,ActGoal) :-
   property_range(Plan,
@@ -117,9 +122,11 @@ action_filler_binding(Filler:InputDict,Entity:BindingDict) :-
 		 *	'PlanExecution'		*
 		 *******************************/
 
-plan_execution_create_(ActType,Tsk,Plan,InputDict,Act,PlanExecution) :-
+action_create_(ActType,Tsk,Act) :-
   action_create(ActType,Act,belief_state),
-  action_set_task(Act,Tsk),
+  action_set_task(Act,Tsk).
+
+plan_execution_create_(Act,Plan,InputDict,PlanExecution) :-
   situation_create(dul:'PlanExecution',PlanExecution,belief_state),
   situation_add(PlanExecution,Act),
   situation_add_satisfies(PlanExecution,Plan),
@@ -128,6 +135,14 @@ plan_execution_create_(ActType,Tsk,Plan,InputDict,Act,PlanExecution) :-
     ( kb_triple(Plan,dul:describes,X) ; get_dict(_Key,InputDict,X) ),
     action_add_filler(Act,X)
   ),!.
+
+add_classifications_(PlanExecution,Dict) :-
+  forall(
+  ( get_dict(Concept,Dict,Value),
+    \+ situation_includes_classification(PlanExecution,Value,Concept)
+  ),
+    situation_add_classification(PlanExecution,Value,Concept)
+  ).
 
 assign_status_parameter_(Act,Tsk,OutputDict) :-
   action_status(Act,Status),
