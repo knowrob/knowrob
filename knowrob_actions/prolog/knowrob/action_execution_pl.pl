@@ -21,6 +21,10 @@ knowrob_action_execution:action_registry(
   'http://knowrob.org/kb/knowrob.owl#KBQuerying',
   knowrob_action_execution_pl:kb_query).
 
+% FIXME: in case of non deterministic predicate, the output assignments are all mixed
+%        in the situation and cannot be distiniguished.
+%        Might need to use sub-situations.
+
 %% kb_query(PlanExecution,BindingDict,InputDict,OutputPairs) is semidet.
 %
 % Executes a querying action by calling a Prolog predicate.
@@ -48,6 +52,7 @@ kb_query(PlanExecution,BindingDict,InputDict,OutputPairs) :-
     member(KBVariable,KBVariables),
     once(
       ( action_filler_binding(Filler:InputDict,KBVariable:BindingDict),
+        situation_add_assignment(PlanExecution,KBVariable,Filler),
       ( kb_type_of(Filler,dul:'Parameter') ->
         kb_rdf_pl(dul:hasParameter,Filler,Assignment) ;
         kb_rdf_pl(dul:hasParticipant,Filler,Assignment)
@@ -85,6 +90,7 @@ kb_query(PlanExecution,BindingDict,InputDict,OutputPairs) :-
     owl_create_pl_entity(OutAssignment,Assignment_owl),
     % assign as participant/region of the action
     action_add_filler(Action,Assignment_owl),
+    situation_add_assignment(PlanExecution,KBVariable,Assignment_owl),
     get_dict(Role, BindingDict, KBVariable)
   ), OutputPairs).
 
