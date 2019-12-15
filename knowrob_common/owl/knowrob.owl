@@ -155,10 +155,31 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#constrains -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#constrains">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#dangerousPart -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dangerousPart">
         <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#dependsOnConcept -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dependsOnConcept">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:label>depends on concept</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -293,6 +314,16 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasInferredParameter -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasInferredParameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+        <rdfs:domain rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
     </owl:ObjectProperty>
     
 
@@ -692,68 +723,9 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction">
-        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerFor">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerUsed -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-containerUsed">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(containerUsed EVENT CONT) means that the objectActedOn in EVENT is contained in (in-ContGeneric) CONT during EVENT, and that CONT facilitates EVENT being accomplished.</rdfs:comment>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-deviceUsedFor">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-toolUsedFor">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-itemUsedFor"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-usableWith">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction"/>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor"/>
     
 
 
@@ -1583,6 +1555,14 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#AvoidLookingAt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AvoidLookingAt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#B21 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#B21">
@@ -1630,6 +1610,14 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CeilingLight">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightFixture"/>
         <rdfs:comment>The collection of all ceiling lights.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CenterOfObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CenterOfObject">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
     </owl:Class>
     
 
@@ -1729,6 +1717,21 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Constraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Constraint">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#constrains"/>
+                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>fixme: there is an issue with the DUL axiom that parameters only classify regions, and &apos;is constraint for&apos; is a sub-property of classifies with domain Parameter and range Entity. this seems like a bug in DUL.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling">
@@ -1768,6 +1771,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Destructing">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#PhysicalTask"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DistanceConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DistanceConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
     </owl:Class>
     
 
@@ -1834,6 +1845,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FinishBefore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FinishBefore">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalConstraint"/>
     </owl:Class>
     
 
@@ -2027,6 +2046,124 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAbove -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAbove">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAtAngle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAtAngle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAwayFrom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAwayFrom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DistanceConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepBehind -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepBehind">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepBelow -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepBelow">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepCloseTo -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepCloseTo">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DistanceConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepInfront -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepInfront">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepLeftOf -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepLeftOf">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepLookingAt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepLookingAt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#dependsOnConcept"/>
+                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepRightOf -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepRightOf">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepStill -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepStill">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepUpright -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepUpright">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Knedding -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knedding">
@@ -2105,6 +2242,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LocationConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LocationConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Map -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Map">
@@ -2145,6 +2290,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#MoveCarefully -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MoveCarefully">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#NonRechargeableBattery -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NonRechargeableBattery">
@@ -2158,6 +2311,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NumberArgument">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ObjectMainAxis -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ObjectMainAxis">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
     </owl:Class>
     
 
@@ -2178,10 +2339,34 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#OrientationConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OrientationConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ParameterInference -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ParameterInference">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasInferredParameter"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A reasoning task where the value of a parameter is determined.</rdfs:comment>
     </owl:Class>
     
 
@@ -2302,6 +2487,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Reasoner -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reasoner">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
     </owl:Class>
     
 
@@ -2483,6 +2676,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Constraint"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#StampedPose -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StampedPose">
@@ -2535,6 +2736,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TUM_Rosie">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TemporalConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TemporalConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Constraint"/>
     </owl:Class>
     
 
@@ -2656,6 +2865,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VisualPerception">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WaitUntil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WaitUntil">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalConstraint"/>
     </owl:Class>
     
 
@@ -2883,6 +3100,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
@@ -2904,6 +3127,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
     
 
 
@@ -3222,6 +3451,12 @@ It may have several exit points. When an exit point is reached, the Workflow exe
     
 
 
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
@@ -3392,30 +3627,6 @@ It may have several exit points. When an exit point is reached, the Workflow exe
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeAmbient -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeAmbient"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeDirectional -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeDirectional"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#LightTypePoint -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypePoint"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#LightTypeSpot -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#LightTypeSpot"/>
     
 
 
