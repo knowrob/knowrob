@@ -7,7 +7,7 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/memory')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model'), [action_status/2]).
+:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/temporal')).
 
@@ -18,6 +18,12 @@
 :- dynamic test_episode/1.
 
 :- mem_init, mem_drop.
+
+test_action(TskNode,Action,Task) :-
+  test_episode(Episode),
+  rdf_has(Episode,ease:includesSituation,TskNode),
+  mem_event(TskNode,Action,Task).
+
 
 test(mem_episode_create) :-
   mem_episode_create(Episode),
@@ -51,29 +57,37 @@ test(mem_event_interval4) :-
   mem_event_interval(Episode,0,10),
   interval(Episode,[0,10]).
 
-test(mem_event_create0) :-
+test(mem_event_create) :-
   test_episode(Episode),
   mem_event_create(Episode,mem_test:'TestTask',TskNode),
   % TskNode is a Situation
   rdfs_individual_of(TskNode,dul:'Situation'),
   % The episode includes TskNode
   rdf_has(Episode,ease:includesSituation,TskNode),
-  % TskNode includes an action that executes TestTask
+  % TskNode includes an action
   rdf_has(TskNode,dul:includesEvent,Act),
-  rdfs_individual_of(Act,dul:'Action'),
+  rdfs_individual_of(Act,dul:'Action').
+
+test(mem_event_executed_in) :-
+  test_action(_,Act,Tsk),
   rdf_has(Tsk,dul:isExecutedIn,Act),
   rdfs_individual_of(Tsk,mem_test:'TestTask').
 
+test(mem_event_created_roles) :-
+  test_action(TskNode,_,_),
+  % Tsk has some individual roles
+  once((
+    mem_event_role(TskNode,_,mem_test:'ARole'),
+    mem_event_role(TskNode,_,mem_test:'BRole')
+  )).
+
 test(mem_event_set_active) :-
-  test_episode(Episode),
-  rdf_has(Episode,ease:includesSituation,TskNode),
-  rdf_has(TskNode,dul:includesEvent,Act),
+  test_action(TskNode,Action,_),
   mem_event_set_active(TskNode),
-  action_status(Act,ease_act:'ExecutionState_Active').
+  action_status(Action,ease_act:'ExecutionState_Active').
 
 test(mem_event_set_diagnosis) :-
-  test_episode(Episode),
-  rdf_has(Episode,ease:includesSituation,TskNode),
+  test_action(TskNode,_,_),
   mem_event_add_diagnosis(TskNode,ease:'Clumsiness'),
   % TskNode satisfies a description of Clumsiness
   rdf_has(TskNode,dul:satisfies,Clumsiness),
@@ -81,26 +95,58 @@ test(mem_event_set_diagnosis) :-
 
 test(mem_subevent_interval) :-
   test_episode(Episode),
-  rdf_has(Episode,ease:includesSituation,TskNode),
+  test_action(TskNode,_,_),
   mem_event_interval(TskNode,5,25),
   interval(Episode,[0,25]).
 
-test(mem_event_includes) :-
-  test_episode(Episode),
-  rdf_has(Episode,ease:includesSituation,TskNode),
-  rdf_has(TskNode,dul:includesEvent,Act),
-  mem_event_includes(TskNode,mem_test:'Substance_0',mem_test:'ARole'),
-  % Substance_0 participates in the action
-  rdf_has(Act,dul:hasParticipant,mem_test:'Substance_0'),
-  % and it is classified by mem_test:'ARole'
-  rdf_has(TskNode,ease:includesSituation,Classification),
-  rdfs_individual_of(Classification,dul:'Classification'),
-  rdf_has(Classification,dul:includesObject,mem_test:'Substance_0'),
-  rdf_has(Classification,ease:includesConcept,ARole0),
-  rdfs_individual_of(ARole0,mem_test:'ARole'),
-  % ARole0 is associated to the task executed in Act
-  rdf_has(Tsk,dul:isTaskOf,ARole0),
-  rdf_has(Tsk,dul:isExecutedIn,Act).
+test(mem_add_classification) :-
+  test_action(TskNode,_,_),
+  mem_event_includes(TskNode,mem_test:'Substance_0',mem_test:'ARole').
+
+test(mem_classified_participant) :-
+  test_action(_,Act,_),
+  rdf_has(Act,dul:hasParticipant,mem_test:'Substance_0').
+
+test(mem_classification_concept, [nondet]) :-
+  test_action(TskNode,_,_),
+  mem_event_classification(TskNode,mem_test:'Substance_0',ARole),
+  rdfs_individual_of(ARole,mem_test:'ARole').
+
+test(mem_add_constraint) :-
+  test_action(TskNode,_,_),
+  % test adding a constraint to the task associated to a task node
+  mem_event_add_constraint(TskNode,
+      knowrob:'KeepCloseTo',
+      mem_test:'ARole',
+      mem_test:'BRole',
+      _).
+
+test(mem_constraint_parameter, [nondet]) :-
+  test_action(TskNode,_,_),
+  mem_event_role(TskNode,ARole,mem_test:'ARole'),
+  mem_event_role(TskNode,BRole,mem_test:'BRole'),
+  %% the constraint has been added as parameter of the event
+  mem_event_parameter(TskNode,KeepCloseTo,knowrob:'KeepCloseTo'),
+  has_constrained_concept(KeepCloseTo,ARole,mem_test:'ARole'),
+  has_dependent_concept(KeepCloseTo,BRole,mem_test:'BRole').
+
+test(mem_predicate_add_role) :-
+  test_action(TskNode,_,_),
+  mem_event_add_role(TskNode, knowrob:'Reasoner'),
+  mem_event_add_classification(TskNode,
+      mem_test:'predicate1', knowrob:'Reasoner').
+
+test(mem_predicate_assignment) :-
+  test_action(TskNode,_,_),
+  mem_event_add_assignment(TskNode,
+      mem_test:'predicate1_Argument1',mem_test:'Bowl_0'),
+  mem_event_add_assignment(TskNode,
+      mem_test:'predicate1_Argument2',mem_test:'Artifact_0'),
+  %%
+  mem_event_assignment(TskNode,
+      mem_test:'predicate1_Argument1',mem_test:'Bowl_0'),
+  mem_event_assignment(TskNode,
+      mem_test:'predicate1_Argument2',mem_test:'Artifact_0').
 
 test(mem_event_causes_transition) :-
   test_episode(Episode),
