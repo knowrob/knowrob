@@ -82,12 +82,6 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasAction -->
-
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasAction"/>
-    
-
-
     <!-- http://www.ease-crc.org/ont/EASE.owl#isPlanFor -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
