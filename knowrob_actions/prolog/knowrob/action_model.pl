@@ -25,6 +25,16 @@
       action_performed_by/2,
       action_set_performed_by/2,
       %%
+      event_type_create/3,
+      role_create/3,
+      parameter_create/3,
+      %%
+      constraint_term/2,
+      has_constrained_concept/3,
+      has_dependent_concept/3,
+      set_constrained_concept/2,
+      set_dependent_concept/2,
+      %%
       task_role/3,
       task_parameter/3,
       task_role_range/3,
@@ -38,12 +48,22 @@
       workflow_role_range/3,
       %%
       situation_satisfies/2,
-      situation_includes_classification/3,
-      situation_includes_assignment/3,
       situation_create/3,
       situation_add/2,
       situation_add_satisfies/2,
+      %%
+      situation_includes_classification/3,
       situation_add_classification/3,
+      classification_concept/2,
+      classification_entity/2,
+      set_classification_entity/2,
+      set_classification_concept/2,
+      %%
+      assignment_argument/2,
+      assignment_value/2,
+      set_assignment_argument/2,
+      set_assignment_value/2,
+      situation_includes_assignment/3,
       situation_add_assignment/3
     ]).
 /** <module> Interface to RDF model of actions, tasks, plans, and plan executions.
@@ -78,6 +98,15 @@
       action_set_task(r,r),
       action_performed_by(r,r),
       action_set_performed_by(r,r),
+      action_set_status_(r,r),
+      event_type_create(r,r,+),
+      role_create(r,r,+),
+      parameter_create(r,r,+),
+      constraint_term(r,t),
+      has_constrained_concept(r,r,r),
+      has_dependent_concept(r,r,r),
+      set_constrained_concept(r,r),
+      set_dependent_concept(r,r),
       task_role(r,r,r),
       task_parameter(r,r,r),
       task_role_range(r,r,r),
@@ -93,7 +122,14 @@
       situation_add_satisfies(r,r),
       situation_add_classification(r,r,r),
       situation_add_assignment(r,r,r),
-      action_set_status_(r,r).
+      classification_concept(r,r),
+      classification_entity(r,r),
+      assignment_argument(r,r),
+      assignment_value(r,r),
+      set_assignment_argument(r,r),
+      set_assignment_value(r,r),
+      set_classification_entity(r,r),
+      set_classification_concept(r,r).
 
 		 /*******************************
 		 *	dul:'Event'		*
@@ -198,7 +234,7 @@ event_participant(Evt,Participant,Class) :-
   kb_type_of(Participant,Class).
 
 		 /*******************************
-		 *	dul:'Action'		*
+		 *	actions			*
 		 *******************************/
 
 %% action_create(+ActType,-Act,+Graph) is semidet.
@@ -353,7 +389,73 @@ action_set_performed_by(Act,Agent) :-
 
 
 		 /*******************************
-		 *	dul:'Task		*
+		 *	concepts		*
+		 *******************************/
+
+%%
+event_type_create(Type,Individual,Graph) :-
+  kb_create(Type,Individual,_{graph:Graph}),
+  %%
+  forall(
+    ( property_cardinality(Individual,dul:isTaskOf,RoleDescr,Min0,_),
+      between(1,Min0,_)
+    ),
+    ( role_create(RoleDescr,Role,Graph),
+      kb_assert(Individual,dul:isTaskOf,Role)
+    )
+  ),
+  %%
+  forall(
+    ( property_cardinality(Individual,dul:hasParameter,ParamDescr,Min1,_),
+      between(1,Min1,_)
+    ),
+    ( parameter_create(ParamDescr,Param,Graph),
+      kb_assert(Individual,dul:hasParameter,Param)
+    )
+  ).
+
+%%
+role_create(Type,Individual,Graph) :-
+  kb_create(Type,Individual,_{graph:Graph}).
+
+%%
+parameter_create(Type,Individual,Graph) :-
+  kb_create(Type,Individual,_{graph:Graph}).
+
+		 /*******************************
+		 *	parameters		*
+		 *******************************/
+
+%%
+constraint_term(Constraint,Term) :-
+  kb_type_of(Constraint,C_type),
+  rdfs_label(C_type,C_label),!,
+  %%
+  has_constrained_concept(Constraint,R0,_),
+  has_dependent_concept(Constraint,R1,_),
+  Term =.. [C_label,R0,R1].
+
+%%
+has_constrained_concept(Constraint,Role0,Role) :-
+  kb_triple(Constraint,knowrob:constrains,Role0),
+  kb_type_of(Role0,Role).
+
+%%
+has_dependent_concept(Constraint,Role0,Role) :-
+  kb_triple(Constraint,knowrob:dependsOnConcept,Role0),
+  kb_type_of(Role0,Role).
+  
+%%
+set_constrained_concept(Concept0,Concept1) :-
+  kb_assert(Concept0,knowrob:constrains,Concept1).
+
+%%
+set_dependent_concept(Concept0,Concept1) :-
+  kb_assert(Concept0,knowrob:dependsOnConcept,Concept1).
+
+
+		 /*******************************
+		 *	tasks			*
 		 *******************************/
 
 %% task_role(?Tsk,?Role,?RoleType) is semidet.
@@ -464,7 +566,7 @@ workflow_role_range(WF,Role,ObjectType) :-
   task_role_range(Tsk,Role,ObjectType).
 
 		 /*******************************
-		 *	dul:'Situation'		*
+		 *	situations		*
 		 *******************************/
 
 %% situation_create(+SitType,-Sit,+Graph) is semidet.
@@ -514,95 +616,6 @@ situation_add(Sit,Object) :-
   kb_type_of(Object,dul:'Object'),!,
   kb_assert(Sit,dul:includesObject,Object).
 
-
-%% situation_includes_assignment(?Sit,?Argument,?Value) is nondet.
-%
-% Associates a situation to an argument assignment that holds
-% within the situational context.
-%
-% @param Sit An individual of type dul:'Situation'.
-% @param Argument An individual of type knowrob:'ProcedureArgument'.
-% @param Value The RDF value of the argument.
-%
-situation_includes_assignment(Sit,Argument,Value) :-
-  kb_triple(Sit,ease:includesSituation,Assignment),
-  rdfs_individual_of(Assignment,knowrob:'Assignment'),
-  ( ground(Argument) ->
-  ( kb_triple(Assignment,dul:includesObject,Argument),
-    kb_triple(Assignment,dul:isSettingFor,Value) ) ;
-  ( kb_triple(Assignment,dul:isSettingFor,Value),
-    kb_triple(Assignment,dul:includesObject,Argument) )
-  ),
-  Argument \= Value.
-
-%% situation_add_assignment(?Sit,?Argument,?Value) is nondet.
-%
-% Associates a situation to an argument assignment that holds
-% within the situational context.
-%
-% @param Sit An individual of type dul:'Situation'.
-% @param Argument An individual of type knowrob:'ProcedureArgument'.
-% @param Value The RDF value of the argument.
-%
-situation_add_assignment(Sit,Argument,Value) :-
-  situation_create(knowrob:'Assignment',Assignment,belief_state),
-  situation_add(Sit,Assignment),
-  situation_add(Assignment,Argument),
-  situation_add(Assignment,Value).
-
-%% situation_includes_classification(?Sit,?Entity,?Concept) is nondet.
-%
-% Associates a situation to a classification that holds
-% within the situational context.
-%
-% @param Sit An individual of type dul:'Situation'.
-% @param Entity The classified entity.
-% @param Concept The dul:'Concept' that classifies the entity.
-%
-situation_includes_classification(Sit,Entity,Concept) :-
-  kb_triple(Sit,ease:includesSituation,Classification),
-  rdfs_individual_of(Classification,dul:'Classification'),
-  ( ground(Concept) ->
-  ( kb_triple(Classification,ease:includesConcept,Concept),
-    kb_triple(Classification,dul:isSettingFor,Entity) ) ;
-  ( kb_triple(Classification,dul:isSettingFor,Entity),
-    kb_triple(Classification,ease:includesConcept,Concept) )
-  ),
-  Entity \= Concept.
-
-%% situation_add_classification(?Sit,?Entity,?Concept) is nondet.
-%
-% Associates a situation to a classification that holds
-% within the situational context.
-%
-% @param Sit An individual of type dul:'Situation'.
-% @param Entity The classified entity.
-% @param Concept The dul:'Concept' that classifies the entity.
-%
-situation_add_classification(Sit,Entity,Concept) :-
-  kb_is_class(Concept),!,
-  ( situation_event_concept_(Sit,Concept,Concept0) ;
-    mem_new_individual(Concept,Concept0)
-  ),!,
-  situation_add_classification(Sit,Entity,Concept0).
-
-situation_add_classification(Sit,Entity,Concept0) :-
-  kb_is_individual(Concept0),
-  situation_create(dul:'Classification',Classification,belief_state),
-  situation_add(Sit,Classification),
-  situation_add(Classification,Concept0),
-  situation_add(Classification,Entity).
-
-situation_event_concept_(Sit,Concept,Concept0) :-
-  kb_triple(Sit,dul:includesEvent,Evt),
-  ( action_has_task(Evt,EvtType) ;
-    situation_classifies(Sit,Evt,EvtType)
-  ),
-  ( kb_triple(EvtType,dul:isTaskOf,Concept0) ;
-    kb_triple(EvtType,dul:hasParameter,Concept0)
-  ),
-  kb_type_of(Concept0,Concept), !.
-
 %% situation_satisfies(?Sit,?Descr) is nondet.
 %
 % Associates a situation to a description that is
@@ -626,3 +639,123 @@ situation_satisfies(Sit,Descr) :-
 %
 situation_add_satisfies(Sit,Descr) :-
   kb_assert(Sit,dul:satisfies,Descr).
+
+		 /*******************************
+		 *	classifications		*
+		 *******************************/
+
+%% 
+classification_concept(Classification,Concept) :-
+  kb_triple(Classification,ease:includesConcept,Concept).
+
+%% 
+classification_entity(Classification,Entity) :-
+  % TODO: better use more specific property
+  classification_concept(Classification,Concept),
+  kb_triple(Classification,dul:isSettingFor,Entity),
+  Concept \= Entity.
+
+%% 
+set_classification_entity(Classification,Entity) :-
+  situation_add(Classification,Entity).
+
+%% 
+set_classification_concept(Sit,Concept) :-
+  kb_is_class(Concept),!,
+  once(rdf(Sit,rdf:type,_,Graph)),
+  kb_create(Concept,Concept0,_{graph:Graph}),
+  set_classification_concept(Sit,Concept0).
+
+set_classification_concept(Classification,Concept) :-
+  situation_add(Classification,Concept).
+
+%% situation_includes_classification(?Sit,?Entity,?Concept) is nondet.
+%
+% Associates a situation to a classification that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Entity The classified entity.
+% @param Concept The dul:'Concept' that classifies the entity.
+%
+situation_includes_classification(Sit,Entity,Concept) :-
+  kb_triple(Sit,ease:includesSituation,Classification),
+  rdfs_individual_of(Classification,dul:'Classification'),
+  classification_concept(Classification,Concept),
+  classification_entity(Classification,Entity).
+
+%% situation_add_classification(?Sit,?Entity,?Concept) is nondet.
+%
+% Associates a situation to a classification that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Entity The classified entity.
+% @param Concept The dul:'Concept' that classifies the entity.
+%
+situation_add_classification(Sit,Entity,Concept) :-
+  once(rdf(Sit,rdf:type,_,Graph)),
+  situation_create(dul:'Classification',Classification,Graph),
+  set_classification_concept(Classification,Concept),
+  set_classification_entity(Classification,Entity),
+  situation_add(Sit,Classification).
+
+		 /*******************************
+		 *	assignments		*
+		 *******************************/
+
+%% 
+assignment_argument(Assignment,Argument) :-
+  kb_triple(Assignment,dul:includesObject,Argument),
+  kb_type_of(Argument,ease_io:'DigitalObject').
+
+%% 
+assignment_value(Assignment,Value) :-
+  kb_triple(Assignment,dul:isSettingFor,Value),
+  % TODO: better use more specific property
+  assignment_argument(Assignment,X),
+  Value \= X.
+
+%% 
+set_assignment_argument(Assignment,Argument) :-
+  situation_add(Assignment,Argument).
+
+%% 
+set_assignment_value(Assignment,Value) :-
+  situation_add(Assignment,Value).
+
+%% situation_includes_assignment(?Sit,?Argument,?Value) is nondet.
+%
+% Associates a situation to an argument assignment that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Argument An individual of type knowrob:'ProcedureArgument'.
+% @param Value The RDF value of the argument.
+%
+situation_includes_assignment(Sit,Argument,Value) :-
+  ground(Argument) ->
+  (situation_includes_assignment_(Sit,Argument,Value),!);
+  (situation_includes_assignment_(Sit,Argument,Value)).
+
+situation_includes_assignment_(Sit,Argument,Value) :-
+  kb_triple(Sit,ease:includesSituation,Assignment),
+  rdfs_individual_of(Assignment,knowrob:'Assignment'),
+  assignment_argument(Assignment,Argument),
+  assignment_value(Assignment,Value).
+
+%% situation_add_assignment(?Sit,?Argument,?Value) is nondet.
+%
+% Associates a situation to an argument assignment that holds
+% within the situational context.
+%
+% @param Sit An individual of type dul:'Situation'.
+% @param Argument An individual of type knowrob:'ProcedureArgument'.
+% @param Value The RDF value of the argument.
+%
+situation_add_assignment(Sit,Argument,Value) :-
+  once(rdf(Sit,rdf:type,_,Graph)),
+  situation_create(knowrob:'Assignment',Assignment,Graph),
+  set_assignment_argument(Assignment,Argument),
+  set_assignment_value(Assignment,Value),
+  situation_add(Sit,Assignment).
