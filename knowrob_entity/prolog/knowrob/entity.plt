@@ -53,6 +53,14 @@ test(query_cup, [nondet]) :-
   entity(Cup, [an, object, [type, ease_obj:'Crockery']]),
   rdf_equal(Cup, entity_test:'Cup_sfd498th').
 
+test(query_disposition, [nondet]) :-
+  entity(Obj, [an, object,
+    [ease_obj:hasDisposition, [
+      [type,ease_obj:'Insertion']
+    ]]
+  ]),
+  rdf_equal(Obj, entity_test:'Refrigerator_fg45543').
+
 test(query_containerFor, [nondet]) :-
   entity(Obj, [an, object,
     [ease_obj:hasDisposition, [
