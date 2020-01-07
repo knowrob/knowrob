@@ -278,7 +278,7 @@ object_localization(Obj,Obj) :-
   rdfs_individual_of(Obj,ease_obj:'Localization'),!.
 object_localization(Obj,Obj) :-
   atom(Obj),
-  rdf_has(Obj, ease_obj:hasSpaceRegion, _),!.
+  kb_triple(Obj, ease_obj:hasSpaceRegion, _),!.
 object_localization(Obj,Loc) :-
   object_localization_(Obj,Loc).
 
