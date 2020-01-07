@@ -133,7 +133,8 @@ class PerceivedObject(object):
         self.__transform = transform
 
     def update_dimensions(self, depth, width, height):
-        self.__scale = Vector3(depth, width, height)
+        # the ordering W/D/H is intentional
+        self.__scale = Vector3(width, depth, height)
 
 
     def get_marker(self):
