@@ -670,7 +670,7 @@ object_feature(Obj, Feature, FeatureType) :-
 feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
   %%
   object_frame_name(Obj, ObjFrame),
-  current_object_pose(Feature, [ObjFrame,FeatureFrame,Pos,Rot]).
+  current_object_pose(Feature, [_,FeatureFrame,Pos,Rot]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
