@@ -80,20 +80,21 @@ class PrologQuery(object):
 
 
 class Prolog(object):
-    def __init__(self, name_space='rosprolog', timeout=None):
+    def __init__(self, name_space='rosprolog', timeout=None, wait_for_services=True):
         """
         :type name_space: str
         :param timeout: Amount of time in seconds spend waiting for rosprolog to become available.
         :type timeout: int
         """
-        rospy.loginfo('waiting for {} services'.format(name_space))
         self._simple_query_srv = rospy.ServiceProxy('{}/query'.format(name_space), srv.PrologQuery)
-        self._simple_query_srv.wait_for_service(timeout=timeout)
         self._next_solution_srv = rospy.ServiceProxy('{}/next_solution'.format(name_space), srv.PrologNextSolution)
-        self._next_solution_srv.wait_for_service(timeout=timeout)
         self._finish_query_srv = rospy.ServiceProxy('{}/finish'.format(name_space), srv.PrologFinish)
-        self._finish_query_srv.wait_for_service(timeout=timeout)
-        rospy.loginfo('{} services ready'.format(name_space))
+        if wait_for_services:
+            rospy.loginfo('waiting for {} services'.format(name_space))
+            self._finish_query_srv.wait_for_service(timeout=timeout)
+            self._simple_query_srv.wait_for_service(timeout=timeout)
+            self._next_solution_srv.wait_for_service(timeout=timeout)
+            rospy.loginfo('{} services ready'.format(name_space))
 
     def query(self, query_str):
         """
