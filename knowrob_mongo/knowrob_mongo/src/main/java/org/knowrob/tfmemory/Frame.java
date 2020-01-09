@@ -99,6 +99,21 @@ public class Frame {
     }
 
     /**
+     * Retrieves the direct transformation from sourceFrame to some other frame, at time point time.
+     *
+     * Parameter sourceFrame must be a direct parent of this frame. The transformation is looked up
+     * in the appropriate time cache, if available. If necessary, inter- or extrapolation is used
+     * to return a transformation of the given point in time.
+     */
+    public TransformStorage getData(long time) {
+        for(Frame key : parentMap.keySet()) {
+            TransformStorage ts = parentMap.get(key).getData(time);
+            if(ts!=null) return ts;
+        }
+        return null;
+    }
+
+    /**
      * Returns the ID of this frame.
      */
     public String getFrameID() {
