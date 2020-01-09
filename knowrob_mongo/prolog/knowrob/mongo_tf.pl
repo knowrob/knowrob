@@ -63,8 +63,12 @@
 %
 mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Time) :-
   mng_interface(Mongo),
-  jpl_call(Mongo, 'lookupTransform',
-          [TargetFrame, SourceFrame, Time], StampedTransform),
+  (ground(TargetFrame) ->
+    jpl_call(Mongo, 'lookupTransform',
+          [TargetFrame, SourceFrame, Time], StampedTransform);(
+    jpl_call(Mongo, 'lookupTransform',
+          [SourceFrame, Time], StampedTransform)
+  )),
   \+ jpl_null(StampedTransform),
   jpl_call(StampedTransform, 'getTranslation', [], Vector3d),
   \+ jpl_null(Vector3d),
@@ -75,7 +79,10 @@ mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Time
   jpl_get(Quat4d, 'x', QX),
   jpl_get(Quat4d, 'y', QY),
   jpl_get(Quat4d, 'z', QZ),
-  jpl_get(Quat4d, 'w', QW).
+  jpl_get(Quat4d, 'w', QW),
+  (ground(TargetFrame) -> true ; (
+    jpl_get(StampedTransform, 'frameID', TargetFrame)
+  )).
 
 %% mng_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Time) is nondet
 %

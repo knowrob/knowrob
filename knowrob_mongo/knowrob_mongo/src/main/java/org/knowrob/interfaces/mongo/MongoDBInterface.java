@@ -214,6 +214,20 @@ public class MongoDBInterface {
 	}
 
 	/**
+	 * Wrapper around the lookupTransform method of the TFMemory class
+	 *
+	 * @param sourceFrameId ID of the source frame of the transformation
+	 * @param posix_ts POSIX timestamp (seconds since 1.1.1970)
+	 * @return
+	 */
+	public StampedTransform lookupTransform(String sourceFrameId, double posix_ts) {
+		Time t = new Time();
+		t.secs = (int)posix_ts;
+		t.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
+		return(mem.lookupTransform(sourceFrameId, t));
+	}
+
+	/**
 	 * Wrapper around the transformPose method of the TFMemory class
 	 *
 	 * @param targetFrameID  ID of the target frame of the transformation
