@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import javax.vecmath.Matrix4d;
@@ -338,6 +340,24 @@ public class TFMemory {
 	}
 
 	/**
+	 */
+	public StampedTransform lookupTransform(String sourceFrameID, Time time) {
+		// resolve the source ID
+		String resolvedSourceID = assertResolved("", sourceFrameID);
+
+		// load data from DB if the current time point is already in the buffer
+		Frame sourceFrame = verifyDataAvailable(time, resolvedSourceID);
+		TransformStorage ts = sourceFrame.getData(time.totalNsecs());
+		if(ts==null) {
+			System.err.println("Cannot transform: source frame \"" + resolvedSourceID + "\" does not exist.");
+			return null;
+		}
+		
+		// return transform
+		return StorageToStampedTransform(ts);
+	}
+
+	/**
 	 * Check if there are transforms for this time and this frame in the buffer,
 	 * try to load from DB otherwise (-> use DB only when needed)
 	 *
@@ -361,7 +381,7 @@ public class TFMemory {
 		}
 
 		// load data from DB if frame is unknown or time not buffered yet
-		loadTransformFromDB(frameID, new ISODate(time).getDate());
+		loadTransformFromDB(frameID, time, new ISODate(time).getDate());
 		frame = frames.get(frameID);
 		return frame;
 
@@ -375,58 +395,57 @@ public class TFMemory {
 	 * @param date
 	 * @return
 	 */
-	private StampedTransform loadTransformFromDB(String childFrameID, Date date) {
+	private StampedTransform loadTransformFromDB(String childFrameID, Time time, Date date) {
 		DBCollection coll = db.getCollection(tfTableName);
 		DBObject query = new BasicDBObject();
 		
-		// FIXME: childFrameID is ignored, and it is not ensured that it is loaded
-		//        at all
-		// FIXME: the estimate to load frames within a time duration
-		//        does not work when frames are only rarely published.
-		//        but it seems hard to avoid splitting this up into multiple queries.
-		// NOTE(daniel): another way would be to use graphLookup to find only
-		//       the frames that connect childFrameID to map.
-		//       But it seems not possible to first filter and sort the
-		//       collection that holds the records of interest.
-		//       In the aggregation pipeline, previous steps only provide 
-		//       "entry point" documents for graphSearch (these must not even
-		//       be part of the searched collection).
-		//       Also note that only java mongo client >= 3 provides an interface
-		//       to aggregation.
-		// TODO: idea: introduce a pre-processing step where the documents are 
-		//       linked to each other by id, such that searching for them is easier.
-		//       then try to use graphSearch to obtain the TF path.
-
-		// select time slice from BUFFER_SIZE seconds before to half a second after given time
-		//Date start = new Date((long) (date.getTime() - ((int) (BUFFER_SIZE * 1000) ) ));
-		long start = (long) (date.getTime() - ((int) (BUFFER_SIZE * 1000) ) );
-		Date end   = new Date((long) (date.getTime() + 500));
+		// TODO: why doing the "resolve" frame anyway?
+		//       mongo logger stores the frame names without leading /.
+		String theChildFrame;
+		if(childFrameID.startsWith("/"))
+				theChildFrame = childFrameID.substring(1);
+		else
+				theChildFrame = childFrameID;
 		
-// 		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
-// 							.and("transforms.header.stamp").lessThan( end )
-// 							.get();
-		query = QueryBuilder.start("transforms.header.stamp").lessThan( end ).get();
-
+		Date end   = new Date((long) (date.getTime() + 500));
+		query = QueryBuilder.start("transforms.header.stamp").lessThan( end )
+							.and("transforms.child_frame_id").is( theChildFrame )
+							.get();
+		
 		// read only transforms
 		DBObject cols  = new BasicDBObject();
 		cols.put("transforms",  1);
 
-		//DBCursor cursor = coll.find(query, cols );
 		DBCursor cursor = coll.find(query, cols).sort(
 			new BasicDBObject("transforms.header.stamp", -1));
 
 		StampedTransform res = null; // FIXME this is never assigned below
+		BasicDBList dblist = null;
 		try {
-			while(cursor.hasNext()) {
-				BasicDBList dblist = (BasicDBList) cursor.next().get("transforms");
-				BasicDBObject dbobj = (BasicDBObject) dblist.get(0);
-				long timeStamp = (long) (((Date) ((BasicDBObject)
-				    dbobj.get("header")).get("stamp")).getTime() );
+			if(cursor.hasNext()) {
+				dblist = (BasicDBList) cursor.next().get("transforms");
 				setTransforms(dblist);
-				if( timeStamp < start ) break;
 			}
 		} finally {
 			cursor.close();
+		}
+		
+		if(dblist!=null) {
+			Set<String> frameNames = new HashSet<String>();
+			frameNames.add("map"); // FIXME: hardcoded map
+			
+			for(Object obj : dblist){
+				BasicDBObject dbobj  = (BasicDBObject) obj;
+				frameNames.add(dbobj.get("child_frame_id").toString());
+			}
+			
+			for(Object obj : dblist){
+				BasicDBObject dbobj  = (BasicDBObject) obj;
+				String parentFrame = ((BasicDBObject)dbobj.get("header")).get("frame_id").toString();
+				if(!frameNames.contains(parentFrame)) {
+					verifyDataAvailable(time,parentFrame);
+				}
+			}
 		}
 		
 		return res;
