@@ -138,14 +138,18 @@ mem_import(Dir) :-
   atom(Dir),
   exists_directory(Dir),!,
   print_message(informational, memory_import(Dir)),
+  %% Mongo DB import
+  mem_drop,
+  mng_restore(Dir),
   %% OWL import
   path_concat(Dir,'beliefstate.owl',OWLFile),
   ( exists_file(OWLFile) -> mem_import_owl(OWLFile) ; true ),
-  %% Mongo DB import
-  mng_restore(Dir),
+  %%
   mem_import_latest_tf,
   %%
-  mem_triples_init.
+  mem_triples_init,
+  %%
+  print_message(informational, memory_imported(Dir)).
 
 mem_import(OWLFile) :-
   atom(OWLFile),
@@ -192,7 +196,11 @@ mem_import_owl(OWLFile) :-
 %%
 mem_import_fixed_pose(Obj) :-
   object_localization__(Obj,Loc),
-  kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
+  %% fixed pose must be asserted as symbol in RDF triple store
+  rdf_has(Loc,ease_obj:hasSpaceRegion,PoseSymbol),
+  transform_data(PoseSymbol,(T,Q)),
+  transform_reference_frame(PoseSymbol,RefFrame),
+  %kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
   object_frame_name(Obj,ObjFrame),
   object_pose_update(Obj,[RefFrame,ObjFrame,T,Q],0),!.
 
@@ -213,7 +221,7 @@ mem_import_latest_tf :-
 
 mem_import_latest_tf(Obj) :-
   object_frame_name(Obj, ObjFrame),
-  map_frame_name(RefFrame),
+  %map_frame_name(RefFrame),
   current_time(Stamp),
   mng_lookup_transform(RefFrame,ObjFrame,pose(T,Q),Stamp),
   % FIXME use proper stamp of transform
