@@ -33,25 +33,8 @@
 
 :- use_module(library('process')).
 
+:- use_module('rosprolog_kb').
 :- use_module('rosprolog_node').
-:- use_module('roscpp').
-
-user:message_hook(format(X,Args), error, _)         :- ros_message_hook(X,Args,ros_error).
-user:message_hook(format(X,Args), warning, -)       :- ros_message_hook(X,Args,ros_warn).
-user:message_hook(format(X,Args), informational, _) :- ros_message_hook(X,Args,ros_info).
-user:message_hook(format(X,Args), debug(_Topic), _) :- ros_message_hook(X,Args,ros_debug).
-
-ros_message_hook(Format,Args,Predicate) :-
-  findall(X, (
-    member(Arg,Args),
-    (( \+ atom(Arg) ;
-       rdf_split_url('',_,Arg) ) ->
-      X = Arg ;
-      rdf_split_url(_,X,Arg)
-    )),
-    Args_x),
-  format(atom(Msg),Format,Args_x),
-  call(Predicate,Msg).
   
 
 %% init_ros_package(+PackagePath) is nondet.

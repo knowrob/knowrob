@@ -28,19 +28,24 @@
 :- module(roscpp,
     [
       ros_publish/3, % TopicName, MsgPath, MsgData
+      ros_subscribe/4,
+      ros_unsubscribe/2,
       ros_service_call/4,
       ros_package_path/2,
       ros_package_command/2,
       ros_param_get_string/2,
       ros_param_get_double/2,
+      ros_param_get_bool/2,
       ros_param_get_int/2,
       ros_param_set_string/2,
       ros_param_set_double/2,
       ros_param_set_int/2,
+      ros_param_set_bool/2,
       ros_info/1,
       ros_warn/1,
       ros_error/1,
-      ros_debug/1
+      ros_debug/1,
+      ros_callback/2
     ]).
 /** <module> ROS CPP interface for Prolog
 
@@ -50,7 +55,27 @@
 
 :- use_module(library('http/json')).
 
-:- use_foreign_library('librosprolog.so').
+:- dynamic rosprolog_subscriber/2.
+
+user:message_hook(format(X,Args), error, _)         :- ros_message_hook(X,Args,ros_error).
+user:message_hook(format(X,Args), warning, -)       :- ros_message_hook(X,Args,ros_warn).
+user:message_hook(format(X,Args), informational, _) :- ros_message_hook(X,Args,ros_info).
+user:message_hook(format(X,Args), debug(_Topic), _) :- ros_message_hook(X,Args,ros_debug).
+
+%%
+ros_message_hook(Format,Args,Predicate) :-
+  findall(X, (
+    member(Arg,Args),
+    (( \+ atom(Arg) ;
+       rdf_split_url('',_,Arg) ) ->
+      X = Arg ;
+      rdf_split_url(_,X,Arg)
+    )),
+    Args_x),
+  format(atom(Msg),Format,Args_x),
+  call(Predicate,Msg).
+
+:- use_foreign_library('librosprolog_kb.so').
 :- ros_init.
 
 %% ros_publish(+TopicName,+MsgPath,+MsgData) is det.
@@ -83,39 +108,88 @@ ros_publish(TopicName, MsgPath, Dict0) :-
   dict_pairs(Dict1,_,[
     msg_path-MsgPath,
     topic_name-TopicName|Pairs]),
-  ros_publish_dict(Dict1).
+  ros_publish_dict(TopicName, Dict1).
 
 ros_publish(TopicName, MsgPath, Pairs) :-
   is_list(Pairs),
   dict_pairs(Dict,_,Pairs),!,
   ros_publish(TopicName, MsgPath, Dict).
 
+% convenience clause for std_msgs allowing
+% to leave out the "std_msgs/" prefix
 ros_publish(TopicName, StdMsg, Data) :-
   atom_concat('std_msgs/',Type,StdMsg),
   \+ atom_concat(_,'Array',StdMsg), !,
   downcase_atom(Type,TypeLowerCase),
-  ros_publish_dict(_{
+  ros_publish_dict(TopicName, _{
       msg_path: StdMsg,
       topic_name: TopicName,
       data: [TypeLowerCase,Data]
   }).
 
-ros_publish_dict(Msg_Dict) :-
+%%
+ros_publish_dict(Topic,Msg_Dict) :-
   with_output_to(atom(Msg_json), 
     json_write_dict(current_output, Msg_Dict)
   ),
-  ros_json_publish(Msg_json).
+  json_ros_publish(Topic,Msg_json).
 
-%ros_subscribe(TopicName, Callback) :-
-%  fail.
-%ros_unsubscribe(TopicName, Callback) :-
-%  fail.
+%% ros_subscribe(+TopicName,+MsgPath,+Callback,-Subscriber) is det.
+%
+ros_subscribe(TopicName, MsgPath, Callback, Subscriber) :-
+  subscriber_name(Subscriber),
+  assertz(rosprolog_subscriber(Subscriber,TopicName)),
+  %%
+  with_output_to(atom(JSON), 
+    json_write_dict(current_output, _{
+      msg_path: MsgPath,
+      topic_name: TopicName
+    })
+  ),
+  json_ros_subscribe(Subscriber,TopicName,JSON,Callback).
 
+%% subscription callback
+ros_callback(Goal,Message) :-
+  Goal=..List1,
+  reverse(List1,Reversed1),
+  reverse(List2,[Message|Reversed1]),
+  Expanded=..List2,
+  % TODO: do some exception handling here
+  call(Expanded).
+
+%% ros_unsubscribe(+Subscriber) is det.
+%
+ros_unsubscribe(Subscriber,TopicName) :-
+  with_output_to(atom(JSON), 
+    json_write_dict(current_output, _{
+      topic_name: TopicName
+    })
+  ),
+  json_ros_unsubscribe(Subscriber,TopicName,JSON),
+  %%
+  retractall(rosprolog_subscriber(Subscriber,TopicName)).
+
+%%
+subscriber_name(N) :-
+  random_id_(M),
+  ( rosprolog_subscriber(M,_) ->
+    subscriber_name(N);
+    N=M
+  ).
+
+%%
+random_id_(Id) :-
+  randseq(8, 25, Seq_random),
+  maplist(plus(65), Seq_random, Alpha_random),
+  atom_codes(Id, Alpha_random).
+
+%% ros_service_call
+%
 ros_service_call(ServiceName, ServicePath, Request, Response) :-
   with_output_to(atom(Request_json), 
     json_write_dict(current_output, Request)
   ),
-  ros_json_service_call(_{
+  json_ros_service_call(ServicePath,_{
         service_name: ServiceName,
         service_path: ServicePath,
         json_data: Request_json
@@ -133,6 +207,10 @@ ros_service_call(ServiceName, ServicePath, Request, Response) :-
 %
 % Read parameter from ROS parameter server.
 
+%% ros_param_get_bool(+Key,-Value) is semidet.
+%
+% Read parameter from ROS parameter server.
+
 %% ros_param_set_string(+Key,+Value) is semidet.
 %
 % Write parameter to ROS parameter server.
@@ -142,6 +220,10 @@ ros_service_call(ServiceName, ServicePath, Request, Response) :-
 % Write parameter to ROS parameter server.
 
 %% ros_param_set_int(+Key,+Value) is semidet.
+%
+% Write parameter to ROS parameter server.
+
+%% ros_param_set_bool(+Key,+Value) is semidet.
 %
 % Write parameter to ROS parameter server.
 

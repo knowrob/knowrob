@@ -1,7 +1,7 @@
 
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <rosprolog/PrologEngine.h>
+#include <rosprolog/rosprolog_node/PrologEngine.h>
 
 PrologEngine::PrologEngine() :
 	is_claimed_(false),
@@ -72,8 +72,9 @@ void PrologEngine::run()
 		term_t a1 = PL_new_term_refs(2);
 		term_t a2 = a1+1;
 		PL_put_atom_chars(a1, goal_.c_str());
-		qid_t qid = PL_open_query(NULL,
-		    PL_Q_NODEBUG | PL_Q_CATCH_EXCEPTION,
+		//
+		int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
+		qid_t qid = PL_open_query(NULL,flags,
 		    PL_pred(PL_new_functor(PL_new_atom("rosprolog_query"),2),NULL),
 		    a1);
 		// do the query processing

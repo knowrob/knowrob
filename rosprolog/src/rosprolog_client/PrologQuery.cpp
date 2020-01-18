@@ -31,8 +31,8 @@
 
 #include <ros/ros.h>
 
-#include <rosprolog/PrologQuery.h>
-#include <rosprolog/PrologClient.h>
+#include <rosprolog/rosprolog_client/PrologQuery.h>
+#include <rosprolog/rosprolog_client/PrologClient.h>
 
 #include <json_prolog_msgs/PrologQuery.h>
 #include <json_prolog_msgs/PrologNextSolution.h>

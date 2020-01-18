@@ -1,6 +1,6 @@
 <launch>
-  <arg name="initial_package" default="knowrob_common" />
-  <arg name="initial_goal" default="" />
+  <arg name="initial_package" default="rosprolog" />
+  <arg name="initial_goal" default="use_module(library('semweb/rdf_db'))" />
   <arg name="num_pl_threads" default="2" />
   <arg name="num_ros_threads" default="4" />
   
@@ -11,4 +11,6 @@
   <param name="num_ros_threads" type="int" value="$(arg num_ros_threads)" />
   
   <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" cwd="node" output="screen" />
+  
+  <node name="json_wrapper" pkg="rosprolog" type="json_ros.py" output="screen"/> 
 </launch>

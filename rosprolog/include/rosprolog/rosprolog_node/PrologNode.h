@@ -9,9 +9,8 @@
 #include <boost/shared_ptr.hpp>
 // SWI Prolog
 #include <SWI-Prolog.h>
-// #include <SWI-cpp.h>
 // rosprolog
-#include <rosprolog/PrologPool.h>
+#include <rosprolog/rosprolog_node/PrologPool.h>
 #include <json_prolog_msgs/PrologQuery.h>
 #include <json_prolog_msgs/PrologFinish.h>
 #include <json_prolog_msgs/PrologNextSolution.h>
@@ -40,6 +39,7 @@ public:
 	bool is_initialized() { return is_initialized_; }
 	
 private:
+	ros::NodeHandle *node_;
 	std::map< std::string, boost::shared_ptr<PrologEngine> > claimed_engines_;
 	PrologPool thread_pool_;
 	

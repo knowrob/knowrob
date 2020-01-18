@@ -27,29 +27,71 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __ROSPROLOG__CLIENT_H__
-#define __ROSPROLOG__CLIENT_H__
+#ifndef __ROSPROLOG_QUERY_H__
+#define __ROSPROLOG_QUERY_H__
 
 #include <string>
+#include <stdexcept>
 
-#include <ros/ros.h>
-#include <rosprolog/PrologQuery.h>
+#include <boost/iterator/iterator_facade.hpp>
 
-class PrologClient {
+#include <rosprolog/rosprolog_client/PrologBindings.h>
+
+class PrologClient;
+
+class PrologQuery
+{
 public:
-	ros::ServiceClient prolog_query;
-	ros::ServiceClient next_solution;
-	ros::ServiceClient prolog_finish;
+	class QueryError : public std::runtime_error {
+	public:
+		QueryError(const std::string &msg)
+		: std::runtime_error(msg) {}
+	};
 	
-	PrologClient(const std::string &ns="/rosprolog");
-	PrologClient(const std::string &ns, bool persistent);
+	class ServerNotFound : public std::runtime_error
+	{
+	public:
+		ServerNotFound(const std::string &msg)
+		: std::runtime_error(msg) {}
+	};
 	
-	PrologQuery query(const std::string &query_str);
-	PrologBindings once(const std::string &query_str);
+	class iterator
+	: public boost::iterator_facade<iterator, PrologBindings, boost::single_pass_traversal_tag>
+	{
+		friend class PrologQuery;
+		friend class boost::iterator_core_access;
+	public:
+		iterator() : query_(0) {}
+		iterator(const iterator &src)
+		: query_(src.query_), data_(src.data_) {}
+	private:
+		PrologQuery *query_;
+		std::list<PrologBindings>::iterator data_;
+
+		iterator(PrologQuery &query)
+		: query_(&query), data_(query.bindings_.begin()) {}
+		
+		void increment();
+		bool requestNextSolution();
+		bool equal(const iterator &other) const;
+		PrologBindings &dereference() const { return *data_; }
+	};
 	
-	bool waitForServer(const ros::Duration &timeout=ros::Duration(-1));
+	PrologQuery(PrologClient &prolog, const std::string &query_str);
+	
+	iterator begin();
+	iterator end() const { return iterator(); }
+	void finish();
+	
 private:
-	ros::NodeHandle nh_;
+	// We support only single traversal. This variable is used to throw
+	// an error when begin is executed more than once.
+	bool finished_;
+	PrologClient *prolog_;
+	std::string query_id_;
+	std::list<PrologBindings> bindings_;
+	
+	static std::string makeQueryId();
 };
 
 #endif

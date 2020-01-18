@@ -8,7 +8,7 @@
 // BOOST
 #include <boost/shared_ptr.hpp>
 // rosprolog
-#include <rosprolog/PrologEngine.h>
+#include <rosprolog/rosprolog_node/PrologEngine.h>
 
 /**
  * A simple thread pool implementation for Prolog engines.

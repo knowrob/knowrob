@@ -36,7 +36,7 @@
 
 #include <json-glib/json-glib.h>
 
-#include <rosprolog/PrologBindings.h>
+#include <rosprolog/rosprolog_client/PrologBindings.h>
 
 namespace rosprolog
 {

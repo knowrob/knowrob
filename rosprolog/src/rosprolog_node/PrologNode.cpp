@@ -3,19 +3,21 @@
 #include <ros/console.h>
 #include <ros/package.h>
 
-#include <rosprolog/PrologNode.h>
+#include <rosprolog/rosprolog_node/PrologNode.h>
 
 #define PARAM_INITIAL_PACKAGE "initial_package"
 #define PARAM_INITIAL_GOAL "initial_goal"
 #define PARAM_NUM_PL_THREADS "num_pl_threads"
 #define PARAM_NUM_ROS_THREADS "num_ros_threads"
+#define PARAM_ENABLE_DEBUG "pl_debug"
 
 #define NUM_PL_THREADS_DEFAULT 2
 #define NUM_ROS_THREADS_DEFAULT 2
 
 PrologNode::PrologNode(ros::NodeHandle *node)
 	: thread_pool_(PrologNode::num_pl_threads(node)),
-	  is_initialized_(false)
+	  is_initialized_(false),
+	  node_(node)
 {
 	if(!ensure_loaded("rosprolog")) {
 		return;
@@ -199,6 +201,7 @@ int main(int argc, char **argv)
 		pl_av[pl_ac++] = (char *) "-g";
 		pl_av[pl_ac++] = (char *) "true";
 		// Inhibit any signal handling by Prolog
+		// TODO use version macro -nosignals needed for old version
 		// pl_av[pl_ac++] = (char *) "-nosignals";
 		pl_av[pl_ac++] = (char *) "--signals=false";
 		// Limit the combined size of the Prolog stacks to the indicated size.

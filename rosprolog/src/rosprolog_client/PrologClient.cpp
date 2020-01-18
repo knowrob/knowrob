@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <rosprolog/PrologClient.h>
+#include <rosprolog/rosprolog_client/PrologClient.h>
 
 #include <json_prolog_msgs/PrologQuery.h>
 #include <json_prolog_msgs/PrologNextSolution.h>
