@@ -150,12 +150,27 @@ ros_subscribe(TopicName, MsgPath, Callback, Subscriber) :-
 
 %% subscription callback
 ros_callback(Goal,Message) :-
+  %%
+  atom_to_chars(Message,Message_chars),
+  open_chars_stream(Message_chars,Message_Stream),
+  json_read_dict(Message_Stream,Dict),
+  %%
   Goal=..List1,
-  reverse(List1,Reversed1),
-  reverse(List2,[Message|Reversed1]),
-  Expanded=..List2,
+  ( List1=[':',Mod,Rest] -> (
+    Rest=..List2,
+    append(List2,[Dict],List3),
+    X=..List3,
+    Expanded=..[':',Mod,X]
+  ) ; (
+    append(List1,[Dict],X),
+    Expanded=..X
+  )),
   % TODO: do some exception handling here
-  call(Expanded).
+  catch(
+    call(Expanded),
+    Exc,
+    ( writeln(Exc), fail )
+  ).
 
 %% ros_unsubscribe(+Subscriber) is det.
 %
