@@ -22,18 +22,18 @@ namespace json_ros {
 		topic_(topic),
 		callback_(callback)
 	{
-		atom_t callback_atom_;
-		if(PL_get_atom(callback, &callback_atom_)) {
-			callback_str_=std::string(PL_atom_chars(callback_atom_));
+		char *term_chars=NULL;
+		if(PL_get_chars(callback, &term_chars, CVT_WRITE|BUF_RING)) {
+			callback_str_=std::string(term_chars);
 		} else {
-			callback_str_="";
+			throw json_ros::Exception("failed to create subscriber");
 		}
 	}
 
 	void Subscriber::handle_message(const std::string &message_json)
 	{
 		std::stringstream ss;
-		ss << "ros_callback(" << callback_str_ << "," << message_json << ")";
+		ss << "ros_callback(" << callback_str_ << ",'" << message_json << "')";
 		//
 		boost::shared_ptr<PrologEngine> engine = rosprolog_kb::thread_pool().claim();
 		engine->one_solution(ss.str());
