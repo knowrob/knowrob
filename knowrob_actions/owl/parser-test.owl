@@ -1004,6 +1004,16 @@
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Actuated"/>
         <DUL:isTaskOf rdf:resource="http://knowrob.org/kb/parser-test.owl#Placing_WF0_Actuator"/>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#TestTable">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#TestObject">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/parser-test.owl#TestHand">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
+    </owl:NamedIndividual>
 </rdf:RDF>
 
 
