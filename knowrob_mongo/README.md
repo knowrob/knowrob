@@ -1,15 +1,17 @@
 knowrob_mongo
 ===
 
-This package implements a mongo client for KnowRob that transparently
-integrates logged data into the reasoning process.
-This is accomplished by symbolic data abstraction on demand 
-given a reasoning task at hand.
-Abstracted symbols correspond to OWL properties in the [KnowRob ontology](http://knowrob.org/doc/knowrob_taxonomy)
-(e.g., logged spatial information may be abstracted to some specific spatial relation on demand).
+This package implements a mongo client using libmongoc-1.0.0,
+and declares a couple of Prolog predicates to interact with mongo DB
+from Prolog code.
+This includes predicates used to store, update or retrieve documents,
+as well as exporting, importing collections, and setting up their
+search indices.
 
-Each DB collection corresponds to a ROS topic and is named accordingly,
-the records in collections are messages published on the topic
+One usecase is logging of ROS messages,
+in which case
+each DB collection corresponds to a ROS topic and is named accordingly.
+The records in collections are messages published on the topic
 and their structure is given by ROS message definitions.
 Using [mongodb-log](https://github.com/code-iai/ros-mongodb_log) 
 ROS messages can be recorded in advance or while KnowRob is running.
@@ -42,56 +44,34 @@ that the indexed key has identical values for all array members (e.g., the same 
 in case of tf) -- a patched [robot state publisher](https://github.com/code-iai/robot_state_publisher)
 should be used for robot transforms to avoid this issue.
 
-KnowRob uses a state variable for database selection,
-only one database may be active at any time.
-Users may use mng_db/1 to select the currently active database,
-the default database is named *roslog*.
-Note that database selection is not threadsafe at the moment (i.e., DB will be selected
-for all threads).
+### Querying mongo
+Documents in mongo DB can be retrieved by first creating a cursor on
+a named collection, and then reading individual documents until
+the cursor has reached the last document matching the query.
+Cursors can limit the results, sort them, and filter them
+according to a pattern given in the query.
+The query is generally given as Prolog list holding two elements:
+the key (or operator) and the value.
+However, to avoid conversion problems, the value must be wrapped in an atom indicating its type.
 
-### Querying DB objects
-The main entry point for querying is mng_query/3.
-Its first argument is the name of the collection from which records
-should be retrieved (i.e., the topic name).
-The second argument is a compound term used to configure the amount
-of records to be queried (one, all, or some), and also binds 
-the resulting DB objects to a Prolog variable.
-The last argument is a key-value pattern that must be fulfilled
-by matching DB objects.
-The keys must comply with the structure of the mongo collection.
-Nested objects can be retrieved by using multi-level keys separated with
-a dot (e.g., 'header.frame_id', or 'pose.position.x').
-Values are passed to the mongo server as is with the exception of
-terms date(Date) which are mapped to mongo date representation internally.
+As an example, below is a query that retrieves documents from a collection named *triples*.
+The cursor only retrieves documents where the *subject* key has the value "Obj1",
+and where the *begin* field has a date value smaller then the Unix timestamp *1579888948.52*.
 
-Another useful predicate is mng_query_latest/4
-that yields ordered records before some constant time instant (latest record first).
-For example, to read only the latest image published
-on the topic `kinect_head_rgb_image_color`, and before time `Instant`, one can write:
+    mng_cursor_create(roslog,triples,Cursor),
+    mng_cursor_filter(Cursor,['subject',['$eq',string('Obj1')]]),
+    mng_cursor_filter(Cursor,['begin',['$lte',time(1579888948.52)]]),
+    mng_cursor_next(Cursor,Doc),
+    mng_cursor_destroy(Cursor).
 
-    mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
+`Note` Make sure to destroy a cursor once you are done with it. Usually you would want to wrap the cursor operation into a call of *setup_call_cleanup/3*.
 
+More complex filters may use, e.g., disjunction as in:
 
-Finally, mng_query_incremental/3 allows to hook a Prolog goal into
-incrementally querying the mongo DB, and to allow integration of
-mongo query processing with Prolog
-backtracking.
-This goes along these lines:
+    mng_cursor_filter(Cursor,['$or',
+        list([['end',    ['$gte',time(Stamp)]],
+              ['end',    ['$exists',bool(0)]]])]).
 
-    mng_query_incremental('tf', my_goal, [['header.frame_id', 'FRAME1']]).
-
-Where my_goal is called for each resulting DB object. Incremental processing is aborted
-as soon as my_goal yields false.
-
-### Republishing messages
-This package also implements a message factory that is able to generate
-ROS messages from DB records, and to republish them on a user specified topic.
-This can be done with the predicate mng_republish/5
-for which users must specify DB object (queried before),
-message type specifiers, and the topic on which the message should
-be published.
-
-For example, camera info messages could be republished like this:
-
-    mng_republish(DBObj, 'camera_info', Msg, 'sensor_msgs/CameraInfo').
-
+These expressions are generically mapped to bson terms. Hence,
+any command supported by your mongo server can be written in such
+an expression.
