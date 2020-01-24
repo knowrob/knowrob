@@ -92,6 +92,17 @@ PREDICATE(quaternion_diff, 3) {
 	return TRUE;
 }
 
+// +Quaternion1, +Quaternion2, +Factor, -Interpolated
+PREDICATE(quaternion_slerp, 4) {
+	Eigen::Quaterniond q1,q2;
+	pl2eigen(PL_A1,q1);
+	pl2eigen(PL_A2,q2);
+	double factor = (double)PL_A3;
+	Eigen::Quaterniond q = q1.slerp(factor,q2);
+	eigen2pl(q,PL_A4);
+	return TRUE;
+}
+
 // +Quaternion, +Translation, -Matrix
 PREDICATE(matrix_create, 3) {
 	Eigen::Quaterniond q;
