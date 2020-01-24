@@ -6,6 +6,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/event_memory')).
