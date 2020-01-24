@@ -129,34 +129,41 @@ mng_pl_value(Dict,Val_pl) :-
 mng_pl_value(String,Val) :-
   string(String),
   string_to_atom(String,A),
-  ( term_to_atom(Val,A);Val=A ),
+  ( catch(term_to_atom(Val,A),_,Val=A) ),
   ( ground(Val);Val=A ),!.
 mng_pl_value(Val,Val).
 
 %%
-mng_pl_dict_value_(Key,String,Val) :-
-  string(String),!,
-  string_to_atom(String,A),
-  term_to_atom(Term,A),
-  mng_pl_dict_value_(Key,Term,Val).
 mng_pl_dict_value_('$numberInt',Val,Val) :-
   number(Val), !.
-mng_pl_dict_value_('$numberDouble',Val,Val) :-
-  number(Val), !.
-mng_pl_dict_value_('$numberDouble',(X0,X1),Val) :-
-  string_to_atom(X0,A0),
-  string_to_atom(X1,A1),
-  atomic_list_concat([A0,A1],'.',A),
-  term_to_atom(Val,A),
-  number(Val), !.
+mng_pl_dict_value_('$numberInt',String,Val) :-
+  string(String),!,
+  parse_number_(String,Val).
 mng_pl_dict_value_('$numberLong',Val,Val) :-
   number(Val), !.
+mng_pl_dict_value_('$numberLong',String,Val) :-
+  string(String),!,
+  parse_number_(String,Val).
+mng_pl_dict_value_('$numberDouble',Val,Val) :-
+  number(Val), !.
+mng_pl_dict_value_('$numberDouble',String,Val) :-
+  string(String),!,
+  parse_number_(String,Val).
 mng_pl_dict_value_('$date',DateDict,Time) :-
   mng_pl_value(DateDict,Long),
   number(Long), !,
   Time is Long/1000.0.
 mng_pl_dict_value_(Type,Val,Val) :-
   write('Warn: unknown mng type: '), write([Type,Val]), nl.
+
+%%
+parse_number_(String,Number) :-
+  string_to_atom(String,Atom),
+  atomic_list_concat([A0,A1],',',Atom),
+  atomic_list_concat([A0,A1],'.',X),
+  term_to_atom(Number,X),!.
+parse_number_(String,Number) :-
+  number_string(Number,String).
 
 %% mng_dump(+DB, +Dir) is det.
 %
