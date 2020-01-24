@@ -35,6 +35,7 @@
       transform_data/2,             % +Transform, ?(Translation, Rotation)
       transform_multiply/3,         % +Transform1, +Transform2, -Product
       transform_between/3,          % +Transform1, +Transform2, -Relative
+      transform_interpolate/4,      % +Transform1, +Transform2, +Factor, -Interpolated
       transform_close_to/3,         % +Transform1, +Transform2, +Delta
       transform_invert/2,           % +Transform, -Inverted
       matrix/3,                     % ?Matrix, ?Translation, ?Quaternion
@@ -115,6 +116,27 @@ transform_between([F,TgFrame, [T1x,T1y,T1z],Q1],
   Diff_y is T2y - T1y,
   Diff_z is T2z - T1z,
   quaternion_transform(Q1, [Diff_x,Diff_y,Diff_z], TN).
+
+%%
+transform_interpolate(
+    [Ref,Tg,T1,Q1],
+    [Ref,Tg,T2,Q2],
+    Factor,
+    [Ref,Tg,T,Q]) :-
+  % linear interpolation
+  lerp_list(T1,T2,Factor,T),
+  % spherical linear interpolation
+  quaternion_slerp(Q1,Q2,Factor,Q).
+
+%%
+lerp(X0,X1,Factor,X) :-
+  X is Factor*X0 + (1.0 - Factor)*X1.
+
+lerp_list([],[],_,[]) :- !.
+lerp_list([X0|Xs0],[X1|Xs1],Factor,[X|Xs]) :-
+  lerp(X0,X1,Factor,X),
+  lerp_list(Xs0,Xs1,Factor,Xs).
+
 
 %% transform_data(+Transform:term, ?Data:tuple) is semidet.
 %
