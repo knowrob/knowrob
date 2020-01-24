@@ -36,7 +36,6 @@
       current_object_pose_stamp/2,
       object_pose_update/2,
       object_pose_update/3,
-      object_trajectory/4,
       object_distance/3,
       object_frame_name/2,
       object_state/2,
@@ -202,17 +201,16 @@ object_pose_update(Obj,Pose,_) :-
 current_object_pose(Obj,Pose) :- 
   object_pose_data(Obj,Pose,_),!.
 
-current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :- 
-  ground(ParentFrame),
+current_object_pose(Obj, [RefFrame,ObjFrame,T,Q]) :- 
   object_frame_name(Obj,ObjFrame),
-  current_map_pose(ObjFrame,MapPose0),
-  current_map_pose(ParentFrame,MapPose1),
-  transform_between(MapPose1,MapPose0,[ParentFrame,ObjFrame,T,Q]), !.
-
-current_object_pose(Obj,[RefFrame,ObjFrame,T,Q]) :-
   object_localization(Obj,Loc),
-  kb_triple(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q]),
-  object_frame_name(Obj,ObjFrame),!.
+  kb_triple(Loc, ease_obj:hasSpaceRegion, [ParentFrame,ObjFrame,T0,Q0]),
+  ( RefFrame=ParentFrame ->
+  ( T=T0, Q=Q0 ) ;
+  ( current_map_pose_([ParentFrame,ObjFrame,T0,Q0], MapPose0),
+    current_map_pose(RefFrame,MapPose1),
+    transform_between(MapPose1,MapPose0,[RefFrame,ObjFrame,T,Q])
+  )),!.
 
 current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :-
   % try TF lookup in case above clauses failed.
@@ -222,11 +220,15 @@ current_object_pose(Obj,[ParentFrame,ObjFrame,T,Q]) :-
 
 %%
 current_map_pose(ObjFrame,MapPose) :-
+  object_frame_name(Obj,ObjFrame),
+  current_object_pose(Obj,CurrentPose),
+  current_map_pose_(CurrentPose,MapPose).
+
+current_map_pose_([ParentFrame,ObjFrame,T,Q],MapPose) :-
   map_frame_name(MapFrame),
-  object_pose_data(_,[ParentFrame,ObjFrame,T,Q],_),
-  ( MapFrame = ParentFrame ->
-    MapPose=[MapFrame,ObjFrame,T,Q] ; (
-    current_map_pose(ParentFrame,MapParent),
+  ( MapFrame=ParentFrame ->
+  ( MapPose=[MapFrame,ObjFrame,T,Q] ) ;
+  ( current_map_pose(ParentFrame,MapParent),
     transform_multiply(MapParent,
       [ParentFrame,ObjFrame,T,Q], MapPose)
   )).
@@ -250,29 +252,32 @@ object_pose(Obj, Pose, Stamp0) :-
   Stamp1 < Stamp0, !.
 
 object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :- 
-  ground(RefFrame),
-  object_frame_name(Obj,ObjFrame),
-  object_map_pose(ObjFrame,MapPose0,Time),
-  object_map_pose(RefFrame,MapPose1,Time),
-  transform_between(MapPose1,MapPose0,[RefFrame,ObjFrame,T,Q]), !.
-
-object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :- 
   object_frame_name(Obj,ObjFrame),
   object_localization(Obj,Loc),
-  holds(Loc, ease_obj:hasSpaceRegion, [RefFrame,_,T,Q], Time),!.
+  holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,ObjFrame,T0,Q0], Time),
+  ( RefFrame=ParentFrame ->
+  ( T=T0, Q=Q0 ) ;
+  ( object_map_pose_([ParentFrame,ObjFrame,T0,Q0], MapPose0, Time),
+    object_map_pose(RefFrame,MapPose1,Time),
+    transform_between(MapPose1,MapPose0,[RefFrame,ObjFrame,T,Q])
+  )).
 
-object_map_pose(ObjFrame,MapPose,Time) :-
+%%
+object_map_pose(ObjFrame,[MapFrame,ObjFrame,T,Q],Time) :-
+  object_frame_name(Obj,ObjFrame),
+  object_pose(Obj,CurrentPose,Time),
+  object_map_pose_(CurrentPose,MapPose,Time).
+
+object_map_pose_([ParentFrame,ObjFrame,T,Q],MapPose,Time) :-
   map_frame_name(MapFrame),
-  object_frame_name(Obj,ObjFrame), % FIXME: only works with Obj Bound
-  object_localization(Obj,Loc),
-  holds(Loc, ease_obj:hasSpaceRegion, [ParentFrame,_,T,Q], Time),
-  ( MapFrame = ParentFrame ->
-    MapPose=[MapFrame,ObjFrame,T,Q] ; (
-    object_map_pose(ParentFrame,MapParent,Time),
+  ( MapFrame=ParentFrame ->
+  ( MapPose=[MapFrame,ObjFrame,T,Q] ) ;
+  ( object_map_pose(ParentFrame,MapParent,Time),
     transform_multiply(MapParent,
       [ParentFrame,ObjFrame,T,Q], MapPose)
   )).
 
+%%
 object_localization(Obj,Obj) :-
   atom(Obj),
   rdfs_individual_of(Obj,ease_obj:'Localization'),!.
@@ -366,36 +371,10 @@ object_state_shape_(Iri,3) :- rdfs_subclass_of(Iri,ease_obj:'CylinderShape'),!.
 % Map RDF transform to Prolog list representation.
 %
 knowrob:kb_rdf_object(SpaceRegion,[Ref_frame,_,Pos,Rot]) :-
-  ground(SpaceRegion),
+  atom(SpaceRegion),
   rdfs_individual_of(SpaceRegion,ease_obj:'6DPose'),!,
   transform_reference_frame(SpaceRegion,Ref_frame),
   transform_data(SpaceRegion,(Pos,Rot)).
-
-%% object_trajectory(+Obj, +Interval, +Density, -Trajectory) is semidet
-%
-% Sample trajectory of Obj's origin frame within Interval.
-% The trajectory either has Count (Density=num_samples(Count)) samples,
-% or Delta (Density=dt(Delta)) temporal distance between samples (in seconds).
-% Trajectory is a list of poses
-%   [reference_frame, source_frame, position, orientation]
-%
-% @param Obj Instance of SpatialThing
-% @param Interval Interval of the trajectory
-% @param Density Trajectory density
-% @param Trajectory Sample trajectory (list of pose terms)
-%
-% TODO(daniel): Implement more efficient way of sampling trajectories.
-%               - create interface for mongo to query many transforms at once
-object_trajectory(Obj, Interval, num_samples(Count), Trajectory) :-
-  interval(Interval, [Begin,End]),
-  Dt is (End - Begin) / Count,
-  object_trajectory(Obj, Interval, dt(Dt), Trajectory).
-
-object_trajectory(_, [Begin,End], _, []) :- Begin > End, !.
-object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
-  Begin =< End, Next is Begin + Dt,
-  object_pose_at_time(Obj, Begin, X),
-  object_trajectory(Obj, [Next,End], dt(Dt), Xs).
 
 %% object_frame_name(+Obj:iri, ?FrameName:atom) is det
 %
@@ -409,11 +388,13 @@ object_frame_name(Obj,FrameName) :-
   kb_triple(Obj,knowrob:frameName,FrameName), !.
 
 object_frame_name(Localization,FrameName) :-
+  atom(Localization),
   rdf_has(Obj,ease_obj:hasLocalization,Localization),
   object_frame_name(Obj,FrameName), !.
 
 object_frame_name(Obj,FrameName) :-
-  atom(Obj), rdf_split_url(_,FrameName,Obj).
+  atom(Obj),
+  rdf_split_url(_,FrameName,Obj).
 
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
