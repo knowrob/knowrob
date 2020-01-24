@@ -28,7 +28,6 @@
 :- begin_tests(urdf_parser).
 
 :- use_module('urdf_parser').
-:- use_module(library('roscpp')).
 
 test(load_urdf_file_pr2) :-
   ros_package_path('urdfprolog', X),

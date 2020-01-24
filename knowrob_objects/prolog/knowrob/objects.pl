@@ -263,7 +263,7 @@ object_pose(Obj, [RefFrame,ObjFrame,T,Q], Time) :-
   )).
 
 %%
-object_map_pose(ObjFrame,[MapFrame,ObjFrame,T,Q],Time) :-
+object_map_pose(ObjFrame,MapPose,Time) :-
   object_frame_name(Obj,ObjFrame),
   object_pose(Obj,CurrentPose,Time),
   object_map_pose_(CurrentPose,MapPose,Time).

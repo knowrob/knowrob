@@ -229,7 +229,6 @@ mem_import_fixed_pose(Obj) :-
   ( rdf_has(Obj,ease_obj:hasLocalization,Loc) ;
   ( rdf_has(Obj,ease_obj:hasSpaceRegion,_), Loc=Obj )
   ),!,
-  object_localization__(Obj,Loc),
   %% fixed pose must be asserted as symbol in RDF triple store
   rdf_has(Loc,ease_obj:hasSpaceRegion,PoseSymbol),
   transform_data(PoseSymbol,(T,Q)),
