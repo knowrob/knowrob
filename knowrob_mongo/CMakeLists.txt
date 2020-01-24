@@ -2,17 +2,44 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_mongo)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools rosprolog knowrob_common)
+add_compile_options(-std=c++11)
+set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 
-catkin_rosjava_setup(installDist publishMavenJavaPublicationToMavenRepository writeClasspath)
+# find SWI Prolog libraries
+find_package(PkgConfig)
+pkg_check_modules(SWIPL REQUIRED swipl)
+include_directories(${SWIPL_INCLUDE_DIRS})
+link_directories(${SWIPL_LIBRARY_DIRS})
 
+pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
+# find_package(libmongoc-1.0 1.7 REQUIRED)
+include_directories(${MONGOC_INCLUDE_DIRS})
+link_directories(${MONGOC_LIBRARY_DIRS})
+
+find_package(catkin REQUIRED COMPONENTS rosprolog knowrob_common)
+
+# TODO: would be nice to get rid of knowrob_common dependency
 catkin_package(CATKIN_DEPENDS knowrob_common rosprolog)
 
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/ 
-        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_library(mongo_kb
+	SHARED
+	src/mongo_kb.cpp
+	src/bson_pl.cpp
+	src/MongoException.cpp
+	src/MongoInterface.cpp
+	src/MongoDatabase.cpp
+	src/MongoCollection.cpp
+	src/MongoCursor.cpp)
+target_link_libraries(mongo_kb
+	${SWIPL_LIBRARIES}
+	${MONGOC_LIBRARIES}
+	${catkin_LIBRARIES})
 
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
 
-install(FILES knowrob_mongo/build/classpath.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
