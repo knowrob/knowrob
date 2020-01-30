@@ -72,7 +72,7 @@ mem_episode_start(Episode,Topics) :-
   asserta(current_episode(Episode)),
   %%
   mem_create_default_index,
-  mem_index_create(Topics),
+  mem_create_index(Topics),
   ros_logger_start(Topics).
 
 %% mem_episode_start
@@ -119,7 +119,7 @@ mem_init(Dir) :-
 %%
 mem_create_index(Topics) :-
   forall( member([Topic,IndexKeys],Topics),
-          mng_create_index(Topic,IndexKeys) ).
+          mng_index_create(Topic,IndexKeys) ).
 
 mem_create_default_index :-
   mem_db_name(DB),
