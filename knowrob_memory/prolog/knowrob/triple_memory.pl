@@ -199,7 +199,7 @@ mem_retrieve_triple(Subject,Property,Value,Stamp) :-
   ( mng_cursor_materialize(Cursor, TripleDict),
     % bind output
     ( ground(Property) -> true ; mng_get_dict(property, TripleDict, Property)),
-    ( ground(Value)    -> true ; mng_get_dict(Property, TripleDict, Value)),
+    ( ground(Value)    -> true ; mng_get_dict(value,    TripleDict, Value)),
     ( ground(Stamp)    -> true ; mng_get_dict(begin,    TripleDict, Stamp)),
     ( ground(Subject)  -> true ; mng_get_dict(subject,  TripleDict, Subject))
   ),

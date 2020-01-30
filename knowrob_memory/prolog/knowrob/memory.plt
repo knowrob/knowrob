@@ -6,6 +6,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/action_model')).
@@ -170,5 +171,9 @@ test(mem_event_causes_transition) :-
   rdf_has(T1,dul:satisfies,QR1),
   rdf_has(QR1,dul:hasQuality,Q),
   kb_triple(QR1,dul:hasRegion,mem_test:'TEST_RED').
+  
+test(mem_assert_dimensions) :-
+  object_assert_dimensions(mem_test:'Substance_0', 0.032, 0.032, 0.12),
+  object_dimensions(mem_test:'Substance_0', 0.032, 0.032, 0.12).
 
 :- end_tests('knowrob/memory').
