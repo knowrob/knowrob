@@ -29,7 +29,7 @@
     [
         ros_logger_start/1,
         ros_logger_stop/0,
-        ros_store_tf/2,
+        mem_store_tf/2,
         comp_object_pose/3,
         comp_object_pose/2
     ]).
@@ -38,6 +38,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/memory'), [mem_db_name/1]).
 
 :-  rdf_meta
     comp_object_pose(r,?,+),
@@ -54,7 +55,7 @@ ros_logger_start(Topics) :-
   % stop any still running instance,
   ( ros_logger_pid(_) ->
     ros_logger_stop ; true ),
-  mng_db(DBName),
+  mem_db_name(DB),
   %
   findall(X, (
     member([T,_],Topics),
@@ -62,7 +63,7 @@ ros_logger_start(Topics) :-
   ), TopicPaths),
   process_create(path('rosrun'),
       ['mongodb_log', 'mongodb_log.py',
-       '--mongodb-name', DBName|TopicPaths],
+       '--mongodb-name', DB|TopicPaths],
       [process(PID)]),
   asserta(ros_logger_pid(PID)),
   %
@@ -84,30 +85,33 @@ ros_logger_stop :-
   print_message(informational,
     process_stopped('mongodb_log',PID)).
 
-%% ros_store_tfros_store_tf(+Pose,+Stamp)
+%% mem_store_tf(+Pose,+Stamp)
 %
 % Stores a single TF message.
 %
-ros_store_tf([RefFrame,ObjFrame,[X,Y,Z],[QX,QY,QZ,QW]],Stamp) :-
-  Stamp_ms is Stamp * 1000.0,
-%t.secs = (int)posix_ts;
-%t.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-  mng_store(tf, _{
-    child_frame_id: RefFrame,
-    header: _{
-      frame_id: ObjFrame,
-      seq: 0,
-      stamp: Stamp_ms % FIXME: need a date type
-      %stamp: _{
-        %secs: XXX,
-        %nsecs: YYYY
-      %}
-    },
-    pose: _{
-      translation: _{x:X,y:Y,z:Z},
-      rotation:    _{x:QX,y:QY,z:QZ,w:QW}
-    }
-  }).
+mem_store_tf([RefFrame,ObjFrame,[X,Y,Z],[QX,QY,QZ,QW]],Stamp) :-
+  mem_db_name(DB),
+  mng_store(DB, tf, [
+    [child_frame_id,string(RefFrame)],
+    [header, [
+      [frame_id,string(ObjFrame)],
+      [seq,int(0)],
+      [stamp,time(Stamp)]
+    ]],
+    [pose,[
+      [translation,[
+        [x,double(X)],
+        [y,double(Y)],
+        [z,double(Z)]
+      ]],
+      [rotation,[
+        [x,double(QX)],
+        [y,double(QY)],
+        [z,double(QZ)],
+        [w,double(QW)]
+      ]]
+    ]]
+  ]).
 
 %% comp_object_pose(+Obj, ?Pose).
 %% comp_object_pose(+Obj, ?Pose, +Interval).
@@ -116,13 +120,11 @@ comp_object_pose(Subject, Pose) :-
   current_time(Time),
   comp_object_pose(Subject, Pose, Time).
 
-comp_object_pose(Subject, [RefFrame,ObjFrame,T,Q], Time) :-
+comp_object_pose(Subject, Pose, Time) :-
   ground(Subject),
-  once((
-    rdf_has(Obj,ease_obj:hasLocalization,Subject);
-    Obj = Subject
-  )),
-  current_object_pose_stamp(Obj,X), X < Time,
-  object_frame_name(Obj,ObjFrame),
-  ( ground(RefFrame) ; map_frame_name(RefFrame) ),
-  mng_lookup_transform(RefFrame,ObjFrame,pose(T,Q),Time),!.
+  mem_db_name(DB),
+  current_object_pose_stamp(Subject,X),
+  X > Time,
+  object_frame_name(Subject,ObjFrame),
+  mng_tf_interpolate(DB,ObjFrame,Pose,Time),
+  !.

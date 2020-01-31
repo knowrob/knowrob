@@ -22,10 +22,15 @@ add_service_files(
   JSONWrapper.srv
 )
 
+add_message_files(
+  FILES 
+  MessageJSON.msg
+)
+
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
-      LIBRARIES rosprolog rosprolog_client
+      LIBRARIES rosprolog_kb rosprolog_client
       INCLUDE_DIRS include
       CATKIN_DEPENDS json_prolog_msgs geometry_msgs roscpp roslib rospack
       CFG_EXTRAS pack.cmake plunit.cmake
@@ -46,25 +51,34 @@ link_directories(${JSON_GLIB_LIBRARIY_DIRS})
 # C++ client library
 include_directories(include ${catkin_INCLUDE_DIRS})
 
+# TODO: make shared library with PrologEngine & PrologPool
 ######
-add_library(rosprolog SHARED src/rosprolog.cpp)
-add_dependencies(rosprolog rosprolog_generate_messages_cpp)
-target_link_libraries(rosprolog ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_library(rosprolog_kb
+	SHARED
+	src/rosprolog_kb/rosprolog_kb.cpp
+	src/rosprolog_kb/ros_param.cpp
+	src/rosprolog_kb/ros_terms.cpp
+	src/rosprolog_kb/json_ros.cpp
+	src/rosprolog_kb/tf.cpp
+	src/rosprolog_node/PrologEngine.cpp
+	src/rosprolog_node/PrologPool.cpp)
+add_dependencies(rosprolog_kb rosprolog_generate_messages_cpp)
+target_link_libraries(rosprolog_kb ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 
 ######
 add_executable(rosprolog_node
-	src/PrologNode.cpp
-	src/PrologEngine.cpp
-	src/PrologPool.cpp
+	src/rosprolog_node/PrologNode.cpp
+	src/rosprolog_node/PrologEngine.cpp
+	src/rosprolog_node/PrologPool.cpp
 )
 target_link_libraries(rosprolog_node ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(rosprolog_node ${catkin_EXPORTED_TARGETS})
 
 ######
 add_library(rosprolog_client
-	src/PrologClient.cpp
-	src/PrologQuery.cpp
-	src/PrologBindings.cpp)
+	src/rosprolog_client/PrologClient.cpp
+	src/rosprolog_client/PrologQuery.cpp
+	src/rosprolog_client/PrologBindings.cpp)
 target_link_libraries(rosprolog_client ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(rosprolog_client ${catkin_EXPORTED_TARGETS})
 

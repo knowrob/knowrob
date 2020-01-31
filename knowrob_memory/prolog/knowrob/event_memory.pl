@@ -28,19 +28,30 @@
 :- module(event_memory,
     [
       mem_episode_create/1,           % -EpisodeNode::iri
+      mem_event/3,
       mem_event_create/3,             % +ParentNode::iri, -EventType::iri, -Node::iri
       mem_event_begin/1,              % +Node::iri
       mem_event_begin/2,              % +Node::iri, +BeginTime::number
       mem_event_end/1,                % +Node::iri
       mem_event_end/2,                % +Node::iri, +EndTime::number
+      mem_event_interval/3,           % +Node::iri, +BeginTime::number, +EndTime::number
       mem_event_set_succeeded/1,
       mem_event_set_failed/1,
       mem_event_set_active/1,
       mem_event_set_paused/1,
       mem_event_set_pending/1,
       mem_event_set_cancelled/1,
+      mem_event_role/3,
+      mem_event_parameter/3,
+      mem_event_constraint/2,
+      mem_event_assignment/3,
+      mem_event_classification/3,
+      mem_event_add_role/2,
+      mem_event_add_parameter/2,
+      mem_event_add_constraint/5,
+      mem_event_add_assignment/3,
+      mem_event_add_classification/3,
       mem_event_add_diagnosis/2,
-      mem_event_interval/3,           % +Node::iri, +BeginTime::number, +EndTime::number
       mem_event_includes/2,           % +Node::iri, +EntityConcepts::list
       mem_event_includes/3,           % +Node::iri, +Entity::iri, +Concept::iri
       mem_event_satisfies/2,          % +Node::iri, +Description::iri
@@ -61,7 +72,9 @@
 :-  rdf_meta
     mem_episode_create(r),
     mem_episode_set_map(r,r),
+    mem_event(r,r,r),
     mem_event_create(r,r,r),
+    mem_event_interval(r,+,+),
     mem_event_begin(r,+),
     mem_event_end(r,+),
     mem_event_set_succeeded(r),
@@ -70,8 +83,17 @@
     mem_event_set_paused(r),
     mem_event_set_pending(r),
     mem_event_set_cancelled(r),
+    mem_event_role(r,r,r),
+    mem_event_parameter(r,r,r),
+    mem_event_constraint(r,r),
+    mem_event_assignment(r,r,r),
+    mem_event_classification(r,r,r),
+    mem_event_add_role(r,r),
+    mem_event_add_parameter(r,r),
+    mem_event_add_constraint(r,r,r,r,+),
+    mem_event_add_assignment(r,r,r),
+    mem_event_add_classification(r,r,r),
     mem_event_add_diagnosis(r,r),
-    mem_event_interval(r,+,+),
     mem_event_causes_transition(r,r,r,r,r),
     mem_event_includes(r,t),
     mem_event_includes(r,r,r),
@@ -99,8 +121,8 @@ mem_episode_create(Episode) :-
 mem_event_create(Parent0,EventType,Node0) :-
   rdfs_individual_of(Parent0,dul:'Situation'),
   rdfs_subclass_of(EventType,dul:'Concept'),!,
-  %% create an avent that is classified by EventType
-  mem_new_individual(EventType,EventType0),
+  %% create an event that is classified by EventType
+  event_type_create(EventType,EventType0,belief_state),
   mem_event_create_(EventType,Event),
   ( rdfs_individual_of(Event,dul:'Action')
   -> mem_assert(EventType0,dul:isExecutedIn,Event);
@@ -114,11 +136,23 @@ mem_event_create(Parent0,EventType,Node0) :-
   mem_assert(Event,dul:hasTimeInterval,I),
   mem_assert(Node0,dul:includesTime,I),
   %%
-  (  mem_event_node_(Parent0,ParentEvent0) -> 
+  (  mem_event(Parent0,ParentEvent0,_) -> 
   (( rdfs_individual_of(ParentEvent0,dul:'Action'),
   \+ rdfs_individual_of(Event,dul:'Action') ) ->
      mem_assert(ParentEvent0,ease:hasPhase,Event) ;
      mem_assert(ParentEvent0,dul:hasConstituent,Event) ) ; true ).
+
+%%
+mem_event(Node,Event,EventType) :-
+  rdf_has(Node,dul:includesEvent,Event),
+  ( rdf_has(EventType,dul:classifies,Event) ;
+    mem_event_classification(Node,Event,EventType)
+  ),
+  !.
+
+		 /*******************************
+		 *	interval		*
+		 *******************************/
 
 %% mem_event_begin(+Node0,+Begin) is det.
 %
@@ -154,6 +188,10 @@ mem_event_interval(Node0,Begin,End) :-
   mem_event_begin(Node0,Begin),
   mem_event_end(Node0,End).
 
+		 /*******************************
+		 *	action status		*
+		 *******************************/
+
 %%
 mem_event_set_succeeded(Node) :-
   rdf_has(Node, dul:includesEvent, Act),
@@ -186,6 +224,110 @@ mem_event_set_cancelled(Node) :-
   action_set_cancelled(Act).
 
 %%
+mem_event_concept(Node,Concept,Type) :-
+  mem_event(Node, _, EvtType),
+  kb_triple(EvtType, dul:isRelatedToConcept, Concept),
+  once((
+    Type == Concept ;
+    kb_type_of(Concept,Type)
+  )).
+
+		 /*******************************
+		 *	paramaters		*
+		 *******************************/
+
+%%
+mem_event_parameter(Node,Param,Type) :-
+  mem_event(Node, _, EvtType),
+  kb_triple(EvtType, dul:hasParameter, Param),
+  once((
+    Type == Param ;
+    kb_type_of(Param,Type)
+  )).
+
+%%
+mem_event_add_parameter(Node,Param) :-
+  mem_event_parameter(Node,Param,_),!.
+
+mem_event_add_parameter(Node,Param) :-
+  mem_event(Node, _, EvtType),
+  kb_assert(EvtType, dul:hasParameter, Param).
+
+		 /*******************************
+		 *	roles			*
+		 *******************************/
+
+%%
+mem_event_role(Node,Role,Type) :-
+  mem_event(Node, _, EvtType),
+  kb_triple(EvtType, dul:isTaskOf, Role),
+  once((
+    Type == Role ;
+    kb_type_of(Role,Type)
+  )).
+
+%%
+mem_event_add_role(Node,Role) :-
+  kb_is_class(Role),!,
+  once(rdf(Node,rdf:type,_,Graph)),
+  once(( mem_event_role(Node,_,Role) ; (
+    role_create(Role,Role0,Graph),
+    mem_event_add_role(Node,Role0)
+  ))).
+
+mem_event_add_role(Node,Role) :-
+  mem_event_role(Node,Role,_),!.
+
+mem_event_add_role(Node,Role) :-
+  mem_event(Node, _, EvtType),
+  kb_assert(EvtType, dul:isTaskOf, Role).
+
+		 /*******************************
+		 *	includes		*
+		 *******************************/
+
+%% mem_event_includes(+Node0,+EntityClasses) is det.
+%
+mem_event_includes(_Node0,[]) :- !.
+
+mem_event_includes(Node0,[[Entity,Concept]|Xs]) :-
+  mem_event_includes(Node0,Entity,Concept),
+  mem_event_includes(Node0,Xs).
+
+%% mem_event_includes(+Node0,+Entity0,+Concept) is det.
+%
+mem_event_includes(Node0,Object0,Role) :-
+  rdfs_individual_of(Object0,dul:'Object'),!,
+  situation_add(Node0,Object0),
+  mem_event(Node0,Event0,_),
+  mem_assert(Event0,dul:hasParticipant,Object0),
+  mem_event_add_classification(Node0,Object0,Role).
+
+mem_event_includes(Node0,Region0,Parameter) :-
+  rdfs_individual_of(Region0,dul:'Region'),!,
+  %situation_add(Node0,Region0),
+  mem_event(Node0,Event0,_),
+  mem_assert(Event0,dul:hasRegion,Region0),
+  mem_event_add_classification(Node0,Region0,Parameter).
+
+		 /*******************************
+		 *	satisfies		*
+		 *******************************/
+
+%% mem_event_satisfies(+Node0,+Description0) is det.
+%
+mem_event_satisfies(Node0,Description0) :-
+  mem_assert(Node0,dul:satisfies,Description0),
+  ( rdfs_individual_of(Description0,dul:'Plan') ->
+    mem_assert(Node0,rdf:type,dul:'PlanExecution') ; true ),
+  ( rdfs_individual_of(Description0,dul:'Workflow') ->
+    mem_assert(Node0,rdf:type,dul:'WorkflowExecution') ; true ).
+
+		 /*******************************
+		 *	diagnosis		*
+		 *******************************/
+
+%%
 mem_event_add_diagnosis(Node,DiagnosisType) :-
   rdfs_individual_of(DiagnosisType,owl:'Class'),!,
   mem_new_individual(DiagnosisType,Diagnosis),
@@ -193,6 +335,67 @@ mem_event_add_diagnosis(Node,DiagnosisType) :-
 
 mem_event_add_diagnosis(Node,Diagnosis) :-
   situation_add_satisfies(Node,Diagnosis).
+
+		 /*******************************
+		 *	constraints		*
+		 *******************************/
+
+%%
+mem_event_constraint(Node,Constraint) :-
+  mem_event_parameter(Node,Constraint,knowrob:'Constraint').
+
+%%
+mem_event_add_constraint(Node,C_type,
+    ConstrainedRole,DependentRole,Constraint) :-
+  once(( 
+    mem_event_role(Node,ConstrainedRole0,ConstrainedRole),
+    mem_event_role(Node,DependentRole0,DependentRole)
+  )),
+  %%
+  mem_new_individual(C_type,Constraint),
+  set_constrained_concept(Constraint,ConstrainedRole0),
+  set_dependent_concept(Constraint,DependentRole0),
+  mem_event_add_parameter(Node,Constraint).
+  
+
+		 /*******************************
+		 *	classification		*
+		 *******************************/
+
+%%
+mem_event_classification(Node,Entity,Concept) :-
+  situation_includes_classification(Node,Entity,Concept).
+
+%%
+mem_event_add_classification(Node,Entity,Concept) :-
+  mem_event_classification(Node,Entity,Concept),!.
+
+mem_event_add_classification(Node,Entity,Concept) :-
+  %%
+  ( mem_event_concept(Node,Concept0,Concept) ;
+    Concept0 = Concept
+  ),!,
+  %%
+  situation_add_classification(Node,Entity,Concept0).
+
+		 /*******************************
+		 *	assignments		*
+		 *******************************/
+
+%%
+mem_event_assignment(Node,Argument,Value) :-
+  situation_includes_assignment(Node,Argument,Value).
+
+%%
+mem_event_add_assignment(Node,Argument,Value) :-
+  mem_event_assignment(Node,Argument,Value),!.
+
+mem_event_add_assignment(Node,Argument,Value) :-
+  situation_add_assignment(Node,Argument,Value).
+
+		 /*******************************
+		 *	transition		*
+		 *******************************/
 
 %% mem_event_causes_transition(+Node0,+Object0,+Quality,+FromRegion0,+ToRegion0) is det.
 %
@@ -211,58 +414,12 @@ mem_event_causes_transition(Node0,Object0,Quality,FromRegion0,ToRegion0) :-
   mem_assert(Transition,ease:hasInitialState,InitialState),
   mem_assert(Transition,ease:hasTerminalState,TerminalState),
   mem_assert(Parent,ease:includesSituation,Transition),
-  mem_event_node_(Node0,Event0),
+  mem_event(Node0,Event0,_),
   mem_assert(Transition,ease:isCausedByEvent,Event0).
 
-%% mem_event_includes(+Node0,+EntityClasses) is det.
-%
-mem_event_includes(_Node0,[]) :- !.
-
-mem_event_includes(Node0,[[Entity,Concept]|Xs]) :-
-  mem_event_includes(Node0,Entity,Concept),
-  mem_event_includes(Node0,Xs).
-
-%% mem_event_includes(+Node0,+Entity0,+Concept) is det.
-%
-mem_event_includes(Node0,Object0,Role) :-
-  rdfs_individual_of(Object0,dul:'Object'),!,
-  situation_add(Node0,Object0),
-  mem_event_node_(Node0,Event0),
-  mem_assert(Event0,dul:hasParticipant,Object0),
-  mem_event_classifies_(Node0,Object0,Role).
-
-mem_event_includes(Node0,Region0,Parameter) :-
-  rdfs_individual_of(Region0,dul:'Region'),!,
-  %situation_add(Node0,Region0),
-  mem_event_node_(Node0,Event0),
-  mem_assert(Event0,dul:hasRegion,Region0),
-  mem_event_classifies_(Node0,Region0,Parameter).
-
-%% mem_event_satisfies(+Node0,+Description0) is det.
-%
-mem_event_satisfies(Node0,Description0) :-
-  mem_assert(Node0,dul:satisfies,Description0),
-  ( rdfs_individual_of(Description0,dul:'Plan') ->
-    mem_assert(Node0,rdf:type,dul:'PlanExecution') ; true ),
-  ( rdfs_individual_of(Description0,dul:'Workflow') ->
-    mem_assert(Node0,rdf:type,dul:'WorkflowExecution') ; true ).
-
-%%
-mem_event_classifies_(Node,Entity,Concept) :-
-  mem_event_node_(Node,Event),
-  rdf_has(EventType0,dul:classifies,Event),
-  %%
-  mem_new_individual(Concept,Concept0),
-  mem_is_related_to_concept_(EventType0,Concept0),
-  %%
-  situation_create(dul:'Classification',X,belief_state),
-  situation_add(Node,X),
-  situation_add(X,Concept0),
-  situation_add(X,Entity).
-
-mem_event_node_(Node,Event) :-
-  % TODO
-  rdf_has(Node,dul:includesEvent,Event),!.
+		 /*******************************
+		 *	helper		*
+		 *******************************/
 
 %%
 mem_event_create_(Task,Action) :-
@@ -309,24 +466,6 @@ mem_quality_state_(Quality,Region,QualityState) :-
   %%
   mem_new_individual(dul:'Situation',QualityState),
   mem_assert(QualityState,dul:satisfies,QR).
-
-%%
-mem_is_related_to_concept_(Task0,Role0) :-
-  rdfs_individual_of(Task0,dul:'Task'),
-  rdfs_individual_of(Role0,dul:'Role'),!,
-  mem_assert(Task0,dul:isTaskOf,Role0).
-
-mem_is_related_to_concept_(Role0,Task0) :-
-  rdfs_individual_of(Task0,dul:'Task'),
-  rdfs_individual_of(Role0,dul:'Role'),!,
-  mem_assert(Role0,dul:hasTask,Task0).
-
-mem_is_related_to_concept_(Concept0,Parameter0) :-
-  rdfs_individual_of(Parameter0,dul:'Parameter'),!,
-  mem_assert(Concept0,dul:hasParameter,Parameter0).
-
-mem_is_related_to_concept_(Concept0,Concept1) :-
-  mem_assert(Concept0,dul:isRelatedToConcept,Concept1).
 
 %%
 mem_new_individual(Type,Entity) :-

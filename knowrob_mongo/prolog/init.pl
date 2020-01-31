@@ -32,6 +32,4 @@
 :- register_ros_package(knowrob_common).
 
 :- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/mongo_designators')).
-:- use_module(library('knowrob/mongo_images')).
 :- use_module(library('knowrob/mongo_tf')).

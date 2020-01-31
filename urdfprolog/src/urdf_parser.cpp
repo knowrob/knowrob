@@ -29,7 +29,7 @@
 #include <vector>
 #include <map>
 #include <mutex>
-#include "rosprolog.h"
+#include <rosprolog/rosprolog_kb/rosprolog_kb.h>
 #include <urdf/model.h>
 
 /**************************************/

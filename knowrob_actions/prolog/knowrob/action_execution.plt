@@ -66,9 +66,17 @@ test('rdf_has(obj1,hasConstituent,?)', [nondet]) :-
   % execute again
   execute_plan(acext:'rdf_has1_Execution',InputDict,OutputDicts,Situation),
   kb_triple(Situation,dul:includesAction,Action),
+  %%
   member(OD2,OutputDicts),
   get_dict_(acext:'rdf_has1_Task_O', OD2, acext:'Object2'),
-  member(OD3,OutputDicts), get_dict_(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
+  situation_includes_classification(Situation,acext:'Object2',acext:'rdf_has1_Task_O'),
+  situation_includes_assignment(Situation,acext:'rdf_has1_Object',acext:'Object2'),
+  %%
+  member(OD3,OutputDicts),
+  get_dict_(acext:'rdf_has1_Task_O', OD3, acext:'Object3'),
+  situation_includes_classification(Situation,acext:'Object3',acext:'rdf_has1_Task_O'),
+  situation_includes_assignment(Situation,acext:'rdf_has1_Object',acext:'Object3'),
+  %%
   action_status(Action,ease_act:'ExecutionState_Succeeded').
 
 %% DataProperty, third argument unbound
@@ -106,11 +114,14 @@ test('add_two_ints(CREATE)') :-
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  knowrob_action_execution:plan_execution_create_(
+  knowrob_action_execution:action_create_(
       ros:'ServiceInvokation',
       acext:'add_two_ints_Task',
+      Action),
+  knowrob_action_execution:plan_execution_create_(
+      Action,
       acext:'add_two_ints_Execution',
-      InputDict,Action,_),
+      InputDict,_),
   kb_triple(Action, dul:executesTask, acext:'add_two_ints_Task'),
   kb_triple(Action, dul:hasRegion, Region_a),
   kb_triple(Action, dul:hasRegion, Region_b).
@@ -166,11 +177,14 @@ test('sum_array(CREATE)') :-
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  knowrob_action_execution:plan_execution_create_(
+  knowrob_action_execution:action_create_(
       ros:'ServiceInvokation',
       acext:'sum_array_Task',
+      Action),
+  knowrob_action_execution:plan_execution_create_(
+      Action,
       acext:'sum_array_Execution',
-      InputDict,Action,_),
+      InputDict,_),
   kb_triple(Action, dul:executesTask, acext:'sum_array_Task'),
   kb_triple(Action, dul:hasRegion, Region_a).
 
@@ -255,11 +269,14 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  knowrob_action_execution:plan_execution_create_(
+  knowrob_action_execution:action_create_(
       ros:'ServiceInvokation',
       acext:'pose_test_Task',
+      Action),
+  knowrob_action_execution:plan_execution_create_(
+      Action,
       acext:'pose_test_Execution',
-      InputDict,Action,_),
+      InputDict,_),
   once( kb_triple(Action, dul:executesTask, acext:'pose_test_Task') ),
   once( kb_triple(Action, dul:hasRegion, _) ).
 

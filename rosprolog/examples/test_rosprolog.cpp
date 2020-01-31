@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include <ros/ros.h>
-#include <rosprolog/PrologClient.h>
+#include <rosprolog/rosprolog_client/PrologClient.h>
 
 using namespace std;
 

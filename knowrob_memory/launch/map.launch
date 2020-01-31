@@ -1,16 +1,18 @@
 <launch>
   <arg name="semantic_map" default="package://iai_semantic_maps/owl/kitchen.owl" />
+  <arg name="mongodb_uri" default="mongodb://localhost:27017/?appname=knowrob" />
   <arg name="mongodb_name" default="roslog" />
   <arg name="memory_dir" default="" />
   
   <env name="KNOWROB_MONGO_DB_NAME" value="$(arg mongodb_name)" />
   <env name="KNOWROB_MEMORY_DIR" value="$(arg memory_dir)" />
   
+  <param name="mongodb_uri" type="string" value="$(arg mongodb_uri)" />
   <param name="initial_package" type="string" value="knowrob_memory" />
   <param name="initial_goal" type="string" value="mem_import('$(arg semantic_map)')" />
   <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" output="screen"/>
   
-  <node name="json_wrapper" pkg="rosprolog" type="json_wrapper.py" output="screen"/> 
+  <node name="json_wrapper" pkg="rosprolog" type="json_ros.py" output="screen"/> 
 
   <node name="object_state_publisher" pkg="knowrob_objects" type="object_state_publisher.py" output="screen">
     <param name="hz" value="10" />

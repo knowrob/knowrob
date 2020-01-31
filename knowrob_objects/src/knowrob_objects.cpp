@@ -7,7 +7,7 @@
 #include <chrono>
 
 #include <ros/ros.h>
-#include <rosprolog.h>
+#include <rosprolog/rosprolog_kb/rosprolog_kb.h>
 #include <knowrob_objects/ObjectState.h>
 #include <knowrob_objects/ObjectStateArray.h>
 
@@ -106,9 +106,9 @@ public:
 		l_data.next(e); obj.object_type = (char*)e;
 		l_data.next(e); obj.shape       = (int)e;
 		l_data.next(e); obj.mesh_path   = (char*)e;
-		l_data.next(e); std_msgs::pl_term_color(e, obj.color);
-		l_data.next(e); geometry_msgs::pl_term_vector3(e, obj.size);
-		l_data.next(e); geometry_msgs::pl_term_pose_stamped(e, obj.pose);
+		l_data.next(e); rosprolog_kb::term_to_color(e, obj.color);
+		l_data.next(e); rosprolog_kb::term_to_vector3(e, obj.size);
+		l_data.next(e); rosprolog_kb::term_to_pose_stamped(e, obj.pose);
 		l_data.next(e);
 		{ // read static transforms
 			geometry_msgs::TransformStamped staticTransform;
@@ -116,7 +116,7 @@ public:
 			PlTerm e;
 			obj.static_transforms.clear();
 			while(staticTransforms.next(e)) {
-				geometry_msgs::pl_term_transform_stamped(e, staticTransform);
+				rosprolog_kb::term_to_transform_stamped(e, staticTransform);
 				obj.static_transforms.push_back(staticTransform);
 			}
 		}

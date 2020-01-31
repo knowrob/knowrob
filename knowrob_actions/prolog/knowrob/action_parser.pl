@@ -3,14 +3,14 @@
      parser_create/1,
      parser_create/2,
      parser_run/3,
-     parser_run/4,
      parser_start/1,
-     parser_start/2,
      parser_stop/1,
      parser_stop/2,
      parser_push_token/2,
-     parser_pop_term/2,
-     parser_peek_term/2
+     parser_pop_finalized/2,
+     parser_intermediate_results/2,
+     parser_jsonify/2,
+     ros_push_token/2
 ]).
 /** <module> Activity parsing.
 
@@ -24,6 +24,8 @@ can be casted as grammar for the parser.
 */
 
 :- use_module(library('debug')).
+:- use_module(library('http/json')).
+
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/temporal')). % `interval/2`
@@ -33,23 +35,41 @@ can be casted as grammar for the parser.
             parser_create_grammar_(+,r),
             parser_create(-,t),
             parser_run(+,t,t),
-            parser_run(+,t,t,t),
             parser_start(+),
-            parser_start(+,t),
             parser_stop(+),
             parser_stop(+,-),
-            parser_push_token(+,t),
-            parser_pop_term(+,t),
-            parser_peek_term(+,t).
+            parser_push_token(+,t).
 
 :- dynamic parser_grammar_/4, % Parser, Workflow, Task Concept, Sequence Graph
            parser_queue_/3,
+           parser_subscriber_/2,
+           composer_queue_/2,
            parser_thread_/2,
-           parser_sub_thread_/2,
+           parser_sub_thread_/3,
            composer_result_/2,
+           composer_finalized_/2,
            composer_thread_/2.
 
+%%
+parser_message_(Level,Msg) :-
+  print_message(Level,activity_parser(Msg)).
+parser_info_(Msg) :-
+  parser_message_(informational,Msg).
+
 %% parser_create(-Parser) is det.
+%
+% Creates a new activity detection parser.
+% For this, sequence graphs are created for each
+% workflow known.
+%
+% @param Parser The id of a activity parser.
+%
+parser_create(Parser) :-
+  findall(WF,
+    rdfs_individual_of(WF,dul:'Workflow'),
+    Workflows),
+  parser_create(Parser,Workflows).
+
 %% parser_create(-Parser,+Workflows) is det.
 %
 % Creates a new activity detection parser.
@@ -59,17 +79,20 @@ can be casted as grammar for the parser.
 % @param Parser The id of a activity parser.
 % @param Workflows A list of workflow IRIs.
 %
-parser_create(Parser) :-
-  parser_create(Parser,[]).
-
 parser_create(Parser,Workflows) :-
   parser_unique_id_(Parser),
   forall(member(WF,Workflows),(
     parser_create_grammar_(Parser,WF);
-    print_message(warning, invalid_grammar(WF))
-  )).
+    parser_message_(warning, invalid_grammar(WF))
+  )),
+  assertz(composer_result_(Parser,[])),
+  assertz(composer_finalized_(Parser,[])),
+  mutex_create(Parser).
            
 %% generate unique parser id
+parser_unique_id_(Parser) :-
+  ground(Parser),!,
+  \+ parser_grammar_(Parser,_,_,_).
 parser_unique_id_(Parser) :-
   random_id_(P),
   ( parser_grammar_(P,_,_,_) ->
@@ -86,10 +109,9 @@ parser_create_grammar_(Parser,WF) :-
   ),
   workflow_constituents(WF,Constituents,Constraints),
   % compute the sequence graph
-  print_message(informational, loading_grammar(TskType)),
+  parser_info_(loading_grammar(WF)),
   esg_truncated(Tsk,Constituents,Constraints,[Sequence,
                            PreConditions, PostConditions]),
-  print_message(informational, grammar(TskType,Sequence)),
   % assert to Prolog KB
   assertz(parser_grammar_(Parser,WF,TskType,[Sequence,PreConditions,PostConditions])).
 
@@ -104,14 +126,13 @@ parser_get_grammar_(Parser,WF,Tsk,GraphChild) :-
      true ; no_grammar_(Parser,Tsk) ).
 
 no_grammar_(Parser) :-
-    print_message(warning, no_grammar_(Parser)),
+    parser_message_(warning, no_grammar_(Parser)),
     fail.
 no_grammar_(Parser,Tsk) :-
-    print_message(warning, no_grammar_(Parser,Tsk)),
+    parser_message_(warning, no_grammar_(Parser,Tsk)),
     fail.
 
 %% parser_run(+Parser,+Tokens,-ActTerm) is nondet.
-%% parser_run(+Parser,+Tokens,-ActTerm,+Opts) is nondet.
 %
 % Runs the parser for provided tokens. This blocks until
 % the processing has finished.
@@ -123,52 +144,51 @@ no_grammar_(Parser,Tsk) :-
 % @param Opts A list of parser options.
 %
 parser_run(Parser,Tokens,Output) :-
-  parser_run(Parser,Tokens,Output,[]).
-parser_run(Parser,Tokens,Output,Opts) :-
   %% start parser thread
-  parser_start(Parser,Opts),
+  parser_start(Parser),
   %% push tokens to its message queue
   forall(member(T,Tokens),parser_push_token(Parser,T)),
   %% wait and get all results
-  parser_stop(Parser,ActTerms),
-  ( member(compose,Opts) ->
-    Output = ActTerms ;
-    member(Output,ActTerms)
-  ).
+  parser_stop(Parser,Output).
 
 %% parser_start(+Parser) is det.
-%% parser_start(+Parser,+Opts) is det.
 %
 % Starts a parser, putting it in a state where
 % it waits for tokens to be streamed to the message
 % queue of the parser thread.
-% Options is a list of configuration parameters.
-% Currently only *compose* is a valid option, indicating
-% that the parser shall consolidate different detected
-% actions into one coherent interpretation.
 %
 % @param Parser The id of a activity parser.
-% @param Opts A list of parser options.
 %
 parser_start(Parser) :-
-  parser_start(Parser,[]).
-
-parser_start(Parser,Opts) :-
   %% message queues used to comminute parse results
   message_queue_create(In),
   message_queue_create(Out),
+  message_queue_create(Composed),
   assertz(parser_queue_(Parser,In,Out)),
+  assertz(composer_queue_(Parser,Composed)),
+  composer_set_intermediate_(Parser,[]),
+  %% obtain tokens from ROS topic '/parser/token'
+  ros_subscribe('/parser/token',
+      'knowrob_actions/EventToken',
+      knowrob_action_parser:ros_push_token(Parser),
+      Subscriber),
+  assertz(parser_subscriber_(Parser,Subscriber)),
   %% run the parser
   thread_create(parser_run_(Parser),Thread),
   assertz(parser_thread_(Parser,Thread)),
   %% run composer
-  ( \+ member(compose,Opts) ; (
-    assertz(composer_result_(Parser,[])),
-    %%
-    thread_create(activity_composer_run_(Parser),ComposeThread),
-    assertz(composer_thread_(Parser,ComposeThread))
-  )),
-  !.
+  thread_create(activity_composer_run_(Parser),ComposeThread),
+  assertz(composer_thread_(Parser,ComposeThread)),
+  %%
+  parser_info_(started(Parser)).
+
+%% the time of the oldest token still active
+parser_time_(Parser,Time) :-
+  findall(T0, (
+    parser_sub_thread_(Parser,Thread,T0),
+    is_active_thread_(Thread)
+  ), Stamps),
+  min_list(Stamps,Time).
 
 %% parser_stop(+Parser) is det.
 %% parser_stop(+Parser,-Outputs) is det.
@@ -184,27 +204,26 @@ parser_start(Parser,Opts) :-
 % @param Outputs The result of the parser.
 %
 parser_stop(Parser) :-
+  %% stop listining to ROS topics
+  parser_subscriber_(Parser,Subscriber),
+  ros_unsubscribe(Subscriber,'/parser/token'),
+  retractall(parser_subscriber_(Parser,_)),
   %% wait until parser thread exits
   parser_stop_threads_(Parser),
-  %% and destroy queues
-  parser_queues_destroy_(Parser).
-
-parser_stop(Parser,Outputs) :-
-  %% wait until parser thread exits
-  parser_stop_threads_(Parser),
-  %% materialize the output queue holding remaining results
-  parser_queue_(Parser,_,OutputQueue),
-  ( composer_thread_(Parser,ComposeThread) -> (
-    thread_send_message(OutputQueue,end_of_file),
-    thread_join(ComposeThread),
-    retractall(composer_thread_(Parser,_)),
-    composer_result_(Parser,Outputs)
-  ) ; (
-    message_queue_materialize_(OutputQueue,Outputs)
-  )),
   %% and destroy queues
   parser_queues_destroy_(Parser),
-  retractall(composer_result_(Parser,_)).
+  %%
+  parser_info_(stopped(Parser)).
+
+parser_stop(Parser,Outputs) :-
+  %% wait until parser threads have finished
+  parser_stop_threads_(Parser),
+  %% get composed actions
+  parser_pop_finalized(Parser,Outputs),
+  %% and destroy queues
+  parser_queues_destroy_(Parser),
+  %%
+  parser_info_(stopped(Parser)).
 
 %%
 parser_stop_threads_(Parser) :-
@@ -212,11 +231,17 @@ parser_stop_threads_(Parser) :-
     parser_join_thread_(Thread) ;
     true
   ),
-  forall( parser_sub_thread_(Parser,SubThread),
+  forall( parser_sub_thread_(Parser,SubThread,_),
           parser_join_thread_(SubThread)
   ),
-  retractall(parser_sub_thread_(Parser,_)),
-  retractall(parser_thread_(Parser,_)).
+  retractall(parser_sub_thread_(Parser,_,_)),
+  retractall(parser_thread_(Parser,_)),
+  %% join ComposeThread
+  composer_thread_(Parser,ComposeThread),
+  parser_queue_(Parser,_,OutputQueue),
+  thread_send_message(OutputQueue,end_of_file),
+  thread_join(ComposeThread),
+  retractall(composer_thread_(Parser,_)).
 
 %%
 parser_join_thread_(Thread) :-
@@ -230,7 +255,10 @@ parser_queues_destroy_(Parser) :-
   parser_queue_(Parser,In,Out),
   message_queue_destroy(In),
   message_queue_destroy(Out),
-  retractall(parser_queue_(Parser,_,_)).
+  composer_queue_(Parser,Composed),
+  message_queue_destroy(Composed),
+  retractall(parser_queue_(Parser,_,_)),
+  retractall(composer_queue_(Parser,_)).
 
 %% action_parser_push_token(+Parser,+Token) is semidet.
 %
@@ -241,35 +269,43 @@ parser_queues_destroy_(Parser) :-
 % @param Token A event endpoint token.
 %
 parser_push_token(Parser,Token) :-
+  ( is_token_(Token) ; (
+    parser_message_(warning, invalid_token(Token)),
+    fail
+  )),!,
   parser_thread_(Parser,Thread),
   is_active_thread_(Thread),
   thread_send_message(Thread,Token).
 
-%% parser_peek_term(+Parser,?ActTerm) is semidet.
-%
-% Peeks the next result from the parsers' output
-% message queue without removing it.
-% Fails in case the queue is empty.
-%
-% @param Parser The id of an activity parser.
-% @param ActTerm An action that was detected by the parser.
-%
-parser_peek_term(Parser,ActTerm) :-
-  parser_queue_(Parser,_,OutQueue),
-  thread_peek_message(OutQueue,ActTerm).
+%%
+ros_push_token(Parser,Tok) :-
+  %% read input
+  get_dict(timestamp,    Tok, Time),
+  get_dict(polarization, Tok, Polarization),
+  get_dict(event_type,   Tok, EventType),
+  get_dict(participants, Tok, Objects),
+  %%
+  atom_string(EventType_atom,EventType),
+  findall(OA, (
+    member(O,Objects),
+    atom_string(OA,O)
+  ), Object_Atoms),
+  %%
+  ( Polarization = 0 ->
+    Endoint = -(EventType_atom);
+    Endoint = +(EventType_atom)
+  ),
+  %%
+  parser_push_token(Parser,tok(Time,Endoint,Object_Atoms)).
 
-%% parser_pop_term(+Parser,?ActTerm) is semidet.
-%
-% Pops the next result from the parsers' output
-% message queue.
-% Blocks until the queue has the next item.
-%
-% @param Parser The id of an activity parser.
-% @param ActTerm An action that was detected by the parser.
-%
-parser_pop_term(Parser,ActTerm) :-
-  parser_queue_(Parser,_,OutQueue),
-  thread_get_message(OutQueue,ActTerm).
+is_token_(tok(Time,Endoint,Objects)) :-
+  %% 1.ARG
+  number(Time),
+  %% 2.ARG
+  endpoint_type(Endoint,EvtType),
+  kb_resource(EvtType),
+  %% 3.ARG
+  forall(member(Obj,Objects), kb_resource(Obj)).
 
 %%
 parser_run_(Parser) :-
@@ -286,22 +322,23 @@ parser_run_(Parser) :-
 
 %%
 push_token_(Parser,States,Tok) :-
+  Tok=tok(Time,_,_),
   % token may indicate the start of a new action verb
   forall(
     parser_get_grammar_(Parser,WF,Tsk,[Graph|ActConditions]),
-    verb_thread_create(Parser,States,[WF,Tsk,Graph,ActConditions])
+    verb_thread_create(Parser,States,[WF,Tsk,Graph,ActConditions],Time)
   ),
   % add token to each active thread
   forall(
-    ( parser_sub_thread_(Parser,VerbThread),
+    ( parser_sub_thread_(Parser,VerbThread,_),
       is_active_thread_(VerbThread)
     ),
     thread_send_message(VerbThread,Tok)
   ).
 
-verb_thread_create(Parser,States,Grammar) :-
+verb_thread_create(Parser,States,Grammar,Time) :-
   thread_create(parse_verb_(Parser,States,Grammar),Thread),
-  assertz(parser_sub_thread_(Parser,Thread)).
+  assertz(parser_sub_thread_(Parser,Thread,Time)).
 
 %%
 parse_verb_(Parser,States,[WF,Tsk,Graph,ActConditions]) :-
@@ -320,18 +357,22 @@ parse_verb_(Parser,States,[WF,Tsk,Graph,ActConditions]) :-
     true
   ),
   %%
-  retractall(parser_sub_thread_(Parser,Thread)).
+  retractall(parser_sub_thread_(Parser,Thread,_)).
 
-%% wait until all threads have consumed the last token
+%% wait until all threads have consumed the last token.
+%% this is indicated by the thread message queue being empty.
 parser_synch_(Parser) :-
   forall(
-    parser_sub_thread_(Parser,Thread),
+    parser_sub_thread_(Parser,Thread,_),
     parser_synch__(Thread)
   ).
 parser_synch__(Thread) :- \+ is_active_thread_(Thread), !.
 parser_synch__(Thread) :- \+ thread_peek_message(Thread,_), !.
 parser_synch__(Thread) :-
   % TODO: is there an event-driven way to wait for a queue to be empty?
+  %       I guess best option is to use a dedicated message signalling
+  %       that the thread is waiting now. then just use get message for 
+  %       blocking wait.
   sleep(0.001),
   parser_synch__(Thread).
 
@@ -357,7 +398,7 @@ action_threaded_(Parser,S0->Sn,ActTerm) -->
 action_threaded_(Parser,_States,ActTerm) -->
   % join all thread when *end_of_file* is reached
   [end_of_file],
-  { forall( parser_sub_thread_(Parser,Thread),
+  { forall( parser_sub_thread_(Parser,Thread,_),
             parser_join_thread_(Thread) ) },
   { parser_queue_(Parser,Queue,_),
     message_queue_materialize_(Queue,ActTerms),
@@ -365,6 +406,7 @@ action_threaded_(Parser,_States,ActTerm) -->
   }.
 
 %% parse {PreConditions}[-(Tsk),...,+(Tsk)]
+%% TODO: include classification in parse tree
 action_([G0,S0,A0]->[G3,S2,A2],
     action(WF,Tsk,Constituents),[Pre,_Post]) -->
   { esg_pop(G0,E0,G1),
@@ -373,13 +415,17 @@ action_([G0,S0,A0]->[G3,S2,A2],
   },
   constituents_([G1,S0,A1]->[G2,S2,A2],WF,Tsk,Constituents),
   % TODO: can we handle post conditions? e.g. surface contact after dropping.
-  %       these are ignored at the moment. maybe these could be used to imply tokens which were not observed.
+  %       these are ignored at the moment.
   %{ 'post_conditions'(Tsk,_Post) },
   { esg_pop(G2,E1,G3),
     concept_endpoint_(E1,+(Tsk))
   }.
 
 %%
+% TODO: there is always also a thread that detects the sub-action
+%       starting at the current token.
+%       It would be good to wait on this thread here, and to integrate its
+%       result as sub-action.
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
@@ -426,20 +472,19 @@ constituent_(Ctx0->[G2,S1,A1], _WF, Endpoint, PhaseTerm) -->
 
 % parse a single typed phase endpoint.
 phase_endpoint_([G0,S0,A0]->[G0,S2,A1],
-    Endpoint, [phase(Endpoint,Event,Participants)]) -->
+    Endpoint, [phase(Time,Endpoint,Participants)]) -->
   % next token has matching endpoint and context
   [ Tok ],
-  { Tok=tok(_Time,Event,Endpoint,Participants),
+  { Tok=tok(Time,Endpoint,Participants),
     update_states_(S0->S1,Tok),
-    esg_peak(G0,Endpoint2), % TODO: why Endpoint2 here?
-    bind_actors_(Endpoint2,A0->A1,Participants),
+    bind_actors_(Endpoint,A0->A1,Participants),
     set_has_token_(S1->S2)
   }.
 
 phase_endpoint_([G0,S0,A0]->Ctx1,Endpoint,ParseTree) -->
   % skip tokens of some other activity context
   [ Tok ],
-  { Tok=tok(_Time,_Event,_IgnoredEndpoint,Participants),
+  { Tok=tok(_Time,_IgnoredEndpoint,Participants),
     ignore_actors_(A0,S0,Participants),
     update_states_(S0->S1,Tok)
   },
@@ -451,17 +496,93 @@ phase_endpoint_([G0,S0,A0]->Ctx1,Endpoint,ParseTree) -->
 
 %%
 activity_composer_run_(Parser) :-
-  parser_pop_term(Parser,Term),
-  ( Term=end_of_file -> true ; (
-    composer_result_(Parser,I0),
-    activity_composer_add_(I0,Term,I1),
-    retractall(composer_result_(Parser,_)),
-    assertz(composer_result_(Parser,I1)),
+  % pop next messsage, wait on it
+  parser_queue_(Parser,_,OutQueue),
+  thread_get_message(OutQueue,T0),
+  parser_intermediate_results(Parser,I0),
+  % materialize rest of queue
+  message_queue_materialize_(OutQueue,Rest),
+  %%
+  composer_add_all_(I0->I1,[T0|Rest]),
+  composer_finalize_(Parser,I1,I2),
+  composer_set_intermediate_(Parser,I2),
+  ( member(end_of_file,[T0|Rest]) -> true ;
     activity_composer_run_(Parser)
-  )).
+  ).
 
 %%
+composer_add_all_(I->I,[]) :- !.
+composer_add_all_(I->I,[end_of_file|_]) :- !.
+composer_add_all_(I0->I2,[X|Xs]) :-
+  activity_composer_add_(I0,X,I1),
+  composer_add_all_(I1->I2,Xs).
+
+%% split pending results into ongoing & finalized
+composer_finalize_(Parser,Results,Ongoing) :-
+  parser_time_(Parser,Time) ->
+  composer_finalize__(Parser,Time,Results,Ongoing);
+  ( forall(
+      member(X,Results),
+      composer_push_finalized_(Parser,X)
+    ),
+    Ongoing=[]
+  ).
+
+composer_finalize__(_Parser,_Time,[],[]).
+composer_finalize__(Parser,Time,[X|Xs],Os) :-
+  term_endtime_(X,EndTime),
+  EndTime < Time, !,
+  composer_push_finalized_(Parser,X),
+  composer_finalize__(Parser,Time,Xs,Os).
+composer_finalize__(Parser,Time,[X|Xs],[X|Os]) :-
+  composer_finalize__(Parser,Time,Xs,Os).
+
+%% parser_pop_finalized(+Parser,-Outputs) is det.
+%
+% Empties the output message queue of the activity
+% parser. Outputs is a list of activity compositions
+% considered as *final* by the parser, i.e., no new token
+% could be pushed that would render the items in the list invalid.
+%
+% @param Parser The id of a activity parser.
+% @param Outputs The pending finalized results of the parser.
+%
+parser_pop_finalized(Parser,Finalized) :-
+  composer_queue_(Parser,Q),
+  message_queue_materialize_(Q,Finalized).
+
+%%
+composer_push_finalized_(Parser,X) :-
+  X=action(_,Tsk,_),
+  parser_info_(composed(Tsk)),
+  %%
+  composer_queue_(Parser,Q),
+  thread_send_message(Q,X).
+
+%% parser_intermediate_results(+Parser,-Outputs) is det.
+%
+% Outputs is a list of activity compositions
+% considered as *non-final* by the parser, i.e., some new token
+% could be pushed that would render the item in the list invalid.
+%
+% @param Parser The id of a activity parser.
+% @param Outputs The intermediate results of the parser.
+%
+parser_intermediate_results(Parser,Outputs) :-
+  with_mutex(Parser,
+    composer_result_(Parser,Outputs)
+  ).
+
+composer_set_intermediate_(Parser,X) :-
+  with_mutex(Parser, (
+    retractall(composer_result_(Parser,_)),
+    assertz(composer_result_(Parser,X))
+  )).
+
+%% add action in case it explains max num of endpoints
 activity_composer_add_(I_in,Act,I_out) :-
+  Act=action(_,Tsk,_),
+  parser_info_(detected(Tsk)),
   %%
   findall(E0,
     term_endpoint(Act,E0),
@@ -495,14 +616,76 @@ overlapping_action_(I,Endpoints,Act_overlapping) :-
   )).
 
 		 /*******************************
+		 *	Serialization		*
+		 *******************************/
+
+%% parser_jsonify(+Terms,-JSON_String) is det.
+%
+% Converts a list of action terms into a JSON-encoded
+% atom.
+%
+% @param Terms A list of action terms.
+% @param JSON_String The list as a JSON string.
+%
+parser_jsonify(Terms,JSON_String) :-
+  %%
+  findall(Dict, (
+    member(X,Terms),
+    event_dict_(X,Dict)
+  ),ActDicts),
+  with_output_to(atom(JSON_String), 
+    json_write_dict(current_output, ActDicts)
+  ).
+
+%%
+event_dict_([],[]) :- !.
+event_dict_([X|Xs],[Y|Ys]) :- !,
+  event_dict_(X,Y),
+  event_dict_(Xs,Ys).
+
+event_dict_(action(Workflow,Tsk,Constituents),
+  _{ type: action,
+     event_type: EventType,
+     event_time: '',
+     event_polarization: '',
+     description: Descr,
+     children: Children,
+     participants: []
+  }
+) :-
+  rdf_split_url(_,EventType,Tsk),
+  rdf_split_url(_,Descr,Workflow),
+  event_dict_(Constituents,Children).
+
+event_dict_(phase(Time,Endpoint,Participants),
+  _{ type: phase,
+     event_type: EventType,
+     event_time: Time,
+     event_polarization: Polarization,
+     description: '',
+     children: [],
+     participants: ObjNames
+  }
+) :-
+  endpoint_type(Endpoint,EndpointType),
+  rdf_split_url(_,EventType,EndpointType),
+  %%
+  ( Endpoint=(-(_)) -> Polarization='-' ; Polarization='+' ),
+  %%
+  findall(N, (
+    member(Obj,Participants),
+    rdf_split_url(_,N,Obj)
+  ),ObjNames).
+
+		 /*******************************
 		 *	States		*
 		 *******************************/
 
 %%
-get_event_state_(States,Obj,EvtType,[Event,Participants]) :-
+get_event_state_(States,Obj,EvtType,Participants) :-
   get_dict(Obj,States,ObjStates),
   get_dict(EvtType,ObjStates,Events),
-  member([Event,Participants],Events),!.
+  member(Participants,Events),!.
 
 %%
 set_event_states_(S_0,[],_,S_0) :- !.
@@ -510,16 +693,15 @@ set_event_states_(S_0,[Obj|Xs],Val,S_n) :-
   set_state_(S_0,Obj,Val,S_1),
   set_event_states_(S_1,Xs,Val,S_n).
 
-set_state_(S_0, Obj, [EvtType,Event,Participants], S_0) :-
-  get_event_state_(S_0,Obj,EvtType,[-(Event),PE]),
+set_state_(S_0, Obj, [EvtType,Participants], S_0) :-
+  get_event_state_(S_0,Obj,EvtType,PE),
   subset(Participants,PE), !.
-set_state_(S_0, Obj,[EvtType,Event,Participants], S_1) :-
+set_state_(S_0, Obj,[EvtType,Participants], S_1) :-
   get_or_create_state_(S_0,Obj,states{},ES_0),
   get_or_create_state_(ES_0,EvtType,[],Events_0),
-  ( member([Event,_],Events_0) ->
+  ( member(Participants,Events_0) ->
     S_1 = S_0 ; (
-    delete_previous_events(Events_0->Events_1,Participants),
-    put_dict(EvtType,ES_0,[[-(Event),Participants]|Events_1],ES_1),
+    put_dict(EvtType,ES_0,[Participants|Events_0],ES_1),
     put_dict(Obj,S_0,ES_1,S_1)
   )).
 
@@ -529,32 +711,22 @@ unset_event_states_(S_0,[Obj|Xs],Val,S_n) :-
   unset_state_(S_0->S_1,Obj,Val),
   unset_event_states_(S_1,Xs,Val,S_n).
 
-unset_state_(States_0->States_0,Obj,[EvtType,Event,Participants]) :-
+unset_state_(States_0->States_0,Obj,[EvtType,Participants]) :-
   \+ (
-    get_event_state_(States_0,Obj,EvtType,[-(Event),PE]),
+    get_event_state_(States_0,Obj,EvtType,PE),
     subset(Participants,PE)
   ), !.
 
-unset_state_(States_0->States_1,Obj,[EvtType,Event,Participants]) :-
+unset_state_(States_0->States_1,Obj,[EvtType,Participants]) :-
   get_dict(Obj,States_0,ES_0),
   get_dict(EvtType,ES_0,Events_0),
-  delete(Events_0,[-(Event),_],Events_1),
-  put_dict(EvtType,ES_0,[[+(Event),Participants]|Events_1],ES_1),
+  delete(Events_0,Participants,Events_1),
+  put_dict(EvtType,ES_0,Events_1,ES_1),
   put_dict(Obj,States_0,ES_1,States_1), !.
 
 %%
 get_or_create_state_(States,Key,Default,Value) :-
   once( get_dict(Key,States,Value) ; Value = Default ).
-
-%%
-delete_previous_events([]->[],_) :- !.
-delete_previous_events([[X,P_X]|Xs]->Events_n,P_0) :-
-  % delete events with identical participants!
-  % TODO: what is going on here?
-  delete_previous_events(Xs->Events_1,P_0),
-  ( subset(P_X,P_0) ->
-    Events_n=Events_1 ;
-    Events_n=[[X,P_X]|Events_1] ).
 
 		 /*******************************
 		 *	Role bindings		*
@@ -661,18 +833,10 @@ set_has_token_(S_0->S_1) :-
   put_dict(has_token,S_0,_{},S_1).
 
 %%
-update_states_(S_0->S_1,tok(_Time,_,-(Event),Participants)) :- !,
-  ( rdfs_individual_of(Event,owl:'Class') ->
-    EvtType = Event ;
-    kb_type_of(Event,EvtType)
-  ),
-  set_event_states_(S_0,Participants,[EvtType,Event,Participants],S_1).
-update_states_(S_0->S_1,tok(_Time,_,+(Event),Participants)) :- !,
-  ( rdfs_individual_of(Event,owl:'Class') ->
-    EvtType = Event ;
-    kb_type_of(Event,EvtType)
-  ),
-  unset_event_states_(S_0,Participants,[EvtType,Event,Participants],S_1).
+update_states_(S_0->S_1,tok(_Time,-(EvtType),Participants)) :- !,
+  set_event_states_(S_0,Participants,[EvtType,Participants],S_1).
+update_states_(S_0->S_1,tok(_Time,+(EvtType),Participants)) :- !,
+  unset_event_states_(S_0,Participants,[EvtType,Participants],S_1).
 
 %%
 ignore_actors_(Bindings,States,Actors) :-
@@ -683,6 +847,7 @@ ignore_actors_(Bindings,States,Actors) :-
   % participants is bound to the activity context.
   % TODO: this is too restrictive, e.g. bumping the object
   %           into another object, dropping it and picking it up again, etc.
+  %           but well one could argue that this is another plan then.
   forall(
     member(O,Actors),
     \+ member([O,_],Bindings)
@@ -696,20 +861,24 @@ action_preceded_by_(G,S,A_0->A_1) :-
 action_preceded_by_(_G,_S,A_0->A_0).
 
 action_preceded_by__(Endpoints,S,A0->A1) :-
-  % check how many endpoints were observed that would sattisfy
+  % check how many endpoints were observed that would satisfy
   % the pre-conditions
+  % FIXME: what about action endpoint pre-conditions? these might fail now
+  findall(AE, (
+    member(AE,Endpoints),
+    AE=(-(_))
+  ), ActiveEndpoints),
   findall([Participants,C_Roles], (
-    member(Endpoint,Endpoints),
+    member(Endpoint,ActiveEndpoints),
     endpoint_type(Endpoint,Concept),
     %%
     kb_type_of(Concept,ConceptType),
-    get_event_state_(S,_,ConceptType, [Evt,Participants]),
-    same_polarization_(Evt,Endpoint),
+    get_event_state_(S,_,ConceptType,Participants),
     %%
     concept_roles_(Concept,C_Roles)
   ), ParticipantsAndRoles),
   %% 
-  length(Endpoints,Total),
+  length(ActiveEndpoints,Total),
   length(ParticipantsAndRoles,Actual),
   Total is Actual,
   %%%
@@ -733,15 +902,19 @@ endpoint_type_(E,Type) :-
   rdfs_subclass_of(Iri,Type),!.
 
 %%
-same_polarization_(-(_),-(_)).
-same_polarization_(+(_),+(_)).
-
-%%
-term_endpoint(phase(-(_),Event,_),-(Event)) :- !.
-term_endpoint(phase(+(_),Event,_),+(Event)) :- !.
+term_endpoint(phase(_,E,_),E) :- !.
 term_endpoint(action(_,_,Xs),E) :-
   member(X,Xs),
   term_endpoint(X,E).
+
+%%
+term_endtime_(phase(Time,_,_),Time) :- !.
+term_endtime_(action(_,_,Xs),Time) :-
+  findall(T0, (
+    member(X,Xs),
+    term_endtime_(X,T0)
+  ), Stamps),
+  max_list(Stamps,Time).
 
 %%
 random_id_(Id) :-

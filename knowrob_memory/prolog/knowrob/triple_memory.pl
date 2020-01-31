@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2019 Daniel Beßler
+  Copyright (C) 2019-2020 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,10 @@
         mem_store_triple/3,
         mem_store_triple/4,
         mem_store_triple/5,
-        mem_store_triple/6,
         mem_retrieve_triple/3,
         mem_retrieve_triple/4,
-        mem_retrieve_triple/5,
-        mem_update_triple_begin/2,
-        mem_update_triple_end/2,
-        mem_update_triple_value/2,
         mem_triple_stop/3,
         mem_triple_stop/4,
-        mem_triple_value/3,
-        mem_xsd_value/3,
-        mem_triple_interval/2,
         mem_subject/1,
         mem_property/1,
         mem_triples_init/0
@@ -54,24 +46,21 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('jpl')).
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/memory'), [mem_db_name/1]).
 
 :-  rdf_meta
     mem_store_triple(r,r,r),
-    mem_store_triple(r,r,r,-),
-    mem_store_triple(r,r,r,-,+),
-    mem_store_triple(r,r,r,-,+,?),
+    mem_store_triple(r,r,r,+),
+    mem_store_triple(r,r,r,+,?),
     mem_retrieve_triple(r,r,r),
     mem_retrieve_triple(r,r,r,+),
     mem_retrieve_triple(r,r,r,+,?),
     mem_triple_stop(r,r,r),
     mem_triple_stop(r,r,r,+),
-    mem_triple_value(+,r,?),
-    mem_xsd_value(+,r,?),
     mem_subject(r),
     mem_property(r).
 
@@ -83,8 +72,9 @@
 % Initialize the triple memory.
 %
 mem_triples_init :-
-  mng_distinct_values(triples, subject, Subjects),
-  mng_distinct_values(triples, property, Properties),
+  mem_db_name(DB),
+  mng_distinct_values(DB, triples, subject, Subjects),
+  mng_distinct_values(DB, triples, property, Properties),
   forall( member(S,Subjects),   mem_add_subject(S) ),
   forall( member(P,Properties), mem_add_property(P) ).
 
@@ -93,13 +83,6 @@ mem_add_subject(S) :-
   once( mem_subject(S)  ; asserta(mem_subject(S)) ).
 
 %%
-mem_add_property(List) :-
-  is_list(List),!,
-  forall(
-    member(P,List),
-    once( mem_property(P) ; asserta(mem_property(P)) )
-  ).
-
 mem_add_property(Sub) :-
   forall(
     rdfs_subproperty_of(Sub,P),
@@ -107,9 +90,8 @@ mem_add_property(Sub) :-
   ).
 
 %% mem_store_triple(+Subject,+Property,+Value)
-%% mem_store_triple(+Subject,+Property,+Value,-DBObject)
-%% mem_store_triple(+Subject,+Property,+Value,-DBObject,+Begin)
-%% mem_store_triple(+Subject,+Property,+Value,-DBObject,+Begin,+End)
+%% mem_store_triple(+Subject,+Property,+Value,+Begin)
+%% mem_store_triple(+Subject,+Property,+Value,+Begin,+End)
 %
 % Stores a temporalized triple in a mongo DB
 % collection named 'triples'.
@@ -119,65 +101,41 @@ mem_add_property(Sub) :-
 % taken care of externally.
 %
 mem_store_triple(Subject,Property,Value) :-
-  mem_store_triple(Subject,Property,Value,_).
-
-mem_store_triple(Subject,Property,Value,DBObject) :-
   current_time(Now),
-  mem_store_triple(Subject,Property,Value,DBObject,Now,_).
+  mem_store_triple(Subject,Property,Value,Now,_).
 
-mem_store_triple(Subject,Property,Value,DBObject,Begin) :-
-  mem_store_triple(Subject,Property,Value,DBObject,Begin,_).
+mem_store_triple(Subject,Property,Value,Begin) :-
+  mem_store_triple(Subject,Property,Value,Begin,_).
 
-mem_store_triple(Subject,Property,Value,DBObject,Begin,End) :-
+mem_store_triple(Subject,Property,Value,Begin,End) :-
   %%
   ground([Subject,Property,Value,Begin]),
+  mem_triple_typed_value_(Property,Value,TypedValue),
   %%
   ( rdfs_individual_of(Property,owl:'FunctionalProperty') ->
     mem_triple_stop(Subject,Property,_,Begin) ; true ),
   %%
   % TODO: not so nice to save the list of all super-properties in each sample!
   %          better use a separate collection?
-  findall(Y,rdfs_subproperty_of(Property,Y),Ys),
+  findall(string(Y),rdfs_subproperty_of(Property,Y),Ys),
   findall(X, (
-    member(X, [
-      'subject'-Subject,
-      'property'-Property,
-      'value'-Value,
-      'begin'-Begin,
-      'end'-End,
-      'property_chain'-Ys
-    ]),
+    ( X=['subject',string(Subject)];
+      X=['property',string(Property)];
+      X=['value',TypedValue];
+      X=['begin',time(Begin)];
+      X=['end',time(End)];
+      X=['property_chain',array(Ys)]
+    ),
     ground(X)
-  ), Pairs),
-  dict_pairs(Dict, _, Pairs),
-  mng_store(triples, Dict, DBObject),
+  ), Doc),
+  mem_db_name(DB),
+  mng_store(DB, triples, Doc),
   %%
   mem_add_subject(Subject),
-  mem_add_property(Ys).
-
-%% mem_update_triple_begin(+DBObject,+Begin)
-%
-% Assign begin timestamp to existing document.
-%
-mem_update_triple_begin(DBObject,Begin) :-
-  ground([DBObject,Begin]),
-  mng_update(triples, DBObject, _{begin: Begin}).
-
-%% mem_update_triple_end(+DBObject,+End)
-%
-% Assign end timestamp to existing document.
-%
-mem_update_triple_end(DBObject,End) :-
-  ground([DBObject,End]),
-  mng_update(triples, DBObject, _{end: End}).
-
-%% mem_update_triple_value(+DBObject,+Value)
-%
-% Assign triple value to existing document.
-%
-mem_update_triple_value(DBObject,Value) :-
-  ground([DBObject,Value]),
-  mng_update(triples, DBObject, _{value: Value}).
+  forall(
+    member(string(P),Ys),
+    once( mem_property(P) ; asserta(mem_property(P)) )
+  ).
 
 %% mem_triple_stop(?Subject,?Property,?Value)
 %% mem_triple_stop(?Subject,?Property,?Value,+Stamp)
@@ -191,15 +149,20 @@ mem_triple_stop(Subject,Property,Value) :-
 
 mem_triple_stop(Subject,Property,Value,Stamp) :-
   ground(Stamp),
-  forall(
-    % triples that are active
-    mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp),
-    % assign new end time
-    mem_update_triple_end(DBObject,Stamp)
-  ).
+  mem_triple_typed_value_(Property,Value,TypedValue),
+  mem_db_name(DB),
+  findall(X, (
+    ( X=['subject',        ['$eq',string(Subject)]];
+      X=['property_chain', ['$eq',string(Property)]];
+      X=['value',          ['$eq',TypedValue]];
+      X=['end',            ['$exists',bool(0)]]
+    ),
+    ground(X)
+  ), Query),
+  mng_update(DB, triples, Query, ['end', time(Stamp)]).
 
-%% mem_retrieve_triple(?Subject,?Property,?Value,-DBObject)
-%% mem_retrieve_triple(?Subject,?Property,?Value,-DBObject,?Stamp)
+%% mem_retrieve_triple(?Subject,?Property,?Value)
+%% mem_retrieve_triple(?Subject,?Property,?Value,?Stamp)
 %
 % Retrieve all matching triples from mong DB that are
 % active at the given time.
@@ -208,81 +171,68 @@ mem_triple_stop(Subject,Property,Value,Stamp) :-
 % at the moment.
 %
 mem_retrieve_triple(Subject,Property,Value) :-
-  mem_retrieve_triple(Subject,Property,Value,_).
-
-mem_retrieve_triple(Subject,Property,Value,DBObject) :-
   current_time(Now),
-  mem_retrieve_triple(Subject,Property,Value,DBObject,Now).
+  mem_retrieve_triple(Subject,Property,Value,Now).
 
-mem_retrieve_triple(Subject,Property,Value,DBObject,Stamp) :-
-  % build query pattern
-  findall(X, ((
-      member(X, [
-        ['subject', 'is', Subject],
-        ['property_chain', 'is', Property],
-        ['value', 'is', Value]
-      ])
-      ; X=['begin', '<=', Stamp]
-      ; X=or([
-            ['end', '>=', Stamp],
-            ['end', 'exists', false]
-          ])
-      ),
-      ground(X)),
-      Pattern),
+mem_retrieve_triple(Subject,Property,Value,Stamp) :-
+  mem_db_name(DB),
+  mem_triple_typed_value_(Property,Value,TypedValue),
   % execute the query
-  mng_cursor(triples, Pattern, DBCursor),
-  mng_cursor_descending(DBCursor, 'begin', DBCursorDescending),
-  mng_cursor_read(DBCursorDescending, DBObject),
-  % bind output
-  ( ground(Property) -> true ; mng_get_string(DBObject,property,Property)),
-  ( ground(Value)    -> true ; mem_triple_value(DBObject,Property,Value)),
-  ( ground(Stamp)    -> true ; mng_get_long(DBObject,begin,Stamp)),
-  ( ground(Subject)  -> true ; mng_get_string(DBObject,subject,Subject)).
+  setup_call_cleanup(
+  %% setup
+  ( mng_cursor_create(DB,triples,Cursor),
+    mng_cursor_descending(Cursor,'begin'),
+    mng_cursor_limit(Cursor,1),
+    forall(
+      ( ( X=['subject',        ['$eq',string(Subject)]];
+          X=['property_chain', string(Property)];
+          X=['value',          ['$eq',TypedValue]];
+          X=['begin',          ['$lte',time(Stamp)]];
+          X=['$or', list([['end',    ['$gte',time(Stamp)]],
+                          ['end',    ['$exists',bool(0)]]])]
+        ),
+        ground(X)),
+      ( mng_cursor_filter(Cursor,X) )
+    )
+  ),
+  %% call
+  ( mng_cursor_materialize(Cursor, TripleDict),
+    % bind output
+    ( ground(Property) -> true ; mng_get_dict(property, TripleDict, Property)),
+    ( ground(Value)    -> true ; mng_get_dict(value,    TripleDict, Value)),
+    ( ground(Stamp)    -> true ; mng_get_dict(begin,    TripleDict, Stamp)),
+    ( ground(Subject)  -> true ; mng_get_dict(subject,  TripleDict, Subject))
+  ),
+  %% cleanup
+  ( mng_cursor_destroy(Cursor) )
+  ).
 
-%% mem_triple_value(+DBObj,+P,?Val)
-%
-% Retrieves the value of the 'value' field
-% of a mongo triple document.
-%
-mem_triple_value(DBObj,P,Val) :-
-  rdfs_individual_of(P,owl:'ObjectProperty'),!,
-  mng_get_string(DBObj,value,Val).
+%%
+mem_triple_typed_value_(P,Value,string(Value)) :-
+  atom(P),
+  rdfs_individual_of(P,owl:'ObjectProperty'),!.
 
-mem_triple_value(DBObj,P,Val) :-
+mem_triple_typed_value_(P,Value,TypedValue) :-
+  atom(P),
   rdf_phas(P,rdfs:range,Range),
-  mem_xsd_value(DBObj,Range,Val),!.
+  mem_triple_typed_xsd_(Range,Value,TypedValue),!.
 
-mem_triple_value(DBObj,_,Val) :-
-  mng_get_string(DBObj,value,Val).
+mem_triple_typed_value_(_P,Value,string(Value)).
 
-%% mem_xsd_value(+DBObj,?XSD_Type,?Val)
-%
-% Retrieves the value of the 'value' field
-% of a mongo triple document.
-%
-mem_xsd_value(DBObj,XSD_Type,Val) :-
-  rdf_equal(XSD_Type,xsd:float),!,
-  mng_get_double(DBObj,value,Val).
+%%
+mem_triple_typed_xsd_(XSD_Type,Value,double(Value)) :-
+  ( rdf_equal(XSD_Type,xsd:float) ;
+    rdf_equal(XSD_Type,xsd:double)
+  ),!.
 
-mem_xsd_value(DBObj,XSD_Type,Val) :-
-  rdf_equal(XSD_Type,xsd:double),!,
-  mng_get_double(DBObj,value,Val).
+mem_triple_typed_xsd_(XSD_Type,Value,int(Value)) :-
+  ( rdf_equal(XSD_Type,xsd:long) ;
+    rdf_equal(XSD_Type,xsd:int) ;
+    rdf_equal(XSD_Type,xsd:short) ;
+    rdf_equal(XSD_Type,xsd:byte)
+  ),!.
 
-mem_xsd_value(DBObj,XSD_Type,Val) :-
-  rdf_equal(XSD_Type,xsd:long),!,
-  mng_get_long(DBObj,value,Val).
-
-mem_xsd_value(DBObj,_XSD_Type,Val) :-
-  mng_get_string(DBObj,value,Val).
-
-%% mem_triple_interval(+DBObj,?Interval)
-%
-mem_triple_interval(DBObject,Interval) :-
-  mng_get_long(DBObject,begin,Begin),
-  ( mng_get_long(DBObject,end,End) ->
-    Interval=[Begin,End] ;
-    Interval=[Begin] ).
+mem_triple_typed_xsd_(_Range,Value,string(Value)).
 
 %%
 % expand knowrob:vkb_has_triple
@@ -291,8 +241,8 @@ knowrob:vkb_has_triple(S,P,O,DBArgs) :-
   ( ground(S) -> mem_subject(S) ; true ),
   ( ground(P) -> mem_property(P) ; true ),
   ( get_dict(during,DBArgs,Stamp) ->
-    mem_retrieve_triple(S,P,O,_,Stamp) ;
-    mem_retrieve_triple(S,P,O,_)
+    mem_retrieve_triple(S,P,O,Stamp) ;
+    mem_retrieve_triple(S,P,O)
   ).
 
 %%
@@ -303,7 +253,7 @@ knowrob:vkb_has_triple(S,P,O,DBArgs) :-
 %%
 mem_triple_start_(S,P,O,DBArgs) :-
   ( get_dict(during,DBArgs,Stamp) ->
-    mem_store_triple(S,P,O,_,Stamp) ;
+    mem_store_triple(S,P,O,Stamp) ;
     mem_store_triple(S,P,O)
   ).
 

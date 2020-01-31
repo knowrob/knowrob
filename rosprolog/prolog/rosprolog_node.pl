@@ -44,8 +44,9 @@
 %
 % Calls *Goal*, which is an atom representation of
 % a term, and JSON encodes the solution and binds
-% it the the second argument *Answer*.
+% it to the second argument *Answer*.
 %
+rosprolog_query('', _) :- !.
 rosprolog_query(Goal, Answer) :-
   atom(Goal),
   % parse term from Goal atom

@@ -204,6 +204,10 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#Substance_0">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#Bowl_0">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Bowl"/>
+    </owl:NamedIndividual>
     
 
 
@@ -219,6 +223,24 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#TEST_RED">
         <rdf:type rdf:resource="http://knowrob.org/kb/mem-test.owl#TestColorRegion"/>
+    </owl:NamedIndividual>
+    
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#predicate1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <knowrob:hasFirstProcedureArgument rdf:resource="http://knowrob.org/kb/mem-test.owl#predicate1_Arg1"/>
+        <knowrob:hasProcedureArgument rdf:resource="http://knowrob.org/kb/mem-test.owl#predicate1_Arg2"/>
+        <knowrob:hasArity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</knowrob:hasArity>
+        <knowrob:hasFunctor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">predicate1</knowrob:hasFunctor>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#predicate1_Argument1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
+        <DUL:precedes rdf:resource="http://knowrob.org/kb/mem-test.owl#predicate1_Arg2"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#predicate1_Argument2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableArgument"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

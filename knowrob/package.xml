@@ -19,7 +19,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <run_depend>swi-prolog</run_depend>
-  <run_depend>swi-prolog-java</run_depend>
   
   <run_depend>comp_spatial</run_depend>
   <run_depend>json_prolog_msgs</run_depend>

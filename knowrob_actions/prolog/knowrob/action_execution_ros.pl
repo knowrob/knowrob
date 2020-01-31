@@ -27,7 +27,7 @@ knowrob_action_execution:action_registry(
 %
 %
 ros_service_query(PlanExecution,BindingDict,InputDict,OutputPairs) :-
-  kb_triple(PlanExecution,dul:sattisfies,ExecutionPlan),
+  kb_triple(PlanExecution,dul:satisfies,ExecutionPlan),
   kb_triple(PlanExecution,dul:includesAction,Action),
   %%%%%%%%%
   %%%%% Find ServiceInterface participant.
