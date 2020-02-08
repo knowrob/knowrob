@@ -85,7 +85,11 @@ timeline(Events) :-
       atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
   data_vis(timeline(event_timeline),
-          [data:[[EvtNames,EventExtends]]]).
+          [values:[[EvtNames,EventExtends]]]).
+
+data_vis_set_(Key,Msg,Value) :-
+  get_dict(Key,Msg,[Type,_]),
+  b_set_dict(Key,Msg,[Type,Value]).
 
 %% data_vis_object
 data_vis_object(piechart(Identifier), Object) :-
@@ -96,44 +100,63 @@ data_vis_object(treechart(Identifier), Object) :-
   data_vis_(Identifier,2,Object).
 data_vis_object(timeline(Identifier), Object) :-
   data_vis_(Identifier,3,Object),
-  b_set_dict(title, Object, 'Logged Actions'),
-  b_set_dict(xlabel, Object, 'Time'),
-  b_set_dict(ylabel, Object, 'Events').
+  data_vis_set_(title, Object, 'Logged Actions'),
+  data_vis_set_(xlabel, Object, 'Time'),
+  data_vis_set_(ylabel, Object, 'Events').
 data_vis_object(linechart(Identifier), Object) :-
   data_vis_(Identifier,4,Object).
 
 data_vis_(Identitier, Type, _{
-  id: Identitier,
-  type: Type,
-  title: '',
-  xlabel: '',
-  ylabel: '',
-  width: 200,
-  height: 200,
-  fontsize: '12px',
-  values: []
+  id:       [string,Identitier],
+  type:     [int32,Type],
+  title:    [string,''],
+  xlabel:   [string,''],
+  ylabel:   [string,''],
+  width:    [int32,200],
+  height:   [int32,200],
+  fontsize: [string,'12px'],
+  values:   ['array(data_vis_msgs/ValueList)',[]]
 }).
 
 %% data_vis_set_data
 data_vis_set_data(Object, Data) :-
-  data_vis_set_property(Object, data:Data).
+  data_vis_set_property(Object, values:Data).
 
 %% data_vis_set_property
-data_vis_set_property(Object, data:[Data,Labels]) :-
-  lists_to_arrays(Data, DataArr),
-  lists_to_arrays(Labels, LabelsArr),!,
-  b_set_dict(data, Object, [DataArr,LabelsArr]).
 data_vis_set_property(Object, data:Data) :-
-  lists_to_arrays(Data, DataArr),!,
-  b_set_dict(data, Object, DataArr).
+  data_vis_set_property(Object, values:Data),!.
+data_vis_set_property(Object, values:Data) :-
+  data_vis_values(Data,Values),!,
+  data_vis_set_(values, Object, [Values]).
 data_vis_set_property(Object, Key:Value) :-
-  b_set_dict(Key, Object, Value).
+  data_vis_set_(Key, Object, Value).
 
 %% data_vis_set_properties
 data_vis_set_properties(_, []) :- !.
 data_vis_set_properties(Object, [Prop|Rest]) :-
   data_vis_set_property(Object, Prop), !,
   data_vis_set_properties(Object, Rest).
+
+%%
+data_vis_values([Data1,Data2],_{
+  label: [string,''],
+  value1: ['array(string)',D1],
+  value2: ['array(string)',D2]
+}) :-
+  string_data_(Data1,D1),
+  string_data_(Data2,D2),!.
+data_vis_values(Data1,_{
+  label: [string,''],
+  value1: ['array(string)',D1],
+  value2: ['array(string)',[]]
+}) :-
+  string_data_(Data1,D1),!.
+
+%%
+string_data_([],[]) :- !.
+string_data_([X|Xs],[Y|Ys]) :-
+  ( atom(X) -> Y=X ; term_to_atom(X,Y) ),
+  string_data_(Xs,Ys).
 
 %%
 data_vis_publish(Object) :-
