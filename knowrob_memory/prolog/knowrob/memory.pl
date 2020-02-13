@@ -53,16 +53,20 @@
            current_episode/1.
 
 %% mem_episode_start(-Episode)
-%% mem_episode_start(-Episode,+Topics)
+%% mem_episode_start(-Episode,+Options)
 %
 % Start recording an episdic memory.
 %
 mem_episode_start(Episode) :-
-  mem_episode_start(Episode,[['tf',[]]]).
+  mem_episode_start(Episode,[
+    topics:[['tf',[]]]
+  ]).
 
-mem_episode_start(Episode,Topics) :-
-  mem_drop,
-  mem_init,
+mem_episode_start(Episode,Options) :-
+  ( member(import:Dir, Options) ->
+    (mem_init(Dir)) ;
+    (mem_drop, mem_init)
+  ),
   %
   \+ current_episode(_),
   current_time(Stamp),
@@ -72,6 +76,10 @@ mem_episode_start(Episode,Topics) :-
   asserta(current_episode(Episode)),
   %%
   mem_create_default_index,
+  once((
+    member(topics:Topics, Options);
+    Topics=[['tf',[]]]
+  )),
   mem_create_index(Topics),
   ros_logger_start(Topics).
 

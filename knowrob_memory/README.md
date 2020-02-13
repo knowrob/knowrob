@@ -23,12 +23,12 @@ Start logging by creating a new episode
 
 By default, only *tf* messages will be logged.
 A second clause of the rule allows to specify
-a list of topics that shall be logged
+a list of options
 
-    mem_episode_start(Episode,[['tf',['__recorded']]]).
+    mem_episode_start(Episode,[topics:[['tf',['__recorded']]]]).
 
 Above statement causes *tf* messages to be recorded where
-the *__recorded* field is indexed. 
+the *__recorded* field is indexed.
 
 Once the episode is running you can advance it by adding
 events, objects, or sub-episodes to it.
