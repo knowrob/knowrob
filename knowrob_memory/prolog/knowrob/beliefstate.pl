@@ -144,7 +144,8 @@ belief_class_of(Obj, NewObjType) :-
 %
 belief_at_update(Obj, [RefFrame,ObjFrame,T,Q]) :-
   object_frame_name(Obj,ObjFrame),
-  object_pose_update(Obj,[RefFrame,ObjFrame,T,Q]).
+  object_pose_update(Obj,[RefFrame,ObjFrame,T,Q]),
+  mark_dirty_objects([Obj]).
 
 %% belief_existing_object_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is semidet.
 %

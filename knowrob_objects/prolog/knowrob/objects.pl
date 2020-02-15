@@ -184,8 +184,7 @@ object_pose_update(Obj,Pose,Stamp) :-
   )),
   %%
   retractall(object_pose_data(Obj,_,_)),
-  asserta(object_pose_data(Obj,Pose,Stamp)),
-  mark_dirty_objects([Obj]), !.
+  asserta(object_pose_data(Obj,Pose,Stamp)), !.
 
 object_pose_update(Obj,Pose,_) :-
   print_message(warning, pose_update_failed(Obj,Pose)),
