@@ -183,7 +183,7 @@ mem_import(Dir) :-
   path_concat(Dir,'beliefstate.owl',OWLFile),
   ( exists_file(OWLFile) -> mem_import_owl(OWLFile) ; true ),
   %%
-  mem_import_latest_tf,
+  %mem_import_latest_tf,
   %%
   mem_triples_init,
   %%
@@ -244,7 +244,8 @@ mem_init_objects_ :-
   forall(
     member(Obj,ObjectIds),(
     object_import_detections(Obj),
-    ignore(mem_import_fixed_pose(Obj))
+    ignore(mem_import_fixed_pose(Obj)),
+    ignore(mem_import_latest_tf(Obj))
   )),
   %%
   mark_dirty_objects(ObjectIds).
