@@ -8,6 +8,7 @@
 
 #include <mongoc.h>
 #include <mongoc-uri.h>
+#include <sstream>
 
 #include <rosprolog/rosprolog_kb/rosprolog_kb.h>
 
@@ -59,7 +60,15 @@ MongoInterface::MongoInterface()
 	bson_error_t err;
 	std::string mongo_uri;
 	if(!rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri)) {
-		mongo_uri = std::string("mongodb://localhost:27017/?appname=knowrob");
+		char *mongo_host = std::getenv("MONGO_PORT_27017_TCP_ADDR");
+		if(mongo_host != NULL) {
+			std::stringstream ss;
+			ss << "mongodb://" << mongo_host << ":27017/?appname=knowrob";
+			mongo_uri = ss.str();
+		}
+		else {
+			mongo_uri = std::string("mongodb://localhost:27017/?appname=knowrob");
+		}
 	}
 	uri_ = mongoc_uri_new_with_error(mongo_uri.c_str(),&err);
 	if(!uri_) {
