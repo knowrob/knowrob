@@ -32,6 +32,7 @@
       mem_drop/0,
       mem_export/1,
       mem_import/1,
+      mem_import_owl/1,
       mem_import_latest/0,
       mem_episode_start/1,
       mem_episode_start/2,
@@ -209,10 +210,27 @@ mem_import_latest :-
   path_concat(MemDir,LatestName,LatestDir),
   mem_import(LatestDir).
 
+%%
+mem_import_owl(Dir) :-
+  atom(Dir),
+  exists_directory(Dir),!,
+  directory_files(Dir,Files),
+  forall(
+  ( member(X,Files),
+    atom_concat(_,'.owl',X)),
+  ( path_concat(Dir,X,OWLFile),
+    print_message(informational, memory_import(owl,OWLFile)),
+    owl_parse(OWLFile, belief_state)
+  )),
+  mem_init_objects_.
+
 mem_import_owl(OWLFile) :-
   print_message(informational, memory_import(owl,OWLFile)),
   owl_parse(OWLFile, belief_state),
-  %%
+  mem_init_objects_.
+
+%%
+mem_init_objects_ :-
   belief_existing_objects(ObjectIds),
   % make sure object frames are asserted
   forall(
