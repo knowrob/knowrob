@@ -55,6 +55,11 @@
 % Properties is a list of properties for the data_vis message of the form key:value.
 % Allowed keys are: data, title, xlabel, ylabel, width, height, fontsize.
 %
+%    data_vis(piechart(chart_id), [
+%      title: 'Some Distribution',
+%      data: [[a,b,c],[10,30,22]]
+%    ]).
+%
 % @param Term the data_vis term
 % @param Properties list of data_vis properties
 %
