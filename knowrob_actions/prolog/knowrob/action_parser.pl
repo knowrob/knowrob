@@ -170,10 +170,10 @@ parser_start(Parser) :-
   assertz(composer_queue_(Parser,Composed)),
   composer_set_intermediate_(Parser,[]),
   %% obtain tokens from ROS topic '/parser/token'
-  ros_subscribe('/parser/token',
+  ignore(ros_subscribe('/parser/token',
       'knowrob_actions/EventToken',
       knowrob_action_parser:ros_push_token(Parser),
-      Subscriber),
+      Subscriber)),
   assertz(parser_subscriber_(Parser,Subscriber)),
   %% run the parser
   thread_create(parser_run_(Parser),Thread),
