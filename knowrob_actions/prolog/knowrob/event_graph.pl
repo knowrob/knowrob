@@ -363,10 +363,9 @@ esg_join(ESG,[Tsk0,TskESG0],Joined) :-
   % is in a parallel node in one of the ESGs.
   esg_pop(TskESG0,-(Tsk0),TskESG1),
   esg_pop(ESG,-(Tsk1),ESG1),
-  once(
-    ( Tsk0 = Tsk1 );
+  ( ( Tsk0 = Tsk1 );
     ( kb_type_of(Tsk0,TskType), kb_type_of(Tsk1,TskType) )
-  ),
+  ), !,
   % find a path to +(Act) in both ESGs
   % NOTE: the paths are represented as difference list to allow
   %       for performing `append` in constant time.
