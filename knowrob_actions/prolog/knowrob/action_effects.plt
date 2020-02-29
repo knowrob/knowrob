@@ -25,10 +25,14 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/objects')).
+
+:- use_module(library('knowrob/model/Event'), [ event_participant/3, event_set_begin_time/2, event_set_end_time/2 ]).
+:- use_module(library('knowrob/model/Action'), [ action_create/3, action_set_task/2 ]).
+:- use_module(library('knowrob/model/Task'), [ task_parameter/3, task_role/3 ]).
+:- use_module(library('knowrob/model/Object'), [ object_is_alive/1 ]).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').

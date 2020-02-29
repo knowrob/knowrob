@@ -11,8 +11,11 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_execution')).
+
+:- use_module(library('knowrob/model/Event'), [ event_participant/3 ]).
+:- use_module(library('knowrob/model/Action'), [ action_add_filler/2, action_filler_binding/2 ]).
+:- use_module(library('knowrob/model/Situation'), [ situation_add_assignment/3 ]).
 
 :- rdf_meta kb_querying(r,t,t,-).
 

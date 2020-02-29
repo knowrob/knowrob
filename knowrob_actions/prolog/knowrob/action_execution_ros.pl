@@ -11,9 +11,11 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_execution')).
 :- use_module(library('knowrob/rosowl')).
+
+:- use_module(library('knowrob/model/Event'), [ event_participant/3 ]).
+:- use_module(library('knowrob/model/Action'), [ action_add_filler/2, action_filler_binding/2 ]).
 
 :- rdf_meta ros_service_query(r,t,t,-).
 

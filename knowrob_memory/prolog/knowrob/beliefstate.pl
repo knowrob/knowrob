@@ -50,6 +50,7 @@
 :- use_module(library('knowrob/temporal')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/model/Object')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 

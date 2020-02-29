@@ -71,6 +71,21 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 
 :- use_module(library('knowrob/utility/atoms')).
 
+% events
+%:- use_module(library('knowrob/model/Event')).
+%:- use_module(library('knowrob/model/Action')).
+%% concepts
+%:- use_module(library('knowrob/model/EventType')).
+%:- use_module(library('knowrob/model/Task')).
+%:- use_module(library('knowrob/model/Role')).
+%:- use_module(library('knowrob/model/Parameter')).
+%% description & situations
+%:- use_module(library('knowrob/model/Plan')).
+%:- use_module(library('knowrob/model/Workflow')).
+%:- use_module(library('knowrob/model/Situation')).
+%% 
+%:- use_module(library('knowrob/model/Constraint')).
+
 :- use_module(library('knowrob/xsd')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/computable')).

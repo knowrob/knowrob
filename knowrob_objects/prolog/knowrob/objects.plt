@@ -22,6 +22,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/model/Object')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').
 

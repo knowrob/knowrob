@@ -67,7 +67,12 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
+:- use_module(library('knowrob/model/Event')).
+:- use_module(library('knowrob/model/EventType')).
+:- use_module(library('knowrob/model/Action')).
+:- use_module(library('knowrob/model/Situation')).
+:- use_module(library('knowrob/model/Constraint')).
+:- use_module(library('knowrob/model/Role')).
 
 :-  rdf_meta
     mem_episode_create(r),

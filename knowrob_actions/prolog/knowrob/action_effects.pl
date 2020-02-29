@@ -16,8 +16,12 @@ The effects of actions on objects are derived from the roles the objects play du
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/objects')).
+
+:- use_module(library('knowrob/model/Event'), [ event_participant/3 ]).
+:- use_module(library('knowrob/model/Action'), [ action_has_task/2, action_add_filler/2 ]).
+:- use_module(library('knowrob/model/Task'), [ task_role_range/3, task_parameter_range/3 ]).
+:- use_module(library('knowrob/model/Object'), [ object_quality/3, object_set_lifetime_begin/2, object_set_lifetime_end/2 ]).
 
 :-  rdf_meta
     action_effect(r,t),

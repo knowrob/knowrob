@@ -35,7 +35,6 @@
 :- register_ros_package(knowrob_actions).
 
 :- use_module(library('knowrob/event_graph')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_effects')).
 :- use_module(library('knowrob/task_planning')).
 

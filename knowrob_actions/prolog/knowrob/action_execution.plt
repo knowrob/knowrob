@@ -5,7 +5,6 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/action_execution')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/transforms')).
@@ -14,6 +13,13 @@
 
 :- use_module(library('knowrob/action_execution_pl')).
 :- use_module(library('knowrob/action_execution_ros')).
+:- use_module(library('knowrob/model/Action'), [
+        action_status/2
+    ]).
+:- use_module(library('knowrob/model/Situation'), [
+        situation_includes_classification/3,
+        situation_includes_assignment/3
+    ]).
 
 :- owl_parse('package://knowrob_actions/owl/execution-test.owl').
 

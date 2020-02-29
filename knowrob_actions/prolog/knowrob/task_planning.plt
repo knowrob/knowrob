@@ -21,8 +21,8 @@
 :- begin_tests('knowrob/task_planning').
 
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/task_planning')).
+:- use_module(library('knowrob/model/Workflow'), [ workflow_role_range/3 ]).
 
 :- owl_parse('package://knowrob_actions/owl/pancake.owl').
 

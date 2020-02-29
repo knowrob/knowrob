@@ -11,6 +11,7 @@
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/beliefstate')).
 :- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/model/Object')).
 
 :- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).

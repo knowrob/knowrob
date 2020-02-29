@@ -9,9 +9,11 @@
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/model/Action')).
+:- use_module(library('knowrob/model/Constraint')).
+:- use_module(library('knowrob/model/Object')).
 
 :- owl_parse('package://knowrob_memory/owl/test.owl').
 

@@ -14,14 +14,34 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('list_util'), [ lazy_findall/3 ]).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/action_model')).
-
-:- rdf_meta action_registry(r,?),
-            action_filler_binding(t,t),
-            execute_plan(r,t,+,+),
-            action_bindings_(r,t),
-            plan_execution_create_(r,r,t,-),
-            action_create_(r,r,-).
+:- use_module(library('knowrob/model/Event'), [
+        event_set_begin_time/1,
+        event_set_end_time/1
+    ]).
+:- use_module(library('knowrob/model/Action'), [
+        action_create/3,
+        action_status/2,
+        action_set_task/2,
+        action_set_active/1,
+        action_set_succeeded/1,
+        action_set_failed/1,
+        action_add_filler/2
+    ]).
+:- use_module(library('knowrob/model/Situation'), [
+        situation_create/3,
+        situation_add/2,
+        situation_add_satisfies/2,
+        situation_includes_classification/3,
+        situation_add_classification/3
+    ]).
+      
+:- rdf_meta
+        action_registry(r,?),
+        action_filler_binding(t,t),
+        execute_plan(r,t,+,+),
+        action_bindings_(r,t),
+        plan_execution_create_(r,r,t,-),
+        action_create_(r,r,-).
 
 %% action_registry(?ActionConcept, ?Goal) is semidet.
 %

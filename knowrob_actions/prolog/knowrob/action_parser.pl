@@ -30,6 +30,8 @@ can be casted as grammar for the parser.
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/temporal')). % `interval/2`
 
+:- use_module(library('knowrob/model/Plan'), [ plan_defines_task/2 ]).
+
 :- rdf_meta endpoint_type_(t,r),
             parser_grammar_(?,r,r,t),
             parser_create_grammar_(+,r),

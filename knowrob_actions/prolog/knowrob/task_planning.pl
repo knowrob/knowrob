@@ -9,11 +9,11 @@
 @author Daniel Beßler
 */
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/action_model'), [ workflow_step/2 ]).
-:- use_module(library('knowrob/temporal'),     [ allen_constraint/2 ]).
-:- use_module(library('knowrob/event_graph'),  [ esg_truncated/4,
-                                                 esg_events/2
-                                               ]).
+:- use_module(library('knowrob/model/Workflow'), [ workflow_step/2 ]).
+:- use_module(library('knowrob/temporal'),       [ allen_constraint/2 ]).
+:- use_module(library('knowrob/event_graph'),    [ esg_truncated/4,
+                                                   esg_events/2
+                                                 ]).
 
 :-  rdf_meta
       workflow_sequence(r,t),
