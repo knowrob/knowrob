@@ -349,6 +349,8 @@ storage_place_for_because_(Container,ObjType,PatientType) :-
   storage_place_for_because__(Disposition,ObjType,PatientType).
 
 storage_place_for_because__(Disposition,ObjType,PatientType) :-
+  % FIXME: bug in property_range, ease_obj:affordsTrigger range inferred as plain role,
+  %        without including constraints derived from axioms of Disposition!
   property_range(Disposition,[ease_obj:affordsTrigger,dul:classifies],PatientType),
   rdfs_subclass_of(PatientType,dul:'PhysicalObject'),
   rdfs_subclass_of(ObjType,PatientType).
