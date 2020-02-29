@@ -31,7 +31,7 @@
 
 :- use_module(library('knowrob/model/Event'), [ event_participant/3, event_set_begin_time/2, event_set_end_time/2 ]).
 :- use_module(library('knowrob/model/Action'), [ action_create/3, action_set_task/2 ]).
-:- use_module(library('knowrob/model/Task'), [ task_parameter/3, task_role/3 ]).
+:- use_module(library('knowrob/model/Task'), [ task_create/3, task_parameter/3, task_role/3 ]).
 :- use_module(library('knowrob/model/Object'), [ object_is_alive/1 ]).
 
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
@@ -54,28 +54,12 @@ yellow_on_blue  :- holds( ease_obj:isOntopOf(blocksworld:'BlockYellow_0', blocks
 yellow_on_red   :- holds( ease_obj:isOntopOf(blocksworld:'BlockYellow_0', blocksworld:'BlockRed_0') ), !.
 red_on_blue     :- holds( ease_obj:isOntopOf(blocksworld:'BlockRed_0', blocksworld:'BlockBlue_0') ), !.
 
-:- rdf_meta create_action_for_task(r,r,r).
+:- rdf_meta create_action_for_task_(r,r,r).
 
-create_task_(TskType,Tsk) :-
-  kb_create(TskType,Tsk,_{graph:belief_state}),
-  forall(
-    ( kb_some(TskType,dul:isTaskOf,Concept) ),
-    ( kb_create(Concept,Concept_instance,_{graph:belief_state}),
-      kb_assert(Tsk,dul:isTaskOf,Concept_instance)
-    )
-  ),
-  forall(
-    ( kb_some(TskType,dul:hasParameter,Concept) ),
-    ( kb_create(Concept,Concept_instance,_{graph:belief_state}),
-      kb_assert(Tsk,dul:hasParameter,Concept_instance)
-    )
-  ).
-
-create_action_for_task(TskType,Act,Tsk) :-
+% helper
+create_action_for_task_(TskType,Act,Tsk) :-
   current_time(T0),
-  %%
-  create_task_(TskType,Tsk),
-  %%
+  task_create(TskType,Tsk,belief_state),
   action_create(dul:'Action',Act,belief_state),
   action_set_task(Act,Tsk),
   event_set_begin_time(Act,T0),
@@ -95,7 +79,7 @@ test('blocksworld extracted') :-
   
 test('Unstack_Y') :-
   yellow_on_blue,
-  create_action_for_task(blocksworld:'Unstack',Act,Tsk),
+  create_action_for_task_(blocksworld:'Unstack',Act,Tsk),
   task_role(Tsk,Deposit,ease_obj:'Deposit'),
   task_role(Tsk,Extracted,ease_obj:'ExtractedObject'),!,
   create_input_dict(Dict,[
@@ -107,7 +91,7 @@ test('Unstack_Y') :-
 
 test('Stack_RB') :-
   \+ red_on_blue,
-  create_action_for_task(blocksworld:'Stack',Act,Tsk),
+  create_action_for_task_(blocksworld:'Stack',Act,Tsk),
   task_role(Tsk,Deposit,ease_obj:'Deposit'),
   task_role(Tsk,Deposited,ease_obj:'DepositedObject'),!,
   create_input_dict(Dict,[
@@ -119,7 +103,7 @@ test('Stack_RB') :-
 
 test('Stack_YR') :-
   \+ yellow_on_red,
-  create_action_for_task(blocksworld:'Stack',Act,Tsk),
+  create_action_for_task_(blocksworld:'Stack',Act,Tsk),
   task_role(Tsk,Deposit,ease_obj:'Deposit'),
   task_role(Tsk,Deposited,ease_obj:'DepositedObject'),!,
   create_input_dict(Dict,[
@@ -132,6 +116,8 @@ test('Stack_YR') :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Pancake Making
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+:- dynamic test_mix_dough/1, test_bake_dough/1.
 
 test(effect_turning_on) :-
   action_effect(
@@ -150,7 +136,7 @@ test(pancake_making_turn_on_maker) :-
   kb_triple(pancake:'PancakeMaker_0_DeviceState',
     dul:hasRegion, pancake:'PancakeMaker_0_RegionOff'),
   %%
-  create_action_for_task(pancake:'TurningOnHeatingDevice',Act,Tsk),
+  create_action_for_task_(pancake:'TurningOnHeatingDevice',Act,Tsk),
   task_parameter(Tsk,Setpoint,ease_obj:'Setpoint'),
   task_role(Tsk,Patient,ease_obj:'AlteredObject'),!,
   create_input_dict(Dict,[
@@ -166,7 +152,7 @@ test(pancake_making_turn_on_maker) :-
 test(pancake_making_crack_egg) :-
   % create some egg yolk and egg shells
   object_is_alive(pancake:'Egg_0'),
-  create_action_for_task(pancake:'CrackingAnEgg',Act,Tsk),
+  create_action_for_task_(pancake:'CrackingAnEgg',Act,Tsk),
   task_role(Tsk,Destroyed,ease_obj:'DestroyedObject'),!,
   create_input_dict(Dict,[
       [Destroyed,pancake:'Egg_0']
@@ -180,11 +166,14 @@ test(pancake_making_crack_egg) :-
     event_participant(Act,_,pancake:'EggYolk')
   )).
 
+%%%%%%
+% Task: pancake:'MixPancakeDough'
+%
 test(pancake_making_mix_dough) :-
-  create_action_for_task(pancake:'MixPancakeDough',Act,Tsk),
+  create_action_for_task_(pancake:'MixPancakeDough',Act,Tsk),
   %%
-  task_role(Tsk,Yolk,ease_obj:'CommitedObject'),
-  property_range(Yolk,dul:classifies,pancake:'EggYolk'),
+  task_role(Tsk,Egg,ease_obj:'CommitedObject'),
+  property_range(Egg,dul:classifies,pancake:'Egg'),
   %%
   task_role(Tsk,Milk,ease_obj:'CommitedObject'),
   property_range(Milk,dul:classifies,pancake:'Milk'),
@@ -193,26 +182,84 @@ test(pancake_making_mix_dough) :-
   property_range(Wheat,dul:classifies,pancake:'WheatFlour'),!,
   %%
   create_input_dict(Dict,[
-      [Yolk,pancake:'EggYolk_0'],
+      [Egg,pancake:'Egg_0'],
       [Milk,pancake:'Milk_0'],
       [Wheat,pancake:'WheatFlour_0']
   ]),
   %%
   action_effects_apply(Act,Dict),
-  %%
-  once((
-    event_participant(Act,Dough,pancake:'Dough'),
-    rdf_has(Dough,dul:hasPart,pancake:'EggYolk_0'),
-    rdf_has(Dough,dul:hasPart,pancake:'Milk_0'),
-    rdf_has(Dough,dul:hasPart,pancake:'WheatFlour_0')
-  )).
+  assertz(test_mix_dough(Act)).
 
-test(pancake_transient) :-
-  %% TODO: the dough transforms into a dough-pancake-transient
-  %%       when baked.
-  %%       But there is a difficulty, as this either happens
-  %%       when the dough is poured on a warm surface, or when
-  %%       the pancake maker is turned on after the dough was poured ontop.
-  fail.
+test(pancake_making_mix_dough_exists, [nondet]) :-
+  % dough was created
+  test_mix_dough(Act),
+  event_participant(Act,_,pancake:'Dough').
+
+test(pancake_making_mix_dough_part1, [nondet]) :-
+  % dough has parts that are ingredients
+  test_mix_dough(Act),
+  event_participant(Act,Dough0,pancake:'Dough'),
+  rdf_has(Dough0,dul:hasPart,pancake:'Egg_0').
+
+test(pancake_making_mix_dough_part2, [nondet]) :-
+  % dough has parts that are ingredients
+  test_mix_dough(Act),
+  event_participant(Act,Dough0,pancake:'Dough'),
+  rdf_has(Dough0,dul:hasPart,pancake:'Milk_0').
+
+test(pancake_making_mix_dough_part3, [nondet]) :-
+  % dough has parts that are ingredients
+  test_mix_dough(Act),
+  event_participant(Act,Dough0,pancake:'Dough'),
+  rdf_has(Dough0,dul:hasPart,pancake:'WheatFlour_0').
+
+test(pancake_making_mix_dough_alive, [nondet]) :-
+  % do is alive after the action
+  test_mix_dough(Act),
+  event_participant(Act,Dough0,pancake:'Dough'),
+  object_is_alive(Dough0).
+
+%%%%%%
+% Task: pancake:'BakePancake'
+%
+test(pancake_making_bake_dough) :-
+  test_mix_dough(MixAct),
+  event_participant(MixAct,Dough0,pancake:'Dough'),
+  %% the dough transforms into a dough-pancake-transient when baked.
+  create_action_for_task_(pancake:'BakingAPancake',Act,Tsk),
+  %%
+  task_role(Tsk,Dough,ease_obj:'CommitedObject'),
+  property_range(Dough,dul:classifies,pancake:'Dough'),
+  %%
+  task_role(Tsk,Pancake,ease_obj:'CreatedObject'),
+  property_range(Pancake,dul:classifies,pancake:'MyPancake'),!,
+  %%
+  create_input_dict(Dict,[ [Dough,Dough0] ]),
+  action_effects_apply(Act,Dict),
+  assertz(test_bake_dough(Act)).
+
+test(pancake_making_bake_not_alive_Dough, [nondet]) :-
+  % the dough is not alive after the action was performed
+  test_bake_dough(Act),
+  event_participant(Act,Dough0,pancake:'Dough'),
+  \+ object_is_alive(Dough0).
+
+test(pancake_making_bake_created_Pancake, [nondet]) :-
+  % the action has created a pancake
+  test_bake_dough(Act),
+  event_participant(Act,_,pancake:'MyPancake').
+
+test(pancake_making_bake_alive_Pancake, [nondet]) :-
+  % the pancake is alive after the action was performed
+  test_bake_dough(Act),
+  event_participant(Act,Pancake0,pancake:'MyPancake'),
+  object_is_alive(Pancake0).
+
+test(pancake_making_bake_Pancake_parts, [nondet]) :-
+  % parts of the dough remain parts of the pancake
+  test_bake_dough(Act),
+  event_participant(Act,Pancake0,pancake:'MyPancake'),
+  kb_triple(Pancake0,dul:hasPart,pancake:'Milk_0'),
+  kb_triple(Pancake0,dul:hasPart,pancake:'WheatFlour_0').
 
 :- end_tests('knowrob/action_effects').

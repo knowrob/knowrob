@@ -28,19 +28,24 @@
 
 :- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 
-test(plan_pancake_events, [nondet]) :-
-  workflow_sequence(pancake:'MakingPancakes_0_WF', SubEvents),
-  nth0(0, SubEvents, 'http://knowrob.org/kb/pancake.owl#Cracking_0'),
-  nth0(1, SubEvents, 'http://knowrob.org/kb/pancake.owl#Mixing_0'),
-  nth0(2, SubEvents, 'http://knowrob.org/kb/pancake.owl#TurningOn_0'),
-  nth0(3, SubEvents, 'http://knowrob.org/kb/pancake.owl#Pouring_0'),
-  nth0(4, SubEvents, 'http://knowrob.org/kb/pancake.owl#FlippingAPancake_0').
+test('WF_MakingPancakes_0 sequence', [nondet]) :-
+  workflow_sequence(pancake:'WF_MakingPancakes_0', [
+    pancake:'Mixing_0',
+    pancake:'Baking_0'
+  ]).
+
+test('WF_Baking_0 sequence', [nondet]) :-
+  workflow_sequence(pancake:'WF_Baking_0', [
+    pancake:'TurningOn_0',
+    pancake:'Pouring_0',
+    pancake:'FlippingAPancake_0'
+  ]).
 
 test(plan_pancake_objects, [nondet]) :-
-  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Egg'),
-  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Milk'),
-  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'WheatFlour'),
-  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'EggYolk'),
-  workflow_role_range(pancake:'MakingPancakes_0_WF', _, pancake:'Dough').
+  workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Egg'),
+  workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Milk'),
+  workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'WheatFlour'),
+  workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'EggYolk'),
+  workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Dough').
 
 :- end_tests('knowrob/task_planning').

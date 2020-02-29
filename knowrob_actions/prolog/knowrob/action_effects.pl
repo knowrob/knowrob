@@ -18,10 +18,14 @@ The effects of actions on objects are derived from the roles the objects play du
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/objects')).
 
-:- use_module(library('knowrob/model/Event'), [ event_participant/3 ]).
-:- use_module(library('knowrob/model/Action'), [ action_has_task/2, action_add_filler/2 ]).
-:- use_module(library('knowrob/model/Task'), [ task_role_range/3, task_parameter_range/3 ]).
-:- use_module(library('knowrob/model/Object'), [ object_quality/3, object_set_lifetime_begin/2, object_set_lifetime_end/2 ]).
+:- use_module(library('knowrob/model/Event'),  [ event_participant/3 ]).
+:- use_module(library('knowrob/model/Action'), [ action_has_task/2,
+                                                 action_add_filler/2 ]).
+:- use_module(library('knowrob/model/Task'),   [ task_role_range/3,
+                                                 task_parameter_range/3 ]).
+:- use_module(library('knowrob/model/Object'), [ object_quality/3,
+                                                 object_set_lifetime_begin/2,
+                                                 object_set_lifetime_end/2 ]).
 
 :-  rdf_meta
     action_effect(r,t),
@@ -112,44 +116,52 @@ action_effects_apply(Act,Grounding0) :-
   append(Pairs0,Pairs1,Pairs),
   dict_pairs(Grounding1,_,Pairs),
   %% apply effects based on roles of objects
+  current_time(Now),
   forall(
     get_dict(Concept,Grounding1,Filler),
-    ( object_effects_apply_(Tsk,Grounding1,Concept,Filler) -> true ; (
+    ( object_effects_apply_(Tsk,Grounding1,Concept,Filler,Now) -> true ; (
       print_message(warning,
         runtime_error(cannot_apply_effects_of(Act,Concept)))
     ))
   ).
 
 %%
-object_effects_apply_(_Tsk,_Grounding,Concept,Filler) :-
+object_effects_apply_(_Tsk,_Grounding,Concept,Filler,Now) :-
   rdfs_individual_of(Concept,ease_obj:'DestroyedObject'),!,
-  current_time(Now),
   object_set_lifetime_end(Filler,Now).
 
-object_effects_apply_(_Tsk,_Grounding,Concept,Filler) :-
+object_effects_apply_(_Tsk,_Grounding,Concept,Filler,Now) :-
   rdfs_individual_of(Concept,ease_obj:'CreatedObject'),!,
-  current_time(Now),
   object_set_lifetime_begin(Filler,Now).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
   rdfs_individual_of(Concept,ease_obj:'AlteredObject'),!,
   action_grounding_(Tsk,Grounding,ease_obj:'Setpoint',Region),
   get_altered_quality_(Concept,Filler,Quality,Region),
   quality_set_region_(Quality,Region).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler,Now) :-
   rdfs_individual_of(Concept,ease_obj:'CommitedObject'),!,
   ( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent) ;
     action_grounding_(Tsk,Grounding,ease_obj:'CreatedObject',Parent)
   ),
-  object_add_part_(Parent,Filler).
+  object_add_part_(Parent,Filler),
+  object_set_lifetime_end(Filler,Now).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+% TODO: add case for transformed objects? i.e. when
+%   the whole object changes its form and becomes a new object.
+%   seems there is no fitting role yet...
+%   AlteredObject seems only about qualities that change.
+%object_effects_apply_(Tsk,Grounding,Concept,Filler,Now) :-
+  %rdfs_individual_of(Concept,ease_obj:'TransformedObject'),!,
+  %fail.
+
+object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
   rdfs_individual_of(Concept,ease_obj:'IncludedObject'),!,
   action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent),
   object_add_content_(Parent,Filler).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
   rdfs_individual_of(Concept,ease_obj:'ExtractedObject'),!,
   ( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent);
     action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent);
@@ -160,7 +172,7 @@ object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
   object_remove_part_(Parent,Filler),
   object_remove_content_(Parent,Filler).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
   rdfs_individual_of(Concept,ease_obj:'LinkedObject'),!,
   forall(
     action_grounding_(Tsk,Grounding,ease_obj:'LinkedObject',Linked),
@@ -171,12 +183,12 @@ object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
     object_add_part_(Parent,Filler)
   ).
 
-object_effects_apply_(Tsk,Grounding,Concept,Filler) :-
+object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
   rdfs_individual_of(Concept,ease_obj:'DepositedObject'),!,
   action_grounding_(Tsk,Grounding,ease_obj:'Deposit',Deposit),
   object_add_deposit_(Deposit,Filler).
 
-object_effects_apply_(_,_,_,_).
+object_effects_apply_(_,_,_,_,_).
 
 
 		 /*******************************
