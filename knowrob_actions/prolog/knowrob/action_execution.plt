@@ -13,13 +13,8 @@
 
 :- use_module(library('knowrob/action_execution_pl')).
 :- use_module(library('knowrob/action_execution_ros')).
-:- use_module(library('knowrob/model/Action'), [
-        action_status/2
-    ]).
-:- use_module(library('knowrob/model/Situation'), [
-        situation_includes_classification/3,
-        situation_includes_assignment/3
-    ]).
+:- use_module(library('knowrob/model/Action')).
+:- use_module(library('knowrob/model/Situation')).
 
 :- owl_parse('package://knowrob_actions/owl/execution-test.owl').
 
@@ -120,10 +115,8 @@ test('add_two_ints(CREATE)') :-
       [acext:'add_two_ints_Task_b',Region_b]
   ]),
   %%
-  knowrob_action_execution:action_create_(
-      ros:'ServiceInvokation',
-      acext:'add_two_ints_Task',
-      Action),
+  action_create(ros:'ServiceInvokation',Action,belief_state),
+  action_set_task(Action,acext:'add_two_ints_Task'),
   knowrob_action_execution:plan_execution_create_(
       Action,
       acext:'add_two_ints_Execution',
@@ -183,10 +176,8 @@ test('sum_array(CREATE)') :-
       [acext:'sum_array_Task_a',Region_a]
   ]),
   %%
-  knowrob_action_execution:action_create_(
-      ros:'ServiceInvokation',
-      acext:'sum_array_Task',
-      Action),
+  action_create(ros:'ServiceInvokation', Action,belief_state),
+  action_set_task(Action,acext:'sum_array_Task'),
   knowrob_action_execution:plan_execution_create_(
       Action,
       acext:'sum_array_Execution',
@@ -275,10 +266,8 @@ pose_test_input(Dict) :-
 test('pose_test(CREATE)') :-
   pose_test_input(InputDict),
   %%
-  knowrob_action_execution:action_create_(
-      ros:'ServiceInvokation',
-      acext:'pose_test_Task',
-      Action),
+  action_create(ros:'ServiceInvokation', Action,belief_state),
+  action_set_task(Action,acext:'pose_test_Task'),
   knowrob_action_execution:plan_execution_create_(
       Action,
       acext:'pose_test_Execution',
