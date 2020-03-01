@@ -19,7 +19,6 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('swrl')).
-:- use_module(library('knowrob/utility/filesystem'), [ path_concat/3 ]).
 
 :- dynamic swrl_file_store/3,
            swrl_assertion_store/3.
@@ -27,8 +26,11 @@
 %%
 swrl_file_path(Pkg,Filename,Filepath) :-
   ros_package_path(Pkg,PkgPath),
-  path_concat(PkgPath,'swrl',X0),
-  path_concat(X0,Filename,Filepath).
+  atomic_list_concat(
+    [PkgPath,'swrl',Filename],
+    '/',
+    Filepath
+  ).
 
 %% swrl_file_unload(+Filepath) is det.
 %% swrl_file_unload(+Filepath,+Label) is det.

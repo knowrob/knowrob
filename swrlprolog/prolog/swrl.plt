@@ -3,14 +3,13 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
-
 :- use_module(library('swrl')).
 :- use_module(library('swrl_parser')).
 :- use_module(library('rdf_swrl')).
+
+%%
+:- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/knowrob')).
 
 :- owl_parser:owl_parse('package://swrlprolog/owl/test.owl').
 
@@ -168,13 +167,6 @@ test(swrl_Driver_subject_unbound, [nondet]) :-
   kb_type_of(X, test_swrl:'Driver'),
   rdf_equal(X, test_swrl:'Fred').
 
-test(swrl_Driver_during) :-
-  current_time(Now),
-  kb_type_of(test_swrl:'Fred', test_swrl:'Driver', _{during:Now}).
-
-test(swrl_Driver_holds) :-
-  holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
-
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1) :-
   \+ kb_type_of(test_swrl:'Alex', dul:'Person'),
@@ -206,35 +198,32 @@ test(swrl_NonHuman_subject_unbound, [nondet]) :-
   rdf_equal(X, test_swrl:'RedCar').
 
 test(swrl_NonHuman_holds) :-
-  holds(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
+  kb_triple(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_area, [nondet]) :-
-  \+ holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  \+ kb_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
   swrl_file_path(swrlprolog,'test.swrl',Filepath),
   swrl_file_load(Filepath,'area'),
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+  kb_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_startsWith_load) :-
-  \+ holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  \+ kb_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
   swrl_file_path(swrlprolog,'test.swrl',Filepath),
   swrl_file_load(Filepath,'startsWith').
 
 test(swrl_startsWith_holds1, [nondet]) :-
   kb_triple(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
 
-test(swrl_startsWith_holds2, [nondet]) :-
-  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
-
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_hasBrother_load) :-
-  \+ holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  \+ kb_triple(test_swrl:'Fred', test_swrl:'hasBrother', _),
   swrl_file_path(swrlprolog,'test.swrl',Filepath),
   swrl_file_load(Filepath,'brother').
 
 test(swrl_hasBrother_holds) :-
-  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+  kb_triple(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_BigRectangle1, [nondet]) :-
@@ -242,10 +231,7 @@ test(swrl_BigRectangle1, [nondet]) :-
   swrl_file_path(swrlprolog,'test.swrl',Filepath),
   swrl_file_load(Filepath,'BigRectangle'),
   kb_type_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-test(swrl_BigRectangle_holds, [nondet]) :-
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+  kb_triple(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_greaterThen) :-
@@ -343,9 +329,9 @@ test(swrl_projection_NonHuman1, [nondet]) :-
 % % % % SWRL rules asserted from human readable expressions
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_phrase_hasUncle, [nondet]) :-
-  \+ holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest'),
+  \+ kb_triple(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest'),
   swrl_phrase_assert('hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)'),
-  holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest').
+  kb_triple(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest').
 
 :- end_tests(swrl).
 

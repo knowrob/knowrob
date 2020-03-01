@@ -41,7 +41,7 @@ test('WF_Baking_0 sequence', [nondet]) :-
     pancake:'FlippingAPancake_0'
   ]).
 
-test(plan_pancake_objects, [nondet]) :-
+test('WF_Mixing_0 roles', [nondet]) :-
   workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Egg'),
   workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Milk'),
   workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'WheatFlour'),

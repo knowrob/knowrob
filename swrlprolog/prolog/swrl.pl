@@ -5,26 +5,40 @@
       swrl_project/1,
       swrl_project/2,
       swrl_satisfied/1,
-      swrl_satisfied/2,
-      swrl_has/3,
-      swrl_instance_of/2
+      swrl_satisfied/2
     ]).
 /** <module> Prolog-based SWRL representation.
 
 @author Daniel Beßler
 */
 
-:- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
-
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
+%% TODO: remove knowrob_common dependency.
+%%         but SWRL needs to assert triples,
+%%         and use the OWL+SWRL reasoner in conditions
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
+
+:- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
 :- rdf_meta swrl_project(r),
             swrl_match_instance(r,r,r).
 :- dynamic  call_mutex/2.
+
+%%
+knowrob:vkb_has_triple(S,P,O,DBArgs) :-
+  rdf_has(swrl_registry,P,literal(Command)),
+  call(Command,S,O,DBArgs).
+%%
+swrl_assert_triple(S,P,O) :-
+  kb_assert(S,P,O).
+%%
+swrl_triple(S,P,O,DBArgs) :-
+  kb_triple(S,P,O,DBArgs).
+%%
+swrl_type_of(S,Cls,DBArgs) :-
+  kb_type_of(S,Cls,DBArgs).
+
 
 %% swrl_assert(+Rule).
 %
@@ -60,11 +74,6 @@ swrl_assert([HeadAtom|Xs] :- Body, [Asserted|Rest]) :-
   )),
   %%
   swrl_assert(Xs :- Body, Rest).
-
-%%
-knowrob:vkb_has_triple(S,P,O,DBArgs) :-
-  rdf_has(swrl_registry,P,literal(Command)),
-  call(Command,S,O,DBArgs).
   
 swrl_rule_pl_implication(Implication :- _, Implication) :- !.
 swrl_rule_pl_implication(Implication, Implication).
@@ -75,6 +84,7 @@ swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
 swrl_rule_pl(Impl :- Cond, Impl_pl :- swrl:with_call_mutex(MutexId, Cond_pl), Vars) :-
   swrl_implication_pl(Impl, Impl_pl, Vars),
   swrl_condition_pl(Cond, Cond_pl, Vars),!,
+  % FIXME not nice
   random(0, 999999999, MutexId).
 
 %% avoid that rules call themself in conditions
@@ -104,12 +114,13 @@ swrl_condition_pl([A], A_pl, Vars) :-
 swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl(A, A_pl, Vars),
   swrl_condition_pl([B|Xs], Ys, Vars).
-swrl_condition_pl(class(Cls,S), kb_type_of(S_var,Cls_rdf,DBArgs), Vars) :-
+  
+swrl_condition_pl(class(Cls,S), swrl:swrl_type_of(S_var,Cls_rdf,DBArgs), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:dbargs', DBArgs),
   assert_rdf_class(Cls, Cls_rdf).
-swrl_condition_pl(property(S,P,O), kb_triple(S_var,P,O_var,DBArgs), Vars) :-
-  kb_rdf_data_atom(O,O_atom),
+swrl_condition_pl(property(S,P,O), swrl:swrl_triple(S_var,P,O_var,DBArgs), Vars) :-
+  rdf_data_atom_(O,O_atom),
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O_atom, O_var),
   swrl_var(Vars, 'swrl:dbargs', DBArgs).
@@ -169,9 +180,9 @@ swrl_builtin_pl(endsWith(A,X), swrl_atom_concat(_, X_atom, A_atom), Vars) :-
 
 % FIXME: not sure why swrl_atoms above does not strip the literal
 swrl_atom_concat(A0,A1,A2) :-
-  (var(A0) ; kb_rdf_data_atom(A0,X0)),
-  (var(A1) ; kb_rdf_data_atom(A1,X1)),
-  (var(A2) ; kb_rdf_data_atom(A2,X2)),!,
+  (var(A0) ; rdf_data_atom_(A0,X0)),
+  (var(A1) ; rdf_data_atom_(A1,X1)),
+  (var(A2) ; rdf_data_atom_(A2,X2)),!,
   atom_concat(X0,X1,X2).
 
 swrl_arithmetic(N,M,Goal) :- number_list(N,M), call(Goal).
@@ -198,11 +209,12 @@ number_list([X|Xs],[Y|Ys]) :-
   catch(atom_number(X,Y), _, fail),
   number_list(Xs,Ys).
 number_list([X|Xs],[Y|Ys]) :-
-  kb_rdf_data_atom(X, X_atom),
+  rdf_data_atom_(X, X_atom),
   catch(atom_number(X_atom,Y), _, fail),
   number_list(Xs,Ys).
 
 %% assert class description in RDF triple store
+%% TODO: move into some rdf module
 assert_rdf_class(Descr, Descr) :- atom(Descr), !.
 assert_rdf_class(Expr, Descr)  :-
   compound(Expr), rdf_node(Descr),
@@ -260,6 +272,7 @@ rdf_number_literal_(Num,
   ( atom(Num) -> Atom = Num ; term_to_atom(Num, Atom) ).
 
 %% assert_rdf_list: assert list description in RDF triple store
+%% TODO: move into some rdf module
 assert_rdf_list([], Nil) :- rdf_equal(rdf:nil,Nil).
 assert_rdf_list([X|Xs], Descr) :-
   rdf_node(Descr),
@@ -267,6 +280,12 @@ assert_rdf_list([X|Xs], Descr) :-
   assert_rdf_list(Xs, Xs_descr),
   rdf_assert(Descr, rdf:first, X_descr),
   rdf_assert(Descr, rdf:rest, Xs_descr).
+
+%%
+%% TODO: move into some rdf module
+rdf_data_atom_(literal(type(_,Atom)),Atom) :- !.
+rdf_data_atom_(literal(Atom),Atom) :- !.
+rdf_data_atom_(Atom,Atom) :- !.
 
 
 %% Find all the variables in a SWRL rule and map those to anonymous
@@ -378,224 +397,21 @@ swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
 
 swrl_project_([], _).
 swrl_project_([Atom|Xs], Vars) :-
-  once(( swrl_atom_satisfied(Atom,Vars) ;
-         swrl_atom_project(Atom,Vars) )),
+  swrl_atom_project(Atom,Vars),
   swrl_project_(Xs, Vars).
 
+%%
 swrl_atom_project(class(Cls,S), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_class_atom_project(S_var, Cls).
+
 swrl_atom_project(property(S,P,O), Vars) :-
-  kb_rdf_data_atom(O, O_atom),
+  rdf_data_atom_(O, O_atom),
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O_atom, O_var),
   swrl_assert_triple(S_var, P, O_var).
 
-% FIXME: this needs some revision.
-%          - there are some cases where random entities are assigned/removed
-%            probably the reasoner should just fail in these cases
-%          - I think it is rather intendend that e.g. asserting not(Cls) would
-%            only yield another rdf:type assertion while leaving potential inconsistencies.
-swrl_class_atom_project(S, allOf(Classes)) :-
-  forall( member(Cls, Classes), swrl_class_atom_project(S, Cls) ).
-swrl_class_atom_project(S, not(allOf(Xs))) :-
-  once((( member(X,Xs), \+ swrl_class_atom_satisfied(S,X) ) ;
-        ( member(X,Xs), swrl_class_atom_project(S,not(X)) ))).
-
-swrl_class_atom_project(S, oneOf(Classes)) :-
-  once((  member(Cls, Classes), swrl_class_atom_project(S, Cls) )).
-swrl_class_atom_project(S, not(oneOf(Xs))) :-
-  forall( member(X,Xs), swrl_class_atom_project(S,not(X)) ).
-
-swrl_class_atom_project(S, all(P,Cls)) :-
-  forall(( rdf_has(S,P,O), \+ swrl_class_atom_satisfied(O,Cls) ),
-         ( swrl_retract_triple(S,P,O) )).
-swrl_class_atom_project(S, some(P,Cls)) :-
-  once(( swrl_class_atom_satisfied(S, some(P,Cls)) ;
-         swrl_assert_random(S, P, Cls, 1) )).
-
-swrl_class_atom_project(S, exactly(0,P,Cls)) :- !,
-  % Retract all facts about objects fulfilling the class description
-  swrl_relation_values(S,P,Cls,Values),
-  forall( member(O,Values), swrl_retract_triple(S,P,O) ).
-swrl_class_atom_project(S, exactly(N,P,Cls)) :-
-  % End or begin some random temporalized properties so that the number of
-  % active ones is equal to qualified cardinality.
-  swrl_relation_count(S, P, Cls, M), Diff is M - N,
-  ( Diff >= 0 ->
-    swrl_retract_random(S, P, Cls, Diff) ;
-    swrl_assert_random(S, P, Cls, Diff) ).
-
-swrl_class_atom_project(S, max(N,P,Cls)) :-
-  swrl_relation_count(S, P, Cls, M), Diff is M - N,
-  swrl_retract_random(S, P, Cls, Diff).
-swrl_class_atom_project(S, min(N,P,Cls)) :-
-  swrl_relation_count(S, P, Cls, M), Diff is M - N,
-  swrl_assert_random(S, P, Cls, Diff).
-
-swrl_class_atom_project(S, value(P,O))      :- swrl_assert_triple(S,P,O).
-swrl_class_atom_project(S, not(value(P,O))) :- swrl_retract_triple(S,P,O).
-
-swrl_class_atom_project(S, Cls) :-
-  % it is not allowed to create new entity symbols!
-  nonvar(S),
-  % unwrap class descriptions for projection
-  atom(Cls), rdf_class_pl(Cls, Cls_pl),
-  ( atom(Cls_pl) ->
-    swrl_assert_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls_pl) ;
-    swrl_class_atom_project(S, Cls_pl) ).
-swrl_class_atom_project(S, not(Cls)) :-
-  atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  swrl_retract_triple(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
-
-swrl_retract_triple(S,P,O) :-
-  kb_retract(S,P,O).
-
-swrl_assert_triple(S,P,O) :-
-  kb_assert(S,P,O).
-
 %%
-% TODO this seems strange
-swrl_has(S,P,O) :-
-  rdf_has(S,P,O).
-swrl_instance_of(S,Cls) :-
-  rdfs_individual_of(S,Cls).
-
-swrl_db(db(swrl_has, swrl_instance_of)).
-
-%% retract random objects that fulfills relation
-swrl_retract_random(_, _, _, N) :- N =< 0, !.
-swrl_retract_random(S, P, Cls, N) :-
-  once((
-    rdf_has(S,P,O),
-    atom(O),
-    swrl_class_atom_satisfied(O,Cls),
-    swrl_retract_triple(S,P,O)
-  )),
-  M is N - 1, swrl_retract_random(S, P, Cls, M).
-
-%% assert random objects that fulfills relation
-swrl_assert_random(_, _, _, N) :- N >= 0, !.
-swrl_assert_random(S, P, Cls, N) :-
-  swrl_class_atom_satisfied(O,Cls),
-  \+ rdf_has(S,P,O),
-  swrl_assert_triple(S,P,O),
-  M is N + 1, swrl_assert_random(S, P, Cls, M).
-
-swrl_relation_values(S,P,Cls,Values) :-
-  swrl_db(DB),
-  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os),
-  list_to_set(Os,Values).
-swrl_relation_count(S,P,Cls,Count) :-
-  swrl_relation_values(S,P,Cls,Values), length(Values, Count).
-
-swrl_atom_satisfied(class(Cls,S), Vars) :-
-  swrl_var(Vars, S, S_var),
-  swrl_class_atom_satisfied(S_var,Cls).
-swrl_atom_satisfied(property(S,P,O), Vars) :-
-  swrl_db(DB),
-  swrl_var(Vars, S, S_var),
-  swrl_var(Vars, O, O_var),
-  kb_rdf_pl(P,O_rdf,O_var),
-  owl_has(S_var,P,O_rdf,DB).
-
-swrl_class_atom_satisfied(S, not(Cls)) :-
-  \+ swrl_class_atom_satisfied(S,Cls).
-
-swrl_class_atom_satisfied(S, allOf(Cls)) :-
-  forall( member(X,Cls), swrl_class_atom_satisfied(S, X) ).
-
-swrl_class_atom_satisfied(S, oneOf(Cls)) :-
-  once(( member(X,Cls), swrl_class_atom_satisfied(S, X) )).
-
-swrl_class_atom_satisfied(S, some(P,Cls)) :-
-  swrl_db(DB),
-  once(( owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls) )).
-
-swrl_class_atom_satisfied(S, all(P,Cls)) :-
-  swrl_db(DB),
-  forall( owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls) ).
-
-swrl_class_atom_satisfied(S, min(N,P,Cls)) :-
-  swrl_db(DB),
-  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  length(Os, Os_length),
-  (number(N) -> N_val=N ; atom_number(N,N_val)),
-  Os_length >= N_val.
-
-swrl_class_atom_satisfied(S, max(N,P,Cls)) :-
-  swrl_db(DB),
-  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  length(Os, Os_length),
-  (number(N) -> N_val=N ; atom_number(N,N_val)),
-  Os_length =< N_val.
-
-swrl_class_atom_satisfied(S, exactly(N,P,Cls)) :-
-  swrl_db(DB),
-  findall(O, (owl_has(S,P,O,DB), swrl_class_atom_satisfied(O,Cls)), Os ),
-  (number(N) -> N_val=N ; atom_number(N,N_val)),
-  length(Os,N_val).
-
-swrl_class_atom_satisfied(S, Cls) :-
-  atom(Cls),
-  swrl_db(DB),
-  owl_individual_of(S, Cls, DB).
-
-%% Read Prolog representation of class from RDF triple store
-rdf_class_pl(Cls, not(ClsTerm)) :-
-  rdf_has(Cls, owl:complementOf, ClsDescr), !,
-  rdf_class_pl(ClsDescr, ClsTerm).
-rdf_class_pl(Cls, allOf(Classes)) :-
-  rdf_has(Cls, owl:intersectionOf, ClsDescr), !,
-  rdf_class_list_pl(ClsDescr, Classes).
-rdf_class_pl(Cls, oneOf(Classes)) :-
-  rdf_has(Cls, owl:unionOf, ClsDescr), !,
-  rdf_class_list_pl(ClsDescr, Classes).
-rdf_class_pl(Cls, Restr) :-
-  rdf_has(Cls, rdf:type, owl:'Restriction'), !,
-  rdf_restriction_pl(Cls, Restr).
-rdf_class_pl(Cls, Cls) :- atom(Cls), !.
-
-%% Read Prolog representation of restriction from RDF triple store
-rdf_restriction_pl(Descr, some(P,Cls_pl)) :-
-  rdf_has(Descr, owl:someValuesFrom, Cls), !,
-  rdf_has(Descr, owl:onProperty, P),
-  rdf_class_pl(Cls, Cls_pl).
-rdf_restriction_pl(Descr, all(P,Cls_pl)) :-
-  rdf_has(Descr, owl:allValuesFrom, Cls), !,
-  rdf_has(Descr, owl:onProperty, P),
-  rdf_class_pl(Cls, Cls_pl).
-rdf_restriction_pl(Descr, value(Value,P)) :- 
-  ( rdf_has(Descr, owl:hasValue, literal(type(_,Value))) ;
-    rdf_has(Descr, owl:hasValue, literal(Value)) ;
-    rdf_has(Descr, owl:hasValue, Value) ),
-  rdf_has(Descr, owl:onProperty, P).
-rdf_restriction_pl(Descr, exactly(Num,P,Cls_pl)) :- 
-  ( rdf_has(Descr, owl:cardinality, literal(type(_,Num_))) ;
-    rdf_has(Descr, owl:qualifiedCardinality, literal(type(_,Num_))) ), !,
-  catch(atom_number(Num_,Num), _, fail),
-  rdf_has(Descr, owl:onProperty, P),
-  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
-  rdf_class_pl(Cls, Cls_pl).
-rdf_restriction_pl(Descr, max(Num,P,Cls_pl)) :- 
-  rdf_has(Descr, owl:maxQualifiedCardinality, literal(type(_,Num_))), !,
-  catch(atom_number(Num_,Num), _, fail),
-  rdf_has(Descr, owl:onProperty, P),
-  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
-  rdf_class_pl(Cls, Cls_pl).
-rdf_restriction_pl(Descr, min(Num,P,Cls_pl)) :- 
-  rdf_has(Descr, owl:minQualifiedCardinality, literal(type(_,Num_))), !,
-  catch(atom_number(Num_,Num), _, fail),
-  rdf_has(Descr, owl:onProperty, P),
-  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
-  rdf_class_pl(Cls, Cls_pl).
-
-% Read Prolog representation of lists from RDF triple store
-% FIXME: use rdfs_list_to_prolog_list ?
-rdf_class_list_pl(Descr, []) :-
-  rdf_equal(Descr, rdf:'nil').
-rdf_class_list_pl(Descr, [First|Rest]) :-
-  rdf_has(Descr, rdf:first, FirstDescr),
-  rdf_class_pl(FirstDescr, First),
-  rdf_has(Descr, rdf:rest, RestDescr),
-rdf_class_list_pl(RestDescr, Rest).
+swrl_class_atom_project(Subject, Cls_rdf) :-
+  assert_rdf_class(Cls_rdf, Cls),
+  swrl_assert_triple(Subject, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
