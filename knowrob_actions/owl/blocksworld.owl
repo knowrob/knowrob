@@ -12,7 +12,6 @@
      xmlns:blocksworld="http://knowrob.org/kb/blocksworld.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/blocksworld.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="package://knowrob_actions/owl/actions.owl"/>
     </owl:Ontology>
     
 

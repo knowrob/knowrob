@@ -87,6 +87,20 @@
             interval_overlapped_by(t,t),
             interval_during(t,t).
 
+:- rdfs_computable
+            interval_after(ease:after),
+            interval_before(ease:before),
+            interval_meets(ease:meets),
+            interval_met_by(ease:metBy),
+            interval_overlaps(ease:overlappedOn),
+            interval_overlapped_by(ease:overlappedBy),
+            interval_starts(ease:starts),
+            interval_started_by(ease:startedBy),
+            interval_during(ease:during),
+            interval_finishes(ease:finishes),
+            interval_finished_by(ease:finishedBy),
+            interval_equal(ease:simultaneous).
+
 		 /*******************************
 		 *	 high-level predicates		*
 		 *******************************/

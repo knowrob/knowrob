@@ -29,14 +29,14 @@
 :- use_module(library('knowrob/comp_spatial')).
 :- use_module(library('knowrob/temporal')).
 
-:- owl_parser:owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/test_comp_spatial.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
 
 test(inCenterOf0) :-
-  comp_inCenterOf(test_sp:'cup3', test_sp:'cupboard1'),!.
+  current_time(Time),
+  comp_inCenterOf(test_sp:'cup3', test_sp:'cupboard1',Time),!.
 test(inCenterOf1) :-
   holds(test_sp:'cup3', knowrob:isInCenterOf, test_sp:'cupboard1'),!.
 test(inCenterOf2) :-

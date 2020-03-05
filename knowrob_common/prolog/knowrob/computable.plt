@@ -4,18 +4,18 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/knowrob'),    [holds/3]).
-:- use_module(library('knowrob/computable'), [rdfs_computable_triple/3, rdfs_computable_triple/4]).
+:- use_module(library('knowrob/computable'), [rdfs_compute/3, rdfs_compute/4]).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/comp_temporal.owl').
+%:- owl_parser:owl_parse('package://knowrob_common/owl/comp_temporal.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/test_comp_temporal.owl').
 
 :- rdf_db:rdf_register_ns(test_comp_temporal, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
 
 test(comp_during1) :-
-  rdfs_computable_triple(ease:during, test_comp_temporal:'Short1', test_comp_temporal:'Long').
+  rdfs_compute(test_comp_temporal:'Short1', ease:during, test_comp_temporal:'Long').
 
 test(comp_during2) :-
-  rdfs_computable_triple(ease:during, test_comp_temporal:'Short1', test_comp_temporal:'Long', _{}).
+  rdfs_compute(test_comp_temporal:'Short1', ease:during, test_comp_temporal:'Long', _{}).
 
 test(comp_during3) :-
   holds(test_comp_temporal:'Short1', ease:during, test_comp_temporal:'Long').

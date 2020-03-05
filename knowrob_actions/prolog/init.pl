@@ -41,6 +41,3 @@
 :- use_module(library('knowrob/action_execution')).
 :- use_module(library('knowrob/action_execution_pl')).
 :- use_module(library('knowrob/rosowl')).
-
-:- owl_parser:owl_parse('package://knowrob_actions/owl/actions.owl').
-:- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').

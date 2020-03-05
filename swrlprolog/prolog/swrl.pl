@@ -16,7 +16,9 @@
 :- use_module(library('semweb/rdfs')).
 %% TODO: remove knowrob_common dependency.
 %%         but SWRL needs to assert triples,
-%%         and use the OWL+SWRL reasoner in conditions
+%%         and use the OWL+SWRL reasoner in conditions.
+%%         it would be cool if we could introduce a reasoner in a more
+%%         general way.
 :- use_module(library('knowrob/knowrob')).
 
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).

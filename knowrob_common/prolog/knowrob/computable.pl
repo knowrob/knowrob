@@ -28,9 +28,9 @@
 
 :- module(knowrob_computable,
     [
-      rdfs_computable_property/2,
-      rdfs_computable_triple/3,
-      rdfs_computable_triple/4
+      rdfs_compute/3,
+      rdfs_compute/4,
+      rdfs_computable/1
     ]).
 /** <module> Reasoning using procedural attachments, called "computables"
 
@@ -41,160 +41,149 @@
 */
 %% TODO: allow caching data values without RDF representation
 %% TODO: allow caching temporalized properties
+%% TODO: can tabling be used to replace the caching?
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('lists')).
 :- use_module(library('knowrob/knowrob')).
 
-:- rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
-
 :- rdf_meta
-  rdfs_computable_property(t,t),
-  rdfs_computable_triple(t,t,t),
-  rdfs_computable_triple(t,t,t,+).
+  computable_(+,r,t),
+  rdfs_compute(t,t,t),
+  rdfs_compute(t,t,t,+).
 
-%% rdfs_computable_property(+Property, -CP) is nondet.
-%
-% Search CP with the target Property.
-%
-rdfs_computable_property(Property, CP) :-
-  ground(Property),
-  rdfs_subproperty_of(SubProperty,Property),
-  rdf_has(CP,computable:'target',SubProperty),
-  once(rdfs_individual_of(CP,computable:'PrologProperty')).
+:- dynamic computable_store_/3.
 
-rdfs_computable_property(CP, CP) :-
-  ground(CP),
-  rdfs_individual_of(CP, computable:'PrologProperty'), !.
+%% 
+:- op(1150, fx, user:(rdfs_computable)).
+  
+%% 
+rdfs_computable(Computables) :-
+  Computables=','(First,Rest),!,
+  computable_(First),
+  rdfs_computable(Rest).
 
-%% rdfs_computable_triple(+Property, ?Frame, ?Value).
+rdfs_computable(Last) :-
+  computable_(Last).
+
+%%
+computable_(Computable) :-
+  Computable=..[Predicate,Property|Args],
+  computable_(Predicate,Property,Args).
+
+computable_(Predicate,Property,Configuration) :-
+  % get the module where the predicate is declared
+  prolog_load_context(module, M),
+  ScopedPredicate=M:Predicate,
+  % validate
+  callable(ScopedPredicate),
+  rdf_global_id(Property,Property_Atom),
+  atom(Property_Atom),
+  term_to_atom(ScopedPredicate,PredicateAtom),
+  % remember the computable
+  rdf_assert('ComputableStore',Property,PredicateAtom,computables),
+  assertz(computable_store_(PredicateAtom,ScopedPredicate,Configuration)).
+
+%% rdfs_compute(?Frame, +Property, ?Value).
+%% rdfs_compute(?Frame, +Property, ?Value, +Time).
 %
 % Unify the property triple for a computable property.
 % Full caching is enabled for everything but (+,-,-)
 % and temporal computable properties.
 %
-rdfs_computable_triple(Property, Frame, Value) :-
-  rdfs_computable_triple(Property, Frame, Value, _{}).
+rdfs_compute(Frame, Property, Value) :-
+  current_time(Time),
+  rdfs_compute(Frame, Property, Value, Time).
 
-rdfs_computable_triple(Property,_,_,_) :-
+rdfs_compute(_,Property,_,_) :-
   var(Property),!,
   throw(error(instantiation_error, _)).
 
-rdfs_computable_triple(Property, Frame, Value, DBArgs) :-
-  ground([Frame,Value]),!,
-  rdfs_computable_property(Property, CP),
-  rdfs_computable_triple(Property, Frame, Value, DBArgs, CP),
-  !.
-
-rdfs_computable_triple(Property, Frame, Value, DBArgs) :-
-  rdfs_computable_property(Property, CP),
-  rdfs_computable_triple(Property, Frame, Value, DBArgs, CP).
-  
-rdfs_computable_triple(_Property, Frame, Value, DBArgs, CP) :-
-  \+ is_computable_cachable(CP),!,
-  rdfs_compute_triple(CP, Frame, Value, DBArgs).
+rdfs_compute(Frame, Property, Value, Time) :-
+  rdf_has('ComputableStore',Property,Cmd),
+  ( is_cachable_(Cmd) ->
+    cached_triple_(Property, Frame, Value, Time, Cmd) ;
+    compute_triple(Cmd, Frame, Value, Time)
+  ).
 
 % both frame and value unbound -> no caching
-rdfs_computable_triple(_Property, Frame, Value, DBArgs, CP) :-
+cached_triple_(_Property, Frame, Value, Time, Cmd) :-
   var(Frame), var(Value), !,
-  rdfs_compute_triple(CP, Frame, Value, DBArgs).
+  compute_triple(Cmd, Frame, Value, Time).
 
 % both frame and value bound
-rdfs_computable_triple(Property, Frame, Value, DBArgs, CP) :-
-  nonvar(Frame), nonvar(Value),
+cached_triple_(Property, Frame, Value, Time, Cmd) :-
+  nonvar(Frame), nonvar(Value), !,
   ( rdf(Frame, Property, Value, cache) -> fail ; ( % cache miss
-    rdfs_compute_triple(CP, Frame, Value, DBArgs),
-    rdfs_computable_cache_values(Property, Frame, Value)
+    compute_triple(Cmd, Frame, Value, Time),
+    computable_cache_values(Property, Frame, Value),
+    !
   )).
 
 % frame bound, value unbound
-rdfs_computable_triple(Property, Frame, Value, DBArgs, CP) :-
-  nonvar(Frame), var(Value),
-  (  rdf(computable:cachedAllValuesFor, Property, Frame, cache)
+cached_triple_(Property, Frame, Value, Time, Cmd) :-
+  nonvar(Frame), var(Value), !,
+  (  rdf(cachedAllValuesFor, Property, Frame, cache)
   -> fail ; (
-     % compute values and cache them
-     setof(MyValue, rdfs_compute_triple(CP, Frame, MyValue, DBArgs), Values),
-     rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
-     maplist(rdfs_computable_cache_values(Property, Frame), Values),
+     setof(MyValue, compute_triple(Cmd, Frame, MyValue, Time), Values),
+     rdf_assert(cachedAllValuesFor, Property, Frame, cache),
+     maplist(computable_cache_values(Property, Frame), Values),
      member(Value, Values)
   )).
 
 % frame unbound, value bound
-rdfs_computable_triple(Property, Frame, Value, DBArgs, CP) :-
-  var(Frame), nonvar(Value), 
-  (  rdf(Property, Value, computable:cachedAllFramesFor, cache)
+cached_triple_(Property, Frame, Value, Time, Cmd) :-
+  var(Frame), nonvar(Value), !,
+  (  rdf(Property, Value, cachedAllFramesFor, cache)
   -> fail ; (
-     setof(MyFrame, rdfs_compute_triple(CP, MyFrame, Value, DBArgs), Frames),
-     rdf_assert(Property, Value, computable:cachedAllFramesFor, cache),
-     maplist(rdfs_computable_cache_frames(Property, Value), Frames),
+     setof(MyFrame, compute_triple(Cmd, MyFrame, Value, Time), Frames),
+     rdf_assert(Property, Value, cachedAllFramesFor, cache),
+     maplist(computable_cache_frames(Property, Value), Frames),
      member(Frame, Frames)
   )).
 
-% Helpers for caching...
-is_computable_cachable(CP) :-
-  \+ rdfs_individual_of(CP, computable:'PrologTemporalProperty'),
-  rdf_has(CP, computable:cache, literal(type(_, cache))), !.
+%%
+computable_cache_values(Property, Frame, Value) :-
+  rdf_assert(Frame, Property, Value, cache).
+%%
+computable_cache_frames(Property, Value, Frame) :-
+  rdf_assert(Frame, Property, Value, cache).
 
-rdfs_computable_cache_values(Property, Frame, Value) :-
-  kb_assert(Frame, Property, Value, _{graph:cache}).
+%%
+is_cachable_(Cmd) :-
+  \+ is_temporalized_(Cmd),
+  computable_store_(Cmd,_,Args),
+  member(cache=true, Args), !.
 
-rdfs_computable_cache_frames(Property, Value, Frame) :-
-  kb_assert(Frame, Property, Value, _{graph:cache}).
+is_temporalized_(Cmd) :-
+  % predicates with three arguments are temporalized,
+  % they have an additional time argument.
+  computable_store_(Cmd,_:Predicate,_),
+  current_predicate(Predicate/3).
 
-
-%% rdfs_compute_triple(CP, ?Frame, ?Value, +Interval).
-%
-% Unify the property triple for a computable property.
-% No caching is performed.
-%
-rdfs_compute_triple(CP, Frame, Value) :-
-  rdfs_compute_triple(CP, Frame, Value, _{}).
-
-rdfs_compute_triple(CP, Frame, Value, DBArgs) :-
+%% 
+compute_triple(Cmd, Frame, Value, Time) :-
   catch(
-    rdfs_compute_triple_(CP, Frame, Value, DBArgs),
+    compute_triple_(Cmd, Frame, Value, Time),
     error(instantiation_error, _),
     fail
   ).
 
-rdfs_compute_triple_(CP, Frame, Value, DBArgs) :-
-  rdfs_computable_args(CP, Frame, Value, DBArgs, Args),
-  % get the Prolog predicate that is used for computation
-  rdf_has(CP, computable:command, literal(type(_, Cmd))),
-  % handle the case that the predicate is defined in another module
-  ( term_to_atom(Module:Pred, Cmd) ->
-  ( Goal=..[Pred|Args], Command=Module:Goal ) ;
-  ( Command=..[Cmd|Args] )),
-  % Make sure the predicate exists
-  computable_predicate(Command, Predicate),
-  once(( current_predicate(Predicate) ; (
-         term_to_atom(Predicate, CmdAtom),
-         atomic_list_concat([
-            'Undefined computable ', CmdAtom, '.',
-            ' Missing register_ros_package?'], ErrStr),
-         ros_warn(ErrStr),
-         fail
-  ))),
-  % execute the Prolog predicate (namespace expansion etc.)
-  call(Command).
-
-rdfs_computable_args(CP, Frame, Value, DBArgs, [Frame, Value, Stamp]) :-
-  rdfs_individual_of(CP,computable:'PrologTemporalProperty'),
-  get_dict(during, DBArgs, Stamp),!.
-
-rdfs_computable_args(_CP, Frame, Value, DBArgs, [Frame, Value]) :-
-  \+ get_dict(during, DBArgs, _).
+compute_triple_(Cmd, Frame, Value, Time) :-
+  term_to_atom(Module:Pred, Cmd),
+  %%
+  findall(X, (
+    X=Frame; X=Value; (
+      is_temporalized_(Cmd),
+      X=Time
+    )
+  ),Args),
+  Goal=..[Pred|Args],
+  %%
+  call(Module:Goal).
 
 %%
-computable_predicate(Command, Predicate) :-
-  functor(Command, N, A),
-  ( N=':' -> (
-    Command =.. [':', Module,Command_i],
-    functor(Command_i, N_i, A_i),
-    Predicate=Module:N_i/A_i
-  ) ; Predicate=N/A ).
-
-%%
+% FIXME: do this elsewhere
 knowrob:vkb_has_triple(S,P,O,Args) :-
-  rdfs_computable_triple(P,S,O,Args).
+  rdfs_compute(S,P,O,Args).

@@ -30,26 +30,15 @@
 */
 :- module(comp_spatial,
     [
-      on_Physical/2,
       on_Physical/3,
-      in_ContGeneric/2,
       in_ContGeneric/3,
-      comp_toTheRightOf/2,
       comp_toTheRightOf/3,
-      comp_toTheLeftOf/2,
       comp_toTheLeftOf/3,
-      comp_toTheSideOf/2,
       comp_toTheSideOf/3,
-      comp_inFrontOf/2,
       comp_inFrontOf/3,
-      comp_inCenterOf/2,
       comp_inCenterOf/3,
-      comp_below_of/2,
       comp_below_of/3,
-      comp_above_of/2,
       comp_above_of/3,
-      comp_center/2,
-      objectAtPoint2D/2,
       objectAtPoint2D/3
     ]).
 /** <module> Predicates for spatial reasoning
@@ -64,32 +53,34 @@
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/model/Object')).
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(comp_spatial, 'http://knowrob.org/kb/comp_spatial.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
 :-  rdf_meta
-    on_Physical(r, r),
-    on_Physical_at_time(r, r, +),
-    in_ContGeneric(r, r),
-    in_ContGeneric_at_time(r, r, +),
-    comp_below_of(r,r),
-    comp_below_of_at_time(r,r,+),
-    comp_above_of(r,r),
-    comp_above_of_at_time(r,r,+),
-    comp_toTheSideOf(r, r),
-    comp_toTheSideOf_at_time(r, r,+),
-    comp_toTheRightOf(r, r),
-    comp_toTheRightOf_at_time(r, r,+),
-    comp_toTheLeftOf(r, r),
-    comp_toTheLeftOf_at_time(r, r,+),
-    comp_inFrontOf(r, r),
-    comp_inFrontOf_at_time(r, r,+),
-    comp_inCenterOf(r, r),
-    comp_inCenterOf_at_time(r, r,+),
-    comp_center(r, r).
+    on_Physical(r, r, +),
+    in_ContGeneric(r, r, +),
+    comp_below_of(r,r,+),
+    comp_above_of(r,r,+),
+    comp_toTheSideOf(r, r,+),
+    comp_toTheRightOf(r, r,+),
+    comp_toTheLeftOf(r, r,+),
+    comp_inFrontOf(r, r,+),
+    comp_inCenterOf(r, r,+).
+
+% define predicates as rdfs_computable predicates
+:- rdfs_computable
+    comp_inCenterOf(knowrob:isInCenterOf),
+    in_ContGeneric(knowrob:isInsideOf),
+    comp_inFrontOf(knowrob:isInFrontOf),
+    on_Physical(knowrob:isOntopOf),
+    comp_above_of(knowrob:isAboveOf),
+    comp_below_of(knowrob:isBelowOf),
+    comp_toTheLeftOf(knowrob:isLeftOf),
+    comp_toTheRightOf(knowrob:isRightOf),
+    comp_toTheSideOf(knowrob:isNextTo).
 
 physical_object(Thing) :-
   rdfs_individual_of(Thing, dul:'PhysicalObject').
@@ -105,10 +96,6 @@ physical_object(Thing) :-
 % @param Top Identifier of the upper Object
 % @param Bottom Identifier of the lower Object
 %
-on_Physical(Top, Bottom) :-
-    current_time(Time),
-    on_Physical(Top, Bottom, Time).
-
 on_Physical(Top, Bottom, Time) :-
     physical_object(Top),
     map_frame_name(MapFrame),
@@ -136,10 +123,6 @@ on_Physical(Top, Bottom, Time) :-
 % @param Top Identifier of the upper Object
 % @param Bottom Identifier of the lower Object
 %
-comp_above_of(Top, Bottom) :-
-    current_time(Time),
-    comp_above_of(Top, Bottom, Time).
-
 comp_above_of(Top, Bottom, Time) :-
     physical_object(Top),
     map_frame_name(MapFrame),
@@ -171,7 +154,6 @@ comp_above_of(Top, Bottom, Time) :-
 % @param Bottom Identifier of the lower Object
 % @param Top Identifier of the upper Object
 %
-comp_below_of(Bottom, Top) :- comp_above_of(Top, Bottom).
 comp_below_of(Bottom, Top, Time) :- comp_above_of(Top, Bottom, Time).
 
 
@@ -186,10 +168,6 @@ comp_below_of(Bottom, Top, Time) :- comp_above_of(Top, Bottom, Time).
 % @param Left Identifier of the left Object
 % @param Right Identifier of the right Object
 %
-comp_toTheLeftOf(Left, Right) :-
-    current_time(Time),
-    comp_toTheLeftOf(Left, Right, Time).
-
 comp_toTheLeftOf(Left, Right, Time) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
@@ -219,7 +197,6 @@ comp_toTheLeftOf(Left, Right, Time) :-
 % @param Left Identifier of the left Object
 % @see comp_toTheLeftOf
 %
-comp_toTheRightOf(Right, Left) :- comp_toTheLeftOf(Left, Right).
 comp_toTheRightOf(Right, Left, Time) :- comp_toTheLeftOf(Left, Right, Time).
 
 
@@ -236,9 +213,6 @@ comp_toTheRightOf(Right, Left, Time) :- comp_toTheLeftOf(Left, Right, Time).
 % @see comp_toTheLeftOf
 % @see comp_toTheRightOf
 %
-comp_toTheSideOf(A, B) :-
-    once(comp_toTheRightOf(A, B); comp_toTheLeftOf(A, B)).
-
 comp_toTheSideOf(A, B, Time) :-
     once(comp_toTheRightOf(A, B, Time); comp_toTheLeftOf(A, B, Time)).
 
@@ -255,10 +229,6 @@ comp_toTheSideOf(A, B, Time) :-
 % @param Front Identifier of the front Object
 % @param Back Identifier of the back Object
 %
-comp_inFrontOf(Front, Back) :-
-    current_time(Time),
-    comp_inFrontOf(Front, Back, Time).
-
 comp_inFrontOf(Front, Back, Time) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
@@ -286,10 +256,6 @@ comp_inFrontOf(Front, Back, Time) :-
 % @param Inner Identifier of the inner Object
 % @param Outer Identifier of the outer Object
 %
-comp_inCenterOf(Inner, Outer) :-
-    current_time(Time),
-    comp_inCenterOf(Inner, Outer, Time).
-
 comp_inCenterOf(Inner, Outer, Time) :-
     physical_object(Inner),
     
@@ -317,13 +283,9 @@ comp_inCenterOf(Inner, Outer, Time) :-
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
 %
-in_ContGeneric(InnerObj, OuterObj) :-
-    current_time(Time),
-    in_ContGeneric(InnerObj, OuterObj, Time).
-
 in_ContGeneric(InnerObj, OuterObj, Time) :-
-    
     physical_object(InnerObj),
+    
     map_frame_name(MapFrame),
     object_pose(InnerObj, [MapFrame, _, [IX,IY,IZ], _], Time),
     object_dimensions(InnerObj, ID, IW, IH),
@@ -338,23 +300,6 @@ in_ContGeneric(InnerObj, OuterObj, Time) :-
     >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05), =<( (IX + 0.5*ID),  (OX + 0.5*OD)+0.05 ),
     >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
     >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
-
-% % % % % % % % % % % % % % % % % % % %
-% matrix and vector computations (relating the homography-based
-% position representation with the old center-point-based one)
-%
-
-%% comp_center(+Obj, ?Center) is semidet.
-%
-% Compute the center point of an object from its homography matrix
-%
-% @param Obj    The object identifier
-% @param Center The center point identifier as a String 'translation_<rotation matrix identifier>'
-comp_center(Obj, Center) :-
-  rdf_triple(knowrob:orientation, Obj, Matrix),
-  rdf_split_url(G, L, Matrix),
-  atom_concat('translation_', L, P),
-  rdf_split_url(G, P, Center).
 
 %% objectAtPoint2D(+Point2D, ?Obj) is nondet.
 %
