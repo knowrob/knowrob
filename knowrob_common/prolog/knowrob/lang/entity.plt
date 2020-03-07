@@ -17,16 +17,15 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests('knowrob/entity').
+:- begin_tests('knowrob/lang/entity').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/entity')).
+:- use_module(library('knowrob/lang/entity')).
 :- use_module(library('knowrob/knowrob')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/memory')).
 
 :- owl_parser:owl_parse('package://knowrob_entity/owl/test.owl').
 
@@ -85,4 +84,4 @@ test(query_cup_by_nameString_prop_2, [nondet]) :-
   X = 'cup_name',
   rdf_equal(Cont, entity_test:'Cup_sfd498th').
   
-:- end_tests('knowrob/entity').
+:- end_tests('knowrob/lang/entity').
