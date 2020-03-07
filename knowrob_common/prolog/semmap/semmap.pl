@@ -49,7 +49,7 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/model/Object')).
 :- use_module(library('knowrob/wup_similarity')).
 
 :-  rdf_meta

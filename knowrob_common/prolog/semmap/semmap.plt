@@ -18,16 +18,15 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(semmap).
+:- begin_tests('semmap/semmap').
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/objects'), [current_object_pose/2]).
-:- use_module(library('knowrob/perception'), [object_import_detections/1]).
-:- use_module(library(semmap)).
+:- use_module(library('semmap/semmap')).
 
-:- owl_parser:owl_parse('package://knowrob_maps/owl/iai_room_v1.owl', belief_state).
+:- owl_parser:owl_parse('package://knowrob_common/owl/maps/iai_room_v1.owl', belief_state).
 
 :- rdf_db:rdf_register_ns(iai_map_v1, 'http://knowrob.org/kb/v1/IAI-Kitchen.owl#', [keep(true)]).
 
@@ -73,5 +72,5 @@ test(map_object_info) :-
 test(map_object_type) :-
   map_object_type(iai_map_v1:'drawer_oven_lower', ease:'Drawer'),!.
 
-:- end_tests(semmap).
+:- end_tests('semmap/semmap').
 
