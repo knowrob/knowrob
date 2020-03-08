@@ -157,8 +157,8 @@ is_cachable_(Cmd) :-
 is_temporalized_(Cmd) :-
   % predicates with three arguments are temporalized,
   % they have an additional time argument.
-  computable_store_(Cmd,_:Predicate,_),
-  current_predicate(Predicate/3).
+  computable_store_(Cmd,Mod:Predicate,_),
+  current_predicate(Mod:Predicate/3).
 
 %% 
 compute_triple(Cmd, Frame, Value, Time) :-

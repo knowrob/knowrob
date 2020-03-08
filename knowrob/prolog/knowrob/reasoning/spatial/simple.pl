@@ -28,7 +28,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-:- module(comp_spatial,
+:- module('knowrob/reasoning/spatial/simple',
     [
       on_Physical/3,
       in_ContGeneric/3,
@@ -49,10 +49,9 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/temporal')).
+
+:- use_module(library('knowrob/triples/computable')).
+:- use_module(library('knowrob/comp/object_pose')).
 :- use_module(library('knowrob/model/Object')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
@@ -69,6 +68,9 @@
     comp_toTheLeftOf(r, r,+),
     comp_inFrontOf(r, r,+),
     comp_inCenterOf(r, r,+).
+
+% FIXME: holds and ask unittests are significantly slower with these
+%           computables :/ maybe because properties are sub-proerty of hasLocation?
 
 % define predicates as rdfs_computable predicates
 :- rdfs_computable

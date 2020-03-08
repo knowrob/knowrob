@@ -18,18 +18,16 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests('knowrob/comp_spatial').
+:- begin_tests('knowrob/reasoning/spatial/simple').
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/comp_spatial')).
-:- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/lang/holds')).
+:- use_module(library('knowrob/reasoning/spatial/simple')).
 
-:- owl_parser:owl_parse('package://comp_spatial/owl/test_comp_spatial.owl').
+:- owl_parser:owl_parse('package://knowrob/owl/test/test_comp_spatial.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
@@ -126,5 +124,5 @@ test(toTheSideOf2) :-
 test(toTheSideOf3) :-
   holds(test_sp:'cup1', knowrob:'isNextTo', test_sp:'cup2'),!.
 
-:- end_tests('knowrob/comp_spatial').
+:- end_tests('knowrob/reasoning/spatial/simple').
 
