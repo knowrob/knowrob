@@ -170,7 +170,7 @@ mem_event_begin(Node0,Begin) :-
   )),!.
 
 mem_event_begin(Node0) :-
-  current_time(Begin),
+  get_time(Begin),
   mem_event_begin(Node0, Begin).
 
 %% mem_event_end(+Node0,+End) is det.
@@ -184,7 +184,7 @@ mem_event_end(Node0,End) :-
   )),!.
 
 mem_event_end(Node0) :-
-  current_time(End),
+  get_time(End),
   mem_event_end(Node0, End).
 
 %% mem_event_interval(+Node0,+Begin,+End) is det.

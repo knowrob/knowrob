@@ -25,7 +25,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(knowrob_entity,
+:- module('knowrob/lang/entity',
     [
       entity/2,
       entity_has/3,
@@ -40,10 +40,10 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/computable')).
-:- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+:- use_module(library('knowrob/lang/holds')).
+:- use_module(library('knowrob/lang/occurs')).
 
 :- rdf_meta entity(r,?),
             entity_property(+,?,?).
@@ -287,13 +287,6 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
 
 entity_properties([], []).
 
-
-entity_mng_triple(Obj, [Key,Value,during,Interval]) :-
-  mem_retrieve_triple(Obj, PropIri, Value, DBObject, Begin),
-  (  mng_get_long(DBObject,end,End) ->
-     Interval=[Begin,End] ; Interval=[Begin] ),
-  entity_iri(PropIri, Key, lower_camelcase).
-
 %%
 entity_generate(Pose, [a, pose], _, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
   kb_triple(Pose, knowrob:translation, [X,Y,Z]),
@@ -307,10 +300,7 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
   ;  TypeIri = TypeBaseIri ),
   entity_iri(TypeIri, TypeName, camelcase),
   findall([PropIri,PropValue], rdf(Entity, PropIri, PropValue), Props),
-  entity_properties(Props, Xs),
-  findall(Y,
-    ( member(Y,Xs) ; entity_mng_triple(Entity,Y) ),
-    PropDescr), !.
+  entity_properties(Props, PropDescr), !.
 
 %% Match [a|an, ?entity_type]
 entity_head(Entity, _, Descr, TypeIri) :-
@@ -327,8 +317,8 @@ entity_head(Entity, _, Descr, TypeIri) :-
   ( Types=[]
   -> true
   ; (
-    current_time(Time),
-    knowrob:vkb(_{during:Time},DB),
+    get_time(Time),
+    'knowrob/lang/ask':vkb(_{during:Time},DB),
     findall(E, (
       % TODO: it might not allways be best to early resolve the entities,
       %       also there could be many of them!

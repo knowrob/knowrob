@@ -11,7 +11,7 @@
   
   <node name="json_wrapper" pkg="rosprolog" type="json_wrapper.py" output="screen"/> 
 
-  <node name="object_state_publisher" pkg="knowrob_objects" type="object_state_publisher.py" output="screen">
+  <node name="object_state_publisher" pkg="knowrob_common" type="object_state_publisher.py" output="screen">
     <param name="hz" value="10" />
     <param name="object_types" value="dul:'PhysicalObject'" />
   </node>

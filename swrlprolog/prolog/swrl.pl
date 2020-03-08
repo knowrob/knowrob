@@ -369,7 +369,7 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 swrl_satisfied(Rule)            :- swrl_satisfied(Rule, [], _).
 swrl_satisfied(Rule, Vars_user) :- swrl_satisfied(Rule, Vars_user, _).
 swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
-  current_time(Now),
+  get_time(Now),
   % create list structure holding the variables
   swrl_vars([HeadAtom|Xs] :- Body, Vars_rule), Vars = [var('swrl:dbargs',_{during:Now})|Vars_rule],
   set_vars(Vars, Vars_user),

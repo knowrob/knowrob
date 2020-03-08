@@ -21,17 +21,12 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/lang/entity')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
 
-:- owl_parser:owl_parse('package://knowrob_entity/owl/test.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/test/test.owl').
 
 :- rdf_db:rdf_register_prefix(entity_test, 'http://knowrob.org/kb/entity_test.owl#', [keep(true)]).
-
-:- mem_drop.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% OWL entity descriptions

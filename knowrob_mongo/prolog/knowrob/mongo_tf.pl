@@ -53,7 +53,7 @@
 % @param PoseTime The time for which the transform was recorded.
 %
 mng_tf_current(DB, ObjFrame, Pose, PoseTime) :-
-  current_time(Now),
+  get_time(Now),
   mng_tf_latest_before(DB, ObjFrame, Now, Pose, PoseTime).
 
 %% mng_tf_latest_before(+DB, +ObjFrame, +RequestedTime, ?Pose, ?PoseTime) is nondet.

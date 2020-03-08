@@ -35,7 +35,7 @@
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
 
 test(inCenterOf0) :-
-  current_time(Time),
+  get_time(Time),
   comp_inCenterOf(test_sp:'cup3', test_sp:'cupboard1',Time),!.
 test(inCenterOf1) :-
   holds(test_sp:'cup3', knowrob:isInCenterOf, test_sp:'cupboard1'),!.

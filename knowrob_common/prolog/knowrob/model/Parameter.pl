@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Parameter,
+:- module('knowrob/model/Parameter',
     [
       parameter_create/3
     ]).
@@ -10,10 +10,9 @@
 @author Daniel Beßler
 @license BSD
 */
-:- use_module(library('semweb/rdfs')).
+
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/lang/tell'), [ kb_create/3 ]).
 
 :- rdf_meta
       parameter_create(r,r,+).

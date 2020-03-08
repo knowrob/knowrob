@@ -128,7 +128,7 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
 % pose of one of its base links.
 %
 comp_baselink_pose(Obj, Pose) :-
-  current_time(Instant),
+  get_time(Instant),
   comp_baselink_pose_at_time(Obj, Pose, [Instant,Instant]).
 
 comp_baselink_pose(Obj, Pose, Interval) :-
@@ -152,7 +152,7 @@ comp_baselink_pose(Obj, Pose, Interval) :-
 % @param Instant    The time instant
 % 
 srdl_inFieldOfView(Agent, Object) :-
-  current_time(Instant),
+  get_time(Instant),
   srdl_inFieldOfView_at_time(Agent, Object, Instant).
 
 srdl_inFieldOfView(Agent, Object, [Instant,Instant]) :-

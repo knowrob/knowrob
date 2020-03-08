@@ -1,0 +1,9 @@
+<launch>
+  <arg name="semantic_map" default="package://iai_semantic_maps/owl/kitchen.owl" />
+  
+  <param name="initial_package" type="string" value="knowrob_common" />
+  <param name="initial_goal" type="string" value="belief_parse('$(arg semantic_map)')" />
+  <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" output="screen"/>
+  
+  <include file="$(find knowrob_common)/launch/object_state_publisher.launch" />
+</launch>

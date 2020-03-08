@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Situation,
+:- module('knowrob/model/Situation',
     [
       situation_satisfies/2,
       situation_create/3,
@@ -32,8 +32,9 @@ For example, a *PlanExecution* is a context including some actions executed by a
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/model/OWL'), [kb_is_class/1]).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 
 :- rdf_meta
       situation_satisfies(r,r),

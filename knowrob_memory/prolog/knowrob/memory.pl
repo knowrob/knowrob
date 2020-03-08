@@ -70,7 +70,7 @@ mem_episode_start(Episode,Options) :-
   ),
   %
   \+ current_episode(_),
-  current_time(Stamp),
+  get_time(Stamp),
   %% 
   mem_episode_create(Episode),
   mem_event_begin(Episode,Stamp),
@@ -92,7 +92,7 @@ mem_episode_stop(Episode) :-
   %% get episode time extend
   current_episode(Episode),
   %% 
-  current_time(Stamp),
+  get_time(Stamp),
   mem_event_end(Episode,Stamp),
   %%
   atom_number(Stamp_atom,Stamp),

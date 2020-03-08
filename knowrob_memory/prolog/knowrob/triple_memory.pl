@@ -101,7 +101,7 @@ mem_add_property(Sub) :-
 % taken care of externally.
 %
 mem_store_triple(Subject,Property,Value) :-
-  current_time(Now),
+  get_time(Now),
   mem_store_triple(Subject,Property,Value,Now,_).
 
 mem_store_triple(Subject,Property,Value,Begin) :-
@@ -144,7 +144,7 @@ mem_store_triple(Subject,Property,Value,Begin,End) :-
 % triple active at that time.
 %
 mem_triple_stop(Subject,Property,Value) :-
-  current_time(Now),
+  get_time(Now),
   mem_triple_stop(Subject,Property,Value,Now).
 
 mem_triple_stop(Subject,Property,Value,Stamp) :-
@@ -171,7 +171,7 @@ mem_triple_stop(Subject,Property,Value,Stamp) :-
 % at the moment.
 %
 mem_retrieve_triple(Subject,Property,Value) :-
-  current_time(Now),
+  get_time(Now),
   mem_retrieve_triple(Subject,Property,Value,Now).
 
 mem_retrieve_triple(Subject,Property,Value,Stamp) :-

@@ -120,7 +120,7 @@ belief_class_of(Obj, ObjType) :-
   % nothing to do if current classification matches beliefs
   kb_type_of(Obj, ObjType), !.
 belief_class_of(Obj, NewObjType) :-
-  current_time(Now),
+  get_time(Now),
   ignore(once((
       % withdraw old beliefs about object type
       kb_type_of(Obj, CurrObjType),

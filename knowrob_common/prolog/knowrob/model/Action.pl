@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Action,
+:- module('knowrob/model/Action',
     [
       action_create/3,
       action_status/2,
@@ -27,9 +27,9 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
 
+:- use_module(library('knowrob/lang/ask'),  [ kb_triple/3 ]).
+:- use_module(library('knowrob/lang/tell'), [ kb_assert/3, kb_retract/3 ]).
 :- use_module(library('knowrob/model/Event'), [ event_create/3 ]).
 
 :- rdf_meta

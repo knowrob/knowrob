@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Constraint,
+:- module('knowrob/model/Constraint',
     [
       constraint_term/2,
       has_constrained_concept/3,
@@ -14,8 +14,9 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+
+:- use_module(library('knowrob/lang/ask'),  [ kb_triple/3, kb_type_of/2 ]).
+:- use_module(library('knowrob/lang/tell'), [ kb_assert/3 ]).
 
 :- rdf_meta
       constraint_term(r,t),

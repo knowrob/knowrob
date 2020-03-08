@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Workflow,
+:- module('knowrob/model/Workflow',
     [
       workflow_step/2,
       workflow_first_step/2,
@@ -15,8 +15,8 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 :- use_module(library('knowrob/model/Task'), [ task_role_range/3 ]).
 
 :- rdf_meta

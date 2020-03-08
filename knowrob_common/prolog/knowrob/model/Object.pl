@@ -26,8 +26,9 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(knowrob_model_Object,
+:- module('knowrob/model/Object',
     [
+      kb_is_object/1,
       object_assert/3,
       object_lifetime/2,
       object_frame_name/2,
@@ -61,11 +62,11 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 
 :-  rdf_meta
+    kb_is_object(r),
     object_lifetime(r,?),
     object_assert(r,r,+),
     object_dimensions(r, ?, ?, ?),
@@ -87,7 +88,14 @@
     object_aspect_(r,r,r,r),
     disposition_trigger_type(r,r).
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+%% kb_is_object(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Object'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_object(Entity) :-
+  kb_type_of(Entity,dul:'Object'),!.
 
 object_assert_frame_name(Obj) :-
   rdf_split_url(_, ObjName, Obj),

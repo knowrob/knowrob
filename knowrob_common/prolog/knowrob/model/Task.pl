@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Task,
+:- module('knowrob/model/Task',
     [
       task_create/3,
       task_role/3,
@@ -20,7 +20,8 @@ For example, reaching a destination could be defined by a plan to get on holiday
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 
 :- rdf_meta
       task_create(r,r,+),

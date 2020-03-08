@@ -324,7 +324,7 @@ objectAtPoint2D(Point2D, Obj) :-
 % @bug        THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
 %
 objectAtPoint2D(PX,PY,Obj) :-
-    current_time(Time),
+    get_time(Time),
     objectAtPoint2D(PX,PY,Obj, Time).
  
 objectAtPoint2D(PX, PY, Obj, Time) :-

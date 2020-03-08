@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_Plan,
+:- module('knowrob/model/Plan',
     [
       plan_has_goal/2,
       plan_defines_task/2
@@ -11,10 +11,9 @@
 @author Daniel Beßler
 @license BSD
 */
-:- use_module(library('semweb/rdfs')).
+
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/lang/ask')).
 
 :- rdf_meta
       plan_has_goal(r,r),

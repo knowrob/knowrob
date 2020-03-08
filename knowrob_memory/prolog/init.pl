@@ -2,8 +2,6 @@
 % dependencies
 :- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_mongo).
-:- register_ros_package(knowrob_objects).
-:- register_ros_package(knowrob_actions).
 
 :- use_module(library('knowrob/event_memory')).
 :- use_module(library('knowrob/triple_memory')).

@@ -1,5 +1,5 @@
 
-:- module(knowrob_model_EventType,
+:- module('knowrob/model/EventType',
     [
       event_type_create/3
     ]).
@@ -12,8 +12,8 @@
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+
+:- use_module(library('knowrob/lang/tell'), [ kb_create/3, kb_assert/3 ]).
 
 :- use_module(library('knowrob/model/Parameter'), [ parameter_create/3 ]).
 :- use_module(library('knowrob/model/Role'),      [ role_create/3 ]).

@@ -14,7 +14,7 @@
   
   <node name="json_wrapper" pkg="rosprolog" type="json_ros.py" output="screen"/> 
 
-  <node name="object_state_publisher" pkg="knowrob_objects" type="object_state_publisher.py" output="screen">
+  <node name="object_state_publisher" pkg="knowrob_common" type="object_state_publisher.py" output="screen">
     <param name="hz" value="10" />
   </node>
 </launch>

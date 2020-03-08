@@ -1,6 +1,7 @@
 
-:- module(knowrob_model_Event,
+:- module('knowrob/model/Event',
     [
+      kb_is_event/1,
       event_create/3,
       event_time/3,
       event_begin_time/2,
@@ -24,10 +25,12 @@ If a position has to be suggested here anyway, the participant-based classificat
 */
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+
+:- use_module(library('knowrob/lang/ask'),  [ kb_triple/3, kb_type_of/2 ]).
+:- use_module(library('knowrob/lang/tell'), [ kb_assert/3, kb_retract/3 ]).
 
 :- rdf_meta
+      kb_is_event(r),
       event_create(r,r,+),
       event_time(r,?,?),
       event_begin_time(r,?),
@@ -41,6 +44,15 @@ If a position has to be suggested here anyway, the participant-based classificat
 		 /*******************************
 		 *	dul:'Event'		*
 		 *******************************/
+
+%% kb_is_event(+Entity) is semidet.
+%
+% True iff Entity is an instance of dul:'Event'.
+%
+% @param Entity An entity IRI.
+%
+kb_is_event(Entity) :-
+  kb_type_of(Entity,dul:'Event'),!.
 
 %% event_create(+EvtType,-Evt,+Graph) is semidet.
 %
@@ -100,7 +112,7 @@ event_end_time(Evt,Stamp) :-
 % @param Stamp The timestamp indicating the begin of the event.
 %
 event_set_begin_time(Evt) :-
-  current_time(Stamp),
+  get_time(Stamp),
   event_set_begin_time(Evt,Stamp).
 
 event_set_begin_time(Evt,Stamp) :-
@@ -119,7 +131,7 @@ event_set_begin_time(Evt,Stamp) :-
 % @param Stamp The timestamp indicating the end of the event.
 %
 event_set_end_time(Evt) :-
-  current_time(Stamp),
+  get_time(Stamp),
   event_set_end_time(Evt,Stamp).
 
 event_set_end_time(Evt,Stamp) :-

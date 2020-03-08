@@ -71,29 +71,17 @@ owl_parser:registry('http://knowrob.org/kb', knowrob_common).
 
 :- use_module(library('knowrob/utility/atoms')).
 
-% events
-%:- use_module(library('knowrob/model/Event')).
-%:- use_module(library('knowrob/model/Action')).
-%% concepts
-%:- use_module(library('knowrob/model/EventType')).
-%:- use_module(library('knowrob/model/Task')).
-%:- use_module(library('knowrob/model/Role')).
-%:- use_module(library('knowrob/model/Parameter')).
-%% description & situations
-%:- use_module(library('knowrob/model/Plan')).
-%:- use_module(library('knowrob/model/Workflow')).
-%:- use_module(library('knowrob/model/Situation')).
-%% 
-%:- use_module(library('knowrob/model/Constraint')).
+:- use_module(library('knowrob/triples/triple_store')).
+:- use_module(library('knowrob/triples/computable')).
 
-:- use_module(library('knowrob/xsd')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/computable')).
-% :- use_module(library('knowrob/units')).
-:- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/rosowl')).
-:- use_module(library('knowrob/wup_similarity')).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+:- use_module(library('knowrob/lang/holds')).
+:- use_module(library('knowrob/lang/occurs')).
+
+:- use_module(library('knowrob/comp/object_pose')).
+:- use_module(library('knowrob/comp/object_state')).
+:- use_module(library('knowrob/comp/tf')).
 
 % convenience: set some Prolog flags in order *not to* trim printed lists with [...]
 :- set_prolog_flag(toplevel_print_anon, false).

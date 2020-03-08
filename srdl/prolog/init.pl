@@ -30,7 +30,6 @@
 */
 
 :- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_actions).
 :- register_ros_package(urdfprolog).
 :- register_ros_package(srdl).
 :- register_ros_package(rosprolog).

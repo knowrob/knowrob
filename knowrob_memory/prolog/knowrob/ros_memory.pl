@@ -79,6 +79,7 @@ ros_logger_stop :-
 
 ros_logger_stop :-
   ros_logger_pid(PID),
+  process_create(path('rosnode'), ['kill', 'mongodb_log'], []),
   process_kill(PID, int),
   retractall(ros_logger_pid(PID)),
   process_wait(PID, _),
@@ -117,7 +118,7 @@ mem_store_tf([RefFrame,ObjFrame,[X,Y,Z],[QX,QY,QZ,QW]],Stamp) :-
 %% comp_object_pose(+Obj, ?Pose, +Interval).
 %
 comp_object_pose(Subject, Pose) :-
-  current_time(Time),
+  get_time(Time),
   comp_object_pose(Subject, Pose, Time).
 
 comp_object_pose(Subject, Pose, Time) :-
