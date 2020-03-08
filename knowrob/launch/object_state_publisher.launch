@@ -1,0 +1,5 @@
+<launch>
+  <node name="object_state_publisher" pkg="knowrob" type="object_state_publisher.py" output="screen">
+    <param name="hz" value="1" />
+  </node>
+</launch>

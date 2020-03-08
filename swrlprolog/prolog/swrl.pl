@@ -14,7 +14,7 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-%% TODO: remove knowrob_common dependency.
+%% TODO: remove knowrob dependency.
 %%         but SWRL needs to assert triples,
 %%         and use the OWL+SWRL reasoner in conditions.
 %%         it would be cool if we could introduce a reasoner in a more

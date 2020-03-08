@@ -15,8 +15,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>knowrob_common</build_depend>
-  <run_depend>knowrob_common</run_depend>
+  <build_depend>knowrob</build_depend>
+  <run_depend>knowrob</run_depend>
   
   <build_depend>data_vis_msgs</build_depend>
   <run_depend>data_vis_msgs</run_depend>

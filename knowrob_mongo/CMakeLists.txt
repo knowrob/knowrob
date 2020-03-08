@@ -16,10 +16,10 @@ pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
 include_directories(${MONGOC_INCLUDE_DIRS})
 link_directories(${MONGOC_LIBRARY_DIRS})
 
-find_package(catkin REQUIRED COMPONENTS rosprolog knowrob_common)
+find_package(catkin REQUIRED COMPONENTS rosprolog knowrob)
 
-# TODO: would be nice to get rid of knowrob_common dependency
-catkin_package(CATKIN_DEPENDS knowrob_common rosprolog)
+# TODO: would be nice to get rid of knowrob dependency
+catkin_package(CATKIN_DEPENDS knowrob rosprolog)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 

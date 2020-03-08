@@ -32,7 +32,7 @@
 
 
 % dependencies
-:- register_ros_package(knowrob_common).
+:- register_ros_package(knowrob).
 :- register_ros_package(comp_spatial).
 
 :- use_module(library('knowrob/comp_spatial')).

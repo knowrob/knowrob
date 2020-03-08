@@ -4,10 +4,10 @@ project(urdfprolog)
 
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS knowrob_common urdf xacro rosprolog)
+find_package(catkin REQUIRED COMPONENTS knowrob urdf xacro rosprolog)
 
 catkin_package(
-  CATKIN_DEPENDS knowrob_common urdf rosprolog
+  CATKIN_DEPENDS knowrob urdf rosprolog
   LIBRARIES urdf_parser
 )
 catkin_add_plunit(rdf_urdf urdf_parser)

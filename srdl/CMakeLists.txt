@@ -4,10 +4,10 @@ project(srdl)
 
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS knowrob_common urdfprolog rosprolog rosowl)
+find_package(catkin REQUIRED COMPONENTS knowrob urdfprolog rosprolog rosowl)
 
 catkin_package(
-  CATKIN_DEPENDS knowrob_common urdfprolog rosprolog rosowl
+  CATKIN_DEPENDS knowrob urdfprolog rosprolog rosowl
 )
 catkin_add_plunit(srdl)
 

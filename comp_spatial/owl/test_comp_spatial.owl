@@ -21,7 +21,7 @@
      xmlns:test="http://knowrob.org/kb/test_comp_spatial.owl#">
 
     <owl:Ontology rdf:about="http://knowrob.org/kb/test_comp_spatial.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
     </owl:Ontology>
     
     

@@ -18,7 +18,7 @@
     xmlns:knowrob="&knowrob;"
     xml:base="http://knowrob.org/kb/comp_spatial.owl">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+    <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
   </owl:Ontology>
 
 

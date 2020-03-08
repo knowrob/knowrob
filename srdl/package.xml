@@ -20,13 +20,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>knowrob_common</build_depend>
+  <build_depend>knowrob</build_depend>
   <build_depend>urdfprolog</build_depend>
   <build_depend>rosprolog</build_depend>
   <build_depend>rosowl</build_depend>
   <build_depend>swi-prolog</build_depend>
 
-  <run_depend>knowrob_common</run_depend>
+  <run_depend>knowrob</run_depend>
   <run_depend>urdfprolog</run_depend>
   <run_depend>rosprolog</run_depend>
   <run_depend>rosowl</run_depend>
