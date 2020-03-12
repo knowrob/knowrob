@@ -44,11 +44,13 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
+
+:- use_module(library('knowrob/comp/tf')).
+:- use_module(library('knowrob/utility/filesystem')).
+
 :- use_module(library('knowrob/mongo')).
 :- use_module(library('knowrob/event_memory')).
-:- use_module(library('knowrob/perception')).
-:- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/utility/filesystem')).
+:- use_module(library('knowrob/beliefstate')).
 
 :- dynamic mem_is_initialized/0,
            current_episode/1.

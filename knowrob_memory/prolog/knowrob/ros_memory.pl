@@ -30,19 +30,22 @@
         ros_logger_start/1,
         ros_logger_stop/0,
         mem_store_tf/2,
-        comp_object_pose/3,
-        comp_object_pose/2
+        comp_object_pose/3
     ]).
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
+
+:- use_module(library('knowrob/comp/object_pose')).
+
 :- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/objects')).
 :- use_module(library('knowrob/memory'), [mem_db_name/1]).
 
 :-  rdf_meta
-    comp_object_pose(r,?,+),
-    comp_object_pose(r,?).
+    comp_object_pose(r,?,+).
+
+:- rdfs_computable
+    comp_object_pose(knowrob:'pose').
 
 :- dynamic ros_logger_pid/1.
 
@@ -79,7 +82,7 @@ ros_logger_stop :-
 
 ros_logger_stop :-
   ros_logger_pid(PID),
-  process_create(path('rosnode'), ['kill', 'mongodb_log'], []),
+  %process_create(path('rosnode'), ['kill', 'mongodb_log'], []),
   process_kill(PID, int),
   retractall(ros_logger_pid(PID)),
   process_wait(PID, _),
@@ -114,13 +117,8 @@ mem_store_tf([RefFrame,ObjFrame,[X,Y,Z],[QX,QY,QZ,QW]],Stamp) :-
     ]]
   ]).
 
-%% comp_object_pose(+Obj, ?Pose).
-%% comp_object_pose(+Obj, ?Pose, +Interval).
+%% comp_object_pose(+Obj, ?Pose, +Time).
 %
-comp_object_pose(Subject, Pose) :-
-  get_time(Time),
-  comp_object_pose(Subject, Pose, Time).
-
 comp_object_pose(Subject, Pose, Time) :-
   ground(Subject),
   mem_db_name(DB),

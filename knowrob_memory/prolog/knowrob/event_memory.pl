@@ -66,7 +66,11 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
+
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+
+:- use_module(library('knowrob/model/OWL')).
 :- use_module(library('knowrob/model/Event')).
 :- use_module(library('knowrob/model/EventType')).
 :- use_module(library('knowrob/model/Action')).

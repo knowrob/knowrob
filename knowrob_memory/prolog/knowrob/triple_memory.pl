@@ -46,10 +46,8 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
+
 :- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/memory'), [mem_db_name/1]).
 
 :-  rdf_meta
@@ -237,7 +235,8 @@ mem_triple_typed_xsd_(_Range,Value,string(Value)).
 %%
 % expand knowrob:vkb_has_triple
 %
-knowrob:vkb_has_triple(S,P,O,DBArgs) :-
+% FIXME
+'knowrob/triples/triple_store':vkb_has_triple(S,P,O,DBArgs) :-
   ( ground(S) -> mem_subject(S) ; true ),
   ( ground(P) -> mem_property(P) ; true ),
   ( get_dict(during,DBArgs,Stamp) ->
@@ -246,7 +245,8 @@ knowrob:vkb_has_triple(S,P,O,DBArgs) :-
   ).
 
 %%
-:- knowrob:set_temporalized_db(
+% FIXME
+:- 'knowrob/lang/tell':set_temporalized_db(
       triple_memory:mem_triple_start_,
       triple_memory:mem_triple_stop_).
 

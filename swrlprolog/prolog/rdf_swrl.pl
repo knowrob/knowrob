@@ -22,7 +22,6 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
 :- use_module(library('swrl')).
 
 :- dynamic  rdf_swrl_store/2.

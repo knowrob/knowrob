@@ -2,9 +2,10 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/transforms'), [transform_close_to/3]).
+
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+:- use_module(library('knowrob/comp/tf'), [transform_close_to/3]).
 
 :- rdf_db:rdf_register_ns(urdf, 'http://knowrob.org/kb/urdf.owl#', [keep(true)]).
 :- owl_parser:owl_parse('package://urdfprolog/owl/urdf.owl').

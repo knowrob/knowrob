@@ -46,10 +46,11 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/objects')).
+
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+:- use_module(library('knowrob/comp/tf')).
+:- use_module(library('knowrob/comp/object_pose')).
 :- use_module(library('knowrob/model/Object')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).

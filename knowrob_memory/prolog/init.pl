@@ -9,6 +9,4 @@
 :- use_module(library('knowrob/beliefstate')).
 :- use_module(library('knowrob/memory')).
 
-:- owl_parser:owl_parse('package://knowrob_memory/owl/knowrob_memory.owl').
-
 :- mem_init.

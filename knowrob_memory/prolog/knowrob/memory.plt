@@ -5,15 +5,17 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/memory')).
-:- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/event_memory')).
-:- use_module(library('knowrob/temporal')).
+
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 :- use_module(library('knowrob/model/Action')).
 :- use_module(library('knowrob/model/Constraint')).
 :- use_module(library('knowrob/model/Object')).
+:- use_module(library('knowrob/model/TimeInterval')).
+
+:- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/event_memory')).
+:- use_module(library('knowrob/mongo')).
 
 :- owl_parse('package://knowrob_memory/owl/test.owl').
 

@@ -19,7 +19,8 @@
 %%         and use the OWL+SWRL reasoner in conditions.
 %%         it would be cool if we could introduce a reasoner in a more
 %%         general way.
-:- use_module(library('knowrob/knowrob')).
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
 
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
@@ -28,7 +29,8 @@
 :- dynamic  call_mutex/2.
 
 %%
-knowrob:vkb_has_triple(S,P,O,DBArgs) :-
+% TODO need a better interface
+'knowrob/triples/triple_store':vkb_has_triple(S,P,O,DBArgs) :-
   rdf_has(swrl_registry,P,literal(Command)),
   call(Command,S,O,DBArgs).
 %%

@@ -3,13 +3,14 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/owl_parser')).
+%%
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+
 :- use_module(library('swrl')).
 :- use_module(library('swrl_parser')).
 :- use_module(library('rdf_swrl')).
-
-%%
-:- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/knowrob')).
 
 :- owl_parser:owl_parse('package://swrlprolog/owl/test.owl').
 

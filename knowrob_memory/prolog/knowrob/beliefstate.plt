@@ -6,12 +6,14 @@
 :- use_module(library('random')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob')).
-:- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/objects')).
-:- use_module(library('knowrob/beliefstate')).
-:- use_module(library('knowrob/memory')).
+
+:- use_module(library('knowrob/lang/ask')).
+:- use_module(library('knowrob/lang/tell')).
+:- use_module(library('knowrob/comp/object_pose')).
 :- use_module(library('knowrob/model/Object')).
+
+:- use_module(library('knowrob/memory')).
+:- use_module(library('knowrob/beliefstate')).
 
 :- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).

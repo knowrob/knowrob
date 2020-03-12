@@ -39,7 +39,7 @@
 @license BSD
 */
 
-:- use_module(library('knowrob/transforms')).
+:- use_module(library('knowrob/comp/tf')).
 :- use_module(library('knowrob/mongo')).
 
 %% mng_tf_current(+DB, +ObjFrame, ?Pose, ?PoseTime) is nondet.
