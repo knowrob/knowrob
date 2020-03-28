@@ -5,7 +5,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/comp/rdf_data')).
 
-:- owl_parser:owl_parse('package://knowrob/owl/test_comp_temporal.owl').
+:- owl_parser:owl_parse('package://knowrob/owl/test/test_comp_temporal.owl').
 
 :- rdf_db:rdf_register_ns(test_comp_temporal, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
 

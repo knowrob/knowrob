@@ -12,7 +12,7 @@
 ]).
 
 %:- owl_parser:owl_parse('package://knowrob/owl/comp_temporal.owl').
-:- owl_parser:owl_parse('package://knowrob/owl/test_comp_temporal.owl').
+:- owl_parser:owl_parse('package://knowrob/owl/test/test_comp_temporal.owl').
 
 :- rdf_db:rdf_register_ns(test_comp_temporal, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
 

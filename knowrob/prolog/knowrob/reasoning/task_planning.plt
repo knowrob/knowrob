@@ -24,7 +24,7 @@
 :- use_module(library('knowrob/reasoning/task_planning')).
 :- use_module(library('knowrob/model/Workflow'), [ workflow_role_range/3 ]).
 
-:- owl_parse('package://knowrob/owl/pancake.owl').
+:- owl_parse('package://knowrob/owl/test/pancake.owl').
 
 :- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake.owl#', [keep(true)]).
 

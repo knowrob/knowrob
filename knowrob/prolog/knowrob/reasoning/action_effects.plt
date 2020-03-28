@@ -36,8 +36,8 @@
 
 :- use_module(library('knowrob/reasoning/action_effects')).
 
-:- owl_parse('package://knowrob/owl/blocksworld.owl').
-:- owl_parse('package://knowrob/owl/pancake.owl').
+:- owl_parse('package://knowrob/owl/test/blocksworld.owl').
+:- owl_parse('package://knowrob/owl/test/pancake.owl').
 
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake.owl#', [keep(true)]).

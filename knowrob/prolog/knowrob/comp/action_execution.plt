@@ -19,7 +19,7 @@
 :- use_module(library('knowrob/comp/action_execution_pl')).
 :- use_module(library('knowrob/comp/action_execution_ros')).
 
-:- owl_parse('package://knowrob/owl/execution-test.owl').
+:- owl_parse('package://knowrob/owl/test/execution-test.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(acext,

@@ -4,7 +4,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/reasoning/action_parser')).
 
-:- owl_parser:owl_parse('package://knowrob/owl/parser-test.owl').
+:- owl_parser:owl_parse('package://knowrob/owl/test/parser-test.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ptest, 'http://knowrob.org/kb/parser-test.owl#', [keep(true)]).

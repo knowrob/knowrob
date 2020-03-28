@@ -27,7 +27,7 @@
     disposition_trigger_type/2
 ]).
 
-:- owl_parser:owl_parse('package://knowrob/owl/test_knowrob_objects.owl').
+:- owl_parser:owl_parse('package://knowrob/owl/test/test_knowrob_objects.owl').
 :- rdf_db:rdf_register_prefix(test_obj, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
 test(object_disposition) :-
