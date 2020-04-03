@@ -36,13 +36,13 @@ catkin_add_plunit(
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 
-add_library(object_state_publisher SHARED src/object_state_publisher.cpp)
+add_library(object_state_publisher SHARED src/comm/object_state_publisher.cpp)
 target_link_libraries(object_state_publisher ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(object_state_publisher 
   ${${PROJECT_NAME}_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS})
 
-add_library(kb_algebra SHARED src/algebra.cpp)
+add_library(kb_algebra SHARED src/utility/algebra.cpp)
 target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(kb_algebra
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
