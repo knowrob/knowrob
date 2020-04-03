@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Runs a web-gui showing the results of KnowRob's activity parser.
+
 import signal
 import sys
 import json
