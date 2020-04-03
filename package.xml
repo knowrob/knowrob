@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package>
+  <name>knowrob</name>
+  <version>0.1.0</version>
+  <description>KnowRob is a knowledge processing framework for robots. It has originally
+    been developed in the IAS group at Technische Universitaet Muenchen,
+    Germany and is currently maintained by Daniel Beßler at the Institute
+    for Artificial Intelligence in Bremen, Germany.
+
+    It provides tools for knowledge acquisition, representation and reasoning
+    that are tailored to the demands in mobile robotics.
+  </description>
+  
+  <author>Moritz Tenorth</author>
+  <author>Daniel Beßler</author>
+
+  <maintainer email="danielb@uni-bremen.de">Daniel Beßler</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://www.knowrob.org</url>
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>rosprolog</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rosowl</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>urdf</build_depend>
+  
+  <run_depend>message_runtime</run_depend>
+  <run_depend>rosprolog</run_depend>
+  <run_depend>rosowl</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>ease_ontology</run_depend>
+  <run_depend>swi-prolog</run_depend>
+  <run_depend>urdf</run_depend>
+
+
+</package>
