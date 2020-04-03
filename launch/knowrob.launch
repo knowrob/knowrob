@@ -1,23 +1,14 @@
 <launch>
   <arg name="mongodb_name" default="roslog" />
   <arg name="memory_dir" default="" />
-  <arg name="num_pl_threads" default="2" />
-  <arg name="num_ros_threads" default="4" />
   
   <env name="KNOWROB_MONGO_DB_NAME" value="$(arg mongodb_name)" />
   <env name="KNOWROB_MEMORY_DIR" value="$(arg memory_dir)" />
   
-  <node name="rosprolog" pkg="rosprolog" type="rosprolog_node" output="screen">
-    <param name="num_pl_threads" type="int" value="$(arg num_pl_threads)" />
-    <param name="num_ros_threads" type="int" value="$(arg num_ros_threads)" />
-    <param name="initial_package" type="string" value="knowrob_memory" />
-    <param name="initial_goal" type="string" value="true" />
-  </node>
-  
-  <node name="json_wrapper" pkg="rosprolog" type="json_ros.py" output="screen"/> 
+  <include file="$(find rosprolog)/launch/rosprolog.launch">
+    <arg name="initial_package" default="knowrob" />
+    <arg name="initial_goal" default="true" />
+  </include>
 
-  <node name="object_state_publisher" pkg="knowrob" type="object_state_publisher.py" output="screen">
-    <param name="hz" value="10" />
-    <param name="object_types" value="dul:'PhysicalObject'" />
-  </node>
+  <include file="$(find knowrob)/launch/object_state_publisher.launch" />
 </launch>

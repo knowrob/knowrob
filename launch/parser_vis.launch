@@ -1,5 +1,5 @@
 <launch>
-  <arg name="plan_library" default="package://knowrob/owl/parser-test.owl" />
+  <arg name="plan_library" default="package://knowrob/owl/test/parser-test.owl" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />
