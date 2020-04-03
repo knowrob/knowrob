@@ -1,7 +1,15 @@
-#include "knowrob_objects.h"
+#include <ros/ros.h>
+
+#define PL_SAFE_ARG_MACROS
+#include <SWI-cpp.h>
+
+#include <stdio.h>
+#include <dlfcn.h>
+#include <iostream>
+#include <string>
+#include <memory>
 
 #include <stdlib.h>
-#include <iostream>
 #include <condition_variable>
 #include <thread>
 #include <chrono>

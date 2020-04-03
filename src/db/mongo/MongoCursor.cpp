@@ -6,9 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob_mongo/MongoCursor.h"
-#include "knowrob_mongo/MongoException.h"
-#include "knowrob_mongo/bson_pl.h"
+#include "knowrob/db/mongo/MongoCursor.h"
+#include "knowrob/db/mongo/MongoException.h"
+#include "knowrob/db/mongo/bson_pl.h"
 
 #include <sstream>
 #include <iostream>

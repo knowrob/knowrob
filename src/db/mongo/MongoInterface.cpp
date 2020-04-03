@@ -12,8 +12,8 @@
 
 #include <rosprolog/rosprolog_kb/rosprolog_kb.h>
 
-#include "knowrob_mongo/MongoInterface.h"
-#include "knowrob_mongo/bson_pl.h"
+#include "knowrob/db/mongo/MongoInterface.h"
+#include "knowrob/db/mongo/bson_pl.h"
 
 /*********************************/
 /********** static functions *****/

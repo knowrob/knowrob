@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob_mongo/MongoCollection.h"
+#include "knowrob/db/mongo/MongoCollection.h"
 
 MongoCollection::MongoCollection(
 	    mongoc_client_pool_t *pool,

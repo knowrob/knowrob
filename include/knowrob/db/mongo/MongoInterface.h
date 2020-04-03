@@ -17,10 +17,10 @@
 #include <map>
 #include <string>
 
-#include <knowrob_mongo/MongoException.h>
-#include <knowrob_mongo/MongoDatabase.h>
-#include <knowrob_mongo/MongoCollection.h>
-#include <knowrob_mongo/MongoCursor.h>
+#include <knowrob/db/mongo/MongoException.h>
+#include <knowrob/db/mongo/MongoDatabase.h>
+#include <knowrob/db/mongo/MongoCollection.h>
+#include <knowrob/db/mongo/MongoCursor.h>
 
 class MongoInterface {
 public:

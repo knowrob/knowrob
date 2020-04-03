@@ -1,4 +1,4 @@
-#include "knowrob_mongo/MongoException.h"
+#include "knowrob/db/mongo/MongoException.h"
 
 MongoException::MongoException(
 	const char *scope,

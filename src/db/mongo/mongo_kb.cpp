@@ -10,7 +10,7 @@
 #include <SWI-cpp.h>
 #include <iostream>
 
-#include "knowrob_mongo/MongoInterface.h"
+#include "knowrob/db/mongo/MongoInterface.h"
 
 PREDICATE(mng_collections,2) {
 	MongoDatabase db_handle(MongoInterface::pool(), (char*)PL_A1);

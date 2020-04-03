@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob_mongo/bson_pl.h"
+#include "knowrob/db/mongo/bson_pl.h"
 #include <sstream>
 #include <iostream>
 

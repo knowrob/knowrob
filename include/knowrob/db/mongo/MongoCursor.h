@@ -16,7 +16,7 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 // knowrob_mongo
-#include <knowrob_mongo/MongoCollection.h>
+#include <knowrob/db/mongo/MongoCollection.h>
 
 class MongoCursor {
 public:

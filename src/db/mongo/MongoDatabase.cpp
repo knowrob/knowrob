@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob_mongo/MongoDatabase.h"
+#include "knowrob/db/mongo/MongoDatabase.h"
 
 MongoDatabase::MongoDatabase(
 	    mongoc_client_pool_t *pool,

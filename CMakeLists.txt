@@ -65,13 +65,13 @@ link_directories(${MONGOC_LIBRARY_DIRS})
 
 add_library(mongo_kb
 	SHARED
-	src/mongo_kb.cpp
-	src/bson_pl.cpp
-	src/MongoException.cpp
-	src/MongoInterface.cpp
-	src/MongoDatabase.cpp
-	src/MongoCollection.cpp
-	src/MongoCursor.cpp)
+	src/db/mongo/mongo_kb.cpp
+	src/db/mongo/bson_pl.cpp
+	src/db/mongo/MongoException.cpp
+	src/db/mongo/MongoInterface.cpp
+	src/db/mongo/MongoDatabase.cpp
+	src/db/mongo/MongoCollection.cpp
+	src/db/mongo/MongoCursor.cpp)
 target_link_libraries(mongo_kb
 	${SWIPL_LIBRARIES}
 	${MONGOC_LIBRARIES}
