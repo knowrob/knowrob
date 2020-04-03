@@ -25,19 +25,20 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module('knowrob/comp/object_state',
+:- module(object_state_publisher,
     [
       mark_dirty_objects/1
     ]).
 
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs')).
 :- use_module(library('knowrob/model/Object')).
-:- use_module(library('knowrob/comp/object_pose'), [
-    object_pose_data/3
+:- use_module(library('knowrob/memory/object_pose'), [
+    object_pose_data/3,
+    current_object_pose/2
 ]).
 :- use_module(library('knowrob/lang/ask'), [
-    kb_type_of/2
+    kb_type_of/2,
+    kb_subclass_of/2
 ]).
 
 :-  rdf_meta
@@ -56,9 +57,7 @@ mark_dirty_objects(Objects) :-
   ), ObjStates),
   object_state_add_cpp(ObjStates).
 
-%% object_state(+Obj:iri, ?State:list) is semidet
-%% object_state(+Obj:iri, ?State:list, +Properties:dict) is semidet
-%
+%% 
 object_state(Obj, State) :-
   object_state(Obj, State, _{}).
 
@@ -88,6 +87,8 @@ object_state(Obj, [
   %
   object_frame_name(Obj,FrameName),
   kb_type_of(Obj,Type),
+  % FIXME: rdf_split_url is deprecated
+  %iri_xml_namespace(_,TypeName,Type),
   rdf_split_url(_,TypeName,Type),
   % get the shape, default to BoxShape
   ( get_dict(shape,Properties,ShapeIri) ;
@@ -115,19 +116,14 @@ object_state(Obj, [
     print_message(warning, unlocalized(Obj)),
     fail
   )),
-  findall(X, (
+  findall([ObjFrame,FeatureFrame,Pos,Rot], (
     object_feature(Obj,Feature),
-    feature_transform(Obj,Feature,X)
+    object_frame_name(Obj, ObjFrame),
+    current_object_pose(Feature, [_,FeatureFrame,Pos,Rot])
   ), StaticTransforms),
   !.
 
-%object_state_shape_(Iri,0) :- rdfs_subclass_of(Iri,ease_obj:'Arrow'),!.
-object_state_shape_(Iri,1) :- rdfs_subclass_of(Iri,ease_obj:'BoxShape'),!.
-object_state_shape_(Iri,2) :- rdfs_subclass_of(Iri,ease_obj:'SphereShape'),!.
-object_state_shape_(Iri,3) :- rdfs_subclass_of(Iri,ease_obj:'CylinderShape'),!.
-
-%%
-feature_transform(Obj, Feature, [ObjFrame,FeatureFrame,Pos,Rot]) :-
-  %%
-  object_frame_name(Obj, ObjFrame),
-  current_object_pose(Feature, [_,FeatureFrame,Pos,Rot]).
+%object_state_shape_(Iri,0) :- kb_subclass_of(Iri,ease_obj:'Arrow'),!.
+object_state_shape_(Iri,1) :- kb_subclass_of(Iri,ease_obj:'BoxShape'),!.
+object_state_shape_(Iri,2) :- kb_subclass_of(Iri,ease_obj:'SphereShape'),!.
+object_state_shape_(Iri,3) :- kb_subclass_of(Iri,ease_obj:'CylinderShape'),!.
