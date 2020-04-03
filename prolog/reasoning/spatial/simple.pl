@@ -39,7 +39,8 @@
       comp_inCenterOf/3,
       comp_below_of/3,
       comp_above_of/3,
-      objectAtPoint2D/3
+      objectAtPoint2D/3,
+      object_distance/3
     ]).
 /** <module> Predicates for spatial reasoning
 
@@ -67,7 +68,8 @@
     comp_toTheRightOf(r, r,+),
     comp_toTheLeftOf(r, r,+),
     comp_inFrontOf(r, r,+),
-    comp_inCenterOf(r, r,+).
+    comp_inCenterOf(r, r,+),
+    object_distance(r,r,-).
 
 % FIXME: holds and ask unittests are significantly slower with these
 %           computables :/ maybe because properties are sub-proerty of hasLocation?
@@ -271,6 +273,23 @@ comp_inCenterOf(Inner, Outer, Time) :-
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
     =<( abs( IZ - OZ), 0.20).  % less than 20cm z diff
+
+%% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
+% 
+% Computes euclidean distance between A and B.
+%
+% @param A         Instance of SpatialThing
+% @param B         Instance of SpatialThing
+% @param Distance  The current distance between A and B
+%
+object_distance(A,B,Distance):-
+  map_frame_name(MapFrame),
+  current_object_pose(A, [MapFrame,_,[AX,AY,AZ],_]),
+  current_object_pose(B, [MapFrame,_,[BX,BY,BZ],_]),
+  DX is AX - BX,
+  DY is AY - BY,
+  DZ is AZ - BZ,
+  Distance is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)), !.
 
 
 %% in_ContGeneric(?InnerObj, ?OuterObj) is nondet.

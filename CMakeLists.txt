@@ -42,13 +42,13 @@ add_dependencies(object_state_publisher
   ${${PROJECT_NAME}_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS})
 
-add_library(pl_eigen SHARED src/pl_eigen.cpp)
-target_link_libraries(pl_eigen ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(pl_eigen
+add_library(kb_algebra SHARED src/algebra.cpp)
+target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(kb_algebra
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS})
 
-add_library(urdf_parser SHARED src/urdf_parser.cpp)
+add_library(urdf_parser SHARED src/model/urdf/urdf_parser.cpp)
 target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(urdf_parser
   ${${PROJECT_NAME}_EXPORTED_TARGETS}

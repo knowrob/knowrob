@@ -60,7 +60,7 @@
     transform_reference_frame(r,?),
     transform_data(r,?).
 
-:- use_foreign_library('libpl_eigen.so').
+:- use_foreign_library('libkb_algebra.so').
 
 %% map_frame_name(?Name:atom) is det.
 %

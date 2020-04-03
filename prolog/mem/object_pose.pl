@@ -34,8 +34,7 @@
       current_object_pose_stamp/2,
       object_pose_update/2,
       object_pose_update/3,
-      object_pose_data/3,
-      object_distance/3
+      object_pose_data/3
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -62,8 +61,7 @@
     object_pose(r,+),
     object_pose_update(r,+),
     object_pose_update(r,+,+),
-    object_trajectory(r,t,+,-),
-    object_distance(r,r,-).
+    object_trajectory(r,t,+,-).
 
 :- dynamic object_pose_data/3,
            current_object_pose_stamp/2.
@@ -180,20 +178,3 @@ object_map_pose_([ParentFrame,ObjFrame,T,Q],MapPose,Time) :-
     transform_multiply(MapParent,
       [ParentFrame,ObjFrame,T,Q], MapPose)
   )).
-
-%% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
-% 
-% Computes euclidean distance between A and B.
-%
-% @param A         Instance of SpatialThing
-% @param B         Instance of SpatialThing
-% @param Distance  The current distance between A and B
-%
-object_distance(A,B,Distance):-
-  map_frame_name(MapFrame),
-  current_object_pose(A, [MapFrame,_,[AX,AY,AZ],_]),
-  current_object_pose(B, [MapFrame,_,[BX,BY,BZ],_]),
-  DX is AX - BX,
-  DY is AY - BY,
-  DZ is AZ - BZ,
-  Distance is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)), !.
