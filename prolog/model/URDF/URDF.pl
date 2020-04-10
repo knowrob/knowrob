@@ -25,25 +25,25 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(rdf_urdf,
+:- module(model_URDF,
     [
-    rdf_urdf_load/2,
-    rdf_urdf_name/2,
-    rdf_urdf_robot_joint/2,
-    rdf_urdf_robot_link/2,
-    rdf_urdf_joint_origin/2,
-    rdf_urdf_joint_limits/4,
-    rdf_urdf_joint_soft_limits/4,
-    rdf_urdf_joint_calibration/3,
-    rdf_urdf_joint_axis/2,
-    rdf_urdf_joint_friction/2,
-    rdf_urdf_joint_damping/2,
-    rdf_urdf_has_child/2,
-    rdf_urdf_has_parent/2,
-    rdf_urdf_link_mass/2,
-    rdf_urdf_link_visual/3,
-    rdf_urdf_link_collision/3,
-    rdf_urdf_link_inertia/3
+    urdf_load/2,
+    urdf_name/2,
+    urdf_robot_joint/2,
+    urdf_robot_link/2,
+    urdf_joint_origin/2,
+    urdf_joint_limits/4,
+    urdf_joint_soft_limits/4,
+    urdf_joint_calibration/3,
+    urdf_joint_axis/2,
+    urdf_joint_friction/2,
+    urdf_joint_damping/2,
+    urdf_has_child/2,
+    urdf_has_parent/2,
+    urdf_link_mass/2,
+    urdf_link_visual/3,
+    urdf_link_collision/3,
+    urdf_link_inertia/3
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -54,121 +54,121 @@
 :- use_module('urdf_parser').
 
 :-  rdf_meta
-    rdf_urdf_load(r,+),
-    rdf_urdf_name(r,?),
-    rdf_urdf_robot_joint(r,t),
-    rdf_urdf_robot_link(r,t),
-    rdf_urdf_joint_origin(r,?),
-    rdf_urdf_joint_limits(r,?,?,?),
-    rdf_urdf_joint_soft_limits(r,?,?,?),
-    rdf_urdf_joint_axis(r,?),
-    rdf_urdf_joint_friction(r,?),
-    rdf_urdf_joint_damping(r,?),
-    rdf_urdf_has_child(r,r),
-    rdf_urdf_has_parent(r,r),
-    rdf_urdf_calibration(r,?,?),
-    rdf_urdf_link_visual(r,?,?),
-    rdf_urdf_link_collision(r,?,?),
-    rdf_urdf_link_inertia(r,?,?).
+    urdf_load(r,+),
+    urdf_name(r,?),
+    urdf_robot_joint(r,t),
+    urdf_robot_link(r,t),
+    urdf_joint_origin(r,?),
+    urdf_joint_limits(r,?,?,?),
+    urdf_joint_soft_limits(r,?,?,?),
+    urdf_joint_axis(r,?),
+    urdf_joint_friction(r,?),
+    urdf_joint_damping(r,?),
+    urdf_has_child(r,r),
+    urdf_has_parent(r,r),
+    urdf_calibration(r,?,?),
+    urdf_link_visual(r,?,?),
+    urdf_link_collision(r,?,?),
+    urdf_link_inertia(r,?,?).
 
-%% rdf_urdf_name(?Entity,?Name) is semidet.
+%% urdf_name(?Entity,?Name) is semidet.
 %
-rdf_urdf_name(Entity,Name) :-
+urdf_name(Entity,Name) :-
   rdf_has(Entity,urdf:hasURDFName,literal(type(_,Name))).
 
-%% rdf_urdf_joint_origin(?Robot,?Joint) is semidet.
+%% urdf_joint_origin(?Robot,?Joint) is semidet.
 %
-rdf_urdf_robot_joint(Robot,Joint) :-
+urdf_robot_joint(Robot,Joint) :-
   rdf_has(Robot,urdf:hasJoint,Joint).
 
-%% rdf_urdf_joint_origin(?Robot,?Link) is semidet.
+%% urdf_joint_origin(?Robot,?Link) is semidet.
 %
-rdf_urdf_robot_link(Robot,Link) :-
+urdf_robot_link(Robot,Link) :-
   rdf_has(Robot,urdf:hasLink,Link).
 
-%% rdf_urdf_joint_origin(?Joint,?Origin) is semidet.
+%% urdf_joint_origin(?Joint,?Origin) is semidet.
 %
-rdf_urdf_joint_origin(Joint,[_,_,Pos,Rot]) :- % TODO: what is the reference frame?
+urdf_joint_origin(Joint,[_,_,Pos,Rot]) :- % TODO: what is the reference frame?
   rdf_has(Joint,urdf:hasOrigin,Origin),!,
   transform_data(Origin,(Pos,Rot)).
 
-%% rdf_urdf_joint_limits(?Joint,?Pos,?Vel,?Eff) is semidet.
+%% urdf_joint_limits(?Joint,?Pos,?Vel,?Eff) is semidet.
 %
-rdf_urdf_joint_limits(J, [LL,UL], VelMax, EffMax) :-
+urdf_joint_limits(J, [LL,UL], VelMax, EffMax) :-
   rdf_has(J,urdf:hasJointLimits,Lim),
   kb_triple(Lim,urdf:hasLowerLimit,LL),
   kb_triple(Lim,urdf:hasUpperLimit,UL),
   kb_triple(Lim,urdf:hasMaxJointVelocity,VelMax),
   kb_triple(Lim,urdf:hasMaxJointEffort,EffMax).
 
-%% rdf_urdf_joint_soft_limits(?Joint,?Pos,?KP,?KV) is semidet.
+%% urdf_joint_soft_limits(?Joint,?Pos,?KP,?KV) is semidet.
 %
-rdf_urdf_joint_soft_limits(J, [LL,UL], KP, KV) :-
+urdf_joint_soft_limits(J, [LL,UL], KP, KV) :-
   rdf_has(J,urdf:hasJointSoftLimits,Saf),
   kb_triple(Saf,urdf:hasLowerLimit,LL),
   kb_triple(Saf,urdf:hasUpperLimit,UL),
   kb_triple(Saf,urdf:hasKPosition,KP),
   kb_triple(Saf,urdf:hasKVelocity,KV).
   
-%% rdf_urdf_joint_calibration(?Joint,?FallingEdge,?RisingEdge) is semidet.
+%% urdf_joint_calibration(?Joint,?FallingEdge,?RisingEdge) is semidet.
 %
-rdf_urdf_joint_calibration(J,Falling,Rising) :-
+urdf_joint_calibration(J,Falling,Rising) :-
   rdf_has(J,urdf:hasJointReferencePositions,Calib),
   kb_triple(Calib,urdf:hasRisingEdge,Rising),
   kb_triple(Calib,urdf:hasFallingEdge,Falling).
 
-%% rdf_urdf_joint_axis(?Joint,?Axis) is semidet.
+%% urdf_joint_axis(?Joint,?Axis) is semidet.
 %
-rdf_urdf_joint_axis(J,[X,Y,Z]) :-
+urdf_joint_axis(J,[X,Y,Z]) :-
   rdf_has(J,urdf:hasJointAxis,Axis),
   kb_triple(Axis,urdf:hasAxisVector,[X,Y,Z]).
 
-%% rdf_urdf_has_child(?Joint,?Friction) is semidet.
+%% urdf_has_child(?Joint,?Friction) is semidet.
 %
-rdf_urdf_joint_friction(J, Friction) :-
+urdf_joint_friction(J, Friction) :-
   rdf_has(J,ease_obj:hasFrictionAttribute,X),
   kb_triple(X,ease_obj:hasFrictionValue,Friction).
   
-%% rdf_urdf_has_child(?Joint,?Damping) is semidet.
+%% urdf_has_child(?Joint,?Damping) is semidet.
 %
-rdf_urdf_joint_damping(J, Damping) :-
+urdf_joint_damping(J, Damping) :-
   rdf_has(J,urdf:hasDampingAttribute,X),
   kb_triple(X,urdf:hasDampingValue,Damping).
 
-%% rdf_urdf_has_child(?Joint,?Link) is semidet.
+%% urdf_has_child(?Joint,?Link) is semidet.
 %
-rdf_urdf_has_child(Joint,Link) :-
+urdf_has_child(Joint,Link) :-
   rdf_has(Joint,urdf:hasChildLink,Link).
 
-%% rdf_urdf_has_parent(?Joint,?Link) is semidet.
+%% urdf_has_parent(?Joint,?Link) is semidet.
 %
-rdf_urdf_has_parent(Joint,Link) :-
+urdf_has_parent(Joint,Link) :-
   rdf_has(Joint,urdf:hasParentLink,Link).
 
-rdf_urdf_origin(Entity,RefFrame,[_,RefFrame,Pos,Rot]) :-
+urdf_origin(Entity,RefFrame,[_,RefFrame,Pos,Rot]) :-
   rdf_has(Entity,urdf:hasOrigin,Origin),!,
   transform_data(Origin,(Pos,Rot)).
 
-rdf_urdf_origin(_Entity,RefFrame,[_,RefFrame,
+urdf_origin(_Entity,RefFrame,[_,RefFrame,
   [0.0,0.0,0.0],[1.0,0.0,0.0,0.0]]).
   
 %%
-rdf_urdf_shape(Shape,box(X, Y, Z)) :-
+urdf_shape(Shape,box(X, Y, Z)) :-
   rdfs_individual_of(Shape,ease_obj:'BoxShape'),
   kb_triple(Shape, ease_obj:hasWidth, X),
   kb_triple(Shape, ease_obj:hasHeight, Y),
   kb_triple(Shape, ease_obj:hasDepth, Z),!.
 
-rdf_urdf_shape(Shape,cylinder(Radius, Length)) :-
+urdf_shape(Shape,cylinder(Radius, Length)) :-
   rdfs_individual_of(Shape,ease_obj:'CylinderShape'),
   kb_triple(Shape, ease_obj:hasRadius, Radius),
   kb_triple(Shape, ease_obj:hasLength, Length),!.
 
-rdf_urdf_shape(Shape,sphere(Radius)) :-
+urdf_shape(Shape,sphere(Radius)) :-
   rdfs_individual_of(Shape,ease_obj:'SphereShape'),
   kb_triple(Shape, ease_obj:hasRadius, Radius),!.
 
-rdf_urdf_shape(Shape,mesh(Filename,Scale)) :-
+urdf_shape(Shape,mesh(Filename,Scale)) :-
   rdfs_individual_of(Shape,ease_obj:'MeshShape'),
   kb_triple(Shape, ease_obj:hasFilePath, Filename),
   mesh_scale_(Shape, Scale),!.
@@ -179,33 +179,33 @@ mesh_scale_(Shape, [X,Y,Z]) :-
   kb_triple(Shape, knowrob:hasZScale, Z),!.
 mesh_scale_(_Shape, [1.0,1.0,1.0]).
 
-%% rdf_urdf_link_mass(+Link, ?MassValue) is semidet.
+%% urdf_link_mass(+Link, ?MassValue) is semidet.
 %
-rdf_urdf_link_mass(Link,MassValue) :-
+urdf_link_mass(Link,MassValue) :-
   rdf_has(Link,ease_obj:hasMassAttribute,Mass),
   kb_triple(Mass,ease_obj:hasMassValue,MassValue).
 
-%% rdf_urdf_link_visual(+Link, ?ShapeTerm, ?Origin) is semidet.
+%% urdf_link_visual(+Link, ?ShapeTerm, ?Origin) is semidet.
 %
-rdf_urdf_link_visual(Link,ShapeTerm,Origin) :-
-  rdf_urdf_name(Link,RefFrame),
+urdf_link_visual(Link,ShapeTerm,Origin) :-
+  urdf_name(Link,RefFrame),
   rdf_has(Link,ease_obj:hasShape,Shape),
   once(kb_triple(Shape,dul:hasRegion,ShapeRegion)),
-  rdf_urdf_shape(ShapeRegion,ShapeTerm),
-  rdf_urdf_origin(ShapeRegion,RefFrame,Origin).
+  urdf_shape(ShapeRegion,ShapeTerm),
+  urdf_origin(ShapeRegion,RefFrame,Origin).
 
-%% rdf_urdf_link_collision(+Link, ?ShapeTerm, ?Origin) is semidet.
+%% urdf_link_collision(+Link, ?ShapeTerm, ?Origin) is semidet.
 %
-rdf_urdf_link_collision(Link,ShapeTerm,Origin) :-
-  rdf_urdf_name(Link,RefFrame),
+urdf_link_collision(Link,ShapeTerm,Origin) :-
+  urdf_name(Link,RefFrame),
   rdf_has(Link,urdf:hasCollisionShape,Shape),
   once(kb_triple(Shape,dul:hasRegion,ShapeRegion)),
-  rdf_urdf_shape(ShapeRegion,ShapeTerm),
-  rdf_urdf_origin(ShapeRegion,RefFrame,Origin).
+  urdf_shape(ShapeRegion,ShapeTerm),
+  urdf_origin(ShapeRegion,RefFrame,Origin).
 
-%% rdf_urdf_link_inertia(+Link, ?Matrix, ?Origin) is semidet.
+%% urdf_link_inertia(+Link, ?Matrix, ?Origin) is semidet.
 %
-rdf_urdf_link_inertia(Link,[XX,XY,XZ,YY,YZ,ZZ],[_,RefFrame,Pos,Rot]) :-
+urdf_link_inertia(Link,[XX,XY,XZ,YY,YZ,ZZ],[_,RefFrame,Pos,Rot]) :-
   rdf_has(Link,urdf:hasInertia,Inertia),
   %
   kb_triple(Inertia,urdf:hasInertia_ixx,XX),
@@ -215,7 +215,7 @@ rdf_urdf_link_inertia(Link,[XX,XY,XZ,YY,YZ,ZZ],[_,RefFrame,Pos,Rot]) :-
   kb_triple(Inertia,urdf:hasInertia_iyz,YZ),
   kb_triple(Inertia,urdf:hasInertia_izz,ZZ),
   %%
-  rdf_urdf_name(Link,RefFrame),
+  urdf_name(Link,RefFrame),
   rdf_has(Inertia,urdf:hasOrigin,Origin),
   transform_data(Origin,(Pos,Rot)).
 
@@ -223,20 +223,20 @@ rdf_urdf_link_inertia(Link,[XX,XY,XZ,YY,YZ,ZZ],[_,RefFrame,Pos,Rot]) :-
 		  *            Loading URDF Files    *
 		  ************************************/
 
-%% rdf_urdf_load(+Robot, +URDF_File) is det.
+%% urdf_load(+Robot, +URDF_File) is det.
 %
 % Load a URDF file and map it into RDF triple store
 % using the model defined in 'urdf.owl'.
 %
-rdf_urdf_load(Robot, URDF_File) :-
+urdf_load(Robot, URDF_File) :-
   rdf_split_url(_, Robot_Id, Robot),
   setup_call_cleanup(
     load_urdf_file(Robot_Id, URDF_File),
-    rdf_urdf_load_(Robot, Robot_Id),
+    urdf_load_(Robot, Robot_Id),
     unload_urdf_file(Robot_Id)
   ).
   
-rdf_urdf_load_(Robot, Robot_Id) :-
+urdf_load_(Robot, Robot_Id) :-
   %%
   once(rdf(Robot,rdf:type,_,Graph)),
   %%
@@ -386,7 +386,7 @@ urdf_joint_has_safety(Robot_Id,Name) :-
 %%
 urdf_joint_to_owl(Robot_Id,Name,Joint,Graph) :-
   joint_type(Robot_Id,Name,Type),
-  owl_joint_create(Type,Joint,Graph),
+  urdf_joint_create_(Type,Joint,Graph),
   %%
   urdf_name_to_owl(Joint,Name),
   %% kinematic chain
@@ -409,17 +409,17 @@ urdf_joint_to_owl(Robot_Id,Name,Joint,Graph) :-
     urdf_joint_kinematics_to_owl(Robot_Id,Name,Type,Joint,Graph) ).
 
 %%
-owl_joint_create(revolute,Joint,Graph) :-
+urdf_joint_create_(revolute,Joint,Graph) :-
   kb_create(urdf:'RevoluteJoint',Joint,_{graph:Graph}).
-owl_joint_create(continuous,Joint,Graph) :-
+urdf_joint_create_(continuous,Joint,Graph) :-
   kb_create(urdf:'ContinuousJoint',Joint,_{graph:Graph}).
-owl_joint_create(prismatic,Joint,Graph) :-
+urdf_joint_create_(prismatic,Joint,Graph) :-
   kb_create(urdf:'PrismaticJoint',Joint,_{graph:Graph}).
-owl_joint_create(fixed,Joint,Graph) :-
+urdf_joint_create_(fixed,Joint,Graph) :-
   kb_create(urdf:'FixedJoint',Joint,_{graph:Graph}).
-owl_joint_create(floating,Joint,Graph) :-
+urdf_joint_create_(floating,Joint,Graph) :-
   kb_create(urdf:'FloatingJoint',Joint,_{graph:Graph}).
-owl_joint_create(planar,Joint,Graph) :-
+urdf_joint_create_(planar,Joint,Graph) :-
   kb_create(urdf:'PlanarJoint',Joint,_{graph:Graph}).
 
 %%
