@@ -62,7 +62,7 @@ ros_logger_start(Topics) :-
     atom_concat('/',T,X)
   ), TopicPaths),
   process_create(path('rosrun'),
-      ['mongodb_log', 'mongodb_log.py',
+      ['mongodb_log', 'mongodb_log.py','__name:=topic_logger',
        '--mongodb-name', DB|TopicPaths],
       [process(PID)]),
   asserta(ros_logger_pid(PID)),
@@ -75,15 +75,15 @@ ros_logger_start(Topics) :-
 % Stop previously started ROS message logging.
 %
 ros_logger_stop :-
-  \+ ros_logger_pid(_), !.
-
-ros_logger_stop :-
-  ros_logger_pid(PID),
-  process_kill(PID, int),
-  retractall(ros_logger_pid(PID)),
-  process_wait(PID, _),
-  print_message(informational,
-    process_stopped('mongodb_log',PID)).
+    ros_logger_pid(PID),
+    retractall(ros_logger_pid(PID)),
+    process_create(path(rosnode), ['kill', '/topic_logger'], 
+        [process(KillPID)]),process_wait(KillPID, _),
+    process_wait(PID, _),
+    process_create(path(rosnode),['cleanup'],
+        [stdin(pipe(In)), detached(true), process(TLPID)]), 
+    writeln(In,'y'),flush_output(In), process_wait(TLPID, _),
+    print_message(informational,'Topic Logger stopped').
 
 %% mem_store_tf(+Pose,+Stamp)
 %
