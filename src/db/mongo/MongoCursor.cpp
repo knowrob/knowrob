@@ -83,3 +83,14 @@ bool MongoCursor::next(const bson_t **doc)
 	}
 	return mongoc_cursor_next(cursor_,doc);
 }
+
+bool MongoCursor::erase()
+{
+	bson_error_t err;
+	bool success = mongoc_collection_delete_many(
+		    coll_(), query_, opts_, NULL /* reply */, &err);
+	if(!success) {
+		throw MongoException("erase_error",err);
+	}
+	return true;
+}

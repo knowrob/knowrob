@@ -95,6 +95,11 @@ PREDICATE(mng_cursor_destroy, 1) {
 	return TRUE;
 }
 
+PREDICATE(mng_cursor_erase, 1) {
+	char* cursor_id = (char*)PL_A1;
+	return MongoInterface::cursor(cursor_id)->erase();
+}
+
 PREDICATE(mng_cursor_filter, 2) {
 	char* cursor_id = (char*)PL_A1;
 	MongoInterface::cursor(cursor_id)->filter(PL_A2);
