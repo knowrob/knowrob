@@ -7,12 +7,15 @@
 */
 
 :- use_module(library('model/DUL/Workflow'),
-        [ workflow_step/2 ]).
-
-:- use_module('interval',
-        [ interval_constraint/2 ]).
-:- use_module('esg',
-        [ esg_truncated/4, esg_event_sequence/2 ]).
+    [ workflow_step/2
+    ]).
+:- use_module('./interval.pl',
+    [ interval_constraint/3
+    ]).
+:- use_module('./esg.pl',
+    [ esg_truncated/4,
+      esg_event_sequence/2
+    ]).
 
 %% workflow_sequence(+WF, ?StepSequence) is semidet.
 %
@@ -32,8 +35,7 @@ workflow_sequence(WF, StepSequence) :-
 workflow_sequence(Steps, StepSequence) :-
   findall(Constraint, (
     member(X,Steps),
-    interval_constraint(X,Constraint),
-    Constraint =.. [_,_,Other],
+    interval_constraint(X,Constraint,Other),
     member(Other,Steps)
   ), Constraints),
   %

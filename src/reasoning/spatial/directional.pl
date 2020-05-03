@@ -1,12 +1,12 @@
 :- module(spatial_directional,
     [ is_ontop_of(r,r)     => knowrob:isOntopOf
-    , is_below_of(r,r)      => knowrob:isBelowOf
-    , is_above_of(r,r)      => knowrob:isAboveOf
+    , is_below_of(r,r)     => knowrob:isBelowOf
+    , is_above_of(r,r)     => knowrob:isAboveOf
     , is_centered_at(r,r)  => knowrob:isInCenterOf
     %, is_infront_of(r,r)   => knowrob:isInFrontOf
-    %, is_right_of(r,r)      => knowrob:isRightOf
-    %, is_left_of(r,r)       => knowrob:isLeftOf
-    %, is_next_to(r,r)       => knowrob:isNextTo
+    %, is_right_of(r,r)     => knowrob:isRightOf
+    %, is_left_of(r,r)      => knowrob:isLeftOf
+    %, is_next_to(r,r)      => knowrob:isNextTo
     ]).
 /** <module> Predicates for spatial reasoning
 
@@ -74,6 +74,7 @@ is_below_of(Bottom, Top) ?>
 % @param Outer Identifier of the outer Object
 %
 is_centered_at(Inner, Outer) ?>
+  % FIXME: hardcoded map
   is_at(Inner, [map, [IX,IY,IZ], _]),
   is_at(Outer, [map, [OX,OY,OZ], _]),
   { Inner \= Outer },
@@ -94,21 +95,15 @@ is_centered_at(Inner, Outer) ?>
 % @param Right Identifier of the right Object
 %
 %is_left_of(Left, Right, Scope) :-
-    %%
-    %% TODO: adapt this to take rotations and object dimensions into account
-    %%
     %physical_object(Left),
     %map_frame_name(MapFrame),
     %object_pose(Left, [MapFrame, _, [LX,LY,LZ], _], Time),
-    
     %physical_object(Right),
     %Left \= Right,
     %object_pose(Right, [MapFrame, _, [RX,RY,RZ], _], Time),
-
     %=<( abs( LX - RX), 0.30),  % less than 30cm y diff
     %=<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
     %=<( abs( LZ - RZ), 0.30).  % less than 30cm height diff
-
 
 %% is_right_of(?Right,?Left) is nondet.
 %
@@ -122,7 +117,6 @@ is_centered_at(Inner, Outer) ?>
 % @see is_left_of
 %
 %is_right_of(Right, Left, Scope) :- is_left_of(Left, Right, Scope).
-
 
 %% is_next_to(?A, ?B) is nondet.
 %
@@ -139,7 +133,6 @@ is_centered_at(Inner, Outer) ?>
 %is_next_to(A, B, Scope) :-
     %once(is_right_of(A, B, Scope); is_left_of(A, B, Scope)).
 
-
 %% is_infront_of(?Front, ?Back) is nondet.
 %
 % Check if Front is in front of Back. Currently does not take the orientation
@@ -152,15 +145,10 @@ is_centered_at(Inner, Outer) ?>
 % @param Back Identifier of the back Object
 %
 %is_infront_of(Front, Back, Scope) :-
-    %%
-    %% TODO: adapt this to take rotations and object dimensions into account
-    %%
     %physical_object(Front),
     %map_frame_name(MapFrame),
     %object_pose(Front, [MapFrame, _, [FX,_,_], _], Time),
-    
     %physical_object(Back),
     %Front \= Back,
     %object_pose(Back, [MapFrame, _, [BX,_,_], _], Time),
-
     %=<( BX, FX ).      % front obj has a higher x coord.

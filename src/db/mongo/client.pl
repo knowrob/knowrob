@@ -125,7 +125,14 @@ mng_pl_value(Dict,Val_pl) :-
     mng_pl_value_dict(Dict,Val_pl)
   ).
 
-mng_pl_value(String,Val) :-
+mng_pl_value(List,array(List0)) :-
+  is_list(List),!,
+  findall(X,(
+    member(Y,List),
+    mng_pl_value(Y,X)
+  ),List0).
+
+mng_pl_value(String,string(Val)) :-
   string(String),
   string_to_atom(String,A),
   ( catch(term_to_atom(Val,A),_,Val=A) ),
@@ -138,27 +145,26 @@ mng_pl_value_dict(In,Out) :-
     get_dict(K,In,V_mng),
     mng_pl_value(V_mng,V_pl)
   ),Pairs),
-  dict_pairs(Out,Pairs).
+  dict_pairs(Out,_,Pairs).
 
 %%
-mng_pl_dict_value_('$numberInt',Val,Val) :-
+mng_pl_dict_value_('$numberInt',Val,int(Val)) :-
   number(Val), !.
-mng_pl_dict_value_('$numberInt',String,Val) :-
+mng_pl_dict_value_('$numberInt',String,int(Val)) :-
   string(String),!,
   parse_number_(String,Val).
-mng_pl_dict_value_('$numberLong',Val,Val) :-
+mng_pl_dict_value_('$numberLong',Val,int(Val)) :-
   number(Val), !.
-mng_pl_dict_value_('$numberLong',String,Val) :-
+mng_pl_dict_value_('$numberLong',String,int(Val)) :-
   string(String),!,
   parse_number_(String,Val).
-mng_pl_dict_value_('$numberDouble',Val,Val) :-
+mng_pl_dict_value_('$numberDouble',Val,double(Val)) :-
   number(Val), !.
-mng_pl_dict_value_('$numberDouble',String,Val) :-
+mng_pl_dict_value_('$numberDouble',String,double(Val)) :-
   string(String),!,
   parse_number_(String,Val).
-mng_pl_dict_value_('$date',DateDict,Time) :-
-  mng_pl_value(DateDict,Long),
-  number(Long), !,
+mng_pl_dict_value_('$date',DateDict,double(Time)) :-
+  mng_pl_value(DateDict,int(Long)),
   Time is Long/1000.0.
 mng_pl_dict_value_(Type,Val,Val) :-
   write('Warn: unknown mng type: '), write([Type,Val]), nl.

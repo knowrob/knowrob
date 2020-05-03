@@ -10,12 +10,22 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-        [ rdf/4, rdf_load/2, rdf_unload_graph/1, rdf_register_ns/3 ]).
+    [ rdf/4,
+      rdf_load/2,
+      rdf_unload_graph/1,
+      rdf_register_ns/3
+    ]).
 :- use_module(library('http/http_open.pl'),
-        [ http_open/3 ]).
+    [ http_open/3
+    ]).
 
 :- rdf_register_ns(qudt,
-        'http://data.nasa.gov/qudt/owl/qudt#', [keep(true)]).
+    'http://data.nasa.gov/qudt/owl/qudt#', [keep(true)]).
+% TODO load into DB backend
+%:- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
+    %[ graph(qudt),
+      %namespace(ease_act)
+    %]).
 
 :- dynamic qudt_unit/4.
 

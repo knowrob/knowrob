@@ -1,4 +1,3 @@
-
 :- module(utils_module,
         [ use_directory/1,
           strip_module/2,
@@ -10,17 +9,16 @@
 @license BSD
 */
 
-% TODO: this will only work when rdf_db and computable_predicate are
-%          loaded into user.
-%       else these imports could also be auto-generated.
+:- use_module('./filesystem.pl'
+    [ path_concat/3
+    ]).
 
 :- dynamic interface_cache_/3.
 
 %%
 %
 use_directory(Dir) :-
-  atomic_list_concat(
-    [Dir,'__init__.pl'],'/',Path),
+  path_concat(Dir,'__init__.pl',Path),
   consult(Path).
 
 %%
@@ -94,19 +92,20 @@ expand_to_module_(Name,Exports,
     Pl_Predicates).
 
 %%
-expand_to_rdf_meta_(Name,Exports,
-        (:-rdf_meta(RDF_Predicates))) :-
+expand_to_rdf_meta_(Name,Exports,Expansion) :-
   findall(
     (:(Name,RDF_predicate)),
     ( member([Functor,_,Args|_],Exports),
       ground(Args),
       RDF_predicate=..[Functor|Args] ),
     RDF_List),
-  argument_list_(RDF_List,RDF_Predicates).
+  argument_list_(RDF_List,RDF_Predicates),
+  ( Expansion=(:-use_module(library('semweb/rdf_db'), [rdf_meta/1]));
+    Expansion=(:-rdf_meta(RDF_Predicates))
+  ).
 
 %%
-expand_to_rdfs_computable_(Name,Exports,
-        (:-computables(Compute_Predicates))) :-
+expand_to_rdfs_computable_(Name,Exports,Expansion) :-
   findall(
     (:(Name,Compute_Predicate)),
     ( member([Functor,_,_,Property|_],Exports),
@@ -114,7 +113,10 @@ expand_to_rdfs_computable_(Name,Exports,
       Compute_Predicate=..[Functor,Property]
     ),
     Compute_List),
-  argument_list_(Compute_List,Compute_Predicates).
+  argument_list_(Compute_List,Compute_Predicates),
+  ( Expansion=(:-use_module(library('lang/computable'), [computables/1]));
+    Expansion=(:-computables(Compute_Predicates))
+  ).
 
 %%
 read_exports_([],[]) :- !.

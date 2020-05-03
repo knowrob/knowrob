@@ -67,13 +67,3 @@ shape_contains(InnerObj, OuterObj) ?>
 % TODO
 %shape_covered_by(A,B) :-
   %shape_covers(B,A).
-
-% TODO: inference: if two shapes occupy the same space, they are the same
-%          - use this for identity resolution
-%belief_existing_object_at(_ObjType, [RefFrame,ObjFrame,T0,Q0], Dmax, Obj) :-
-  %% - maybe use octree to find the nearest neighbour?
-  %rdf(Obj, rdf:type, owl:'NamedIndividual', belief_state),
-  %rdfs_individual_of(Obj, dul:'PhysicalObject'),
-  %current_object_pose(Obj,[RefFrame,ObjFrame,T1,Q1]),
-  %transform_close_to([RefFrame,ObjFrame,T0,Q0],
-                     %[RefFrame,ObjFrame,T1,Q1], Dmax),!.

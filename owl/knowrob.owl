@@ -13,9 +13,9 @@
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-ACT.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-PROC.owl"/>
-        <owl:imports rdf:resource="package://knowrob/owl/urdf.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-STATE.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/urdf.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
@@ -567,23 +567,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#pose -->
-
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#pose">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasSpaceRegion"/>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Localization"/>
-                    <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Pose"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#postActor -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#postActor">
@@ -1023,6 +1006,16 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#hasPoseData -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasPoseData">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+        <rdfs:label>has pose data</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#hasVisual -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasVisual">
@@ -1362,6 +1355,12 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
     
 
 
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasOrientationVector -->
 
     <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasOrientationVector"/>
@@ -1485,16 +1484,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AffordanceTransform">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StaticTransform"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty>
-                    <rdf:Description>
-                        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#pose"/>
-                    </rdf:Description>
-                </owl:onProperty>
-                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -3634,7 +3623,6 @@ It may have several exit points. When an exit point is reached, the Workflow exe
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#MapFrame">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#CartesianCoordinateSystem"/>
-        <pose rdf:resource="http://knowrob.org/kb/knowrob.owl#Pose_MapFrame"/>
     </owl:NamedIndividual>
     
 

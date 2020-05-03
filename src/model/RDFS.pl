@@ -3,11 +3,9 @@
       is_property(r),
       is_literal(r),
       is_datatype(r),
-      is_subclass_of(r,r),
-      is_subproperty_of(r,r),
       has_type(r,r),
-      has_property_range(r,r),
-      has_property_domain(r,r),
+      has_range(r,r),
+      has_domain(r,r),
       has_label(r,?),
       has_comment(r,?),
       rdfs_list(r,t)
@@ -18,10 +16,11 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-        [ rdf_register_ns/3 ]).
+    [ rdf_register_ns/3
+    ]).
 
 :- rdf_register_ns(rdfs,
-        'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
 %% is_resource(+Entity) is semidet.
 %
@@ -73,53 +72,57 @@ is_literal(Entity) ?+>
 is_datatype(Entity) ?+>
   has_type(Entity, rdfs:'Datatype').
 
-%% is_subclass_of(+SubClass,?Class) is semidet.
-%
-% The property rdfs:subClassOf is an instance of rdf:Property
-% that is used to state that all the instances of one class
-% are instances of another.
-%
-is_subclass_of(SubClass,Class) ?+>
-  holds(SubClass, rdfs:subClassOf, Class).
-
-%% is_subproperty_of(+Resource,?Property) is semidet.
-%
-% The property rdfs:subPropertyOf is an instance of rdf:Property
-% that is used to state that all resources related by one property
-% are also related by another.
-%
-is_subproperty_of(SubProperty,Property) ?+>
-  holds(SubProperty, rdfs:subPropertyOf, Property).
-
 %% has_type(+Resource,?Type) is semidet.
 %
 % rdf:type is an instance of rdf:Property that is used to
 % state that a resource is an instance of a class.
 %
-has_type(Resource,Type) ?+>
-  holds(Resource, rdf:type, Label).
+has_type(Resource,Type) ?>
+  tripledb_ask(Resource, rdf:type, Type).
 
-has_property_range(P,Range) ?+>
-  tripledb_ask(P,rdfs:range,Range).
+has_type(Resource,Type) +>
+  %tripledb_tell(Resource, rdf:type, Label).
+  instance_of(Resource,Type).
 
-has_property_domain(P,Range) ?+>
-  tripledb_ask(P,rdfs:domain,Range).
+%%
+%
+%
+has_range(Property,Range) ?>
+  tripledb_ask(Property, rdfs:range, Range).
+
+has_range(Property,Range) +>
+  tripledb_tell(Property, rdfs:range, Range).
+
+%%
+%
+%
+has_domain(Property,Range) ?>
+  tripledb_ask(Property, rdfs:domain, Range).
+
+has_domain(Property,Range) +>
+  tripledb_tell(Property, rdfs:domain, Range).
 
 %% has_label(+Resource,?Comment) is semidet.
 %
 % rdfs:label is an instance of rdf:Property that may be used
 % to provide a human-readable version of a resource's name.
 %
-has_label(Resource,Label) ?+>
-  holds(Resource, rdfs:label, Label).
+has_label(Resource,Label) ?>
+  tripledb_ask(Resource, rdfs:label, Label).
+
+has_label(Resource,Label) +>
+  tripledb_tell(Resource, rdfs:label, Label).
 
 %% has_comment(+Resource,?Comment) is semidet.
 %
 % rdfs:comment is an instance of rdf:Property that may be used
 % to provide a human-readable description of a resource.
 %
-has_comment(Resource,Comment) ?+>
-  holds(Resource, rdfs:comment, Comment).
+has_comment(Resource,Comment) ?>
+  tripledb_ask(Resource, rdfs:comment, Comment).
+
+has_comment(Resource,Comment) +>
+  tripledb_tell(Resource, rdfs:comment, Comment).
 
 %%
 %
@@ -127,13 +130,13 @@ has_comment(Resource,Comment) ?+>
 rdfs_list(rdf:nil,[]) +?> { ! }.
 
 rdfs_list(RDFList,[X|Xs]) ?>
-  holds(RDFList, rdf:first, X),
-  holds(RDFList, rdf:rdf:rest, Ys),
+  tripledb_ask(RDFList, rdf:first, X),
+  tripledb_ask(RDFList, rdf:rest, Ys),
   rdfs_list(Ys,Xs).
 
 rdfs_list(RDFList,[X|Xs]) +>
   rdfs_list(Ys,Xs),
   % TODO: might be overkill to have rdf:type for each sublist?
   has_type(RDFList, rdf:'List'),
-  holds(RDFList,    rdf:first, X),
-  holds(RDFList,    rdf:rest, Ys).
+  tripledb_tell(RDFList, rdf:first, X),
+  tripledb_tell(RDFList, rdf:rest, Ys).

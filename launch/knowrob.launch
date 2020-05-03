@@ -1,9 +1,14 @@
 <launch>
+  <!-- mongo DB configuration -->
   <arg name="mongodb_name" default="roslog" />
-  <arg name="memory_dir" default="" />
   
-  <env name="KNOWROB_MONGO_DB_NAME" value="$(arg mongodb_name)" />
-  <env name="KNOWROB_MEMORY_DIR" value="$(arg memory_dir)" />
+  <!-- triple store configuration -->
+  <arg name="pl_triple_store" default="db/mongo/triple_store" />
+  <env name="KB_TRIPLE_STORE" value="$(arg pl_triple_store)" />
+  
+  <!-- Additional Prolog modules -->
+  <arg name="pl_modules" default="db/mongo/ros" />
+  <env name="PL_MODULES" value="$(arg pl_modules)" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />

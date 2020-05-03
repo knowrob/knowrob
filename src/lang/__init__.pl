@@ -1,9 +1,9 @@
 
 % query language
-:- use_module('sentence').
-:- use_module('computable').
-%:- use_module('designator').
-:- use_module('export').
+:- use_module('./query.pl').
+:- use_module('./computable.pl').
+%:- use_module('./designator.pl').
+:- use_module('./export.pl').
 
 % query terms
 :- use_module('terms/holds').

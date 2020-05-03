@@ -12,15 +12,16 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-STATE.owl',
-        [ graph(static),
-          namespace(ease_state)
-        ]).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-STATE.owl',
+    [ graph(tbox),
+      namespace(ease_state)
+    ]).
 
 %% is_state(+Entity) is semidet.
 %

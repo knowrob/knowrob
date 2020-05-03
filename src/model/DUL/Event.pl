@@ -22,9 +22,11 @@ In DUL, Object is defined as:
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
-:- use_module('Object'
-        [ has_object_type/2 ]).
+    [ has_type/2
+    ]).
+:- use_module('./Object.pl'
+    [ has_object_type/2
+    ]).
 
 %% is_event(+Entity) is semidet.
 %
@@ -74,11 +76,10 @@ is_process(Entity) ?+>
 %%
 %
 has_time_interval(Evt,TimeInterval) ?>
-  % TODO: auto create TimeInterval symbol here?
   holds(Evt,dul:hasTimeInterval,TimeInterval).
 
-has_time_interval(Evt,TimeInterval) +>
-  holds(Evt,dul:hasTimeInterval,TimeInterval).
+%has_time_interval(Evt,TimeInterval) +>
+  %holds(Evt,dul:hasTimeInterval,TimeInterval).
   
 
 %% has_participant(+Evt,?Participant,?Class) is semidet.

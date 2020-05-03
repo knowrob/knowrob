@@ -2,7 +2,6 @@
     [ xsd_data_type(r),
       xsd_numeric_type(r),
       xsd_string_type(r),
-      xsd_boolean_type(r),
       xsd_misc_type(r),
       xsd_data_basetype(r,?),
       xsd_data_type_name(r,?)
@@ -84,7 +83,7 @@ xsd_numeric_type(xsd:'unsignedInt').
 xsd_numeric_type(xsd:'unsignedShort').
 xsd_numeric_type(xsd:'unsignedByte').
 
-%%
+%% 
 %
 xsd_misc_type(xsd:'anyURI').
 xsd_misc_type(xsd:'base64Binary').

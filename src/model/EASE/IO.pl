@@ -9,15 +9,16 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-IO.owl',
-        [ graph(static),
-          namespace(ease_io)
-        ]).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-IO.owl',
+    [ graph(tbox),
+      namespace(ease_io)
+    ]).
 
 %% is_computational_agent(+Entity) is semidet.
 %

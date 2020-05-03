@@ -48,7 +48,7 @@ add_dependencies(kb_algebra
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS})
 
-add_library(urdf_parser SHARED src/model/urdf/urdf_parser.cpp)
+add_library(urdf_parser SHARED src/model/URDF/parser.cpp)
 target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(urdf_parser
   ${${PROJECT_NAME}_EXPORTED_TARGETS}

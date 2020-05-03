@@ -30,11 +30,14 @@ In DUL, Region is defined as:
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
-:- use_module('Event'
-        [ is_event/1 ]).
-:- use_module('Situation'
-        [ is_situation/1 ]).
+    [ has_type/2
+    ]).
+:- use_module('./Event.pl'
+    [ is_event/1
+    ]).
+:- use_module('./Situation.pl'
+    [ is_situation/1
+    ]).
 
 %% is_region(+Entity) is semidet.
 %

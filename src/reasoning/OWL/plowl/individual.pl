@@ -7,13 +7,12 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('db/tripledb'),
-    [ tripledb_type_of/3
+:- use_module(library('model/RDFS'),
+    [ has_range/2,
+      has_domain/2
     ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
-      has_property_range/2,
-      has_property_domain/2,
       owl_description/2
     ]).
 :- use_module(library('lang/terms/holds'),
@@ -26,9 +25,6 @@
 :- use_module('./property.pl',
     [ owl_cardinality/5
     ]).
-
-% TODO SCOPING: need to propagate scope manually,
-%        or call ask(...) to handle scope propagation in there.
 
 %% owl_individual_of(?Subject,?Class,+Scope) is nondet.
 %
@@ -47,79 +43,137 @@ owl_individual_of(Subject,Class,Scope) :-
 %%
 owl_individual_of_range(Subject,Class,Scope) :-
   var(Subject),!,
-  has_property_range(P,Class),
-  holds(_,P,Subject,Scope).
+  has_range(P,Class),
+  ask(holds(_,P,Subject),Scope).
 
 owl_individual_of_range(Subject,Class,Scope) :-
-  holds(_,P,Subject,Scope),
-  has_property_range(P,Class).
+  ask(holds(_,P,Subject),Scope),
+  has_range(P,Class).
 
 %%
 owl_individual_of_domain(Subject,Class,Scope) :-
   var(Subject),!,
-  has_property_domain(P,Class),
-  holds(Subject,P,_,Scope).
+  has_domain(P,Class),
+  ask(holds(Subject,P,_),Scope).
 
 owl_individual_of_domain(Subject,Class,Scope) :-
-  holds(Subject,P,_,Scope),
-  has_property_domain(P,Class).
+  ask(holds(Subject,P,_),Scope),
+  has_domain(P,Class).
 
 %% owl_satisfied_by(?Class,?Subject,+Scope) is nondet.
 %
 %
 owl_satisfied_by(Class,Subject,Scope) :-
   var(Class),!,
+  % TODO: avoid iterating over all classes
   is_class(Class),
   owl_satisfied_by(Class,Subject,Scope).
 
 owl_satisfied_by(Class,Subject,Scope) :-
   owl_description(Class,Descr),
   ( ground(Subject) ->
-    ( owl_satisfied_by1(Descr,Subject,Scope),! );
-    ( owl_satisfied_by1(Descr,Subject,Scope) )
+    ( owl_satisfied_by1(Descr,Subject,Scope,[]),! );
+    ( owl_satisfied_by1(Descr,Subject,Scope,[]) )
   ).
 
 %%
-owl_satisfied_by1(class(Class),Subject,Scope) :-
-  tripledb_type_of(Subject,Class,Scope).
+owl_satisfied_by1(class(Class),_,_,Visited) :-
+  memberchk(Class,Visited),!,
+  fail.
 
-%%
-owl_satisfied_by1(class(Class),Subject,Scope) :-
-  subclass_of(Class,Sup), Sup\=Class,
-  owl_description(Sup,Descr),
-  owl_satisfied_by1(Descr,Subject,Scope).
+owl_satisfied_by1(class(Class),Subject,Scope,Visited) :-
+  ( ask( has_type(Subject,Class), Scope ) -> true ; (
+    subclass_of(Class,Sup), Sup\=Class,
+    owl_description(Sup,Descr),
+    owl_satisfied_by1(Descr,Subject,Scope,[Class|Visited])
+  )).
 
 %owl_satisfied_by1(complement_of(Cls),Subject,Scope) :-
   %\+ owl_individual_of(Subject,Cls,Scope).
 
-owl_satisfied_by1(intersection_of(Set),Subject,Scope) :-
-  forall(
-    member(X,Set),
-    owl_individual_of(Subject,X,Scope)).
+owl_satisfied_by1(intersection_of(Set),Subject,Scope,_) :-
+  findall(instance_of(Subject,X),
+          member(X,Set),
+          Statements),
+  ask(Statements,Scope).
 
-owl_satisfied_by1(union_of(Set),Subject,Scope) :-
+owl_satisfied_by1(union_of(Set),Subject,Scope,_) :-
   member(X,Set),
-  owl_individual_of(Subject,X,Scope).
+  ask(instance_of(Subject,X),Scope).
 
-owl_satisfied_by1(only(P,Cls),Subject,Scope) :-
-  forall(
-    holds(Subject,P,O,Scope),
-    instance_of(O,Cls,Scope)).
+owl_satisfied_by1(some(P,Cls),Subject,Scope,_) :-
+  ask([ holds(Subject,P,O),
+        instance_of(O,Cls) ], Scope),
 
-owl_satisfied_by1(some(P,Cls),Subject,Scope) :-
-  holds(Subject,P,O,Scope),
-  instance_of(O,Cls,Scope).
+owl_satisfied_by1(value(P,O),Subject,Scope,_) :-
+  ask(holds(Subject,P,O),Scope).
 
-owl_satisfied_by1(value(P,O),Subject,Scope) :-
-  holds(Subject,P,O,Scope).
-
-owl_satisfied_by1(min(P,Cls,Min),Subject,Scope) :-
+owl_satisfied_by1(min(P,Cls,Min),Subject,Scope,_) :-
   owl_cardinality(Subject,P,Cls,Card,Scope),
   Card>=Min.
 
-owl_satisfied_by1(max(P,Cls,Max),Subject,Scope) :-
+owl_satisfied_by1(max(P,Cls,Max),Subject,Scope,_) :-
   owl_cardinality(Subject,P,Cls,Card,Scope),
   Card=<Max.
 
-owl_satisfied_by1(exactly(P,Cls,Count),Subject,Scope) :-
+owl_satisfied_by1(exactly(P,Cls,Count),Subject,Scope,_) :-
   owl_cardinality(Subject,P,Cls,Count,Scope).
+
+owl_satisfied_by1(only(P,R),S,QS->FS,_) :-
+  ( var(S) -> S0=_ ; S0=S ),
+  ( var(P) -> P0=_ ; P0=P ),
+  findall([S0,P0,V0,FS0],
+    ask(holds(S0,P0,V0),QS->FS0),
+    Facts),
+  owl_only_satisfied_by_(S,P,R,Facts,QS->FS).
+
+%%
+owl_only_satisfied_by_(S,P,R,Facts,QS->FS) :-
+  var(S),!,
+  % bind subject
+  setof(S0, member([S0,_,_,_],Facts), Subjects),
+  member(S,Subjects),
+  % and filter facts
+  findall([S,P0,V0,FS0],
+    member([S,P0,V0,FS0],Facts),
+    Facts0),
+  owl_satisfied_by2_(Descr,S,Facts0,QS->FS).
+
+owl_only_satisfied_by_(S,P,R,Facts,QS->FS) :-
+  var(P),!,
+  % bind property
+  setof(P0, member([_,P0,_,_],Facts), Properties),
+  member(P,Properties),
+  % filter for values of P
+  findall([S,P1,V0,FS0],
+    ( member([S,P1,V0,FS0],Facts),
+      subproperty_of(P0,P) ),
+    Facts0),
+  owl_satisfied_by2_(S,P,R,Facts0,QS->FS).
+
+owl_only_satisfied_by_(S,P,R,Facts,QS->FS) :-
+  % ground([S,P]),
+  setof(V0, member([_,_,V0,_],Facts), Values),
+  findall(
+    instance_of(V1,R),
+    member(V1,Values),
+    Statements),
+  ask(Statements,QS->FS0),
+  % intersect all fact scopes to obtain the scope
+  % of the inferred fact.
+  findall(FS1_list, (
+    member(V2,Values),
+    findall(FS1, member([_,_,V2,FS1],Facts), FS1_list)
+  ), ValueScopes),
+  scope_intersect_all_([[FS0]|ValueScopes],FS).
+
+%%
+scope_intersect_all_([X],X0) :-
+  member(X0,X),!.
+scope_intersect_all_([X,Y|Rest],Intersection) :-
+  % only pick one scope of each list.
+  % each item is an alternative scope matching the query.
+  member(X0,X),
+  member(Y0,Y),
+  scope_intersect(X,Y,Z),
+  scope_intersect_all_([[Z]|Rest],Intersection).

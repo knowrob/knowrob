@@ -14,15 +14,16 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-PROC.owl',
-        [ graph(static),
-          namespace(ease_proc)
-        ]).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-PROC.owl',
+    [ graph(tbox),
+      namespace(ease_proc)
+    ]).
 
 %% is_chemical_process(+Entity) is semidet.
 %

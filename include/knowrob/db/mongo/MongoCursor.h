@@ -38,6 +38,8 @@ public:
 	
 	bool next(const bson_t **doc);
 	
+	bool erase();
+	
 private:
 	MongoCollection coll_;
 	mongoc_cursor_t *cursor_;

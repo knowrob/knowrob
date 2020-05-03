@@ -28,8 +28,6 @@
       instance_of/3
     ]).
 
-% TODO look into how FScope is handled
-
 %% owl_subproperty_of(?Sub,?Super) is nondet.
 %
 % Infer the rdfs:subProperty relation.
@@ -88,11 +86,12 @@ owl_has(S,P,O,Scope) :-
 has_transitive_(S,P,O,Scope,_) :-
   has_symmetric_(S,P,O,Scope).
 
-has_transitive_(S,P,O,Scope,Visited) :-
+has_transitive_(S,P,O,QScope->FScope,Visited) :-
   is_transitive_property(P),
-  has_symmetric_(S,P,O1,Scope),
+  has_symmetric_(S,P,O1,QScope->FScope0),
   \+ memberchk(O1, Visited),
-  has_transitive_(O1,P,O,Scope,[O1|Visited]).
+  has_transitive_(O1,P,O,QScope->FScope1,[O1|Visited]),
+  scope_intersect(FScope0,FScope1,FScope).
 
 %%
 has_symmetric_(S,P,O,Scope) :-
@@ -107,9 +106,9 @@ has_symmetric_(S,P,O,Scope) :-
   has_direct2_(O,Inverse,S,Scope).
 
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
-has_direct2_(S,P,O,Scope) :-
+has_direct2_(S,P,O,QScope->FScope) :-
   % TODO: do not yield this if S/P/O are the same as in the call of owl_has to avoid redundancy
-  tripledb_ask(S,P,O,Scope).
+  tripledb_ask(S,P,O,QScope,FScope).
 
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
@@ -119,7 +118,7 @@ has_direct2_(S,P,O,Scope) :-
 
 % use has value restrictions
 has_direct2_(S,P,O,Scope) :-
-  instance_of(S,value(P,O),Scope).
+  ask(instance_of(S,value(P,O)),Scope).
 
 %% 
 has_chain_(S, Chain, O, Scope) :-
@@ -130,89 +129,98 @@ has_chain_(S, Chain, O, Scope) :-
   ).
 
 has_chain_S2O_(O, [], O, _).
-has_chain_S2O_(S, [P|Rest], O, Scope) :-
-  owl_has(S, P, Oi, Scope),
-  has_chain_S2O_(Oi, Rest, O, Scope).
+has_chain_S2O_(S, [P|Rest], O, QScope->FScope) :-
+  owl_has(S, P, Oi, QScope->FScope0),
+  has_chain_S2O_(Oi, Rest, O, QScope->FScope1),
+  scope_intersect(FScope0,FScope1,FScope).
 
 has_chain_O2S_(S, [], S, _).
-has_chain_O2S_(O, [P|Rest], S, Scope) :-
-  owl_has(Si, P, O, Scope),
-  has_chain_O2S_(Si, Rest, S, Scope).
+has_chain_O2S_(O, [P|Rest], S, QScope->FScope) :-
+  owl_has(Si, P, O, QScope->FScope0),
+  has_chain_O2S_(Si, Rest, S, QScope->FScope1),
+  scope_intersect(FScope0,FScope1,FScope).
 
-%% owl_has_cardinality(?S,?P,?Range,?Card,+Scope) is det.
+%% owl_has_cardinality(?S,?P,?R,?Card,+Scope) is det.
 %
-% Card is the number of values with type Range linked
+% Card is the number of values with type R linked
 % to S via property P.
 %
-owl_cardinality(S,P,Range,Card,Scope) :-
-  ground(S),!,
-  owl_has_all(S,P,All,Scope),
-  % FIXME: scoping below
-  % make sure Range is grounded
-  ( ground(Range) -> true ; (
-    setof(R, (
-       member(Val0,All),
-       ask(instance_of(Val0,R),Scope)
-    ), Ranges),
-    member(Range,Ranges)
-  )),
-  % compute cardinality on Range
-  findall(X, (
-    member(X,All),
-    ask(instance_of(X,Range),Scope)
-  ),Xs),
-  length(Vs, Card).
-
-owl_cardinality(S,P,Range,Card,Scope) :-
-  ground(Range),!,
-  % iterate over all instances of Range
-  instance_of(S,Range,Scope),
-  owl_has_cardinality(S,P,Range,Card,Scope).
-
-owl_cardinality(S,P,Range,Card,Scope) :-
-  % iterate over all OWL individuals
-  is_individual(S),
-  owl_has_cardinality(S,P,Range,Card,Scope).
+owl_cardinality(S,P,R,Card,QScope->FScope) :-
+  ( var(S) -> S0=_ ; S0=S ),
+  ( var(P) -> P0=_ ; P0=P ),
+  ( var(R) -> R0=_ ; R0=R ),
+  findall([S0,P0,R0,V0,FS0],
+    ask([ holds(S0,P0,V0), 
+          instance_of(V0,class(R0))
+        ], QScope->FS0),
+    Facts),
+  owl_cardinality1_(S,P,R,Facts,Card,FScope).
 
 %%
-% FIXME scoping is difficult here
-owl_has_all(S,P,All,Scope) :-
-  ground([S,P]),!,
-  setof(V, ask(holds(S,P,V), Scope), All0),
-  owl_has_all1(All,All0).
+owl_cardinality1_(S,P,R,Facts,Card,FScope) :-
+  var(S),!,
+  % bind subject
+  setof(S0, member([S0,_,_,_,_],Facts), Subjects),
+  member(S,Subjects),
+  % and filter facts
+  findall([S,P0,R0,V0,FS0],
+    member([S,P0,R0,V0,FS0],Facts),
+    Facts0),
+  owl_cardinality1_(S,P,R,Facts0,Card,FScope).
 
-owl_has_all(S,P,All,Scope) :-
-  ground(S),!,
-  % find all property-value pairs
-  findall([P0,V0],
-    ask(holds(S,P0,V0),Scope), Pairs),
-  setof(P1, member([P1,_],Pairs), S_Properties),
-  % for each property, yield values
-  member(P,S_Properties),
-  setof(V, member([P,V],Pairs), All0),
-  owl_has_all1(All,All0).
+owl_cardinality1_(S,P,R,Facts,Card,FScope) :-
+  var(P),!,
+  % bind property
+  setof(P0, member([_,P0,_,_,_],Facts), Properties),
+  member(P,Properties),
+  % filter for values of P
+  findall([S,P1,R0,V0,FS0],
+    ( member([S,P1,R0,V0,FS0],Facts),
+      subproperty_of(P1,P) ),
+    Facts0),
+  owl_cardinality1_(S,P,R,Facts0,Card,FScope).
 
-owl_has_all(S,P,All,Scope) :-
-  ground(P),!,
-  % find all subject-value pairs
-  findall([S0,V0],
-    ask(holds(S0,P,V0),Scope), Pairs),
-  setof(S1, member([S1,_],Pairs), P_subjects),
-  % for each subject, yield values
-  member(S,P_subjects),
-  setof(V, member([S,V],Pairs), All0),
-  owl_has_all1(All,All0).
+owl_cardinality1_(S,P,R,Facts,Card,FScope) :-
+  var(R),!,
+  % bind range
+  setof(R0, member([_,_,R0,_,_],Facts), Ranges),
+  member(R,Ranges),
+  % filter for values that are instance of R
+  findall([S,P0,R,V0,FS0],
+    member([S,P0,R,V0,FS0],Facts),
+    Facts0),
+  owl_cardinality2_(Facts0,Card,FScope).
 
-owl_has_all(S,P,All,Scope) :-
-  % iterate over all OWL individuals
-  is_individual(S),
-  owl_has_all(S,P,All,Scope).
+owl_cardinality1_(_S,_P,_R,Facts,Card,FScope) :-
+  % ground([S,P,R]),
+  owl_cardinality2_(Facts,Card,FScope).
 
 %%
-owl_has_all1(All_req,All_inferred) :-
-  var(All_req),!,
-  All_req=All_inferred.
+owl_cardinality2_(Facts,Card0,FScope) :-
+  setof(V0, member([_,_,_,V0,_],Facts), Values),
+  % collect different scopes of the same value
+  findall(FS0_list, (
+    member(V1,Values),
+    findall(X, member([_,_,_,V1,FS0],Facts), FS0_list)
+  ), NestedScopes),
+  owl_cardinality3_(NestedScopes,Card1,FScope),
+  % unify cardinality value
+  ( var(Card0) -> Card1>0 ; true ),
+  Card0=Card1.
+  
+%%
+owl_cardinality3_([], 0, FS->FS) :- !.
+owl_cardinality3_([FirstList|Rest], Card, FS_in->FS_out) :-
+  % try to intersect with FS_in and continue
+  ( scopes_intersect_(FirstList,FS_in,FS0) *->
+    ( Card0=1 );
+    ( Card0=0, FS0=FS_in )
+  ),
+  % rescursion
+  owl_cardinality3_(Rest,Card1,FS0->FS_out),
+  Card is Card0 + Card1.
 
-owl_has_all1(All_req,All_inferred) :-
-  forall( member(X,All_req),
-          member(X,All_inferred) ).
+%%
+scopes_intersect_(Scopes,In,Out) :-
+  member(S,Scopes),
+  scope_intersect(In,S,Out).

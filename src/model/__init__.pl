@@ -14,6 +14,9 @@
 :- ros_package_iri(knowrob,'http://knowrob.org/kb').
 :- tripledb_load(
         'http://knowrob.org/kb/knowrob.owl',
-        [ graph(static),
+        [ graph(tbox),
           namespace(knowrob)
         ]).
+
+%
+:- use_module('notify').

@@ -21,21 +21,25 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-        [ rdf_equal/2 ]).
+    [ rdf_equal/2
+    ]).
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('model/DUL/Event')
-        [ task_role_range/3 ]).
+    [ task_role_range/3
+    ]).
 :- use_module(library('model/DUL/Region')
-        [ has_parameter_range/3 ]).
+    [ has_parameter_range/3
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-ACT.owl',
-        [ graph(static),
-          namespace(ease_act)
-        ]).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
+    [ graph(tbox),
+      namespace(ease_act)
+    ]).
 
 %% is_manipulation_action(+Entity) is semidet.
 %
@@ -93,15 +97,15 @@ has_subevent(Event,Sub) ?>
   holds(Event,ease:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
-  { ask(is_action(Sub)) },
+  { is_action(Sub) },
   holds(Event,dul:hasConstituent,Sub).
 
 has_subevent(Event,Sub) +>
-  { ask(is_process(Sub)) },
+  { is_process(Sub) },
   holds(Event,ease:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
-  { ask(is_state(Sub)) },
+  { is_state(Sub) },
   holds(Event,ease:hasPhase,Sub).
 
 %% action_status(?Act,?Status) is semidet.
@@ -224,5 +228,5 @@ get_altered_quality_type__(_Concept,Region,Quality_type) :-
   holds(Region, dul:isRegionFor, only(Quality_type)).
 
 get_altered_quality_type__(Concept,_Region,Quality_type) :-
-  holds(Concept,    ease_obj:isTriggerDefinedIn, only(Affordance)),
-  holds(Affordance, ease_obj:describesQuality,   only(Quality_type)).
+  holds(Concept, ease_obj:isTriggerDefinedIn, only(Affordance)),
+  subclass_of(Affordance,only(ease_obj:describesQuality,Quality_type)).

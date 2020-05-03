@@ -10,8 +10,8 @@
 :- set_prolog_flag(float_format, '%.12g').
 
 % load some standard Prolog libraries into user
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdf_portray')).
+%:- use_module(library('semweb/rdf_db')).
+%:- use_module(library('semweb/rdf_portray')).
 %:- use_module(library('semweb/rdfs')).
 
 % load utility modules into user

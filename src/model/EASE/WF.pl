@@ -1,7 +1,5 @@
-
 :- module(model_EASE_WF,
-    [
-      is_binding(r),
+    [ is_binding(r),
       is_succeedence(r),
       plan_defines_task(r,r),
       workflow_step(r,r),
@@ -16,17 +14,19 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('model/DUL/Event')
-        [ task_role_range/3 ]).
+    [ task_role_range/3
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-WF.owl',
-        [ graph(static),
-          namespace(ease_wf)
-        ]).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-WF.owl',
+    [ graph(tbox),
+      namespace(ease_wf)
+    ]).
 
 %% is_binding(+Entity) is semidet.
 %

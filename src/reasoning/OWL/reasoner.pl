@@ -2,9 +2,20 @@
     [ implements('../ireasoner.pl')
     ]).
 
-:- use_module(library('plowl/class')).
-:- use_module(library('plowl/individual')).
-:- use_module(library('plowl/property')).
+:- use_module(library('lang/query'),
+    [ universal_scope/1
+    ]).
+
+:- use_module('./plowl/class.pl',
+    [ owl_subclass_of/2
+    ]).
+:- use_module('./plowl/individual.pl',
+    [ owl_individual_of/3
+    ]).
+:- use_module('./plowl/property.pl',
+    [ owl_subproperty_of/2,
+      owl_has/4
+    ]).
 
 %%
 % @implements ireasoner
@@ -24,17 +35,21 @@ infer( holds(S,P,O),
        QScope,FScope) :-
   { owl_has(S,P,O,QScope->FScope) }.
 
-infer( is_instance_of(S,O),
-       is_instance_of(S,O),
+infer( instance_of(S,O),
+       instance_of(S,O),
        QScope,FScope) :-
   { owl_individual_of(S,O,QScope->FScope) }.
 
-infer( is_subclass_of(S,O),
-       is_subclass_of(S,O),
-       _QScope,_{}) :-
+infer( subclass_of(S,O),
+       subclass_of(S,O),
+       _QScope,
+       FScope) :-
+  { universal_scope(FScope) },
   { owl_subclass_of(S,O) }.
 
-infer( is_subproperty_of(S,O),
-       is_subproperty_of(S,O),
-       _QScope,_{}) :-
+infer( subproperty_of(S,O),
+       subproperty_of(S,O),
+       _QScope,
+       FScope) :-
+  { universal_scope(FScope) },
   { owl_subproperty_of(S,O) }.

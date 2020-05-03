@@ -46,9 +46,9 @@ interval_constraint(Resource,Constraint) :-
 
 interval_constraint(Resource,Constraint,Other) :-
   % TODO: this seems a bit hacky
-  ask( holds(Resource,Relation,Other) ),
-  ask( holds(Relation,ease:symbol,X) ),
-  once( allen_symbol(Symbol) ),
+  tripledb_ask(Resource,Relation,Other),
+  tripledb_ask(Relation,ease:symbol,Symbol),
+  once(allen_symbol(Symbol)),
   Constraint =.. [Symbol,Resource,Other].
 
 %%
@@ -257,6 +257,7 @@ esg_query_(ESG, =(E0,E1)) :-
 get_esg_(Evt,ESG) :-
   % FIXME: once generated ESGs are never updated.
   %           each new allen axiom inferred/asserted should notify us to update ESGs
+  %           - use notify to trigger update?
   esg_cache_(Evt,ESG) -> true ;
   esg_gen_(Evt,ESG).
 

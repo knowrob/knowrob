@@ -1,6 +1,5 @@
 :- module(model_EASE_OBJ,
-    [ object_frame_name(r,?),
-      %% Life Time
+    [ %% Life Time
       is_alive(r),
       %% Qualities
       is_physical_quality(r),
@@ -35,43 +34,27 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('model/OWL')
-        [ is_individual/2 ]).
+    [ is_individual/2
+    ]).
 :- use_module(library('model/DUL/Object')
-        [ has_role/2, has_object_type/2, has_quality_type/2 ]).
+    [ has_role/2,
+      has_object_type/2,
+      has_quality_type/2
+    ]).
 :- use_module(library('db/tripledb')
-        [ tripledb_load/2 ]).
+    [ tripledb_load/2
+    ]).
+:- use_module(library('comm/notify')
+    [ notify/1
+    ]).
 
-:- tripledb_load(
-        'http://www.ease-crc.org/ont/EASE-OBJ.owl',
-        [ graph(static),
-          namespace(ease_obj)
-        ]).
-
-%% object_frame_name(+Obj:iri, ?FrameName:atom) is det
-%
-% True if FrameName is the name of origin frame of the object.
-% Fallback is to use the IRI suffix of Obj.
-% 
-% @param Obj Instance of SpatialThing
-% @param FrameName The frame name
-%
-object_frame_name(Obj,FrameName) :-
-  % FIXME: use of knowrob here
-  holds(Obj,knowrob:frameName,FrameName), !.
-
-% TODO: this clause really needed?
-%object_frame_name(Localization,FrameName) :-
-  %atom(Localization),
-  %holds(Obj,ease_obj:hasLocalization,Localization),
-  %object_frame_name(Obj,FrameName), !.
-
-object_frame_name(Obj,FrameName) :-
-  % FIXME: this does not work for var(Obj)
-  %           so generally knowrob:frameName is required :/
-  atom(Obj),
-  rdf_split_url(_,FrameName,Obj).
+:- tripledb_load('http://www.ease-crc.org/ont/EASE-OBJ.owl',
+    [ graph(tbox),
+      namespace(ease_obj)
+    ]).
 
 		 /*******************************
 		 *	    LIFE TIME		*
@@ -84,7 +67,7 @@ is_alive(Obj) ?>
   occurs(Evt).
 
 is_alive(Obj) +>
-  { ask(holds(Obj,ease:hasLifetime,Evt)) },
+  { holds(Obj,ease:hasLifetime,Evt) },
   occurs(Evt).
 
 		 /*******************************
@@ -141,23 +124,29 @@ object_localization(Obj,Loc) ?+>
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
 % 
-object_color_rgb(Obj,[R,G,B]) ?+>
+object_color_rgb(Obj,[R,G,B]) ?>
   holds(Obj,ease_obj:hasColor,Color),
   holds(Color,dul:hasRegion,Region),
-  % TODO: what happens to old values here on tell?
   holds(Region,ease_obj:hasRGBValue,[R,G,B]),
-  { ! }.
-
-% TODO: really allow data values everywhere?
-%           seems hacky... and slows down
-object_color_rgb(Obj, [R,G,B]) ?>
-  holds(Obj,ease_obj:hasColor,Color),
-  holds(Color,ease_obj:hasRGBValue,[R,G,B]),
   { ! }.
 
 object_color_rgb(Obj, [R,G,B]) ?>
   holds(Obj,ease_obj:hasRGBValue,[R,G,B]),
   { ! }.
+  
+object_color_rgb(Obj,[R,G,B]) +>
+  % get the color quality
+  { holds(Obj,ease_obj:hasColor,Color) },
+  % create a new region
+  { universal_scope(US),
+    tell([ has_type(Region,ease_obj:'ColorRegion'),
+           holds(Region,ease_obj:hasRGBValue,[R,G,B])
+         ],US)
+  },
+  % update the region of the color quality
+  holds(Color,dul:hasRegion,update(Region)),
+  % FIXME: notify after assert
+  notify(object_changed(Obj)).
 
 %% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
 %
@@ -176,27 +165,26 @@ object_dimensions(Obj, Depth, Width, Height) ?>
   shape_bbox(ShapeRegion,Depth,Width,Height),
   { ! }.
 
-% TODO: really allow data values everywhere?
-%           seems hacky... and slows down
-object_dimensions(Obj, Depth, Width, Height) ?>
-  holds(Obj,ease_obj:hasShape,Shape),
-  shape_bbox(Shape,Depth,Width,Height),
-  { ! }.
-
 object_dimensions(Obj, Depth, Width, Height) ?>
   shape_bbox(Obj, Depth, Width, Height),
   { ! }.
 
 object_dimensions(Obj, Depth, Width, Height) +>
-  { ask(holds(Obj,ease_obj:hasShape,Shape)) },
+  % get the shape quality
+  { holds(Obj,ease_obj:hasShape,Shape) },
   is_individual(ShapeRegion),
-  has_type(ShapeRegion,ease_obj:'BoxShape'),
-  % TODO: use array term instead?
-  % TODO: what happens to old values here on tell?
-  holds(ShapeRegion, ease_obj:hasDepth,  Depth),
-  holds(ShapeRegion, ease_obj:hasWidth,  Width),
-  holds(ShapeRegion, ease_obj:hasHeight, Height),
-  holds(Shape,       dul:hasRegion,      ShapeRegion).
+  % create a new region
+  % TODO: replace any other BoxShape region
+  { universal_scope(US),
+    tell([ has_type(Region,ease_obj:'BoxShape'),
+           holds(Region, ease_obj:hasDepth,  Depth),
+           holds(Region, ease_obj:hasWidth,  Width),
+           holds(Region, ease_obj:hasHeight, Height)
+         ],US)
+  },
+  holds(Shape,dul:hasRegion,Region),
+  % FIXME: notify after assert
+  notify(object_changed(Obj)).
 
 %%
 shape_bbox(ShapeRegion, Depth, Width, Height) ?>
@@ -224,24 +212,22 @@ object_mesh_path(Obj, FilePath) ?>
   holds(ShapeRegion,ease_obj:hasFilePath,FilePath),
   { ! }.
 
-% TODO: really allow data values everywhere?
-%           seems hacky... and slows down
-object_mesh_path(Obj, FilePath) ?>
-  holds(Obj,ease_obj:hasShape,Shape),
-  holds(Shape,ease_obj:hasFilePath,FilePath),
-  { ! }.
-
 object_mesh_path(Obj, FilePath) ?>
   holds(Obj ease_obj:hasFilePath FilePath ),
   { ! }.
 
 object_mesh_path(Obj, FilePath) +>
-  { ask(holds(Obj,ease_obj:hasShape,Shape)) },
-  is_individual(ShapeRegion),
-  % TODO: what happens to old values here on tell?
-  has_type(ShapeRegion,ease_obj:'MeshShape'),
+  { holds(Obj,ease_obj:hasShape,Shape) },
+  % create a new region
+  { universal_scope(US),
+    tell([ has_type(Region,ease_obj:'MeshShape'),
+           holds(Region,ease_obj:hasFilePath,FilePath)
+         ],US)
+  },
+  % assign the region to the shape quality
   holds(Shape,dul:hasRegion,ShapeRegion),
-  holds(ShapeRegion,ease_obj:hasFilePath,FilePath).
+  % FIXME: notify after assert
+  notify(object_changed(Obj)).
 
 		 /*******************************
 		 *	    FEATURES		*
@@ -324,7 +310,7 @@ has_disposition_type(Obj, Disposition, DispositionType) ?>
 %
 disposition_trigger_type(Disposition,TriggerType) ?>
   holds(Disposition, ease_obj:affordsTrigger, only(TriggerRole)),
-  holds(TriggerRole, dul:classifies,          only(TriggerType)).
+  subclass_of(TriggerRole, only(dul:classifies,TriggerType)).
 
 		 /*******************************
 		 *	    ROLES & PARAMETERS		*

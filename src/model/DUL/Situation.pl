@@ -19,11 +19,16 @@
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
-:- use_module('Event'
-        [ is_event/1, is_action/1 ]).
-:- use_module('Object'
-        [ is_object/1, is_agent/1 ]).
+    [ has_type/2
+    ]).
+:- use_module('./Event.pl'
+    [ is_event/1,
+      is_action/1
+    ]).
+:- use_module('./Object.pl'
+    [ is_object/1,
+      is_agent/1
+    ]).
 
 %% is_description(+Entity) is semidet.
 %
@@ -88,7 +93,7 @@ is_plan(Entity) ?+>
 is_plan_execution(Entity) ?+>
   has_type(Entity, dul:'PlanExecution').
 
-% FIXME
+% TODO
 %is_plan_execution(Entity,Plan,Action) ?+>
   %is_plan_execution(Sit),
   %is_plan(Plan),

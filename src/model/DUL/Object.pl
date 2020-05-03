@@ -19,9 +19,11 @@ In DUL, Object is defined as:
 */
 
 :- use_module(library('model/RDFS')
-        [ has_type/2 ]).
+    [ has_type/2
+    ]).
 :- use_module(library('db/tripledb'),
-        [ tripledb_subclass_of/2 ]).
+    [ tripledb_subclass_of/2
+    ]).
 
 %% is_object(+Entity) is semidet.
 %

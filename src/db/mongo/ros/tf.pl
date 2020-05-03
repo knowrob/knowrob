@@ -1,6 +1,5 @@
 :- module(mng_ros_tf,
-    [ implements('db/iobda'),
-      mng_has_pose(r,?) => knowrob:pose,
+    [ mng_has_pose(r,?) => knowrob:hasPoseData,
       mng_tf_current/4,
       mng_tf_latest_before/5,
       mng_tf_earliest_after/5,
@@ -14,11 +13,11 @@
 */
 
 :- use_module(library('utility/algebra'),
-        [ transform_interpolate/4 ]).
+    [ transform_interpolate/4
+    ]).
 :- use_module(library('utility/filesystem'),
-        [ path_concat/3 ]).
-:- use_module(library('model/EASE/OBJ'),
-        [ object_frame_name/2 ]).
+    [ path_concat/3
+    ]).
 
 :- use_module(library('db/mongo/client')).
 
@@ -29,36 +28,24 @@ mng_ros_tf_init :-
   mng_index_create(DB,tf,
         ['transforms.child_frame_id',
          'transforms.header.stamp'
-        ])
-  mng_distinct_values(DB,tf,
-        'transforms.child_frame_id',Frames),
-  forall(
-    ( member(Frame,Frames),
-      object_frame_name(Obj,Frame) )
-    ( mng_tf_current(DB,Frame,Pose,Since),
-      tell( is_at(Obj,Pose), _{ time: { since: Since }}) )
-  ).
-
+        ]).
 :- mng_ros_tf_init.
 
 %%
 %
 %
-mng_has_pose(Subject, Pose) ?>
-  `scope`(Query_Scope->Fact_Scope),
-  { mng_has_pose1(Subject, Pose, Query_Scope, Fact_Scope) }.
-
-mng_has_pose1(Subject, Pose, Query_Scope, Fact_Scope) :-
-  ground(Subject),
-  object_frame_name(Subject,Frame),
-  time_scope_data([Since0,Until0], Query_Scope),
+mng_has_pose(PoseRegion,PoseData) ?>
+  `scope`(Query_Scope->_{ time: _{
+        since: double(Since1),
+        until: double(Until1)
+  }}),
+  time_scope_data(Query_Scope,[Since0,Until0]),
+  holds(PoseRegion,knowrob:frameName,Frame),
+  %
   mng_has_pose2(Frame,
         Since0,Until0,Pose,
         Since1,Until1),
-  ( var(Until1) ->
-    Fact_Scope=_{ time: _{ since: >=(Since1) }};
-    Fact_Scope=_{ time: _{ since: >=(Since1), until: >=(Until1) }}
-  ).
+  ( var(Until1) -> get_time(Until1) ; true ).
 
 % has_pose during/since
 mng_has_pose2(Frame,
@@ -68,8 +55,8 @@ mng_has_pose2(Frame,
   mng_db_name(DB),
   mng_tf_latest_before(DB, Frame, Since, Pose, Since1),
   ignore(mng_tf_earliest_after(DB, Frame, Since, _, Until1)),
-  % TODO: assume that pose holds at least until now if var(Until1)?
-  ( var(Until0) -> true ;
+  % assume that pose holds at least until now if var(Until1)
+  ( var(Until0) -> get_time(Until0) ;
   ( ground(Until1), Until1 >= Until0 )).
 
 % has_pose until
@@ -307,18 +294,18 @@ mng_tf_pose_(Doc,Time,[ParentFrame,ObjFrame,[TX,TY,TZ],[QX,QY,QZ,QW]]) :-
   get_dict(translation,PoseDoc,TDoc),
   get_dict(rotation,PoseDoc,QDoc),
   %%
-  mng_get_dict(child_frame_id,Doc,ObjFrame),
-  mng_get_dict(frame_id,Header,ParentFrame),
-  mng_get_dict(stamp,Header,Time),
+  mng_get_dict(child_frame_id,Doc,string(ObjFrame)),
+  mng_get_dict(frame_id,Header,string(ParentFrame)),
+  mng_get_dict(stamp,Header,double(Time)),
   %%
-  mng_get_dict(x,TDoc,TX),
-  mng_get_dict(y,TDoc,TY),
-  mng_get_dict(z,TDoc,TZ),
+  mng_get_dict(x,TDoc,double(TX)),
+  mng_get_dict(y,TDoc,double(TY)),
+  mng_get_dict(z,TDoc,double(TZ)),
   %%
-  mng_get_dict(x,QDoc,QX),
-  mng_get_dict(y,QDoc,QY),
-  mng_get_dict(z,QDoc,QZ),
-  mng_get_dict(w,QDoc,QW).
+  mng_get_dict(x,QDoc,double(QX)),
+  mng_get_dict(y,QDoc,double(QY)),
+  mng_get_dict(z,QDoc,double(QZ)),
+  mng_get_dict(w,QDoc,double(QW)).
 
 %%
 mng_tf_cursor_read_(Cursor, PoseTime, Pose) :-

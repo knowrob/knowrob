@@ -20,8 +20,7 @@
 obda_add(Module) :-
   forall(
     call((:(Module,can_access(Property)))),
-    assertz(obda_client_(Module,X))
-  ).
+    assertz(obda_client_(Module,X))).
 
 %%
 %
@@ -35,8 +34,7 @@ obda_remove(Module) :-
 obda_import(Directory) :-
   forall(
     obda_client_(Module,_),
-    call( (:(Module,import(Directory))) ),
-  ).
+    call( (:(Module,import(Directory))) ),).
 
 %%
 %
@@ -44,8 +42,7 @@ obda_import(Directory) :-
 obda_export(Directory) :-
   forall(
     obda_client_(Module,_),
-    call( (:(Module,export(Directory))) ),
-  ).
+    call( (:(Module,export(Directory))) ),).
 
 %%
 %
@@ -53,8 +50,7 @@ obda_export(Directory) :-
 obda_whipe :-
   forall(
     obda_client_(Module,_),
-    call( (:(Module,whipe(Directory))) ),
-  ).
+    call( (:(Module,whipe(Directory))) ),).
 
 %%
 %
