@@ -70,6 +70,9 @@ tell(Statement) :-
 %% tell(+Statement,+Scope) is det.
 %
 % Tell the knowledge base that some statement is true.
+% Scope is a term `[Options,FactScope]` where FactScope
+% the scope of the statement being true.
+% Statement can also be a list of statements.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
