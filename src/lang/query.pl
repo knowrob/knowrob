@@ -4,7 +4,7 @@
       tell(t),    % +Statement
       tell(t,t)   % +Statement, +Scope
     ]).
-/** <module> The querying language of KnowRob.
+/** <module> Main interface predicates for querying the knowledge base.
 
 @author Daniel Beßler
 @license BSD
@@ -24,14 +24,24 @@
 
 %% ask(+Statement) is nondet.
 %
-% Ask the knowledge base if some statement is true.
+% Same as ask/2 with wildcard scope.
+%
+% @param Statement a statement term.
 %
 ask(Statement) :-
   wildcard_scope(QScope),
   ask(Statement,[[],QScope]->_).
 
-%%
+%% ask(+Statement,+Scope) is nondet.
 %
+% True if Statement term holds within the requested scope.
+% Scope is a term `[Options,QueryScope]->FactScope` where QueryScope
+% is the scope requested, and FactScope the actual scope
+% of the statement being true.
+% Statement can also be a list of statements.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
 %
 ask(Statements,QScope->FScope) :-
   is_list(Statements),!,
@@ -40,27 +50,29 @@ ask(Statements,QScope->FScope) :-
 ask(triple(S,P,O),[Options,QScope]->FScope) :-
   tripledb_ask(S,P,O,QScope,FScope,Options).
 
-%%
 ask_all_([],_QS,FS->FS) :- !.
 ask_all_([X|Xs],QS,FS->FSn) :-
   ask(X,QS->FS0),
-  % TODO: probably fact scope should restrict query scope
-  %         for next query!
+  % TODO: fact scope should restrict query scope for next query!
   scope_intersect(FS,FS0,FS1),
   ask_all_(Xs,QS,FS1->FSn).
 
-%% tell(+Statement) is det.
+%% tell(+Statement) is nondet.
 %
-% Tell the knowledge base that some statement is true.
-% This will cause the statement to be added to the 
-% tripledb used by the knowledge base.
+% Same as tell/2 with universal scope.
+%
+% @param Statement a statement term.
 %
 tell(Statement) :-
   universal_scope(FScope),
   tell(Statement,[[],FScope]).
 
-%%
+%% tell(+Statement,+Scope) is det.
 %
+% Tell the knowledge base that some statement is true.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
 %
 tell(Statements,Scope) :-
   is_list(Statements),!,
@@ -112,7 +124,6 @@ expand_ask_query_(Head,Goal,(:-(HeadExpanded,GoalExpanded))) :-
   expand_ask_term_(QScope->_,_->FScope,
                    Goal,GoalExpanded),
   HeadExpanded = lang_query:ask(Head,QScope->FScope),
-  % TODO: why are there so many choicepoints here?
   !.
 
 %%
