@@ -60,31 +60,32 @@ tripledb_module('db/mongo/tripledb').
 
 %% tripledb_load(+URL) is det.
 %
-% Parse a RDF file and load it into the tripledb.
-% 
-% Resolves owl:imports and supports both the common URL formats
-% (file paths, file:// or http://) and the package:// URLs used
-% in ROS to reference files with respect to the surrounding ROS
-% package.
+% Same as tripledb_load/2 with empty Options list.
 %
-% @param URL Local or global file path or URL of the forms file://, http:// or package://
+% @param URL URL of a RDF file.
 % 
 tripledb_load(URL) :-
   tripledb_load(URL,[]).
 
-%%
+%% tripledb_load(+URL,+Options) is semidet.
 %
+% Same as tripledb_load/3 with universal scope,
+% and graph name argument as given in the options list
+% or "user" if none is given.
 %
-tripledb_load(URL,Args) :-
-  is_list(Args),!,
+% @param URL URL of a RDF file.
+% @param Options List of options.
+%
+tripledb_load(URL,Options) :-
+  is_list(Options),!,
   % register namespace
-  ( member(namespace(NS),Args) ->
+  ( member(namespace(NS),Options) ->
     ( atom_concat(URL,'#',Prefix),
       rdf_register_ns(NS,Prefix,[keep(true)]));
     ( true )
   ),
   % get graph name
-  ( member(graph(Graph),Args) ->
+  ( member(graph(Graph),Options) ->
     ( true );
     ( Graph=user )
   ),
@@ -92,8 +93,15 @@ tripledb_load(URL,Args) :-
   universal_scope(Scope),
   tripledb_load(URL,Scope,Graph).
 
-%%
+%% tripledb_load(+URL,+Scope,+Graph) is semidet.
 %
+% Load RDF data from file, and assert it into
+% the triple DB using the scope provided, and
+% into the graph with the name provided.
+%
+% @param URL URL of a RDF file.
+% @param Scope The subject of a triple.
+% @param Graph The graph name.
 %
 tripledb_load(URL,_,_) :-
   % FIXME: Make sure we do not load multiple versions of same ontology!
@@ -211,6 +219,10 @@ tripledb_whipe :-
 % @implements 'db/itripledb'
 %
 tripledb_tell(S,P,update(O),Scope,Options) :-
+  % values wrapped in update/1 indicate that old values
+  % should be replaced.
+  % TODO: I do not like this clause much, and indicating an update like this.
+  %          what would be a better way to indicate that all old values should be stopped?
   time_scope_data(Scope,[Since,_]),!,
   tripledb_stop(S,P,Since),
   itripledb_tell(S,P,O,Scope,Options).
@@ -218,9 +230,28 @@ tripledb_tell(S,P,update(O),Scope,Options) :-
 tripledb_tell(S,P,O,Scope,Options) :-
   itripledb_tell(S,P,O,Scope,Options).
 
+%% tripledb_tell(?S,?P,?O,+Scope) is semidet.
+%
+% Same as tripledb_tell/5 but uses universal 
+% scope, and an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+% @param Scope The scope of the new triple.
+%
 tripledb_tell(S,P,O,Scope) :-
   tripledb_tell(S,P,O,Scope,[]).
 
+%% tripledb_tell(?S,?P,?O) is semidet.
+%
+% Same as tripledb_tell/5 but uses universal 
+% scope, and an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+%
 tripledb_tell(S,P,O) :-
   universal_scope(Scope),
   tripledb_tell(S,P,O,Scope,[]).
@@ -237,9 +268,27 @@ tripledb_bulk_tell(Facts,Scope,Options) :-
 tripledb_forget(S,P,O,Scope,Options) :-
   itripledb_forget(S,P,O,Scope,Options).
 
+%% tripledb_forget(?S,?P,?O,+Scope) is semidet.
+%
+% Same as tripledb_forget/5 but uses an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+% @param Scope The scope of considered triples.
+%
 tripledb_forget(S,P,O,Scope) :-
   itripledb_forget(S,P,O,Scope,[]).
 
+%% tripledb_forget(?S,?P,?O) is semidet.
+%
+% Same as tripledb_forget/5 but uses wildcard 
+% scope, and an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+%
 tripledb_forget(S,P,O) :-
   wildcard_scope(QScope),
   itripledb_forget(S,P,O,QScope,[]).
@@ -250,9 +299,28 @@ tripledb_forget(S,P,O) :-
 tripledb_ask(S,P,O,QScope,FScope,Options) :-
   itripledb_ask(S,P,O,QScope,FScope,Options).
 
+%% tripledb_ask(?S,?P,?O,+QScope,-FScope) is semidet.
+%
+% Same as tripledb_ask/6 but uses an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+% @param QScope The scope of requested triples.
+% @param FScope The scope of the retrieved triple.
+%
 tripledb_ask(S,P,O,QScope,FScope) :-
   itripledb_ask(S,P,O,QScope,FScope,[]).
 
+%% tripledb_ask(?S,?P,?O) is semidet.
+%
+% Same as tripledb_ask/6 but uses wildcard 
+% scope, and an empty options list.
+%
+% @param S The subject of a triple.
+% @param P The predicate of a triple.
+% @param O The object or data value of a triple.
+%
 tripledb_ask(S,P,O) :-
   wildcard_scope(QScope),
   itripledb_ask(S,P,O,QScope,_,[]).
