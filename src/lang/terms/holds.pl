@@ -9,29 +9,22 @@
 */
 
 :- use_module(library('model/XSD'),
-    [ xsd_type/2
+    [ xsd_data_basetype/2
     ]).
 :- use_module(library('model/RDFS'),
     [ has_range/2
     ]).
 :- use_module(library('model/OWL'),
     [ is_object_property/1,
+      is_functional_property/1,
       is_data_property/1
     ]).
 :- use_module(library('model/QUDT'),
     [ qudt_unit/4,
       qudt_conv/4
     ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_ask/4,
-      tripledb_tell/4
-    ]).
-:- use_module(library('db/obda'),
-    [ access/2
-    ]).
-:- use_module(library('reasoning/pool'),
-    [ infer/2
-    ]).
+
+:- use_module(library('db/obda'), [ access/2 ]).
 
 %% holds(+Query) is nondet.
 %
@@ -48,17 +41,16 @@ holds(Query) ?>
 % True for triples (S,P,O) that are known
 % or that can be deduced by on-demand reasoning.
 %
+% NOTE: holds can only be used with OWL ObjectProperties
+%       and DatatypeProperies.
+%
 % @param S The subject of a triple.
 % @param P The predicate of a triple.
 % @param O The object of a triple.
 %
-holds(S,[],O) ?>
-  { !, S=O }.
-
-holds(S,[P0|Ps],O) ?>
-  { ! },
-  holds(S,P0,X),
-  holds(X,Ps,O).
+holds(S,Chain,O) ?>
+  { is_list(Chain),! },
+  holds_chain(S,Chain,O).
 
 holds(S,P,O) ?>
   { once((var(P); is_object_property(P))) },
@@ -98,7 +90,7 @@ holds(S,P,O) +>
   { is_object_property(P), ! },
   % O1 should be the bare IRI atom
   { strip_operator_(O,O1,=), atom(O1) },
-  tripledb_tell(S,P,string(O1)).
+  triple(S,P,string(O1)).
 
 holds(S,P,DataTerm) +>
   { is_data_property(P), ! },
@@ -108,24 +100,28 @@ holds(S,P,DataTerm) +>
   % infer the base type of this property (e.g. float, string, term, etc.)
   { data_base_type_(P,DataValue,BaseType) },
   %%
-  Term=..[BaseType,DataValue],
+  { Term=..[BaseType,DataValue] },
   holds_data(S,P,unit(Term,DataUnit)).
 
-%%
-% DB retrieval
-holds_object(S,P,O) ?> tripledb_ask(S,P,O).
-% Reasoning
-holds_object(S,P,O) ?> infer(holds(S,P,O)).
+holds(_,P,_) +>
+  { print_message(error, holds(unknown_property(P))) },
+  { fail }.
 
 %%
 % DB retrieval
-holds_data(S,P,O) ?> tripledb_ask(S,P,O).
+holds_object(S,P,O) ?> triple(S,P,O).
+
+%%
+% DB retrieval/retrieval
+holds_data(S,P,O) ?+> triple(S,P,O).
 % OBDA
 holds_data(S,P,O) ?> access(holds(S,P,O)).
-% Reasoning
-holds_data(S,P,O) ?> infer(holds(S,P,O)).
-% DB storage
-holds_data(S,P,O) +> tripledb_tell(S,P,O).
+
+%%
+holds_chain(S,[],O)      ?> { !, S=O }.
+holds_chain(S,[P0|Ps],O) ?>
+  holds(S,P0,X),
+  holds_chain(X,Ps,O).
 
 %%
 % Unify requested value with the one that was actually retrieved.
@@ -160,6 +156,7 @@ data_term_unify_('=',DataValue,DataValue,_).
 % still be a compound afterwards (e.g. in case of units, or OWL operators
 % such as only).
 %
+strip_operator_(X,     X, =) :- var(X), !.
 strip_operator_(=(X),  X, Operator) :- !, Operator='='.
 strip_operator_(>(X),  X, Operator) :- !, Operator='>'.
 strip_operator_(<(X),  X, Operator) :- !, Operator='<'.
@@ -170,7 +167,7 @@ strip_operator_(X,     X, =).
 %%
 % Extract unit from value term.
 %
-data_term_unit_(_,_,_) :- var(DataTerm), !.
+data_term_unit_(DataTerm,_,_) :- var(DataTerm), !.
 data_term_unit_(DataTerm,DataValue,DataUnit) :-
   compound(DataTerm), !,
   DataTerm =.. [DataUnit,DataValue],
@@ -195,7 +192,7 @@ data_value_convert_(Unit0,Unit1,Value0,Value1) :-
 data_base_type_(_Property,DataValue,term) :- compound(DataValue),!.
 data_base_type_(Property,_DataValue,XSDType) :-
   has_range(Property,Range),
-  xsd_type(Range,XSDType),!.
+  xsd_data_basetype(Range,XSDType),!.
 data_base_type_(_Property,DataValue,number) :- number(DataValue),!.
 data_base_type_(_Property,DataValue,string) :- atom(DataValue),!.
 data_base_type_(_Property,DataValue,string) :- string(DataValue),!.

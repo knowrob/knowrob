@@ -1,6 +1,6 @@
 :- module(model_EASE_OBJ,
     [ %% Life Time
-      is_alive(r),
+      %is_alive(r),
       %% Qualities
       is_physical_quality(r),
       is_social_quality(r),
@@ -33,21 +33,24 @@
 @license BSD
 */
 
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
-:- use_module(library('model/OWL')
-    [ is_individual/2
+:- use_module(library('model/OWL'),
+    [ is_individual/1
     ]).
-:- use_module(library('model/DUL/Object')
+:- use_module(library('model/DUL/Object'),
     [ has_role/2,
       has_object_type/2,
       has_quality_type/2
     ]).
-:- use_module(library('db/tripledb')
+:- use_module(library('db/tripledb'),
     [ tripledb_load/2
     ]).
-:- use_module(library('comm/notify')
+:- use_module(library('db/scope'),
+    [ universal_scope/1
+    ]).
+:- use_module(library('comm/notify'),
     [ notify/1
     ]).
 
@@ -62,13 +65,14 @@
 
 %% is_alive(+Obj) is det.
 %
-is_alive(Obj) ?>
-  holds(Obj,ease:hasLifetime,Evt),
-  occurs(Evt).
+%is_alive(Obj) ?>
+  %% FIXME: knowrob namespace
+  %holds(Obj,knowrob:hasLifetime,Evt),
+  %occurs(Evt).
 
-is_alive(Obj) +>
-  { holds(Obj,ease:hasLifetime,Evt) },
-  occurs(Evt).
+%is_alive(Obj) +>
+  %{ holds(Obj,knowrob:hasLifetime,Evt) },
+  %occurs(Evt).
 
 		 /*******************************
 		 *	    QUALITIES		*
@@ -176,13 +180,13 @@ object_dimensions(Obj, Depth, Width, Height) +>
   % create a new region
   % TODO: replace any other BoxShape region
   { universal_scope(US),
-    tell([ has_type(Region,ease_obj:'BoxShape'),
-           holds(Region, ease_obj:hasDepth,  Depth),
-           holds(Region, ease_obj:hasWidth,  Width),
-           holds(Region, ease_obj:hasHeight, Height)
+    tell([ has_type(ShapeRegion,ease_obj:'BoxShape'),
+           holds(ShapeRegion, ease_obj:hasDepth,  Depth),
+           holds(ShapeRegion, ease_obj:hasWidth,  Width),
+           holds(ShapeRegion, ease_obj:hasHeight, Height)
          ],US)
   },
-  holds(Shape,dul:hasRegion,Region),
+  holds(Shape,dul:hasRegion,ShapeRegion),
   % FIXME: notify after assert
   notify(object_changed(Obj)).
 
@@ -195,7 +199,7 @@ shape_bbox(ShapeRegion, Depth, Width, Height) ?>
 
 shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
   %holds(ShapeRegion,rdf:type,ease_obj:'SphereShape' ),
-  holds(ShapeRegion ease_obj:hasRadius Radius),
+  holds(ShapeRegion, ease_obj:hasRadius, Radius),
   { Diameter is 2 * Radius },
   { ! }.
 
@@ -213,15 +217,15 @@ object_mesh_path(Obj, FilePath) ?>
   { ! }.
 
 object_mesh_path(Obj, FilePath) ?>
-  holds(Obj ease_obj:hasFilePath FilePath ),
+  holds(Obj,ease_obj:hasFilePath,FilePath ),
   { ! }.
 
 object_mesh_path(Obj, FilePath) +>
   { holds(Obj,ease_obj:hasShape,Shape) },
   % create a new region
   { universal_scope(US),
-    tell([ has_type(Region,ease_obj:'MeshShape'),
-           holds(Region,ease_obj:hasFilePath,FilePath)
+    tell([ has_type(ShapeRegion,ease_obj:'MeshShape'),
+           holds(ShapeRegion,ease_obj:hasFilePath,FilePath)
          ],US)
   },
   % assign the region to the shape quality

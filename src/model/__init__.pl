@@ -1,9 +1,10 @@
 
 % load modules into user
-:- use_module('RDFS').
-:- use_module('XSD').
-:- use_module('OWL').
-:- use_module('QUDT').
+:- use_module('./RDFS.pl').
+:- use_module('./XSD.pl').
+:- use_module('./OWL.pl').
+:- use_module('./QUDT.pl').
+:- use_module('./portray.pl').
 
 % load init files in sub-directories
 :- use_directory('DUL').
@@ -11,7 +12,7 @@
 %:- use_directory('URDF').
 
 % load knowrob.owl
-:- ros_package_iri(knowrob,'http://knowrob.org/kb').
+% TODO: shoud have its own subdir?
 :- tripledb_load(
         'http://knowrob.org/kb/knowrob.owl',
         [ graph(tbox),
@@ -19,4 +20,4 @@
         ]).
 
 %
-:- use_module('notify').
+:- use_module('./notify.pl').

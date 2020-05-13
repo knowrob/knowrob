@@ -1,6 +1,6 @@
 :- module(reasoning_pool,
     [ reasoning_module/1,
-      infer/3
+      infer(t,-)
     ]).
 /** <module> TODO ...
 
@@ -8,10 +8,10 @@
 */
 
 :- use_module(library('db/tripledb'),
-    [ tripledb_cache_get/2,
+    [ tripledb_cache_get/3,
       tripledb_cache_add/3
     ]).
-:- use_module(library('lang/query'),
+:- use_module(library('db/scope'),
     [ scope_intersect/3
     ]).
 :- use_module(library('lang/scopes/temporal'),
@@ -19,36 +19,61 @@
     ]).
 
 :- dynamic reasoner_module_/1.
+:- dynamic active_query_/2.
+
+%%
+%
+%
+instance_of(A,B)    ?> infer(instance_of(A,B),_Fact).
+subclass_of(A,B)    ?> infer(subclass_of(A,B),_Fact).
+subproperty_of(A,B) ?> infer(subproperty_of(A,B),_Fact).
+holds_object(S,P,O) ?> infer(holds(S,P,O),_Fact).
+holds_data(S,P,O)   ?> infer(holds(S,P,O),_Fact).
 
 %% reasoning_module(+Module) is det.
 %
 %
 reasoning_module(Module) :-
-  % TODO: maybe better to get the module predicates
-  %         here? does it make a difference?
   assertz( reasoner_module_(Module) ).
 
 %%
-can_answer_(Module,Query,Meta) :-
-  call((:(Module,can_answer(Query,Meta)))).
+can_answer_(Module,Query) :-
+  % avoid binding vars in Query
+  copy_term(Query, Query0),
+  call((:(Module,can_answer(Query0)))),!.
 
 %%
 %
 %
 %
-infer(Query,Fact,QScope->FScope) :-
+infer(Query,Fact) ?>
+  query_scope(QScope),
+  fact_scope(FScope),
+  { infer0(Query,Fact,[[],QScope]->FScope) }.
+
+infer0(Query,Fact,QScope->FScope) :-
   query_string_(Query,QueryStr),
   % get list of reasoner that already answered this
   % query.
-  tripledb_cache_get(QueryStr,L),
+  ( is_cachable_(Query,Pred) ->
+    tripledb_cache_get(Pred,QueryStr,CachedModules);
+    CachedModules=[]
+  ),
   % select registered reasoner that did not yet answer 
   % given query, but is capable to do so
   reasoner_module_(Module),
   can_answer_(Module,Query),
-  \+ member(Module,L),
+  \+ memberchk(Module,CachedModules),
+  \+ active_query_(Module,QueryStr),
   % finally perform the inference
-  % TODO: run reasoner in parallel
-  infer1(Module,Query,QueryStr,Fact,QScope,FScope0),
+  setup_call_cleanup(
+      % remember that the reasoner has answered this query
+      asserta(active_query_(Module,QueryStr)),
+      % infer solutions
+      infer1(Module,Query,QueryStr,Fact,QScope,FScope0),
+      % indicate that we are done with end_of_inference atom
+      retractall(active_query_(Module,QueryStr))
+  ),
   % force until=now in FScope if var(Until)
   time_scope_data(FScope0,[_,Until]),
   ( ground(Until) -> FScope=FScope0 ; (
@@ -58,43 +83,72 @@ infer(Query,Fact,QScope->FScope) :-
   )).
 
 infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
-  % run the reasoner in a separate thread where it
-  % fills a queue with inferred answers.
-  message_queue_create(Queue),
-  thread_create(
-    infer_thread_(Module,Query,QueryStr,QScope,Queue),
-    _ThreadId),
-  % poll reasoning results until end_of_inference
-  % FIXME: message_queue_destroy never called in case not all results
-  %          are pulled
-  poll_result(Queue,Fact,FScope).
+  add_to_cache_(Module,Query,QueryStr),
+  Options=[skip_invalidate(true)],
+  % FIXME: better use thread queues to yield a resut as soon as it was inferred
+  findall([X,Y], (
+    call((:(Module,infer(Query,X,QScope,Y)))),
+    % FIXME: do not invalidate cache for self?
+    ( tell(X,[Options,Y]) -> true ; (
+      print_message(error, infer(failed(tell(X,Y))))
+    ))
+  ), Results),
+  member([Fact,FScope],Results),
+  print_message(informational, inferred(Fact)),
+  % FIXME
+  Query=Fact.
 
-infer_thread_(Module,Query,QueryStr,QScope,Queue) :-
-  % remember that the reasoner has answered this query
-  ( \+ is_cachable_(Query,Pred) ;
-    tripledb_cache_add(Module,Pred,QueryStr)
-  ),!,
-  % infer solutions
-  forall(
-    % call the reasoner
-    call((:(Module,infer(Query,Fact,QScope,FScope)))),
-    % handle inference
-    ( thread_send_message(Queue,[Fact,FScope]),
-      % assert inferred triple to DB
-      tell(Fact,FScope)
-    )
-  ),
-  % indicate that we are done with end_of_inference atom
-  thread_send_message(Queue,end_of_inference).
+% TODO: run reasoner in a thread.
+%        - but reasoner calls itself recursively, creating too many threads!
+%infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
+  %% run the reasoner in a separate thread where it
+  %% fills a queue with inferred answers.
+  %message_queue_create(Queue),
+  %thread_create(
+    %infer_thread_(Module,Query,QueryStr,QScope,Queue),
+    %_ThreadId),
+  %% FIXME: message_queue_destroy never called in case not all results
+  %%          are pulled
+  %poll_result(Queue,Fact,FScope),
+  %% FIXME
+  %Query=Fact.
+
+%infer_thread_(Module,Query,QueryStr,QScope,Queue) :-
+  %setup_call_cleanup(
+      %% remember that the reasoner has answered this query
+      %add_to_cache_(Module,Query,QueryStr),
+      %% infer solutions
+      %catch(infer_thread_1_(Module,Query,QScope,Queue),
+            %Exception,
+            %print_message(error,reasoner(exception(Module,Exception)))),
+      %% indicate that we are done with end_of_inference atom
+      %thread_send_message(Queue,end_of_inference)
+  %).
+
+%%
+%infer_thread_1_(Module,Query,QScope,Queue) :-
+  %forall(
+    %% call the reasoner
+    %call((:(Module,infer(Query,Fact,QScope,FScope)))),
+    %% handle inference
+    %( thread_send_message(Queue,[Fact,FScope]),
+      %% assert inferred triple to DB
+      %tell(Fact,FScope) )
+  %).
+
+%%
+add_to_cache_(Module,Query,QueryStr) :-
+  ( is_cachable_(Query,Pred) ->
+    tripledb_cache_add(Pred,QueryStr,Module);
+    true ).
 
 %%
 poll_result(Queue,Fact,Scope) :-
   thread_get_message(Queue,Msg),
   ( Msg=end_of_inference ->
-    message_queue_destroy(Queue); (
-    Msg=[Fact,Scope] ;
-    poll_result(Queue,Fact,Scope)
-  )).
+    ( message_queue_destroy(Queue), fail );
+    ( Msg=[Fact,Scope] ; poll_result(Queue,Fact,Scope) )
+  ).
 
 %%
 % Unique query string used to identify cached
@@ -112,7 +166,7 @@ query_string1_(X,Y) :-
   X=..L,
   findall(Y0, (
     member(L0,L),
-    query_string_(L0,Y0)
+    query_string1_(L0,Y0)
   ), YL),
   Y=..YL.
 

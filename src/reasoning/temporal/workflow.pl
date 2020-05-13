@@ -6,7 +6,7 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('model/DUL/Workflow'),
+:- use_module(library('model/EASE/WF'),
     [ workflow_step/2
     ]).
 :- use_module('./interval.pl',

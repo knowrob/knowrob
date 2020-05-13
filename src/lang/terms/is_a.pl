@@ -3,14 +3,15 @@
       instance_of(r,r),
       subclass_of(r,r),
       subproperty_of(r,r),
-      unique_name(r,-),
-      op(1000, xfx, is_a)
+      unique_name(r,-)
     ]).
 /** <module> The *is_a* predicate.
 
 @author Daniel Beßler
 @license BSD
 */
+
+:- op(1000, xfx, user:is_a).
 
 :- use_module(library('comm/notify'),
     [ notify/1
@@ -21,14 +22,6 @@
 :- use_module(library('model/OWL'),
     [ is_class/1,
       is_individual/1
-    ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_subclass_of/2,
-      tripledb_subproperty_of/2,
-      tripledb_tell/4
-    ]).
-:- use_module(library('reasoning/pool'),
-    [ infer/2
     ]).
 
 %% is_a(?A,?B) is nondet.
@@ -68,33 +61,42 @@ is_a(A,B) +>
 % For example: `Nibbler instance_of Cat`.
 %
 instance_of(A,B) ?> has_type(A,B).
-instance_of(A,B) ?> infer(instance_of(A,B)).
+
+instance_of(A,B) +>
+  { owl_description(B,intersection_of(List)),! },
+  instance_of_all(A,List).
 instance_of(A,B) +>
   % generate a new name in case A is a variable
   { var(A), ! },
   { unique_name(B,A) },
-  { tell( is_individual(A) )},
+  { is_class(B) ->
+    tell(is_individual(A)) ;
+    true },
   instance_of(A,B).
 instance_of(A,B) +>
-  tripledb_tell(A,rdf:type,B),
+  triple(A,rdf:type,B),
   notify(individual(A)).
+
+%%
+instance_of_all(_S,[]) ?+> { true }.
+instance_of_all(S,[First|Rest]) ?+>
+  instance_of(S,First),
+  instance_of_all(S,Rest).
 
 %% subclass_of(?A,?B) is nondet.
 %
 % The subclass-of relation (rdfs:subClassOf).
 % For example: `Cat subclass_of Animal`.
 %
-subclass_of(A,B) ?> { tripledb_subclass_of(A,B) }.
-subclass_of(A,B) ?> infer(subclass_of(A,B)).
-subclass_of(A,B) +> tripledb_tell(A,rdfs:subClassOf,B).
+subclass_of(A,B) ?> { ground([A,B]), A=B, ! }.
+subclass_of(A,B) ?+> triple(A,rdfs:subClassOf,B).
 
 %% subproperty_of(?A,?B) is nondet.
 %
 % The subproperty-of relation (rdfs:subPropertyOf).
 %
-subproperty_of(A,B) ?> { tripledb_subproperty_of(A,B) }.
-subproperty_of(A,B) ?> infer(subproperty_of(A,B)).
-subproperty_of(A,B) +> tripledb_tell(A,rdfs:subPropertyOf,B).
+subproperty_of(A,B) ?> { ground([A,B]), A=B, ! }.
+subproperty_of(A,B) ?+> triple(A,rdfs:subPropertyOf,B).
 
 %% unique_name(+Type,-Name) is det.
 %
@@ -115,6 +117,6 @@ unique_name1(Type_IRI, Name) :-
   atomic_list_concat([Type_IRI,'_',Sub], IRI),
   % check if there is no triple with this identifier as subject or object yet
   ( is_resource(IRI) ->
-    unique_name(Type,Name);
+    unique_name(Type_IRI,Name);
     Name = IRI
   ).

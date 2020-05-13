@@ -8,12 +8,12 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('db/tripledb'),
-    [ tripledb_subproperty_of/2,
-      tripledb_ask/4
+:- use_module(library('semweb/rdf_db'),
+    [ rdf_equal/2
     ]).
-:- use_module(library('model/RDFS'),
-    [ is_property/2
+:- use_module(library('db/tripledb'),
+    [ tripledb_ask/5,
+      tripledb_ask/3
     ]).
 :- use_module(library('model/OWL'),
     [ is_individual/1,
@@ -24,8 +24,7 @@
       same_as/2
     ]).
 :- use_module(library('lang/terms/is_a'),
-    [ subclass_of/2,
-      instance_of/3
+    [ instance_of/2
     ]).
 
 %% owl_subproperty_of(?Sub,?Super) is nondet.
@@ -36,23 +35,19 @@ owl_subproperty_of(Sub,Sup) :-
   ground([Sub,Sup]),!,
   has_inverse_property(Sub,Sub_inv),
   has_inverse_property(Sup,Sup_inv),
-  tripledb_subproperty_of(Sub_inv,Sup_inv).
+  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sub),!,
   has_inverse_property(Sub,Sub_inv),
-  tripledb_subproperty_of(Sub_inv,Sup_inv),
+  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv),
   has_inverse_property(Sup,Sup_inv).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sup),!,
   has_inverse_property(Sup,Sup_inv),
-  tripledb_subproperty_of(Sub_inv,Sup_inv),
+  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv),
   has_inverse_property(Sub,Sub_inv).
-
-owl_subproperty_of(Sub,Sup) :-
-  is_property(Sub),
-  owl_subproperty_of(Sub,Sup).
 
 %% owl_has(?S,?P,?O,+Scope) is nondet.
 %
@@ -83,10 +78,16 @@ owl_has(S,P,O,Scope) :-
   same_as(O1,O).
 
 %%
+%
+% TODO: handle var(P) case in a better way.
+%         currently ground(P) is used in some clauses to avoid
+%         iterating over all properties.
+%
 has_transitive_(S,P,O,Scope,_) :-
   has_symmetric_(S,P,O,Scope).
 
 has_transitive_(S,P,O,QScope->FScope,Visited) :-
+  ground(P),
   is_transitive_property(P),
   has_symmetric_(S,P,O1,QScope->FScope0),
   \+ memberchk(O1, Visited),
@@ -98,21 +99,25 @@ has_symmetric_(S,P,O,Scope) :-
   has_direct2_(S,P,O,Scope).
 
 has_symmetric_(S,P,O,Scope) :-
+  ground(P),
   is_symmetric_property(P),
   has_direct2_(O,P,S,Scope).
 
 has_symmetric_(S,P,O,Scope) :-
+  ground(P),
   has_inverse_property(P,Inverse),
   has_direct2_(O,Inverse,S,Scope).
 
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
-has_direct2_(S,P,O,QScope->FScope) :-
+has_direct2_(S,P,O,[Options,QScope]->FScope) :-
   % TODO: do not yield this if S/P/O are the same as in the call of owl_has to avoid redundancy
-  tripledb_ask(S,P,O,QScope,FScope).
+  tripledb_ask(S,P,O,QScope,FScope,Options),
+  \+ rdf_equal(P,rdf:type).
 
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
 has_direct2_(S,P,O,Scope) :-
+  ground(P),
   has_property_chain(P,Chain),
   has_chain_(S,Chain,O,Scope).
 
@@ -150,10 +155,11 @@ owl_cardinality(S,P,R,Card,QScope->FScope) :-
   ( var(P) -> P0=_ ; P0=P ),
   ( var(R) -> R0=_ ; R0=R ),
   findall([S0,P0,R0,V0,FS0],
-    ask([ holds(S0,P0,V0), 
+    ask([ triple(S0,P0,V0), 
           instance_of(V0,class(R0))
         ], QScope->FS0),
     Facts),
+  Facts \= [],
   owl_cardinality1_(S,P,R,Facts,Card,FScope).
 
 %%
@@ -180,7 +186,7 @@ owl_cardinality1_(S,P,R,Facts,Card,FScope) :-
     Facts0),
   owl_cardinality1_(S,P,R,Facts0,Card,FScope).
 
-owl_cardinality1_(S,P,R,Facts,Card,FScope) :-
+owl_cardinality1_(S,_P,R,Facts,Card,FScope) :-
   var(R),!,
   % bind range
   setof(R0, member([_,_,R0,_,_],Facts), Ranges),
@@ -201,7 +207,7 @@ owl_cardinality2_(Facts,Card0,FScope) :-
   % collect different scopes of the same value
   findall(FS0_list, (
     member(V1,Values),
-    findall(X, member([_,_,_,V1,FS0],Facts), FS0_list)
+    findall(X, member([_,_,_,V1,X],Facts), FS0_list)
   ), NestedScopes),
   owl_cardinality3_(NestedScopes,Card1,FScope),
   % unify cardinality value

@@ -1,5 +1,5 @@
 :- module(mng_ros_tf,
-    [ mng_has_pose(r,?) => knowrob:hasPoseData,
+    [ mng_has_pose(r,?) -> knowrob:hasPoseData,
       mng_tf_current/4,
       mng_tf_latest_before/5,
       mng_tf_earliest_after/5,

@@ -18,16 +18,25 @@
 @license BSD
 */
 
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
-:- use_module('./Event.pl'
+:- use_module('./Event.pl',
     [ is_event/1,
       is_action/1
     ]).
-:- use_module('./Object.pl'
+:- use_module('./Object.pl',
     [ is_object/1,
       is_agent/1
+    ]).
+:- use_module(library('db/tripledb'),
+    [ tripledb_load/2
+    ]).
+
+% load RDF data
+:- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
+    [ graph(tbox),
+      namespace(dul)
     ]).
 
 %% is_description(+Entity) is semidet.

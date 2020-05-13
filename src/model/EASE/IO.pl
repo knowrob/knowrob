@@ -8,10 +8,10 @@
 @license BSD
 */
 
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
-:- use_module(library('db/tripledb')
+:- use_module(library('db/tripledb'),
     [ tripledb_load/2
     ]).
 

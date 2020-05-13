@@ -1,8 +1,8 @@
 
-% register ROS packages to resolve IRI prefixes to local paths
-:- ros_package_iri(ease_ontology, 'http://www.ease-crc.org/ont').
-:- ros_package_iri(rosowl,        'http://www.ease-crc.org/ont').
-% TODO: rather load bundled version here
+:- tripledb_load('http://www.ease-crc.org/ont/EASE.owl',
+    [ graph(tbox),
+      namespace(ease)
+    ]).
 
 % load modules into user
 :- use_module('ACT').

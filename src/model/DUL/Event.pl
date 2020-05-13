@@ -3,7 +3,10 @@
       is_event_type(r),
       is_action(r),
       is_task(r),
-      is_process(r),
+      % FIXME: pl module process defines this already.
+      %        - probably better assert all into another module then user,
+      %          then prefer this over user
+      %is_process(r),
       has_time_interval(r,r),
       has_participant(r,r),
       has_participant(r,r,r),
@@ -21,11 +24,20 @@ In DUL, Object is defined as:
 @license BSD
 */
 
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
-:- use_module('./Object.pl'
+:- use_module('./Object.pl',
     [ has_object_type/2
+    ]).
+:- use_module(library('db/tripledb'),
+    [ tripledb_load/2
+    ]).
+
+% load RDF data
+:- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
+    [ graph(tbox),
+      namespace(dul)
     ]).
 
 %% is_event(+Entity) is semidet.

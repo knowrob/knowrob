@@ -4,6 +4,7 @@
       is_restriction(r,t),
       is_union_of(r,t),
       is_intersection_of(r,t),
+      is_complement_of(r,t),
       is_individual(r),
       is_object_property(r),
       is_data_property(r),
@@ -30,24 +31,33 @@
 :- use_module(library('semweb/rdf_db'),
     [ rdf_register_ns/3
     ]).
-:- use_module(library('db/tripledb')
+:- use_module(library('db/tripledb'),
     [ tripledb_load/2,
-      tripledb_ask/3,
-      tripledb_tell/3
+      tripledb_ask/3
     ]).
-:- use_module('./RDFS.pl'
+:- use_module('./RDFS.pl',
     [ has_type/2,
-      rdfs_list/2
+      is_rdf_list/2
     ]).
 
 % load OWL model
-:- tripledb_load('http://knowrob.org/kb/owl.owl',
-    [ graph(common)
-    ]).
+% FIXME: bad import, rather import byregular URL,
+%           but map to package internally
 :- rdf_register_ns(owl,
     'http://www.w3.org/2002/07/owl#',
     [ keep(true)
     ]).
+:- tripledb_load('package://knowrob/owl/owl.owl',
+    [ graph(common)
+    ]).
+
+%%
+is_restriction_term(only(_,_)).
+is_restriction_term(some(_,_)).
+is_restriction_term(value(_,_)).
+is_restriction_term(min(_,_,_)).
+is_restriction_term(max(_,_,_)).
+is_restriction_term(exactly(_,_,_)).
 
 %% is_class(+Entity) is semidet.
 %
@@ -60,140 +70,8 @@ is_class(Entity) ?+>
 
 %%
 %
-is_restriction(Entity) ?>
+is_restriction(Entity) ?+>
   has_type(Entity, owl:'Restriction').
-
-%%
-%
-% FIXME: seems redundant with owl_description
-%
-is_restriction(R,only(P,O)) ?>
-  { ground(O),! },
-  tripledb_ask(R,owl:allValuesFrom,O),
-  tripledb_ask(R,owl:onProperty,P).
-
-is_restriction(R,only(P,O)) ?>
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:allValuesFrom,O).
-
-is_restriction(R,only(P,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  tripledb_tell(R,owl:allValuesFrom,O).
-
-
-is_restriction(R,some(P,O)) ?>
-  { ground(O),! },
-  tripledb_ask(R,owl:someValuesFrom,O),
-  tripledb_ask(R,owl:onProperty,P).
-
-is_restriction(R,some(P,O)) ?>
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:someValuesFrom,O).
-
-is_restriction(R,some(P,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  tripledb_tell(R,owl:someValuesFrom,O).
-
-
-is_restriction(R,value(P,O)) ?>
-  { ground(P),! },
-  tripledb_ask(R,owl:onProperty,P),
-  % TODO: need to specify type for data properties
-  tripledb_ask(R,owl:hasValue,O).
-
-is_restriction(R,value(P,O)) ?>
-  % TODO: need to specify type for data properties
-  tripledb_ask(R,owl:hasValue,O),
-  tripledb_ask(R,owl:onProperty,P).
-
-is_restriction(R,value(P,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  % TODO: need to specify type for data properties
-  tripledb_tell(R,owl:hasValue,O).
-
-
-is_restriction(R,min(P,M,O)) ?>
-  { ground(P), ! },
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:minCardinality,M).
-
-is_restriction(R,min(P,M,O)) ?>
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:minCardinality,M).
-
-is_restriction(R,min(P,M,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  tripledb_tell(R,owl:minCardinality,M),
-  tripledb_tell(R,owl:onClass,O).
-
-
-is_restriction(R,max(P,M,O)) ?>
-  { ground(P), ! },
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:minCardinality,M).
-
-is_restriction(R,max(P,M,O)) ?>
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:minCardinality,M).
-
-is_restriction(R,max(P,M,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  tripledb_tell(R,owl:minCardinality,M),
-  tripledb_tell(R,owl:onClass,O).
-
-
-is_restriction(R,exactly(P,M,O)) ?>
-  { ground(P), ! },
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:qualifiedCardinality,M).
-
-is_restriction(R,exactly(P,M,O)) ?>
-  tripledb_ask(R,owl:onClass,O),
-  tripledb_ask(R,owl:onProperty,P),
-  tripledb_ask(R,owl:qualifiedCardinality,M).
-
-is_restriction(R,exactly(P,M,O)) +>
-  is_restriction(R),
-  tripledb_tell(R,owl:onProperty,P),
-  tripledb_tell(R,owl:qualifiedCardinality,M),
-  tripledb_tell(R,owl:onClass,O).
-
-%%
-%
-%
-is_union_of(S,union_of(O1)) ?>
-  % TODO: would be nice having a better interface for lists
-  tripledb_ask(S,owl:unionOf,RDFList),
-  rdfs_list(RDFList,O2),
-  { forall(member(X,O1), member(X,O2)) }.
-
-is_union_of(S,union_of(O)) +>
-  rdfs_list(RDFList,O),
-  is_class(S),
-  tripledb_tell(S,owl:unionOf,RDFList).
-
-%%
-%
-%
-is_intersection_of(S,intersection_of(O1)) ?>
-  tripledb_ask(S,owl:intersectionOf,RDFList),
-  rdfs_list(RDFList,O2),
-  { forall(member(X,O1), member(X,O2)) }.
-
-is_intersection_of(S,intersection_of(O)) +>
-  rdfs_list(RDFList,O),
-  is_class(S),
-  tripledb_tell(S,owl:intersectionOf,RDFList).
 
 %% is_individual(+Entity) is semidet.
 %
@@ -240,279 +118,106 @@ is_symmetric_property(Entity) ?+>
 is_data_property(Entity) ?+>
   has_type(Entity, owl:'DatatypeProperty').
 
+%%
+%
+%
+has_description(Class,Descr) ?> is_restriction1(Class,Descr), { ! }.
+has_description(Class,Descr) ?> is_union_of(Class,Descr), { ! }.
+has_description(Class,Descr) ?> is_intersection_of(Class,Descr), { ! }.
+has_description(Class,Descr) ?> is_complement_of(Class,Descr), { ! }.
+
+%%
+%
+%
+is_restriction(R,Descr) +>
+  % try to find existing restriction first.
+  { ask(is_restriction1(R,Descr)) },
+  { ! }.
+
+is_restriction(R,Descr) +>
+  is_restriction(R),
+  is_restriction1(R,Descr).
+
+is_restriction(R,Descr) ?>
+  is_restriction1(R,Descr).
+
+%%
+is_restriction1(R,only(P,O)) ?+>
+  triple(R,owl:allValuesFrom,O),
+  triple(R,owl:onProperty,P).
+
+is_restriction1(R,some(P,O)) ?+>
+  triple(R,owl:someValuesFrom,O),
+  triple(R,owl:onProperty,P).
+
+is_restriction1(R,value(P,O)) ?+>
+  triple(R,owl:onProperty,P),
+  triple(R,owl:hasValue,O).
+
+is_restriction1(R,min(P,M,O)) ?+>
+  triple(R,owl:onProperty,P),
+  triple(R,owl:onClass,O),
+  triple(R,owl:minCardinality,M).
+
+is_restriction1(R,max(P,M,O)) ?+>
+  triple(R,owl:onProperty,P),
+  triple(R,owl:onClass,O),
+  triple(R,owl:maxCardinality,M).
+
+is_restriction1(R,exactly(P,M,O)) ?+>
+  triple(R,owl:onProperty,P),
+  triple(R,owl:onClass,O),
+  triple(R,owl:qualifiedCardinality,M).
+
+%%
+%
+%
+is_union_of(UnionClass,union_of(List_pl)) +>
+  is_rdf_list(List_rdf,List_pl),
+  is_class(UnionClass),
+  triple(UnionClass,owl:unionOf,List_rdf).
+
+is_union_of(UnionClass,union_of(List_pl)) ?>
+  triple(UnionClass,owl:unionOf,List_rdf),
+  is_rdf_list(List_rdf,List_pl).
+
+%%
+%
+%
+is_intersection_of(IntersectionClass,intersection_of(List_pl)) +>
+  is_rdf_list(List_rdf,List_pl),
+  is_class(IntersectionClass),
+  triple(IntersectionClass,owl:intersectionOf,List_rdf).
+
+is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
+  triple(IntersectionClass,owl:intersectionOf,List_rdf),
+  is_rdf_list(List_rdf,List_pl).
+
+%%
+%
+%
+is_complement_of(ComplementClass,complement_of(Class)) +>
+  is_class(ComplementClass),
+  triple(ComplementClass,owl:complementOf,Class).
+
+is_complement_of(ComplementClass,complement_of(Class)) ?>
+  triple(ComplementClass,owl:complementOf,Class).
+
 %% has_inverse_property(?P, ?P_inv)
 %
 %
-has_inverse_property(P,P_inv) ?>
-  tripledb_ask(P,owl:inverseOf,P_inv).
+has_inverse_property(P,P_inv) ?+>
+  triple(P,owl:inverseOf,P_inv).
 
 has_inverse_property(P,P_inv) ?>
-  tripledb_ask(P_inv,owl:inverseOf,P).
-
-has_inverse_property(P,P_inv) +>
-  tripledb_tell(P,owl:inverseOf,P_inv).
+  triple(P_inv,owl:inverseOf,P).
 
 %%
 %
 %
 has_property_chain(P,Chain) ?>
-  tripledb_ask(P,owl:propertyChainAxiom,RDFList),
-  rdfs_list(RDFList,Chain).
-
-%%
-%
-lang_is_a:subclass_of(S,only(P,O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_restriction(R,only(P,O)).
-
-lang_is_a:subclass_of(S,only(P,O)) ?>
-  is_restriction(R,only(P,O)),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,only(P,O)) +>
-  is_restriction(R,only(P,O)),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,some(P,O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_restriction(R,some(P,O)).
-
-lang_is_a:subclass_of(S,some(P,O)) ?>
-  is_restriction(R,some(P,O)),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,some(P,O)) +>
-  is_restriction(R,some(P,O)),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,value(P,O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_restriction(R,value(P,O)).
-
-lang_is_a:subclass_of(S,value(P,O)) ?>
-  is_restriction(R,value(P,O)),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,value(P,O)) +>
-  is_restriction(R,value(P,O)),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,min(P,M,O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_restriction(R,min(P,M,O)).
-
-lang_is_a:subclass_of(S,min(P,M,O)) ?>
-  is_restriction(R,min(P,M,O)),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,min(P,M,O)) +>
-  is_restriction(R,min(P,M,O)),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,max(P,M,O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_restriction(R,max(P,M,O)).
-
-lang_is_a:subclass_of(S,max(P,M,O)) ?>
-  is_restriction(R,max(P,M,O)),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,max(P,M,O)) +>
-  is_restriction(R,max(P,M,O)),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,complement_of(O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  tripledb_ask(R,owl:complementOf,O).
-
-lang_is_a:subclass_of(S,complement_of(O)) ?>
-  tripledb_ask(R,owl:complementOf,O),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,complement_of(O)) +>
-  is_class(R),
-  tripledb_tell(R,owl:complementOf,O),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,intersection_of(O1)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_intersection_of(R,O).
-
-lang_is_a:subclass_of(S,intersection_of(O1)) ?>
-  is_intersection_of(R,O),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,intersection_of(O)) +>
-  is_intersection_of(R,O),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-
-lang_is_a:subclass_of(S,union_of(O)) ?>
-  { ground(S),! },
-  tripledb_subclass_of(S,R),
-  is_union_of(R,O).
-
-lang_is_a:subclass_of(S,union_of(O)) ?>
-  is_union_of(R,O),
-  tripledb_subclass_of(S,R).
-
-lang_is_a:subclass_of(S,union_of(O)) +>
-  is_union_of(R,O),
-  tripledb_tell(S,rdfs:subClassOf,R).
-
-%%
-%
-lang_is_a:instance_of(S,only(P,O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_restriction(R,only(P,O)).
-
-vinstance_of(S,only(P,O)) ?>
-  is_restriction(R,only(P,O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,only(P,O)) +>
-  is_restriction(R,only(P,O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,some(P,O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_restriction(R,some(P,O)).
-
-lang_is_a:instance_of(S,some(P,O)) ?>
-  is_restriction(R,some(P,O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,some(P,O)) +>
-  is_restriction(R,some(P,O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,value(P,O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_restriction(R,value(P,O)).
-
-lang_is_a:instance_of(S,value(P,O)) ?>
-  is_restriction(R,value(P,O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,value(P,O)) +>
-  is_restriction(R,value(P,O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,min(P,M,O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_restriction(R,min(P,M,O)).
-
-lang_is_a:instance_of(S,min(P,M,O)) ?>
-  is_restriction(R,min(P,M,O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,min(P,M,O)) +>
-  is_restriction(R,min(P,M,O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,max(P,M,O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_restriction(R,min(P,M,O)).
-
-lang_is_a:instance_of(S,max(P,M,O)) ?>
-  is_restriction(R,min(P,M,O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,max(P,M,O)) +>
-  is_restriction(R,max(P,M,O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,complement_of(O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  tripledb_ask(R,owl:complementOf,O).
-
-lang_is_a:instance_of(S,complement_of(O)) ?>
-  tripledb_ask(R,owl:complementOf,O),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,complement_of(O)) +>
-  is_class(R),
-  tripledb_tell(R,owl:complementOf,O),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,union_of(O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_union_of(R,union_of(O)).
-
-lang_is_a:instance_of(S,union_of(O)) ?>
-  is_union_of(R,union_of(O)),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,union_of(O)) +>
-  is_union_of(R,union_of(O)),
-  has_type(S,R).
-
-
-lang_is_a:instance_of(S,intersection_of(O)) ?>
-  { ground(S), ! },
-  has_type(S,R),
-  is_intersection_of(R,O).
-
-lang_is_a:instance_of(S,intersection_of(O)) ?>
-  is_intersection_of(R,O),
-  has_type(S,R).
-
-lang_is_a:instance_of(S,intersection_of(O)) +>
-  is_intersection_of(R,O),
-  has_type(S,R).
-
-%%
-%
-%
-lang_holds:holds(S,P,only(O)) +?>
-  instance_of(S,only(P,O)).
-
-lang_holds:holds(S,P,some(O)) +?>
-  instance_of(S,some(P,O)).
-
-lang_holds:holds(S,P,value(O)) +?>
-  instance_of(S,value(P,O)).
-
-lang_holds:holds(S,P,min(M,O)) +?>
-  instance_of(S,min(P,M,O)).
-
-lang_holds:holds(S,P,max(M,O)) +?>
-  instance_of(S,max(P,M,O)).
-
-lang_holds:holds(S,P,exactly(M,O)) +?>
-  instance_of(S,exactly(P,M,O)).
-
-lang_holds:holds(S,P,value(O)) +?>
-  instance_of(S,value(P,O)).
-
-lang_holds:holds(S,P,O) ?>
-  instance_of(S,value(P,O)).
+  triple(P,owl:propertyChainAxiom,RDFList),
+  is_rdf_list(RDFList,Chain).
 
 %% has_disjoint_class(?Class1, ?Class2) is nondet.
 %
@@ -539,20 +244,24 @@ has_disjoint_class(A,B) :-
 has_disjoint_class1(A,B) :-
   % test if there are super-classes of A and B (including A and B)
   % with disjointness axiom.
-  subclass_of(A,Sup_A),
+  % TODO rather use triple(_,rdfs:subClassOf,_) here?
+  ( Sup_A=A ; transitive(subclass_of(A,Sup_A)) ),
   ( tripledb_ask(Sup_A,owl:disjointWith,Sup_B) ;
     tripledb_ask(Sup_B,owl:disjointWith,Sup_A) ),
-  subclass_of(B,Sup_B).
+  ( unify_disjoint_(B,Sup_B) ).
 
 %% OWL2 AllDisjointClasses
 has_disjoint_class2(A,B) :-
   is_all_disjoint_classes(DC),
   tripledb_ask(DC,owl:members,RDF_list),
-  rdfs_list(RDF_list,List),
+  is_rdf_list(RDF_list,List),
   once((
     member(Sup_A,List), subclass_of(A,Sup_A),
-    member(Sup_B,List), subclass_of(B,Sup_B)
+    member(Sup_B,List), unify_disjoint_(B,Sup_B)
   )).
+
+unify_disjoint_(B,Disjoint) :-
+  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
 
 %%
 %
@@ -617,8 +326,8 @@ same_as1([Entity|Queue],Same,Visited) :-
   same_as1(Queue0,Same,[Entity|Visited]).
 
 same_as_direct(Entity,Same) :-
-  tripledb_ask(Entity, owl:sameAs, Next) ;
-  tripledb_ask(Next,   owl:sameAs, Entity).
+  tripledb_ask(Entity, owl:sameAs, Same) ;
+  tripledb_ask(Same,   owl:sameAs, Entity).
 
 %% owl_description(+IRI, -Term) is det.
 %
@@ -628,9 +337,9 @@ same_as_direct(Entity,Same) :-
 %    * class(Class)
 %    * only(Property,Description)
 %    * some(Property,Description)
-%    * min(Property,Description,Min)
-%    * max(Property,Description,Max)
-%    * exactly(Property,Description,Count)
+%    * min(Property,Min,Description)
+%    * max(Property,Max,Description)
+%    * exactly(Property,Count,Description)
 %    * union_of(ListOfDescriptions)
 %    * intersection_of(ListOfDescriptions)
 %    * complement_of(Description)
@@ -647,50 +356,140 @@ same_as_direct(Entity,Same) :-
 %  </rdfs:Class>
 %  ==
 %
+% TODO: maybe remove, and just use has_description
+%
 owl_description(Descr,Descr) :-
-  compound(Descr),
-  !.
+  compound(Descr), !.
 
 owl_description(IRI,_) :-
-  \+ ground(IRI),
-  !,
+  \+ ground(IRI), !,
   throw(error(instantiation_error, _)).
 
 owl_description(IRI,Descr) :-
-  owl_description1(IRI,Descr),!.
+  ( has_description(IRI,Descr) ; (
+    atom(IRI),
+    Descr=class(IRI)
+  )),!.
 
-owl_description(IRI,class(IRI)).
+
+% TODO: needs to be handled elsewhere
+%tripledb_tell(S,P,O,Scope,Graph) :-
+  %% HACK: in many cases convinient, but could cause issues
+  %%           to avoid adding more then one value to a functional property
+  %is_functional_property(P),!,
+  %time_scope_data(Scope,[Since,_]),
+  %tripledb_stop(S,P,Since),
+  %tripledb_tell1(S,P,O,Scope,Graph).
+
+% TODO: needs to be handled elsewhere
+%tripledb_tell1(S,P,O,Scope,Graph) :-
+  %itripledb_tell(S,P,O,Scope,Graph),
+  %( is_symmetric_property(P) ->
+    %itripledb_tell(O,P,S,Scope);
+    %true
+  %).
+
+
+		 /*******************************
+		 *	    LANGUAGE EXTENSIONS		*
+		 *******************************/
 
 %%
-owl_description1(IRI,Descr) :-
-  tripledb_ask(IRI,owl:onProperty,P),
-  owl_restriction_(IRI,P,Descr).
-
-owl_description1(ID,union_of(Set))        :- is_union_of(ID,Set).
-owl_description1(ID,intersection_of(Set)) :- is_intersection_of(ID,Set).
-owl_description1(ID,complement_of(Cls))   :- is_complement_of(ID,Cls).
-%owl_description1(ID,one_of(Set))          :- is_one_of(ID,Set).
+%
+%
+subclass_of(S,Descr) ?+>
+  { compound(Descr) },
+  subclass_of_description(S,Descr).
 
 %%
-owl_restriction_(IRI,P,only(P,Cls)) :-
-  tripledb_ask(IRI,owl:allValuesFrom,Cls).
+subclass_of_description(Class,Descr) ?>
+  % equal class
+  has_description(Class,Descr).
 
-owl_restriction_(IRI,P,some(P,Cls)) :-
-  tripledb_ask(IRI,owl:someValuesFrom,Cls).
+subclass_of_description(Class,intersection_of(List)) ?+>
+  { ! }, subclass_of_description_(Class,intersection_of(List),is_intersection_of).
 
-owl_restriction_(IRI,P,value(P,Value)) :-
-  % TODO: need to specify type for data properties
-  tripledb_ask(IRI,owl:hasValue,Value).
+subclass_of_description(Class,union_of(List)) ?+>
+  { ! }, subclass_of_description_(Class,union_of(List),is_union_of).
+  
+subclass_of_description(Class,complement_of(O)) ?+>
+  { ! }, subclass_of_description_(Class,complement_of(O),is_complement_of).
 
-% TODO: also support unqualified cardinality restrictions?
-owl_restriction_(IRI,P,min(P,Cls,Min)) :-
-  tripledb_ask(IRI,owl:minCardinality,Min),
-  tripledb_ask(IRI,owl:onClass,Cls).
+subclass_of_description(Class,Descr) ?+>
+  { is_restriction_term(Descr),! },
+  subclass_of_description_(Class,Descr,is_restriction).
 
-owl_restriction_(IRI,P,max(P,Cls,Max)) :-
-  tripledb_ask(IRI,owl:maxCardinality,Max),
-  tripledb_ask(IRI,owl:onClass,Cls).
+%%
+subclass_of_description_(Class,Descr,_Goal) ?>
+  { ground(Class), ! },
+  triple(Class,rdfs:subClassOf,SuperClass),
+  subclass_of(SuperClass,Descr).
 
-owl_restriction_(IRI,P,exactly(P,Cls,Count)) :-
-  tripledb_ask(IRI,owl:qualifiedCardinality,Count),
-  tripledb_ask(IRI,owl:onClass,Cls).
+subclass_of_description_(Class,Descr,Goal) ?+>
+  { Goal0=..[Goal,Restriction,Descr] },
+  call(Goal0),
+  subclass_of_description1_(Class,Restriction).
+
+subclass_of_description1_(Class0,Class1) ?+> { ground([Class0,Class1]), Class0=Class1, true,! }.
+subclass_of_description1_(Class,Restr)   ?+> triple(Class,rdfs:subClassOf,Restr).
+
+%%
+%
+%
+instance_of(S,Descr) ?+>
+  { compound(Descr) },
+  instance_of_description(S,Descr).
+
+%%
+instance_of_description(S,intersection_of(List)) ?+>
+  { ! }, instance_of_all(S,List).
+
+instance_of_description(S,union_of(List)) ?+>
+  { ! }, instance_of_description_(S,union_of(List),is_union_of).
+  
+instance_of_description(S,complement_of(Cls)) ?+>
+  { ! }, instance_of_description_(S,complement_of(Cls),is_complement_of).
+
+instance_of_description(S,value(P,O)) ?>
+  { var(P),! },
+  triple(S,P,O),
+  { is_object_property(P) ;
+    is_data_property(P)
+  }.
+  
+instance_of_description(S,value(P,O)) ?>
+  triple(S,P,O).
+
+instance_of_description(S,Descr) ?+>
+  { is_restriction_term(Descr),! },
+  instance_of_description_(S,Descr,is_restriction).
+
+%%
+instance_of_description_(S,Descr,_Goal) ?>
+  { ground(S), ! },
+  has_type(S,SType),
+  subclass_of(SType,Descr).
+
+instance_of_description_(S,Descr,Goal) ?+>
+  { Goal0=..[Goal,SType,Descr] },
+  call(Goal0),
+  has_type(S,SType).
+
+%%
+%
+%
+holds(S,P,O) ?>
+  { \+ compound(O) },
+  instance_of(S,value(P,O)).
+
+holds(S,P,Descr) ?+>
+  { compound(Descr) },
+  holds_description(S,P,Descr).
+
+holds_description(S,P,only(O))      ?+> instance_of(S,only(P,O)).
+holds_description(S,P,some(O))      ?+> instance_of(S,some(P,O)).
+holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
+holds_description(S,P,min(M,O))     ?+> instance_of(S,min(P,M,O)).
+holds_description(S,P,max(M,O))     ?+> instance_of(S,max(P,M,O)).
+holds_description(S,P,exactly(M,O)) ?+> instance_of(S,exactly(P,M,O)).
+holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).

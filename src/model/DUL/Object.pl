@@ -6,6 +6,7 @@
       is_physical_object(r),
       is_social_object(r),
       has_object_type(r,r),
+      has_quality_type(r,r),
       has_location(r,r),
       has_role(r,r) % ?Object, ?Role
     ]).
@@ -18,11 +19,17 @@ In DUL, Object is defined as:
 @license BSD
 */
 
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_subclass_of/2
+    [ tripledb_load/2
+    ]).
+
+% load RDF data
+:- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
+    [ graph(tbox),
+      namespace(dul)
     ]).
 
 %% is_object(+Entity) is semidet.
@@ -81,9 +88,17 @@ is_social_object(Entity) ?+>
 
 %%
 %
-has_object_type(Object,Type) ?>
+has_quality_type(Entity,Type) ?>
   has_type(Entity,Type),
-  tripledb_subclass_of(Type,dul:'Object'),
+  triple(Type,rdfs:subClassOf,dul:'Quality'),
+  % only yield one type
+  { ! }.
+
+%%
+%
+has_object_type(Entity,Type) ?>
+  has_type(Entity,Type),
+  triple(Type,rdfs:subClassOf,dul:'Object'),
   % only yield one type
   { ! }.
 

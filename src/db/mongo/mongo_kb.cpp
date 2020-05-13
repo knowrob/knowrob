@@ -53,7 +53,7 @@ PREDICATE(mng_distinct_values_json,4) {
 }
 
 
-PREDICATE(mng_drop, 2) {
+PREDICATE(mng_drop_unsafe, 2) {
 	char* db_name   = (char*)PL_A1;
 	char* coll_name = (char*)PL_A2;
 	MongoInterface::get().drop(db_name,coll_name);
@@ -67,6 +67,13 @@ PREDICATE(mng_store, 3) {
 	return TRUE;
 }
 
+PREDICATE(mng_remove, 3) {
+	char* db_name   = (char*)PL_A1;
+	char* coll_name = (char*)PL_A2;
+	MongoInterface::get().remove(db_name,coll_name,PL_A3);
+	return TRUE;
+}
+
 PREDICATE(mng_update, 4) {
 	char* db_name     = (char*)PL_A1;
 	char* coll_name   = (char*)PL_A2;
@@ -77,8 +84,7 @@ PREDICATE(mng_update, 4) {
 PREDICATE(mng_index_create, 3) {
 	char* db_name   = (char*)PL_A1;
 	char* coll_name = (char*)PL_A2;
-	char* key       = (char*)PL_A3;
-	MongoInterface::get().create_index(db_name,coll_name,key);
+	MongoInterface::get().create_index(db_name,coll_name,PL_A3);
 	return TRUE;
 }
 

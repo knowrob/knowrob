@@ -1,5 +1,5 @@
 
 % load modules into user
-:- use_module('directional').
-:- use_module('distance').
-:- use_module('topological').
+:- use_module('./directional.pl').
+:- use_module('./distance.pl').
+:- use_module('./topological.pl').

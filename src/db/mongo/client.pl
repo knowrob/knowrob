@@ -5,6 +5,7 @@
       mng_drop/2,
       mng_store/3,
       mng_update/4,
+      mng_remove/3,
       mng_index_create/2,
       mng_export/1,
       mng_export_collection/2,
@@ -27,11 +28,10 @@
 @author Daniel Beßler
 @license BSD
 */
-:- use_module(library('http/json')).
-:- use_foreign_library('libmongo_kb.so').
 
-:-  rdf_meta
-    mng_store(+,+,t).
+:- use_module(library('http/json')).
+
+:- use_foreign_library('libmongo_kb.so').
 
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),
@@ -53,6 +53,15 @@ mng_export(Dir) :-
 mng_export_collection(Collection,Dir) :-
   mng_db_name(DB),
   mng_dump_collection(DB,Collection,Dir).
+
+%%
+mng_drop(DB,Coll) :-
+  catch(
+    mng_drop_unsafe(DB,Coll),
+    % collection does not exist yet
+    mng_error(drop_failed('ns not found')),
+    true
+  ).
 
 %% mng_collection(+DB,?Collection) is det
 %
@@ -119,7 +128,7 @@ mng_pl_value(Dict,Val_pl) :-
   is_dict(Dict),!,
   % peek element, in case the key starts with '$',
   % read as atomic value
-  get_dict(Type,Dict,Val),
+  once(get_dict(Type,Dict,Val)),
   ( atom_concat('$',_,Type) ->
     mng_pl_dict_value_(Type,Val,Val_pl) ;
     mng_pl_value_dict(Dict,Val_pl)
@@ -158,6 +167,12 @@ mng_pl_dict_value_('$numberLong',Val,int(Val)) :-
 mng_pl_dict_value_('$numberLong',String,int(Val)) :-
   string(String),!,
   parse_number_(String,Val).
+mng_pl_dict_value_('$numberDecimal',Val,double(Val)) :- number(Val), !.
+mng_pl_dict_value_('$numberDecimal','Infinity',double('Infinity')) :- !.
+mng_pl_dict_value_('$numberDecimal',"Infinity",double('Infinity')) :- !.
+mng_pl_dict_value_('$numberDecimal',String,double(Val)) :-
+  string(String),!,
+  parse_number_(String,Val).
 mng_pl_dict_value_('$numberDouble',Val,double(Val)) :-
   number(Val), !.
 mng_pl_dict_value_('$numberDouble',String,double(Val)) :-
@@ -166,6 +181,11 @@ mng_pl_dict_value_('$numberDouble',String,double(Val)) :-
 mng_pl_dict_value_('$date',DateDict,double(Time)) :-
   mng_pl_value(DateDict,int(Long)),
   Time is Long/1000.0.
+mng_pl_dict_value_('$oid',Val,id(Val)) :-
+  atom(Val), !.
+mng_pl_dict_value_('$oid',Val,id(Atom)) :-
+  string(Val), !,
+  string_to_atom(Val,Atom).
 mng_pl_dict_value_(Type,Val,Val) :-
   write('Warn: unknown mng type: '), write([Type,Val]), nl.
 

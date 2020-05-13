@@ -7,84 +7,77 @@
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'), 
-    [ rdf_meta/1
-    ]).
-:- use_module(library('utility/filesystem'), 
-    [ path_concat/2
-    ]).
+:- use_module(library('semweb/rdf_db'),      [ rdf_meta/1 ]).
+:- use_module(library('utility/filesystem'), [ path_concat/3 ]).
+:- use_module(library('db/scope'),           [ universal_scope/1,
+                                               subscope_of/2,
+                                               scope_satisfies/2,
+                                               scope_query_overlaps/2 ]).
+:- use_module(library('db/subgraph'),        [ tripledb_get_supgraphs/2]).
 
 :- use_module('./client.pl').
 
-:- dynamic subgraph_of_/2.
-
-:- rdf_meta propagate_assertion_(r,+,+).
-:- rdf_meta propagate_deletion_(r,+,+).
-:- rdf_meta taxonomical_property(r,?).
-
-%% TODO this should not be here.
-%        also make it configurable.
-% NOTE: some/all would work, but max cardinality would not!
-%taxonomical_property(owl:someValuesFrom, class).
-%taxonomical_property(owl:allValuesFrom,  class).
-%taxonomical_property(owl:onClass,        class).
-%taxonomical_property(owl:onProperty,     property).
-taxonomical_property(rdf:type,           class).
-taxonomical_property(rdfs:subClassOf,    class).
-taxonomical_property(rdfs:subPropertyOf, property).
-% TODO: what about range/domain???
-%taxonomical_property(rdfs:range, class).
-%taxonomical_property(rdfs:domain, class).
+:- rdf_meta(taxonomical_property(r,-,-)).
 
 %%
-tripledb(DB,'tripledb','inferred') :- mng_db_name(DB).
-
-%%
-% @implements 'db/itripledb'
+% For "taxonomical" properties, not only the value is stored in the document,
+% but as well all its parents (using the key "o*").
 %
-tripledb_subgraph_of(Sub,Sup) :-
-  assert_subgraph_of_(Sub,Sup),
-  % transitivity
-  forall(
-    ( subgraph_of_(Sup,Sup0),
-    ( X=Sub ; subgraph_of_(X,Sub) )),
-    ( assert_subgraph_of_(X,Sup0) )
-  ).
+% TODO: could we auto-expand other properties too?
+%       - rdfs:range, rdfs:domain
+%       - owl:someValuesFrom, owl:allValuesFrom, owl:onClass, owl:onProperty
+%       -- some/all would work, but max cardinality would not!
+%
+taxonomical_property(rdf:type,           subclass_of,    instance_of).
+taxonomical_property(rdfs:subClassOf,    subclass_of,    subclass_of).
+taxonomical_property(rdfs:subPropertyOf, subproperty_of, subproperty_of).
 
 %%
-assert_subgraph_of_(Sub,Sup) :-
-  subgraph_of_(Sub,Sup),!.
-assert_subgraph_of_(Sub,Sup) :-
-  assertz(subgraph_of_(Sub,Sup)).
-
-%%
-get_supgraphs_(G,_) :-
-  var(G),!.
-get_supgraphs_(G,Graphs) :-
-  findall(string(X), (
-    X=G; subgraph_of_(G,X)
-  ),Graphs).
+%
+%
+tripledb(DB,'tripledb','inferred') :- mng_db_name(DB).
 
 %% 
 % @implements 'db/itripledb'
 %
 tripledb_init :-
   tripledb(DB,TriplesColl,InferredColl),
-  mng_index_create(DB,TriplesColl,
-    [ 'query',
-      'predicate'
-    ]).
   %%
-  % TODO: look deeper into creating indices
-  % TODO: scopes should define their indices
-  mng_index_create(DB,InferredColl,
-    [ 's',
-      'p*',
-      'o*',
-      'graph',
-      'scope.time.since',
-      'scope.time.until'
-    ]).
+  forall(
+    tripledb_search_index_(IndexKeys), (
+    append(IndexKeys,['graph'],IndexKeys0),
+    append_scope_index_(IndexKeys0,IndexKeys1),
+    mng_index_create(DB,TriplesColl,IndexKeys1)
+  )),
+  mng_index_create(DB,InferredColl,['query']),
+  mng_index_create(DB,InferredColl,['predicate']).
+
+%%
+% The set of composed indices over triples.
+% NOTE: it is not allowed to generate an index over more then one vector field!
+%
+tripledb_search_index_(['s']).
+tripledb_search_index_(['p']).
+tripledb_search_index_(['p*']).
+tripledb_search_index_(['o']).
+tripledb_search_index_(['o*']).
+tripledb_search_index_(['s','p']).
+tripledb_search_index_(['s','p*']).
+tripledb_search_index_(['s','o']).
+tripledb_search_index_(['s','o*']).
+tripledb_search_index_(['o','p']).
+tripledb_search_index_(['o','p*']).
+tripledb_search_index_(['p','o*']).
+tripledb_search_index_(['s','o','p']).
+tripledb_search_index_(['s','o','p*']).
+tripledb_search_index_(['s','o*','p']).
+
+%%
+% TODO: for some reason it is slower with scope indices?!? (at least tell)
+%
+append_scope_index_(IndexKeys,IndexKeys).
+%append_scope_index_(IndexKeys,IndexKeys0).
+  %append(IndexKeys, %['scope.time.since', 'scope.time.until'],  %IndexKeys0),
 
 %% 
 % @implements 'db/itripledb'
@@ -115,70 +108,81 @@ tripledb_whipe :-
   mng_drop(DB,InferredColl).
 
 %% 
-% @implements 'db/itripledb'
 %
-tripledb_load_rdf(RDF_Data,Scope,Graph) :-
-  % TODO: bulk insert instead
-  % TODO: support triple stream
+tripledb_bulk_tell(Triples,Scope,Options) :-
+  % TODO: support bulk insert.
+  %         - needs support for bulk operations (mongoc_collection_create_bulk_operation)
+  %         - make sure no duplicates are added
+  %         - still need to propagate subclass/subproperty assertions!
   forall(
-    member(rdf(S,P,O),RDF_Data),
-    tripledb_tell(S,P,O,Scope,Graph)
+    member(rdf(S,P,O),Triples),
+    tripledb_tell(S,P,O,Scope,Options)
   ).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_tell(Subject,Property,ValueQuery,Scope,Graph) :-
-  mng_query_value_(ValueQuery,=,MngValue,Unit),
-  tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph).
+tripledb_tell(Subject,Property,ValueQuery,Scope,Options) :-
+  %% read options 
+  option(graph(Graph),Options,user),
+  %% parse query value
+  mng_query_value_(ValueQuery,'$eq',MngValue,Unit),
+  tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,Options).
 
-tripledb_tell1(Subject,Property,MngValue,Unit,Scope,_Graph) :-
-  % find existing document
-  tripledb_document1(Subject,Property,MngValue,Unit,Doc),!,
-  Query=[ ['s',Subject],
-          ['p',Property],
-          ['o',MngValue] ],
-  % handle unit
-  ( var(Unit) ->
-    Query0=Query ;
-    Query0=[['unit',Unit]|Query] ),
-  % update scope
-  mng_get_dict('scope',Doc,array(DocScopes)),
-  ( update_scope_(DocScopes,Scope,NewScopes) ->
-    ( mng_update(DB,Coll,Query0,
-        [ 'scope',['$eq',array(NewScopes)] ]) );
-    % nothing changed
-    ( true )
-  ).
+tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,_Options) :-
+  % find existing document with *overlapping* scope
+  findall(X,
+    tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,Scope,Graph,X),
+    [First|Rest]),!,
+  mng_get_dict('scope',First,FirstScope),
+  % nothing to do if Scope is a subscope of first
+  ( subscope_of(Scope,FirstScope) -> true ; (
+    % else merge all overlapping scopes
+    doc_scopes_merge_(Scope,[First|Rest],MergedScope),
+    doc_scope_set_(First,MergedScope),
+    forall(member(Y,Rest), doc_delete_(Y))
+  )).
 
-tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph) :-
-  % find all super properties of Property
-  findall(string(Y), tripledb_subproperty_of(Property,Y), Properties),
-  % create a new document
-  findall(Key-Val, (
+tripledb_tell1(S,P,MngValue,Unit,Scope,Graph,Options) :-
+  ignore( taxonomical_property(P,HierarchyKey,CacheKey) ),
+  triple_doc1(rdf(S,P,MngValue,Unit,HierarchyKey),Scope,Graph,Doc),
+  tripledb(DB,TriplesColl,_),
+  mng_store(DB,TriplesColl,Doc),
+  % update other documents
+  propagate_assertion_(HierarchyKey,CacheKey,S,MngValue,Graph,Options).
+
+%%
+triple_doc(rdf(S,P,ValueQuery),Scope,Graph,Doc) :-
+  ignore( taxonomical_property(P,HierarchyKey,_) ),
+  mng_query_value_(ValueQuery,'$eq',MngValue,Unit),
+  triple_doc1(rdf(S,P,MngValue,Unit,HierarchyKey),Scope,Graph,Doc).
+
+triple_doc1(rdf(S,P,MngValue,Unit,HierarchyKey),Scope,Graph,Doc) :-
+  findall([Key,Val], (
     ( Key='graph', Val=string(Graph) );
-    ( Key='s',     Val=string(Subject) );
-    ( Key='p',     Val=string(Property) );
-    ( Key='p*',    Val=array(Properties) );
+    ( Key='s',     Val=string(S) );
+    ( Key='p',     Val=string(P) );
+    ( var(HierarchyKey),
+      get_supproperties_(P,Properties),
+      Key='p*',    Val=array(Properties) );
     ( Key='o',     Val=MngValue );
-    ( fact_value_hierarchy_(Property,MngValue,MngHierarchy),
+    ( ground(HierarchyKey),
+      fact_value_hierarchy_(HierarchyKey,MngValue,MngHierarchy),
       Key='o*',    Val=array(MngHierarchy) );
     ( ground(Unit),
       Key='unit',  Val=string(Unit) );
     ( get_scope_document_(Scope,Scope_doc),
-      Key='scope', Val=array([Scope_doc]) )
-  ), Pairs),
-  dict_pairs(Dict,_,Pairs),
-  tripledb(DB,TriplesColl,_),
-  mng_store(DB,TriplesColl,Dict),
-  % update other documents
-  propagate_assertion_(Property,Subject,MngValue).
+      Key='scope', Val=Scope_doc )
+  ), Doc).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_ask(Subject,Property,ValueQuery,QScope,FScope,Graph) :-
-  mng_query_value_(ValueQuery,Operator,MngValue,Unit),
+tripledb_ask(Subject,Property,ValueQuery,QScope,FScope,Options) :-
+  %% read options 
+  option(graph(Graph), Options, user),
+  %% parse query value
+  mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
   setup_call_cleanup(
     % setup: create a query cursor
     triple_query_cursor_(Subject,Property,
@@ -186,42 +190,58 @@ tripledb_ask(Subject,Property,ValueQuery,QScope,FScope,Graph) :-
             QScope,Graph,Cursor),
     % call: find matching document
     triple_query_unify_(Cursor,Subject,Property,
-            ValueQuery,QScope,FScope,Graph),
+            ValueQuery,FScope,Options),
     % cleanup: destroy cursor again
     mng_cursor_destroy(Cursor)
   ).
 
 %%
-tripledb_document(Subject,Property,ValueQuery,Doc) :-
-  mng_query_value_(ValueQuery,=,Value,Unit),
-  tripledb_document1(Subject,Property,Value,Unit,Doc).
-
-tripledb_document1(Subject,Property,Value,Unit,Doc) :-
-  tripledb(DB,TriplesColl,_),
-  mng_cursor_create(DB,TriplesColl,Cursor),
-  mng_cursor_filter(Cursor,['s',string(Subject)]),
-  mng_cursor_filter(Cursor,['p',string(Property)]),
-  mng_cursor_filter(Cursor,['o',Value]),
-  % TODO: think about if we can use * here
-  %mng_cursor_filter(Cursor,['p*',string(Property)]),
-  %mng_cursor_filter(Cursor,['o*',Value]),
-  ( var(Unit); mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
-  %%
-  mng_cursor_materialize(Cursor,Doc),
-  mng_cursor_destroy(Cursor),
-  !.
+tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,FScope,Graph,OverlappingDoc) :-
+  findall(X,scope_query_overlaps(FScope,X),QScopes),
+  setup_call_cleanup(
+    % setup: create a query cursor
+    triple_query_cursor_(Subject,Property,
+            '$eq',MngValue,Unit,
+            QScopes,Graph,Cursor),
+    % call: find matching document
+    mng_cursor_materialize(Cursor,OverlappingDoc),
+    % cleanup: destroy cursor again
+    mng_cursor_destroy(Cursor)
+  ).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_forget(Subject,Property,ValueQuery,Scope,Graph) :-
+tripledb_forget(Subject,Property,ValueQuery,Scope,Options) :-
+  %% read options 
+  option(graph(Graph), Options, user),
+  %% parse query value
   mng_query_value_(ValueQuery,Operator,MngValue,Unit),
+  %%
   triple_query_cursor_(Subject,Property,
         Operator,MngValue,Unit,
         Scope,Graph,Cursor),
   mng_cursor_erase(Cursor),
   mng_cursor_destroy(Cursor),
-  propagate_deletion_(Property,Subject,MngValue).
+  %%
+  ignore( taxonomical_property(Property,HierarchyKey,_) ),
+  propagate_deletion_(HierarchyKey,Subject,MngValue,Graph).
+
+%%
+get_supproperties_(P,SuperProperties) :-
+  Options=[graph(tbox), include_parents(true)],
+  wildcard_scope(QScope),
+  findall(string(Sup),
+    (Sup=P ; tripledb_ask(P,rdfs:subPropertyOf,Sup,QScope,_,Options)),
+    SuperProperties).
+
+%%
+get_supclasses_(Cls,SuperClasses) :-
+  Options=[graph(tbox), include_parents(true)],
+  wildcard_scope(QScope),
+  findall(string(Sup),
+    (Sup=Cls ; tripledb_ask(Cls,rdfs:subClassOf,Sup,QScope,_,Options)),
+    SuperClasses).
 
 		 /*******************************
 		 *	   .....              	*
@@ -230,66 +250,86 @@ tripledb_forget(Subject,Property,ValueQuery,Scope,Graph) :-
 %% create a query cursor
 triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor) :-
   tripledb(DB,TriplesColl,_),
-  get_supgraphs_(Graph,Graphs),
+  tripledb_get_supgraphs(Graph,Graphs),
+  ( taxonomical_property(Property,_,_) ->
+    (Key_p='p',  Key_o='o*') ;
+    (Key_p='p*', Key_o='o')
+  ),
   mng_cursor_create(DB,TriplesColl,Cursor),
-  ( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',Subject]) ),
-  ( \+ground(Property) ; mng_cursor_filter(Cursor,['p*',Property]) ),
-  ( \+ground(MngValue) ; mng_cursor_filter(Cursor,['o*',[Operator,MngValue]]) ),
+  ( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',string(Subject)]) ),
+  ( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,[Operator,MngValue]]) ),
+  ( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,string(Property)]) ),
   ( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',Unit]) ),
-  ( \+ground(Graphs)   ; mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]]) ),
-  % filter scope
+  mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]]),
+  filter_scope_(Cursor,Scope),
+  !.
+
+filter_scope_(Cursor,Scopes) :-
+  % generate disjunctive query if given a list of scopes
+  is_list(Scopes),!,
+  findall(['$and',X], (
+    member(Scope,Scopes),
+    findall(Y, filter_scope1_(Scope,Y), X)),
+    Filters),
+  mng_cursor_filter(Cursor,['$or',Filters]).
+
+filter_scope_(Cursor,Scope) :-
   forall(
-    ( get_scope_query_(Scope,Scope_Key,Scope_Query),
-      mng_query_value_(Scope_Query,Scope_Operator,Scope_Value,_) ),
-    % TODO: here we also match all documents without that scope.
-    %        this is to match time scopes where until is not known,
-    %        expecting that this means it is still ongoing.
-    %        - better distinguish between ongoing, and unknown!
-    %        - better use $exists=0 only for selected keys? e.g. time.until
-    ( mng_cursor_filter(Cursor,
-        [ Scope_Key,['$or',[
-            ['$exists',bool(0)],
-            [Scope_Operator,Scope_Value]
-        ]]] ))
-  ).
+    filter_scope1_(Scope,Filter),
+    mng_cursor_filter(Cursor,Filter)).
+
+filter_scope1_(Scope,Filter) :-
+  get_scope_query_(Scope,Scope_Key,Scope_Query),
+  mng_query_value_(Scope_Query,Scope_Operator,Scope_Value,_),
+  % TODO: here we also match all documents without that scope.
+  %        this is to match time scopes where until is not known,
+  %        expecting that this means it is still ongoing.
+  %        - better distinguish between ongoing, and unknown!
+  %        - better use $exists=0 only for selected keys? e.g. time.until
+  Filter=[Scope_Key,['$or',[
+    ['$exists',bool(0)],
+    [Scope_Operator,Scope_Value]
+  ]]].
 
 %%
-triple_query_unify_(Cursor,Subject,Property,ValueQuery,QScope,FScope,Graph) :-
-  MngValue=..[_,Value],
+triple_query_unify_(Cursor,Subject,Property,ValueQuery,FScope,Options) :-
   mng_cursor_materialize(Cursor,Doc),
-  ( ground(Graph)      -> true ; mng_get_dict('graph',Doc,string(Graph)) ),
   ( ground(Subject)    -> true ; mng_get_dict('s',Doc,string(Subject)) ),
-  ( ground(Property)   -> true ; mng_get_dict('p',Doc,string(Property)) ),
-  ( ground(ValueQuery) -> true ; triple_query_unify1_(Doc,ValueQuery) ),
+  ( ground(Property)   -> true ; triple_property_unify1_(Doc,Property,Options) ),
+  ( ground(ValueQuery) -> true ; triple_query_unify1_(Doc,ValueQuery,Options) ),
   % get the fact scope
-  ( mng_get_dict('scope',Doc,array(FScopes)) ->
-    % only yield fact scopes that satisfy the query scope
-    ( member(FScope,FScopes), scope_satisfies(FScope,QScope) );
-    ( universal_scope(FScope) )
+  mng_get_dict('scope',Doc,FScope).
+
+triple_property_unify1_(Doc,Property,Options) :-
+  ( ( option(include_parents(true),Options),
+      mng_get_dict('p*',Doc,array(Properties)) ) ->
+    ( member(Property,Properties) );
+    ( mng_get_dict('p',Doc,Property) )
   ).
 
-triple_query_unify1_(Doc,ValueQuery) :-
-  mng_get_dict('o',Doc,Value),
+triple_query_unify1_(Doc,ValueQuery,Options) :-
+  ( ( option(include_parents(true),Options),
+      mng_get_dict('o*',Doc,array(Values)) ) ->
+    ( member(Value,Values) );
+    ( mng_get_dict('o',Doc,Value) )
+  ),
   strip_type_(Value,_,Value0),
-  ( mng_get_dict('unit',Doc,string(Unit)) -> 
-    true ;
-    Unit=_ ),
-  triple_query_unify2_(Value0,Unit,ValueQuery).
+  once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
+  %%
+  strip_operator_(ValueQuery,_,Value1),
+  strip_type_(Value1,_,Value2),
+  triple_query_unify2_(Value0,Unit,Value2).
 
-triple_query_unify2_(Value,Unit,ValueQuery) :-
-  var(ValueQuery),!,
-  ( var(Unit) ->
-    ValueQuery=Value;
-    ValueQuery=unit(Value,Unit) ).
+triple_query_unify2_(Value0,Unit,Value1) :-
+  var(Value1),!,
+  ( var(Unit) -> Value1=Value0; Value1=..[Unit,Value0] ).
 
-triple_query_unify2_(Value,Unit,unit(Value1,Unit)) :-
-  !, triple_query_unify2_(Value,Unit,Value1).
+triple_query_unify2_(Value0,Unit,unit(Value1,Unit)) :-
+  !,
+  triple_query_unify2_(Value0,Unit,Value1).
 
-triple_query_unify2_(Value,_Unit,Value1) :-
-  strip_type_(Value,_,Value0),
-  ( var(Value1) -> 
-    Value1=Value0 ;
-    strip_type_(Value1,_,Value0) ).
+triple_query_unify2_(Value0,_Unit,Value1) :-
+  strip_type_(Value0,_,Value1).
 
 		 /*******************************
 		 *	   .....              	*
@@ -305,44 +345,45 @@ mng_query_value_(Query,Operator,Value,Unit) :-
   % finally get value
   strip_type_(Query1,Type0,Value0),
   type_mapping_(Type0,MngType),
-  Value=..[MngType,Value0].
+  Value=..[MngType,Value0],
+  !.
+
+% TODO: better use units as replacement of type.
+%          I guess all qudt units are double basetype?
+strip_unit_(unit(X,Unit),Unit,X) :- ground(X).
+strip_unit_(X,_,X).
 
 %%
 % For some properties it is useful to store a hierarchy of values 
 % instead of a single one.
 %
-fact_value_hierarchy_(P,string(Value),List) :-
-  taxonomical_property(P,RangeType),!,
-  ( RangeType=class ->
-    findall(string(Sup), tripledb_subclass_of(Value,Sup), List) ;
-    RangeType=property ->
-    findall(string(Sup), tripledb_subproperty_of(Value,Sup), List) ;
+fact_value_hierarchy_(HierarchyKey,string(Value),List) :-
+  ( HierarchyKey=subclass_of    -> get_supclasses_(Value,List);
+    HierarchyKey=subproperty_of -> get_supproperties_(Value,List);
     fail
-  ).
+  ),!.
 fact_value_hierarchy_(_,V0,[V0]).
 
 %%
-% Insert an additional scope into a list of scopes
-% stored in a triple document.
-% The predicate fails in case the new scope is
-% already subsumed by an existing scope.
-%
-update_scope_(Original,New,Updated) :-
-  member(Old,Original),
-  % no update needed if all facts in New are also
-  % contained in Old.
-  subscope_of(New,Old),!,
-  fail.
+doc_scopes_merge_(Scope,[],Scope) :- !.
+doc_scopes_merge_(Scope0,[First|Rest],MergedScope) :-
+  mng_get_dict('scope',First,Scope1),
+  scope_merge(Scope0,Scope1,Scope2),
+  doc_scopes_merge_(Scope2,Rest,MergedScope).
 
-update_scope_(Original,New,Updated) :-
-  update_scope1_(Original,New,Updated).
+%%
+doc_scope_set_(Doc,MergedScope) :-
+  tripledb(DB,TriplesColl,_),
+  mng_get_dict('_id',Doc,DocID),
+  mng_update(DB,TriplesColl,
+    ['_id', DocID],
+    ['$set',['scope',MergedScope]]).
 
-update_scope1_([],New,[New]) :- !.
-update_scope1_([X|Xs],New,Updated) :-
-  scope_merge(X,New,Merged),!,
-  update_scope1_(Xs,Merged,Updated).
-update_scope1_([X|Xs],New,[X|Updated]) :-
-  update_scope1_(Xs,New,Updated).
+%%
+doc_delete_(Doc) :-
+  tripledb(DB,TriplesColl,_),
+  mng_get_dict('_id',Doc,DocID),
+  mng_remove(DB,TriplesColl,['_id', DocID]).
 
 %%
 get_scope_query_(QScope,Key,Value) :-
@@ -378,27 +419,13 @@ operator_mapping_('>', '$gt').
 operator_mapping_('<', '$lt').
 
 %%
+strip_operator_(    X, =,X) :- var(X),!.
 strip_operator_( =(X), =,X).
 strip_operator_(>=(X),>=,X).
 strip_operator_(=<(X),=<,X).
 strip_operator_( <(X), <,X).
 strip_operator_( >(X), >,X).
 strip_operator_(    X, =,X).
-
-%%
-% TODO: better use units as replacement of type.
-%          I guess all qudt units are double basetype?
-strip_unit_(unit(X,Unit),Unit,X).
-strip_unit_(X,_,X).
-  
-%%
-type_mapping_(float,  double).
-type_mapping_(double, double).
-type_mapping_(long,   int).
-type_mapping_(int,    int).
-type_mapping_(short,  int).
-type_mapping_(byte,   int).
-type_mapping_(string, string).
 
 %%
 strip_type_(Term,Type,X) :-
@@ -409,77 +436,93 @@ strip_type_(X,double,X) :- number(X),!.
 % FIXME var(X) always ends in string, but holds takes care of setting type
 %                  better do not require type in query!
 strip_type_(X,string,X).
-
+  
+%%
+type_mapping_(float,  double).
+type_mapping_(double, double).
+type_mapping_(number, double).
+type_mapping_(long,   int).
+type_mapping_(int,    int).
+type_mapping_(short,  int).
+type_mapping_(byte,   int).
+type_mapping_(string, string).
 
 		 /*******************************
 		 *	   PROPAGATION       *
 		 *******************************/
-% TODO: cache_invalidate is model dependent and should not be done here,
-%           it should only be triggered through tell.
 
 %%
-%
-%
-% FIXME: need to invalidate cache with more properties
-propagate_assertion_(rdfs:subClassOf,S,string(O)) :-
-  % invalidate all subclass-of inferences when
-  % a new subclass-of axiom was added
-  tripledb_cache_invalidate(subclass_of),
+propagate_assertion_(HierarchyKey,CacheKey,S,string(O),Graph,Options) :-
+  ground(HierarchyKey),!,
+  % invalidate all inferences when
+  % a new axiom was added
+  ( option(skip_invalidate(true),Options) ->
+    ( true ) ;
+    ( tripledb_cache_invalidate(CacheKey) )
+  ),
   % find parents
-  findall(string(X), tripledb_subclass_of(O,X), Parents),
-  % update type of instances of class S
+  ( HierarchyKey=subclass_of    -> get_supclasses_(O,Parents);
+    HierarchyKey=subproperty_of -> get_supproperties_(O,Parents);
+    fail
+  ),
+  tripledb_get_supgraphs(Graph,Graphs),
+  %wildcard_scope(Scope),
+  %findall(X,filter_scope1_(Scope,X),ScopeFilter),
+  % update documents where S appears in "o*"
   tripledb(DB,TriplesColl,_),
-  mng_update(DB,TriplesColl,['o*',S],
-    ['$addToSet',['o*',['$each',array(Parents)]]]),
-  !.
-propagate_assertion_(rdfs:subPropertyOf,S,string(O)) :-
-  % invalidate all subproperty-of inferences when
-  % a new subproperty-of axiom was added
-  tripledb_cache_invalidate(subproperty_of),
-  % find parents
-  findall(string(X), tripledb_subproperty_of(O,X), Parents),
-  % update triples asserted for property S
-  tripledb(DB,TriplesColl,_),
-  mng_update(DB,TriplesColl,['p*',S],
-    ['$addToSet',['p*',['$each',array(Parents)]]]),
-  !.
-propagate_assertion_(_,_,_).
+  mng_update(DB,TriplesColl,
+    [ ['graph',['$in',array(Graphs)]],
+      ['o*',string(S)] %|ScopeFilter
+	],
+    ['$addToSet',['o*',['$each',array(Parents)]]]
+  ).
+propagate_assertion_(_,_,_,_,_,_).
 
 %%
-%
-%
-propagate_deletion_(rdfs:subClassOf,S,string(O)) :-
+propagate_deletion_(subclass_of,S,string(_O),Graph) :-
   tripledb(DB,TriplesColl,_),
+  tripledb_get_supgraphs(Graph,Graphs),
+  wildcard_scope(QScope),
   % update o* for all triples where o is a subclass of S
   forall(
-    tripledb_subclass_of(X,S),
-    ( findall(string(Y), tripledb_subclass_of(X,Y), Parents),
-      mng_update(DB,TriplesColl,['o',X],
-            ['o*',['$eq',array(Parents)]])
+    tripledb_ask(X,rdfs:subClassOf,S,QScope,_,[]),
+    ( get_supclasses_(X,Parents),
+      mng_update(DB,TriplesColl,
+        [['graph',['$in',array(Graphs)]],['o',string(X)]],
+        ['$set',['o*',array(Parents)]])
     )
-  ),!.
-propagate_deletion_(rdfs:subPropertyOf,S,string(O)) :-
+  ),
+  !.
+propagate_deletion_(subproperty_of,S,string(_O),Graph) :-
   tripledb(DB,TriplesColl,_),
+  tripledb_get_supgraphs(Graph,Graphs),
+  wildcard_scope(QScope),
   % update p* for all triples where p is a subproperty of S
   forall(
-    tripledb_subproperty_of(X,S),
-    ( findall(string(Y), tripledb_subproperty_of(X,Y), Parents),
-      mng_update(DB,TriplesColl,['p',X],
-            ['p*',['$eq',array(Parents)]])
+    tripledb_ask(X,rdfs:subPropertyOf,S,QScope,_,[]),
+    ( get_supproperties_(X,Parents),
+      mng_update(DB,TriplesColl,
+        [['graph',['$in',array(Graphs)]],['o',string(X)]],
+        ['$set',['o*',array(Parents)]])
     )
-  ),!.
-propagate_deletion_(_,_,_).
-
+  ),
+  !.
+propagate_deletion_(_,_,_,_).
 
 		 /*******************************
 		 *	   CACHING       *
 		 *******************************/
 
+:- dynamic tripledb_cache_empty/1.
+
 %% 
 % @implements 'db/itripledb'
 %
 %
-tripledb_cache_get(Query,Modules) :-
+tripledb_cache_get(Predicate,_,[]) :-
+  tripledb_cache_empty(Predicate),!.
+
+tripledb_cache_get(_Predicate,Query,Modules) :-
   tripledb(DB,_,InferredColl),
   mng_cursor_create(DB,InferredColl,Cursor),
   mng_cursor_filter(Cursor,['query',string(Query)]),
@@ -492,20 +535,25 @@ tripledb_cache_get(Query,Modules) :-
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_cache_add(Module,Predicate,Query) :-
-  cachedb(DB,Coll),
-  mng_store(DB,Coll,_{
-        query:     string(Query),
-        module:    string(Module),
-        predicate: string(Predicate)
-  }).
+tripledb_cache_add(Predicate,Query,Module) :-
+  tripledb(DB,_,InferredColl),
+  mng_store(DB,InferredColl,[
+        [query,     string(Query)],
+        [module,    string(Module)],
+        [predicate, string(Predicate)]
+  ]),
+  retractall(tripledb_cache_empty(Predicate)).
 
 %% 
 % @implements 'db/itripledb'
 %
 tripledb_cache_invalidate(Predicate) :-
-  cachedb(DB,Coll),
-  mng_cursor_create(DB,Coll,Cursor),
+  tripledb_cache_empty(Predicate),!.
+
+tripledb_cache_invalidate(Predicate) :-
+  tripledb(DB,_,InferredColl),
+  mng_cursor_create(DB,InferredColl,Cursor),
   mng_cursor_filter(Cursor,['predicate',string(Predicate)]),
   mng_cursor_erase(Cursor),
-  mng_cursor_destroy(Cursor).
+  mng_cursor_destroy(Cursor),
+  assertz(tripledb_cache_empty(Predicate)).

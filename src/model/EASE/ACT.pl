@@ -23,16 +23,16 @@
 :- use_module(library('semweb/rdf_db'),
     [ rdf_equal/2
     ]).
-:- use_module(library('model/RDFS')
+:- use_module(library('model/RDFS'),
     [ has_type/2
     ]).
-:- use_module(library('model/DUL/Event')
+:- use_module(library('model/DUL/Event'),
     [ task_role_range/3
     ]).
-:- use_module(library('model/DUL/Region')
+:- use_module(library('model/DUL/Region'),
     [ has_parameter_range/3
     ]).
-:- use_module(library('db/tripledb')
+:- use_module(library('db/tripledb'),
     [ tripledb_load/2
     ]).
 

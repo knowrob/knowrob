@@ -1,6 +1,5 @@
 :- module(utils_module,
         [ use_directory/1,
-          strip_module/2,
           interface/2
         ]).
 /** <module> TODO
@@ -9,7 +8,7 @@
 @license BSD
 */
 
-:- use_module('./filesystem.pl'
+:- use_module('./filesystem.pl',
     [ path_concat/3
     ]).
 
@@ -19,13 +18,7 @@
 %
 use_directory(Dir) :-
   path_concat(Dir,'__init__.pl',Path),
-  consult(Path).
-
-%%
-% Strip first argument of (:(_,_)) terms.
-%
-strip_module(:(_,Term),Term) :- !-
-strip_module(Term,Term).
+  user:consult(Path).
 
 %% interface(+Name,+Exports) is det
 %
@@ -56,13 +49,46 @@ interface(Name,Exports) :-
 %%
 % Read list of exports of an interface (not recursively).
 %
+interface_load_(RelPath,Exports) :-
+  atom(RelPath),
+  prolog_load_context(directory,ModulePath),
+  path_concat(ModulePath,RelPath,Path),
+  interface_load1_(Path,Exports),
+  !.
+  
+interface_load_(library(Lib),Exports) :-
+  file_search_path(_,SearchPath),
+  path_concat(SearchPath,Lib,Path),
+  interface_load1_(Path,Exports),
+  !.
+  
+interface_load_(RelPath,Exports) :-
+  atom(RelPath),
+  file_search_path(_,SearchPath),
+  path_concat(SearchPath,RelPath,Path),
+  interface_load1_(Path,Exports),
+  !.
+  
 interface_load_(Path,Exports) :-
-  \+ atom_concat(_,'.pl',Path),!,
-  atom_concat(Path,'.pl',PathWithExtension),
-  interface_load_(PathWithExtension,Exports).
+  atom(Path),
+  interface_load1_(Path,Exports),
+  !.
 
-interface_load_(Path,Exports) :-
+interface_load_(Path,_Exports) :-
+  print_message(error, unresolved_interface(Path)),
+  fail.
+
+%%
+interface_load1_(Path,Exports) :-
+  atom(Path),
+  \+ atom_concat(_,'.pl',Path),
+  atom_concat(Path,'.pl',PathWithExtension),
+  interface_load1_(PathWithExtension,Exports),
+  !.
+
+interface_load1_(Path,Exports) :-
   absolute_file_name(Path,AbsPath),
+  exists_file(AbsPath),
   ensure_loaded(AbsPath),
   interface_cache_(_,AbsPath,Exports).
 
@@ -75,7 +101,9 @@ interface_load_(Path,Exports) :-
 user:term_expansion((:-module(Name,Exports)), Expansions) :-
   % first: transform each exported element into common structure,
   %        and resolve *implements(_)* terms.
-  read_exports_(Exports,Xs),
+  read_exports_(Exports,Xs,NeedsExpansion),
+  ground(NeedsExpansion),
+  print_message(informational, module(load(Name))),
   % second: generate some expansions
   findall(Expansion, (
     expand_to_module_(Name,Xs,Expansion);
@@ -86,10 +114,12 @@ user:term_expansion((:-module(Name,Exports)), Expansions) :-
 %%
 expand_to_module_(Name,Exports,
         (:-module(Name,Pl_Predicates))) :-
-  findall(
-    (/(Functor,Arity)),
-    member([Functor,Arity|_],Exports),
-    Pl_Predicates).
+  findall(Export, (
+    member(X,Exports),
+    ( X=[Functor,Arity|_] -> Export=(/(Functor,Arity)) ;
+      X=op(_,_,_)         -> Export=X ;
+      fail )
+  ), Pl_Predicates).
 
 %%
 expand_to_rdf_meta_(Name,Exports,Expansion) :-
@@ -100,7 +130,7 @@ expand_to_rdf_meta_(Name,Exports,Expansion) :-
       RDF_predicate=..[Functor|Args] ),
     RDF_List),
   argument_list_(RDF_List,RDF_Predicates),
-  ( Expansion=(:-use_module(library('semweb/rdf_db'), [rdf_meta/1]));
+  ( %Expansion=(:-use_module(library('semweb/rdf_db'), [rdf_meta/1]));
     Expansion=(:-rdf_meta(RDF_Predicates))
   ).
 
@@ -119,28 +149,28 @@ expand_to_rdfs_computable_(Name,Exports,Expansion) :-
   ).
 
 %%
-read_exports_([],[]) :- !.
-read_exports_([implements(I)|Xs],Y) :-
+read_exports_([],[],_) :- !.
+read_exports_([implements(I)|Xs],Y,true) :-
   interface_load_(I,Zs),
-  read_exports_(Zs,Y0),
-  read_exports_(Xs,Y1),
+  read_exports_(Zs,Y0,_),
+  read_exports_(Xs,Y1,_),
   append(Y0,Y1,Y).
-read_exports_([X|Xs],[Y|Ys]) :-
-  read_export_(X,Y),
-  read_exports_(Xs,Ys).
+read_exports_([X|Xs],[Y|Ys],Flag) :-
+  read_export_(X,Y,Flag),
+  read_exports_(Xs,Ys,Flag).
 
 %%
-read_export_((/(Functor,Arity)),
-        [Functor,Arity,_,_]) :-
-  !.
+read_export_((/(Functor,Arity)), [Functor,Arity,_,_],_) :- !.
+read_export_(op(P,T,N), op(P,T,N),_) :- !.
 read_export_((->(Term,Property)),
-        [Functor,Arity,RDF_Args,Property]) :-
-  !, read_export_(Term,[Functor,Arity,RDF_Args,Property]).
+        [Functor,Arity,RDF_Args,Property],true) :-
+  !, read_export_(Term,[Functor,Arity,RDF_Args,Property],_).
 read_export_(     RDF_Predicate,
-        [Functor,Arity,RDF_Args,_]) :-
+        [Functor,Arity,RDF_Args,_],true) :-
   compound(RDF_Predicate),
   RDF_Predicate=..[Functor|RDF_Args],
-  length(RDF_Args,Arity).
+  length(RDF_Args,Arity),
+  Arity>0.
 
 %%
 argument_list_([Xi], Xi).

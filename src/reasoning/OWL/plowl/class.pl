@@ -32,6 +32,15 @@
 %%
 %
 %
+%owl_subclass_of(Sub,Sup) :-
+  %% TODO: this clause seems displaced, but is not covered otherwise.
+  %ground(Sub),
+  %owl_description(Sub,intersection_of(List)),!,
+  %once((
+    %member(Sub0,List),
+    %(Sub0=Sup ; subclass_of(Sub0,Sup))
+  %)).
+
 owl_subclass_of(Sub,Sup) :-
   var(Sup),!,
   owl_subclass_of1(Sub,class(Sup)).
@@ -46,21 +55,21 @@ owl_subclass_of1(Sub,only(P,Range)) :-
 owl_subclass_of1(Sub,some(P,Range)) :-
   % TODO: rather only generate min-subclasses?
   % once((ground(P);ground(Range))),
-  subclass_of(Sub,min(P,Range,Min)), Min>0.
+  subclass_of(Sub,min(P,Min,Range)), Min>0.
 
-owl_subclass_of1(Sub,min(P,Range,Min)) :-
+owl_subclass_of1(Sub,min(P,Min,Range)) :-
   ( var(Min) ->
     ( owl_property_cardinality(Sub,P,Range,Min,_) );
     ( owl_property_cardinality(Sub,P,Range,Min,_), Min>0 )
   ).
 
-owl_subclass_of1(Sub,max(P,Range,Max)) :-
+owl_subclass_of1(Sub,max(P,Max,Range)) :-
   ( var(Max) ->
     ( owl_property_cardinality(Sub,P,Range,_,Max) );
     ( owl_property_cardinality(Sub,P,Range,_,Max), Max \= inf )
   ).
 
-owl_subclass_of1(Sub,exactly(P,Range,Card)) :-
+owl_subclass_of1(Sub,exactly(P,Card,Range)) :-
   owl_property_cardinality(Sub,P,Range,Card,Card).
   
 owl_subclass_of1(Sub,Sup) :-
@@ -105,14 +114,14 @@ owl_subclass_of_only(Sub,P,Range) :-
 common_supclass_([X0|Xs],Sup) :-
   % find shared super classes
   findall(Y,
-    ( subclass_of(X0,Y),
-      forall(member(Xn,Xs), subclass_of(Xn,Y)) ),
+    ( transitive(subclass_of_eq(X0,Y)),
+      forall(member(Xn,Xs), subclass_of_eq(Xn,Y)) ),
     Sups),
   % yield most specific shared super class
   member(Sup,Sups),
   forall(
-    ( member(X,Sups), Sup \= X ),
-    ( subclass_of(Sup,X) )
+    ( member(X,Sups) ),
+    ( \+ subclass_of(X,Sup) )
   ),
   % there is only one (not true if equvalent classes are included)
   !.
@@ -142,13 +151,13 @@ owl_property_range(Cls,P,Range) :-
   % the meaning is that the range is the intersection 
   % of these classes.
   setof(R,
-    owl_property_range1(Cls,P,R),
+    owl_property_range1(Descr,P,R),
     Ranges),
   member(Range,Ranges),
   % However, the list may contain redundant entries.
   % Only yield the most specific ones.
   forall(
-    ( member(X, Types), Range \= X ),
+    ( member(X, Ranges), Range \= X ),
     ( \+ subclass_of(X,Range) )
   ).
 
@@ -165,10 +174,10 @@ owl_property_range1(only(P,Range),P,Range).
 owl_property_range1(some(P0,Cls),P1,Range) :-
   owl_property_range_some(P0,Cls,P1,Range).
 
-owl_property_range1(min(P0,Cls,Min),P1,Range) :-
+owl_property_range1(min(P0,Min,Cls),P1,Range) :-
   Min>0, owl_property_range_some(P0,Cls,P1,Range).
 
-owl_property_range1(exactly(P0,Cls,Count),P1,Range) :-
+owl_property_range1(exactly(P0,Count,Cls),P1,Range) :-
   Count>0, owl_property_range_some(P0,Cls,P1,Range).
 
 owl_property_range1(union_of(Set),P,Range) :-
@@ -187,7 +196,7 @@ owl_property_range1(intersection_of(Set),P,Range) :-
 
 owl_property_range1(class(Cls),P,Range) :-
   % get range constraints from super-classes of Cls
-  subclass_of(Cls,Sup), Sup\=Cls,
+  subclass_of(Cls,Sup),
   owl_property_range(Sup,P,Range).
 
 %%
@@ -213,7 +222,7 @@ owl_property_cardinality(Cls,P,Range,Min,Max) :-
   % try to at least limit Cls to sub-classes of
   % the domain of P (if P given)
   ( ground(P) ->
-    ( has_domain(P,Domain), subclass_of(Cls,Domain) );
+    ( has_domain(P,Domain), subclass_of_eq(Cls,Domain) );
     ( is_class(Cls) )
   ),
   owl_property_cardinality(Cls,P,Range,Min,Max).
@@ -221,9 +230,11 @@ owl_property_cardinality(Cls,P,Range,Min,Max) :-
 owl_property_cardinality(Cls,P,Range,Min,Max) :-
   owl_description(Cls,Descr),
   owl_property_cardinality0(Descr,P,Range,Cards),
-  ( is_functional_property(P) ->
-    Cards0=[(0,1),Cards],
-    Cards0=Cards ),
+  % FIXME: what is wrong below?
+  %( is_functional_property(P) ->
+    %Cards0=[(0,1)|Cards],
+    %Cards0=Cards ),
+  Cards0=Cards,
   % get the most constrained min/max values
   cardinality_all_of(Cards0,[(Min,Max)]).
 
@@ -259,19 +270,19 @@ owl_property_cardinality1(some(P0,Range0),P,Range,1,inf,_) :-
   ( var(P)     -> P=P0         ; subproperty_of(P0,P) ),
   ( var(Range) -> Range=Range0 ; subclass_of(Range0,Range) ).
 
-owl_property_cardinality1(min(P0,Range0,Min),P,Range,Min,inf,_) :-
+owl_property_cardinality1(min(P0,Min,Range0),P,Range,Min,inf,_) :-
   ( var(P)     -> P=P0         ; subproperty_of(P0,P) ),
   ( var(Range) -> Range=Range0 ; subclass_of(Range0,Range) ).
 
-owl_property_cardinality1(max(P0,Range0,Max),P,Range,0,Max,_) :-
+owl_property_cardinality1(max(P0,Max,Range0),P,Range,0,Max,_) :-
   % NOTE: max cardinality is inherited from super-classes/properties
   %         to their children while min cardinality is inherited the other way.
   ( var(P)     -> P=P0         ; subproperty_of(P,P0) ),
   ( var(Range) -> Range=Range0 ; subclass_of(Range,Range0) ).
 
-owl_property_cardinality1(exactly(P0,Range0,Count),P,Range,Min,Max,_) :-
-  owl_property_cardinality1(min(P0,Range0,Min),P,Range,Min,Max,_);
-  owl_property_cardinality1(max(P0,Range0,Min),P,Range,Min,Max,_).
+owl_property_cardinality1(exactly(P0,Count,Range0),P,Range,Count,Count,_) :-
+  ( var(P)     -> P=P0         ; subproperty_of(P0,P) ),
+  ( var(Range) -> Range=Range0 ; subclass_of(Range0,Range) ).
 
 owl_property_cardinality1(union_of(Set),P,Range,Min,Max,_) :-
   % find cardinality constraints from members of Set
@@ -286,7 +297,7 @@ owl_property_cardinality1(intersection_of(Set),P,Range,Min,Max,_) :-
 
 owl_property_cardinality1(class(Cls),P,Range,Min,Max,Visited) :-
   % get cardinaity constraints from super-classes of Cls
-  subclass_of(Cls,Sup), Sup\=Cls,
+  subclass_of(Cls,Sup),
   \+ memberchk(Sup,Visited),
   owl_description(Sup,Descr),
   owl_property_cardinality1(Descr,P,Range,Min,Max,[Cls|Visited]).
@@ -295,15 +306,15 @@ owl_property_cardinality1(class(Cls),P,Range,Min,Max,Visited) :-
 cardinality_of_union_(Union,P,Range,Cards) :-
   var(P),var(Range),!,
   findall([P0,R0,(Min0,Max0)],
-    ( member(Cls,Set),
+    ( member(Cls,Union),
       owl_property_cardinality(Cls,P0,R0,Min0,Max0) ),
     CardsPR),
-  cardinality_bind_pr_(CardsPR,P,R,Cards).
+  cardinality_bind_pr_(CardsPR,P,Range,Cards).
 
 cardinality_of_union_(Union,P,Range,Cards) :-
   var(P),!,
   findall([P0,(Min0,Max0)],
-    ( member(Cls,Set),
+    ( member(Cls,Union),
       owl_property_cardinality(Cls,P0,Range,Min0,Max0) ),
     CardsP),
   cardinality_bind_p_(CardsP,P,Cards).
@@ -311,15 +322,15 @@ cardinality_of_union_(Union,P,Range,Cards) :-
 cardinality_of_union_(Union,P,Range,Cards) :-
   var(Range),!,
   findall([R0,(Min0,Max0)],
-    ( member(Cls,Set),
+    ( member(Cls,Union),
       owl_property_cardinality(Cls,P,R0,Min0,Max0) ),
     CardsR),
   cardinality_bind_r_(CardsR,Range,Cards).
 
 cardinality_of_union_(Union,P,Range,Cards) :-
   findall((Min0,Max0),
-    ( member(Cls,Set),
-      owl_property_cardinality(Cls,P,R,Min0,Max0) ),
+    ( member(Cls,Union),
+      owl_property_cardinality(Cls,P,Range,Min0,Max0) ),
     Cards).
 
 %%
@@ -332,7 +343,7 @@ cardinality_bind_pr_(CardsPR,P,R,Cards) :-
   member(R,Ranges),
   % finally get cardinality tuples
   findall((Min1,Max1), (
-    member([P2,R2,(Min0,Max0)],CardsR),
+    member([P2,R2,(Min0,Max0)],CardsPR),
     ( (subproperty_of(P2,P),subclass_of(R2,R)) -> Min1=Min0 ; Min1=0 ),
     ( (subproperty_of(P,P2),subclass_of(R,R2)) -> Max1=Max0 ; Max1=inf )
   ), Cards).
@@ -381,6 +392,6 @@ cardinality_min(X, inf, X) :- !.
 cardinality_min(X1, X2, X) :- X is min(X1, X2).
 
 %%
-cardinality_max(inf, X, inf) :- !.
-cardinality_max(X, inf, inf) :- !.
+cardinality_max(inf, _, inf) :- !.
+cardinality_max(_, inf, inf) :- !.
 cardinality_max(X1, X2, X) :- X is max(X1, X2).

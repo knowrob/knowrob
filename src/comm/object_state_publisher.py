@@ -263,8 +263,8 @@ class ObjectStatePublisher(object):
     # @profile
     def load_objects_from_prolog(self):
         rospy.loginfo('object state publisher load_objects_from_prolog')
-        q = "belief_existing_objects(Objects)," \
-            "mark_dirty_objects(Objects)"
+        q = "findall(PO,is_physical_object(PO),POs)," \
+            "notify(objects_changed(POs))"
         self.prolog_query(q)
 
     def publish_object_markers(self, object_ids, removed_ids):

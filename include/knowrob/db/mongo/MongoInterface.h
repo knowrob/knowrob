@@ -35,7 +35,9 @@ public:
 	
 	void update(const char *db_name, const char *coll_name, const PlTerm &query_term, const PlTerm &update_term);
 	
-	void create_index(const char *db_name, const char *coll_name, const char *key);
+	void remove(const char *db_name, const char *coll_name, const PlTerm &doc_term);
+	
+	void create_index(const char *db_name, const char *coll_name, const PlTerm &keys_term);
 	
 	
 	static MongoCursor* cursor_create(const char *db_name, const char *coll_name);

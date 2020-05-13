@@ -22,6 +22,8 @@ xsd_data_type(DataType) :-
 
 %%
 %
+% FIXME: shouldn't basetype be float/double/int?
+%
 xsd_data_basetype(DataType,number) :-
   xsd_numeric_type(DataType).
 xsd_data_basetype(xsd:double,number).

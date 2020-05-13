@@ -113,6 +113,25 @@ void MongoInterface::store(
 	}
 }
 
+void MongoInterface::remove(
+		const char *db_name,
+		const char *coll_name,
+		const PlTerm &doc_term)
+{
+	MongoCollection coll(pool_,db_name,coll_name);
+	bson_error_t err;
+	//
+	bson_t *doc = bson_new_from_term(doc_term,&err);
+	if(doc==NULL) {
+		throw MongoException("invalid_term",err);
+	}
+	bool success = mongoc_collection_remove(coll(),MONGOC_REMOVE_NONE,doc,NULL,&err);
+	bson_destroy(doc);
+	if(!success) {
+		throw MongoException("remove_failed",err);
+	}
+}
+
 void MongoInterface::update(
 		const char *db_name,
 		const char *coll_name,
@@ -126,24 +145,25 @@ void MongoInterface::update(
 	if(query==NULL) {
 		throw MongoException("invalid_query",err);
 	}
-	bson_t *update0 = bson_new_from_term(update_term, &err);
-	if(update0==NULL) {
+	bson_t *update = bson_new_from_term(update_term, &err);
+	if(update==NULL) {
 		bson_destroy(query);
 		throw MongoException("invalid_update",err);
 	}
-	bson_t *update = bson_new();
-	BSON_APPEND_DOCUMENT(update, "$set", update0);
 	bool success = mongoc_collection_update(coll(),
-		MONGOC_UPDATE_NONE,query,update,NULL,&err);
+		MONGOC_UPDATE_MULTI_UPDATE,
+		query,
+		update,
+		NULL,
+		&err);
 	bson_destroy(query);
 	bson_destroy(update);
-	bson_destroy(update0);
 	if(!success) {
 		throw MongoException("update_failed",err);
 	}
 }
 
-void MongoInterface::create_index(const char *db_name, const char *coll_name, const char *key)
+void MongoInterface::create_index(const char *db_name, const char *coll_name, const PlTerm &keys_pl)
 {
 	MongoDatabase db_handle(pool_,db_name);
 	bson_t reply;
@@ -151,7 +171,11 @@ void MongoInterface::create_index(const char *db_name, const char *coll_name, co
 	bson_t keys;
 	//
 	bson_init(&keys);
-	BSON_APPEND_INT32(&keys, key, 1);
+	PlTail pl_list(keys_pl);
+	PlTerm pl_member;
+	while(pl_list.next(pl_member)) {
+		BSON_APPEND_INT32(&keys, (char*)pl_member, 1);
+	}
 	char *index_name = mongoc_collection_keys_to_index_string(&keys);
 	//
 	bson_t *cmd = BCON_NEW ("createIndexes", BCON_UTF8(coll_name),

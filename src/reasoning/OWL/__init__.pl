@@ -1,2 +1,2 @@
 
-:- reasoning_module('reasoning/OWL/reasoner').
+:- ensure_loaded('./reasoner.pl').

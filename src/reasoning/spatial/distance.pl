@@ -13,6 +13,7 @@
 % @param Distance  The current distance between A and B
 %
 object_distance(A,B,Distance) ?>
+  { ground([A,B]) },
   % FIXME: hardcoded map
   is_at(A, [map,[AX,AY,AZ],_]),
   is_at(B, [map,[BX,BY,BZ],_]),

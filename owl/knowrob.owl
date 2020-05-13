@@ -15,7 +15,7 @@
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-PROC.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-STATE.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
-        <owl:imports rdf:resource="package://knowrob/owl/urdf.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/URDF.owl"/>
         <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
           Technische Universität München. This work is licensed under
@@ -126,6 +126,9 @@
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#avoidedObject">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasLifetime">
     </owl:ObjectProperty>
     
 
@@ -960,6 +963,7 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#frameName">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
 

@@ -11,12 +11,12 @@
 :- use_module(library('semweb/rdf_db'),
     [ rdf_equal/2
     ]).
-:- use_module(library('model/DUL/Object')
+:- use_module(library('model/DUL/Object'),
     [ has_object_type/2
     ]).
-:- use_module(library('model/EASE/Object'),
+:- use_module(library('model/EASE/OBJ'),
     [ object_feature/2,
-      object_color/2,
+      object_color_rgb/2,
       object_mesh_path/2,
       object_dimensions/4,
       object_shape_type/2
@@ -63,7 +63,7 @@ object_state(Obj, [
    TypeName,  % object_type
    Shape,     % shape
    Mesh,      % mesh_path
-   [R,G,B,A], % color
+   [R,G,B,1], % color
    [D,W,H],   % size
    Pose,      % pose
    StaticTransforms % static_transforms
@@ -78,7 +78,7 @@ object_state(Obj, [
   % get the state scope
   ( get_dict(timestamp,Properties,Time) -> true ;
     get_time(Time) ),
-  Scope=_{ time: _{ since: =<(Time), until: >=(Time) }},
+  Scope=[[],_{ time: _{ since: =<(Time), until: >=(Time) }}],
   %%
   object_state_shape_(Obj,     Shape, Properties, Scope),
   object_state_color_(Obj,   [R,G,B], Properties, Scope),
@@ -122,7 +122,7 @@ object_state_shape_(Obj,Shape,Properties,Scope) :-
     ask(object_shape_type(Obj,ShapeIri),Scope->_);
     rdf_equal(ShapeIri,ease_obj:'BoxShape')
   ),
-  object_state_shape_(ShapeIri,Shape),
+  object_state_shape_(ShapeIri,Shape).
 
 %object_state_shape_(Iri,0) :- instance_of(Iri,ease_obj:'Arrow'),!.
 object_state_shape_(Iri,1) :- instance_of(Iri,ease_obj:'BoxShape'),!.

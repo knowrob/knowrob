@@ -1,6 +1,5 @@
 :- module(lang_occurs,
-    [ occurs(r),             % ?Event
-      op(1000, xf, occurs)
+    [ occurs(r) % ?Event
     ]).
 /** <module> The *occurs* predicate.
 
@@ -8,15 +7,14 @@
 @license BSD
 */
 
-:- use_module(library('model/DUL/Region'),
-    [ time_interval_start/2,
-      time_interval_end/2
-    ]).
+:- op(1000, xf, occurs).
+
 :- use_module(library('model/DUL/Event'),
     [ has_time_interval/2
     ]).
 :- use_module('../scopes/temporal.pl',
-    [ time_scope_data/2
+    [ time_scope_data/2,
+      time_interval_data/3
     ]).
 
 %% occurs(?Event) is nondet.
@@ -24,7 +22,7 @@
 % True for all occurences (events).
 %
 occurs(Evt) ?>
-  `query-scope`(Query_Scope),
+  query_scope(Query_Scope),
   { get_dict(time,Query_Scope,Query_TimeScope),
     time_interval_data(Evt,Since,Until),
     time_scope(Since,_,Until,Event_TimeScope),
@@ -32,13 +30,13 @@ occurs(Evt) ?>
   }.
 
 occurs(Evt) +>
-  `unscope`(time,TimeScope),
+  unscope(time,TimeScope),
   is_event(Evt),
   occurs1(Evt,TimeScope),
-  `scope`(time,TimeScope).
+  scope(time,TimeScope).
 
 %%
-occurs1(Evt,TimeScope) +> { var(TimeScope),! }.
+occurs1(_,TimeScope) +> { var(TimeScope),! }.
 occurs1(Evt,TimeScope) +>
   { time_scope_data(TimeScope,[Since,Until]) },
   { has_time_interval(Evt,Interval) },
@@ -46,9 +44,9 @@ occurs1(Evt,TimeScope) +>
   occurs_until_(Interval,Until).
 
 %%
-occurs_since_(Interval,Since) +> { var(Since), ! }.
+occurs_since_(_,Since) +> { var(Since), ! }.
 occurs_since_(Interval,Since) +> holds(Interval,ease:hasIntervalBegin,Since).
   
 %%
-occurs_until_(Interval,Until) +> { var(Until), ! }.
+occurs_until_(_,Until) +> { var(Until), ! }.
 occurs_until_(Interval,Until) +> holds(Interval,ease:hasIntervalEnd,Until).

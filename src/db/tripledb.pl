@@ -1,36 +1,30 @@
 :- module(tripledb,
-    [ implements('itripledb'),
+    [ implements('./itripledb.pl'),
       tripledb_load/1,
       tripledb_load/2,
       tripledb_load/3,
+      tripledb_tell(r,r,t),
       tripledb_tell(r,r,t,+),
+      tripledb_ask(r,r,t,+,-,+),
       tripledb_ask(r,r,t,+,-),
-      tripledb_ask(r,r,t,+),
       tripledb_ask(r,r,t),
       tripledb_forget(r,r,t,+),
-      tripledb_forget(r,r,t),
-      tripledb_subclass_of(r,r),     % ?Subclass, ?Class
-      tripledb_subproperty_of(r,r),  % ?Subproperty, ?Property
-      tripledb_subgraph_of/2,
-      ros_package_iri/2
+      tripledb_forget(r,r,t)
     ]).
 /** <module> Interface for loading, storing, and retrieving triple data.
 
-@author Moritz Tenorth
 @author Daniel Beßler
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db.pl'), 
-    [ load_rdf/3,
-      rdf_register_ns/3
-    ]).
-:- use_module(library('http/http_open.pl'),
-    [ http_open/3
-    ]).
+:- use_module(library(rdf),              [ load_rdf/3 ]).
+:- use_module(library('semweb/rdf_db'),  [ rdf_equal/2, rdf_register_ns/3 ]).
+:- use_module(library('http/http_open'), [ http_open/3 ]).
 
-%ros_path/2
-%ros_package_path/2
+:- use_module(library('utility/url'),    [ url_resolve/2 ]).
+:- use_module(library('db/scope'),       [ universal_scope/1 ]).
+:- use_module(library('comm/notify'),    [ notify/1 ]).
+:- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
 % get path from environment
 tripledb_module(Module) :-
@@ -48,36 +42,21 @@ tripledb_module('db/mongo/tripledb').
 % TODO: rather do re-export? not sure if this kind of wrapping
 %       adds much overhead.
 :- tripledb_module(Module),
-   use_module(Module,
+   use_module(library(Module),
         [ tripledb_init/0             as itripledb_init,
           tripledb_import/1           as itripledb_import,
           tripledb_export/1           as itripledb_export,
           tripledb_whipe/0            as itripledb_whipe,
-          tripledb_load_rdf/3         as itripledb_load_rdf,
           tripledb_tell/5             as itripledb_tell,
+          tripledb_bulk_tell/3        as itripledb_bulk_tell,
           tripledb_ask/6              as itripledb_ask,
           tripledb_forget/5           as itripledb_forget,
-          tripledb_subgraph_of/2      as itripledb_subgraph_of,
-          tripledb_cache_get/2        as itripledb_cache_get,
+          tripledb_cache_get/3        as itripledb_cache_get,
           tripledb_cache_add/3        as itripledb_cache_add,
           tripledb_cache_invalidate/1 as itripledb_cache_invalidate
         ]).
-:- dynamic ros_package_iri_/2.
-
-%% ros_package_iri(+PkgName,+URI) is det.
-%
-% Register an IRI for a ROS package.
-% When RDF files are loaded with the IRI prefix,
-% it is first tried to serve the local file from
-% the ROS package before downoading the file
-% from the web.
-%
-ros_package_iri(PkgName,URI) :-
-  assertz(ros_package_iri_(URI,PkgName)).
-
-%% add default subgraph-of axioms
-:- tripledb_subgraph_of(tbox,common).
-:- tripledb_subgraph_of(user,tbox).
+% whipe the triple DB initially if requested by the user.
+:- getenv('KB_WHIPE_TRIPLE_STORE',true) -> itripledb_whipe ; true.
 
 %% tripledb_load(+URL) is det.
 %
@@ -117,56 +96,89 @@ tripledb_load(URL,Args) :-
 %
 %
 tripledb_load(URL,_,_) :-
-  % TODO: replace old ontology version by new one
-  tripledb_ask(URL,rdf:type,string(owl:'Ontology')),!.
+  % FIXME: Make sure we do not load multiple versions of same ontology!
+  once(( url_unresolve(URL,Unresolved) ; Unresolved=URL )),
+  tripledb_ask(Unresolved,rdf:type,string(owl:'Ontology')),!.
 
 tripledb_load(URL,Scope,Graph) :-
-  tripledb_load1(URL,Triples),
-  % load RDF data of imported ontologies
+  rdf_equal(owl:'imports',OWL_Imports),
+  rdf_equal(owl:'NamedIndividual',OWL_NamedIndividual),
+  rdf_equal(rdf:'type',RDF_Type),
+  %%
+  tripledb_load1(URL,URL_resolved,Triples),
+  % first, load RDF data of imported ontologies
   forall(
-    member(rdf(_,owl:'imports',I), Triples),
+    member(rdf(_,OWL_Imports,I), Triples),
     tripledb_load(I,Scope,Graph)
   ),
   % load data into triple DB
-  tripledb_load_rdf(Triples,Scope,Graph),
+  print_message(informational,tripledb(load(URL_resolved))),
+  tripledb_load3t(Triples,Scope,Graph),
   % notify about asserted individuals
   forall(
-    member(rdf(X,rdf:'type',owl:'NamedIndividual'), Triples),
+    member(rdf(X,RDF_Type,OWL_NamedIndividual), Triples),
     notify(individual(X))
   ).
 
 %%
-tripledb_load1(URL,Triples) :-
+tripledb_load1(URL,Resolved,Triples) :-
+  % try to resolve to local path
+  url_resolve(URL,Resolved),!,
+  tripledb_load2(Resolved,Triples).
+
+tripledb_load1(URL,URL,Triples) :-
   sub_string(URL,0,4,_,'http'), !,
   http_open(URL,RDF_Stream,[]),
-  tripledb_load2(URL,RDF_Stream,Triples),
+  tripledb_load2(RDF_Stream,Triples),
   close(RDF_Stream).
 
-tripledb_load1(URL,Triples) :-
-  % map IRI to ROS package path based on predicate *ros_package_iri_*
-  file_base_name(URL,FileName),
-  file_directory_name(URL,Prefix),
-  ros_package_iri_(Pkg,Prefix),
-  ros_package_path(Pkg,PkgPath),
-  % convention is that rdf files are stored in a directory named "owl" or "rdf"
-  ( atomic_list_concat([PkgPath,owl,FileName],'/',LocalPath) ;
-    atomic_list_concat([PkgPath,rdf,FileName],'/',LocalPath) ;
-    atomic_list_concat([PkgPath,FileName],'/',LocalPath)
-  ),
-  exists_file(LocalPath),
-  tripledb_load1(LocalPath,Triples),
+tripledb_load1(URL,URL,Triples) :-
+  tripledb_load2(URL,Triples).
+
+tripledb_load2(URL,Triples) :-
+  % load rdf data. *Triples* is a ist of `rdf(Subject, Predicate, Object)` terms.
+  load_rdf(URL, Triples,[blank_nodes(noshare)]).
+
+%%
+tripledb_load3(Triples,Scope,Graph) :-
+  findall(Converted, (
+    member(Triple0,Triples),
+    convert_rdf_(Triple0,Converted)
+  ), ConvertedTriples),
+  tripledb_bulk_tell(ConvertedTriples,Scope,[graph(Graph)]).
+
+tripledb_load3t(Triples,Scope,Graph) :-
+  % debug how long loading takes
+  length(Triples,NumTriples),
+  get_time(Time0),
+  tripledb_load3(Triples,Scope,Graph),
+  get_time(Time1),
+  PerSec is NumTriples/(Time1-Time0),
+  print_message(informational, tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
+
+%%
+tripledb_load_rdf_(Triple,Scope,Options) :-
+  convert_rdf_(Triple,rdf(S,P,O)) ->
+    tripledb_tell(S,P,O,Scope,Options);
+    true.
+
+%%
+convert_rdf_(rdf(_,P,_),_) :-
+  ( rdf_equal(P,rdfs:comment)
+  ; rdf_equal(P,rdfs:seeAlso)
+  ; rdf_equal(P,owl:versionInfo) ),!,
+  fail.
+
+convert_rdf_(rdf(S,P,O),rdf(S,P,O1)) :-
+  convert_rdf_value_(O,O1),
   !.
 
-tripledb_load1(URL,Triples) :-
-  ros_path(URL,GlobalPath), !,
-  tripledb_load1(GlobalPath,Triples).
-
-tripledb_load1(URL,Triples) :-
-  tripledb_load2(URL,URL,Triples).
-
-tripledb_load2(Id,URL,Triples) :-
-  % load rdf data. *Triples* is a ist of `rdf(Subject, Predicate, Object)` terms.
-  load_rdf(URL, Triples, [blank_nodes(noshare)]).
+%%
+convert_rdf_value_(literal(type(Type,O)),O_typed) :-
+  xsd_data_basetype(Type,TypeKey),
+  O_typed=..[TypeKey,O].
+convert_rdf_value_(literal(O),string(O)).
+convert_rdf_value_(O,string(O)).
 
 		 /*******************************
 		 *	   itripledb INTERFACE     	*
@@ -198,88 +210,64 @@ tripledb_whipe :-
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_load_rdf(RDF,Scope,Graph) :-
-  itripledb_load_rdf(RDF,Scope,Graph).
-
-%% 
-% @implements 'db/itripledb'
-%
-tripledb_tell(S,P,update(O),Scope,Graph) :-
+tripledb_tell(S,P,update(O),Scope,Options) :-
   time_scope_data(Scope,[Since,_]),!,
   tripledb_stop(S,P,Since),
-  tripledb_tell1(S,P,O,Scope,Graph).
+  itripledb_tell(S,P,O,Scope,Options).
 
-tripledb_tell(S,P,O,Scope,Graph) :-
-  % HACK: in many cases convinient, but could cause issues
-  %           to avoid adding more then one value to a functional property
-  is_functional_property(P),!,
-  time_scope_data(Scope,[Since,_]),
-  tripledb_stop(S,P,Since),
-  tripledb_tell1(S,P,O,Scope,Graph).
-
-tripledb_tell(S,P,O,Scope,Graph) :-
-  tripledb_tell1(S,P,O,Scope,Graph).
-
-tripledb_tell1(S,P,O,Scope,Graph) :-
-  itripledb_tell(S,P,O,Scope,Graph),
-  ( is_symmetric_property(P) ->
-    itripledb_tell(O,P,S,Scope);
-    true
-  ).
+tripledb_tell(S,P,O,Scope,Options) :-
+  itripledb_tell(S,P,O,Scope,Options).
 
 tripledb_tell(S,P,O,Scope) :-
-  tripledb_tell(S,P,O,Scope,user).
+  tripledb_tell(S,P,O,Scope,[]).
+
+tripledb_tell(S,P,O) :-
+  universal_scope(Scope),
+  tripledb_tell(S,P,O,Scope,[]).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_forget(S,P,O,Scope,Graph) :-
-  itripledb_forget(S,P,O,Scope,Graph).
+tripledb_bulk_tell(Facts,Scope,Options) :-
+  itripledb_bulk_tell(Facts,Scope,Options).
+
+%% 
+% @implements 'db/itripledb'
+%
+tripledb_forget(S,P,O,Scope,Options) :-
+  itripledb_forget(S,P,O,Scope,Options).
 
 tripledb_forget(S,P,O,Scope) :-
-  tripledb_forget(S,P,O,Scope,user).
+  itripledb_forget(S,P,O,Scope,[]).
 
 tripledb_forget(S,P,O) :-
-  tripledb_forget(S,P,O,_{},user).
+  wildcard_scope(QScope),
+  itripledb_forget(S,P,O,QScope,[]).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_ask(S,P,O,QScope,FScope,Graph) :-
-  itripledb_ask(S,P,O,QScope,FScope,Graph).
+tripledb_ask(S,P,O,QScope,FScope,Options) :-
+  itripledb_ask(S,P,O,QScope,FScope,Options).
 
 tripledb_ask(S,P,O,QScope,FScope) :-
-  tripledb_ask(S,P,O,QScope,FScope,user).
-
-tripledb_ask(S,P,O,QScope->FScope) :-
-  tripledb_ask(S,P,O,QScope,FScope,user).
+  itripledb_ask(S,P,O,QScope,FScope,[]).
 
 tripledb_ask(S,P,O) :-
-  tripledb_ask(S,P,O,_{},_,user).
-
-%%
-%
-tripledb_subclass_of(Class,Class).
-tripledb_subclass_of(Subclass,Class) :-
-  tripledb_ask(Subclass,rdfs:subClassOf,Class,_{},_,tbox).
-
-%%
-%
-tripledb_subproperty_of(Property,Property).
-tripledb_subproperty_of(Subproperty,Property) :-
-  tripledb_ask(Subproperty,rdfs:subPropertyOf,Property,_{},_,tbox).
+  wildcard_scope(QScope),
+  itripledb_ask(S,P,O,QScope,_,[]).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_cache_get(Query,Modules) :-
-  itripledb_cache_get(Query,Modules).
+tripledb_cache_get(Predicate,Query,Modules) :-
+  itripledb_cache_get(Predicate,Query,Modules).
 
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_cache_add(Module,Predicate,Query) :-
-  itripledb_cache_add(Module,Predicate,Query).
+tripledb_cache_add(Predicate,Query,Module) :-
+  itripledb_cache_add(Predicate,Query,Module).
 
 %% 
 % @implements 'db/itripledb'

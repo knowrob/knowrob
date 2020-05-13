@@ -8,7 +8,7 @@
       has_domain(r,r),
       has_label(r,?),
       has_comment(r,?),
-      rdfs_list(r,t)
+      is_rdf_list(r,t)
     ]).
 /** <module> TODO ...
 
@@ -16,11 +16,15 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3
+    [ rdf_register_ns/3,
+      rdf_current_ns/2,
+      rdf_split_url/3
     ]).
-
 :- rdf_register_ns(rdfs,
     'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+% TODO move somewhere else
+:- rdf_register_ns(io,
+    'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl#', [keep(true)]).
 
 %% is_resource(+Entity) is semidet.
 %
@@ -78,65 +82,53 @@ is_datatype(Entity) ?+>
 % state that a resource is an instance of a class.
 %
 has_type(Resource,Type) ?>
-  tripledb_ask(Resource, rdf:type, Type).
+  triple(Resource, rdf:type, Type).
 
 has_type(Resource,Type) +>
-  %tripledb_tell(Resource, rdf:type, Label).
+  %triple(Resource, rdf:type, Label).
   instance_of(Resource,Type).
 
 %%
 %
 %
-has_range(Property,Range) ?>
-  tripledb_ask(Property, rdfs:range, Range).
-
-has_range(Property,Range) +>
-  tripledb_tell(Property, rdfs:range, Range).
+has_range(Property,Range) ?+>
+  triple(Property, rdfs:range, Range).
 
 %%
 %
 %
-has_domain(Property,Range) ?>
-  tripledb_ask(Property, rdfs:domain, Range).
-
-has_domain(Property,Range) +>
-  tripledb_tell(Property, rdfs:domain, Range).
+has_domain(Property,Range) ?+>
+  triple(Property, rdfs:domain, Range).
 
 %% has_label(+Resource,?Comment) is semidet.
 %
 % rdfs:label is an instance of rdf:Property that may be used
 % to provide a human-readable version of a resource's name.
 %
-has_label(Resource,Label) ?>
-  tripledb_ask(Resource, rdfs:label, Label).
-
-has_label(Resource,Label) +>
-  tripledb_tell(Resource, rdfs:label, Label).
+has_label(Resource,Label) ?+>
+  triple(Resource, rdfs:label, Label).
 
 %% has_comment(+Resource,?Comment) is semidet.
 %
 % rdfs:comment is an instance of rdf:Property that may be used
 % to provide a human-readable description of a resource.
 %
-has_comment(Resource,Comment) ?>
-  tripledb_ask(Resource, rdfs:comment, Comment).
-
-has_comment(Resource,Comment) +>
-  tripledb_tell(Resource, rdfs:comment, Comment).
+has_comment(Resource,Comment) ?+>
+  triple(Resource, rdfs:comment, Comment).
 
 %%
 %
 %
-rdfs_list(rdf:nil,[]) +?> { ! }.
+is_rdf_list('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',[]) ?+> { ! }.
 
-rdfs_list(RDFList,[X|Xs]) ?>
-  tripledb_ask(RDFList, rdf:first, X),
-  tripledb_ask(RDFList, rdf:rest, Ys),
-  rdfs_list(Ys,Xs).
+is_rdf_list(RDFList,[X|Xs]) ?>
+  triple(RDFList, rdf:first, X),
+  triple(RDFList, rdf:rest, Ys),
+  is_rdf_list(Ys,Xs).
 
-rdfs_list(RDFList,[X|Xs]) +>
-  rdfs_list(Ys,Xs),
+is_rdf_list(RDFList,[X|Xs]) +>
+  is_rdf_list(Ys,Xs),
   % TODO: might be overkill to have rdf:type for each sublist?
   has_type(RDFList, rdf:'List'),
-  tripledb_tell(RDFList, rdf:first, X),
-  tripledb_tell(RDFList, rdf:rest, Ys).
+  triple(RDFList, rdf:first, X),
+  triple(RDFList, rdf:rest, Ys).

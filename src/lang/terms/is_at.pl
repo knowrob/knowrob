@@ -1,12 +1,13 @@
 :- module(lang_is_at,
-    [ is_at(r,r),
-      op(1000, xfx, is_at)
+    [ is_at(r,r)
     ]).
 /** <module> The *is_at* predicate.
 
 @author Daniel Beßler
 @license BSD
 */
+
+:- op(1000, xfx, user:is_at).
 
 :- use_module(library('utility/algebra'),
     [ transform_between/3,
@@ -16,8 +17,7 @@
     [ has_region/2
     ]).
 :- use_module(library('model/EASE/OBJ'),
-    [ object_map/3,
-      object_localization/2
+    [ object_localization/2
     ]).
 :- use_module(library('comm/notify'),
     [ notify/1
@@ -46,19 +46,23 @@ is_at(Obj,PoseData) +>
   notify(object_changed(Obj)).
   
 %%
-is_at1(_ObjFrame,Pose,Pose) ?> { ! }.
+is_at1(_,Pose,Pose) ?> { ! }.
 
-is_at1(ObjFrame,[RefFrame,T0,Q0],RelPose0) ?>
+is_at1(ObjFrame,[RefFrame_query,T_query,Q_query],
+                [RefFrame_comp,T_comp,Q_comp]) ?>
   % get object frame in map
-  world_pose1(ObjFrame,WorldFrame,RelPose0,[WorldFrame,T0,Q0]),
+  world_pose1(ObjFrame,WorldFrame,
+    [RefFrame_comp,T_comp,Q_comp],
+    [WorldFrame,T0,Q0]),
   % get requested frame in map
-  world_pose(RefFrame,WorldFrame,[WorldFrame,T1,Q1]),
+  world_pose(RefFrame_query,WorldFrame,
+    [WorldFrame,T1,Q1]),
   % compute transform from requested frame
   % to object frame
   { transform_between(
-        [MapFrame,RefFrame,T1,Q1],
-        [MapFrame,ObjFrame,T0,Q0],
-        [RefFrame,ObjFrame,T,Q]) }.
+        [MapFrame,       RefFrame_query, T1,Q1],
+        [MapFrame,       ObjFrame,       T0,Q0],
+        [RefFrame_query, ObjFrame,       T_query,Q_query]) }.
 
 %%
 world_pose(ObjFrame,MapFrame,MapPose) ?>
@@ -77,6 +81,6 @@ world_pose1(ObjFrame, MapFrame,
         [ParentFrame,ObjFrame,T0,Q0],
         [MapFrame,ObjFrame,T,Q]) }.
 
-world_pose1(_ObjFrame, MapFrame,
+world_pose1(_, MapFrame,
         [MapFrame|Rest],
         [MapFrame|Rest]) ?> { true }.

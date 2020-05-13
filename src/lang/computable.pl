@@ -12,15 +12,10 @@
     [ is_object_property/1,
       is_data_property/1
     ]).
-:- use_module(library('db/obda'),
-    [ obda_add/1
-    ]).
-:- use_module(library('reasoning/pool'),
-    [ reasoning_module/1
-    ]).
-:- use_module('./terms/is_a.pl',
-    [ subproperty_of/2
-    ]).
+:- use_module(library('db/obda'),        [ obda_add/1 ]).
+:- use_module(library('reasoning/pool'), [ reasoning_module/1 ]).
+:- use_module('./terms/is_a.pl',         [ subproperty_of/2 ]).
+:- use_module('./terms/transitive.pl',   [ transitive/1 ]).
 
 %% computables(+Computables) is det
 %
@@ -28,8 +23,8 @@
 %
 computables(Computables) :-
   % peak module M
-  Computables=(,(:(M,_),_)),
   computable_list_(Computables,List),
+  List=[(:(M,_))|_],
   %
   findall(OC, (
     member(OC,List),
@@ -45,7 +40,7 @@ computables(Computables) :-
 
 %%
 computable_list_(Computables,[C|Xs]) :-
-  Computables=','(C,Cs),
+  Computables=','(C,Cs),!,
   computable_list_(Cs,Xs).
 
 computable_list_(C,[C]).
@@ -59,7 +54,7 @@ assert_scoped(M,Head,Body) :-
 		 *******************************/
 
 %%
-is_object_computable(C) :-
+is_object_computable((:(_,C))) :-
   C=..[_,Property|_],
   is_object_property(Property).
 
@@ -67,15 +62,15 @@ is_object_computable(C) :-
 computable_reasoner_(_,[]) :- !.
 
 computable_reasoner_(M,ObjectComputables) :-
+  % assert various can_answer and infer clauses
+  forall(
+    member(C,ObjectComputables),
+    computable_reasoner2_(C)
+  ),
   % queries can be answered in case of property is a variable
   assert_scoped(M,
         can_answer(holds(_,P,_)),
         var(P)),
-  % assert various can_answer and infer clauses
-  forall(
-    member(C,ObjectComputables),
-    computable_reasoner2_(M,C)
-  ),
   % create one more *infer* clause that calls *infer2*
   % only if property is grounded (i.e. only yield specific
   % properties in case property is a var)
@@ -87,14 +82,13 @@ computable_reasoner_(M,ObjectComputables) :-
   % register reasoner
   reasoning_module(M).
 
-computable_reasoner2_(Module,ComputableTerm) :-
-  ComputableTerm=..[Predicate,Property|Configuration],
-  % validate
-  callable(Predicate),
+computable_reasoner2_(:(Module,ComputableTerm)) :-
+  ComputableTerm=..[Predicate,Property],
+  % TODO validate
   atom(Property),
   %
   forall(
-    subproperty_of(Property,SupProperty),
+    transitive(subproperty_of(Property,SupProperty)),
     ( % assert *can_answer* clause
       assert_can_answer_(Module,SupProperty),
       % assert *infer* clause
@@ -113,51 +107,51 @@ assert_can_answer_(M,P) :-
 assert_infer_(M,P_sup,P_specific,Predicate) :-
   ( P_sup=P_specific -> X=infer ; X=infer2 ),
   Head=..[X,holds(S,P_sup,O),holds(S,P_specific,O),Scope],
-  Body=..[Predicate,S,O,Scope],
-  assert_scoped(M,Head,Body).
+  Goal=..[Predicate,S,O],
+  assert_scoped(M,Head,ask(Goal,Scope)).
 
 		 /*******************************
 		 *	   OBDA	*
 		 *******************************/
 
 %%
-is_datatype_computable(C) :-
+is_datatype_computable((:(_,C))) :-
   C=..[_,Property|_],
   is_data_property(Property).
 
 %%
-computable_obda_([]) :- !.
+computable_obda_(_,[]) :- !.
 
 computable_obda_(M,DatatypeProperties) :-
+  % assert various can_access and access clauses
+  forall(
+    member(C,DatatypeProperties),
+    computable_obda2_(M,C)
+  ),
   % queries can be answered in case of property is a variable
   assert_scoped(M,
         can_access(holds(_,P,_)),
         var(P)),
-  % assert various can_access and access clauses
-  forall(
-    member(C,ObjectComputables),
-    computable_obda2_(M,C)
-  ),
   % register obda client
   obda_add(M).
 
 computable_obda2_(Module,ComputableTerm) :-
-  ComputableTerm=..[Predicate,Property|Configuration],
+  ComputableTerm=..[Predicate,Property],
   % validate
   callable(Predicate),
   atom(Property),
   %
   forall(
-    subproperty_of(Property,X),
+    transitive(subproperty_of(Property,X)),
     ( % assert *can_answer* clause
-      assert_can_access_(Module,SubProperty),
+      assert_can_access_(Module,X),
       % assert *infer* clause
-      assert_access_(Module,SubProperty,Property,Predicate)
+      assert_access_(Module,X,Property,Predicate)
     )
   ).
 
 %%
-assert_can_access_(P) :-
+assert_can_access_(M,P) :-
   Predicate=(:(M,can_access(P))),
   ( clause(Predicate,true) ;
     assertz(Predicate)

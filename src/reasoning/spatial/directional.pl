@@ -1,12 +1,12 @@
 :- module(spatial_directional,
-    [ is_ontop_of(r,r)     => knowrob:isOntopOf
-    , is_below_of(r,r)     => knowrob:isBelowOf
-    , is_above_of(r,r)     => knowrob:isAboveOf
-    , is_centered_at(r,r)  => knowrob:isInCenterOf
-    %, is_infront_of(r,r)   => knowrob:isInFrontOf
-    %, is_right_of(r,r)     => knowrob:isRightOf
-    %, is_left_of(r,r)      => knowrob:isLeftOf
-    %, is_next_to(r,r)      => knowrob:isNextTo
+    [ is_ontop_of(r,r)     -> knowrob:isOntopOf
+    , is_below_of(r,r)     -> knowrob:isBelowOf
+    , is_above_of(r,r)     -> knowrob:isAboveOf
+    , is_centered_at(r,r)  -> knowrob:isInCenterOf
+    %, is_infront_of(r,r)   -> knowrob:isInFrontOf
+    %, is_right_of(r,r)     -> knowrob:isRightOf
+    %, is_left_of(r,r)      -> knowrob:isLeftOf
+    %, is_next_to(r,r)      -> knowrob:isNextTo
     ]).
 /** <module> Predicates for spatial reasoning
 
@@ -25,6 +25,7 @@
 % @param Bottom Identifier of the lower Object
 %
 is_ontop_of(Top, Bottom) ?>
+  { ground([Top,Bottom]) },
   % FIXME: hardcoded map
   is_at(Top,    [map, [_,_,TZ], _]),
   is_at(Bottom, [map, [_,_,BZ], _]),
@@ -43,6 +44,7 @@ is_ontop_of(Top, Bottom) ?>
 % @param Bottom Identifier of the lower Object
 %
 is_above_of(Top, Bottom) ?>
+  { ground([Top,Bottom]) },
   % FIXME: hardcoded map
   is_at(Top,    [map, [_,_,TZ], _]),
   is_at(Bottom, [map, [_,_,BZ], _]),
@@ -74,6 +76,7 @@ is_below_of(Bottom, Top) ?>
 % @param Outer Identifier of the outer Object
 %
 is_centered_at(Inner, Outer) ?>
+  { ground([Inner,Outer]) },
   % FIXME: hardcoded map
   is_at(Inner, [map, [IX,IY,IZ], _]),
   is_at(Outer, [map, [OX,OY,OZ], _]),
@@ -82,7 +85,7 @@ is_centered_at(Inner, Outer) ?>
   { =<( abs( IX - OX), 0.20),
     =<( abs( IY - OY), 0.20),
     =<( abs( IZ - OZ), 0.20) 
-  }
+  }.
 
 %% is_left_of(?Left, ?Right) is nondet.
 %

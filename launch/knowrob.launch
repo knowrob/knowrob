@@ -4,7 +4,9 @@
   
   <!-- triple store configuration -->
   <arg name="pl_triple_store" default="db/mongo/triple_store" />
+  <arg name="whipe_triple_store" default="true" />
   <env name="KB_TRIPLE_STORE" value="$(arg pl_triple_store)" />
+  <env name="KB_WHIPE_TRIPLE_STORE" value="$(arg whipe_triple_store)" />
   
   <!-- Additional Prolog modules -->
   <arg name="pl_modules" default="db/mongo/ros" />
