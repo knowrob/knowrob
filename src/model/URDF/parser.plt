@@ -25,12 +25,12 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- begin_tests(urdf_parser).
+:- begin_tests('model/URDF/parser').
 
-:- use_module('urdf_parser').
+:- use_module('parser').
 
 test(load_urdf_file_pr2) :-
-  ros_package_path('urdfprolog', X),
+  ros_package_path('knowrob', X),
   atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', Filename),
   load_urdf_file(pr2,Filename).
 
@@ -399,4 +399,4 @@ test(link_collision_geometry_pr2_base_laser_link, fail) :-
 test(urdf_unload) :-
   unload_urdf_file(pr2).
 
-:- end_tests(urdf_parser).
+:- end_tests('model/URDF/parser').

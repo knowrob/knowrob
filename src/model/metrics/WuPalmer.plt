@@ -1,9 +1,9 @@
 
-:- begin_tests('knowrob/comp/wup_similarity').
+:- begin_tests('model/metrics/WuPalmer').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('knowrob/comp/wup_similarity')).
+:- use_module('./WuPalmer.pl').
 
 test('rdf_wup_similarity1') :-
   rdf_wup_similarity(dul:'Object', dul:'PhysicalObject', Sim),
@@ -13,4 +13,4 @@ test('rdf_wup_similarity2') :-
   rdf_wup_similarity(dul:'PhysicalObject', dul:'Object', Sim),
   rdf_wup_similarity(dul:'Object', dul:'PhysicalObject', Sim).
 
-:- end_tests('knowrob/comp/wup_similarity').
+:- end_tests('model/metrics/WuPalmer').

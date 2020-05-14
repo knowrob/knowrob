@@ -1,5 +1,5 @@
 
-:- begin_tests(spatial_directional).
+:- begin_tests('reasoning/spatial/directional').
 
 %:- use_module(library('semweb/rdfs')).
 %:- use_module(library('semweb/rdf_db')).
@@ -105,5 +105,5 @@
 %test(toTheSideOf3) :-
   %holds(test_sp:'cup1', knowrob:'isNextTo', test_sp:'cup2'),!.
 
-:- end_tests(spatial_directional).
+:- end_tests('reasoning/spatial/directional').
 

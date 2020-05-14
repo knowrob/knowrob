@@ -1,5 +1,5 @@
 
-:- begin_tests(model_EASE_OBJ).
+:- begin_tests('model/EASE/OBJ').
 
 test(model_EASE_OBJ) :-
   fail.
@@ -46,4 +46,4 @@ test(model_EASE_OBJ) :-
   %object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   %object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
 
-:- end_tests(model_EASE_OBJ).
+:- end_tests('model/EASE/OBJ').

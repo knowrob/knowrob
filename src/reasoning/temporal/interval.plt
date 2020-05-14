@@ -1,5 +1,5 @@
 
-:- begin_tests(time_interval).
+:- begin_tests('reasoning/temporal/interval').
 
 test(time_interval) :-
   fail.
@@ -42,4 +42,4 @@ test(time_interval) :-
 %test(interval_during10, [fail]) :-
   %interval_during([2.0,5.0], [2.0,4.0]).
 
-:- end_tests(time_interval).
+:- end_tests('reasoning/temporal/interval').
