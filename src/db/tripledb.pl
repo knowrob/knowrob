@@ -84,6 +84,10 @@ tripledb_load(URL,Options) :-
       rdf_register_ns(NS,Prefix,[keep(true)]));
     ( true )
   ),
+  ( member(namespace(NS,Prefix),Options) ->
+    ( rdf_register_ns(NS,Prefix,[keep(true)]));
+    ( true )
+  ),
   % get graph name
   ( member(graph(Graph),Options) ->
     ( true );

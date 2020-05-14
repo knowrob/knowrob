@@ -43,7 +43,7 @@
 % load OWL model
 :- tripledb_load('http://www.w3.org/2002/07/owl.rdf',
     [ graph(common),
-      namespace(owl)
+      namespace(owl,'http://www.w3.org/2002/07/owl#')
     ]).
 
 %% is_class(+Entity) is semidet.
