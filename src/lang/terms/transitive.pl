@@ -43,7 +43,7 @@ include_parents(Query) ?>
 % already handled on the DB level such that no sequential
 % querying is needed for these cases.
 %
-% @param A query term.
+% @param Query A query term.
 %
 transitive(Query) ?>
   { transitive_db_(Query),! },

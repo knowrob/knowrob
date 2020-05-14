@@ -36,6 +36,9 @@
 % True for statements that hold during the whole
 % duration of some time interval.
 %
+% @param Statement A language term.
+% @param Interval A time interval, instant, or event.
+%
 during(Query,Interval) ?>
   { var(Interval), ! },
   call(Query),
@@ -59,10 +62,13 @@ during(Fact,Interval) +>
   { time_scope(Since,_,Until,_,Scope) },
   call(Fact,[scope(Scope)]).
 
-%% since(+Statement,?Time) is nondet.
+%% since(+Statement,?Interval) is nondet.
 %
 % True for statements that hold (at least) since some time
 % instant.
+%
+% @param Statement A language term.
+% @param Interval A time interval, instant, or event.
 %
 since(Query,Since) ?>
   { var(Since), ! },
@@ -92,10 +98,13 @@ since(Fact,Interval) +>
   %       -> add new fact without until
   call(Fact,[scope(Scope)]).
 
-%% until(+Statement,?Time) is nondet.
+%% until(+Statement,?Interval) is nondet.
 %
 % True for statements that hold (at least) until some time
 % instant.
+%
+% @param Statement A language term.
+% @param Interval A time interval, instant, or event.
 %
 until(Query,Until) ?>
   { var(Until), ! },
@@ -127,9 +136,14 @@ until(Fact,Interval) +>
   % FIXME: it is not allowed to leave since var, I think
   call(Fact,[scope(Scope)]).
 
-%% time_scope_data(+Scope,?Interval) is det.
+%% time_scope_data(+Scope,?IntervalData) is det.
 %
 % Read since/until pair of temporal scope.
+% Note that vars are used in case since or until
+% not known.
+%
+% @param Scope A scope dict.
+% @param IntervalData A list [Since,Until].
 %
 time_scope_data(Scope,[Since,Until]) :-
   ( get_dict(time,Scope,X) ; X=Scope ),
@@ -137,14 +151,19 @@ time_scope_data(Scope,[Since,Until]) :-
   ( get_dict(until,X,double(Until)) ; Until=_ ),
   !.
 
-%%
+%% time_scope_universal(-Scope) is det.
 %
+% From begin of time until its end.
+%
+% @param Scope A scope dict.
 %
 time_scope_universal(Scope) :-
   time_scope(0, _, 'Infinity',_, _{ time: Scope }).
 
-%%
+%% time_scope_satisfies(+A,+B) is semidet.
 %
+% @param A A scope dict.
+% @param B A scope dict.
 %
 time_scope_satisfies(FScope,QScope) :-
   time_scope_data(FScope,[FSince,FUntil]),
@@ -162,8 +181,12 @@ time_scope_satisfies1(>=(V0),V1) :- time_scope_max_(V0,V1,V1).
 time_scope_satisfies1( <(V0),V1) :- time_scope_min_(V0,V1,V1).
 time_scope_satisfies1( >(V0),V1) :- time_scope_max_(V0,V1,V1).
 
-%%
-% All timepoints in Sub are also included in Sup.
+%% time_subscope_of(+A,+B) is semidet.
+%
+% All statements in A are also included in B.
+%
+% @param A A scope dict.
+% @param B A scope dict.
 %
 time_subscope_of(Sub,Sup) :-
   time_scope_data(Sub,[Sub0,Sub1]),
@@ -171,10 +194,15 @@ time_subscope_of(Sub,Sup) :-
   time_scope_min_(Sub0,Sup0,Sup0),
   time_scope_max_(Sub1,Sup1,Sup1).
 
-%%
-% Union is the scope containing all timepoints from
-% scope A and scope B, where A and B have overlapping
-% time scope (merge not possible if disjoint).
+%% time_scope_merge(+A,+B,-Merged) is semidet.
+%
+% Merged is the scope containing all statements from
+% scope A and scope B, where A and B overlap
+% (merge not possible if disjoint).
+%
+% @param A A scope dict.
+% @param B A scope dict.
+% @param Merged A scope dict.
 %
 time_scope_merge(A,B,Merged) :-
   time_scope_data(A,[Since0,Until0]),
@@ -188,9 +216,14 @@ time_scope_merge(A,B,Merged) :-
     Merged=_{ since: double(Since) }
   ).
 
-%%
+%% time_scope_merge(+A,+B,-Intersection) is semidet.
+%
 % Modify A such that it only contains time instants
 % that are also contained in B.
+%
+% @param A A scope dict.
+% @param B A scope dict.
+% @param Intersection A scope dict.
 %
 time_scope_intersect(A,B,Intersection) :-
   time_scope_data(A,[Since0,Until0]),
@@ -238,7 +271,16 @@ time_scope_max_(X0,_,_)    :- var(X0).
 time_scope_max_(_,X1,_)    :- var(X1).
 time_scope_max_(X0,X1,Max) :- Max is max(X0,X1).
 
-%%
+%% time_scope(+Since,+Op1,+Until,+Op2,-Scope) is det.
+%
+% Create a new scope dcitionary from given arguments.
+%
+% @param Since The since time.
+% @param Op1 The operator for since time.
+% @param Until The until time.
+% @param Op2 The operator for until time.
+% @param Scope A scope dict.
+%
 time_scope(Since,SinceOperator,Until,_,
            _{ time: _{ since: SinceTerm }}) :-
   var(Until),!,
@@ -260,6 +302,25 @@ get_scope1_(Value,Operator,Term) :-
     Term=..[Operator,double(Value)]
   ).
 
+get_time_interval_(Situation,TimeInterval) :-
+  is_situation(Situation),!,
+  % TODO: rather go over all included events to find time boundaries?
+  %         then no need to include some time interval
+  holds(Situation, dul:includesTime, TimeInterval).
+
+%%
+% Register temporal scope by declaring clauses in scope module.
+%
+scope:universal_scope(time,V)          :- time_scope_universal(V).
+scope:subscope_of(time,V0,V1)          :- time_subscope_of(V0,V1).
+scope:scope_satisfies(time,V0,V1)      :- time_scope_satisfies(V0,V1).
+scope:scope_merge(time,V0,V1,V)        :- time_scope_merge(V0,V1,V).
+scope:scope_intersect(time,V0,V1,V)    :- time_scope_intersect(V0,V1,V).
+scope:scope_query_overlaps(time,V0,V1) :- time_scope_query_overlaps(V0,V1).
+
+		 /*******************************
+		 *	    TIME INTERVALS     		*
+		 *******************************/
 
 %% time_interval_data(+In,-Out) is semidet.
 %
@@ -337,7 +398,6 @@ time_interval_start(Entity, Begin) :-
 time_interval_end(Entity, End) :-
   time_interval_data(Entity, _, End).
 
-
 %%
 get_time_interval_(TimeInterval,TimeInterval) :-
   is_time_interval(TimeInterval),!.
@@ -345,19 +405,3 @@ get_time_interval_(TimeInterval,TimeInterval) :-
 get_time_interval_(Event,TimeInterval) :-
   is_event(Event),!,
   holds(Event, dul:hasTimeInterval, TimeInterval).
-
-get_time_interval_(Situation,TimeInterval) :-
-  is_situation(Situation),!,
-  % TODO: rather go over all included events to find time boundaries?
-  %         then no need to include some time interval
-  holds(Situation, dul:includesTime, TimeInterval).
-
-%%
-%
-%
-scope:universal_scope(time,V)          :- time_scope_universal(V).
-scope:subscope_of(time,V0,V1)          :- time_subscope_of(V0,V1).
-scope:scope_satisfies(time,V0,V1)      :- time_scope_satisfies(V0,V1).
-scope:scope_merge(time,V0,V1,V)        :- time_scope_merge(V0,V1,V).
-scope:scope_intersect(time,V0,V1,V)    :- time_scope_intersect(V0,V1,V).
-scope:scope_query_overlaps(time,V0,V1) :- time_scope_query_overlaps(V0,V1).
