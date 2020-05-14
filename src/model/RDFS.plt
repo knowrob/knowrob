@@ -1,4 +1,3 @@
-
 :- begin_tests(model_RDFS).
 
 test(model_RDFS) :-

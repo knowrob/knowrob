@@ -16,8 +16,7 @@
       rdf_register_ns/3
     ]).
 :- use_module(library('http/http_open.pl'),
-    [ http_open/3
-    ]).
+    [ http_open/3 ]).
 
 :- rdf_register_ns(qudt,
     'http://data.nasa.gov/qudt/owl/qudt#', [keep(true)]).

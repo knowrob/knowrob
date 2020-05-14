@@ -11,7 +11,11 @@
 @author Daniel Beßler
 */
 
-%%
+%% xsd_data_type(?DataType) is nondet.
+%
+% True for all XSD data types such as xsd:string.
+%
+% @param DataType a XSD data type
 %
 xsd_data_type(DataType) :-
   ( xsd_numeric_type(DataType);
@@ -20,9 +24,11 @@ xsd_data_type(DataType) :-
     xsd_misc_type(DataType)
   ).
 
-%%
+%% xsd_data_basetype(?DataType,?PrologType) is nondet.
 %
 % FIXME: shouldn't basetype be float/double/int?
+%
+% @param DataType a XSD data type
 %
 xsd_data_basetype(DataType,number) :-
   xsd_numeric_type(DataType).
@@ -40,22 +46,33 @@ xsd_data_basetype(DataType,date) :-
 xsd_data_basetype(xsd:base64Binary,blob).
 xsd_data_basetype(xsd:hexBinary,blob).
 
-%%
+%% xsd_data_type_name(+DataType,-Name) is semidet.
+%
+% Split name from IRI of a XSD type.
+%
+% @param DataType a XSD data type
+% @param Name the XSD data type without IRI prefix
 %
 xsd_data_type_name(DataType,Name) :-
   ground(DataType),
   atom_concat('http://www.w3.org/2001/XMLSchema#',Name,DataType).
 
-%%
+%% xsd_string_type(?DataType) is nondet.
+%
 % String data types are used for values that contains character strings.
+%
+% @param DataType a XSD data type
 %
 xsd_string_type(xsd:'string').
 xsd_string_type(xsd:'token').
 xsd_string_type(xsd:'normalizedString').
 xsd_string_type(xsd:'language').
 
-%%
+%% xsd_date_type(?DataType) is nondet.
+%
 % Date and time data types are used for values that contain date and time.
+%
+% @param DataType a XSD data type
 %
 xsd_date_type(xsd:'date').
 xsd_date_type(xsd:'dateTime').
@@ -67,8 +84,11 @@ xsd_date_type(xsd:'gYear').
 xsd_date_type(xsd:'gYearMonth').
 xsd_date_type(xsd:'time').
 
-%%
+%% xsd_numeric_type(?DataType) is nondet.
+%
 % Decimal data types are used for numeric values.
+%
+% @param DataType a XSD data type
 %
 xsd_numeric_type(xsd:'byte').
 xsd_numeric_type(xsd:'decimal').
@@ -85,7 +105,9 @@ xsd_numeric_type(xsd:'unsignedInt').
 xsd_numeric_type(xsd:'unsignedShort').
 xsd_numeric_type(xsd:'unsignedByte').
 
-%% 
+%% xsd_misc_type(?DataType) is nondet.
+%
+% @param DataType a XSD data type
 %
 xsd_misc_type(xsd:'anyURI').
 xsd_misc_type(xsd:'base64Binary').
