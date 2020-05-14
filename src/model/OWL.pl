@@ -16,15 +16,16 @@
       has_disjoint_class(r,r),
       has_equivalent_class(r,r),
       same_as(r,r),
-      owl_description(r,t),
-      op(1000, fy, only),
-      op(1000, fy, some),
-      op(1000, fy, value)
+      owl_description(r,t)
     ]).
 /** <module> TODO ...
 
 @author Daniel Beßler
 */
+
+:- op(1000, fy, user:only).
+:- op(1000, fy, user:some).
+:- op(1000, fy, user:value).
 
 % TODO: allow expressions (A and B and (C or D))
 
