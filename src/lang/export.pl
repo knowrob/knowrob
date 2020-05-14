@@ -2,7 +2,7 @@
     [ remember/1,
       memorize/1
     ]).
-/** <module> ...
+/** <module> Interface for dumping knowledge and restoring it.
 
 @author Daniel Beßler
 @license BSD
@@ -19,18 +19,23 @@
 :- use_module(library('comm/notify'),
     [ notify/1 ]).
 
-%%
+%% remember(+Directory) is det.
 %
-remember( dir(Directory) ) :-
+% Restore memory previously stored into given directory.
+%
+% @param Directory filesystem path
+%
+remember(Directory) :-
   tripledb_import(Directory),
   obda_import(Directory),
-  % TODO: only notify about individuals with new rdf:type
-  %              assertion
-  forall( is_individual(I),
-          notify(individual(I)) ).
+  forall(is_individual(I), notify(individual(I))).
 
-%%
+%% memorize(+Directory) is det.
 %
-memorize( dir(Directory) ) :-
+% Store knowledge into given directory.
+%
+% @param Directory filesystem path
+%
+memorize(Directory) :-
   tripledb_export(Directory),
   obda_export(Directory).

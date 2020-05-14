@@ -1,10 +1,15 @@
 :- module(lang_transitive,
-    [ transitive(t)
+    [ transitive(t),      % +Query
+      include_parents(t)  % +Query
     ]).
+/** <module> Treat a query term as transitive relation.
+
+@author Daniel Beßler
+@license BSD
+*/
     
 :- use_module(library('db/scope'),
-    [ scope_intersect/3
-    ]).
+    [ scope_intersect/3 ]).
 
 %%
 :- rdf_meta(transitive_db_(t)).
@@ -13,11 +18,32 @@ transitive_db_(subproperty_of(_,_)).
 transitive_db_(triple(_,rdfs:subClassOf,_)).
 transitive_db_(triple(_,rdfs:subPropertyOf,_)).
 
-%%
+%% include_parents(+Query) is nondet.
+%
+% Calls a query but not only includes direct (specific) results
+% but also more general ones in case of a taxonomical property 
+% (type, subClassOf, subPropertyOf) is used in the query.
+%
+% @param A query term.
+%
 include_parents(Query) ?>
   call(Query, [options([include_parents(true)])]).
 
-%%
+%% transitive(+Query) is nondet.
+%
+% Assumes transitivity of a 2-ary or 3-ary query term,
+% meaning that if query holds for (A,B) and (B,C), then
+% it also holds for (A,C).
+% In the case of a 2-ary query term, the two arguments
+% are assumed to be the subject and the object of the relation.
+% In case of 3-ary queries, the object is the last argument,
+% and the middle argument is a property.
+%
+% Note that transitivity of subClassOf and subPropertyOf is
+% already handled on the DB level such that no sequential
+% querying is needed for these cases.
+%
+% @param A query term.
 %
 transitive(Query) ?>
   { transitive_db_(Query),! },

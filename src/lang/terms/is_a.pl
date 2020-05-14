@@ -1,11 +1,10 @@
 :- module(lang_is_a,
-    [ is_a(r,r),
-      instance_of(r,r),
-      subclass_of(r,r),
-      subproperty_of(r,r),
-      unique_name(r,-)
+    [ is_a(r,r),          % +Resource, ?Type
+      instance_of(r,r),   % ?Individual, ?Class
+      subclass_of(r,r),   % ?Class, ?SuperClass
+      subproperty_of(r,r) % ?Property, ?SuperProperty
     ]).
-/** <module> The *is_a* predicate.
+/** <module> Type checking predicates.
 
 @author Daniel Beßler
 @license BSD
@@ -14,57 +13,68 @@
 :- op(1000, xfx, user:is_a).
 
 :- use_module(library('comm/notify'),
-    [ notify/1
-    ]).
+    [ notify/1 ]).
 :- use_module(library('model/RDFS'),
-    [ is_resource/1
-    ]).
+    [ is_resource/1 ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
       is_individual/1
     ]).
 
-%% is_a(?A,?B) is nondet.
+%% is_a(+Resource,?Type) is nondet.
 %
-% Wrapper around instance_of and subclass_of.
+% Wrapper around instance_of, subclass_of, and subproperty_of.
 % Using this is a bit slower as an additional type check
-% is needed at the moment.
+% is needed.
 % For example: `Cat is_a Animal` and `Nibbler is_a Cat`.
+% 
+% Note that contrary to wrapped predicates, is_a/2 requires
+% the Resource to be ground.
 %
-is_a(A,B) ?>
-  { var(A); (is_individual(A),!) },
+% @param Resource a RDF resource
+% @param Type the type of the resource
+%
+is_a(A,_B) ?+>
+  { var(A),! },
+  { throw(error(instantiation_error, is_a(resource_is_var))) }.
+  
+is_a(A,B) ?+>
+  { is_individual(A),! },
   instance_of(A,B).
 
-is_a(A,B) ?>
-  { ground(A), is_class(A), ! },
+is_a(A,B) ?+>
+  { is_class(A),! },
   subclass_of(A,B).
 
-is_a(A,B) ?>
-  { ground(A), is_property(A), ! },
+is_a(A,B) ?+>
+  { is_property(A),! },
   subproperty_of(A,B).
 
-is_a(A,B) +>
-  { is_class(A), ! },
-  subclass_of(A,B).
-
-is_a(A,B) +>
-  { is_property(A), ! },
-  subproperty_of(A,B).
-
-is_a(A,B) +>
-  { ( var(A); is_individual(A) ), ! },
-  instance_of(A,B).
-
-%% instance_of(?A,?B) is nondet.
+%% instance_of(?Entity,?Type) is nondet.
 %
 % The type of an entity (rdf:type).
 % For example: `Nibbler instance_of Cat`.
 %
+% Note: that the *tell* clause of this rule allows
+% Entity to be a variable, in which case a new entity
+% symbol is generated.
+%
+% @param Entity a named individual
+% @param Type the type of the entity
+%
 instance_of(A,B) ?> has_type(A,B).
 
 instance_of(A,B) +>
-  { owl_description(B,intersection_of(List)),! },
+  { is_list(B), ! },
+  instance_of_all(A,B).
+
+instance_of(A,B) +>
+  % special handling of intersection classes:
+  %    auto expand into multiple assertions.
+  has_description(B,intersection_of(List)),
+  { ! },
   instance_of_all(A,List).
+
 instance_of(A,B) +>
   % generate a new name in case A is a variable
   { var(A), ! },
@@ -73,33 +83,39 @@ instance_of(A,B) +>
     tell(is_individual(A)) ;
     true },
   instance_of(A,B).
+
 instance_of(A,B) +>
   triple(A,rdf:type,B),
   notify(individual(A)).
 
 %%
-instance_of_all(_S,[]) ?+> { true }.
+instance_of_all(_S,[])          ?+> { true }.
 instance_of_all(S,[First|Rest]) ?+>
   instance_of(S,First),
   instance_of_all(S,Rest).
 
-%% subclass_of(?A,?B) is nondet.
+%% subclass_of(?Class,?SuperClass) is nondet.
 %
 % The subclass-of relation (rdfs:subClassOf).
 % For example: `Cat subclass_of Animal`.
 %
+% @param Class a class IRI
+% @param SuperClass a class IRI
+%
 subclass_of(A,B) ?> { ground([A,B]), A=B, ! }.
 subclass_of(A,B) ?+> triple(A,rdfs:subClassOf,B).
 
-%% subproperty_of(?A,?B) is nondet.
+%% subproperty_of(?Property,?SuperProperty) is nondet.
 %
 % The subproperty-of relation (rdfs:subPropertyOf).
+%
+% @param Property a property IRI
+% @param SuperProperty a property IRI
 %
 subproperty_of(A,B) ?> { ground([A,B]), A=B, ! }.
 subproperty_of(A,B) ?+> triple(A,rdfs:subPropertyOf,B).
 
-%% unique_name(+Type,-Name) is det.
-%
+%%
 % Obtain IRI not yet used by any resource.
 %
 unique_name(Type,Name) :-

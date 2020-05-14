@@ -40,6 +40,11 @@ ask(Statement) :-
 % of the statement being true.
 % Statement can also be a list of statements.
 %
+% ask/2 is a multifile predicate. Meaning that clauses may be
+% decalared in multiple files.
+% Specifically, declaring a rule using the ask operator `?>`,
+% or the ask-tell operator `?+>` will generate a clause of the ask rule.
+%
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
@@ -74,6 +79,11 @@ tell(Statement) :-
 % the scope of the statement being true.
 % Statement can also be a list of statements.
 %
+% tell/2 is a multifile predicate. Meaning that clauses may be
+% decalared in multiple files.
+% Specifically, declaring a rule using the tell operator `+>`,
+% or the ask-tell operator `?+>` will generate a clause of the tell rule.
+%
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
@@ -88,6 +98,7 @@ tell(triple(S,P,O),QScope) :-
 tell(triple(S,P,O),[Options,QScope]) :-
   tripledb_tell(S,P,O,QScope,Options).
 
+%%
 tell_all([],_) :- !.
 tell_all([X|Xs],QScope) :-
   tell(X,QScope),

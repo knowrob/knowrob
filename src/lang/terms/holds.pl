@@ -9,11 +9,9 @@
 */
 
 :- use_module(library('model/XSD'),
-    [ xsd_data_basetype/2
-    ]).
+    [ xsd_data_basetype/2 ]).
 :- use_module(library('model/RDFS'),
-    [ has_range/2
-    ]).
+    [ has_range/2 ]).
 :- use_module(library('model/OWL'),
     [ is_object_property/1,
       is_functional_property/1,
@@ -28,25 +26,30 @@
 
 %% holds(+Query) is nondet.
 %
-% Same as holds/3, but expects a single term as argument.
+% Same as holds/3 with arguments wrapped into a single
+% term `Property(Subject,Value)`.
 %
-% @param Query Must be of the form: PROPERTY(SUBJECT, OBJECT).
+% @param Query the query term.
 %
 holds(Query) ?>
   { Query =.. [P,S,O] },
   holds(S,P,O).
 
-%% holds(?S, ?P, ?O) is nondet.
+%% holds(?Subject, ?Property, ?Value) is nondet.
 %
-% True for triples (S,P,O) that are known
-% or that can be deduced by on-demand reasoning.
+% Query values of a property on some subject.
+% Property may also be a list interpreted as a chain of properties,
+% thus yielding all values connected to the subject via the chain.
+% In case of datatype properties, the value may be a term `Operator(Value)`
+% where Operator is a comparison operator (e.g. "<"), meaning that only triples
+% are yielded where the comparison between actual value and Value yields true.
 %
 % NOTE: holds can only be used with OWL ObjectProperties
-%       and DatatypeProperies.
+%       and DatatypeProperties.
 %
-% @param S The subject of a triple.
-% @param P The predicate of a triple.
-% @param O The object of a triple.
+% @param Subject The subject of a triple.
+% @param Property The predicate of a triple.
+% @param Value The object of a triple.
 %
 holds(S,Chain,O) ?>
   { is_list(Chain),! },
@@ -56,6 +59,7 @@ holds(S,P,O) ?>
   { once((var(P); is_object_property(P))) },
   { strip_operator_(O,O1,=) },
   holds_object(S,P,O1),
+  % TODO: check is_object_property(P) in case it was a var before.
   % limit result count to 1 if property is functional
   % TODO: this is problematic because inconsistent assertions
   %          cannot be retrieved. But at least reasoning could
@@ -148,7 +152,6 @@ data_term_unify_(Operator,Query,DataValue,DataUnit) :-
   call(Goal).
 
 data_term_unify_('=',DataValue,DataValue,_).
-  
 
 %%
 % Extract operator from value term.

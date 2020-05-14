@@ -275,7 +275,6 @@ time_interval_data(Instant, Instant, Instant) :-
   !.
 time_interval_data(Entity, Begin, End) :-
   get_time_interval_(Entity,Interval),
-  % FIXME: needs to move to EASE
   % TODO: rather use interval term and only one assertion for intervals!
   ignore(holds(Interval, ease:hasIntervalBegin, Begin)),
   ignore(holds(Interval, ease:hasIntervalEnd, End)),
