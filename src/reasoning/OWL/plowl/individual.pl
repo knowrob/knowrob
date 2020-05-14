@@ -13,7 +13,7 @@
     ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
-      owl_description/2
+      has_description/2
     ]).
 :- use_module(library('lang/terms/is_a'),
     [ subclass_of/2
@@ -73,7 +73,7 @@ owl_satisfied_by(Class,_,_) :-
   fail.
 
 owl_satisfied_by(Class,Subject,Scope) :-
-  owl_description(Class,Descr),
+  has_description(Class,Descr),
   ( ground(Subject) ->
     ( owl_satisfied_by1(Descr,Subject,Scope,[]),! );
     ( owl_satisfied_by1(Descr,Subject,Scope,[]) )
@@ -89,7 +89,7 @@ owl_satisfied_by1(class(Class),Subject,Scope,_) :-
   
 owl_satisfied_by1(class(Class),Subject,Scope,Visited) :-
   has_equivalent_class(Class,EQ),
-  owl_description(EQ,EQDescr),
+  has_description(EQ,EQDescr),
   owl_satisfied_by1(EQDescr,Subject,Scope,[Class|Visited]).
 
 %owl_satisfied_by1(complement_of(Cls),Subject,Scope) :-

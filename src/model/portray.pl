@@ -32,7 +32,8 @@ convert_(A,B) :-
   % this is the case e.g. for OWL restriction classes
   (atom(A);string(A)),
   atom_concat('_',_,A),
-  ask(has_description(A,B0)),!,
+  ask(has_description(A,B0)),
+  B0 \= class(_),!,
   convert_(B0,B).
 
 convert_(A,:(Prefix,NameEnquoted)) :-

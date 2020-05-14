@@ -15,8 +15,8 @@
       has_property_chain(r,t),
       has_disjoint_class(r,r),
       has_equivalent_class(r,r),
-      same_as(r,r),
-      owl_description(r,t)
+      has_description(r,t),
+      same_as(r,r)
     ]).
 /** <module> The Web Ontology Language (OWL) model.
 
@@ -153,10 +153,17 @@ is_data_property(Entity) ?+>
 % @param Class an OWL class
 % @param Descr Prolog term representing the class
 %
+has_description(Descr,Descr) ?> { compound(Descr), ! }.
+
+has_description(Class,_) ?>
+  { \+ ground(Class), !, }
+  { throw(error(instantiation_error, has_description)) }.
+
 has_description(Class,Descr) ?> is_restriction1(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_union_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_intersection_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_complement_of(Class,Descr), { ! }.
+has_description(Class,class(Class)) ?> { true }.
 
 %% is_restriction(?Restr,?Descr) is nondet.
 %
@@ -402,49 +409,6 @@ same_as1([Entity|Queue],Same,Visited) :-
 same_as_direct(Entity,Same) :-
   tripledb_ask(Entity, owl:sameAs, Same) ;
   tripledb_ask(Same,   owl:sameAs, Entity).
-
-%% owl_description(+IRI, -Term) is det.
-%
-% Convert an owl description into a Prolog representation.  This
-% representation is:
-%
-%    * class(Class)
-%    * only(Property,Description)
-%    * some(Property,Description)
-%    * min(Property,Min,Description)
-%    * max(Property,Max,Description)
-%    * exactly(Property,Count,Description)
-%    * union_of(ListOfDescriptions)
-%    * intersection_of(ListOfDescriptions)
-%    * complement_of(Description)
-%    * one_of(Individuals)
-%
-%  For example, the union-of can be the result of
-%
-%  ==
-%  <rdfs:Class rdf:ID="myclass">
-%    <owl:unionOf parseType=Collection>
-%      <rdf:Description rdf:about="gnu"/>
-%      <rdf:Description rdf:about="gnat"/>
-%    </owl:unionOf>
-%  </rdfs:Class>
-%  ==
-%
-% TODO: maybe remove, and just use has_description
-%
-owl_description(Descr,Descr) :-
-  compound(Descr), !.
-
-owl_description(IRI,_) :-
-  \+ ground(IRI), !,
-  throw(error(instantiation_error, _)).
-
-owl_description(IRI,Descr) :-
-  ( has_description(IRI,Descr) ; (
-    atom(IRI),
-    Descr=class(IRI)
-  )),!.
-
 
 % TODO: needs to be handled elsewhere
 %tripledb_tell(S,P,O,Scope,Graph) :-
