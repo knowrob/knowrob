@@ -31,6 +31,7 @@
 :- ros_package_iri(ease_ontology, 'http://www.ease-crc.org/ont').
 :- ros_package_iri(rosowl,        'http://www.ease-crc.org/ont').
 :- ros_package_iri(knowrob,       'http://knowrob.org/kb').
+:- ros_package_iri(knowrob,       'http://www.w3.org/2002/07').
 
 % initialize databases
 :- use_directory('db').

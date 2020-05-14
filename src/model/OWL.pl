@@ -41,14 +41,9 @@
     ]).
 
 % load OWL model
-% FIXME: bad import, rather import by regular URL,
-%           but map to package internally
-:- rdf_register_ns(owl,
-    'http://www.w3.org/2002/07/owl#',
-    [ keep(true)
-    ]).
-:- tripledb_load('package://knowrob/owl/owl.owl',
-    [ graph(common)
+:- tripledb_load('http://www.w3.org/2002/07/owl.rdf',
+    [ graph(common),
+      namespace(owl)
     ]).
 
 %% is_class(+Entity) is semidet.
@@ -156,7 +151,7 @@ is_data_property(Entity) ?+>
 has_description(Descr,Descr) ?> { compound(Descr), ! }.
 
 has_description(Class,_) ?>
-  { \+ ground(Class), !, }
+  { \+ ground(Class), ! },
   { throw(error(instantiation_error, has_description)) }.
 
 has_description(Class,Descr) ?> is_restriction1(Class,Descr), { ! }.
