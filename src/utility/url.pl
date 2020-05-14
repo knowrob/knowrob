@@ -52,7 +52,7 @@ ros_resolve(URL,LocalPath) :-
   %% convention is that rdf files are stored in a directory named "owl" or "rdf"
   ( path_concat(PkgPath,owl,Dir);
     path_concat(PkgPath,rdf,Dir);
-    path_concat(PkgPath,Dir)
+    Dir=PkgPath
   ),
   path_concat(Dir,FileName,LocalPath),
   exists_file(LocalPath).
