@@ -424,6 +424,8 @@ strip_type_(Term,Type,X) :-
   Term=..[Type,X],
   type_mapping_(Type,_).
 strip_type_(X,double,X) :- number(X),!.
+% FIXME: below makes it impossible to ask for string values true/false
+strip_type_(X,bool,X) :- ground(X), (X=true;X=false), !.
 % FIXME var(X) always ends in string, but holds takes care of setting type
 %                  better do not require type in query!
 strip_type_(X,string,X).
@@ -437,6 +439,7 @@ type_mapping_(int,    int).
 type_mapping_(short,  int).
 type_mapping_(byte,   int).
 type_mapping_(string, string).
+type_mapping_(bool,   bool).
 
 		 /*******************************
 		 *	   PROPAGATION       *
