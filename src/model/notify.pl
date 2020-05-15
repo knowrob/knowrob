@@ -21,6 +21,7 @@
     ]).
 :- use_module('./DUL/Object.pl',
     [ is_object/1,
+      is_concept/1,
       is_physical_object/1,
       is_physical_object/1
     ]).
