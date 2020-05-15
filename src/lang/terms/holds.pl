@@ -81,7 +81,8 @@ holds(S,P,DataTerm) ?>
     %       in case of unit conversion.
     % TODO: better convert request to unit in which data is stored
     %       before querying! would need a kind of schema.
-    ( ValueQuery=..[=,            unit(DataValue,DataUnit)] );
+    % FIXME basetype missing in second case!
+    ( ValueQuery=..[=,            unit(double(DataValue),DataUnit)] );
     ( ValueQuery=..[QueryOperator,unit(DataValue,DataUnit)],
       DataValue=QueryValue )
   },
