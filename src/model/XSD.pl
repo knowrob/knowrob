@@ -34,7 +34,8 @@ xsd_data_basetype(DataType,number) :-
   xsd_numeric_type(DataType).
 xsd_data_basetype(xsd:double,number).
 xsd_data_basetype(xsd:float,number).
-xsd_data_basetype(xsd:boolean,number).
+
+xsd_data_basetype(xsd:boolean,bool).
 
 xsd_data_basetype(DataType,string) :-
   xsd_string_type(DataType).
