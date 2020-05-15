@@ -6,10 +6,8 @@
 
 :- use_module('./plowl/class.pl',      [ owl_subclass_of/2 ]).
 :- use_module('./plowl/individual.pl', [ owl_individual_of/3 ]).
-:- use_module('./plowl/property.pl',
-    [ owl_subproperty_of/2,
-      owl_has/4
-    ]).
+:- use_module('./plowl/property.pl',   [ owl_subproperty_of/2,
+                                         owl_has/4 ]).
 
 :- reasoning_module(owl_reasoner).
 

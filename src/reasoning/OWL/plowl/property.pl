@@ -3,7 +3,7 @@
       owl_has(r,r,r,t),
       owl_cardinality(r,r,r,?,t)
     ]).
-/** <module> TODO ...
+/** <module> Reasoning about OWL properties.
 
 @author Daniel Beßler
 */
