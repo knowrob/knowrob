@@ -14,18 +14,16 @@
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-PROC.owl',
     [ graph(tbox),
       namespace(ease_proc)
     ]).
 
-%% is_chemical_process(+Entity) is semidet.
+%% is_chemical_process(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'ChemicalProcess'.
 %
@@ -34,7 +32,7 @@
 is_chemical_process(Entity) ?+>
   has_type(Entity, ease_proc:'ChemicalProcess').
 
-%% is_physical_process(+Entity) is semidet.
+%% is_physical_process(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease:'PhysicalProcess'.
 %
@@ -43,7 +41,7 @@ is_chemical_process(Entity) ?+>
 is_physical_process(Entity) ?+>
   has_type(Entity, ease:'PhysicalProcess').
 
-%% is_process_flow(+Entity) is semidet.
+%% is_process_flow(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'ProcessFlow'.
 %
@@ -52,7 +50,7 @@ is_physical_process(Entity) ?+>
 is_process_flow(Entity) ?+>
   has_type(Entity, ease_proc:'ProcessFlow').
 
-%% is_process_type(+Entity) is semidet.
+%% is_process_type(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'ProcessType'.
 %
@@ -61,7 +59,7 @@ is_process_flow(Entity) ?+>
 is_process_type(Entity) ?+>
   has_type(Entity, ease_proc:'ProcessType').
 
-%% is_motion(+Entity) is semidet.
+%% is_motion(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'Motion'.
 %
@@ -70,7 +68,7 @@ is_process_type(Entity) ?+>
 is_motion(Entity) ?+>
   has_type(Entity, ease_proc:'Motion').
 
-%% is_force_interaction(+Entity) is semidet.
+%% is_force_interaction(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'ForceInteraction'.
 %
@@ -79,7 +77,7 @@ is_motion(Entity) ?+>
 is_force_interaction(Entity) ?+>
   has_type(Entity, ease_proc:'ForceInteraction').
 
-%% is_progression(+Entity) is semidet.
+%% is_progression(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_proc:'Progression'.
 %

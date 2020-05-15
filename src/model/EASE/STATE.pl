@@ -12,18 +12,16 @@
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-STATE.owl',
     [ graph(tbox),
       namespace(ease_state)
     ]).
 
-%% is_state(+Entity) is semidet.
+%% is_state(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_state:'State'.
 %
@@ -32,7 +30,7 @@
 is_state(Entity) ?+>
   has_type(Entity, ease_state:'State').
 
-%% is_physical_state(+Entity) is semidet.
+%% is_physical_state(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_state:'PhysicalState'.
 %
@@ -41,7 +39,7 @@ is_state(Entity) ?+>
 is_physical_state(Entity) ?+>
   has_type(Entity, ease_state:'PhysicalState').
 
-%% is_social_state(+Entity) is semidet.
+%% is_social_state(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_state:'SocialState'.
 %
@@ -50,7 +48,7 @@ is_physical_state(Entity) ?+>
 is_social_state(Entity) ?+>
   has_type(Entity, ease_state:'SocialState').
 
-%% is_configuration(+Entity) is semidet.
+%% is_configuration(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_state:'Configuration'.
 %
@@ -59,7 +57,7 @@ is_social_state(Entity) ?+>
 is_configuration(Entity) ?+>
   has_type(Entity, ease_state:'Configuration').
 
-%% is_state_type(+Entity) is semidet.
+%% is_state_type(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_state:'StateType'.
 %
