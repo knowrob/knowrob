@@ -23,7 +23,7 @@
 % TODO load into DB backend
 %:- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
     %[ graph(qudt),
-      %namespace(ease_act)
+      %namespace(qudt)
     %]).
 
 :- dynamic qudt_unit/4.

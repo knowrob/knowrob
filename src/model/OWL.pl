@@ -23,11 +23,25 @@
 @author Daniel Beßler
 */
 
+%%
+% Manchester OWL Syntax Precedence:
+%   - some, all, value, min, max, exactly, that
+%   - not
+%   - and
+%   - or
+%
 :- op(1000, fy, user:only).
+%:- op(1000, fy, user:all).
 :- op(1000, fy, user:some).
 :- op(1000, fy, user:value).
-
+%:- op(1000, fy, user:min).
+%:- op(1000, fy, user:max).
+%:- op(1000, fy, user:exactly).
+:- op(999,  fy, user:not).
 % TODO: allow expressions (A and B and (C or D))
+%        stop using intersection_of and union_of terms
+%:- op(998, xfy, user:and).
+%:- op(997, xfy, user:or).
 
 :- use_module(library('semweb/rdf_db'),
     [ rdf_register_ns/3 ]).
@@ -131,7 +145,7 @@ is_data_property(Entity) ?+>
 %    * exactly(Property,Count,Class)
 %    * union_of(Classes)
 %    * intersection_of(Classes)
-%    * complement_of(Class)
+%    * not(Class)
 %    * one_of(Individuals)
 %
 %  For example, the union-of can be the result of
@@ -254,11 +268,11 @@ is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
 % @param ComplementClass an OWL restriction class
 % @param Descr Prolog term representing the class
 %
-is_complement_of(ComplementClass,complement_of(Class)) +>
+is_complement_of(ComplementClass,not(Class)) +>
   is_class(ComplementClass),
   triple(ComplementClass,owl:complementOf,Class).
 
-is_complement_of(ComplementClass,complement_of(Class)) ?>
+is_complement_of(ComplementClass,not(Class)) ?>
   triple(ComplementClass,owl:complementOf,Class).
 
 %% has_inverse_property(?Property, ?Inverse) is nondet.
@@ -445,8 +459,8 @@ subclass_of_description(Class,intersection_of(List)) ?+>
 subclass_of_description(Class,union_of(List)) ?+>
   { ! }, subclass_of_description_(Class,union_of(List),is_union_of).
   
-subclass_of_description(Class,complement_of(O)) ?+>
-  { ! }, subclass_of_description_(Class,complement_of(O),is_complement_of).
+subclass_of_description(Class,not(O)) ?+>
+  { ! }, subclass_of_description_(Class,not(O),is_complement_of).
 
 subclass_of_description(Class,Descr) ?+>
   { is_restriction_term_(Descr),! },
@@ -480,8 +494,8 @@ instance_of_description(S,intersection_of(List)) ?+>
 instance_of_description(S,union_of(List)) ?+>
   { ! }, instance_of_description_(S,union_of(List),is_union_of).
   
-instance_of_description(S,complement_of(Cls)) ?+>
-  { ! }, instance_of_description_(S,complement_of(Cls),is_complement_of).
+instance_of_description(S,not(Cls)) ?+>
+  { ! }, instance_of_description_(S,not(Cls),is_complement_of).
 
 instance_of_description(S,value(P,O)) ?>
   { var(P),! },

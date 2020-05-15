@@ -24,6 +24,8 @@
 
 %% owl_individual_of(?Subject,?Class,+Scope) is nondet.
 %
+% TODO: subject is instance_of not(A) if it is subclass of
+%          a class disjoint to A? That seems to be not covered here.
 %
 owl_individual_of(Subject,Class,QScope->FScope) :-
   var(Class),!,
@@ -92,7 +94,7 @@ owl_satisfied_by1(class(Class),Subject,Scope,Visited) :-
   has_description(EQ,EQDescr),
   owl_satisfied_by1(EQDescr,Subject,Scope,[Class|Visited]).
 
-%owl_satisfied_by1(complement_of(Cls),Subject,Scope) :-
+%owl_satisfied_by1(not(Cls),Subject,Scope) :-
   %\+ owl_individual_of(Subject,Cls,Scope).
 
 owl_satisfied_by1(intersection_of(Set),Subject,Scope,_) :-

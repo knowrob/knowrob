@@ -144,7 +144,6 @@ is_rdf_list(RDFList,[X|Xs]) ?>
 
 is_rdf_list(RDFList,[X|Xs]) +>
   is_rdf_list(Ys,Xs),
-  % TODO: might be overkill to have rdf:type for each sublist?
   has_type(RDFList, rdf:'List'),
   triple(RDFList, rdf:first, X),
   triple(RDFList, rdf:rest, Ys).
