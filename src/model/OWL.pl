@@ -528,7 +528,7 @@ instance_of_description_(S,Descr,Goal) ?+>
 %
 holds(S,P,O) ?>
   { \+ compound(O) },
-  instance_of(S,value(P,O)).
+  instance_of_description_(S,value(P,O),is_restriction).
 
 holds(S,P,Descr) ?+>
   { compound(Descr) },
