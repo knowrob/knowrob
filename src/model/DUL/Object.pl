@@ -1,6 +1,7 @@
 :- module(model_DUL_Object,
     [ is_object(r),
       is_quality(r),  % ?Quality
+      is_concept(r),
       is_role(r),   % ?Role
       is_agent(r),
       is_physical_object(r),
@@ -47,6 +48,15 @@ is_object(Entity) ?+>
 %
 is_quality(Entity) ?+>
   has_type(Entity, dul:'Quality').
+
+%% is_concept(?Entity) is nondet.
+%
+% True iff Entity is an instance of dul:'Concept'.
+%
+% @param Entity An entity IRI.
+%
+is_concept(Entity) ?+>
+  has_type(Entity, dul:'Concept').
 
 %% is_role(?Entity) is nondet.
 %
