@@ -259,7 +259,7 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
   ( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',string(Subject)]) ),
   ( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,[Operator,MngValue]]) ),
   ( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,string(Property)]) ),
-  ( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',Unit]) ),
+  ( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
   mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]]),
   filter_scope_(Cursor,Scope),
   !.
@@ -313,23 +313,12 @@ triple_query_unify1_(Doc,ValueQuery,Options) :-
     ( member(Value,Values) );
     ( mng_get_dict('o',Doc,Value) )
   ),
-  strip_type_(Value,_,Value0),
   once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
   %%
   strip_operator_(ValueQuery,_,Value1),
-  strip_type_(Value1,_,Value2),
-  triple_query_unify2_(Value0,Unit,Value2).
-
-triple_query_unify2_(Value0,Unit,Value1) :-
-  var(Value1),!,
-  ( var(Unit) -> Value1=Value0; Value1=..[Unit,Value0] ).
-
-triple_query_unify2_(Value0,Unit,unit(Value1,Unit)) :-
-  !,
-  triple_query_unify2_(Value0,Unit,Value1).
-
-triple_query_unify2_(Value0,_Unit,Value1) :-
-  strip_type_(Value0,_,Value1).
+  strip_unit_(Value1,Unit,Value2),
+  strip_type_(Value2,_,Value3),
+  strip_type_(Value,_,Value3).
 
 		 /*******************************
 		 *	   .....              	*
@@ -339,9 +328,9 @@ triple_query_unify2_(Value0,_Unit,Value1) :-
 mng_query_value_(Query,Operator,Value,Unit) :-
   % get operator
   strip_operator_(Query,Operator0,Query0),
-  operator_mapping_(Operator0,Operator),
+  operator_mapping_(Operator0,Operator),!,
   % get unit if any
-  strip_unit_(Query0,Unit,Query1),
+  strip_unit_(Query0,Unit,Query1),!,
   % finally get value
   strip_type_(Query1,Type0,Value0),
   type_mapping_(Type0,MngType),
@@ -350,7 +339,9 @@ mng_query_value_(Query,Operator,Value,Unit) :-
 
 % TODO: better use units as replacement of type.
 %          I guess all qudt units are double basetype?
-strip_unit_(unit(X,Unit),Unit,X) :- ground(X).
+strip_unit_(Term,Unit,X) :-
+  compound(Term),
+  Term=unit(X,Unit),!.
 strip_unit_(X,_,X).
 
 %%
@@ -420,12 +411,12 @@ operator_mapping_('<', '$lt').
 
 %%
 strip_operator_(    X, =,X) :- var(X),!.
-strip_operator_( =(X), =,X).
-strip_operator_(>=(X),>=,X).
-strip_operator_(=<(X),=<,X).
-strip_operator_( <(X), <,X).
-strip_operator_( >(X), >,X).
-strip_operator_(    X, =,X).
+strip_operator_( =(X), =,X) :- !.
+strip_operator_(>=(X),>=,X) :- !.
+strip_operator_(=<(X),=<,X) :- !.
+strip_operator_( <(X), <,X) :- !.
+strip_operator_( >(X), >,X) :- !.
+strip_operator_(    X, =,X) :- !.
 
 %%
 strip_type_(Term,Type,X) :-
