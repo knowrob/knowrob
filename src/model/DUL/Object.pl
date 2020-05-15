@@ -20,11 +20,9 @@ In DUL, Object is defined as:
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
@@ -32,7 +30,7 @@ In DUL, Object is defined as:
       namespace(dul)
     ]).
 
-%% is_object(+Entity) is semidet.
+%% is_object(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Object'.
 %
@@ -41,7 +39,7 @@ In DUL, Object is defined as:
 is_object(Entity) ?+>
   has_type(Entity, dul:'Object').
 
-%% is_quality(+Entity) is semidet.
+%% is_quality(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Quality'.
 %
@@ -50,7 +48,7 @@ is_object(Entity) ?+>
 is_quality(Entity) ?+>
   has_type(Entity, dul:'Quality').
 
-%% is_role(+Entity) is semidet.
+%% is_role(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Role'.
 %
@@ -59,7 +57,7 @@ is_quality(Entity) ?+>
 is_role(Entity) ?+>
   has_type(Entity, dul:'Role').
 
-%% is_agent(+Entity) is semidet.
+%% is_agent(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Agent'.
 %
@@ -68,7 +66,7 @@ is_role(Entity) ?+>
 is_agent(Entity) ?+>
   has_type(Entity, dul:'Agent').
 
-%% is_physical_object(+Entity) is semidet.
+%% is_physical_object(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'PhysicalObject'.
 %
@@ -77,7 +75,7 @@ is_agent(Entity) ?+>
 is_physical_object(Entity) ?+>
   has_type(Entity, dul:'PhysicalObject').
 
-%% is_social_object(+Entity) is semidet.
+%% is_social_object(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'SocialObject'.
 %
@@ -86,7 +84,13 @@ is_physical_object(Entity) ?+>
 is_social_object(Entity) ?+>
   has_type(Entity, dul:'SocialObject').
 
-%%
+%% has_quality_type(+Entity,?Type) is nondet.
+%
+% Relates an entity to its types that are sub-classes
+% of the Quality concept.
+%
+% @param Entity named individual
+% @param Type class resource
 %
 has_quality_type(Entity,Type) ?>
   has_type(Entity,Type),
@@ -94,7 +98,13 @@ has_quality_type(Entity,Type) ?>
   % only yield one type
   { ! }.
 
-%%
+%% has_object_type(+Entity,?Type) is nondet.
+%
+% Relates an entity to its types that are sub-classes
+% of the Object concept.
+%
+% @param Entity named individual
+% @param Type class resource
 %
 has_object_type(Entity,Type) ?>
   has_type(Entity,Type),
@@ -102,12 +112,25 @@ has_object_type(Entity,Type) ?>
   % only yield one type
   { ! }.
 
-%%
+%% has_location(?Object, ?Location) is nondet.
+%
+% A generic, relative spatial location, holding between any entities. E.g.
+% - 'the cat is on the mat',
+% - 'Omar is in Samarcanda',
+% - 'the wound is close to the femural artery'.
+%
+% @param Object named individual
+% @param Location named individual
 %
 has_location(Object, Location) ?+>
   holds(Object, dul:hasLocation, Location).
 
-%%
+%% has_role(?Entity,?Role) is nondet.
+%
+% Relates an object to its roles.
+%
+% @param Entity named individual
+% @param Role named individual
 %
 has_role(Entity,Role) ?+>
   holds(Role, dul:classifies, Entity).
