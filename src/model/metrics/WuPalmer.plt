@@ -1,8 +1,6 @@
 
 :- begin_tests('model/metrics/WuPalmer').
 
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs')).
 :- use_module('./WuPalmer.pl').
 
 test('rdf_wup_similarity1') :-
