@@ -22,9 +22,6 @@
     ]).
 :- rdf_register_ns(rdfs,
     'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-% TODO move somewhere else
-:- rdf_register_ns(io,
-    'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl#', [keep(true)]).
 
 %% is_resource(+Entity) is semidet.
 %
