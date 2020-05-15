@@ -37,6 +37,7 @@
 %:- op(1000, fy, user:min).
 %:- op(1000, fy, user:max).
 %:- op(1000, fy, user:exactly).
+%:- op(1000, xfy, user:that).
 :- op(999,  fy, user:not).
 % TODO: allow expressions (A and B and (C or D))
 %        stop using intersection_of and union_of terms
