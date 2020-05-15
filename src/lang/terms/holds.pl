@@ -172,6 +172,7 @@ strip_operator_(X,     X, =).
 % Extract unit from value term.
 %
 data_term_unit_(DataTerm,_,_) :- var(DataTerm), !.
+data_term_unit_(unit(DataValue,DataUnit),DataValue,DataUnit) :- !.
 data_term_unit_(DataTerm,DataValue,DataUnit) :-
   compound(DataTerm), !,
   DataTerm =.. [DataUnit,DataValue],
@@ -200,3 +201,5 @@ data_base_type_(Property,_DataValue,XSDType) :-
 data_base_type_(_Property,DataValue,number) :- number(DataValue),!.
 data_base_type_(_Property,DataValue,string) :- atom(DataValue),!.
 data_base_type_(_Property,DataValue,string) :- string(DataValue),!.
+data_base_type_(_Property,true,bool) :- !.
+data_base_type_(_Property,false,bool) :- !.
