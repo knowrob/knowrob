@@ -29,6 +29,23 @@ In such a case, where ask and tell rules can be declared identical
 within the ask and tell operators, one can also use the ask-tell operator
 `?+>` which expands into both cases to avoid code redundancy.
 
+KnowRob pre-defines some general language terms that are used to relate entities
+in the knowledge base to each other,
+or to assign data properties to them.
+These are:
+
+| Term | Description |
+| --- | --- |
+| `triple/3`           | Triple data in the triple store |
+| `holds/3`            | A relation between entities, or a data property of an entitiy |
+| `is_a/2`             | A taxonomical relation between entities and classes |
+| `instance_of/2`      | The type-of relationship between entities and classes |
+| `subclass_of/2`      | The subclass-of relationship |
+| `subproperty_of/2`   | The subproperty-of relationship |
+| `occurs/1`           | An event occurence |
+| `is_at/2`            | A spatial relation between entities and locations |
+| `transitive/1`       | A transitive relation between entities |
+
 Another aspect of these operators is that they hide the contextual
 argument from the declaration (above: the `Context` argument of predicates).
 This is handy for declaring context-invariant rules.
@@ -44,7 +61,6 @@ in which the statement is true, for example,
 that some statement is true after some event has happened.
 The scope must be instantiated before calling the tell predicate.
 Statements in tell rules expand into scoped assertions in the triple store.
-
 Within ask rules, context has an additional 
 query scope (also called question scope).
 Question scopes are used to restrict the scope
@@ -55,3 +71,5 @@ within which the given statement is true, if any.
 In case of the term expands into a conjunctive query,
 the statament scope is instantiated to the intersection
 of individual statement scopes (if the intersection is not empty).
+
+
