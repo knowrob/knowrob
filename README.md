@@ -189,18 +189,3 @@ Some action effects may imply new relations, for example, that one object is par
     })
 
 Note that "destroying" an object in KnowRob does not mean that knowledge about it disappears. Each object has an associated lifetime, and an event that destroys some object determines the end of its lifetime rather then vanishing its existence in the knwoledge base.
-
-### object_state_publisher.py
-
-An additional script is provided that is used to publish 
-object transforms on the ROS tf topic along with
-marker visualization messages.
-This is realized as a rosprolog client that 
-initially loads all known objects, and
-provides a service to mark objects as "dirty" which causes
-the script to reload the dirty objects, and
-to republish tf and marker visualization messages.
-
-You can run the publisher with:
-
-    rosrun knowrob object_state_publisher.py
