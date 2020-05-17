@@ -4,7 +4,9 @@ knowrob_lang
 The KnowRob language is mainly made of two predicates: `ask/2` and `tell/2`.
 Their first argument is a language term (such as `holds/3`),
 and their second argument is a contextual parameter used
-to handle scoped facts and queries.
+to handle scoped statements and questions.
+
+### Language terms
 
 The binary operators
 `?>` (ask operator) and
@@ -46,6 +48,8 @@ These are:
 | `is_at/2`            | A spatial relation between entities and locations |
 | `transitive/1`       | A transitive relation between entities |
 
+### Scoped questions and statements
+
 Another aspect of these operators is that they hide the contextual
 argument from the declaration (above: the `Context` argument of predicates).
 This is handy for declaring context-invariant rules.
@@ -61,7 +65,7 @@ in which the statement is true, for example,
 that some statement is true after some event has happened.
 The scope must be instantiated before calling the tell predicate.
 Statements in tell rules expand into scoped assertions in the triple store.
-Within ask rules, context has an additional 
+Within ask rules, on the other hand, context has an additional 
 query scope (also called question scope).
 Question scopes are used to restrict the scope
 of considered statements to statements with overlapping
@@ -72,4 +76,20 @@ In case of the term expands into a conjunctive query,
 the statament scope is instantiated to the intersection
 of individual statement scopes (if the intersection is not empty).
 
+Special scoping language terms are used to restrict the scope
+within a nested term. Restrictions of the scope will allways be passed
+through to child terms, hence the scoping is done in the outer term such as
+in `since(holds(S,P,O),Time)`. As these terms are usually defined as operators,
+one can also write, for example, `holds(S,P,O) since Time`.
+Generally, scoping terms are nested terms where another language term is
+called with an updated scope.
+In the case of ask-rules, scoping predicates will modify the question scope,
+while, in the case of tell-rules, the statement scope is modified.
 
+KnowRob pre-defines a time scope, and the following time-scoping terms:
+
+| Term | Description |
+| --- | --- |
+| `during/2` | The time frame in which a statement holds |
+| `since/2`  | The begin time of a statement being true |
+| `until/2`  | The end time of a statement being true |
