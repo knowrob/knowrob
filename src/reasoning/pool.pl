@@ -1,6 +1,6 @@
 :- module(reasoning_pool,
     [ reasoning_module/1,
-      infer(t,-)
+      infer(t,-,t)
     ]).
 /** <module> TODO ...
 
@@ -12,23 +12,12 @@
       tripledb_cache_add/3
     ]).
 :- use_module(library('db/scope'),
-    [ scope_intersect/3
-    ]).
+    [ scope_intersect/3 ]).
 :- use_module(library('lang/scopes/temporal'),
-    [ time_scope_data/2
-    ]).
+    [ time_scope_data/2 ]).
 
 :- dynamic reasoner_module_/1.
 :- dynamic active_query_/2.
-
-%%
-%
-%
-instance_of(A,B)    ?> infer(instance_of(A,B),_Fact).
-subclass_of(A,B)    ?> infer(subclass_of(A,B),_Fact).
-subproperty_of(A,B) ?> infer(subproperty_of(A,B),_Fact).
-holds_object(S,P,O) ?> infer(holds(S,P,O),_Fact).
-holds_data(S,P,O)   ?> infer(holds(S,P,O),_Fact).
 
 %% reasoning_module(+Module) is det.
 %
@@ -42,16 +31,18 @@ can_answer_(Module,Query) :-
   copy_term(Query, Query0),
   call((:(Module,can_answer(Query0)))),!.
 
+can_answer__(instance_of(A,B)    , instance_of(A,B)).
+can_answer__(subclass_of(A,B)    , subclass_of(A,B)).
+can_answer__(subproperty_of(A,B) , subproperty_of(A,B)).
+can_answer__(holds_object(S,P,O) , holds(S,P,O)).
+can_answer__(holds_data(S,P,O)   , holds(S,P,O)).
+
 %%
 %
 %
 %
-infer(Query,Fact) ?>
-  query_scope(QScope),
-  fact_scope(FScope),
-  { infer0(Query,Fact,[[],QScope]->FScope) }.
-
-infer0(Query,Fact,QScope->FScope) :-
+infer(Query0,Fact,QScope->FScope) :-
+  once(can_answer__(Query0,Query)),
   query_string_(Query,QueryStr),
   % get list of reasoner that already answered this
   % query.

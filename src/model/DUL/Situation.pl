@@ -12,15 +12,14 @@
       situation_satisfies(r,r),
       is_setting_for(r,r)
     ]).
-/** <module> ...
+/** <module> DUL notion of Situation.
 
 @author Daniel Beßler
 @license BSD
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module('./Event.pl',
     [ is_event/1,
       is_action/1
@@ -30,8 +29,7 @@
       is_agent/1
     ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
@@ -39,7 +37,7 @@
       namespace(dul)
     ]).
 
-%% is_description(+Entity) is semidet.
+%% is_description(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Description'.
 %
@@ -48,7 +46,7 @@
 is_description(Entity) ?+>
   has_type(Entity, dul:'Description').
 
-%% is_situation(+Entity) is semidet.
+%% is_situation(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Situation'.
 %
@@ -57,7 +55,7 @@ is_description(Entity) ?+>
 is_situation(Entity) ?+>
   has_type(Entity, dul:'Situation').
 
-%% is_goal(+Entity) is semidet.
+%% is_goal(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Goal'.
 %
@@ -66,7 +64,7 @@ is_situation(Entity) ?+>
 is_goal(Entity) ?+>
   has_type(Entity, dul:'Goal').
 
-%% is_design(+Entity) is semidet.
+%% is_design(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Design'.
 %
@@ -75,7 +73,7 @@ is_goal(Entity) ?+>
 is_design(Entity) ?+>
   has_type(Entity, dul:'Design').
 
-%% is_diagnosis(+Entity) is semidet.
+%% is_diagnosis(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Diagnosis'.
 %
@@ -84,7 +82,7 @@ is_design(Entity) ?+>
 is_diagnosis(Entity) ?+>
   has_type(Entity, dul:'Diagnosis').
 
-%% is_plan(+Entity) is semidet.
+%% is_plan(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Plan'.
 %
@@ -93,7 +91,7 @@ is_diagnosis(Entity) ?+>
 is_plan(Entity) ?+>
   has_type(Entity, dul:'Plan').
 
-%% is_plan_execution(+Entity) is semidet.
+%% is_plan_execution(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'PlanExecution'.
 %
@@ -111,7 +109,7 @@ is_plan_execution(Entity) ?+>
   %holds(Plan,ease:isPlanFor,Tsk),
   %holds(Action,dul:executesTask,Tsk).
 
-%% is_norm(+Entity) is semidet.
+%% is_norm(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Norm'.
 %
@@ -120,7 +118,7 @@ is_plan_execution(Entity) ?+>
 is_norm(Entity) ?+>
   has_type(Entity, dul:'Norm').
 
-%% is_transition(+Entity) is semidet.
+%% is_transition(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Transition'.
 %
@@ -129,7 +127,7 @@ is_norm(Entity) ?+>
 is_transition(Entity) ?+>
   has_type(Entity, dul:'Transition').
 
-%% plan_has_goal(?Plan,?Goal) is semidet.
+%% plan_has_goal(?Plan,?Goal) is nondet.
 %
 % Relates a plan to its goal.
 %
@@ -142,10 +140,8 @@ plan_has_goal(Plan,Goal) ?+>
 
 %% situation_satisfies(?Sit,?Descr) is nondet.
 %
-% Associates a situation to a description that is
-% satisfied by the situation.
-% An example is that the execution of a plan (a situation)
-% satisfies the plan (a description).
+% A relation between a Situation and a Description,
+% e.g. the execution of a Plan satisfies that plan.
 %
 % @param Sit An individual of type dul:'Situation'.
 % @param Descr An individual of type dul:'Description'.
@@ -153,9 +149,12 @@ plan_has_goal(Plan,Goal) ?+>
 situation_satisfies(Sit,Descr) ?+>
   holds(Sit,dul:satisfies,Descr).
 
-%% is_setting_for(+Sit,+Entity) is det.
+%% is_setting_for(+Sit,+Entity) is nondet.
 %
-% Some entity is included in the situation.
+% A relation between situations and entities, e.g.
+% 'this morning I've prepared my coffee with a new fantastic Arabica',
+% i.e.: the preparation of my coffee this morning is the setting
+% for (an amount of) a new fantastic Arabica.
 %
 % @param Sit An individual of type dul:'Situation'.
 % @param Entity A named individual.

@@ -3,7 +3,7 @@
       owl_property_range(r,r,t),
       owl_property_cardinality(r,r,t,?,?)
     ]).
-/** <module> TODO ...
+/** <module> Reasoning about OWL classes.
 
 @author Daniel Beßler
 */

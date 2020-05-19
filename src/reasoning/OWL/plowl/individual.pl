@@ -2,7 +2,7 @@
     [ owl_individual_of(r,t,t),
       owl_satisfied_by(t,r,t)
     ]).
-/** <module> TODO ...
+/** <module> Reasoning about OWL individuals.
 
 @author Daniel Beßler
 */
@@ -37,6 +37,7 @@ owl_individual_of(Subject,Class,QScope->FScope) :-
 owl_individual_of(Subject,Class,Scope) :-
   % Subject is an individual of Class if some super-class
   % of Class is satisfied by Subject
+  \+ (ground(Subject),has_type(Subject,Class)), % FIXME scope
   owl_satisfied_by(Class,Subject,Scope).
 
 %owl_individual_of(Subject,Class,Scope) :-

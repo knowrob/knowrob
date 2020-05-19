@@ -19,8 +19,10 @@
       scope_update/3,
       scope_remove/4
     ]).
+%:- use_module(library('reasoning/pool'),
+    %[ infer/3 ]).
 
-:- multifile ask/2, tell/2.
+:- multifile tell/2, ask2/2.
 
 %% ask(+Statement) is nondet.
 %
@@ -52,10 +54,35 @@ ask(Statements,QScope->FScope) :-
   is_list(Statements),!,
   ask_all_(Statements,QScope,_->FScope).
 
-ask(triple(S,P,O),[Options,QScope]->FScope) :-
+ask(Statement,QScope->FScope) :-
+  ground(Statement),!,
+  % TODO only cut choicepoints in case fact scope is universal!
+  %universal_scope(US),
+  ask1(Statement,QScope->FScope),
+  %( scope_equal(FScope,US) -> ! ; true )
+  !.
+
+ask(Statement,Scope) :-
+  ask1(Statement,Scope).
+
+ask1(triple(S,P,O),[Options,QScope]->FScope) :-
+  !,
+  % tripledb retrieval
   tripledb_ask(S,P,O,QScope,FScope,Options).
 
+ask1(Statement,Scope) :-
+  % handle complex statements
+  ask2(Statement,Scope).
+
+ask1(Statement,Scope) :-
+  % try to infer the statement
+  reasoning_pool:infer(Statement,_,Scope).
+
+%%
 ask_all_([],_QS,FS->FS) :- !.
+ask_all_([{X}|Xs],QS,FS1->FSn) :-
+  call(X),
+  ask_all_(Xs,QS,FS1->FSn).
 ask_all_([X|Xs],QS,FS->FSn) :-
   ask(X,QS->FS0),
   % TODO: fact scope should restrict query scope for next query!
@@ -116,7 +143,6 @@ tell_all([X|Xs],QScope) :-
 user:term_expansion((?>(Head,Goal)),Expansions) :-
   strip_module_(Head,Module,Term),
   once((ground(Module);prolog_load_context(module,Module))),
-  %%
   findall(Expansion, (
     expand_predicate_(Module,Term,Expansion);
     expand_ask_query_(Term,Goal,Expansion)
@@ -137,7 +163,7 @@ expand_predicate_(Module,Head,(:-(HeadExpanded,lang_query:ask(Term)))) :-
 expand_ask_query_(Head,Goal,(:-(HeadExpanded,GoalExpanded))) :-
   expand_ask_term_(QScope->_,_->FScope,
                    Goal,GoalExpanded),
-  HeadExpanded = lang_query:ask(Head,QScope->FScope),
+  HeadExpanded = lang_query:ask2(Head,QScope->FScope),
   !.
 
 %%

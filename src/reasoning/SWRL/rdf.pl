@@ -6,11 +6,7 @@
       rdf_swrl_load/0,
       rdf_swrl_load/1,
       rdf_swrl_unload/0,
-      rdf_swrl_unload/1,
-      rdf_swrl_project/1,
-      rdf_swrl_project/2,
-      rdf_swrl_satisfied/1,
-      rdf_swrl_satisfied/2
+      rdf_swrl_unload/1
     ]).
 /** <module> RDF-based SWRL representation.
 
@@ -22,7 +18,8 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('swrl')).
+
+:- use_module('./swrl.pl').
 
 :- dynamic  rdf_swrl_store/2.
 
@@ -178,25 +175,3 @@ rdf_swrl_retract(Descr) :-
       retract( rdf_swrl_store(Descr,Rule) ),
       ignore(retract( Rule ))
   )).
-
-%% rdf_swrl_project(+Descr).
-%% rdf_swrl_project(+Descr,+Vars_user).
-%
-% Project implication of named SWRL rule into the RDF triple store.
-%
-% @param Descr RDF identifier of SWRl rule description, or the name of a rule.
-% 
-rdf_swrl_project(Descr) :- rdf_swrl_project(Descr, []).
-rdf_swrl_project(Descr,Vars) :-
-  rdf_swrl_description(Descr, Descr_),
-  rdf_swrl_rule(Descr_, Rule),
-  swrl_project(Rule,Vars).
-
-%% rdf_swrl_satisfied(+Descr).
-%% rdf_swrl_satisfied(+Descr,+Vars_user).
-%
-rdf_swrl_satisfied(Descr) :- rdf_swrl_satisfied(Descr, []).
-rdf_swrl_satisfied(Descr, Vars) :-
-  rdf_swrl_description(Descr, Descr_),
-  rdf_swrl_rule(Descr_, Rule),
-  swrl_satisfied(Rule,Vars).
