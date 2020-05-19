@@ -7,7 +7,7 @@ and DBs which are used to store quantitative information.
 Interfaces are defined for the both distinct cases such
 that it is possible to configure the triple DB used by KnowRob,
 and to dynamically link the knowledge base to new sources
-of quatntive information.
+of quantitative information.
 
 ### triple DB
 
@@ -36,7 +36,7 @@ through ontology-based data access (OBDA).
 KnowRob defines a common interface for OBDA sources where
 each source declares a binary predicate that maps to a binary
 relation symbol.
-More specfically, each OBDA predicate maps to some supproperty
+More specifically, each OBDA predicate maps to some sub-property
 of the relation hasDataValue (a datatype property).
 This mapping is used by KnowRob to incorporate OBDA sources
 into question answering where questions are structured according to
