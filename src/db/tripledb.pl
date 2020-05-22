@@ -21,7 +21,7 @@
 :- use_module(library('semweb/rdf_db'),  [ rdf_equal/2, rdf_register_ns/3 ]).
 :- use_module(library('http/http_open'), [ http_open/3 ]).
 
-:- use_module(library('utility/url'),    [ url_resolve/2 ]).
+:- use_module(library('utility/url'),    [ url_resolve/2, url_unresolve/2 ]).
 :- use_module(library('db/scope'),       [ universal_scope/1 ]).
 :- use_module(library('comm/notify'),    [ notify/1 ]).
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
