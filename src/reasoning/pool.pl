@@ -101,7 +101,6 @@ infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
   %% FIXME: message_queue_destroy never called in case not all results
   %%          are pulled
   %poll_result(Queue,Fact,FScope),
-  %% FIXME
   %Query=Fact.
 
 %infer_thread_(Module,Query,QueryStr,QScope,Queue) :-
