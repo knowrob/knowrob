@@ -1,5 +1,5 @@
 
-:- begin_tests('lang/designator').
+:- begin_tests(designator).
 
 test(designator) :-
   fail.
@@ -64,4 +64,4 @@ test(designator) :-
   %X = 'cup_name',
   %rdf_equal(Cont, entity_test:'Cup_sfd498th').
   
-:- end_tests('lang/designator').
+:- end_tests(designator).
