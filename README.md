@@ -31,7 +31,7 @@ as a falback implementation, KnowRob provides a simple MongoDB
 implementation of a temporalized triple store.
 
 One important aspect in knowledge representation for robots is that
-a lot knowledge is *implicitly* encoded in the control structures
+a lot of knowledge is *implicitly* encoded in the control structures
 of the robot. Hence, one goal is to make the knowledge in robot
 control structures *explicit*.
 KnowRob does that through *Ontology-based Data Access* (OBDA).
