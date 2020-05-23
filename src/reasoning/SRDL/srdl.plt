@@ -1,5 +1,5 @@
 
-:- begin_tests('reasoning/SRDL/srdl').
+:- begin_tests('srdl').
 
 %:- use_module(library('semweb/rdf_db')).
 %:- use_module(library('semweb/rdfs')).
@@ -80,4 +80,4 @@
   %%\+ action_feasible_on_robot(act:'MakingPancakes', pr2:'PR2Robt1'),
   %%action_feasible_on_robot(act:'MakingPancakes', pr2:'PR2Robot1'),!.
 
-:- end_tests('reasoning/SRDL/srdl').
+:- end_tests('srdl').

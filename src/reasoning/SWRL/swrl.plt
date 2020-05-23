@@ -1,5 +1,5 @@
 
-:- begin_tests('reasoning/SWRL/swrl').
+:- begin_tests('swrl').
 
 :- use_module(library('semweb/rdf_db'),    [ rdf_equal/2 ]).
 :- use_module(library('db/tripledb'),      [ tripledb_load/2 ]).
@@ -259,5 +259,5 @@ test(swrl_phrase_hasUncle, [nondet]) :-
                      'http://knowrob.org/kb/swrl_test#'),
   holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest').
 
-:- end_tests('reasoning/SWRL/swrl').
+:- end_tests('swrl').
 

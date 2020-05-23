@@ -1,5 +1,5 @@
 
-:- begin_tests('reasoning/temporal/workflow').
+:- begin_tests('temporal_workflow').
 
 %:- use_module(library('semweb/owl_parser')).
 %:- use_module(library('knowrob/reasoning/task_planning')).
@@ -29,4 +29,4 @@
   %workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'EggYolk'),
   %workflow_role_range(pancake:'WF_Mixing_0', _, pancake:'Dough').
 
-:- end_tests('reasoning/temporal/workflow').
+:- end_tests('temporal_workflow').

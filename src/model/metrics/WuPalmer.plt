@@ -1,5 +1,5 @@
 
-:- begin_tests('model/metrics/WuPalmer').
+:- begin_tests('metrics_WuPalmer').
 
 :- use_module('./WuPalmer.pl').
 
@@ -11,4 +11,4 @@ test('rdf_wup_similarity2') :-
   rdf_wup_similarity(dul:'PhysicalObject', dul:'Object', Sim),
   rdf_wup_similarity(dul:'Object', dul:'PhysicalObject', Sim).
 
-:- end_tests('model/metrics/WuPalmer').
+:- end_tests('metrics_WuPalmer').

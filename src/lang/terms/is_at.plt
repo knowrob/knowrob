@@ -1,5 +1,5 @@
 
-:- begin_tests('lang/terms/is_at').
+:- begin_tests(lang_is_at).
 
 test(lang_is_at) :-
   fail.
@@ -66,4 +66,4 @@ test(lang_is_at) :-
   %\+ kb_type_of(Cup, knowrob:'Milk'), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-:- end_tests('lang/terms/is_at').
+:- end_tests(lang_is_at).

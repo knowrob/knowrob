@@ -1,8 +1,17 @@
 
-:- begin_tests('reasoning/temporal/interval').
+:- begin_tests(time_interval).
 
-test(time_interval) :-
-  fail.
+test(time_interval0) :-
+  	X is 2 + 2,
+  	( X = 4 ; X = 4 ).
+
+test(time_interval2) :-
+  	fail.
+
+test(time_interval1) :-
+  	X = 'a',
+  	Y = 'a',
+  	X = Y.
 
 %:- use_module(library('knowrob/reasoning/temporal/allen')).
 
@@ -42,4 +51,4 @@ test(time_interval) :-
 %test(interval_during10, [fail]) :-
   %interval_during([2.0,5.0], [2.0,4.0]).
 
-:- end_tests('reasoning/temporal/interval').
+:- end_tests(time_interval).

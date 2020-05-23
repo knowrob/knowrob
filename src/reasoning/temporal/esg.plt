@@ -1,4 +1,4 @@
-:- begin_tests('reasoning/temporal/esg').
+:- begin_tests('esg').
 
 :- use_module('./esg.pl').
 
@@ -184,4 +184,4 @@ test('esg_join(parallel goal)') :-
     ],
     [[-z],[+a,+z],[+b]]).
 
-:- end_tests('reasoning/temporal/esg').
+:- end_tests('esg').
