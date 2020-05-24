@@ -11,7 +11,8 @@
       has_parameter(r,r,r),
       has_parameter_range(r,r,r),
       has_assignment(r,r),
-      has_data_value(r,?)
+      has_data_value(r,?),
+      has_time_interval(r,r)
     ]).
 /** <module> DUL notion of Region.
 
@@ -22,8 +23,6 @@ In DUL, Region is defined as:
 @license BSD
 */
 
-:- use_module(library('lang/scopes/temporal'),
-    [ time_interval_data/3 ]).
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
 :- use_module('./Event.pl',
@@ -31,7 +30,7 @@ In DUL, Region is defined as:
 :- use_module('./Situation.pl',
     [ is_situation/1 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
+    [ tripledb_load/2, tripledb_ask/3 ]).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
@@ -173,3 +172,19 @@ has_assignment(Param,Region) ?+>
 %
 has_data_value(Entity,DataValue) ?+>
   holds(Entity,dul:hasDataValue,DataValue).
+
+%% has_time_interval(+Entity,?Interval) is semidet. 
+%
+%
+has_time_interval(TimeInterval,TimeInterval) :-
+  is_time_interval(TimeInterval),!.
+
+has_time_interval(Event,TimeInterval) :-
+  is_event(Event),!,
+  tripledb_ask(Event, dul:hasTimeInterval, TimeInterval).
+
+has_time_interval(Situation,TimeInterval) :-
+  is_situation(Situation),!,
+  % TODO: rather go over all included events to find time boundaries?
+  %         then no need to include some time interval
+  tripledb_ask(Situation, dul:includesTime, TimeInterval).

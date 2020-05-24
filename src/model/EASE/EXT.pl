@@ -1,6 +1,13 @@
 
 :- module(model_EASE_EXT,
-    [ is_episode(r)
+    [ is_episode(r),
+      %%
+      time_interval_tell(r,+,+),
+      time_interval_data(r,?,?),
+      time_interval_duration(r,?),
+      time_interval_equal(r,r),
+      time_interval_start(r,?),
+      time_interval_end(r,?)
       %constraint_term(r,?),
       %has_constrained_concept(r,r,r),
       %has_dependent_concept(r,r,r),
@@ -12,8 +19,95 @@
       %building_has_room(r,r)
      ]).
 
+:- use_module(library('db/tripledb'),
+	[ tripledb_ask/3 ]).
+:- use_module(library('model/DUL/Region'),
+	[ has_time_interval/2 ]).
+
 is_episode(Entity) ?+>
   has_type(Entity, ease:'Episode').
+ 
+		 /*******************************
+		 *	    TIME INTERVALS			*
+		 *******************************/
+
+%% time_interval_data(+In,-Out) is semidet.
+%
+% True if Out is the interval of In.
+%
+% @param In Time point, interval or temporally extended entity
+% @param Out Start and end time of the interval
+% 
+time_interval_data([Begin, End], Begin, End) :-
+  !.
+
+time_interval_data(Instant, Instant, Instant) :-
+  number(Instant),
+  !.
+
+time_interval_data(Entity, Begin, End) :-
+  has_time_interval(Entity,Interval),
+  % TODO: rather use interval term and only one assertion for intervals!
+  ignore(tripledb_ask(Interval, ease:hasIntervalBegin, Begin)),
+  ignore(tripledb_ask(Interval, ease:hasIntervalEnd, End)),
+  !.
+
+%% 
+%
+time_interval_tell(Entity,Begin,End) :-
+  has_time_interval(Entity,Interval),!,
+  ( ground(Begin) ->
+    tell(holds(Interval, ease:hasIntervalBegin, Begin)) ;
+    true
+  ),
+  ( ground(End) ->
+    tell(holds(Interval, ease:hasIntervalEnd, End)) ;
+    true
+  ).
+
+%% interval_equal(?I1,?I2) is semidet.
+%
+% Interval I1 is equal to I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+time_interval_equal(Entity1,Entity2) :-
+   time_interval_data(Entity1, Begin, End),
+   time_interval_data(Entity2, Begin, End),
+   ground([Begin,End]).
+
+%% interval_duration(Event, Duration) is nondet.
+%
+% Calculate the duration of the the TemporalThing Event
+%
+% @param Event Identifier of a TemporalThing
+% @param Duration Duration of the event
+%
+% @tbd Duration should be literal(type(qudt:'MinuteTime', Duration))
+%
+time_interval_duration(Entity, Duration) :-
+  time_interval_data(Entity, Begin, End),
+  ground([Begin, End]),
+  Duration is (End-Begin).
+
+%% interval_start(I,End) is semidet.
+%
+% The start time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+time_interval_start(Entity, Begin) :-
+  time_interval_data(Entity, Begin, _).
+
+%% interval_end(I,End) is semidet.
+%
+% The end time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+time_interval_end(Entity, End) :-
+  time_interval_data(Entity, _, End).
 
 		 /*******************************
 		 *	    CONSTRAINTS		*
