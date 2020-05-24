@@ -7,7 +7,6 @@
  */
 
 #include <mongoc.h>
-#include <mongoc-uri.h>
 #include <sstream>
 
 #include <rosprolog/rosprolog_kb/rosprolog_kb.h>
