@@ -1,0 +1,303 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/test_events.owl#"
+     xml:base="http://knowrob.org/kb/test_events.owl"
+     xmlns:test="http://knowrob.org/kb/test_events.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
+     xmlns:EASE="http://www.ease-crc.org/ont/EASE.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/test_events.owl">
+        <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#before -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#before"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#during -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#during"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#meets -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#meets"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#overlappedOn -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#overlappedOn"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#simultaneous -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#simultaneous"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#starts -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#starts"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasTimeInterval -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasTimeInterval"/>
+
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasIntervalBegin -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasIntervalBegin"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasIntervalEnd -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasIntervalEnd"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event0">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:starts rdf:resource="http://knowrob.org/kb/test_events.owl#Event1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event1">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:meets rdf:resource="http://knowrob.org/kb/test_events.owl#Event2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event2">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:simultaneous rdf:resource="http://knowrob.org/kb/test_events.owl#Event3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event3">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event4 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event4">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event5 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event5">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:during rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event6 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event6">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:before rdf:resource="http://knowrob.org/kb/test_events.owl#Short3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Event7 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event7">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Long -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Long">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <dul:hasConstituent rdf:resource="http://knowrob.org/kb/test_events.owl#Short2"/>
+        <dul:hasTimeInterval rdf:resource="http://knowrob.org/kb/test_events.owl#Time_Long"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Short1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Short1">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <dul:hasTimeInterval rdf:resource="http://knowrob.org/kb/test_events.owl#Time_Short1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Short2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Short2">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <dul:hasTimeInterval rdf:resource="http://knowrob.org/kb/test_events.owl#Time_Short2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Short3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Short3">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <dul:hasTimeInterval rdf:resource="http://knowrob.org/kb/test_events.owl#Time_Short3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Short4 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Short4">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <dul:hasTimeInterval rdf:resource="http://knowrob.org/kb/test_events.owl#Time_Short4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Time_Long -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Long">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</EASE:hasIntervalBegin>
+        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</EASE:hasIntervalEnd>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Time_Short1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short1">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</EASE:hasIntervalBegin>
+        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</EASE:hasIntervalEnd>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Time_Short2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short2">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</EASE:hasIntervalBegin>
+        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777004</EASE:hasIntervalEnd>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Time_Short3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short3">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777008</EASE:hasIntervalBegin>
+        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</EASE:hasIntervalEnd>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_events.owl#Time_Short4 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short4">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777009</EASE:hasIntervalBegin>
+        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777011</EASE:hasIntervalEnd>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
