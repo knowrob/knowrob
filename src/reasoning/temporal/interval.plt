@@ -1,4 +1,3 @@
-
 :- begin_tests(time_interval).
 
 :- use_module(library('db/tripledb'),
@@ -136,15 +135,17 @@ test('<(Event6,Short3)') :-
 test('<(Event7,Short3)') :-
 	interval_before(test_events:'Event7', test_events:'Short3').
 
-test('<(Event6,Short4)', [ blocked('mixing of quantitative+qualitative input not yet supported.') ]) :-
+test('<(Event6,Short4)', [ fixme('support mixing of quantitative+qualitative input') ]) :-
 	interval_before(test_events:'Event6', test_events:'Short4').
-test('<(Event7,Short4)', [ blocked('mixing of quantitative+qualitative input not yet supported.') ]) :-
+test('<(Event7,Short4)', [ fixme('support mixing of quantitative+qualitative input') ]) :-
 	interval_before(test_events:'Event7', test_events:'Short4').
 
 /********************************
  *	    DYNAMIC ASSERTIONS     	*
  ********************************/
 
-% TODO: test that adding some axiom will merge ESGs
+% TODO: test adding axioms, connect to pre-loaded events
+%         that won't work at the moment! because ESGs are
+%         not updated
 
 :- end_tests(time_interval).
