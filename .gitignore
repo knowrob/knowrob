@@ -5,6 +5,7 @@
 *.idea
 *.project
 *.settings
+.externalToolBuilders
 
 # ignore log files and databases
 *.log

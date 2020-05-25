@@ -21,9 +21,7 @@
 @license BSD
 */
 
-% TODO: scope is ignored here entirely.
-%        - time scope does not make sense
-%        - what about confidence etc?
+:- use_module('esg.pl').
 
 %%
 %
@@ -43,14 +41,20 @@ allen_symbol(d).
 %%
 %
 interval_constraint(Resource,Constraint) :-
-  interval_constraint(Resource,Constraint,_).
+	interval_constraint(Resource,Constraint,_).
 
-interval_constraint(Resource,Constraint,Other) :-
-  % TODO: this seems a bit hacky
-  tripledb_ask(Resource,Relation,Other),
-  tripledb_ask(Relation,ease:symbol,Symbol),
-  once(allen_symbol(Symbol)),
-  Constraint =.. [Symbol,Resource,Other].
+interval_constraint(A,  =(A,B), B) :- tripledb_ask(A,ease:simultaneous,B).
+interval_constraint(A,  <(A,B), B) :- tripledb_ask(A,ease:before,B).
+interval_constraint(A,  >(A,B), B) :- tripledb_ask(A,ease:after,B).
+interval_constraint(A,  m(A,B), B) :- tripledb_ask(A,ease:meets,B).
+interval_constraint(A, mi(A,B), B) :- tripledb_ask(A,ease:metBy,B).
+interval_constraint(A,  o(A,B), B) :- tripledb_ask(A,ease:overlappedOn,B).
+interval_constraint(A, oi(A,B), B) :- tripledb_ask(A,ease:overlappedBy,B).
+interval_constraint(A,  s(A,B), B) :- tripledb_ask(A,ease:starts,B).
+interval_constraint(A, si(A,B), B) :- tripledb_ask(A,ease:startedBy,B).
+interval_constraint(A,  f(A,B), B) :- tripledb_ask(A,ease:finishes,B).
+interval_constraint(A, fi(A,B), B) :- tripledb_ask(A,ease:finishedBy,B).
+interval_constraint(A,  d(A,B), B) :- tripledb_ask(A,ease:during,B).
 
 %%
 %
@@ -71,10 +75,20 @@ interval_query(  d(A,B) ) :- interval_during(A,B).
 %
 % 
 interval_equals(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0, B, E),
-    time_interval_data(I1, B, E)
-  }.
+	{ interval_equals_(I0, I1) }.
+
+interval_equals_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0, B, E),
+	ground([E,B]),
+	time_interval_data(I1, B, E).
+
+interval_equals_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, =(-(I0),-(I1))),
+	esg_query_(ESG, =(+(I0),+(I1))).
 
 %% interval_before(I0,I1) is semidet.
 %
@@ -84,18 +98,21 @@ interval_equals(I0, I1) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_before(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0,  _, E0),
-    time_interval_data(I1, B1, _),
-    ground([E0,B1]),
-    E0 < B1
-  }.
+	{ interval_before_(I0, I1) }.
 
-%interval_before(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, <(+(I0),-(I1)))
-  %}.
+%%
+interval_before_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0,  _, E0),
+	time_interval_data(I1, B1, _),
+	ground([E0,B1]),
+	E0 < B1.
+
+interval_before_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, <(+(I0),-(I1))).
 
 %% interval_after(I0,I1) is semidet.
 %
@@ -105,7 +122,7 @@ interval_before(I0, I1) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_after(I0,I1) ?>
-  interval_before(I1,I0).
+	interval_before(I1,I0).
 
 %% interval_meets(I0,I1) is semidet.
 %
@@ -115,18 +132,21 @@ interval_after(I0,I1) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_meets(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0,  _, E0),
-    time_interval_data(I1, B1, _),
-    ground([E0,B1]),
-    E0 is B1
-  }.
+	{ interval_meets_(I0, I1) }.
 
-%interval_meets(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, =(+(I0),-(I1)))
-  %}.
+%%
+interval_meets_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0,  _, E0),
+	time_interval_data(I1, B1, _),
+	ground([E0,B1]),
+	E0 is B1.
+
+interval_meets_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, =(+(I0),-(I1))).
 
 %% interval_met_by(I1,I2) is semidet.
 %
@@ -136,7 +156,7 @@ interval_meets(I0, I1) ?>
 % @param I2 Instance of a knowrob:TimeInterval
 % 
 interval_met_by(I1,I2) ?>
-   interval_meets(I2,I1).
+	interval_meets(I2,I1).
 
 %% interval_starts(I0,I1) is semidet.
 %
@@ -146,19 +166,22 @@ interval_met_by(I1,I2) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_starts(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0, B0, E0),
-    time_interval_data(I1, B1, E1),
-    ground([B0,B1,E0,E1]),
-    B0 is B1, E0 < E1
-  }.
+	{ interval_starts_(I0, I1) }.
 
-%interval_starts(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, =(-(I0),-(I1))),
-    %esg_query_(ESG, <(+(I0),+(I1)))
-  %}.
+%%
+interval_starts_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
+	ground([B0,B1,E0,E1]),
+	B0 is B1, E0 < E1.
+
+interval_starts_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, =(-(I0),-(I1))),
+	esg_query_(ESG, <(+(I0),+(I1))).
 
 %% interval_started_by(I1,I2) is semidet.
 %
@@ -168,7 +191,7 @@ interval_starts(I0, I1) ?>
 % @param I2 Instance of a knowrob:TimeInterval
 % 
 interval_started_by(I1,I2) ?>
-   interval_starts(I2,I1).
+	interval_starts(I2,I1).
 
 %% interval_finishes(I0,I1) is semidet.
 %
@@ -178,19 +201,22 @@ interval_started_by(I1,I2) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_finishes(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0, B0, E0),
-    time_interval_data(I1, B1, E1),
-    ground([B0,B1,E0,E1]),
-    B0 > B1, E0 is E1
-  }.
+	{ interval_finishes_(I0, I1) }.
 
-%interval_finishes(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, =(+(I0),+(I1))),
-    %esg_query_(ESG, <(-(I1),-(I0)))
-  %}.
+%%
+interval_finishes_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
+	ground([B0,B1,E0,E1]),
+	B0 > B1, E0 is E1.
+
+interval_finishes_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, =(+(I0),+(I1))),
+	esg_query_(ESG, <(-(I1),-(I0))).
 
 %% interval_finished_by(I1,I2) is semidet.
 %
@@ -200,7 +226,7 @@ interval_finishes(I0, I1) ?>
 % @param I2 Instance of a knowrob:TimeInterval
 % 
 interval_finished_by(I1,I2) ?>
-   interval_finishes(I2,I1).
+	interval_finishes(I2,I1).
 
 %% interval_overlaps(I0,I1) is semidet.
 %
@@ -210,20 +236,22 @@ interval_finished_by(I1,I2) ?>
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_overlaps(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0, B0, E0),
-    time_interval_data(I1, B1, E1),
-    ground([B0,B1,E0,E1]),
-    B0 < B1, B1 < E0, E0 < E1
-  }.
+	{ interval_overlaps_(I0, I1) }.
 
-%interval_overlaps(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, <(-(I0),-(I1))),
-    %esg_query_(ESG, <(-(I1),+(I0))),
-    %esg_query_(ESG, <(+(I0),+(I1)))
-  %}.
+interval_overlaps_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
+	ground([B0,B1,E0,E1]),
+	B0 < B1, B1 < E0, E0 < E1.
+
+interval_overlaps_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, <(-(I0),-(I1))),
+	esg_query_(ESG, <(-(I1),+(I0))),
+	esg_query_(ESG, <(+(I0),+(I1))).
 
 %% interval_overlapped_by(I1,I2) is semidet.
 %
@@ -233,7 +261,7 @@ interval_overlaps(I0, I1) ?>
 % @param I2 Instance of a knowrob:TimeInterval
 % 
 interval_overlapped_by(I1,I2) ?>
-   interval_overlaps(I2,I1).
+	interval_overlaps(I2,I1).
 
 %% interval_during(I0,I1) is semidet.
 %
@@ -243,65 +271,66 @@ interval_overlapped_by(I1,I2) ?>
 % @param I1 Time point, interval or temporally extended entity
 %
 interval_during(I0, I1) ?>
-  { ground([I0,I1]) },
-  { time_interval_data(I0, B0, E0),
-    time_interval_data(I1, B1, E1),
-    ground([B0,B1,E0,E1]),
-    B1 =< B0,
-    E0 =< E1
-  }.
+	{ interval_during_(I0, I1) }.
 
-%interval_during(I0, I1) ?>
-  %{ get_esg_(I0,ESG),
-    %get_esg_(I1,ESG),
-    %esg_query_(ESG, <(-(I1),-(I0))),
-    %esg_query_(ESG, <(+(I0),+(I1)))
-  %}.
+interval_during_(I0, I1) :-
+	ground([I0,I1]),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
+	ground([B0,B1,E0,E1]),
+	B1 =< B0,
+	E0 =< E1.
+
+interval_during_(I0, I1) :-
+	ground([I0,I1]),
+	get_esg_(I0,ESG),
+	get_esg_(I1,ESG),
+	esg_query_(ESG, <(-(I1),-(I0))),
+	esg_query_(ESG, <(+(I0),+(I1))).
 
 %%
 % Answer an event endpoint query using an ESG.
 %
 esg_query_(ESG, <(E0,E1)) :-
-  % <(E0,E1) holds iff there is any path from
-  % E0 to E1 in the ESG.
-  % TODO: think about ways how pathfinding can be optimized
-  esg_endpoint_node(ESG,E0,N0),
-  esg_endpoint_node(ESG,E1,N1),
+  % <(E0,E1) holds iff there is any path from E0 to E1 in the ESG.
+  esg:esg_endpoint(ESG,_,E0,N0),
+  esg:esg_endpoint(ESG,_,E1,N1),
   N0 \= N1,
-  esg_path(ESG,N0,N1,_),!.
+  % TODO: faster path finding: store index with each node, then compare index instead.
+  once(esg_path(ESG,N0,N1,_)).
 
 esg_query_(ESG, =(E0,E1)) :-
   % =(E0,E1) holds iff E0 and E1 are part of the same ESG node.
-  % FIXME: being part of the same node really always means *equal*?
-  %        I think rather that either of them could occur first,
-  %        but not necessary at the same time.
-  %        - ESG might need to distinguish between unknown and equal!
-  %esg_endpoint_node(ESG,E0,N),
-  %esg_endpoint_node(ESG,E1,N),
-  fail.
+  esg:esg_endpoint(ESG,_,E0,N),
+  esg:esg_endpoint(ESG,_,E1,N).
+
+:- dynamic esg_cache_/2.
 
 %%
 %
 get_esg_(Evt,ESG) :-
-  % FIXME: once generated ESGs are never updated.
-  %           each new allen axiom inferred/asserted should notify us to update ESGs
-  %           - use notify to trigger update?
-  esg_cache_(Evt,ESG) -> true ;
-  esg_gen_(Evt,ESG).
+	% FIXME: once generated ESGs are never updated.
+	%           each new allen axiom inferred/asserted should notify us to update ESGs
+	%           - use notify to trigger update?
+	%           - need to merge ESGs when new axioms are added
+	esg_cache_(Evt,ESG)
+	-> true
+	;  esg_gen_(Evt,ESG).
 
 esg_gen_(Entity,ESG) :-
-  var(ESG),
-  esg_unique_id(ESG),
-  esg_gen_2_(Entity,ESG,[]).
+	esg:esg_unique_id(ESG),
+	esg_gen_2_(Entity,ESG,[]).
 
+%
 esg_gen_2_(Entity,_ESG,Visited) :-
-  member(Entity,Visited),!.
+	member(Entity,Visited),!.
   
 esg_gen_2_(Entity,ESG,Visited) :-
-  push_event_endpoints(ESG,Entity),
-  forall(
-    ( interval_constraint(Entity,Constraint,Other) ),
-    ( esg_gen_2_(Other,ESG,[Entity|Visited]),
-      push_allen_constraint(ESG,Constraint) )
-  ),
-  assertz(esg_cache_(Entity,ESG)).
+	esg:push_event_endpoints(ESG,Entity),
+	forall(
+		( interval_constraint(Entity,Constraint,Other);
+		  interval_constraint(Other,Constraint,Entity) ),
+		( esg_gen_2_(Other,ESG,[Entity|Visited]),
+		  esg:push_allen_constraint(ESG,Constraint) )
+	),
+	assertz(esg_cache_(Entity,ESG)).

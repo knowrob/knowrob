@@ -1,4 +1,4 @@
-:- begin_tests('reasoning/temporal/map').
+:- begin_tests('reasoning_Allen_MAP').
 
 test('map') :-
   fail.
@@ -122,4 +122,4 @@ test('map') :-
   %test_parser(Parser),
   %retractall(parser_grammar(Parser,_,_)).
 
-:- end_tests('reasoning/temporal/map').
+:- end_tests('reasoning_Allen_MAP').

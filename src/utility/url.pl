@@ -9,6 +9,8 @@
 @license BSD
 */
 
+:- use_module('filesystem.pl', [ path_concat/3 ]).
+
 :- dynamic resolve/2.
 :- dynamic ros_package_iri_/2.
 

@@ -25,7 +25,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- begin_tests('model/URDF/parser').
+:- begin_tests('urdf_parser').
 
 :- use_module('parser').
 
@@ -399,4 +399,4 @@ test(link_collision_geometry_pr2_base_laser_link, fail) :-
 test(urdf_unload) :-
   unload_urdf_file(pr2).
 
-:- end_tests('model/URDF/parser').
+:- end_tests('urdf_parser').

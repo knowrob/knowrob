@@ -1,5 +1,5 @@
 
-:- begin_tests('lang/computable').
+:- begin_tests(computable).
 
 test(computable) :-
   fail.
@@ -80,4 +80,4 @@ test(computable) :-
 % TODO: test caching
 % TODO: test temporal properties
 
-:- end_tests('lang/computable').
+:- end_tests(computable).

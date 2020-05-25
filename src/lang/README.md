@@ -1,4 +1,4 @@
-knowrob_lang
+KnowRob Language
 =======
 
 The KnowRob language is mainly made of two predicates: `ask/2` and `tell/2`.

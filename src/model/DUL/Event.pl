@@ -7,7 +7,6 @@
       %        - probably better assert all into another module then user,
       %          then prefer this over user
       %is_process(r),
-      has_time_interval(r,r),
       has_participant(r,r),
       has_participant(r,r,r),
       executes_task(r,r),
@@ -81,19 +80,6 @@ is_task(Entity) ?+>
 %
 is_process(Entity) ?+>
   has_type(Entity, dul:'Process').
-
-%% has_time_interval(?Evt,?TimeInterval) is nondet.
-%
-% The generic relation between events and time intervals.
-%
-% @param Evt Event resource
-% @param TimeInterval TimeInterval resource
-%
-has_time_interval(Evt,TimeInterval) ?>
-  holds(Evt,dul:hasTimeInterval,TimeInterval).
-
-%has_time_interval(Evt,TimeInterval) +>
-  %holds(Evt,dul:hasTimeInterval,TimeInterval).
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %

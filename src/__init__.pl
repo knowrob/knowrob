@@ -18,6 +18,9 @@
 %:- use_module(library('semweb/rdf_portray')).
 %:- use_module(library('semweb/rdfs')).
 
+% make sure library path is expanded
+:- register_ros_package(knowrob).
+
 % load utility modules into user
 :- use_module('utility/module').
 :- use_module('utility/algebra').

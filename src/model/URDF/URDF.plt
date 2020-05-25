@@ -1,4 +1,4 @@
-:- begin_tests('model/URDF/URDF').
+:- begin_tests('model_URDF').
 
 %:- use_module(library('semweb/rdfs')).
 %:- use_module(library('semweb/rdf_db')).
@@ -191,4 +191,4 @@
     %[_,_,[0.0,0.0,0.0],[1.0,0.0,0.0,0.0]],
     %0.0001).
 
-:- end_tests('model/URDF/URDF').
+:- end_tests('model_URDF').

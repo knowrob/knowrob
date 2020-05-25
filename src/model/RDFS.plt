@@ -1,4 +1,4 @@
-:- begin_tests('model/RDFS').
+:- begin_tests('model_RDFS').
 
 test(model_RDFS) :-
   fail.
@@ -26,4 +26,4 @@ test(model_RDFS) :-
 %test('kb_resource(not_a_resource)', [fail]) :-
   %kb_resource(xyz:'NotExistingClass').
 
-:- end_tests('model/RDFS').
+:- end_tests('model_RDFS').

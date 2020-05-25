@@ -11,7 +11,6 @@
      esg_peak/2,
      esg_join/3,
      esg_endpoints/2,
-     esg_endpoint_node/3,
      esg_path/4,
      endpoint_type/2
 ]).
