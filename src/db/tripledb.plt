@@ -1,4 +1,4 @@
-:- begin_tests('db/tripledb').
+:- begin_tests('tripledb').
 
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2,
@@ -55,6 +55,5 @@ test('tripledb_ask_after_injection') :-
 	rdfs:'subClassOf',
 	knowrob:'TestThing'
 ).
-%:- trace.
 
-:- end_tests('db/tripledb').
+:- end_tests('tripledb').
