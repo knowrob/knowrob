@@ -8,7 +8,7 @@
     ]).
 
 % load swrl owl file for tripledb testing
-test('tripledb_load(URL)') :-
+test('tripledb_load_local_owl_file(URL)') :-
   tripledb_load(
     'package://knowrob/owl/test/swrl.owl',
     [ graph(common),
@@ -16,7 +16,7 @@ test('tripledb_load(URL)') :-
     ]).
 
 % check via tripledb_ask if individual triple exists
-test('tripledb_ask(S,P,O)') :-
+test('tripledb_ask_if_individual_triple_exists_in_triplestore(S,P,O)') :-
   tripledb_ask(
     knowrob:'Adult',
  	rdfs:'subClassOf',
@@ -24,7 +24,7 @@ test('tripledb_ask(S,P,O)') :-
 ).
 
 % delete individual triple
-test('tripledb_forget(S,P,O)') :-
+test('tripledb_forget_from_triplestore(S,P,O)') :-
   tripledb_forget(
     knowrob:'Adult',
 	rdfs:'subClassOf',
@@ -40,7 +40,7 @@ test('tripledb_ask_after_deletion', [fail]) :-
 ).
 
 % add triple
-test('tripledb_tell(S,P,O)') :-
+test('tripledb_tell_to_triplestore(S,P,O)') :-
   tripledb_tell(
     knowrob:'Adult',
 	rdfs:'subClassOf',
@@ -49,7 +49,7 @@ test('tripledb_tell(S,P,O)') :-
 
 
 % check again for that triple and it should be in the tripledb
-test('tripledb_ask_after_injection') :-
+test('tripledb_ask_after_injection_of_new_triple') :-
   tripledb_ask(
     knowrob:'Adult',
 	rdfs:'subClassOf',
