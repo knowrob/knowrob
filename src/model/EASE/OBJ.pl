@@ -34,25 +34,20 @@
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('model/OWL'),
-    [ is_individual/1
-    ]).
+    [ is_individual/1 ]).
 :- use_module(library('model/DUL/Object'),
     [ has_role/2,
       has_object_type/2,
       has_quality_type/2
     ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 :- use_module(library('db/scope'),
-    [ universal_scope/1
-    ]).
+    [ universal_scope/1 ]).
 :- use_module(library('comm/notify'),
-    [ notify/1
-    ]).
+    [ notify/1 ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-OBJ.owl',
     [ graph(tbox),
@@ -78,7 +73,7 @@
 		 *	    QUALITIES		*
 		 *******************************/
 
-%% is_physical_quality(+Entity) is semidet.
+%% is_physical_quality(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'PhysicalQuality'.
 %
@@ -87,7 +82,7 @@
 is_physical_quality(Entity) ?+>
   has_type(Entity, ease_obj:'PhysicalQuality').
 
-%% is_social_quality(+Entity) is semidet.
+%% is_social_quality(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'SocialQuality'.
 %
@@ -96,7 +91,7 @@ is_physical_quality(Entity) ?+>
 is_social_quality(Entity) ?+>
   has_type(Entity, ease_obj:'SocialQuality').
 
-%% is_intrinsic(+Entity) is semidet.
+%% is_intrinsic(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Intrinsic'.
 %
@@ -105,7 +100,7 @@ is_social_quality(Entity) ?+>
 is_intrinsic(Entity) ?+>
   has_type(Entity, ease_obj:'Intrinsic').
 
-%% is_extrinsic(+Entity) is semidet.
+%% is_extrinsic(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Extrinsic'.
 %
@@ -114,19 +109,23 @@ is_intrinsic(Entity) ?+>
 is_extrinsic(Entity) ?+>
   has_type(Entity, ease_obj:'Extrinsic').
 
-%% object_localization(?Obj, ?Loc) is det
+%% object_localization(?Obj, ?Loc) is nondet.
 %
+% Relates an object to its localization quality.
+%
+% @param Obj object resource
+% @param Loc localization quality
 %
 object_localization(Obj,Loc) ?+>
   holds(Obj,ease_obj:hasLocalization,Loc).
 
-%% object_color_rgb(?Obj:iri, ?Col:list) is det
+%% object_color_rgb(?Obj, ?Col) is nondet.
 %
 % True if Col is the main color of Obj.
-% Col is encoded as as [float red, green, blue, alpha], on a scale of 0-1.
+% Col is encoded as as [float red, green, blue], on a scale of 0-1.
 %
-% @param Obj  Instance of a subclass of EnduringThing-Localized
-% @param Col  Main color of the object
+% @param Obj object resource
+% @param Col rgb color data
 % 
 object_color_rgb(Obj,[R,G,B]) ?>
   holds(Obj,ease_obj:hasColor,Color),
@@ -149,16 +148,15 @@ object_color_rgb(Obj,[R,G,B]) +>
   },
   % update the region of the color quality
   holds(Color,dul:hasRegion,update(Region)),
-  % FIXME: notify after assert
   notify(object_changed(Obj)).
 
-%% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
+%% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
 % True if Depth x Width x Height are (exactly) the extends of the bounding box of Obj.
 % NOTE that we use ROS conventions here: Coordinate systems in ROS are
 % always right-handed, with X forward, Y left, and Z up. 
 %
-% @param Obj    Instance of SpatialThing
+% @param Obj    Object resource
 % @param Depth  Depth of the bounding box (x-dimension)
 % @param Width  Width of the bounding box (y-dimension)
 % @param Height Height of the bounding box (z-dimension)
@@ -187,7 +185,6 @@ object_dimensions(Obj, Depth, Width, Height) +>
          ],US)
   },
   holds(Shape,dul:hasRegion,ShapeRegion),
-  % FIXME: notify after assert
   notify(object_changed(Obj)).
 
 %%
@@ -203,12 +200,12 @@ shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
   { Diameter is 2 * Radius },
   { ! }.
 
-%% object_mesh_path(+Obj:iri, -FilePath:atom) is det
+%% object_mesh_path(?Obj, -FilePath) is nondet.
 %
 % True if FilePath is a path to a mesh file (stl or dae) for Obj.
 %
-% @param Obj        Instance of a subclass of EnduringThing-Localized
-% @param FilePath   the path (usually a package:// path)
+% @param Obj      Object resource
+% @param FilePath the file path
 %
 object_mesh_path(Obj, FilePath) ?>
   holds(Obj,ease_obj:hasShape,Shape),
@@ -230,14 +227,13 @@ object_mesh_path(Obj, FilePath) +>
   },
   % assign the region to the shape quality
   holds(Shape,dul:hasRegion,ShapeRegion),
-  % FIXME: notify after assert
   notify(object_changed(Obj)).
 
 		 /*******************************
 		 *	    FEATURES		*
 		 *******************************/
 
-%% is_feature(+Entity) is semidet.
+%% is_feature(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Feature'.
 %
@@ -246,14 +242,24 @@ object_mesh_path(Obj, FilePath) +>
 is_feature(Entity) ?+>
   has_type(Entity,ease_obj:'Feature').
 
-%% object_feature(+Obj, ?Feature) is semidet.
+%% object_feature(+Obj, ?Feature) is nondet.
 %
+% Associates an object resource to features it hosts.
+%
+% @param Obj      Object resource
+% @param Feature  Feature resource
 %
 object_feature(Obj, Feature) ?+>
   holds(Obj,ease_obj:hasFeature,Feature).
 
-%% object_feature(+Obj, ?Feature, ?FeatureType) is semidet.
+%% object_feature(?Obj, ?Feature, ?FeatureType) is nondet.
 %
+% Same as object_feature/2 but additionally unifies
+% the feature type.
+%
+% @param Obj      Object resource
+% @param Feature  Feature resource
+% @param FeatureType  Class resource
 %
 object_feature_type(Obj, Feature, FeatureType) ?>
   object_feature(Obj,Feature),
@@ -263,7 +269,7 @@ object_feature_type(Obj, Feature, FeatureType) ?>
 		 *	    AFFORDANCES		*
 		 *******************************/
 
-%% is_affordance(+Entity) is semidet.
+%% is_affordance(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Affordance'.
 %
@@ -272,7 +278,7 @@ object_feature_type(Obj, Feature, FeatureType) ?>
 is_affordance(Entity) ?+>
   has_type(Entity,ease_obj:'Affordance').
 
-%% is_disposition(+Entity) is semidet.
+%% is_disposition(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Disposition'.
 %
@@ -281,12 +287,12 @@ is_affordance(Entity) ?+>
 is_disposition(Entity) ?+>
   has_type(Entity,ease_obj:'Disposition').
 
-%% has_disposition(?Obj:iri, ?Disposition:iri) is nondet.
+%% has_disposition(?Obj, ?Disposition) is nondet.
 %
-% Relates an object to one of its dispositions.
+% Relates an object to its dispositions.
 %
-% @param Obj           An individual of type dul:'Object'.
-% @param Disposition   An individual of type ease_obj:'Disposition'.
+% @param Obj          Object resource
+% @param Disposition  Disposition resource
 %
 has_disposition(Obj, Disposition) ?+>
   holds(Obj,ease_obj:hasDisposition,Disposition).
@@ -296,21 +302,21 @@ has_disposition(Obj, Disposition) ?+>
 % Relates an object to one of its dispositions that is an instance
 % of given disposition type.
 %
-% @param Obj               An individual of type dul:'Object'.
-% @param Disposition       An individual of type ease_obj:'Disposition'.
-% @param DispositionType   A sub-class of ease_obj:'Disposition'.
+% @param Obj               Object resource
+% @param Disposition       Disposition resource
+% @param DispositionType   Class resource
 %
 has_disposition_type(Obj, Disposition, DispositionType) ?>
   holds(Obj,ease_obj:hasDisposition,Disposition),
   has_quality_type(Disposition,DispositionType).
 
-%% disposition_trigger_type(?Disposition:iri, ?TriggerType:iri) is nondet.
+%% disposition_trigger_type(?Disposition, ?TriggerType) is nondet.
 %
 % Relates a disposition to the type of objects that can be the 
 % trigger of the disposition.
 %
-% @param Disposition   An individual of type ease_obj:'Disposition'.
-% @param TriggerType   A sub-class of dul:'Object'.
+% @param Disposition  Disposition resource
+% @param TriggerType  Class resource
 %
 disposition_trigger_type(Disposition,TriggerType) ?>
   holds(Disposition, ease_obj:affordsTrigger, only(TriggerRole)),
@@ -320,7 +326,7 @@ disposition_trigger_type(Disposition,TriggerType) ?>
 		 *	    ROLES & PARAMETERS		*
 		 *******************************/
 
-%% is_patient(+Entity) is semidet.
+%% is_patient(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Patient'.
 %
@@ -330,16 +336,7 @@ is_patient(Entity) ?>
   has_role(Entity,Role),
   has_object_type(Role,ease_obj:'Patient').
 
-% TODO: not sure about just creating a role symbol here.
-%         this needs some more consideration.
-%         e.g. what about role symbols defined by tasks?
-%            **is_patient(X) during Event**
-%is_patient(Entity) +>
-  %is_role(Role),
-  %has_type(Role,ease_obj:'Patient'),
-  %has_role(Entity,Role)
-
-%% is_instrument(+Entity) is semidet.
+%% is_instrument(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Instrument'.
 %
@@ -349,7 +346,7 @@ is_instrument(Entity) ?>
   has_role(Entity,Role),
   has_object_type(Role,ease_obj:'Instrument').
 
-%% is_location(+Entity) is semidet.
+%% is_location(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Location'.
 %
@@ -359,7 +356,7 @@ is_location(Entity) ?>
   has_role(Entity,Role),
   has_object_type(Role,ease_obj:'Location').
 
-%% is_destination(+Entity) is semidet.
+%% is_destination(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Destination'.
 %
@@ -369,7 +366,7 @@ is_destination(Entity) ?>
   has_role(Entity,Role),
   has_object_type(Role,ease_obj:'Destination').
 
-%% is_origin(+Entity) is semidet.
+%% is_origin(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_obj:'Origin'.
 %

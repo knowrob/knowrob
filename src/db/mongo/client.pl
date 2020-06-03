@@ -105,7 +105,13 @@ mng_cursor_next(Cursor,Dict) :-
 %% 
 mng_cursor_materialize(Cursor,Dict) :-
   mng_cursor_next(Cursor,Next),
-  ( Dict=Next ; mng_cursor_materialize(Cursor,Dict) ).
+  mng_cursor_materialize(Cursor,Next,Dict).
+
+mng_cursor_materialize(Cursor,Next,Dict) :-
+  ( mng_cursor_next(Cursor,Next1) ->
+    ( Dict=Next ; mng_cursor_materialize(Cursor,Next1,Dict) );
+    ( Dict=Next )
+  ).
 
 %% mng_get_dict(?Key,+Doc,?PlValue) is semidet.
 %
@@ -143,9 +149,13 @@ mng_pl_value(List,array(List0)) :-
 
 mng_pl_value(String,string(Val)) :-
   string(String),
-  string_to_atom(String,A),
-  ( catch(term_to_atom(Val,A),_,Val=A) ),
-  ( ground(Val);Val=A ),!.
+  string_to_atom(String,Val),!.
+
+%mng_pl_value(String,string(Val)) :-
+  %string(String),
+  %string_to_atom(String,A),
+  %( catch(term_to_atom(Val,A),_,Val=A) ),
+  %( ground(Val);Val=A ),!.
 
 mng_pl_value(Val,Val).
 

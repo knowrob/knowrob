@@ -10,6 +10,20 @@
 #include <sstream>
 #include <iostream>
 
+bool get_boolean_(const PlTerm &atomic_value)
+{
+	std::string val(atomic_value.name());
+	if(val.compare("true")==0) {
+		return true;
+	}
+	else if(val.compare("false")==0) {
+		return false;
+	}
+	else {
+		return (bool)((int)atomic_value);
+	}
+}
+
 bson_t *bson_new_from_term(const PlTerm &term, bson_error_t *err)
 {
 	PlTail list(term);
@@ -47,18 +61,15 @@ bson_t *bson_new_from_term(const PlTerm &term, bson_error_t *err)
 			if(type_name.compare("int")==0)
 				return BCON_NEW(key, BCON_INT32((int)atomic_value));
 			else if(type_name.compare("bool")==0)
-				return BCON_NEW(key, BCON_BOOL((bool)((int)atomic_value)));
+				return BCON_NEW(key, BCON_BOOL(get_boolean_(atomic_value)));
 			else if(type_name.compare("double")==0) {
 				// NOTE: must use canonical form for "Infinity"
 				bson_decimal128_t dec;
 				bson_decimal128_from_string ((char*)atomic_value, &dec);
-// 				bson_t *double_bson0 = BCON_NEW("$numberDouble", BCON_UTF8((char*)atomic_value));
-// 				bson_t *double_bson1 = BCON_NEW(key, double_bson0);
-// 				bson_destroy(double_bson0);
-// 				return double_bson1;
-				//return BCON_NEW(key, BCON_DOUBLE((double)atomic_value));
 				return BCON_NEW(key, BCON_DECIMAL128(&dec));
 			}
+			else if(type_name.compare("regex")==0)
+				return BCON_NEW(key, BCON_REGEX((char*)atomic_value,"i"));
 			else if(type_name.compare("string")==0)
 				return BCON_NEW(key, BCON_UTF8((char*)atomic_value));
 			else if(type_name.compare("time")==0) {

@@ -1,5 +1,5 @@
 
-:- begin_tests(role_reasoning).
+:- begin_tests('reasoning_roles').
 
 test(role_reasoning) :-
   fail.
@@ -248,4 +248,4 @@ test(role_reasoning) :-
   %kb_triple(Pancake0,dul:hasPart,pancake:'Milk_0'),
   %kb_triple(Pancake0,dul:hasPart,pancake:'WheatFlour_0').
 
-:- end_tests(role_reasoning).
+:- end_tests('reasoning_roles').

@@ -14,21 +14,18 @@
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('model/DUL/Event'),
-    [ task_role_range/3
-    ]).
+    [ task_role_range/3 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-WF.owl',
     [ graph(tbox),
       namespace(ease_wf)
     ]).
 
-%% is_binding(+Entity) is semidet.
+%% is_binding(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_wf:'Binding'.
 %
@@ -37,7 +34,7 @@
 is_binding(Entity) ?+>
   has_type(Entity, ease_wf:'Binding').
 
-%% is_succeedence(+Entity) is semidet.
+%% is_succeedence(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_wf:'Succeedence'.
 %

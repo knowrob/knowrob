@@ -16,15 +16,14 @@
       rdf_register_ns/3
     ]).
 :- use_module(library('http/http_open.pl'),
-    [ http_open/3
-    ]).
+    [ http_open/3 ]).
 
 :- rdf_register_ns(qudt,
     'http://data.nasa.gov/qudt/owl/qudt#', [keep(true)]).
 % TODO load into DB backend
 %:- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
     %[ graph(qudt),
-      %namespace(ease_act)
+      %namespace(qudt)
     %]).
 
 :- dynamic qudt_unit/4.

@@ -21,27 +21,22 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_equal/2
-    ]).
+    [ rdf_equal/2 ]).
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module(library('model/DUL/Event'),
-    [ task_role_range/3
-    ]).
+    [ task_role_range/3 ]).
 :- use_module(library('model/DUL/Region'),
-    [ has_parameter_range/3
-    ]).
+    [ has_parameter_range/3 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
     [ graph(tbox),
       namespace(ease_act)
     ]).
 
-%% is_manipulation_action(+Entity) is semidet.
+%% is_manipulation_action(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_act:'ManipulationAction'.
 %
@@ -50,7 +45,7 @@
 is_manipulation_action(Entity) ?+>
   has_type(Entity, ease_act:'ManipulationAction').
 
-%% is_mental_action(+Entity) is semidet.
+%% is_mental_action(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_act:'MentalAction'.
 %
@@ -59,7 +54,7 @@ is_manipulation_action(Entity) ?+>
 is_mental_action(Entity) ?+>
   has_type(Entity, ease_act:'MentalAction').
 
-%% is_physical_task(+Entity) is semidet.
+%% is_physical_task(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_act:'PhysicalTask'.
 %
@@ -68,7 +63,7 @@ is_mental_action(Entity) ?+>
 is_physical_task(Entity) ?+>
   has_type(Entity, ease_act:'PhysicalTask').
 
-%% is_mental_task(+Entity) is semidet.
+%% is_mental_task(?Entity) is nondet.
 %
 % True iff Entity is an instance of ease_act:'MentalTask'.
 %
@@ -77,7 +72,7 @@ is_physical_task(Entity) ?+>
 is_mental_task(Entity) ?+>
   has_type(Entity, ease_act:'MentalTask').
 
-%% is_performed_by(?Act,?Agent) is semidet.
+%% is_performed_by(?Act,?Agent) is nondet.
 %
 % Relates an action to the agent that performs it.
 %

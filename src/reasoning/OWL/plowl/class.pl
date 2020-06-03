@@ -3,13 +3,13 @@
       owl_property_range(r,r,t),
       owl_property_cardinality(r,r,t,?,?)
     ]).
-/** <module> TODO ...
+/** <module> Reasoning about OWL classes.
 
 @author Daniel Beßler
 */
 
 :- use_module(library('model/OWL'),
-    [ owl_description/2,
+    [ has_description/2,
       is_class/1,
       is_object_property/1,
       is_functional_property/1,
@@ -35,7 +35,7 @@
 %owl_subclass_of(Sub,Sup) :-
   %% TODO: this clause seems displaced, but is not covered otherwise.
   %ground(Sub),
-  %owl_description(Sub,intersection_of(List)),!,
+  %has_description(Sub,intersection_of(List)),!,
   %once((
     %member(Sub0,List),
     %(Sub0=Sup ; subclass_of(Sub0,Sup))
@@ -46,7 +46,7 @@ owl_subclass_of(Sub,Sup) :-
   owl_subclass_of1(Sub,class(Sup)).
 
 owl_subclass_of(Sub,Sup) :-
-  owl_description(Sup,Descr),
+  has_description(Sup,Descr),
   owl_subclass_of1(Sub,Descr).
 
 owl_subclass_of1(Sub,only(P,Range)) :-
@@ -79,12 +79,12 @@ owl_subclass_of1(Sub,Sup) :-
 owl_subclass_of_equivalent(Sub,Descr) :-
   ground(Sub),!,
   has_equivalent_class(Sub,EQ),
-  owl_description(EQ,Descr).
+  has_description(EQ,Descr).
 
 owl_subclass_of_equivalent(Sub,class(EQ)) :-
   ground(EQ),!,
   has_equivalent_class(EQ,EQ0),
-  owl_description(EQ0,class(Sub)).
+  has_description(EQ0,class(Sub)).
 
 owl_subclass_of_equivalent(Sub,Descr) :-
   is_class(Sub),
@@ -146,7 +146,7 @@ owl_property_range(Cls,P,Range) :-
   owl_property_range(Cls,P,Range).
 
 owl_property_range(Cls,P,Range) :-
-  owl_description(Cls,Descr),
+  has_description(Cls,Descr),
   % get list of inferred ranges.
   % the meaning is that the range is the intersection 
   % of these classes.
@@ -228,7 +228,7 @@ owl_property_cardinality(Cls,P,Range,Min,Max) :-
   owl_property_cardinality(Cls,P,Range,Min,Max).
 
 owl_property_cardinality(Cls,P,Range,Min,Max) :-
-  owl_description(Cls,Descr),
+  has_description(Cls,Descr),
   owl_property_cardinality0(Descr,P,Range,Cards),
   % FIXME: what is wrong below?
   %( is_functional_property(P) ->
@@ -299,7 +299,7 @@ owl_property_cardinality1(class(Cls),P,Range,Min,Max,Visited) :-
   % get cardinaity constraints from super-classes of Cls
   subclass_of(Cls,Sup),
   \+ memberchk(Sup,Visited),
-  owl_description(Sup,Descr),
+  has_description(Sup,Descr),
   owl_property_cardinality1(Descr,P,Range,Min,Max,[Cls|Visited]).
 
 %%

@@ -1,7 +1,7 @@
 :- module(lang_is_at,
-    [ is_at(r,r)
+    [ is_at(r,r)  % ?Object, -PoseData
     ]).
-/** <module> The *is_at* predicate.
+/** <module> The is_at predicate.
 
 @author Daniel Beßler
 @license BSD
@@ -14,17 +14,19 @@
       transform_multiply/3
     ]).
 :- use_module(library('model/DUL/Region'),
-    [ has_region/2
-    ]).
+    [ has_region/2 ]).
 :- use_module(library('model/EASE/OBJ'),
-    [ object_localization/2
-    ]).
+    [ object_localization/2 ]).
 :- use_module(library('comm/notify'),
-    [ notify/1
-    ]).
+    [ notify/1 ]).
 
-%% is_at(?Object,?Pose) is nondet.
+%% is_at(?Object,-PoseData) is nondet.
 %
+% Query the pose where the object is located.
+% PoseData is a term `[Frame,[X,Y,Z],[QX,QY,QZ,QW]]`.
+%
+% @param Object an object instance
+% @param PoseData the position data
 %
 is_at(Obj,PoseQuery) ?>
   object_localization(Obj,Localization),

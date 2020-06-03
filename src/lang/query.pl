@@ -4,7 +4,7 @@
       tell(t),    % +Statement
       tell(t,t)   % +Statement, +Scope
     ]).
-/** <module> The querying language of KnowRob.
+/** <module> Main interface predicates for querying the knowledge base.
 
 @author Daniel Beßler
 @license BSD
@@ -19,48 +19,100 @@
       scope_update/3,
       scope_remove/4
     ]).
+%:- use_module(library('reasoning/pool'),
+    %[ infer/3 ]).
 
-:- multifile ask/2, tell/2.
+:- multifile tell/2, ask2/2.
 
 %% ask(+Statement) is nondet.
 %
-% Ask the knowledge base if some statement is true.
+% Same as ask/2 with wildcard scope.
+%
+% @param Statement a statement term.
 %
 ask(Statement) :-
   wildcard_scope(QScope),
   ask(Statement,[[],QScope]->_).
 
-%%
+%% ask(+Statement,+Scope) is nondet.
 %
+% True if Statement term holds within the requested scope.
+% Scope is a term `[Options,QueryScope]->FactScope` where QueryScope
+% is the scope requested, and FactScope the actual scope
+% of the statement being true.
+% Statement can also be a list of statements.
+%
+% ask/2 is a multifile predicate. Meaning that clauses may be
+% decalared in multiple files.
+% Specifically, declaring a rule using the ask operator `?>`,
+% or the ask-tell operator `?+>` will generate a clause of the ask rule.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
 %
 ask(Statements,QScope->FScope) :-
   is_list(Statements),!,
   ask_all_(Statements,QScope,_->FScope).
 
-ask(triple(S,P,O),[Options,QScope]->FScope) :-
+ask(Statement,QScope->FScope) :-
+  ground(Statement),!,
+  % TODO only cut choicepoints in case fact scope is universal!
+  %universal_scope(US),
+  ask1(Statement,QScope->FScope),
+  %( scope_equal(FScope,US) -> ! ; true )
+  !.
+
+ask(Statement,Scope) :-
+  ask1(Statement,Scope).
+
+ask1(triple(S,P,O),[Options,QScope]->FScope) :-
+  !,
+  % tripledb retrieval
   tripledb_ask(S,P,O,QScope,FScope,Options).
+
+ask1(Statement,Scope) :-
+  % handle complex statements
+  ask2(Statement,Scope).
+
+ask1(Statement,Scope) :-
+  % try to infer the statement
+  reasoning_pool:infer(Statement,_,Scope).
 
 %%
 ask_all_([],_QS,FS->FS) :- !.
+ask_all_([{X}|Xs],QS,FS1->FSn) :-
+  call(X),
+  ask_all_(Xs,QS,FS1->FSn).
 ask_all_([X|Xs],QS,FS->FSn) :-
   ask(X,QS->FS0),
-  % TODO: probably fact scope should restrict query scope
-  %         for next query!
+  % TODO: fact scope should restrict query scope for next query!
   scope_intersect(FS,FS0,FS1),
   ask_all_(Xs,QS,FS1->FSn).
 
-%% tell(+Statement) is det.
+%% tell(+Statement) is nondet.
 %
-% Tell the knowledge base that some statement is true.
-% This will cause the statement to be added to the 
-% tripledb used by the knowledge base.
+% Same as tell/2 with universal scope.
+%
+% @param Statement a statement term.
 %
 tell(Statement) :-
   universal_scope(FScope),
   tell(Statement,[[],FScope]).
 
-%%
+%% tell(+Statement,+Scope) is det.
 %
+% Tell the knowledge base that some statement is true.
+% Scope is a term `[Options,FactScope]` where FactScope
+% the scope of the statement being true.
+% Statement can also be a list of statements.
+%
+% tell/2 is a multifile predicate. Meaning that clauses may be
+% decalared in multiple files.
+% Specifically, declaring a rule using the tell operator `+>`,
+% or the ask-tell operator `?+>` will generate a clause of the tell rule.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
 %
 tell(Statements,Scope) :-
   is_list(Statements),!,
@@ -73,6 +125,7 @@ tell(triple(S,P,O),QScope) :-
 tell(triple(S,P,O),[Options,QScope]) :-
   tripledb_tell(S,P,O,QScope,Options).
 
+%%
 tell_all([],_) :- !.
 tell_all([X|Xs],QScope) :-
   tell(X,QScope),
@@ -90,7 +143,6 @@ tell_all([X|Xs],QScope) :-
 user:term_expansion((?>(Head,Goal)),Expansions) :-
   strip_module_(Head,Module,Term),
   once((ground(Module);prolog_load_context(module,Module))),
-  %%
   findall(Expansion, (
     expand_predicate_(Module,Term,Expansion);
     expand_ask_query_(Term,Goal,Expansion)
@@ -111,8 +163,7 @@ expand_predicate_(Module,Head,(:-(HeadExpanded,lang_query:ask(Term)))) :-
 expand_ask_query_(Head,Goal,(:-(HeadExpanded,GoalExpanded))) :-
   expand_ask_term_(QScope->_,_->FScope,
                    Goal,GoalExpanded),
-  HeadExpanded = lang_query:ask(Head,QScope->FScope),
-  % TODO: why are there so many choicepoints here?
+  HeadExpanded = lang_query:ask2(Head,QScope->FScope),
   !.
 
 %%

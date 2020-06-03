@@ -6,5 +6,5 @@
 :- use_directory('spatial').
 %:- use_directory('causal').
 :- use_directory('OWL').
-%:- use_directory('SWRL').
+:- use_directory('SWRL').
 %:- use_directory('SRDL').

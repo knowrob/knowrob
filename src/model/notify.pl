@@ -1,20 +1,15 @@
 :- module(model_notify, []).
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_split_url/3
-    ]).
+    [ rdf_split_url/3 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_ask/3
-    ]).
+    [ tripledb_ask/3 ]).
 :- use_module(library('db/scope'),
-    [ universal_scope/1
-    ]).
+    [ universal_scope/1 ]).
 :- use_module(library('lang/terms/holds'),
-    [ holds/3
-    ]).
+    [ holds/3 ]).
 :- use_module(library('lang/terms/is_a'),
-    [ subproperty_of/2
-    ]).
+    [ subproperty_of/2 ]).
 
 :- use_module('./RDFS.pl',
     [ has_type/2,
@@ -26,18 +21,16 @@
     ]).
 :- use_module('./DUL/Object.pl',
     [ is_object/1,
+      is_concept/1,
       is_physical_object/1,
       is_physical_object/1
     ]).
 :- use_module('./DUL/Region.pl',
-    [ is_time_interval/1
-    ]).
+    [ is_time_interval/1 ]).
 :- use_module('./EASE/PROC.pl',
-    [ is_process_type/1
-    ]).
+    [ is_process_type/1 ]).
 :- use_module('./EASE/STATE.pl',
-    [ is_state_type/1
-    ]).
+    [ is_state_type/1 ]).
 
 % FIXME: Syntax error: Operator expected
 %:- rdf_meta initialize_required_(r,r).

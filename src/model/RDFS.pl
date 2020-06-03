@@ -10,7 +10,7 @@
       has_comment(r,?),
       is_rdf_list(r,t)
     ]).
-/** <module> TODO ...
+/** <module> The Resource Description Framework Schema model.
 
 @author Daniel Beßler
 */
@@ -22,9 +22,6 @@
     ]).
 :- rdf_register_ns(rdfs,
     'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-% TODO move somewhere else
-:- rdf_register_ns(io,
-    'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl#', [keep(true)]).
 
 %% is_resource(+Entity) is semidet.
 %
@@ -81,6 +78,9 @@ is_datatype(Entity) ?+>
 % rdf:type is an instance of rdf:Property that is used to
 % state that a resource is an instance of a class.
 %
+% @param Resource a RDF resource
+% @param Type a rdf:type of the resource
+%
 has_type(Resource,Type) ?>
   triple(Resource, rdf:type, Type).
 
@@ -88,22 +88,35 @@ has_type(Resource,Type) +>
   %triple(Resource, rdf:type, Label).
   instance_of(Resource,Type).
 
-%%
+%% has_range(?Property,?Range) is nondet.
 %
+% The range of a property globally restricts values
+% of the property to instances of the range.
+%
+% @param Property a property
+% @param Range the range of the property
 %
 has_range(Property,Range) ?+>
   triple(Property, rdfs:range, Range).
 
-%%
+%% has_domain(?Property,?Domain) is nondet.
 %
+% The domain of a property globally restricts hosts
+% of the property to instances of the domain.
 %
-has_domain(Property,Range) ?+>
-  triple(Property, rdfs:domain, Range).
+% @param Property a property
+% @param Domain the range of the property
+%
+has_domain(Property,Domain) ?+>
+  triple(Property, rdfs:domain, Domain).
 
 %% has_label(+Resource,?Comment) is semidet.
 %
 % rdfs:label is an instance of rdf:Property that may be used
 % to provide a human-readable version of a resource's name.
+%
+% @param Resource a RDF resource
+% @param Label a label atom
 %
 has_label(Resource,Label) ?+>
   triple(Resource, rdfs:label, Label).
@@ -113,10 +126,13 @@ has_label(Resource,Label) ?+>
 % rdfs:comment is an instance of rdf:Property that may be used
 % to provide a human-readable description of a resource.
 %
+% @param Resource a RDF resource
+% @param Comment a comment atom
+%
 has_comment(Resource,Comment) ?+>
   triple(Resource, rdfs:comment, Comment).
 
-%%
+%% is_rdf_list(+RDFList,-PrologList) is semidet.
 %
 %
 is_rdf_list('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',[]) ?+> { ! }.
@@ -128,7 +144,6 @@ is_rdf_list(RDFList,[X|Xs]) ?>
 
 is_rdf_list(RDFList,[X|Xs]) +>
   is_rdf_list(Ys,Xs),
-  % TODO: might be overkill to have rdf:type for each sublist?
   has_type(RDFList, rdf:'List'),
   triple(RDFList, rdf:first, X),
   triple(RDFList, rdf:rest, Ys).

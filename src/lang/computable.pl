@@ -1,12 +1,12 @@
 :- module(computable,
-    [ computables(t),
-      op(1150, fx, computables)
-    ]).
-/** <module> Implementation of computable properties.
+    [ computables(t) ]).
+/** <module> Loading of computable predicates used to compute relations and data values.
 
 @author Daniel Beßler
 @license BSD
 */
+
+:- op(1150, fx, user:computables).
 
 :- use_module(library('model/OWL'),
     [ is_object_property/1,
@@ -17,9 +17,14 @@
 :- use_module('./terms/is_a.pl',         [ subproperty_of/2 ]).
 :- use_module('./terms/transitive.pl',   [ transitive/1 ]).
 
-%% computables(+Computables) is det
+%% computables(+Computables) is det.
 %
+% Register a list of comutable predicates.
+% Each computable is represented as list
+% `[Predicate,Property]` where Predicate is a Prolog
+% predicate, and Property is a RDF property.
 %
+% @param Computables list of computables
 %
 computables(Computables) :-
   % peak module M
@@ -88,6 +93,8 @@ computable_reasoner2_(:(Module,ComputableTerm)) :-
   atom(Property),
   %
   forall(
+    % FIXME: we assume here that property hierarchy never changes.
+    %         better would be to re-initialize in case the hierarchy changes.
     transitive(subproperty_of(Property,SupProperty)),
     ( % assert *can_answer* clause
       assert_can_answer_(Module,SupProperty),
@@ -142,6 +149,8 @@ computable_obda2_(Module,ComputableTerm) :-
   atom(Property),
   %
   forall(
+    % FIXME: we assume here that property hierarchy never changes.
+    %         better would be to re-initialize in case the hierarchy changes.
     transitive(subproperty_of(Property,X)),
     ( % assert *can_answer* clause
       assert_can_access_(Module,X),

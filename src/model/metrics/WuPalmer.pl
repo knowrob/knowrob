@@ -16,19 +16,18 @@
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdf_db'), [rdf_meta/1]).
 
-:-  rdf_meta
-      rdf_wup_similarity(r,r,-),
-      rdf_wup_similarity_given_LCS(r,r,r,-),
-      rdf_path_distance(r,r,-),
-      rdf_shortest_path(r,r,-),
-      rdf_paths(r,r,t),
-      rdf_most_similar(r,r,+,-),
-      rdf_all_similar(r,r,-),
-      rdfs_common_ancestor(t,r),
-      rdf_shortest_dist_up(r,r,?),
-      rdf_paths_up(r,r,t).
+:- rdf_meta(rdf_wup_similarity(r,r,-)).
+:- rdf_meta(rdf_wup_similarity_given_LCS(r,r,r,-)).
+:- rdf_meta(rdf_path_distance(r,r,-)).
+:- rdf_meta(rdf_shortest_path(r,r,-)).
+:- rdf_meta(rdf_paths(r,r,t)).
+:- rdf_meta(rdf_most_similar(r,r,+,-)).
+:- rdf_meta(rdf_all_similar(r,r,-)).
+:- rdf_meta(rdfs_common_ancestor(t,r)).
+:- rdf_meta(rdf_shortest_dist_up(r,r,?)).
+:- rdf_meta(rdf_paths_up(r,r,t)).
 
 %% rdf_wup_similarity(+A:rdf_class, +B:rdf_class, -Sim:float).
 %
@@ -94,10 +93,10 @@ rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
     findall(NewSuperClasses, (
         member(Class, SearchList),
         findall(SuperClass, (
-                              rdf_has(Class, rdfs:subClassOf, SuperClass),
-                              \+ rdfs_individual_of(SuperClass, owl:'Restriction'),
-                              \+ member(SuperClass, DoneList)
-                            ), NewSuperClasses)
+            (SuperClass=Class; subclass_of(Class,SuperClass)),
+            \+ is_restriction(SuperClass),
+            \+ member(SuperClass, DoneList)
+        ), NewSuperClasses)
     ), NewSuperClassesLists),
     flatten(NewSuperClassesLists, NewSearchList),
     (  NewSearchList = [] %if no new classes in searchlist, then Goal is not reachable -> return false
@@ -159,12 +158,12 @@ rdf_find_path_down([], _, []).
 
 rdf_paths_up(A, A, []).
 rdf_paths_up(A, B, [Super|Path]) :-
-  findall(C, rdf_has(A, rdfs:subClassOf, C), Cs), member(Super, Cs),
+  findall(C, subclass_of(A,C), Cs), member(Super, Cs),
   rdf_paths_up(Super, B, Path).
 
 rdf_paths_down(A, A, []).
 rdf_paths_down(A, B, [Sub|Path]) :-
-  findall(C, rdf_has(C, rdfs:subClassOf, A), Cs), member(Sub, Cs),
+  findall(C, subclass_of(C,A), Cs), member(Sub, Cs),
   rdf_paths_down(Sub, B, Path).
 
 %% rdf_most_similar(Class, Super, N, NMostSim).
@@ -177,7 +176,7 @@ rdf_paths_down(A, B, [Sub|Path]) :-
 % @param NMostSim  List of the N most similar classes
 %
 rdf_most_similar(Class, Super, N, NMostSim) :-
-  findall([A, D], (rdfs_subclass_of(A, Super),
+  findall([A, D], (subclass_of(A, Super),
                    rdf_wup_similarity(A, Class, D)), Dists),
   predsort(compare_inference_probs, Dists, MostSim),
   first_n_elem(MostSim, N, NMostSim).
@@ -201,7 +200,7 @@ rdf_common_ancestor([C1, C2| Cs], C) :-
 
 rdf_superclass_list([], []).
 rdf_superclass_list([C|CRest], [SCs| SCRest]) :-
-  findall(SC, rdfs_subclass_of(C, SC), SCs),
+  findall(SC, (SC=C ; subclass_of(C,SC)), SCs),
   rdf_superclass_list(CRest, SCRest).
 
 intersection_of_sets([], []).
@@ -212,13 +211,13 @@ intersection_of_sets([L0, L1|LRest], Intersection) :-
 
 most_specific_class([C], C).
 most_specific_class([C1,C2|Cs], C) :-
-  rdfs_subclass_of(C2, C1)
+  subclass_of(C2, C1)
   -> most_specific_class([C2|Cs], C)
   ; most_specific_class([C1|Cs], C). % Either not comparable or C2 is superclass of C1
 
 
 rdf_all_similar(Class, Super, MostSim) :-
-  findall([A, D], (rdfs_subclass_of(A, Super),
+  findall([A, D], (subclass_of(A, Super),
                    rdf_wup_similarity(A, Class, D)), Dists),
   predsort(compare_inference_probs, Dists, MostSim).
 

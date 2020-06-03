@@ -9,7 +9,7 @@
       scope_remove/4,
       scope_query_overlaps/2
     ]).
-/** <module> TODO
+/** <module> The scope of statements being true.
 
 @author Daniel Beßler
 @license BSD
@@ -22,8 +22,11 @@
              scope_satisfies/3,
              scope_query_overlaps/3.
 
-%%
+%% universal_scope(-Scope) is det.
+%
 % The scope of facts that are universally true.
+%
+% @param Scope A scope dictionary.
 %
 universal_scope(Scope) :-
   current_predicate(universal_scope_/1),
@@ -36,16 +39,23 @@ universal_scope(Scope) :-
   dict_pairs(Scope,_,Pairs),
   assertz(universal_scope_(Scope)).
 
-%%
+%% wildcard_scope(-Scope) is det.
+%
+% A scope that matches any fact.
+%
+% @param Scope A scope dictionary.
+%
 % TODO: should we always specify full scope instead for seacrh indices to work?
 %         - at least for tell it is slower to use search indices on the scope :/
-%
 wildcard_scope(_{}).
 
-%%
+%% subscope_of(+Sub,+Sup) is det.
 %
-% True if Sup contains all facts that are contained
-% in Sub.
+% True if scope Sup contains all facts that are contained
+% in scope Sub.
+%
+% @param Sub a scope dict.
+% @param Sup a scope dict.
 %
 subscope_of(Sub,Sup) :-
   %ground([Scope0,Scope1]),
@@ -59,8 +69,12 @@ subscope_of1(_K,V,V)  :- !.
 subscope_of1(K,V0,V1) :- subscope_of(K,V0,V1), !.
 subscope_of1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 
-%%
+%% scope_satisfies(+A,+B) is det.
 %
+% TODO: how is this different to subscope_of?
+%
+% @param A a scope dict.
+% @param B a scope dict.
 %
 scope_satisfies(_,_{}) :- !.
 scope_satisfies(Scope0,Scope1) :-
@@ -77,8 +91,13 @@ scope_satisfies1(_K,V,V)  :- !.
 scope_satisfies1(K,V0,V1) :- scope_satisfies(K,V0,V1), !.
 scope_satisfies1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 
-%%
+%% scope_merge(+A,+B,-Merged) is det.
 %
+% Merge two scopes. The merged scope contains all
+% facts that are contained in scope A or scope B.
+%
+% @param A a scope dict.
+% @param B a scope dict.
 %
 scope_merge(Scope0,Scope1,Merged) :-
   %ground([Scope0,Scope1]),
@@ -93,8 +112,13 @@ scope_merge1(_K,V,V,V)  :- !.
 scope_merge1(K,V0,V1,V) :- scope_merge(K,V0,V1,V), !.
 scope_merge1(K,_,_,_)   :- throw(lang_error(unknown_scope(K))).
 
-%%
+%% scope_intersect(+A,+B,-Merged) is det.
 %
+% Intersect two scopes. The intersected scope contains all
+% facts that are contained in scope A and also in scope B.
+%
+% @param A a scope dict.
+% @param B a scope dict.
 %
 scope_intersect(_{},Scope,Scope) :- !.
 scope_intersect(Scope,_{},Scope) :- !.
@@ -125,7 +149,16 @@ scope_query_overlaps(FScope,QScope) :-
 scope_query_overlaps1(K,V0,V) :- scope_query_overlaps(K,V0,V), !.
 scope_query_overlaps1(K,_,_)  :- throw(lang_error(unknown_scope(K))).
 
-%%
+%% scope_update(+Original,+Inserted,-Updated) is det.
+%
+% Update a scope with new values taken from another scope
+% dictionary. In case keys appear in both scopes, only
+% the value from Inserted is used in Updated scope.
+%
+% @param Original a scope dictionary.
+% @param Inserted a scope dictionary.
+% @param Updated a scope dictionary.
+%
 scope_update(Original,Inserted,Updated) :-
   findall(K-V, (
     ( get_dict(K,Inserted,V) ) ;
@@ -135,7 +168,15 @@ scope_update(Original,Inserted,Updated) :-
   ), Pairs),
   dict_pairs(Updated,_,Pairs).
 
-%%
+%% scope_remove(+Original,+Key,-Value,-Updated) is det.
+%
+% Removes a key from a scope dictionary.
+%
+% @param Original a scope dictionary.
+% @param Key a key in the scope dictionary.
+% @param Value the value popped out of the dictionary.
+% @param Updated the scope dictionary without Key.
+%
 scope_remove(Original,Key,Value,Updated) :-
   get_dict(Key,Original,Value),!,
   findall(K-V, (

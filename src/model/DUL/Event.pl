@@ -7,7 +7,6 @@
       %        - probably better assert all into another module then user,
       %          then prefer this over user
       %is_process(r),
-      has_time_interval(r,r),
       has_participant(r,r),
       has_participant(r,r,r),
       executes_task(r,r),
@@ -25,14 +24,11 @@ In DUL, Object is defined as:
 */
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2
-    ]).
+    [ has_type/2 ]).
 :- use_module('./Object.pl',
-    [ has_object_type/2
-    ]).
+    [ has_object_type/2 ]).
 :- use_module(library('db/tripledb'),
-    [ tripledb_load/2
-    ]).
+    [ tripledb_load/2 ]).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
@@ -40,7 +36,7 @@ In DUL, Object is defined as:
       namespace(dul)
     ]).
 
-%% is_event(+Entity) is semidet.
+%% is_event(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Event'.
 %
@@ -49,7 +45,7 @@ In DUL, Object is defined as:
 is_event(Entity) ?+>
   has_type(Entity, dul:'Event').
 
-%% is_event_type(+Entity) is semidet.
+%% is_event_type(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'EventType'.
 %
@@ -58,7 +54,7 @@ is_event(Entity) ?+>
 is_event_type(Entity) ?+>
   has_type(Entity, dul:'EventType').
 
-%% is_action(+Entity) is semidet.
+%% is_action(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Action'.
 %
@@ -67,7 +63,7 @@ is_event_type(Entity) ?+>
 is_action(Entity) ?+>
   has_type(Entity, dul:'Action').
 
-%% is_task(+Entity) is semidet.
+%% is_task(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Task'.
 %
@@ -76,7 +72,7 @@ is_action(Entity) ?+>
 is_task(Entity) ?+>
   has_type(Entity, dul:'Task').
 
-%% is_process(+Entity) is semidet.
+%% is_process(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Process'.
 %
@@ -85,19 +81,12 @@ is_task(Entity) ?+>
 is_process(Entity) ?+>
   has_type(Entity, dul:'Process').
 
-%%
+%% has_participant(+Evt,?Participant,?Class) is nondet.
 %
-has_time_interval(Evt,TimeInterval) ?>
-  holds(Evt,dul:hasTimeInterval,TimeInterval).
-
-%has_time_interval(Evt,TimeInterval) +>
-  %holds(Evt,dul:hasTimeInterval,TimeInterval).
-  
-
-%% has_participant(+Evt,?Participant,?Class) is semidet.
-%
-% Relates an event to a tuple of an object partipating in
-% the event and its type.
+% A relation between an object and a process, e.g.
+% - 'John took part in the discussion',
+% - 'a large mass of snow fell during the avalanche', or
+% - 'a cook, some sugar, flour, etc. are all present in the cooking of a cake'.
 %
 % @param Evt An individual of type dul:'Event'.
 % @param Participant An individual of type dul:'Object'.
@@ -110,12 +99,11 @@ has_participant(Evt,Participant,Class) ?>
   holds(Evt,dul:hasParticipant,Participant),
   has_object_type(Participant,Class).
 
-%% executes_task(?Act,?Tsk) is semidet.
+%% executes_task(?Act,?Tsk) is nondet.
 %
-% Relates an action to the task that it executes.
-% Note that this relations may not be known, e.g. in case
-% of observing another agent performing an action.
-% In such a case this predicate fails.
+% A relation between an action and a task, e.g. 'putting some water in a pot
+% and putting the pot on a fire until the water starts bubbling'
+% executes the task 'boiling'.
 %
 % @param Act An individual of type dul:'Action'.
 % @param Tsk An individual of type dul:'Task'.
@@ -123,24 +111,39 @@ has_participant(Evt,Participant,Class) ?>
 executes_task(Act,Tsk) ?+>
   holds(Act,dul:executesTask,Tsk).
 
-%% task_role(?Tsk,?Role,?RoleType) is semidet.
+%% task_role(?Tsk,?Role) is nondet.
 %
-% Relates a task to roles of objects related to the tasks.
+% A relation between roles and tasks, e.g.
+% 'students have the duty of giving exams'
+% (i.e. the Role 'student' hasTask the Task 'giving exams').
+%
+% @param Tsk An individual of type dul:'Task'.
+% @param Role An individual of type dul:'Role'.
+%
+task_role(Tsk,Role) ?+>
+  holds(Tsk, dul:isTaskOf ,Role).
+
+%% task_role_type(?Tsk,?Role,?RoleType) is nondet.
+%
+% Same as task_role/2 but in addition unifies the
+% type of the parameter with the third argument.
 %
 % @param Tsk An individual of type dul:'Task'.
 % @param Role An individual of type dul:'Role'.
 % @param RoleType A sub-class of dul:'Role'.
 %
-task_role(Tsk,Role) ?+>
-  holds(Tsk, dul:isTaskOf ,Role).
-
-%%
-%
 task_role_type(Tsk,Role,RoleType) ?>
   holds(Tsk, dul:isTaskOf, Role),
   has_object_type(Role,RoleType).
 
-%%
+%% task_role_range(?Tsk,?Role,?Range) is nondet.
+%
+% Same as task_role/2 but in addition unifies the
+% range of the parameter with the third argument.
+%
+% @param Tsk An individual of type dul:'Task'.
+% @param Role An individual of type dul:'Role'.
+% @param Range A sub-class of dul:'Object'.
 %
 task_role_range(Tsk,Role,Range) ?>
   holds(Tsk,dul:isTaskOf,Role),
