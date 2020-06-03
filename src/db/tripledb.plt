@@ -20,32 +20,28 @@ test('tripledb_ask_if_individual_triple_exists_in_triplestore(S,P,O)') :-
   tripledb_ask(
     knowrob:'Adult',
     rdfs:'subClassOf',
-    knowrob:'TestThing'
-).
+    knowrob:'TestThing').
 
 % delete individual triple
 test('tripledb_forget_from_triplestore(S,P,O)') :-
   tripledb_forget(
     knowrob:'Adult',
     rdfs:'subClassOf',
-    knowrob:'TestThing'
-).
+    knowrob:'TestThing').
 
 % check again for that triple and it should not be in the tripledb
 test('tripledb_ask_after_deletion', [fail]) :-
   tripledb_ask(
     knowrob:'Adult',
     rdfs:'subClassOf',
-    knowrob:'TestThing'
-).
+    knowrob:'TestThing').
 
 % add triple
 test('tripledb_tell_to_triplestore(S,P,O)') :-
   tripledb_tell(
     knowrob:'Adult',
     rdfs:'subClassOf',
-    knowrob:'TestThing'
-).
+    knowrob:'TestThing').
 
 
 % check again for that triple and it should be in the tripledb
