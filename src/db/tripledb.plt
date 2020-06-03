@@ -49,7 +49,6 @@ test('tripledb_ask_after_injection_of_new_triple') :-
   tripledb_ask(
     knowrob:'Adult',
     rdfs:'subClassOf',
-    knowrob:'TestThing'
-).
+    knowrob:'TestThing').
 
 :- end_tests('tripledb').
