@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/datatype_test"
+     xml:base="http://knowrob.org/kb/datatype_test"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:datatype_test="http://knowrob.org/kb/datatype_test#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/datatype_test"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#studies -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/datatype_test#studies">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Student"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/datatype_test#Module"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#teaches -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/datatype_test#teaches">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Lecturer"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/datatype_test#Module"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#first_name -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/datatype_test#first_name">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#last_name -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/datatype_test#last_name">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#staffId -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/datatype_test#staffId">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Lecturer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#studentId -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/datatype_test#studentId">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/datatype_test#Student"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#CSModule -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#CSModule">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/datatype_test#Module"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Lecturer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#Lecturer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/datatype_test#Person"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#MathModule -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#MathModule">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/datatype_test#Module"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Module -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#Module"/>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Person -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#Person"/>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Student -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/datatype_test#Student">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/datatype_test#Person"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#CS101 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#CS101">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#CSModule"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#CS102 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#CS102">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#CSModule"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Lecturer1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Lecturer1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#Lecturer"/>
+        <datatype_test:teaches rdf:resource="http://knowrob.org/kb/datatype_test#CS101"/>
+        <datatype_test:first_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">John</datatype_test:first_name>
+        <datatype_test:last_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Doe</datatype_test:last_name>
+        <datatype_test:staffId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">101010</datatype_test:staffId>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Lecturer2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Lecturer2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#Lecturer"/>
+        <datatype_test:teaches rdf:resource="http://knowrob.org/kb/datatype_test#CS102"/>
+        <datatype_test:teaches rdf:resource="http://knowrob.org/kb/datatype_test#Math101"/>
+        <datatype_test:first_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Juli</datatype_test:first_name>
+        <datatype_test:last_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">King</datatype_test:last_name>
+        <datatype_test:staffId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">202020</datatype_test:staffId>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Math101 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Math101">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#MathModule"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Math102 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Math102">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#MathModule"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Student1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Student1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#Student"/>
+        <datatype_test:studies rdf:resource="http://knowrob.org/kb/datatype_test#CS101"/>
+        <datatype_test:studies rdf:resource="http://knowrob.org/kb/datatype_test#CS102"/>
+        <datatype_test:first_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Abhijit</datatype_test:first_name>
+        <datatype_test:last_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vyas</datatype_test:last_name>
+        <datatype_test:studentId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">111111</datatype_test:studentId>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/datatype_test#Student2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/datatype_test#Student2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/datatype_test#Student"/>
+        <datatype_test:studies rdf:resource="http://knowrob.org/kb/datatype_test#Math101"/>
+        <datatype_test:studies rdf:resource="http://knowrob.org/kb/datatype_test#Math102"/>
+        <datatype_test:first_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ana</datatype_test:first_name>
+        <datatype_test:last_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rita</datatype_test:last_name>
+        <datatype_test:studentId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">222222</datatype_test:studentId>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://knowrob.org/kb/datatype_test#CSModule"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/datatype_test#Lecturer"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/datatype_test#MathModule"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/datatype_test#Student"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
