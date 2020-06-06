@@ -1,13 +1,13 @@
 :- module(scope,
     [ universal_scope/1,
       wildcard_scope/1,
+      current_scope/1,
       subscope_of/2,
-      scope_satisfies/2,
       scope_merge/3,
       scope_intersect/3,
+      scope_overlaps_query/2,
       scope_update/3,
-      scope_remove/4,
-      scope_query_overlaps/2
+      scope_remove/4
     ]).
 /** <module> The scope of statements being true.
 
@@ -16,11 +16,11 @@
 */
 
 :- multifile universal_scope/2,
+             current_scope/2,
              subscope_of/3,
              scope_merge/4,
              scope_intersect/4,
-             scope_satisfies/3,
-             scope_query_overlaps/3.
+             scope_overlaps_query/3.
 
 %% universal_scope(-Scope) is det.
 %
@@ -29,15 +29,29 @@
 % @param Scope A scope dictionary.
 %
 universal_scope(Scope) :-
-  current_predicate(universal_scope_/1),
-  universal_scope_(Scope),!.
+	current_predicate(universal_scope_/1),
+	universal_scope_(Scope),!.
 
 universal_scope(Scope) :-
-  findall(K-V,
-    universal_scope(K,V),
-    Pairs),
-  dict_pairs(Scope,_,Pairs),
-  assertz(universal_scope_(Scope)).
+	findall(K-V,
+		universal_scope(K,V),
+		Pairs
+	),
+	dict_pairs(Scope,_,Pairs),
+	assertz(universal_scope_(Scope)).
+
+%% current_scope(-Scope) is det.
+%
+% The scope of facts that are currently true.
+%
+% @param Scope A scope dictionary.
+%
+current_scope(Scope) :-
+	findall(K-V,
+		current_scope(K,V),
+		Pairs
+	),
+	dict_pairs(Scope,_,Pairs).
 
 %% wildcard_scope(-Scope) is det.
 %
@@ -58,38 +72,15 @@ wildcard_scope(_{}).
 % @param Sup a scope dict.
 %
 subscope_of(Sub,Sup) :-
-  %ground([Scope0,Scope1]),
-  forall(
-    ( get_dict(K,Sub,V0) ),
-    ( get_dict(K,Sup,V1),
-      subscope_of1(K,V0,V1)
-    )).
+	%ground([Scope0,Scope1]),
+	forall(
+		( get_dict(K,Sub,V0) ),
+		( get_dict(K,Sup,V1), subscope_of1(K,V0,V1) )
+	).
 
 subscope_of1(_K,V,V)  :- !.
 subscope_of1(K,V0,V1) :- subscope_of(K,V0,V1), !.
 subscope_of1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
-
-%% scope_satisfies(+A,+B) is det.
-%
-% TODO: how is this different to subscope_of?
-%
-% @param A a scope dict.
-% @param B a scope dict.
-%
-scope_satisfies(_,_{}) :- !.
-scope_satisfies(Scope0,Scope1) :-
-  %ground([Scope0,Scope1]),
-  forall(
-    % TODO: what about K missing in Scope1? I think any
-    %       scope satisfies then!
-    ( get_dict(K,Scope0,V0) ),
-    ( get_dict(K,Scope1,V1),
-      scope_satisfies1(K,V0,V1)
-    )).
-
-scope_satisfies1(_K,V,V)  :- !.
-scope_satisfies1(K,V0,V1) :- scope_satisfies(K,V0,V1), !.
-scope_satisfies1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 
 %% scope_merge(+A,+B,-Merged) is det.
 %
@@ -100,13 +91,15 @@ scope_satisfies1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 % @param B a scope dict.
 %
 scope_merge(Scope0,Scope1,Merged) :-
-  %ground([Scope0,Scope1]),
-  findall(K-V, (
-    get_dict(K,Scope0,V0),
-    get_dict(K,Scope1,V1),
-    scope_merge1(K,V0,V1,V)
-  ), Pairs),
-  dict_pairs(Merged,_,Pairs).
+	%ground([Scope0,Scope1]),
+	findall(K-V,
+		(	get_dict(K,Scope0,V0),
+			get_dict(K,Scope1,V1),
+			scope_merge1(K,V0,V1,V)
+		),
+		Pairs
+	),
+	dict_pairs(Merged,_,Pairs).
 
 scope_merge1(_K,V,V,V)  :- !.
 scope_merge1(K,V0,V1,V) :- scope_merge(K,V0,V1,V), !.
@@ -124,30 +117,35 @@ scope_intersect(_{},Scope,Scope) :- !.
 scope_intersect(Scope,_{},Scope) :- !.
 scope_intersect(Scope,Scope,Scope) :- !.
 scope_intersect(Scope0,Scope1,Intersection) :-
-  %ground([Scope0,Scope1]),
-  findall(K-V, (
-    get_dict(K,Scope0,V0),
-    get_dict(K,Scope1,V1),
-    scope_intersect1(K,V0,V1,V)
-  ),Pairs),
-  dict_pairs(Intersection,_,Pairs).
+	%ground([Scope0,Scope1]),
+	findall(K-V,
+		(	get_dict(K,Scope0,V0),
+			get_dict(K,Scope1,V1),
+			scope_intersect1(K,V0,V1,V)
+		),
+		Pairs
+	),
+	dict_pairs(Intersection,_,Pairs).
 
 scope_intersect1(_K,V,V,V)  :- !.
 scope_intersect1(K,V0,V1,V) :- scope_intersect(K,V0,V1,V), !.
 scope_intersect1(K,_,_,_)   :- throw(lang_error(unknown_scope(K))).
 
-%%
+%% scope_overlaps_query(+A,-B) is semidet.
 %
+% B is the scope of all facts whose scope overlaps with A.
 %
-scope_query_overlaps(FScope,QScope) :-
-  findall(K-V, (
-    get_dict(K,FScope,V0),
-    scope_query_overlaps1(K,V0,V)
-  ),Pairs),
-  dict_pairs(QScope,_,Pairs).
+scope_overlaps_query(FScope,QScope) :-
+	findall(K-V,
+		(	get_dict(K,FScope,V0),
+			scope_overlaps_query1(K,V0,V)
+		),
+		Pairs
+	),
+	dict_pairs(QScope,_,Pairs).
 
-scope_query_overlaps1(K,V0,V) :- scope_query_overlaps(K,V0,V), !.
-scope_query_overlaps1(K,_,_)  :- throw(lang_error(unknown_scope(K))).
+scope_overlaps_query1(K,V0,V) :- scope_overlaps_query(K,V0,V), !.
+scope_overlaps_query1(K,_,_)  :- throw(lang_error(unknown_scope(K))).
 
 %% scope_update(+Original,+Inserted,-Updated) is det.
 %
@@ -160,13 +158,13 @@ scope_query_overlaps1(K,_,_)  :- throw(lang_error(unknown_scope(K))).
 % @param Updated a scope dictionary.
 %
 scope_update(Original,Inserted,Updated) :-
-  findall(K-V, (
-    ( get_dict(K,Inserted,V) ) ;
-    ( get_dict(K,Original,V),
-      \+ get_dict(K,Inserted,_)
-    )
-  ), Pairs),
-  dict_pairs(Updated,_,Pairs).
+	findall(K-V,
+		(	( get_dict(K,Inserted,V) )
+		;	( get_dict(K,Original,V), \+ get_dict(K,Inserted,_) )
+		),
+		Pairs
+	),
+	dict_pairs(Updated,_,Pairs).
 
 %% scope_remove(+Original,+Key,-Value,-Updated) is det.
 %
@@ -178,10 +176,12 @@ scope_update(Original,Inserted,Updated) :-
 % @param Updated the scope dictionary without Key.
 %
 scope_remove(Original,Key,Value,Updated) :-
-  get_dict(Key,Original,Value),!,
-  findall(K-V, (
-    get_dict(K,Original,V),
-    K \= Key
-  ), Pairs),
-  dict_pairs(Updated,_,Pairs).
+	get_dict(Key,Original,Value),!,
+	findall(K-V,
+		(	get_dict(K,Original,V),
+			K \= Key
+		),
+		Pairs
+	),
+	dict_pairs(Updated,_,Pairs).
 scope_remove(Scope0,_,_,Scope0).
