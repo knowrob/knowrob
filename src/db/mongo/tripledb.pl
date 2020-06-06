@@ -9,11 +9,8 @@
 
 :- use_module(library('semweb/rdf_db'),      [ rdf_meta/1 ]).
 :- use_module(library('utility/filesystem'), [ path_concat/3 ]).
-:- use_module(library('db/scope'),           [ universal_scope/1,
-                                               subscope_of/2,
-                                               scope_satisfies/2,
-                                               scope_query_overlaps/2 ]).
 :- use_module(library('db/subgraph'),        [ tripledb_get_supgraphs/2]).
+:- use_module(library('db/scope')).
 
 :- use_module('./client.pl').
 
@@ -129,7 +126,7 @@ tripledb_tell(Subject,Property,ValueQuery,Scope,Options) :-
   mng_query_value_(ValueQuery,'$eq',MngValue,Unit),
   tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,Options).
 
-tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,_Options) :-
+tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,Options) :-
   % find existing document with *overlapping* scope
   findall(X,
     tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,Scope,Graph,X),
@@ -137,8 +134,11 @@ tripledb_tell1(Subject,Property,MngValue,Unit,Scope,Graph,_Options) :-
   mng_get_dict('scope',First,FirstScope),
   % nothing to do if Scope is a subscope of first
   ( subscope_of(Scope,FirstScope) -> true ; (
-    % else merge all overlapping scopes
-    doc_scopes_merge_(Scope,[First|Rest],MergedScope),
+    % else merge/intersect all overlapping scopes
+    ( option(update(intersect),Options)
+    -> doc_scopes_intersect_(Scope,[First|Rest],MergedScope)
+    ;  doc_scopes_merge_(Scope,[First|Rest],MergedScope)
+    ),
     doc_scope_set_(First,MergedScope),
     forall(member(Y,Rest), doc_delete_(Y))
   )).
@@ -197,7 +197,7 @@ tripledb_ask(Subject,Property,ValueQuery,QScope,FScope,Options) :-
 
 %%
 tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,FScope,Graph,OverlappingDoc) :-
-  findall(X,scope_query_overlaps(FScope,X),QScopes),
+  findall(X,scope_overlaps_query(FScope,X),QScopes),
   setup_call_cleanup(
     % setup: create a query cursor
     triple_query_cursor_(Subject,Property,
@@ -361,6 +361,13 @@ doc_scopes_merge_(Scope0,[First|Rest],MergedScope) :-
   mng_get_dict('scope',First,Scope1),
   scope_merge(Scope0,Scope1,Scope2),
   doc_scopes_merge_(Scope2,Rest,MergedScope).
+
+%%
+doc_scopes_intersect_(Scope,[],Scope) :- !.
+doc_scopes_intersect_(Scope0,[First|Rest],MergedScope) :-
+  mng_get_dict('scope',First,Scope1),
+  scope_intersect(Scope0,Scope1,Scope2),
+  doc_scopes_intersect_(Scope2,Rest,MergedScope).
 
 %%
 doc_scope_set_(Doc,MergedScope) :-
