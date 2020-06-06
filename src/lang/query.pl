@@ -31,7 +31,7 @@
 % @param Statement a statement term.
 %
 ask(Statement) :-
-  wildcard_scope(QScope),
+  current_scope(QScope),
   ask(Statement,[[],QScope]->_).
 
 %% ask(+Statement,+Scope) is nondet.
