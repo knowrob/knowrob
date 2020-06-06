@@ -7,7 +7,7 @@
 @author Daniel Beßler
 @license BSD
 */
-    
+
 :- use_module(library('db/scope'),
     [ scope_intersect/3 ]).
 
