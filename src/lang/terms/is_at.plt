@@ -1,69 +1,34 @@
 
 :- begin_tests(lang_is_at).
 
-test(lang_is_at) :-
-  fail.
+:- use_module(library('db/tripledb'), [ tripledb_load/2 ]).
+:- use_module(library('lang/query'), [ tell/1, ask/1 ]).
 
-%:- use_module(library('lists')).
-%:- use_module(library('random')).
-%:- use_module(library('semweb/rdfs')).
-%:- use_module(library('semweb/owl')).
+:- tripledb_load(
+        'package://knowrob/owl/test/swrl.owl',
+        [ graph(user),
+          namespace(test_swrl,'http://knowrob.org/kb/swrl_test#')
+        ]).
 
-%:- use_module(library('knowrob/lang/ask')).
-%:- use_module(library('knowrob/lang/tell')).
-%:- use_module(library('knowrob/comp/object_pose')).
-%:- use_module(library('knowrob/model/Object')).
+:- use_module('./is_at.pl').
 
-%:- use_module(library('knowrob/memory')).
-%:- use_module(library('knowrob/beliefstate')).
+test('no_pose(Fred)') :-
+	\+ is_at(test_swrl:'Fred',_).
 
-%:- owl_parser:owl_parse('package://knowrob_household/owl/kitchen.owl').
-%:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
+test('no_pose(Driver)') :-
+	\+ is_at(test_swrl:'Driver',_).
 
-%:- dynamic test_object/1.
+test('tell_pose(Fred)') :-
+	tell( during(
+		is_at(
+			'http://knowrob.org/kb/swrl_test#Fred',
+			[world,[1,0,0],[0,0,0,1]]
+		),
+		[5,15])
+	).
 
-%:- mem_init, mem_drop.
-
-%test(belief_new_object) :-
-  %belief_new_object(knowrob:'Cup', Cup),
-  %rdfs_individual_of(Cup, knowrob:'Cup'),
-  %rdfs_individual_of(Cup, owl:'NamedIndividual'),
-  %assertz(test_object(Cup)).
-
-%test(belief_at_update) :-
-  %test_object(Cup),
-  %belief_at_update(Cup, ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]]),
-  %current_object_pose(Cup, _), !.
-  
-%test(belief_at_update2) :-
-  %test_object(Cup),
-  %object_frame_name(Cup, F1),
-  %belief_perceived_at(knowrob:'Cup', [F1,_,[1.0,1.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup2),
-  %current_object_pose(Cup2,[F1,_,_,_]), !.
-
-%test('belief_at_location(equal)') :-
-  %belief_existing_object_at(knowrob:'Cup', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
-  %test_object(Cup), !.
-
-%test('belief_at_location(fails)', [fail]) :-
-  %belief_existing_object_at(knowrob:'Cup', ['map',_,[1.001,0.001,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
-  %test_object(Cup), !.
-
-%test('belief_at_location(nearby)') :-
-  %belief_existing_object_at(knowrob:'Cup', ['map',_,[1.001,0.001,0.0],[1.0,0.0,0.0,0.0]], 0.5, Cup),
-  %test_object(Cup), !.
-
-%test(belief_at_update_class) :-
-  %test_object(Cup),
-  %belief_perceived_at(knowrob:'Milk', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
-  %\+ rdfs_individual_of(Cup, knowrob:'Cup'),
-  %kb_type_of(Cup, knowrob:'Milk'), !.
-
-%test(belief_at_update_class2) :-
-  %test_object(Cup),
-  %belief_perceived_at(knowrob:'Cup', ['map',_,[1.0,0.0,0.0],[1.0,0.0,0.0,0.0]], 0.0, Cup),
-  %kb_type_of(Cup, knowrob:'Cup'),
-  %\+ kb_type_of(Cup, knowrob:'Milk'), !.
+test('has_pose(Fred)') :-
+	ask(during(is_at(test_swrl:'Fred',_), [9,12])).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- end_tests(lang_is_at).
