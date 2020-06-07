@@ -57,7 +57,7 @@ time_scope_universal(Scope) :-
 %
 time_scope_now(Scope) :-
 	get_time(Now),
-	time_scope(=(Now), =(Now), _{ time: Scope }).
+	time_scope(=<(Now), >=(Now), _{ time: Scope }).
 
 %% time_subscope_of(+A,+B) is semidet.
 %
@@ -136,7 +136,8 @@ time_scope_overlaps_query(A,B) :-
 	time_scope_data(A,[Since0,Until0]),
 	strip_operator_(Since0,_,Since),
 	strip_operator_(Until0,_,Until),
-	time_scope(=<(Until),>=(Since),B).
+	time_scope(=<(Until),>=(Since),TimeScope),
+	get_dict(time,TimeScope,B).
 
 %%
 time_scope_min_('Infinity',Min,Min) :- !.
