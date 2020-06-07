@@ -31,6 +31,23 @@ is_episode(Entity) ?+>
 		 *	    TIME INTERVALS			*
 		 *******************************/
 
+%% has_interval_data(+Term,?Since,?Until) is semidet.
+%
+% Associates a term to its interval data [Since,Until].
+% Both are represented as Unix timestamps.
+%
+% @param Term language term
+% @param Since begin of the interval
+% @param Until end of the interval
+%
+has_interval_data(Term,Since,Until) ?>
+	{ time_interval_data(Term,Since,Until) }.
+
+has_interval_data(Term,Since,Until) +>
+	{ has_time_interval(Entity,Interval) },
+	triple(Interval, ease:hasIntervalBegin, Since),
+	triple(Interval, ease:hasIntervalEnd, Until).
+
 %% time_interval_data(+In,-Out) is semidet.
 %
 % True if Out is the interval of In.
