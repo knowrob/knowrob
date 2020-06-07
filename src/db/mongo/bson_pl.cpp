@@ -68,6 +68,11 @@ bson_t *bson_new_from_term(const PlTerm &term, bson_error_t *err)
 				bson_decimal128_from_string ((char*)atomic_value, &dec);
 				return BCON_NEW(key, BCON_DECIMAL128(&dec));
 			}
+			else if(type_name.compare("id")==0) {
+				bson_oid_t oid;
+				bson_oid_init_from_string (&oid, (char*)atomic_value);
+				return BCON_NEW(key, BCON_OID(&oid));
+			}
 			else if(type_name.compare("regex")==0)
 				return BCON_NEW(key, BCON_REGEX((char*)atomic_value,"i"));
 			else if(type_name.compare("string")==0)
