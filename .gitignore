@@ -5,6 +5,7 @@
 *.idea
 *.project
 *.settings
+*.pdtproperties
 .externalToolBuilders
 
 # ignore log files and databases
