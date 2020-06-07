@@ -80,7 +80,6 @@ subscope_of(Sub,Sup) :-
 
 subscope_of1(_K,V,V)  :- !.
 subscope_of1(K,V0,V1) :- subscope_of(K,V0,V1), !.
-subscope_of1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 
 %% scope_merge(+A,+B,-Merged) is det.
 %
@@ -92,6 +91,11 @@ subscope_of1(K,_,_)   :- throw(lang_error(unknown_scope(K))).
 %
 scope_merge(Scope0,Scope1,Merged) :-
 	%ground([Scope0,Scope1]),
+	dict_pairs(Scope0,_,Pairs0),
+	dict_pairs(Scope1,_,Pairs1),
+	length(Pairs0,NumScopes),
+	length(Pairs1,NumScopes),
+	%%
 	findall(K-V,
 		(	get_dict(K,Scope0,V0),
 			get_dict(K,Scope1,V1),
@@ -99,11 +103,11 @@ scope_merge(Scope0,Scope1,Merged) :-
 		),
 		Pairs
 	),
+	length(Pairs,NumScopes),
 	dict_pairs(Merged,_,Pairs).
 
 scope_merge1(_K,V,V,V)  :- !.
 scope_merge1(K,V0,V1,V) :- scope_merge(K,V0,V1,V), !.
-scope_merge1(K,_,_,_)   :- throw(lang_error(unknown_scope(K))).
 
 %% scope_intersect(+A,+B,-Merged) is det.
 %
@@ -118,6 +122,11 @@ scope_intersect(Scope,_{},Scope) :- !.
 scope_intersect(Scope,Scope,Scope) :- !.
 scope_intersect(Scope0,Scope1,Intersection) :-
 	%ground([Scope0,Scope1]),
+	dict_pairs(Scope0,_,Pairs0),
+	dict_pairs(Scope1,_,Pairs1),
+	length(Pairs0,NumScopes),
+	length(Pairs1,NumScopes),
+	%%
 	findall(K-V,
 		(	get_dict(K,Scope0,V0),
 			get_dict(K,Scope1,V1),
@@ -125,11 +134,11 @@ scope_intersect(Scope0,Scope1,Intersection) :-
 		),
 		Pairs
 	),
+	length(Pairs,NumScopes),
 	dict_pairs(Intersection,_,Pairs).
 
 scope_intersect1(_K,V,V,V)  :- !.
-scope_intersect1(K,V0,V1,V) :- scope_intersect(K,V0,V1,V), !.
-scope_intersect1(K,_,_,_)   :- throw(lang_error(unknown_scope(K))).
+scope_intersect1(K,V0,V1,V) :- scope_intersect(K,V0,V1,V).
 
 %% scope_overlaps_query(+A,-B) is semidet.
 %
