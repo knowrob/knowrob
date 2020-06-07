@@ -44,7 +44,7 @@ has_interval_data(Term,Since,Until) ?>
 	{ time_interval_data(Term,Since,Until) }.
 
 has_interval_data(Term,Since,Until) +>
-	{ has_time_interval(Entity,Interval) },
+	{ has_time_interval(Term,Interval) },
 	triple(Interval, ease:hasIntervalBegin, Since),
 	triple(Interval, ease:hasIntervalEnd, Until).
 
