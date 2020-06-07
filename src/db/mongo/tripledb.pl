@@ -264,6 +264,9 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
   filter_scope_(Cursor,Scope),
   !.
 
+filter_scope_(Cursor,[Scope]) :-
+  !, filter_scope_(Cursor,Scope).
+
 filter_scope_(Cursor,Scopes) :-
   % generate disjunctive query if given a list of scopes
   is_list(Scopes),!,
@@ -278,18 +281,8 @@ filter_scope_(Cursor,Scope) :-
     filter_scope1_(Scope,Filter),
     mng_cursor_filter(Cursor,Filter)).
 
-filter_scope1_(Scope,Filter) :-
-  get_scope_query_(Scope,Scope_Key,Scope_Query),
-  mng_query_value_(Scope_Query,Scope_Operator,Scope_Value,_),
-  % TODO: here we also match all documents without that scope.
-  %        this is to match time scopes where until is not known,
-  %        expecting that this means it is still ongoing.
-  %        - better distinguish between ongoing, and unknown!
-  %        - better use $exists=0 only for selected keys? e.g. time.until
-  Filter=[Scope_Key,['$or',[
-    ['$exists',bool(0)],
-    [Scope_Operator,Scope_Value]
-  ]]].
+filter_scope1_(Scope,[Key,Filter]) :-
+  get_scope_query_(Scope,Key,Filter).
 
 %%
 triple_query_unify_(Cursor,Subject,Property,ValueQuery,FScope,Options) :-
@@ -373,9 +366,10 @@ doc_scopes_intersect_(Scope0,[First|Rest],MergedScope) :-
 doc_scope_set_(Doc,MergedScope) :-
   tripledb(DB,TriplesColl,_),
   mng_get_dict('_id',Doc,DocID),
+  get_scope_document_(MergedScope,ScopeDoc),
   mng_update(DB,TriplesColl,
     ['_id', DocID],
-    ['$set',['scope',MergedScope]]).
+    ['$set',['scope',ScopeDoc]]).
 
 %%
 doc_delete_(Doc) :-
