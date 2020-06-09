@@ -10,6 +10,7 @@
       object_color_rgb(r,?),
       object_dimensions(r,?,?,?),
       object_mesh_path(r,?),
+      object_shape_type(r,r),
       %% Features
       is_feature(r),
       object_feature(r,r),
@@ -149,6 +150,20 @@ object_color_rgb(Obj,[R,G,B]) +>
   % update the region of the color quality
   holds(Color,dul:hasRegion,update(Region)),
   notify(object_changed(Obj)).
+
+%% object_shape_type(?Obj, ?ShapeType) is nondet.
+%
+% Relates an object to the type of its shape(s).
+% An object may have multiple shapes associated that
+% provide different level of detail.
+%
+% @param Obj Object resource
+% @param ShapeType IRI of shape type
+%
+object_shape_type(Obj, ShapeType) ?>
+  holds(Obj,ease_obj:hasShape,Shape),
+  holds(Shape,dul:hasRegion,ShapeRegion),
+  has_type(ShapeRegion,ShapeType).
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
