@@ -1,5 +1,8 @@
-
-:- begin_tests(model_EASE_NEEM).
+:- module(model_EASE_NEEMS,
+    [
+    ]).
+ 
+:- begin_tests(model_EASE_NEEMS                                                   ).
 
 test(model_EASE_NEEM) :-
   fail.
