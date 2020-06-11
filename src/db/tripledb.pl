@@ -222,17 +222,17 @@ tripledb_whipe :-
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_tell(S,P,update(O),Scope,Options) :-
-  % values wrapped in update/1 indicate that old values
-  % should be replaced.
-  % TODO: I do not like this clause much, and indicating an update like this.
-  %          what would be a better way to indicate that all old values should be stopped?
-  time_scope_data(Scope,[Since,_]),!,
-  tripledb_stop(S,P,Since),
+tripledb_tell(S,P,O,Scope,Options) :-
+  ( option(functional,Options)
+  -> tripledb_stop(S,P,Scope,Options)
+  ;  true
+  ),
   itripledb_tell(S,P,O,Scope,Options).
 
-tripledb_tell(S,P,O,Scope,Options) :-
-  itripledb_tell(S,P,O,Scope,Options).
+%%
+tripledb_stop(S,P,Scope,Options) :-
+	% TODO implement
+	true.
 
 %% tripledb_tell(?S,?P,?O,+Scope) is semidet.
 %
