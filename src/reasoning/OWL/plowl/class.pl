@@ -229,11 +229,12 @@ owl_property_cardinality(Cls,P,Range,Min,Max) :-
 
 owl_property_cardinality(Cls,P,Range,Min,Max) :-
   has_description(Cls,Descr),
-  owl_property_cardinality0(Descr,P,Range,Cards),
-  % FIXME: what is wrong below?
-  %( is_functional_property(P) ->
-    %Cards0=[(0,1)|Cards],
-    %Cards0=Cards ),
+  ( owl_property_cardinality0(Descr,P,Range,Cards)
+  -> true             % some constraint was found
+  ;  Cards=[(0,inf)]  % no constraints
+  ),
+  % TODO: handle functional properties here
+  %( is_functional_property(P) -> Cards0=[(0,1)|Cards] ; Cards0=Cards ),
   Cards0=Cards,
   % get the most constrained min/max values
   cardinality_all_of(Cards0,[(Min,Max)]).
