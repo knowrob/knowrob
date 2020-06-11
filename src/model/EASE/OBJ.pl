@@ -148,7 +148,7 @@ object_color_rgb(Obj,[R,G,B]) +>
          ],US)
   },
   % update the region of the color quality
-  holds(Color,dul:hasRegion,update(Region)),
+  update(holds(Color,dul:hasRegion,Region)),
   notify(object_changed(Obj)).
 
 %% object_shape_type(?Obj, ?ShapeType) is nondet.
