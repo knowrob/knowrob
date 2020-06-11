@@ -57,6 +57,7 @@ notify:notify_hook(event(Evt)) :-
 
 %%
 initialize_EV_(EV) :-
+  \+ holds(EV,dul:hasTimeInterval,_),
   tell([ is_time_interval(TI),
          holds(EV,dul:hasTimeInterval,TI) ]).
   
