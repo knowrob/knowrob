@@ -2,7 +2,9 @@
     [ ask(t),     % +Statement
       ask(t,t),   % +Statement, +Scope
       tell(t),    % +Statement
-      tell(t,t)   % +Statement, +Scope
+      tell(t,t),  % +Statement, +Scope
+      update(t),  % +Statement
+      update(t,t) % +Statement, +Scope
     ]).
 /** <module> Main interface predicates for querying the knowledge base.
 
@@ -131,6 +133,28 @@ tell_all([X|Xs],QScope) :-
   tell(X,QScope),
   tell_all(Xs,QScope).
 
+%% update(+Statement) is nondet.
+%
+% Same as tell/1 but replaces existing overlapping values.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+update(Statement) :-
+	universal_scope(FScope),
+	update(Statement,[[],FScope]).
+
+%% update(+Statement,+Scope) is nondet.
+%
+% Same as tell/2 but replaces existing overlapping values.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+update(Statement,Scope0) :-
+	context_update_(Scope0,[options([functional])],Scope1),
+	tell(Statement,Scope1).
+
 		 /*******************************
 		 *	    TERM EXPANSION     		*
 		 *******************************/
@@ -239,6 +263,8 @@ expand_tell_term_(QS->QS, call(Statement,Q0),
       lang_query:tell(Statement,Q1) )).
 expand_tell_term_(QS->QS, call(Statement),
     ( lang_query:tell(Statement,QS) )).
+expand_tell_term_(QS->QS, update(Statement),
+    ( lang_query:update(Statement,QS) )).
 expand_tell_term_(QS->QS, Statement,
     ( lang_query:tell(Statement,QS) )).
 
