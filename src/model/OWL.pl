@@ -380,11 +380,12 @@ has_equivalent_class(Cls,EQ) :-
   has_equivalent_class(Cls,EQ).
 
 %%
-has_equivalent_class1([Entity|_],Entity,_).
+has_equivalent_class1([Entity|_],Entity,_) :- !.
 
 has_equivalent_class1([Entity|Queue],Same,Visited) :-
   findall(Next, (
     has_equivalent_direct(Entity,Next),
+    Entity \= Next,
     \+ memberchk(Next,Visited),
     \+ memberchk(Next,Queue)
   ), List),
