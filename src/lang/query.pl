@@ -122,6 +122,10 @@ tell(Statements,Scope) :-
 
 tell(triple(S,P,O),[Options,QScope]) :-
   !,
+  ( ask(is_description_of(O,Resource))
+  -> true
+  ;  Resource=O
+  ),
   tripledb_tell(S,P,Resource,QScope,Options).
 
 tell(triple(S,P,O),QScope) :-
