@@ -45,7 +45,8 @@
 %:- op(997, xfy, user:or).
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3 ]).
+    [ rdf_register_ns/3,
+      rdf_equal/2 ]).
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2,
       tripledb_ask/3
@@ -174,6 +175,13 @@ has_description(Class,Descr) ?> is_union_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_intersection_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_complement_of(Class,Descr), { ! }.
 has_description(Class,class(Class)) ?> { true }.
+
+%% is_description_of(+Descr,-Class) is semidet.
+%
+% TODO: why not has_description in two directions?
+%
+%is_description_of(Descr,Resource) ?>
+%  { fail }.
 
 %% is_restriction(?Restr,?Descr) is nondet.
 %
@@ -516,6 +524,7 @@ instance_of_description(S,Descr) ?+>
 instance_of_description_(S,Descr,_Goal) ?>
   { ground(S), ! },
   has_type(S,SType),
+  { \+ rdf_equal(SType,owl:'NamedIndividual') },
   subclass_of(SType,Descr).
 
 instance_of_description_(S,Descr,Goal) ?+>
