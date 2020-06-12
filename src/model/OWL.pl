@@ -180,8 +180,28 @@ has_description(Class,class(Class)) ?> { true }.
 %
 % TODO: why not has_description in two directions?
 %
-%is_description_of(Descr,Resource) ?>
-%  { fail }.
+is_description_of(Descr,Resource) ?>
+  { is_owl_description_of_(Descr,Resource) }.
+
+is_owl_description_of_(union_of(L),Resource) :-
+  tell_if_unknown_(is_union_of(Resource,union_of(L))).
+
+is_owl_description_of_(intersection_of(L),Resource) :-
+  tell_if_unknown_(is_intersection_of(Resource,intersection_of(L))).
+
+is_owl_description_of_(not(L),Resource) :-
+  tell_if_unknown_(is_complement_of(Resource,not(L))).
+
+is_owl_description_of_(Descr,Resource) :-
+  is_restriction_term_(Descr),
+  tell_if_unknown_(is_restriction(Resource,Descr)).
+
+%%
+% TODO: move to query.pl ?
+tell_if_unknown_(Statement) :-
+  ask(Statement)
+  -> true
+  ;  tell(Statement).
 
 %% is_restriction(?Restr,?Descr) is nondet.
 %
@@ -481,6 +501,7 @@ subclass_of_description_(Class,Descr,_Goal) ?>
   { ground(Class), ! },
   triple(Class,rdfs:subClassOf,SuperClass),
   has_description(SuperClass,Descr).
+  %subclass_of(SuperClass,Descr).
 
 subclass_of_description_(Class,Descr,Goal) ?+>
   { Goal0=..[Goal,Restriction,Descr] },
