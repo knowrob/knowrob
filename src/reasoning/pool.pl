@@ -85,7 +85,7 @@ infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
     ))
   ), Results),
   member([Fact,FScope],Results),
-  print_message(informational, inferred(Fact)),
+  print_message(informational, inferred(Module,Fact)),
   % FIXME
   Query=Fact.
 
