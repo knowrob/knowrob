@@ -120,12 +120,13 @@ tell(Statements,Scope) :-
   is_list(Statements),!,
   tell_all(Statements,Scope).
 
+tell(triple(S,P,O),[Options,QScope]) :-
+  !,
+  tripledb_tell(S,P,Resource,QScope,Options).
+
 tell(triple(S,P,O),QScope) :-
   is_dict(QScope),!,
   tell(triple(S,P,O),[[],QScope]).
-
-tell(triple(S,P,O),[Options,QScope]) :-
-  tripledb_tell(S,P,O,QScope,Options).
 
 %%
 tell_all([],_) :- !.
