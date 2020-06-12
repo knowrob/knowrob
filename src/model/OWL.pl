@@ -480,7 +480,7 @@ subclass_of_description(Class,Descr) ?+>
 subclass_of_description_(Class,Descr,_Goal) ?>
   { ground(Class), ! },
   triple(Class,rdfs:subClassOf,SuperClass),
-  subclass_of(SuperClass,Descr).
+  has_description(SuperClass,Descr).
 
 subclass_of_description_(Class,Descr,Goal) ?+>
   { Goal0=..[Goal,Restriction,Descr] },
