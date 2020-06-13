@@ -41,7 +41,10 @@ is_episode(Entity) ?+>
 % @param Until end of the interval
 %
 has_interval_data(Term,Since,Until) ?>
-	{ time_interval_data(Term,Since,Until) }.
+	{ time_interval_data(Term,Since,Until),
+	  universal_scope(US)
+	},
+	fact_scope(US).
 
 has_interval_data(Term,Since,Until) +>
 	{ has_time_interval(Term,Interval) },
@@ -63,8 +66,10 @@ time_interval_data(Instant, Instant, Instant) :-
   !.
 
 time_interval_data(Entity, Begin, End) :-
-  has_time_interval(Entity,Interval),
-  % TODO: rather use interval term and only one assertion for intervals!
+  ( is_time_interval(Entity)
+  -> Interval=Entity
+  ;  has_time_interval(Entity,Interval)
+  ),
   ignore(tripledb_ask(Interval, ease:hasIntervalBegin, Begin)),
   ignore(tripledb_ask(Interval, ease:hasIntervalEnd, End)),
   !.
