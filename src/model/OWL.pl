@@ -183,6 +183,9 @@ has_description(Class,class(Class)) ?> { true }.
 is_description_of(Descr,Resource) ?>
   { is_owl_description_of_(Descr,Resource) }.
 
+is_owl_description_of_(class(Cls),Cls) :-
+  !.
+
 is_owl_description_of_(union_of(L),Resource) :-
   tell_if_unknown_(is_union_of(Resource,union_of(L))).
 
