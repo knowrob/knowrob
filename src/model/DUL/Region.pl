@@ -176,15 +176,5 @@ has_data_value(Entity,DataValue) ?+>
 %% has_time_interval(+Entity,?Interval) is semidet. 
 %
 %
-has_time_interval(TimeInterval,TimeInterval) :-
-  is_time_interval(TimeInterval),!.
-
-has_time_interval(Event,TimeInterval) :-
-  is_event(Event),!,
-  tripledb_ask(Event, dul:hasTimeInterval, TimeInterval).
-
-has_time_interval(Situation,TimeInterval) :-
-  is_situation(Situation),!,
-  % TODO: rather go over all included events to find time boundaries?
-  %         then no need to include some time interval
-  tripledb_ask(Situation, dul:includesTime, TimeInterval).
+has_time_interval(Entity,TimeInterval) ?+>
+  triple(Entity,dul:hasTimeInterval,TimeInterval).
