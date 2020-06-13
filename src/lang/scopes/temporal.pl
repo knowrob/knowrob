@@ -142,28 +142,38 @@ time_scope_overlaps_query(A,B) :-
 %%
 time_scope_min_('Infinity',Min,Min) :- !.
 time_scope_min_(Min,'Infinity',Min) :- !.
+time_scope_min_(0,_,0) :- !.
+time_scope_min_(_,0,0) :- !.
 time_scope_min_(X0,X1,X1)  :- var(X0),!.
 time_scope_min_(X0,X1,X0)  :- var(X1),!.
 time_scope_min_(X0,X1,Min) :-
-	% FIXME: do not ignore operator here?
-	strip_operator_(X0,_,X01),
-	strip_operator_(X1,_,X11),
-	Min1 is min(X01,X11),
-	( Min1=X01 -> Min=X0 ; Min=X1 ),
-	!.
+	strip_operator_(X0,Op0,V0),
+	strip_operator_(X1,Op1,V1),
+	operator_polarization_(Op0,P0),
+	operator_polarization_(Op1,P1),
+	( P0<P1 -> Min=X0
+	; P1<P0 -> Min=X1
+	; V0<V1 -> Min=X0
+	; Min=X1
+	).
 
 %%
 time_scope_max_('Infinity',_,'Infinity') :- !.
 time_scope_max_(_,'Infinity','Infinity') :- !.
+time_scope_max_(0,Max,Max) :- !.
+time_scope_max_(Max,0,Max) :- !.
 time_scope_max_(X0,_,_)    :- var(X0),!.
 time_scope_max_(_,X1,_)    :- var(X1),!.
 time_scope_max_(X0,X1,Max) :-
-	% FIXME: do not ignore operator here?
-	strip_operator_(X0,_,X01),
-	strip_operator_(X1,_,X11),
-	Max1 is max(X01,X11),
-	( Max1=X01 -> Max=X0 ; Max=X1 ),
-	!.
+	strip_operator_(X0,Op0,V0),
+	strip_operator_(X1,Op1,V1),
+	operator_polarization_(Op0,P0),
+	operator_polarization_(Op1,P1),
+	( P0>P1 -> Max=X0
+	; P1>P0 -> Max=X1
+	; V0>V1 -> Max=X0
+	; Max=X1
+	).
 
 %% time_scope(+Since,+Until,-Scope) is det.
 %
@@ -182,6 +192,13 @@ strip_operator_(>(Value),>,Value) :- !.
 strip_operator_(<(Value),<,Value) :- !.
 strip_operator_(=(Value),=,Value) :- !.
 strip_operator_(Value,=,Value) :- !.
+
+%%
+operator_polarization_( <,-1) :- !.
+operator_polarization_(=<,-1) :- !.
+operator_polarization_( =, 0) :- !.
+operator_polarization_( >, 1) :- !.
+operator_polarization_(>=, 1) :- !.
 
 %% time_scope(+Since,+Op1,+Until,+Op2,-Scope) is det.
 %
