@@ -9,7 +9,7 @@
       is_norm(r),
       is_transition(r),
       plan_has_goal(r,r),
-      situation_satisfies(r,r),
+      satisfies(r,r),
       is_setting_for(r,r)
     ]).
 /** <module> DUL notion of Situation.
@@ -138,7 +138,7 @@ plan_has_goal(Plan,Goal) ?+>
   holds(Plan,dul:hasComponent,Goal),
   has_type(Goal,dul:'Goal').
 
-%% situation_satisfies(?Sit,?Descr) is nondet.
+%% satisfies(?Sit,?Descr) is nondet.
 %
 % A relation between a Situation and a Description,
 % e.g. the execution of a Plan satisfies that plan.
@@ -146,7 +146,7 @@ plan_has_goal(Plan,Goal) ?+>
 % @param Sit An individual of type dul:'Situation'.
 % @param Descr An individual of type dul:'Description'.
 %
-situation_satisfies(Sit,Descr) ?+>
+satisfies(Sit,Descr) ?+>
   holds(Sit,dul:satisfies,Descr).
 
 %% is_setting_for(+Sit,+Entity) is nondet.
