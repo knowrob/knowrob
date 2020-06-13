@@ -2,145 +2,99 @@
     [
     ]).
  
-:- begin_tests(model_EASE_NEEMS                                                   ).
+:- begin_tests(model_EASE_NEEMS).
+%:- begin_rdf_tests(model_EASE_NEEMS,
+%		'package://knowrob/owl/test/memory.owl',
+%		[ namespace('http://knowrob.org/kb/mem-test.owl#')
+%		]).
 
-test(model_EASE_NEEM) :-
-  fail.
+:- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
 
-%:- use_module(library('semweb/rdfs')).
-%:- use_module(library('semweb/rdf_db')).
-%:- use_module(library('semweb/owl')).
-%:- use_module(library('semweb/owl_parser')).
+:- tripledb_load(
+		'package://knowrob/owl/test/memory.owl',
+		[ graph(user),
+		  namespace(mem_test,'http://knowrob.org/kb/mem-test.owl#')
+		]).
 
-%:- use_module(library('knowrob/lang/ask')).
-%:- use_module(library('knowrob/lang/tell')).
-%:- use_module(library('knowrob/model/Action')).
-%:- use_module(library('knowrob/model/Constraint')).
-%:- use_module(library('knowrob/model/Object')).
-%:- use_module(library('knowrob/model/TimeInterval')).
+:- dynamic test_episode/1,
+           test_action/1.
 
-%:- use_module(library('knowrob/memory')).
-%:- use_module(library('knowrob/event_memory')).
-%:- use_module(library('knowrob/mongo')).
+test('is_episode') :-
+	tell(is_episode(Episode)),
+	assert_true(ground(Episode)),
+	assert_true(is_episode(Episode)),
+	assertz(test_episode(Episode)).
 
-%:- owl_parse('package://knowrob_memory/owl/test.owl').
+test('is_setting_for') :-
+	test_episode(Episode),
+	%% create an action
+	tell(is_action(Action)),
+	assert_true(ground(Action)),
+	assert_true(is_action(Action)),
+	%% assert is_setting_for
+	assert_false(is_setting_for(Episode,Action)),
+	assert_true(tell(is_setting_for(Episode,Action))),
+	assert_true(is_setting_for(Episode,Action)),
+	%%
+	assertz(test_action(Action)).
 
-%:- rdf_db:rdf_register_ns(mem_test,  'http://knowrob.org/kb/mem-test.owl#', [keep(true)]).
+test('occurs') :-
+	test_action(Action),
+	assert_false(occurs(Action)),
+	assert_true(tell(occurs(Action) during [24,464])),
+	assert_true(occurs(Action)),
+	assert_true(occurs(Action) during [24,464]).
 
-%:- dynamic test_episode/1.
+test('executes_task') :-
+	test_action(Action),
+	%% state what task the action executes
+	tell(has_type(Task,mem_test:'TestTask')),
+	assert_true(ground(Task)),
+	assert_true(is_task(Task)),
+	%%
+	assert_false(executes_task(Action,Task)),
+	assert_true(tell(executes_task(Action,Task))),
+	assert_true(executes_task(Action,Task)).
 
-%:- mem_init, mem_drop.
+test('has_participant') :-
+	test_action(Action),
+	rdf_equal(mem_test:'Substance_0',Obj),
+	%%
+	assert_false(has_participant(Action,Obj)),
+	assert_true(tell(has_participant(Action,Obj))),
+	assert_true(has_participant(Action,Obj)),
+	%%
+	tell(has_type(Role,mem_test:'ARole')),
+	assert_false(has_role(Obj,Role) during Action),
+	assert_true(tell(has_role(Obj,Role) during Action)),
+	assert_true(has_role(Obj,Role) during Action).
 
-%test_action(TskNode,Action,Task) :-
-  %test_episode(Episode),
-  %rdf_has(Episode,ease:includesSituation,TskNode),
-  %mem_event(TskNode,Action,Task).
+test('has_transition') :-
+	rdf_equal(mem_test:'TestColor_0',Q),
+	% TODO: assert a description of the transistion, then state that
+	%          the episode satisfies this description.
+	assert_true(tell(has_region(Q,mem_test:'TEST_GREEN') until 300)),
+	assert_true(tell(has_region(Q,mem_test:'TEST_RED') since 300)),
+	assert_true(has_region(Q,mem_test:'TEST_RED')),
+	assert_false(has_region(Q,mem_test:'TEST_GREEN')),
+	assert_true(has_region(Q,mem_test:'TEST_GREEN') during [200,250]).
 
+test('action_succeeded') :-
+	test_action(Action),
+	assert_false(action_succeeded(Action)),
+	assert_true(tell(action_succeeded(Action))),
+	assert_true(action_succeeded(Action)).
 
-%test(mem_episode_create) :-
-  %mem_episode_create(Episode),
-  %rdfs_individual_of(Episode,ease:'Episode'),
-  %rdf_has(Episode,dul:includesTime,_),
-  %assertz(test_episode(Episode)).
-
-%test(mem_event_interval0) :-
-  %test_episode(Episode),
-  %\+ interval(Episode,_),
-  %mem_event_begin(Episode,10),
-  %interval(Episode,[10]).
-
-%test(mem_event_interval1) :-
-  %test_episode(Episode),
-  %mem_event_begin(Episode,4),
-  %interval(Episode,[4]).
-
-%test(mem_event_interval2) :-
-  %test_episode(Episode),
-  %mem_event_begin(Episode,8),
-  %interval(Episode,[4]).
-
-%test(mem_event_interval3) :-
-  %test_episode(Episode),
-  %mem_event_end(Episode,8),
-  %interval(Episode,[4,8]).
-
-%test(mem_event_interval4) :-
-  %test_episode(Episode),
-  %mem_event_interval(Episode,0,10),
-  %interval(Episode,[0,10]).
-
-%test(mem_event_create) :-
-  %test_episode(Episode),
-  %mem_event_create(Episode,mem_test:'TestTask',TskNode),
-  %% TskNode is a Situation
-  %rdfs_individual_of(TskNode,dul:'Situation'),
-  %% The episode includes TskNode
-  %rdf_has(Episode,ease:includesSituation,TskNode),
-  %% TskNode includes an action
-  %rdf_has(TskNode,dul:includesEvent,Act),
-  %rdfs_individual_of(Act,dul:'Action').
-
-%test(mem_event_executed_in) :-
-  %test_action(_,Act,Tsk),
-  %rdf_has(Tsk,dul:isExecutedIn,Act),
-  %rdfs_individual_of(Tsk,mem_test:'TestTask').
-
-%test(mem_event_created_roles) :-
-  %test_action(TskNode,_,_),
-  %% Tsk has some individual roles
-  %once((
-    %mem_event_role(TskNode,_,mem_test:'ARole'),
-    %mem_event_role(TskNode,_,mem_test:'BRole')
-  %)).
-
-%test(mem_event_set_active) :-
-  %test_action(TskNode,Action,_),
-  %mem_event_set_active(TskNode),
-  %action_status(Action,ease_act:'ExecutionState_Active').
-
-%test(mem_event_set_diagnosis) :-
-  %test_action(TskNode,_,_),
-  %mem_event_add_diagnosis(TskNode,ease:'Clumsiness'),
-  %% TskNode satisfies a description of Clumsiness
-  %rdf_has(TskNode,dul:satisfies,Clumsiness),
-  %rdfs_individual_of(Clumsiness,ease:'Clumsiness').
-
-%test(mem_subevent_interval) :-
-  %test_episode(Episode),
-  %test_action(TskNode,_,_),
-  %mem_event_interval(TskNode,5,25),
-  %interval(Episode,[0,25]).
-
-%test(mem_add_classification) :-
-  %test_action(TskNode,_,_),
-  %mem_event_includes(TskNode,mem_test:'Substance_0',mem_test:'ARole').
-
-%test(mem_classified_participant) :-
-  %test_action(_,Act,_),
-  %rdf_has(Act,dul:hasParticipant,mem_test:'Substance_0').
-
-%test(mem_classification_concept, [nondet]) :-
-  %test_action(TskNode,_,_),
-  %mem_event_classification(TskNode,mem_test:'Substance_0',ARole),
-  %rdfs_individual_of(ARole,mem_test:'ARole').
-
-%test(mem_add_constraint) :-
-  %test_action(TskNode,_,_),
-  %% test adding a constraint to the task associated to a task node
-  %mem_event_add_constraint(TskNode,
-      %knowrob:'KeepCloseTo',
-      %mem_test:'ARole',
-      %mem_test:'BRole',
-      %_).
-
-%test(mem_constraint_parameter, [nondet]) :-
-  %test_action(TskNode,_,_),
-  %mem_event_role(TskNode,ARole,mem_test:'ARole'),
-  %mem_event_role(TskNode,BRole,mem_test:'BRole'),
-  %%% the constraint has been added as parameter of the event
-  %mem_event_parameter(TskNode,KeepCloseTo,knowrob:'KeepCloseTo'),
-  %has_constrained_concept(KeepCloseTo,ARole,mem_test:'ARole'),
-  %has_dependent_concept(KeepCloseTo,BRole,mem_test:'BRole').
+test('is_masterful') :-
+	test_episode(Episode),
+	%%
+	tell(has_type(Masterful,mem_test:'Masterful')),
+	assert_true(ground(Masterful)),
+	assert_true(is_diagnosis(Masterful)),
+	%%
+	assert_false(satisfies(Episode,Masterful)),
+	assert_true(tell(satisfies(Episode,Masterful))),
+	assert_true(satisfies(Episode,Masterful)).
 
 %test(mem_predicate_add_role) :-
   %test_action(TskNode,_,_),
@@ -160,30 +114,5 @@ test(model_EASE_NEEM) :-
   %mem_event_assignment(TskNode,
       %mem_test:'predicate1_Argument2',mem_test:'Artifact_0').
 
-%test(mem_event_causes_transition) :-
-  %test_episode(Episode),
-  %rdf_has(Episode,ease:includesSituation,TskNode),
-  %mem_event_causes_transition(TskNode,
-      %mem_test:'Substance_0',
-      %mem_test:'TestColor',
-      %mem_test:'TEST_GREEN',
-      %mem_test:'TEST_RED'),
-  %% the episode includes the transition
-  %rdf_has(Episode,ease:includesSituation,Transition),
-  %rdfs_individual_of(Transition,dul:'Transition'),
-  %% transition has initial state
-  %rdf_has(Transition,ease:hasInitialState,T0),
-  %rdf_has(T0,dul:satisfies,QR0),
-  %rdf_has(QR0,dul:hasQuality,Q),
-  %kb_triple(QR0,dul:hasRegion,mem_test:'TEST_GREEN'),
-  %% transition has terminal state
-  %rdf_has(Transition,ease:hasTerminalState,T1),
-  %rdf_has(T1,dul:satisfies,QR1),
-  %rdf_has(QR1,dul:hasQuality,Q),
-  %kb_triple(QR1,dul:hasRegion,mem_test:'TEST_RED').
-  
-%test(mem_assert_dimensions) :-
-  %object_assert_dimensions(mem_test:'Substance_0', 0.032, 0.032, 0.12),
-  %object_dimensions(mem_test:'Substance_0', 0.032, 0.032, 0.12).
-
-:- end_tests(model_EASE_NEEM).
+%:- end_rdf_tests(model_EASE_NEEMS).
+:- end_tests(model_EASE_NEEMS).

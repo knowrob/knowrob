@@ -48,6 +48,25 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/mem-test.owl#floatProperty -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/mem-test.owl#floatProperty">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +87,14 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/mem-test.owl#BRole">
         <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/mem-test.owl#Masterful -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/mem-test.owl#Masterful">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Diagnosis"/>
     </owl:Class>
     
 
@@ -203,13 +230,16 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#Substance_0">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
+        <DUL:hasQuality rdf:resource="http://knowrob.org/kb/mem-test.owl#TestColor_0"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#Bowl_0">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Bowl"/>
     </owl:NamedIndividual>
-    
 
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#TestColor_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/mem-test.owl#TestColor"/>
+    </owl:NamedIndividual>
 
     <!-- http://knowrob.org/kb/mem-test.owl#TEST_GREEN -->
 
