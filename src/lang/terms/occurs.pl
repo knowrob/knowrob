@@ -26,10 +26,10 @@
 %
 occurs(Evt) ?>
   has_interval_data(Evt,Since,Until),
+  { ground([Since,Until]) },
   query_scope(QScope),
-  { get_dict(time,QScope,QScope_Time),
-    time_scope(=(Since),=(Until),OccursScope),
-    time_subscope_of(OccursScope,QScope_Time)
+  { time_scope(=(Since),=(Until),OccursScope),
+    subscope_of(OccursScope,QScope)
   }.
 
 occurs(Evt) +>
