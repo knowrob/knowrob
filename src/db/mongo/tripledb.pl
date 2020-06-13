@@ -229,7 +229,8 @@ tripledb_forget(Subject,Property,ValueQuery,Scope,Options) :-
 
 %%
 get_supproperties_(P,SuperProperties) :-
-  Options=[graph(tbox), include_parents(true)],
+  %Options=[graph(tbox), include_parents(true)],
+  Options=[include_parents(true)],
   wildcard_scope(QScope),
   findall(string(Sup),
     (Sup=P ; tripledb_ask(P,rdfs:subPropertyOf,Sup,QScope,_,Options)),
@@ -237,7 +238,8 @@ get_supproperties_(P,SuperProperties) :-
 
 %%
 get_supclasses_(Cls,SuperClasses) :-
-  Options=[graph(tbox), include_parents(true)],
+  %Options=[graph(tbox), include_parents(true)],
+  Options=[include_parents(true)],
   wildcard_scope(QScope),
   findall(string(Sup),
     (Sup=Cls ; tripledb_ask(Cls,rdfs:subClassOf,Sup,QScope,_,Options)),
@@ -311,7 +313,10 @@ triple_query_unify1_(Doc,ValueQuery,Options) :-
   strip_operator_(ValueQuery,_,Value1),
   strip_unit_(Value1,Unit,Value2),
   strip_type_(Value2,_,Value3),
-  strip_type_(Value,_,Value3).
+  ( ground(Value3)
+  -> true
+  ;  strip_type_(Value,_,Value3)
+  ).
 
 		 /*******************************
 		 *	   .....              	*
