@@ -88,8 +88,11 @@ holds(S,P,DataTerm) ?>
   },
   holds_data(S,P,ValueQuery),
   % finally ground remaining vars in StrippedQuery
-  { data_term_unify_(QueryOperator,StrippedQuery,
-                     DataValue,DataUnit) }.
+  { once((
+      ground(StrippedQuery)
+      ; data_term_unify_(QueryOperator,StrippedQuery,DataValue,DataUnit)
+    ))
+  }.
 
 holds(S,P,O) +>
   { is_object_property(P), ! },
