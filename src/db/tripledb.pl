@@ -129,7 +129,7 @@ tripledb_load(URL,Scope,Graph) :-
   % notify about asserted individuals
   forall(
     member(rdf(X,RDF_Type,OWL_NamedIndividual), Triples),
-    notify(individual(X))
+    ignore(notify(individual(X)))
   ).
 
 %%
