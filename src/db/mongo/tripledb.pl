@@ -25,6 +25,7 @@
 %       - owl:someValuesFrom, owl:allValuesFrom, owl:onClass, owl:onProperty
 %       -- some/all would work, but max cardinality would not!
 %
+taxonomical_property(P,_,_) :- var(P),!,fail.
 taxonomical_property(rdf:type,           subclass_of,    instance_of).
 taxonomical_property(rdfs:subClassOf,    subclass_of,    subclass_of).
 taxonomical_property(rdfs:subPropertyOf, subproperty_of, subproperty_of).
@@ -196,6 +197,30 @@ tripledb_ask(Subject,Property,ValueQuery,QScope,FScope,Options) :-
   ).
 
 %%
+% @implements 'db/itripledb'
+%
+tripledb_forget(Subject,Property,ValueQuery,QScope,Options) :-
+  %% read options
+  option(graph(Graph), Options, user),
+  %% parse query value
+  mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
+  %%
+  setup_call_cleanup(
+    % setup: create a query cursor
+    triple_query_cursor_(Subject,Property,
+            MngOperator,MngValue,Unit,
+            QScope,Graph,Cursor),
+    % call: delete all matching documents
+    mng_cursor_erase(Cursor),
+    % cleanup: destroy cursor again
+    mng_cursor_destroy(Cursor)
+  ),
+  %%
+  % TODO: only invalidate if necessary
+  tripledb_cache_invalidate(subclass_of),
+  tripledb_cache_invalidate(subproperty_of).
+
+%%
 tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,FScope,Graph,OverlappingDoc) :-
   findall(X,scope_overlaps_query(FScope,X),QScopes),
   setup_call_cleanup(
@@ -209,28 +234,10 @@ tripledb_ask_overlapping_(Subject,Property,MngValue,Unit,FScope,Graph,Overlappin
     mng_cursor_destroy(Cursor)
   ).
 
-%% 
-% @implements 'db/itripledb'
-%
-tripledb_forget(Subject,Property,ValueQuery,Scope,Options) :-
-  %% read options 
-  option(graph(Graph), Options, user),
-  %% parse query value
-  mng_query_value_(ValueQuery,Operator,MngValue,Unit),
-  %%
-  triple_query_cursor_(Subject,Property,
-        Operator,MngValue,Unit,
-        Scope,Graph,Cursor),
-  mng_cursor_erase(Cursor),
-  mng_cursor_destroy(Cursor),
-  %%
-  ignore( taxonomical_property(Property,HierarchyKey,_) ),
-  propagate_deletion_(HierarchyKey,Subject,MngValue,Graph).
-
 %%
 get_supproperties_(P,SuperProperties) :-
   %Options=[graph(tbox), include_parents(true)],
-  Options=[include_parents(true)],
+  Options=[graph('*'), include_parents(true)],
   wildcard_scope(QScope),
   findall(string(Sup),
     (Sup=P ; tripledb_ask(P,rdfs:subPropertyOf,Sup,QScope,_,Options)),
@@ -239,7 +246,7 @@ get_supproperties_(P,SuperProperties) :-
 %%
 get_supclasses_(Cls,SuperClasses) :-
   %Options=[graph(tbox), include_parents(true)],
-  Options=[include_parents(true)],
+  Options=[graph('*'), include_parents(true)],
   wildcard_scope(QScope),
   findall(string(Sup),
     (Sup=Cls ; tripledb_ask(Cls,rdfs:subClassOf,Sup,QScope,_,Options)),
@@ -252,17 +259,33 @@ get_supclasses_(Cls,SuperClasses) :-
 %% create a query cursor
 triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor) :-
   tripledb(DB,TriplesColl,_),
-  tripledb_get_supgraphs(Graph,Graphs),
   ( taxonomical_property(Property,_,_) ->
     (Key_p='p',  Key_o='o*') ;
     (Key_p='p*', Key_o='o')
   ),
+  %%
+  ( atom(Subject)
+  -> Query_s=string(Subject)
+  ;  Query_s=Subject
+  ),
+  ( atom(Property)
+  -> Query_p=string(Property)
+  ;  Query_p=Property
+  ),
+  ( Operator='$eq'
+  -> Query_o=MngValue
+  ;  Query_o=[Operator,MngValue]
+  ),
+  %%
   mng_cursor_create(DB,TriplesColl,Cursor),
-  ( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',string(Subject)]) ),
-  ( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,[Operator,MngValue]]) ),
-  ( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,string(Property)]) ),
+  ( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',Query_s]) ),
+  ( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,Query_p]) ),
+  ( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,Query_o]) ),
   ( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
-  mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]]),
+  ( Graph='*' ; (
+    tripledb_get_supgraphs(Graph,Graphs),
+    mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]])
+  )),
   filter_scope_(Cursor,Scope),
   !.
 
@@ -437,15 +460,12 @@ strip_type_(X,bool,X) :- ground(X), (X=true;X=false), !.
 strip_type_(X,string,X).
   
 %%
-type_mapping_(float,  double).
-type_mapping_(double, double).
-type_mapping_(number, double).
-type_mapping_(long,   int).
-type_mapping_(int,    int).
-type_mapping_(short,  int).
-type_mapping_(byte,   int).
-type_mapping_(string, string).
-type_mapping_(bool,   bool).
+type_mapping_(float,  double) :- !.
+type_mapping_(number, double) :- !.
+type_mapping_(long,   int)    :- !.
+type_mapping_(short,  int)    :- !.
+type_mapping_(byte,   int)    :- !.
+type_mapping_(X,      X)      :- !.
 
 		 /*******************************
 		 *	   PROPAGATION       *
