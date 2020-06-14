@@ -58,6 +58,25 @@ tripledb_module('db/mongo/tripledb').
 % whipe the triple DB initially if requested by the user.
 :- getenv('KB_WHIPE_TRIPLE_STORE',true) -> itripledb_whipe ; true.
 
+%%
+:- dynamic default_graph/1.
+default_graph(user).
+
+%%
+% Set the name of the graph where triples are asserted and retrieved
+% if no other graph was specified.
+%
+set_default_graph(Graph) :-
+  retractall(default_graph(_)),
+  assertz(default_graph(Graph)).
+
+set_graph_option(Options,Options) :-
+  option(graph(_),Options),!.
+
+set_graph_option(Options,Merged) :-
+  default_graph(DG),
+  merge_options([graph(DG)],Options,Merged).
+
 %% tripledb_load(+URL) is det.
 %
 % Same as tripledb_load/2 with empty Options list.
@@ -91,7 +110,7 @@ tripledb_load(URL,Options) :-
   % get graph name
   ( member(graph(Graph),Options) ->
     ( true );
-    ( Graph=user )
+    ( default_graph(Graph) )
   ),
   % get fact scope
   universal_scope(Scope),
@@ -227,7 +246,8 @@ tripledb_tell(S,P,O,Scope,Options) :-
   -> tripledb_stop(S,P,Scope,Options)
   ;  true
   ),
-  itripledb_tell(S,P,O,Scope,Options).
+  set_graph_option(Options,Options0),
+  itripledb_tell(S,P,O,Scope,Options0).
 
 %%
 tripledb_stop(S,P,Scope,Options) :-
@@ -282,7 +302,7 @@ tripledb_forget(S,P,O,Scope,Options) :-
 % @param Scope The scope of considered triples.
 %
 tripledb_forget(S,P,O,Scope) :-
-  itripledb_forget(S,P,O,Scope,[]).
+  tripledb_forget(S,P,O,Scope,[]).
 
 %% tripledb_forget(?S,?P,?O) is semidet.
 %
@@ -301,7 +321,8 @@ tripledb_forget(S,P,O) :-
 % @implements 'db/itripledb'
 %
 tripledb_ask(S,P,O,QScope,FScope,Options) :-
-  itripledb_ask(S,P,O,QScope,FScope,Options).
+  set_graph_option(Options,Options0),
+  itripledb_ask(S,P,O,QScope,FScope,Options0).
 
 %% tripledb_ask(?S,?P,?O,+QScope,-FScope) is semidet.
 %
@@ -314,7 +335,7 @@ tripledb_ask(S,P,O,QScope,FScope,Options) :-
 % @param FScope The scope of the retrieved triple.
 %
 tripledb_ask(S,P,O,QScope,FScope) :-
-  itripledb_ask(S,P,O,QScope,FScope,[]).
+  tripledb_ask(S,P,O,QScope,FScope,[]).
 
 %% tripledb_ask(?S,?P,?O) is semidet.
 %
@@ -327,7 +348,7 @@ tripledb_ask(S,P,O,QScope,FScope) :-
 %
 tripledb_ask(S,P,O) :-
   wildcard_scope(QScope),
-  itripledb_ask(S,P,O,QScope,_,[]).
+  tripledb_ask(S,P,O,QScope,_,[]).
 
 %% 
 % @implements 'db/itripledb'
