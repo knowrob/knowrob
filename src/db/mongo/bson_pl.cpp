@@ -74,7 +74,7 @@ bson_t *bson_new_from_term(const PlTerm &term, bson_error_t *err)
 				return BCON_NEW(key, BCON_OID(&oid));
 			}
 			else if(type_name.compare("regex")==0)
-				return BCON_NEW(key, BCON_REGEX((char*)atomic_value,"i"));
+				return BCON_NEW(key, BCON_REGEX((char*)atomic_value,"msi"));
 			else if(type_name.compare("string")==0)
 				return BCON_NEW(key, BCON_UTF8((char*)atomic_value));
 			else if(type_name.compare("time")==0) {
