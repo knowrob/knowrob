@@ -81,8 +81,10 @@ ask1(Statement,Scope) :-
   reasoning_pool:infer(Statement,_,Scope).
 
 %%
-ask_all_([],_QS,FS->FS) :- !.
+ask_all_([],_QS,FS->FS) :-
+  !.
 ask_all_([{X}|Xs],QS,FS1->FSn) :-
+  !,
   call(X),
   ask_all_(Xs,QS,FS1->FSn).
 ask_all_([X|Xs],QS,FS->FSn) :-
