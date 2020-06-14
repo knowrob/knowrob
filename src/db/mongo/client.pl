@@ -12,6 +12,7 @@
       mng_dump/2,
       mng_dump_collection/3,
       mng_restore/2,
+      mng_regex_prefix/2,
       mng_cursor_create/3,
       mng_cursor_destroy/1,
       mng_cursor_filter/2,
@@ -91,6 +92,35 @@ mng_index_create(DB,Indices) :-
   ).
   
   
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % regex
+
+%% mng_regex_prefix(+Prefix,-Pattern) is det.
+%
+% Create a regex pattern for matching entries
+% with some prefix.
+%
+% @param Prefix an atom
+% @param Pattern regex pattern for matching the prefix of values
+%
+mng_regex_prefix(Prefix,Pattern) :-
+	atom_codes(Prefix, AtomCodes),
+	mng_regex_prefix_(AtomCodes,PatternCodes),
+	atom_codes(Pattern0, PatternCodes),
+	atomic_list_concat(['^',Pattern0,'.*'], '', Pattern).
+
+%%
+mng_regex_prefix_([],[]) :- !.
+
+mng_regex_prefix_([X|Xs],[X|Ys]) :-
+	char_type(X,alnum),!,
+	mng_regex_prefix_(Xs,Ys).
+
+mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
+	char_code('\\', BS),
+	mng_regex_prefix_(Xs,Ys).
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Query Cursor
