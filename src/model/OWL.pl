@@ -440,6 +440,7 @@ same_as(Entity,Same) :-
 same_as1([Entity|_],Entity,_).
 
 same_as1([Entity|Queue],Same,Visited) :-
+  atom(Entity),
   findall(Next, (
     same_as_direct(Entity,Next),
     \+ memberchk(Next,Visited),
@@ -449,8 +450,8 @@ same_as1([Entity|Queue],Same,Visited) :-
   same_as1(Queue0,Same,[Entity|Visited]).
 
 same_as_direct(Entity,Same) :-
-  tripledb_ask(Entity, owl:sameAs, Same) ;
-  tripledb_ask(Same,   owl:sameAs, Entity).
+  tripledb_ask(Entity, owl:sameAs, string(Same)) ;
+  tripledb_ask(Same,   owl:sameAs, string(Entity)).
 
 % TODO: needs to be handled elsewhere
 %tripledb_tell(S,P,O,Scope,Graph) :-
