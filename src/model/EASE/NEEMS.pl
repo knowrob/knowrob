@@ -1,19 +1,12 @@
 :- module(model_EASE_NEEMS,
     [
     ]).
- 
-:- begin_tests(model_EASE_NEEMS).
-%:- begin_rdf_tests(model_EASE_NEEMS,
-%		'package://knowrob/owl/test/memory.owl',
-%		[ namespace('http://knowrob.org/kb/mem-test.owl#')
-%		]).
 
 :- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
-
-:- tripledb_load(
+ 
+:- begin_tripledb_tests(model_EASE_NEEMS,
 		'package://knowrob/owl/test/memory.owl',
-		[ graph(user),
-		  namespace(mem_test,'http://knowrob.org/kb/mem-test.owl#')
+		[ namespace('http://knowrob.org/kb/mem-test.owl#')
 		]).
 
 :- dynamic test_episode/1,
@@ -48,7 +41,7 @@ test('occurs') :-
 test('executes_task') :-
 	test_action(Action),
 	%% state what task the action executes
-	tell(has_type(Task,mem_test:'TestTask')),
+	tell(has_type(Task,test:'TestTask')),
 	assert_true(ground(Task)),
 	assert_true(is_task(Task)),
 	%%
@@ -58,26 +51,26 @@ test('executes_task') :-
 
 test('has_participant') :-
 	test_action(Action),
-	rdf_equal(mem_test:'Substance_0',Obj),
+	rdf_equal(test:'Substance_0',Obj),
 	%%
 	assert_false(has_participant(Action,Obj)),
 	assert_true(tell(has_participant(Action,Obj))),
 	assert_true(has_participant(Action,Obj)),
 	%%
-	tell(has_type(Role,mem_test:'ARole')),
+	tell(has_type(Role,test:'ARole')),
 	assert_false(has_role(Obj,Role) during Action),
 	assert_true(tell(has_role(Obj,Role) during Action)),
 	assert_true(has_role(Obj,Role) during Action).
 
 test('has_transition') :-
-	rdf_equal(mem_test:'TestColor_0',Q),
+	rdf_equal(test:'TestColor_0',Q),
 	% TODO: assert a description of the transistion, then state that
 	%          the episode satisfies this description.
-	assert_true(tell(has_region(Q,mem_test:'TEST_GREEN') until 300)),
-	assert_true(tell(has_region(Q,mem_test:'TEST_RED') since 300)),
-	assert_true(has_region(Q,mem_test:'TEST_RED')),
-	assert_false(has_region(Q,mem_test:'TEST_GREEN')),
-	assert_true(has_region(Q,mem_test:'TEST_GREEN') during [200,250]).
+	assert_true(tell(has_region(Q,test:'TEST_GREEN') until 300)),
+	assert_true(tell(has_region(Q,test:'TEST_RED') since 300)),
+	assert_true(has_region(Q,test:'TEST_RED')),
+	assert_false(has_region(Q,test:'TEST_GREEN')),
+	assert_true(has_region(Q,test:'TEST_GREEN') during [200,250]).
 
 test('action_succeeded') :-
 	test_action(Action),
@@ -88,7 +81,7 @@ test('action_succeeded') :-
 test('is_masterful') :-
 	test_episode(Episode),
 	%%
-	tell(has_type(Masterful,mem_test:'Masterful')),
+	tell(has_type(Masterful,test:'Masterful')),
 	assert_true(ground(Masterful)),
 	assert_true(is_diagnosis(Masterful)),
 	%%
@@ -100,19 +93,18 @@ test('is_masterful') :-
   %test_action(TskNode,_,_),
   %mem_event_add_role(TskNode, knowrob:'Reasoner'),
   %mem_event_add_classification(TskNode,
-      %mem_test:'predicate1', knowrob:'Reasoner').
+      %test:'predicate1', knowrob:'Reasoner').
 
 %test(mem_predicate_assignment) :-
   %test_action(TskNode,_,_),
   %mem_event_add_assignment(TskNode,
-      %mem_test:'predicate1_Argument1',mem_test:'Bowl_0'),
+      %test:'predicate1_Argument1',test:'Bowl_0'),
   %mem_event_add_assignment(TskNode,
-      %mem_test:'predicate1_Argument2',mem_test:'Artifact_0'),
+      %test:'predicate1_Argument2',test:'Artifact_0'),
   %%%
   %mem_event_assignment(TskNode,
-      %mem_test:'predicate1_Argument1',mem_test:'Bowl_0'),
+      %test:'predicate1_Argument1',test:'Bowl_0'),
   %mem_event_assignment(TskNode,
-      %mem_test:'predicate1_Argument2',mem_test:'Artifact_0').
+      %test:'predicate1_Argument2',test:'Artifact_0').
 
-%:- end_rdf_tests(model_EASE_NEEMS).
-:- end_tests(model_EASE_NEEMS).
+:- end_tripledb_tests(model_EASE_NEEMS).
