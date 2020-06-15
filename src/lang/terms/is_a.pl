@@ -103,7 +103,10 @@ instance_of_all(S,[First|Rest]) ?+>
 % @param SuperClass a class IRI
 %
 subclass_of(A,B) ?> { ground([A,B]), A=B, ! }.
-subclass_of(A,B) ?+> triple(A,rdfs:subClassOf,B).
+subclass_of(A,B) ?+>
+  % avoid that class description terms are passed to tripledb lookup
+  { \+ compound(B) },
+  triple(A,rdfs:subClassOf,B).
 
 %% subproperty_of(?Property,?SuperProperty) is nondet.
 %
@@ -113,7 +116,10 @@ subclass_of(A,B) ?+> triple(A,rdfs:subClassOf,B).
 % @param SuperProperty a property IRI
 %
 subproperty_of(A,B) ?> { ground([A,B]), A=B, ! }.
-subproperty_of(A,B) ?+> triple(A,rdfs:subPropertyOf,B).
+subproperty_of(A,B) ?+>
+  % avoid that class description terms are passed to tripledb lookup
+  { \+ compound(B) },
+  triple(A,rdfs:subPropertyOf,B).
 
 %%
 % Obtain IRI not yet used by any resource.

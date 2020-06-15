@@ -16,6 +16,7 @@
 
 #include <map>
 #include <string>
+#include <mutex>
 
 #include <knowrob/db/mongo/MongoException.h>
 #include <knowrob/db/mongo/MongoDatabase.h>
@@ -57,6 +58,8 @@ private:
 	mongoc_client_pool_t *pool_;
 	
 	std::map<std::string, MongoCursor*> cursors_;
+
+	std::mutex mongo_mutex_;
 };
 
 #endif //__KB_MONGO_IFACE_H__

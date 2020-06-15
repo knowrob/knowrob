@@ -32,12 +32,16 @@ mongoc_client_pool_t* MongoInterface::pool()
 MongoCursor* MongoInterface::cursor_create(const char *db_name, const char *coll_name)
 {
 	MongoCursor *c = new MongoCursor(MongoInterface::pool(),db_name,coll_name);
-	MongoInterface::get().cursors_[c->id()] = c;
+	{
+		std::lock_guard<std::mutex> scoped_lock(MongoInterface::get().mongo_mutex_);
+		MongoInterface::get().cursors_[c->id()] = c;
+	}
 	return c;
 }
 
 void MongoInterface::cursor_destroy(const char *curser_id)
 {
+	std::lock_guard<std::mutex> scoped_lock(MongoInterface::get().mongo_mutex_);
 	std::string key(curser_id);
 	MongoCursor *c = MongoInterface::get().cursors_[key];
 	MongoInterface::get().cursors_.erase(key);
@@ -46,7 +50,12 @@ void MongoInterface::cursor_destroy(const char *curser_id)
 
 MongoCursor* MongoInterface::cursor(const char *curser_id)
 {
-	return MongoInterface::get().cursors_[std::string(curser_id)];
+	MongoCursor *c;
+	{
+		std::lock_guard<std::mutex> scoped_lock(MongoInterface::get().mongo_mutex_);
+		c = MongoInterface::get().cursors_[std::string(curser_id)];
+	}
+	return c;
 }
 
 /*********************************/

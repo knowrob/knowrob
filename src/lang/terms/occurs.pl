@@ -9,6 +9,9 @@
 
 :- op(1000, xf, occurs).
 
+:- use_module(library('db/scope'),
+    [ universal_scope/1
+    ]).
 :- use_module('../scopes/temporal.pl',
     [ time_scope/3,
       time_scope_data/2,
@@ -23,17 +26,23 @@
 %
 occurs(Evt) ?>
   has_interval_data(Evt,Since,Until),
+  { ground([Since,Until]) },
   query_scope(QScope),
-  { get_dict(time,QScope,QScope_Time),
-    time_scope(=(Since),=(Until),OccursScope),
-    time_subscope_of(OccursScope,QScope_Time)
+  { time_scope(=(Since),=(Until),OccursScope),
+    subscope_of(OccursScope,QScope)
   }.
 
 occurs(Evt) +>
-  unscope(time,TimeScope),
-  is_event(Evt),
-  occurs1(Evt,TimeScope),
-  scope(time,TimeScope).
+  fact_scope(FScope),
+  { get_dict(time,FScope,TimeScope),
+    universal_scope(US)
+  },
+  call(
+    [ is_event(Evt),
+      occurs1(Evt,TimeScope)
+    ],
+    [scope(US)]
+  ).
 
 %%
 occurs1(_,TimeScope)   +> { var(TimeScope),! }.

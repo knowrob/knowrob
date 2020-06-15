@@ -45,7 +45,8 @@
 %:- op(997, xfy, user:or).
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3 ]).
+    [ rdf_register_ns/3,
+      rdf_equal/2 ]).
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2,
       tripledb_ask/3
@@ -174,6 +175,36 @@ has_description(Class,Descr) ?> is_union_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_intersection_of(Class,Descr), { ! }.
 has_description(Class,Descr) ?> is_complement_of(Class,Descr), { ! }.
 has_description(Class,class(Class)) ?> { true }.
+
+%% is_description_of(+Descr,-Class) is semidet.
+%
+% TODO: why not has_description in two directions?
+%
+is_description_of(Descr,Resource) ?>
+  { is_owl_description_of_(Descr,Resource) }.
+
+is_owl_description_of_(class(Cls),Cls) :-
+  !.
+
+is_owl_description_of_(union_of(L),Resource) :-
+  tell_if_unknown_(is_union_of(Resource,union_of(L))).
+
+is_owl_description_of_(intersection_of(L),Resource) :-
+  tell_if_unknown_(is_intersection_of(Resource,intersection_of(L))).
+
+is_owl_description_of_(not(L),Resource) :-
+  tell_if_unknown_(is_complement_of(Resource,not(L))).
+
+is_owl_description_of_(Descr,Resource) :-
+  is_restriction_term_(Descr),
+  tell_if_unknown_(is_restriction(Resource,Descr)).
+
+%%
+% TODO: move to query.pl ?
+tell_if_unknown_(Statement) :-
+  ask(Statement)
+  -> true
+  ;  tell(Statement).
 
 %% is_restriction(?Restr,?Descr) is nondet.
 %
@@ -372,11 +403,12 @@ has_equivalent_class(Cls,EQ) :-
   has_equivalent_class(Cls,EQ).
 
 %%
-has_equivalent_class1([Entity|_],Entity,_).
+has_equivalent_class1([Entity|_],Entity,_) :- !.
 
 has_equivalent_class1([Entity|Queue],Same,Visited) :-
   findall(Next, (
     has_equivalent_direct(Entity,Next),
+    Entity \= Next,
     \+ memberchk(Next,Visited),
     \+ memberchk(Next,Queue)
   ), List),
@@ -408,6 +440,7 @@ same_as(Entity,Same) :-
 same_as1([Entity|_],Entity,_).
 
 same_as1([Entity|Queue],Same,Visited) :-
+  atom(Entity),
   findall(Next, (
     same_as_direct(Entity,Next),
     \+ memberchk(Next,Visited),
@@ -417,8 +450,8 @@ same_as1([Entity|Queue],Same,Visited) :-
   same_as1(Queue0,Same,[Entity|Visited]).
 
 same_as_direct(Entity,Same) :-
-  tripledb_ask(Entity, owl:sameAs, Same) ;
-  tripledb_ask(Same,   owl:sameAs, Entity).
+  tripledb_ask(Entity, owl:sameAs, string(Same)) ;
+  tripledb_ask(Same,   owl:sameAs, string(Entity)).
 
 % TODO: needs to be handled elsewhere
 %tripledb_tell(S,P,O,Scope,Graph) :-
@@ -471,7 +504,7 @@ subclass_of_description(Class,Descr) ?+>
 subclass_of_description_(Class,Descr,_Goal) ?>
   { ground(Class), ! },
   triple(Class,rdfs:subClassOf,SuperClass),
-  subclass_of(SuperClass,Descr).
+  has_description(SuperClass,Descr).
 
 subclass_of_description_(Class,Descr,Goal) ?+>
   { Goal0=..[Goal,Restriction,Descr] },
@@ -516,6 +549,7 @@ instance_of_description(S,Descr) ?+>
 instance_of_description_(S,Descr,_Goal) ?>
   { ground(S), ! },
   has_type(S,SType),
+  { \+ rdf_equal(SType,owl:'NamedIndividual') },
   subclass_of(SType,Descr).
 
 instance_of_description_(S,Descr,Goal) ?+>

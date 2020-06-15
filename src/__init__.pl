@@ -41,6 +41,7 @@
 :- tripledb_init.
 :- tripledb_add_subgraph(tbox,common).
 :- tripledb_add_subgraph(user,tbox).
+:- tripledb_add_subgraph(test,user).
 
 % load init files in sub-directories
 :- use_directory('lang').

@@ -167,7 +167,8 @@ set_current_pose(Obj,Pose) :-
 
 set_current_pose(Obj,_,Stamp) :-
 	pose_data_(Obj,_,LatestStamp),
-	LatestStamp >= Stamp, !.
+	%LatestStamp >= Stamp, !.
+	LatestStamp > Stamp, !.
 
 set_current_pose(Obj,Pose,Stamp) :-
 	retractall(pose_data_(Obj,_,_)),

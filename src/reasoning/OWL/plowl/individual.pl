@@ -37,6 +37,7 @@ owl_individual_of(Subject,Class,QScope->FScope) :-
 owl_individual_of(Subject,Class,Scope) :-
   % Subject is an individual of Class if some super-class
   % of Class is satisfied by Subject
+  ground(Class),
   \+ (ground(Subject),has_type(Subject,Class)), % FIXME scope
   owl_satisfied_by(Class,Subject,Scope).
 
