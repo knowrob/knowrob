@@ -23,7 +23,7 @@ begin_tripledb_tests(Name,RDFFile,Options0) :-
 	),
 	%%
 	Setup   = tripledb_tests:tripledb_setup(RDFFile),
-	Cleanup = tripledb_tests:tripledb_cleanup(URI_Prefix),
+	Cleanup = tripledb_tests:tripledb_cleanup,
 	add_option_goal_(Options1,setup(Setup),Options2),
 	add_option_goal_(Options2,cleanup(Cleanup),Options3),
 	%%
@@ -43,7 +43,7 @@ tripledb_setup(RDFFile) :-
 	tripledb_load(RDFFile).
 
 %%
-tripledb_cleanup(URI_Prefix) :-
+tripledb_cleanup :-
 	wildcard_scope(QScope),
 	tripledb_forget(_,_,_,QScope,[graph(test)]),
 	tripledb:set_default_graph(user).
