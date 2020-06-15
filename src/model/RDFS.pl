@@ -82,10 +82,10 @@ is_datatype(Entity) ?+>
 % @param Type a rdf:type of the resource
 %
 has_type(Resource,Type) ?>
+  { \+ compound(Type) },
   triple(Resource, rdf:type, Type).
 
 has_type(Resource,Type) +>
-  %triple(Resource, rdf:type, Label).
   instance_of(Resource,Type).
 
 %% has_range(?Property,?Range) is nondet.
