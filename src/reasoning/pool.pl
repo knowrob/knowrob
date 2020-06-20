@@ -1,5 +1,5 @@
 :- module(reasoning_pool,
-    [ reasoning_module/1,
+    [ register_reasoner/1,
       infer(t,-,t)
     ]).
 /** <module> TODO ...
@@ -19,10 +19,10 @@
 :- dynamic reasoner_module_/1.
 :- dynamic active_query_/2.
 
-%% reasoning_module(+Module) is det.
+%% register_reasoner(+Module) is det.
 %
 %
-reasoning_module(Module) :-
+register_reasoner(Module) :-
   assertz( reasoner_module_(Module) ).
 
 %%
