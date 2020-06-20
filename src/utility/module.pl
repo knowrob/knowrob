@@ -103,7 +103,6 @@ user:term_expansion((:-module(Name,Exports)), Expansions) :-
   %        and resolve *implements(_)* terms.
   read_exports_(Exports,Xs,NeedsExpansion),
   ground(NeedsExpansion),
-  print_message(informational, module(load(Name))),
   % second: generate some expansions
   findall(Expansion, (
     expand_to_module_(Name,Xs,Expansion);
