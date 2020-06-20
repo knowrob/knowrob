@@ -1,22 +1,15 @@
+:- use_module(library('db/tripledb_tests')).
 
-:- begin_tests('model_EASE_OBJ').
+:- begin_tripledb_tests(
+		'model_EASE_OBJ',
+		'package://knowrob/owl/test/test_knowrob_objects.owl',
+		[ namespace('http://knowrob.org/kb/test_knowrob_objects.owl#')
+		]).
 
-test(model_EASE_OBJ) :-
-  fail.
+:- use_module('./OBJ.pl').
 
-%:- use_module(library('semweb/rdf_db')).
-%:- use_module(library('semweb/owl_parser')).
-%:- use_module(library('knowrob/reasoning/dispositions')).
-%:- use_module(library('knowrob/model/Object'),[
-    %object_disposition/3,
-    %disposition_trigger_type/2
-%]).
-
-%:- owl_parser:owl_parse('package://knowrob/owl/test/test_knowrob_objects.owl').
-%:- rdf_db:rdf_register_prefix(test_obj, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
-
-%test(object_disposition) :-
-  %object_disposition(test_obj:'Dishwasher1', _, ease_obj:'Insertion').
+test(has_disposition_type, [nondet]) :-
+	has_disposition_type(test:'Dishwasher1', _, ease_obj:'Insertion').
 
 %test(disposition_trigger_type) :-
   %object_disposition(test_obj:'Dishwasher1', D, ease_obj:'Insertion'),!,
@@ -46,4 +39,4 @@ test(model_EASE_OBJ) :-
   %object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   %object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
 
-:- end_tests('model_EASE_OBJ').
+:- end_tripledb_tests('model_EASE_OBJ').
