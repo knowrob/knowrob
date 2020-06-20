@@ -34,9 +34,6 @@ test(load_urdf_file_pr2) :-
   atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', Filename),
   load_urdf_file(pr2,Filename).
 
-test(load_non_existent_urdf, fail) :-
-  load_urdf_file(foo,'foo.urdf').
-
 test(robot_name_pr2) :-
   robot_name(pr2,pr2).
 
@@ -121,8 +118,9 @@ test(joint_child_link_pr2_torso_lift_joint) :-
 test(joint_child_link_pr2_l_shoulder_pan_joint) :-
   joint_child_link(pr2,l_shoulder_pan_joint, l_shoulder_pan_link).
 
-test(joint_child_link_pr2_nonexisting_joint, fail) :-
-  joint_child_link(pr2, foo, l_shoulder_pan_link).
+test(joint_child_link_pr2_nonexisting_joint) :-
+  catch(joint_child_link(pr2, foo, l_shoulder_pan_link), urdf_error(Msg), true),
+  ground(Msg).
 
 test(joint_parent_link_pr2_r_elbow_flex_joint) :-
   joint_parent_link(pr2, r_elbow_flex_joint, r_upper_arm_roll_link).
@@ -130,8 +128,9 @@ test(joint_parent_link_pr2_r_elbow_flex_joint) :-
 test(joint_parent_link_pr2_head_tilt_joint) :-
   joint_parent_link(pr2, head_tilt_joint, head_pan_link).
 
-test(joint_parent_link_nonexisting_joint, fail) :-
-  joint_parent_link(pr2, bar, head_pan_link).
+test(joint_parent_link_nonexisting_joint) :-
+  catch(joint_parent_link(pr2, bar, head_pan_link), urdf_error(Msg), true),
+  ground(Msg).
 
 test(joint_type_pr2_torso_lift_joint) :-
   joint_type(pr2, torso_lift_joint, prismatic).
@@ -352,8 +351,9 @@ test(link_num_collisions_pr2_base_laser_link) :-
   link_num_collisions(pr2, base_laser_link, N),
   N=0.
 
-test(link_num_collision_foo_link, fail) :-
-  link_num_collisions(pr2, foo, _).
+test(link_num_collision_foo_link) :-
+  catch(link_num_collisions(pr2, foo, _), urdf_error(Msg), true),
+  ground(Msg).
 
 test(link_collision_type_pr2_base_link) :-
   link_collision_type(pr2, base_link, 0, mesh).
