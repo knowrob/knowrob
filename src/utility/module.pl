@@ -169,8 +169,10 @@ read_export_(     RDF_Predicate,
         [Functor,Arity,RDF_Args,_],true) :-
   compound(RDF_Predicate),
   RDF_Predicate=..[Functor|RDF_Args],
+  subset(RDF_Args,[r,t,o,o,@,?,-,+,:]),
   length(RDF_Args,Arity),
   Arity>0.
+read_export_(X,X,_) :- !.
 
 %%
 argument_list_([Xi], Xi).
