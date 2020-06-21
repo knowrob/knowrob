@@ -144,7 +144,8 @@ tripledb_load(URL,Scope,Graph) :-
   ),
   %%
   once(( url_unresolve(URL,Unresolved) ; Unresolved=URL )),
-  tripledb_tell(Unresolved,rdf:type,string(owl:'Ontology')),
+  universal_scope(US),
+  tripledb_tell(Unresolved,rdf:type,string(owl:'Ontology'),US,[graph(Graph)]),
   % load data into triple DB
   print_message(informational,tripledb(load(URL_resolved))),
   tripledb_load3t(Triples,Scope,Graph),
