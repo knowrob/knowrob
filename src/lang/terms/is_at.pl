@@ -49,7 +49,6 @@ is_at(Obj,PoseData) +>
 	notify(object_changed(Obj)).
 
 is_at(Obj,PoseQuery) ?>
-  { writeln(is_at) },
 	% read query scope
 	query_scope(QS),
 	% do the query
