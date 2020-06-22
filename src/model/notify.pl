@@ -1,5 +1,7 @@
 :- module(model_notify, []).
 
+:- use_module(library('comm/notify'),
+    [ notify/1 ]).
 :- use_module(library('semweb/rdf_db'),
     [ rdf_split_url/3 ]).
 :- use_module(library('db/tripledb'),
@@ -46,7 +48,6 @@ notify:notify_hook(individual(X)) :-
   ).
 
 notify:notify_hook(object(Object)) :-
-  initialize_required_(Object,dul:hasQuality),
   ( is_physical_object(Object) -> initialize_PO_(Object);
     is_concept(Object)         -> initialize_CO_(Object);
     true
@@ -57,13 +58,16 @@ notify:notify_hook(event(Evt)) :-
 
 %%
 initialize_EV_(EV) :-
-  \+ holds(EV,dul:hasTimeInterval,_),
+  tripledb_ask(EV,dul:hasTimeInterval,_),!.
+ 
+initialize_EV_(EV) :-
   tell([ is_time_interval(TI),
          holds(EV,dul:hasTimeInterval,TI) ]).
   
 %%
 initialize_PO_(PO) :-
   initialize_lifetime_(PO),
+  initialize_required_(PO,dul:hasQuality),
   initialize_required_(PO,ease_obj:hasFeature),
   initialize_LOC_(PO).
   
@@ -78,10 +82,11 @@ initialize_lifetime_(O) :-
 %%
 initialize_LOC_(PO) :-
   % TODO: better would be an axiom for all POs, then this clause would be obsolete
-  ( object_localization(PO,LOC) -> true ; (
-    tell([ instance_of(LOC,ease_obj:'Localization'),
-           holds(PO,ease_obj:hasLocalization,LOC) ])
-  )),
+  ( tripledb_ask(PO,ease_obj:hasLocalization,LOC)
+  -> true
+  ;  tell([ instance_of(LOC,ease_obj:'Localization'),
+            holds(PO,ease_obj:hasLocalization,LOC) ])
+  ),
   %%
   ( has_region(LOC,_) -> true ; (
     % create a new region if none exist,
@@ -105,27 +110,22 @@ initialize_CO_(C) :-
 %%
 %
 initialize_required_(Object,P) :-
-  findall([Range0,Card0],
-    % NOTE: this also yields general statements
-    holds(Object,P,min(Card0,Range0)),
-    Required),
-  list_to_set(Required,Set),
-  forall(
-    member([Range1,Card1],Set), (
-    reduced_cardinality_(Range1,Set,Card1->Card2),
-    once((
-      Card2=<0;
-      initialize_required_1_(Object,P,[Range1,Card2])
-    ))
-  )).
+	current_scope(QScope),
+	CB=all(model_notify:initialize_required_1),
+	ask(holds(Object,P,min(_,_)),
+		[[callback(CB)],QScope]).
 
-%%
-% FIXME
-reduced_cardinality_(Range0,List,_->0) :-
-  member([Range1,_],List),
-  Range1\=Range0,
-  subclass_of(Range1,Range0),!.
-reduced_cardinality_(_,_,N->N).
+initialize_required_1(Facts) :-
+	forall(
+		member([Fact,_],Facts),
+		(	Fact=holds(Object,P,min(Card1,Range1)),
+			reduced_cardinality_(Range1,Facts,Card1->Card2),
+			once((
+				Card2=<0;
+				initialize_required_1_(Object,P,[Range1,Card2])
+			))
+		)
+	).
 
 %%
 initialize_required_1_(Object,P,[Range,Card]) :-
@@ -151,9 +151,20 @@ initialize_required_1_(Object,P,[Range,Card]) :-
   ).
 
 %%
+% FIXME
+reduced_cardinality_(Range0,List,_->0) :-
+  member([Range1,_],List),
+  Range1\=Range0,
+  subclass_of(Range1,Range0),!.
+reduced_cardinality_(_,_,N->N).
+
+%%
 get_property_(Object,P,Range,Min,P_Sub) :-
-  has_range(P_Sub,Range),
-  subproperty_of(P_Sub,P),
+  %has_range(P_Sub,Range),
+  %subproperty_of(P_Sub,P),
+  % TODO seems slow
+  fail,
+  tripledb_ask(P_Sub,rdfs:subPropertyOf,P),
   holds(Object,P_Sub,min(Min,Range)),
   !.
 get_property_(_,P,_,_,P).
