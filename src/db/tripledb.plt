@@ -63,6 +63,14 @@ test('tripledb_ask_for_XSD_DataTypes') :-
     assert_true(forall(tripledb_ask(_, test_datatype:'last_name', Z), atom(Z))),
     assert_true(forall(tripledb_ask(_, test_datatype:'height', H), float(H))).
 
+% test for special characters
+test('tripledb_tell_special_character_umlaut', [ fixme('fix encoding for special characters e.g. umlaut') ]) :-
+	assert_true(tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Müller')).
+
+% test for list as an argument
+test('tripledb_tell_list_as_an_argument', [ fixme('provide support for list as an argument') ]) :-
+	assert_true(tripledb_tell(test_datatype:'Car', test_datatype:'hasColor', '[255,99,71]')).
+
 % remove the triple at the end of test
 test('tripledb_forget_for_XSD_DataTypes') :-
     assert_true(tripledb_forget(test_datatype:'Lecturer3', _, _)).
