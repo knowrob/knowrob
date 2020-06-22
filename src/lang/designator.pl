@@ -1,4 +1,6 @@
 
+:- module(lang_designator, []).
+
 %:- module(lang_designator,
     %[ xxx/0
     %]).

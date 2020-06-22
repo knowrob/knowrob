@@ -25,84 +25,86 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-:- module(knowrob_vis,
-    [
-      show/1,
-      show/2,
-      hide/1
-    ]).
-/** <module> Methods for visualizing parts of the knowledge base
+:- module(knowrob_vis, []).
 
-  @author Daniel Beßler
-  @license BSD
-*/
-:- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/data_vis')).
-
-:- rdf_meta 
-      hide(t),
-      show(t),
-      show(t,t),
-      hide_marker(t),
-      show_marker(t,t).
-
-:- multifile show/2,
-             hide/1,
-             show_marker/2,
-             hide_marker/1.
-
-%% show(+Thing) is det.
-%% show(+Thing, +Properties) is det.
+%:- module(knowrob_vis,
+%    [
+%      show/1,
+%      show/2,
+%      hide/1
+%    ]).
+%/** <module> Methods for visualizing parts of the knowledge base
 %
-% This is a non-logical predicate used to invoke
-% external clients such us RViz
-% to visualize objects in the knowledge base.
-% Custom visualization back-ends may be used
-% by defining another clause of this multifile
-% predicate.
+%  @author Daniel Beßler
+%  @license BSD
+%*/
+%:- use_module(library('semweb/rdfs')).
+%:- use_module(library('semweb/rdf_db')).
+%:- use_module(library('knowrob/data_vis')).
 %
-show(Things) :-
-  is_list(Things), !,
-  show_next_,
-  forall( member(Thing, Things), (
-    T =.. [show|Thing], call(T)
-  )), !.
-show(Thing) :-
-  show(Thing,[]).
-show(Thing, Properties) :-
-  show_marker(Thing,Properties).
-
-%% show_next is det
-show_next_ :-
-  true.
-
-%% hide(+Thing) is det.
+%:- rdf_meta 
+%      hide(t),
+%      show(t),
+%      show(t,t),
+%      hide_marker(t),
+%      show_marker(t,t).
 %
-% This is a non-logical predicate used to invoke
-% external clients such us RViz
-% to remove visualizations of objects.
+%:- multifile show/2,
+%             hide/1,
+%             show_marker/2,
+%             hide_marker/1.
 %
-hide(Things) :-
-  is_list(Things), !,
-  forall( member(Thing, Things), (
-    T =.. [hide|Thing], call(T)
-  )), !.
-hide(Thing) :-
-  hide_marker(Thing).
-  
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Marker visualization
-
+%%% show(+Thing) is det.
+%%% show(+Thing, +Properties) is det.
 %%
-show_marker(Thing, Properties) :-
-  atom(Thing),
-  rdf_resource(Thing),
-  object_state(Thing, State, Properties),
-  object_state_add_cpp([State]).
+%% This is a non-logical predicate used to invoke
+%% external clients such us RViz
+%% to visualize objects in the knowledge base.
+%% Custom visualization back-ends may be used
+%% by defining another clause of this multifile
+%% predicate.
 %%
-hide_marker(Thing) :-
-  atom(Thing),
-  rdf_resource(Thing),
-  object_state_remove_cpp([Thing]).
+%show(Things) :-
+%  is_list(Things), !,
+%  show_next_,
+%  forall( member(Thing, Things), (
+%    T =.. [show|Thing], call(T)
+%  )), !.
+%show(Thing) :-
+%  show(Thing,[]).
+%show(Thing, Properties) :-
+%  show_marker(Thing,Properties).
+%
+%%% show_next is det
+%show_next_ :-
+%  true.
+%
+%%% hide(+Thing) is det.
+%%
+%% This is a non-logical predicate used to invoke
+%% external clients such us RViz
+%% to remove visualizations of objects.
+%%
+%hide(Things) :-
+%  is_list(Things), !,
+%  forall( member(Thing, Things), (
+%    T =.. [hide|Thing], call(T)
+%  )), !.
+%hide(Thing) :-
+%  hide_marker(Thing).
+%  
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % Marker visualization
+%
+%%%
+%show_marker(Thing, Properties) :-
+%  atom(Thing),
+%  rdf_resource(Thing),
+%  object_state(Thing, State, Properties),
+%  object_state_add_cpp([State]).
+%%%
+%hide_marker(Thing) :-
+%  atom(Thing),
+%  rdf_resource(Thing),
+%  object_state_remove_cpp([Thing]).

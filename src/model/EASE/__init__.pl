@@ -10,4 +10,5 @@
 :- use_module('PROC').
 :- use_module('STATE').
 :- use_module('WF').
+:- use_module('IO').
 :- use_module('EXT').

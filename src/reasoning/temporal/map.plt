@@ -1,8 +1,5 @@
 :- begin_tests('reasoning_Allen_MAP').
 
-test('map') :-
-  fail.
-
 %:- use_module(library('semweb/rdf_db')).
 %:- use_module(library('semweb/rdfs')).
 %:- use_module(library('knowrob/reasoning/action_parser')).

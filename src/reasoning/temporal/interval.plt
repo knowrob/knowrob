@@ -1,20 +1,13 @@
 :- use_module(library('db/tripledb_tests')).
+:- use_module(library('db/tripledb'),
+	[ tripledb_load/2 ]).
+:- use_module('interval.pl').
+
 :- begin_tripledb_tests(
 		'time_interval',
 		'package://knowrob/owl/test/events.owl',
 		[ namespace('http://knowrob.org/kb/test_events.owl#')
 		]).
-%:- begin_tests(time_interval).
-
-:- use_module(library('db/tripledb'),
-	[ tripledb_load/2 ]).
-:- use_module('interval.pl').
-
-%:- tripledb_load(
-%	'package://knowrob/owl/test/events.owl',
-%	[ graph(test),
-%	  namespace(test,'http://knowrob.org/kb/test_events.owl#')
-%	]).
 
 /********************************
  *	    QUANTITATIVE INPUT     	*

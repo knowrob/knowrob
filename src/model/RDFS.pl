@@ -44,7 +44,7 @@ is_resource(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_property(Entity) ?+>
-  has_type(Entity, rdfs:'Property').
+  has_type(Entity, rdf:'Property').
 
 %% is_literal(+Entity) is semidet.
 %
@@ -147,3 +147,26 @@ is_rdf_list(RDFList,[X|Xs]) +>
   has_type(RDFList, rdf:'List'),
   triple(RDFList, rdf:first, X),
   triple(RDFList, rdf:rest, Ys).
+
+		 /*******************************
+		 *	    UNIT TESTS	     		*
+		 *******************************/
+
+:- begin_tripledb_tests(
+		'model_RDFS',
+		'package://knowrob/owl/test/swrl.owl',
+		[ namespace('http://knowrob.org/kb/swrl_test#')
+		]).
+
+test('is_resource') :-
+	assert_true(is_resource(test:'Lea')),
+	assert_true(is_resource(test:'Adult')),
+	assert_false(is_resource(test:'hasNumber')),
+	assert_false(is_resource(test:'NotExisting')).
+
+test('is_property') :-
+	assert_true(is_property(test:'hasNumber')),
+	assert_false(is_property(test:'Lea')),
+	assert_false(is_property(test:'NotExisting')).
+
+:- end_tripledb_tests('model_RDFS').

@@ -45,7 +45,7 @@ tripledb_setup(RDFFile) :-
 %%
 tripledb_cleanup :-
 	wildcard_scope(QScope),
-	tripledb_forget(_,_,_,QScope,[graph(test)]),
+	tripledb_forget(_,_,_,QScope,[graph(=(test))]),
 	tripledb:set_default_graph(user).
 
 %%

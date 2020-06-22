@@ -13,7 +13,7 @@
       is_data_property/1
     ]).
 :- use_module(library('db/obda'),        [ obda_add/1 ]).
-:- use_module(library('reasoning/pool'), [ reasoning_module/1 ]).
+:- use_module(library('reasoning/pool'), [ register_reasoner/1 ]).
 :- use_module('./terms/is_a.pl',         [ subproperty_of/2 ]).
 :- use_module('./terms/transitive.pl',   [ transitive/1 ]).
 
@@ -85,7 +85,7 @@ computable_reasoner_(M,ObjectComputables) :-
           infer2(holds(S,P0,O),Fact,Scope)
         )),
   % register reasoner
-  reasoning_module(M).
+  register_reasoner(M).
 
 computable_reasoner2_(:(Module,ComputableTerm)) :-
   ComputableTerm=..[Predicate,Property],
