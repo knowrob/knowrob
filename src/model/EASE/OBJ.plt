@@ -1,5 +1,8 @@
 :- use_module(library('db/tripledb_tests')).
 
+:- use_module(library('lang/query'),
+    [ synchronize/1 ]).
+
 :- begin_tripledb_tests(
 		'model_EASE_OBJ',
 		'package://knowrob/owl/test/test_knowrob_objects.owl',
@@ -9,6 +12,7 @@
 :- use_module('./OBJ.pl').
 
 test(has_disposition_type, [nondet]) :-
+	synchronize(subject(test:'Dishwasher1')),
 	has_disposition_type(test:'Dishwasher1', _, ease_obj:'Insertion').
 
 %test(disposition_trigger_type) :-
