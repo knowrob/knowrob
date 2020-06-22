@@ -32,14 +32,15 @@
 %%
 %
 %
-%owl_subclass_of(Sub,Sup) :-
-  %% TODO: this clause seems displaced, but is not covered otherwise.
-  %ground(Sub),
-  %has_description(Sub,intersection_of(List)),!,
-  %once((
-    %member(Sub0,List),
-    %(Sub0=Sup ; subclass_of(Sub0,Sup))
-  %)).
+owl_subclass_of(Sub,Sup) :-
+  % TODO: this clause seems displaced, but is not covered otherwise.
+  ground(Sub),
+  ground(Sup),
+  has_description(Sub,intersection_of(List)),!,
+  once((
+    member(Sub0,List),
+    (Sub0=Sup ; subclass_of(Sub0,Sup))
+  )).
 
 owl_subclass_of(Sub,Sup) :-
   var(Sup),!,
@@ -65,7 +66,7 @@ owl_subclass_of1(Sub,max(P,Max,Range)) :-
 
 owl_subclass_of1(Sub,exactly(P,Card,Range)) :-
   owl_property_cardinality(Sub,P,Range,Card,Card).
-  
+
 owl_subclass_of1(Sub,Sup) :-
   owl_subclass_of_equivalent(Sub,Sup).
 
