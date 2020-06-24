@@ -168,7 +168,8 @@ read_export_(     RDF_Predicate,
         [Functor,Arity,RDF_Args,_],true) :-
   compound(RDF_Predicate),
   RDF_Predicate=..[Functor|RDF_Args],
-  subset(RDF_Args,[r,t,o,o,@,?,-,+,:]),
+  % Test if the Args are the arguments for rdf_meta (see https://www.swi-prolog.org/pldoc/man?predicate=rdf_meta/1)
+  subset(RDF_Args,[r,t,o,@,?,-,+,:]),
   length(RDF_Args,Arity),
   Arity>0.
 read_export_(X,X,_) :- !.
