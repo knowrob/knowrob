@@ -23,7 +23,7 @@
 test('tripledb_load_local_owl_file(URL)') :-
     tripledb_load(
         'package://knowrob/owl/test/swrl.owl',
-        [ graph(common)
+        [ graph(test)
         ]).
 
 % check via tripledb_ask if individual triple exists
