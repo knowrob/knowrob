@@ -20,26 +20,26 @@
 :- rdf_register_ns(swrl_tests,'http://knowrob.org/kb/swrl_test#',[keep(true)]).
 
 % load swrl owl file for tripledb testing
-test('tripledb_load_local_owl_file(URL)') :-
+test('tripledb tests: load local owl file') :-
     tripledb_load(
         'package://knowrob/owl/test/swrl.owl',
         [ graph(test)
         ]).
 
 % check via tripledb_ask if individual triple exists
-test('tripledb_ask_if_individual_triple_exists_in_triplestore(S,P,O)') :-
+test('tripledb tests: ask triple exists in triplestore') :-
     assert_true(tripledb_ask(swrl_tests:'Adult', rdfs:'subClassOf', swrl_tests:'TestThing')).
 
 % delete individual triple
-test('tripledb_forget_from_triplestore(S,P,O)') :-
+test('tripledb tests: forget triple') :-
     assert_true(tripledb_forget(swrl_tests:'Adult', rdfs:'subClassOf', swrl_tests:'TestThing')).
 
 % check again for that triple and it should not be in the tripledb
-test('tripledb_ask_after_deletion', [fail]) :-
+test('tripledb tests: ask after deletion', [fail]) :-
     tripledb_ask(swrl_tests:'Adult', rdfs:'subClassOf', swrl_tests:'TestThing').
 
 % add triple and check if it exists in db
-test('tripledb_tell_to_triplestore_and_check_if_it_exists(S,P,O)') :-
+test('tripledb tests: tell to triplestore and check if triple exists') :-
     assert_true(tripledb_tell(swrl_tests:'Adult', rdfs:'subClassOf', swrl_tests:'TestThing')),
     assert_true(tripledb_ask(swrl_tests:'Adult', rdfs:'subClassOf', swrl_tests:'TestThing')).
 
@@ -49,28 +49,28 @@ test('tripledb_tell_to_triplestore_and_check_if_it_exists(S,P,O)') :-
 :- rdf_register_ns(test_datatype, 'http://knowrob.org/kb/datatype_test#',[keep(true)]).
 
 % load test owl file for tripledb testing for xsd datatypes
-test('tripledb_load_local_owl_file_for_xsd_datatypes(URL)') :-
+test('tripledb tests: load local owl file for xsd datatypes') :-
     tripledb_load(
         'package://knowrob/owl/test/datatype_test.owl',
         [ graph(test)
         ]).
 
 % test for xsd:integer, Str, float
-test('tripledb_tell_for_XSD_DataTypes') :-
+test('tripledb tests: tell triples with various XSD DataTypes') :-
     assert_true(tripledb_tell(test_datatype:'Lecturer3', test_datatype:'first_name', 'Johana$')),
     assert_true(tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Muller')),
     assert_true(tripledb_tell(test_datatype:'Lecturer3', test_datatype:'studentId', 212123)),
     assert_true(tripledb_tell(test_datatype:'Lecturer3', test_datatype:'height', 5.10)).
 
 % test for xsd:integer, Str, float
-test('tripledb_ask_for_XSD_DataTypes') :-
+test('tripledb tests: ask triples with various XSD DataTypes') :-
     assert_true(forall(tripledb_ask(_, test_datatype:'studentId', X), integer(X))),
     assert_true(forall(tripledb_ask(_, test_datatype:'first_name', Y), atom(Y))),
     assert_true(forall(tripledb_ask(_, test_datatype:'last_name', Z), atom(Z))),
     assert_true(forall(tripledb_ask(_, test_datatype:'height', H), float(H))).
 
 % remove the triple at the end of test
-test('tripledb_forget_for_XSD_DataTypes') :-
+test('tripledb tests: forget triple with various XSD DataTypes') :-
     assert_true(tripledb_forget(test_datatype:'Lecturer3', _, _)).
 
 :- end_tests('tripledb').
