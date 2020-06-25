@@ -10,12 +10,12 @@
 :- use_module(library('model/RDFS'),       [ has_type/2 ]).
 :- use_module(library('lang/terms/is_a'),  [ instance_of/2 ]).
 :- use_module(library('lang/terms/holds'), [ holds/3 ]).
-:- use_module(library('reasoning/pool'),   [ reasoning_module/1 ]).
+:- use_module(library('reasoning/pool'),   [ register_reasoner/1 ]).
 
 :- use_module('./swrl.pl').
 :- use_module('./parser.pl').
 
-:- reasoning_module(swrl).
+:- register_reasoner(swrl).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing

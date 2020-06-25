@@ -74,8 +74,8 @@ tripledb_search_index_(['s','o*','p']).
 % TODO: for some reason it is slower with scope indices?!? (at least tell)
 %
 append_scope_index_(IndexKeys,IndexKeys).
-%append_scope_index_(IndexKeys,IndexKeys0).
-  %append(IndexKeys, %['scope.time.since', 'scope.time.until'],  %IndexKeys0),
+%append_scope_index_(IndexKeys,IndexKeys0) :-
+%  append(IndexKeys, ['scope.time.since', 'scope.time.until'],  IndexKeys0).
 
 %% 
 % @implements 'db/itripledb'
@@ -246,6 +246,7 @@ get_supproperties_(P,SuperProperties) :-
 %%
 get_supclasses_(Cls,SuperClasses) :-
   %Options=[graph(tbox), include_parents(true)],
+  atom(Cls),
   Options=[graph('*'), include_parents(true)],
   wildcard_scope(QScope),
   findall(string(Sup),
@@ -282,13 +283,22 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
   ( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,Query_p]) ),
   ( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,Query_o]) ),
   ( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
-  ( Graph='*' ; (
-    tripledb_get_supgraphs(Graph,Graphs),
-    mng_cursor_filter(Cursor,['graph',['$in',array(Graphs)]])
-  )),
+  filter_graph_(Cursor,Graph),
   filter_scope_(Cursor,Scope),
   !.
 
+%%
+filter_graph_(_,'*') :-
+  !.
+filter_graph_(Cursor,=(GraphName)) :-
+  mng_cursor_filter(Cursor,['graph',string(GraphName)]),
+  !.
+filter_graph_(Cursor,GraphName) :-
+  tripledb_get_supgraphs(GraphName,Graphs),
+  mng_cursor_filter(Cursor,
+    ['graph',['$in',array(Graphs)]]).
+
+%%
 filter_scope_(Cursor,[Scope]) :-
   !, filter_scope_(Cursor,Scope).
 

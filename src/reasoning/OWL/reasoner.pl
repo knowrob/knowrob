@@ -9,7 +9,7 @@
 :- use_module('./plowl/property.pl',   [ owl_subproperty_of/2,
                                          owl_has/4 ]).
 
-:- reasoning_module(owl_reasoner).
+:- register_reasoner(owl_reasoner).
 
 %%
 % @implements ireasoner

@@ -165,8 +165,7 @@ PREDICATE(robot_name, 2) {
         PL_A2 = get_robot_model(urdf_id).name_.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -197,8 +196,7 @@ PREDICATE(root_link_name, 2) {
         PL_A2 = get_robot_model(urdf_id).root_link_->name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -210,8 +208,7 @@ PREDICATE(link_names, 2) {
             names.append(link_entry.first.c_str());
         return names.close();
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -226,8 +223,7 @@ PREDICATE(link_parent_joint, 3) {
         } else
             return false;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -241,8 +237,7 @@ PREDICATE(link_child_joints, 3) {
             child_joints.append(child_joint->name.c_str());
         return child_joints.close();
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -256,8 +251,7 @@ PREDICATE(link_inertial_origin, 3) {
         PL_A3 = to_prolog_pose(link->inertial->origin);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -271,8 +265,7 @@ PREDICATE(link_inertial_mass, 3) {
         PL_A3 = link->inertial->mass;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -292,8 +285,7 @@ PREDICATE(link_inertial_inertia, 3) {
         inertia.append(link->inertial->izz);
         return inertia.close();
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -305,8 +297,7 @@ PREDICATE(link_num_visuals, 3) {
         PL_A3 = (long) link->visual_array.size();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -340,8 +331,7 @@ PREDICATE(link_visual_type, 4) {
                 return false;
         }
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -357,8 +347,7 @@ PREDICATE(link_visual_name, 4) {
         PL_A4 = link->visual_array[index]->name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -373,8 +362,7 @@ PREDICATE(link_visual_origin, 4) {
         PL_A4 = to_prolog_pose(link->visual_array[index]->origin);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -390,8 +378,7 @@ PREDICATE(link_visual_geometry, 4) {
         PL_A4 = to_prolog_geometry(link->visual_array[index]->geometry);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -407,8 +394,7 @@ PREDICATE(link_material_name, 4) {
         PL_A4 = link->visual_array[index]->material->name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -424,8 +410,7 @@ PREDICATE(link_material_color, 4) {
         PL_A4 = to_prolog_rgba(link->visual_array[index]->material->color);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -442,8 +427,7 @@ PREDICATE(link_material_texture, 4) {
         PL_A4 = link->visual_array[index]->material->texture_filename.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -455,8 +439,7 @@ PREDICATE(link_num_collisions, 3) {
         PL_A3 = (long) link->collision_array.size();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -490,8 +473,7 @@ PREDICATE(link_collision_type, 4) {
                 return false;
         }
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -507,8 +489,7 @@ PREDICATE(link_collision_name, 4) {
         PL_A4 = link->collision_array[index]->name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -523,8 +504,7 @@ PREDICATE(link_collision_origin, 4) {
         PL_A4 = to_prolog_pose(link->collision_array[index]->origin);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -540,8 +520,7 @@ PREDICATE(link_collision_geometry, 4) {
         PL_A4 = to_prolog_geometry(link->collision_array[index]->geometry);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -580,8 +559,7 @@ PREDICATE(joint_names, 2) {
             names.append(joint_entry.first.c_str());
         return names.close();
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -622,8 +600,7 @@ PREDICATE(joint_type, 3) {
                 throw std::runtime_error("Found undefined joint type for joint'" + joint_name + "'.");
         }
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -634,8 +611,7 @@ PREDICATE(joint_child_link, 3) {
         PL_A3 = get_joint(urdf_id,joint_name)->child_link_name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -646,8 +622,7 @@ PREDICATE(joint_parent_link, 3) {
         PL_A3 = get_joint(urdf_id,joint_name)->parent_link_name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -667,8 +642,7 @@ PREDICATE(joint_axis, 3) {
         l.append(joint->axis.z);
         return l.close();
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -680,8 +654,7 @@ PREDICATE(joint_origin, 3) {
         PL_A3 = to_prolog_pose(joint->parent_to_joint_origin_transform);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -695,8 +668,7 @@ PREDICATE(joint_lower_pos_limit, 3) {
         PL_A3 = joint->limits->lower;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -710,8 +682,7 @@ PREDICATE(joint_upper_pos_limit, 3) {
         PL_A3 = joint->limits->upper;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -725,8 +696,7 @@ PREDICATE(joint_velocity_limit, 3) {
         PL_A3 = joint->limits->velocity;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -740,8 +710,7 @@ PREDICATE(joint_effort_limit, 3) {
         PL_A3 = joint->limits->effort;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -755,8 +724,7 @@ PREDICATE(joint_calibration_rising, 3) {
         PL_A3 = *(joint->calibration->rising);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -770,8 +738,7 @@ PREDICATE(joint_calibration_falling, 3) {
         PL_A3 = *(joint->calibration->falling);
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -785,8 +752,7 @@ PREDICATE(joint_dynamics_damping, 3) {
         PL_A3 = joint->dynamics->damping;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -800,8 +766,7 @@ PREDICATE(joint_dynamics_friction, 3) {
         PL_A3 = joint->dynamics->friction;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -815,8 +780,7 @@ PREDICATE(joint_mimic_joint_name, 3) {
         PL_A3 = joint->mimic->joint_name.c_str();
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -830,8 +794,7 @@ PREDICATE(joint_mimic_multiplier, 3) {
         PL_A3 = joint->mimic->multiplier;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -845,8 +808,7 @@ PREDICATE(joint_mimic_offset, 3) {
         PL_A3 = joint->mimic->offset;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -860,8 +822,7 @@ PREDICATE(joint_safety_lower_limit, 3) {
         PL_A3 = joint->safety->soft_lower_limit;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -875,8 +836,7 @@ PREDICATE(joint_safety_upper_limit, 3) {
         PL_A3 = joint->safety->soft_upper_limit;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -890,8 +850,7 @@ PREDICATE(joint_safety_kp, 3) {
         PL_A3 = joint->safety->k_position;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
 
@@ -905,7 +864,6 @@ PREDICATE(joint_safety_kv, 3) {
         PL_A3 = joint->safety->k_velocity;
         return true;
     } catch (const std::runtime_error& e) {
-        ROS_ERROR("%s", e.what());
-        return false;
+        throw PlException(PlCompound("urdf_error", PlTerm(e.what())));
     }
 }
