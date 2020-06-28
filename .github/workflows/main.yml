@@ -29,4 +29,4 @@ jobs:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax.
         ros-version: melodic
         # Root directory of the catkin workspace
-        # workspace: # optional
+        workspace: $GITHUB_WORKSPACE
