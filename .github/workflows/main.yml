@@ -68,4 +68,4 @@ jobs:
       run: roscore &
     
     - name: Run tests
-      run: source $GITHUB_WORKSPACE/setup.bash && rosrun rosprolog rosprolog-test knowrob
+      run: source $GITHUB_WORKSPACE/devel/setup.bash && rosrun rosprolog rosprolog-test knowrob
