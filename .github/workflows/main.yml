@@ -17,9 +17,9 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     
-    strategy:
-      matrix:
-        compiler: [g++]
+    #strategy:
+    #  matrix:
+    #    compiler: [gcc]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -58,4 +58,5 @@ jobs:
         workspace: $GITHUB_WORKSPACE
     
     # build the workspace
-    - run: catkin_make_isolated -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+    - run: catkin_make_isolated #-DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+    #- run: catkin_make_isolated -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
