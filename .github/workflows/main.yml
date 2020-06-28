@@ -30,3 +30,6 @@ jobs:
         ros-version: melodic
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
+    
+    # build the workspace
+    - run: catkin_make_isolated -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
