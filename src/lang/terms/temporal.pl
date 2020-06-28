@@ -136,40 +136,39 @@ interval_data__(_,X,X).
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tests(lang_temporal).
-
-:- tripledb_load(
+:- begin_tripledb_tests(
+		'lang_temporal',
 		'package://knowrob/owl/test/swrl.owl',
-		[ graph(user),
-		  namespace(test_swrl,'http://knowrob.org/kb/swrl_test#')
+		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
 test('tell Lea hasNumber during') :-
-	tell( holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during [10,34] ),
-	tell( holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455249') during [34,64] ).
+	tell( holds(test:'Lea', test:hasNumber, '+493455247') during [10,34] ),
+	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [34,64] ).
 
 test('tell Lea hasNumber overlapping') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
-	tell( holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455249') during [54,84] ).
+	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [54,84] ).
 
 test('Lea hasNumber during') :-
-	assert_true(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during [10,34]),
-	assert_true(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during [14,24]),
-	assert_true(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455249') during [34,44]),
-	assert_true(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455249') during [38,80]).
+	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [10,34]),
+	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [14,24]),
+	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [34,44]),
+	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [38,80]).
 
 test('Lea hasNumber during X') :-
-	holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during X,
-	assert_equals(X,[10,34]).
+	findall(X,
+		holds(test:'Lea', test:hasNumber, '+493455247') during X,
+		Xs
+	),
+	assert_true(length(Xs,1)),
+	assert_equals(Xs,[[10,34]]).
 
 test('Lea not hasNumber during') :-
-	assert_false(holds(test_swrl:'Lea', test_swrl:hasNumber, '+999999999') during [5,20]),
-	assert_false(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455249') during [12,20]),
-	assert_false(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during [5,20]),
-	assert_false(holds(test_swrl:'Lea', test_swrl:hasNumber, '+493455247') during [34,44]).
+	assert_false(holds(test:'Lea', test:hasNumber, '+999999999') during [5,20]),
+	assert_false(holds(test:'Lea', test:hasNumber, '+493455249') during [12,20]),
+	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [5,20]),
+	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [34,44]).
 
-test('forget Lea hasNumber') :-
-	tripledb_forget(test_swrl:'Lea', test_swrl:hasNumber, _).
-
-:- end_tests(lang_temporal).
+:- end_tripledb_tests('lang_temporal').
