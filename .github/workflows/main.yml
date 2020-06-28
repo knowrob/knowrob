@@ -24,32 +24,32 @@ jobs:
       with:
         path: 'src/knowrob'
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/rosprolog'
         repository: knowrob/rosprolog
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/ease_ontology'
         repository: knowrob/ease_ontology
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/rosowl'
         repository: knowrob/rosowl
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/genowl'
         repository: knowrob/genowl
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/dul'
         repository: ease-crc/dul
     
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         path: 'src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
