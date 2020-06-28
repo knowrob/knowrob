@@ -485,10 +485,10 @@ test_asynch_ask(Mode,Query) :-
 
 test_asynch_answer0(Actual,Expected) :-
 	assert_true(is_list(Actual)),
-	assert_true(Actual=[_,_]),
+	assert_unifies(Actual,[_,_]),
 	Actual=[Fact,FScope],
 	assert_true(ground(Fact)),
-	assert_true(Fact=Expected),
+	assert_unifies(Fact,Expected),
 	assert_true(is_dict(FScope)).
 
 test_asynch_answer(Expected) :-
@@ -527,9 +527,9 @@ test('ask asynch all nondet') :-
 	test_asynch_ask(all,Query),
 	thread_get_message(ask_test_results,Answers),
 	assert_true(is_list(Answers)),
-	assert_true(Answers=[_|_]),
+	assert_unifies(Answers,[_|_]),
 	findall(X, member([triple(X,_,_),_],Answers), SubClasses),
-	assert_true(SubClasses=[_|_]),
+	assert_unifies(SubClasses,[_|_]),
 	assert_true(member(dul:'PhysicalObject',SubClasses)),
 	test_asynch_has_finished(Query).
 
