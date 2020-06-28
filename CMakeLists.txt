@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(knowrob)
 
 find_package(catkin REQUIRED COMPONENTS
-    rosprolog rosowl roscpp roslib urdf
+    rosprolog roscpp roslib urdf
     geometry_msgs message_generation)
 
 catkin_python_setup()
