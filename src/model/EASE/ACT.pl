@@ -30,6 +30,8 @@
     [ has_parameter_range/3 ]).
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
+:- use_module(library('model/EASE/OBJ'),
+    [ ]).
 
 :- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
     [ graph(tbox),
