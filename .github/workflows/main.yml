@@ -22,36 +22,36 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
-        path: 'src'
+        path: 'src/knowrob'
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/rosprolog'
         repository: knowrob/rosprolog
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/ease_ontology'
         repository: knowrob/ease_ontology
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/rosowl'
         repository: knowrob/rosowl
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/genowl'
         repository: knowrob/genowl
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/dul'
         repository: ease-crc/dul
     
     - uses: actions/checkout@v1
       with:
-        path: 'src'
+        path: 'src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
     
     # Runs a single command using the runners shell
