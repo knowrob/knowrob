@@ -58,6 +58,11 @@ MongoCursor* MongoInterface::cursor(const char *curser_id)
 	return c;
 }
 
+MongoCollection* MongoInterface::get_collection(const char *db_name, const char *coll_name)
+{
+	return new MongoCollection(MongoInterface::get().pool_,db_name,coll_name);
+}
+
 /*********************************/
 /********** MongoInterface *******/
 /*********************************/

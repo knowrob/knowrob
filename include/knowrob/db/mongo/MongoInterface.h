@@ -43,6 +43,8 @@ public:
 	
 	static MongoCursor* cursor_create(const char *db_name, const char *coll_name);
 	
+	static MongoCollection* get_collection(const char *db_name, const char *coll_name);
+
 	static void cursor_destroy(const char *curser_id);
 	
 	static MongoCursor* cursor(const char *curser_id);
