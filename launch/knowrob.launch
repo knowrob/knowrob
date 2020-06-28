@@ -16,6 +16,4 @@
     <arg name="initial_package" default="knowrob" />
     <arg name="initial_goal" default="true" />
   </include>
-
-  <include file="$(find knowrob)/launch/object_state_publisher.launch" />
 </launch>

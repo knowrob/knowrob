@@ -1,9 +1,0 @@
-<launch>
-  <arg name="hz" default="10" />
-  <arg name="object_types" default="dul:'PhysicalObject'" />
-  
-  <node name="object_state_publisher" pkg="knowrob" type="object_state_publisher.py" output="screen">
-    <param name="hz" value="$(arg hz)" />
-    <param name="object_types" value="$(arg object_types)" />
-  </node>
-</launch>
