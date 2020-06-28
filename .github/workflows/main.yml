@@ -24,6 +24,36 @@ jobs:
       with:
         path: 'src'
     
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: knowrob/rosprolog
+    
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: knowrob/ease_ontology
+    
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: knowrob/rosowl
+    
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: knowrob/genowl
+    
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: ease-crc/dul
+    
+    - uses: actions/checkout@master
+      with:
+        path: 'src'
+        name: code-iai/iai_common_msgs
+    
     # Runs a single command using the runners shell
     - name: Setup catkin workspace
       uses: janbernloehr/github-setup-catkin@patch-1
