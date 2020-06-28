@@ -60,3 +60,12 @@ jobs:
     # build the workspace
     - run: catkin_make_isolated #-DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
     #- run: catkin_make_isolated -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+    
+    - name: Start MongoDB
+      run: sudo systemctl start mongod
+    
+    - name: Start ros
+      run: roscore &
+    
+    - name: Run tests
+      run: source $GITHUB_WORKSPACE/setup.bash && rosrun rosprolog rosprolog-test knowrob
