@@ -64,5 +64,8 @@ jobs:
     
     - name: Run tests
       run: |
+        echo "Sourcing workspace"
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+        echo "Running tests..."
         rosrun rosprolog rosprolog-test knowrob
+        echo "done."
