@@ -96,8 +96,10 @@ time_scope_merge(A,B,Merged) :-
 
 %%
 time_scope_overlaps_([S0,U0],[S1,U1]) :-
-	time_scope_inside_(S0,[S1,U1]);
-	time_scope_inside_(U0,[S1,U1]).
+	( time_scope_inside_(S0,[S1,U1])
+	; time_scope_inside_(U0,[S1,U1])
+	),
+	!.
 
 %%
 time_scope_inside_(X,[_S,U]) :-
