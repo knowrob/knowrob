@@ -29,7 +29,7 @@
     [ is_at/2
     ]).
 
-:- use_foreign_library('libobject_state_publisher.so').
+%:- use_foreign_library('libobject_state_publisher.so').
 
 %%
 %

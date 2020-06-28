@@ -139,25 +139,25 @@ public:
 PREDICATE(object_state_add_cpp, 1) {
 	static MarkDirtyObjectClient mark_dirty_client;
 	PlTail tail(PL_A1); PlTerm e;
-	
+
 	mark_dirty_client.push_begin();
 	while(tail.next(e)) {
 		mark_dirty_client.push(e);
         };
 	mark_dirty_client.push_end();
-	
+
 	return TRUE;
 }
 
 PREDICATE(object_state_remove_cpp, 1) {
 	static MarkDirtyObjectClient mark_dirty_client;
 	PlTail tail(PL_A1); PlTerm e;
-	
+
 	mark_dirty_client.push_begin();
 	while(tail.next(e)) {
 		mark_dirty_client.push_deleted(e);
         };
 	mark_dirty_client.push_end();
-	
+
 	return TRUE;
 }
