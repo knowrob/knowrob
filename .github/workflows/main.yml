@@ -40,16 +40,6 @@ jobs:
     
     - uses: actions/checkout@v2
       with:
-        path: 'src/rosowl'
-        repository: knowrob/rosowl
-    
-    - uses: actions/checkout@v2
-      with:
-        path: 'src/genowl'
-        repository: knowrob/genowl
-    
-    - uses: actions/checkout@v2
-      with:
         path: 'src/dul'
         repository: ease-crc/dul
     
