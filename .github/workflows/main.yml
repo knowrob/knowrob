@@ -24,7 +24,7 @@ jobs:
     
     # Runs a single command using the runners shell
     - name: Setup catkin workspace
-      uses: betwo/github-setup-catkin@v1.0.0
+      uses: janbernloehr/github-setup-catkin@patch-1
       with:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax.
         ros-version: melodic
