@@ -245,18 +245,21 @@ test('tell Lea hasNumber') :-
   assert_true(holds(test:'Lea', test:'hasNumber', '+493564754647')).
 
 test('tell the rectangle size during a time interval') :-
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [25,45]),
-  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [25,45])),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 25),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 45),
-  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [48,55])),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 48),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [50,55]).
+  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200]),
+  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200])),
+  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593302400),
+  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1593349200),
+  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388800,1593435600])),
+  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593389900),
+  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388900,1593434600]),
+  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1594434300),
+  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593288900),
+  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1592434300,1592464300]).
 
 test('ask holds unit conversion') :-
   assert_true(tell(holds(test:'RectangleSmall',test:'hasHeightInMeters', m(6.5)))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(X))).
-  assert_equals(X, 650).
+  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(650))),
+  holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); true.
 
 test('ask holds without an object or data type property') :-
   assert_false(holds(test:'Alex', rdf:'type', test:'Woman')).
