@@ -1,3 +1,6 @@
+% NOTE: this is currently disabled because the role taxonomy
+%        is not yet fixed in SOMA, the module should be re-implemented
+%        once this is done.
 :- module(reasoning_roles,
     [
     ]).
