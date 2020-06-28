@@ -19,6 +19,9 @@
 :- use_module(library('comm/notify'),
     [ notify/1 ]).
 
+:- multifile remember_hook/1.
+:- multifile memorize_hook/1.
+
 %% remember(+Directory) is det.
 %
 % Restore memory previously stored into given directory.
@@ -28,6 +31,7 @@
 remember(Directory) :-
   tripledb_import(Directory),
   obda_import(Directory),
+  forall(remember_hook(Directory), true),
   forall(is_individual(I), notify(individual(I))).
 
 %% memorize(+Directory) is det.
@@ -38,4 +42,5 @@ remember(Directory) :-
 %
 memorize(Directory) :-
   tripledb_export(Directory),
-  obda_export(Directory).
+  obda_export(Directory),
+  forall(memorize_hook(Directory), true).
