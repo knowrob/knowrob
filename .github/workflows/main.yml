@@ -57,12 +57,12 @@ jobs:
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
     
-    - name: ls workspace
-      run: ls $GITHUB_WORKSPACE && ls $GITHUB_WORKSPACE/src
-    
     # build the workspace
     - run: catkin_make_isolated #-DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
     #- run: catkin_make_isolated -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+    
+    - name: ls workspace
+      run: ls $GITHUB_WORKSPACE && ls $GITHUB_WORKSPACE/src
     
     - name: Start MongoDB
       run: sudo systemctl start mongod
@@ -71,4 +71,4 @@ jobs:
       run: roscore &
     
     - name: Run tests
-      run: source $GITHUB_WORKSPACE/devel/setup.bash && rosrun rosprolog rosprolog-test knowrob
+      run: rosrun rosprolog rosprolog-test knowrob
