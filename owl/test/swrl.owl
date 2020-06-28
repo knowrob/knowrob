@@ -345,7 +345,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#RectangleBig">
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Rectangle"/>
-        <hasHeightInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#float">13.5</hasHeightInMeters>
+        <hasHeightInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">13</hasHeightInMeters>
         <hasWidthInMeters rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">13</hasWidthInMeters>
     </owl:NamedIndividual>
     
