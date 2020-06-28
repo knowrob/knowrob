@@ -36,12 +36,6 @@ catkin_package(CATKIN_DEPENDS rosprolog roscpp roslib)
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 
-add_library(object_state_publisher SHARED src/comm/object_state_publisher.cpp)
-target_link_libraries(object_state_publisher ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(object_state_publisher 
-  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
-  ${catkin_EXPORTED_TARGETS})
-
 add_library(kb_algebra SHARED src/utility/algebra.cpp)
 target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(kb_algebra
@@ -76,6 +70,24 @@ target_link_libraries(mongo_kb
 	${SWIPL_LIBRARIES}
 	${MONGOC_LIBRARIES}
 	${catkin_LIBRARIES})
+
+##############
+#### Pugins
+##############
+
+add_library(tf_plugin SHARED
+	src/comm/ros/tf/tf_plugin.cpp
+	src/comm/ros/tf/memory.cpp
+	src/comm/ros/tf/logger.cpp
+	src/comm/ros/tf/publisher.cpp)
+target_link_libraries(tf_plugin
+	${SWIPL_LIBRARIES}
+	${MONGOC_LIBRARIES}
+	${catkin_LIBRARIES}
+	mongo_kb)
+add_dependencies(tf_plugin
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS})
 
 ##############
 ##############
