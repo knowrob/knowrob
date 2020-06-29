@@ -76,7 +76,7 @@ test('tripledb_tell_special_character_umlaut', [ fixme('fix encoding for special
 
 % test for list as an argument
 test('tripledb_tell_list_as_an_argument', [ fixme('provide support for list as an argument') ]) :-
-	tripledb_tell(test_datatype:'Car', test_datatype:'hasColor', '[255,99,71]').
+	tripledb_tell(test_datatype:'Lecturer3', test_datatype:'hasHairColor', '[255,99,71]').
 
 % remove the triple at the end of test
 test('tripledb tests: forget triple with various XSD DataTypes') :-
