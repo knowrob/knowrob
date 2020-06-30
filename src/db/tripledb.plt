@@ -5,12 +5,12 @@
 		[   setup(tripledb:set_default_graph(test)),
 		    cleanup(tripledb_tests:tripledb_cleanup)
 		]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2,
-      tripledb_ask/3,
-      tripledb_forget/3,
-      tripledb_tell/3
-    ]).
+
+:- use_module(library('db/tripledb')).
+
+:- use_module(library('lang/scopes/temporal')).
+
+:- use_module(library('lang/terms/holds')).
 
 :- use_module(library('rostest.pl')).
 
@@ -71,8 +71,8 @@ test('tripledb tests: ask triples with various XSD DataTypes') :-
 
 
 % test for special characters
-test('tripledb_tell_special_character_umlaut', [ fixme('fix encoding for special characters e.g. umlaut') ]) :-
-	tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Muller').
+test('tripledb_tell_special_character_umlaut', [ fixme('fix encoding for special characters e.g. umlaut') ]):-
+	tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Müller').
 
 % test for list as an argument
 test('tripledb_tell_list_as_an_argument', [ fixme('provide support for list as an argument') ]) :-
@@ -81,6 +81,19 @@ test('tripledb_tell_list_as_an_argument', [ fixme('provide support for list as a
 % remove the triple at the end of test
 test('tripledb tests: forget triple with various XSD DataTypes') :-
     assert_true(tripledb_forget(test_datatype:'Lecturer3', _, _)).
+
+% test for time scope
+test('tripledb tell triple with time scope'):-
+    time_scope(=(5), =(10), S2),
+	tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
+	assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,10])),
+	assert_false(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
+
+% test for time scope extension
+test('tripledb tell triple with time scope extension'):-
+    time_scope(=(5), =(20), S2),
+	tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
+	assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
 
 :- end_tests('tripledb').
 
