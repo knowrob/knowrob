@@ -56,20 +56,14 @@ jobs:
     # build the workspace
     - run: catkin_make_isolated
     
-    - name: Start MongoDB
-      run: sudo systemctl start mongod
-    
-    - name: Start ros
-      run: roscore &
-    
-    - run: echo "PKG PATH='$ROS_PACKAGE_PATH'"
-    
     - name: Run tests
       shell: bash
       run: |
+        echo "Starting MongoDB"
+        sudo systemctl start mongod
+        echo "Starting roscore"
+        roscore &
+        echo "Running plunit"
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
         $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
-        echo "PKG PATH='$ROS_PACKAGE_PATH'"
-    
-    - name: Run ls
-      run: ls .
+        ls .
