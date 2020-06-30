@@ -62,17 +62,15 @@ jobs:
     - name: Start ros
       run: roscore &
     
-    - run: env
+    - run: echo "PKG PATH='$ROS_PACKAGE_PATH'"
     
     - name: Run tests
       run: |
-        echo "Sourcing workspace"
-        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        echo "Running tests..."
+        . $GITHUB_WORKSPACE/devel_isolated/setup.sh
         rosrun rosprolog rosprolog-test -o xunit.xml knowrob
-        echo "done."
+        echo "PKG PATH='$ROS_PACKAGE_PATH'"
     
-    - run: env
+    - run: echo "PKG PATH='$ROS_PACKAGE_PATH'"
     
     - name: Run ls
       run: ls .
