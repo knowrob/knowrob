@@ -65,7 +65,7 @@ jobs:
         roscore &
         echo "Running plunit"
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
+        . $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
         ls .
     
     - run: |
