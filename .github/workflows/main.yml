@@ -68,6 +68,6 @@ jobs:
         . $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
         ls .
     
-    - run: |
-        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        roslaunch knowrob knowrob.launch
+    #- run: |
+    #    source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+    #    roslaunch knowrob knowrob.launch
