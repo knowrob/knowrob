@@ -68,7 +68,7 @@ jobs:
       shell: bash
       run: |
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        $GITHUB_WORKSPACE/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
+        $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
         echo "PKG PATH='$ROS_PACKAGE_PATH'"
     
     - run: echo "PKG PATH='$ROS_PACKAGE_PATH'"
