@@ -62,6 +62,8 @@ jobs:
     - name: Start ros
       run: roscore &
     
+    - run: env
+    
     - name: Run tests
       run: |
         echo "Sourcing workspace"
@@ -69,6 +71,8 @@ jobs:
         echo "Running tests..."
         rosrun rosprolog rosprolog-test -o xunit.xml knowrob
         echo "done."
+    
+    - run: env
     
     - name: Run ls
       run: ls .
