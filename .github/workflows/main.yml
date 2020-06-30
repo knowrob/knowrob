@@ -71,8 +71,5 @@ jobs:
         $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
         echo "PKG PATH='$ROS_PACKAGE_PATH'"
     
-    - name: The job has succeeded
-      if: ${{ success() }}
-    
     - name: Run ls
       run: ls .
