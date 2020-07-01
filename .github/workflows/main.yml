@@ -59,13 +59,13 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-        echo "Starting MongoDB"
         sudo systemctl start mongod
-        echo "Starting roscore"
         roscore &
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        echo "Running plunit"
-        . $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
+        rosrun rosprolog rosprolog-test -o junit.xml knowrob
+    
+    - uses: ashley-taylor/junit-report-annotations-action@1.2
+      if: always()
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
