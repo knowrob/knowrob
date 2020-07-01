@@ -71,5 +71,5 @@ jobs:
       uses: shyim/junit-report-annotations-action@0.1.5
       with:
         path: junit-*.xml
-        stripFromPath: "$GITHUB_WORKSPACE/src/knowrob/"
+        stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
