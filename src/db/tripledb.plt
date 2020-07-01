@@ -85,9 +85,9 @@ test('tripledb tests: forget triple with various XSD DataTypes') :-
 % test for time scope
 test('tripledb tell triple with time scope'):-
     time_scope(=(5), =(10), S2),
-	tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
-	assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,10])),
-	assert_false(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
+    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
+    assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,10])),
+    assert_false(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
 
 % test for time scope extension
 test('tripledb tell triple with time scope extension'):-
