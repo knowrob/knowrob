@@ -58,20 +58,19 @@ jobs:
     
     - name: Run tests
       shell: bash
-      env:
-        PL_INIT: src/rosprolog/src/__init__.pl
-        PL_TEST: src/rosprolog/src/rostest.pl
       run: |
         echo "Starting MongoDB"
         sudo systemctl start mongod
         echo "Starting roscore"
         roscore &
         echo "Running plunit"
-        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
-        /usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
-          -g "ensure_loaded('$GITHUB_WORKSPACE/${PL_INIT}'),ensure_loaded('$GITHUB_WORKSPACE/${PL_TEST}')" \
-          -t "setup_call_cleanup(true, rospl_run_tests(knowrob,[xunit('xunit.xml')]), halt)"
-        ls .
+        . $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
+        
+    #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+    #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
+    #-g "ensure_loaded('$GITHUB_WORKSPACE/${PL_INIT}'),ensure_loaded('$GITHUB_WORKSPACE/${PL_TEST}')" \
+    #-t "setup_call_cleanup(true, rospl_run_tests(knowrob,[xunit('xunit.xml')]), halt)"
+    #ls .
     
     # . $GITHUB_WORKSPACE/src/rosprolog/scripts/rosprolog-test -o xunit.xml knowrob
     #- run: |
