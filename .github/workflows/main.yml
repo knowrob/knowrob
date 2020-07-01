@@ -67,6 +67,7 @@ jobs:
     - uses: junit-annotate@v1.7.0
       with:
         artifacts: junit-*.xml
+        failure-format: file
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
