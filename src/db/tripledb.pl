@@ -294,7 +294,8 @@ tripledb_bulk_tell(Facts,Scope,Options) :-
 % @implements 'db/itripledb'
 %
 tripledb_forget(S,P,O,Scope,Options) :-
-  itripledb_forget(S,P,O,Scope,Options).
+  set_graph_option(Options,Options0),
+  itripledb_forget(S,P,O,Scope,Options0).
 
 %% tripledb_forget(?S,?P,?O,+Scope) is semidet.
 %
@@ -319,7 +320,7 @@ tripledb_forget(S,P,O,Scope) :-
 %
 tripledb_forget(S,P,O) :-
   wildcard_scope(QScope),
-  itripledb_forget(S,P,O,QScope,[]).
+  tripledb_forget(S,P,O,QScope,[]).
 
 %% 
 % @implements 'db/itripledb'
