@@ -57,7 +57,7 @@ jobs:
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
       
     - name: Report plunit results as Github Actions Annotations
-      uses: daniel86/junit-report-annotations-action@test1
+      uses: daniel86/junit-report-annotations-action@master
       with:
         path: junit-*.xml
         stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
