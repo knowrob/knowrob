@@ -69,7 +69,6 @@ jobs:
       
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
-      #uses: shyim/junit-report-annotations-action@0.1.5
       with:
         path: junit-*.xml
         stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
