@@ -54,12 +54,6 @@ jobs:
     - name: Build catkin workspace
       run: catkin_make_isolated
     
-  test:
-    needs: [build]
-    
-    runs-on: ubuntu-18.04
-    
-    steps:
     - name: Run tests
       shell: bash
       run: |
