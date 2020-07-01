@@ -64,8 +64,8 @@ jobs:
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit.xml knowrob
     
-    - uses: ashley-taylor/junit-report-annotations-action@1.2
-      if: always()
+    - uses: IgnusG/jest-report-action@v{ current version }
+      if: always() # Or use "continue-on-error: true" in previous test step
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
