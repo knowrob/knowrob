@@ -68,6 +68,7 @@ jobs:
       uses: shyim/junit-report-annotations-action@0.1.5
       with:
         path: junit-*.xml
+        accessToken: ${{ secrets.GITHUB_TOKEN }}
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
