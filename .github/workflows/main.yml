@@ -60,7 +60,7 @@ jobs:
       shell: bash
       env:
         PL_INIT: src/rosprolog/src/__init__.pl
-        PL_TEST: src/rosprolog/src/test.pl
+        PL_TEST: src/rosprolog/src/rostest.pl
       run: |
         echo "Starting MongoDB"
         sudo systemctl start mongod
