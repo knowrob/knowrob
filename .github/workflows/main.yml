@@ -48,7 +48,6 @@ jobs:
         path: 'src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
     
-    # Runs a single command using the runners shell
     - name: Setup catkin workspace
       uses: janbernloehr/github-setup-catkin@patch-1
       with:
@@ -57,8 +56,8 @@ jobs:
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
     
-    # build the workspace
-    - run: catkin_make_isolated
+    - name: Build catkin workspace
+      run: catkin_make_isolated
     
     - name: Run tests
       shell: bash
