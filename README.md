@@ -1,7 +1,7 @@
 KnowRob
 =======
 
-[![Build Status](https://travis-ci.org/knowrob/knowrob.svg?branch=master)](https://travis-ci.org/knowrob/knowrob)
+![CI](https://github.com/daniel86/knowrob/workflows/CI/badge.svg)
 
 KnowRob is a knowledge processing system designed for robots.
 Its purpose is to equip robots with the capability to organize information in re-usable
