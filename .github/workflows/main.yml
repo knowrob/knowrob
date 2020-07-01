@@ -31,16 +31,16 @@ jobs:
       with:
         path: 'src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
-    - name: Setup catkin workspace
+    - name: Setup KnowRob workspace
       uses: janbernloehr/github-setup-catkin@patch-1
       with:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax.
         ros-version: melodic
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
-    - name: Build catkin workspace
+    - name: Build KnowRob workspace
       run: catkin_make_isolated
-    - name: Run tests
+    - name: Run KnowRob plunit tests
       shell: bash
       run: |
         sudo systemctl start mongod
