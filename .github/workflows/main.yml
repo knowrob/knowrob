@@ -10,7 +10,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  plunit:
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
 
@@ -63,7 +63,7 @@ jobs:
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
       
     - name: Report plunit results as Github Actions Annotations
-      uses: shyim/junit-report-annotations-action@0.1.5
+      uses: daniel86/junit-report-annotations-action@master
       with:
         path: junit-*.xml
         stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
