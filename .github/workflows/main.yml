@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         path: 'src/rosprolog'
-        repository: knowrob/rosprolog
+        repository: daniel86/rosprolog
     
     - uses: actions/checkout@v2
       with:
