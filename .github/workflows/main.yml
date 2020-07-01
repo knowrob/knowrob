@@ -66,6 +66,8 @@ jobs:
     
     - uses: IgnusG/jest-report-action@v2.3.3
       if: always() # Or use "continue-on-error: true" in previous test step
+      with:
+        access-token: ${{ secrets.GITHUB_TOKEN }}
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
