@@ -92,8 +92,8 @@ test('tripledb tell triple with time scope'):-
 % test for time scope extension
 test('tripledb tell triple with time scope extension'):-
     time_scope(=(5), =(20), S2),
-	tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
-	assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
+    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
+    assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
 
 :- end_tests('tripledb').
 
