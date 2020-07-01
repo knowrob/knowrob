@@ -64,7 +64,7 @@ jobs:
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
     
-    - uses: junit-annotate#v1.7.0
+    - uses: junit-annotate@v1.7.0
       with:
         artifacts: junit-*.xml
         
