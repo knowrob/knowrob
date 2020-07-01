@@ -11,32 +11,27 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        path: 'src/knowrob'
-    
+        path: 'src/knowrob' 
     - name: Checkout rosprolog
       uses: actions/checkout@v2
       with:
         path: 'src/rosprolog'
         repository: daniel86/rosprolog
-    
     - name: Checkout SOMA ontology
       uses: actions/checkout@v2
       with:
         path: 'src/ease_ontology'
         repository: knowrob/ease_ontology
-    
     - name: Checkout DUL ontology
       uses: actions/checkout@v2
       with:
         path: 'src/dul'
         repository: ease-crc/dul
-    
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
         path: 'src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
-    
     - name: Setup catkin workspace
       uses: janbernloehr/github-setup-catkin@patch-1
       with:
@@ -44,10 +39,8 @@ jobs:
         ros-version: melodic
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
-    
     - name: Build catkin workspace
       run: catkin_make_isolated
-    
     - name: Run tests
       shell: bash
       run: |
@@ -55,7 +48,6 @@ jobs:
         roscore &
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
-      
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
