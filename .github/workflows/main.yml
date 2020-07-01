@@ -63,11 +63,11 @@ jobs:
         roscore &
         source $GITHUB_WORKSPACE/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
-    
-    - uses: junit-annotate@v1.7.0
+      
+    - name: Report jUnit Annotations as Github Actions Annotations
+      uses: shyim/junit-report-annotations-action@0.1.5
       with:
-        artifacts: junit-*.xml
-        failure-format: file
+        path: junit-*.xml
         
     #source $GITHUB_WORKSPACE/devel_isolated/setup.bash
     #/usr/bin/swipl -q -f $GITHUB_WORKSPACE/${PL_INIT} \
