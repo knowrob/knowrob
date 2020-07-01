@@ -34,7 +34,7 @@ jobs:
     - name: Setup KnowRob workspace
       uses: janbernloehr/github-setup-catkin@patch-1
       with:
-        # Version range or exact version of ROS version to use, using SemVer's version range syntax.
+        # Version range or exact version of ROS version to use, using SemVer's version range syntax. 
         ros-version: melodic
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE
