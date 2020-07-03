@@ -64,7 +64,7 @@ is_a(A,B) ?+>
 %
 instance_of(A,B) ?> has_type(A,B).
 
-instance_of(A,B) +>
+instance_of(A,B) ?+>
   { is_list(B), ! },
   instance_of_all(A,B).
 
@@ -142,3 +142,43 @@ unique_name1(Type_IRI, Name) :-
     unique_name(Type_IRI,Name);
     Name = IRI
   ).
+
+     /*******************************
+     *          UNIT TESTS          *
+     *******************************/
+
+:- begin_tripledb_tests(
+    lang_is_a,
+    'package://knowrob/owl/test/swrl.owl',
+    [ namespace('http://knowrob.org/kb/swrl_test#')
+    ]).
+
+test("ask and tell woman is a person") :-
+  assert_true(is_a(test:'Woman', test:'TestThing')),
+  assert_false(is_a(test:'Woman', test:'Person')),
+  assert_true(tell(is_a(test:'Woman', test:'Person'))),
+  assert_true(is_a(test:'Woman', test:'Person')).
+
+test("ask and tell instances of Rex") :-
+  assert_true(instance_of(test:'Rex', test:'Man')),
+  assert_false(instance_of(test:'Rex', dul:'Person')),
+  assert_true(tell(instance_of(test:'Rex', dul:'Person'))),
+  assert_true(instance_of(test:'Rex', dul:'Person')).
+
+test("ask and tell list instance of Greta") :-
+  assert_false(instance_of('Greta', [test:'Woman', dul:'Person'])),
+  assert_true(tell(instance_of('Greta', [test:'Woman', dul:'Person']))),
+  assert_true(ask(instance_of_all('Greta', [test:'Woman', dul:'Person']))),
+  assert_true(ask(instance_of('Greta', [test:'Woman', dul:'Person']))).
+
+test("ask and tell sub property of") :-
+  assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
+  assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
+  assert_true(tell(subproperty_of(test:'hasBrother', test:'hasSibling'))),
+  assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
+
+% expect instantiation error as is_a expects a ground variable
+test("ask A is a Person", [throws(error(instantiation_error, _))]) :-
+  is_a(A, dul:'Person').
+
+:- end_tripledb_tests(lang_is_a).
