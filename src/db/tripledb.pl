@@ -26,22 +26,18 @@
 :- use_module(library('comm/notify'),    [ notify/1 ]).
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
-% get path from environment
-tripledb_module(Module) :-
-  getenv('PL_TRIPLE_STORE', Module),
-  ( file_exists(Module) -> true ; (
-    print_message(warning, tripledb(no_such_module(Module))),
-    fail
-  )),!.
-% use fallback path
-tripledb_module('db/mongo/tripledb').
+% define some settings
+:- setting(path, atom, 'db/mongo/tripledb',
+		'Path to the module where the triple DB is implemented.').
+:- setting(whipe, atom, yes,
+		'Toggle to configure whether the DB should initially by whiped.').
 
 %%
 % Get path to module that implements the tripledb
 % and import prefixed predicates from the module.
 % TODO: rather do re-export? not sure if this kind of wrapping
 %       adds much overhead.
-:- tripledb_module(Module),
+:- setting(tripledb:path,Module),
    use_module(library(Module),
         [ tripledb_init/0             as itripledb_init,
           tripledb_import/1           as itripledb_import,
@@ -56,7 +52,7 @@ tripledb_module('db/mongo/tripledb').
           tripledb_cache_invalidate/1 as itripledb_cache_invalidate
         ]).
 % whipe the triple DB initially if requested by the user.
-:- getenv('KB_WHIPE_TRIPLE_STORE',true) -> itripledb_whipe ; true.
+:- setting(tripledb:whipe,yes) -> itripledb_whipe ; true.
 
 %%
 :- dynamic default_graph/1.

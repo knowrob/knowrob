@@ -1,16 +1,7 @@
 <launch>
-  <!-- mongo DB configuration -->
-  <arg name="mongodb_name" default="roslog" />
-  
-  <!-- triple store configuration -->
-  <arg name="pl_triple_store" default="db/mongo/triple_store" />
-  <arg name="whipe_triple_store" default="true" />
-  <env name="KB_TRIPLE_STORE" value="$(arg pl_triple_store)" />
-  <env name="KB_WHIPE_TRIPLE_STORE" value="$(arg whipe_triple_store)" />
-  
-  <!-- Additional Prolog modules -->
-  <arg name="pl_modules" default="db/mongo/ros" />
-  <env name="PL_MODULES" value="$(arg pl_modules)" />
+  <!-- Configure settings file. -->
+  <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl" />
+  <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />

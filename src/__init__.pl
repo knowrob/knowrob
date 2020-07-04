@@ -36,6 +36,10 @@
 :- ros_package_iri(knowrob,       'http://knowrob.org/kb').
 :- ros_package_iri(knowrob,       'http://www.w3.org/2002/07').
 
+% load knowrob.pl
+:- use_module('knowrob').
+:- knowrob_load_settings.
+
 % initialize databases
 :- use_directory('db').
 :- tripledb_init.
@@ -50,5 +54,5 @@
 :- use_directory('comm').
 :- use_directory('vis').
 
-% TODO: load additional modules
-%env(PL_MODULES)
+% load additional modules
+:- knowrob_load_plugins.

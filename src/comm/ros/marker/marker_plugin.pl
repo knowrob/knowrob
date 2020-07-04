@@ -11,17 +11,20 @@
 % - trajectory marker
 %    -> use points/lines primitive?
 % - hook to shows predicate
-% - should be optional
 %
 
+:- use_module(library(settings)).
 :- use_module(library('db/scope'),
     [ current_scope/1
     ]).
-
 :- use_module('object_marker').
 :- use_foreign_library('libmarker_plugin.so').
 
 :- multifile marker_factory/3.
+
+% define some settings
+:- setting(auto, boolean, true,
+	'Toggle whether marker messages are generated automatically when an object changes.').
 
 %%
 :- message_queue_create(_,[alias(ros_marker_queue)]).
@@ -214,4 +217,7 @@ marker_loop :-
 % notify_hook is called whenever an object changes.
 %
 notify:notify_hook(object_changed(Obj)) :-
-	show_marker(Obj, Obj, []).
+	( setting(marker_plugin:auto,true)
+	-> show_marker(Obj, Obj, [])
+	;  true
+	).

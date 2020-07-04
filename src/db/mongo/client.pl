@@ -34,6 +34,10 @@
 
 :- use_foreign_library('libmongo_kb.so').
 
+% define some settings
+:- setting(db_name, atom, roslog,
+		'Name of the Mongo DB used by KnowRob.').
+
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),
   open_chars_stream(Chars,Stream),
@@ -41,9 +45,7 @@ read_json_(JSON,Dict) :-
 
 %%
 mng_db_name(DBName) :-
-  getenv('KNOWROB_MONGO_DB_NAME',DBName),
-  \+ DBName='', !.
-mng_db_name(roslog).
+	setting(mng_client:db_name, DBName).
 
 %%
 mng_export(Dir) :-
