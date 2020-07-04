@@ -58,19 +58,23 @@ As an example, below is a query that retrieves documents from a collection named
 The cursor only retrieves documents where the *subject* key has the value "Obj1",
 and where the *begin* field has a date value smaller then the Unix timestamp *1579888948.52*.
 
-    mng_cursor_create(roslog,triples,Cursor),
-    mng_cursor_filter(Cursor,['subject',['$eq',string('Obj1')]]),
-    mng_cursor_filter(Cursor,['begin',['$lte',time(1579888948.52)]]),
-    mng_cursor_next(Cursor,Doc),
-    mng_cursor_destroy(Cursor).
+```Prolog
+mng_cursor_create(roslog,triples,Cursor),
+mng_cursor_filter(Cursor,['subject',['$eq',string('Obj1')]]),
+mng_cursor_filter(Cursor,['begin',['$lte',time(1579888948.52)]]),
+mng_cursor_next(Cursor,Doc),
+mng_cursor_destroy(Cursor).
+```
 
 `Note` Make sure to destroy a cursor once you are done with it. Usually you would want to wrap the cursor operation into a call of *setup_call_cleanup/3*.
 
 More complex filters may use, e.g., disjunction as in:
 
-    mng_cursor_filter(Cursor,['$or',
-        list([['end',    ['$gte',time(Stamp)]],
-              ['end',    ['$exists',bool(0)]]])]).
+```Prolog
+mng_cursor_filter(Cursor,['$or',
+    list([['end',    ['$gte',time(Stamp)]],
+          ['end',    ['$exists',bool(0)]]])]).
+```
 
 These expressions are generically mapped to bson terms. Hence,
 any command supported by your mongo server can be written in such
