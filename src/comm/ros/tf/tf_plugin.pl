@@ -66,7 +66,8 @@ lang_export:memorize_hook(Directory) :- tf_memorize(Directory).
 %
 is_at(Obj,[RefFrame,Pos,Rot]) +>
 	fact_scope(FS),
-	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) }.
+	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) },
+	notify(object_changed(Obj)).
 
 is_at(Obj,[RefFrame,Pos,Rot]) ?>
 	query_scope(QS),
