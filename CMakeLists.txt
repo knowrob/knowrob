@@ -9,8 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_python_setup()
 
 add_message_files(FILES
-    ObjectState.msg
-    ObjectStateArray.msg
     EventToken.msg)
 generate_messages(DEPENDENCIES geometry_msgs)
 
@@ -26,12 +24,6 @@ install_prolog_pack(delay
   URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
 
 catkin_package(CATKIN_DEPENDS rosprolog roscpp roslib)
-# FIXME
-# catkin_add_plunit(
-#   knowrob/computable
-#   knowrob/knowrob
-#   knowrob/temporal
-#   knowrob/wup_similarity)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
