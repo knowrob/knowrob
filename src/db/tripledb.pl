@@ -29,7 +29,7 @@
 % define some settings
 :- setting(path, atom, 'db/mongo/tripledb',
 		'Path to the module where the triple DB is implemented.').
-:- setting(whipe, atom, yes,
+:- setting(whipe, boolean, false,
 		'Toggle to configure whether the DB should initially by whiped.').
 
 %%
@@ -52,7 +52,7 @@
           tripledb_cache_invalidate/1 as itripledb_cache_invalidate
         ]).
 % whipe the triple DB initially if requested by the user.
-:- setting(tripledb:whipe,yes) -> itripledb_whipe ; true.
+:- setting(tripledb:whipe,true) -> itripledb_whipe ; true.
 
 %%
 :- dynamic default_graph/1.
