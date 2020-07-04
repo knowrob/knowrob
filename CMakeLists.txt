@@ -89,6 +89,15 @@ add_dependencies(tf_plugin
 	${${PROJECT_NAME}_EXPORTED_TARGETS}
 	${catkin_EXPORTED_TARGETS})
 
+add_library(marker_plugin SHARED
+	src/comm/ros/marker/publisher.cpp)
+target_link_libraries(marker_plugin
+	${SWIPL_LIBRARIES}
+	${catkin_LIBRARIES})
+add_dependencies(marker_plugin
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS})
+
 ##############
 ##############
 
