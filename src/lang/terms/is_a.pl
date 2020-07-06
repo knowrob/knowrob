@@ -183,7 +183,7 @@ test("ask and tell sub property of") :-
   assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 % expect instantiation error as is_a expects a ground variable
-test("ask A is a Person", [throws(error(instantiation_error, _))]) :-
-  is_a(A, dul:'Person').
+test("ask _ is a Person", [throws(error(instantiation_error, _))]) :-
+  is_a(_, dul:'Person').
 
 :- end_tripledb_tests(lang_is_a).
