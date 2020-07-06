@@ -12,6 +12,8 @@
 
 :- op(1000, xfx, user:is_a).
 
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_equal/2 ]).
 :- use_module(library('comm/notify'),
     [ notify/1 ]).
 :- use_module(library('model/RDFS'),
@@ -62,7 +64,9 @@ is_a(A,B) ?+>
 % @param Entity a named individual
 % @param Type the type of the entity
 %
-instance_of(A,B) ?> has_type(A,B).
+instance_of(A,B) ?>
+  has_type(A,B),
+  { \+ rdf_equal(B,owl:'NamedIndividual') }.
 
 instance_of(A,B) ?+>
   { is_list(B), ! },
@@ -105,6 +109,7 @@ instance_of_all(S,[First|Rest]) ?+>
 subclass_of(A,B) ?> { ground([A,B]), A=B, ! }.
 subclass_of(A,B) ?+>
   % avoid that class description terms are passed to tripledb lookup
+  { \+ compound(A) },
   { \+ compound(B) },
   triple(A,rdfs:subClassOf,B).
 
