@@ -7,7 +7,7 @@ setting(knowrob:plugins,
 
 %	Triple DB
 setting(tripledb:path,  'db/mongo/tripledb').
-setting(tripledb:whipe, yes).
+setting(tripledb:whipe, true).
 
 %	Mongo DB
 setting(mng_client:db_name, roslog).
