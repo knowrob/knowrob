@@ -84,16 +84,17 @@ test('tripledb tests: forget triple with various XSD DataTypes') :-
 
 % test for time scope
 test('tripledb tell triple with time scope'):-
-    time_scope(=(5), =(10), S2),
-    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
-    assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,10])),
-    assert_false(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
+    time_scope(=(5), =(10), T_S1),
+    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1),
+    assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1, _, _)),
+    time_scope(=(5), =(20), T_S2),
+    assert_false(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S2, _, _)).
 
 % test for time scope extension
 test('tripledb tell triple with time scope extension'):-
-    time_scope(=(5), =(20), S2),
-    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', S2),
-    assert_true(during(holds(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler'),  [5,20])).
+    time_scope(=(5), =(20), T_S1),
+    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1),
+    assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1, _, _)).
 
 :- end_tests('tripledb').
 
