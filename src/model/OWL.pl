@@ -164,7 +164,9 @@ is_data_property(Entity) ?+>
 % @param Class an OWL class
 % @param Descr Prolog term representing the class
 %
-has_description(Descr,Descr) ?> { compound(Descr), ! }.
+has_description(Descr,Descr0) ?>
+  { compound(Descr), ! },
+  { Descr0=Descr }.
 
 has_description(Class,_) ?>
   { \+ ground(Class), ! },
