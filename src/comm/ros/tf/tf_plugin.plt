@@ -5,7 +5,7 @@
 :- use_module(library('db/mongo/client')).
 
 :- use_module(library('lang/terms/is_at'), [ is_at/2 ]).
-:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
+:- use_module(library('semweb/rdf_db')).
 
 :- begin_tripledb_tests(
 		'tf_plugin',
