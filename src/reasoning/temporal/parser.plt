@@ -36,25 +36,25 @@ test_parser_run_asynch(Tokens,Expected) :-
   parser_stop(Parser,Actual),
   assert_unifies(Actual,Expected).
 
-test('action_parser(Placing)', [nondet]) :-
-  test_parser_run([
-    tok(0.0, -(test:'Touching'),        [test:'TestHand',test:'TestObject']),
-    tok(0.9, -(test:'Supporting'),      [test:'TestTable',test:'TestObject']),
-    tok(1.0, -(test:'ReleaseMotion'),   [test:'TestHand']),
-    tok(3.0, +(test:'Touching'),        [test:'TestHand',test:'TestObject']),
-    tok(4.0, +(test:'ReleaseMotion'),   [test:'TestHand'])
-    ],
-    [action(_,test:'Placing',_)]).
+%test('action_parser(Placing)', [nondet]) :-
+%  test_parser_run([
+%    tok(0.0, -(test:'Touching'),        [test:'TestHand',test:'TestObject']),
+%    tok(0.9, -(test:'Supporting'),      [test:'TestTable',test:'TestObject']),
+%    tok(1.0, -(test:'ReleaseMotion'),   [test:'TestHand']),
+%    tok(3.0, +(test:'Touching'),        [test:'TestHand',test:'TestObject']),
+%    tok(4.0, +(test:'ReleaseMotion'),   [test:'TestHand'])
+%    ],
+%    [action(_,test:'Placing',_)]).
 
-test('action_parser(asynch)', [nondet]) :-
-  test_parser_run_asynch([
-    tok(0.0, -(test:'Touching'),        [test:'TestHand',test:'TestObject']),
-    tok(0.9, -(test:'Supporting'),      [test:'TestTable',test:'TestObject']),
-    tok(1.0, -(test:'ReleaseMotion'),   [test:'TestHand']),
-    tok(3.0, +(test:'Touching'),        [test:'TestHand',test:'TestObject']),
-    tok(4.0, +(test:'ReleaseMotion'),   [test:'TestHand'])
-    ],
-    [action(_,test:'Placing',_)]).
+%test('action_parser(asynch)', [nondet]) :-
+%  test_parser_run_asynch([
+%    tok(0.0, -(test:'Touching'),        [test:'TestHand',test:'TestObject']),
+%    tok(0.9, -(test:'Supporting'),      [test:'TestTable',test:'TestObject']),
+%    tok(1.0, -(test:'ReleaseMotion'),   [test:'TestHand']),
+%    tok(3.0, +(test:'Touching'),        [test:'TestHand',test:'TestObject']),
+%    tok(4.0, +(test:'ReleaseMotion'),   [test:'TestHand'])
+%    ],
+%    [action(_,test:'Placing',_)]).
 
 %test('action_parser(PickingUp)', [nondet]) :-
 %  test_parser_run([
