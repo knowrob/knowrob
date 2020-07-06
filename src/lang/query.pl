@@ -59,9 +59,8 @@ ask(Statement,[Options,QScope]) :-
 	!,
 	ask_asynch(Statement,[Options1,QScope],CB).
 
-ask(Statements,QScope->FScope) :-
-  is_list(Statements),!,
-  ask_all_(Statements,QScope,_->FScope).
+ask([X|Xs],QScope->FScope) :-
+  ask_all_([X|Xs],QScope,_->FScope).
 
 ask(Statement,QScope->FScope) :-
   ground(Statement),!,
@@ -76,6 +75,9 @@ ask(Statement,Scope) :-
 
 ask1(triple(S,P,O),[Options,QScope]->FScope) :-
   !,
+  ( (atom(S);var(S)) -> true
+  ; (print_message(warning, invalid_input(atom,S,triple(S,P,O))),fail)
+  ),
   % tripledb retrieval
   tripledb_ask(S,P,O,QScope,FScope,Options).
 
