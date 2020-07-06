@@ -365,7 +365,8 @@ esg_join(ESG,[Tsk0,TskESG0],Joined) :-
   esg_pop(TskESG0,-(Tsk0),TskESG1),
   esg_pop(ESG,-(Tsk1),ESG1),
   ( ( Tsk0 = Tsk1 );
-    ( kb_type_of(Tsk0,TskType), kb_type_of(Tsk1,TskType) )
+    %% FIXME: this should not be here!
+    ( has_type(Tsk0,TskType), has_type(Tsk1,TskType) )
   ), !,
   % find a path to +(Act) in both ESGs
   % NOTE: the paths are represented as difference list to allow
