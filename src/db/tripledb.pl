@@ -144,7 +144,7 @@ tripledb_load(URL,Scope,Graph) :-
   tripledb_tell(Unresolved,rdf:type,string(owl:'Ontology'),US,[graph(Graph)]),
   % load data into triple DB
   print_message(informational,tripledb(load(URL_resolved))),
-  tripledb_load3t(Triples,Scope,Graph),
+  tripledb_load3t(Unresolved,Triples,Scope,Graph),
   % notify about asserted individuals
   forall(
     member(rdf(X,RDF_Type,OWL_NamedIndividual), Triples),
@@ -171,38 +171,44 @@ tripledb_load2(URL,Triples) :-
   load_rdf(URL, Triples,[blank_nodes(noshare)]).
 
 %%
-tripledb_load3(Triples,Scope,Graph) :-
-  findall(Converted, (
-    member(Triple0,Triples),
-    convert_rdf_(Triple0,Converted)
-  ), ConvertedTriples),
-  tripledb_bulk_tell(ConvertedTriples,Scope,[graph(Graph)]).
-
-tripledb_load3t(Triples,Scope,Graph) :-
+tripledb_load3t(IRI,Triples,Scope,Graph) :-
   % debug how long loading takes
   length(Triples,NumTriples),
   get_time(Time0),
-  tripledb_load3(Triples,Scope,Graph),
+  tripledb_load3(IRI,Triples,Scope,Graph),
   get_time(Time1),
   PerSec is NumTriples/(Time1-Time0),
   print_message(informational, tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
 
 %%
-tripledb_load_rdf_(Triple,Scope,Options) :-
-  convert_rdf_(Triple,rdf(S,P,O)) ->
-    tripledb_tell(S,P,O,Scope,Options);
-    true.
+tripledb_load3(IRI,Triples,Scope,Graph) :-
+  findall(Converted, (
+    member(Triple0,Triples),
+    convert_rdf_(IRI,Triple0,Converted)
+  ), ConvertedTriples),
+  tripledb_bulk_tell(ConvertedTriples,Scope,[graph(Graph)]).
 
 %%
-convert_rdf_(rdf(_,P,_),_) :-
+convert_rdf_(_,rdf(_,P,_),_) :-
   ( rdf_equal(P,rdfs:comment)
   ; rdf_equal(P,rdfs:seeAlso)
   ; rdf_equal(P,owl:versionInfo) ),!,
   fail.
 
-convert_rdf_(rdf(S,P,O),rdf(S,P,O1)) :-
-  convert_rdf_value_(O,O1),
+convert_rdf_(IRI,rdf(S,P,O),rdf(S1,P,O2)) :-
+  convert_blank_node_(IRI,S,S1),
+  convert_blank_node_(IRI,O,O1),
+  convert_rdf_value_(O1,O2),
   !.
+
+%%
+convert_blank_node_(IRI,Blank,Converted) :-
+	% avoid name clashes between blanks loaded from different ontologies
+	% by prepending the ontology prefix. 
+	( ( atom(Blank), atom_concat('_:',_,Blank) )
+	-> atomic_list_concat([IRI,'#',Blank],'',Converted)
+	;  Converted=Blank
+	).
 
 %%
 convert_rdf_value_(literal(type(Type,O)),O_typed) :-
