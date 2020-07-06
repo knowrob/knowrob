@@ -153,7 +153,7 @@ initialize_required_1_(Object,P,[Range,Card]) :-
 %%
 % FIXME
 reduced_cardinality_(Range0,List,_->0) :-
-  member([Range1,_],List),
+  member([holds(_,_,min(_,Range1)),_],List),
   Range1\=Range0,
   subclass_of(Range1,Range0),!.
 reduced_cardinality_(_,_,N->N).
