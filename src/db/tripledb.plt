@@ -96,5 +96,11 @@ test('tripledb tell triple with time scope extension'):-
     tripledb_tell(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1),
     assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'last_name', 'Spiendler', T_S1, _, _)).
 
+% test for unit
+test('tripledb tell triple with Unit'):-
+    assert_false(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
+    assert_true(tripledb_tell(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
+    assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))).
+
 :- end_tests('tripledb').
 
