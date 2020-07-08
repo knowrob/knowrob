@@ -2,9 +2,8 @@
 :- use_module(library('db/tripledb_tests')).
 :- begin_tests(
 		'tripledb',
-		[   setup(tripledb:set_default_graph(test))
-
-		%,cleanup(tripledb_tests:tripledb_cleanup)
+		[   setup(tripledb:set_default_graph(test)),
+		    cleanup(tripledb_tests:tripledb_cleanup)
 		]).
 
 :- use_module(library('db/tripledb')).
