@@ -294,10 +294,10 @@ swrl_match_instance(Iri,Name,NS) :-
   var(Iri), atom(Name), atom(NS),
   % try to use user-specified namespace to find the entity
   atom_concat(NS,Name,Iri),
-  once(ask(triple(Iri,rdf:type,_))),!.
+  once(triple(Iri,rdf:type,_)),!.
 
 swrl_match_instance(Iri,Name,_NS) :-
   var(Iri), atom(Name),
   rdf_current_prefix(_, Uri),
   rdf_split_url(Uri, Name, Iri),
-  once(ask(triple(Iri,rdf:type,_))).
+  once(triple(Iri,rdf:type,_)).
