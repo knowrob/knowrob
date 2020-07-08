@@ -44,3 +44,28 @@ memorize(Directory) :-
   tripledb_export(Directory),
   obda_export(Directory),
   forall(memorize_hook(Directory), true).
+
+     /*******************************
+     *          UNIT TESTS          *
+     *******************************/
+
+:- begin_tests('lang_export').
+
+get_path(Path):-
+  working_directory(X,X), string_concat(X, "test_lang_export", Path).
+
+test('stores knowledge in test_lang_export directory', 
+  [ setup(get_path(Path))
+  ]) :-
+  memorize(Path).
+
+test('wipe db') :-
+  tripledb_whipe.
+
+test('restores knowledge from test_lang_export directory', 
+  [ setup(get_path(Path)),
+    cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
+  ]) :-
+  remember(Path).
+
+:- end_tests('lang_export').
