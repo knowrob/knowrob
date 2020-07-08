@@ -34,6 +34,8 @@ can be casted as grammar for the parser.
     [ has_type/2 ]).
 :- use_module(library('model/EASE/WF'),
     [ workflow_step/2, plan_defines_task/2 ]).
+:- use_module(library('lang/query'),
+    [ triple/3 ]).
 :- use_module(library('lang/terms/is_a'),
     [ instance_of/2, subclass_of/2 ]).
 :- use_module(library('lang/terms/holds'),
@@ -453,7 +455,7 @@ action_([G0,S0,A0]->[G3,S2,A2],
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
-    holds(WF,ease:isPlanFor,Tsk_1),
+    once(triple(WF,ease:isPlanFor,Tsk_1)),
     esg_join(G0,[Tsk_1,G1],G2)
   },
   % assign roles of WF/ACT given bindings from the parent workflow
@@ -478,41 +480,41 @@ constituents_([G0,S0,A0]->Ctx2, WF, Tsk,[X|Xs]) -->
     concept_endpoint_(E,Endpoint),
     \+ endpoint_type(Endpoint,Tsk)
   },
-  constituent_([G0,S0,A0]->Ctx1, WF, Endpoint, [X]),
+  constituent_([G0,S0,A0]->Ctx1, WF, E, Endpoint, [X]),
   constituents_(Ctx1->Ctx2, WF, Tsk, Xs).
 
 %
-constituent_(Ctx0->Ctx1, WF, -(Tsk), [action(SubWF,Tsk,Term)]) -->
+constituent_(Ctx0->Ctx1, WF, _, -(Tsk), [action(SubWF,Tsk,Term)]) -->
   { endpoint_type_(Tsk,dul:'Task') },
   sub_action_(Ctx0->Ctx1, WF, action(SubWF,Tsk,Term)).
-constituent_(Ctx0->[G2,S1,A1], _WF, Endpoint, PhaseTerm) -->
+constituent_(Ctx0->[G2,S1,A1], _WF, E, Endpoint, PhaseTerm) -->
   { endpoint_type_(Endpoint,ease_state:'StateType') ;
     endpoint_type_(Endpoint,ease_proc:'ProcessType')
   },
-  phase_endpoint_(Ctx0->[G1,S1,A1], Endpoint, PhaseTerm),
+  phase_endpoint_(Ctx0->[G1,S1,A1], E, Endpoint, PhaseTerm),
   { esg_pop(G1,E,G2),
     concept_endpoint_(E,Endpoint)
   }.
 
 % parse a single typed phase endpoint.
 phase_endpoint_([G0,S0,A0]->[G0,S2,A1],
-    Endpoint, [phase(Time,Endpoint,Participants)]) -->
+    E, Endpoint, [phase(Time,Endpoint,Participants)]) -->
   % next token has matching endpoint and context
   [ Tok ],
   { Tok=tok(Time,Endpoint,Participants),
     update_states_(S0->S1,Tok),
-    bind_actors_(Endpoint,A0->A1,Participants),
+    bind_actors_(E,A0->A1,Participants),
     set_has_token_(S1->S2)
   }.
 
-phase_endpoint_([G0,S0,A0]->Ctx1,Endpoint,ParseTree) -->
+phase_endpoint_([G0,S0,A0]->Ctx1,E,Endpoint,ParseTree) -->
   % skip tokens of some other activity context
   [ Tok ],
   { Tok=tok(_Time,_IgnoredEndpoint,Participants),
     ignore_actors_(A0,S0,Participants),
     update_states_(S0->S1,Tok)
   },
-  phase_endpoint_([G0,S1,A0]->Ctx1,Endpoint,ParseTree).
+  phase_endpoint_([G0,S1,A0]->Ctx1,E,Endpoint,ParseTree).
 
 		 /*******************************
 		 *	Activity composition	*
@@ -530,8 +532,9 @@ activity_composer_run_(Parser) :-
   composer_add_all_(I0->I1,[T0|Rest]),
   composer_finalize_(Parser,I1,I2),
   composer_set_intermediate_(Parser,I2),
-  ( member(end_of_file,[T0|Rest]) -> true ;
-    activity_composer_run_(Parser)
+  ( member(end_of_file,[T0|Rest])
+  -> true
+  ;  activity_composer_run_(Parser)
   ).
 
 %%
@@ -829,9 +832,11 @@ apply_role_binding_(Plan, _Tsk,
     Bindings, [Obj,Roles0]->[Obj,Roles1]) :-
   findall(Role, (
     member(Role,Roles0) ;
-    ( holds(Plan,    ease_wf:hasBinding, Binding),
-      holds(Binding, ease_wf:hasBindingRole, X0),
-      holds(Binding, ease_wf:hasBindingFiller, X1),
+    ( triple(Plan, ease_wf:hasBinding, Binding),
+      once((
+        triple(Binding, ease_wf:hasBindingRole, X0),
+        triple(Binding, ease_wf:hasBindingFiller, X1)
+      )),
       ( member(X0,Roles0) -> Role = X1 ;
       ( member(X1,Roles0) -> Role = X0 ; fail )),
       % avoid duplicates
@@ -910,8 +915,8 @@ action_preceded_by__(Endpoints,S,A0->A1) :-
 %%
 concept_roles_(Concept,C_Roles_Set) :-
   findall(CR, (
-    holds(Concept,dul:isRelatedToConcept,CR),
-    instance_of(CR,dul:'Role')
+    triple(Concept,dul:isRelatedToConcept,CR),
+    once(instance_of(CR,dul:'Role'))
   ),C_Roles),
   list_to_set(C_Roles,C_Roles_Set).
 
