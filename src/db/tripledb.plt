@@ -2,8 +2,9 @@
 :- use_module(library('db/tripledb_tests')).
 :- begin_tests(
 		'tripledb',
-		[   setup(tripledb:set_default_graph(test)),
-		    cleanup(tripledb_tests:tripledb_cleanup)
+		[   setup(tripledb:set_default_graph(test))
+
+		%,cleanup(tripledb_tests:tripledb_cleanup)
 		]).
 
 :- use_module(library('db/tripledb')).
@@ -98,7 +99,8 @@ test('tripledb tell triple with time scope extension'):-
 
 % test for unit
 test('tripledb tell triple with Unit'):-
-    tripledb_tell(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter')),
+    assert_false(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
+    assert_true(tripledb_tell(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
     assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))).
 
 :- end_tests('tripledb').
