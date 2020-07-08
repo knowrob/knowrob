@@ -10,6 +10,7 @@
 % query terms
 :- use_module('./terms/temporal.pl').
 :- use_module('./terms/transitive.pl').
+:- use_module('./terms/triple.pl').
 :- use_module('./terms/holds.pl').
 :- use_module('./terms/is_a.pl').
 :- use_module('./terms/is_at.pl').

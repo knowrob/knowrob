@@ -60,47 +60,32 @@ ask(Statement,[Options,QScope]) :-
 	ask_asynch(Statement,[Options1,QScope],CB).
 
 ask([X|Xs],QScope->FScope) :-
-  ask_all_([X|Xs],QScope,_->FScope).
-
-ask(Statement,QScope->FScope) :-
-  ground(Statement),!,
-  % TODO only cut choicepoints in case fact scope is universal!
-  %universal_scope(US),
-  ask1(Statement,QScope->FScope),
-  %( scope_equal(FScope,US) -> ! ; true )
-  !.
+	ask_all_([X|Xs],QScope,_->FScope).
 
 ask(Statement,Scope) :-
-  ask1(Statement,Scope).
+	( ground(Statement)
+	-> once(ask1(Statement,Scope))
+	;  ask1(Statement,Scope)
+	).
 
-ask1(triple(S,P,O),[Options,QScope]->FScope) :-
-  !,
-  ( (atom(S);var(S)) -> true
-  ; (print_message(warning, invalid_input(atom,S,triple(S,P,O))),fail)
-  ),
-  % tripledb retrieval
-  tripledb_ask(S,P,O,QScope,FScope,Options).
-
+%%
 ask1(Statement,Scope) :-
-  % handle complex statements
-  ask2(Statement,Scope).
-
-ask1(Statement,Scope) :-
-  % try to infer the statement
-  reasoning_pool:infer(Statement,_,Scope).
+	( ask2(Statement,Scope)
+	; reasoning_pool:infer(Statement,_,Scope)
+	).
 
 %%
 ask_all_([],_QS,FS->FS) :-
-  !.
+	!.
 ask_all_([{X}|Xs],QS,FS1->FSn) :-
-  !,
-  call(X),
-  ask_all_(Xs,QS,FS1->FSn).
+	!,
+	call(X),
+	ask_all_(Xs,QS,FS1->FSn).
 ask_all_([X|Xs],QS,FS->FSn) :-
-  ask(X,QS->FS0),
-  % TODO: fact scope should restrict query scope for next query!
-  scope_intersect(FS,FS0,FS1),
-  ask_all_(Xs,QS,FS1->FSn).
+	ask(X,QS->FS0),
+	% TODO: fact scope should restrict query scope for next query!
+	scope_intersect(FS,FS0,FS1),
+	ask_all_(Xs,QS,FS1->FSn).
 
 %% tell(+Statement) is nondet.
 %
@@ -109,8 +94,8 @@ ask_all_([X|Xs],QS,FS->FSn) :-
 % @param Statement a statement term.
 %
 tell(Statement) :-
-  universal_scope(FScope),
-  tell(Statement,[[],FScope]).
+	universal_scope(FScope),
+	tell(Statement,[[],FScope]).
 
 %% tell(+Statement,+Scope) is det.
 %
@@ -127,27 +112,15 @@ tell(Statement) :-
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-tell(Statements,Scope) :-
-  is_list(Statements),!,
-  tell_all(Statements,Scope).
-
-tell(triple(S,P,O),[Options,QScope]) :-
-  !,
-  ( ask(is_description_of(O,Resource))
-  -> true
-  ;  Resource=O
-  ),
-  tripledb_tell(S,P,Resource,QScope,Options).
-
-tell(triple(S,P,O),QScope) :-
-  is_dict(QScope),!,
-  tell(triple(S,P,O),[[],QScope]).
+tell([X|Xs],Scope) :-
+	!,
+	tell_all([X|Xs],Scope).
 
 %%
 tell_all([],_) :- !.
 tell_all([X|Xs],QScope) :-
-  tell(X,QScope),
-  tell_all(Xs,QScope).
+	tell(X,QScope),
+	tell_all(Xs,QScope).
 
 %% update(+Statement) is nondet.
 %
