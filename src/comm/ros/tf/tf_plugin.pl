@@ -55,8 +55,8 @@ tf_mng_memorize(Directory) :-
 	mng_export_collection(tf,TFDir).
 
 %%
-lang_export:remember_hook(Directory) :- tf_remember(Directory).
-lang_export:memorize_hook(Directory) :- tf_memorize(Directory).
+lang_export:remember_hook(Directory) :- tf_mng_remember(Directory).
+lang_export:memorize_hook(Directory) :- tf_mng_memorize(Directory).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
