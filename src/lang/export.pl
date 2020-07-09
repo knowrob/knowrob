@@ -54,20 +54,13 @@ memorize(Directory) :-
 get_path(Path):-
   working_directory(X,X), string_concat(X, "test_lang_export", Path).
 
-test('stores knowledge in test_lang_export directory', 
-  [ fixme('tf_plugin not loaded properly'),
-    setup(get_path(Path))
+test('stores knowledge in test_lang_export directory and restores the same', 
+  [ 
+    setup(get_path(Path)),
+    cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
   ]) :-
-  memorize(Path).
-
-test('wipe db') :-
-  tripledb_whipe.
-
-test('restores knowledge from test_lang_export directory', 
-  [ fixme('tf_plugin not loaded properly'),
-  setup(get_path(Path)),
-  cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
-  ]) :-
-  remember(Path).
+  assert_true(memorize(Path)),
+  assert_true(tripledb_whipe),
+  assert_true(remember(Path)).
 
 :- end_tests('lang_export').
