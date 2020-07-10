@@ -27,10 +27,10 @@
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
 % define some settings
-:- setting(path, atom, 'db/mongo/tripledb',
+:- setting(path, atom, 'db/mongo/tripledb/plugin',
 		'Path to the module where the triple DB is implemented.').
-:- setting(whipe, boolean, false,
-		'Toggle to configure whether the DB should initially by whiped.').
+:- setting(drop, boolean, false,
+		'Toggle to configure whether the DB should initially by erased.').
 
 %%
 % Get path to module that implements the tripledb
@@ -42,7 +42,7 @@
         [ tripledb_init/0             as itripledb_init,
           tripledb_import/1           as itripledb_import,
           tripledb_export/1           as itripledb_export,
-          tripledb_whipe/0            as itripledb_whipe,
+          tripledb_drop/0             as itripledb_drop,
           tripledb_tell/5             as itripledb_tell,
           tripledb_bulk_tell/3        as itripledb_bulk_tell,
           tripledb_ask/6              as itripledb_ask,
@@ -51,8 +51,8 @@
           tripledb_cache_add/3        as itripledb_cache_add,
           tripledb_cache_invalidate/1 as itripledb_cache_invalidate
         ]).
-% whipe the triple DB initially if requested by the user.
-:- setting(tripledb:whipe,true) -> itripledb_whipe ; true.
+% drop the triple DB initially if requested by the user.
+:- setting(tripledb:drop,true) -> itripledb_drop ; true.
 
 %%
 :- dynamic default_graph/1.
@@ -189,12 +189,6 @@ tripledb_load3(IRI,Triples,Scope,Graph) :-
   tripledb_bulk_tell(ConvertedTriples,Scope,[graph(Graph)]).
 
 %%
-convert_rdf_(_,rdf(_,P,_),_) :-
-  ( rdf_equal(P,rdfs:comment)
-  ; rdf_equal(P,rdfs:seeAlso)
-  ; rdf_equal(P,owl:versionInfo) ),!,
-  fail.
-
 convert_rdf_(IRI,rdf(S,P,O),rdf(S1,P,O2)) :-
   convert_blank_node_(IRI,S,S1),
   convert_blank_node_(IRI,O,O1),
@@ -241,8 +235,8 @@ tripledb_export(Directory) :-
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_whipe :-
-  itripledb_whipe.
+tripledb_drop :-
+  itripledb_drop.
 
 %% 
 % @implements 'db/itripledb'

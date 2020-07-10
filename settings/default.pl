@@ -6,8 +6,8 @@ setting(knowrob:plugins,
 	]).
 
 %	Triple DB
-setting(tripledb:path,  'db/mongo/tripledb').
-setting(tripledb:whipe, true).
+setting(tripledb:path, 'db/mongo/tripledb/plugin').
+setting(tripledb:drop, true).
 
 %	Mongo DB
 setting(mng_client:db_name, roslog).
