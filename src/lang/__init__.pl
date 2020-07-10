@@ -3,8 +3,7 @@
 :- use_module('./scopes/temporal.pl').
 
 :- use_module('./computable.pl').
-% TODO: re-enable designators as query language extension
-%:- use_module('./designator.pl').
+:- use_module('./designator.pl').
 :- use_module('./export.pl').
 
 % query terms
