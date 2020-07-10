@@ -165,9 +165,13 @@ triple_tell1(S,P,MngValue,Unit,Scope,Graph,Options) :-
 
 %%
 %
-triple_ask(Subject,Property,ValueQuery,QScope,FScope,Options) :-
+triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 	%% read options 
 	option(graph(Graph), Options, user),
+	%%
+	strip_variable(QSubject,Subject),
+	strip_variable(QProperty,Property),
+	strip_variable(QValue,ValueQuery),
 	%% parse query value
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
 	setup_call_cleanup(
@@ -178,7 +182,7 @@ triple_ask(Subject,Property,ValueQuery,QScope,FScope,Options) :-
 		),
 		% call: find matching document
 		triple_query_unify_(Cursor,
-			Subject,Property,ValueQuery,
+			QSubject,QProperty,QValue,
 			FScope,Options
 		),
 		% cleanup: destroy cursor again
@@ -315,22 +319,46 @@ filter_scope1_(Scope,[Key,Filter]) :-
 	get_scope_query_(Scope,Key,Filter).
 
 %%
-triple_query_unify_(Cursor,Subject,Property,ValueQuery,FScope,Options) :-
+triple_query_unify_(Cursor,QSubject,QProperty,QValue,FScope,Options) :-
 	mng_cursor_materialize(Cursor,Doc),
-	( ground(Subject)    -> true ; mng_get_dict('s',Doc,string(Subject)) ),
-	( ground(Property)   -> true ; triple_property_unify1_(Doc,Property,Options) ),
-	( ground(ValueQuery) -> true ; triple_query_unify1_(Doc,ValueQuery,Options) ),
+	triple_query_unify_s(Doc,QSubject),
+	triple_query_unify_p(Doc,QProperty,Options),
+	triple_query_unify_o(Doc,QValue,Options),
 	% get the fact scope
 	mng_get_dict('scope',Doc,FScope).
 
-triple_property_unify1_(Doc,Property,Options) :-
+%%
+triple_query_unify_s(Doc,QSubject) :-
+	get_query_variable(QSubject,Subject),
+	( ground(Subject)
+	-> true
+	;  mng_get_dict('s',Doc,string(Subject))
+	).
+
+%%
+triple_query_unify_p(Doc,QProperty,Options) :-
+	get_query_variable(QProperty,Property),
+	( ground(Property)
+	-> true
+	;  triple_query_unify_p1(Doc,Property,Options)
+	).
+
+triple_query_unify_p1(Doc,Property,Options) :-
 	((	option(include_parents(true),Options),
 		mng_get_dict('p*',Doc,array(Properties)) ) 
 	-> member(Property,Properties)
     ;  mng_get_dict('p',Doc,Property)
     ).
 
-triple_query_unify1_(Doc,ValueQuery,Options) :-
+%%
+triple_query_unify_o(Doc,QValue,Options) :-
+	get_query_variable(QValue,ValueQuery),
+	( ground(ValueQuery)
+	-> true
+	;  triple_query_unify_o1(Doc,ValueQuery,Options)
+	).
+
+triple_query_unify_o1(Doc,ValueQuery,Options) :-
 	((	option(include_parents(true),Options),
 		mng_get_dict('o*',Doc,array(Values)) )
 	-> member(Value,Values)
@@ -346,6 +374,12 @@ triple_query_unify1_(Doc,ValueQuery,Options) :-
 	;  strip_type_(Value,_,Value3)
 	).
 
+%%
+get_query_variable(QValue,Var) :-
+	( var(QValue) -> Var=QValue
+	; QValue=(_->Var) -> true
+	; Var=QValue
+	).
 		 /*******************************
 		 *	   .....              	*
 		 *******************************/
@@ -357,7 +391,7 @@ mng_query_value_(Query,Operator,Value,Unit) :-
 	operator_mapping_(Operator0,Operator),!,
 	% get unit if any
 	strip_unit_(Query0,Unit,Query1),!,
-	% finally get value
+	% get the value type
 	strip_type_(Query1,Type0,Value0),
 	type_mapping_(Type0,MngType),
 	Value=..[MngType,Value0],
@@ -471,6 +505,10 @@ strip_type_(X,bool,X) :- ground(X), (X=true;X=false), !.
 % FIXME var(X) always ends in string, but holds takes care of setting type
 %                  better do not require type in query!
 strip_type_(X,string,X).
+
+%%
+strip_variable(X->_,X) :- nonvar(X), !.
+strip_variable(X,X) :- !.
   
 %%
 type_mapping_(float,  double) :- !.
