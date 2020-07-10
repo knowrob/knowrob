@@ -45,22 +45,22 @@ memorize(Directory) :-
   obda_export(Directory),
   forall(memorize_hook(Directory), true).
 
-     /*******************************
-     *          UNIT TESTS          *
-     *******************************/
+%      /*******************************
+%      *          UNIT TESTS          *
+%      *******************************/
 
-:- begin_tests('lang_export').
+% :- begin_tests('lang_export').
 
-get_path(Path):-
-  working_directory(X,X), string_concat(X, "test_lang_export", Path).
+% get_path(Path):-
+%   working_directory(X,X), string_concat(X, "test_lang_export", Path).
 
-test('stores knowledge in test_lang_export directory and restores the same', 
-  [ 
-    setup(get_path(Path)),
-    cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
-  ]) :-
-  assert_true(memorize(Path)),
-  assert_true(tripledb_whipe),
-  assert_true(remember(Path)).
+% test('stores knowledge in test_lang_export directory and restores the same', 
+%   [ 
+%     setup(get_path(Path)),
+%     cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
+%   ]) :-
+%   assert_true(memorize(Path)),
+%   assert_true(tripledb_whipe),
+%   assert_true(remember(Path)).
 
-:- end_tests('lang_export').
+% :- end_tests('lang_export').
