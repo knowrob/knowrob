@@ -222,7 +222,7 @@ data_base_type_(_Property,false,bool) :- !.
 test('ask triples holds') :-
   assert_true(holds(test:'Ernest', test:'hasSibling', test:'Fred')).
 
-test('ask holds with arity 1', [ fixme('rdf term expansion is not working as expected while using namespace with ":"') ]) :-
+test('ask holds with arity 1', [ blocked('rdf term expansion is not working as expected while using namespace with ":"') ]) :-
   assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).
 
 test('ask holds using operators >, <, = a value in float') :-
