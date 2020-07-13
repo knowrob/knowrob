@@ -10,6 +10,139 @@
 #include <sstream>
 #include <iostream>
 
+static bool bson_visit_double(const bson_iter_t *iter, const char *key, double v_double, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("double", v_double))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	char string[BSON_DECIMAL128_STRING];
+	bson_decimal128_to_string(v_decimal128,string);
+	// TODO can be done better?
+	if(strcmp(string, "Infinity")==0 || strcmp(string, "NaN")==0) {
+		out_list->append(PlCompound("-", PlTermv(PlTerm(key),
+				PlCompound("double", PlTerm(string)))));
+	}
+	else {
+		out_list->append(PlCompound("-", PlTermv(PlTerm(key),
+				PlCompound("double", PlTerm(atof(string))))));
+	}
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_int32(const bson_iter_t *iter, const char *key, int32_t v_int32, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("int", (long)v_int32))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_int64(const bson_iter_t *iter, const char *key, int64_t v_int64, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("int", (long)v_int64))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_oid(const bson_iter_t *iter, const char *key, const bson_oid_t *v_oid, void *data)
+{
+	char str[25];
+	bson_oid_to_string (v_oid, str);
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-", PlTermv(PlTerm(key),
+			PlCompound("id", PlTerm(str)))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_bool(const bson_iter_t *iter, const char *key, bool v_bool, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("bool", (long)v_bool))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_utf8_len, const char *v_utf8, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-", PlTermv(PlTerm(key),
+			PlCompound("string", PlTerm(v_utf8)))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64_t msec_since_epoch, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	double sec_since_epoch = ((double)msec_since_epoch)/1000.0;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("double", sec_since_epoch))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bson_t *v_array, void *data)
+{
+	PlTermv av(1);
+	PlTail pl_array(av[0]);
+	bson_iter_t array_iter;
+	if(bson_iter_init(&array_iter, v_array)) {
+		while(bson_iter_next(&array_iter)) {
+			// TODO: support other array types
+			pl_array.append(PlCompound("string",
+					PlTerm(bson_iter_utf8(&array_iter,NULL))));
+		}
+	}
+	pl_array.close();
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), PlCompound("array", av[0]))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bool bson_visit_document(const bson_iter_t *iter, const char *key, const bson_t *v_document, void *data)
+{
+	PlTail *out_list = (PlTail*)data;
+	out_list->append(PlCompound("-",
+			PlTermv(PlTerm(key), bson_to_term(v_document))));
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
+static bson_visitor_t get_bson_visitor()
+{
+	bson_visitor_t visitor = {0};
+	visitor.visit_double     = bson_visit_double;
+	visitor.visit_decimal128 = bson_visit_decimal128;
+	visitor.visit_int32      = bson_visit_int32;
+	visitor.visit_int64      = bson_visit_int64;
+	visitor.visit_bool       = bson_visit_bool;
+	visitor.visit_oid        = bson_visit_oid;
+	visitor.visit_utf8       = bson_visit_utf8;
+//	visitor.visit_timestamp  = bson_visit_timestamp;
+	visitor.visit_date_time  = bson_visit_date_time;
+	visitor.visit_array      = bson_visit_array;
+	visitor.visit_document   = bson_visit_document;
+	return visitor;
+}
+
+PlTerm bson_to_term(const bson_t *doc)
+{
+	static bson_visitor_t visitor = get_bson_visitor();
+	bson_iter_t iter;
+	PlTerm term;
+	PlTail out_list(term);
+	if (bson_iter_init(&iter, doc)) {
+		bson_iter_visit_all(&iter, &visitor, &out_list);
+	}
+	out_list.close();
+	return term;
+}
+
 bool get_boolean_(const PlTerm &atomic_value)
 {
 	std::string val(atomic_value.name());
