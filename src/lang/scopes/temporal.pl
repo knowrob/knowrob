@@ -30,12 +30,16 @@ time_scope_data(Scope,[Since,Until]) :-
 	!.
 
 %%
-time_scope_data_(Key,Dict,Val) :-
+time_scope_data_(Key,Dict,FloatValue) :-
 	get_dict(Key,Dict,Val0),!,
 	strip_operator_(Val0,Op,double(Val1)),
 	( Op='='
 	-> Val=Val1
 	;  strip_operator_(Val,Op,Val1)
+	),
+	( integer(Val)
+	-> FloatValue is float(Val)
+	;  FloatValue = Val
 	).
 
 time_scope_data_(_,_,_).
