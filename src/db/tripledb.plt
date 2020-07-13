@@ -64,7 +64,7 @@ test('tripledb tests: tell triples with various XSD DataTypes') :-
 
 % test for xsd:integer, Str, float
 test('tripledb tests: ask triples with various XSD DataTypes') :-
-    assert_true(forall(tripledb_ask(_, test_datatype:'studentId', X), integer(X))),
+    assert_true(forall(tripledb_ask(_, test_datatype:'studentId', X), number(X))),
     assert_true(forall(tripledb_ask(_, test_datatype:'first_name', Y), atom(Y))),
     assert_true(forall(tripledb_ask(_, test_datatype:'last_name', Z), atom(Z))),
     assert_true(forall(tripledb_ask(_, test_datatype:'height', H), float(H))).
@@ -75,8 +75,16 @@ test('tripledb_tell_special_character_umlaut', [ fixme('fix encoding for special
 	tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Müller').
 
 % test for list as an argument
-test('tripledb_tell_list_as_an_argument', [ fixme('provide support for list as an argument') ]) :-
-	tripledb_tell(test_datatype:'Lecturer3', test_datatype:'hasHairColor', '[255,99,71]').
+test('tripledb_tell_list_as_an_argument') :-
+	DataTerm=[255,99,71],
+	assert_true(tripledb_tell(test_datatype:'Lecturer3',
+		test_datatype:'hasHairColor', term(DataTerm))),
+	assert_true(tripledb_ask(test_datatype:'Lecturer3',
+		test_datatype:'hasHairColor', term(DataTerm))),
+	tripledb_ask(test_datatype:'Lecturer3',
+		test_datatype:'hasHairColor', term(Actual)),
+	assert_true(is_list(Actual)),
+	assert_equals(Actual,DataTerm).
 
 % remove the triple at the end of test
 test('tripledb tests: forget triple with various XSD DataTypes') :-
