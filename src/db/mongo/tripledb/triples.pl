@@ -83,7 +83,7 @@ triple_search_index_(['s','o*','p']).
 %
 append_scope_index_(IndexKeys,IndexKeys).
 %append_scope_index_(IndexKeys,IndexKeys0) :-
-%  append(IndexKeys, ['scope.time.since', 'scope.time.until'],  IndexKeys0).
+%	append(IndexKeys, ['scope.time.since', 'scope.time.until'],  IndexKeys0).
 
 %%
 %
@@ -321,11 +321,12 @@ filter_scope1_(Scope,[Key,Filter]) :-
 %%
 triple_query_unify_(Cursor,QSubject,QProperty,QValue,FScope,Options) :-
 	mng_cursor_materialize(Cursor,Doc),
-	triple_query_unify_s(Doc,QSubject),
-	triple_query_unify_p(Doc,QProperty,Options),
-	triple_query_unify_o(Doc,QValue,Options),
-	% get the fact scope
-	mng_get_dict('scope',Doc,FScope).
+	once((
+		triple_query_unify_s(Doc,QSubject),
+		triple_query_unify_p(Doc,QProperty,Options),
+		triple_query_unify_o(Doc,QValue,Options),
+		mng_get_dict('scope',Doc,FScope)
+	)).
 
 %%
 triple_query_unify_s(Doc,QSubject) :-
@@ -333,7 +334,8 @@ triple_query_unify_s(Doc,QSubject) :-
 	( ground(Subject)
 	-> true
 	;  mng_get_dict('s',Doc,string(Subject))
-	).
+	),
+	!.
 
 %%
 triple_query_unify_p(Doc,QProperty,Options) :-
@@ -341,7 +343,8 @@ triple_query_unify_p(Doc,QProperty,Options) :-
 	( ground(Property)
 	-> true
 	;  triple_query_unify_p1(Doc,Property,Options)
-	).
+	),
+	!.
 
 triple_query_unify_p1(Doc,Property,Options) :-
 	((	option(include_parents(true),Options),
@@ -356,7 +359,8 @@ triple_query_unify_o(Doc,QValue,Options) :-
 	( ground(ValueQuery)
 	-> true
 	;  triple_query_unify_o1(Doc,ValueQuery,Options)
-	).
+	),
+	!.
 
 triple_query_unify_o1(Doc,ValueQuery,Options) :-
 	((	option(include_parents(true),Options),
@@ -366,13 +370,16 @@ triple_query_unify_o1(Doc,ValueQuery,Options) :-
 	),
 	once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
 	%%
-	strip_operator_(ValueQuery,_,Value1),
+	once(strip_operator_(ValueQuery,_,Value1)),
 	strip_unit_(Value1,Unit,Value2),
 	strip_type_(Value2,_,Value3),
-	( ground(Value3)
-	-> true
-	;  strip_type_(Value,_,Value3)
-	).
+	( ground(Value3) -> true ; (
+		strip_type_(Value,_,AtomicValue),
+		( (nonvar(Value2),Value2=term(_))
+		-> term_to_atom(Value3,AtomicValue)
+		;  Value3=AtomicValue
+		)
+	)).
 
 %%
 get_query_variable(QValue,Var) :-
@@ -394,7 +401,11 @@ mng_query_value_(Query,Operator,Value,Unit) :-
 	% get the value type
 	strip_type_(Query1,Type0,Value0),
 	type_mapping_(Type0,MngType),
-	Value=..[MngType,Value0],
+	(	(Type0=term,compound(Value0))
+	->	term_to_atom(Value0,Value1)
+	;	Value1=Value0
+	),
+	Value=..[MngType,Value1],
 	!.
 
 % TODO: better use units as replacement of type.
@@ -466,16 +477,19 @@ get_scope_query2_(Query,'',[Operator,Value]) :-
 	mng_query_value_(Query,Operator,Value,_Unit).
 
 %%
-get_scope_document_(Dict,List) :-
+:- table get_scope_document_/2.
+get_scope_document_(Dict,List) :- get_scope_document_1(Dict,List).
+
+get_scope_document_1(Dict,List) :-
 	is_dict(Dict),
 	!,
 	findall([K,V],
 		(	get_dict(K,Dict,V0),
-			get_scope_document_(V0,V)
+			get_scope_document_1(V0,V)
 		),
 		List
 	).
-get_scope_document_(X,X).
+get_scope_document_1(X,X).
 
 %%
 operator_mapping_('=', '$eq').
@@ -485,13 +499,13 @@ operator_mapping_('>', '$gt').
 operator_mapping_('<', '$lt').
 
 %%
-strip_operator_(    X, =,X) :- var(X),!.
-strip_operator_( =(X), =,X) :- !.
-strip_operator_(>=(X),>=,X) :- !.
-strip_operator_(=<(X),=<,X) :- !.
-strip_operator_( <(X), <,X) :- !.
-strip_operator_( >(X), >,X) :- !.
-strip_operator_(    X, =,X) :- !.
+strip_operator_(    X, =,X) :- var(X).
+strip_operator_( =(X), =,X).
+strip_operator_(>=(X),>=,X).
+strip_operator_(=<(X),=<,X).
+strip_operator_( <(X), <,X).
+strip_operator_( >(X), >,X).
+strip_operator_(    X, =,X).
 
 %%
 strip_type_(Term,Type,X) :-
@@ -516,6 +530,7 @@ type_mapping_(number, double) :- !.
 type_mapping_(long,   int)    :- !.
 type_mapping_(short,  int)    :- !.
 type_mapping_(byte,   int)    :- !.
+type_mapping_(term,   string) :- !.
 type_mapping_(X,      X)      :- !.
 
 		 /*******************************
