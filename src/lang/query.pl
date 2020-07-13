@@ -60,6 +60,7 @@ ask(Statement,[Options,QScope]) :-
 	ask_asynch(Statement,[Options1,QScope],CB).
 
 ask([X|Xs],QScope->FScope) :-
+	!,
 	ask_all_([X|Xs],QScope,_->FScope).
 
 ask(Statement,Scope) :-
