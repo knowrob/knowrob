@@ -48,16 +48,16 @@ void MongoCursor::limit(unsigned int limit)
 
 void MongoCursor::ascending(const char *key)
 {
-	bson_t *doc = BCON_NEW("sort", "{", key, BCON_INT32(1), "}");
+	static bson_t *doc = BCON_NEW("sort", "{", key, BCON_INT32(1), "}");
 	bson_concat(opts_,doc);
-	bson_destroy(doc);
+//	bson_destroy(doc);
 }
 
 void MongoCursor::descending(const char *key)
 {
-	bson_t *doc = BCON_NEW("sort", "{", key, BCON_INT32(-1), "}");
+	static bson_t *doc = BCON_NEW("sort", "{", key, BCON_INT32(-1), "}");
 	bson_concat(opts_,doc);
-	bson_destroy(doc);
+//	bson_destroy(doc);
 }
 
 void MongoCursor::filter(const PlTerm &query_term)
