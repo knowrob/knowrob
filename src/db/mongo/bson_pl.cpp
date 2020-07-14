@@ -9,28 +9,34 @@
 #include "knowrob/db/mongo/bson_pl.h"
 #include <sstream>
 #include <iostream>
+#include <charconv>
 
 static bool bson_visit_double(const bson_iter_t *iter, const char *key, double v_double, void *data)
 {
 	PlTail *out_list = (PlTail*)data;
 	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("double", v_double))));
+			PlTermv(PlTerm(key), PlCompound("double", PlTerm(v_double)))));
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
 {
 	PlTail *out_list = (PlTail*)data;
-	char string[BSON_DECIMAL128_STRING];
-	bson_decimal128_to_string(v_decimal128,string);
-	// TODO can be done better?
-	if(strcmp(string, "Infinity")==0 || strcmp(string, "NaN")==0) {
-		out_list->append(PlCompound("-", PlTermv(PlTerm(key),
-				PlCompound("double", PlTerm(string)))));
+	// positive infinity
+	if(v_decimal128->high == 0x7800000000000000) {
+		out_list->append(PlCompound("-", PlTermv(PlTerm(key),PlCompound("double", PlTerm("Infinity")))));
+	}
+	// negative infinity
+	else if(v_decimal128->high == 0xf800000000000000) {
+		out_list->append(PlCompound("-", PlTermv(PlTerm(key),PlCompound("double", PlTerm("-Infinity")))));
 	}
 	else {
+		char buffer[BSON_DECIMAL128_STRING];
+		bson_decimal128_to_string(v_decimal128,buffer);
+		setlocale(LC_NUMERIC,"C");
 		out_list->append(PlCompound("-", PlTermv(PlTerm(key),
-				PlCompound("double", PlTerm(atof(string))))));
+				PlCompound("double", PlTerm(atof(buffer))))));
+		setlocale(LC_NUMERIC,"");
 	}
 	return false; // NOTE: returning true stops further iteration of the document
 }
@@ -39,7 +45,7 @@ static bool bson_visit_int32(const bson_iter_t *iter, const char *key, int32_t v
 {
 	PlTail *out_list = (PlTail*)data;
 	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("int", (long)v_int32))));
+			PlTermv(PlTerm(key), PlCompound("int", PlTerm((long)v_int32)))));
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
@@ -47,7 +53,7 @@ static bool bson_visit_int64(const bson_iter_t *iter, const char *key, int64_t v
 {
 	PlTail *out_list = (PlTail*)data;
 	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("int", (long)v_int64))));
+			PlTermv(PlTerm(key), PlCompound("int", PlTerm((long)v_int64)))));
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
@@ -82,7 +88,7 @@ static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64
 	PlTail *out_list = (PlTail*)data;
 	double sec_since_epoch = ((double)msec_since_epoch)/1000.0;
 	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("double", sec_since_epoch))));
+			PlTermv(PlTerm(key), PlCompound("double", PlTerm(sec_since_epoch)))));
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
