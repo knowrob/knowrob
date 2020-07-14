@@ -11,84 +11,78 @@
 #include <iostream>
 #include <charconv>
 
+#define APPEND_BSON_PL_PAIR(list,key,value,type) ((PlTail*)list)->append(PlCompound("-", \
+		PlTermv(PlTerm(key), PlCompound(type, PlTerm(value)))))
+
+static PlAtom ATOM_Pos_Infinity("Infinity");
+static PlAtom ATOM_Neg_Infinity("-Infinity");
+
 static bool bson_visit_double(const bson_iter_t *iter, const char *key, double v_double, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("double", PlTerm(v_double)))));
+	APPEND_BSON_PL_PAIR(data,key,v_double,"double");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
 {
 	PlTail *out_list = (PlTail*)data;
+	PlTermv v_pl(2);
+	v_pl[0] = PlTerm(key);
 	// positive infinity
 	if(v_decimal128->high == 0x7800000000000000) {
-		out_list->append(PlCompound("-", PlTermv(PlTerm(key),PlCompound("double", PlTerm("Infinity")))));
+		v_pl[1] = PlCompound("double", PlTerm(ATOM_Pos_Infinity));
 	}
 	// negative infinity
 	else if(v_decimal128->high == 0xf800000000000000) {
-		out_list->append(PlCompound("-", PlTermv(PlTerm(key),PlCompound("double", PlTerm("-Infinity")))));
+		v_pl[1] = PlCompound("double", PlTerm(ATOM_Neg_Infinity));
 	}
 	else {
 		char buffer[BSON_DECIMAL128_STRING];
 		bson_decimal128_to_string(v_decimal128,buffer);
 		setlocale(LC_NUMERIC,"C");
-		out_list->append(PlCompound("-", PlTermv(PlTerm(key),
-				PlCompound("double", PlTerm(atof(buffer))))));
+		v_pl[1] = PlCompound("double", PlTerm(atof(buffer)));
 		setlocale(LC_NUMERIC,"");
 	}
+	out_list->append(PlCompound("-",v_pl));
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_int32(const bson_iter_t *iter, const char *key, int32_t v_int32, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("int", PlTerm((long)v_int32)))));
+	APPEND_BSON_PL_PAIR(data,key,(long)v_int32,"int");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_int64(const bson_iter_t *iter, const char *key, int64_t v_int64, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("int", PlTerm((long)v_int64)))));
+	APPEND_BSON_PL_PAIR(data,key,(long)v_int64,"int");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_oid(const bson_iter_t *iter, const char *key, const bson_oid_t *v_oid, void *data)
 {
 	char str[25];
-	bson_oid_to_string (v_oid, str);
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-", PlTermv(PlTerm(key),
-			PlCompound("id", PlTerm(str)))));
+	bson_oid_to_string(v_oid, str);
+	APPEND_BSON_PL_PAIR(data,key,str,"id");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_bool(const bson_iter_t *iter, const char *key, bool v_bool, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("bool", (long)v_bool))));
+	APPEND_BSON_PL_PAIR(data,key,(long)v_bool,"bool");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_utf8_len, const char *v_utf8, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-", PlTermv(PlTerm(key),
-			PlCompound("string", PlTerm(v_utf8)))));
+	APPEND_BSON_PL_PAIR(data,key,v_utf8,"string");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64_t msec_since_epoch, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
 	double sec_since_epoch = ((double)msec_since_epoch)/1000.0;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("double", PlTerm(sec_since_epoch)))));
+	APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"double");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
@@ -105,9 +99,7 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 		}
 	}
 	pl_array.close();
-	PlTail *out_list = (PlTail*)data;
-	out_list->append(PlCompound("-",
-			PlTermv(PlTerm(key), PlCompound("array", av[0]))));
+	APPEND_BSON_PL_PAIR(data,key,av[0],"array");
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
