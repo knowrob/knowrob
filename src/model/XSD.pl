@@ -30,16 +30,17 @@ xsd_data_type(DataType) :-
 %
 % @param DataType a XSD data type
 %
-xsd_data_basetype(DataType,number) :-
+xsd_data_basetype(DataType,integer) :-
   xsd_numeric_type(DataType).
-xsd_data_basetype(xsd:double,number).
-xsd_data_basetype(xsd:float,number).
+
+xsd_data_basetype(xsd:double,double).
+xsd_data_basetype(xsd:float,double).
 
 xsd_data_basetype(xsd:boolean,bool).
 
 xsd_data_basetype(DataType,string) :-
   xsd_string_type(DataType).
-xsd_data_basetype(xsd:anyURI,number).
+xsd_data_basetype(xsd:anyURI,string).
 
 xsd_data_basetype(DataType,date) :-
   xsd_date_type(DataType).
