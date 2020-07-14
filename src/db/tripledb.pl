@@ -205,9 +205,13 @@ convert_blank_node_(IRI,Blank,Converted) :-
 	).
 
 %%
-convert_rdf_value_(literal(type(Type,O)),O_typed) :-
+convert_rdf_value_(literal(type(Type,V_atom)),O_typed) :-
   xsd_data_basetype(Type,TypeKey),
-  O_typed=..[TypeKey,O].
+  ( TypeKey=integer -> atom_number(V_atom,V_typed)
+  ; TypeKey=double  -> atom_number(V_atom,V_typed)
+  ; V_typed=V_atom
+  ),
+  O_typed=..[TypeKey,V_typed].
 convert_rdf_value_(literal(O),string(O)).
 convert_rdf_value_(O,string(O)).
 
