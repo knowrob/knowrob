@@ -163,7 +163,7 @@ test('Lea hasNumber during X') :-
 		Xs
 	),
 	assert_true(length(Xs,1)),
-	assert_equals(Xs,[[10,34]]).
+	assert_equals(Xs,[[10.0,34.0]]).
 
 test('Lea not hasNumber during') :-
 	assert_false(holds(test:'Lea', test:hasNumber, '+999999999') during [5,20]),
