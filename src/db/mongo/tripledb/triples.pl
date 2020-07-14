@@ -321,12 +321,10 @@ filter_scope1_(Scope,[Key,Filter]) :-
 %%
 triple_query_unify_(Cursor,QSubject,QProperty,QValue,FScope,Options) :-
 	mng_cursor_materialize(Cursor,Doc),
-	once((
-		triple_query_unify_s(Doc,QSubject),
-		triple_query_unify_p(Doc,QProperty,Options),
-		triple_query_unify_o(Doc,QValue,Options),
-		mng_get_dict('scope',Doc,FScope)
-	)).
+	triple_query_unify_s(Doc,QSubject),
+	triple_query_unify_p(Doc,QProperty,Options),
+	triple_query_unify_o(Doc,QValue,Options),
+	mng_get_dict('scope',Doc,FScope).
 
 %%
 triple_query_unify_s(Doc,QSubject) :-
@@ -343,8 +341,7 @@ triple_query_unify_p(Doc,QProperty,Options) :-
 	( ground(Property)
 	-> true
 	;  triple_query_unify_p1(Doc,Property,Options)
-	),
-	!.
+	).
 
 triple_query_unify_p1(Doc,Property,Options) :-
 	((	option(include_parents(true),Options),
@@ -359,8 +356,7 @@ triple_query_unify_o(Doc,QValue,Options) :-
 	( ground(ValueQuery)
 	-> true
 	;  triple_query_unify_o1(Doc,ValueQuery,Options)
-	),
-	!.
+	).
 
 triple_query_unify_o1(Doc,ValueQuery,Options) :-
 	((	option(include_parents(true),Options),
@@ -525,13 +521,14 @@ strip_variable(X->_,X) :- nonvar(X), !.
 strip_variable(X,X) :- !.
   
 %%
-type_mapping_(float,  double) :- !.
-type_mapping_(number, double) :- !.
-type_mapping_(long,   int)    :- !.
-type_mapping_(short,  int)    :- !.
-type_mapping_(byte,   int)    :- !.
-type_mapping_(term,   string) :- !.
-type_mapping_(X,      X)      :- !.
+type_mapping_(float,   double) :- !.
+type_mapping_(number,  double) :- !.
+type_mapping_(integer, int) :- !.
+type_mapping_(long,    int)    :- !.
+type_mapping_(short,   int)    :- !.
+type_mapping_(byte,    int)    :- !.
+type_mapping_(term,    string) :- !.
+type_mapping_(X,       X)      :- !.
 
 		 /*******************************
 		 *	   PROPAGATION       *
