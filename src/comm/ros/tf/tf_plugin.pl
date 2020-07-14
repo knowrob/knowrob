@@ -236,7 +236,7 @@ tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
 
 tf_mng_lookup1(Cursor,MaxStamp,PoseData,FSince,FUntil) :-
 	mng_cursor_next(Cursor,First),
-	get_dict(header,First,Header),
+	mng_get_dict(header,First,Header),
 	mng_get_dict(stamp,Header,double(FirstStamp)),
 	( FirstStamp>MaxStamp
 	->	( FirstUntil=FirstStamp,
@@ -263,10 +263,10 @@ tf_mng_lookup2(Cursor,Next,LastStamp,PoseData,FSince,FUntil) :-
 % Convert mongo document to pose term.
 %
 tf_mng_doc_pose(Doc,ObjFrame,Time,[ParentFrame,[TX,TY,TZ],[QX,QY,QZ,QW]]) :-
-	get_dict(header,Doc,Header),
-	get_dict(transform,Doc,PoseDoc),
-	get_dict(translation,PoseDoc,TDoc),
-	get_dict(rotation,PoseDoc,QDoc),
+	mng_get_dict(header,Doc,Header),
+	mng_get_dict(transform,Doc,PoseDoc),
+	mng_get_dict(translation,PoseDoc,TDoc),
+	mng_get_dict(rotation,PoseDoc,QDoc),
 	%%
 	mng_get_dict(child_frame_id,Doc,string(ObjFrame)),
 	mng_get_dict(frame_id,Header,string(ParentFrame)),
