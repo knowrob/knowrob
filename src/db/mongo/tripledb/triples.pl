@@ -161,7 +161,7 @@ triple_tell1(S,P,MngValue,Unit,Scope,Graph,Options) :-
 	triple_db(DB,Coll),
 	mng_store(DB,Coll,Doc),
 	% update other documents
-	propagate_assertion_(HierarchyKey,CacheKey,S,MngValue,Graph,Options).
+	propagate_assertion_(Doc,CacheKey,S,Graph,Options).
 
 %%
 %
@@ -272,50 +272,42 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
 	;  Query_o=[Operator,MngValue]
 	),
 	%%
-	mng_cursor_create(DB,Coll,Cursor),
-	( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',Query_s]) ),
-	( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,Query_p]) ),
-	( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,Query_o]) ),
-	( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
-	filter_graph_(Cursor,Graph),
-	filter_scope_(Cursor,Scope),
+	findall(X,
+		(	( ground(Subject),  X=['s',Query_s] )
+		;	( ground(Property), X=[Key_p,Query_p] )
+		;	( ground(MngValue), X=[Key_o,Query_o] )
+		;	( ground(Unit),     X=['unit',string(Unit)] )
+		;	filter_graph_(Graph,X)
+		;	filter_scope_(Scope,X)
+		),
+		Filter
+	),
+	mng_cursor_create(DB,Coll,Cursor,[Filter]),
 	!.
 
 %%
-filter_graph_(_,'*') :- !.
+filter_graph_('*',_) :- !, fail.
 
-filter_graph_(Cursor,=(GraphName)) :-
-	mng_cursor_filter(Cursor,['graph',string(GraphName)]),
-	!.
+filter_graph_(=(GraphName),['graph',string(GraphName)]) :- !.
 
-filter_graph_(Cursor,GraphName) :-
-	tripledb_get_supgraphs(GraphName,Graphs),
-	mng_cursor_filter(Cursor,
-		['graph',['$in',array(Graphs)]]
-	).
+filter_graph_(GraphName,['graph',['$in',array(Graphs)]]) :-
+	tripledb_get_supgraphs(GraphName,Graphs).
 
 %%
-filter_scope_(Cursor,[Scope]) :-
-	!, filter_scope_(Cursor,Scope).
+filter_scope_([Scope],Filter) :-
+	!, filter_scope_(Scope,Filter).
 
-filter_scope_(Cursor,Scopes) :-
+filter_scope_([First|Rest],['$or',Filters]) :-
 	% generate disjunctive query if given a list of scopes
-	is_list(Scopes),!,
+	!,
 	findall(['$and',X],
-		(	member(Scope,Scopes),
-			findall(Y, filter_scope1_(Scope,Y), X)
+		(	member(Scope,[First|Rest]),
+			findall(Y, filter_scope_(Scope,Y), X)
 		),
 		Filters
-	),
-	mng_cursor_filter(Cursor,['$or',Filters]).
-
-filter_scope_(Cursor,Scope) :-
-	forall(
-		filter_scope1_(Scope,Filter),
-		mng_cursor_filter(Cursor,Filter)
 	).
 
-filter_scope1_(Scope,[Key,Filter]) :-
+filter_scope_(Scope,[Key,Filter]) :-
 	get_scope_query_(Scope,Key,Filter).
 
 %%
@@ -379,9 +371,9 @@ triple_query_unify_o1(Doc,ValueQuery,Options) :-
 
 %%
 get_query_variable(QValue,Var) :-
-	( var(QValue) -> Var=QValue
-	; QValue=(_->Var) -> true
-	; Var=QValue
+	(	var(QValue) -> Var=QValue
+	;	QValue=(_->Var) -> true
+	;	Var=QValue
 	).
 		 /*******************************
 		 *	   .....              	*
@@ -416,11 +408,9 @@ strip_unit_(X,_,X).
 % instead of a single one.
 %
 fact_value_hierarchy_(HierarchyKey,string(Value),List) :-
-	( HierarchyKey=subclass_of
-	-> get_supclasses_(Value,List)
-	;  HierarchyKey=subproperty_of
-	-> get_supproperties_(Value,List)
-	;  fail
+	(	HierarchyKey=subclass_of    -> get_supclasses_(Value,List)
+	;	HierarchyKey=subproperty_of -> get_supproperties_(Value,List)
+	;	fail
 	),
 	!.
 fact_value_hierarchy_(_,V0,[V0]).
@@ -535,21 +525,18 @@ type_mapping_(X,       X)      :- !.
 		 *******************************/
 
 %%
-propagate_assertion_(HierarchyKey,CacheKey,S,string(O),Graph,Options) :-
-	ground(HierarchyKey),
-	!,
+propagate_assertion_(Doc,CacheKey,S,Graph,Options) :-
+	(	member(['o*',array(Parents)],Doc)
+	->	propagate_assertion_1(Parents,CacheKey,S,Graph,Options)
+	;	true
+	).
+
+propagate_assertion_1(Parents,CacheKey,S,Graph,Options) :-
 	% invalidate all inferences when
 	% a new axiom was added
-	( option(skip_invalidate(true),Options)
-	-> true
-	;  inference_cache_invalidate(CacheKey)
-	),
-	% find parents
-	( HierarchyKey=subclass_of
-	-> get_supclasses_(O,Parents)
-	;  HierarchyKey=subproperty_of
-	-> get_supproperties_(O,Parents)
-	;  fail
+	(	option(skip_invalidate(true),Options)
+	->	true
+	;	inference_cache_invalidate(CacheKey)
 	),
 	tripledb_get_supgraphs(Graph,Graphs),
 	%wildcard_scope(Scope),
@@ -562,7 +549,6 @@ propagate_assertion_(HierarchyKey,CacheKey,S,string(O),Graph,Options) :-
 		],
 		['$addToSet',['o*',['$each',array(Parents)]]]
 	).
-propagate_assertion_(_,_,_,_,_,_).
 
 %%
 propagate_deletion_(subclass_of,S,string(_O),Graph) :-
