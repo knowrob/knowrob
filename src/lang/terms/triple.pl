@@ -38,9 +38,5 @@ triple(Subject,Property,Value) +>
 	% unpack options and scope
 	options(Options),
 	fact_scope(QScope),
-	{ (atom(Value),ask(is_description_of(Value,Resource)))
-	-> true
-	;  Resource=Value
-	},
-	{ tripledb_tell(Subject,Property,Resource,QScope,Options)
+	{ tripledb_tell(Subject,Property,Value,QScope,Options)
 	}.
