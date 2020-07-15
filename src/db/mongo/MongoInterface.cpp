@@ -14,6 +14,11 @@
 #include "knowrob/db/mongo/MongoInterface.h"
 #include "knowrob/db/mongo/bson_pl.h"
 
+static mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
+		(mongoc_insert_flags_t)MONGOC_INSERT_NO_VALIDATE;
+static mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
+		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
+
 /*********************************/
 /********** static functions *****/
 /*********************************/
@@ -41,10 +46,13 @@ MongoCursor* MongoInterface::cursor_create(const char *db_name, const char *coll
 
 void MongoInterface::cursor_destroy(const char *curser_id)
 {
-	std::lock_guard<std::mutex> scoped_lock(MongoInterface::get().mongo_mutex_);
 	std::string key(curser_id);
-	MongoCursor *c = MongoInterface::get().cursors_[key];
-	MongoInterface::get().cursors_.erase(key);
+	MongoCursor *c;
+	{
+		std::lock_guard<std::mutex> scoped_lock(MongoInterface::get().mongo_mutex_);
+		c = MongoInterface::get().cursors_[key];
+		MongoInterface::get().cursors_.erase(key);
+	}
 	delete c;
 }
 
@@ -115,11 +123,12 @@ void MongoInterface::store(
 	MongoCollection coll(pool_,db_name,coll_name);
 	bson_error_t err;
 	//
-	bson_t *doc = bson_new_from_term(doc_term,&err);
-	if(doc==NULL) {
+	bson_t *doc = bson_new();
+	if(!bsonpl_concat(doc,doc_term,&err)) {
+		bson_destroy(doc);
 		throw MongoException("invalid_term",err);
 	}
-	bool success = mongoc_collection_insert(coll(),MONGOC_INSERT_NONE,doc,NULL,&err);
+	bool success = mongoc_collection_insert(coll(),INSERT_NO_VALIDATE_FLAG,doc,NULL,&err);
 	bson_destroy(doc);
 	if(!success) {
 		throw MongoException("insert_failed",err);
@@ -134,8 +143,9 @@ void MongoInterface::remove(
 	MongoCollection coll(pool_,db_name,coll_name);
 	bson_error_t err;
 	//
-	bson_t *doc = bson_new_from_term(doc_term,&err);
-	if(doc==NULL) {
+	bson_t *doc = bson_new();
+	if(!bsonpl_concat(doc,doc_term,&err)) {
+		bson_destroy(doc);
 		throw MongoException("invalid_term",err);
 	}
 	bool success = mongoc_collection_remove(coll(),MONGOC_REMOVE_NONE,doc,NULL,&err);
@@ -151,20 +161,24 @@ void MongoInterface::update(
 		const PlTerm &query_term,
 		const PlTerm &update_term)
 {
+	static mongoc_update_flags_t UPDATE_FLAGS =
+			(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 	MongoCollection coll(pool_,db_name,coll_name);
 	bson_error_t err;
 	//
-	bson_t *query = bson_new_from_term(query_term, &err);
-	if(query==NULL) {
+	bson_t *query = bson_new();
+	if(!bsonpl_concat(query,query_term,&err)) {
+		bson_destroy(query);
 		throw MongoException("invalid_query",err);
 	}
-	bson_t *update = bson_new_from_term(update_term, &err);
-	if(update==NULL) {
+	bson_t *update = bson_new();
+	if(!bsonpl_concat(update,update_term,&err)) {
 		bson_destroy(query);
+		bson_destroy(update);
 		throw MongoException("invalid_update",err);
 	}
 	bool success = mongoc_collection_update(coll(),
-		MONGOC_UPDATE_MULTI_UPDATE,
+		UPDATE_FLAGS,
 		query,
 		update,
 		NULL,
