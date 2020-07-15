@@ -246,17 +246,12 @@ tripledb_drop :-
 % @implements 'db/itripledb'
 %
 tripledb_tell(S,P,O,Scope,Options) :-
-  ( option(functional,Options)
-  -> tripledb_stop(S,P,Scope,Options)
-  ;  true
-  ),
+%  ( option(functional,Options)
+%  -> tripledb_stop(S,P,Scope,Options)
+%  ;  true
+%  ),
   set_graph_option(Options,Options0),
   itripledb_tell(S,P,O,Scope,Options0).
-
-%%
-tripledb_stop(S,P,Scope,Options) :-
-	% TODO implement
-	true.
 
 %% tripledb_tell(?S,?P,?O,+Scope) is semidet.
 %
@@ -289,6 +284,11 @@ tripledb_tell(S,P,O) :-
 %
 tripledb_bulk_tell(Facts,Scope,Options) :-
   itripledb_bulk_tell(Facts,Scope,Options).
+
+%%
+tripledb_stop(S,P,Scope,Options) :-
+	% TODO implement
+	true.
 
 %% 
 % @implements 'db/itripledb'
