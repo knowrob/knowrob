@@ -83,10 +83,10 @@ instance_of(A,B) +>
   % generate a new name in case A is a variable
   { var(A), ! },
   { unique_name(B,A) },
+  instance_of(A,B),
   { is_class(B) ->
     tell(is_individual(A)) ;
-    true },
-  instance_of(A,B).
+    true }.
 
 instance_of(A,B) +>
   triple(A,rdf:type,B),
