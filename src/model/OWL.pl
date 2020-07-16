@@ -56,6 +56,16 @@
       is_rdf_list/2
     ]).
 
+% setup tabled ask calls (the "g_" is prepended in expand_term)
+:- table g_is_class/1.
+:- table g_is_restriction/1.
+:- table g_is_individual/1.
+:- table g_is_object_property/1.
+:- table g_is_data_property/1.
+:- table g_is_functional_property/1.
+:- table g_is_transitive_property/1.
+:- table g_is_symmetric_property/1.
+
 % load OWL model
 :- tripledb_load('http://www.w3.org/2002/07/owl.rdf',
     [ graph(common),
@@ -68,7 +78,7 @@
 %
 % @param Entity An entity IRI.
 %
-is_class(Entity) ?+>
+is_class(Entity), [table(?)] ?+>
   has_type(Entity, owl:'Class').
 
 %% is_restriction(+Entity) is semidet.
@@ -77,7 +87,7 @@ is_class(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_restriction(Entity) ?+>
+is_restriction(Entity), [table(?)] ?+>
   has_type(Entity, owl:'Restriction').
 
 %% is_individual(+Entity) is semidet.
@@ -86,7 +96,7 @@ is_restriction(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_individual(Entity) ?+>
+is_individual(Entity), [table(?)] ?+>
   has_type(Entity, owl:'NamedIndividual').
 
 %% is_object_property(+Entity) is semidet.
@@ -95,7 +105,7 @@ is_individual(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_object_property(Entity) ?+>
+is_object_property(Entity), [table(?)] ?+>
   has_type(Entity, owl:'ObjectProperty').
 
 %% is_functional_property(+Entity) is semidet.
@@ -104,7 +114,7 @@ is_object_property(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_functional_property(Entity) ?+>
+is_functional_property(Entity), [table(?)] ?+>
   has_type(Entity, owl:'FunctionalProperty').
 
 %% is_transitive_property(+Entity) is semidet.
@@ -113,7 +123,7 @@ is_functional_property(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_transitive_property(Entity) ?+>
+is_transitive_property(Entity), [table(?)] ?+>
   has_type(Entity, owl:'TransitiveProperty').
 
 %% is_symmetric_property(+Entity) is semidet.
@@ -122,7 +132,7 @@ is_transitive_property(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_symmetric_property(Entity) ?+>
+is_symmetric_property(Entity), [table(?)] ?+>
   has_type(Entity, owl:'SymmetricProperty').
 
 %% is_data_property(+Entity) is semidet.
@@ -131,7 +141,7 @@ is_symmetric_property(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_data_property(Entity) ?+>
+is_data_property(Entity), [table(?)] ?+>
   has_type(Entity, owl:'DatatypeProperty').
 
 %% has_description(+Class,-Descr) is semidet.

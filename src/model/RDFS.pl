@@ -23,6 +23,12 @@
 :- rdf_register_ns(rdfs,
     'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
+% setup tabled ask calls (the "g_" is prepended in expand_term)
+:- table g_is_resource/1.
+:- table g_is_property/1.
+:- table g_is_literal/1.
+:- table g_is_datatype/1.
+
 %% is_resource(+Entity) is semidet.
 %
 % All things described by RDF are called resources,
@@ -33,7 +39,7 @@
 %
 % @param Entity An entity IRI.
 %
-is_resource(Entity) ?+>
+is_resource(Entity), [table(?)] ?+>
   has_type(Entity, rdfs:'Resource').
 
 %% is_property(+Entity) is semidet.
@@ -43,7 +49,7 @@ is_resource(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_property(Entity) ?+>
+is_property(Entity), [table(?)] ?+>
   has_type(Entity, rdf:'Property').
 
 %% is_literal(+Entity) is semidet.
@@ -57,7 +63,7 @@ is_property(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_literal(Entity) ?+>
+is_literal(Entity), [table(?)] ?+>
   has_type(Entity, rdfs:'Literal').
 
 %% is_datatype(+Entity) is semidet.
@@ -70,7 +76,7 @@ is_literal(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_datatype(Entity) ?+>
+is_datatype(Entity), [table(?)] ?+>
   has_type(Entity, rdfs:'Datatype').
 
 %% has_type(+Resource,?Type) is semidet.
