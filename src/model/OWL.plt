@@ -62,9 +62,9 @@ test('is_restriction/2') :-
   assert_true((subclass_of(test:'D',R), is_restriction(R,max(test:'s',5,test:'Range1')))),
   assert_true((subclass_of(test:'D',R), is_restriction(R,exactly(test:'s',2,test:'Range2')))),
   % False cases
-  assert_true((subclass_of(test:'A',R), is_restriction(R,only(test:'s', test:'Range1')))),
-  assert_true((subclass_of(test:'A2',R), is_restriction(R,some(test:'t', test:'B')))),
-  assert_true((subclass_of(test:'C',R), is_restriction(R,min(test:'r',2,test:'Range1')))).
+  assert_false((subclass_of(test:'A',R), is_restriction(R,only(test:'s', test:'Range1')))),
+  assert_false((subclass_of(test:'A2',R), is_restriction(R,some(test:'t', test:'B')))),
+  assert_false((subclass_of(test:'C',R), is_restriction(R,min(test:'r',2,test:'Range1')))).
 
 test('is_union_of') :-
   assert_true((subclass_of(test:'EUnion',Union),
