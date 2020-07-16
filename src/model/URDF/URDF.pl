@@ -350,22 +350,14 @@ urdf_load1(Robot, Robot_Id) :-
 	root_link_name(Robot_Id,Root),
 	%%
 	tell(has_urdf_name(Robot,RobotName)),
-get_time(T0),
 	forall(
 		member(LinkName,Links), 
 		load_link(Robot,Robot_Id,Root,LinkName)
 	),
-get_time(T1),
 	forall(
 		member(JointName,Joints), 
 		load_joint(Robot,Robot_Id,JointName)
-	),
-get_time(T2),
-XX is T1-T0,
-YY is T2-T1,
-write('time links: '), writeln(XX),
-write('time joints: '), writeln(YY)
-.
+	).
   
 		 /*******************************
 		 *		  Loading Links		*
