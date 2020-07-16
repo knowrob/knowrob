@@ -52,9 +52,9 @@ holds(Query) ?>
 % @param Property The predicate of a triple.
 % @param Value The object of a triple.
 %
-holds(S,Chain,O) ?>
-  { is_list(Chain),! },
-  holds_chain(S,Chain,O).
+holds(S,[P|Ps],O) ?>
+  { ! },
+  holds_chain(S,[P|Ps],O).
 
 holds(S,P,O) ?>
   { once((var(P); is_object_property(P))) },
