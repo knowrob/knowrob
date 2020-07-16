@@ -100,3 +100,20 @@ call_(Functor,S,P,O,Scope) :-
     Goal=..[Functor,S,P,O]
   ),
   ask(Goal,Scope).
+
+
+     /*******************************
+     *        UNIT TESTS            *
+     *******************************/
+
+:- begin_tripledb_tests(
+    'lang_transitive',
+    'package://knowrob/owl/test/swrl.owl',
+    [ namespace('http://knowrob.org/kb/swrl_test#')
+    ]).
+
+test("ask ancestor of Lea") :-
+  assert_true(transitive(holds(test:'Lea', test:'hasAncestor', test:'Rex'))),
+  assert_false(holds(test:'Lea', test:'hasAncestor', test:'Rex')).
+
+:- end_tripledb_tests('lang_transitive').
