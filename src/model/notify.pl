@@ -41,12 +41,6 @@
 %%
 %
 %
-notify:notify_hook(individual(X)) :-
-  ( is_object(X) -> notify(object(X)) ;
-    is_event(X)  -> notify(event(X)) ;
-    fail
-  ).
-
 notify:notify_hook(object(Object)) :-
   ( is_physical_object(Object) -> initialize_PO_(Object);
     is_concept(Object)         -> initialize_CO_(Object);
