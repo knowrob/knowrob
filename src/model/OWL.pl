@@ -237,30 +237,45 @@ is_restriction1(R,some(P,O)) ?+>
   triple(R,owl:onProperty,P).
 
 is_restriction1(R,value(P,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:hasValue,O).
+  triple(R,owl:hasValue,O),
+  triple(R,owl:onProperty,P).
 
 is_restriction1(R,min(P,M,O)) ?+>
+  triple(R,owl:minQualifiedCardinality,M),
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
-  triple(R,owl:minCardinality,M).
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,min(P,M)) ?+>
+  triple(R,owl:minCardinality,M),
+  triple(R,owl:onProperty,P).
 
 is_restriction1(R,max(P,M,O)) ?+>
+  triple(R,owl:maxQualifiedCardinality,M),
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
-  triple(R,owl:maxCardinality,M).
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,max(P,M)) ?+>
+  triple(R,owl:maxCardinality,M),
+  triple(R,owl:onProperty,P).
 
 is_restriction1(R,exactly(P,M,O)) ?+>
+  triple(R,owl:qualifiedCardinality,M),
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
-  triple(R,owl:qualifiedCardinality,M).
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,exactly(P,M)) ?+>
+  triple(R,owl:cardinality,M),
+  triple(R,owl:onProperty,P).
 
 %%
 is_restriction_term_(only(_,_)).
 is_restriction_term_(some(_,_)).
 is_restriction_term_(value(_,_)).
+is_restriction_term_(min(_,_)).
 is_restriction_term_(min(_,_,_)).
 is_restriction_term_(max(_,_,_)).
+is_restriction_term_(max(_,_)).
+is_restriction_term_(exactly(_,_)).
 is_restriction_term_(exactly(_,_,_)).
 
 %% is_union_of(?UnionClass,?Descr) is nondet.
@@ -295,6 +310,7 @@ is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
   triple(IntersectionClass,owl:intersectionOf,List_rdf),
   is_rdf_list(List_rdf,List_pl).
 
+
 %% is_complement_of(?ComplementClass,?Descr) is nondet.
 %
 % Convert an OWL complement class into a Prolog representation.
@@ -308,6 +324,15 @@ is_complement_of(ComplementClass,not(Class)) +>
 
 is_complement_of(ComplementClass,not(Class)) ?>
   triple(ComplementClass,owl:complementOf,Class).
+
+%% is_all_disjoint_classes(?AllDisjointClasses) is nondet.
+%
+% True for OWL2 AllDisjointClasses
+%
+% @param Entity An entity IRI.
+%
+is_all_disjoint_classes(Entity) ?+>
+    has_type(Entity, owl:'AllDisjointClasses').
 
 %% has_inverse_property(?Property, ?Inverse) is nondet.
 %
@@ -392,7 +417,8 @@ unify_disjoint_(B,Disjoint) :-
 %
 has_equivalent_class(Cls,EQ) :-
   ground(Cls),!,
-  has_equivalent_class1([Cls],EQ,[]),
+  has_equivalent_class1([Cls],EQList,[]),
+  member(EQ,EQList),
   EQ \= Cls.
 
 has_equivalent_class(Cls,EQ) :-
@@ -405,7 +431,7 @@ has_equivalent_class(Cls,EQ) :-
   has_equivalent_class(Cls,EQ).
 
 %%
-has_equivalent_class1([Entity|_],Entity,_) :- !.
+has_equivalent_class1([],Visited,Visited).
 
 has_equivalent_class1([Entity|Queue],Same,Visited) :-
   findall(Next, (
