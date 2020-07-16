@@ -72,7 +72,7 @@ has_joint_hard_limits(J, [LL,UL], VelMax, EffMax) +>
 	triple(J,urdf:hasJointLimits,Lim).
 
 %%
-:- table tabled_hard_limits/4.
+:- table(tabled_hard_limits/4).
 tabled_hard_limits(Saf,L,VelMax,EffMax) :-
 	tell([
 		has_type(Saf,urdf:'JointLimits'),
@@ -97,7 +97,7 @@ has_joint_soft_limits(J, [LL,UL], KP, KV) +>
 	triple(J,urdf:hasJointSoftLimits,Saf).
 
 %%
-:- table tabled_soft_limits/4.
+:- table(tabled_soft_limits/4).
 tabled_soft_limits(Saf,L,KP,KV) :-
 	tell([
 		has_type(Saf,urdf:'JointSoftLimits'),
@@ -123,7 +123,7 @@ has_joint_calibration(J,Falling,Rising) +>
 	triple(J,urdf:hasJointReferencePositions,Calib).
 
 %%
-:- table tabled_joint_calibration/3.
+:- table(tabled_joint_calibration/3).
 tabled_joint_calibration(Calib,Falling,Rising) :-
 	tell([
 		has_type(Calib,urdf:'JointReferencePositions'),
@@ -142,7 +142,7 @@ has_joint_axis(J,AxisData) +>
 	triple(J,urdf:hasJointAxis,Axis).
 
 %%
-:- table tabled_joint_axis/2.
+:- table(tabled_joint_axis/2).
 tabled_joint_axis(Axis,AxisData) :-
 	tell([
 		has_type(Axis,urdf:'JointAxis'),
@@ -160,7 +160,7 @@ has_joint_friction(J, Friction) +>
 	triple(J,ease_obj:hasFrictionAttribute,Attribute).
 
 %%
-:- table tabled_joint_friction/2.
+:- table(tabled_joint_friction/2).
 tabled_joint_friction(Attribute,Friction) :-
 	tell([
 		has_type(Attribute,ease_obj:'StaticFrictionAttribute'),
@@ -178,7 +178,7 @@ has_joint_damping(J, DampingValue) +>
 	triple(J,urdf:hasDampingAttribute,Attribute).
 
 %%
-:- table tabled_joint_damping/2.
+:- table(tabled_joint_damping/2).
 tabled_joint_damping(Attribute,Damping) :-
 	tell([
 		has_type(Attribute,urdf:'DampingAttribute'),
@@ -196,7 +196,7 @@ has_link_mass(Link,MassValue) +>
 	triple(Link,ease_obj:hasMassAttribute,Attribute).
 
 %%
-:- table tabled_link_mass/2.
+:- table(tabled_link_mass/2).
 tabled_link_mass(Attribute,MassValue) :-
 	tell([
 		has_type(Attribute,ease_obj:'MassAttribute'),
@@ -214,7 +214,7 @@ has_link_inertia(Link,Data,Inertia) +>
 	triple(Link,urdf:hasInertia,Inertia).
 
 %%
-:- table tabled_inertia/2.
+:- table(tabled_inertia/2).
 tabled_inertia(Inertia,InertiaData) :-
 	tell([
 		has_type(Inertia,urdf:'Inertia'),
@@ -267,7 +267,7 @@ has_collision_shape(Link,Geom,Shape) +>
 	triple(Link,urdf:hasCollisionShape,Shape).
 
 %%
-:- table tabled_shape/2.
+:- table(tabled_shape/2).
 tabled_shape(Shape,Geom) :- tell(has_shape_data(Shape,Geom)).
   
 %%
@@ -312,7 +312,7 @@ has_urdf_origin(Entity,Frame,OriginData) +>
 	triple(Entity,urdf:hasOrigin,Origin).
 
 %%
-:- table tabled_origin/3.
+:- table(tabled_origin/3).
 tabled_origin(Origin,Frame,OriginData) :-
 	tell([
 		has_type(Origin, dul:'Region'),

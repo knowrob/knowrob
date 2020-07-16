@@ -57,14 +57,14 @@
     ]).
 
 % setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table g_is_class/1.
-:- table g_is_restriction/1.
-:- table g_is_individual/1.
-:- table g_is_object_property/1.
-:- table g_is_data_property/1.
-:- table g_is_functional_property/1.
-:- table g_is_transitive_property/1.
-:- table g_is_symmetric_property/1.
+:- table(g_is_class/1).
+:- table(g_is_restriction/1).
+:- table(g_is_individual/1).
+:- table(g_is_object_property/1).
+:- table(g_is_data_property/1).
+:- table(g_is_functional_property/1).
+:- table(g_is_transitive_property/1).
+:- table(g_is_symmetric_property/1).
 
 % load OWL model
 :- tripledb_load('http://www.w3.org/2002/07/owl.rdf',

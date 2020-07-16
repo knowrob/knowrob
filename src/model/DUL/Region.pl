@@ -33,10 +33,10 @@ In DUL, Region is defined as:
     [ tripledb_load/2, tripledb_ask/3 ]).
 
 % setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table g_is_region/1.
-:- table g_is_parameter/1.
-:- table g_is_time_interval/1.
-:- table g_is_space_region/1.
+:- table(g_is_region/1).
+:- table(g_is_parameter/1).
+:- table(g_is_time_interval/1).
+:- table(g_is_space_region/1).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',

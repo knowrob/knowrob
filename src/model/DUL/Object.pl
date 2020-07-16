@@ -26,13 +26,13 @@ In DUL, Object is defined as:
     [ tripledb_load/2 ]).
 
 % setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table g_is_object/1.
-:- table g_is_quality/1.
-:- table g_is_concept/1.
-:- table g_is_role/1.
-:- table g_is_agent/1.
-:- table g_is_physical_object/1.
-:- table g_is_social_object/1.
+:- table(g_is_object/1).
+:- table(g_is_quality/1).
+:- table(g_is_concept/1).
+:- table(g_is_role/1).
+:- table(g_is_agent/1).
+:- table(g_is_physical_object/1).
+:- table(g_is_social_object/1).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',

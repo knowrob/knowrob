@@ -24,10 +24,10 @@
     'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
 % setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table g_is_resource/1.
-:- table g_is_property/1.
-:- table g_is_literal/1.
-:- table g_is_datatype/1.
+:- table(g_is_resource/1).
+:- table(g_is_property/1).
+:- table(g_is_literal/1).
+:- table(g_is_datatype/1).
 
 %% is_resource(+Entity) is semidet.
 %

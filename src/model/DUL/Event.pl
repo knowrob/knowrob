@@ -32,11 +32,11 @@ In DUL, Object is defined as:
     [ tripledb_load/2 ]).
 
 % setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table g_is_event/1.
-:- table g_is_event_type/1.
-:- table g_is_action/1.
-:- table g_is_process/1.
-:- table g_is_task/1.
+:- table(g_is_event/1).
+:- table(g_is_event_type/1).
+:- table(g_is_action/1).
+:- table(g_is_process/1).
+:- table(g_is_task/1).
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
