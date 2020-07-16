@@ -9,7 +9,6 @@
 #include "knowrob/db/mongo/bson_pl.h"
 #include <sstream>
 #include <iostream>
-#include <charconv>
 
 // NOTE: returning true would stop further iteration of the document
 #define APPEND_BSON_PL_PAIR(list,key,value,type) ((PlTail*)list)->append(PlCompound("-", \
