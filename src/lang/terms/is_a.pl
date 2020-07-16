@@ -166,9 +166,9 @@ test("ask and tell woman is a person") :-
 
 test("ask and tell instances of Rex") :-
   assert_true(instance_of(test:'Rex', test:'Man')),
-  assert_false(instance_of(test:'Rex', dul:'Person')),
-  assert_true(tell(instance_of(test:'Rex', dul:'Person'))),
-  assert_true(instance_of(test:'Rex', dul:'Person')).
+  assert_false(instance_of(test:'Rex', test:'Adult')),
+  assert_true(tell(instance_of(test:'Rex', test:'Adult'))),
+  assert_true(instance_of(test:'Rex', test:'Adult')).
 
 test("ask and tell list instance of Greta") :-
   assert_false(instance_of('Greta', [test:'Woman', dul:'Person'])),
@@ -183,7 +183,7 @@ test("ask and tell sub property of") :-
   assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 % expect instantiation error as is_a expects a ground variable
-test("ask A is a Person", [throws(error(instantiation_error, _))]) :-
-  is_a(A, dul:'Person').
+test("ask _ is a Person", [throws(error(instantiation_error, _))]) :-
+  is_a(_, dul:'Person').
 
 :- end_tripledb_tests(lang_is_a).

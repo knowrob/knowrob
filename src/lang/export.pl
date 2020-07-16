@@ -44,3 +44,23 @@ memorize(Directory) :-
   tripledb_export(Directory),
   obda_export(Directory),
   forall(memorize_hook(Directory), true).
+
+     /*******************************
+     *          UNIT TESTS          *
+     *******************************/
+
+:- begin_tests('lang_export').
+
+get_path(Path):-
+  working_directory(X,X), string_concat(X, "test_lang_export", Path).
+
+test('stores knowledge in test_lang_export directory and restores the same', 
+  [ blocked('Not possible to set a different database in runtime at the moment'),
+    setup(get_path(Path)),
+    cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
+  ]) :-
+  assert_true(memorize(Path)),
+  assert_true(tripledb_whipe),
+  assert_true(remember(Path)).
+
+:- end_tests('lang_export').
