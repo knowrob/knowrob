@@ -25,7 +25,6 @@
     <!-- http://knowrob.org/kb/swrl_test#hasAncestor -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasAncestor">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
         <owl:propertyChainAxiom rdf:parseType="Collection">
             <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#hasParent"/>
         </owl:propertyChainAxiom>

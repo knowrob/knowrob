@@ -114,6 +114,6 @@ call_(Functor,S,P,O,Scope) :-
 
 test("ask ancestor of Lea") :-
   assert_true(transitive(holds(test:'Lea', test:'hasAncestor', test:'Rex'))),
-  assert_false(transitive(holds(test:'Lea', test:'hasAncestor', test:'Ernest'))).
+  assert_false(holds(test:'Lea', test:'hasAncestor', test:'Rex')).
 
 :- end_tripledb_tests('lang_transitive').
