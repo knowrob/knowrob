@@ -10,8 +10,6 @@
 */
 
 :- dynamic subgraph_of_/2.
-:- table tripledb_get_supgraphs/2.
-:- table tripledb_get_subgraphs/2.
 
 %% tripledb_add_subgraph(+Sub,+Sup) is det.
 %
