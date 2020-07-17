@@ -70,4 +70,4 @@ jobs:
         FOLDER: src/knowrob/doc
         # The folder in the target branch
         TARGET_FOLDER: ${{ github.ref }}
-        WORKSPACE: $GITHUB_WORKSPACE/src/knowrob
+        WORKSPACE: src/knowrob
