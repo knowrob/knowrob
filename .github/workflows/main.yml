@@ -53,3 +53,20 @@ jobs:
         path: junit-*.xml
         stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run pldoc
+      if: ${{ github.event_name == 'push' }}
+      shell: bash
+      run: |
+        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+        rosrun rosprolog rosprolog-doc knowrob
+    - name: Deploy
+      if: ${{ github.event_name == 'push' }}
+      uses: JamesIves/github-pages-deploy-action@3.5.7
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The branch the action should deploy to.
+        BRANCH: gh-pages-test
+        # The folder the action should deploy.
+        FOLDER: src/knowrob/doc
+        # The folder in the target branch
+        TARGET_FOLDER: master
