@@ -69,4 +69,4 @@ jobs:
         # The folder the action should deploy.
         FOLDER: src/knowrob/doc
         # The folder in the target branch
-        TARGET_FOLDER: master
+        TARGET_FOLDER: ${{ github.ref }}
