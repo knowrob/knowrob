@@ -1,0 +1,10 @@
+<launch>
+  <arg name="plan_library" default="package://knowrob/owl/test/parser-test.owl" />
+  
+  <include file="$(find rosprolog)/launch/rosprolog.launch">
+    <arg name="initial_package" default="knowrob" />
+    <arg name="initial_goal" default="use_module(library('knowrob/action_parser')), owl_parser:owl_parse('$(arg plan_library)')" />
+  </include>
+  
+  <node name="parser_vis" pkg="knowrob" type="parser_vis.py" output="screen" />
+</launch>

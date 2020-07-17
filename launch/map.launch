@@ -1,0 +1,16 @@
+<launch>
+  <arg name="semantic_map" default="package://iai_semantic_maps/owl/kitchen.owl" />
+  <arg name="mongodb_uri" default="mongodb://localhost:27017/?appname=knowrob" />
+  <arg name="mongodb_name" default="roslog" />
+  <arg name="memory_dir" default="" />
+  
+  <env name="KNOWROB_MONGO_DB_NAME" value="$(arg mongodb_name)" />
+  <env name="KNOWROB_MEMORY_DIR" value="$(arg memory_dir)" />
+  
+  <param name="mongodb_uri" type="string" value="$(arg mongodb_uri)" />
+  
+  <include file="$(find rosprolog)/launch/rosprolog.launch">
+    <arg name="initial_package" default="knowrob" />
+    <arg name="initial_goal" default="mem_import('$(arg semantic_map)')" />
+  </include>
+</launch>
