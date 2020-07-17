@@ -62,12 +62,13 @@ jobs:
     - name: Deploy
       if: ${{ github.event_name == 'push' }}
       uses: JamesIves/github-pages-deploy-action@3.5.7
+      env:
+        GITHUB_WORKSPACE: $GITHUB_WORKSPACE/src/knowrob
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # The branch the action should deploy to.
         BRANCH: gh-pages-test
         # The folder the action should deploy.
-        FOLDER: src/knowrob/doc
+        FOLDER: doc
         # The folder in the target branch
         TARGET_FOLDER: ${{ github.ref }}
-        GITHUB_WORKSPACE: $GITHUB_WORKSPACE/src/knowrob
