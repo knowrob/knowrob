@@ -63,7 +63,7 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       uses: JamesIves/github-pages-deploy-action@3.5.7
       env:
-        GITHUB_WORKSPACE: $GITHUB_WORKSPACE/src/knowrob
+        GITHUB_WORKSPACE: /home/runner/work/knowrob/knowrob/src/knowrob/
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # The branch the action should deploy to.
