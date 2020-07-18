@@ -75,4 +75,4 @@ jobs:
         FOLDER: doc
         # The folder in the target branch
         TARGET_FOLDER: ${GITHUB_REF##*/} # ${{ github.ref }}
-        CLEAN: yes
+        CLEAN: true
