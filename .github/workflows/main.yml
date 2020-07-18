@@ -68,7 +68,7 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: Deploy pldoc
+    - name: Deploy pldoc to gh-pages
       if: ${{ github.event_name == 'push' }}
       uses: JamesIves/github-pages-deploy-action@3.5.7
       with:
