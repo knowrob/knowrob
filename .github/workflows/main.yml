@@ -10,26 +10,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        path: 'src/knowrob' 
+        path: 'ros_ws/src/knowrob' 
     - name: Checkout rosprolog
       uses: actions/checkout@v2
       with:
-        path: 'src/rosprolog'
+        path: 'ros_ws/src/rosprolog'
         repository: daniel86/rosprolog
     - name: Checkout SOMA ontology
       uses: actions/checkout@v2
       with:
-        path: 'src/ease_ontology'
+        path: 'ros_ws/src/ease_ontology'
         repository: knowrob/ease_ontology
     - name: Checkout DUL ontology
       uses: actions/checkout@v2
       with:
-        path: 'src/dul'
+        path: 'ros_ws/src/dul'
         repository: ease-crc/dul
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
-        path: 'src/iai_common_msgs'
+        path: 'ros_ws/src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
     - name: Setup KnowRob workspace
       uses: janbernloehr/github-setup-catkin@patch-1
@@ -37,19 +37,38 @@ jobs:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax. 
         ros-version: melodic
         # Root directory of the catkin workspace
-        workspace: $GITHUB_WORKSPACE
+        workspace: $GITHUB_WORKSPACE/ros_ws
     - name: Build KnowRob workspace
-      run: catkin_make_isolated
+      run: cd ros_ws && catkin_make_isolated
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
         sudo systemctl start mongod
         roscore &
-        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+        source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
         path: junit-*.xml
-        stripFromPath: /home/runner/work/knowrob/knowrob/src/knowrob/
+        stripFromPath: /home/runner/work/knowrob/knowrob/ros_ws/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
+    #####
+    - uses: actions/checkout@v2
+    - name: Run pldoc
+      if: ${{ github.event_name == 'push' }}
+      shell: bash
+      run: |
+        source $GITHUB_WORKSPACE/devel_isolated/setup.bash
+        rosrun rosprolog rosprolog-doc knowrob
+    - name: Deploy pldoc
+      if: ${{ github.event_name == 'push' }}
+      uses: JamesIves/github-pages-deploy-action@3.5.7
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The branch the action should deploy to.
+        BRANCH: gh-pages-test
+        # The folder the action should deploy.
+        FOLDER: doc
+        # The folder in the target branch
+        TARGET_FOLDER: ${{ github.ref }}
