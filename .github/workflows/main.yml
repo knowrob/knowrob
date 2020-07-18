@@ -74,5 +74,5 @@ jobs:
         # The folder the action should deploy.
         FOLDER: doc
         # The folder in the target branch
-        TARGET_FOLDER: ${GITHUB_REF##*/} # ${{ github.ref }}
+        TARGET_FOLDER: ${{GITHUB_REF##*/}} # ${{ github.ref }}
         CLEAN: true
