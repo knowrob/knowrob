@@ -80,3 +80,4 @@ jobs:
         # The folder in the target branch
         TARGET_FOLDER: ${{ steps.extract_branch.outputs.branch }}
         CLEAN: true
+        SINGLE_COMMIT: true
