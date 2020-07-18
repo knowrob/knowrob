@@ -64,6 +64,10 @@ jobs:
       run: |
         mv $GITHUB_WORKSPACE/ros_ws/src/knowrob/.git $GITHUB_WORKSPACE/
         mv $GITHUB_WORKSPACE/ros_ws/src/knowrob/* $GITHUB_WORKSPACE/
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
     - name: Deploy pldoc
       if: ${{ github.event_name == 'push' }}
       uses: JamesIves/github-pages-deploy-action@3.5.7
@@ -74,5 +78,5 @@ jobs:
         # The folder the action should deploy.
         FOLDER: doc
         # The folder in the target branch
-        TARGET_FOLDER: ${{ github.ref }}
+        TARGET_FOLDER: ${{ steps.extract_branch.outputs.branch }}
         CLEAN: true
