@@ -74,10 +74,10 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # The branch the action should deploy to.
-        BRANCH: gh-pages-test
+        BRANCH: gh-pages
         # The folder the action should deploy.
         FOLDER: doc
         # The folder in the target branch
-        TARGET_FOLDER: branch/${{ steps.extract_branch.outputs.branch }}
+        TARGET_FOLDER: ${{ steps.extract_branch.outputs.branch }}
         CLEAN: true
         SINGLE_COMMIT: true
