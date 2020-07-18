@@ -8,12 +8,65 @@ Its purpose is to equip robots with the capability to organize information in re
 knowledge chunks, and to perform reasoning in an expressive logic.
 It further provides a set of tools for visualization and acquisition of knowledge.
 
+## Getting Started
+
+These instructions will get you a copy of KnowRob up and running on your local machine.
+
+### Prerequisites
+
+- ROS (*ROS melodic* for the master branch)
+- SWI Prolog >= 7.6
+- libmongoc
+
+### Installation
+
+KnowRob uses the [catkin](http://wiki.ros.org/catkin) buildsystem that has been the main ROS buildsystem.
+We have prepared different *.rosinstall* setup files that you can add to your ROS workspace as described [here](http://www.ros.org/wiki/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
+
+```Bash
+rosdep update
+cd ~/catkin_ws/src
+wstool merge https://raw.github.com/knowrob/knowrob/master/rosinstall/knowrob-base.rosinstall
+wstool update
+rosdep install --ignore-src --from-paths .
+cd ~/catkin_ws
+catkin_make
+```
+
+You may further need to set the *SWI_HOME_DIR* environment variable to the installation location of *swipl*:
+
+```
+export SWI_HOME_DIR=/usr/lib/swi-prolog
+```
+
+### Launching
+
 In order to interact with other robot components,
 the [Robot Operating System](https://www.ros.org/) (ROS)
 is used via [rosprolog](https://github.com/knowrob/rosprolog).
 *rosprolog* provides a ROS node that manages a pool of Prolog engines
 in which KnowRob can be loaded such that its querying interface
 is exposed via the node.
+KnowRob provides a launch file that starts the *rosprolog* node, and initializes KnowRob:
+
+```
+roslaunch knowrob knowrob.launch
+```
+
+Please refer to the *rosprolog* documentation for how to interact with this node.
+However, KnowRob can also be launched without ROS node through a script offered by *rosprolog*:
+
+```
+rosrun rosprolog rosprolog knowrob
+```
+
+Launching KnowRob without the ROS node may help debugging.
+
+## Getting Familiar
+
+Here we provide an overview about functionality of KnowRob.
+
+### Querying
 
 The core of KnowRob is an extendible querying interface that
 provides basic operations *ask*, *tell*, *forget*, and *remember*.
@@ -30,6 +83,8 @@ A configurable backend is used to store and retrieve temporalized triples --
 as a falback implementation, KnowRob provides a simple MongoDB
 implementation of a temporalized triple store.
 
+### Data Access
+
 One important aspect in knowledge representation for robots is that
 a lot of knowledge is *implicitly* encoded in the control structures
 of the robot. Hence, one goal is to make the knowledge in robot
@@ -38,6 +93,8 @@ KnowRob does that through *Ontology-based Data Access* (OBDA).
 So called, *semantic data accessors* are used to map data to symbols in
 an ontology, often by accessing some database, or by reading from
 a message queue, etc.
+
+### Reasoning
 
 KnowRob uses an ensemble of reasoners approach where inferences
 of different reasoners are combined into correlated knowledge pieces.
@@ -53,6 +110,6 @@ reasoning modules that handle domain-specific problems
 such as reasoning about time intervals using Allen's interval
 calculus.
 
-Please visit http://www.knowrob.org for
-more information and [installation instructions](http://www.knowrob.org/installation),
-and have a look at additional README files in the *src* directory.
+## Further Information
+
+Please visit http://www.knowrob.org for more information.
