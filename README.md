@@ -75,6 +75,18 @@ Language phrases are terms whose semantics is defined
 in form of Prolog rules using special operators such as *?>* (the ask operator),
 or *+>* (the tell operator).
 
+### Model
+
+KnowRob structures knowledge according to models represented using RDF.
+Some models are very basic and domain-independent such as the OWL model
+that e.g. distinguishes between object and datatype properties, or the
+toplevel ontology SOMA which is supported by KnowRob.
+[KnowRob Models](src/model/README.md) is a collection of such models
+that are explicitely supported by KnowRob.
+However, support for other models may be added through plugins.
+
+### Triple Store and Data Access
+
 Knowledge is represented in form of temporalized triples --
 each subject-predicate-object triple has an additional field
 that restricts the temporal scope in which the statement
@@ -82,8 +94,6 @@ represented by the triple is true.
 A configurable backend is used to store and retrieve temporalized triples --
 as a falback implementation, KnowRob provides a simple MongoDB
 implementation of a temporalized triple store.
-
-### Data Access
 
 One important aspect in knowledge representation for robots is that
 a lot of knowledge is *implicitly* encoded in the control structures
@@ -93,6 +103,9 @@ KnowRob does that through *Ontology-based Data Access* (OBDA).
 So called, *semantic data accessors* are used to map data to symbols in
 an ontology, often by accessing some database, or by reading from
 a message queue, etc.
+
+For more information on database backends in KnowRob, please have a look
+[here](src/db/README.md).
 
 ### Reasoning
 
@@ -109,6 +122,8 @@ an (incomplete) OWL reasoner, a SWRL reasoner, and some specialized
 reasoning modules that handle domain-specific problems
 such as reasoning about time intervals using Allen's interval
 calculus.
+More complete information about reasoning in KnowRob can be found
+[here](src/reasoning/README.md).
 
 ## Further Information
 
