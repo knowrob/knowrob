@@ -59,6 +59,7 @@ jobs:
       shell: bash
       run: |
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
+        cp $GITHUB_WORKSPACE/ros_ws/src/knowrob/README.md $GITHUB_WORKSPACE/ros_ws/src/knowrob/src/
         rosrun rosprolog rosprolog-doc knowrob
     - name: Move checkout
       run: |
