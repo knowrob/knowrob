@@ -83,7 +83,7 @@ triple_search_index_(['s','o*','p']).
 %
 append_scope_index_(IndexKeys,IndexKeys).
 %append_scope_index_(IndexKeys,IndexKeys0) :-
-%  append(IndexKeys, ['scope.time.since', 'scope.time.until'],  IndexKeys0).
+%	append(IndexKeys, ['scope.time.since', 'scope.time.until'],  IndexKeys0).
 
 %%
 %
@@ -161,7 +161,7 @@ triple_tell1(S,P,MngValue,Unit,Scope,Graph,Options) :-
 	triple_db(DB,Coll),
 	mng_store(DB,Coll,Doc),
 	% update other documents
-	propagate_assertion_(HierarchyKey,CacheKey,S,MngValue,Graph,Options).
+	propagate_assertion_(Doc,CacheKey,S,Graph,Options).
 
 %%
 %
@@ -272,50 +272,42 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
 	;  Query_o=[Operator,MngValue]
 	),
 	%%
-	mng_cursor_create(DB,Coll,Cursor),
-	( \+ground(Subject)  ; mng_cursor_filter(Cursor,['s',Query_s]) ),
-	( \+ground(Property) ; mng_cursor_filter(Cursor,[Key_p,Query_p]) ),
-	( \+ground(MngValue) ; mng_cursor_filter(Cursor,[Key_o,Query_o]) ),
-	( \+ground(Unit)     ; mng_cursor_filter(Cursor,['unit',string(Unit)]) ),
-	filter_graph_(Cursor,Graph),
-	filter_scope_(Cursor,Scope),
+	findall(X,
+		(	( ground(Subject),  X=['s',Query_s] )
+		;	( ground(Property), X=[Key_p,Query_p] )
+		;	( ground(MngValue), X=[Key_o,Query_o] )
+		;	( ground(Unit),     X=['unit',string(Unit)] )
+		;	filter_graph_(Graph,X)
+		;	filter_scope_(Scope,X)
+		),
+		Filter
+	),
+	mng_cursor_create(DB,Coll,Cursor,[Filter]),
 	!.
 
 %%
-filter_graph_(_,'*') :- !.
+filter_graph_('*',_) :- !, fail.
 
-filter_graph_(Cursor,=(GraphName)) :-
-	mng_cursor_filter(Cursor,['graph',string(GraphName)]),
-	!.
+filter_graph_(=(GraphName),['graph',string(GraphName)]) :- !.
 
-filter_graph_(Cursor,GraphName) :-
-	tripledb_get_supgraphs(GraphName,Graphs),
-	mng_cursor_filter(Cursor,
-		['graph',['$in',array(Graphs)]]
-	).
+filter_graph_(GraphName,['graph',['$in',array(Graphs)]]) :-
+	tripledb_get_supgraphs(GraphName,Graphs).
 
 %%
-filter_scope_(Cursor,[Scope]) :-
-	!, filter_scope_(Cursor,Scope).
+filter_scope_([Scope],Filter) :-
+	!, filter_scope_(Scope,Filter).
 
-filter_scope_(Cursor,Scopes) :-
+filter_scope_([First|Rest],['$or',Filters]) :-
 	% generate disjunctive query if given a list of scopes
-	is_list(Scopes),!,
+	!,
 	findall(['$and',X],
-		(	member(Scope,Scopes),
-			findall(Y, filter_scope1_(Scope,Y), X)
+		(	member(Scope,[First|Rest]),
+			findall(Y, filter_scope_(Scope,Y), X)
 		),
 		Filters
-	),
-	mng_cursor_filter(Cursor,['$or',Filters]).
-
-filter_scope_(Cursor,Scope) :-
-	forall(
-		filter_scope1_(Scope,Filter),
-		mng_cursor_filter(Cursor,Filter)
 	).
 
-filter_scope1_(Scope,[Key,Filter]) :-
+filter_scope_(Scope,[Key,Filter]) :-
 	get_scope_query_(Scope,Key,Filter).
 
 %%
@@ -324,7 +316,6 @@ triple_query_unify_(Cursor,QSubject,QProperty,QValue,FScope,Options) :-
 	triple_query_unify_s(Doc,QSubject),
 	triple_query_unify_p(Doc,QProperty,Options),
 	triple_query_unify_o(Doc,QValue,Options),
-	% get the fact scope
 	mng_get_dict('scope',Doc,FScope).
 
 %%
@@ -333,7 +324,8 @@ triple_query_unify_s(Doc,QSubject) :-
 	( ground(Subject)
 	-> true
 	;  mng_get_dict('s',Doc,string(Subject))
-	).
+	),
+	!.
 
 %%
 triple_query_unify_p(Doc,QProperty,Options) :-
@@ -366,19 +358,22 @@ triple_query_unify_o1(Doc,ValueQuery,Options) :-
 	),
 	once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
 	%%
-	strip_operator_(ValueQuery,_,Value1),
+	once(strip_operator_(ValueQuery,_,Value1)),
 	strip_unit_(Value1,Unit,Value2),
 	strip_type_(Value2,_,Value3),
-	( ground(Value3)
-	-> true
-	;  strip_type_(Value,_,Value3)
-	).
+	( ground(Value3) -> true ; (
+		strip_type_(Value,_,AtomicValue),
+		( (nonvar(Value2),Value2=term(_))
+		-> term_to_atom(Value3,AtomicValue)
+		;  Value3=AtomicValue
+		)
+	)).
 
 %%
 get_query_variable(QValue,Var) :-
-	( var(QValue) -> Var=QValue
-	; QValue=(_->Var) -> true
-	; Var=QValue
+	(	var(QValue) -> Var=QValue
+	;	QValue=(_->Var) -> true
+	;	Var=QValue
 	).
 		 /*******************************
 		 *	   .....              	*
@@ -394,7 +389,11 @@ mng_query_value_(Query,Operator,Value,Unit) :-
 	% get the value type
 	strip_type_(Query1,Type0,Value0),
 	type_mapping_(Type0,MngType),
-	Value=..[MngType,Value0],
+	(	(Type0=term,compound(Value0))
+	->	term_to_atom(Value0,Value1)
+	;	Value1=Value0
+	),
+	Value=..[MngType,Value1],
 	!.
 
 % TODO: better use units as replacement of type.
@@ -409,11 +408,9 @@ strip_unit_(X,_,X).
 % instead of a single one.
 %
 fact_value_hierarchy_(HierarchyKey,string(Value),List) :-
-	( HierarchyKey=subclass_of
-	-> get_supclasses_(Value,List)
-	;  HierarchyKey=subproperty_of
-	-> get_supproperties_(Value,List)
-	;  fail
+	(	HierarchyKey=subclass_of    -> get_supclasses_(Value,List)
+	;	HierarchyKey=subproperty_of -> get_supproperties_(Value,List)
+	;	fail
 	),
 	!.
 fact_value_hierarchy_(_,V0,[V0]).
@@ -466,16 +463,19 @@ get_scope_query2_(Query,'',[Operator,Value]) :-
 	mng_query_value_(Query,Operator,Value,_Unit).
 
 %%
-get_scope_document_(Dict,List) :-
+:- table(get_scope_document_/2).
+get_scope_document_(Dict,List) :- get_scope_document_1(Dict,List).
+
+get_scope_document_1(Dict,List) :-
 	is_dict(Dict),
 	!,
 	findall([K,V],
 		(	get_dict(K,Dict,V0),
-			get_scope_document_(V0,V)
+			get_scope_document_1(V0,V)
 		),
 		List
 	).
-get_scope_document_(X,X).
+get_scope_document_1(X,X).
 
 %%
 operator_mapping_('=', '$eq').
@@ -485,13 +485,13 @@ operator_mapping_('>', '$gt').
 operator_mapping_('<', '$lt').
 
 %%
-strip_operator_(    X, =,X) :- var(X),!.
-strip_operator_( =(X), =,X) :- !.
-strip_operator_(>=(X),>=,X) :- !.
-strip_operator_(=<(X),=<,X) :- !.
-strip_operator_( <(X), <,X) :- !.
-strip_operator_( >(X), >,X) :- !.
-strip_operator_(    X, =,X) :- !.
+strip_operator_(    X, =,X) :- var(X).
+strip_operator_( =(X), =,X).
+strip_operator_(>=(X),>=,X).
+strip_operator_(=<(X),=<,X).
+strip_operator_( <(X), <,X).
+strip_operator_( >(X), >,X).
+strip_operator_(    X, =,X).
 
 %%
 strip_type_(Term,Type,X) :-
@@ -511,33 +511,32 @@ strip_variable(X->_,X) :- nonvar(X), !.
 strip_variable(X,X) :- !.
   
 %%
-type_mapping_(float,  double) :- !.
-type_mapping_(number, double) :- !.
-type_mapping_(long,   int)    :- !.
-type_mapping_(short,  int)    :- !.
-type_mapping_(byte,   int)    :- !.
-type_mapping_(X,      X)      :- !.
+type_mapping_(float,   double) :- !.
+type_mapping_(number,  double) :- !.
+type_mapping_(integer, int) :- !.
+type_mapping_(long,    int)    :- !.
+type_mapping_(short,   int)    :- !.
+type_mapping_(byte,    int)    :- !.
+type_mapping_(term,    string) :- !.
+type_mapping_(X,       X)      :- !.
 
 		 /*******************************
 		 *	   PROPAGATION       *
 		 *******************************/
 
 %%
-propagate_assertion_(HierarchyKey,CacheKey,S,string(O),Graph,Options) :-
-	ground(HierarchyKey),
-	!,
+propagate_assertion_(Doc,CacheKey,S,Graph,Options) :-
+	(	member(['o*',array(Parents)],Doc)
+	->	propagate_assertion_1(Parents,CacheKey,S,Graph,Options)
+	;	true
+	).
+
+propagate_assertion_1(Parents,CacheKey,S,Graph,Options) :-
 	% invalidate all inferences when
 	% a new axiom was added
-	( option(skip_invalidate(true),Options)
-	-> true
-	;  inference_cache_invalidate(CacheKey)
-	),
-	% find parents
-	( HierarchyKey=subclass_of
-	-> get_supclasses_(O,Parents)
-	;  HierarchyKey=subproperty_of
-	-> get_supproperties_(O,Parents)
-	;  fail
+	(	option(skip_invalidate(true),Options)
+	->	true
+	;	inference_cache_invalidate(CacheKey)
 	),
 	tripledb_get_supgraphs(Graph,Graphs),
 	%wildcard_scope(Scope),
@@ -550,7 +549,6 @@ propagate_assertion_(HierarchyKey,CacheKey,S,string(O),Graph,Options) :-
 		],
 		['$addToSet',['o*',['$each',array(Parents)]]]
 	).
-propagate_assertion_(_,_,_,_,_,_).
 
 %%
 propagate_deletion_(subclass_of,S,string(_O),Graph) :-

@@ -60,6 +60,7 @@ ask(Statement,[Options,QScope]) :-
 	ask_asynch(Statement,[Options1,QScope],CB).
 
 ask([X|Xs],QScope->FScope) :-
+	!,
 	ask_all_([X|Xs],QScope,_->FScope).
 
 ask(Statement,Scope) :-
@@ -285,13 +286,55 @@ synchronize(Term) :-
 % The head is rewritten as ask head, and the goal is
 % expanded such that the contextual parameter is taken into account.
 %
-user:term_expansion((?>(Head,Goal)),Expansions) :-
-  strip_module_(Head,Module,Term),
-  once((ground(Module);prolog_load_context(module,Module))),
-  findall(Expansion, (
-    expand_predicate_(Module,Term,Expansion);
-    expand_ask_query_(Term,Goal,Expansion)
-  ), Expansions).
+user:term_expansion((?>(LeftSide,Goal)),Expansions) :-
+	(	( LeftSide=(','(Head,Options)) )
+	;	( LeftSide=Head, Options=[] )
+	),
+	strip_module_(Head,Module,Term),
+	once((ground(Module);prolog_load_context(module,Module))),
+	findall(Expansion,
+		expand_predicate(Module,Term,Goal,Expansion,Options),
+		Expansions
+	).
+
+%%
+expand_predicate(_Module,Head,Goal,Expansion,Options) :-
+	member(table(?),Options),
+	!,
+	(	expand_tabled_predicate(Head,Goal,Expansion)
+	;	expand_ask_query_(Head,Goal,Expansion)
+	).
+
+expand_predicate(Module,Head,Goal,Expansion,_Options) :-
+	(	expand_predicate_(Module,Head,Expansion)
+	;	expand_ask_query_(Head,Goal,Expansion)
+	).
+
+%%
+% Expand `f(Args) ?> goal` to `:- table g_f/arity`
+%
+%expand_table_directive(Head,(:- table G_Functor/Arity)) :-
+%	functor(Head,Functor,Arity),
+%	atom_concat('g_',Functor,G_Functor).
+
+%%
+% Expand `f(Args) ?> goal` to `f(Args) :- (ground(Args) -> g_f(Args) ; goal(Args)))`
+%
+expand_tabled_predicate(Head,Goal,(:-(Head,X_Goal))) :-
+	functor(Head,Functor,_Arity),
+	atom_concat('g_',Functor,G_Functor),
+	Head=..[Functor|Args],
+	Term=..[G_Functor|Args],
+	X_Goal=(ground(Args) -> Term ; Goal).
+
+%%
+% Expand `f(Args) ?> goal` to `g_f(Args) :- goal(Args)`
+%
+expand_tabled_predicate(Head,Goal,(:-(Term,Goal))) :-
+	functor(Head,Functor,_Arity),
+	atom_concat('g_',Functor,G_Functor),
+	Head=..[Functor|Args],
+	Term=..[G_Functor|Args].
 
 %%
 % Expand `f(..) ?> ...` to `f(..) :- lang_query:ask(f(..))`
@@ -348,14 +391,20 @@ expand_ask_term_(QS->QS, FS->Fx, Goal,
 % The head is rewritten as tell/2 head, and the goal is
 % expanded such that the contextual parameter is taken into account.
 %
-user:term_expansion((+>(Head,Goal)),
+user:term_expansion((+>(LeftSide,Goal)),
                     (:-(lang_query:tell(Term,Scope),GoalExpanded))) :-
-  %%
-  strip_module_(Head,_,Term),
-  expand_tell_term_(Scope->_,Goal,GoalExpanded).
+	(	( LeftSide=(','(Head,Options)) )
+	;	( LeftSide=Head, Options=[] )
+	),
+	%%
+	strip_module_(Head,_,Term),
+	expand_tell_term(Scope->_,Goal,GoalExpanded,Options).
 
 %%
-%
+expand_tell_term(Scope,Goal,Expanded,_Options) :-
+	expand_tell_term_(Scope,Goal,Expanded).
+
+%%
 expand_tell_term_(QS0->QSn,
         (','(First0,Rest0)),
         (','(First1,Rest1))) :-

@@ -399,6 +399,9 @@ parser_synch__(Thread) :-
   %       I guess best option is to use a dedicated message signalling
   %       that the thread is waiting now. then just use get message for 
   %       blocking wait.
+  %       but this is difficult as wait is triggered by requesting token
+  %       in lazy list.
+%  thread_get_message(sleep_queue,sleeping(Thread)),
   sleep(0.001),
   parser_synch__(Thread).
 

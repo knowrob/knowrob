@@ -51,6 +51,12 @@ workflow_sequence(Steps, StepSequence) :-
 		[ namespace('http://knowrob.org/kb/pancake.owl#')
 		]).
 
+test('WF_MakingPancakes_0 steps', [fixme('the OWL reasoner yields some redundant results')]) :-
+	findall(S, workflow_step(test:'WF_MakingPancakes_0',S), Steps),
+	assert_true(member(test:'Mixing_0',Steps)),
+	assert_true(member(test:'Baking_0',Steps)),
+	assert_unifies(Steps,[_,_]).
+
 test('WF_MakingPancakes_0 sequence', [nondet]) :-
 	workflow_sequence(test:'WF_MakingPancakes_0',
 		[ test:'Mixing_0',

@@ -153,10 +153,10 @@ time_scope_min_(X0,X1,Min) :-
 	strip_operator_(X1,Op1,V1),
 	operator_polarization_(Op0,P0),
 	operator_polarization_(Op1,P1),
-	( P0<P1 -> Min=X0
-	; P1<P0 -> Min=X1
-	; V0<V1 -> Min=X0
-	; Min=X1
+	( P0<P1 -> is_equal_(X0,Min)
+	; P1<P0 -> is_equal_(X1,Min)
+	; V0<V1 -> is_equal_(X0,Min)
+	; is_equal_(X1,Min)
 	).
 
 %%
@@ -171,11 +171,20 @@ time_scope_max_(X0,X1,Max) :-
 	strip_operator_(X1,Op1,V1),
 	operator_polarization_(Op0,P0),
 	operator_polarization_(Op1,P1),
-	( P0>P1 -> Max=X0
-	; P1>P0 -> Max=X1
-	; V0>V1 -> Max=X0
-	; Max=X1
+	( P0>P1 -> is_equal_(X0,Max)
+	; P1>P0 -> is_equal_(X1,Max)
+	; V0>V1 -> is_equal_(X0,Max)
+	; is_equal_(X1,Max)
 	).
+
+%
+is_equal_(X,X) :- !.
+is_equal_(X,Y) :-
+	ground(Y),
+	strip_operator_(X,Op,VX),
+	strip_operator_(Y,Op,VY),
+	VX_f is float(VX),
+	VX_f is float(VY).
 
 %% time_scope(+Since,+Until,-Scope) is det.
 %
@@ -332,6 +341,14 @@ test('merge_scope([5,10],[=<10,20])') :-
 	time_scope_data(S3,Data),
 	assertion(ground(Data)),
 	assertion(Data = [=<(10),20]).
+
+test('merge_scope([5,20],[5.0,10.0])') :-
+	time_scope(=(5), =(20), S1),
+	time_scope(=(5.0), =(10.0), S2),
+	time_scope_merge(S1, S2, S3),
+	time_scope_data(S3,Data),
+	assertion(ground(Data)),
+	assertion(Data = [5.0,20]).
 
 test('intersect_scope([5,18],[10,20])') :-
 	time_scope(=(5),  =(18), S1),

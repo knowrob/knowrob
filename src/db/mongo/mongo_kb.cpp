@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "knowrob/db/mongo/MongoInterface.h"
+#include "knowrob/db/mongo/bson_pl.h"
 
 PREDICATE(mng_collections,2) {
 	MongoDatabase db_handle(MongoInterface::pool(), (char*)PL_A1);
@@ -95,6 +96,15 @@ PREDICATE(mng_cursor_create, 3) {
 	return TRUE;
 }
 
+PREDICATE(mng_cursor_create, 4) {
+	char* db_name   = (char*)PL_A1;
+	char* coll_name = (char*)PL_A2;
+	MongoCursor *cursor = MongoInterface::cursor_create(db_name,coll_name);
+	cursor->filter(PL_A4);
+	PL_A3 = cursor->id().c_str();
+	return TRUE;
+}
+
 PREDICATE(mng_cursor_destroy, 1) {
 	char* cursor_id = (char*)PL_A1;
 	MongoInterface::cursor_destroy(cursor_id);
@@ -131,6 +141,18 @@ PREDICATE(mng_cursor_limit, 2) {
 	int limit       = (int)PL_A2;
 	MongoInterface::cursor(cursor_id)->limit(limit);
 	return TRUE;
+}
+
+PREDICATE(mng_cursor_next_pairs, 2) {
+	char* cursor_id = (char*)PL_A1;
+	const bson_t *doc;
+	if(MongoInterface::cursor(cursor_id)->next(&doc)) {
+		PL_A2 = bson_to_term(doc);
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
 }
 
 PREDICATE(mng_cursor_next_json, 2) {

@@ -41,12 +41,6 @@
 %%
 %
 %
-notify:notify_hook(individual(X)) :-
-  ( is_object(X) -> notify(object(X)) ;
-    is_event(X)  -> notify(event(X)) ;
-    fail
-  ).
-
 notify:notify_hook(object(Object)) :-
   ( is_physical_object(Object) -> initialize_PO_(Object);
     is_concept(Object)         -> initialize_CO_(Object);
@@ -88,7 +82,9 @@ initialize_LOC_(PO) :-
             holds(PO,ease_obj:hasLocalization,LOC) ])
   ),
   %%
-  ( has_region(LOC,_) -> true ; (
+  ( tripledb_ask(LOC,dul:hasRegion,_)
+%  ( has_region(LOC,_)
+  -> true ; (
     % create a new region if none exist,
     % and assign a frame name to the region used
     % for pose data lookups in the DB.
@@ -136,19 +132,23 @@ initialize_required_1_(Object,P,[Range,Card]) :-
     NumActual
   ),
   NumMissing is Card - NumActual,
-  % TODO: infer more specific P. This might not be trivial...
-  %          - could we get this from calling holds above?
-  %          - else probably need to do some more queries
-  % HACK: for now try to use sub-properties of P with matching min card
-  get_property_(Object,P,Range,Card,P_sup),
-  print_message(informational,
-      notify(initialize(Object,P_sup,NumMissing,Range))),
-  % finally generate symbols, and assert relation
-  forall(
-    between(1,NumMissing,_),
-    tell([ instance_of(X,Range),
-           holds(Object,P_sup,X) ])
-  ).
+  NumMissing_i is integer(NumMissing), % FIXME: why needed?
+  ( NumMissing_i = 0 -> true 
+  ; (
+    % TODO: infer more specific P. This might not be trivial...
+    %          - could we get this from calling holds above?
+    %          - else probably need to do some more queries
+    % HACK: for now try to use sub-properties of P with matching min card
+    get_property_(Object,P,Range,Card,P_sup),
+    print_message(informational,
+        notify(initialize(Object,P_sup,NumMissing_i,Range))),
+    % finally generate symbols, and assert relation
+    forall(
+      between(1,NumMissing_i,_),
+      tell([ instance_of(X,Range),
+             holds(Object,P_sup,X) ])
+    )
+  )).
 
 %%
 % FIXME

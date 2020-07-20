@@ -2,6 +2,7 @@
     [ is_event(r),
       is_event_type(r),
       is_action(r),
+      is_process(r),
       is_task(r),
       % FIXME: pl module process defines this already.
       %        - probably better assert all into another module then user,
@@ -30,6 +31,13 @@ In DUL, Object is defined as:
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
+% setup tabled ask calls (the "g_" is prepended in expand_term)
+:- table(g_is_event/1).
+:- table(g_is_event_type/1).
+:- table(g_is_action/1).
+:- table(g_is_process/1).
+:- table(g_is_task/1).
+
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ graph(tbox),
@@ -42,7 +50,7 @@ In DUL, Object is defined as:
 %
 % @param Entity An entity IRI.
 %
-is_event(Entity) ?+>
+is_event(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Event').
 
 %% is_event_type(?Entity) is nondet.
@@ -51,7 +59,7 @@ is_event(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_event_type(Entity) ?+>
+is_event_type(Entity), [table(?)] ?+>
   has_type(Entity, dul:'EventType').
 
 %% is_action(?Entity) is nondet.
@@ -60,7 +68,7 @@ is_event_type(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_action(Entity) ?+>
+is_action(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Action').
 
 %% is_task(?Entity) is nondet.
@@ -69,7 +77,7 @@ is_action(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_task(Entity) ?+>
+is_task(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Task').
 
 %% is_process(?Entity) is nondet.
@@ -78,7 +86,7 @@ is_task(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_process(Entity) ?+>
+is_process(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Process').
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.

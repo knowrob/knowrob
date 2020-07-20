@@ -31,6 +31,12 @@
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
+% setup tabled ask calls (the "g_" is prepended in expand_term)
+:- table(g_is_description/1).
+:- table(g_is_situation/1).
+:- table(g_is_goal/1).
+:- table(g_is_plan/1).
+
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ graph(tbox),
@@ -43,7 +49,7 @@
 %
 % @param Entity An entity IRI.
 %
-is_description(Entity) ?+>
+is_description(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Description').
 
 %% is_situation(?Entity) is nondet.
@@ -52,7 +58,7 @@ is_description(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_situation(Entity) ?+>
+is_situation(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Situation').
 
 %% is_goal(?Entity) is nondet.
@@ -61,7 +67,7 @@ is_situation(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_goal(Entity) ?+>
+is_goal(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Goal').
 
 %% is_design(?Entity) is nondet.
@@ -88,7 +94,7 @@ is_diagnosis(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_plan(Entity) ?+>
+is_plan(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Plan').
 
 %% is_plan_execution(?Entity) is nondet.

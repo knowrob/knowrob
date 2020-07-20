@@ -21,7 +21,6 @@
       mng_cursor_limit/2,
       mng_cursor_next/2,
       mng_cursor_materialize/2,
-      mng_pl_value/2,
       mng_get_dict/3
     ]).
 /** <module> A mongo DB client for Prolog.
@@ -31,12 +30,15 @@
 */
 
 :- use_module(library('http/json')).
-
 :- use_foreign_library('libmongo_kb.so').
+:- dynamic mng_db_name/1.
 
 % define some settings
 :- setting(db_name, atom, roslog,
 		'Name of the Mongo DB used by KnowRob.').
+
+:- setting(mng_client:db_name, DBName),
+   assertz(mng_db_name(DBName)).
 
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),
@@ -44,8 +46,8 @@ read_json_(JSON,Dict) :-
   json_read_dict(Stream,Dict).
 
 %%
-mng_db_name(DBName) :-
-	setting(mng_client:db_name, DBName).
+%mng_db_name(DBName) :-
+%	setting(mng_client:db_name, DBName).
 
 %%
 mng_export(Dir) :-
@@ -131,10 +133,18 @@ mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
 %
 %
 mng_cursor_next(Cursor,Dict) :-
-  mng_cursor_next_json(Cursor,JSON),
-  read_json_(JSON,Dict).
+  mng_cursor_next_pairs(Cursor,Pairs),
+  dict_pairs(Dict,_,Pairs).
 
 %% 
+%mng_cursor_materialize(Cursor,Next) :-
+%	(	mng_cursor_next(Cursor,X)
+%	->	(	Next=X
+%		;	mng_cursor_materialize(Cursor,Next)
+%		)
+%	;	fail
+%	).
+
 mng_cursor_materialize(Cursor,Dict) :-
   mng_cursor_next(Cursor,Next),
   mng_cursor_materialize(Cursor,Next,Dict).
@@ -152,93 +162,19 @@ mng_cursor_materialize(Cursor,Next,Dict) :-
 %
 mng_get_dict(Key,Doc,PlValue) :-
   get_dict(Key,Doc,MngValue),
-  mng_pl_value(MngValue,PlValue).
-
-%% mng_pl_value(+ValueMongo,?ValueNative) is det.
-%
-% Query results are mapped into Prolog dictionaries,
-% with some particularities typed data is represented.
-% This predicate is used to eliminate type annotations
-% while mapping data values to appropiate native
-% Prolog types.
-%
-mng_pl_value(Dict,Val_pl) :-
-  is_dict(Dict),!,
-  % peek element, in case the key starts with '$',
-  % read as atomic value
-  once(get_dict(Type,Dict,Val)),
-  ( atom_concat('$',_,Type) ->
-    mng_pl_dict_value_(Type,Val,Val_pl) ;
-    mng_pl_value_dict(Dict,Val_pl)
-  ).
-
-mng_pl_value(List,array(List0)) :-
-  is_list(List),!,
-  findall(X,(
-    member(Y,List),
-    mng_pl_value(Y,X)
-  ),List0).
-
-mng_pl_value(String,string(Val)) :-
-  string(String),
-  string_to_atom(String,Val),!.
-
-%mng_pl_value(String,string(Val)) :-
-  %string(String),
-  %string_to_atom(String,A),
-  %( catch(term_to_atom(Val,A),_,Val=A) ),
-  %( ground(Val);Val=A ),!.
-
-mng_pl_value(Val,Val).
-
-mng_pl_value_dict(In,Out) :-
-  findall(K-V_pl, (
-    get_dict(K,In,V_mng),
-    mng_pl_value(V_mng,V_pl)
-  ),Pairs),
-  dict_pairs(Out,_,Pairs).
+  mng_get_dict2(MngValue,PlValue).
 
 %%
-mng_pl_dict_value_('$numberInt',Val,int(Val)) :-
-  number(Val), !.
-mng_pl_dict_value_('$numberInt',String,int(Val)) :-
-  string(String),!,
-  parse_number_(String,Val).
-mng_pl_dict_value_('$numberLong',Val,int(Val)) :-
-  number(Val), !.
-mng_pl_dict_value_('$numberLong',String,int(Val)) :-
-  string(String),!,
-  parse_number_(String,Val).
-mng_pl_dict_value_('$numberDecimal',Val,double(Val)) :- number(Val), !.
-mng_pl_dict_value_('$numberDecimal','Infinity',double('Infinity')) :- !.
-mng_pl_dict_value_('$numberDecimal',"Infinity",double('Infinity')) :- !.
-mng_pl_dict_value_('$numberDecimal',String,double(Val)) :-
-  string(String),!,
-  parse_number_(String,Val).
-mng_pl_dict_value_('$numberDouble',Val,double(Val)) :-
-  number(Val), !.
-mng_pl_dict_value_('$numberDouble',String,double(Val)) :-
-  string(String),!,
-  parse_number_(String,Val).
-mng_pl_dict_value_('$date',DateDict,double(Time)) :-
-  mng_pl_value(DateDict,int(Long)),
-  Time is Long/1000.0.
-mng_pl_dict_value_('$oid',Val,id(Val)) :-
-  atom(Val), !.
-mng_pl_dict_value_('$oid',Val,id(Atom)) :-
-  string(Val), !,
-  string_to_atom(Val,Atom).
-mng_pl_dict_value_(Type,Val,Val) :-
-  write('Warn: unknown mng type: '), write([Type,Val]), nl.
+mng_get_dict2([X|Xs],PlValue) :-
+	findall(Key-PlValue_n,
+		(	member(Key-MngValue_n,[X|Xs]),
+			mng_get_dict2(MngValue_n,PlValue_n)
+		),
+		Pairs
+	),
+	dict_pairs(PlValue,_,Pairs), !.
 
-%%
-parse_number_(String,Number) :-
-  string_to_atom(String,Atom),
-  atomic_list_concat([A0,A1],',',Atom),
-  atomic_list_concat([A0,A1],'.',X),
-  term_to_atom(Number,X),!.
-parse_number_(String,Number) :-
-  number_string(Number,String).
+mng_get_dict2(PlValue,PlValue).
 
 %% mng_dump(+DB, +Dir) is det.
 %

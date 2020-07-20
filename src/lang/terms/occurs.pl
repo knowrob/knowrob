@@ -7,6 +7,8 @@
 @license BSD
 */
 
+:- use_module(library('comm/notify'), [ notify_synchronize/1 ]).
+
 :- op(1000, xf, occurs).
 
 :- use_module(library('db/scope'),
@@ -25,6 +27,7 @@
 % @param Event an event instance.
 %
 occurs(Evt) ?>
+  { notify_synchronize(event(Evt)) },
   has_interval_data(Evt,Since,Until),
   { ground([Since,Until]) },
   query_scope(QScope),

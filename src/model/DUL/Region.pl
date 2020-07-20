@@ -32,6 +32,12 @@ In DUL, Region is defined as:
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2, tripledb_ask/3 ]).
 
+% setup tabled ask calls (the "g_" is prepended in expand_term)
+:- table(g_is_region/1).
+:- table(g_is_parameter/1).
+:- table(g_is_time_interval/1).
+:- table(g_is_space_region/1).
+
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ graph(tbox),
@@ -44,7 +50,7 @@ In DUL, Region is defined as:
 %
 % @param Entity An entity IRI.
 %
-is_region(Entity) ?+>
+is_region(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Region').
 
 %% is_parameter(?Entity) is nondet.
@@ -53,7 +59,7 @@ is_region(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_parameter(Entity) ?+>
+is_parameter(Entity), [table(?)] ?+>
   has_type(Entity, dul:'Parameter').
 
 %% is_space_region(?Entity) is nondet.
@@ -62,7 +68,7 @@ is_parameter(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_space_region(Entity) ?+>
+is_space_region(Entity), [table(?)] ?+>
   has_type(Entity, dul:'SpaceRegion').
 
 %% is_amount(?Entity) is nondet.
@@ -98,7 +104,7 @@ is_social_attribute(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_time_interval(Entity) ?+>
+is_time_interval(Entity), [table(?)] ?+>
   has_type(Entity, dul:'TimeInterval').
 
 %% has_region(?Entity,?Region) is nondet.

@@ -205,9 +205,13 @@ convert_blank_node_(IRI,Blank,Converted) :-
 	).
 
 %%
-convert_rdf_value_(literal(type(Type,O)),O_typed) :-
+convert_rdf_value_(literal(type(Type,V_atom)),O_typed) :-
   xsd_data_basetype(Type,TypeKey),
-  O_typed=..[TypeKey,O].
+  ( TypeKey=integer -> atom_number(V_atom,V_typed)
+  ; TypeKey=double  -> atom_number(V_atom,V_typed)
+  ; V_typed=V_atom
+  ),
+  O_typed=..[TypeKey,V_typed].
 convert_rdf_value_(literal(O),string(O)).
 convert_rdf_value_(O,string(O)).
 
@@ -242,17 +246,12 @@ tripledb_drop :-
 % @implements 'db/itripledb'
 %
 tripledb_tell(S,P,O,Scope,Options) :-
-  ( option(functional,Options)
-  -> tripledb_stop(S,P,Scope,Options)
-  ;  true
-  ),
+%  ( option(functional,Options)
+%  -> tripledb_stop(S,P,Scope,Options)
+%  ;  true
+%  ),
   set_graph_option(Options,Options0),
   itripledb_tell(S,P,O,Scope,Options0).
-
-%%
-tripledb_stop(S,P,Scope,Options) :-
-	% TODO implement
-	true.
 
 %% tripledb_tell(?S,?P,?O,+Scope) is semidet.
 %
@@ -285,6 +284,11 @@ tripledb_tell(S,P,O) :-
 %
 tripledb_bulk_tell(Facts,Scope,Options) :-
   itripledb_bulk_tell(Facts,Scope,Options).
+
+%%
+tripledb_stop(S,P,Scope,Options) :-
+	% TODO implement
+	true.
 
 %% 
 % @implements 'db/itripledb'

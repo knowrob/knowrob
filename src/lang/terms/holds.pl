@@ -1,6 +1,6 @@
 :- module(lang_holds,
     [ holds(t),    % ?Query
-      holds(r,r,t) % ?Subject, ?Predicate, ?Object
+      holds(r,t,t) % ?Subject, ?Predicate, ?Object
     ]).
 /** <module> The *holds* predicate.
 
@@ -52,9 +52,9 @@ holds(Query) ?>
 % @param Property The predicate of a triple.
 % @param Value The object of a triple.
 %
-holds(S,Chain,O) ?>
-  { is_list(Chain),! },
-  holds_chain(S,Chain,O).
+holds(S,[P|Ps],O) ?>
+  { ! },
+  holds_chain(S,[P|Ps],O).
 
 holds(S,P,O) ?>
   { once((var(P); is_object_property(P))) },
@@ -259,7 +259,8 @@ test('tell the rectangle size during a time interval') :-
 test('ask holds unit conversion') :-
   assert_true(tell(holds(test:'RectangleSmall',test:'hasHeightInMeters', m(6.5)))),
   assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(650))),
-  holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); true.
+  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(650.0))),
+  holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); fail.
 
 test('ask holds without an object or data type property') :-
   assert_false(holds(test:'Alex', rdf:'type', test:'Woman')).

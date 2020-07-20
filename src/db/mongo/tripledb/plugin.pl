@@ -51,16 +51,16 @@ tripledb_import(Dir) :-
 % @implements 'db/itripledb'
 %
 tripledb_export(Dir) :-
-	triples_export(Dir),
-	annotations_export(Dir),
+	triple_export(Dir),
+	annotation_export(Dir),
 	inference_cache_export(Dir).
 
 %% 
 % @implements 'db/itripledb'
 %
 tripledb_drop :-
-	triples_drop,
-	annotations_drop,
+	triple_drop,
+	annotation_drop,
 	inference_cache_drop.
 
 %% 
