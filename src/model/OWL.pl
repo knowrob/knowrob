@@ -229,43 +229,43 @@ is_restriction(R,Descr) ?>
 
 %%
 is_restriction1(R,only(P,O)) ?+>
-  triple(R,owl:allValuesFrom,O),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:allValuesFrom,O).
 
 is_restriction1(R,some(P,O)) ?+>
-  triple(R,owl:someValuesFrom,O),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:someValuesFrom,O).
 
 is_restriction1(R,value(P,O)) ?+>
-  triple(R,owl:hasValue,O),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:hasValue,O).
 
 is_restriction1(R,min(P,M,O)) ?+>
-  triple(R,owl:minQualifiedCardinality,M),
   triple(R,owl:onProperty,P),
+  triple(R,owl:minQualifiedCardinality,M),
   triple(R,owl:onClass,O).
 
 is_restriction1(R,min(P,M)) ?+>
-  triple(R,owl:minCardinality,M),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:minCardinality,M).
 
 is_restriction1(R,max(P,M,O)) ?+>
-  triple(R,owl:maxQualifiedCardinality,M),
   triple(R,owl:onProperty,P),
+  triple(R,owl:maxQualifiedCardinality,M),
   triple(R,owl:onClass,O).
 
 is_restriction1(R,max(P,M)) ?+>
-  triple(R,owl:maxCardinality,M),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:maxCardinality,M).
 
 is_restriction1(R,exactly(P,M,O)) ?+>
-  triple(R,owl:qualifiedCardinality,M),
   triple(R,owl:onProperty,P),
+  triple(R,owl:qualifiedCardinality,M),
   triple(R,owl:onClass,O).
 
 is_restriction1(R,exactly(P,M)) ?+>
-  triple(R,owl:cardinality,M),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:cardinality,M).
 
 %%
 is_restriction_term_(only(_,_)).
@@ -309,7 +309,6 @@ is_intersection_of(IntersectionClass,intersection_of(List_pl)) +>
 is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
   triple(IntersectionClass,owl:intersectionOf,List_rdf),
   is_rdf_list(List_rdf,List_pl).
-
 
 %% is_complement_of(?ComplementClass,?Descr) is nondet.
 %
@@ -423,7 +422,8 @@ has_equivalent_class(Cls,EQ) :-
 
 has_equivalent_class(Cls,EQ) :-
   ground(EQ),!,
-  has_equivalent_class1([EQ],Cls,[]),
+  has_equivalent_class1([EQ],ClsList,[]),
+  member(Cls,ClsList),
   EQ \= Cls.
 
 has_equivalent_class(Cls,EQ) :-
