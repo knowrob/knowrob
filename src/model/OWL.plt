@@ -38,32 +38,42 @@ test('is_class') :-
   assert_false(is_class(test:'bIndiv')),
   assert_false(is_class(test:'P')),
   % Argument is unbound
-  assert_true(is_class(_)).
+  assert_true(is_class(_)),
+  (is_class(A) -> assert_unifies(test:'E',A) ; true).
 
 test('is_restriction/1') :-
   check_is_restriction_true(_,owl:'allValuesFrom',test:'s',test:'Range2'),
-  check_is_restriction_true(Entity,owl:'someValuesFrom',test:'p',test:'B'),
-  assert_true(subclass_of(test:'A2',Entity)),
   check_is_restriction_false(_,owl:'allValuesFrom',test:'s',test:'Range1'),
-  check_is_restriction_false(_,owl:'someValuesFrom',test:'p',test:'Range2').
+  check_is_restriction_false(_,owl:'someValuesFrom',test:'p',test:'Range2'),
+  % Argument is unbound
+  ((assert_true(subclass_of(test:'A2',A)), check_is_restriction_true(B,owl:'someValuesFrom',test:'p',test:'B')) *-> assert_unifies(A,B)),
+  assert_true(is_restriction(_)).
 
 test('is_restriction/2') :-
   assert_true((subclass_of(test:'A',R))),
   assert_true(is_restriction(R,only(test:'s', test:'Range2'))),
-  assert_true((subclass_of(test:'A2',R))), 
-  assert_true(is_restriction(R,some(test:'p', test:'B'))),
-  assert_true((subclass_of(test:'B',R))), 
-  assert_true(is_restriction(R,min(test:'r',2,test:'Range1'))),
-  assert_true((subclass_of(test:'B',R))), 
-  assert_true(is_restriction(R,max(test:'r',5))),
-  assert_true((subclass_of(test:'B',R))), 
-  assert_true(is_restriction(R,exactly(test:'s',3))),
-  assert_true((subclass_of(test:'D',R))), 
-  assert_true(is_restriction(R,min(test:'s',2))),
-  assert_true((subclass_of(test:'D',R))), 
-  assert_true(is_restriction(R,max(test:'s',5,test:'Range1'))),
-  assert_true((subclass_of(test:'D',R))),
-  assert_true(is_restriction(R,exactly(test:'s',2,test:'Range2'))),
+  assert_true((subclass_of(test:'A2',R2))), 
+  assert_true(is_restriction(R2,some(test:'p', test:'B'))),
+  assert_true((subclass_of(test:'B',R3))), 
+  assert_true(is_restriction(R3,min(test:'r',2,test:'Range1'))),
+  assert_true((subclass_of(test:'B',R4))), 
+  assert_true(is_restriction(R4,max(test:'r',5))),
+  assert_true((subclass_of(test:'B',R5))), 
+  assert_true(is_restriction(R5,exactly(test:'s',3))),
+  assert_true((subclass_of(test:'D',R6))), 
+  assert_true(is_restriction(R6,min(test:'s',2))),
+  assert_true((subclass_of(test:'D',R7))), 
+  assert_true(is_restriction(R7,max(test:'s',5,test:'Range1'))),
+  assert_true((subclass_of(test:'D',R8))),
+  assert_true(is_restriction(R8,exactly(test:'s',2,test:'Range2'))),
+  % Left argument is unbound
+  assert_true(is_restriction(_,only(test:'s', test:'Range2'))),
+  ((subclass_of(test:'A',ARestr),is_restriction(A,only(test:'s', test:'Range2'))) -> assert_unifies(ARestr,A) ; true),
+  % Right argument is unbound
+  assert_true(is_restriction(test:'EUnion',_)),
+  ((subclass_of(test:'A',A),is_restriction(A,ARestr)) -> assert_unifies(ARestr,only(test:'s', test:'Range2')) ; true),
+  % Both arguments are unbound
+  assert_true(is_union_of(_,_)),
   % Negative Case
   assert_true((subclass_of(test:'A',R))), 
   assert_false(is_restriction(R,only(test:'s', test:'Range1'))),
@@ -71,23 +81,35 @@ test('is_restriction/2') :-
   assert_false(is_restriction(R,some(test:'t', test:'B'))).
 
 test('is_union_of') :-
-  assert_true(subclass_of(test:'EUnion',Union)),
-  %has_description(Union, Desc),
-  assert_true(is_union_of(Union,is_union_of([test:'E1',test:'E2']))),
+  assert_true((subclass_of(test:'EUnion',Union))),
+  assert_true(is_union_of(Union,union_of([test:'E1',test:'E2']))),
+  assert_false(is_union_of(Union,union_of([test:'E1']))),
+  assert_false(is_union_of(Union,union_of([test:'E1',test:'E2',test:'E3']))),
+  % Left argument is unbound
+  assert_true(is_union_of(_,union_of([test:'E1',test:'E2']))),
+  ((subclass_of(test:'EUnion',AUnion),is_union_of(A,union_of([test:'E1',test:'E3']))) -> assert_unifies(AUnion,A) ; true),
+  % Right argument is unbound
+  assert_true(is_intersection_of(test:'EUnion',_)),
+  ((subclass_of(test:'EUnion',BUnion),is_union_of(BUnion,union_of([test:'E1',test:'E2']))) -> assert_unifies(BUnion,A) ; true),
+  % Both arguments are unbound
+  assert_true(is_union_of(_,_)),
+  % Negative Case
   assert_false(is_union_of(test:'A',test:'B')).
 
 test('is_intersection_of') :-
   assert_true(subclass_of(test:'CInter',CInter)),
   %has_description(Inter, Desc),
   assert_true(is_intersection_of(CInter,intersection_of([test:'C1',test:'C2']))),
-    % Left argument is unbound
-  %assert_true(is_complement_of(_,not(test:'D'))),
-  %((is_intersection_of(test:'CInter',Compl), is_complement_of(A,not(test:'D'))) -> assert_unifies(Compl,A) ; true),
+  assert_false(is_intersection_of(CInter,intersection_of([test:'C1']))),
+  assert_false(is_intersection_of(CInter,intersection_of([test:'C1',test:'C2',test:'C3']))),
+  % Left argument is unbound
+  assert_true(is_intersection_of(_,intersection_of([test:'C1',test:'C2']))),
+  ((subclass_of(test:'CInter',AInter),is_intersection_of(A,intersection_of([test:'C1',test:'C2']))) -> assert_unifies(AInter,A) ; true),
   % Right argument is unbound
-  %assert_true(is_complement_of(Compl,_)),
-  %((subclass_of(test:'DCompl',Compl), is_complement_of(Compl,B)) -> assert_unifies(not(test:'D'),B) ; true),
+  assert_true(is_intersection_of(CInter,_)),
+  (is_intersection_of(CInter,B) *-> assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; true),
   % Both arguments are unbound
-  %assert_true(is_intersection_of(_,_)),
+  assert_true(is_intersection_of(_,_)),
   % Negative Case
   assert_false(is_intersection_of(test:'A',test:'B')).
 
@@ -114,7 +136,8 @@ test('is_individual') :-
   assert_true(is_individual(test:'bIndiv')),
   assert_false(is_individual(test:'P')),
   % Argument is unbound
-  assert_true(is_individual(_)).
+  assert_true(is_individual(_)),
+  (is_individual(A) -> assert_unifies(test:'bIndiv',A) ; true).
 
 test('is_object_property') :-
   assert_false(is_object_property(test:'E')),
@@ -125,7 +148,8 @@ test('is_object_property') :-
   assert_false(is_object_property(test:'bIndiv')),
   assert_false(is_object_property(test:'P')),
   % Argument is unbound
-  assert_true(is_object_property(_)).
+  assert_true(is_object_property(_)),
+  (is_object_property(A) -> assert_unifies(test:'p',A) ; true).
 
 test('is_data_property') :-
   assert_false(is_data_property(test:'E')),
@@ -136,7 +160,8 @@ test('is_data_property') :-
   assert_false(is_data_property(test:'bIndiv')),
   assert_true(is_data_property(test:'P')),
   % Argument is unbound
-  assert_true(is_data_property(_)).
+  assert_true(is_data_property(_)),
+  (is_data_property(A) -> assert_unifies(test:'P',A) ; true).
 
 test('is_functional_property') :-
   assert_true(is_functional_property(test:'p')),
@@ -144,7 +169,8 @@ test('is_functional_property') :-
   assert_false(is_functional_property(test:'r')),
   assert_false(is_functional_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_functional_property(_)).
+  assert_true(is_functional_property(_)),
+  (is_functional_property(A) -> assert_unifies(test:'p',A) ; true).
 
 test('is_transitive_property') :-
   assert_false(is_transitive_property(test:'p')),
@@ -152,7 +178,8 @@ test('is_transitive_property') :-
   assert_true(is_transitive_property(test:'r')),
   assert_false(is_transitive_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_transitive_property(_)).
+  assert_true(is_transitive_property(_)),
+  (is_transitive_property(A) -> assert_unifies(test:'p',A) ; true).
 
 test('is_symmetric_property') :-
   assert_false(is_symmetric_property(test:'p')),
@@ -160,7 +187,8 @@ test('is_symmetric_property') :-
   assert_false(is_symmetric_property(test:'r')),
   assert_false(is_symmetric_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_symmetric_property(_)).
+  assert_true(is_symmetric_property(_)),
+  (is_symmetric_property(A) -> assert_unifies(test:'s',A) ; true).
 
 test('has_inverse_property') :-
   assert_true(has_inverse_property(test:'r',test:'rInv')),
@@ -213,7 +241,15 @@ test('has_disjoint_class2') :-
   assert_true(has_disjoint_class(test:'DisjCls1',test:'DisjCls2')),
   assert_true(has_disjoint_class(test:'DisjCls3',test:'DisjCls2')),
   assert_true(has_disjoint_class(test:'DisjCls1',test:'DisjCls3')),
-  assert_true(has_disjoint_class(test:'DisjCls1Sub',test:'DisjCls2Sub')).
+  assert_true(has_disjoint_class(test:'DisjCls1Sub',test:'DisjCls2Sub')),
+  % Left argument is unbound
+  assert_true(has_disjoint_class(_,test:'DisjCls2')),
+  (findall(A, has_disjoint_class(A,test:'DisjCls2'), AList) *-> assert_true(member(test:'DisjCls1', AList)) ; true), 
+  (findall(B, has_disjoint_class(B,test:'DisjCls2'), BList) *-> assert_true(member(test:'DisjCls3', BList)) ; true), 
+  % Right argument is unbound
+  assert_true(has_disjoint_class(test:'DisjCls2',_)),
+  (findall(C, has_disjoint_class(test:'DisjCls2',C), CList) *-> assert_true(member(test:'DisjCls1', CList)) ; true), 
+  (findall(D, has_disjoint_class(test:'DisjCls2',D), DList) *-> assert_true(member(test:'DisjCls3', DList)) ; true).
 
 test('has_equivalent_class') :-
   assert_true(has_equivalent_class(test:'ASub',test:'ASubEq')),
@@ -226,12 +262,12 @@ test('has_equivalent_class') :-
   assert_unifies(Xs,[_]),
   % Left argument is unbound
   assert_true(has_equivalent_class(_,test:'ASubEq')),
-  %(has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain1') ; true), 
-  %(has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain3') ; true), 
+  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain1') ; true), 
+  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain3') ; true), 
   % Right argument is unbound
   assert_true(has_equivalent_class(test:'ASub',_)),
-  %(has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain1',B) ; true),
-  %(has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain3',B) ; true),
+  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain1',B) ; true),
+  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain3',B) ; true),
   % Both arguments are unbound
   assert_true(has_equivalent_class(_,_)),
   % Negative Case
@@ -242,6 +278,20 @@ test('same_as') :-
   assert_true(same_as(test:'aIndiv',test:'bIndiv')),
   assert_true(same_as(test:'aIndiv',test:'aIndiv')),
   assert_false(same_as(test:'aIndiv',test:'indiv')),
+  % Make sure that there is only one individual (except the individual itself) that is equivalent to the tested individual
+  findall(X, (same_as(X,test:'aIndiv'), X \= test:'aIndiv'), Xs),
+  assert_unifies(Xs,[_]),
+  % Left argument is unbound
+  assert_true(has_equivalent_class(_,test:'ASubEq')),
+  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain1') ; true), 
+  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain3') ; true), 
+  % Right argument is unbound
+  assert_true(has_equivalent_class(test:'ASub',_)),
+  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain1',B) ; true),
+  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain3',B) ; true),
+  % Both arguments are unbound
+  assert_true(has_equivalent_class(_,_)),
+  % Negative Case
   assert_false(same_as(test:'aIndiv',test:'doesNotExists')).
 
 :- end_tests(model_OWL).
