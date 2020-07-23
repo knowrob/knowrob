@@ -406,13 +406,13 @@ has_disjoint_class2(A,B) :-
   is_all_disjoint_classes(DC),
   tripledb_ask(DC,owl:members,RDF_list),
   is_rdf_list(RDF_list,List),
-  once((
+  (
     member(Sup_A,List), subclass_of(A,Sup_A),
     member(Sup_B,List), unify_disjoint_(B,Sup_B)
-  )).
+  ).
 
 unify_disjoint_(B,Disjoint) :-
-  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
+  ( B=Disjoint ; transitive(subclass_of(B,Disjoint)) ).
 
 %% has_equivalent_class(?Class1, ?Class2) is nondet.
 %

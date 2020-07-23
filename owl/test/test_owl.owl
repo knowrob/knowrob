@@ -295,6 +295,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/test_owl#DisjCls1SubSub -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#DisjCls1SubSub">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/test_owl#DisjCls1Sub"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/test_owl#DisjCls2 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/test_owl#DisjCls2"/>
@@ -327,6 +335,14 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/test_owl#DisjClsChain1Sub">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/test_owl#DisjClsChain1"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#DisjClsChain1SubSub -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#DisjClsChain1SubSub">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/test_owl#DisjClsChain1Sub"/>
     </owl:Class>
     
 
