@@ -209,7 +209,6 @@ test('has_disjoint_class1') :-
   assert_false(has_disjoint_class(test:'DisjClsChain1',test:'DisjClsChain3')),
   assert_true(has_disjoint_class(test:'DisjClsChain1Sub',test:'DisjClsChain2Sub')),  
   assert_true(has_disjoint_class(test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')),
-  assert_true(subclass_of(test:'DisjClsChain2SubSub',test:'DisjClsChain2')),  
   % Left argument is unbound
   assert_true(has_disjoint_class(_,test:'DisjClsChain2')),
   assert_true((findall(A, has_disjoint_class(A,test:'DisjClsChain2'), AList), member(test:'DisjClsChain1', AList))), 
