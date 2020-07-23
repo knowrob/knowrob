@@ -94,7 +94,7 @@ test('is_intersection_of') :-
   ((subclass_of(test:'CInter',AInter),is_intersection_of(A,intersection_of([test:'C1',test:'C2']))) -> assert_unifies(AInter,A) ; true),
   % Right argument is unbound
   assert_true((subclass_of(test:'CInter',CInter4),is_intersection_of(CInter4,_))),
-  ((subclass_of(test:'CInter',CInter5),is_intersection_of(CInter5,B)) *-> assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; true),
+  ((subclass_of(test:'CInter',CInter5),is_intersection_of(CInter5,B)) -> assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; true),
   % Both arguments are unbound
   assert_true(is_intersection_of(_,_)),
   % Negative Case
@@ -198,7 +198,7 @@ test('has_property_chain') :-
   (has_property_chain(A,[test:'t1',test:'t2',test:'t3']) *-> assert_unifies(A,test:'t') ; true), 
   % Right argument is unbound
   assert_true(has_property_chain(test:'t',_)),
-  (has_property_chain(test:'t',B) *-> assert_unifies([test:'t1',test:'t2',test:'t3'],B) ; true),
+  (has_property_chain(test:'t',B) -> assert_unifies([test:'t1',test:'t2',test:'t3'],B) ; true),
   % Both arguments are unbound
   assert_true(has_property_chain(_,_)),!.
 
@@ -269,12 +269,12 @@ test('same_as') :-
   assert_unifies(Xs,[_]),
   % Left argument is unbound
   assert_true(has_equivalent_class(_,test:'ASubEq')),
-  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain1') ; true), 
-  (has_equivalent_class(A,test:'EqClsChain2') *-> assert_unifies(A,test:'EqClsChain3') ; true), 
+  (has_equivalent_class(A,test:'EqClsChain2') -> assert_unifies(A,test:'EqClsChain1') ; true), 
+  (has_equivalent_class(A,test:'EqClsChain2') -> assert_unifies(A,test:'EqClsChain3') ; true), 
   % Right argument is unbound
   assert_true(has_equivalent_class(test:'ASub',_)),
-  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain1',B) ; true),
-  (has_equivalent_class(test:'EqClsChain2',B) *-> assert_unifies(test:'EqClsChain3',B) ; true),
+  (has_equivalent_class(test:'EqClsChain2',B) -> assert_unifies(test:'EqClsChain1',B) ; true),
+  (has_equivalent_class(test:'EqClsChain2',B) -> assert_unifies(test:'EqClsChain3',B) ; true),
   % Both arguments are unbound
   assert_true(has_equivalent_class(_,_)),
   % Negative Case
