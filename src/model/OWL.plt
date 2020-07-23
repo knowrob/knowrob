@@ -50,22 +50,14 @@ test('is_restriction/1') :-
   assert_true(is_restriction(_)).
 
 test('is_restriction/2') :-
-  assert_true((subclass_of(test:'A',R))),
-  assert_true(is_restriction(R,only(test:'s', test:'Range2'))),
-  assert_true((subclass_of(test:'A2',R2))), 
-  assert_true(is_restriction(R2,some(test:'p', test:'B'))),
-  assert_true((subclass_of(test:'B',R3))), 
-  assert_true(is_restriction(R3,min(test:'r',2,test:'Range1'))),
-  assert_true((subclass_of(test:'B',R4))), 
-  assert_true(is_restriction(R4,max(test:'r',5))),
-  assert_true((subclass_of(test:'B',R5))), 
-  assert_true(is_restriction(R5,exactly(test:'s',3))),
-  assert_true((subclass_of(test:'D',R6))), 
-  assert_true(is_restriction(R6,min(test:'s',2))),
-  assert_true((subclass_of(test:'D',R7))), 
-  assert_true(is_restriction(R7,max(test:'s',5,test:'Range1'))),
-  assert_true((subclass_of(test:'D',R8))),
-  assert_true(is_restriction(R8,exactly(test:'s',2,test:'Range2'))),
+  assert_true((subclass_of(test:'A',R),is_restriction(R,only(test:'s', test:'Range2')))),
+  assert_true((subclass_of(test:'A2',R2),is_restriction(R2,some(test:'p', test:'B')))),
+  assert_true((subclass_of(test:'B',R3),is_restriction(R3,min(test:'r',2,test:'Range1')))),
+  assert_true((subclass_of(test:'B',R4),is_restriction(R4,max(test:'r',5)))),
+  assert_true((subclass_of(test:'B',R5),is_restriction(R5,exactly(test:'s',3)))),
+  assert_true((subclass_of(test:'D',R6),is_restriction(R6,min(test:'s',2)))),
+  assert_true((subclass_of(test:'D',R7),is_restriction(R7,max(test:'s',5,test:'Range1')))),
+  assert_true((subclass_of(test:'D',R8),is_restriction(R8,exactly(test:'s',2,test:'Range2')))),
   % Left argument is unbound
   assert_true(is_restriction(_,only(test:'s', test:'Range2'))),
   ((subclass_of(test:'A',ARestr),is_restriction(A,only(test:'s', test:'Range2'))) -> assert_unifies(ARestr,A) ; true),
@@ -75,16 +67,13 @@ test('is_restriction/2') :-
   % Both arguments are unbound
   assert_true(is_union_of(_,_)),
   % Negative Case
-  assert_true((subclass_of(test:'A',R))), 
-  assert_false(is_restriction(R,only(test:'s', test:'Range1'))),
-  assert_true((subclass_of(test:'A2',R))), 
-  assert_false(is_restriction(R,some(test:'t', test:'B'))).
+  assert_false((subclass_of(test:'A',R), is_restriction(R,only(test:'s', test:'Range1')))),
+  assert_false((subclass_of(test:'A2',R),is_restriction(R,some(test:'t', test:'B')))).
 
 test('is_union_of') :-
-  assert_true((subclass_of(test:'EUnion',Union))),
-  assert_true(is_union_of(Union,union_of([test:'E1',test:'E2']))),
-  assert_false(is_union_of(Union,union_of([test:'E1']))),
-  assert_false(is_union_of(Union,union_of([test:'E1',test:'E2',test:'E3']))),
+  assert_true((subclass_of(test:'EUnion',Union1),is_union_of(Union1,union_of([test:'E1',test:'E2'])))),
+  assert_false((subclass_of(test:'EUnion',Union2),is_union_of(Union2,union_of([test:'E1'])))),
+  assert_false((subclass_of(test:'EUnion',Union3),is_union_of(Union3,union_of([test:'E1',test:'E2',test:'E3'])))),
   % Left argument is unbound
   assert_true(is_union_of(_,union_of([test:'E1',test:'E2']))),
   ((subclass_of(test:'EUnion',AUnion),is_union_of(A,union_of([test:'E1',test:'E3']))) -> assert_unifies(AUnion,A) ; true),
@@ -97,25 +86,22 @@ test('is_union_of') :-
   assert_false(is_union_of(test:'A',test:'B')).
 
 test('is_intersection_of') :-
-  assert_true(subclass_of(test:'CInter',CInter)),
-  %has_description(Inter, Desc),
-  assert_true(is_intersection_of(CInter,intersection_of([test:'C1',test:'C2']))),
-  assert_false(is_intersection_of(CInter,intersection_of([test:'C1']))),
-  assert_false(is_intersection_of(CInter,intersection_of([test:'C1',test:'C2',test:'C3']))),
+  assert_true((subclass_of(test:'CInter',CInter1),is_intersection_of(CInter1,intersection_of([test:'C1',test:'C2'])))),
+  assert_false((subclass_of(test:'CInter',CInter2),is_intersection_of(CInter2,intersection_of([test:'C1'])))),
+  assert_false((subclass_of(test:'CInter',CInter3),is_intersection_of(CInter3,intersection_of([test:'C1',test:'C2',test:'C3'])))),
   % Left argument is unbound
   assert_true(is_intersection_of(_,intersection_of([test:'C1',test:'C2']))),
   ((subclass_of(test:'CInter',AInter),is_intersection_of(A,intersection_of([test:'C1',test:'C2']))) -> assert_unifies(AInter,A) ; true),
   % Right argument is unbound
-  assert_true(is_intersection_of(CInter,_)),
-  (is_intersection_of(CInter,B) *-> assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; true),
+  assert_true((subclass_of(test:'CInter',CInter4),is_intersection_of(CInter4,_))),
+  ((subclass_of(test:'CInter',CInter5),is_intersection_of(CInter5,B)) *-> assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; true),
   % Both arguments are unbound
   assert_true(is_intersection_of(_,_)),
   % Negative Case
   assert_false(is_intersection_of(test:'A',test:'B')).
 
 test('is_complement_of') :-
-  assert_true(subclass_of(test:'DCompl',Compl)),
-  assert_true(is_complement_of(Compl,not(test:'D'))),
+  assert_true((subclass_of(test:'DCompl',Compl1),is_complement_of(Compl1,not(test:'D')))),
   % Left argument is unbound
   assert_true(is_complement_of(_,not(test:'D'))),
   ((subclass_of(test:'DCompl',Compl), is_complement_of(A,not(test:'D'))) -> assert_unifies(Compl,A) ; true),
