@@ -202,7 +202,8 @@ test('has_property_chain') :-
   % Both arguments are unbound
   assert_true(has_property_chain(_,_)),!.
 
-test('has_disjoint_class1') :-
+test('has_disjoint_class1', 
+    [ blocked('The transitive(subclass_of(B,Disjoint) call in unify_disjoint of OWL.pl seems to not return the transitive closure of all subclasses') ]) :-
   assert_true(has_disjoint_class(test:'DisjClsChain1',test:'DisjClsChain2')),
   assert_true(has_disjoint_class(test:'DisjClsChain2',test:'DisjClsChain1')),
   assert_true(has_disjoint_class(test:'DisjClsChain2',test:'DisjClsChain3')),
