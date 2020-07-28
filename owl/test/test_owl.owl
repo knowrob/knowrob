@@ -53,11 +53,40 @@
     
 
 
+    <!-- http://knowrob.org/kb/test_owl#rProp -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/test_owl#rProp">
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/test_owl#rPropInv"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#rPropInv -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/test_owl#rPropInv"/>
+    
+
+
     <!-- http://knowrob.org/kb/test_owl#s -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/test_owl#s">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#sProp -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/test_owl#sProp">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/test_owl#rProp"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/test_owl#sPropInv"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#sPropInv -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/test_owl#sPropInv"/>
     
 
 
@@ -160,10 +189,18 @@
     
 
 
-    <!-- http://knowrob.org/kb/test_owl#ASubPropRange -->
+    <!-- http://knowrob.org/kb/test_owl#ASubRange -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#ASubPropRange">
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#ASubRange">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/test_owl#A"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#ASubSubRange -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#ASubSubRange">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/test_owl#ASubRange"/>
     </owl:Class>
     
 
@@ -196,7 +233,15 @@
 
     <!-- http://knowrob.org/kb/test_owl#C -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#C"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#C">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#t1"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range1"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -380,13 +425,34 @@
 
     <!-- http://knowrob.org/kb/test_owl#E1 -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#E1"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#E1">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#t1"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#p"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">4</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/test_owl#E2 -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#E2"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#E2">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#t2"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">4</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range2"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -433,6 +499,67 @@
     
 
 
+    <!-- http://knowrob.org/kb/test_owl#G1 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#G1">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#p"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">3</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range3"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#p"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">8</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range3"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#G2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#G2">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#t"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">8</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range1"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#t"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">15</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#G3 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#G3">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#s"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">3</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/test_owl#s"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">5</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/test_owl#Range3"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/test_owl#Range1 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/test_owl#Range1"/>
@@ -442,6 +569,12 @@
     <!-- http://knowrob.org/kb/test_owl#Range2 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/test_owl#Range2"/>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#Range3 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/test_owl#Range3"/>
     
 
 
@@ -479,6 +612,7 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_owl#aIndiv">
         <rdf:type rdf:resource="http://knowrob.org/kb/test_owl#A"/>
         <owl:sameAs rdf:resource="http://knowrob.org/kb/test_owl#bIndiv"/>
+        <r rdf:resource="http://knowrob.org/kb/test_owl#indiv"/>
     </owl:NamedIndividual>
     
 
@@ -493,7 +627,15 @@
 
     <!-- http://knowrob.org/kb/test_owl#indiv -->
 
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_owl#indiv"/>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_owl#indiv">
+        <r rdf:resource="http://knowrob.org/kb/test_owl#indiv2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_owl#indiv2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_owl#indiv2"/>
     
 
 
