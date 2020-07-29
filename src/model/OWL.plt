@@ -375,11 +375,11 @@ test('has_disjoint_class1 with unbound arguments') :-
   % Right argument is unbound
   assert_true(has_disjoint_class(test:'DisjClsChain2',_)),
   assert_true((
-    findall(C, has_disjoint_class(test:'DisjClsChain2',C), DList), 
+    findall(C, has_disjoint_class(test:'DisjClsChain2',C), CList), 
     member(test:'DisjClsChain1', CList)
   )), 
   assert_true((
-    findall(D, has_disjoint_class(test:'DisjClsChain2',D), EList), 
+    findall(D, has_disjoint_class(test:'DisjClsChain2',D), DList), 
     member(test:'DisjClsChain3', DList)
   )),
   % Both arguments are unbound
