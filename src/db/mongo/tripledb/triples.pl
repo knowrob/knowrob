@@ -355,10 +355,9 @@ triple_query_unify_o1(Doc,ValueQuery,Options) :-
 		mng_get_dict('o*',Doc,array(Values)) )
 	->  member(Value,Values)
 	;   (mng_get_dict('o',Doc,Value)
-	    ->      true
-        ;       (print_message(error, mng_get_dict('o',Doc,Value)), fail)
-        )
-    ),
+		->	true
+		;	(print_message(error, mng_get_dict('o',Doc,Value)), fail))
+    	),
 	once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
 	%%
 	once(strip_operator_(ValueQuery,_,Value1)),
