@@ -16,17 +16,6 @@ jobs:
       with:
         path: 'ros_ws/src/rosprolog'
         repository: daniel86/rosprolog
-    - name: Checkout SOMA ontology
-      uses: actions/checkout@v2
-      with:
-        path: 'ros_ws/src/soma'
-        repository: ease-crc/soma
-        ref: "1.0.0"
-    - name: Checkout DUL ontology
-      uses: actions/checkout@v2
-      with:
-        path: 'ros_ws/src/dul'
-        repository: ease-crc/dul
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
