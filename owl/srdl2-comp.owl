@@ -62,7 +62,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
         <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:label>has body part</rdfs:label>
@@ -138,9 +138,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
     
 
 
@@ -176,7 +176,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hasBaseLinkName -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasBaseLinkName">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#KinematicChain"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:label>has base link name</rdfs:label>
@@ -187,7 +187,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hasEndLinkName -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasEndLinkName">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#KinematicChain"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:label>has end link name</rdfs:label>
@@ -228,9 +228,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasNameString -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasNameString -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
     
 
 
@@ -301,7 +301,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#BladderGripper -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#BladderGripper">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
         <rdfs:comment>A gripper designed for rod-shaped or cylindrical objects. Useful to handle fragile objects.</rdfs:comment>
     </owl:Class>
     
@@ -319,7 +319,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Classifier -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Classifier">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -364,7 +364,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FeatureExtractor -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FeatureExtractor">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -453,7 +453,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#KnowledgeBase -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#KnowledgeBase">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -481,8 +481,8 @@
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MobileBase"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Limb"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Limb"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>A robot base with mechanical limbs that can move the robot by walking.</rdfs:comment>
@@ -502,7 +502,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LocalizationSoftware">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
         <rdfs:comment>Software components that allow the robot to localize itself</rdfs:comment>
     </owl:Class>
     
@@ -511,7 +511,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MagneticGripper -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MagneticGripper">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
         <rdfs:comment>A gripper that uses magnets to hold metallic objects.</rdfs:comment>
     </owl:Class>
     
@@ -520,7 +520,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MappingSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MappingSoftware">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
         <rdfs:comment>Software components that build environment maps from sensor data</rdfs:comment>
     </owl:Class>
     
@@ -546,10 +546,10 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minQualifiedCardinality>
                 <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
             </owl:Restriction>
@@ -589,7 +589,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MotionController -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MotionController">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
         <rdfs:comment>Software components for planning motions of components of the robot (arms, hands,...)</rdfs:comment>
     </owl:Class>
     
@@ -598,7 +598,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#NaturalLanguageSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NaturalLanguageSoftware">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -632,7 +632,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PathPlanner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PathPlanner">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -648,7 +648,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptionSoftware -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptionSoftware">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
         <rdfs:comment>Software components that interpret sensor data to perceive the environment</rdfs:comment>
     </owl:Class>
     
@@ -657,7 +657,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -700,7 +700,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Reasoner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Reasoner">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -732,7 +732,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Simulator -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Simulator">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
         <rdfs:comment>Software components that allow the robot to simulate its environment or its actions</rdfs:comment>
     </owl:Class>
     
@@ -759,7 +759,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SuctionGripper -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SuctionGripper">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
         <rdfs:comment>A gripper that suctions objects it holds, e.g. by creating a vacuum. Often only useful with objects that have a flat surface.</rdfs:comment>
     </owl:Class>
     
@@ -768,7 +768,7 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TaskPlanner -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TaskPlanner">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     </owl:Class>
     
 
@@ -788,7 +788,7 @@
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MobileBase"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Wheel"/>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -830,7 +830,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRegionFor"/>
-                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -854,7 +854,7 @@
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MechanicalGripper"/>
-                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
+                            <rdf:Description rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Hand"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -865,33 +865,33 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#DigitalObject -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#DigitalObject"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SoftwareType -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#SoftwareType"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SoftwareType"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Gripper -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Gripper -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Gripper"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Hand -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Hand -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Hand"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Limb -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Limb -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Limb"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Limb"/>
     
 
 

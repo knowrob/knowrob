@@ -19,8 +19,9 @@ jobs:
     - name: Checkout SOMA ontology
       uses: actions/checkout@v2
       with:
-        path: 'ros_ws/src/ease_ontology'
-        repository: knowrob/ease_ontology
+        path: 'ros_ws/src/soma'
+        repository: ease-crc/soma
+        ref: "1.0.0"
     - name: Checkout DUL ontology
       uses: actions/checkout@v2
       with:
