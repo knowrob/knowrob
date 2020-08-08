@@ -62,7 +62,7 @@ initialize_EV_(EV) :-
 initialize_PO_(PO) :-
   initialize_lifetime_(PO),
   initialize_required_(PO,dul:hasQuality),
-  initialize_required_(PO,ease_obj:hasFeature),
+  initialize_required_(PO,soma:hasFeature),
   initialize_LOC_(PO).
   
 %%
@@ -76,10 +76,10 @@ initialize_lifetime_(O) :-
 %%
 initialize_LOC_(PO) :-
   % TODO: better would be an axiom for all POs, then this clause would be obsolete
-  ( tripledb_ask(PO,ease_obj:hasLocalization,LOC)
+  ( tripledb_ask(PO,soma:hasLocalization,LOC)
   -> true
-  ;  tell([ instance_of(LOC,ease_obj:'Localization'),
-            holds(PO,ease_obj:hasLocalization,LOC) ])
+  ;  tell([ instance_of(LOC,soma:'Localization'),
+            holds(PO,soma:hasLocalization,LOC) ])
   ),
   %%
   ( tripledb_ask(LOC,dul:hasRegion,_)
@@ -98,8 +98,8 @@ initialize_LOC_(PO) :-
 initialize_CO_(C) :-
   initialize_required_(C,dul:hasParameter),
   ( is_task(C)         -> initialize_required_(C,dul:isTaskOf);
-    is_process_type(C) -> initialize_required_(C,ease_proc:isProcessTypeOf);
-    is_state_type(C)   -> initialize_required_(C,ease_proc:isStateTypeOf);
+    is_process_type(C) -> initialize_required_(C,soma:isProcessTypeOf);
+    is_state_type(C)   -> initialize_required_(C,soma:isStateTypeOf);
     true
   ).
 

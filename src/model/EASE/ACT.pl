@@ -33,46 +33,41 @@
 :- use_module(library('model/EASE/OBJ'),
     [ ]).
 
-:- tripledb_load('http://www.ease-crc.org/ont/EASE-ACT.owl',
-    [ graph(tbox),
-      namespace(ease_act)
-    ]).
-
 %% is_manipulation_action(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_act:'ManipulationAction'.
+% True iff Entity is an instance of soma:'ManipulationAction'.
 %
 % @param Entity An entity IRI.
 %
 is_manipulation_action(Entity) ?+>
-  has_type(Entity, ease_act:'ManipulationAction').
+  has_type(Entity, soma:'ManipulationAction').
 
 %% is_mental_action(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_act:'MentalAction'.
+% True iff Entity is an instance of soma:'MentalAction'.
 %
 % @param Entity An entity IRI.
 %
 is_mental_action(Entity) ?+>
-  has_type(Entity, ease_act:'MentalAction').
+  has_type(Entity, soma:'MentalAction').
 
 %% is_physical_task(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_act:'PhysicalTask'.
+% True iff Entity is an instance of soma:'PhysicalTask'.
 %
 % @param Entity An entity IRI.
 %
 is_physical_task(Entity) ?+>
-  has_type(Entity, ease_act:'PhysicalTask').
+  has_type(Entity, soma:'PhysicalTask').
 
 %% is_mental_task(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_act:'MentalTask'.
+% True iff Entity is an instance of soma:'MentalTask'.
 %
 % @param Entity An entity IRI.
 %
 is_mental_task(Entity) ?+>
-  has_type(Entity, ease_act:'MentalTask').
+  has_type(Entity, soma:'MentalTask').
 
 %% is_performed_by(?Act,?Agent) is nondet.
 %
@@ -82,7 +77,7 @@ is_mental_task(Entity) ?+>
 % @param Agent An individual of type dul:'Agent'.
 %
 is_performed_by(Act,Agent) ?+>
-  holds(Act, ease_act:isPerformedBy, Agent).
+  holds(Act, soma:isPerformedBy, Agent).
 
 %% has_subevent(+Event,?Sub) is nondet.
 %
@@ -91,7 +86,7 @@ has_subevent(Event,Sub) ?>
   holds(Event,dul:hasConstituent,Sub).
 
 has_subevent(Event,Sub) ?>
-  holds(Event,ease:hasPhase,Sub).
+  holds(Event,soma:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
   { is_action(Sub) },
@@ -99,11 +94,11 @@ has_subevent(Event,Sub) +>
 
 has_subevent(Event,Sub) +>
   { is_process(Sub) },
-  holds(Event,ease:hasPhase,Sub).
+  holds(Event,soma:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
   { is_state(Sub) },
-  holds(Event,ease:hasPhase,Sub).
+  holds(Event,soma:hasPhase,Sub).
 
 %% action_status(?Act,?Status) is semidet.
 %
@@ -113,7 +108,7 @@ has_subevent(Event,Sub) +>
 % @param Status The execution status of Act.
 %
 action_status(Act,Status) ?+>
-  holds(Act, ease_act:hasExecutionState, Status).
+  holds(Act, soma:hasExecutionState, Status).
 
 %% action_succeeded(?Act) is det.
 %
@@ -122,7 +117,7 @@ action_status(Act,Status) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_succeeded(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Succeeded').
+  action_status(Act, soma:'ExecutionState_Succeeded').
 
 %% action_failed(?Act) is det.
 %
@@ -131,7 +126,7 @@ action_succeeded(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_failed(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Failed').
+  action_status(Act, soma:'ExecutionState_Failed').
 
 %% action_active(?Act) is det.
 %
@@ -140,7 +135,7 @@ action_failed(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_active(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Active').
+  action_status(Act, soma:'ExecutionState_Active').
 
 %% action_paused(?Act) is det.
 %
@@ -149,7 +144,7 @@ action_active(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_paused(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Paused').
+  action_status(Act, soma:'ExecutionState_Paused').
 
 %% action_pending(?Act) is det.
 %
@@ -158,7 +153,7 @@ action_paused(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_pending(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Pending').
+  action_status(Act, soma:'ExecutionState_Pending').
 
 %% action_cancelled(?Act) is det.
 %
@@ -167,7 +162,7 @@ action_pending(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_cancelled(Act) ?+>
-  action_status(Act, ease_act:'ExecutionState_Cancelled').
+  action_status(Act, soma:'ExecutionState_Cancelled').
 
 %% task_effect(?EventType, ?Effect) is nondet
 %
@@ -191,29 +186,29 @@ task_effect(Tsk,Effect) :-
   task_effect_(Tsk,Effect).
 
 task_effect_(Tsk, created(Type)) :-
-  task_role_range(Tsk,ease_obj:'CreatedObject',Type).
+  task_role_range(Tsk,soma:'CreatedObject',Type).
 
 task_effect_(Tsk, destroyed(Type)) :-
-  task_role_range(Tsk,ease_obj:'DestroyedObject',Type).
+  task_role_range(Tsk,soma:'DestroyedObject',Type).
 
 task_effect_(Tsk, linked(Type)) :-
-  task_role_range(Tsk,ease_obj:'LinkedObject',Type).
+  task_role_range(Tsk,soma:'LinkedObject',Type).
 
 task_effect_(Tsk, commited(Type)) :-
-  task_role_range(Tsk,ease_obj:'CommitedObject',Type).
+  task_role_range(Tsk,soma:'CommitedObject',Type).
 
 task_effect_(Tsk, deposited(Type)) :-
-  task_role_range(Tsk,ease_obj:'DepositedObject',Type).
+  task_role_range(Tsk,soma:'DepositedObject',Type).
 
 task_effect_(Tsk, extracted(Type)) :-
-  task_role_range(Tsk,ease_obj:'ExtractedObject',Type).
+  task_role_range(Tsk,soma:'ExtractedObject',Type).
 
 task_effect_(Tsk, included(Type)) :-
-  task_role_range(Tsk,ease_obj:'IncludedObject',Type).
+  task_role_range(Tsk,soma:'IncludedObject',Type).
 
 task_effect_(Tsk, altered(Type,QualityType)) :-
-  task_role_range(Tsk,ease_obj:'AlteredObject',Type),
-  has_parameter_range(Tsk,ease_obj:'Setpoint',Region),
+  task_role_range(Tsk,soma:'AlteredObject',Type),
+  has_parameter_range(Tsk,soma:'Setpoint',Region),
   get_altered_quality_type_(Type,Region,QualityType).
 
 %%
@@ -225,5 +220,5 @@ get_altered_quality_type__(_Concept,Region,Quality_type) :-
   holds(Region, dul:isRegionFor, only(Quality_type)).
 
 get_altered_quality_type__(Concept,_Region,Quality_type) :-
-  holds(Concept, ease_obj:isTriggerDefinedIn, only(Affordance)),
-  subclass_of(Affordance,only(ease_obj:describesQuality,Quality_type)).
+  holds(Concept, soma:isTriggerDefinedIn, only(Affordance)),
+  subclass_of(Affordance,only(soma:describesQuality,Quality_type)).

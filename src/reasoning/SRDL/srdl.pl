@@ -55,7 +55,7 @@
 %subcomponents_create(Comp, CompType) :-
   %findall(Range-Count,
     %( property_cardinality(CompType,
-         %ease:hasPhysicalComponent, Range, Count, _),
+         %soma:hasPhysicalComponent, Range, Count, _),
       %Count > 0
     %),
     %Pairs
@@ -88,7 +88,7 @@
   %component_create(PartType,X),
   %( rdfs_individual_of(Parent,dul:'Agent') ->
     %kb_assert(Parent,srdlcomp:hasBodyPart,X);
-    %kb_assert(Parent,ease:hasPhysicalComponent,X) ),
+    %kb_assert(Parent,soma:hasPhysicalComponent,X) ),
   %M is N - 1,
   %component_create(Parent,PartType,M).
 
@@ -183,7 +183,7 @@
 %% @param CompType The RDF name of a body part type.
 %%
 %has_direct_component(Obj,Comp,CompType) :-
-  %rdf_has(Obj,ease:hasPhysicalComponent,Comp),
+  %rdf_has(Obj,soma:hasPhysicalComponent,Comp),
   %component_type(Comp,CompType).
 
 %%% has_component(?Obj,?Comp,?CompType) is nondet.
@@ -199,7 +199,7 @@
   %component_type(Obj,ObjType).
 
 %has_component(Obj,Comp,CompType) :-
-  %rdf_has(Obj,ease:hasPhysicalComponent,X),
+  %rdf_has(Obj,soma:hasPhysicalComponent,X),
   %has_component(X,Comp,CompType).
 
 %%% component_type(?Comp,?CompType) is nondet.

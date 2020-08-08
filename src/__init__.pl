@@ -30,11 +30,10 @@
 :- use_module('utility/url').
 
 % register ROS packages to resolve IRI prefixes to local paths
-:- ros_package_iri(dul,           'http://www.ontologydesignpatterns.org/ont/dul').
-:- ros_package_iri(ease_ontology, 'http://www.ease-crc.org/ont').
-:- ros_package_iri(rosowl,        'http://www.ease-crc.org/ont').
-:- ros_package_iri(knowrob,       'http://knowrob.org/kb').
-:- ros_package_iri(knowrob,       'http://www.w3.org/2002/07').
+:- ros_package_iri(knowrob, 'http://www.ontologydesignpatterns.org/ont/dul').
+:- ros_package_iri(knowrob, 'http://www.ease-crc.org/ont').
+:- ros_package_iri(knowrob, 'http://knowrob.org/kb').
+:- ros_package_iri(knowrob, 'http://www.w3.org/2002/07').
 
 % load knowrob.pl
 :- use_module('knowrob').

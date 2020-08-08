@@ -112,7 +112,7 @@ is_plan_execution(Entity) ?+>
   %is_plan(Plan),
   %holds(Sit,dul:satisfies,Plan),
   %holds(Sit,dul:includesEvent,Action),
-  %holds(Plan,ease:isPlanFor,Tsk),
+  %holds(Plan,soma:isPlanFor,Tsk),
   %holds(Action,dul:executesTask,Tsk).
 
 %% is_norm(?Entity) is nondet.

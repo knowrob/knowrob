@@ -26,7 +26,7 @@
 :- use_module(library('lang/terms/holds')).
 :- use_module('./parser.pl').
 
-:- tripledb_load('package://knowrob/owl/urdf.owl',
+:- tripledb_load('http://knowrob.org/kb/URDF.owl',
     [ graph(tbox),
       namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
     ]).
@@ -152,19 +152,19 @@ tabled_joint_axis(Axis,AxisData) :-
 %% has_joint_friction(?Joint,?Friction) is semidet.
 %
 has_joint_friction(J, Friction) ?>
-	triple(J,ease_obj:hasFrictionAttribute,X),
-	triple(X,ease_obj:hasFrictionValue,Friction).
+	triple(J,soma:hasFrictionAttribute,X),
+	triple(X,soma:hasFrictionValue,Friction).
 
 has_joint_friction(J, Friction) +>
 	{ tabled_joint_friction(Attribute,Friction) },
-	triple(J,ease_obj:hasFrictionAttribute,Attribute).
+	triple(J,soma:hasFrictionAttribute,Attribute).
 
 %%
 :- table(tabled_joint_friction/2).
 tabled_joint_friction(Attribute,Friction) :-
 	tell([
-		has_type(Attribute,ease_obj:'StaticFrictionAttribute'),
-		triple(Attribute,ease_obj:hasFrictionValue,Friction)
+		has_type(Attribute,soma:'StaticFrictionAttribute'),
+		triple(Attribute,soma:hasFrictionValue,Friction)
 	]).
   
 %% has_joint_damping(?Joint,?Damping) is semidet.
@@ -188,19 +188,19 @@ tabled_joint_damping(Attribute,Damping) :-
 %% has_link_mass(+Link, ?MassValue) is semidet.
 %
 has_link_mass(Link,MassValue) ?>
-	triple(Link,ease_obj:hasMassAttribute,Mass),
-	triple(Mass,ease_obj:hasMassValue,MassValue).
+	triple(Link,soma:hasMassAttribute,Mass),
+	triple(Mass,soma:hasMassValue,MassValue).
 
 has_link_mass(Link,MassValue) +>
 	{ tabled_link_mass(Attribute,MassValue) },
-	triple(Link,ease_obj:hasMassAttribute,Attribute).
+	triple(Link,soma:hasMassAttribute,Attribute).
 
 %%
 :- table(tabled_link_mass/2).
 tabled_link_mass(Attribute,MassValue) :-
 	tell([
-		has_type(Attribute,ease_obj:'MassAttribute'),
-		triple(Attribute,ease_obj:hasMassValue,MassValue)
+		has_type(Attribute,soma:'MassAttribute'),
+		triple(Attribute,soma:hasMassValue,MassValue)
 	]).
 
 %% has_link_inertia(+Link, ?Matrix) is semidet.
@@ -250,12 +250,12 @@ has_link_collision(Link,ShapeTerm,Origin) ?>
 
 %%
 has_visual_shape(Link,Geom,Shape) ?>
-	triple(Link,ease_obj:hasShape,Shape),
+	triple(Link,soma:hasShape,Shape),
 	has_shape_data(Shape,Geom).
 
 has_visual_shape(Link,Geom,Shape) +>
 	{ tabled_shape(Shape,Geom) },
-	triple(Link,ease_obj:hasShape,Shape).
+	triple(Link,soma:hasShape,Shape).
 
 %%
 has_collision_shape(Link,Geom,Shape) ?>
@@ -272,23 +272,23 @@ tabled_shape(Shape,Geom) :- tell(has_shape_data(Shape,Geom)).
   
 %%
 has_shape_data(Shape, box(X,Y,Z)) ?+>
-	has_type(Shape, ease_obj:'BoxShape'),
-	triple(Shape, ease_obj:hasWidth,  X),
-	triple(Shape, ease_obj:hasHeight, Y),
-	triple(Shape, ease_obj:hasDepth,  Z).
+	has_type(Shape, soma:'BoxShape'),
+	triple(Shape, soma:hasWidth,  X),
+	triple(Shape, soma:hasHeight, Y),
+	triple(Shape, soma:hasDepth,  Z).
 
 has_shape_data(Shape, cylinder(Radius, Length)) ?+>
-	has_type(Shape, ease_obj:'CircularCylinder'),
-	triple(Shape, ease_obj:hasRadius, Radius),
-	triple(Shape, ease_obj:hasLength, Length).
+	has_type(Shape, soma:'CircularCylinder'),
+	triple(Shape, soma:hasRadius, Radius),
+	triple(Shape, soma:hasLength, Length).
 
 has_shape_data(Shape, sphere(Radius)) ?+>
-	has_type(Shape, ease_obj:'SphereShape'),
-	triple(Shape, ease_obj:hasRadius, Radius).
+	has_type(Shape, soma:'SphereShape'),
+	triple(Shape, soma:hasRadius, Radius).
 
 has_shape_data(Shape, mesh(Filename,[X,Y,Z])) ?+>
-	has_type(Shape, ease_obj:'MeshShape'),
-	triple(Shape, ease_obj:hasFilePath, Filename),
+	has_type(Shape, soma:'MeshShape'),
+	triple(Shape, soma:hasFilePath, Filename),
 	triple(Shape, knowrob:hasXScale, X),
 	triple(Shape, knowrob:hasYScale, Y),
 	triple(Shape, knowrob:hasZScale, Z).
@@ -321,9 +321,9 @@ tabled_origin(Origin,Frame,OriginData) :-
 
 %%
 has_origin_data(Origin,Frame,pose(Position,Quaternion)) ?+>
-	triple(Origin, ease_obj:hasPositionVector,    term(Position)),
-	triple(Origin, ease_obj:hasOrientationVector, term(Quaternion)),
-	triple(Origin, ease_obj:hasReferenceFrame, Frame).
+	triple(Origin, soma:hasPositionVector,    term(Position)),
+	triple(Origin, soma:hasOrientationVector, term(Quaternion)),
+	triple(Origin, soma:hasReferenceFrame, Frame).
 
 		 /************************************
 		  *            Loading URDF Files    *

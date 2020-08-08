@@ -1,6 +1,7 @@
-
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob)
+
+set(SOMA_VERSION "1.0.0")
 
 find_package(catkin REQUIRED COMPONENTS
     rosprolog roscpp roslib urdf
@@ -23,7 +24,32 @@ install_prolog_pack(list_util
 install_prolog_pack(delay
   URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
 
-catkin_package(CATKIN_DEPENDS rosprolog roscpp roslib)
+catkin_package(
+	CATKIN_DEPENDS rosprolog roscpp roslib
+)
+
+#
+macro(install_ontology ONTOLOGY_NAME ONTOLOGY_VERSION ONTOLOGY_URL)
+	set(ONTOLOGY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/owl/external")
+	set(VERSION_FILE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}/${ONTOLOGY_VERSION}")
+	set(ONTOLOGY_FILE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}.owl")
+	if (NOT EXISTS "${VERSION_FILE}")
+		message(STATUS "Installing ${ONTOLOGY_NAME} ontology.")
+		file(REMOVE_RECURSE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}")
+		file(REMOVE_RECURSE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}.owl")
+		file(DOWNLOAD
+			"${ONTOLOGY_URL}"
+			"${ONTOLOGY_FILE}"
+		)
+		file(WRITE "${VERSION_FILE}" "")
+	endif()
+endmacro()
+install_ontology("DUL" "3.32"
+	"http://www.ontologydesignpatterns.org/ont/dul/DUL.owl")
+install_ontology("IOLite" "1.8"
+	"http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl")
+install_ontology("SOMA" "${SOMA_VERSION}"
+	"https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
@@ -95,6 +121,6 @@ add_dependencies(marker_plugin
 
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
-  
+
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)

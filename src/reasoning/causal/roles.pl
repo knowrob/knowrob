@@ -80,23 +80,23 @@
 
 %%%
 %object_effects_apply_(_Tsk,_Grounding,Concept,Filler,Now) :-
-  %rdfs_individual_of(Concept,ease_obj:'DestroyedObject'),!,
+  %rdfs_individual_of(Concept,soma:'DestroyedObject'),!,
   %object_set_lifetime_end(Filler,Now).
 
 %object_effects_apply_(_Tsk,_Grounding,Concept,Filler,Now) :-
-  %rdfs_individual_of(Concept,ease_obj:'CreatedObject'),!,
+  %rdfs_individual_of(Concept,soma:'CreatedObject'),!,
   %object_set_lifetime_begin(Filler,Now).
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
-  %rdfs_individual_of(Concept,ease_obj:'AlteredObject'),!,
-  %action_grounding_(Tsk,Grounding,ease_obj:'Setpoint',Region),
+  %rdfs_individual_of(Concept,soma:'AlteredObject'),!,
+  %action_grounding_(Tsk,Grounding,soma:'Setpoint',Region),
   %get_altered_quality_(Concept,Filler,Quality,Region),
   %quality_set_region_(Quality,Region).
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,Now) :-
-  %rdfs_individual_of(Concept,ease_obj:'CommitedObject'),!,
-  %( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent) ;
-    %action_grounding_(Tsk,Grounding,ease_obj:'CreatedObject',Parent)
+  %rdfs_individual_of(Concept,soma:'CommitedObject'),!,
+  %( action_grounding_(Tsk,Grounding,soma:'AlteredObject',Parent) ;
+    %action_grounding_(Tsk,Grounding,soma:'CreatedObject',Parent)
   %),
   %object_add_part_(Parent,Filler),
   %object_set_lifetime_end(Filler,Now).
@@ -106,19 +106,19 @@
 %%   seems there is no fitting role yet...
 %%   AlteredObject seems only about qualities that change.
 %%object_effects_apply_(Tsk,Grounding,Concept,Filler,Now) :-
-  %%rdfs_individual_of(Concept,ease_obj:'TransformedObject'),!,
+  %%rdfs_individual_of(Concept,soma:'TransformedObject'),!,
   %%fail.
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
-  %rdfs_individual_of(Concept,ease_obj:'IncludedObject'),!,
-  %action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent),
+  %rdfs_individual_of(Concept,soma:'IncludedObject'),!,
+  %action_grounding_(Tsk,Grounding,soma:'Container',Parent),
   %object_add_content_(Parent,Filler).
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
-  %rdfs_individual_of(Concept,ease_obj:'ExtractedObject'),!,
-  %( action_grounding_(Tsk,Grounding,ease_obj:'AlteredObject',Parent);
-    %action_grounding_(Tsk,Grounding,ease_obj:'Container',Parent);
-    %action_grounding_(Tsk,Grounding,ease_obj:'Deposit',Parent)
+  %rdfs_individual_of(Concept,soma:'ExtractedObject'),!,
+  %( action_grounding_(Tsk,Grounding,soma:'AlteredObject',Parent);
+    %action_grounding_(Tsk,Grounding,soma:'Container',Parent);
+    %action_grounding_(Tsk,Grounding,soma:'Deposit',Parent)
   %),
   %object_remove_deposit_(Parent,Filler),
   %object_remove_link_(Parent,Filler),
@@ -126,19 +126,19 @@
   %object_remove_content_(Parent,Filler).
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
-  %rdfs_individual_of(Concept,ease_obj:'LinkedObject'),!,
+  %rdfs_individual_of(Concept,soma:'LinkedObject'),!,
   %forall(
-    %action_grounding_(Tsk,Grounding,ease_obj:'LinkedObject',Linked),
+    %action_grounding_(Tsk,Grounding,soma:'LinkedObject',Linked),
     %object_create_link_(Filler,Linked)
   %),
   %forall(
-    %action_grounding_(Tsk,Grounding,ease_obj:'CreatedObject',Parent),
+    %action_grounding_(Tsk,Grounding,soma:'CreatedObject',Parent),
     %object_add_part_(Parent,Filler)
   %).
 
 %object_effects_apply_(Tsk,Grounding,Concept,Filler,_) :-
-  %rdfs_individual_of(Concept,ease_obj:'DepositedObject'),!,
-  %action_grounding_(Tsk,Grounding,ease_obj:'Deposit',Deposit),
+  %rdfs_individual_of(Concept,soma:'DepositedObject'),!,
+  %action_grounding_(Tsk,Grounding,soma:'Deposit',Deposit),
   %object_add_deposit_(Deposit,Filler).
 
 %object_effects_apply_(_,_,_,_,_).
@@ -157,8 +157,8 @@
 %get_altered_quality_type__(_Concept,Region,Quality_type) :-
   %property_range(Region,dul:isRegionFor,Quality_type).
 %get_altered_quality_type__(Concept,_Region,Quality_type) :-
-  %property_range(Concept,ease_obj:isTriggerDefinedIn,Affordance),
-  %property_range(Affordance,ease_obj:describesQuality,Quality_type).
+  %property_range(Concept,soma:isTriggerDefinedIn,Affordance),
+  %property_range(Affordance,soma:describesQuality,Quality_type).
 
 %get_altered_quality_(Concept,Object,Quality,Region) :-
   %get_altered_quality_type_(Concept,Region,Quality_type),
@@ -179,7 +179,7 @@
   %findall(Role-Obj, (
     %kb_triple(Tsk,dul:isTaskOf,Role),
     %once((
-      %kb_type_of(Role,ease_obj:'CreatedObject'),
+      %kb_type_of(Role,soma:'CreatedObject'),
       %property_range(Role,dul:classifies,Type),
       %action_create_object_(Act,Grounding,Type,Obj)
     %))
@@ -189,7 +189,7 @@
 %action_create_object_(Act,Grounding,Type,Obj) :-
   %event_participant(Act,Obj,Type),
   %get_dict(Concept,Grounding,Obj),
-  %rdfs_individual_of(Concept,ease_obj:'CreatedObject'),!,
+  %rdfs_individual_of(Concept,soma:'CreatedObject'),!,
   %fail.
 %action_create_object_(Act,_Grounding,Type,Obj) :-
   %kb_create(Type,Obj),
@@ -208,20 +208,20 @@
 
 %%%
 %object_add_content_(Parent,Filler) :-
-  %kb_assert(Parent,ease_obj:containsObject,Filler).
+  %kb_assert(Parent,soma:containsObject,Filler).
 %object_remove_content_(Parent,Filler) :-
-  %kb_retract(Parent,ease_obj:containsObject,Filler).
+  %kb_retract(Parent,soma:containsObject,Filler).
 
 %%%
 %object_add_deposit_(Parent,Filler) :-
-  %kb_assert(Filler,ease_obj:isOntopOf,Parent).
+  %kb_assert(Filler,soma:isOntopOf,Parent).
 %object_remove_deposit_(Parent,Filler) :-
-  %kb_retract(Filler,ease_obj:isOntopOf,Parent).
+  %kb_retract(Filler,soma:isOntopOf,Parent).
 
 %%%
 %object_create_link_(L,L) :- !.
 %object_create_link_(L0,L1) :-
-  %kb_assert(L0,ease_obj:isLinkedTo,L1).
+  %kb_assert(L0,soma:isLinkedTo,L1).
 %object_remove_link_(L,L) :- !.
 %object_remove_link_(L0,L1) :-
-  %kb_retract(L0,ease_obj:isLinkedTo,L1).
+  %kb_retract(L0,soma:isLinkedTo,L1).

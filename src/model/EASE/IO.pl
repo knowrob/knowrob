@@ -13,25 +13,20 @@
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
-:- tripledb_load('http://www.ease-crc.org/ont/EASE-IO.owl',
-    [ graph(tbox),
-      namespace(ease_io)
-    ]).
-
 %% is_computational_agent(?Entity) is semidet.
 %
-% True iff Entity is an instance of ease_act:'ManipulationAction'.
+% True iff Entity is an instance of soma:'ComputationalAgent'.
 %
 % @param Entity An entity IRI.
 %
 is_computational_agent(Entity) ?+>
-  has_type(Entity, ease_io:'ComputationalAgent').
+  has_type(Entity, soma:'ComputationalAgent').
 
 %% is_digital_object(?Entity) is semidet.
 %
-% True iff Entity is an instance of ease_act:'ManipulationAction'.
+% True iff Entity is an instance of soma:'DigitalObject'.
 %
 % @param Entity An entity IRI.
 %
 is_digital_object(Entity) ?+>
-  has_type(Entity, ease_io:'DigitalObject').
+  has_type(Entity, soma:'DigitalObject').

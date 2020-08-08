@@ -25,7 +25,7 @@
 	[ has_time_interval/2 ]).
 
 is_episode(Entity) ?+>
-  has_type(Entity, ease:'Episode').
+  has_type(Entity, soma:'Episode').
  
 		 /*******************************
 		 *	    TIME INTERVALS			*
@@ -48,8 +48,8 @@ has_interval_data(Term,Since,Until) ?>
 
 has_interval_data(Term,Since,Until) +>
 	{ has_time_interval(Term,Interval) },
-	triple(Interval, ease:hasIntervalBegin, Since),
-	triple(Interval, ease:hasIntervalEnd, Until).
+	triple(Interval, soma:hasIntervalBegin, Since),
+	triple(Interval, soma:hasIntervalEnd, Until).
 
 %% time_interval_data(+In,-Out) is semidet.
 %
@@ -70,8 +70,8 @@ time_interval_data(Entity, Begin, End) :-
   -> Interval=Entity
   ;  has_time_interval(Entity,Interval)
   ),
-  ignore(tripledb_ask(Interval, ease:hasIntervalBegin, Begin)),
-  ignore(tripledb_ask(Interval, ease:hasIntervalEnd, End)),
+  ignore(tripledb_ask(Interval, soma:hasIntervalBegin, Begin)),
+  ignore(tripledb_ask(Interval, soma:hasIntervalEnd, End)),
   !.
 
 %% 
@@ -79,11 +79,11 @@ time_interval_data(Entity, Begin, End) :-
 time_interval_tell(Entity,Begin,End) :-
   has_time_interval(Entity,Interval),!,
   ( ground(Begin) ->
-    tell(holds(Interval, ease:hasIntervalBegin, Begin)) ;
+    tell(holds(Interval, soma:hasIntervalBegin, Begin)) ;
     true
   ),
   ( ground(End) ->
-    tell(holds(Interval, ease:hasIntervalEnd, End)) ;
+    tell(holds(Interval, soma:hasIntervalEnd, End)) ;
     true
   ).
 
