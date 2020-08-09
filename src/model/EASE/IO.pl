@@ -10,8 +10,6 @@
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 
 %% is_computational_agent(?Entity) is semidet.
 %

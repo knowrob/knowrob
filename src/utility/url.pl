@@ -1,6 +1,5 @@
 :- module(utils_url,
         [ url_resolve/2,
-          url_unresolve/2,
           ros_package_iri/2
         ]).
 /** <module> TODO
@@ -22,24 +21,9 @@ url_resolve(URL,Resolved) :-
 
 %%
 %
-%
-url_unresolve(URL,Unresolved) :-
-  resolve(Unresolved,URL),!.
-
-%%
-%
 % TODO: move into ROS-specific comm package
 %
-resolve(A,B) :-
-  var(A) -> ros_unresolve(B,A) ; ros_resolve(A,B).
-
-%%
-ros_unresolve(PackagePath,URL) :-
-  atom_concat('package://',Path,PackagePath),
-  file_base_name(PackagePath,FileName),
-  atomic_list_concat([Pkg|_],'/',Path),
-  ros_package_iri_(Pkg,Prefix),!,
-  atomic_list_concat([Prefix,FileName],'/',URL).
+resolve(A,B) :- ros_resolve(A,B).
 
 %%
 ros_resolve(PackagePath,LocalPath) :-

@@ -109,6 +109,9 @@ test('tripledb tell triple with Unit'):-
     assert_false(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
     assert_true(tripledb_tell(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
     assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))).
+    
+test('tripledb graph_drop'):-
+    tripledb:tripledb_graph_drop(datatype_test).
 
 :- end_tests('tripledb').
 

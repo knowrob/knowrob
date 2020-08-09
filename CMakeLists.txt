@@ -3,6 +3,9 @@ project(knowrob)
 
 set(SOMA_VERSION "1.0.0")
 
+# include additional CMake macros
+include("cmake/ontologies.cmake")
+
 find_package(catkin REQUIRED COMPONENTS
     rosprolog roscpp roslib urdf
     geometry_msgs message_generation)
@@ -19,37 +22,36 @@ find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
 
-install_prolog_pack(list_util
-  URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")
-install_prolog_pack(delay
-  URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
-
 catkin_package(
 	CATKIN_DEPENDS rosprolog roscpp roslib
+	CFG_EXTRAS ontologies.cmake
 )
 
-#
-macro(install_ontology ONTOLOGY_NAME ONTOLOGY_VERSION ONTOLOGY_URL)
-	set(ONTOLOGY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/owl/external")
-	set(VERSION_FILE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}/${ONTOLOGY_VERSION}")
-	set(ONTOLOGY_FILE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}.owl")
-	if (NOT EXISTS "${VERSION_FILE}")
-		message(STATUS "Installing ${ONTOLOGY_NAME} ontology.")
-		file(REMOVE_RECURSE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}")
-		file(REMOVE_RECURSE "${ONTOLOGY_DIR}/${ONTOLOGY_NAME}.owl")
-		file(DOWNLOAD
-			"${ONTOLOGY_URL}"
-			"${ONTOLOGY_FILE}"
-		)
-		file(WRITE "${VERSION_FILE}" "")
-	endif()
-endmacro()
-install_ontology("DUL" "3.32"
-	"http://www.ontologydesignpatterns.org/ont/dul/DUL.owl")
-install_ontology("IOLite" "1.8"
-	"http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl")
-install_ontology("SOMA" "${SOMA_VERSION}"
-	"https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl")
+# install additional Prolog code
+install_prolog_pack(list_util
+	URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")
+install_prolog_pack(delay
+	URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
+
+# install ontologies hosted on http servers.
+# copy them into the workspace such the we can load them
+# from a local source at runtime.
+install_ontology(
+	URL		  "https://www.w3.org/2000/01/rdf-schema.rdf"
+	FILE_NAME "rdf-schema"
+	VERSION   "2000.01")
+install_ontology(
+	URL		  "http://www.w3.org/2002/07/owl.rdf"
+	VERSION   "2002.07")
+install_ontology(
+	URL		  "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"
+	VERSION   "3.32")
+install_ontology(
+	URL		  "http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl"
+	VERSION   "1.8")
+install_ontology(
+	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl"
+	VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
