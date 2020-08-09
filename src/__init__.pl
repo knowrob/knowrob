@@ -23,11 +23,15 @@
 
 % load utility modules into user
 :- use_module('utility/module').
+:- use_module('utility/logging').
 :- use_module('utility/algebra').
 :- use_module('utility/atoms').
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
 :- use_module('utility/url').
+
+% tell the user what is going on
+:- log_info(kb(initialization(started))).
 
 % register ROS packages to resolve IRI prefixes to local paths
 :- ros_package_iri(knowrob, 'http://www.ontologydesignpatterns.org/ont/dul').
@@ -55,3 +59,5 @@
 
 % load additional modules
 :- knowrob_load_plugins.
+% tell the user that we are done with the initialization
+:- log_info(kb(initialization(finished))).

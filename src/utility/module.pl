@@ -75,7 +75,7 @@ interface_load_(Path,Exports) :-
   !.
 
 interface_load_(Path,_Exports) :-
-  print_message(error, unresolved_interface(Path)),
+  print_message(error, log(unresolved_interface(Path))),
   fail.
 
 %%

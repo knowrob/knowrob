@@ -202,8 +202,8 @@ ask_loop :-
 ask_with_callback(request(_,query(Query,QScope),callback(Callback),_)) :-
 	catch(
 		ask_with_callback1(Callback,Query,QScope),
-		Exc,
-		print_message(warning, query_exception(Query,Exc))
+		Exception,
+		log_error(exception(Exception))
 	).
 ask_with_callback1(all(Goal),Query,QScope) :-
 	% *all* callbacks are called once with the list of all answers.

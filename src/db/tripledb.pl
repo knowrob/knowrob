@@ -239,7 +239,7 @@ tripledb_load0(Resolved,Scope,OntoGraph,SubGraph) :-
 	% get ontology IRI
 	(	member(rdf(Unresolved,RDF_Type,OWL_Ontology), Triples)
 	->	true
-	;	(	print_message(warning, tripledb(load(Resolved),ontology_element_missing)),
+	;	(	log_error(type_error(ontology,Resolved)),
 			fail
 		)
 	),
@@ -265,8 +265,8 @@ tripledb_load0(Resolved,Scope,OntoGraph,SubGraph) :-
 
 %%
 tripledb_load1(URL,Triples) :-
-	sub_string(URL,0,4,_,'http'), !,
-	print_message(warning,tripledb(load(from_http))),
+	sub_string(URL,0,4,_,'http'),
+	!,
 	http_open(URL,RDF_Stream,[]),
 	tripledb_load2(RDF_Stream,Triples),
 	close(RDF_Stream).
@@ -286,7 +286,7 @@ tripledb_load3t(IRI,Triples,Scope,Graph) :-
   tripledb_load3(IRI,Triples,Scope,Graph),
   get_time(Time1),
   PerSec is NumTriples/(Time1-Time0),
-  print_message(informational, tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
+  log_debug(tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
 
 %%
 tripledb_load3(IRI,Triples,Scope,Graph) :-

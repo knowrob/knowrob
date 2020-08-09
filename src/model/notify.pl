@@ -140,8 +140,7 @@ initialize_required_1_(Object,P,[Range,Card]) :-
     %          - else probably need to do some more queries
     % HACK: for now try to use sub-properties of P with matching min card
     get_property_(Object,P,Range,Card,P_sup),
-    print_message(informational,
-        notify(initialize(Object,P_sup,NumMissing_i,Range))),
+    log_debug(notify(initialize(Object,P_sup,NumMissing_i,Range))),
     % finally generate symbols, and assert relation
     forall(
       between(1,NumMissing_i,_),
