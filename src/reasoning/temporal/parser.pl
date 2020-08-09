@@ -67,7 +67,7 @@ can be casted as grammar for the parser.
 
 %%
 parser_message_(Level,Msg) :-
-  print_message(Level,activity_parser(Msg)).
+  print_message(Level,log(activity_parser(Msg))).
 parser_info_(Msg) :-
   parser_message_(informational,Msg).
 
