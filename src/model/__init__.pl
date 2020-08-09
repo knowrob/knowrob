@@ -14,13 +14,11 @@
 % load additional ontologies
 :- tripledb_load(
         'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
-        [ graph(tbox),
-          namespace(io)
+        [ namespace(io)
         ]).
 :- tripledb_load(
         'http://knowrob.org/kb/knowrob.owl',
-        [ graph(tbox),
-          namespace(knowrob)
+        [ namespace(knowrob)
         ]).
 
 %

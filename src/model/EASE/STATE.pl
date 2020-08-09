@@ -13,8 +13,6 @@
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 
 %% is_state(?Entity) is nondet.
 %

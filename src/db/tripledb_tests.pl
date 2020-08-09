@@ -23,7 +23,7 @@ begin_tripledb_tests(Name,RDFFile,Options0) :-
 	),
 	%%
 	Setup   = tripledb_tests:tripledb_setup(RDFFile),
-	Cleanup = tripledb_tests:tripledb_cleanup,
+	Cleanup = tripledb_tests:tripledb_cleanup(RDFFile),
 	add_option_goal_(Options1,setup(Setup),Options2),
 	add_option_goal_(Options2,cleanup(Cleanup),Options3),
 	%%
@@ -41,6 +41,14 @@ end_tripledb_tests(Name) :-
 tripledb_setup(RDFFile) :-
 	tripledb:set_default_graph(test),
 	tripledb_load(RDFFile).
+
+%%
+tripledb_cleanup(RDFFile) :-
+	tripledb_cleanup,
+	%%
+	wildcard_scope(QScope),
+	tripledb:tripledb_get_onto_graph(RDFFile,OntoGraph),
+	tripledb_forget(_,_,_,QScope,[graph(=(OntoGraph))]).
 
 %%
 tripledb_cleanup :-

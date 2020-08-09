@@ -28,8 +28,6 @@
     [ task_role_range/3 ]).
 :- use_module(library('model/DUL/Region'),
     [ has_parameter_range/3 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 :- use_module(library('model/EASE/OBJ'),
     [ ]).
 

@@ -43,8 +43,6 @@
       has_object_type/2,
       has_quality_type/2
     ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 :- use_module(library('db/scope'),
     [ universal_scope/1 ]).
 :- use_module(library('comm/notify'),

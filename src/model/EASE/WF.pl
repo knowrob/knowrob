@@ -17,8 +17,6 @@
     [ has_type/2 ]).
 :- use_module(library('model/DUL/Event'),
     [ task_role_range/3 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 
 %% is_binding(?Entity) is nondet.
 %

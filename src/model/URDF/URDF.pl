@@ -27,8 +27,7 @@
 :- use_module('./parser.pl').
 
 :- tripledb_load('http://knowrob.org/kb/URDF.owl',
-    [ graph(tbox),
-      namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
+    [ namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
     ]).
 
 %% urdf_name(?Entity,?Name) is semidet.

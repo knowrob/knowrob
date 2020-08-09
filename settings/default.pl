@@ -7,7 +7,7 @@ setting(knowrob:plugins,
 
 %	Triple DB
 setting(tripledb:path, 'db/mongo/tripledb/plugin').
-setting(tripledb:drop, true).
+setting(tripledb:drop_graphs, [user]). % erase "user" graph on start-up
 
 %	Mongo DB
 setting(mng_client:db_name, roslog).

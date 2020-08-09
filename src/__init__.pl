@@ -33,7 +33,8 @@
 :- ros_package_iri(knowrob, 'http://www.ontologydesignpatterns.org/ont/dul').
 :- ros_package_iri(knowrob, 'http://www.ease-crc.org/ont').
 :- ros_package_iri(knowrob, 'http://knowrob.org/kb').
-:- ros_package_iri(knowrob, 'http://www.w3.org/2002/07').
+:- ros_package_iri(knowrob, 'http://www.w3.org/2002/07'). %/owl.rdf
+:- ros_package_iri(knowrob, 'http://www.w3.org/2000/01'). %/rdf-schema
 
 % load knowrob.pl
 :- use_module('knowrob').
@@ -42,8 +43,7 @@
 % initialize databases
 :- use_directory('db').
 :- tripledb_init.
-:- tripledb_add_subgraph(tbox,common).
-:- tripledb_add_subgraph(user,tbox).
+:- tripledb_add_subgraph(user,common).
 :- tripledb_add_subgraph(test,user).
 
 % load init files in sub-directories

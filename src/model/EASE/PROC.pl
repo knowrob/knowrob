@@ -15,8 +15,6 @@
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 
 %% is_chemical_process(?Entity) is nondet.
 %
