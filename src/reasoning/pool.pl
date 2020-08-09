@@ -84,7 +84,9 @@ infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
   findall([X,Y], (
     % FIXME: do not invalidate cache for self?
     call((:(Module,infer(Query,X,QScope,Y)))),
-    tell(X,[Options,Y])
+    ( tell(X,[Options,Y]) -> true ; (
+      print_message(error, infer(failed(tell(X,Y))))
+    ))
   ), Results),
   member([Fact,FScope],Results),
   log_debug(reasoner(Module,inferred(Fact))),
