@@ -112,7 +112,8 @@ test('tripledb tell triple with Unit'):-
 
 % test for special characters in iri: @*~!#?
 test('tripledb_tell_special_characters_@*~!#?'):-
-    tripledb_tell(test_datatype:'normal_user_test_new', test_datatype:'last@*~!#?_name', 'umlaut').
+    assert_true(tripledb_tell(test_datatype:'normal_user_test_new', test_datatype:'last@*~!#?_name', 'umlaut')),
+    assert_true(tripledb_ask(test_datatype:'normal_user_test_new', test_datatype:'last@*~!#?_name', 'umlaut')).
 
 % it is observed that once these special characters are stored in db(with wrong format), they can not be retrieved normally in variables or any other way.
 % Hence, in the code we throw a warning at triple_query_unify_o1
