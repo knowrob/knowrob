@@ -5,6 +5,7 @@
       is_union_of(r,t),
       is_intersection_of(r,t),
       is_complement_of(r,t),
+      is_all_disjoint_classes(r),
       is_individual(r),
       is_object_property(r),
       is_data_property(r),
@@ -406,13 +407,18 @@ has_disjoint_class2(A,B) :-
   is_all_disjoint_classes(DC),
   tripledb_ask(DC,owl:members,RDF_list),
   is_rdf_list(RDF_list,List),
+  once((
+    member(Sup_A,List), 
+    subclass_of(A,Sup_A)
+  )),
   (
-    member(Sup_A,List), subclass_of(A,Sup_A),
-    member(Sup_B,List), unify_disjoint_(B,Sup_B)
+    member(Sup_B,List), 
+    unify_disjoint_(B,Sup_B),
+    Sup_B \= Sup_A
   ).
 
 unify_disjoint_(B,Disjoint) :-
-  ( B=Disjoint ; transitive(subclass_of(B,Disjoint)) ).
+  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
 
 %% has_equivalent_class(?Class1, ?Class2) is nondet.
 %

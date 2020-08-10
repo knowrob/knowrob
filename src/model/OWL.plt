@@ -175,9 +175,9 @@ test('is_intersection_of with unbound variables') :-
     (
       subclass_of(test:'CInter',AInter),
       is_intersection_of(A,intersection_of([test:'C1',test:'C2']))
-    ) -> 
-    assert_unifies(AInter,A) ; 
-    true
+    ) 
+    -> assert_unifies(AInter,A) 
+    ;  true
   ),
   % Right argument is unbound
   assert_true((
@@ -189,9 +189,8 @@ test('is_intersection_of with unbound variables') :-
       subclass_of(test:'CInter',CInter5), 
       is_intersection_of(CInter5,B)
     ) 
-    -> 
-    assert_unifies(intersection_of([test:'C1',test:'C2']),B) ; 
-    true
+    -> assert_unifies(intersection_of([test:'C1',test:'C2']),B) 
+    ;  true
   ),
   % Both arguments are unbound
   assert_true(is_intersection_of(_,_)).
@@ -212,9 +211,8 @@ test('is_complement_of with unbound arguments') :-
       subclass_of(test:'DCompl',Compl), 
       is_complement_of(A,not(test:'D'))
     ) 
-    -> 
-    assert_unifies(Compl,A) ; 
-    true
+    -> assert_unifies(Compl,A) 
+    ;  true
   ),
   % Right argument is unbound
   assert_true(is_complement_of(Compl,_)),
@@ -223,9 +221,8 @@ test('is_complement_of with unbound arguments') :-
       subclass_of(test:'DCompl',Compl), 
       is_complement_of(Compl,B)
     ) 
-    -> 
-    assert_unifies(not(test:'D'),B) ; 
-    true
+    -> assert_unifies(not(test:'D'),B) 
+    ;  true
   ),
   % Both arguments are unbound
   assert_true(is_complement_of(_,_)).
@@ -366,21 +363,21 @@ test('has_disjoint_class1 with unbound arguments') :-
   assert_true(has_disjoint_class(_,test:'DisjClsChain2')),
   assert_true((
     findall(A, has_disjoint_class(A,test:'DisjClsChain2'), AList), 
-    member(test:'DisjClsChain1', AList)
+    memberchk(test:'DisjClsChain1', AList)
   )), 
   assert_true((
     findall(B, has_disjoint_class(B,test:'DisjClsChain2'), BList), 
-    member(test:'DisjClsChain3', BList)
+    memberchk(test:'DisjClsChain3', BList)
   )),
   % Right argument is unbound
   assert_true(has_disjoint_class(test:'DisjClsChain2',_)),
   assert_true((
     findall(C, has_disjoint_class(test:'DisjClsChain2',C), CList), 
-    member(test:'DisjClsChain1', CList)
+    memberchk(test:'DisjClsChain1', CList)
   )), 
   assert_true((
     findall(D, has_disjoint_class(test:'DisjClsChain2',D), DList), 
-    member(test:'DisjClsChain3', DList)
+    memberchk(test:'DisjClsChain3', DList)
   )),
   % Both arguments are unbound
   assert_true(has_disjoint_class(_,_)).
@@ -396,19 +393,19 @@ test('has_disjoint_class1 for subclasses',
   ),
   (
     findall(A, has_disjoint_class(A,test:'DisjClsChain1Sub'), AList), 
-    assert_true(member(test:'DisjClsChain2Sub', AList))
+    assert_true(memberchk(test:'DisjClsChain2Sub', AList))
   ),
   (
     findall(B, has_disjoint_class(B,test:'DisjClsChain1SubSub'), BList), 
-    assert_true(member(test:'DisjClsChain2SubSub', BList))
+    assert_true(memberchk(test:'DisjClsChain2SubSub', BList))
   ),
   assert_true((
     findall(C, has_disjoint_class(test:'DisjClsChain1Sub',C), CList), 
-    member(test:'DisjClsChain2Sub', CList)
+    memberchk(test:'DisjClsChain2Sub', CList)
   )),
   assert_true((
     findall(D, has_disjoint_class(test:'DisjClsChain1SubSub',D), DList), 
-    member(test:'DisjClsChain2Sub', DList)
+    memberchk(test:'DisjClsChain2Sub', DList)
   )).
 
 % Test OWL2 AllDisjointClasses
@@ -429,21 +426,21 @@ test('has_disjoint_class2 with unbound arguments') :-
   assert_true(has_disjoint_class(_,test:'DisjCls2')),
   (
     findall(A, has_disjoint_class(A,test:'DisjCls2'), AList), 
-    assert_true(member(test:'DisjCls1', AList))
+    assert_true(memberchk(test:'DisjCls1', AList))
   ), 
   (
     findall(B, has_disjoint_class(B,test:'DisjCls2'), BList), 
-    assert_true(member(test:'DisjCls3', BList))
+    assert_true(memberchk(test:'DisjCls3', BList))
   ),
   % Right argument is unbound
   assert_true(has_disjoint_class(test:'DisjCls2',_)),
   (
     findall(E, has_disjoint_class(test:'DisjCls2',E), EList), 
-    assert_true(member(test:'DisjCls1', EList))
+    assert_true(memberchk(test:'DisjCls1', EList))
   ),
   (
     findall(F, has_disjoint_class(test:'DisjCls2',F), FList), 
-    assert_true(member(test:'DisjCls3', FList))
+    assert_true(memberchk(test:'DisjCls3', FList))
   ).
 
 % Test OWL2 AllDisjointClasses
@@ -454,23 +451,15 @@ test('has_disjoint_class2 for subclasses') :-
   assert_true(
     has_disjoint_class(test:'DisjCls1Sub',test:'DisjCls3')
   ),
-  assert_true(
+  assert_true((
     has_disjoint_class(test:'DisjCls1SubSub',test:'DisjCls2Sub')
-  ),
+  )),
   assert_true(
     has_disjoint_class(test:'DisjCls1SubSub',test:'DisjCls3')
   ),
   (
-    findall(C, has_disjoint_class(C,test:'DisjCls1Sub'), CList), 
-    assert_true(member(test:'DisjCls2Sub', CList))
-  ),
-  (
     findall(D, has_disjoint_class(D,test:'DisjCls1Sub'), DList), 
-    assert_true(member(test:'DisjCls3', DList))
-  ),
-  (
-    findall(E, has_disjoint_class(test:'DisjCls1Sub',E), EList), 
-    assert_true(member(test:'DisjCls2Sub', EList))
+    assert_true(memberchk(test:'DisjCls3', DList))
   ).
 
 test('has_equivalent_class') :-
