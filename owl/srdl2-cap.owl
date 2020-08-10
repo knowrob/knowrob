@@ -144,7 +144,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Leg"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -314,7 +314,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PrehensileEffector"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#PrehensileEffector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -511,15 +511,15 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Leg -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Leg -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Leg"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#PrehensileEffector -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PrehensileEffector -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PrehensileEffector"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PrehensileEffector"/>
     
 
 

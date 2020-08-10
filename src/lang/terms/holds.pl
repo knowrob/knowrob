@@ -113,8 +113,9 @@ holds(S,P,DataTerm) +>
   holds_data(S,P,unit(Term,DataUnit)).
 
 holds(_,P,_) +>
-  { print_message(error, holds(unknown_property(P))) },
-  { fail }.
+	{	log_error(type_error(owl_property,P)),
+		fail
+	}.
 
 %%
 % DB retrieval

@@ -22,30 +22,30 @@ test(designator) :-
 
 %test(generate_refrigerator_description) :-
   %entity(entity_test:'Refrigerator_fg45543', X),
-  %X = [an, object, [type, ease:refrigerator]].
+  %X = [an, object, [type, soma:refrigerator]].
 
 %test(query_refrigerator, [nondet]) :-
-  %entity(Cont, [an, object, [type, ease:refrigerator]]),
+  %entity(Cont, [an, object, [type, soma:refrigerator]]),
   %rdf_equal(Cont, entity_test:'Refrigerator_fg45543').
 
 %test(query_cup, [nondet]) :-
-  %entity(Cup, [an, object, [type, ease_obj:'Crockery']]),
+  %entity(Cup, [an, object, [type, soma:'Crockery']]),
   %rdf_equal(Cup, entity_test:'Cup_sfd498th').
 
 %test(query_disposition, [nondet]) :-
   %entity(Obj, [an, object,
-    %[ease_obj:hasDisposition, [
-      %[type,ease_obj:'Insertion']
+    %[soma:hasDisposition, [
+      %[type,soma:'Insertion']
     %]]
   %]),
   %rdf_equal(Obj, entity_test:'Refrigerator_fg45543').
 
 %test(query_containerFor, [nondet]) :-
   %entity(Obj, [an, object,
-    %[ease_obj:hasDisposition, [
-      %[type,ease_obj:'Insertion'],
-      %[ease_obj:affordsTrigger, [
-        %[classifies, only(ease:'DesignedContainer')]
+    %[soma:hasDisposition, [
+      %[type,soma:'Insertion'],
+      %[soma:affordsTrigger, [
+        %[classifies, only(soma:'DesignedContainer')]
       %]]
     %]]
   %]),

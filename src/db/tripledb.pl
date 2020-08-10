@@ -21,16 +21,18 @@
 :- use_module(library('semweb/rdf_db'),  [ rdf_equal/2, rdf_register_ns/3 ]).
 :- use_module(library('http/http_open'), [ http_open/3 ]).
 
-:- use_module(library('utility/url'),    [ url_resolve/2, url_unresolve/2 ]).
+:- use_module(library('utility/url'),    [ url_resolve/2 ]).
+:- use_module(library('utility/atoms'),  [ camelcase/2 ]).
 :- use_module(library('db/scope'),       [ universal_scope/1 ]).
+:- use_module(library('db/subgraph')).
 :- use_module(library('comm/notify'),    [ notify/1 ]).
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
 % define some settings
 :- setting(path, atom, 'db/mongo/tripledb/plugin',
 		'Path to the module where the triple DB is implemented.').
-:- setting(drop, boolean, false,
-		'Toggle to configure whether the DB should initially by erased.').
+:- setting(drop_graphs, list, [user],
+		'List of named graphs that should initially by erased.').
 
 %%
 % Get path to module that implements the tripledb
@@ -51,8 +53,6 @@
           tripledb_cache_add/3        as itripledb_cache_add,
           tripledb_cache_invalidate/1 as itripledb_cache_invalidate
         ]).
-% drop the triple DB initially if requested by the user.
-:- setting(tripledb:drop,true) -> itripledb_drop ; true.
 
 %%
 :- dynamic default_graph/1.
@@ -72,6 +72,71 @@ set_graph_option(Options,Options) :-
 set_graph_option(Options,Merged) :-
   default_graph(DG),
   merge_options([graph(DG)],Options,Merged).
+
+%%
+tripledb_graph_drop(Name) :-
+	wildcard_scope(QScope),
+	tripledb_forget(_,_,_,QScope,[graph(=(Name))]),
+	!.
+
+%% Each ontology is stored in a separate graph named according to the ontology
+tripledb_get_onto_graph(URL,Name) :-
+	file_base_name(URL,FileName),
+	file_name_extension(Name,_,FileName),
+	!.
+
+%% The version/last modification time of a loaded ontology
+tripledb_get_onto_version(OntoGraph,Version) :-
+	wildcard_scope(QScope),
+	% find value of property "tripledbVersionString" in ontology graph
+	tripledb_ask(
+		_,
+		tripledbVersionString,
+		string(Version),
+		QScope,_,
+		[graph(=(OntoGraph))]
+	),
+	!.
+%% Write version string into DB
+tripledb_set_onto_version(URL,Version,OntoGraph) :-
+	universal_scope(Scope),
+	tripledb_tell(
+		URL,
+		tripledbVersionString,
+		string(Version),
+		Scope,
+		[graph(OntoGraph)]
+	).
+
+%% get modification time of local file.
+%% this is to cause re-loading the file in case of it has changed locally.
+tripledb_get_file_version(URL,Version) :-
+	exists_file(URL),
+	!,
+	set_time_file(URL,[modified(ModStamp)],[]),
+	atom_number(Version,ModStamp).
+
+%% try to extract version from URI
+tripledb_get_file_version(URL,Version) :-
+	atomic_list_concat(XL,'/',URL),
+	% FIXME: some ontologies use e.g. ".../2005/07/xx.owl"
+	reverse(XL,[_,Version|_]),
+	is_version_string(Version),
+	!.
+
+%% remote URL -> reload only one update per day
+tripledb_get_file_version(_URL,Version) :-
+	date(VersionTerm),
+	term_to_atom(VersionTerm,Version).
+
+%% version string validation
+is_version_string(Atom) :-
+	atom_codes(Atom,Codes),
+	phrase(version_matcher,Codes),
+	!.
+version_matcher --> "v", version_matcher.
+version_matcher --> digits(_), ".", digits(_), ".", digits(_).
+version_matcher --> digits(_), ".", digits(_).
 
 %% tripledb_load(+URL) is det.
 %
@@ -106,7 +171,7 @@ tripledb_load(URL,Options) :-
   % get graph name
   ( member(graph(Graph),Options) ->
     ( true );
-    ( default_graph(Graph) )
+    ( Graph=_ )
   ),
   % get fact scope
   universal_scope(Scope),
@@ -122,48 +187,91 @@ tripledb_load(URL,Options) :-
 % @param Scope The subject of a triple.
 % @param Graph The graph name.
 %
-tripledb_load(URL,_,_) :-
-  % FIXME: Make sure we do not load multiple versions of same ontology!
-  once(( url_unresolve(URL,Unresolved) ; Unresolved=URL )),
-  tripledb_ask(Unresolved,rdf:type,string(owl:'Ontology')),!.
+tripledb_load(URL,Scope,SubGraph) :-
+	(	url_resolve(URL,Resolved)
+	->	true
+	;	Resolved=URL 
+	),
+	tripledb_get_onto_graph(Resolved,OntoGraph),
+	%% setup graph structure
+	(	SubGraph == common
+	->	true
+	;	(	tripledb_add_subgraph(OntoGraph,common),
+			tripledb_add_subgraph(user,OntoGraph)
+		)
+	),
+	(	ground(SubGraph)
+	->	(	tripledb_add_subgraph(SubGraph,OntoGraph),
+			tripledb_add_subgraph(user,SubGraph)
+		)
+	;	true
+	),
+	!,
+	%%
+	tripledb_load0(Resolved,Scope,OntoGraph,SubGraph).
 
-tripledb_load(URL,Scope,Graph) :-
-  rdf_equal(owl:'imports',OWL_Imports),
-  rdf_equal(owl:'NamedIndividual',OWL_NamedIndividual),
-  rdf_equal(rdf:'type',RDF_Type),
-  %%
-  tripledb_load1(URL,URL_resolved,Triples),
-  % first, load RDF data of imported ontologies
-  forall(
-    member(rdf(_,OWL_Imports,I), Triples),
-    tripledb_load(I,Scope,Graph)
-  ),
-  %%
-  once(( url_unresolve(URL,Unresolved) ; Unresolved=URL )),
-  universal_scope(US),
-  tripledb_tell(Unresolved,rdf:type,string(owl:'Ontology'),US,[graph(Graph)]),
-  % load data into triple DB
-  print_message(informational,tripledb(load(URL_resolved))),
-  tripledb_load3t(Unresolved,Triples,Scope,Graph),
-  % notify about asserted individuals
-  forall(
-    member(rdf(X,RDF_Type,OWL_NamedIndividual), Triples),
-    ignore(notify(individual(X)))
-  ).
+tripledb_load0(Resolved,_,OntoGraph,_) :-
+	% test whether the ontology is already loaded
+	tripledb_get_onto_version(OntoGraph,Version),
+	tripledb_get_file_version(Resolved,Version),
+	% no triples to load if versions unify
+	% but we must make sure the graph is a sub-graph
+	% of all imported ontologies.
+	wildcard_scope(QScope),
+	forall(
+		tripledb_ask(_,owl:'imports',string(Imported),QScope,_,[graph(=(OntoGraph))]),
+		(	tripledb_get_onto_graph(Imported,ImportedGraph),
+			tripledb_add_subgraph(OntoGraph,ImportedGraph)
+		)
+	),
+	!.
+
+tripledb_load0(Resolved,Scope,OntoGraph,SubGraph) :-
+	%%
+	rdf_equal(owl:'imports',OWL_Imports),
+	rdf_equal(owl:'NamedIndividual',OWL_NamedIndividual),
+	rdf_equal(owl:'Ontology',OWL_Ontology),
+	rdf_equal(rdf:'type',RDF_Type),
+	% erase old triples
+	tripledb_graph_drop(OntoGraph),
+	%
+	tripledb_load1(Resolved,Triples),
+	% get ontology IRI
+	(	member(rdf(Unresolved,RDF_Type,OWL_Ontology), Triples)
+	->	true
+	;	(	log_error(type_error(ontology,Resolved)),
+			fail
+		)
+	),
+	% first, load RDF data of imported ontologies
+	forall(
+		member(rdf(Unresolved,OWL_Imports,I), Triples),
+		(	tripledb_get_onto_graph(I,ImportedGraph),
+			tripledb_add_subgraph(OntoGraph,ImportedGraph),
+			tripledb_load(I,Scope,SubGraph)
+		)
+	),
+	% assert a version string
+	tripledb_get_file_version(Resolved,Version),
+	tripledb_set_onto_version(Unresolved,Version,OntoGraph),
+	% load data into triple DB
+	tripledb_load3t(Unresolved,Triples,Scope,OntoGraph),
+	% notify about asserted individuals
+	forall(
+		member(rdf(X,RDF_Type,OWL_NamedIndividual), Triples),
+		ignore(notify(individual(X)))
+	),
+	!.
 
 %%
-tripledb_load1(URL,Resolved,Triples) :-
-  % try to resolve to local path
-  url_resolve(URL,Resolved),!,
-  tripledb_load2(Resolved,Triples).
+tripledb_load1(URL,Triples) :-
+	sub_string(URL,0,4,_,'http'),
+	!,
+	http_open(URL,RDF_Stream,[]),
+	tripledb_load2(RDF_Stream,Triples),
+	close(RDF_Stream).
 
-tripledb_load1(URL,URL,Triples) :-
-  sub_string(URL,0,4,_,'http'), !,
-  http_open(URL,RDF_Stream,[]),
-  tripledb_load2(RDF_Stream,Triples),
-  close(RDF_Stream).
-
-tripledb_load1(URL,URL,Triples) :-
+tripledb_load1(URL,Triples) :-
   tripledb_load2(URL,Triples).
 
 tripledb_load2(URL,Triples) :-
@@ -178,7 +286,7 @@ tripledb_load3t(IRI,Triples,Scope,Graph) :-
   tripledb_load3(IRI,Triples,Scope,Graph),
   get_time(Time1),
   PerSec is NumTriples/(Time1-Time0),
-  print_message(informational, tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
+  log_debug(tripledb(loaded(ntriples(NumTriples),persecond(PerSec)))).
 
 %%
 tripledb_load3(IRI,Triples,Scope,Graph) :-
@@ -222,7 +330,12 @@ convert_rdf_value_(O,string(O)).
 %% 
 % @implements 'db/itripledb'
 %
-tripledb_init :- itripledb_init.
+tripledb_init :-
+	% drop some graphs on start-up
+	setting(tripledb:drop_graphs,L),
+	forall(member(X,L), tripledb_graph_drop(X)),
+	%
+	itripledb_init.
 
 %% 
 % @implements 'db/itripledb'

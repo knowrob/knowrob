@@ -9,7 +9,7 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
-     xmlns:EASE="http://www.ease-crc.org/ont/EASE.owl#">
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/mem-test.owl">
         <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
     </owl:Ontology>
@@ -234,7 +234,7 @@
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#Bowl_0">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Bowl"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Bowl"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/mem-test.owl#TestColor_0">

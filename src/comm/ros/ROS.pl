@@ -235,7 +235,7 @@
 %
 %ros_entity_to_prolog(Collection, List) :-
 %  kb_type_of(Collection,dul:'Collection'),!,
-%  ( kb_triple(Collection, ease:firstMember, First) ->
+%  ( kb_triple(Collection, soma:firstMember, First) ->
 %    owl_sequence(First, List) ; 
 %    findall(M, kb_triple(Collection,dul:hasMember, M), Xs) ),
 %  findall(X, (
@@ -260,7 +260,7 @@
 %    dict_pairs(Msg_dict,_,Msg_pairs),
 %    forall(member(SName-[SType,SValue], Msg_pairs),(
 %      owl_create_ros_entity(SType,SValue,Val_owl),
-%      kb_assert(Val_owl,ease:hasNameString,SName),
+%      kb_assert(Val_owl,soma:hasNameString,SName),
 %      kb_assert(Msg_owl,dul:hasPart,Val_owl)
 %    ))
 %  )).

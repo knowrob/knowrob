@@ -17,31 +17,24 @@
     [ has_type/2 ]).
 :- use_module(library('model/DUL/Event'),
     [ task_role_range/3 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
-
-:- tripledb_load('http://www.ease-crc.org/ont/EASE-WF.owl',
-    [ graph(tbox),
-      namespace(ease_wf)
-    ]).
 
 %% is_binding(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_wf:'Binding'.
+% True iff Entity is an instance of soma:'Binding'.
 %
 % @param Entity An entity IRI.
 %
 is_binding(Entity) ?+>
-  has_type(Entity, ease_wf:'Binding').
+  has_type(Entity, soma:'Binding').
 
 %% is_succeedence(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_wf:'Succeedence'.
+% True iff Entity is an instance of soma:'Succeedence'.
 %
 % @param Entity An entity IRI.
 %
 is_succeedence(Entity) ?+>
-  has_type(Entity, ease_wf:'Succeedence').
+  has_type(Entity, soma:'Succeedence').
 
 %% plan_defines_task(?Plan,?Tsk) is semidet.
 %
@@ -51,7 +44,7 @@ is_succeedence(Entity) ?+>
 % @param Tsk An individual of type dul:'Task'.
 %
 plan_defines_task(Plan,Tsk) ?+>
-  holds(Plan,ease:isPlanFor,Tsk).
+  holds(Plan,soma:isPlanFor,Tsk).
 
 %% plan_has_goal(?WF,?Step) is semidet.
 %
@@ -61,7 +54,7 @@ plan_defines_task(Plan,Tsk) ?+>
 % @param Step An individual of type dul:'Task'.
 %
 workflow_step(WF,Step) ?+>
-  holds(WF,ease_wf:hasStep,Step).
+  holds(WF,soma:hasStep,Step).
 
 %% workflow_first_step(?WF,?Step) is semidet.
 %
@@ -71,7 +64,7 @@ workflow_step(WF,Step) ?+>
 % @param Step An individual of type dul:'Task'.
 %
 workflow_first_step(WF,Step) ?+>
-  holds(WF,ease_wf:hasFirstStep,Step).
+  holds(WF,soma:hasFirstStep,Step).
 
 %% workflow_constituent(+WF, ?Constituent) is semidet.
 %
@@ -79,7 +72,7 @@ workflow_first_step(WF,Step) ?+>
 %
 workflow_constituent(WF,X) ?> holds(WF,dul:describes,X).
 workflow_constituent(WF,X) ?> holds(WF,dul:definesTask,X).
-workflow_constituent(WF,X) ?> holds(WF,ease_proc:definesProcess,X).
+workflow_constituent(WF,X) ?> holds(WF,soma:definesProcess,X).
 
 %% workflow_role_range(?WF,?Role,?ObjectType) is semidet.
 %

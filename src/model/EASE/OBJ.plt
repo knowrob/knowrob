@@ -13,11 +13,11 @@
 
 test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correctly')]) :-
 	synchronize(subject(test:'Dishwasher1')),
-	has_disposition_type(test:'Dishwasher1', _, ease_obj:'Insertion').
+	has_disposition_type(test:'Dishwasher1', _, soma:'Insertion').
 
 %test(disposition_trigger_type) :-
-  %object_disposition(test_obj:'Dishwasher1', D, ease_obj:'Insertion'),!,
-  %disposition_trigger_type(D, ease_obj:'Tableware').
+  %object_disposition(test_obj:'Dishwasher1', D, soma:'Insertion'),!,
+  %disposition_trigger_type(D, soma:'Tableware').
 
 %test(storage_place_for1) :-
   %storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup1').
@@ -26,11 +26,11 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
   %storage_place_for(test_obj:'Dishwasher1', test_obj:'Cup2').
 
 %test(storage_place_for3) :-
-  %storage_place_for(test_obj:'Dishwasher1', ease_obj:'Tableware').
+  %storage_place_for(test_obj:'Dishwasher1', soma:'Tableware').
 
 %test(storage_place_for_because1) :-
   %storage_place_for_because(test_obj:'Dishwasher1',test_obj:'Cup1',X),
-  %rdf_equal(X, ease_obj:'Tableware').
+  %rdf_equal(X, soma:'Tableware').
 
 %test(object_dimensions) :-
   %object_dimensions(test_obj:'Handle1', 0.015, 0.015, 0.015).

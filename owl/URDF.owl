@@ -7,9 +7,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/urdf.owl">
-        <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
-        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
-        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
+        <owl:imports rdf:resource="http://www.ease-crc.org/ont/SOMA.owl"/>
     </owl:Ontology>
     
 
@@ -25,9 +23,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#array_double -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#array_double -->
 
-    <rdfs:Datatype rdf:about="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+    <rdfs:Datatype rdf:about="http://www.ease-crc.org/ont/SOMA.owl#array_double"/>
     
 
 
@@ -58,7 +56,7 @@
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasCollisionShape">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Shape"/>
         <rdfs:label>has collision shape</rdfs:label>
     </owl:ObjectProperty>
     
@@ -89,7 +87,7 @@
     <!-- http://knowrob.org/kb/urdf.owl#hasJoint -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasJoint">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/urdf.owl#Joint"/>
         <rdfs:label>has joint</rdfs:label>
@@ -155,7 +153,7 @@
     <!-- http://knowrob.org/kb/urdf.owl#hasLink -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasLink">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:label>has link</rdfs:label>
@@ -168,7 +166,7 @@
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasOrigin">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
-        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#6DPose"/>
         <rdfs:label>has origin</rdfs:label>
     </owl:ObjectProperty>
     
@@ -196,9 +194,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
     
 
 
@@ -248,7 +246,7 @@
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasAxisVector">
         <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/urdf.owl#JointAxis"/>
-        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#array_double"/>
         <rdfs:label>has axis vector</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -411,7 +409,7 @@
     <!-- http://knowrob.org/kb/urdf.owl#hasURDFName -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasURDFName">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
         <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>The name of the link or joint.</rdfs:comment>
@@ -431,9 +429,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasNameString -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasNameString -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
     
 
 
@@ -823,57 +821,57 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#BoxShape -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#BoxShape -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#BoxShape"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#BoxShape"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#CylinderShape -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#CylinderShape -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CylinderShape"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#CylinderShape"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#FrictionAttribute -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#FrictionAttribute -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#FrictionAttribute"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#FrictionAttribute"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MassAttribute -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#MassAttribute -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MassAttribute"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#MassAttribute"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#MeshShape -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#MeshShape -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#MeshShape"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#MeshShape"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Shape -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Shape"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Shape"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#ShapeRegion -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ShapeRegion -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#ShapeRegion"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ShapeRegion"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#SphereShape -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SphereShape -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#SphereShape"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SphereShape"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#6DPose -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#6DPose"/>
     
 
 

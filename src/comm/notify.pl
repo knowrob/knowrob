@@ -21,7 +21,7 @@ notify_loop :-
 	catch(
 		forall(notify_hook(Msg),true),
 		Exception,
-		print_message(error,notify_exception(Exception))
+		log_error(exception(Exception))
 	),
 	% fallback to 'repeat' above
 	fail.

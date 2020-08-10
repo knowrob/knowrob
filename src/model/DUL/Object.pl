@@ -36,8 +36,7 @@ In DUL, Object is defined as:
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
-    [ graph(tbox),
-      namespace(dul)
+    [ namespace(dul)
     ]).
 
 %% is_object(?Entity) is nondet.

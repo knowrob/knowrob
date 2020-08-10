@@ -23,18 +23,22 @@
 
 % load utility modules into user
 :- use_module('utility/module').
+:- use_module('utility/logging').
 :- use_module('utility/algebra').
 :- use_module('utility/atoms').
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
 :- use_module('utility/url').
 
+% tell the user what is going on
+:- log_info(kb(initialization(started))).
+
 % register ROS packages to resolve IRI prefixes to local paths
-:- ros_package_iri(dul,           'http://www.ontologydesignpatterns.org/ont/dul').
-:- ros_package_iri(ease_ontology, 'http://www.ease-crc.org/ont').
-:- ros_package_iri(rosowl,        'http://www.ease-crc.org/ont').
-:- ros_package_iri(knowrob,       'http://knowrob.org/kb').
-:- ros_package_iri(knowrob,       'http://www.w3.org/2002/07').
+:- ros_package_iri(knowrob, 'http://www.ontologydesignpatterns.org/ont/dul').
+:- ros_package_iri(knowrob, 'http://www.ease-crc.org/ont').
+:- ros_package_iri(knowrob, 'http://knowrob.org/kb').
+:- ros_package_iri(knowrob, 'http://www.w3.org/2002/07'). %/owl.rdf
+:- ros_package_iri(knowrob, 'http://www.w3.org/2000/01'). %/rdf-schema
 
 % load knowrob.pl
 :- use_module('knowrob').
@@ -43,8 +47,7 @@
 % initialize databases
 :- use_directory('db').
 :- tripledb_init.
-:- tripledb_add_subgraph(tbox,common).
-:- tripledb_add_subgraph(user,tbox).
+:- tripledb_add_subgraph(user,common).
 :- tripledb_add_subgraph(test,user).
 
 % load init files in sub-directories
@@ -56,3 +59,5 @@
 
 % load additional modules
 :- knowrob_load_plugins.
+% tell the user that we are done with the initialization
+:- log_info(kb(initialization(finished))).
