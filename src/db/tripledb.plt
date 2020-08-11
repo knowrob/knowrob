@@ -119,7 +119,7 @@ test('tripledb_tell_special_characters_@*~!#?'):-
 % Hence, in the code we throw a warning at triple_query_unify_o1
 test('tripledb ask for triple with special character already stored in db(wrong/corrupt format)'):-
     tripledb_tell(test_datatype:'Lecturer3', test_datatype:'last_name', 'Müller'),
-    assert_true(tripledb_ask(test_datatype:'Lecturer3', test_datatype:'last_name', Y)).
+    assert_false(tripledb_ask(test_datatype:'Lecturer3', test_datatype:'last_name', _)).
 
 % test for non existent triples
 test('tripledb_ask_for_non_existant_triples'):-
