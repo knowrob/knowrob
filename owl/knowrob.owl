@@ -1,0 +1,3646 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
+     xml:base="http://knowrob.org/kb/knowrob.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob.owl">
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-WF.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-ACT.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-PROC.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-STATE.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-OBJ.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/URDF.owl"/>
+        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-IO.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright © 2007-2011 by
+          Technische Universität München. This work is licensed under
+          CreativeCommons Attribution 3.0, so you are granted to use, copy,
+          distribute, transmit and adapt this work, but you must attribute
+          the work to the original authors.
+
+          Parts of this ontology are based on the OpenCyc ontology. The OpenCyc
+          OWL Ontologies are Copyright © 2001-2009 Cycorp, Inc., Austin, TX,
+          USA. All rights reserved.
+
+          These files contain an OWL representation of information contained
+          in the OpenCyc Knowledge Base. The content of these OWL files are
+          licensed under the Creative Commons Attribution 3.0 license. The
+          content of these OWL files, including the OpenCyc content they
+          represent, constitutes the &quot;Work&quot; referred to in the
+          Creative Commons license. The terms of this license equally apply
+          to, without limitation, renamings and other logically equivalent
+          reformulations of the content of these OWL files (or portions
+          thereof) in any natural or formal language, as well as to derivations
+          of this content or inclusion of it in other ontologies.
+        </rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#todo -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#vec3 -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#vec3"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#vec4 -->
+
+    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#vec4"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#array_double -->
+
+    <rdfs:Datatype rdf:about="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#actor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#actor">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The most general instance of ActorSlot (q.v.): all other actor slots are specializations of this predicate. Thus actors is a broad relation that holds between a given event and any contemporary existing thing (see SomethingExisting) that is meaningfully involved in the event. (actors EVENT ACTOR) means that ACTOR is somehow saliently (directly or indirectly) involved in EVENT during EVENT. An object&apos;s merely being cotemporal (see cotemporal) with an event is obviously not sufficient for being an actor in it, nor is participating (however centrally) in a representation or re-enactment of the event. But note that being an &quot;actor&quot; in the relevant sense is not restricted to things that play &quot;active&quot; (as opposed to passive or instrumental) roles in a given event.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#avoidedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#avoidedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasLifetime">
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#causedBy -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#causedBy">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#connectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#connectedTo">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of ConnectionPredicate. (connectedTo OBJ1 OBJ2) means that OBJ1 and OBJ2 are (directly or indirectly) physically connected in a way that allows at most only limited types of relative motion between them. A hinged connection, for example, allows limited rotational motion between OBJ1 and OBJ2. In many cases, being connectedTo implicitly involves another object(s); e.g. a door is connectedTo a door frame by a hinge, which is itself connectedTo_Directly (q.v.) both the door and the frame.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#connectedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#constrains -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#constrains">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#dangerousPart -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dangerousPart">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#dependsOnConcept -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#dependsOnConcept">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+        <rdfs:label>depends on concept</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#describedInMap -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#describedInMap">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Map"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedAgent -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedAgent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#detectedObject"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedArtifact -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedArtifact">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#detectedObject"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedObject -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedObject">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#postActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#detectedPerson -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedPerson">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#detectedAgent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#deviceUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#deviceUsed">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#doorHingedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#doorHingedTo">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#hingedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#electricalPart -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#electricalPart">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#eventOccursAt -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#eventOccursAt">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+        <rdfs:comment>An ActorSlot and a specialization of inRegion that relates a particular event to the instance of EnduringThing_Localized at which it occurs. (eventOccursAt EVENT LOC) means that the spatial extent of EVENT is within LOC. For example, (eventOccursAt LomaPrietaEarthquake SanFranciscoBayArea).
+
+See also the more general predicate eventPartiallyOccursAt, which relates an event to any instance of SpatialThing_Localized in which some sub-event of it occurs.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#fromLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fromLocation">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#fromState -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fromState">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#goalLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#goalLocation">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#eventOccursAt"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasAffordance -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasAffordance">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasFirstProcedureArgument -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasFirstProcedureArgument">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#hasProcedureArgument"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#CompoundArgument"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasInferredParameter -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasInferredParameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+        <rdfs:domain rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasProcedureArgument -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasProcedureArgument">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#CompoundArgument"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasResolution -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasResolution">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Resolution"/>
+        <rdfs:label>has resolution</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasSamplingRate -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasSamplingRate">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorDevice"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SamplingRate"/>
+        <rdfs:label>has sampling rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasSensorRange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasSensorRange">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorDevice"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorRange"/>
+        <rdfs:label>has sensor range</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hingedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hingedTo">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#rotationallyConnectedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inFieldOfView -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inFieldOfView">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inReachOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inReachOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsDestroyed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsDestroyed">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#inputsRemaining -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputsRemaining">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isAboveOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isAboveOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isBelowOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isBehindOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isBehindOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isInFrontOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isBelowOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isBelowOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isInCenterOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInCenterOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isInFrontOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInFrontOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isInsideOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isInsideOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isLeftOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isLeftOf">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isNextTo"/>
+        <owl:inverseOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isRightOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isNextTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isNextTo">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isOntopOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isOntopOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#isRightOf -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#isRightOf">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#isNextTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightTarget -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightTarget">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#near -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#near">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This intentionally-vague predicate relates spatial things that are relatively near each other. (near THIS THAT) means that the distance between THIS and THAT is such that -- given the situation at hand and the sorts of things that THIS and THAT are -- they would be considered near each other by most observers. Note that an object is near itself, anything it touches, and any part of itself. When appropriate, use a more precisely-defined predicate such as nearToDegree, nearRelativeTo, nearForRolesInEventType, nearnessForRolesInEventType, touches_Directly, or physicalParts.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectOfStateChange -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectOfStateChange">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectRemoved -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectRemoved">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectTransported -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectTransported">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#outputsCreated">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#postActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#performedInMap -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#performedInMap">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Map"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#postActor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#postActor">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#actor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#preActor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#preActor">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#actor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ActorSlot (q.v.) that relates an event to those of its participants that pre-exist it. (preActors EVENT OBJECT) means that OBJECT is a participant (see actors) in EVENT and that OBJECT exists before EVENT begins. Note that OBJECT also exists during at least part of EVENT (as actors generalizes to temporallyIntersects). preActors is a very general actor-slot, subsuming doneBy, objectActedOn, objectMoving, and many others.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#prismaticallyConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#prismaticallyConnectedTo">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#connectedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStarted -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStarted">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStopped -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStopped">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+        <rdfs:range rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#relativeTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#relativeTo">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#rotationallyConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#rotationallyConnectedTo">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#connectedTo"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ConnectionPredicate (q.v.) and thus a specialization of connectedTo (q.v.). (rotationallyConnectedTo OBJ1 OBJ2) means that OBJ1 and OBJ2 are connected in such a way that rotational motion, and only rotational motion, can happen between them. The range of rotational motion possible might be full or partial. Non-rotational movement between two rotationally connected objects can occur only if the connection is broken, deformed, or disassembled. If OBJ1 and OBJ2 do rotate relative to one another, then this may be due to sliding of their surfaces, articulation of some joint part, or deformation of OBJ1 or OBJ2 (so long as that deformation only allows rotation between OBJ1 and OBJ2). Positive examples: Femurs are rotationally connected to hips, doors are rotationally connected to door frames, doorknobs are rotationally connected to doors, and propellers are rotationally connected to airplanes; in computer trackballs the ball is rotationally connected to the housing. Also a book cover is rotationally connected to its binding (but flapHingedTo is even more appropriate for describing such a connection because it is more specific). Negative examples: a planet orbiting a star (they are not connected; cf. MovingInACircle) and a toothpick stuck in a person&apos;s leg (although elastic deformation of flesh allows there to be rotational motion between toothpick and leg, it also may allow a small amount of translational motion to occur between them; in-Lodged is more appropriate for describing this case).</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#storedAtPlace -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#storedAtPlace">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#connectedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toLocation">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toState -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toState">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toolUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toolUsed">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#trajectory-Arm -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#trajectory-Arm">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#trajectory-Complete"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#trajectory-Complete -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#trajectory-Complete">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#eventOccursAt"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Trajectory"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#trajectory-Mean -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#trajectory-Mean">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#trajectory-Complete"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Trajectory"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#trajectory-RobotBase -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#trajectory-RobotBase">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#trajectory-Complete"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#typePrimaryFunction-StoragePlaceFor"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#userOfAffordance -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#userOfAffordance">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDesign -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDesign"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasSpaceRegion -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasSpaceRegion"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#definesInput -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasPhysicalComponent"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#involvesArtifact -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesArtifact"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#involvesPlace -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#involvesPlace"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#isPlanFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#associatedWith"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParameter"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasQuality"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#involvesAgent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isPartOf"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isParticipantIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isParticipantIn"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isRelatedToConcept"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topObjectProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#areaOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#areaOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#buildingParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#buildingParameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#depthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#depthOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDepth"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#duration -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#duration">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventTime"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#endTime -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#endTime">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventEnd"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#firstName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#firstName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#floorNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#floorNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#buildingParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#frameName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#frameName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#fullName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#fullName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasArity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasArity">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label>has arity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasFunctor -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasFunctor">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>has functor</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasModulePath -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasModulePath">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>has module path</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasPoseData -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasPoseData">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter"/>
+        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+        <rdfs:label>has pose data</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasVisual -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasVisual">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#visualHint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasXScale -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasXScale">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasYScale -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasYScale">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasZScale -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasZScale">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#heightOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#heightOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasHeight"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#jointLimitParameters -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#jointLimitParameters">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lastName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lastName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightConeAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightConeAngle">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>The opening angle of spot lights. Must be below or equal pi/2. Default is pi/3.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightDirection -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightDirection">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>determines orientation of spot lights.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightDistance -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightDistance">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:comment>determines light attenuation. I guess threejs interprets this as &quot;the light shines lightDistance meters&quot; (or so)</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightExponent -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightExponent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>Used as exponent in spot effect computation: effect=x^exponent. Exponents below 1 make light brighter, above darker. Default value is 10. Only meaningful for spotlights.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightIntensity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightIntensity">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>numeric value of the light&apos;s strength/intensity. Default is 1.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightParameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightType -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightType">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightParameter"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                        <rdf:first>directional</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first>point</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                        <rdf:first>spot</rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+        <rdfs:comment>One of &apos;spot&apos;, &apos;point&apos;, or &apos;directional&apos;. Corresponds to different light types used in Computer Graphics.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#linkToImageFile -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#linkToImageFile">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#mainColorOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#mainColorOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasRGBValue"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#maxJointValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#maxJointValue">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#jointLimitParameters"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#minJointValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#minJointValue">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#jointLimitParameters"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#nameString -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#nameString">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#numberOfLevels -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#numberOfLevels">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#buildingParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#numberOfStories -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#numberOfStories">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#buildingParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectID -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectID">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#pathToCadModel -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#pathToCadModel">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasFilePath"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#quaternion -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#quaternion">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasOrientationVector"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#roomNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#roomNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#buildingParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#scale -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#scale">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#vec3"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#startTime -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#startTime">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#hasEventBegin"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#streetNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#streetNumber">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#buildingParameter"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#temperatureOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temperatureOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#translation -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#translation">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasPositionVector"/>
+        <rdfs:range rdf:resource="http://www.ease-crc.org/ont/EASE.owl#array_double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#visualHint -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#visualHint">
+        <rdfs:subPropertyOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#volumeOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#volumeOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#widthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#widthOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasWidth"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDepth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDepth"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasFilePath -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasFilePath"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasHeight -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasHeight"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasLocalizationParameter"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasOrientationVector -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasOrientationVector"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasPositionVector -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasPositionVector"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasRGBValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasRGBValue"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasShapeParameter"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasWidth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasWidth"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventBegin -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventBegin"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventEnd -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventEnd"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasEventTime -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasEventTime"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#hasNameString -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegionDataValue"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topDataProperty -->
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/actions.owl#Mapping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/actions.owl#Mapping">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Perceiving"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Accuracy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Accuracy">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Affordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Affordance">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isQualityOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AffordanceTransform -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AffordanceTransform">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#StaticTransform"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AssemblyAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AssemblyAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Assignment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Assignment">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#includesObject"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AtomArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AtomArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AtomicArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AtomicArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#CompoundArgument"/>
+        <rdfs:comment>An atomic term in the language in which the procedure is implemented.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AvoidLookingAt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AvoidLookingAt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#B21 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#B21">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Battery -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Battery">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>providers of DC electricity from chemical reactions</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BottleCap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BottleCap">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Candle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Candle">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedSubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CartesianCoordinateSystem -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CartesianCoordinateSystem">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CoordinateSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of CoordinateSystem. Each instance of CartesianCoordinateSystem is based on two or three perpendicular axes that intersect at a point, called the origin. Two axes are used for coordinating a two-dimensional space; three axes are used for coordinating a three-dimensional space. Any point in the space coordinated by the system can be specified by a pair (or triple) of Distances, representing distances from the origin along each of the two (or three) axes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CeilingLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CeilingLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightFixture"/>
+        <rdfs:comment>The collection of all ceiling lights.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CenterOfObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CenterOfObject">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Chopping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Chopping">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cutting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cleaning -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cleaning">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#ModifyingPhysicalObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cloth -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cloth">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TextileArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CompoundArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CompoundArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasArity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasFunctor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A compound term in the language in which the procedure is implemented.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ComputationalPredicate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalProcedure"/>
+        <rdfs:comment>A boolean procedure yielding true if the fact implied by the predicate can be derived using the argument instantiation provided when the predicate is called. In some implementations arguments may be left without instantiation before a predicate is called in which case the call yields true if an appropiate instantiation could be found.</rdfs:comment>
+        <rdfs:label>Computational predicate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ComputationalProcedure -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ComputationalProcedure">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasArity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasFunctor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>An implemented procedure with specific functor and arity that can be computed by calling it with appropiate arguments possibly yielding one or more outputs.</rdfs:comment>
+        <rdfs:label>Computational procedure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Constraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Constraint">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#constrains"/>
+                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>fixme: there is an issue with the DUL axiom that parameters only classify regions, and &apos;is constraint for&apos; is a sub-property of classifies with domain Parameter and range Entity. this seems like a bug in DUL.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cooling -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooling">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. Each instance of CoolingProcess is an event in which the temperature of some object (related to the instance of CoolingProcess by objectOfStateChange) is lowered.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CoordinateSystem -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CoordinateSystem">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FrameOfReference"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of FrameOfReference. This is the collection of systems with respect to which the locations of SpatialThings can be specified.
+The two most common types of coordinate systems are CartesianCoordinateSystems and PolarCoordinateSystems.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cutting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cutting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Destructing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Date -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Date">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Destructing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Destructing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#PhysicalTask"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DistanceConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DistanceConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Duration -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Duration">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricLamp -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricLamp">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightFixture"/>
+        <rdfs:comment>The collection for all kinds of freestanding (easily moveable) electrical lamps.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>Devices that provide light by transforming electrical current into light energy.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalOutlet -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalOutlet">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalPlug -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalPlug">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FaultyHardware -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FaultyHardware">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InoperableHardware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FinishBefore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FinishBefore">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Flashlight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flashlight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
+        <rdfs:comment>A small portable electric lamp powered by batteries.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlatScreenMonitor -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FlatScreenMonitor">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Monitor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Flipping -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flipping">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Actuating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FloatArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FloatArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NumberArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlyingRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FlyingRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FrameOfReference -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FrameOfReference">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#FormalEntity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each instance of FrameOfReference is a representation of the context in which certain data are to be interpreted. Such contexts are typically physical, but may be purely mathematical. For example, a CartesianCoordinateSystem can be used to represent the positions of things on the surface of the Eath, but can also be used to represent an abstract gepometric space.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GraspingAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GraspingAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Heating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Heating">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of TemperatureChangingProcess. During each HeatingProcess event, the temperature of the objectOfStateChange is increased by applying heat to the object. Any instance of IntrinsicStateChangeEvent in which an object temperature is increased is also an instance of this collection.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hook -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hook">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Image -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Image">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IncompleteModel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IncompleteModel">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IndexFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndexFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IndicatorLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndicatorLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all indicator lights.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InoperableHardware -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InoperableHardware">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#HardwareDiagnosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntegerArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntegerArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NumberArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InvalidArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InvalidArgument">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBQuerying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBQuerying">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Querying"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasParticipant"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#ComputationalPredicate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasRegion"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#ExecutionStateRegion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A querying action where some predicate of the KB is called.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KBQueryingExecution -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isExecutedIn"/>
+                        <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQuerying"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAbove -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAbove">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAtAngle -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAtAngle">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepAwayFrom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepAwayFrom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DistanceConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepBehind -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepBehind">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepBelow -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepBelow">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepCloseTo -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepCloseTo">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DistanceConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepInfront -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepInfront">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepLeftOf -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepLeftOf">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepLookingAt -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepLookingAt">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#OrientationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#dependsOnConcept"/>
+                <owl:someValuesFrom rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepRightOf -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepRightOf">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepRelativeLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepStill -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepStill">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KeepUpright -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#KeepUpright">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#KeepPerpendicularTo"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Knedding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Knedding">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Lamp-Hanging -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lamp-Hanging">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all hanging lamps.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftArm">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightArm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftHand">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightHand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeftLeg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeftLeg">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
+        <owl:disjointWith rdf:resource="http://knowrob.org/kb/knowrob.owl#RightLeg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LeggedRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LeggedRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LightFixture -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightFixture">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>Light fixtures are lights that are permanently attached as parts of rooms or buildings. e.g. Flourescent light fixtures in office building ceilings.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Lightbulb -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lightbulb">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>A bulb of glass or quartz enclosing material that incandesces or fluoresces when provided with current, thus generating light.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LittleFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LittleFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LocationConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LocationConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Map -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Map">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MiddleFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MiddleFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MissingArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MissingArgument">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MobileBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MobileBase">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Monitor -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Monitor">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VideoScreen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MoveCarefully -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MoveCarefully">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LocationConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#NonRechargeableBattery -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NonRechargeableBattery">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Battery"/>
+        <rdfs:comment>Batteries which may not be recharged (cf. ChargingABattery).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#NumberArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NumberArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ObjectMainAxis -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ObjectMainAxis">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ObjectOverlooked -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ObjectOverlooked">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#FailedAttempt"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OperableHardware -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OperableHardware">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#HardwareDiagnosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OrientationConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OrientationConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ParameterInference -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ParameterInference">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasInferredParameter"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A reasoning task where the value of a parameter is determined.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PartOffsetAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PartOffsetAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perception">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#MentalAction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PerceptionAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PerceptionAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pin -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pin">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Point -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Point">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#3DPosition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pose -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pose">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pouring -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Actuating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PouringInto -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PouringInto">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pouring"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PouringOnto -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PouringOnto">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pouring"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Precision -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Precision">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ProcedureArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ProcedureArgument">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+                    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#CompoundArgument"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#ProcedureArgument"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>An argument of a procedure. Note that this is *not* the instantiation of the argument but rather a description of it in terms of structure and type. e.g., NumberArgument is used to denote arguments that are a number constant! In most cases VariableArgument should be used.</rdfs:comment>
+        <rdfs:label>Procedure argument</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Proprioception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Proprioception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Reasoner -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reasoner">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RechargeableBattery -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RechargeableBattery">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Battery"/>
+        <rdfs:comment>Batteries which may be recharged (cf. ChargingABattery).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Resolution -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Resolution">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ResourceMissing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ResourceMissing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Infeasibility"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ResourceNotFound -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ResourceNotFound">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#FailedAttempt"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RfidPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RfidPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightArm">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightHand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightHand">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RightLeg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RightLeg">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RingFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RingFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RobovieMR2 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobovieMR2">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SamplingRate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SamplingRate">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:comment>The frequency at which a sensor takes measurements.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Scissors -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Scissors">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SemanticEnvironmentMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SemanticEnvironmentMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Map"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sensitivity -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sensitivity">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SensorDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensorDevice">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasResolution"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Resolution"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasSamplingRate"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SamplingRate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#hasSensorRange"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SensorRange"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: axiomatize measured quantitiy.</rdfs:comment>
+        <rdfs:label>Sensor device</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SensorRange -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SensorRange">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+        <rdfs:label>Sensor range</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Serving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Serving">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Actuating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SideGraspAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SideGraspAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Slicing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Slicing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cutting"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Constraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StampedPose -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StampedPose">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpatioTemporalRegion"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StaticTransform -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StaticTransform">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stirring -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stirring">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-ACT.owl#Mixing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StreetLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StreetLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all streetlights.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StringArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StringArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasDataValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TUM_Rosie -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TUM_Rosie">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WheeledRobot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TemporalConstraint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TemporalConstraint">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Constraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TextileArtifact -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TextileArtifact">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Thumb -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thumb">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimePoint">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of TimePoint is an interval of time that has no duration (or, if you prefer, an infinitely small duration). A time point corresponds to what is colloquially described as an &quot;instant&quot; or &quot;moment&quot;. If time is likened to a (perhaps infinitely long) straight line, then each TimePoint is like a particular point on that line. Given that time intervals are defined purely by their locations in time, no two time intervals can occupy exactly the same times; and since time points are intervals with no duration, no two time points can even overlap.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TopGraspAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TopGraspAffordance">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GraspingAffordance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TouchPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TouchPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Towel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Towel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TextileArtifact"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Trajectory -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Trajectory">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpatioTemporalRegion"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#UndefinedReference -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UndefinedReference">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Ungraspable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ungraspable">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Inability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Unliftable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Unliftable">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Inability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#UnpoweredHardware -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UnpoweredHardware">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InoperableHardware"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Unreachable -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Unreachable">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Inability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VariableArgument -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VariableArgument">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtomicArgument"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VideoScreen -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VideoScreen">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VisualPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VisualPerception">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WaitUntil -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WaitUntil">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalConstraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WallMirror -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WallMirror">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WasteBasket -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WasteBasket">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Water -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Water">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Fluid"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Wheel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Wheel">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WheeledRobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WheeledRobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/urdf.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#BeaconMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#BeaconMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#CollisionMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CollisionMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Map"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#LaserScannerMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LaserScannerMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MetricMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MetricMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#OccupancyGridMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#OccupancyGridMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#PointMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PointMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#SemanticEnvironmentMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SemanticEnvironmentMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#SonarMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SonarMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCameraMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCameraMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMap -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMap">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#Robot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/urdf.owl#Robot"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Actuating -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Actuating"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#ExecutionStateRegion -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#ExecutionStateRegion"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#MentalAction -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#MentalAction"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Mixing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Mixing"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#ModifyingPhysicalObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#ModifyingPhysicalObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Perceiving"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#PhysicalTask -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#PhysicalTask"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Querying -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Querying"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-ACT.owl#Reasoning"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#DigitalObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-IO.owl#FaultySoftware"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Appliance"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#CuttingTool"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DependentPlace"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#DesignedComponent"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#Localization -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#Localization"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#3DPosition -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#3DPosition"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#6DPose"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-PROC.owl#PhaseTransition -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-PROC.owl#PhaseTransition"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-PROC.owl#ProcessType"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow"/>
+        <rdfs:comment>Note: equality constraints between parameter sets for Entry/Exit points and the OGPTask defined by a RobotWorkflow might suggest that the OGPTask defined by the workflow can be used as an entry/exit point.
+
+This however is not the case, as these tasks have different meanings for the KnowRob workflow interpreter.
+
+-- work-flow defined task: any general purpose task, such as some robot behavior, described by a workflow. Encountering such a task during a run of the interpreter will evoke the defining workflow.
+-- entry point task: bind roles and parameters in the workflow to values obtained from the evoker of the workflow
+-- exit point task: bind roles and parameters in the workflow to outputs, and return control to the workflow&apos;s evoker.</rdfs:comment>
+        <rdfs:comment>The first Task in a RobotWorkflow, which is simply to receive the inputs and bind them to the appropriate roles defined in the workflow.
+
+A RobotWorkflow has only 1 entry point.
+
+This task has no outputs.</rdfs:comment>
+        <rdfs:comment>WARNING: the following constraint was not modelled in the Tbox, but it is expected that RobotWorkflows will implement it.
+
+The EntryRobotWorkflow should have the same inputs as the RobotTask defined by the RobotWorkflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A final Task in a OGPWorkflow, which is simply to return some information as a &quot;result&quot; of the workflow&apos;s execution.
+
+This task only uses outputs. The values for the outputs are calculated by the KnowRob workflow interpreter based on the Bindings between roles that exist in the workflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesInput"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#definesOutput"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A Task to be interpreted by the KnowRob Workflow interpreter.
+
+Usually, has a non-empty set of input (Role or Parameter)s, and a non-empty set of output (Role or Parameter)s-- however, eiter or both of these sets may be empty in the case of tasks with trivial input/outputs.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#OGPWorkflow -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#OGPWorkflow">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ExitOGPWorkflow"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#hasSuccedence"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#ConditionalSuccedence"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:allValuesFrom rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ease-crc.org/ont/EASE.owl#isPlanFor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#OGPTask"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#EntryOGPWorkflow"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A natural exit of an OGPWorkflow is the arrival at an ExitOGPWorkflow task.
+
+A premature exit will however happen when an OGPTask is completed, which is not an ExitOGPWorkflow, and which has no triggerable ConditionalSuccedence relations for which it is the predecessor task.
+
+This situation can occur when
+
+-- the OGPTask in question is not a predecessor task for any ConditionalSuccedence in the workflow;
+-- none of the ConditionalSuccedence relations that have the task as predecessor can fire, because neither of their conditions are met.
+
+Both of these situations are errors: they signal that the workflow is incompletely described.</rdfs:comment>
+        <rdfs:comment>A workflow meant to guide the action of a robot agent and interpreted by the KnowRob workflow interpreter.
+
+It is a workflow for exactly one OGPTask, but may contain several invocations of OGPTasks linked by ConditionalSuccedence relations.
+
+It has at most one entry point, which is the first OGPTask to execute when enacting the Workflow. If no first task is present, then the Workflow is empty.
+
+It may have several exit points. When an exit point is reached, the Workflow execution has completed. They result in a termination of the workflow, and a return to its invoker, with a special error status and a record of the output of the last task.</rdfs:comment>
+        <rdfs:comment>WARNING: not all constraints are easy to enforce in OWL Tboxes; in particular, the following constraints have not been modelled in the Tbox. It is required however that OGPWorkflows obey them.
+
+-- the input parameters of the OGPTask defined by the OGPWorkflow are exactly the same as the input parameters of the EntryOGPWorkflow belonging to the OGPWorkflow;
+-- the output parameters of the OGPTask defined by the OGPWorkflow are exactly the same as the output parameters defined by every ExitOGPWorkflow belonging to the OGPWorkflow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Arm -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Arm"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Condensing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Condensing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#PhaseTransition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedContainer -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedContainer"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedFurniture"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#DesignedTool -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#DesignedTool"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#FailedAttempt -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#FailedAttempt"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Fluid -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Fluid"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Freezing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Freezing">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#PhaseTransition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Hand -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Hand"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#HardwareDiagnosis -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#HardwareDiagnosis"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Inability -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Inability"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Infeasibility -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Infeasibility"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Leg -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Leg"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Melting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Melting">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/EASE-PROC.owl#PhaseTransition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#PhysicalEffector"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#SoftwareDiagnosis -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#SoftwareDiagnosis"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/EASE.owl#Status -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Action"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedSubstance -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#DesignedSubstance"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Entity"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#FormalEntity -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#FormalEntity"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationEntity -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationEntity"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationObject -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationObject"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Object"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Organization -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Organization"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Parameter"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAttribute"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Place"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Process"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Quality"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Region"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Role"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Situation"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpaceRegion"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpatioTemporalRegion -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SpatioTemporalRegion"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Substance"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Workflow"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MapFrame -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#MapFrame">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#CartesianCoordinateSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pose_MapFrame -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Pose_MapFrame">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Pose"/>
+        <quaternion rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0.0 0.0 0.0 1.0</quaternion>
+        <translation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0.0 0.0 0.0</translation>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
