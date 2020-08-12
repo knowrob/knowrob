@@ -38,7 +38,6 @@
 :- ros_package_iri(knowrob, 'http://www.ease-crc.org/ont').
 :- ros_package_iri(knowrob, 'http://knowrob.org/kb').
 :- ros_package_iri(knowrob, 'http://www.w3.org/2002/07'). %/owl.rdf
-:- ros_package_iri(knowrob, 'http://www.w3.org/2000/01'). %/rdf-schema
 
 % load knowrob.pl
 :- use_module('knowrob').
@@ -59,5 +58,6 @@
 
 % load additional modules
 :- knowrob_load_plugins.
+
 % tell the user that we are done with the initialization
 :- log_info(kb(initialization(finished))).

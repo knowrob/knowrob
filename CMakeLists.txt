@@ -37,13 +37,6 @@ install_prolog_pack(delay
 # copy them into the workspace such the we can load them
 # from a local source at runtime.
 install_ontology(
-	URL		  "https://www.w3.org/2000/01/rdf-schema.rdf"
-	FILE_NAME "rdf-schema"
-	VERSION   "2000.01")
-install_ontology(
-	URL		  "http://www.w3.org/2002/07/owl.rdf"
-	VERSION   "2002.07")
-install_ontology(
 	URL		  "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"
 	VERSION   "3.32")
 install_ontology(
