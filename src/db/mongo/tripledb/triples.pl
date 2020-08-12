@@ -351,11 +351,7 @@ triple_query_unify_o(Doc,QValue,Options) :-
 	).
 
 triple_query_unify_o1(Doc,ValueQuery,Options) :-
-	((	option(include_parents(true),Options),
-		mng_get_dict('o*',Doc,array(Values)) )
-	-> member(Value,Values)
-	;  mng_get_dict('o',Doc,Value)
-	),
+	triple_query_get_o(Doc,Options,Value),
 	once(( mng_get_dict('unit',Doc,string(Unit)); Unit=_ )),
 	%%
 	once(strip_operator_(ValueQuery,_,Value1)),
@@ -368,6 +364,32 @@ triple_query_unify_o1(Doc,ValueQuery,Options) :-
 		;  Value3=AtomicValue
 		)
 	)).
+
+triple_query_get_o(Doc,Options,Value) :-
+	% try to read the o/o* field from the mongo document
+	(	triple_query_get_o1(Doc,Options,Value)
+	*->	true
+	% no value could be found, so the document must be corrupted
+	;	(	handle_corruption(Doc,field_missing(o)),
+			fail
+		)
+	).
+
+triple_query_get_o1(Doc,Options,Value) :-
+	% get value from o* if include_parents option is *true*
+	option(include_parents(true),Options),
+	!,
+	mng_get_dict('o*',Doc,array(Values)),
+	member(Value,Values).
+
+triple_query_get_o1(Doc,Options,Value) :-
+	% get value from o if include_parents option is not *true*
+	mng_get_dict('o',Doc,Value).
+
+handle_corruption(Doc,Msg) :-
+	% read doc id (at least the id should be defined)
+	mng_get_dict('_id',Doc,DocID),
+	print_message(error, tripledb(document(id(DocID),corruption(Msg)))).
 
 %%
 get_query_variable(QValue,Var) :-
