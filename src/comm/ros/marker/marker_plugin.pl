@@ -103,10 +103,10 @@ hide_marker(MarkerID) :-
 %   [Action,ID,Type,Pose,Scale,Color,Mesh,Text]
 %
 marker_message(marker(add,ID,Term,Parameters),
-		[Action,ID,Type,Pose,Scale,Color,Mesh,Text]) :-
+		[Action,ID0,Type,Pose,Scale,Color,Mesh,Text]) :-
 	%% get marker data
 	get_marker_scope(Parameters,Scope),
-	marker_message1(Term,[[],Scope]->_,Data0),
+	marker_message1(Term,[[],Scope]->_,ID->ID0,Data0),
 	%% overwrite parameters
 	merge_options(Parameters,Data0,Data),
 	%%
@@ -118,8 +118,7 @@ marker_message(marker(add,ID,Term,Parameters),
 	option(text(Text),Data,''),
 	%%
 	marker_action(add,Action),
-	marker_type(TypeTerm,Type),
-	!.
+	marker_type(TypeTerm,Type).
 
 marker_message(marker(modify,ID,Term,Opts),Msg) :-
 	marker_message(marker(add,ID,Term,Opts),Msg),
@@ -134,16 +133,15 @@ marker_message(marker(delete,ID,_,_),[Action,ID]) :-
 	!.
 
 %%
-marker_message1(MarkerData,_,MarkerData) :-
+marker_message1(MarkerData,_,ID->ID,MarkerData) :-
 	is_list(MarkerData),
 	!.
 
-marker_message1(Object,Scope,MarkerData) :-
+marker_message1(Object,Scope,_->ID,MarkerData) :-
 	atom(Object),
-	object_marker(Object,Scope,MarkerData),
-	!.
+	object_marker(Object,Scope,ID,MarkerData).
 
-marker_message1(MarkerTerm,Scope,MarkerData) :-
+marker_message1(MarkerTerm,Scope,ID->ID,MarkerData) :-
 	compound(MarkerTerm),
 	marker_factory(MarkerTerm,Scope,MarkerData),
 	!.
@@ -198,12 +196,11 @@ marker_loop :-
 	marker_pull_all(MarkerTerms,[]),
 	marker_to_set(MarkerTerms,MarkerTerms0),
 	%%
-	findall(MarkerMessage,
+	setof(MarkerMessage,
 		(	member(MarkerTerm,MarkerTerms0),
 			marker_message(MarkerTerm,MarkerMessage)
 		),
-		MessageList
-	),
+		MessageList),
 	marker_array_publish(MessageList),
 	%%
 	fail.

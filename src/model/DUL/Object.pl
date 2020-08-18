@@ -9,7 +9,8 @@
       has_object_type(r,r),
       has_quality_type(r,r),
       has_location(r,r),
-      has_role(r,r) % ?Object, ?Role
+      has_role(r,r), % ?Object, ?Role
+      has_part(r,r)
     ]).
 /** <module> DUL notion of Object.
 
@@ -152,3 +153,7 @@ has_location(Object, Location) ?+>
 %
 has_role(Entity,Role) ?+>
   holds(Role, dul:classifies, Entity).
+
+% FIXME: not object related
+has_part(Entity,Part) ?+>
+  holds(Entity, dul:hasPart, Part).

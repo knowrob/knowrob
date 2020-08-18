@@ -1,227 +1,244 @@
 :- module(srdl,
-  [
-  ]).
+	[ has_base_link_name(r,?),
+	  has_end_link_name(r,?),
+	  has_base_link(r,r),
+	  has_end_link(r,r),
+	  has_child_link(r,r),
+	  has_parent_link(r,r),
+	  object_set_urdf(r,+),
+	  object_set_urdf(r,+,+),
+	  object_set_urdf_pose(r),
+	  object_set_urdf_pose(r,+)
+	]).
 
-%:- module(srdl,
-  %[
-        %robot_create/2,
-        %robot_set_urdf/2,
-        %robot_set_tf_prefix/2,
-        %robot_tf_prefix/2,
-        %has_direct_component/3,
-        %has_component/3,
-        %component_type/2
-  %]).
-%/** <module> Representation of individual robots in the RDF triple store.
+:- use_module(library('model/URDF/URDF')).
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_split_url/3 ]).
+:- use_module(library('comm/notify'),
+    [ notify/1 ]).
 
-  %@author Daniel Beßler
-  %@license BSD
-%*/
-%:- use_module(library('semweb/rdf_db')).
-%:- use_module(library('semweb/rdfs')).
-%:- use_module(library('semweb/owl')).
-%:- use_module(library('knowrob/knowrob')).
-%:- use_module(library('knowrob/model/URDF')).
+:- tripledb_load('http://knowrob.org/kb/srdl2-comp.owl',
+    [ namespace(srdlcomp,'http://knowrob.org/kb/srdl2-comp.owl#')
+    ]).
 
-%:- rdf_meta
-        %robot_create(r,r),
-        %robot_set_urdf(r,+),
-        %robot_set_tf_prefix(r,+),
-        %robot_tf_prefix(r,+),
-        %has_direct_component(r,r,r),
-        %has_component(r,r,r),
-        %component_type(r,r),
-        %urdf_name_of_range(r,r,?).
+/**************************************/
+/******** Language Predicates *********/
+/**************************************/
 
-%%% robot_create(RobotType,Robot) is det.
+%% has_base_link_name(?Obj,?Name) is semidet.
+%
+has_base_link_name(Obj,Name) ?+>
+	triple(Obj,srdlcomp:hasBaseLinkName,Name).
+
+%% has_end_link_name(?Obj,?Name) is semidet.
+%
+has_end_link_name(Obj,Name) ?+>
+	triple(Obj,srdlcomp:hasEndLinkName,Name).
+
+%% has_base_link(?Obj,?Link) is semidet.
+%
+has_base_link(Obj,Link) ?+>
+	triple(Obj,srdlcomp:hasBaseLink,Link).
+
+%% has_urdf_prefix(?Obj,?Prefix) is semidet.
+%
+has_urdf_prefix(Obj,Prefix) ?+>
+	triple(Obj,urdf:hasNamePrefix,Prefix).
+
+%% has_end_link(?Obj,?Link) is semidet.
+%
+has_end_link(Obj,Link) ?+>
+	triple(Obj,srdlcomp:hasEndLink,Link).
+
+%% has_child_link(?Joint,?Link) is semidet.
+%
+has_child_link(Joint,Link) ?+>
+	triple(Joint,urdf:hasChildLink,Link).
+
+%% has_parent_link(?Joint,?Link) is semidet.
+%
+has_parent_link(Joint,Link) ?+>
+	triple(Joint,urdf:hasParentLink,Link).
+
 %%
-%% Create a new robot instance and also auto-instantiate
-%% its components recursively.
+%
+object_shape(Obj,ShapeTerm,Origin) ?>
+	has_base_link_name(Obj,BaseName),
+	{ get_object_shape_(Obj,BaseName,ShapeTerm,Origin) }.
+
 %%
-%% @param RobotType The RDF type of the robot.
-%% @param Robot The new RDF individual.
+get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot]) :-
+	get_root_object_(Obj,Root),
+	(	has_urdf_prefix(Root,Prefix)
+	;	Prefix=''
+	),!,
+	setof(L,
+		(	has_end_link_name(Obj,EndName),
+			urdf_chain(Root,BaseName,EndName,L)
+		),
+		LinkNames
+	),
+	member(LinkName,LinkNames),
+	urdf_link_visual_shape(Root,LinkName,
+		ShapeTerm,[Name,Pos,Rot]),
+	atom_concat(Prefix,Name,Frame).
+
 %%
-%robot_create(RobotType,Robot) :-
-  %kb_create(RobotType,Robot),
-  %subcomponents_create(Robot,RobotType).
+get_root_object_(Root,Root) :-
+	urdf_is_loaded(Root),
+	!.
+get_root_object_(Part,Root) :-
+	has_part(X,Part),
+	get_root_object_(X,Root).
 
-%% TODO: handle tf prefixes
-%robot_set_tf_prefix(Robot,TF_prefix) :-
-  %fail.
-%robot_tf_prefix(Robot,TF_prefix) :-
-  %fail.
+/**************************************/
+/*********** URDF Data ****************/
+/**************************************/
 
-%%%
-%subcomponents_create(Comp, CompType) :-
-  %findall(Range-Count,
-    %( property_cardinality(CompType,
-         %soma:hasPhysicalComponent, Range, Count, _),
-      %Count > 0
-    %),
-    %Pairs
-  %),
-  %% FIXME: also take into account cardinality
-  %dict_pairs(Dict,_,Pairs),
-  %pairs_keys(Pairs, Ranges),
-  %forall(
-    %owl_most_specific(Ranges, X), (
-    %get_dict(X, Dict, C),
-    %component_create(Comp, X, C)
-  %)).
-
-%%%
-%component_create(PartType,Part) :-
-  %kb_create(PartType,Part),
-  %subcomponents_create(Part,PartType).
-
-%%%
-%component_create(_,PartType,_) :-
-  %\+ rdfs_subclass_of(PartType,dul:'PhysicalObject'), !.
-
-%component_create(_,PartType,_) :-
-  %( rdfs_subclass_of(PartType,urdf:'Link') ;
-    %rdf_equal(PartType,dul:'PhysicalObject') ), !.
-
-%component_create(_,_,0) :- !.
-
-%component_create(Parent,PartType,N) :-
-  %component_create(PartType,X),
-  %( rdfs_individual_of(Parent,dul:'Agent') ->
-    %kb_assert(Parent,srdlcomp:hasBodyPart,X);
-    %kb_assert(Parent,soma:hasPhysicalComponent,X) ),
-  %M is N - 1,
-  %component_create(Parent,PartType,M).
-
-%%% robot_set_urdf(+Robot,+URDF) is det.
 %%
-%% Load URDF file into memory and map it into
-%% RDF triple store while associating the links
-%% to components of the robot.
-%% The component-link association is done based on
-%% URDF names.
+:- rdf_meta(joint_type_(?,r)).
+joint_type_(revolute,   urdf:'RevoluteJoint').
+joint_type_(continuous, urdf:'ContinuousJoint').
+joint_type_(prismatic,  urdf:'PrismaticJoint').
+joint_type_(fixed,      urdf:'FixedJoint').
+joint_type_(floating,   urdf:'FloatingJoint').
+joint_type_(planar,     urdf:'PlanarJoint').
+
 %%
-%% @param Robot The RDF name of a robot.
-%% @param URDF URI to a URDF file.
+%
+object_set_urdf(Object,File) :-
+	object_set_urdf(Object,File,[]).
+
+object_set_urdf(Object,File,Options) :-
+	urdf_load_file(Object,File),
+	% assign urdf name to object
+	urdf_root_link(Object,RootLinkName),
+	tell(has_base_link_name(Object,RootLinkName)),
+	% assign prefix to object
+	option(prefix(OptPrefix),Options,''),
+	(	OptPrefix=''
+	->	true
+	;	tell(has_urdf_prefix(Object,OptPrefix))
+	),
+	% get all the object parts
+	% FIXME: lots of redundant results with transitive, and its super slow
+	% setof(X, transitive(has_part(Object,X)), Parts),
+	setof(X, has_part_(Object,X), Parts),
+	% set component poses relative to links
+	forall(member(Y,Parts),
+		part_set_urdf_(Y,OptPrefix)),
+	% optional: load links and joints as rdf objects
+	(	option(load_rdf,Options)
+	->	load_urdf_triples(Object,Parts,OptPrefix)
+	;	true
+	).
+
 %%
-%robot_set_urdf(Robot,URDF) :-
-  %rdf_urdf_load(Robot,URDF),
-  %forall( has_component(Robot,Comp,CompType), (
-    %( kinematic_chain(CompType,BL,ELs) ->
-      %robot_set_kinematic_(Robot,Comp,BL,ELs) ; true ),
-    %( owl_property_range_on_class(CompType,urdf:hasURDFName,literal(type(_,Name))) ->
-      %robot_link_classify_(Robot,Name,Comp) ; true )
-  %)),
-  %forall( rdf_urdf_robot_link(Robot,L), once(
-    %is_link_of_component(L,_) ;
-    %( rdf_urdf_name(L, LName),
-      %print_message(warning, orphan_link(Robot,LName)) )
-  %)),
-  %forall( has_direct_component(Robot,BodyPart,_), once((
-    %is_composition(BodyPart) ;
-    %is_classified_link(BodyPart) ;
-    %print_message(warning, orphan_component(Robot,BodyPart))
-  %))).
+has_part_(X,X).
+has_part_(X,Y) :-
+	triple(X,dul:hasPart,Z),
+	has_part_(Z,Y).
 
-%is_composition(Comp) :-
-  %rdf_has(Comp,srdlcomp:hasBaseLink,_),
-  %rdf_has(Comp,srdlcomp:hasEndLink,_),!.
-
-%is_classified_link(Comp) :-
-  %rdfs_individual_of(Comp,dul:'PhysicalObject'),
-  %\+ rdfs_individual_of(Comp,urdf:'Joint'),
-  %component_type(Comp,_),!.
-
-%%% assert hasBaseLink / hasEndLink
-%robot_set_kinematic_(Robot,BodyPart,BL,ELs) :-
-  %get_robot_link(Robot,BL,BaseLink),
-  %kb_assert(BodyPart,srdlcomp:hasBaseLink,BaseLink),
-  %%%
-  %forall( member(N,ELs), (
-    %get_robot_link(Robot,N,EndLink),
-    %kb_assert(BodyPart,srdlcomp:hasEndLink,EndLink)
-  %)).
-
-%%% classify a link, i.e. replacing the link in the RDF store
-%%% with the robot component
-%robot_link_classify_(Robot,LinkName,Comp) :-
-  %get_robot_link(Robot,LinkName,Link),
-  %%%
-  %forall( rdf(Link,P0,O), kb_assert(Comp,P0,O) ),
-  %forall( rdf(S,P1,Link), kb_assert(S,P1,Comp) ),
-  %rdf_retractall(Link,_,_),
-  %rdf_retractall(_,_,Link).
-
-%%%
-%get_robot_link(Robot,URDF_name,Link) :-
-  %rdf_has(Robot,urdf:hasLink,Link),
-  %rdf_urdf_name(Link,URDF_name),!.
-
-%get_robot_link(Robot,URDF_name,_) :-
-  %print_message(warning, undefined_link(Robot,URDF_name)),
-  %fail.
-
-%%%
-%kinematic_chain(BodyPart,BL,ELs) :-
-  %urdf_name_of_range(BodyPart,srdlcomp:hasBaseLink,BL),!,
-  %findall(EL,
-    %urdf_name_of_range(BodyPart,srdlcomp:hasEndLink,EL),
-    %ELs
-  %).
-
-%%% infer urdf name of a property range class
-%urdf_name_of_range(Class,P,Name) :-
-  %property_cardinality(Class,P,Restr,C,_), C > 0,
-  %owl_property_range_on_class(Restr,urdf:hasURDFName,literal(type(_,Name))),!.
-
-%%% has_direct_component(?Obj,?Comp,?CompType) is nondet.
 %%
-%% Non-transitive hasPhysicalComponent relation excluding joints and links
-%% that are not classified.
-%%
-%% @param Obj The RDF name of a robot.
-%% @param Comp The RDF name of a body part.
-%% @param CompType The RDF name of a body part type.
-%%
-%has_direct_component(Obj,Comp,CompType) :-
-  %rdf_has(Obj,soma:hasPhysicalComponent,Comp),
-  %component_type(Comp,CompType).
+part_set_urdf_(Part,Prefix) :-
+	% components are exactly located at the base link
+	(	get_component_frame_(Part,Prefix,Frame)
+	->	tell(is_at(Part,[Frame,[0,0,0],[0,0,0,1]]))
+	;	log_warn(srdl(no_comp_pose(Part)))
+	).
 
-%%% has_component(?Obj,?Comp,?CompType) is nondet.
-%%
-%% Transitive hasPhysicalComponent relation excluding joints and links
-%% that are not classified.
-%%
-%% @param Obj The RDF name of a robot.
-%% @param Comp The RDF name of a body part.
-%% @param CompType The RDF name of a body part type.
-%%
-%has_component(Obj,Obj,ObjType) :-
-  %component_type(Obj,ObjType).
+get_component_frame_(Part,Prefix,Frame) :-
+	has_base_link_name(Part,LinkName),
+	atom_concat(Prefix,LinkName,Frame).
 
-%has_component(Obj,Comp,CompType) :-
-  %rdf_has(Obj,soma:hasPhysicalComponent,X),
-  %has_component(X,Comp,CompType).
-
-%%% component_type(?Comp,?CompType) is nondet.
 %%
-%% Relation between individual component and its
-%% component type which is a subclass of dul:'PhysicalObject'
-%% but not of urdf:'Link' or urdf:'Joint'.
-%%
-%% @param Comp The RDF name of a body part.
-%% @param CompType The RDF name of a body part type.
-%%
-%component_type(Comp,CompType) :-
-  %kb_type_of(Comp,CompType),
-  %rdfs_subclass_of(CompType,dul:'PhysicalObject'),
-  %\+ rdfs_subclass_of(CompType,urdf:'Joint'),
-  %\+ rdf_equal(CompType,dul:'PhysicalObject').
+load_urdf_triples(Object,Parts,Prefix) :-
+	urdf_link_names(Object,Links),
+	urdf_joint_names(Object,Joints),
+	% create link entities
+	forall(member(LinkName,Links), 
+		create_link_(Object,Prefix,LinkName,_)),
+	% create joint entities
+	forall(member(JointName,Joints), 
+		create_joint_(Object,Prefix,JointName,_)),
+	% associate links to components
+	forall(member(Part,Parts),
+		set_links_(Part,Prefix)).
 
-%%%
-%is_link_of_component(Link,Comp) :-
-  %rdf_has(Comp,srdlcomp:hasBaseLink,Link).
+%%
+create_link_(Object,Prefix,Name,Link) :-
+	urdf_iri_(Object,Prefix,Name,Link),
+	tell(has_type(Link,urdf:'Link')).
 
-%is_link_of_component(Link,Comp) :-
-  %rdf_has(Joint,urdf:hasChildLink,Link),
-  %rdf_has(Joint,urdf:hasParentLink,ParentLink),
-  %is_link_of_component(ParentLink,Comp).
+%%
+create_joint_(Object,Prefix,Name,Joint) :-
+	urdf_iri_(Object,Prefix,Name,Joint),
+	%%
+	urdf_joint_type(Object,Name,Type),
+	joint_type_(Type,JointType),
+	%%
+	urdf_joint_child_link(Object,Name,ChildName),
+	urdf_joint_parent_link(Object,Name,ParentName),
+	urdf_iri_(Object,Prefix,ChildName,Child),
+	urdf_iri_(Object,Prefix,ParentName,Parent),
+	%%
+	tell([
+		has_type(Joint,JointType),
+		has_child_link(Joint,Child),
+		has_parent_link(Joint,Parent)
+	]).
+
+%%
+set_links_(Part,URDFPrefix) :-
+	(	get_base_link_(Part,URDFPrefix,BaseLink)
+	->	tell(has_base_link(Part,BaseLink))
+	;	true
+	),
+	forall(
+		get_end_link_(Part,URDFPrefix,EndLink),
+		tell(has_end_link(Part,EndLink))
+	).
+
+get_base_link_(Part,Prefix,BaseLink) :-
+	has_base_link_name(Part,LinkName),
+	urdf_iri_(Part,Prefix,LinkName,BaseLink).
+
+get_end_link_(Part,Prefix,BaseLink) :-
+	has_end_link_name(Part,LinkName),
+	urdf_iri_(Part,Prefix,LinkName,BaseLink).
+
+%%
+%
+object_set_urdf_pose(Object) :-
+	object_set_urdf_pose(Object,[map,[0,0,0],[0,0,0,1]]).
+
+object_set_urdf_pose(Object,Pose) :-
+	(	has_urdf_prefix(Object,Prefix)
+	;	Prefix=''
+	),!,
+	% set root link pose
+	urdf_root_link(Object,RootLinkName),
+	urdf_iri_(Object,Prefix,RootLinkName,RootLink),
+	tell(is_at(RootLink,Pose)),
+	% set pose of other links
+	urdf_link_names(Object,Links),
+	forall(
+		member(LinkName,Links), 
+		(	LinkName=RootLinkName
+		->	true
+		;	set_link_pose_(Object,Prefix,LinkName)
+		)
+	).
+
+set_link_pose_(Object,Prefix,LinkName) :-
+	urdf_link_parent_joint(Object,LinkName,JointName),
+	urdf_joint_origin(Object,JointName,[_,Pos,Rot]),
+	urdf_joint_parent_link(Object,JointName,ParentName),
+	urdf_iri_(Object,Prefix,LinkName,Link),
+	atom_concat(Prefix,ParentName,ParentFrame),
+	tell(is_at(Link,[ParentFrame,Pos,Rot])).
+
+%%
+urdf_iri_(Object,URDFPrefix,Name,IRI) :-
+	rdf_split_url(IRIPrefix,_,Object),
+	atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI).

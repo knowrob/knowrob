@@ -1,7 +1,10 @@
 :- module(model_URDF,
 	[ urdf_load_file/2,
+	  urdf_is_loaded/1,
 	  urdf_unload_file/1,
 	  urdf_robot_name/2,
+	  urdf_link_names/2,
+	  urdf_joint_names/2,
 	  urdf_root_link/2,
 	  urdf_link_parent_joint/3,
 	  urdf_link_child_joints/3,
@@ -18,7 +21,8 @@
 	  urdf_joint_hard_limits/5,
 	  urdf_joint_soft_limits/5,
 	  urdf_joint_damping/3,
-	  urdf_joint_friction/3
+	  urdf_joint_friction/3,
+	  urdf_chain/4
     ]).
 
 %:- use_module(library('semweb/rdf_db'),
@@ -49,6 +53,15 @@ urdf_link_collision_shape(Object,Link,ShapeTerm,Origin) :-
 	N is Count - 1,
 	between(0,N,Index),
 	urdf_link_nth_collision_shape(Object,Link,Index,ShapeTerm,Origin).
+
+%%
+%
+urdf_chain(_,X,X,X) :- !.
+urdf_chain(_,_,X,X).
+urdf_chain(Object,FromLink,ToLink,Node) :-
+	urdf_link_parent_joint(Object,ToLink,Joint),
+	urdf_joint_parent_link(Object,Joint,ParentLink),
+	urdf_chain(Object,FromLink,ParentLink,Node).
 
 /**************************************/
 /********** FOREIGN LIBRARY ***********/

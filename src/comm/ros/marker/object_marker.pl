@@ -1,14 +1,10 @@
 :- module(object_marker,
-	[ object_marker/3
+	[ object_marker/4
 	]).
 
-:- use_module(library('lang/terms/is_at'),
-    [ is_at/2
-    ]).
 :- use_module(library('model/EASE/OBJ'),
-    [ object_mesh_path/2,
-      object_color_rgb/2,
-      object_dimensions/4
+    [ object_shape/3,
+      object_color_rgb/2
     ]).
 
 %% object_marker(+Obj,-MarkerData) is semidet.
@@ -19,34 +15,53 @@
 % @param MarkerData marker parameters
 %
 object_marker(Obj,Scope,
-	[ pose(ObjPose)
+	MarkerID,
+	[ pose(ShapeOrigin)
 	| MarkerData
 	]) :-
-	ask(is_at(Obj,ObjPose),Scope),
-	object_marker1(Obj,MarkerData),
-	!.
-
-%% prefer mesh markers
-object_marker1(Obj,
-	[ type(mesh_resource),
-	  mesh(MeshPath),
-	  scale([1,1,1]),
-	  color(RGBA)
-	]) :-
-	object_mesh_path(Obj,MeshPath),
-	( file_name_extension(_, stl, MeshPath)
-	-> RGBA=[0,0,0,0]
-	;  object_marker_rgba(RGBA)
+	catch((
+		ask(object_shape(Obj,Shape,ShapeOrigin),Scope),
+		ShapeOrigin=[MarkerID,_,_],
+		object_marker1(Shape,Obj,MarkerData)),
+		Exc,
+		(log_error(Exc),fail)
 	).
 
-%% fallback to cube marker
-object_marker1(Obj,
-	[ type(cube),
-	  color(RGBA),
-	  scale(Scale)
+object_marker1(
+	mesh(MeshPath,Scale), Obj,
+	[ type(mesh_resource),
+	  mesh(MeshPath),
+	  scale(Scale),
+	  color(RGBA)
 	]) :-
-	object_marker_rgba(Obj,RGBA),
-	object_marker_scale(Obj,Scale).
+	(  file_name_extension(_, stl, MeshPath)
+	-> object_marker_rgba(Obj,RGBA)
+	;  RGBA=[0,0,0,0]
+	).
+
+object_marker1(
+	box(X,Y,Z), Obj,
+	[ type(cube),
+	  scale([X,Y,Z]),
+	  color(RGBA)
+	]) :-
+	object_marker_rgba(Obj,RGBA).
+
+object_marker1(
+	sphere(Radius), Obj,
+	[ type(sphere),
+	  scale([Radius,Radius,Radius]),
+	  color(RGBA)
+	]) :-
+	object_marker_rgba(Obj,RGBA).
+
+object_marker1(
+	cylinder(Radius,Length), Obj,
+	[ type(sphere),
+	  scale([Radius,Radius,Length]),
+	  color(RGBA)
+	]) :-
+	object_marker_rgba(Obj,RGBA).
 
 %%
 object_marker_rgba(Object,[R,G,B,1]) :-
@@ -55,9 +70,3 @@ object_marker_rgba(Object,[R,G,B,1]) :-
 
 object_marker_rgba(_,[1,1,1,1]).
 
-%%
-object_marker_scale(Object,[X,Y,Z]) :-
-	object_dimensions(Object,X,Y,Z),
-	!.
-
-object_marker_scale(_,[0.1,0.1,0.1]).

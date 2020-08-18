@@ -1,16 +1,21 @@
+:- begin_tripledb_tests(
+    'srdl',
+    'package://knowrob/owl/robots/PR2.owl',
+    [ namespace('http://knowrob.org/kb/PR2.owl#')
+    ]).
 
-:- begin_tests('srdl').
+:- use_module('./srdl.pl').
 
-%:- use_module(library('semweb/rdf_db')).
-%:- use_module(library('semweb/rdfs')).
-%:- use_module(library('semweb/owl')).
-%:- use_module(library('semweb/owl_parser')).
-
-%:- rdf_db:rdf_register_ns(pr2, 'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
-
-%:- use_module(library('srdl')).
-
-%:- owl_parser:owl_parse('package://srdl/owl/PR2.owl').
+test(robot_set_urdf) :-
+	ros_package_path('knowrob', X),
+	atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', FileURL),
+	object_set_urdf(
+		test:'PR2_0',
+		FileURL,
+		[ prefix('/test/'),
+		  load_rdf(true)
+		]).
+	
 
 %:- dynamic testbot/1.
 
@@ -19,16 +24,16 @@
   %rdf_has(Comp,srdlcomp:hasEndLink,_),!.
 
 %test(robot_create) :-
-  %robot_create(knowrob:'PR2',PR2),
-  %asserta(testbot(PR2)),
-  %%% test created component symbols
-  %once((
-    %has_direct_component(PR2,_,pr2:'PR2Base'),
-    %has_direct_component(PR2,_,pr2:'PR2ArmL'),
-    %has_direct_component(PR2,_,pr2:'PR2ArmR'),
-    %has_direct_component(PR2,_,pr2:'PR2GripperL'),
-    %has_direct_component(PR2,_,pr2:'PR2GripperR')
-  %)).
+%	srdl_create(knowrob:'PR2',PR2),
+%	asserta(testbot(PR2)),
+%	%% test created component symbols
+%	once((
+%		srdl_component(PR2,_,test:'PR2Base'),
+%		srdl_component(PR2,_,test:'PR2ArmL'),
+%		srdl_component(PR2,_,test:'PR2ArmR'),
+%		srdl_component(PR2,_,test:'PR2GripperL'),
+%		srdl_component(PR2,_,test:'PR2GripperR')
+%	)).
 
 %test(robot_set_urdf) :-
   %ros_package_path('urdfprolog', X),

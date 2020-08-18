@@ -60,6 +60,7 @@ PlTerm to_prolog_pose(const std::string &frame, const urdf::Pose& p) {
 	l.append(frame.c_str());
 	l.append(pos);
 	l.append(rot);
+	l.close();
 	return pose;
 }
 
@@ -193,6 +194,13 @@ PREDICATE(urdf_load_file, 2) {
 	}
 }
 
+// urdf_load_file(Object, File)
+PREDICATE(urdf_is_loaded,1) {
+	std::string urdf_id((char*)PL_A1);
+	std::unique_lock<std::mutex> lock(robot_models_mtx);
+	return robot_models.find(urdf_id) != robot_models.end();
+}
+
 // urdf_unload_file(Object)
 PREDICATE(urdf_unload_file, 1) {
 	std::string urdf_id((char*)PL_A1);
@@ -217,6 +225,22 @@ PREDICATE(urdf_unload_file, 1) {
 PREDICATE(urdf_robot_name, 2) {
 	PL_A2 = get_robot_model(PL_A1).name_.c_str();
 	return true;
+}
+
+// urdf_link_names(Object, LinkNames)
+PREDICATE(urdf_link_names, 2) {
+	PlTail names(PL_A2);
+	for (auto const& link_entry: get_robot_model(PL_A1).links_)
+		names.append(link_entry.first.c_str());
+	return names.close();
+}
+
+// urdf_joint_names(Object, JointNames)
+PREDICATE(urdf_joint_names, 2) {
+	PlTail names(PL_A2);
+	for (auto const& joint_entry: get_robot_model(PL_A1).joints_)
+		names.append(joint_entry.first.c_str());
+	return names.close();
 }
 
 // urdf_root_link(Object, RootLink)
