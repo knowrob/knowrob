@@ -194,7 +194,7 @@ PREDICATE(urdf_load_file, 2) {
 	}
 }
 
-// urdf_load_file(Object, File)
+// urdf_is_loaded(Object)
 PREDICATE(urdf_is_loaded,1) {
 	std::string urdf_id((char*)PL_A1);
 	std::unique_lock<std::mutex> lock(robot_models_mtx);
