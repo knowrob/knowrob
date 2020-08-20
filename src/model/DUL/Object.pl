@@ -9,7 +9,8 @@
       has_object_type(r,r),
       has_quality_type(r,r),
       has_location(r,r),
-      has_role(r,r) % ?Object, ?Role
+      has_role(r,r), % ?Object, ?Role
+      has_part(r,r)
     ]).
 /** <module> DUL notion of Object.
 
@@ -36,8 +37,7 @@ In DUL, Object is defined as:
 
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
-    [ graph(tbox),
-      namespace(dul)
+    [ namespace(dul)
     ]).
 
 %% is_object(?Entity) is nondet.
@@ -153,3 +153,15 @@ has_location(Object, Location) ?+>
 %
 has_role(Entity,Role) ?+>
   holds(Role, dul:classifies, Entity).
+
+%% has_part(?Entity,?Part) is nondet.
+%
+% Relates an object to its parts.
+%
+% @Entity IRI atom
+% @Part IRI atom
+%
+% TODO: not object related, probably best to add a module DUL.pl and add it there
+%
+has_part(Entity,Part) ?+>
+  holds(Entity, dul:hasPart, Part).

@@ -10,6 +10,7 @@
       object_color_rgb(r,?),
       object_dimensions(r,?,?,?),
       object_mesh_path(r,?),
+      object_shape(r,-,-),
       object_shape_type(r,r),
       %% Features
       is_feature(r),
@@ -43,17 +44,10 @@
       has_object_type/2,
       has_quality_type/2
     ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
 :- use_module(library('db/scope'),
     [ universal_scope/1 ]).
 :- use_module(library('comm/notify'),
     [ notify/1 ]).
-
-:- tripledb_load('http://www.ease-crc.org/ont/EASE-OBJ.owl',
-    [ graph(tbox),
-      namespace(ease_obj)
-    ]).
 
 		 /*******************************
 		 *	    LIFE TIME		*
@@ -76,39 +70,39 @@
 
 %% is_physical_quality(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'PhysicalQuality'.
+% True iff Entity is an instance of soma:'PhysicalQuality'.
 %
 % @param Entity An entity IRI.
 %
 is_physical_quality(Entity) ?+>
-  has_type(Entity, ease_obj:'PhysicalQuality').
+  has_type(Entity, soma:'PhysicalQuality').
 
 %% is_social_quality(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'SocialQuality'.
+% True iff Entity is an instance of soma:'SocialQuality'.
 %
 % @param Entity An entity IRI.
 %
 is_social_quality(Entity) ?+>
-  has_type(Entity, ease_obj:'SocialQuality').
+  has_type(Entity, soma:'SocialQuality').
 
 %% is_intrinsic(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Intrinsic'.
+% True iff Entity is an instance of soma:'Intrinsic'.
 %
 % @param Entity An entity IRI.
 %
 is_intrinsic(Entity) ?+>
-  has_type(Entity, ease_obj:'Intrinsic').
+  has_type(Entity, soma:'Intrinsic').
 
 %% is_extrinsic(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Extrinsic'.
+% True iff Entity is an instance of soma:'Extrinsic'.
 %
 % @param Entity An entity IRI.
 %
 is_extrinsic(Entity) ?+>
-  has_type(Entity, ease_obj:'Extrinsic').
+  has_type(Entity, soma:'Extrinsic').
 
 %% object_localization(?Obj, ?Loc) is nondet.
 %
@@ -118,7 +112,7 @@ is_extrinsic(Entity) ?+>
 % @param Loc localization quality
 %
 object_localization(Obj,Loc) ?+>
-  holds(Obj,ease_obj:hasLocalization,Loc).
+  holds(Obj,soma:hasLocalization,Loc).
 
 %% object_color_rgb(?Obj, ?Col) is nondet.
 %
@@ -129,27 +123,91 @@ object_localization(Obj,Loc) ?+>
 % @param Col rgb color data
 % 
 object_color_rgb(Obj,[R,G,B]) ?>
-  holds(Obj,ease_obj:hasColor,Color),
+  holds(Obj,soma:hasColor,Color),
   holds(Color,dul:hasRegion,Region),
-  holds(Region,ease_obj:hasRGBValue,[R,G,B]),
+  holds(Region,soma:hasRGBValue,[R,G,B]),
   { ! }.
 
 object_color_rgb(Obj, [R,G,B]) ?>
-  holds(Obj,ease_obj:hasRGBValue,[R,G,B]),
+  holds(Obj,soma:hasRGBValue,[R,G,B]),
   { ! }.
   
 object_color_rgb(Obj,[R,G,B]) +>
   % get the color quality
-  { holds(Obj,ease_obj:hasColor,Color) },
+  { holds(Obj,soma:hasColor,Color) },
   % create a new region
   { universal_scope(US),
-    tell([ has_type(Region,ease_obj:'ColorRegion'),
-           holds(Region,ease_obj:hasRGBValue,[R,G,B])
+    tell([ has_type(Region,soma:'ColorRegion'),
+           holds(Region,soma:hasRGBValue,[R,G,B])
          ],US)
   },
   % update the region of the color quality
   update(holds(Color,dul:hasRegion,Region)),
   notify(object_changed(Obj)).
+
+%% object_shape(?Obj,?ShapeTerm,?ShapeOrigin) is nondet.
+%
+% Relates objects to shapes and their origin (usually a pose relative to the object).
+% The shape is represented as a Prolog term that encodes the shape type
+% and its geometrical properties.
+%
+% ShapeTerm may be one of:
+% - mesh(File,Scale)
+% - box(X,Y,Z)
+% - cylinder(Radius,Length)
+% - sphere(Radius)
+%
+% ShapeOrigin is a list of frame-position-quaternion.
+%
+% @Obj IRI atom
+% @ShapeTerm A shape term
+% @ShapeOrigin The origin of the shape
+%
+object_shape(Obj,ShapeTerm,[Frame,Pos,Rot]) ?>
+	triple(Obj,soma:hasShape,Shape),
+	triple(Shape,dul:hasRegion,ShapeRegion),
+	rdf_split_url(_,Frame,Obj),
+	{ shape_data(ShapeRegion,ShapeData),
+	  shape_origin(ShapeRegion,[Pos,Rot])
+	}.
+
+%%
+shape_data(ShapeRegion,mesh(File,Scale)) :-
+	holds(ShapeRegion,soma:hasFilePath,File),
+	shape_scale(ShapeRegion,Scale),
+	!.
+
+shape_data(ShapeRegion,box(X,Y,Z)) :-
+	triple(ShapeRegion, soma:hasWidth,  X),
+	triple(ShapeRegion, soma:hasHeight, Y),
+	triple(ShapeRegion, soma:hasDepth,  Z),
+	!.
+
+shape_data(ShapeRegion,cylinder(Radius,Length)) :-
+	triple(ShapeRegion, soma:hasLength, Length),
+	triple(ShapeRegion, soma:hasRadius, Radius),
+	!.
+
+shape_data(ShapeRegion,sphere(Radius)) :-
+	triple(ShapeRegion, soma:hasRadius, Radius),
+	!.
+
+%%
+shape_scale(ShapeRegion,[X,Y,Z]) :-
+	% TODO: knowrob namespace should not be used here
+	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasXScale', X),
+	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasYScale', Y),
+	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasZScale', Z).
+shape_scale(_,[1,1,1]).
+
+%%
+shape_origin(ShapeRegion,[Pos,Rot]) :-
+	% TODO: urdf namespace should not be used here
+	triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin),
+	triple(Origin, soma:hasPositionVector, term(Pos)),
+	triple(Origin, soma:hasOrientationVector, term(Rot)),
+	!.
+get_origin_(_,[[0,0,0],[0,0,0,1]]).
 
 %% object_shape_type(?Obj, ?ShapeType) is nondet.
 %
@@ -161,7 +219,7 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @param ShapeType IRI of shape type
 %
 object_shape_type(Obj, ShapeType) ?>
-  holds(Obj,ease_obj:hasShape,Shape),
+  holds(Obj,soma:hasShape,Shape),
   holds(Shape,dul:hasRegion,ShapeRegion),
   has_type(ShapeRegion,ShapeType).
 
@@ -177,7 +235,7 @@ object_shape_type(Obj, ShapeType) ?>
 % @param Height Height of the bounding box (z-dimension)
 % 
 object_dimensions(Obj, Depth, Width, Height) ?>
-  holds(Obj,ease_obj:hasShape,Shape),
+  holds(Obj,soma:hasShape,Shape),
   holds(Shape,dul:hasRegion,ShapeRegion),
   shape_bbox(ShapeRegion,Depth,Width,Height),
   { ! }.
@@ -188,15 +246,15 @@ object_dimensions(Obj, Depth, Width, Height) ?>
 
 object_dimensions(Obj, Depth, Width, Height) +>
   % get the shape quality
-  { holds(Obj,ease_obj:hasShape,Shape) },
+  { holds(Obj,soma:hasShape,Shape) },
   is_individual(ShapeRegion),
   % create a new region
   % TODO: replace any other BoxShape region
   { universal_scope(US),
-    tell([ has_type(ShapeRegion,ease_obj:'BoxShape'),
-           holds(ShapeRegion, ease_obj:hasDepth,  Depth),
-           holds(ShapeRegion, ease_obj:hasWidth,  Width),
-           holds(ShapeRegion, ease_obj:hasHeight, Height)
+    tell([ has_type(ShapeRegion,soma:'BoxShape'),
+           holds(ShapeRegion, soma:hasDepth,  Depth),
+           holds(ShapeRegion, soma:hasWidth,  Width),
+           holds(ShapeRegion, soma:hasHeight, Height)
          ],US)
   },
   holds(Shape,dul:hasRegion,ShapeRegion),
@@ -204,14 +262,14 @@ object_dimensions(Obj, Depth, Width, Height) +>
 
 %%
 shape_bbox(ShapeRegion, Depth, Width, Height) ?>
-  holds(ShapeRegion, ease_obj:hasDepth, Depth),
-  holds(ShapeRegion, ease_obj:hasWidth, Width),
-  holds(ShapeRegion, ease_obj:hasHeight, Height),
+  holds(ShapeRegion, soma:hasDepth, Depth),
+  holds(ShapeRegion, soma:hasWidth, Width),
+  holds(ShapeRegion, soma:hasHeight, Height),
   { ! }.
 
 shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
-  %holds(ShapeRegion,rdf:type,ease_obj:'SphereShape' ),
-  holds(ShapeRegion, ease_obj:hasRadius, Radius),
+  %holds(ShapeRegion,rdf:type,soma:'SphereShape' ),
+  holds(ShapeRegion, soma:hasRadius, Radius),
   { Diameter is 2 * Radius },
   { ! }.
 
@@ -223,21 +281,21 @@ shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
 % @param FilePath the file path
 %
 object_mesh_path(Obj, FilePath) ?>
-  holds(Obj,ease_obj:hasShape,Shape),
+  holds(Obj,soma:hasShape,Shape),
   holds(Shape,dul:hasRegion,ShapeRegion),
-  holds(ShapeRegion,ease_obj:hasFilePath,FilePath),
+  holds(ShapeRegion,soma:hasFilePath,FilePath),
   { ! }.
 
 object_mesh_path(Obj, FilePath) ?>
-  holds(Obj,ease_obj:hasFilePath,FilePath ),
+  holds(Obj,soma:hasFilePath,FilePath ),
   { ! }.
 
 object_mesh_path(Obj, FilePath) +>
-  { holds(Obj,ease_obj:hasShape,Shape) },
+  { holds(Obj,soma:hasShape,Shape) },
   % create a new region
   { universal_scope(US),
-    tell([ has_type(ShapeRegion,ease_obj:'MeshShape'),
-           holds(ShapeRegion,ease_obj:hasFilePath,FilePath)
+    tell([ has_type(ShapeRegion,soma:'MeshShape'),
+           holds(ShapeRegion,soma:hasFilePath,FilePath)
          ],US)
   },
   % assign the region to the shape quality
@@ -250,12 +308,12 @@ object_mesh_path(Obj, FilePath) +>
 
 %% is_feature(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Feature'.
+% True iff Entity is an instance of soma:'Feature'.
 %
 % @param Entity An entity IRI.
 %
 is_feature(Entity) ?+>
-  has_type(Entity,ease_obj:'Feature').
+  has_type(Entity,soma:'Feature').
 
 %% object_feature(+Obj, ?Feature) is nondet.
 %
@@ -265,7 +323,7 @@ is_feature(Entity) ?+>
 % @param Feature  Feature resource
 %
 object_feature(Obj, Feature) ?+>
-  holds(Obj,ease_obj:hasFeature,Feature).
+  holds(Obj,soma:hasFeature,Feature).
 
 %% object_feature(?Obj, ?Feature, ?FeatureType) is nondet.
 %
@@ -286,21 +344,21 @@ object_feature_type(Obj, Feature, FeatureType) ?>
 
 %% is_affordance(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Affordance'.
+% True iff Entity is an instance of soma:'Affordance'.
 %
 % @param Entity An entity IRI.
 %
 is_affordance(Entity) ?+>
-  has_type(Entity,ease_obj:'Affordance').
+  has_type(Entity,soma:'Affordance').
 
 %% is_disposition(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Disposition'.
+% True iff Entity is an instance of soma:'Disposition'.
 %
 % @param Entity An entity IRI.
 %
 is_disposition(Entity) ?+>
-  has_type(Entity,ease_obj:'Disposition').
+  has_type(Entity,soma:'Disposition').
 
 %% has_disposition(?Obj, ?Disposition) is nondet.
 %
@@ -310,7 +368,7 @@ is_disposition(Entity) ?+>
 % @param Disposition  Disposition resource
 %
 has_disposition(Obj, Disposition) ?+>
-  holds(Obj,ease_obj:hasDisposition,Disposition).
+  holds(Obj,soma:hasDisposition,Disposition).
 
 %% has_disposition(?Obj:iri, ?Disposition:iri, +DispositionType:iri) is nondet.
 %
@@ -322,7 +380,7 @@ has_disposition(Obj, Disposition) ?+>
 % @param DispositionType   Class resource
 %
 has_disposition_type(Obj, Disposition, DispositionType) ?>
-  holds(Obj,ease_obj:hasDisposition,Disposition),
+  holds(Obj,soma:hasDisposition,Disposition),
   has_quality_type(Disposition,DispositionType).
 
 %% disposition_trigger_type(?Disposition, ?TriggerType) is nondet.
@@ -334,7 +392,7 @@ has_disposition_type(Obj, Disposition, DispositionType) ?>
 % @param TriggerType  Class resource
 %
 disposition_trigger_type(Disposition,TriggerType) ?>
-  holds(Disposition, ease_obj:affordsTrigger, only(TriggerRole)),
+  holds(Disposition, soma:affordsTrigger, only(TriggerRole)),
   subclass_of(TriggerRole, only(dul:classifies,TriggerType)).
 
 		 /*******************************
@@ -343,50 +401,50 @@ disposition_trigger_type(Disposition,TriggerType) ?>
 
 %% is_patient(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Patient'.
+% True iff Entity is an instance of soma:'Patient'.
 %
 % @param Entity An entity IRI.
 %
 is_patient(Entity) ?>
   has_role(Entity,Role),
-  has_object_type(Role,ease_obj:'Patient').
+  has_object_type(Role,soma:'Patient').
 
 %% is_instrument(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Instrument'.
+% True iff Entity is an instance of soma:'Instrument'.
 %
 % @param Entity An entity IRI.
 %
 is_instrument(Entity) ?>
   has_role(Entity,Role),
-  has_object_type(Role,ease_obj:'Instrument').
+  has_object_type(Role,soma:'Instrument').
 
 %% is_location(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Location'.
+% True iff Entity is an instance of soma:'Location'.
 %
 % @param Entity An entity IRI.
 %
 is_location(Entity) ?>
   has_role(Entity,Role),
-  has_object_type(Role,ease_obj:'Location').
+  has_object_type(Role,soma:'Location').
 
 %% is_destination(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Destination'.
+% True iff Entity is an instance of soma:'Destination'.
 %
 % @param Entity An entity IRI.
 %
 is_destination(Entity) ?>
   has_role(Entity,Role),
-  has_object_type(Role,ease_obj:'Destination').
+  has_object_type(Role,soma:'Destination').
 
 %% is_origin(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_obj:'Origin'.
+% True iff Entity is an instance of soma:'Origin'.
 %
 % @param Entity An entity IRI.
 %
 is_origin(Entity) ?>
   has_role(Entity,Role),
-  has_object_type(Role,ease_obj:'Origin').
+  has_object_type(Role,soma:'Origin').

@@ -13,55 +13,48 @@
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
-
-:- tripledb_load('http://www.ease-crc.org/ont/EASE-STATE.owl',
-    [ graph(tbox),
-      namespace(ease_state)
-    ]).
 
 %% is_state(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_state:'State'.
+% True iff Entity is an instance of soma:'State'.
 %
 % @param Entity An entity IRI.
 %
 is_state(Entity) ?+>
-  has_type(Entity, ease_state:'State').
+  has_type(Entity, soma:'State').
 
 %% is_physical_state(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_state:'PhysicalState'.
+% True iff Entity is an instance of soma:'PhysicalState'.
 %
 % @param Entity An entity IRI.
 %
 is_physical_state(Entity) ?+>
-  has_type(Entity, ease_state:'PhysicalState').
+  has_type(Entity, soma:'PhysicalState').
 
 %% is_social_state(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_state:'SocialState'.
+% True iff Entity is an instance of soma:'SocialState'.
 %
 % @param Entity An entity IRI.
 %
 is_social_state(Entity) ?+>
-  has_type(Entity, ease_state:'SocialState').
+  has_type(Entity, soma:'SocialState').
 
 %% is_configuration(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_state:'Configuration'.
+% True iff Entity is an instance of soma:'Configuration'.
 %
 % @param Entity An entity IRI.
 %
 is_configuration(Entity) ?+>
-  has_type(Entity, ease_state:'Configuration').
+  has_type(Entity, soma:'Configuration').
 
 %% is_state_type(?Entity) is nondet.
 %
-% True iff Entity is an instance of ease_state:'StateType'.
+% True iff Entity is an instance of soma:'StateType'.
 %
 % @param Entity An entity IRI.
 %
 is_state_type(Entity) ?+>
-  has_type(Entity, ease_state:'StateType').
+  has_type(Entity, soma:'StateType').

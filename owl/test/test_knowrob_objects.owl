@@ -5,9 +5,8 @@
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
-    <!ENTITY ease_obj "http://www.ease-crc.org/ont/EASE-OBJ.owl#" >
-    <!ENTITY ease "http://www.ease-crc.org/ont/EASE.owl#" >
-    <!ENTITY dul "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#" >
+    <!ENTITY soma "http://www.ease-crc.org/ont/SOMA.owl#" >
+    <!ENTITY dul "http://www.ontologydesignpatterns.org/ont/dul/SOMA.owl#" >
     <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
@@ -23,8 +22,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:ease="http://www.ease-crc.org/ont/EASE.owl#"
-     xmlns:ease_obj="http://www.ease-crc.org/ont/EASE-OBJ.owl#"
+     xmlns:soma="http://www.ease-crc.org/ont/SOMA.owl#"
      xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/test_knowrob_objects.owl#">
@@ -32,11 +30,11 @@
     </owl:Ontology>
 
     <owl:Class rdf:about="&test;Cup">
-        <rdfs:subClassOf rdf:resource="&ease_obj;Tableware"/>
+        <rdfs:subClassOf rdf:resource="&soma;Tableware"/>
     </owl:Class>
 
     <owl:Class rdf:about="&test;Dishwasher">
-        <rdfs:subClassOf rdf:resource="&ease;Dishwasher"/>
+        <rdfs:subClassOf rdf:resource="&soma;Dishwasher"/>
     </owl:Class>
 
 
@@ -55,20 +53,20 @@
 
     <owl:NamedIndividual rdf:about="&test;Cup1">
         <rdf:type rdf:resource="&test;Cup"/>
-        <ease_obj:hasColor rdf:resource="&test;Cup1_Color"/>
+        <soma:hasColor rdf:resource="&test;Cup1_Color"/>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.03</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.03</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&test;Cup1_Color">
-        <rdf:type rdf:resource="&ease_obj;Color"/>
+        <rdf:type rdf:resource="&soma;Color"/>
         <dul:hasRegion rdf:resource="&test;Cup1_ColorRegion"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&test;Cup1_ColorRegion">
-        <rdf:type rdf:resource="&ease_obj;ColorRegion"/>
-        <ease_obj:hasRGBValue rdf:datatype="&xsd;string">0.4 0.5 0.6</ease_obj:hasRGBValue>
+        <rdf:type rdf:resource="&soma;ColorRegion"/>
+        <soma:hasRGBValue rdf:datatype="&xsd;string">0.4 0.5 0.6</soma:hasRGBValue>
     </owl:NamedIndividual>
 
     <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Cup2 -->

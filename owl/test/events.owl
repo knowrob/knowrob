@@ -9,7 +9,7 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
-     xmlns:EASE="http://www.ease-crc.org/ont/EASE.owl#">
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/test_events.owl">
         <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
     </owl:Ontology>
@@ -27,39 +27,39 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#before -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#before -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#before"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#before"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#during -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#during -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#during"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#during"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#meets -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#meets -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#meets"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#meets"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#overlappedOn -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#overlappedOn -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#overlappedOn"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#overlappedOn"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#simultaneous -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#simultaneous -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#simultaneous"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#simultaneous"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#starts -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#starts -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#starts"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#starts"/>
     
 
 
@@ -86,15 +86,15 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasIntervalBegin -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasIntervalBegin -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasIntervalBegin"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasIntervalBegin"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasIntervalEnd -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasIntervalEnd -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasIntervalEnd"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasIntervalEnd"/>
     
 
 
@@ -136,7 +136,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event0">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:starts rdf:resource="http://knowrob.org/kb/test_events.owl#Event1"/>
+        <SOMA:starts rdf:resource="http://knowrob.org/kb/test_events.owl#Event1"/>
     </owl:NamedIndividual>
     
 
@@ -145,7 +145,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event1">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:meets rdf:resource="http://knowrob.org/kb/test_events.owl#Event2"/>
+        <SOMA:meets rdf:resource="http://knowrob.org/kb/test_events.owl#Event2"/>
     </owl:NamedIndividual>
     
 
@@ -154,7 +154,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event2">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:simultaneous rdf:resource="http://knowrob.org/kb/test_events.owl#Event3"/>
+        <SOMA:simultaneous rdf:resource="http://knowrob.org/kb/test_events.owl#Event3"/>
     </owl:NamedIndividual>
     
 
@@ -163,7 +163,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event3">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
+        <SOMA:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
     </owl:NamedIndividual>
     
 
@@ -180,7 +180,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event5">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:during rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
+        <SOMA:during rdf:resource="http://knowrob.org/kb/test_events.owl#Event4"/>
     </owl:NamedIndividual>
     
 
@@ -189,7 +189,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event6">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:before rdf:resource="http://knowrob.org/kb/test_events.owl#Short3"/>
+        <SOMA:before rdf:resource="http://knowrob.org/kb/test_events.owl#Short3"/>
     </owl:NamedIndividual>
     
 
@@ -198,7 +198,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Event7">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event"/>
-        <EASE:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event6"/>
+        <SOMA:overlappedOn rdf:resource="http://knowrob.org/kb/test_events.owl#Event6"/>
     </owl:NamedIndividual>
     
 
@@ -253,8 +253,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Long">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</EASE:hasIntervalBegin>
-        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</EASE:hasIntervalEnd>
+        <SOMA:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</SOMA:hasIntervalBegin>
+        <SOMA:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</SOMA:hasIntervalEnd>
     </owl:NamedIndividual>
     
 
@@ -263,8 +263,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short1">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</EASE:hasIntervalBegin>
-        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</EASE:hasIntervalEnd>
+        <SOMA:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777001</SOMA:hasIntervalBegin>
+        <SOMA:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</SOMA:hasIntervalEnd>
     </owl:NamedIndividual>
     
 
@@ -273,8 +273,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short2">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</EASE:hasIntervalBegin>
-        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777004</EASE:hasIntervalEnd>
+        <SOMA:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777002</SOMA:hasIntervalBegin>
+        <SOMA:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777004</SOMA:hasIntervalEnd>
     </owl:NamedIndividual>
     
 
@@ -283,8 +283,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short3">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777008</EASE:hasIntervalBegin>
-        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</EASE:hasIntervalEnd>
+        <SOMA:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777008</SOMA:hasIntervalBegin>
+        <SOMA:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777010</SOMA:hasIntervalEnd>
     </owl:NamedIndividual>
     
 
@@ -293,8 +293,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/test_events.owl#Time_Short4">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval"/>
-        <EASE:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777009</EASE:hasIntervalBegin>
-        <EASE:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777011</EASE:hasIntervalEnd>
+        <SOMA:hasIntervalBegin rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777009</SOMA:hasIntervalBegin>
+        <SOMA:hasIntervalEnd rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1377777011</SOMA:hasIntervalEnd>
     </owl:NamedIndividual>
 </rdf:RDF>
 

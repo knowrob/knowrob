@@ -19,6 +19,10 @@
 :- dynamic reasoner_module_/1.
 :- dynamic active_query_/2.
 
+%% rendering of messages
+prolog:message(reasoner(Module,inferred(Fact))) -->
+	[ 'A reasoner (~w) has inferred new knowledge (~w)'-[Module,Fact] ].
+
 %% register_reasoner(+Module) is det.
 %
 %
@@ -78,14 +82,14 @@ infer1(Module,Query,QueryStr,Fact,QScope,FScope) :-
   Options=[skip_invalidate(true)],
   % FIXME: better use thread queues to yield a resut as soon as it was inferred
   findall([X,Y], (
-    call((:(Module,infer(Query,X,QScope,Y)))),
     % FIXME: do not invalidate cache for self?
+    call((:(Module,infer(Query,X,QScope,Y)))),
     ( tell(X,[Options,Y]) -> true ; (
       print_message(error, infer(failed(tell(X,Y))))
     ))
   ), Results),
   member([Fact,FScope],Results),
-  print_message(informational, inferred(Module,Fact)),
+  log_debug(reasoner(Module,inferred(Fact))),
   % FIXME
   Query=Fact.
 
