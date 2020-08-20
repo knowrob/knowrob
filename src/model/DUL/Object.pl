@@ -154,6 +154,14 @@ has_location(Object, Location) ?+>
 has_role(Entity,Role) ?+>
   holds(Role, dul:classifies, Entity).
 
-% FIXME: not object related
+%% has_part(?Entity,?Part) is nondet.
+%
+% Relates an object to its parts.
+%
+% @Entity IRI atom
+% @Part IRI atom
+%
+% TODO: not object related, probably best to add a module DUL.pl and add it there
+%
 has_part(Entity,Part) ?+>
   holds(Entity, dul:hasPart, Part).
