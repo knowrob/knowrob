@@ -278,9 +278,9 @@ owl_property_cardinality1(exactly(P0,Count,Range0),P,Range,Count,Count,_) :-
   ( var(P)     -> P=P0         ; subproperty_of(P0,P) ),
   ( var(Range) -> Range=Range0 ; subclass_of(Range0,Range) ).
 
-owl_property_cardinality1(union_of(Set),P,Range,Min,Max,_) :-
+owl_property_cardinality1(union_of(Set),P,Range,Min,Max,Visited) :-
   % find cardinality constraints from members of Set
-  cardinality_of_union_(Set,P,Range,Cards),
+  cardinality_of_union_(Set,P,Range,Cards,Visited),
   % get the least constrained min/max values
   cardinality_one_of(Cards,[(Min,Max)]).
 
@@ -297,34 +297,38 @@ owl_property_cardinality1(class(Cls),P,Range,Min,Max,Visited) :-
   owl_property_cardinality1(Descr,P,Range,Min,Max,[Cls|Visited]).
 
 %%
-cardinality_of_union_(Union,P,Range,Cards) :-
+cardinality_of_union_(Union,P,Range,Cards,Visited) :-
   var(P),var(Range),!,
   findall([P0,R0,(Min0,Max0)],
     ( member(Cls,Union),
-      owl_property_cardinality(Cls,P0,R0,Min0,Max0) ),
+      has_description(Cls,Descr),
+      owl_property_cardinality1(Descr,P0,R0,Min0,Max0,Visited) ),
     CardsPR),
   cardinality_bind_pr_(CardsPR,P,Range,Cards).
 
-cardinality_of_union_(Union,P,Range,Cards) :-
+cardinality_of_union_(Union,P,Range,Cards,Visited) :-
   var(P),!,
   findall([P0,(Min0,Max0)],
     ( member(Cls,Union),
-      owl_property_cardinality(Cls,P0,Range,Min0,Max0) ),
+      has_description(Cls,Descr),
+      owl_property_cardinality1(Descr,P0,Range,Min0,Max0,Visited) ),
     CardsP),
   cardinality_bind_p_(CardsP,P,Cards).
 
-cardinality_of_union_(Union,P,Range,Cards) :-
+cardinality_of_union_(Union,P,Range,Cards,Visited) :-
   var(Range),!,
   findall([R0,(Min0,Max0)],
     ( member(Cls,Union),
-      owl_property_cardinality(Cls,P,R0,Min0,Max0) ),
+      has_description(Cls,Descr),
+      owl_property_cardinality1(Descr,P,R0,Min0,Max0,Visited) ),
     CardsR),
   cardinality_bind_r_(CardsR,Range,Cards).
 
-cardinality_of_union_(Union,P,Range,Cards) :-
+cardinality_of_union_(Union,P,Range,Cards,Visited) :-
   findall((Min0,Max0),
     ( member(Cls,Union),
-      owl_property_cardinality(Cls,P,Range,Min0,Max0) ),
+      has_description(Cls,Descr),
+      owl_property_cardinality1(Descr,P,Range,Min0,Max0,Visited) ),
     Cards).
 
 %%

@@ -5,6 +5,7 @@
       is_union_of(r,t),
       is_intersection_of(r,t),
       is_complement_of(r,t),
+      is_all_disjoint_classes(r),
       is_individual(r),
       is_object_property(r),
       is_data_property(r),
@@ -239,12 +240,12 @@ is_restriction(R,Descr) ?>
 
 %%
 is_restriction1(R,only(P,O)) ?+>
-  triple(R,owl:allValuesFrom,O),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:allValuesFrom,O).
 
 is_restriction1(R,some(P,O)) ?+>
-  triple(R,owl:someValuesFrom,O),
-  triple(R,owl:onProperty,P).
+  triple(R,owl:onProperty,P),
+  triple(R,owl:someValuesFrom,O).
 
 is_restriction1(R,value(P,O)) ?+>
   triple(R,owl:onProperty,P),
@@ -252,25 +253,40 @@ is_restriction1(R,value(P,O)) ?+>
 
 is_restriction1(R,min(P,M,O)) ?+>
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
+  triple(R,owl:minQualifiedCardinality,M),
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,min(P,M)) ?+>
+  triple(R,owl:onProperty,P),
   triple(R,owl:minCardinality,M).
 
 is_restriction1(R,max(P,M,O)) ?+>
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
+  triple(R,owl:maxQualifiedCardinality,M),
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,max(P,M)) ?+>
+  triple(R,owl:onProperty,P),
   triple(R,owl:maxCardinality,M).
 
 is_restriction1(R,exactly(P,M,O)) ?+>
   triple(R,owl:onProperty,P),
-  triple(R,owl:onClass,O),
-  triple(R,owl:qualifiedCardinality,M).
+  triple(R,owl:qualifiedCardinality,M),
+  triple(R,owl:onClass,O).
+
+is_restriction1(R,exactly(P,M)) ?+>
+  triple(R,owl:onProperty,P),
+  triple(R,owl:cardinality,M).
 
 %%
 is_restriction_term_(only(_,_)).
 is_restriction_term_(some(_,_)).
 is_restriction_term_(value(_,_)).
+is_restriction_term_(min(_,_)).
 is_restriction_term_(min(_,_,_)).
 is_restriction_term_(max(_,_,_)).
+is_restriction_term_(max(_,_)).
+is_restriction_term_(exactly(_,_)).
 is_restriction_term_(exactly(_,_,_)).
 
 %% is_union_of(?UnionClass,?Descr) is nondet.
@@ -318,6 +334,15 @@ is_complement_of(ComplementClass,not(Class)) +>
 
 is_complement_of(ComplementClass,not(Class)) ?>
   triple(ComplementClass,owl:complementOf,Class).
+
+%% is_all_disjoint_classes(?AllDisjointClasses) is nondet.
+%
+% True for OWL2 AllDisjointClasses
+%
+% @param Entity An entity IRI.
+%
+is_all_disjoint_classes(Entity) ?+>
+    has_type(Entity, owl:'AllDisjointClasses').
 
 %% has_inverse_property(?Property, ?Inverse) is nondet.
 %
@@ -383,9 +408,14 @@ has_disjoint_class2(A,B) :-
   tripledb_ask(DC,owl:members,RDF_list),
   is_rdf_list(RDF_list,List),
   once((
-    member(Sup_A,List), subclass_of(A,Sup_A),
-    member(Sup_B,List), unify_disjoint_(B,Sup_B)
-  )).
+    member(Sup_A,List), 
+    subclass_of(A,Sup_A)
+  )),
+  (
+    member(Sup_B,List), 
+    unify_disjoint_(B,Sup_B),
+    Sup_B \= Sup_A
+  ).
 
 unify_disjoint_(B,Disjoint) :-
   ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
@@ -402,12 +432,14 @@ unify_disjoint_(B,Disjoint) :-
 %
 has_equivalent_class(Cls,EQ) :-
   ground(Cls),!,
-  has_equivalent_class1([Cls],EQ,[]),
+  has_equivalent_class1([Cls],EQList,[]),
+  member(EQ,EQList),
   EQ \= Cls.
 
 has_equivalent_class(Cls,EQ) :-
   ground(EQ),!,
-  has_equivalent_class1([EQ],Cls,[]),
+  has_equivalent_class1([EQ],ClsList,[]),
+  member(Cls,ClsList),
   EQ \= Cls.
 
 has_equivalent_class(Cls,EQ) :-
@@ -415,7 +447,7 @@ has_equivalent_class(Cls,EQ) :-
   has_equivalent_class(Cls,EQ).
 
 %%
-has_equivalent_class1([Entity|_],Entity,_) :- !.
+has_equivalent_class1([],Visited,Visited).
 
 has_equivalent_class1([Entity|Queue],Same,Visited) :-
   findall(Next, (

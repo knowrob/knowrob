@@ -35,18 +35,18 @@ owl_subproperty_of(Sub,Sup) :-
   ground([Sub,Sup]),!,
   has_inverse_property(Sub,Sub_inv),
   has_inverse_property(Sup,Sup_inv),
-  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv).
+  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sub),!,
   has_inverse_property(Sub,Sub_inv),
-  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv),
+  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv),
   has_inverse_property(Sup,Sup_inv).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sup),!,
   has_inverse_property(Sup,Sup_inv),
-  tripledb_ask(Sub_inv,rdfs:subClassOf,Sup_inv),
+  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv),
   has_inverse_property(Sub,Sub_inv).
 
 %% owl_has(?S,?P,?O,+Scope) is nondet.
