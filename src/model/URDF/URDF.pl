@@ -78,12 +78,10 @@ urdf_load(Object,File,Options) :-
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
-	% FIXME: lots of redundant results with transitive, and its super slow
-	% setof(X, transitive(has_part(Object,X)), Parts),
-	setof(X, has_part_(Object,X), Parts),
+	findall(X, transitive(triple(Object,dul:hasPart,X)), Parts),
 	% set component poses relative to links
 	forall(
-		(	member(Y,Parts),
+		(	member(Y,[Object|Parts]),
 			has_base_link_name(Y,YName)
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
@@ -95,12 +93,6 @@ urdf_load(Object,File,Options) :-
 	->	load_rdf_(Object,Parts,OptPrefix)
 	;	true
 	).
-
-%%
-has_part_(X,X).
-has_part_(X,Y) :-
-	triple(X,dul:hasPart,Z),
-	has_part_(Z,Y).
 
 %% has_urdf(+Object,+RootObject) is semidet.
 %
