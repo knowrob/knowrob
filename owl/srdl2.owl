@@ -9,9 +9,8 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2.owl">
-        <owl:imports rdf:resource="package://rosowl/owl/ROS.owl"/>
-        <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
-        <owl:imports rdf:resource="package://srdl/owl/srdl2-cap.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/srdl2-cap.owl"/>
     </owl:Ontology>
 </rdf:RDF>
 

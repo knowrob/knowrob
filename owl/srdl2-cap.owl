@@ -13,7 +13,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-cap.owl">
         <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/srdl2-comp.owl"/>
     </owl:Ontology>
     
 
