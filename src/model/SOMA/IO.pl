@@ -1,4 +1,4 @@
-:- module(model_EASE_IO,
+:- module(model_SOMA_IO,
     [ is_computational_agent(r),
       is_digital_object(r)
     ]).

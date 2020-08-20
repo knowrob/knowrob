@@ -29,9 +29,9 @@
     ]).
 :- use_module('./DUL/Region.pl',
     [ is_time_interval/1 ]).
-:- use_module('./EASE/PROC.pl',
+:- use_module('./SOMA/PROC.pl',
     [ is_process_type/1 ]).
-:- use_module('./EASE/STATE.pl',
+:- use_module('./SOMA/STATE.pl',
     [ is_state_type/1 ]).
 
 % FIXME: Syntax error: Operator expected

@@ -2,7 +2,7 @@
 	[ object_marker/4
 	]).
 
-:- use_module(library('model/EASE/OBJ'),
+:- use_module(library('model/SOMA/OBJ'),
     [ object_shape/3,
       object_color_rgb/2
     ]).

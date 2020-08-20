@@ -1,4 +1,4 @@
-:- module(model_EASE_OBJ,
+:- module(model_SOMA_OBJ,
     [ %% Life Time
       %is_alive(r),
       %% Qualities

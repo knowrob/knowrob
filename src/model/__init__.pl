@@ -8,7 +8,7 @@
 
 % load init files in sub-directories
 :- use_directory('DUL').
-:- use_directory('EASE').
+:- use_directory('SOMA').
 
 % load additional ontologies
 :- tripledb_load(
