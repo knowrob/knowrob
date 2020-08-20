@@ -41,8 +41,7 @@ The collection should be indexed by the key `header.stamp` such that the mongo s
 can quickly filter out records based on the timestamp when they were acquired.
 `Note` in case of array values (as for tf) it is important
 that the indexed key has identical values for all array members (e.g., the same header stamp
-in case of tf) -- a patched [robot state publisher](https://github.com/code-iai/robot_state_publisher)
-should be used for robot transforms to avoid this issue.
+in case of tf) -- however, *it is advised to avoid generating indices over arrays*.
 
 ### Querying mongo
 Documents in mongo DB can be retrieved by first creating a cursor on
