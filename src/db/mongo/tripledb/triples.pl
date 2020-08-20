@@ -382,7 +382,7 @@ triple_query_get_o1(Doc,Options,Value) :-
 	mng_get_dict('o*',Doc,array(Values)),
 	member(Value,Values).
 
-triple_query_get_o1(Doc,Options,Value) :-
+triple_query_get_o1(Doc,_Options,Value) :-
 	% get value from o if include_parents option is not *true*
 	mng_get_dict('o',Doc,Value).
 
