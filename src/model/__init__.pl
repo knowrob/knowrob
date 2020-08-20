@@ -9,7 +9,7 @@
 % load init files in sub-directories
 :- use_directory('DUL').
 :- use_directory('EASE').
-%:- use_directory('URDF').
+:- use_directory('URDF').
 
 % load additional ontologies
 :- tripledb_load(
