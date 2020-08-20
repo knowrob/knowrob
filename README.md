@@ -127,4 +127,5 @@ More complete information about reasoning in KnowRob can be found
 
 ## Further Information
 
-Please visit http://www.knowrob.org for more information.
+- Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
+- A blog and more wiki pages are avaiabale at: http://www.knowrob.org

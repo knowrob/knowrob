@@ -68,7 +68,7 @@ KnowRob uses the [DOLCE+DnS Ultralite](http://ontologydesignpatterns.org/wiki/On
 A *domain ontology* is used to fix general terms in some domain.
 The domain KnowRob was designed for is *everyday activities*.
 KnowRob ships with the
-[Socio-physical Model of Activities](https://github.com/knowrob/soma) (SOMA)
+[Socio-physical Model of Activities](https://github.com/ease-crc/soma) (SOMA)
 ontology which derives its notions from the DUL upper-level.
 However, it is possible to configure KnowRob for other discipines by
 using different domain ontologies.
