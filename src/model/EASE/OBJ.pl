@@ -167,7 +167,7 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot]) ?>
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
 	rdf_split_url(_,Frame,Obj),
-	{ shape_data(ShapeRegion,ShapeData),
+	{ shape_data(ShapeRegion,ShapeTerm),
 	  shape_origin(ShapeRegion,[Pos,Rot])
 	}.
 
