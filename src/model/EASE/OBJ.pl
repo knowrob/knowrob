@@ -145,14 +145,28 @@ object_color_rgb(Obj,[R,G,B]) +>
   update(holds(Color,dul:hasRegion,Region)),
   notify(object_changed(Obj)).
 
-%%
+%% object_shape(?Obj,?ShapeTerm,?ShapeOrigin) is nondet.
 %
+% Relates objects to shapes and their origin (usually a pose relative to the object).
+% The shape is represented as a Prolog term that encodes the shape type
+% and its geometrical properties.
 %
-object_shape(Obj,ShapeData,[Frame,Pos,Rot]) ?>
+% ShapeTerm may be one of:
+% - mesh(File,Scale)
+% - box(X,Y,Z)
+% - cylinder(Radius,Length)
+% - sphere(Radius)
+%
+% ShapeOrigin is a list of frame-position-quaternion.
+%
+% @Obj IRI atom
+% @ShapeTerm A shape term
+% @ShapeOrigin The origin of the shape
+%
+object_shape(Obj,ShapeTerm,[Frame,Pos,Rot]) ?>
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
-	% TODO: should not depend on urdf here
-	has_urdf_name(Obj,Frame),
+	rdf_split_url(_,Frame,Obj),
 	{ shape_data(ShapeRegion,ShapeData),
 	  shape_origin(ShapeRegion,[Pos,Rot])
 	}.
@@ -180,7 +194,7 @@ shape_data(ShapeRegion,sphere(Radius)) :-
 
 %%
 shape_scale(ShapeRegion,[X,Y,Z]) :-
-	% FIXME: knowrob namespace should not be used here
+	% TODO: knowrob namespace should not be used here
 	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasXScale', X),
 	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasYScale', Y),
 	triple(ShapeRegion, 'http://knowrob.org/kb/knowrob.owl#hasZScale', Z).
@@ -188,7 +202,7 @@ shape_scale(_,[1,1,1]).
 
 %%
 shape_origin(ShapeRegion,[Pos,Rot]) :-
-	% FIXME: urdf namespace should not be used here
+	% TODO: urdf namespace should not be used here
 	triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin),
 	triple(Origin, soma:hasPositionVector, term(Pos)),
 	triple(Origin, soma:hasOrientationVector, term(Rot)),
