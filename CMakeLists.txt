@@ -55,12 +55,6 @@ add_dependencies(kb_algebra
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS})
 
-add_library(urdf_parser SHARED src/model/URDF/parser.cpp)
-target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(urdf_parser
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-  ${catkin_EXPORTED_TARGETS})
-
 ##############
 #### DB
 ##############
@@ -89,10 +83,10 @@ target_link_libraries(mongo_kb
 ##############
 
 add_library(tf_plugin SHARED
-	src/comm/ros/tf/tf_plugin.cpp
-	src/comm/ros/tf/memory.cpp
-	src/comm/ros/tf/logger.cpp
-	src/comm/ros/tf/publisher.cpp)
+	src/ros/tf/tf_plugin.cpp
+	src/ros/tf/memory.cpp
+	src/ros/tf/logger.cpp
+	src/ros/tf/publisher.cpp)
 target_link_libraries(tf_plugin
 	${SWIPL_LIBRARIES}
 	${MONGOC_LIBRARIES}
@@ -103,13 +97,19 @@ add_dependencies(tf_plugin
 	${catkin_EXPORTED_TARGETS})
 
 add_library(marker_plugin SHARED
-	src/comm/ros/marker/publisher.cpp)
+	src/ros/marker/publisher.cpp)
 target_link_libraries(marker_plugin
 	${SWIPL_LIBRARIES}
 	${catkin_LIBRARIES})
 add_dependencies(marker_plugin
 	${${PROJECT_NAME}_EXPORTED_TARGETS}
 	${catkin_EXPORTED_TARGETS})
+
+add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
+target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(urdf_parser
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS})
 
 ##############
 ##############

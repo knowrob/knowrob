@@ -29,6 +29,7 @@
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
 :- use_module('utility/url').
+:- use_module('utility/notify').
 
 % tell the user what is going on
 :- log_info(kb(initialization(started))).
@@ -53,7 +54,7 @@
 :- use_directory('lang').
 :- use_directory('model').
 :- use_directory('reasoning').
-:- use_directory('comm').
+:- use_directory('ros').
 :- use_directory('vis').
 
 % load additional modules

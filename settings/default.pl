@@ -1,8 +1,8 @@
 
 %	Plugins
 setting(knowrob:plugins,
-	[ 'comm/ros/tf/tf_plugin',
-	  'comm/ros/marker/marker_plugin'
+	[ 'ros/tf/tf_plugin',
+	  'ros/marker/marker_plugin'
 	]).
 
 %	Triple DB

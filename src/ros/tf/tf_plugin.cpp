@@ -1,7 +1,7 @@
 
-#include <knowrob/comm/ros/tf/memory.h>
-#include <knowrob/comm/ros/tf/logger.h>
-#include <knowrob/comm/ros/tf/publisher.h>
+#include <knowrob/ros/tf/memory.h>
+#include <knowrob/ros/tf/logger.h>
+#include <knowrob/ros/tf/publisher.h>
 
 static ros::NodeHandle node;
 static TFMemory memory;

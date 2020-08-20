@@ -23,9 +23,9 @@
 
 :- use_module(library('utility/url'),    [ url_resolve/2 ]).
 :- use_module(library('utility/atoms'),  [ camelcase/2 ]).
+:- use_module(library('utility/notify'), [ notify/1 ]).
 :- use_module(library('db/scope'),       [ universal_scope/1 ]).
 :- use_module(library('db/subgraph')).
-:- use_module(library('comm/notify'),    [ notify/1 ]).
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
 % define some settings

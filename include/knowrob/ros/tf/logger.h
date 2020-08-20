@@ -13,7 +13,7 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 
-#include <knowrob/comm/ros/tf/memory.h>
+#include <knowrob/ros/tf/memory.h>
 
 /**
  * A TF listener that stores messages in MongoDB.

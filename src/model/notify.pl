@@ -1,6 +1,6 @@
 :- module(model_notify, []).
 
-:- use_module(library('comm/notify'),
+:- use_module(library('utility/notify'),
     [ notify/1 ]).
 :- use_module(library('semweb/rdf_db'),
     [ rdf_split_url/3 ]).

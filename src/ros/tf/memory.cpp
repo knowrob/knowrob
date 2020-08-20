@@ -1,4 +1,4 @@
-#include <knowrob/comm/ros/tf/memory.h>
+#include <knowrob/ros/tf/memory.h>
 
 static double get_stamp(const geometry_msgs::TransformStamped &ts)
 {

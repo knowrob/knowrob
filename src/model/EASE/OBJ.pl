@@ -46,7 +46,7 @@
     ]).
 :- use_module(library('db/scope'),
     [ universal_scope/1 ]).
-:- use_module(library('comm/notify'),
+:- use_module(library('utility/notify'),
     [ notify/1 ]).
 
 		 /*******************************

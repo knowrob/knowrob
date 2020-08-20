@@ -1,4 +1,4 @@
-:- module(model_URDF,
+:- module(ros_urdf,
 	[ urdf_load(r,+),
 	  urdf_load(r,+,+),
 	  has_urdf(r,r),
