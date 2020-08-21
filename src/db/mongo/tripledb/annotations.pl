@@ -25,7 +25,13 @@ It is also not needed that annotation values are indexed.
 %%
 % The mongo DB + Collection used to store annotations.
 %
-annotation_db(DB,'annotations') :- mng_db_name(DB).
+annotation_db(DB, Name) :- 
+	mng_db_name(DB),
+	(setting(mng_client:neemhub_neem_id, Id) 
+		-> atom_concat(Id,'_annotations', Name)
+		; Name = 'annotations'
+	).
+
 
 %%
 % Create indices for fast annotation retrieval.

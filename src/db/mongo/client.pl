@@ -7,6 +7,7 @@
       mng_update/4,
       mng_remove/3,
       mng_index_create/2,
+      mng_index_create/3,
       mng_export/1,
       mng_export_collection/2,
       mng_dump/2,
@@ -14,6 +15,7 @@
       mng_restore/2,
       mng_regex_prefix/2,
       mng_cursor_create/3,
+      mng_cursor_create_core/3,
       mng_cursor_destroy/1,
       mng_cursor_filter/2,
       mng_cursor_descending/2,
@@ -34,7 +36,7 @@
 :- dynamic mng_db_name/1.
 
 % define some settings
-:- setting(db_name, atom, roslog,
+:- setting(db_name, atom, 'roslog',
 		'Name of the Mongo DB used by KnowRob.').
 
 :- setting(mng_client:db_name, DBName),
@@ -129,6 +131,22 @@ mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Query Cursor
 
+%% mng_cursor_create(+DB, +Collection, -Cursor) is det.
+%
+% Creates a new query cursor.
+% Make sure to call *mng_cursor_destroy/1* once
+% you are done querying.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Cursor The id of a new mongo DB cursor
+%
+mng_cursor_create(DB, Collection, Cursor) :-
+  ( setting(mng_client:tripledb_read_only, true)
+    -> true
+    ; mng_cursor_create_core(DB, Collection, Cursor)
+  ).
+
 %% mng_cursor_next(+Cursor,?Dict) is semidet.
 %
 %
@@ -154,6 +172,25 @@ mng_cursor_materialize(Cursor,Next,Dict) :-
     ( Dict=Next ; mng_cursor_materialize(Cursor,Next1,Dict) );
     ( Dict=Next )
   ).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Query Index
+
+%% mng_index_create(+DB,+Collection,+Keys) is det
+%
+% Creates search index.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Keys List of keys for which an index shall be created
+%
+mng_index_create(DB,Collection,Keys) :-
+  ( setting(mng_client:tripledb_read_only, true)
+    -> true
+    ; mng_index_create_core(DB,Collection,Keys)
+  ).
+
 
 %% mng_get_dict(?Key,+Doc,?PlValue) is semidet.
 %
@@ -232,7 +269,7 @@ mng_restore(_DB,Dir) :-
 % @param Dict A Prolog dictionary
 %
 
-%% mng_index_create(+DB,+Collection,+Keys) is det
+%% mng_index_create_core(+DB,+Collection,+Keys) is det
 %
 % Creates search index.
 %
@@ -241,7 +278,7 @@ mng_restore(_DB,Dir) :-
 % @param Keys List of keys for which an index shall be created
 %
 
-%% mng_cursor_create(+DB, +Collection, -Cursor) is det.
+%% mng_cursor_create_core(+DB, +Collection, -Cursor) is det.
 %
 % Creates a new query cursor.
 % Make sure to call *mng_cursor_destroy/1* once

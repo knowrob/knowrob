@@ -175,7 +175,10 @@ tripledb_load(URL,Options) :-
   ),
   % get fact scope
   universal_scope(Scope),
-  tripledb_load(URL,Scope,Graph).
+  ( setting(mng_client:tripledb_read_only, true) 
+  	->  true
+  	; tripledb_load(URL,Scope,Graph)
+  ).
 
 %% tripledb_load(+URL,+Scope,+Graph) is semidet.
 %

@@ -17,8 +17,13 @@
 %%
 % The mongo DB + Collection used to store the query cache.
 %
-inference_cache_db(DB,'inferred') :-
-	mng_db_name(DB).
+inference_cache_db(DB, Name) :- 
+	mng_db_name(DB),
+	(setting(mng_client:neemhub_neem_id, Id) 
+		-> atom_concat(Id,'_inferred', Name)
+		; Name = 'inferred'
+	).
+
 
 %%
 % Create search indices.
