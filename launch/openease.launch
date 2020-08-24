@@ -1,0 +1,10 @@
+<launch>
+  <!-- Configure settings file. -->
+  <arg name="knowrob_settings" default="$(find knowrob)/settings/neemhub.pl" />
+  <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
+  
+  <include file="$(find rosprolog)/launch/rosprolog.launch">
+    <arg name="initial_package" default="knowrob" />
+    <arg name="initial_goal" default="true" />
+  </include>
+</launch>
