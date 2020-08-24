@@ -97,7 +97,6 @@ WORKDIR /home/ros
 # Build the catkin workspace
 RUN /opt/ros/melodic/bin/catkin_make
 
-COPY openease.launch /home/ros/openease.launch
 COPY run_knowrob.sh /run_knowrob.sh
 
 ENTRYPOINT ["/run_knowrob.sh"]
