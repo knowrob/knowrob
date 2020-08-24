@@ -81,10 +81,14 @@ MongoInterface::MongoInterface()
 	bson_error_t err;
 	std::string mongo_uri;
 	if(!rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri)) {
-		char *mongo_host = std::getenv("MONGO_PORT_27017_TCP_ADDR");
+		char *mongo_host = std::getenv("MONGO_HOST");
 		if(mongo_host != NULL) {
+			char *mongo_user_name = std::getenv("MONGO_USERNAME");
+			char *mongo_user_pw = std::getenv("MONGO_PASSWORD");
+			char *mongo_database = std::getenv("MONGO_DATABASE");
+			char *mongo_port = std::getenv("MONGO_PORT");
 			std::stringstream ss;
-			ss << "mongodb://" << mongo_host << ":27017/?appname=knowrob";
+			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw << "@" << mongo_host << ":" << mongo_port << "/" << mongo_database;
 			mongo_uri = ss.str();
 		}
 		else {
