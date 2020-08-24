@@ -2,9 +2,20 @@
   <!-- Configure settings file. -->
   <arg name="knowrob_settings" default="$(find knowrob)/settings/neemhub.pl" />
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
-  
-  <include file="$(find rosprolog)/launch/rosprolog.launch">
-    <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="true" />
+
+    <!-- KnowRob json_prolog server -->
+  <param name="initial_package" type="string" value="knowrob_roslog_launch" />
+  <param name="initial_goal" type="string" value="register_ros_package(knowrob_openease)" />
+  <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
+
+
+  <param name="/ros_mac_authentication/secret_file_location" value="/etc/rosauth/secret" />
+  <node name="auth_node" pkg="rosauth" type="ros_mac_authentication" />
+
+    <!-- rosbridge for websocket visualization -->
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+    <arg name="authenticate" value="true"/>
   </include>
+  
+  <node pkg="rosprolog" name="json_wrapper" type="json_wrapper.py" output="screen"/> 
 </launch>

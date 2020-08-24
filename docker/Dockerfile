@@ -81,7 +81,7 @@ RUN /usr/bin/python /opt/ros/melodic/bin/catkin_init_workspace
 
 RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     rm -rf /home/ros/src/* && \
-    git clone https://github.com/knowrob/knowrob.git && \
+    git clone https://github.com/sasjonge/knowrob.git && \
     git clone https://github.com/knowrob/rosprolog.git && \
     git clone https://github.com/knowrob/rosowl.git && \
     git clone https://github.com/knowrob/genowl.git && \
@@ -93,6 +93,8 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     git clone https://github.com/RobotWebTools/tf2_web_republisher.git ; \
     fi
 
+WORKDIR /home/ros/src/knowrob
+RUN git checkout mongoservice
 WORKDIR /home/ros
 # Build the catkin workspace
 RUN /opt/ros/melodic/bin/catkin_make
