@@ -9,10 +9,10 @@
   <node pkg="rosauth" type="ros_mac_authentication" name="ros_mac_authentication" output="screen">
   	<param name="secret_file_location" value="/etc/rosauth/secret" />
   </node>
-
     <!-- rosbridge for websocket visualization -->
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
     <arg name="authenticate" value="true"/>
+    <param name="websocket_external_port" value="80" />
   </include>
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
