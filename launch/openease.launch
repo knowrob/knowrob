@@ -4,6 +4,7 @@
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
 
   <param name="/ros_mac_authentication/secret_file_location" value="/etc/rosauth/secret" />
+  <param name="secret_file_location" value="/etc/rosauth/secret" />
   <node name="auth_node" pkg="rosauth" type="ros_mac_authentication" />
 
     <!-- rosbridge for websocket visualization -->
