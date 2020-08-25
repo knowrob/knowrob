@@ -85,7 +85,6 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     git clone https://github.com/knowrob/rosprolog.git && \
     git clone https://github.com/knowrob/rosowl.git && \
     git clone https://github.com/knowrob/genowl.git && \
-    git clone https://github.com/code-iai/ros-mongodb_log.git -b onlyPythonSupport && \
     git clone https://github.com/code-iai/iai_maps.git && \
     git clone https://github.com/code-iai/iai_common_msgs.git && \
     git clone https://github.com/code-iai/iai_cad_tools.git && \
