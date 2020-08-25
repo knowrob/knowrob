@@ -3,9 +3,12 @@
   <arg name="knowrob_settings" default="$(find knowrob)/settings/neemhub.pl" />
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
 
-  <param name="/ros_mac_authentication/secret_file_location" value="/etc/rosauth/secret" />
-  <param name="secret_file_location" value="/etc/rosauth/secret" />
-  <node name="auth_node" pkg="rosauth" type="ros_mac_authentication" />
+  <!-- param name="/ros_mac_authentication/secret_file_location" value="/etc/rosauth/secret" -->
+  <!-- param name="secret_file_location" value="/etc/rosauth/secret" -->
+  <!-- node name="auth_node" pkg="rosauth" type="ros_mac_authentication" -->
+  <node pkg="rosauth" type="ros_mac_authentication" name="ros_mac_authentication" output="screen">
+  	<param name="secret_file_location" value="/etc/rosauth/secret" />
+  </node>
 
     <!-- rosbridge for websocket visualization -->
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
