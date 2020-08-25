@@ -8,7 +8,6 @@
   <param name="initial_goal" type="string" value="register_ros_package(knowrob_openease)" />
   <node name="json_prolog" pkg="json_prolog" type="json_prolog_node" cwd="node" output="screen" />
 
-
   <param name="/ros_mac_authentication/secret_file_location" value="/etc/rosauth/secret" />
   <node name="auth_node" pkg="rosauth" type="ros_mac_authentication" />
 
@@ -17,5 +16,8 @@
     <arg name="authenticate" value="true"/>
   </include>
   
-  <node pkg="rosprolog" name="json_wrapper" type="json_wrapper.py" output="screen"/> 
+  <include file="$(find rosprolog)/launch/rosprolog.launch">
+    <arg name="initial_package" default="knowrob" />
+    <arg name="initial_goal" default="true" />
+  </include>
 </launch>
