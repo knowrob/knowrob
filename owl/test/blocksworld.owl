@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://knowrob.org/kb/blocksworld.owl#"
      xml:base="http://knowrob.org/kb/blocksworld.owl"
-     xmlns:EASE-OBJ="http://www.ease-crc.org/ont/EASE-OBJ.owl#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -26,9 +26,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDeposit -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasDeposit -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-OBJ.owl#hasDeposit"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasDeposit"/>
     
 
 
@@ -65,14 +65,14 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Deposit"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Deposit"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#DepositedObject"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#DepositedObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -87,14 +87,14 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#Deposit"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Deposit"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isTaskOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/EASE-OBJ.owl#ExtractedObject"/>
+                <owl:onClass rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ExtractedObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -156,7 +156,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockYellow_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Block"/>
-        <EASE-OBJ:isOntopOf rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_0"/>
+        <SOMA:isOntopOf rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_0"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

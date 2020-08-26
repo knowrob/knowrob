@@ -1,7 +1,7 @@
 #include <knowrob/comm/ros/tf/publisher.h>
 #include <tf/tfMessage.h>
 
-// TODO: handle static object transforms (e.g. for features)
+// TODO: handle static object transforms (e.g. for features, srdl components also have static transforms relative to base link)
 
 TFPublisher::TFPublisher(TFMemory &memory, double frequency) :
 		memory_(memory),

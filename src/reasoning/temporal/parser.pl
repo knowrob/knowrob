@@ -67,7 +67,7 @@ can be casted as grammar for the parser.
 
 %%
 parser_message_(Level,Msg) :-
-  print_message(Level,activity_parser(Msg)).
+  print_message(Level,log(activity_parser(Msg))).
 parser_info_(Msg) :-
   parser_message_(informational,Msg).
 
@@ -458,7 +458,7 @@ action_([G0,S0,A0]->[G3,S2,A2],
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
-    once(triple(WF,ease:isPlanFor,Tsk_1)),
+    once(triple(WF,soma:isPlanFor,Tsk_1)),
     esg_join(G0,[Tsk_1,G1],G2)
   },
   % assign roles of WF/ACT given bindings from the parent workflow
@@ -491,8 +491,8 @@ constituent_(Ctx0->Ctx1, WF, _, -(Tsk), [action(SubWF,Tsk,Term)]) -->
   { endpoint_type_(Tsk,dul:'Task') },
   sub_action_(Ctx0->Ctx1, WF, action(SubWF,Tsk,Term)).
 constituent_(Ctx0->[G2,S1,A1], _WF, E, Endpoint, PhaseTerm) -->
-  { endpoint_type_(Endpoint,ease_state:'StateType') ;
-    endpoint_type_(Endpoint,ease_proc:'ProcessType')
+  { endpoint_type_(Endpoint,soma:'StateType') ;
+    endpoint_type_(Endpoint,soma:'ProcessType')
   },
   phase_endpoint_(Ctx0->[G1,S1,A1], E, Endpoint, PhaseTerm),
   { esg_pop(G1,E,G2),
@@ -835,10 +835,10 @@ apply_role_binding_(Plan, _Tsk,
     Bindings, [Obj,Roles0]->[Obj,Roles1]) :-
   findall(Role, (
     member(Role,Roles0) ;
-    ( triple(Plan, ease_wf:hasBinding, Binding),
+    ( triple(Plan, soma:hasBinding, Binding),
       once((
-        triple(Binding, ease_wf:hasBindingRole, X0),
-        triple(Binding, ease_wf:hasBindingFiller, X1)
+        triple(Binding, soma:hasBindingRole, X0),
+        triple(Binding, soma:hasBindingFiller, X1)
       )),
       ( member(X0,Roles0) -> Role = X1 ;
       ( member(X1,Roles0) -> Role = X0 ; fail )),

@@ -1,7 +1,6 @@
 
-:- tripledb_load('http://www.ease-crc.org/ont/EASE.owl',
-    [ graph(tbox),
-      namespace(ease)
+:- tripledb_load('http://www.ease-crc.org/ont/SOMA.owl',
+    [ namespace(soma)
     ]).
 
 % load modules into user

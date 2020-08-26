@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://knowrob.org/kb/action-test.owl#"
      xml:base="http://knowrob.org/kb/action-test.owl"
-     xmlns:EASE-WF="http://www.ease-crc.org/ont/EASE-WF.owl#"
      xmlns:test="http://knowrob.org/kb/test.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
@@ -9,7 +8,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#"
-     xmlns:EASE="http://www.ease-crc.org/ont/EASE.owl#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:ROS="http://www.ease-crc.org/ont/ROS.owl#"
@@ -18,7 +17,7 @@
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-test.owl">
         <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://rosowl/owl/ROS.owl"/>
-        <owl:imports rdf:resource="package://ease_ontology/owl/EASE-WF.owl"/>
+        <owl:imports rdf:resource="http://www.ease-crc.org/ont/SOMA.owl"/>
     </owl:Ontology>
     
 
@@ -75,21 +74,21 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#hasBinding -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasBinding -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#hasBinding"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasBinding"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#hasBindingFiller -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasBindingFiller -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#hasBindingFiller"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasBindingFiller"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#hasBindingRole -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasBindingRole -->
 
-    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#hasBindingRole"/>
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasBindingRole"/>
     
 
 
@@ -194,9 +193,9 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#hasNameString -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasNameString -->
 
-    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/EASE.owl#hasNameString"/>
+    <owl:DatatypeProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
     
 
 
@@ -259,15 +258,15 @@
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
     
 
 
-    <!-- http://www.ease-crc.org/ont/EASE.owl#Status -->
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Status -->
 
-    <owl:Class rdf:about="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Status"/>
     
 
 
@@ -367,7 +366,7 @@
         <knowrob:pose rdf:resource="http://knowrob.org/kb/action-test.owl#Object1_pose"/>
         <DUL:hasConstituent rdf:resource="http://knowrob.org/kb/action-test.owl#Object2"/>
         <DUL:hasConstituent rdf:resource="http://knowrob.org/kb/action-test.owl#Object3"/>
-        <EASE:hasNameString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">obj1</EASE:hasNameString>
+        <SOMA:hasNameString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">obj1</SOMA:hasNameString>
     </owl:NamedIndividual>
     
 
@@ -402,11 +401,11 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_Execution">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_sum"/>
-        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_sum"/>
+        <SOMA:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Interface"/>
     </owl:NamedIndividual>
     
@@ -501,9 +500,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_a">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_a"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_a"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_a"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_a"/>
     </owl:NamedIndividual>
     
 
@@ -511,9 +510,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_b">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_b"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_b"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_b"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_b"/>
     </owl:NamedIndividual>
     
 
@@ -521,9 +520,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#add_two_ints_binding_sum -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#add_two_ints_binding_sum">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_sum"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_sum"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_slot_sum"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#add_two_ints_Task_sum"/>
     </owl:NamedIndividual>
     
 
@@ -574,8 +573,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Execution">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_O"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_P"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_O"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_P"/>
         <DUL:definesTask rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose"/>
     </owl:NamedIndividual>
@@ -639,7 +638,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_Task_Status -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_Task_Status">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Status"/>
     </owl:NamedIndividual>
     
 
@@ -647,9 +646,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_binding_O -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_O">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task_O"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Object"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task_O"/>
     </owl:NamedIndividual>
     
 
@@ -657,9 +656,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#current_object_pose_binding_P -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#current_object_pose_binding_P">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task_P"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Pose"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#current_object_pose_Task_P"/>
     </owl:NamedIndividual>
     
 
@@ -668,10 +667,10 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_Execution">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_a"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_b"/>
-        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_a"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_binding_b"/>
+        <SOMA:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Interface"/>
     </owl:NamedIndividual>
     
@@ -765,9 +764,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#pose_test_binding_a -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_binding_a">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_a"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task_a"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_a"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task_a"/>
     </owl:NamedIndividual>
     
 
@@ -775,9 +774,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#pose_test_binding_b -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#pose_test_binding_b">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_b"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task_b"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_slot_b"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#pose_test_Task_b"/>
     </owl:NamedIndividual>
     
 
@@ -819,11 +818,11 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Execution">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#KBQueryingExecution"/>
-        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task"/>
+        <SOMA:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_S"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_P"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_O"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_S"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_P"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_O"/>
     </owl:NamedIndividual>
     
 
@@ -904,7 +903,7 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_Task_Status -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_Status">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#Status"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Status"/>
     </owl:NamedIndividual>
     
 
@@ -912,9 +911,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_binding_O -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_O">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Object"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_O"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Object"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_O"/>
     </owl:NamedIndividual>
     
 
@@ -922,9 +921,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_binding_P -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_P">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_P"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Predicate"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_P"/>
     </owl:NamedIndividual>
     
 
@@ -932,9 +931,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#rdf_has1_binding_S -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#rdf_has1_binding_S">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_S"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Subject"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#rdf_has1_Task_S"/>
     </owl:NamedIndividual>
     
 
@@ -943,10 +942,10 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_Execution">
         <rdf:type rdf:resource="http://www.ease-crc.org/ont/ROS.owl#ROSExecutionPlan"/>
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE.owl#ActionExecutionPlan"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_a"/>
-        <EASE-WF:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_b"/>
-        <EASE:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_a"/>
+        <SOMA:hasBinding rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_binding_b"/>
+        <SOMA:isPlanFor rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task"/>
         <DUL:describes rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Interface"/>
     </owl:NamedIndividual>
     
@@ -1031,9 +1030,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#sum_array_binding_a -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_binding_a">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_a"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task_a"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_a"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task_a"/>
     </owl:NamedIndividual>
     
 
@@ -1041,9 +1040,9 @@
     <!-- http://knowrob.org/kb/action-test.owl#sum_array_binding_b -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/action-test.owl#sum_array_binding_b">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/EASE-WF.owl#RoleFillerBinding"/>
-        <EASE-WF:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_b"/>
-        <EASE-WF:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task_b"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RoleFillerBinding"/>
+        <SOMA:hasBindingFiller rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_slot_b"/>
+        <SOMA:hasBindingRole rdf:resource="http://knowrob.org/kb/action-test.owl#sum_array_Task_b"/>
     </owl:NamedIndividual>
     
 

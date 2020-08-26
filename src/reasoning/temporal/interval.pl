@@ -2,18 +2,18 @@
     [ interval_constraint(r,t),
       interval_constraint(r,t,r),
       interval_query(t),
-      interval_equals(r,r)        -> ease:simultaneous,
-      interval_before(r,r)        -> ease:before,
-      interval_after(r,r)         -> ease:after,
-      interval_meets(r,r)         -> ease:meets,
-      interval_met_by(r,r)        -> ease:metBy,
-      interval_starts(r,r)        -> ease:starts,
-      interval_started_by(r,r)    -> ease:startedBy,
-      interval_finishes(r,r)      -> ease:finishes,
-      interval_finished_by(r,r)   -> ease:finishedBy,
-      interval_overlaps(r,r)      -> ease:overlappedOn,
-      interval_overlapped_by(r,r) -> ease:overlappedBy,
-      interval_during(r,r)        -> ease:during
+      interval_equals(r,r)        -> soma:simultaneous,
+      interval_before(r,r)        -> soma:before,
+      interval_after(r,r)         -> soma:after,
+      interval_meets(r,r)         -> soma:meets,
+      interval_met_by(r,r)        -> soma:metBy,
+      interval_starts(r,r)        -> soma:starts,
+      interval_started_by(r,r)    -> soma:startedBy,
+      interval_finishes(r,r)      -> soma:finishes,
+      interval_finished_by(r,r)   -> soma:finishedBy,
+      interval_overlaps(r,r)      -> soma:overlappedOn,
+      interval_overlapped_by(r,r) -> soma:overlappedBy,
+      interval_during(r,r)        -> soma:during
     ]).
 /** <module> Allen calculus implementation using Event Endpoint Graphs (ESGs).
 
@@ -43,18 +43,18 @@ allen_symbol(d).
 interval_constraint(Resource,Constraint) :-
 	interval_constraint(Resource,Constraint,_).
 
-interval_constraint(A,  =(A,B), B) :- tripledb_ask(A,ease:simultaneous,B).
-interval_constraint(A,  <(A,B), B) :- tripledb_ask(A,ease:before,B).
-interval_constraint(A,  >(A,B), B) :- tripledb_ask(A,ease:after,B).
-interval_constraint(A,  m(A,B), B) :- tripledb_ask(A,ease:meets,B).
-interval_constraint(A, mi(A,B), B) :- tripledb_ask(A,ease:metBy,B).
-interval_constraint(A,  o(A,B), B) :- tripledb_ask(A,ease:overlappedOn,B).
-interval_constraint(A, oi(A,B), B) :- tripledb_ask(A,ease:overlappedBy,B).
-interval_constraint(A,  s(A,B), B) :- tripledb_ask(A,ease:starts,B).
-interval_constraint(A, si(A,B), B) :- tripledb_ask(A,ease:startedBy,B).
-interval_constraint(A,  f(A,B), B) :- tripledb_ask(A,ease:finishes,B).
-interval_constraint(A, fi(A,B), B) :- tripledb_ask(A,ease:finishedBy,B).
-interval_constraint(A,  d(A,B), B) :- tripledb_ask(A,ease:during,B).
+interval_constraint(A,  =(A,B), B) :- tripledb_ask(A,soma:simultaneous,B).
+interval_constraint(A,  <(A,B), B) :- tripledb_ask(A,soma:before,B).
+interval_constraint(A,  >(A,B), B) :- tripledb_ask(A,soma:after,B).
+interval_constraint(A,  m(A,B), B) :- tripledb_ask(A,soma:meets,B).
+interval_constraint(A, mi(A,B), B) :- tripledb_ask(A,soma:metBy,B).
+interval_constraint(A,  o(A,B), B) :- tripledb_ask(A,soma:overlappedOn,B).
+interval_constraint(A, oi(A,B), B) :- tripledb_ask(A,soma:overlappedBy,B).
+interval_constraint(A,  s(A,B), B) :- tripledb_ask(A,soma:starts,B).
+interval_constraint(A, si(A,B), B) :- tripledb_ask(A,soma:startedBy,B).
+interval_constraint(A,  f(A,B), B) :- tripledb_ask(A,soma:finishes,B).
+interval_constraint(A, fi(A,B), B) :- tripledb_ask(A,soma:finishedBy,B).
+interval_constraint(A,  d(A,B), B) :- tripledb_ask(A,soma:during,B).
 
 %%
 %

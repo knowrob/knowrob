@@ -68,12 +68,11 @@ KnowRob uses the [DOLCE+DnS Ultralite](http://ontologydesignpatterns.org/wiki/On
 A *domain ontology* is used to fix general terms in some domain.
 The domain KnowRob was designed for is *everyday activities*.
 KnowRob ships with the
-[Everyday Activity](https://github.com/knowrob/ease_ontology) (EVA)
+[Socio-physical Model of Activities](https://github.com/ease-crc/soma) (SOMA)
 ontology which derives its notions from the DUL upper-level.
 However, it is possible to configure KnowRob for other discipines by
 using different domain ontologies.
-Another domain ontology in KnowRob is the
-*Robot Control* (ROCO) ontology. The scope of this domain ontology is
+Another domain ontology in KnowRob has the scope 
 to capture categories underying robot control.
 This includes the concepts sensor, actor, and capability.
 

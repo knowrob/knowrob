@@ -9,18 +9,16 @@
 % load init files in sub-directories
 :- use_directory('DUL').
 :- use_directory('EASE').
-%:- use_directory('URDF').
+:- use_directory('URDF').
 
 % load additional ontologies
 :- tripledb_load(
         'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
-        [ graph(tbox),
-          namespace(io)
+        [ namespace(io)
         ]).
 :- tripledb_load(
         'http://knowrob.org/kb/knowrob.owl',
-        [ graph(tbox),
-          namespace(knowrob)
+        [ namespace(knowrob)
         ]).
 
 %

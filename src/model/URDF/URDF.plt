@@ -4,179 +4,221 @@
     [ namespace('http://knowrob.org/kb/swrl_test#')
     ]).
 
-:- use_module(library('lang/query')).
-:- use_module(library('lang/terms/holds')).
 :- use_module(library('model/RDFS')).
-:- use_module('parser').
 :- use_module('URDF').
 
-:- dynamic testbot/1.
+test(load_urdf_file_pr2) :-
+  ros_package_path('knowrob', X),
+  atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', Filename),
+  urdf_load_file(pr2,Filename).
 
-%%
-get_urdf_entity(Name,Entity) :-
-	has_urdf_name(Entity,Name),
-	!.
+test(robot_name_pr2) :-
+  urdf_robot_name(pr2,pr2).
 
-test(rdf_urdf_load) :-
-	ros_package_path('knowrob', X),
-	atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', FileURL),
-	%%
-	tell(has_type(Robot,urdf:'Robot')),
-	urdf_load(Robot, FileURL),
-	assertz(testbot(Robot)).
+test(root_link_name_pr2) :-
+  urdf_root_link(pr2,base_footprint).
 
-test(robot_name) :-
-	testbot(Robot),
-	has_urdf_name(Robot,pr2).
+test(joint_child_link_pr2_torso_lift_joint) :-
+  urdf_joint_child_link(pr2,torso_lift_joint, torso_lift_link).
 
-test(root_link, [fixme('randomly fails for unknown reason')]) :-
-	testbot(Robot),
-	get_urdf_entity(base_footprint,L),
-	has_root_link(Robot,L).
+test(joint_child_link_pr2_l_shoulder_pan_joint) :-
+  urdf_joint_child_link(pr2,l_shoulder_pan_joint, l_shoulder_pan_link).
 
-test(joint_names) :-
-	testbot(Robot),
-	forall(
-		member(N, [
-			l_forearm_roll_joint,
-			base_bellow_joint,
-			projector_wg6802418_frame_joint
-		]),
-		(	has_urdf_name(J,N),
-			has_joint(Robot,J)
-		)
-	).
+test(joint_child_link_pr2_nonexisting_joint) :-
+  catch(urdf_joint_child_link(pr2, foo, l_shoulder_pan_link), urdf_error(Msg), true),
+  ground(Msg).
 
-test(link_names) :-
-	testbot(Robot),
-	forall(
-		member(N, [
-			head_tilt_link,
-			projector_wg6802418_child_frame,
-			l_gripper_r_finger_tip_link
-		]),
-		(	has_urdf_name(L,N),
-			has_link(Robot,L)
-		)
-	).
+test(joint_parent_link_pr2_r_elbow_flex_joint) :-
+  urdf_joint_parent_link(pr2, r_elbow_flex_joint, r_upper_arm_roll_link).
 
-test(joint_has_child) :-
-	get_urdf_entity(torso_lift_joint,J),
-	get_urdf_entity(torso_lift_link,L),
-	has_child_link(J,L).
+test(joint_parent_link_pr2_head_tilt_joint) :-
+  urdf_joint_parent_link(pr2, head_tilt_joint, head_pan_link).
 
-test(joint_has_parent) :-
-	get_urdf_entity(r_elbow_flex_joint,J),
-	get_urdf_entity(r_upper_arm_link,L),
-	has_parent_link(J,L).
+test(joint_parent_link_nonexisting_joint) :-
+  catch(urdf_joint_parent_link(pr2, bar, head_pan_link), urdf_error(Msg), true),
+  ground(Msg).
 
-test(joint_type_prismatic) :-
-	get_urdf_entity(torso_lift_joint,J),
-	has_type(J,urdf:'PrismaticJoint').
+test(joint_type_pr2_torso_lift_joint) :-
+  urdf_joint_type(pr2, torso_lift_joint, prismatic).
 
-test(joint_type_continuous) :-
-	get_urdf_entity(l_wrist_roll_joint,J),
-	has_type(J,urdf:'ContinuousJoint').
+test(joint_type_pr2_l_wrist_roll_joint) :-
+  urdf_joint_type(pr2, l_wrist_roll_joint, continuous).
 
-test(joint_type_revolute) :-
-	get_urdf_entity(r_shoulder_lift_joint,J),
-	has_type(J,urdf:'RevoluteJoint').
+test(joint_type_pr2_r_shoulder_lift_joint) :-
+  urdf_joint_type(pr2, r_shoulder_lift_joint, revolute).
 
-test(joint_type_fixed) :-
-	get_urdf_entity(head_plate_frame_joint,J),
-	has_type(J,urdf:'FixedJoint').
+test(joint_type_pr2_head_plate_frame_joint) :-
+  urdf_joint_type(pr2, head_plate_frame_joint, fixed).
 
-test(joint_axis) :-
-	get_urdf_entity(l_shoulder_pan_joint,J),
-	has_joint_axis(J,[0.0,0.0,1.0]).
+test(joint_child_link_and_link_parent_joint_pr2_left_arm, forall(
+  member(J,[l_shoulder_pan_joint, l_shoulder_lift_joint, l_upper_arm_roll_joint,
+        l_elbow_flex_joint, l_forearm_roll_joint, l_wrist_flex_joint, l_wrist_roll_joint]))) :-
+  urdf_joint_child_link(pr2,J,L),
+  urdf_link_parent_joint(pr2,L,J).
 
-test(joint_limits) :-
-	get_urdf_entity(l_elbow_flex_joint,J),
-	has_joint_hard_limits(J, [-2.3213,0.0], 3.3, 30.0).
+% Observation: The root link of a robot never has a parent joint.
+test(link_parent_joint_pr2_root_link, fail) :-
+  urdf_root_link(pr2,L),
+  urdf_link_parent_joint(pr2, L, _).
 
-test(joint_soft_limits) :-
-	get_urdf_entity(l_elbow_flex_joint,J),
-	has_joint_soft_limits(J, [-2.1213,-0.15], 100.0, 3.0).
 
-test(joint_calib) :-
-	get_urdf_entity(fl_caster_rotation_joint,J),
-	has_joint_calibration(J,0.0,-0.785398163397).
+test(link_child_joints_pr2_torso_lift_link) :-
+  urdf_link_child_joints(pr2, torso_lift_link, Joints),
+  Joints ==
+    [head_pan_joint, imu_joint, l_shoulder_pan_joint, l_torso_lift_side_plate_joint,
+     laser_tilt_mount_joint, r_shoulder_pan_joint, r_torso_lift_side_plate_joint].
 
-test(joint_dynamics) :-
-	get_urdf_entity(l_elbow_flex_joint,J),
-	has_joint_damping(J,1.0),
-	has_joint_friction(J,0.0).
+test(joint_axis_pr2_l_shoulder_pan_joint) :-
+  urdf_joint_axis(pr2, l_shoulder_pan_joint, [0,0,1]).
 
-test(link_mass) :-
-	get_urdf_entity(l_elbow_flex_link,L),
-	has_link_mass(L, 1.90327).
+test(joint_axis_pr2_fixed_joint, fail) :-
+  urdf_joint_axis(pr2, head_plate_frame_joint, _).
 
-test(link_inertial) :-
-	get_urdf_entity(l_elbow_flex_link,L),
-	once(has_link_inertia(L, _, _)).
+test(joint_origin_pr2_r_gripper_led_joint) :-
+  urdf_joint_origin(pr2, r_gripper_led_joint, pose([0.0513, 0.0, 0.0244], [0, 0, 0, 1])).
 
-test(link_no_vis) :-
-	get_urdf_entity(r_gripper_led_frame,L),
-	\+ has_link_visual(L,_,_).
+test(joint_origin_pr2_l_foreaem_cam_optical_frame_joint) :-
+  urdf_joint_origin(pr2, l_forearm_cam_optical_frame_joint,
+               pose([0,0,0],[-0.5, 0.5, -0.5, 0.5])).
 
-test(link_vis) :-
-	get_urdf_entity(r_gripper_motor_accelerometer_link,L),
-	once(has_link_visual(L,_,_)).
+test(joint_lower_limit_pr2_l_elbow_flex_joint) :-
+  urdf_joint_hard_limits(pr2, l_elbow_flex_joint, [-2.3213,_], _, _).
 
-test(link_visual_box, [nondet]) :-
-	get_urdf_entity(r_gripper_motor_accelerometer_link,L),
-	has_link_visual(L,box(0.001, 0.001, 0.001),_).
+test(joint_lower_limit_pr2_l_wrist_roll_joint, fail) :-
+  urdf_joint_hard_limits(pr2, l_wrist_roll_joint, _, _, _).
 
-test(link_visual_sphere, [nondet]) :-
-	get_urdf_entity(head_mount_kinect_ir_link,L),
-	has_link_visual(L,sphere(0.0005),_).
+test(joint_upper_limit_pr2_torso_lift_joint) :-
+  urdf_joint_hard_limits(pr2, torso_lift_joint, [_,0.33], _, _).
 
-test(link_visual_mesh_scaled) :-
-	get_urdf_entity(head_mount_link,L),
-	once(has_link_visual(L,mesh(_, [0.001, 0.001, 0.001]),_)).
+test(joint_upper_limit_pr2_r_forearm_roll_joint, fail) :-
+  urdf_joint_hard_limits(pr2, r_forearm_roll_joint, _, _, _).
 
-test(link_visual_mesh) :-
-	get_urdf_entity(laser_tilt_mount_link,L),
-	once(has_link_visual(L, mesh(_, [1.0, 1.0, 1.0]),_)).
+test(joint_vel_limit_pr2_r_gripper_joint) :-
+  urdf_joint_hard_limits(pr2, r_gripper_joint, _, 0.2, _).
 
-test(link_visual_cylinder, [nondet]) :-
-	get_urdf_entity(r_gripper_motor_slider_link,L),
-	has_link_visual(L,cylinder(0.025, 0.002),_).
+test(joint_effort_limit_pr2_head_pan_joint) :-
+  urdf_joint_hard_limits(pr2, head_pan_joint, _, _, 6.0).
 
-test(link_with_collision) :-
-	get_urdf_entity(base_link,L),
-	once(has_link_collision(L,_,_)).
+test(joint_calibration_rising_pr2_torso_lift_joint, fail) :-
+  urdf_joint_calibration_rising(pr2, torso_lift_joint, _).
 
-test(link_no_collision) :-
-	get_urdf_entity(base_laser_link,L),
-	\+ has_link_collision(L,_,_).
+test(joint_calibration_falling_pr2_fl_caster_rotation_joint, fail) :-
+  urdf_joint_calibration_falling(pr2, fl_caster_rotation_joint, _).
 
-test(link_collision_mesh) :-
-	get_urdf_entity(base_link,L),
-	once(has_link_collision(L, mesh(_,_),_)).
+test(joint_calibration_rising_pr2_fl_caster_rotation_joint) :-
+  urdf_joint_calibration_rising(pr2, fl_caster_rotation_joint, -0.785398163397).
 
-test(link_collision_box, [nondet]) :-
-	get_urdf_entity(torso_lift_motor_screw_link,L),
-	has_link_collision(L, box(0.5, 0.7, 0.01),_).
+test(joint_calibration_falling_pr2_torso_lift_joint) :-
+	urdf_joint_calibration_falling(pr2, torso_lift_joint, Falling),
+	assert_equals(Falling,0.00475).
 
-test(link_collision_sphere, [nondet]) :-
-	get_urdf_entity(head_mount_prosilica_link,L),
-	has_link_collision(L, sphere(0.0005),_).
+test(joint_dynamics_damping_pr2_l_torso_lift_side_plate_joint, fail) :-
+  urdf_joint_damping(pr2, l_torso_lift_side_plate_joint, _).
 
-test(link_collision_cylinder, [nondet]) :-
-	get_urdf_entity(fr_caster_r_wheel_link,L),
-	has_link_collision(L, cylinder(0.074792, 0.034),_).
+test(joint_dynamics_friction_pr2_l_torso_lift_side_plate_joint, fail) :-
+  urdf_joint_friction(pr2, l_torso_lift_side_plate_joint, _).
 
-test(link_collision_mesh2) :-
-	get_urdf_entity(r_gripper_r_finger_link,L),
-	once(has_link_collision(L, mesh(_, [1.0,1.0,1.0]),_)).
+test(joint_dynamics_damping_pr2_head_pan_joint) :-
+  urdf_joint_damping(pr2, head_pan_joint, 0.5).
 
-test(link_visual_origin, [nondet]) :-
-	get_urdf_entity(r_gripper_motor_slider_link,L),
-	has_link_visual(L,cylinder(0.025, 0.002), pose(_,_)).
+test(joint_dynamics_friction_pr2_head_pan_joint) :-
+  urdf_joint_friction(pr2, head_pan_joint, 0.0).
 
-test(link_collision_origin) :-
-	get_urdf_entity(r_gripper_r_finger_link,L),
-	once(has_link_collision(L, mesh(_,_), pose(_,_))).
+test(joint_safety_lower_limit_pr2_l_upper_arm_joint, fail) :-
+  urdf_joint_soft_limits(pr2, l_upper_arm_joint, _, _, _).
+
+test(joint_safety_upper_limit_pr2_l_upper_arm_joint, fail) :-
+  urdf_joint_soft_limits(pr2, l_upper_arm_joint, _, _, _).
+
+test(joint_safety_kp_pr2_l_upper_arm_joint, fail) :-
+  urdf_joint_soft_limits(pr2, l_upper_arm_joint, _, _, _).
+
+test(joint_safety_kv_pr2_l_upper_arm_joint, fail) :-
+  urdf_joint_soft_limits(pr2, l_upper_arm_joint, _, _, _).
+
+test(joint_safety_lower_limit_pr2_l_elbow_flex_joint) :-
+  urdf_joint_soft_limits(pr2, l_elbow_flex_joint, [-2.1213,_], _, _).
+
+test(joint_safety_upper_limit_pr2_l_elbow_flex_joint) :-
+  urdf_joint_soft_limits(pr2, l_elbow_flex_joint, [_,-0.15], _, _).
+
+test(joint_safety_kp_pr2_l_elbow_flex_joint) :-
+  urdf_joint_soft_limits(pr2, l_elbow_flex_joint, _, 100.0, _).
+
+test(joint_safety_kv_pr2_l_elbow_flex_joint) :-
+  urdf_joint_soft_limits(pr2, l_elbow_flex_joint, _, _, 3.0).
+
+test(link_inertial_origin_pr2_l_gripper_led_frame, fail) :-
+  urdf_link_inertial(pr2, l_gripper_led_frame, _, _, _).
+
+test(link_inertial_mass_pr2_l_gripper_led_frame, fail) :-
+  urdf_link_inertial(pr2, l_gripper_led_frame, _, _, _).
+
+test(link_inertial_inertia_pr2_l_gripper_led_frame, fail) :-
+  urdf_link_inertial(pr2, l_gripper_led_frame, _, _, _).
+
+test(link_inertial_origin_pr2_l_elbow_flex_link) :-
+  urdf_link_inertial(pr2, l_elbow_flex_link, _,
+  	[l_elbow_flex_link, [0.01014, 0.00032, -0.01211], [0.0, 0.0, 0.0, 1.0]],
+  	_).
+
+test(link_inertial_mass_pr2_l_elbow_flex_link) :-
+  urdf_link_inertial(pr2, l_elbow_flex_link, _, _, 1.90327).
+
+test(link_inertial_mass_pr2_l_elbow_flex_link) :-
+  urdf_link_inertial(pr2, l_elbow_flex_link,
+  	[0.00346541989, 0.00004066825, 0.00043171614, 0.00441606455, 0.00003968914, 0.00359156824],
+  	_, _).
+
+test(link_num_visuals_pr2_r_gripper_led_frame, [fail]) :-
+  urdf_link_visual_shape(pr2, r_gripper_led_frame, _, _).
+
+test(link_visual_type_pr2_r_gripper_motor_accelerometer_link) :-
+  urdf_link_visual_shape(pr2, r_gripper_motor_accelerometer_link, Shape, _),
+  assert_equals(Shape,box(0.001,0.001,0.001)).
+
+test(link_visual_type_pr2_r_gripper_motor_slider_link) :-
+  urdf_link_visual_shape(pr2, r_gripper_motor_slider_link, cylinder(0.002, 0.025), _).
+
+test(link_visual_geometry_pr2_head_mount_kinect_ir_link) :-
+  urdf_link_visual_shape(pr2, head_mount_kinect_ir_link, sphere(0.0005), _).
+
+test(link_visual_geometry_pr2_head_mount_link) :-
+  urdf_link_visual_shape(pr2, head_mount_link, mesh(_, [0.001, 0.001, 0.001]), _).
+
+test(link_origin_pr2_r_gripper_motor_slider_link) :-
+  urdf_link_visual_shape(pr2, r_gripper_motor_slider_link, _,
+	  [	r_gripper_motor_slider_link,
+	  	[0.0,0.0,0.0],
+	  	[0.7071080798594737, 0.0, 0.0, 0.7071054825112363]
+	  ]).
+
+test(link_collision_geometry_pr2_r_gripper_r_finger_link) :-
+	urdf_link_collision_shape(pr2, r_gripper_r_finger_link,
+  		mesh("package://pr2_description/meshes/gripper_v0/l_finger.stl", [1.0, 1.0, 1.0]),
+  		_).
+
+test(link_num_collisions_pr2_base_laser_link, [fail]) :-
+  urdf_link_collision_shape(pr2, base_laser_link, _, _).
+
+test(link_num_collision_foo_link) :-
+  catch(urdf_link_collision_shape(pr2, foo, _, _), urdf_error(Msg), true),
+  ground(Msg).
+
+test(link_collision_geometry_pr2_head_mount_prosilica_link) :-
+  urdf_link_collision_shape(pr2, head_mount_prosilica_link, sphere(0.0005), _).
+
+test(link_collision_geometry_pr2_fr_caster_r_wheel_link) :-
+  urdf_link_collision_shape(pr2, fr_caster_r_wheel_link, cylinder(0.074792, 0.034), _).
+
+test(link_collision_geometry_pr2_torso_lift_motor_screw_link) :-
+  urdf_link_collision_shape(pr2, torso_lift_motor_screw_link, box(0.5, 0.7, 0.01), _).
+
+test(link_collision_origin_pr2_r_gripper_r_finger_link) :-
+	urdf_link_collision_shape(pr2, r_gripper_r_finger_link, _,
+		[r_gripper_r_finger_link, [0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]]).
+
+test(urdf_unload) :-
+  urdf_unload_file(pr2).
 
 :- end_tripledb_tests('model_URDF').
