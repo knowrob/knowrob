@@ -36,7 +36,7 @@
 
 tf_db(DB, Name) :- 
 	mng_db_name(DB),
-	(setting(mng_client:neemhub_neem_id, Id) 
+	((setting(mng_client:neemhub_neem_id, Id),Id \= '') 
 		-> atom_concat(Id,'_tf', Name)
 		; Name = 'tf'
 	).
