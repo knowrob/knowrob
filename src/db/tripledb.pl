@@ -336,9 +336,9 @@ convert_rdf_value_(O,string(O)).
 tripledb_init :-
 	% drop some graphs on start-up
 	( setting(mng_client:tripledb_read_only, true)
-    	-> true
-    	; (
-    		setting(tripledb:drop_graphs,L),
+		-> true
+		; (
+			setting(tripledb:drop_graphs,L),
 			forall(member(X,L), tripledb_graph_drop(X))
 		)
  	).

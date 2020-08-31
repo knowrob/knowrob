@@ -88,7 +88,8 @@ MongoInterface::MongoInterface()
 			char *mongo_database = std::getenv("NEEMHUB_MONGO_DB");
 			char *mongo_port = std::getenv("NEEMHUB_MONGO_PORT");
 			std::stringstream ss;
-			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw << "@" << mongo_host << ":" << mongo_port << "/" << mongo_database;
+			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw 
+				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database;
 			mongo_uri = ss.str();
 		}
 		else {
