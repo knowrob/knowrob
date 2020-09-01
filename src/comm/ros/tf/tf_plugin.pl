@@ -35,11 +35,7 @@
 
 
 tf_db(DB, Name) :- 
-	mng_db_name(DB),
-	((setting(mng_client:collection_prefix, Id),Id \= '') 
-		-> atom_concat(Id,'_tf', Name)
-		; Name = 'tf'
-	).
+	mng_get_db(DB, Name, 'tf').
 
 %%
 tf_mng_whipe :-

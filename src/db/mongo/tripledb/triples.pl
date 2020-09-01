@@ -44,11 +44,7 @@ taxonomical_property(rdfs:subPropertyOf, subproperty_of, subproperty_of).
 %
 %
 triple_db(DB, Name) :- 
-	mng_db_name(DB),
-	((setting(mng_client:collection_prefix, Id),Id \= '') 
-		-> atom_concat(Id,'_triples', Name)
-		; Name = 'triples'
-	).
+	mng_get_db(DB, Name, 'triples').
 
 %%
 %

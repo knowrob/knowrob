@@ -1,5 +1,6 @@
 :- module(mng_client,
     [ mng_db_name/1,
+      mng_get_db/3,
       mng_collection/2,
       mng_distinct_values/4,
       mng_drop/2,
@@ -40,6 +41,14 @@
 
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
+
+% Get db and collection for this type of data, e.g. triples
+mng_get_db(DB, Name, DBType) :- 
+  mng_db_name(DB),
+  ((setting(mng_client:collection_prefix, Id),Id \= '') 
+    -> atomic_list_concat([Id,'_',DBType], Name)
+    ; Name = DBType
+  ).
 
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),

@@ -18,11 +18,7 @@
 % The mongo DB + Collection used to store the query cache.
 %
 inference_cache_db(DB, Name) :- 
-	mng_db_name(DB),
-	((setting(mng_client:collection_prefix, Id),Id \= '') 
-		-> atom_concat(Id,'_inferred', Name)
-		; Name = 'inferred'
-	).
+	mng_get_db(DB, Name, 'inferred').
 
 
 %%
