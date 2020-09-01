@@ -13,7 +13,7 @@ setting(tripledb:drop_graphs, [user]). % erase "user" graph on start-up
 setting(mng_client:db_name, roslog).
 
 % Flag for read only mongo databases
-setting(mng_client:tripledb_read_only, false).
+setting(mng_client:read_only, false).
 
 %	Neemhub Setting
 % setting(mng_client:db_name, 'neems').

@@ -12,7 +12,7 @@
 % define some settings
 :- setting(mng_client:neemhub_neem_id, atom, '',
 		'Id of the current neem. Empty if neemhub is not used').
-:- setting(mng_client:tripledb_read_only, atom, false,
+:- setting(mng_client:read_only, atom, false,
 		'Flag if the tripledb is read only').
 
 % tell/ask queries generate discontiguous clauses.

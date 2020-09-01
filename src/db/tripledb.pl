@@ -175,7 +175,7 @@ tripledb_load(URL,Options) :-
   ),
   % get fact scope
   universal_scope(Scope),
-  ( setting(mng_client:tripledb_read_only, true) 
+  ( setting(mng_client:read_only, true) 
   	->  true
   	; tripledb_load(URL,Scope,Graph)
   ).
@@ -335,7 +335,7 @@ convert_rdf_value_(O,string(O)).
 %
 tripledb_init :-
 	% drop some graphs on start-up
-	( setting(mng_client:tripledb_read_only, true)
+	( setting(mng_client:read_only, true)
 		-> true
 		; (
 			setting(tripledb:drop_graphs,L),

@@ -142,7 +142,7 @@ mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
 % @param Cursor The id of a new mongo DB cursor
 %
 mng_cursor_create(DB, Collection, Cursor) :-
-  ( setting(mng_client:tripledb_read_only, true)
+  ( setting(mng_client:read_only, true)
     -> true
     ; mng_cursor_create_core(DB, Collection, Cursor)
   ).
@@ -186,7 +186,7 @@ mng_cursor_materialize(Cursor,Next,Dict) :-
 % @param Keys List of keys for which an index shall be created
 %
 mng_index_create(DB,Collection,Keys) :-
-  ( setting(mng_client:tripledb_read_only, true)
+  ( setting(mng_client:read_only, true)
     -> true
     ; mng_index_create_core(DB,Collection,Keys)
   ).
