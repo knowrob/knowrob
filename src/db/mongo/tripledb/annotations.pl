@@ -27,7 +27,7 @@ It is also not needed that annotation values are indexed.
 %
 annotation_db(DB, Name) :- 
 	mng_db_name(DB),
-	((setting(mng_client:neemhub_neem_id, Id),Id \= '') 
+	((setting(mng_client:collection_prefix, Id),Id \= '') 
 		-> atom_concat(Id,'_annotations', Name)
 		; Name = 'annotations'
 	).

@@ -17,6 +17,6 @@ setting(mng_client:read_only, false).
 
 %	Neemhub Setting
 % setting(mng_client:db_name, 'neems').
-setting(mng_client:neemhub_neem_id, '').
+setting(mng_client:collection_prefix, '').
 
 

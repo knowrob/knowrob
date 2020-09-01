@@ -10,7 +10,7 @@
 :- set_prolog_flag(float_format, '%.12g').
 
 % define some settings
-:- setting(mng_client:neemhub_neem_id, atom, '',
+:- setting(mng_client:collection_prefix, atom, '',
 		'Id of the current neem. Empty if neemhub is not used').
 :- setting(mng_client:read_only, atom, false,
 		'Flag if the tripledb is read only').

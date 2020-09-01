@@ -14,6 +14,6 @@ setting(mng_client:read_only, true).
 
 %	Neemhub Setting
 setting(mng_client:db_name, 'neems').
-setting(mng_client:neemhub_neem_id, '5f22b1f512db5aed7cd1961b').
+setting(mng_client:collection_prefix, '5f22b1f512db5aed7cd1961b').
 
 
