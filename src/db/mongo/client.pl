@@ -269,26 +269,6 @@ mng_restore(_DB,Dir) :-
 % @param Dict A Prolog dictionary
 %
 
-%% mng_index_create_core(+DB,+Collection,+Keys) is det
-%
-% Creates search index.
-%
-% @param DB The database name
-% @param Collection The collection name
-% @param Keys List of keys for which an index shall be created
-%
-
-%% mng_cursor_create_core(+DB, +Collection, -Cursor) is det.
-%
-% Creates a new query cursor.
-% Make sure to call *mng_cursor_destroy/1* once
-% you are done querying.
-%
-% @param DB The database name
-% @param Collection The collection name
-% @param Cursor The id of a new mongo DB cursor
-%
-
 %% mng_cursor_destroy(+Cursor) is det.
 %
 % Destroys a query cursor.
