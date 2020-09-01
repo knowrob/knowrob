@@ -139,22 +139,6 @@ mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Query Cursor
 
-%% mng_cursor_create(+DB, +Collection, -Cursor) is det.
-%
-% Creates a new query cursor.
-% Make sure to call *mng_cursor_destroy/1* once
-% you are done querying.
-%
-% @param DB The database name
-% @param Collection The collection name
-% @param Cursor The id of a new mongo DB cursor
-%
-mng_cursor_create(DB, Collection, Cursor) :-
-  ( setting(mng_client:read_only, true)
-    -> true
-    ; mng_cursor_create_core(DB, Collection, Cursor)
-  ).
-
 %% mng_cursor_next(+Cursor,?Dict) is semidet.
 %
 %
@@ -275,6 +259,17 @@ mng_restore(_DB,Dir) :-
 % @param DB The database name
 % @param Collection The collection name
 % @param Dict A Prolog dictionary
+%
+
+%% mng_cursor_create(+DB, +Collection, -Cursor) is det.
+%
+% Creates a new query cursor.
+% Make sure to call *mng_cursor_destroy/1* once
+% you are done querying.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Cursor The id of a new mongo DB cursor
 %
 
 %% mng_cursor_destroy(+Cursor) is det.

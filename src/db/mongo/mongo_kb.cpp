@@ -89,7 +89,7 @@ PREDICATE(mng_index_create_core, 3) {
 	return TRUE;
 }
 
-PREDICATE(mng_cursor_create_core, 3) {
+PREDICATE(mng_cursor_create, 3) {
 	char* db_name   = (char*)PL_A1;
 	char* coll_name = (char*)PL_A2;
 	PL_A3 = MongoInterface::cursor_create(db_name,coll_name)->id().c_str();
