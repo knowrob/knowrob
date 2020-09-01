@@ -81,7 +81,7 @@ RUN /usr/bin/python /opt/ros/melodic/bin/catkin_init_workspace
 
 RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     rm -rf /home/ros/src/* && \
-    git clone https://github.com/sasjonge/knowrob.git && \
+    git clone https://github.com/knowrob/knowrob.git && \
     git clone https://github.com/knowrob/rosprolog.git && \
     git clone https://github.com/code-iai/iai_maps.git && \
     git clone https://github.com/code-iai/iai_common_msgs.git && \
