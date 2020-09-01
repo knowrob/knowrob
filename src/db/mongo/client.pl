@@ -15,7 +15,6 @@
       mng_restore/2,
       mng_regex_prefix/2,
       mng_cursor_create/3,
-      mng_cursor_create_core/3,
       mng_cursor_destroy/1,
       mng_cursor_filter/2,
       mng_cursor_descending/2,
@@ -36,7 +35,7 @@
 :- dynamic mng_db_name/1.
 
 % define some settings
-:- setting(db_name, atom, 'roslog',
+:- setting(db_name, atom, roslog,
 		'Name of the Mongo DB used by KnowRob.').
 
 :- setting(mng_client:db_name, DBName),
