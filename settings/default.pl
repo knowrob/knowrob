@@ -15,7 +15,7 @@ setting(mng_client:db_name, roslog).
 % Flag for read only mongo databases
 setting(mng_client:read_only, false).
 
-%	Neemhub Setting
+%	Remote Mongo Setting
 % setting(mng_client:db_name, 'neems').
 setting(mng_client:collection_prefix, '').
 
