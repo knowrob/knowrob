@@ -16,7 +16,6 @@ setting(mng_client:db_name, roslog).
 setting(mng_client:read_only, false).
 
 %	Remote Mongo Setting
-% setting(mng_client:db_name, 'neems').
 setting(mng_client:collection_prefix, '').
 
 

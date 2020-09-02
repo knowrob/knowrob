@@ -7,7 +7,7 @@ setting(knowrob:plugins,
 
 %	Triple DB
 setting(tripledb:path, 'db/mongo/tripledb/plugin').
-setting(tripledb:drop_graphs, []). % erase "user" graph on start-up
+setting(tripledb:drop_graphs, []).
 
 % Flag for read only mongo databases
 setting(mng_client:read_only, true).
