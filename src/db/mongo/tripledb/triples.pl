@@ -43,7 +43,8 @@ taxonomical_property(rdfs:subPropertyOf, subproperty_of, subproperty_of).
 %%
 %
 %
-triple_db(DB,'triples') :- mng_db_name(DB).
+triple_db(DB, Name) :- 
+	mng_get_db(DB, Name, 'triples').
 
 %%
 %
