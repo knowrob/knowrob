@@ -42,12 +42,20 @@
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
 
-% Get db and collection for this type of data, e.g. triples
-mng_get_db(DB, Name, DBType) :- 
+%% mng_get_db(?DB, -CollectionName, +DBType) is det.
+%
+% Get db and collection for this type 
+% of data, e.g. triples
+%
+% @param DB The database name
+% @param CollectionNAme The Name of the collection for the type
+% @param DBType
+%
+mng_get_db(DB, CollectionName, DBType) :- 
   mng_db_name(DB),
   ((setting(mng_client:collection_prefix, Id),Id \= '') 
-    -> atomic_list_concat([Id,'_',DBType], Name)
-    ; Name = DBType
+    -> atomic_list_concat([Id,'_',DBType], CollectionName)
+    ; CollectionName = DBType
   ).
 
 read_json_(JSON,Dict) :-
