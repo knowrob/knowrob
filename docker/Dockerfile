@@ -91,7 +91,6 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     fi
 
 WORKDIR /home/ros/src/knowrob
-RUN git checkout mongoservice
 WORKDIR /home/ros
 # Build the catkin workspace
 RUN /opt/ros/melodic/bin/catkin_make
