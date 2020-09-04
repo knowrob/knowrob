@@ -1,4 +1,4 @@
-:- module(model_EASE_ACT,
+:- module(model_SOMA_ACT,
     [ is_manipulation_action(r),
       is_mental_action(r),
       is_mental_task(r),
@@ -28,7 +28,7 @@
     [ task_role_range/3 ]).
 :- use_module(library('model/DUL/Region'),
     [ has_parameter_range/3 ]).
-:- use_module(library('model/EASE/OBJ'),
+:- use_module(library('model/SOMA/OBJ'),
     [ ]).
 
 %% is_manipulation_action(?Entity) is nondet.

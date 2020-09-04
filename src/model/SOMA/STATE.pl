@@ -1,4 +1,4 @@
-:- module(model_EASE_STATE,
+:- module(model_SOMA_STATE,
     [ is_state(r),
       is_physical_state(r),
       is_social_state(r),

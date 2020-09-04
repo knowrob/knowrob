@@ -7,7 +7,7 @@
 @license BSD
 */
 
-:- use_module(library('comm/notify'), [ notify_synchronize/1 ]).
+:- use_module(library('utility/notify'), [ notify_synchronize/1 ]).
 
 :- op(1000, xf, occurs).
 

@@ -31,6 +31,56 @@
 @license BSD
 */
 
+/*
+  triple(L, rdf:first, X),
+  triple(L, rdf:rest, Ys)
+-->
+db.triples.aggregate([
+   { $match: { p: rdf:rest } },
+   { $graphLookup: {
+      from: "triples",
+      startWith: "$o", connectFromField: "o", connectToField: "s",
+      restrictSearchWithMatch: { p: rdf:rest },
+      as: "paths"
+   }}
+])
+-->
+{ [ ... ] }
+*/
+
+/*
+triple(R,owl:onProperty,P),
+triple(R,owl:minQualifiedCardinality,M),
+triple(R,owl:onClass,O)
+-->
+db.triples.aggregate([
+   { $match: { p: onProperty } },
+   { $project: { "R": "$s", "P": "$o" }},
+   { $graphLookup: {
+      from: "triples", maxDepth: 0,
+      startWith: "$R", connectFromField: "s", connectToField: "s",
+      restrictSearchWithMatch: { p: minQualifiedCardinality},
+      as: "paths"
+    },
+    { $unwind: "$paths" },
+    { $project: { "R": "$R", "P": "$P", "M": "$paths.o" }},
+    { $graphLookup: {
+      from: "triples", maxDepth: 0,
+      startWith: "$R", connectFromField: "s", connectToField: "s",
+      restrictSearchWithMatch: { p: onClass },
+      as: "paths"
+    },
+    { $unwind: "$paths" },
+    { $project: { "R": "$R", "P": "$P", "M": "$M", "O": "$paths.o" }}
+])
+-->
+{ "R": "....",
+  "P": "....",
+  "M": "....",
+  "O": "...."
+}
+*/
+
 :- use_module(library('http/json')).
 :- use_foreign_library('libmongo_kb.so').
 :- dynamic mng_db_name/1.

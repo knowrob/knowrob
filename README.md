@@ -16,7 +16,7 @@ These instructions will get you a copy of KnowRob up and running on your local m
 
 - ROS (*ROS melodic* for the master branch)
 - SWI Prolog >= 7.6
-- libmongoc
+- mongo DB server and libmongoc
 
 ### Installation
 
@@ -60,7 +60,7 @@ However, KnowRob can also be launched without ROS node through a script offered 
 rosrun rosprolog rosprolog knowrob
 ```
 
-Launching KnowRob without the ROS node may help debugging.
+Launching KnowRob without the ROS node may help debugging (at the moment the GUI tracing tool of SWI Prolog *gtrace* does not work via the rosprolog node).
 
 ## Getting Familiar
 
@@ -128,4 +128,4 @@ More complete information about reasoning in KnowRob can be found
 ## Further Information
 
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
-- A blog and more wiki pages are avaiabale at: http://www.knowrob.org
+- A blog and more wiki pages are avaiabale at [knowrob.org](http://www.knowrob.org)

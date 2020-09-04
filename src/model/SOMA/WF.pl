@@ -1,4 +1,4 @@
-:- module(model_EASE_WF,
+:- module(model_SOMA_WF,
     [ is_binding(r),
       is_succeedence(r),
       plan_defines_task(r,r),

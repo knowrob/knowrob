@@ -16,7 +16,7 @@
     [ obda_import/1,
       obda_export/1
     ]).
-:- use_module(library('comm/notify'),
+:- use_module(library('utility/notify'),
     [ notify/1 ]).
 
 :- multifile remember_hook/1.

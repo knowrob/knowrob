@@ -14,7 +14,7 @@
 
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_equal/2 ]).
-:- use_module(library('comm/notify'),
+:- use_module(library('utility/notify'),
     [ notify/1 ]).
 :- use_module(library('model/RDFS'),
     [ is_resource/1 ]).
