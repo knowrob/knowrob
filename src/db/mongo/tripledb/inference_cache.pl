@@ -17,8 +17,9 @@
 %%
 % The mongo DB + Collection used to store the query cache.
 %
-inference_cache_db(DB,'inferred') :-
-	mng_db_name(DB).
+inference_cache_db(DB, Name) :- 
+	mng_get_db(DB, Name, 'inferred').
+
 
 %%
 % Create search indices.

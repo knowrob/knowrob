@@ -175,7 +175,10 @@ tripledb_load(URL,Options) :-
   ),
   % get fact scope
   universal_scope(Scope),
-  tripledb_load(URL,Scope,Graph).
+  ( setting(mng_client:read_only, true) 
+  	->  true
+  	; tripledb_load(URL,Scope,Graph)
+  ).
 
 %% tripledb_load(+URL,+Scope,+Graph) is semidet.
 %
@@ -332,8 +335,13 @@ convert_rdf_value_(O,string(O)).
 %
 tripledb_init :-
 	% drop some graphs on start-up
-	setting(tripledb:drop_graphs,L),
-	forall(member(X,L), tripledb_graph_drop(X)),
+	( setting(mng_client:read_only, true)
+		-> true
+		; (
+			setting(tripledb:drop_graphs,L),
+			forall(member(X,L), tripledb_graph_drop(X))
+		)
+ 	).
 	%
 	itripledb_init.
 
