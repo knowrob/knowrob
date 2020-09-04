@@ -128,4 +128,4 @@ More complete information about reasoning in KnowRob can be found
 ## Further Information
 
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
-- A blog and more wiki pages are avaiabale at: http://www.knowrob.org
+- A blog and more wiki pages are avaiabale at [knowrob.org](http://www.knowrob.org)
