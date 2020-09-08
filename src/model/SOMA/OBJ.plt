@@ -4,7 +4,7 @@
     [ synchronize/1 ]).
 
 :- begin_tripledb_tests(
-		'model_EASE_OBJ',
+		'model_SOMA_OBJ',
 		'package://knowrob/owl/test/test_knowrob_objects.owl',
 		[ namespace('http://knowrob.org/kb/test_knowrob_objects.owl#')
 		]).
@@ -43,4 +43,4 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
   %object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   %object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
 
-:- end_tripledb_tests('model_EASE_OBJ').
+:- end_tripledb_tests('model_SOMA_OBJ').

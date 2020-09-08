@@ -1,4 +1,4 @@
-#include <knowrob/comm/ros/marker/publisher.h>
+#include <knowrob/ros/marker/publisher.h>
 
 MarkerPublisher::MarkerPublisher(ros::NodeHandle &node) :
 		pub_(node.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 5)),

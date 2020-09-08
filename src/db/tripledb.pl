@@ -23,9 +23,9 @@
 
 :- use_module(library('utility/url'),    [ url_resolve/2 ]).
 :- use_module(library('utility/atoms'),  [ camelcase/2 ]).
+:- use_module(library('utility/notify'), [ notify/1 ]).
 :- use_module(library('db/scope'),       [ universal_scope/1 ]).
 :- use_module(library('db/subgraph')).
-:- use_module(library('comm/notify'),    [ notify/1 ]).
 :- use_module(library('model/XSD'),      [ xsd_data_basetype/2 ]).
 
 % define some settings
@@ -175,7 +175,10 @@ tripledb_load(URL,Options) :-
   ),
   % get fact scope
   universal_scope(Scope),
-  tripledb_load(URL,Scope,Graph).
+  ( setting(mng_client:read_only, true) 
+  	->  true
+  	; tripledb_load(URL,Scope,Graph)
+  ).
 
 %% tripledb_load(+URL,+Scope,+Graph) is semidet.
 %
@@ -332,8 +335,13 @@ convert_rdf_value_(O,string(O)).
 %
 tripledb_init :-
 	% drop some graphs on start-up
-	setting(tripledb:drop_graphs,L),
-	forall(member(X,L), tripledb_graph_drop(X)),
+	( setting(mng_client:read_only, true)
+		-> true
+		; (
+			setting(tripledb:drop_graphs,L),
+			forall(member(X,L), tripledb_graph_drop(X))
+		)
+ 	).
 	%
 	itripledb_init.
 

@@ -10,7 +10,7 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 
-#include <knowrob/comm/ros/tf/memory.h>
+#include <knowrob/ros/tf/memory.h>
 
 /**
  * TF publisher for frames that are managed by the KB.

@@ -9,6 +9,12 @@
         ]).
 :- set_prolog_flag(float_format, '%.12g').
 
+% define some settings
+:- setting(mng_client:collection_prefix, atom, '',
+		'Id of the current neem. Empty if neemhub is not used').
+:- setting(mng_client:read_only, atom, false,
+		'Flag if the tripledb is read only').
+
 % tell/ask queries generate discontiguous clauses.
 % TODO: find a better solution then disabling this globally.
 :- style_check(-discontiguous).
@@ -29,6 +35,7 @@
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
 :- use_module('utility/url').
+:- use_module('utility/notify').
 
 % tell the user what is going on
 :- log_info(kb(initialization(started))).
@@ -53,7 +60,7 @@
 :- use_directory('lang').
 :- use_directory('model').
 :- use_directory('reasoning').
-:- use_directory('comm').
+:- use_directory('ros').
 :- use_directory('vis').
 
 % load additional modules

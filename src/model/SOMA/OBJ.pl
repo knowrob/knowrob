@@ -1,4 +1,4 @@
-:- module(model_EASE_OBJ,
+:- module(model_SOMA_OBJ,
     [ %% Life Time
       %is_alive(r),
       %% Qualities
@@ -46,7 +46,7 @@
     ]).
 :- use_module(library('db/scope'),
     [ universal_scope/1 ]).
-:- use_module(library('comm/notify'),
+:- use_module(library('utility/notify'),
     [ notify/1 ]).
 
 		 /*******************************
@@ -167,7 +167,7 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot]) ?>
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
 	rdf_split_url(_,Frame,Obj),
-	{ shape_data(ShapeRegion,ShapeData),
+	{ shape_data(ShapeRegion,ShapeTerm),
 	  shape_origin(ShapeRegion,[Pos,Rot])
 	}.
 

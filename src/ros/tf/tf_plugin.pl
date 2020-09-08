@@ -33,10 +33,15 @@
 	]).
 :- use_module(library('db/mongo/client')).
 
+
+tf_db(DB, Name) :- 
+	mng_get_db(DB, Name, 'tf').
+
 %%
 tf_mng_whipe :-
 	mng_db_name(DB),
-	mng_drop(DB,tf).
+	tf_db(DB, Name),
+	mng_drop(DB,Name).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -215,7 +220,8 @@ tf_get_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
 tf_mng_init :-
 	mng_db_name(DB),
 	tf_logger_set_db_name(DB),
-	mng_index_create(DB,tf,['child_frame_id','header.stamp']).
+	tf_db(DB, Name),
+	mng_index_create(DB,Name,['child_frame_id','header.stamp']).
 %%
 :- tf_mng_init.
 
@@ -226,7 +232,8 @@ tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
 	Stamp0 is QSince - LoggerTimeThreshold,
 	Stamp1 is QUntil + LoggerTimeThreshold,
 	mng_db_name(DB),
-	mng_cursor_create(DB,tf,Cursor),
+	tf_db(DB, Name),
+	mng_cursor_create(DB,Name,Cursor),
 	mng_cursor_descending(Cursor,'header.stamp'),
 	mng_cursor_filter(Cursor, ['child_frame_id', string(ObjFrame)]),
 	mng_cursor_filter(Cursor, ['header.stamp', ['$lt', time(Stamp1)]]),

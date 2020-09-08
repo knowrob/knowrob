@@ -32,7 +32,7 @@ can be casted as grammar for the parser.
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('model/EASE/WF'),
+:- use_module(library('model/SOMA/WF'),
     [ workflow_step/2, plan_defines_task/2 ]).
 :- use_module(library('lang/terms/is_a'),
     [ instance_of/2, subclass_of/2 ]).

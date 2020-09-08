@@ -1,5 +1,6 @@
 :- module(mng_client,
     [ mng_db_name/1,
+      mng_get_db/3,
       mng_collection/2,
       mng_distinct_values/4,
       mng_drop/2,
@@ -7,6 +8,7 @@
       mng_update/4,
       mng_remove/3,
       mng_index_create/2,
+      mng_index_create/3,
       mng_export/1,
       mng_export_collection/2,
       mng_dump/2,
@@ -29,6 +31,56 @@
 @license BSD
 */
 
+/*
+  triple(L, rdf:first, X),
+  triple(L, rdf:rest, Ys)
+-->
+db.triples.aggregate([
+   { $match: { p: rdf:rest } },
+   { $graphLookup: {
+      from: "triples",
+      startWith: "$o", connectFromField: "o", connectToField: "s",
+      restrictSearchWithMatch: { p: rdf:rest },
+      as: "paths"
+   }}
+])
+-->
+{ [ ... ] }
+*/
+
+/*
+triple(R,owl:onProperty,P),
+triple(R,owl:minQualifiedCardinality,M),
+triple(R,owl:onClass,O)
+-->
+db.triples.aggregate([
+   { $match: { p: onProperty } },
+   { $project: { "R": "$s", "P": "$o" }},
+   { $graphLookup: {
+      from: "triples", maxDepth: 0,
+      startWith: "$R", connectFromField: "s", connectToField: "s",
+      restrictSearchWithMatch: { p: minQualifiedCardinality},
+      as: "paths"
+    },
+    { $unwind: "$paths" },
+    { $project: { "R": "$R", "P": "$P", "M": "$paths.o" }},
+    { $graphLookup: {
+      from: "triples", maxDepth: 0,
+      startWith: "$R", connectFromField: "s", connectToField: "s",
+      restrictSearchWithMatch: { p: onClass },
+      as: "paths"
+    },
+    { $unwind: "$paths" },
+    { $project: { "R": "$R", "P": "$P", "M": "$M", "O": "$paths.o" }}
+])
+-->
+{ "R": "....",
+  "P": "....",
+  "M": "....",
+  "O": "...."
+}
+*/
+
 :- use_module(library('http/json')).
 :- use_foreign_library('libmongo_kb.so').
 :- dynamic mng_db_name/1.
@@ -39,6 +91,22 @@
 
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
+
+%% mng_get_db(?DB, -CollectionName, +DBType) is det.
+%
+% Get db and collection for this type 
+% of data, e.g. triples
+%
+% @param DB The database name
+% @param CollectionNAme The Name of the collection for the type
+% @param DBType
+%
+mng_get_db(DB, CollectionName, DBType) :- 
+  mng_db_name(DB),
+  ((setting(mng_client:collection_prefix, Id),Id \= '') 
+    -> atomic_list_concat([Id,'_',DBType], CollectionName)
+    ; CollectionName = DBType
+  ).
 
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),
@@ -155,6 +223,25 @@ mng_cursor_materialize(Cursor,Next,Dict) :-
     ( Dict=Next )
   ).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Query Index
+
+%% mng_index_create(+DB,+Collection,+Keys) is det
+%
+% Creates search index.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Keys List of keys for which an index shall be created
+%
+mng_index_create(DB,Collection,Keys) :-
+  ( setting(mng_client:read_only, true)
+    -> true
+    ; mng_index_create_core(DB,Collection,Keys)
+  ).
+
+
 %% mng_get_dict(?Key,+Doc,?PlValue) is semidet.
 %
 % Get a key-value pair from a dictionary, and map
@@ -230,15 +317,6 @@ mng_restore(_DB,Dir) :-
 % @param DB The database name
 % @param Collection The collection name
 % @param Dict A Prolog dictionary
-%
-
-%% mng_index_create(+DB,+Collection,+Keys) is det
-%
-% Creates search index.
-%
-% @param DB The database name
-% @param Collection The collection name
-% @param Keys List of keys for which an index shall be created
 %
 
 %% mng_cursor_create(+DB, +Collection, -Cursor) is det.

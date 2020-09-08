@@ -1,4 +1,4 @@
-:- module(model_EASE_PROC,
+:- module(model_SOMA_PROC,
     [ is_chemical_process(r),
       is_physical_process(r),
       is_force_interaction(r),

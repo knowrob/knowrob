@@ -1,5 +1,5 @@
 
-:- module(model_EASE_EXT,
+:- module(model_SOMA_EXT,
     [ is_episode(r),
       %%
       time_interval_tell(r,+,+),
