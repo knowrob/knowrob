@@ -88,9 +88,15 @@ db.triples.aggregate([
 % define some settings
 :- setting(db_name, atom, roslog,
 		'Name of the Mongo DB used by KnowRob.').
+:- setting(mng_client:collection_prefix, atom, '',
+    'Id of the current neem. Empty if neemhub is not used').
+:- setting(mng_client:read_only, atom, false,
+    'Flag if the tripledb is read only').
 
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
+
+
 
 %% mng_get_db(?DB, -CollectionName, +DBType) is det.
 %
