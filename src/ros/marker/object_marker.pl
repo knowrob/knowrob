@@ -56,7 +56,7 @@ object_marker1(
 
 object_marker1(
 	cylinder(Radius,Length), Material,
-	[ type(sphere),
+	[ type(cylinder),
 	  scale([Radius,Radius,Length]),
 	  color(RGBA)
 	]) :-
