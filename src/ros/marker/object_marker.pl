@@ -3,8 +3,7 @@
 	]).
 
 :- use_module(library('model/SOMA/OBJ'),
-    [ object_shape/3,
-      object_color_rgb/2
+    [ object_shape/4
     ]).
 
 %% object_marker(+Obj,-MarkerData) is semidet.
@@ -16,57 +15,63 @@
 %
 object_marker(Obj,Scope,
 	MarkerID,
-	[ pose(ShapeOrigin)
+	[ pose(Origin)
 	| MarkerData
 	]) :-
 	catch((
-		ask(object_shape(Obj,Shape,ShapeOrigin),Scope),
-		ShapeOrigin=[MarkerID,_,_],
-		object_marker1(Shape,Obj,MarkerData)),
+		ask(object_shape(Obj,Shape,Origin,Material),Scope),
+		Origin=[MarkerID,_,_],
+		object_marker1(Shape,Material,MarkerData)),
 		Exc,
 		(log_error(Exc),fail)
 	).
 
 object_marker1(
-	mesh(MeshPath,Scale), Obj,
+	mesh(MeshPath,Scale), Material,
 	[ type(mesh_resource),
 	  mesh(MeshPath),
 	  scale(Scale),
 	  color(RGBA)
 	]) :-
 	(  file_name_extension(_, stl, MeshPath)
-	-> object_marker_rgba(Obj,RGBA)
+	-> material_rgba(Material,RGBA)
 	;  RGBA=[0,0,0,0]
 	).
 
 object_marker1(
-	box(X,Y,Z), Obj,
+	box(X,Y,Z), Material,
 	[ type(cube),
 	  scale([X,Y,Z]),
 	  color(RGBA)
 	]) :-
-	object_marker_rgba(Obj,RGBA).
+	material_rgba(Material,RGBA).
 
 object_marker1(
-	sphere(Radius), Obj,
+	sphere(Radius), Material,
 	[ type(sphere),
 	  scale([Radius,Radius,Radius]),
 	  color(RGBA)
 	]) :-
-	object_marker_rgba(Obj,RGBA).
+	material_rgba(Material,RGBA).
 
 object_marker1(
-	cylinder(Radius,Length), Obj,
+	cylinder(Radius,Length), Material,
 	[ type(sphere),
 	  scale([Radius,Radius,Length]),
 	  color(RGBA)
 	]) :-
-	object_marker_rgba(Obj,RGBA).
+	material_rgba(Material,RGBA).
 
 %%
-object_marker_rgba(Object,[R,G,B,1]) :-
-	object_color_rgb(Object,[R,G,B]),
+material_rgba(material(Material),[R,G,B,A]) :-
+	member(rgba([R,G,B,A]),Material),
+	ground([R,G,B,A]),
 	!.
 
-object_marker_rgba(_,[1,1,1,1]).
+material_rgba(material(Material),[R,G,B,1]) :-
+	member(rgb([R,G,B]),Material),
+	ground([R,G,B]),
+	!.
+
+material_rgba(_,[1,1,1,1]).
 
