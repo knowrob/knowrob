@@ -1,16 +1,14 @@
 <launch>
-  <arg name="semantic_map" default="package://iai_semantic_maps/owl/kitchen.owl" />
-  <arg name="mongodb_uri" default="mongodb://localhost:27017/?appname=knowrob" />
-  <arg name="mongodb_name" default="roslog" />
-  <arg name="memory_dir" default="" />
+  <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl" />
+  <arg name="owl_file" default="package://knowrob/owl/robots/PR2.owl" />
+  <arg name="urdf_file" default="package://knowrob/urdf/pr2_for_unit_tests.urdf" />
+  <arg name="object_iri" default="http://knowrob.org/kb/PR2.owl#PR2_0" />
   
-  <env name="KNOWROB_MONGO_DB_NAME" value="$(arg mongodb_name)" />
-  <env name="KNOWROB_MEMORY_DIR" value="$(arg memory_dir)" />
-  
-  <param name="mongodb_uri" type="string" value="$(arg mongodb_uri)" />
+  <!-- Configure settings file. -->
+  <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="mem_import('$(arg semantic_map)')" />
+    <arg name="initial_goal" default="tripledb_load('$(arg owl_file)'), urdf_load('$(arg object_iri)', '$(arg urdf_file)', [load_rdf]), urdf_set_pose_to_origin('$(arg object_iri)',map), sleep(1.0), marker_plugin:republish" />
   </include>
 </launch>
