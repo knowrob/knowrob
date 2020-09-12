@@ -94,6 +94,13 @@ tripledb_ask(S,P,ValueQuery,QScope,FScope,Options) :-
 	;  triple_ask(S,P,ValueQuery,QScope,FScope,Options)
 	).
 
+%% 
+% @implements 'db/itripledb'
+%
+tripledb_aggregate(Triples,QScope,FScope,Options) :-
+	% FIXME: handle annotation properties
+	triple_aggregate(Triples,QScope,FScope,Options).
+
 %%
 % @implements 'db/itripledb'
 %

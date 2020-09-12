@@ -22,7 +22,8 @@ MongoCursor::MongoCursor(
 		const char *db_name,
 		const char *coll_name)
 : cursor_(NULL),
-  coll_(pool, db_name, coll_name)
+  coll_(pool, db_name, coll_name),
+  is_aggregate_query_(false)
 {
 	query_ = bson_new();
 	opts_ = bson_new();
@@ -66,11 +67,26 @@ void MongoCursor::filter(const PlTerm &query_term)
 	}
 }
 
+void MongoCursor::aggregate(const PlTerm &query_term)
+{
+	bson_error_t err;
+	is_aggregate_query_ = true;
+	if(!bsonpl_concat(query_, query_term, &err)) {
+		throw MongoException("invalid_term",err);
+	}
+}
+
 bool MongoCursor::next(const bson_t **doc)
 {
 	if(cursor_==NULL) {
-		cursor_ = mongoc_collection_find_with_opts(
-		    coll_(), query_, opts_, NULL /* read_prefs */ );
+		if(is_aggregate_query_) {
+			cursor_ = mongoc_collection_aggregate(
+				coll_(), MONGOC_QUERY_NONE, query_, opts_, NULL /* read_prefs */ );
+		}
+		else {
+			cursor_ = mongoc_collection_find_with_opts(
+			    coll_(), query_, opts_, NULL /* read_prefs */ );
+		}
 	}
 	// make sure cursor has no error
 	bson_error_t err;
