@@ -216,19 +216,19 @@ mng_index_create(DB,Collection,Keys) :-
 %
 mng_get_dict(Key,Doc,PlValue) :-
   get_dict(Key,Doc,MngValue),
-  mng_get_dict2(MngValue,PlValue).
+  mng_doc_value(MngValue,PlValue).
 
 %%
-mng_get_dict2([X|Xs],PlValue) :-
+mng_doc_value([X|Xs],PlValue) :-
 	findall(Key-PlValue_n,
 		(	member(Key-MngValue_n,[X|Xs]),
-			mng_get_dict2(MngValue_n,PlValue_n)
+			mng_doc_value(MngValue_n,PlValue_n)
 		),
 		Pairs
 	),
 	dict_pairs(PlValue,_,Pairs), !.
 
-mng_get_dict2(PlValue,PlValue).
+mng_doc_value(PlValue,PlValue).
 
 %% mng_dump(+DB, +Dir) is det.
 %

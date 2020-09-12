@@ -206,14 +206,17 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	triple_query_document_(S,P,
 			Operator,Value,Unit,
 			QScope,Graph,QueryDoc),
-	findall([Pr_Key,string(Pr_Value)],
-		(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
+	findall([Pr_Key,string(Pr_Value)], (
+		%
+		(	Pr_Key='v_scope',
+			atom_concat('$',Pr_Key,Pr_Value)
+		)
+	;	(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
 			atom_concat('$',Pr_Value0,Pr_Value)
-		),
-		ProjectDoc
-	),
-	% FIXME: handle scope
+		)
+	), ProjectDoc),
 	Doc=[ ['$match', QueryDoc],
+		  ['$set', ['v_scope', array([string('$scope')]) ]],
 		  ['$project', ProjectDoc] | Doc_inner],
 	triple_db(DB,Coll),
 	% TODO: compute fact scope and bind variables
@@ -224,8 +227,17 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
 			mng_cursor_materialize(Cursor,Result_doc),
 			triple_aggregate_unify_(Result_doc,AllVars),
-			% FIXME handle scope
-			universal_scope(FScope)
+			%% handle scope
+			% TODO: it would be possible to compute scope intersections in mongo!
+			%
+			mng_get_dict('v_scope',Result_doc,array(ScopesData)),
+			findall(S0,
+				(	member(Data0,ScopesData),
+					mng_client:mng_doc_value(Data0,S0)
+				),
+				[FirstScope|RestScopes]
+			),
+			doc_scopes_intersect_b_(FirstScope,RestScopes,FScope)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
@@ -234,7 +246,7 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 %%
 triple_aggregate1([],_,_,Vars,[],Vars) :- !.
 triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
-		[Lookup0,Unwind0,Project0|Doc_inner],
+		[Lookup0,Unwind0,Scopes0,Project0|Doc_inner],
 		Vars_n) :-
 	read_triple_(Triple,S,P,Operator,Value,Unit),
 	read_vars_(S,P,Value,TripleVars),
@@ -246,7 +258,6 @@ triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
 		Joins
 	),
 	%%%%%% recursion
-	% FIXME
 	read_vars_2(TripleVars,Vars1),
 	append(Vars0,Vars1,Vars_new),
 	list_to_set(Vars_new,Vars2),
@@ -274,13 +285,20 @@ triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
 			QueryDoc
 		]]])]
 	]],
-    %%%%%% $unwind the next field
-    Unwind0=['$unwind',string('$next')],
-    %%%%%% $project
-	% FIXME: handle scope
+	%%%%%% $unwind the next field
+	Unwind0=['$unwind',string('$next')],
+	%%%%%% $set scopes, $setUnion is used to avoid duplicate scopes
+	Scopes0=['$set',['v_scope',['$setUnion',
+		array([string('$v_scope'), array([string('$next.scope')])])
+	]]],
+	%%%%%% $project
 	findall([Pr_Key,string(Pr_Value)],(
+		%
+		(	Pr_Key='v_scope',
+			atom_concat('$',Pr_Key,Pr_Value)
+		)
 		% copy value of var e.g. { 'S': '$S' }
-		(	member([Pr_Key,_],Vars0),
+	;	(	member([Pr_Key,_],Vars0),
 			atom_concat('$',Pr_Key,Pr_Value)
 		)
 		% set new value of var e.g. { 'S': '$next.s' }
@@ -611,6 +629,11 @@ doc_scopes_intersect_(Scope,[],Scope) :- !.
 doc_scopes_intersect_(Scope0,[First|Rest],MergedScope) :-
 	mng_get_dict('scope',First,Scope1),
 	scope_intersect(Scope0,Scope1,Scope2),
+	doc_scopes_intersect_(Scope2,Rest,MergedScope).
+
+doc_scopes_intersect_b_(Scope,[],Scope) :- !.
+doc_scopes_intersect_b_(Scope0,[First|Rest],MergedScope) :-
+	scope_intersect(Scope0,First,Scope2),
 	doc_scopes_intersect_(Scope2,Rest,MergedScope).
 
 %%
