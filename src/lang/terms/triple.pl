@@ -62,47 +62,52 @@ aggregate(Triples) ?>
     [ namespace('http://knowrob.org/kb/swrl_test#')
     ]).
 
-:- rdf_meta(measure_time(t)).
-measure_time(Goal) :-
-	time(forall(
-		between(1,10,_),
-		forall(
-			call(Goal),
-			true
-		)
-	)).
-
-test('without aggregate2') :-
-	forall(
-		(	triple(R,owl:onProperty,P),
-			triple(R,owl:minQualifiedCardinality,M),
-			triple(R,owl:onClass,O)
+test('aggregate query') :-
+	findall([R0,P0,M0,O0],
+		(	triple(R0,owl:onProperty,P0),
+			triple(R0,owl:minQualifiedCardinality,M0),
+			triple(R0,owl:onClass,O0)
 		),
-		writeln([R,P,M,O])
+		ResultsNonAggregate
+	),
+	findall([R1,P1,M1,O1],
+		(	ask(aggregate([
+				triple(R1,owl:onProperty,P1),
+				triple(R1,owl:minQualifiedCardinality,M1),
+				triple(R1,owl:onClass,O1)
+			]))
+		),
+		ResultsAggregate
+	),
+	assert_true(ResultsAggregate \= []),
+	forall(
+		member(X,ResultsNonAggregate),
+		assert_true(member(X,ResultsAggregate))
 	).
 
-test('aggregate2') :-
-	forall(ask(aggregate([
-			triple(R,owl:onProperty,P),
-			triple(R,owl:minQualifiedCardinality,M),
-			triple(R,owl:onClass,O)
-		])),
-		writeln([R,P,M,O])
-	).
-
-test('without aggregate1') :-
-	measure_time(
-		(	triple(R,owl:onProperty,_),
-			triple(R,owl:minQualifiedCardinality,_),
-			triple(R,owl:onClass,_)
-		)
-	).
-
-test('aggregate1') :-
-	measure_time(ask(aggregate([
-			triple(R,owl:onProperty,_),
-			triple(R,owl:minQualifiedCardinality,_),
-			triple(R,owl:onClass,_)
-		]))).
+%:- rdf_meta(measure_time(t)).
+%measure_time(Goal) :-
+%	time(forall(
+%		between(1,10,_),
+%		forall(
+%			call(Goal),
+%			true
+%		)
+%	)).
+%
+%test('time without aggregate1') :-
+%	measure_time(
+%		(	triple(R,owl:onProperty,_),
+%			triple(R,owl:minQualifiedCardinality,_),
+%			triple(R,owl:onClass,_)
+%		)
+%	).
+%
+%test('time with aggregate') :-
+%	measure_time(ask(aggregate([
+%			triple(R,owl:onProperty,_),
+%			triple(R,owl:minQualifiedCardinality,_),
+%			triple(R,owl:onClass,_)
+%		]))).
   
 :- end_tripledb_tests('lang_triple').
