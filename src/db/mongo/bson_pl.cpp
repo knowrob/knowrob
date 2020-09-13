@@ -97,9 +97,40 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 	bson_iter_t array_iter;
 	if(bson_iter_init(&array_iter, v_array)) {
 		while(bson_iter_next(&array_iter)) {
-			// TODO: support other array types
-			pl_array.append(PlCompound("string",
-					PlTerm(bson_iter_utf8(&array_iter,NULL))));
+			if(BSON_ITER_HOLDS_UTF8(&array_iter)) {
+				pl_array.append(PlCompound("string",
+						PlTerm(bson_iter_utf8(&array_iter,NULL))));
+			}
+			else if(BSON_ITER_HOLDS_DOCUMENT(&array_iter)) {
+				const uint8_t *data = NULL;
+				uint32_t len = 0;
+				bson_iter_document(&array_iter, &len, &data);
+				bson_t *doc = bson_new_from_data(data, len);
+				pl_array.append(bson_to_term(doc));
+			}
+			else if(BSON_ITER_HOLDS_DOUBLE(&array_iter)) {
+				pl_array.append(PlCompound("double",
+						PlTerm(bson_iter_double(&array_iter))));
+			}
+			else if(BSON_ITER_HOLDS_INT32(&array_iter)) {
+				pl_array.append(PlCompound("int",
+						PlTerm((long)bson_iter_int32(&array_iter))));
+			}
+			else if(BSON_ITER_HOLDS_INT64(&array_iter)) {
+				pl_array.append(PlCompound("int",
+						PlTerm((long)bson_iter_int32(&array_iter))));
+			}
+			else if(BSON_ITER_HOLDS_BOOL(&array_iter)) {
+				pl_array.append(PlCompound("bool",
+						PlTerm((long)bson_iter_bool(&array_iter))));
+			}
+			else if(BSON_ITER_HOLDS_DATE_TIME(&array_iter)) {
+				double sec_since_epoch = ((double)bson_iter_date_time(&array_iter))/1000.0;
+				pl_array.append(PlCompound("double", PlTerm(sec_since_epoch)));
+			}
+			else {
+				std::cout << "WARN: unsupported array type for key '" << key << "'" << std::endl;
+			}
 		}
 	}
 	pl_array.close();

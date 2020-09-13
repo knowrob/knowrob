@@ -36,6 +36,8 @@ public:
 	
 	void filter(const PlTerm &query_term);
 	
+	void aggregate(const PlTerm &query_term);
+
 	bool next(const bson_t **doc);
 	
 	bool erase();
@@ -46,6 +48,7 @@ private:
 	bson_t *query_;
 	bson_t *opts_;
 	std::string id_;
+	bool is_aggregate_query_;
 };
 
 #endif //__KB_MONGO_CURSOR_H__

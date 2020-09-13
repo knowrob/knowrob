@@ -48,39 +48,6 @@ db.triples.aggregate([
 { [ ... ] }
 */
 
-/*
-triple(R,owl:onProperty,P),
-triple(R,owl:minQualifiedCardinality,M),
-triple(R,owl:onClass,O)
--->
-db.triples.aggregate([
-   { $match: { p: onProperty } },
-   { $project: { "R": "$s", "P": "$o" }},
-   { $graphLookup: {
-      from: "triples", maxDepth: 0,
-      startWith: "$R", connectFromField: "s", connectToField: "s",
-      restrictSearchWithMatch: { p: minQualifiedCardinality},
-      as: "paths"
-    },
-    { $unwind: "$paths" },
-    { $project: { "R": "$R", "P": "$P", "M": "$paths.o" }},
-    { $graphLookup: {
-      from: "triples", maxDepth: 0,
-      startWith: "$R", connectFromField: "s", connectToField: "s",
-      restrictSearchWithMatch: { p: onClass },
-      as: "paths"
-    },
-    { $unwind: "$paths" },
-    { $project: { "R": "$R", "P": "$P", "M": "$M", "O": "$paths.o" }}
-])
--->
-{ "R": "....",
-  "P": "....",
-  "M": "....",
-  "O": "...."
-}
-*/
-
 :- use_module(library('http/json')).
 :- use_foreign_library('libmongo_kb.so').
 :- dynamic mng_db_name/1.
@@ -249,19 +216,19 @@ mng_index_create(DB,Collection,Keys) :-
 %
 mng_get_dict(Key,Doc,PlValue) :-
   get_dict(Key,Doc,MngValue),
-  mng_get_dict2(MngValue,PlValue).
+  mng_doc_value(MngValue,PlValue).
 
 %%
-mng_get_dict2([X|Xs],PlValue) :-
+mng_doc_value([X|Xs],PlValue) :-
 	findall(Key-PlValue_n,
 		(	member(Key-MngValue_n,[X|Xs]),
-			mng_get_dict2(MngValue_n,PlValue_n)
+			mng_doc_value(MngValue_n,PlValue_n)
 		),
 		Pairs
 	),
 	dict_pairs(PlValue,_,Pairs), !.
 
-mng_get_dict2(PlValue,PlValue).
+mng_doc_value(PlValue,PlValue).
 
 %% mng_dump(+DB, +Dir) is det.
 %
