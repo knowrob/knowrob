@@ -43,6 +43,13 @@ triple(Subject,Property,Value) +>
 
 %% aggregate(?Triples) is nondet.
 %
+% Query a conjunction of triples.
+% This is substantially faster then calling triple/3 due to a aggregate
+% query being generated for the conjunction.
+% The *Triples* list is a list holding terms `triple(S,P,O)`.
+%
+% @Triples a list of triple terms
+%
 aggregate(Triples) ?>
 	% unpack options and scope
 	options(Options),
