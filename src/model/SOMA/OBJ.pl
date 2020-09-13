@@ -162,6 +162,7 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @Obj IRI atom
 % @ShapeTerm A shape term
 % @ShapeOrigin The origin of the shape
+% @MaterialTerm List of material properties
 %
 object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 	triple(Obj,soma:hasShape,Shape),
@@ -172,10 +173,10 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 	},
 	object_shape_material(Obj,MaterialTerm).
 
+%%
 object_shape_material(Obj,material([rgb(RGB)])) ?>
 	object_color_rgb(Obj,RGB),
 	{ ! }.
-
 object_shape_material(_,material([])) ?> { true }.
 
 %%
