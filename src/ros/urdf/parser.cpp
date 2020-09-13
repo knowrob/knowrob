@@ -107,6 +107,29 @@ PlCompound to_prolog_geometry(urdf::GeometryConstSharedPtr geom) {
     }
 }
 
+PlTerm to_prolog_material(const urdf::MaterialSharedPtr& material) {
+	PlTermv mat_term(1);
+	PlTail args(mat_term[0]);
+	if(material) {
+		if(!material->texture_filename.empty()) {
+			PlTermv file_term(1);
+			file_term[0] = material->texture_filename.c_str();
+			args.append(PlCompound("texture_file",file_term));
+		}
+		//
+		PlTermv col_term(1);
+		PlTail col_list(col_term[0]);
+		col_list.append(material->color.r);
+		col_list.append(material->color.g);
+		col_list.append(material->color.b);
+		col_list.append(material->color.a);
+		col_list.close();
+		args.append(PlCompound("color", col_term));
+	}
+	args.close();
+	return PlCompound("material", mat_term);
+}
+
 /**************************************/
 /********** INIT URDF *****************/
 /**************************************/
@@ -292,24 +315,6 @@ PREDICATE(urdf_link_inertial, 5) {
 	}
 }
 
-//PREDICATE(urdf_link_material, 4) {
-//	urdf::LinkConstSharedPtr link = get_link(PL_A1,PL_A2);
-//        long index = (long) PL_A3;
-//        urdf::LinkConstSharedPtr link = get_link(urdf_id,link_name);
-//        if (!link_has_visual_with_index(link, index) ||
-//                !link->visual_array[index]->material ||
-//                link->visual_array[index]->material->texture_filename.compare("") == 0)
-//            return false;
-//        PL_A4 = link->visual_array[index]->material->texture_filename.c_str();
-//PlTermv rgba_term(PL_A4);
-//rgba_term[0] = link->visual_array[index]->material->color.r;
-//rgba_term[1] = link->visual_array[index]->material->color.g;
-//rgba_term[2] = link->visual_array[index]->material->color.b;
-//rgba_term[3] = link->visual_array[index]->material->color.a;
-//        PL_A4 = link->visual_array[index]->material->name.c_str();
-//        return true;
-//}
-
 // urdf_link_num_visuals(Object,Link,Count)
 PREDICATE(urdf_link_num_visuals, 3) {
 	urdf::LinkConstSharedPtr link = get_link(PL_A1,PL_A2);
@@ -317,16 +322,17 @@ PREDICATE(urdf_link_num_visuals, 3) {
 	return true;
 }
 
-// urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin)
-PREDICATE(urdf_link_nth_visual_shape, 5) {
+// urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin,MaterialTerm)
+PREDICATE(urdf_link_nth_visual_shape, 6) {
 	urdf::LinkConstSharedPtr link = get_link(PL_A1,PL_A2);
 	long index = (long) PL_A3;
-    if (link_has_visual_with_index(link, index)) {
-    	//link->visual_array[index]->name.c_str();
-    	PL_A4 = to_prolog_geometry(link->visual_array[index]->geometry);
-    	PL_A5 = to_prolog_pose(link->name,link->visual_array[index]->origin);
-        return true;
-    }
+	if (link_has_visual_with_index(link, index)) {
+		//link->visual_array[index]->name.c_str();
+		PL_A4 = to_prolog_geometry(link->visual_array[index]->geometry);
+		PL_A5 = to_prolog_pose(link->name,link->visual_array[index]->origin);
+		PL_A6 = to_prolog_material(link->visual_array[index]->material);
+		return true;
+	}
 	else {
 		return false;
 	}

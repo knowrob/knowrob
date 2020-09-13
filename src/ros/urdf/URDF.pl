@@ -17,7 +17,7 @@
 	  urdf_link_parent_joint/3,
 	  urdf_link_child_joints/3,
 	  urdf_link_inertial/5,
-	  urdf_link_visual_shape/4,
+	  urdf_link_visual_shape/5,
 	  urdf_link_collision_shape/4,
 	  urdf_joint_type/3,
 	  urdf_joint_child_link/3,
@@ -37,6 +37,7 @@
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 :- use_module(library('lang/query')).
+:- use_module(library('utility/url'), [ url_resolve/2 ]).
 
 :- use_foreign_library('liburdf_parser.so').
 
@@ -66,8 +67,12 @@ urdf_load(Object,File) :-
 % @File Path to URDF file
 % @Options List of options
 %
-urdf_load(Object,File,Options) :-
-	urdf_load_file(Object,File),
+urdf_load(Object,URL,Options) :-
+	(	url_resolve(URL,Resolved)
+	->	true
+	;	Resolved=URL 
+	),
+	urdf_load_file(Object,Resolved),
 	% assign urdf name to object
 	urdf_root_link(Object,RootLinkName),
 	tell(has_base_link_name(Object,RootLinkName)),
@@ -158,11 +163,11 @@ set_link_pose_(Object,Prefix,LinkName) :-
 
 %%
 %
-urdf_link_visual_shape(Object,Link,ShapeTerm,Origin) :-
+urdf_link_visual_shape(Object,Link,ShapeTerm,Origin,MaterialTerm) :-
 	urdf_link_num_visuals(Object,Link,Count),
 	N is Count - 1,
 	between(0,N,Index),
-	urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin).
+	urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin,MaterialTerm).
 
 %%
 %
@@ -294,12 +299,12 @@ has_parent_link(Joint,Link) ?+>
 %%
 % TODO: reconsider this
 % 
-object_shape(Obj,ShapeTerm,Origin) ?>
+object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
 	has_base_link_name(Obj,BaseName),
-	{ get_object_shape_(Obj,BaseName,ShapeTerm,Origin) }.
+	{ get_object_shape_(Obj,BaseName,ShapeTerm,Origin,MaterialTerm) }.
 
 %%
-get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot]) :-
+get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	has_urdf(Obj,Root),
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
@@ -312,7 +317,7 @@ get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot]) :-
 	),
 	member(LinkName,LinkNames),
 	urdf_link_visual_shape(Root,LinkName,
-		ShapeTerm,[Name,Pos,Rot]),
+		ShapeTerm,[Name,Pos,Rot],MaterialTerm),
 	atom_concat(Prefix,Name,Frame).
 
 /**************************************/
