@@ -219,7 +219,7 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 		  ['$set', ['v_scope', array([string('$scope')]) ]],
 		  ['$project', ProjectDoc] | Doc_inner],
 	triple_db(DB,Coll),
-	% TODO: compute fact scope and bind variables
+	%%
 	setup_call_cleanup(
 		% setup: create a query cursor
 		mng_cursor_create(DB,Coll,Cursor),
