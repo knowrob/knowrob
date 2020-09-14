@@ -6,6 +6,7 @@
           tripledb_tell(r,r,t,+,+),      % +Subject, +Property, +Value, +Fact_Scope, +Options
           tripledb_bulk_tell(t,+,+),     % +Triples, +Fact_Scope, +Options
           tripledb_ask(r,r,t,+,+,-),     % ?Subject, ?Property, ?Value, +Query_Scope, -Fact_Scope, +Options
+          tripledb_aggregate(t,+,+,-),   % ?Triples, +Query_Scope, -Fact_Scope, +Options
           tripledb_forget(r,r,r,+,+),    % ?Subject, ?Property, ?Value, +Query_Scope, +Options
           %%
           tripledb_cache_get(+,+,-),

@@ -122,6 +122,12 @@ PREDICATE(mng_cursor_filter, 2) {
 	return TRUE;
 }
 
+PREDICATE(mng_cursor_aggregate, 2) {
+	char* cursor_id = (char*)PL_A1;
+	MongoInterface::cursor(cursor_id)->aggregate(PL_A2);
+	return TRUE;
+}
+
 PREDICATE(mng_cursor_descending, 2) {
 	char* cursor_id = (char*)PL_A1;
 	char* key       = (char*)PL_A2;

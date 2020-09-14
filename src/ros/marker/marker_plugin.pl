@@ -139,6 +139,7 @@ marker_message1(MarkerData,_,ID->ID,MarkerData) :-
 
 marker_message1(Object,Scope,_->ID,MarkerData) :-
 	atom(Object),
+	!,
 	object_marker(Object,Scope,ID,MarkerData).
 
 marker_message1(MarkerTerm,Scope,ID->ID,MarkerData) :-
@@ -195,7 +196,6 @@ marker_loop :-
 	%%
 	marker_pull_all(MarkerTerms,[]),
 	marker_to_set(MarkerTerms,MarkerTerms0),
-	%%
 	setof(MarkerMessage,
 		(	member(MarkerTerm,MarkerTerms0),
 			marker_message(MarkerTerm,MarkerMessage)
@@ -204,6 +204,15 @@ marker_loop :-
 	marker_array_publish(MessageList),
 	%%
 	fail.
+
+%%
+% Republish all object markers.
+%
+republish :-
+	forall(
+		ask(is_physical_object(PO)),
+		ignore(show_marker(PO, PO, []))
+	).
 
 %%
 % Start thread when this file is consulted.

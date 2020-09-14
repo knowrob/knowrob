@@ -94,6 +94,18 @@ tripledb_ask(S,P,ValueQuery,QScope,FScope,Options) :-
 	;  triple_ask(S,P,ValueQuery,QScope,FScope,Options)
 	).
 
+%% 
+% @implements 'db/itripledb'
+%
+tripledb_aggregate(Triples,QScope,FScope,Options) :-
+	% TODO: allow annotation properties in aggregate queries?
+	%         - at the moment aggregate will just fail if Triples contains an annotation property
+	%             because documents are only drawn from triples collection.
+	%         - howver, it would be possible to draw documents annotations in the aggregate query.
+	%             but the query generated would need to know which collection to use.
+	% 
+	triple_aggregate(Triples,QScope,FScope,Options).
+
 %%
 % @implements 'db/itripledb'
 %

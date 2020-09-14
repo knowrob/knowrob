@@ -276,6 +276,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Neck -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Neck">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/PR2.owl#PR2Wheel -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PR2Wheel">
@@ -582,6 +590,7 @@
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_pan_link</urdf:hasBaseLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_ir_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_rgb_optical_frame</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_prosilica_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">high_def_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_l_stereo_camera_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</urdf:hasEndLinkName>
@@ -597,6 +606,26 @@
     
 
 
+    <!-- http://knowrob.org/kb/PR2.owl#PR2BackPlate_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2Neck_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Neck_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Neck"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">torso_lift_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">laser_tilt_link</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/PR2.owl#PR2_0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0">
@@ -606,6 +635,8 @@
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Base_0"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_L"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_R"/>
+        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0"/>
+        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Neck_0"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Head_0"/>
     </owl:NamedIndividual>
     
