@@ -25,7 +25,7 @@
 % define some settings
 :- setting(auto, boolean, true,
 	'Toggle whether marker messages are generated automatically when an object changes.').
-:- setting(reference_frame, string, '',
+:- setting(reference_frame, atom, '',
 	'The reference frame in which the position of markers is published.').
 
 %%
