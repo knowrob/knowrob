@@ -15,11 +15,12 @@
 %
 object_marker(Obj,Scope,
 	MarkerID,
-	[ pose(Origin)
+	[ pose(MarkerPose)
 	| MarkerData
 	]) :-
 	catch((
 		ask(object_shape(Obj,Shape,Origin,Material),Scope),
+		object_marker_pose_(Obj,Scope,Origin,MarkerPose),
 		Origin=[MarkerID,_,_],
 		object_marker1(Shape,Material,MarkerData)),
 		Exc,
@@ -61,6 +62,21 @@ object_marker1(
 	  color(RGBA)
 	]) :-
 	material_rgba(Material,RGBA).
+
+%%
+object_marker_pose_(Obj,Scope,Origin,MarkerPose) :-
+	setting(marker_plugin:reference_frame,Frame),
+	(	Frame=''
+	->	MarkerPose=Origin
+	;	(	Origin=[ObjFrame,Pos_shape,Rot_shape],
+			ask(is_at(Obj,[Frame,Pos_obj,Rot_obj]),Scope),
+			transform_multiply(
+				[foo,ObjFrame,Pos_shape,Rot_shape],
+				[ObjFrame,Frame,Pos_obj,Rot_obj],
+				[foo,Frame,Pos_frame,Rot_frame]),
+			MarkerPose=[Frame,Pos_frame,Rot_frame]
+		)
+	).
 
 %%
 material_rgba(material(Material),[R,G,B,A]) :-
