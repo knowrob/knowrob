@@ -512,7 +512,7 @@ triple_query_unify_p(Doc,QProperty,Options) :-
 	get_query_variable(QProperty,Property),
 	( ground(Property)
 	-> true
-	;  triple_query_unify_p1(Doc,Property,Options)
+	;  triple_query_unify_p1(Doc,string(Property),Options)
 	).
 
 triple_query_unify_p1(Doc,Property,Options) :-
