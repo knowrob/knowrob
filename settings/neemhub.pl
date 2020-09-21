@@ -5,6 +5,9 @@ setting(knowrob:plugins,
 	  'ros/marker/marker_plugin'
 	]).
 
+setting(marker_plugin:auto, false).
+setting(marker_plugin:reference_frame, 'map').
+
 %	Triple DB
 setting(tripledb:path, 'db/mongo/tripledb/plugin').
 setting(tripledb:drop_graphs, []).
