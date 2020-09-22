@@ -342,7 +342,7 @@ tripledb_init :-
 			setting(tripledb:drop_graphs,L),
 			forall(member(X,L), tripledb_graph_drop(X))
 		)
- 	).
+ 	),
 	%
 	itripledb_init.
 
