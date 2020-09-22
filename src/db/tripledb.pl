@@ -494,7 +494,10 @@ tripledb_cache_get(Predicate,Query,Modules) :-
 % @implements 'db/itripledb'
 %
 tripledb_cache_add(Predicate,Query,Module) :-
-  itripledb_cache_add(Predicate,Query,Module).
+	(	setting(mng_client:read_only, true)
+	->	true
+	;	itripledb_cache_add(Predicate,Query,Module)
+	).
 
 %% 
 % @implements 'db/itripledb'
