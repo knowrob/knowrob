@@ -176,10 +176,7 @@ tripledb_load(URL,Options) :-
   ),
   % get fact scope
   universal_scope(Scope),
-  ( setting(mng_client:read_only, true) 
-  	->  true
-  	; tripledb_load(URL,Scope,Graph)
-  ).
+  tripledb_load(URL,Scope,Graph).
 
 %% tripledb_load(+URL,+Scope,+Graph) is semidet.
 %
@@ -212,7 +209,10 @@ tripledb_load(URL,Scope,SubGraph) :-
 	),
 	!,
 	%%
-	tripledb_load0(Resolved,Scope,OntoGraph,SubGraph).
+	(	setting(mng_client:read_only, true)
+	->	true
+	;	tripledb_load0(Resolved,Scope,OntoGraph,SubGraph)
+	).
 
 tripledb_load0(Resolved,_,OntoGraph,_) :-
 	% test whether the ontology is already loaded
@@ -494,7 +494,10 @@ tripledb_cache_get(Predicate,Query,Modules) :-
 % @implements 'db/itripledb'
 %
 tripledb_cache_add(Predicate,Query,Module) :-
-  itripledb_cache_add(Predicate,Query,Module).
+	(	setting(mng_client:read_only, true)
+	->	true
+	;	itripledb_cache_add(Predicate,Query,Module)
+	).
 
 %% 
 % @implements 'db/itripledb'
