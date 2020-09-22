@@ -70,7 +70,6 @@ triple_init :-
 %
 load_graph_structure :-
 	triple_db(DB,Coll),
-		writeln(load_graph_structure(DB,Coll)),
 	mng_distinct_values(DB,Coll,'graph',Names),
 	forall(
 		member(NameString,Names),
@@ -81,7 +80,6 @@ load_graph_structure1(NameString) :-
 	string_to_atom(NameString,Name),
 	(	Name=user -> true ;
 	(	tripledb_add_subgraph(Name,common),
-		writeln(subgraph(user,Name)),
 		tripledb_add_subgraph(user,Name)
 	)).
 
