@@ -309,7 +309,7 @@ get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
 	),!,
-	setof(L,
+	bagof(L,
 		(	has_end_link_name(Obj,EndName),
 			urdf_chain(Root,BaseName,EndName,L)
 		),
