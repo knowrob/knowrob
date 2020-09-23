@@ -13,18 +13,12 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
-object_marker(Obj,QScope->_,
-	MarkerID,
-	[ pose(MarkerPose)
-	| MarkerData
-	]) :-
-	catch((
-		ask(object_shape(Obj,Shape,Origin,Material),QScope->_),
-		once((
-			object_marker_pose_(Obj,QScope->_,Origin,MarkerPose),
-			Origin=[MarkerID,_,_],
+object_marker(Obj,QScope->_,MarkerID,
+		[ pose(Pose) | MarkerData ]) :-
+	catch(
+		(	object_marker_shape(Obj,QScope,Shape,Material,MarkerID,Pose),
 			object_marker1(Shape,Material,MarkerData)
-		))),
+		),
 		Exc,
 		(log_error(Exc),fail)
 	).
@@ -66,19 +60,28 @@ object_marker1(
 	material_rgba(Material,RGBA).
 
 %%
-object_marker_pose_(Obj,Scope,Origin,MarkerPose) :-
+object_marker_shape(Obj,QScope,
+		Shape,Material,ObjFrame,Pose) :-
 	setting(marker_plugin:reference_frame,Frame),
-	(	Frame=''
-	->	MarkerPose=Origin
-	;	(	Origin=[ObjFrame,Pos_shape,Rot_shape],
-			ask(is_at(Obj,[Frame,Pos_obj,Rot_obj]),Scope),
-			transform_multiply(
-				[foo,ObjFrame,Pos_shape,Rot_shape],
-				[ObjFrame,Frame,Pos_obj,Rot_obj],
-				[foo,Frame,Pos_frame,Rot_frame]),
-			MarkerPose=[Frame,Pos_frame,Rot_frame]
-		)
-	).
+	!,
+	% Get the pose of Obj in given reference frame
+	once(ask(is_at(Obj,[Frame,Pos_obj,Rot_obj]),QScope->_)),
+	% Get an object shape
+	ask(object_shape(Obj,Shape,Origin,Material),QScope->_),
+	% Compute the marker pose in given frame
+	% FIXME: might be faster to have special handling for identity transform
+	Origin=[ObjFrame,Pos_shape,Rot_shape],
+	transform_multiply(
+		[foo,ObjFrame,Pos_shape,Rot_shape],
+		[ObjFrame,Frame,Pos_obj,Rot_obj],
+		[foo,Frame,Pos_frame,Rot_frame]),
+	Pose=[Frame,Pos_frame,Rot_frame].
+
+object_marker_shape(Obj,QScope,
+		Shape,Material,ObjFrame,Pose) :-
+	% Get an object shape
+	ask(object_shape(Obj,Shape,Pose,Material),QScope->_),
+	Pose=[ObjFrame,_,_].
 
 %%
 material_rgba(material(Material),[R,G,B,A]) :-
