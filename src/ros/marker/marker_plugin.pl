@@ -198,12 +198,14 @@ marker_loop :-
 	%%
 	marker_pull_all(MarkerTerms,[]),
 	marker_to_set(MarkerTerms,MarkerTerms0),
-	setof(MarkerMessage,
+	findall(MarkerMessage,
 		(	member(MarkerTerm,MarkerTerms0),
 			marker_message(MarkerTerm,MarkerMessage)
 		),
 		MessageList),
-	marker_array_publish(MessageList),
+	(	MessageList=[] -> true
+	;	marker_array_publish(MessageList)
+	),
 	%%
 	fail.
 
