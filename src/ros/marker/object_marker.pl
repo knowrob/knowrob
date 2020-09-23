@@ -13,6 +13,13 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
+object_marker(Obj,_,_,_) :-
+	(	has_type(Obj,urdf:'Link')
+	;	has_type(Obj,urdf:'Joint')
+	),
+	!,
+	fail.
+
 object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 	catch(
 		object_marker0(Obj,QScope,MarkerID,MarkerData),
