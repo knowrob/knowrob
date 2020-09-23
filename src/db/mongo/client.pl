@@ -125,7 +125,7 @@ mng_distinct_values(DB,Collection,Key,DistinctValues) :-
   get_dict(values, DistinctDict, ValuesMng),
   findall(V, (
       member(V_mng,ValuesMng),
-      mng_pl_value(V_mng,V)
+      mng_doc_value(V_mng,V)
   ), DistinctValues).
 
 %%

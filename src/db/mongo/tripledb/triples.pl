@@ -18,8 +18,7 @@
 	[ rdf_meta/1 ]).
 :- use_module(library('utility/filesystem'),
 	[ path_concat/3 ]).
-:- use_module(library('db/subgraph'),
-	[ tripledb_get_supgraphs/2]).
+:- use_module(library('db/subgraph')).
 :- use_module(library('db/scope')).
 
 :- use_module('../client.pl').
@@ -51,14 +50,38 @@ triple_db(DB, Name) :-
 %
 triple_init :-
 	triple_db(DB,Coll),
+	load_graph_structure,
 	% create indices
-	forall(
-		triple_search_index_(IndexKeys),
-		(	append(IndexKeys,['graph'],IndexKeys0),
-			append_scope_index_(IndexKeys0,IndexKeys1),
-			mng_index_create(DB,Coll,IndexKeys1)
+	(	setting(mng_client:read_only, true)
+	->	true
+	;	forall(
+			triple_search_index_(IndexKeys),
+			(	append(IndexKeys,['graph'],IndexKeys0),
+				append_scope_index_(IndexKeys0,IndexKeys1),
+				mng_index_create(DB,Coll,IndexKeys1)
+			)
 		)
 	).
+
+%%
+% This is used to avoid that there are any orphan graphs in case
+% of there are some ontologies loaded already into the triple DB
+% when KnowRob is started.
+%
+load_graph_structure :-
+	triple_db(DB,Coll),
+	mng_distinct_values(DB,Coll,'graph',Names),
+	forall(
+		member(NameString,Names),
+		load_graph_structure1(NameString)
+	).
+
+load_graph_structure1(NameString) :-
+	string_to_atom(NameString,Name),
+	(	Name=user -> true ;
+	(	tripledb_add_subgraph(Name,common),
+		tripledb_add_subgraph(user,Name)
+	)).
 
 %%
 % The set of composed indices over triples.
