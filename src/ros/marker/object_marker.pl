@@ -72,9 +72,9 @@ object_marker_shape(Obj,QScope,
 	% FIXME: might be faster to have special handling for identity transform
 	Origin=[ObjFrame,Pos_shape,Rot_shape],
 	transform_multiply(
-		[foo,ObjFrame,Pos_shape,Rot_shape],
-		[ObjFrame,Frame,Pos_obj,Rot_obj],
-		[foo,Frame,Pos_frame,Rot_frame]),
+		[Frame,ObjFrame,Pos_obj,Rot_obj],
+		[ObjFrame,foo,Pos_shape,Rot_shape],
+		[Frame,foo,Pos_frame,Rot_frame]),
 	Pose=[Frame,Pos_frame,Rot_frame].
 
 object_marker_shape(Obj,QScope,
