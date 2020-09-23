@@ -45,6 +45,16 @@
     [ namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
     ]).
 
+%% has_urdf(+Object,+RootObject) is semidet.
+%
+% True if Object is a part of RootObject, and RootObject is assigned
+% to some URDF description.
+%
+% @Part IRI atom
+% @Root IRI atom
+%
+:- dynamic has_urdf/2.
+
 %% urdf_load(+Object,+File) is semidet.
 %
 % Same as urdf_load/3 with empty options list.
@@ -90,7 +100,8 @@ urdf_load(Object,URL,Options) :-
 			has_base_link_name(Y,YName)
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
-			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]]))
+			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
+			assertz(has_urdf(Y,Object))
 		)
 	),
 	% optional: load links and joints as rdf objects
@@ -98,21 +109,6 @@ urdf_load(Object,URL,Options) :-
 	->	load_rdf_(Object,Parts,OptPrefix)
 	;	true
 	).
-
-%% has_urdf(+Object,+RootObject) is semidet.
-%
-% True if Object is a part of RootObject, and RootObject is assigned
-% to some URDF description.
-%
-% @Part IRI atom
-% @Root IRI atom
-%
-has_urdf(Root,Root) :-
-	urdf_is_loaded(Root),
-	!.
-has_urdf(Part,Root) :-
-	has_part(X,Part),
-	has_urdf(X,Root).
 
 %% urdf_set_pose_to_origin(+Object,+Frame) is semidet.
 %
