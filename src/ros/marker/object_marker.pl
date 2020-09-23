@@ -13,16 +13,18 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
-object_marker(Obj,Scope,
+object_marker(Obj,QScope->_,
 	MarkerID,
 	[ pose(MarkerPose)
 	| MarkerData
 	]) :-
 	catch((
-		ask(object_shape(Obj,Shape,Origin,Material),Scope),
-		object_marker_pose_(Obj,Scope,Origin,MarkerPose),
-		Origin=[MarkerID,_,_],
-		object_marker1(Shape,Material,MarkerData)),
+		ask(object_shape(Obj,Shape,Origin,Material),QScope->_),
+		once((
+			object_marker_pose_(Obj,QScope->_,Origin,MarkerPose),
+			Origin=[MarkerID,_,_],
+			object_marker1(Shape,Material,MarkerData)
+		))),
 		Exc,
 		(log_error(Exc),fail)
 	).
