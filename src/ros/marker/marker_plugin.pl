@@ -106,6 +106,7 @@ hide_marker(MarkerID) :-
 %
 marker_message(marker(add,ID,Term,Parameters),
 		[Action,ID0,Type,Pose,Scale,Color,Mesh,Text]) :-
+	!,
 	%% get marker data
 	get_marker_scope(Parameters,Scope),
 	marker_message1(Term,[[],Scope]->_,ID->ID0,Data0),
@@ -135,14 +136,14 @@ marker_message(marker(delete,ID,_,_),[Action,ID]) :-
 	!.
 
 %%
-marker_message1(MarkerData,_,ID->ID,MarkerData) :-
-	is_list(MarkerData),
-	!.
-
 marker_message1(Object,Scope,_->ID,MarkerData) :-
 	atom(Object),
 	!,
 	object_marker(Object,Scope,ID,MarkerData).
+
+marker_message1(MarkerData,_,ID->ID,MarkerData) :-
+	is_list(MarkerData),
+	!.
 
 marker_message1(MarkerTerm,Scope,ID->ID,MarkerData) :-
 	compound(MarkerTerm),
@@ -160,7 +161,8 @@ get_marker_scope(Options,Scope) :-
 	!.
 
 get_marker_scope(_,Scope) :-
-	current_scope(Scope).
+	current_scope(Scope),
+	!.
 
 %%
 % Get all queued markers.
@@ -213,9 +215,10 @@ marker_loop :-
 % Republish all object markers.
 %
 republish :-
+	current_scope(Scope),
 	forall(
 		ask(is_physical_object(PO)),
-		ignore(show_marker(PO, PO, []))
+		ignore(show_marker(PO, PO, [scope(Scope)]))
 	).
 
 %%

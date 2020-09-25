@@ -164,14 +164,16 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @ShapeOrigin The origin of the shape
 % @MaterialTerm List of material properties
 %
-object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
-	triple(Obj,soma:hasShape,Shape),
-	triple(Shape,dul:hasRegion,ShapeRegion),
-	rdf_split_url(_,Frame,Obj),
-	{ shape_data(ShapeRegion,ShapeTerm),
-	  shape_origin(ShapeRegion,[Pos,Rot])
-	},
-	object_shape_material(Obj,MaterialTerm).
+object_shape(_,_,_,_) ?>
+	{ fail }.
+%object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
+%	triple(Obj,soma:hasShape,Shape),
+%	triple(Shape,dul:hasRegion,ShapeRegion),
+%	rdf_split_url(_,Frame,Obj),
+%	{ shape_data(ShapeRegion,ShapeTerm),
+%	  shape_origin(ShapeRegion,[Pos,Rot])
+%	},
+%	object_shape_material(Obj,MaterialTerm).
 
 %%
 object_shape_material(Obj,material([rgb(RGB)])) ?>

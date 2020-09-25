@@ -238,7 +238,7 @@ static bool bsonpl_append_typed(bson_t *doc, const char *key, const PlTerm &term
 		bson_set_error(err,
 			MONGOC_ERROR_BSON,
 			MONGOC_ERROR_BSON_INVALID,
-			"invalid type: %s", term.name()
+			"invalid type: %s", (char*)term
 		);
 		return false;
 	}

@@ -296,7 +296,7 @@ has_parent_link(Joint,Link) ?+>
 % TODO: reconsider this
 % 
 object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
-	{ has_urdf(Obj,Root) },
+	{ has_urdf(Obj,Root), ! },
 	has_base_link_name(Obj,BaseName),
 	{ get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm) }.
 

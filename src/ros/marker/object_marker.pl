@@ -2,24 +2,20 @@
 	[ object_marker/4
 	]).
 
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_split_url/3 ]).
 :- use_module(library('model/SOMA/OBJ'),
     [ object_shape/4
     ]).
-
-%% object_marker(+Obj,-MarkerData) is semidet.
+:- use_module(library('ros/tf/tf_tree')).
+	
+%% object_marker
 %
 % Maps an object entity to its marker parameters.
 %
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
-object_marker(Obj,_,_,_) :-
-	(	has_type(Obj,urdf:'Link')
-	;	has_type(Obj,urdf:'Joint')
-	),
-	!,
-	fail.
-
 object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 	catch(
 		object_marker0(Obj,QScope,MarkerID,MarkerData),
@@ -29,11 +25,9 @@ object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 
 object_marker0(Obj,QScope,MarkerID,
 		[ pose(Pose) | MarkerData ]) :-
-	bagof([Shape0,Origin0,Material0],
-		ask(object_shape(Obj,Shape0,Origin0,Material0),QScope->_),
-		Shapes
-	),
-	get_shape_(Obj,QScope,Shapes,Shape,Material,MarkerID,Pose),
+	ask(object_shape(Obj,Shape,Origin,Material),QScope->_),
+	QScope=[_,QS],
+	get_shape_pose_(QS,Origin,MarkerID,Pose),
 	object_marker1(Shape,Material,MarkerData).
 
 object_marker1(
@@ -73,27 +67,29 @@ object_marker1(
 	material_rgba(Material,RGBA).
 
 %%
-get_shape_(Obj,QScope,Shapes,
-		Shape,Material,ObjFrame,Pose) :-
+get_shape_pose_(QS,Origin,ObjFrame,Pose) :-
 	setting(marker_plugin:reference_frame,Frame),
+	Frame \= '',
 	!,
-	% Get the pose of Obj in given reference frame
-	once(ask(is_at(Obj,[Frame,Pos_obj,Rot_obj]),QScope->_)),
-	% Get an object shape
-	member([Shape,Origin,Material],Shapes),
+	time_scope_data(QS,[_QSince,QUntil]),
+	tf_plugin:strip_operator_(QUntil,Stamp),
+	Origin=[ObjFrame,Pos_shape,Rot_shape],
+	% Get the pose of Part in given reference frame
+	%rdf_split_url(IRIPrefix,_,Obj),
+	%rdf_split_url(IRIPrefix,ObjFrame,Part),
+	%once(ask(is_at(Part,[Frame,Pos_obj,Rot_obj]),QScope->_)),
+	tf_tree_get(Stamp,Tree),
+	tf_tree_lookup(Tree,ObjFrame,[Frame,Pos_obj,Rot_obj]),
 	% Compute the marker pose in given frame
 	% FIXME: might be faster to have special handling for identity transform
-	Origin=[ObjFrame,Pos_shape,Rot_shape],
 	transform_multiply(
 		[Frame,ObjFrame,Pos_obj,Rot_obj],
-		[ObjFrame,foo,Pos_shape,Rot_shape],
-		[Frame,foo,Pos_frame,Rot_frame]),
+		[ObjFrame,shape,Pos_shape,Rot_shape],
+		[Frame,shape,Pos_frame,Rot_frame]),
 	Pose=[Frame,Pos_frame,Rot_frame].
 
-get_shape_(_Obj,_QScope,Shapes,
-		Shape,Material,ObjFrame,Pose) :-
-	% Get an object shape
-	member([Shape,Pose,Material],Shapes),
+get_shape_pose_(_,Pose,ObjFrame,Pose) :-
+	!,
 	Pose=[ObjFrame,_,_].
 
 %%
@@ -108,4 +104,3 @@ material_rgba(material(Material),[R,G,B,1]) :-
 	!.
 
 material_rgba(_,[1,1,1,1]).
-
