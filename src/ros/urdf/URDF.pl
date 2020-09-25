@@ -84,22 +84,26 @@ urdf_load(Object,URL,Options) :-
 	),
 	urdf_load_file(Object,Resolved),
 	% assign urdf name to object
+	% TODO: only do this on first load
 	urdf_root_link(Object,RootLinkName),
 	tell(has_base_link_name(Object,RootLinkName)),
 	% assign prefix to object
+	% TODO: only do this on first load
 	option(prefix(OptPrefix),Options,''),
 	(	OptPrefix=''
 	->	true
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
+	% TODO: auto-create InformationObject+Realization
 	% get all the object parts
-	findall(X, transitive(triple(Object,dul:hasPart,X)), Parts),
+	findall(X, transitive(triple(Object,dul:hasComponent,X)), Parts),
 	% set component poses relative to links
 	forall(
 		(	member(Y,[Object|Parts]),
 			has_base_link_name(Y,YName)
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
+			% TODO: only do this on first load
 			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
 			assertz(has_urdf(Y,Object))
 		)

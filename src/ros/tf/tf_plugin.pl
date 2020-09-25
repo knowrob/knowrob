@@ -13,6 +13,7 @@
 
 :- use_foreign_library('libtf_plugin.so').
 
+:- use_module(library(settings)).
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).
 :- use_module(library('utility/algebra'),
@@ -33,6 +34,9 @@
 	]).
 :- use_module(library('db/mongo/client')).
 
+% define some settings
+:- setting(use_logger, boolean, true,
+	'Toggle whether TF messages are logged into the mongo DB.').
 
 tf_db(DB, Name) :- 
 	mng_get_db(DB, Name, 'tf').
@@ -84,7 +88,10 @@ tf_set_pose(Obj,PoseData,FS) :-
 	rdf_split_url(_,ObjFrame,Obj),
 	time_scope_data(FS,[Since,_Until]),
 	tf_mem_set_pose(ObjFrame,PoseData,Since),
-	tf_mng_store(ObjFrame,PoseData,Since).
+	(	setting(tf_plugin:use_logger,false)
+	->	true
+	;	tf_mng_store(ObjFrame,PoseData,Since)
+	).
 
 %%
 tf_get_pose(Obj,PoseQuery,QS,FS) :-
@@ -218,7 +225,12 @@ tf_mng_init :-
 	mng_db_name(DB),
 	tf_logger_set_db_name(DB),
 	tf_db(DB, Name),
-	mng_index_create(DB,Name,['child_frame_id','header.stamp']).
+	mng_index_create(DB,Name,['child_frame_id','header.stamp']),
+	%%
+	(	setting(tf_plugin:use_logger,false)
+	->	true
+	;	tf_logger_enable
+	).
 %%
 :- tf_mng_init.
 
