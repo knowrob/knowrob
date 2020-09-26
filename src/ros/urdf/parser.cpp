@@ -217,6 +217,19 @@ PREDICATE(urdf_load_file, 2) {
 	}
 }
 
+// urdf_load_xml(Object, XML_data)
+PREDICATE(urdf_load_xml, 2) {
+	std::string xml_data((char*)PL_A2);
+	if(get_robot_model(PL_A1).initString(xml_data)) {
+		return true;
+	} else {
+		std::unique_lock<std::mutex> lock(robot_models_mtx);
+		std::string urdf_id((char*)PL_A1);
+		robot_models.erase(urdf_id);
+		return false;
+	}
+}
+
 // urdf_is_loaded(Object)
 PREDICATE(urdf_is_loaded,1) {
 	std::string urdf_id((char*)PL_A1);

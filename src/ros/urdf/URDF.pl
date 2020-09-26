@@ -29,7 +29,8 @@
 	  urdf_joint_hard_limits/5,
 	  urdf_joint_soft_limits/5,
 	  urdf_joint_damping/3,
-	  urdf_joint_friction/3
+	  urdf_joint_friction/3,
+	  urdf_init/0
     ]).
 
 :- use_module(library('semweb/rdf_db'),
@@ -38,12 +39,54 @@
     [ tripledb_load/2 ]).
 :- use_module(library('lang/query')).
 :- use_module(library('utility/url'), [ url_resolve/2 ]).
+:- use_module(library('utility/filesystem'), [ path_concat/3 ]).
+:- use_module(library(http/http_client)).
 
 :- use_foreign_library('liburdf_parser.so').
 
 :- tripledb_load('http://knowrob.org/kb/URDF.owl',
     [ namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
     ]).
+
+%% has_urdf(+Object,+RootObject) is semidet.
+%
+% True if Object is a part of RootObject, and RootObject is assigned
+% to some URDF description.
+%
+% @Part IRI atom
+% @Root IRI atom
+%
+:- dynamic has_urdf/2.
+
+%%
+%
+%
+urdf_init :-
+	forall(
+		has_kinematics_file(Object,Identifier,'URDF'),
+		urdf_init(Object,Identifier)
+	).
+
+urdf_init(Object,Identifier) :-
+	% FIXME: hardcoded URL
+	DATA_URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/',
+	atomic_list_concat([Identifier,urdf],'.',Filename),
+	path_concat(DATA_URL,Filename,URL),
+	% get XML data
+	http_get(URL,XML_data,[]),
+	% parse data
+	urdf_load_xml(Object,XML_data),
+	% create has_urdf facts
+	bagof(X,
+		transitive(triple(Object,dul:hasComponent,X)),
+		Parts
+	),
+	forall(
+		member(Y,[Object|Parts]),
+		(	has_urdf(Y,Object) -> true
+		;	assertz(has_urdf(Y,Object))
+		)
+	).
 
 %% urdf_load(+Object,+File) is semidet.
 %
@@ -73,24 +116,32 @@ urdf_load(Object,URL,Options) :-
 	;	Resolved=URL 
 	),
 	urdf_load_file(Object,Resolved),
+	% create IO and IR objects in triple store
+	file_base_name(Resolved,FileName),
+	file_name_extension(Identifier,_,FileName),
+	tell(has_kinematics_file(Object,Identifier,'URDF')),
 	% assign urdf name to object
+	% TODO: only do this on first load
 	urdf_root_link(Object,RootLinkName),
 	tell(has_base_link_name(Object,RootLinkName)),
 	% assign prefix to object
+	% TODO: only do this on first load
 	option(prefix(OptPrefix),Options,''),
 	(	OptPrefix=''
 	->	true
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
-	findall(X, transitive(triple(Object,dul:hasPart,X)), Parts),
+	findall(X, transitive(triple(Object,dul:hasComponent,X)), Parts),
 	% set component poses relative to links
 	forall(
 		(	member(Y,[Object|Parts]),
 			has_base_link_name(Y,YName)
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
-			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]]))
+			% TODO: only do this on first load
+			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
+			assertz(has_urdf(Y,Object))
 		)
 	),
 	% optional: load links and joints as rdf objects
@@ -98,21 +149,6 @@ urdf_load(Object,URL,Options) :-
 	->	load_rdf_(Object,Parts,OptPrefix)
 	;	true
 	).
-
-%% has_urdf(+Object,+RootObject) is semidet.
-%
-% True if Object is a part of RootObject, and RootObject is assigned
-% to some URDF description.
-%
-% @Part IRI atom
-% @Root IRI atom
-%
-has_urdf(Root,Root) :-
-	urdf_is_loaded(Root),
-	!.
-has_urdf(Part,Root) :-
-	has_part(X,Part),
-	has_urdf(X,Root).
 
 %% urdf_set_pose_to_origin(+Object,+Frame) is semidet.
 %
@@ -300,25 +336,35 @@ has_parent_link(Joint,Link) ?+>
 % TODO: reconsider this
 % 
 object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
+	{ has_urdf(Obj,Root), ! },
 	has_base_link_name(Obj,BaseName),
-	{ get_object_shape_(Obj,BaseName,ShapeTerm,Origin,MaterialTerm) }.
+	{ get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm) }.
 
 %%
-get_object_shape_(Obj,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
-	has_urdf(Obj,Root),
+get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
 	),!,
-	setof(L,
+	bagof(L,
 		(	has_end_link_name(Obj,EndName),
-			urdf_chain(Root,BaseName,EndName,L)
+			urdf_catch(urdf_chain(Root,BaseName,EndName,L))
 		),
 		LinkNames
 	),
 	member(LinkName,LinkNames),
-	urdf_link_visual_shape(Root,LinkName,
-		ShapeTerm,[Name,Pos,Rot],MaterialTerm),
+	urdf_catch(urdf_link_visual_shape(Root,LinkName,
+		ShapeTerm,[Name,Pos,Rot],MaterialTerm)),
 	atom_concat(Prefix,Name,Frame).
+
+%%
+urdf_catch(Goal) :-
+	catch(
+		call(Goal),
+		urdf_error(Err),
+		(	print_message(error,urdf_error(Err)),
+			fail
+		)
+	).
 
 /**************************************/
 /********** FOREIGN LIBRARY ***********/
