@@ -347,14 +347,24 @@ get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	),!,
 	bagof(L,
 		(	has_end_link_name(Obj,EndName),
-			urdf_chain(Root,BaseName,EndName,L)
+			urdf_catch(urdf_chain(Root,BaseName,EndName,L))
 		),
 		LinkNames
 	),
 	member(LinkName,LinkNames),
-	urdf_link_visual_shape(Root,LinkName,
-		ShapeTerm,[Name,Pos,Rot],MaterialTerm),
+	urdf_catch(urdf_link_visual_shape(Root,LinkName,
+		ShapeTerm,[Name,Pos,Rot],MaterialTerm)),
 	atom_concat(Prefix,Name,Frame).
+
+%%
+urdf_catch(Goal) :-
+	catch(
+		call(Goal),
+		urdf_error(Err),
+		(	print_message(error,urdf_error(Err)),
+			fail
+		)
+	).
 
 /**************************************/
 /********** FOREIGN LIBRARY ***********/
