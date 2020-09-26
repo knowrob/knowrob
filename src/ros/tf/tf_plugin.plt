@@ -30,40 +30,40 @@ test_pose_alex1(['Fred',[0.0,1.0,0.0],[0.0,0.0,0.0,1.0]], 1593178680.123).
 
 test_set_pose(Object,Pose,Stamp) :-
 	time_scope(=(Stamp), =<('Infinity'), FScope),
-	assert_true(tf_set_pose(Object,Pose,FScope)).
+	assert_true(tf_plugin:tf_set_pose(Object,Pose,FScope)).
 
 test_get_pose(Object,Stamp,Expected) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_true(tf_get_pose(Object,_,QScope,_)),
-	( tf_get_pose(Object,Actual,QScope,_)
+	assert_true(tf_plugin:tf_get_pose(Object,_,QScope,_)),
+	( tf_plugin:tf_get_pose(Object,Actual,QScope,_)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).
 
 test_trajectory(Obj,Begin,End,Expected) :-
-	assert_true(tf_get_trajectory(Obj,Begin,End,_)),
-	( tf_get_trajectory(Obj,Begin,End,Actual)
+	assert_true(tf_plugin:tf_get_trajectory(Obj,Begin,End,_)),
+	( tf_plugin:tf_get_trajectory(Obj,Begin,End,Actual)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).
 
 test_transform_pose(Object,Stamp,Query) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_true(tf_get_pose(Object,Query,QScope,_)).
+	assert_true(tf_plugin:tf_get_pose(Object,Query,QScope,_)).
 
 test_lookup(Frame,Stamp,Expected) :-
-	assert_true(tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)),
-	( tf_mng_lookup(Frame,Stamp,Stamp,Actual,_,_)
+	assert_true(tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)),
+	( tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,Actual,_,_)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).
 
 test_lookup_fails(Frame,Stamp) :-
-	assert_false(tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)).
+	assert_false(tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)).
 
 test_is_unlocalized(Object,Stamp) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_false(tf_get_pose(Object,_,QScope,_)).
+	assert_false(tf_plugin:tf_get_pose(Object,_,QScope,_)).
 
 test('tf_pose') :-
 	test_pose_fred0(Pose0,Stamp0),
