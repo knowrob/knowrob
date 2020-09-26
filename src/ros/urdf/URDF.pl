@@ -83,6 +83,10 @@ urdf_load(Object,URL,Options) :-
 	;	Resolved=URL 
 	),
 	urdf_load_file(Object,Resolved),
+	% create IO and IR objects in triple store
+	file_base_name(Resolved,FileName),
+	file_name_extension(Identifier,_,FileName),
+	tell(has_kinematics_file(Object,Identifier,'URDF')),
 	% assign urdf name to object
 	% TODO: only do this on first load
 	urdf_root_link(Object,RootLinkName),

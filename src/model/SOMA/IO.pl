@@ -1,6 +1,8 @@
 :- module(model_SOMA_IO,
     [ is_computational_agent(r),
-      is_digital_object(r)
+      is_digital_object(r),
+      is_kino_dynamic_data(r),
+      has_kinematics_file(r,?,?)
     ]).
 /** <module> ....
 
@@ -28,3 +30,23 @@ is_computational_agent(Entity) ?+>
 %
 is_digital_object(Entity) ?+>
   has_type(Entity, soma:'DigitalObject').
+
+%% has_kinematics_file(?OBJ,?DOI,?Format) is semidet.
+%
+is_kino_dynamic_data(IO) ?+>
+	has_type(IO, soma:'KinoDynamicData').
+
+%% has_kinematics_file(?OBJ,?DOI,?Format) is semidet.
+%
+% Associates an object to KinoDynamicData about the object.
+%
+% @param Obj An entity IRI.
+% @param Identifier The DOI of a data file.
+% @param Format File format identifier string (i.e. the file extension).
+%
+has_kinematics_file(Obj,Identifier,Format) ?+>
+	triple(IO, dul:isAbout, Obj),
+	triple(IO, rdf:type, soma:'KinoDynamicData'),
+	triple(IR, dul:realizes, IO),
+	triple(IR, soma:hasPersistentIdentifier, Identifier),
+	triple(IR, soma:hasDataFormat, Format).
