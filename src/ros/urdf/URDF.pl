@@ -29,7 +29,8 @@
 	  urdf_joint_hard_limits/5,
 	  urdf_joint_soft_limits/5,
 	  urdf_joint_damping/3,
-	  urdf_joint_friction/3
+	  urdf_joint_friction/3,
+	  urdf_init/0
     ]).
 
 :- use_module(library('semweb/rdf_db'),
@@ -38,6 +39,8 @@
     [ tripledb_load/2 ]).
 :- use_module(library('lang/query')).
 :- use_module(library('utility/url'), [ url_resolve/2 ]).
+:- use_module(library('utility/filesystem'), [ path_concat/3 ]).
+:- use_module(library(http/http_client)).
 
 :- use_foreign_library('liburdf_parser.so').
 
@@ -54,6 +57,36 @@
 % @Root IRI atom
 %
 :- dynamic has_urdf/2.
+
+%%
+%
+%
+urdf_init :-
+	forall(
+		has_kinematics_file(Object,Identifier,'URDF'),
+		urdf_init(Object,Identifier)
+	).
+
+urdf_init(Object,Identifier) :-
+	% FIXME: hardcoded URL
+	DATA_URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/',
+	atomic_list_concat([Identifier,urdf],'.',Filename),
+	path_concat(DATA_URL,Filename,URL),
+	% get XML data
+	http_get(URL,XML_data,[]),
+	% parse data
+	urdf_load_xml(Object,XML_data),
+	% create has_urdf facts
+	bagof(X,
+		transitive(triple(Object,dul:hasComponent,X)),
+		Parts
+	),
+	forall(
+		member(Y,[Object|Parts]),
+		(	has_urdf(Y,Object) -> true
+		;	assertz(has_urdf(Y,Object))
+		)
+	).
 
 %% urdf_load(+Object,+File) is semidet.
 %
@@ -98,7 +131,6 @@ urdf_load(Object,URL,Options) :-
 	->	true
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
-	% TODO: auto-create InformationObject+Realization
 	% get all the object parts
 	findall(X, transitive(triple(Object,dul:hasComponent,X)), Parts),
 	% set component poses relative to links

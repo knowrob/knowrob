@@ -19,7 +19,7 @@ path_delimiter('/').
 %% path_concat(+Prefix, +Suffix, ?Path)
 %
 % Concatenate path prefix with path suffix.
-% Makes sure that one filesytem delimiter is added time_between
+% Makes sure that one filesytem delimiter is added between
 % Prefix and Suffix.
 %
 path_concat(Prefix, Suffix, Path) :-
