@@ -96,7 +96,7 @@ show_marker(MarkerID, MarkerTerm, Options) :-
 % @param Timepoint The given timepoint
 %
 show_marker(Timepoint) :-
-	time_scope(=<(Timepoint), >=(Timepoint), Scope)
+	time_scope(=<(Timepoint), >=(Timepoint), Scope),
 	forall(
 		ask(is_physical_object(PO)),
 		writeln(show_marker(PO, PO, [scope(Scope)]))
