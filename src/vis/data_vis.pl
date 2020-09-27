@@ -86,7 +86,7 @@ timeline(Events) :-
   findall(Time, (
     member(Evt, Events),
     once((
-      interval(Evt, [T0,T1]),
+      time_interval_data(Evt, T0,T1),
       atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
   data_vis(timeline(event_timeline),
