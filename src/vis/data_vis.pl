@@ -79,8 +79,8 @@ timeline(Events) :-
   findall(EvtName, (
     member(Evt,Events),
     once((
-      rdfs_type_of(Evt,EvtType),
-      rdf_split_url(_,EvtName,EvtType))),
+      is_classified_by(Evt, Task),
+      rdf_split_url(_,EvtName,Task))),
     interval(Evt, [_,_])
   ), EvtNames),
   findall(Time, (

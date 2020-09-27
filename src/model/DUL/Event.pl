@@ -8,6 +8,7 @@
       %        - probably better assert all into another module then user,
       %          then prefer this over user
       %is_process(r),
+      is_classified_by(r,r),
       has_participant(r,r),
       has_participant(r,r,r),
       executes_task(r,r),
@@ -105,6 +106,16 @@ has_participant(Evt,Participant) ?+>
 has_participant(Evt,Participant,Class) ?>
   holds(Evt,dul:hasParticipant,Participant),
   has_object_type(Participant,Class).
+
+%% is_classified_by(+Evt, ?Tsk) is nondet
+%
+% 
+%
+% @param Evt The Event
+% @param Task The task that classifies the Event
+is_classified_by(Evt, Task) ?+>
+  holds(Evt,dul:isClassifiedBy,Task).
+
 
 %% executes_task(?Act,?Tsk) is nondet.
 %

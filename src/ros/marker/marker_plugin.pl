@@ -88,6 +88,21 @@ show_marker(MarkerID, MarkerTerm, Options) :-
 		marker(add, MarkerID, MarkerTerm, Options)
 	).
 
+
+%% show_marker(+TimePoint) is semidet.
+%
+% Republish all markers of a given timepoint
+%
+% @param Timepoint The given timepoint
+%
+show_marker(Timepoint) :-
+	time_scope(=<(Timepoint), >=(Timepoint), Scope)
+	forall(
+		ask(is_physical_object(PO)),
+		writeln(show_marker(PO, PO, [scope(Scope)]))
+	).
+
+
 %% hide_marker(+MarkerID) is det.
 %
 % Remove a visualization marker.
