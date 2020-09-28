@@ -219,12 +219,13 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	%% read options 
 	option(graph(Graph), Options, user),
+	triple_db(DB,Coll),
 	%%
 	read_triple_(FirstTriple,S,P,Operator,Value,Unit),
 	read_vars_(S,P,Value,FirstTripleVars),
 	read_vars_2(FirstTripleVars,FirstVars),
 	%%
-	triple_aggregate1(Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
+	triple_aggregate1(Coll,Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
 	%%
 	triple_query_document_(S,P,
 			Operator,Value,Unit,
@@ -241,7 +242,6 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	Doc=[ ['$match', QueryDoc],
 		  ['$set', ['v_scope', array([string('$scope')]) ]],
 		  ['$project', ProjectDoc] | Doc_inner],
-	triple_db(DB,Coll),
 	%%
 	setup_call_cleanup(
 		% setup: create a query cursor
@@ -267,8 +267,8 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	).
 
 %%
-triple_aggregate1([],_,_,Vars,[],Vars) :- !.
-triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
+triple_aggregate1(_,[],_,_,Vars,[],Vars) :- !.
+triple_aggregate1(Coll,[Triple|Xs],QScope,Graph,Vars0,
 		[Lookup0,Unwind0,Scopes0,Project0|Doc_inner],
 		Vars_n) :-
 	read_triple_(Triple,S,P,Operator,Value,Unit),
@@ -284,7 +284,7 @@ triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
 	read_vars_2(TripleVars,Vars1),
 	append(Vars0,Vars1,Vars_new),
 	list_to_set(Vars_new,Vars2),
-	triple_aggregate1(Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
+	triple_aggregate1(Coll,Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
     %%%%%% $lookup
 	triple_query_document_(S,P,
 			Operator,Value,Unit,
@@ -297,7 +297,7 @@ triple_aggregate1([Triple|Xs],QScope,Graph,Vars0,
 		LetDoc
 	),
 	Lookup0=['$lookup', [
-		['from',string('triples')],
+		['from',string(Coll)],
 		% create a field "next" with all matching documents
 		['as',string('next')],
 		% make fields from input document accessible in pipeline
