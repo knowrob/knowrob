@@ -1,6 +1,7 @@
 :- module(marker_plugin,
 	[ show_marker/2,
 	  show_marker/3,
+	  show_markers/1,
 	  hide_marker/1,
 	  marker_type/2,
 	  marker_action/2
@@ -95,11 +96,11 @@ show_marker(MarkerID, MarkerTerm, Options) :-
 %
 % @param Timepoint The given timepoint
 %
-show_marker(Timepoint) :-
+show_markers(Timepoint) :-
 	time_scope(=<(Timepoint), >=(Timepoint), Scope),
 	forall(
 		ask(is_physical_object(PO)),
-		writeln(show_marker(PO, PO, [scope(Scope)]))
+		show_marker(PO, PO, [scope(Scope)])
 	).
 
 
