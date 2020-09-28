@@ -30,7 +30,8 @@
     [
       data_vis/2,
       data_vis_remove/1,
-      timeline/1
+      timeline/1,
+      timeline_data/1
     ]).
 /** <module> Methods for data visualization
   
@@ -79,15 +80,36 @@ timeline(Events) :-
   findall(EvtName, (
     member(Evt,Events),
     once((
-      rdfs_type_of(Evt,EvtType),
-      rdf_split_url(_,EvtName,EvtType))),
-    interval(Evt, [_,_])
+      is_classified_by(Evt, Task),
+      rdf_split_url(_,EvtName,Task))),
+    time_interval_data(Evt, _,_)
   ), EvtNames),
   findall(Time, (
     member(Evt, Events),
     once((
-      interval(Evt, [T0,T1]),
+      time_interval_data(Evt, T0,T1),
       atomic_list_concat([T0,T1], '_', Time)))
+  ), EventExtends),
+  writeln('c'),
+  data_vis(timeline(event_timeline),
+          [values:[[EvtNames,EventExtends]]]).
+
+%% timeline_data(+Events:list) is det
+%
+% Creates a new data_vis timeline message and publishes it via _|/data_vis_msgs|_
+% ROS topic.
+%
+% @param EventData list of list of the form [[Events, Task, Start, End]]
+%
+timeline_data(EventsData) :-
+  findall(EvtName, (
+    member([_,Task,_,_],EventsData),
+    once((
+      rdf_split_url(_,EvtName,Task)))
+  ), EvtNames),
+  findall(Time, (
+    member([_,_,Start,End], EventsData),
+    atomic_list_concat([Start, End],'_',Time)
   ), EventExtends),
   data_vis(timeline(event_timeline),
           [values:[[EvtNames,EventExtends]]]).

@@ -1,6 +1,7 @@
 :- module(marker_plugin,
 	[ show_marker/2,
 	  show_marker/3,
+	  show_markers/1,
 	  hide_marker/1,
 	  marker_type/2,
 	  marker_action/2
@@ -87,6 +88,21 @@ show_marker(MarkerID, MarkerTerm, Options) :-
 		ros_marker_queue,
 		marker(add, MarkerID, MarkerTerm, Options)
 	).
+
+
+%% show_marker(+TimePoint) is semidet.
+%
+% Republish all markers of a given timepoint
+%
+% @param Timepoint The given timepoint
+%
+show_markers(Timepoint) :-
+	time_scope(=<(Timepoint), >=(Timepoint), Scope),
+	forall(
+		ask(is_physical_object(PO)),
+		show_marker(PO, PO, [scope(Scope)])
+	).
+
 
 %% hide_marker(+MarkerID) is det.
 %
