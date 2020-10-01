@@ -58,7 +58,7 @@ tf_mng_remember(Directory) :-
 	tf_logger_set_db_name(DB),
 	path_concat(Directory,ros_tf,TFDir),
 	mng_restore(DB,TFDir),
-        mng_index_create(DB,tf,['child_frame_id','header.stamp']).
+	mng_index_create(DB,tf,['child_frame_id','header.stamp']).
 
 %%
 tf_mng_memorize(Directory) :-
