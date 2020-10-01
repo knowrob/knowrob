@@ -54,7 +54,7 @@ tf_mng_whipe :-
 %%
 tf_mng_remember(Directory) :-
 	mng_db_name(DB),
-	tf_mng_whipe(),
+	tf_mng_whipe,
 	tf_logger_set_db_name(DB),
 	path_concat(Directory,ros_tf,TFDir),
 	mng_restore(DB,TFDir),
