@@ -1,9 +1,14 @@
 
 %	Plugins
 setting(knowrob:plugins,
-	[ 'comm/ros/tf/tf_plugin',
-	  'comm/ros/marker/marker_plugin'
+	[ 'ros/tf/tf_plugin',
+	  'ros/marker/marker_plugin'
 	]).
+
+setting(marker_plugin:auto, false).
+setting(marker_plugin:reference_frame, 'map').
+
+setting(tf_plugin:use_logger, false).
 
 %	Triple DB
 setting(tripledb:path, 'db/mongo/tripledb/plugin').
@@ -14,6 +19,6 @@ setting(mng_client:read_only, true).
 
 %	Remote Mongo Setting
 setting(mng_client:db_name, 'neems').
-setting(mng_client:collection_prefix, '5f22b1f512db5aed7cd1961b').
+setting(mng_client:collection_prefix, '5f22b1f512db5aed7cd1961a').
 
 

@@ -5,6 +5,7 @@
       triple_drop/0,
       triple_tell(r,r,t,+,+),
       triple_ask(r,r,t,+,+,-),
+      triple_aggregate(t,+,+,-),
       triple_erase(r,r,t,+,+)
     ]).
 /** <module> Triple store backend using mongo DB.
@@ -17,8 +18,7 @@
 	[ rdf_meta/1 ]).
 :- use_module(library('utility/filesystem'),
 	[ path_concat/3 ]).
-:- use_module(library('db/subgraph'),
-	[ tripledb_get_supgraphs/2]).
+:- use_module(library('db/subgraph')).
 :- use_module(library('db/scope')).
 
 :- use_module('../client.pl').
@@ -50,14 +50,38 @@ triple_db(DB, Name) :-
 %
 triple_init :-
 	triple_db(DB,Coll),
+	load_graph_structure,
 	% create indices
-	forall(
-		triple_search_index_(IndexKeys),
-		(	append(IndexKeys,['graph'],IndexKeys0),
-			append_scope_index_(IndexKeys0,IndexKeys1),
-			mng_index_create(DB,Coll,IndexKeys1)
+	(	setting(mng_client:read_only, true)
+	->	true
+	;	forall(
+			triple_search_index_(IndexKeys),
+			(	append(IndexKeys,['graph'],IndexKeys0),
+				append_scope_index_(IndexKeys0,IndexKeys1),
+				mng_index_create(DB,Coll,IndexKeys1)
+			)
 		)
 	).
+
+%%
+% This is used to avoid that there are any orphan graphs in case
+% of there are some ontologies loaded already into the triple DB
+% when KnowRob is started.
+%
+load_graph_structure :-
+	triple_db(DB,Coll),
+	mng_distinct_values(DB,Coll,'graph',Names),
+	forall(
+		member(NameString,Names),
+		load_graph_structure1(NameString)
+	).
+
+load_graph_structure1(NameString) :-
+	string_to_atom(NameString,Name),
+	(	Name=user -> true ;
+	(	tripledb_add_subgraph(Name,common),
+		tripledb_add_subgraph(user,Name)
+	)).
 
 %%
 % The set of composed indices over triples.
@@ -192,6 +216,181 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 
 %%
 %
+triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
+	%% read options 
+	option(graph(Graph), Options, user),
+	triple_db(DB,Coll),
+	%%
+	read_triple_(FirstTriple,S,P,Operator,Value,Unit),
+	read_vars_(S,P,Value,FirstTripleVars),
+	read_vars_2(FirstTripleVars,FirstVars),
+	%%
+	triple_aggregate1(Coll,Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
+	%%
+	triple_query_document_(S,P,
+			Operator,Value,Unit,
+			QScope,Graph,QueryDoc),
+	findall([Pr_Key,string(Pr_Value)], (
+		%
+		(	Pr_Key='v_scope',
+			atom_concat('$',Pr_Key,Pr_Value)
+		)
+	;	(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
+			atom_concat('$',Pr_Value0,Pr_Value)
+		)
+	), ProjectDoc),
+	Doc=[ ['$match', QueryDoc],
+		  ['$set', ['v_scope', array([string('$scope')]) ]],
+		  ['$project', ProjectDoc] | Doc_inner],
+	%%
+	setup_call_cleanup(
+		% setup: create a query cursor
+		mng_cursor_create(DB,Coll,Cursor),
+		% call: find matching document
+		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
+			mng_cursor_materialize(Cursor,Result_doc),
+			triple_aggregate_unify_(Result_doc,AllVars),
+			%% handle scope
+			% TODO: it would be possible to compute scope intersections in mongo!
+			%
+			mng_get_dict('v_scope',Result_doc,array(ScopesData)),
+			findall(S0,
+				(	member(Data0,ScopesData),
+					mng_client:mng_doc_value(Data0,S0)
+				),
+				[FirstScope|RestScopes]
+			),
+			doc_scopes_intersect_b_(FirstScope,RestScopes,FScope)
+		),
+		% cleanup: destroy cursor again
+		mng_cursor_destroy(Cursor)
+	).
+
+%%
+triple_aggregate1(_,[],_,_,Vars,[],Vars) :- !.
+triple_aggregate1(Coll,[Triple|Xs],QScope,Graph,Vars0,
+		[Lookup0,Unwind0,Scopes0,Project0|Doc_inner],
+		Vars_n) :-
+	read_triple_(Triple,S,P,Operator,Value,Unit),
+	read_vars_(S,P,Value,TripleVars),
+	% find all joins with input documents
+	findall([Field_j,Value_j],
+		(	member([Field_j,_,Value_j],TripleVars),
+			member([Field_j,_],Vars0)
+		),
+		Joins
+	),
+	%%%%%% recursion
+	read_vars_2(TripleVars,Vars1),
+	append(Vars0,Vars1,Vars_new),
+	list_to_set(Vars_new,Vars2),
+	triple_aggregate1(Coll,Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
+    %%%%%% $lookup
+	triple_query_document_(S,P,
+			Operator,Value,Unit,
+			QScope,Graph,QueryDoc),
+	aggregate_match_(Joins,MatchDoc),
+	findall([Let_key,string(Let_val)],
+		(	member([Let_key,_],Joins),
+			atom_concat('$',Let_key,Let_val)
+		),
+		LetDoc
+	),
+	Lookup0=['$lookup', [
+		['from',string(Coll)],
+		% create a field "next" with all matching documents
+		['as',string('next')],
+		% make fields from input document accessible in pipeline
+		['let',LetDoc],
+		% get matching documents
+		['pipeline', array([['$match', [
+			['$expr', ['$and', array(MatchDoc)]] |
+			QueryDoc
+		]]])]
+	]],
+	%%%%%% $unwind the next field
+	Unwind0=['$unwind',string('$next')],
+	%%%%%% $set scopes, $setUnion is used to avoid duplicate scopes
+	Scopes0=['$set',['v_scope',['$setUnion',
+		array([string('$v_scope'), array([string('$next.scope')])])
+	]]],
+	%%%%%% $project
+	findall([Pr_Key,string(Pr_Value)],(
+		%
+		(	Pr_Key='v_scope',
+			atom_concat('$',Pr_Key,Pr_Value)
+		)
+		% copy value of var e.g. { 'S': '$S' }
+	;	(	member([Pr_Key,_],Vars0),
+			atom_concat('$',Pr_Key,Pr_Value)
+		)
+		% set new value of var e.g. { 'S': '$next.s' }
+	;	(	member([Pr_Key,_,Field],TripleVars),
+			\+ member([Pr_Key,_],Vars0),
+			atom_concat('$next.',Field,Pr_Value)
+		)
+	), ProjectDoc),
+	Project0=['$project', ProjectDoc].
+
+%%
+triple_aggregate_unify_(_,[]) :- !.
+triple_aggregate_unify_(Doc,[X|Xs]) :-
+	triple_aggregate_unify_1(Doc,X),
+	triple_aggregate_unify_(Doc,Xs).
+
+triple_aggregate_unify_1(_,['_id',_]) :-
+	!.
+triple_aggregate_unify_1(Doc,[VarKey,Var]) :-
+	mng_get_dict(VarKey,Doc,TypedValue),
+	strip_type_(TypedValue,_,Value),
+	Var=Value.
+
+%%
+aggregate_match_(Joins,MatchDoc) :-
+	findall(['$eq', array([string(Match_key),string(Match_val)])],
+		% { $eq: [ "$s",  "$$R" ] },
+		(	member([Join_var,Join_field],Joins),
+			atom_concat('$',Join_field,Match_key),
+			atom_concat('$$',Join_var,Match_val)
+		),
+		MatchDoc
+	).
+
+%%
+read_triple_(
+		triple(QSubject,QProperty,QValue),
+		Subject,
+		Property,
+		MngOperator,MngValue,Unit) :-
+	strip_variable(QSubject,Subject),
+	strip_variable(QProperty,Property),
+	strip_variable(QValue,ValueQuery),
+	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit).
+
+%%
+read_vars_(S,P,Value,Vars) :-
+	strip_type_(S,_,S0),
+	strip_type_(P,_,P0),
+	strip_type_(Value,_,Value0),
+	read_vars_1([ [S0,'s'], [P0,'p'], [Value0,'o'] ],Vars).
+read_vars_1( [],[] ) :- !.
+read_vars_1( [[Var,_]|Xs], Ys ) :-
+	\+ var(Var),
+	!,
+	read_vars_1(Xs,Ys).
+read_vars_1( [[Var,Field]|Xs],
+	         [[Key,Var,Field]|Ys]) :-
+	term_to_atom(Var,Var0),
+	atom_concat('v',Var0,Key),
+	read_vars_1(Xs,Ys).
+
+%%
+read_vars_2([],[]) :- !.
+read_vars_2([[X0,X1,_]|Xs],[[X0,X1]|Ys]) :-
+	read_vars_2(Xs,Ys).
+
+%%
+%
 triple_erase(Subject,Property,ValueQuery,QScope,Options) :-
 	%% read options
 	option(graph(Graph), Options, user),
@@ -253,8 +452,7 @@ get_supclasses_(Cls,SuperClasses) :-
 		 *******************************/
 
 %% create a query cursor
-triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor) :-
-	triple_db(DB,Coll),
+triple_query_document_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Filter) :-
 	( taxonomical_property(Property,_,_)
 	-> ( Key_p='p',  Key_o='o*' )
 	;  ( Key_p='p*', Key_o='o' )
@@ -282,7 +480,11 @@ triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor)
 		;	filter_scope_(Scope,X)
 		),
 		Filter
-	),
+	).
+
+triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor) :-
+	triple_query_document_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Filter),
+	triple_db(DB,Coll),
 	mng_cursor_create(DB,Coll,Cursor,[Filter]),
 	!.
 
@@ -333,7 +535,7 @@ triple_query_unify_p(Doc,QProperty,Options) :-
 	get_query_variable(QProperty,Property),
 	( ground(Property)
 	-> true
-	;  triple_query_unify_p1(Doc,Property,Options)
+	;  triple_query_unify_p1(Doc,string(Property),Options)
 	).
 
 triple_query_unify_p1(Doc,Property,Options) :-
@@ -450,6 +652,11 @@ doc_scopes_intersect_(Scope,[],Scope) :- !.
 doc_scopes_intersect_(Scope0,[First|Rest],MergedScope) :-
 	mng_get_dict('scope',First,Scope1),
 	scope_intersect(Scope0,Scope1,Scope2),
+	doc_scopes_intersect_(Scope2,Rest,MergedScope).
+
+doc_scopes_intersect_b_(Scope,[],Scope) :- !.
+doc_scopes_intersect_b_(Scope0,[First|Rest],MergedScope) :-
+	scope_intersect(Scope0,First,Scope2),
 	doc_scopes_intersect_(Scope2,Rest,MergedScope).
 
 %%

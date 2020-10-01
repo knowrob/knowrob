@@ -10,7 +10,7 @@
       object_color_rgb(r,?),
       object_dimensions(r,?,?,?),
       object_mesh_path(r,?),
-      object_shape(r,-,-),
+      object_shape(r,-,-,-),
       object_shape_type(r,r),
       %% Features
       is_feature(r),
@@ -145,7 +145,7 @@ object_color_rgb(Obj,[R,G,B]) +>
   update(holds(Color,dul:hasRegion,Region)),
   notify(object_changed(Obj)).
 
-%% object_shape(?Obj,?ShapeTerm,?ShapeOrigin) is nondet.
+%% object_shape(?Obj,?ShapeTerm,?ShapeOrigin,?MaterialTerm) is nondet.
 %
 % Relates objects to shapes and their origin (usually a pose relative to the object).
 % The shape is represented as a Prolog term that encodes the shape type
@@ -162,14 +162,22 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @Obj IRI atom
 % @ShapeTerm A shape term
 % @ShapeOrigin The origin of the shape
+% @MaterialTerm List of material properties
 %
-object_shape(Obj,ShapeTerm,[Frame,Pos,Rot]) ?>
+object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
 	rdf_split_url(_,Frame,Obj),
 	{ shape_data(ShapeRegion,ShapeTerm),
 	  shape_origin(ShapeRegion,[Pos,Rot])
-	}.
+	},
+	object_shape_material(Obj,MaterialTerm).
+
+%%
+object_shape_material(Obj,material([rgb(RGB)])) ?>
+	object_color_rgb(Obj,RGB),
+	{ ! }.
+object_shape_material(_,material([])) ?> { true }.
 
 %%
 shape_data(ShapeRegion,mesh(File,Scale)) :-

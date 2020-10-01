@@ -25,6 +25,8 @@
 % define some settings
 :- setting(auto, boolean, true,
 	'Toggle whether marker messages are generated automatically when an object changes.').
+:- setting(reference_frame, atom, '',
+	'The reference frame in which the position of markers is published.').
 
 %%
 :- message_queue_create(_,[alias(ros_marker_queue)]).
@@ -104,6 +106,7 @@ hide_marker(MarkerID) :-
 %
 marker_message(marker(add,ID,Term,Parameters),
 		[Action,ID0,Type,Pose,Scale,Color,Mesh,Text]) :-
+	!,
 	%% get marker data
 	get_marker_scope(Parameters,Scope),
 	marker_message1(Term,[[],Scope]->_,ID->ID0,Data0),
@@ -133,13 +136,14 @@ marker_message(marker(delete,ID,_,_),[Action,ID]) :-
 	!.
 
 %%
+marker_message1(Object,Scope,_->ID,MarkerData) :-
+	atom(Object),
+	!,
+	object_marker(Object,Scope,ID,MarkerData).
+
 marker_message1(MarkerData,_,ID->ID,MarkerData) :-
 	is_list(MarkerData),
 	!.
-
-marker_message1(Object,Scope,_->ID,MarkerData) :-
-	atom(Object),
-	object_marker(Object,Scope,ID,MarkerData).
 
 marker_message1(MarkerTerm,Scope,ID->ID,MarkerData) :-
 	compound(MarkerTerm),
@@ -157,7 +161,8 @@ get_marker_scope(Options,Scope) :-
 	!.
 
 get_marker_scope(_,Scope) :-
-	current_scope(Scope).
+	current_scope(Scope),
+	!.
 
 %%
 % Get all queued markers.
@@ -195,15 +200,26 @@ marker_loop :-
 	%%
 	marker_pull_all(MarkerTerms,[]),
 	marker_to_set(MarkerTerms,MarkerTerms0),
-	%%
-	setof(MarkerMessage,
+	findall(MarkerMessage,
 		(	member(MarkerTerm,MarkerTerms0),
 			marker_message(MarkerTerm,MarkerMessage)
 		),
 		MessageList),
-	marker_array_publish(MessageList),
+	(	MessageList=[] -> true
+	;	marker_array_publish(MessageList)
+	),
 	%%
 	fail.
+
+%%
+% Republish all object markers.
+%
+republish :-
+	current_scope(Scope),
+	forall(
+		ask(is_physical_object(PO)),
+		ignore(show_marker(PO, PO, [scope(Scope)]))
+	).
 
 %%
 % Start thread when this file is consulted.
