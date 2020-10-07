@@ -34,7 +34,7 @@ is_digital_object(Entity) ?+>
 %% has_kinematics_file(?OBJ,?DOI,?Format) is semidet.
 %
 is_kino_dynamic_data(IO) ?+>
-	has_type(IO, soma:'KinoDynamicData').
+  has_type(IO, soma:'KinoDynamicData').
 
 %% has_kinematics_file(?OBJ,?DOI,?Format) is semidet.
 %
@@ -45,8 +45,9 @@ is_kino_dynamic_data(IO) ?+>
 % @param Format File format identifier string (i.e. the file extension).
 %
 has_kinematics_file(Obj,Identifier,Format) ?+>
-	triple(IO, dul:isAbout, Obj),
-	triple(IO, rdf:type, soma:'KinoDynamicData'),
-	triple(IR, dul:realizes, IO),
-	triple(IR, soma:hasPersistentIdentifier, Identifier),
-	triple(IR, soma:hasDataFormat, Format).
+  has_type(IO,soma:'KinoDynamicData'),
+  triple(IO, dul:isAbout, Obj),
+  has_type(IR,io:'DigitalResource'),
+  triple(IR, dul:realizes, IO),
+  triple(IR, soma:hasPersistentIdentifier, Identifier),
+  triple(IR, soma:hasDataFormat, Format).
