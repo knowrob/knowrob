@@ -47,7 +47,7 @@ is_kino_dynamic_data(IO) ?+>
 has_kinematics_file(Obj,Identifier,Format) ?+>
   has_type(IO,soma:'KinoDynamicData'),
   triple(IO, dul:isAbout, Obj),
-  has_type(IR,dul:'InformationRealization'),
+  has_type(IR,io:'DigitalResource'),
   triple(IR, dul:realizes, IO),
   triple(IR, soma:hasPersistentIdentifier, Identifier),
   triple(IR, soma:hasDataFormat, Format).
