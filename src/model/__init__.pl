@@ -6,10 +6,6 @@
 :- use_module('./QUDT.pl').
 :- use_module('./portray.pl').
 
-% load init files in sub-directories
-:- use_directory('DUL').
-:- use_directory('SOMA').
-
 % load additional ontologies
 :- tripledb_load(
         'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
@@ -19,6 +15,10 @@
         'http://knowrob.org/kb/knowrob.owl',
         [ namespace(knowrob)
         ]).
+
+% load init files in sub-directories
+:- use_directory('DUL').
+:- use_directory('SOMA').
 
 %
 :- use_module('./notify.pl').
