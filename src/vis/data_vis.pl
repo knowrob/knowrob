@@ -92,7 +92,7 @@ timeline(Events) :-
   ), EventExtends),
   writeln('c'),
   data_vis(timeline(event_timeline),
-          [values:[[EvtNames,EventExtends]]]).
+          [values:[EvtNames,EventExtends]]).
 
 %% timeline_data(+Events:list) is det
 %
@@ -112,7 +112,7 @@ timeline_data(EventsData) :-
     atomic_list_concat([Start, End],'_',Time)
   ), EventExtends),
   data_vis(timeline(event_timeline),
-          [values:[[EvtNames,EventExtends]]]).
+          [values:[EvtNames,EventExtends]]).
 
 data_vis_set_(Key,Msg,Value) :-
   get_dict(Key,Msg,[Type,_]),
