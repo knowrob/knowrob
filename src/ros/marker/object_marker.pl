@@ -16,6 +16,10 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
+object_marker(Obj,_,_,_) :-
+	is_urdf_joint(Obj), !,
+	fail.
+
 object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 	catch(
 		object_marker0(Obj,QScope,MarkerID,MarkerData),
