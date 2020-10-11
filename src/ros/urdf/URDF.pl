@@ -62,6 +62,13 @@
 %
 %
 urdf_init :-
+	% close opened files
+	forall(
+		has_urdf(X,X),
+		urdf_unload_file(X)
+	),
+	retractall(has_urdf(_,_)),
+	%
 	forall(
 		has_kinematics_file(Object,Identifier,'URDF'),
 		urdf_init(Object,Identifier)
