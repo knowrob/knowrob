@@ -5,6 +5,7 @@
       is_role(r),   % ?Role
       is_agent(r),
       is_physical_object(r),
+      is_physical_artifact(r),
       is_social_object(r),
       has_object_type(r,r),
       has_quality_type(r,r),
@@ -33,6 +34,7 @@ In DUL, Object is defined as:
 :- table(g_is_role/1).
 :- table(g_is_agent/1).
 :- table(g_is_physical_object/1).
+:- table(g_is_physical_artifact/1).
 :- table(g_is_social_object/1).
 
 % load RDF data
@@ -93,6 +95,15 @@ is_agent(Entity), [table(?)] ?+>
 %
 is_physical_object(Entity), [table(?)] ?+>
   has_type(Entity, dul:'PhysicalObject').
+
+%% is_physical_artifact(?Entity) is nondet.
+%
+% True iff Entity is an instance of dul:'PhysicalArtifact'.
+%
+% @param Entity An entity IRI.
+%
+is_physical_artifact(Entity), [table(?)] ?+>
+  has_type(Entity, dul:'PhysicalArtifact').
 
 %% is_social_object(?Entity) is nondet.
 %
