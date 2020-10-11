@@ -181,7 +181,7 @@ object_shape_material(_,material([])) ?> { true }.
 
 %%
 shape_data(ShapeRegion,mesh(File,Scale)) :-
-	holds(ShapeRegion,soma:hasFilePath,File),
+	triple(ShapeRegion,soma:hasFilePath,File),
 	shape_scale(ShapeRegion,Scale),
 	!.
 
