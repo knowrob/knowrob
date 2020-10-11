@@ -204,7 +204,7 @@ mng_index_create(DB,Collection,Keys) :-
 	findall(K,
 		(	member(K0,Keys),
 			format_key_(K0,K)
-		).
+		),
 		Keys0
 	),
   ( setting(mng_client:read_only, true)
