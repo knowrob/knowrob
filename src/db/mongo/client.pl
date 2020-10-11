@@ -127,14 +127,6 @@ mng_distinct_values(DB,Collection,Key,DistinctValues) :-
       member(V_mng,ValuesMng),
       mng_doc_value(V_mng,V)
   ), DistinctValues).
-
-%%
-mng_index_create(DB,Indices) :-
-  forall(
-    ( member([Coll,Keys],Indices),
-      member(Key,Keys) ),
-    ( mng_index_create(DB,Coll,Key) )
-  ).
   
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -209,10 +201,28 @@ mng_cursor_materialize(Cursor,Next,Dict) :-
 % @param Keys List of keys for which an index shall be created
 %
 mng_index_create(DB,Collection,Keys) :-
+	findall(K,
+		(	member(K0,Keys),
+			format_key_(K0,K)
+		).
+		Keys0
+	),
   ( setting(mng_client:read_only, true)
     -> true
-    ; mng_index_create_core(DB,Collection,Keys)
+    ; mng_index_create_core(DB,Collection,Keys0)
   ).
+
+%%
+mng_index_create(DB,Indices) :-
+  forall(
+    member([Coll,Keys],Indices),
+    mng_index_create(DB,Coll,Keys)
+  ).
+
+%%
+format_key_(+(K),+(K)) :- !.
+format_key_(-(K),-(K)) :- !.
+format_key_(  K, +(K)) :- !.
 
 
 %% mng_get_dict(?Key,+Doc,?PlValue) is semidet.
