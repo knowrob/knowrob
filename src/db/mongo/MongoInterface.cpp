@@ -19,6 +19,8 @@ static mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
 static mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
 
+static PlAtom ATOM_minus("-");
+
 /*********************************/
 /********** static functions *****/
 /*********************************/
@@ -206,7 +208,14 @@ void MongoInterface::create_index(const char *db_name, const char *coll_name, co
 	PlTail pl_list(keys_pl);
 	PlTerm pl_member;
 	while(pl_list.next(pl_member)) {
-		BSON_APPEND_INT32(&keys, (char*)pl_member, 1);
+		const PlAtom mode_atom(pl_member.name());
+		const PlTerm &pl_value = pl_member[1];
+		if(mode_atom == ATOM_minus) {
+			BSON_APPEND_INT32(&keys, (char*)pl_value, -1);
+		}
+		else {
+			BSON_APPEND_INT32(&keys, (char*)pl_value, 1);
+		}
 	}
 	char *index_name = mongoc_collection_keys_to_index_string(&keys);
 	//
