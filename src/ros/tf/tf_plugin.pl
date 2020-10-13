@@ -228,7 +228,7 @@ tf_mng_init :-
 	mng_db_name(DB),
 	tf_logger_set_db_name(DB),
 	tf_db(DB, Name),
-	mng_index_create(DB,Name,['child_frame_id','header.stamp']),
+	mng_index_create(DB,Name,[+'child_frame_id',-'header.stamp']),
 	%%
 	(	setting(tf_plugin:use_logger,false)
 	->	true
@@ -285,20 +285,24 @@ tf_mng_lookup2(Cursor,Next,LastStamp,PoseData,FSince,FUntil) :-
 % Convert mongo document to pose term.
 %
 tf_mng_doc_pose(Doc,ObjFrame,Time,[ParentFrame,[TX,TY,TZ],[QX,QY,QZ,QW]]) :-
-	mng_get_dict(header,Doc,Header),
-	mng_get_dict(transform,Doc,PoseDoc),
-	mng_get_dict(translation,PoseDoc,TDoc),
-	mng_get_dict(rotation,PoseDoc,QDoc),
-	%%
-	mng_get_dict(child_frame_id,Doc,string(ObjFrame)),
-	mng_get_dict(frame_id,Header,string(ParentFrame)),
-	mng_get_dict(stamp,Header,double(Time)),
-	%%
-	mng_get_dict(x,TDoc,double(TX)),
-	mng_get_dict(y,TDoc,double(TY)),
-	mng_get_dict(z,TDoc,double(TZ)),
-	%%
-	mng_get_dict(x,QDoc,double(QX)),
-	mng_get_dict(y,QDoc,double(QY)),
-	mng_get_dict(z,QDoc,double(QZ)),
-	mng_get_dict(w,QDoc,double(QW)).
+	get_dict(child_frame_id,Doc,
+		string(ObjFrame)
+	),
+	get_dict(header,Doc,[
+		_,
+		stamp-double(Time),
+		frame_id-string(ParentFrame)
+	]),
+	get_dict(transform,Doc,[
+		translation-[
+			x-double(TX),
+			y-double(TY),
+			z-double(TZ)
+		],
+		rotation-[
+			x-double(QX),
+			y-double(QY),
+			z-double(QZ),
+			w-double(QW)
+		]
+	]).

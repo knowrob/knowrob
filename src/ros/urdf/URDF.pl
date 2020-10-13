@@ -30,6 +30,8 @@
 	  urdf_joint_soft_limits/5,
 	  urdf_joint_damping/3,
 	  urdf_joint_friction/3,
+	  is_urdf_link(r),
+	  is_urdf_joint(r),
 	  urdf_init/0
     ]).
 
@@ -62,6 +64,13 @@
 %
 %
 urdf_init :-
+	% close opened files
+	forall(
+		has_urdf(X,X),
+		urdf_unload_file(X)
+	),
+	retractall(has_urdf(_,_)),
+	%
 	forall(
 		has_kinematics_file(Object,Identifier,'URDF'),
 		urdf_init(Object,Identifier)
@@ -291,6 +300,19 @@ set_links_(Part,Prefix) :-
 /**************************************/
 /*********** LANG EXTENSIONS **********/
 /**************************************/
+
+:- table(g_is_urdf_link/1).
+:- table(g_is_urdf_joint/1).
+
+%% is_urdf_link(?Entity) is semidet.
+%
+is_urdf_link(Entity), [table(?)] ?+>
+  has_type(Entity, urdf:'Link').
+
+%% is_urdf_joint(?Entity) is semidet.
+%
+is_urdf_joint(Entity), [table(?)] ?+>
+  has_type(Entity, urdf:'Joint').
 
 %% has_urdf_prefix(?Obj,?Prefix) is semidet.
 %

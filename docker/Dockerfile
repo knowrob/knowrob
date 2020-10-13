@@ -31,6 +31,7 @@ RUN sh -c 'wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key &
                            libjson-glib-dev python-yaml python-catkin-pkg python-rospkg \
                            emacs ros-melodic-catkin git \
                            ros-melodic-rosbridge-suite \
+                           ros-melodic-cv-bridge \
                            mongodb-clients libmongoc-dev  python-pip\
                            ros-melodic-rosauth mencoder lame libavcodec-extra \
                            texlive-latex-base imagemagick python-rdflib  && \
