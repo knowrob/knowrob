@@ -5,6 +5,8 @@
 :- use_module('./OWL.pl').
 :- use_module('./QUDT.pl').
 :- use_module('./portray.pl').
+:- use_module('./DUL/Object.pl').
+:- use_module('./DUL/Event.pl').
 
 % load additional ontologies
 :- tripledb_load(
