@@ -1,7 +1,7 @@
 :- use_module(library('db/tripledb_tests')).
 
 :- use_module(library('lang/query'),
-    [ synchronize/1 ]).
+    [ synchronize/1, tell/1 ]).
 
 :- begin_tripledb_tests(
 		'model_SOMA_OBJ',
@@ -14,6 +14,8 @@
 test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correctly')]) :-
 	synchronize(subject(test:'Dishwasher1')),
 	has_disposition_type(test:'Dishwasher1', _, soma:'Insertion').
+
+
 
 %test(disposition_trigger_type) :-
   %object_disposition(test_obj:'Dishwasher1', D, soma:'Insertion'),!,
@@ -42,5 +44,13 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
 %test(object_assert_dimensions) :-
   %object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   %object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
+
+test(assert_an_object_dimension) :-
+  tell(is_physical_object(Object)),
+  tell(object_dimensions(Object, 0.5, 0.8, 0.14)).
+
+test('assert object color') :-
+  tell(is_physical_object(Object)),
+  tell(object_color_rgb(Object, [0.2,0.2,0.2,1.0])).
 
 :- end_tripledb_tests('model_SOMA_OBJ').

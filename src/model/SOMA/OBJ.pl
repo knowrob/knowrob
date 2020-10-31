@@ -49,6 +49,8 @@
 :- use_module(library('utility/notify'),
     [ notify/1 ]).
 
+:- rdf_db:rdf_register_ns(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
+
 		 /*******************************
 		 *	    LIFE TIME		*
 		 *******************************/
@@ -81,6 +83,7 @@ is_physical_quality(Entity) ?+>
 %
 % True iff Entity is an instance of soma:'SocialQuality'.
 %
+
 % @param Entity An entity IRI.
 %
 is_social_quality(Entity) ?+>
@@ -132,14 +135,16 @@ object_color_rgb(Obj, [R,G,B]) ?>
   holds(Obj,soma:hasRGBValue,[R,G,B]),
   { ! }.
   
-object_color_rgb(Obj,[R,G,B]) +>
-  % get the color quality
-  { holds(Obj,soma:hasColor,Color) },
+object_color_rgb(Obj,[R,G,B,O]) +>
+   is_individual(Color),
+  % get the color quality ---> get or tell. Again should not this be tell?
+  holds(Obj,soma:hasColor,Color),
+  { atomic_list_concat([R,G,B,O]," ", ColorValue) },
   % create a new region
   { universal_scope(US),
     tell([ has_type(Region,soma:'ColorRegion'),
-           holds(Region,soma:hasRGBValue,[R,G,B])
-         ],US)
+           holds(Region,soma:hasRGBValue, ColorValue)
+         ],[[],US])
   },
   % update the region of the color quality
   update(holds(Color,dul:hasRegion,Region)),
@@ -253,9 +258,10 @@ object_dimensions(Obj, Depth, Width, Height) ?>
   { ! }.
 
 object_dimensions(Obj, Depth, Width, Height) +>
-  % get the shape quality
-  { holds(Obj,soma:hasShape,Shape) },
-  is_individual(ShapeRegion),
+  is_individual(Shape),
+  % get the shape quality --> Should not this be telling a shape quality?
+  holds(Obj,soma:hasShape,Shape), 
+  is_individual(ShapeRegion), 
   % create a new region
   % TODO: replace any other BoxShape region
   { universal_scope(US),
@@ -263,7 +269,7 @@ object_dimensions(Obj, Depth, Width, Height) +>
            holds(ShapeRegion, soma:hasDepth,  Depth),
            holds(ShapeRegion, soma:hasWidth,  Width),
            holds(ShapeRegion, soma:hasHeight, Height)
-         ],US)
+         ],[[],US])
   },
   holds(Shape,dul:hasRegion,ShapeRegion),
   notify(object_changed(Obj)).
