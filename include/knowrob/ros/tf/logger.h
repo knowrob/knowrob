@@ -54,6 +54,7 @@ public:
 
 protected:
 	ros::Subscriber subscriber_;
+	ros::Subscriber subscriber_static_;
 	TFMemory &memory_;
 	double vectorialThreshold_;
 	double angularThreshold_;
