@@ -13,6 +13,7 @@ TFLogger::TFLogger(
 		angularThreshold_(0.1),
 		db_name_("roslog"),
 		topic_(topic),
+		subscriber_static_(node.subscribe("tf_static", 1000, &TFLogger::callback, this)),
 		subscriber_(node.subscribe(topic, 1000, &TFLogger::callback, this))
 {
 }
