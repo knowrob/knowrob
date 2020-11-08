@@ -90,7 +90,6 @@ timeline(Events) :-
       time_interval_data(Evt, T0,T1),
       atomic_list_concat([T0,T1], '_', Time)))
   ), EventExtends),
-  writeln('c'),
   data_vis(timeline(event_timeline),
           [values:[EvtNames,EventExtends]]).
 
@@ -132,6 +131,8 @@ data_vis_object(timeline(Identifier), Object) :-
   data_vis_set_(ylabel, Object, 'Events').
 data_vis_object(linechart(Identifier), Object) :-
   data_vis_(Identifier,4,Object).
+data_vis_object(graph(Identifier), Object) :-
+  data_vis_(Identifier,999,Object).
 
 data_vis_(Identitier, Type, _{
   id:       [string,Identitier],
@@ -155,6 +156,15 @@ data_vis_set_property(Object, data:Data) :-
 data_vis_set_property(Object, values:Data) :-
   data_vis_values(Data,Values),!,
   data_vis_set_(values, Object, [Values]).
+data_vis_set_property(Object, array_data:Array) :-
+	!,
+	findall(Y,
+		(	member(X,Array),
+			data_vis_values(X,Y)
+		),
+		ValuesArray
+	),
+	data_vis_set_(values, Object, ValuesArray).
 data_vis_set_property(Object, Key:Value) :-
   data_vis_set_(Key, Object, Value).
 
