@@ -76,6 +76,10 @@ urdf_init :-
 		urdf_init(Object,Identifier)
 	).
 
+urdf_init(Object,_) :-
+	has_urdf(Object,_),
+	!.
+
 urdf_init(Object,Identifier) :-
 	% FIXME: hardcoded URL
 	DATA_URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/',
