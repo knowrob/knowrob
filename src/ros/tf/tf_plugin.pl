@@ -261,25 +261,14 @@ tf_mng_lookup1(Cursor,MaxStamp,PoseData,FSince,FUntil) :-
 	mng_get_dict(header,First,Header),
 	mng_get_dict(stamp,Header,double(FirstStamp)),
 	( FirstStamp>MaxStamp
-	->	( FirstUntil=FirstStamp,
+	->	( FUntil=FirstStamp,
 	      mng_cursor_next(Cursor,Doc)
 		)
-	;	( FirstUntil='Infinity',
+	;	( FUntil='Infinity',
 		  Doc=First
 		)
 	),
-	tf_mng_lookup2(Cursor,Doc,FirstUntil,PoseData,FSince,FUntil).
-
-tf_mng_lookup2(Cursor,Next,LastStamp,PoseData,FSince,FUntil) :-
-	tf_mng_doc_pose(Next,_,Stamp,PoseData0),
-	(	( PoseData=PoseData0,
-		  FSince=Stamp,
-		  FUntil=LastStamp
-		)
-	;	( mng_cursor_next(Cursor,X),
-		  tf_mng_lookup2(Cursor,X,Stamp,PoseData,FSince,FUntil)
-		)
-	).
+	tf_mng_doc_pose(Doc,_,FSince,PoseData).
 
 %%
 % Convert mongo document to pose term.
