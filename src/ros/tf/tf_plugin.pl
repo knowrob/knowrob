@@ -239,7 +239,7 @@ tf_mng_init :-
 
 %%
 %
-tf_mng_lookup(ObjFrame,_QSince,QUntil,PoseData,FSince,FUntil) :-
+tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
 	tf_logger_get_time_threshold(LoggerTimeThreshold),
 	%Stamp0 is QSince - LoggerTimeThreshold,
 	Stamp1 is QUntil + LoggerTimeThreshold,
@@ -252,23 +252,35 @@ tf_mng_lookup(ObjFrame,_QSince,QUntil,PoseData,FSince,FUntil) :-
 	%mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(Stamp0)]]),
 	setup_call_cleanup(
 		true,
-		tf_mng_lookup1(Cursor,QUntil,PoseData,FSince,FUntil),
+		tf_mng_lookup1(Cursor,QSince,QUntil,PoseData,FSince,FUntil),
 		mng_cursor_destroy(Cursor)
 	).
 
-tf_mng_lookup1(Cursor,MaxStamp,PoseData,FSince,FUntil) :-
+tf_mng_lookup1(Cursor,MinStamp,MaxStamp,PoseData,FSince,FUntil) :-
 	mng_cursor_next(Cursor,First),
 	mng_get_dict(header,First,Header),
 	mng_get_dict(stamp,Header,double(FirstStamp)),
 	( FirstStamp>MaxStamp
-	->	( FUntil=FirstStamp,
+	->	( FirstUntil=FirstStamp,
 	      mng_cursor_next(Cursor,Doc)
 		)
-	;	( FUntil='Infinity',
+	;	( FirstUntil='Infinity',
 		  Doc=First
 		)
 	),
-	tf_mng_doc_pose(Doc,_,FSince,PoseData).
+	tf_mng_lookup2(Cursor,Doc,MinStamp,FirstUntil,PoseData,FSince,FUntil).
+
+tf_mng_lookup2(Cursor,Next,MinStamp,LastStamp,PoseData,FSince,FUntil) :-
+	tf_mng_doc_pose(Next,_,Stamp,PoseData0),
+	(	( PoseData=PoseData0,
+		  FSince=Stamp,
+		  FUntil=LastStamp
+		)
+	;	( Stamp > MinStamp,
+		  mng_cursor_next(Cursor,X),
+		  tf_mng_lookup2(Cursor,X,MinStamp,Stamp,PoseData,FSince,FUntil)
+		)
+	).
 
 %%
 % Convert mongo document to pose term.
