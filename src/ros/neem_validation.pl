@@ -5,6 +5,7 @@
       get_actions_without_tasks(r),
       get_actions_without_participants(r),
       get_child_frames_without_link_to_world_frame(r,r),
+      load_logs(r)
     ]).
 
 :- use_module(library('db/scope')).
