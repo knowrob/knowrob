@@ -41,7 +41,6 @@ public:
 	 * Add a transform, overwriting any previous transform with same frame.
 	 */
 	void set_transform(const geometry_msgs::TransformStamped &ts);
-	void set_transform2(const geometry_msgs::TransformStamped &ts);
 
 	/**
 	 * Read Prolog pose term for frame.

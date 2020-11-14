@@ -113,7 +113,7 @@ void TFRepublisher::advance_cursor(double dt)
 				break;
 			}
 			// push the next transform
-			memory_.set_transform2(ts_);
+			memory_.set_transform(ts_);
 		}
 		// read the next transform
 		const bson_t *doc;
