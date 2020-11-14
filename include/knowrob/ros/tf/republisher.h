@@ -38,6 +38,9 @@ public:
 	void set_db_collection(std::string db_collection)
 	{ db_collection_ = db_collection; }
 
+	TFMemory& memory()
+	{ return memory_; }
+
 	void set_goal(double time_min, double time_max);
 
 protected:

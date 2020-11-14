@@ -91,6 +91,12 @@ PREDICATE(tf_mem_set_pose, 3) {
 	return memory.set_pose_term(frame,PL_A2,stamp);
 }
 
+// tf_republish_set_pose(ObjFrame,PoseData)
+PREDICATE(tf_republish_set_pose, 2) {
+	std::string frame((char*)PL_A1);
+	return get_republisher().memory().set_pose_term(frame,PL_A2,0.0);
+}
+
 // tf_mem_get_pose(ObjFrame,PoseData,Since)
 PREDICATE(tf_mem_get_pose, 3) {
 	std::string frame((char*)PL_A1);

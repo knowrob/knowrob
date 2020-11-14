@@ -10,6 +10,7 @@
 	  tf_mng_whipe/0,
 	  tf_mng_remember/1,
 	  tf_mng_memorize/1,
+	  tf_republish_set_pose/2,
 	  tf_republish_set_goal/2,
 	  tf_republish_set_loop/1,
 	  tf_republish_set_realtime_factor/1

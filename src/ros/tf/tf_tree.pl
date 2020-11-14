@@ -120,6 +120,43 @@ tf_tree_dict_1([_|Xs],Pair) :-
 	tf_tree_dict_1(Xs,Pair).
 
 %%
+initial_transforms(Transforms) :-
+	tf_plugin:tf_db(DB,Coll),
+	Query=[
+		['$group',['_id',['child_frame_id',string('$child_frame_id')]]],
+		['$lookup',[
+			['from',string(Coll)],
+			['as',string('tf')],
+			['let',['frame',string('$_id.child_frame_id')]],
+			['pipeline',array([
+				['$match',['$expr',['$and',array([
+					['$eq',array([string('$child_frame_id'),string('$$frame')])]
+				])]]],
+				['$sort',[
+					['child_frame_id',int(1)],
+					['header.stamp',int(1)]
+				]],
+				['$limit',int(1)]
+			])]
+		]],
+		['$unwind',string('$tf')],
+		['$replaceRoot',['newRoot',string('$tf')]]
+	],
+	%%
+	setup_call_cleanup(
+		mng_cursor_create(DB,Coll,Cursor),
+		(	mng_cursor_aggregate(Cursor,['pipeline',array(Query)]),
+			findall([Ref,Frame,Pos,Rot],
+				(	mng_cursor_materialize(Cursor,Doc),
+					tf_plugin:tf_mng_doc_pose(Doc,Frame,_,[Ref,Pos,Rot])
+				),
+				Transforms
+			)
+		),
+		mng_cursor_destroy(Cursor)
+	).
+
+%%
 lookup_transforms_(Stamp,Transforms) :-
 	tf_plugin:tf_db(DB,Coll),
 	Query=[
