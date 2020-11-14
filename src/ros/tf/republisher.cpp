@@ -37,12 +37,16 @@ void TFRepublisher::loop()
 {
 	ros::NodeHandle node;
 	ros::Rate r(frequency_);
-	ros::Publisher tick(node.advertise<std_msgs::Float64>("republisher_tick", 5));
+	ros::Publisher tick(node.advertise<std_msgs::Float64>("republisher_tick",1));
 	double last_t = ros::Time::now().toSec();
 	while(ros::ok()) {
 		double this_t = ros::Time::now().toSec();
-		advance_cursor(tick,this_t-last_t);
-		last_t = this_t;
+		if(advance_cursor(tick,this_t-last_t)) {
+			last_t = this_t;
+		}
+		else {
+			last_t = ros::Time::now().toSec();
+		}
 		r.sleep();
 		if(!is_running_) break;
 	}
@@ -69,15 +73,17 @@ void TFRepublisher::create_cursor()
 	);
 	// filter documents outside of time interval
 	bson_t *filter = BCON_NEW(
-		"header.stamp", "{", "$gt", BCON_DATE_TIME((unsigned long long)(1000.0*time_min_)), "}",
-		"header.stamp", "{", "$lt", BCON_DATE_TIME((unsigned long long)(1000.0*time_max_)), "}"
+		"header.stamp", "{",
+			"$gt", BCON_DATE_TIME((unsigned long long)(1000.0*time_min_)),
+			"$lt", BCON_DATE_TIME((unsigned long long)(1000.0*time_max_)),
+		"}"
 	);
 	// get the cursor
 	if(collection) {
 		delete collection;
 	}
 	collection = MongoInterface::get_collection(
-			db_name_.c_str(),db_collection_.c_str());
+		db_name_.c_str(),db_collection_.c_str());
 	cursor_ = mongoc_collection_find_with_opts(
 	    (*collection)(), filter, opts, NULL /* read_prefs */ );
 }
@@ -91,7 +97,7 @@ void TFRepublisher::reset_cursor()
 	}
 }
 
-void TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
+bool TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
 {
 	// advance time
 	time_ += dt*realtime_factor_;
@@ -100,9 +106,16 @@ void TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
 			time_ = time_min_;
 			has_next_ = false;
 			reset_cursor();
+			// look ahead
+			const bson_t *doc;
+			if(cursor_!=NULL && mongoc_cursor_next(cursor_,&doc)) {
+				read_transform(doc);
+				has_next_ = true;
+			}
+			return false;
 		}
 		else {
-			return;
+			return false;
 		}
 	}
 	//
@@ -132,6 +145,8 @@ void TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
 			has_next_ = false;
 		}
 	} while(has_next_);
+
+	return true;
 }
 
 void TFRepublisher::read_transform(const bson_t *doc)

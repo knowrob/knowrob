@@ -67,7 +67,7 @@ protected:
 	void loop();
 	void create_cursor();
 	void reset_cursor();
-	void advance_cursor(ros::Publisher &tick, double dt);
+	bool advance_cursor(ros::Publisher &tick, double dt);
 	void read_transform(const bson_t *doc);
 };
 
