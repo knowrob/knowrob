@@ -36,6 +36,12 @@ void TFMemory::set_transform(const geometry_msgs::TransformStamped &ts)
 	transforms_[ts.child_frame_id] = ts;
 }
 
+void TFMemory::set_transform2(const geometry_msgs::TransformStamped &ts)
+{
+	transforms_[ts.child_frame_id] = ts;
+	managed_frames_.insert(ts.child_frame_id);
+}
+
 bool TFMemory::get_pose_term(const std::string &frame, PlTerm *term, double *stamp)
 {
 	if(!has_transform(frame)) return false;

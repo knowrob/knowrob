@@ -2,6 +2,7 @@
 #include <knowrob/ros/tf/memory.h>
 #include <knowrob/ros/tf/logger.h>
 #include <knowrob/ros/tf/publisher.h>
+#include <knowrob/ros/tf/republisher.h>
 
 static ros::NodeHandle node;
 static TFMemory memory;
@@ -10,6 +11,36 @@ static TFPublisher pub(memory);
 TFLogger& get_logger() {
 	static TFLogger logger(node,memory);
 	return logger;
+}
+
+TFRepublisher& get_republisher() {
+	static TFRepublisher republisher;
+	return republisher;
+}
+
+// tf_republish_set_goal(DBName,CollectionName,Time0,Time1)
+PREDICATE(tf_republish_set_goal, 4) {
+	std::string db_name((char*)PL_A1);
+	std::string coll_name((char*)PL_A2);
+	double time_min = (double)PL_A3;
+	double time_max = (double)PL_A4;
+	get_republisher().set_db_name(db_name);
+	get_republisher().set_db_collection(coll_name);
+	get_republisher().set_goal(time_min,time_max);
+	return true;
+}
+
+// tf_republish_set_loop(RealtimeFactor)
+PREDICATE(tf_republish_set_loop, 1) {
+	get_republisher().set_loop((int)PL_A1);
+	return true;
+}
+
+// tf_republish_set_realtime_factor(RealtimeFactor)
+PREDICATE(tf_republish_set_realtime_factor, 1) {
+	double realtime_factor = (double)PL_A1;
+	get_republisher().set_realtime_factor(realtime_factor);
+	return true;
 }
 
 // tf_logger_enable
