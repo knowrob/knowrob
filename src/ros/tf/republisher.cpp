@@ -1,5 +1,6 @@
 #include <knowrob/ros/tf/republisher.h>
 #include <knowrob/db/mongo/MongoInterface.h>
+#include <std_msgs/Float64.h>
 
 // FIXME
 static MongoCollection *collection=NULL;
@@ -34,11 +35,13 @@ TFRepublisher::~TFRepublisher()
 
 void TFRepublisher::loop()
 {
+	ros::NodeHandle node;
 	ros::Rate r(frequency_);
+	ros::Publisher tick(node.advertise<std_msgs::Float64>("republisher_tick", 5));
 	double last_t = ros::Time::now().toSec();
 	while(ros::ok()) {
 		double this_t = ros::Time::now().toSec();
-		advance_cursor(this_t-last_t);
+		advance_cursor(tick,this_t-last_t);
 		last_t = this_t;
 		r.sleep();
 		if(!is_running_) break;
@@ -88,7 +91,7 @@ void TFRepublisher::reset_cursor()
 	}
 }
 
-void TFRepublisher::advance_cursor(double dt)
+void TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
 {
 	// advance time
 	time_ += dt*realtime_factor_;
@@ -102,6 +105,10 @@ void TFRepublisher::advance_cursor(double dt)
 			return;
 		}
 	}
+	//
+	std_msgs::Float64 time_msg;
+	time_msg.data = time_;
+	tick.publish(time_msg);
 	// push transforms from beginning of cursor until
 	// one is reached with stamp>time_
 	do {
