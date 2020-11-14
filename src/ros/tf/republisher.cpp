@@ -43,11 +43,11 @@ void TFRepublisher::loop()
 		double this_t = ros::Time::now().toSec();
 		if(advance_cursor(tick,this_t-last_t)) {
 			last_t = this_t;
+			r.sleep();
 		}
 		else {
 			last_t = ros::Time::now().toSec();
 		}
-		r.sleep();
 		if(!is_running_) break;
 	}
 }
