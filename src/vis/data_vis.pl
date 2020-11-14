@@ -134,6 +134,9 @@ data_vis_object(linechart(Identifier), Object) :-
 data_vis_object(graph(Identifier), Object) :-
   data_vis_(Identifier,999,Object).
 
+data_vis_object(type(Identifier,TypeID), Object) :-
+  data_vis_(Identifier,TypeID,Object).
+
 data_vis_(Identitier, Type, _{
   id:       [string,Identitier],
   type:     [int32,Type],
