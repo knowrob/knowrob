@@ -11,6 +11,7 @@ TFRepublisher::TFRepublisher(double frequency) :
 		loop_(true),
 		has_next_(false),
 		is_running_(true),
+		reset_(false),
 		db_name_("neems"),
 		db_collection_("tf"),
 		time_min_(0.0),
@@ -19,7 +20,8 @@ TFRepublisher::TFRepublisher(double frequency) :
 		cursor_(NULL),
 		memory_(),
 		publisher_(memory_,frequency),
-	    thread_(&TFRepublisher::loop, this)
+	    thread_(&TFRepublisher::loop, this),
+	    tick_thread_(&TFRepublisher::tick_loop, this)
 {
 }
 
@@ -27,27 +29,48 @@ TFRepublisher::~TFRepublisher()
 {
 	is_running_ = false;
 	thread_.join();
+	tick_thread_.join();
 	if(collection) {
 		delete collection;
 		collection = NULL;
 	}
 }
 
-void TFRepublisher::loop()
+void TFRepublisher::tick_loop()
 {
 	ros::NodeHandle node;
 	ros::Rate r(frequency_);
 	ros::Publisher tick(node.advertise<std_msgs::Float64>("republisher_tick",1));
+	std_msgs::Float64 time_msg;
 	double last_t = ros::Time::now().toSec();
+
 	while(ros::ok()) {
 		double this_t = ros::Time::now().toSec();
-		if(advance_cursor(tick,this_t-last_t)) {
-			last_t = this_t;
-			r.sleep();
+		double dt = this_t - last_t;
+		double next_time = time_ + dt*realtime_factor_;
+		// set new time value
+		if(next_time > time_max_) {
+			time_ = time_min_;
 		}
 		else {
-			last_t = ros::Time::now().toSec();
+			time_ = next_time;
 		}
+		last_t = this_t;
+		// publish time value
+		time_msg.data = time_;
+		tick.publish(time_msg);
+		// sleep to achieve rate of 10Hz
+		r.sleep();
+		if(!is_running_) break;
+	}
+}
+
+void TFRepublisher::loop()
+{
+	ros::Rate r(frequency_);
+	while(ros::ok()) {
+		advance_cursor();
+		r.sleep();
 		if(!is_running_) break;
 	}
 }
@@ -97,38 +120,20 @@ void TFRepublisher::reset_cursor()
 	}
 }
 
-bool TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
+void TFRepublisher::advance_cursor()
 {
-	// advance time
-	time_ += dt*realtime_factor_;
-	if(time_ > time_max_) {
-		if(loop_) {
-			time_ = time_min_;
-			has_next_ = false;
-			reset_cursor();
-			// look ahead
-			const bson_t *doc;
-			if(cursor_!=NULL && mongoc_cursor_next(cursor_,&doc)) {
-				read_transform(doc);
-				has_next_ = true;
-			}
-			return false;
-		}
-		else {
-			return false;
-		}
+	double this_time = time_;
+	if(reset_) {
+		reset_ = false;
+		has_next_ = false;
+		reset_cursor();
 	}
 	//
-	std_msgs::Float64 time_msg;
-	time_msg.data = time_;
-	tick.publish(time_msg);
-	// push transforms from beginning of cursor until
-	// one is reached with stamp>time_
-	do {
+	while(1) {
 		if(has_next_) {
 			double t_next = (ts_.header.stamp.sec * 1000.0 +
 					ts_.header.stamp.nsec / 1000000.0) / 1000.0;
-			if(t_next > time_) {
+			if(t_next > this_time) {
 				// the next transform is too far in the future
 				break;
 			}
@@ -143,10 +148,9 @@ bool TFRepublisher::advance_cursor(ros::Publisher &tick, double dt)
 		}
 		else {
 			has_next_ = false;
+			break;
 		}
-	} while(has_next_);
-
-	return true;
+	}
 }
 
 void TFRepublisher::read_transform(const bson_t *doc)

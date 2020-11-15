@@ -48,7 +48,9 @@ protected:
 	double frequency_;
 	bool loop_;
 	bool is_running_;
+	bool reset_;
 	std::thread thread_;
+	std::thread tick_thread_;
 
 	double time_min_;
 	double time_max_;
@@ -65,9 +67,10 @@ protected:
 	TFPublisher publisher_;
 
 	void loop();
+	void tick_loop();
 	void create_cursor();
 	void reset_cursor();
-	bool advance_cursor(ros::Publisher &tick, double dt);
+	void advance_cursor();
 	void read_transform(const bson_t *doc);
 };
 
