@@ -239,6 +239,7 @@ tf_mng_init :-
 	mng_db_name(DB),
 	tf_db(DB, Name),
 	mng_index_create(DB,Name,[+'child_frame_id',-'header.stamp']),
+	mng_index_create(DB,Name,[+'header.stamp']),
 	%%
 	(	setting(tf_plugin:use_logger,false)
 	->	true
