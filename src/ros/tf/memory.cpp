@@ -28,11 +28,13 @@ const std::set<std::string>& TFMemory::get_managed_frames() const
 
 const geometry_msgs::TransformStamped& TFMemory::get_transform(const std::string &frame)
 {
+	std::lock_guard<std::mutex> scoped_lock(mutex_);
 	return transforms_[frame];
 }
 
 void TFMemory::set_transform(const geometry_msgs::TransformStamped &ts)
 {
+	std::lock_guard<std::mutex> scoped_lock(mutex_);
 	transforms_[ts.child_frame_id] = ts;
 }
 
