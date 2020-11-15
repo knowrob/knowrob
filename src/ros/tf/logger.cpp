@@ -9,7 +9,7 @@ TFLogger::TFLogger(
 		const std::string &topic) :
 		memory_(memory),
 		timeThreshold_(1.0),
-		vectorialThreshold_(0.1),
+		vectorialThreshold_(0.001),
 		angularThreshold_(0.1),
 		db_name_("roslog"),
 		topic_(topic),
