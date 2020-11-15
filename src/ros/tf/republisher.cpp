@@ -51,6 +51,7 @@ void TFRepublisher::tick_loop()
 		// set new time value
 		if(next_time > time_max_) {
 			time_ = time_min_;
+			reset_ = true;
 		}
 		else {
 			time_ = next_time;
