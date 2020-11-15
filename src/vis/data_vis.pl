@@ -31,7 +31,8 @@
       data_vis/2,
       data_vis_remove/1,
       timeline/1,
-      timeline_data/1
+      timeline_data/1,
+      timeline_data/2
     ]).
 /** <module> Methods for data visualization
   
@@ -101,6 +102,9 @@ timeline(Events) :-
 % @param EventData list of list of the form [[Events, Task, Start, End]]
 %
 timeline_data(EventsData) :-
+	timeline_data(EventsData,[]).
+
+timeline_data(EventsData,Options) :-
   findall(EvtName, (
     member([_,Task,_,_],EventsData),
     once((
@@ -111,7 +115,7 @@ timeline_data(EventsData) :-
     atomic_list_concat([Start, End],'_',Time)
   ), EventExtends),
   data_vis(timeline(event_timeline),
-          [values:[EvtNames,EventExtends]]).
+          [values:[EvtNames,EventExtends] | Options]).
 
 data_vis_set_(Key,Msg,Value) :-
   get_dict(Key,Msg,[Type,_]),
@@ -125,10 +129,7 @@ data_vis_object(barchart(Identifier), Object) :-
 data_vis_object(treechart(Identifier), Object) :-
   data_vis_(Identifier,2,Object).
 data_vis_object(timeline(Identifier), Object) :-
-  data_vis_(Identifier,3,Object),
-  data_vis_set_(title, Object, 'Logged Actions'),
-  data_vis_set_(xlabel, Object, 'Time'),
-  data_vis_set_(ylabel, Object, 'Events').
+  data_vis_(Identifier,3,Object).
 data_vis_object(linechart(Identifier), Object) :-
   data_vis_(Identifier,4,Object).
 data_vis_object(graph(Identifier), Object) :-
