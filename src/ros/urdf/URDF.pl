@@ -353,8 +353,9 @@ has_parent_link(Joint,Link) ?+>
 % TODO: reconsider this
 % 
 object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
-	{ has_urdf(Obj,Root), ! },
+	{ has_urdf(Obj,Root) },
 	has_base_link_name(Obj,BaseName),
+	{ ! },
 	{ get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm) }.
 
 %%
@@ -362,13 +363,14 @@ get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
 	),!,
-	bagof(L,
+	findall(L,
 		(	has_end_link_name(Obj,EndName),
 			urdf_catch(urdf_chain(Root,BaseName,EndName,L))
 		),
 		LinkNames
 	),
-	member(LinkName,LinkNames),
+	list_to_set(LinkNames,LinkSet),
+	member(LinkName,LinkSet),
 	urdf_catch(urdf_link_visual_shape(Root,LinkName,
 		ShapeTerm,[Name,Pos,Rot],MaterialTerm)),
 	atom_concat(Prefix,Name,Frame).
