@@ -85,7 +85,7 @@ tripledb_bulk_tell(Triples,Scope,Options) :-
 		tripledb_tell(S,P,O,Scope,Options)
 	).
 
-%% 
+%%
 % @implements 'db/itripledb'
 %
 tripledb_ask(S,P,ValueQuery,QScope,FScope,Options) :-
@@ -105,6 +105,12 @@ tripledb_aggregate(Triples,QScope,FScope,Options) :-
 	%             but the query generated would need to know which collection to use.
 	% 
 	triple_aggregate(Triples,QScope,FScope,Options).
+
+%% 
+% @implements 'db/itripledb'
+%
+tripledb_transitive(Triple,QScope,FScope,Options) :-
+	triple_transitive(Triple,QScope,FScope,Options).
 
 %%
 % @implements 'db/itripledb'

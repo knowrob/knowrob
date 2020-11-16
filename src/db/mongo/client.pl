@@ -31,23 +31,6 @@
 @license BSD
 */
 
-/*
-  triple(L, rdf:first, X),
-  triple(L, rdf:rest, Ys)
--->
-db.triples.aggregate([
-   { $match: { p: rdf:rest } },
-   { $graphLookup: {
-      from: "triples",
-      startWith: "$o", connectFromField: "o", connectToField: "s",
-      restrictSearchWithMatch: { p: rdf:rest },
-      as: "paths"
-   }}
-])
--->
-{ [ ... ] }
-*/
-
 :- use_module(library('http/json')).
 :- use_foreign_library('libmongo_kb.so').
 :- dynamic mng_db_name/1.
