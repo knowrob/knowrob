@@ -218,7 +218,7 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 %%
 %
 triple_transitive(triple(Subject,Property,Value),
-		_QScope,FScope,Options) :-
+		_QScope,FScope,_Options) :-
 	%% read options
 	%option(graph(Graph), Options, user),
 	triple_db(DB,Coll),
