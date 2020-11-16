@@ -83,12 +83,10 @@ urdf_init(Object,Identifier) :-
 	% parse data
 	urdf_load_xml(Object,XML_data),
 	% create has_urdf facts
-	bagof(X,
-		transitive(triple(Object,dul:hasComponent,X)),
-		Parts
-	),
 	forall(
-		member(Y,[Object|Parts]),
+		(	Y=Object
+		;	transitive(triple(Object,dul:hasComponent,Y))
+		),
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
 		)
