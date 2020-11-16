@@ -5,6 +5,9 @@
       get_actions_without_tasks(r),
       get_actions_without_participants(r),
       get_child_frames_without_link_to_world_frame(r,r),
+      get_objects_without_location(r),
+      get_objects_without_shape(r),
+      get_joints_without_proper_links(r),
       load_logs(r)
     ]).
 
@@ -13,6 +16,7 @@
 :- use_module(library('model/DUL/Object')).
 :- use_module(library('ros/tf/tf_plugin')).
 :- use_module(library('db/mongo/client')).
+:- use_module(library('ros/urdf/URDF')).
 
 
 get_path(Path, Folder):-
@@ -74,6 +78,36 @@ get_child_frames_without_link_to_world_frame(World, ChildFramesWithoutLinkToWorl
   forall(member(Child, ChildFramesWithoutLinkToWorld), print_message(warning, Child))), !;
   print_message(info, 'All the child frames in the TF are fine'), true.
 
+get_objects_without_location(POWithoutLocation) :-
+   findall(Object,
+    ( is_physical_object(Object),
+    \+ object_localization(Object, Location)),
+    POWithoutLocation),
+  length(POWithoutLocation, Listlength),
+  ( Listlength > 0 -> print_message(warning, 'The following physical objects have no location. Please assert the locations for these objects'),
+  forall(member(O, POWithoutLocation), print_message(warning, O))), !;
+   print_message(info, 'All objects have a location'), true.
+
+get_objects_without_shape(POWithoutShape) :-
+   findall(Object,
+    ( is_physical_object(Object),
+    \+ object_shape(Object, Shape, Pos, Material)),
+    POWithoutShape),
+  length(POWithoutShape, Listlength),
+  ( Listlength > 0 -> print_message(warning, 'The following physical objects have no shape. Please assert the shape for these objects'),
+  forall(member(O, POWithoutShape), print_message(warning, O))), !;
+   print_message(info, 'All physical objects in this episode have shape'), true.
+
+get_joints_without_proper_links(Joints) :-
+  (findall(Joint,
+    ( has_type(Joint, urdf:'Joint'),
+    \+ has_parent_link(Joint, _),
+    \+ has_child_link(Joint, _)),
+    Joints),
+  length(Joints, Listlength),
+  ( Listlength > 0 -> print_message(warning, 'The following joints have no parent link or child link asserted. Please assert the corresponding links for the joints'),
+  forall(member(O, Joints), print_message(warning, O))), !;
+  print_message(info, 'All joints have their corresponding links'), true.
 
 load_logs(Folder) :-
   get_path(Path, Folder),
@@ -104,5 +138,14 @@ test('get actions without participants') :-
 test('check the TF tree') :-
   WorldFrame = 'map', % Set the desired world frame 
   get_child_frames_without_link_to_world_frame(WorldFrame, ChildFrames).
+
+test('get objects without location') :-
+  get_objects_without_location(ObjectWithoutLocation).
+
+test('get objects without shape') :-
+  get_objects_without_shape(ObjWithoutShape).
+
+test('get joints without parent and child link') :-
+  get_joints_without_proper_links(JointWithoutPLinkOrCLink).
 
 :- end_tests('neem_logs').
