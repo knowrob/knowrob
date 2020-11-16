@@ -49,7 +49,7 @@ transitive(Query) ?>
   { transitive_db_(Query),! },
   include_parents(Query).
 
-transitive(triple(S,P.O)) ?>
+transitive(triple(S,P,O)) ?>
 	{ ground([S,P]),
 	  !
 	},
@@ -59,7 +59,7 @@ transitive(triple(S,P.O)) ?>
 	fact_scope(FScope),
 	% query the triple DB
 	{ tripledb_transitive(
-		triple(S,P.O),
+		triple(S,P,O),
 		QScope,FScope,Options)
 	}.
 

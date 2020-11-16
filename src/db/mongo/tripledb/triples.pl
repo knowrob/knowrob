@@ -256,7 +256,6 @@ triple_transitive(triple(Subject,Property,Value),
 		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
 			mng_cursor_materialize(Cursor,Result_doc),
 			mng_get_dict('_id',Result_doc,string(Value)),
-			writeln(Value),
 			%% TODO: handle scope
 			universal_scope(FScope)
 		),
