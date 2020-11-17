@@ -62,6 +62,7 @@ protected:
 	mongoc_cursor_t *cursor_;
 	geometry_msgs::TransformStamped ts_;
 	bool has_next_;
+	bool has_new_goal_;
 
 	TFMemory memory_;
 	TFPublisher publisher_;

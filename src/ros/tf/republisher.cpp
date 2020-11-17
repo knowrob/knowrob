@@ -10,6 +10,7 @@ TFRepublisher::TFRepublisher(double frequency) :
 		frequency_(frequency),
 		loop_(true),
 		has_next_(false),
+		has_new_goal_(false),
 		is_running_(true),
 		reset_(false),
 		db_name_("neems"),
@@ -80,9 +81,8 @@ void TFRepublisher::set_goal(double time_min, double time_max)
 {
 	time_min_ = time_min;
 	time_max_ = time_max;
-	time_ = time_min_;
 	has_next_ = false;
-	create_cursor();
+	has_new_goal_ = true;
 }
 
 void TFRepublisher::create_cursor()
@@ -124,6 +124,12 @@ void TFRepublisher::reset_cursor()
 void TFRepublisher::advance_cursor()
 {
 	double this_time = time_;
+	if(has_new_goal_) {
+		has_new_goal_ = false;
+		has_next_ = false;
+		time_ = time_min_;
+		create_cursor();
+	}
 	if(reset_) {
 		reset_ = false;
 		has_next_ = false;
