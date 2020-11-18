@@ -1,7 +1,7 @@
 :- module(neem_logs,
     [ 
       get_actions_without_timeinterval(r),
-      get_actions_with_participants_without_role(r)
+      get_actions_with_participants_without_role(r),
       get_actions_without_tasks(r),
       get_actions_without_participants(r),
       get_child_frames_without_link_to_world_frame(r,r),
@@ -20,7 +20,9 @@
 
 
 get_path(Path, Folder):-
-  working_directory(X,X), string_concat(X, Folder, Path).
+  ros_package_path('knowrob', X),
+  atom_concat(X, '/', Temp), 
+  atom_concat(Temp, Folder, Path).
 
 get_actions_without_timeinterval(ActionWithoutInterval) :-
   findall(Action, 
@@ -37,7 +39,8 @@ get_actions_with_participants_without_role(ParticipantsWithoutRole) :-
     ( is_action(Action),
       has_participant(Action, Participant), 
     \+ has_role(Participant, ParticipantRole)), 
-    ParticipantsWithoutRole),
+    Participants),
+  list_to_set(Participants, ParticipantsWithoutRole),
   length(ParticipantsWithoutRole, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have participants with no role. Please assert the corresponding participant role'),
   forall(member(Action, ParticipantsWithoutRole), print_message(warning, Action))), !;
@@ -91,15 +94,16 @@ get_objects_without_location(POWithoutLocation) :-
 get_objects_without_shape(POWithoutShape) :-
    findall(Object,
     ( is_physical_object(Object),
-    \+ object_shape(Object, Shape, Pos, Material)),
-    POWithoutShape),
+    (\+ object_shape(Object, Shape, Pos, Material); \+ ros_urdf:object_shape(Object, Shape, Pos, Material))),
+    PO),
+  list_to_set(PO, POWithoutShape),
   length(POWithoutShape, Listlength),
-  ( Listlength > 0 -> print_message(warning, 'The following physical objects have no shape. Please assert the shape for these objects'),
+  ( Listlength > 0 -> print_message(warning, 'The following physical objects have no shape. Please assert the shape for these objects or load the corresponding urdf files for the robot and environment, where the shapes are defined.'),
   forall(member(O, POWithoutShape), print_message(warning, O))), !;
    print_message(info, 'All physical objects in this episode have shape'), true.
 
 get_joints_without_proper_links(Joints) :-
-  (findall(Joint,
+  findall(Joint,
     ( has_type(Joint, urdf:'Joint'),
     \+ has_parent_link(Joint, _),
     \+ has_child_link(Joint, _)),
@@ -119,7 +123,7 @@ load_logs(Folder) :-
      *          UNIT TESTS          *
      *******************************/
 :- begin_tests('neem_logs').
-  
+
 test('load the logs') :-
   load_logs("neems"). % neem is the name of the folder with the logs
 
