@@ -15,8 +15,6 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
 	synchronize(subject(test:'Dishwasher1')),
 	has_disposition_type(test:'Dishwasher1', _, soma:'Insertion').
 
-
-
 %test(disposition_trigger_type) :-
   %object_disposition(test_obj:'Dishwasher1', D, soma:'Insertion'),!,
   %disposition_trigger_type(D, soma:'Tableware').
@@ -47,10 +45,9 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
 
 test(assert_an_object_dimension) :-
   tell(is_physical_object(Object)),
+  tell(is_individual(Shape)),
+  tell(triple(Object, soma:hasShape, Shape)),
   tell(object_dimensions(Object, 0.5, 0.8, 0.14)).
 
-test('assert object color') :-
-  tell(is_physical_object(Object)),
-  tell(object_color_rgb(Object, [0.2,0.2,0.2,1.0])).
 
 :- end_tripledb_tests('model_SOMA_OBJ').
