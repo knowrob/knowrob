@@ -1,7 +1,7 @@
 :- use_module(library('db/tripledb_tests')).
 
 :- use_module(library('lang/query'),
-    [ synchronize/1 ]).
+    [ synchronize/1, tell/1 ]).
 
 :- begin_tripledb_tests(
 		'model_SOMA_OBJ',
@@ -42,5 +42,12 @@ test(has_disposition_type, [nondet,fixme('hasDisposition is not inferred correct
 %test(object_assert_dimensions) :-
   %object_assert_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12),
   %object_dimensions(test_obj:'Cup2', 0.032, 0.032, 0.12).
+
+test(assert_an_object_dimension) :-
+  tell(is_physical_object(Object)),
+  tell(is_individual(Shape)),
+  tell(triple(Object, soma:hasShape, Shape)),
+  tell(object_dimensions(Object, 0.5, 0.8, 0.14)).
+
 
 :- end_tripledb_tests('model_SOMA_OBJ').
