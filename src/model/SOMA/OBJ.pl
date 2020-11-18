@@ -48,6 +48,7 @@
     [ universal_scope/1 ]).
 :- use_module(library('utility/notify'),
     [ notify/1 ]).
+:- use_module(library('semweb/rdf_db')).
 
 :- rdf_db:rdf_register_ns(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
 
@@ -135,11 +136,9 @@ object_color_rgb(Obj, [R,G,B]) ?>
   holds(Obj,soma:hasRGBValue,[R,G,B]),
   { ! }.
   
-object_color_rgb(Obj,[R,G,B,O]) +>
-   is_individual(Color),
-  % get the color quality ---> get or tell. Again should not this be tell?
-  holds(Obj,soma:hasColor,Color),
-  { atomic_list_concat([R,G,B,O]," ", ColorValue) },
+object_color_rgb(Obj,[R,G,B]) +>
+  % get the color quality
+  { holds(Obj,soma:hasColor,Color) },
   % create a new region
   { universal_scope(US),
     tell([ has_type(Region,soma:'ColorRegion'),
@@ -172,8 +171,8 @@ object_color_rgb(Obj,[R,G,B,O]) +>
 object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
-	rdf_split_url(_,Frame,Obj),
-	{ shape_data(ShapeRegion,ShapeTerm),
+	{ rdf_split_url(_,Frame,Obj),
+	  shape_data(ShapeRegion,ShapeTerm),
 	  shape_origin(ShapeRegion,[Pos,Rot])
 	},
 	object_shape_material(Obj,MaterialTerm).
@@ -258,9 +257,8 @@ object_dimensions(Obj, Depth, Width, Height) ?>
   { ! }.
 
 object_dimensions(Obj, Depth, Width, Height) +>
-  is_individual(Shape),
-  % get the shape quality --> Should not this be telling a shape quality?
-  holds(Obj,soma:hasShape,Shape), 
+  % get the shape quality
+  { holds(Obj,soma:hasShape,Shape) },
   is_individual(ShapeRegion), 
   % create a new region
   % TODO: replace any other BoxShape region
