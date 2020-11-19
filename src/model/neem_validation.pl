@@ -8,7 +8,8 @@
       get_objects_without_location(r),
       get_objects_without_shape(r),
       get_joints_without_proper_links(r),
-      load_logs(r)
+      load_logs(r),
+      validate_episode(r,r)
     ]).
 
 :- use_module(library('db/scope')).
@@ -118,38 +119,25 @@ load_logs(Folder) :-
   remember(Path),
   tf_mng_remember(Path).
 
+validate_episode(Foldername, WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame. Neems folder is expected to be in knowrob package
+  load_logs(Foldername),
+  get_actions_without_timeinterval(ActionsWithoutTimeInterval),
+  get_actions_with_participants_without_role(ActionsWithoutRole),
+  get_actions_without_tasks(ActionsWithoutTasks),
+  get_actions_without_participants(ActionsWithoutParticipants),
+  get_child_frames_without_link_to_world_frame(WorldFrame, ChildFrames),
+  get_objects_without_location(ObjectWithoutLocation),
+  get_objects_without_shape(ObjWithoutShape),
+  get_joints_without_proper_links(JointWithoutPLinkOrCLink).
+
+
 
      /*******************************
      *          UNIT TESTS          *
      *******************************/
-:- begin_tests('neem_logs').
+:- begin_tests('neem_validation').
 
-test('load the logs') :-
-  load_logs("neems"). % neem is the name of the folder with the logs
+test('validate the stored episode') :-
+  validate_episode('neems', 'map').
 
-test('find all actions without time interval') :-
-  get_actions_without_timeinterval(ActionsWithoutTimeInterval).
-
-test('find all actions with participants assigned no role') :-
-  get_actions_with_participants_without_role(ActionsWithoutRole).
-
-test('get blackbox action which does not perform any tasks') :-
-  get_actions_without_tasks(ActionsWithoutTasks).
-
-test('get actions without participants') :-
-  get_actions_without_participants(ActionsWithoutParticipants).
-
-test('check the TF tree') :-
-  WorldFrame = 'map', % Set the desired world frame 
-  get_child_frames_without_link_to_world_frame(WorldFrame, ChildFrames).
-
-test('get objects without location') :-
-  get_objects_without_location(ObjectWithoutLocation).
-
-test('get objects without shape') :-
-  get_objects_without_shape(ObjWithoutShape).
-
-test('get joints without parent and child link') :-
-  get_joints_without_proper_links(JointWithoutPLinkOrCLink).
-
-:- end_tests('neem_logs').
+:- end_tests('neem_validation').
