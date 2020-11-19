@@ -1,4 +1,4 @@
-:- module(neem_logs,
+:- module(neem_validation,
     [ 
       get_actions_without_timeinterval(r),
       get_actions_with_participants_without_role(r),
