@@ -23,6 +23,8 @@ jobs:
         repository: code-iai/iai_common_msgs
     - name: Setup KnowRob workspace
       uses: janbernloehr/github-setup-catkin@patch-1
+      env:
+            ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       with:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax. 
         ros-version: melodic
