@@ -84,7 +84,6 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     rm -rf /home/ros/src/* && \
     git clone https://github.com/knowrob/knowrob.git && \
     git clone https://github.com/knowrob/rosprolog.git && \
-    git clone https://github.com/ease-crc/knowrob_openease.git && \
     git clone https://github.com/code-iai/iai_maps.git && \
     git clone https://github.com/code-iai/iai_common_msgs.git && \
     git clone https://github.com/code-iai/iai_cad_tools.git && \
