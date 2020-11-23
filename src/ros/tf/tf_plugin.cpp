@@ -7,6 +7,13 @@
 static ros::NodeHandle node;
 static TFMemory memory;
 static TFPublisher pub(memory);
+static TFLogger *tf_logger=NULL;
+
+// TF logger parameter
+double vectorial_threshold=0.001;
+double angular_threshold=0.1;
+double time_threshold=1.0;
+std::string logger_db_name="roslog";
 
 TFLogger& get_logger() {
 	static TFLogger logger(node,memory);
@@ -45,43 +52,56 @@ PREDICATE(tf_republish_set_realtime_factor, 1) {
 
 // tf_logger_enable
 PREDICATE(tf_logger_enable, 0) {
-	get_logger();
+	if(tf_logger) {
+		delete tf_logger;
+	}
+	tf_logger = new TFLogger(node,memory);
+	tf_logger->set_db_name(logger_db_name);
+	tf_logger->set_time_threshold(time_threshold);
+	tf_logger->set_vectorial_threshold(vectorial_threshold);
+	tf_logger->set_angular_threshold(angular_threshold);
+	return true;
+}
+
+// tf_logger_disable
+PREDICATE(tf_logger_disable, 0) {
+	if(tf_logger) {
+		delete tf_logger;
+		tf_logger = NULL;
+	}
 	return true;
 }
 
 // tf_logger_set_db_name(DBName)
 PREDICATE(tf_logger_set_db_name, 1) {
 	std::string db_name((char*)PL_A1);
-	get_logger().set_db_name(db_name);
+	logger_db_name = db_name;
 	return true;
 }
 
 //
 PREDICATE(tf_logger_set_time_threshold, 1) {
-	get_logger().set_time_threshold((double)PL_A1);
+	time_threshold = (double)PL_A1;
 	return true;
 }
 PREDICATE(tf_logger_set_vectorial_threshold, 1) {
-	get_logger().set_vectorial_threshold((double)PL_A1);
+	vectorial_threshold = (double)PL_A1;
 	return true;
 }
 PREDICATE(tf_logger_set_angular_threshold, 1) {
-	get_logger().set_angular_threshold((double)PL_A1);
+	angular_threshold = (double)PL_A1;
 	return true;
 }
 
 //
 PREDICATE(tf_logger_get_time_threshold, 1) {
-	PL_A1=get_logger().get_time_threshold();
-	return true;
+	return time_threshold;
 }
 PREDICATE(tf_logger_get_vectorial_threshold, 1) {
-	PL_A1=get_logger().get_vectorial_threshold();
-	return true;
+	return vectorial_threshold;
 }
 PREDICATE(tf_logger_get_angular_threshold, 1) {
-	PL_A1=get_logger().get_angular_threshold();
-	return true;
+	return angular_threshold;
 }
 
 // tf_mem_set_pose(ObjFrame,PoseData,Since)
@@ -117,6 +137,8 @@ PREDICATE(tf_mng_store, 3) {
 	double stamp = (double)PL_A3;
 	geometry_msgs::TransformStamped ts;
 	memory.create_transform(&ts,frame,PL_A2,stamp);
-	get_logger().store(ts);
+	if(tf_logger) {
+		tf_logger->store(ts);
+	}
 	return true;
 }

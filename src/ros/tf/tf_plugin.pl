@@ -13,7 +13,9 @@
 	  tf_republish_set_pose/2,
 	  tf_republish_set_goal/2,
 	  tf_republish_set_loop/1,
-	  tf_republish_set_realtime_factor/1
+	  tf_republish_set_realtime_factor/1,
+	  tf_logger_enable/0,
+	  tf_logger_disable/0
 	]).
 
 :- use_foreign_library('libtf_plugin.so').
@@ -102,10 +104,7 @@ tf_set_pose(Obj,PoseData,FS) :-
 	rdf_split_url(_,ObjFrame,Obj),
 	time_scope_data(FS,[Since,_Until]),
 	tf_mem_set_pose(ObjFrame,PoseData,Since),
-	(	setting(tf_plugin:use_logger,false)
-	->	true
-	;	tf_mng_store(ObjFrame,PoseData,Since)
-	).
+	tf_mng_store(ObjFrame,PoseData,Since).
 
 %%
 tf_get_pose(Obj,PoseQuery,QS,FS) :-
