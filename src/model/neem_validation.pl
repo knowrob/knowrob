@@ -9,7 +9,7 @@
       get_objects_without_shape(r),
       get_joints_without_proper_links(r),
       load_logs(r),
-      validate_episode(r,r)
+      validate_episode(r)
     ]).
 
 :- use_module(library('db/scope')).
@@ -119,8 +119,7 @@ load_logs(Folder) :-
   remember(Path),
   tf_mng_remember(Path).
 
-validate_episode(Foldername, WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame. Neems folder is expected to be in knowrob package
-  load_logs(Foldername),
+validate_episode(WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame
   get_actions_without_timeinterval(ActionsWithoutTimeInterval),
   get_actions_with_participants_without_role(ActionsWithoutRole),
   get_actions_without_tasks(ActionsWithoutTasks),
@@ -129,15 +128,3 @@ validate_episode(Foldername, WorldFrame):- % Set the name of the folder with the
   get_objects_without_location(ObjectWithoutLocation),
   get_objects_without_shape(ObjWithoutShape),
   get_joints_without_proper_links(JointWithoutPLinkOrCLink).
-
-
-
-     /*******************************
-     *          UNIT TESTS          *
-     *******************************/
-:- begin_tests('neem_validation').
-
-test('validate the stored episode') :-
-  validate_episode('neems', 'map').
-
-:- end_tests('neem_validation').
