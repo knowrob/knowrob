@@ -28,18 +28,18 @@ get_path(Path, Folder):-
 get_actions_without_timeinterval(ActionWithoutInterval) :-
   findall(Action, 
     ( is_action(Action),
-      \+ has_time_interval(Action, TimeInterval)), 
+      \+ has_time_interval(Action, _)), 
     ActionWithoutInterval),
   length(ActionWithoutInterval, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have no time interval'),
   forall(member(Action, ActionWithoutInterval), print_message(warning, Action))), !; 
-  print_message(info, 'All actions have time interval'),true.
+  print_message(info, 'All actions have time intervals'),true.
 
 get_actions_with_participants_without_role(ParticipantsWithoutRole) :-
   findall(Action, 
     ( is_action(Action),
       has_participant(Action, Participant), 
-    \+ has_role(Participant, ParticipantRole)), 
+    \+ has_role(Participant, _)), 
     Participants),
   list_to_set(Participants, ParticipantsWithoutRole),
   length(ParticipantsWithoutRole, Listlength),
@@ -62,7 +62,7 @@ get_actions_without_tasks(ActionsWithNoTask) :-
 get_actions_without_participants(ActionsWithoutParticipants) :-
   findall(Action, 
     ( is_action(Action), 
-    \+ has_participant(Action, P)), 
+    \+ has_participant(Action, _)), 
     ActionsWithoutParticipants),
   length(ActionsWithoutParticipants, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have no participants. Please assert the participants involved in the action'),
@@ -75,7 +75,7 @@ get_child_frames_without_link_to_world_frame(World, ChildFramesWithoutLinkToWorl
   mng_distinct_values(DB, tf, 'child_frame_id', ChildFrames),
   findall(Frame, 
     (member(Frame, ChildFrames), 
-    \+ is_at(Frame, [World, Translation, Rotation])),
+    \+ is_at(Frame, [World, _, _])),
     ChildFramesWithoutLinkToWorld),
   length(ChildFramesWithoutLinkToWorld, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following child frames have no link to the world frame'),
@@ -85,7 +85,7 @@ get_child_frames_without_link_to_world_frame(World, ChildFramesWithoutLinkToWorl
 get_objects_without_location(POWithoutLocation) :-
    findall(Object,
     ( is_physical_object(Object),
-    \+ object_localization(Object, Location)),
+    \+ object_localization(Object, _)),
     POWithoutLocation),
   length(POWithoutLocation, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following physical objects have no location. Please assert the locations for these objects'),
@@ -120,11 +120,11 @@ load_logs(Folder) :-
   tf_mng_remember(Path).
 
 validate_episode(WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame
-  get_actions_without_timeinterval(ActionsWithoutTimeInterval),
-  get_actions_with_participants_without_role(ActionsWithoutRole),
-  get_actions_without_tasks(ActionsWithoutTasks),
-  get_actions_without_participants(ActionsWithoutParticipants),
-  get_child_frames_without_link_to_world_frame(WorldFrame, ChildFrames),
-  get_objects_without_location(ObjectWithoutLocation),
-  get_objects_without_shape(ObjWithoutShape),
-  get_joints_without_proper_links(JointWithoutPLinkOrCLink).
+  get_actions_without_timeinterval(_),
+  get_actions_with_participants_without_role(_),
+  get_actions_without_tasks(_),
+  get_actions_without_participants(_),
+  get_child_frames_without_link_to_world_frame(WorldFrame, _),
+  get_objects_without_location(_),
+  get_objects_without_shape(_),
+  get_joints_without_proper_links(_).
