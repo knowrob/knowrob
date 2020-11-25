@@ -81,6 +81,7 @@ void TFRepublisher::set_goal(double time_min, double time_max)
 {
 	time_min_ = time_min;
 	time_max_ = time_max;
+	time_ = time_min_;
 	has_next_ = false;
 	has_new_goal_ = true;
 }
@@ -127,7 +128,6 @@ void TFRepublisher::advance_cursor()
 	if(has_new_goal_) {
 		has_new_goal_ = false;
 		has_next_ = false;
-		time_ = time_min_;
 		create_cursor();
 	}
 	if(reset_) {
