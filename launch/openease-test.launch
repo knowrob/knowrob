@@ -10,7 +10,7 @@
   <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
-    <arg name="initial_package" default="knowrob_openease" />
+    <arg name="initial_package" default="knowrob" />
     <arg name="initial_goal" default="true" />
   </include>
 </launch>
