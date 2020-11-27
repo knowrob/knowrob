@@ -262,15 +262,12 @@ tf_mng_init :-
 %%
 %
 tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
-	tf_logger_get_time_threshold(LoggerTimeThreshold),
-	%Stamp0 is QSince - LoggerTimeThreshold,
-	Stamp1 is QUntil + LoggerTimeThreshold,
 	mng_db_name(DB),
 	tf_db(DB, Name),
 	mng_cursor_create(DB,Name,Cursor),
 	mng_cursor_descending(Cursor,'header.stamp'),
 	mng_cursor_filter(Cursor, ['child_frame_id', string(ObjFrame)]),
-	mng_cursor_filter(Cursor, ['header.stamp', ['$lt', time(Stamp1)]]),
+	mng_cursor_filter(Cursor, ['header.stamp', ['$lte', time(QUntil)]]),
 	%mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(Stamp0)]]),
 	setup_call_cleanup(
 		true,
@@ -299,7 +296,7 @@ tf_mng_lookup1(Cursor,MinStamp,MaxStamp,ObjFrame,PoseData,FSince,FUntil) :-
 	mng_cursor_next(Cursor,First),
 	mng_get_dict(header,First,Header),
 	mng_get_dict(stamp,Header,double(FirstStamp)),
-	( FirstStamp>MaxStamp
+	( FirstStamp > MaxStamp
 	->	( FirstUntil=FirstStamp,
 	      mng_cursor_next(Cursor,Doc)
 		)
