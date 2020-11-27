@@ -90,13 +90,16 @@ PREDICATE(tf_logger_set_angular_threshold, 1) {
 
 //
 PREDICATE(tf_logger_get_time_threshold, 1) {
-	return time_threshold;
+	PL_A1 = time_threshold;
+	return true;
 }
 PREDICATE(tf_logger_get_vectorial_threshold, 1) {
-	return vectorial_threshold;
+	PL_A1 = vectorial_threshold;
+	return true;
 }
 PREDICATE(tf_logger_get_angular_threshold, 1) {
-	return angular_threshold;
+	PL_A1 = angular_threshold;
+	return true;
 }
 
 // tf_mem_set_pose(ObjFrame,PoseData,Since)
