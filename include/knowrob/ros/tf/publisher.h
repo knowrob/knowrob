@@ -18,7 +18,7 @@
 class TFPublisher
 {
 public:
-	TFPublisher(TFMemory &memory, double frequency=1.0);
+	TFPublisher(TFMemory &memory, double frequency=10.0);
 	~TFPublisher();
 
 protected:

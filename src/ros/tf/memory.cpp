@@ -73,7 +73,7 @@ bool TFMemory::get_pose_term(const std::string &frame, PlTerm *term, double *sta
 bool TFMemory::set_pose_term(const std::string &frame, const PlTerm &term, double stamp)
 {
 	const geometry_msgs::TransformStamped &ts_old = get_transform(frame);
-	// make sure the pose if more recent then the one stored
+	// make sure the pose is more recent then the one stored
 	if(get_stamp(ts_old)>stamp) {
 		return false;
 	}

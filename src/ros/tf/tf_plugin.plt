@@ -12,8 +12,8 @@
 		'tf_plugin',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#'),
-		  setup(tf_mng_whipe),
-		  cleanup(tf_mng_whipe)
+		  setup(tf_plugin_setup),
+		  cleanup(tf_plugin_cleanup)
 		]).
 
 :- rdf_meta(test_set_pose(r,+,+)).
@@ -22,11 +22,21 @@
 :- rdf_meta(test_transform_pose(r,+,+)).
 :- rdf_meta(test_is_unlocalized(r,+)).
 
+tf_plugin_setup :-
+	tf_mng_whipe,
+	tf_logger_enable.
+
+tf_plugin_cleanup :-
+	tf_logger_disable,
+	tf_mng_whipe.
+
 % some test facts
 test_pose_fred0([world,[1.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178679.123).
 test_pose_fred1([world,[2.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178680.123).
 test_pose_fred2([world,[3.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178681.123).
 test_pose_alex1(['Fred',[0.0,1.0,0.0],[0.0,0.0,0.0,1.0]], 1593178680.123).
+test_pose_alex2([world,[0.0,0.0,1.0],[0.0,0.0,0.0,1.0]], 1593178681.123).
+test_pose_alex3(['Fred',[0.0,1.0,0.0],[0.0,0.0,0.0,1.0]], 1593178682.123).
 
 test_set_pose(Object,Pose,Stamp) :-
 	time_scope(=(Stamp), =<('Infinity'), FScope),

@@ -2,10 +2,12 @@
   <!-- Configure settings file. -->
   <arg name="knowrob_settings" default="$(find knowrob)/settings/neemhub.pl" />
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
-
+  
   <!-- rosbridge for websocket visualization -->
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
   </include>
+  
+  <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />

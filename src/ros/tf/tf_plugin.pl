@@ -6,9 +6,16 @@
 	  tf_mem_get_pose/3,
 	  tf_mng_store/3,
 	  tf_mng_lookup/6,
+	  tf_mng_range/6,
 	  tf_mng_whipe/0,
 	  tf_mng_remember/1,
-	  tf_mng_memorize/1
+	  tf_mng_memorize/1,
+	  tf_republish_set_pose/2,
+	  tf_republish_set_goal/2,
+	  tf_republish_set_loop/1,
+	  tf_republish_set_realtime_factor/1,
+	  tf_logger_enable/0,
+	  tf_logger_disable/0
 	]).
 
 :- use_foreign_library('libtf_plugin.so').
@@ -40,6 +47,24 @@
 
 tf_db(DB, Name) :- 
 	mng_get_db(DB, Name, 'tf').
+
+%%
+tf_republish_set_goal(Time_min, Time_max) :-
+	tf_db(DBName, CollectionName),
+	tf_republish_set_goal(DBName, CollectionName, Time_min, Time_max).
+
+%%
+tf_republish_load_transforms(Time) :-
+	tf_tree:lookup_transforms_(Time,Transforms),
+	forall(
+	    (   member([Ref,Frame,Pos,Rot],Transforms),
+	        % FIXME avoid this elsewhere
+	        Ref \= Frame,
+	        \+ atom_concat('/',Ref,Frame),
+	        \+ atom_concat('/',Frame,Ref)
+	    ),
+		tf_plugin:tf_republish_set_pose(Frame,[Ref,Pos,Rot])
+	).
 
 %%
 tf_mng_whipe :-
@@ -91,10 +116,7 @@ tf_set_pose(Obj,PoseData,FS) :-
 	rdf_split_url(_,ObjFrame,Obj),
 	time_scope_data(FS,[Since,_Until]),
 	tf_mem_set_pose(ObjFrame,PoseData,Since),
-	(	setting(tf_plugin:use_logger,false)
-	->	true
-	;	tf_mng_store(ObjFrame,PoseData,Since)
-	).
+	tf_mng_store(ObjFrame,PoseData,Since).
 
 %%
 tf_get_pose(Obj,PoseQuery,QS,FS) :-
@@ -226,41 +248,55 @@ tf_get_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
 %
 tf_mng_init :-
 	mng_db_name(DB),
-	tf_logger_set_db_name(DB),
 	tf_db(DB, Name),
 	mng_index_create(DB,Name,[+'child_frame_id',-'header.stamp']),
+	mng_index_create(DB,Name,[+'header.stamp']),
 	%%
 	(	setting(tf_plugin:use_logger,false)
 	->	true
-	;	tf_logger_enable
+	;	tf_logger_set_db_name(DB)
 	).
 %%
 :- tf_mng_init.
 
 %%
 %
-tf_mng_lookup(ObjFrame,_QSince,QUntil,PoseData,FSince,FUntil) :-
-	tf_logger_get_time_threshold(LoggerTimeThreshold),
-	%Stamp0 is QSince - LoggerTimeThreshold,
-	Stamp1 is QUntil + LoggerTimeThreshold,
+tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
 	mng_db_name(DB),
 	tf_db(DB, Name),
 	mng_cursor_create(DB,Name,Cursor),
 	mng_cursor_descending(Cursor,'header.stamp'),
 	mng_cursor_filter(Cursor, ['child_frame_id', string(ObjFrame)]),
-	mng_cursor_filter(Cursor, ['header.stamp', ['$lt', time(Stamp1)]]),
+	mng_cursor_filter(Cursor, ['header.stamp', ['$lte', time(QUntil)]]),
 	%mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(Stamp0)]]),
 	setup_call_cleanup(
 		true,
-		tf_mng_lookup1(Cursor,QUntil,PoseData,FSince,FUntil),
+		tf_mng_lookup1(Cursor,QSince,QUntil,_,PoseData,FSince,FUntil),
 		mng_cursor_destroy(Cursor)
 	).
 
-tf_mng_lookup1(Cursor,MaxStamp,PoseData,FSince,FUntil) :-
+%%
+%
+tf_mng_range(QSince,QUntil,ObjFrame,PoseData,FSince,FUntil) :-
+	mng_db_name(DB),
+	tf_db(DB, Name),
+	mng_cursor_create(DB,Name,Cursor),
+	mng_cursor_filter(Cursor, ['header.stamp', ['$lt', time(QUntil)]]),
+	mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(QSince)]]),
+	mng_cursor_descending(Cursor,'header.stamp'),
+	setup_call_cleanup(
+		true,
+		tf_mng_lookup1(Cursor,QSince,QUntil,ObjFrame,PoseData,FSince,FUntil),
+		mng_cursor_destroy(Cursor)
+	),
+	% TODO: read frame name
+	true.
+
+tf_mng_lookup1(Cursor,MinStamp,MaxStamp,ObjFrame,PoseData,FSince,FUntil) :-
 	mng_cursor_next(Cursor,First),
 	mng_get_dict(header,First,Header),
 	mng_get_dict(stamp,Header,double(FirstStamp)),
-	( FirstStamp>MaxStamp
+	( FirstStamp > MaxStamp
 	->	( FirstUntil=FirstStamp,
 	      mng_cursor_next(Cursor,Doc)
 		)
@@ -268,16 +304,18 @@ tf_mng_lookup1(Cursor,MaxStamp,PoseData,FSince,FUntil) :-
 		  Doc=First
 		)
 	),
-	tf_mng_lookup2(Cursor,Doc,FirstUntil,PoseData,FSince,FUntil).
+	tf_mng_lookup2(Cursor,Doc,MinStamp,FirstUntil,ObjFrame,PoseData,FSince,FUntil).
 
-tf_mng_lookup2(Cursor,Next,LastStamp,PoseData,FSince,FUntil) :-
+tf_mng_lookup2(Cursor,Next,MinStamp,LastStamp,ObjFrame,PoseData,FSince,FUntil) :-
 	tf_mng_doc_pose(Next,_,Stamp,PoseData0),
 	(	( PoseData=PoseData0,
 		  FSince=Stamp,
-		  FUntil=LastStamp
+		  FUntil=LastStamp,
+		  mng_get_dict(child_frame_id,Next,ObjFrame)
 		)
-	;	( mng_cursor_next(Cursor,X),
-		  tf_mng_lookup2(Cursor,X,Stamp,PoseData,FSince,FUntil)
+	;	( Stamp > MinStamp,
+		  mng_cursor_next(Cursor,X),
+		  tf_mng_lookup2(Cursor,X,MinStamp,Stamp,ObjFrame,PoseData,FSince,FUntil)
 		)
 	).
 

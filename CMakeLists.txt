@@ -86,7 +86,8 @@ add_library(tf_plugin SHARED
 	src/ros/tf/tf_plugin.cpp
 	src/ros/tf/memory.cpp
 	src/ros/tf/logger.cpp
-	src/ros/tf/publisher.cpp)
+	src/ros/tf/publisher.cpp
+	src/ros/tf/republisher.cpp)
 target_link_libraries(tf_plugin
 	${SWIPL_LIBRARIES}
 	${MONGOC_LIBRARIES}

@@ -6,6 +6,7 @@
       triple_tell(r,r,t,+,+),
       triple_ask(r,r,t,+,+,-),
       triple_aggregate(t,+,+,-),
+      triple_transitive(t,+,+,-),
       triple_erase(r,r,t,+,+)
     ]).
 /** <module> Triple store backend using mongo DB.
@@ -209,6 +210,54 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 		triple_query_unify_(Cursor,
 			QSubject,QProperty,QValue,
 			FScope,Options
+		),
+		% cleanup: destroy cursor again
+		mng_cursor_destroy(Cursor)
+	).
+
+%%
+%
+triple_transitive(triple(Subject,Property,Value),
+		_QScope,FScope,_Options) :-
+	%% read options
+	%option(graph(Graph), Options, user),
+	triple_db(DB,Coll),
+	% match starting document
+	Match=['$match', [
+		['s',string(Subject)],
+		['p*',string(Property)]
+	]],
+	% make a graph query
+	Lookup=['$graphLookup', [
+		['from',string(Coll)],
+		['startWith',string('$o')],
+		['connectFromField',string('o')],
+		['connectToField',string('s')],
+		['as',string('paths')],
+		['restrictSearchWithMatch',['p*',string(Property)]]
+	]],
+	%
+	Concat=['$addFields', ['paths', ['$concatArrays', array([
+		% the array field
+		string("$paths"),
+		% an additional element
+		array([[ "o", string("$o") ]])
+	])]]],
+	% unwind the paths array
+	Unwind=['$unwind',['path',string('$paths')]],
+	% avoid duplicates
+	Group=['$group',['_id',string('$paths.o')]],
+	%%
+	Doc=[ Match, Lookup, Concat, Unwind, Group ],
+	setup_call_cleanup(
+		% setup: create a query cursor
+		mng_cursor_create(DB,Coll,Cursor),
+		% call: find matching document
+		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
+			mng_cursor_materialize(Cursor,Result_doc),
+			mng_get_dict('_id',Result_doc,string(Value)),
+			%% TODO: handle scope
+			universal_scope(FScope)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)

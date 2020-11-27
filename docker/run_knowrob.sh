@@ -1,4 +1,6 @@
 #!/bin/bash
 
 source /home/ros/devel/setup.bash
-roslaunch /home/ros/src/knowrob_openease/launch/openease.launch
+export ROS_PACKAGE_PATH="$ROS_PACKAGE_PATH:/home/ros/user_data/:/openease_ws"
+
+roslaunch /home/ros/src/knowrob/launch/openease.launch

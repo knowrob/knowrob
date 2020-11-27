@@ -49,6 +49,20 @@ transitive(Query) ?>
   { transitive_db_(Query),! },
   include_parents(Query).
 
+transitive(triple(S,P,O)) ?>
+	{ ground([S,P]),
+	  !
+	},
+	% unpack options and scope
+	options(Options),
+	query_scope(QScope),
+	fact_scope(FScope),
+	% query the triple DB
+	{ tripledb_transitive(
+		triple(S,P,O),
+		QScope,FScope,Options)
+	}.
+
 transitive(Query) ?>
   options(Options),
   query_scope(QScope),

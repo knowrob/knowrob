@@ -62,7 +62,7 @@ RUN echo "source /opt/ros/melodic/setup.bash" >> /home/ros/.bashrc && \
 ENV PATH /home/ros/devel/bin:/opt/ros/melodic/bin:.:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 
 ENV PATH=/home/ros/devel/bin:/opt/ros/melodic/bin:.:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-ENV ROS_PACKAGE_PATH=/home/ros/src:/opt/ros/melodic/share:/opt/ros/melodic/stacks:/home/ros/user_data/
+ENV ROS_PACKAGE_PATH=/home/ros/src:/opt/ros/melodic/share:/opt/ros/melodic/stacks
 ENV CMAKE_PREFIX_PATH=/home/ros/melodic/catkin_ws/devel:/opt/ros/melodic
 ENV PKG_CONFIG_PATH=/home/ros/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig
 ENV ROS_MASTER_URI=http://localhost:11311
@@ -84,7 +84,6 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     rm -rf /home/ros/src/* && \
     git clone https://github.com/knowrob/knowrob.git && \
     git clone https://github.com/knowrob/rosprolog.git && \
-    git clone https://github.com/ease-crc/knowrob_openease.git && \
     git clone https://github.com/code-iai/iai_maps.git && \
     git clone https://github.com/code-iai/iai_common_msgs.git && \
     git clone https://github.com/code-iai/iai_cad_tools.git && \
@@ -92,11 +91,9 @@ RUN if [ "x$LOCAL_BUILD" = "x0" ] ; then \
     git clone https://github.com/RobotWebTools/tf2_web_republisher.git ; \
     fi
 
-WORKDIR /home/ros/src/knowrob
 WORKDIR /home/ros
 # Build the catkin workspace
 RUN /opt/ros/melodic/bin/catkin_make
 
 COPY run_knowrob.sh /run_knowrob.sh
-
 ENTRYPOINT ["/run_knowrob.sh"]
