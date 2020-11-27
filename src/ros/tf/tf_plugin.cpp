@@ -15,11 +15,6 @@ double angular_threshold=0.1;
 double time_threshold=-1.0;
 std::string logger_db_name="roslog";
 
-TFLogger& get_logger() {
-	static TFLogger logger(node,memory);
-	return logger;
-}
-
 TFRepublisher& get_republisher() {
 	static TFRepublisher republisher;
 	return republisher;
