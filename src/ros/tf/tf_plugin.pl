@@ -50,9 +50,21 @@ tf_db(DB, Name) :-
 
 %%
 tf_republish_set_goal(Time_min, Time_max) :-
-	writeln(set_goal0(Time_min, Time_max)),
 	tf_db(DBName, CollectionName),
 	tf_republish_set_goal(DBName, CollectionName, Time_min, Time_max).
+
+%%
+tf_republish_load_transforms(Time) :-
+	tf_tree:lookup_transforms_(Time,Transforms),
+	forall(
+	    (   member([Ref,Frame,Pos,Rot],Transforms),
+	        % FIXME avoid this elsewhere
+	        Ref \= Frame,
+	        \+ atom_concat('/',Ref,Frame),
+	        \+ atom_concat('/',Frame,Ref)
+	    ),
+		tf_plugin:tf_republish_set_pose(Frame,[Ref,Pos,Rot])
+	).
 
 %%
 tf_mng_whipe :-
