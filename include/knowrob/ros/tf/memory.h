@@ -4,7 +4,6 @@
 #include <string>
 #include <set>
 #include <map>
-#include <mutex>
 
 // MONGO
 #include <mongoc.h>
@@ -63,7 +62,6 @@ public:
 protected:
 	std::set<std::string> managed_frames_;
 	std::map<std::string, geometry_msgs::TransformStamped> transforms_;
-	std::mutex mutex_;
 };
 
 #endif //__KNOWROB_TF_MEMORY__
