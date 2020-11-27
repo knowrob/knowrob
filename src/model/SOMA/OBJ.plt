@@ -49,5 +49,12 @@ test(assert_an_object_dimension) :-
   tell(triple(Object, soma:hasShape, Shape)),
   tell(object_dimensions(Object, 0.5, 0.8, 0.14)).
 
+test(assert_an_object_color) :-
+  tell(is_physical_object(Object)),
+  tell(is_individual(Color)),
+  tell(triple(Object, soma:hasColor, Color)),
+  tell(object_color_rgb(Object, [1.0,1.0,1.0])),
+  object_color_rgb(Object, [R,G,B]).
+
 
 :- end_tripledb_tests('model_SOMA_OBJ').
