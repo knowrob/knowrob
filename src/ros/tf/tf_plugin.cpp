@@ -12,7 +12,7 @@ static TFLogger *tf_logger=NULL;
 // TF logger parameter
 double vectorial_threshold=0.001;
 double angular_threshold=0.1;
-double time_threshold=1.0;
+double time_threshold=-1.0;
 std::string logger_db_name="roslog";
 
 TFLogger& get_logger() {
