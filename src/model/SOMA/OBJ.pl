@@ -129,16 +129,21 @@ object_localization(Obj,Loc) ?+>
 object_color_rgb(Obj,[R,G,B]) ?>
   holds(Obj,soma:hasColor,Color),
   holds(Color,dul:hasRegion,Region),
-  holds(Region,soma:hasRGBValue,[R,G,B]),
+  holds(Region,soma:hasRGBValue,ColorValue),
+  { atomic_list_concat(ColorList, ',', ColorValue),
+    maplist(atom_number, ColorList, [R,G,B]) },
   { ! }.
 
 object_color_rgb(Obj, [R,G,B]) ?>
-  holds(Obj,soma:hasRGBValue,[R,G,B]),
+  holds(Obj,soma:hasRGBValue,ColorValue),
+  { atomic_list_concat(ColorList, ',', ColorValue),
+    maplist(atom_number, ColorList, [R,G,B]) },
   { ! }.
   
 object_color_rgb(Obj,[R,G,B]) +>
   % get the color quality
-  { holds(Obj,soma:hasColor,Color) },
+  { holds(Obj,soma:hasColor,Color),
+    atomic_list_concat([R,G,B],',', ColorValue)},
   % create a new region
   { universal_scope(US),
     tell([ has_type(Region,soma:'ColorRegion'),
