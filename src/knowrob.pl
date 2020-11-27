@@ -1,7 +1,7 @@
 :- module(knowrob,
 	[ knowrob_load_settings/0,
 	  knowrob_load_plugins/0,
-	  neem_init0/1
+	  knowrob_load_neem/1
 	]).
 
 :- use_module(library(settings)).
@@ -9,7 +9,12 @@
 % define some settings
 :- setting(plugins, list, [], 'List of auto-loaded plugins').
 
-neem_init0(NEEM_id) :-
+%% knowrob_load_neem(+NEEM_id) is det.
+%
+% Configure KnowRob to use the DB associated to some NEEM,
+% and initialize position data etc.
+%
+knowrob_load_neem(NEEM_id) :-
 	% assign DB collection prefix
 	set_setting(mng_client:collection_prefix, NEEM_id),
 	% load URDF files referred to in triple store
