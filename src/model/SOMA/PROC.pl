@@ -5,7 +5,8 @@
       is_motion(r),
       is_process_flow(r),
       is_process_type(r),
-      is_progression(r)
+      is_progression(r),
+      has_process_role(r,r)
     ]).
 /** <module> Interface predicates for EASE-PROC model.
 
@@ -78,3 +79,13 @@ is_force_interaction(Entity) ?+>
 %
 is_progression(Entity) ?+>
   has_type(Entity, soma:'Progression').
+
+%% has_process_role(?ProcType,?Role) is nondet.
+%
+% A relation between roles and process types.
+%
+% @param ProcType An individual of type soma:'ProcessType'.
+% @param Role An individual of type dul:'Role'.
+%
+has_process_role(Tsk,Role) ?+>
+  holds(Tsk, soma:isProcessTypeOf ,Role).
