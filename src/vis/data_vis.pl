@@ -132,6 +132,8 @@ data_vis_object(timeline(Identifier), Object) :-
   data_vis_(Identifier,3,Object).
 data_vis_object(linechart(Identifier), Object) :-
   data_vis_(Identifier,4,Object).
+data_vis_object(table(Identifier), Object) :-
+  data_vis_(Identifier,100,Object).
 data_vis_object(graph(Identifier), Object) :-
   data_vis_(Identifier,999,Object).
 
