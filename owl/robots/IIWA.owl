@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/IAI-kitchen.owl#"
+     xml:base="http://knowrob.org/kb/IAI-kitchen.owl"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
+     xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:urdf="http://knowrob.org/kb/urdf.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:qudt-unit="http://qudt.org/vocab/unit#"
+     xmlns:iai-map="http://knowrob.org/kb/IAI-kitchen.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/IIWA.owl">
+        <owl:imports rdf:resource="http://www.ease-crc.org/ont/SOMA.owl"/>
+        <owl:imports rdf:resource="package://knowrob/owl/srdl2.owl"/>
+    </owl:Ontology>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAArm -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAArm">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Arm"/>
+        <rdfs:comment>todo: X DoF?</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWABase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWABase">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasMaximumSpeed"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#IIWAMaximumSpeed"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Back"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Front"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>todo: base widht&amp;depth 668mm??</rdfs:comment>
+        <rdfs:comment>todo: speed 1 m/s??</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAFinger -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAFinger">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAGripper">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
+        <rdfs:comment>todo: 1 DoF</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWALaserScanner -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LaserScanner"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWACameraHolder -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWACameraHolder">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAAngleAdapterConnector -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAAngleAdapterConnector">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAAngleAdapterPlate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAAngleAdapterPlate">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWA -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWA">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWABase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAArm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAGripper"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed"/>
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Gripper -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCamera -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#WheeledBase -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Arm -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Arm"/>
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent  -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWA_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWA_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWA"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWABase_0"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAArm_0"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAGripper_0"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera_0"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWA_BASE_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWABase_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWABase"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">back_laser</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">front_laser</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">angle_adapter_plate</urdf:hasEndLinkName>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Back"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Front"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAArm_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAArm"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iiwa_link_0</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">iiwa_link_ee</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Back -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Back">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">back_laser</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Front -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Front">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">front_laser</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">camera_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rs_camera_link</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAGripper_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAGripper_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAGripper"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fwk_fwa_050_frame_in</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_gripper_left_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_gripper_right_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">camera_holder_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">refills_finger</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#IIWAMaximumSpeed -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-comp.owl#IIWAMaximumSpeed">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MaximumSpeed"/>
+        <srdl2-comp:hasMaximumSpeedValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</srdl2-comp:hasMaximumSpeedValue>
+        <rdfs:comment>in m/s</rdfs:comment>
+    </owl:NamedIndividual>
+
+</rdf:RDF>

@@ -12,6 +12,7 @@
       has_participant(r,r),
       has_participant(r,r,r),
       executes_task(r,r),
+      has_task_role(r,r),
       task_role(r,r),
       task_role_type(r,r,r),
       task_role_range(r,r,r)
@@ -140,6 +141,8 @@ executes_task(Act,Tsk) ?+>
 %
 task_role(Tsk,Role) ?+>
   holds(Tsk, dul:isTaskOf ,Role).
+
+has_task_role(Tsk,Role) ?+> task_role(Tsk,Role).
 
 %% task_role_type(?Tsk,?Role,?RoleType) is nondet.
 %

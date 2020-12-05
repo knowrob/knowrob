@@ -4,10 +4,11 @@
       get_actions_with_participants_without_role(r),
       get_actions_without_tasks(r),
       get_actions_without_participants(r),
-      get_child_frames_without_link_to_world_frame(r,r),
+      %get_child_frames_without_link_to_world_frame(r,r),
       get_objects_without_location(r),
       get_objects_without_shape(r),
       get_joints_without_proper_links(r),
+      first_n_list(r,r,r),
       load_logs(r),
       validate_episode(r)
     ]).
@@ -32,19 +33,26 @@ get_actions_without_timeinterval(ActionWithoutInterval) :-
     ActionWithoutInterval),
   length(ActionWithoutInterval, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have no time interval'),
-  forall(member(Action, ActionWithoutInterval), print_message(warning, Action))), !; 
+  first_n_list(10, ActionWithoutInterval, NActionWithoutInterval),
+  forall(member(Action, NActionWithoutInterval), print_message(warning, Action))), !; 
   print_message(info, 'All actions have time intervals'),true.
 
 get_actions_with_participants_without_role(ParticipantsWithoutRole) :-
   findall(Action, 
-    ( is_action(Action),
-      has_participant(Action, Participant), 
-    \+ has_role(Participant, _)), 
-    Participants),
+    ( 
+      ask(aggregate([
+        triple(Action,rdf:type,dul:'Event'),
+        triple(Action,rdf:type,regex('^.*(?!Action).*')),
+        triple(Action,dul:hasParticipant,Participant)
+      ])),
+      \+ has_role(Participant, _)
+    ), 
+  Participants),
   list_to_set(Participants, ParticipantsWithoutRole),
   length(ParticipantsWithoutRole, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have participants with no role. Please assert the corresponding participant role'),
-  forall(member(Action, ParticipantsWithoutRole), print_message(warning, Action))), !;
+  first_n_list(10, ParticipantsWithoutRole, NParticipantsWithoutRole),
+  forall(member(Action, NParticipantsWithoutRole), print_message(warning, Action))), !;
   print_message(info, 'All actions have participants with a role'), true.
 
 get_actions_without_tasks(ActionsWithNoTask) :-
@@ -55,8 +63,9 @@ get_actions_without_tasks(ActionsWithNoTask) :-
     ActionsWithNoTask),
   length(ActionsWithNoTask, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have no tasks associated with it. Please assert the corresponding tasks performed by the action'),
-  forall(member(Action, ActionsWithNoTask), print_message(warning, Action))), !;
-   print_message(info, 'All actions perform a physical task'), true.
+  first_n_list(10, ActionsWithNoTask, NActionsWithNoTask),
+  forall(member(Action, NActionsWithNoTask), print_message(warning, Action))), !;
+  print_message(info, 'All actions perform a physical task'), true.
 
 
 get_actions_without_participants(ActionsWithoutParticipants) :-
@@ -66,21 +75,22 @@ get_actions_without_participants(ActionsWithoutParticipants) :-
     ActionsWithoutParticipants),
   length(ActionsWithoutParticipants, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following actions have no participants. Please assert the participants involved in the action'),
-  forall(member(Action, ActionsWithoutParticipants), print_message(warning, Action))), !;
+  first_n_list(10, ActionsWithoutParticipants, NActionsWithoutParticipants),
+  forall(member(Action, NActionsWithoutParticipants), print_message(warning, Action))), !;
   print_message(info, 'All actions have participants'), true.
 
 
-get_child_frames_without_link_to_world_frame(World, ChildFramesWithoutLinkToWorld) :-
-  mng_db_name(DB),
-  mng_distinct_values(DB, tf, 'child_frame_id', ChildFrames),
-  findall(Frame, 
-    (member(Frame, ChildFrames), 
-    \+ is_at(Frame, [World, _, _])),
-    ChildFramesWithoutLinkToWorld),
-  length(ChildFramesWithoutLinkToWorld, Listlength),
-  ( Listlength > 0 -> print_message(warning, 'The following child frames have no link to the world frame'),
-  forall(member(Child, ChildFramesWithoutLinkToWorld), print_message(warning, Child))), !;
-  print_message(info, 'All the child frames in the TF are fine'), true.
+%get_child_frames_without_link_to_world_frame(World, ChildFramesWithoutLinkToWorld) :-
+%  mng_db_name(DB),
+%  mng_distinct_values(DB, tf, 'child_frame_id', ChildFrames),
+%  findall(Frame, 
+%    (member(Frame, ChildFrames), 
+%    \+ is_at(Frame, [World, _, _])),
+%    ChildFramesWithoutLinkToWorld),
+%  length(ChildFramesWithoutLinkToWorld, Listlength),
+%  ( Listlength > 0 -> print_message(warning, 'The following child frames have no link to the world frame'),
+%  forall(member(Child, ChildFramesWithoutLinkToWorld), print_message(warning, Child))), !;
+%  print_message(info, 'All the child frames in the TF are fine'), true.
 
 get_objects_without_location(POWithoutLocation) :-
    findall(Object,
@@ -89,8 +99,9 @@ get_objects_without_location(POWithoutLocation) :-
     POWithoutLocation),
   length(POWithoutLocation, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following physical objects have no location. Please assert the locations for these objects'),
-  forall(member(O, POWithoutLocation), print_message(warning, O))), !;
-   print_message(info, 'All objects have a location'), true.
+  first_n_list(10, POWithoutLocation, NPOWithoutLocation),
+  forall(member(O, NPOWithoutLocation), print_message(warning, O))), !;
+  print_message(info, 'All objects have a location'), true.
 
 get_objects_without_shape(POWithoutShape) :-
    findall(Object,
@@ -100,8 +111,9 @@ get_objects_without_shape(POWithoutShape) :-
   list_to_set(PO, POWithoutShape),
   length(POWithoutShape, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following physical objects have no shape. Please assert the shape for these objects or load the corresponding urdf files for the robot and environment, where the shapes are defined.'),
-  forall(member(O, POWithoutShape), print_message(warning, O))), !;
-   print_message(info, 'All physical objects in this episode have shape'), true.
+  first_n_list(10, POWithoutShape, NPOWithoutShape),
+  forall(member(O, NPOWithoutShape), print_message(warning, O))), !;
+  print_message(info, 'All physical objects in this episode have shape'), true.
 
 get_joints_without_proper_links(Joints) :-
   findall(Joint,
@@ -111,8 +123,11 @@ get_joints_without_proper_links(Joints) :-
     Joints),
   length(Joints, Listlength),
   ( Listlength > 0 -> print_message(warning, 'The following joints have no parent link or child link asserted. Please assert the corresponding links for the joints'),
-  forall(member(O, Joints), print_message(warning, O))), !;
+  first_n_list(10, Joints, NJoints),
+  forall(member(O, NJoints), print_message(warning, O))), !;
   print_message(info, 'All joints have their corresponding links'), true.
+
+first_n_list(N, List, Front):- length(Front, N), append(Front, _, List).
 
 load_logs(Folder) :-
   get_path(Path, Folder),
@@ -124,7 +139,7 @@ validate_episode(WorldFrame):- % Set the name of the folder with the logs as Fol
   get_actions_with_participants_without_role(_),
   get_actions_without_tasks(_),
   get_actions_without_participants(_),
-  get_child_frames_without_link_to_world_frame(WorldFrame, _),
+  %get_child_frames_without_link_to_world_frame(WorldFrame, _),
   get_objects_without_location(_),
   get_objects_without_shape(_),
   get_joints_without_proper_links(_).
