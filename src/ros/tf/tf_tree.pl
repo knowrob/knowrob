@@ -134,7 +134,7 @@ initial_transforms(Transforms) :-
 				])]]],
 				['$sort',[
 					['child_frame_id',int(1)],
-					['header.stamp',int(1)]
+					['header.stamp',int(-1)]
 				]],
 				['$limit',int(1)]
 			])]
