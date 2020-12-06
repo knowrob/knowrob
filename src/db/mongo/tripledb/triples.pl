@@ -358,6 +358,11 @@ triple_aggregate1(Coll,[Triple|Xs],QScope,Graph,Vars0,
 		]]])]
 	]],
 	%%%%%% $unwind the next field
+	%% TODO
+%	Unwind0=['$unwind',[
+%		['path', string('$next')],
+%		['preserveNullAndEmptyArrays',bool(true)]
+%	]],
 	Unwind0=['$unwind',string('$next')],
 	%%%%%% $set scopes, $setUnion is used to avoid duplicate scopes
 	Scopes0=['$set',['v_scope',['$setUnion',

@@ -354,13 +354,19 @@ has_parent_link(Joint,Link) ?+>
 % TODO: reconsider this
 % 
 object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
-	{ has_urdf(Obj,Root) },
+	{ object_shape_urdf(Obj,ShapeTerm,Origin,MaterialTerm) },
+	% TODO: set universal fact scope? or not needed?
+	{ true }.
+
+%%
+object_shape_urdf(Obj,ShapeTerm,Origin,MaterialTerm) :-
+	has_urdf(Obj,Root),
 	has_base_link_name(Obj,BaseName),
-	{ ! },
-	{ get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm) }.
+	get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm).
 
 %%
 get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+	% TODO avoid triple lookup for every urdf obj
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
 	),!,
