@@ -51,7 +51,15 @@ tf_db(DB, Name) :-
 %%
 tf_republish_set_goal(Time_min, Time_max) :-
 	tf_db(DBName, CollectionName),
-	tf_republish_set_goal(DBName, CollectionName, Time_min, Time_max).
+	( number(Time_min)
+	->	Min is Time_min
+	;	atom_number(Time_min,Min)
+	),
+	( number(Time_max)
+	->	Max is Time_max
+	;	atom_number(Time_max,Max)
+	),
+	tf_republish_set_goal(DBName, CollectionName, Min, Max).
 
 %%
 tf_republish_load_transforms(Time) :-

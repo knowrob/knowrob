@@ -17,6 +17,10 @@
 knowrob_load_neem(NEEM_id) :-
 	% assign DB collection prefix
 	set_setting(mng_client:collection_prefix, NEEM_id),
+	% re-initialize the triple DB
+	% this is important e.g. to establish triple graph hierarchy.
+	% else we may get orphaned graphs.
+	tripledb_init,
 	% load URDF files referred to in triple store
 	urdf_init,
 	% initialize position of each frame for tf publishing

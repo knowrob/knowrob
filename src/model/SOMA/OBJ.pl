@@ -52,6 +52,10 @@
 
 :- rdf_db:rdf_register_ns(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
 
+%% FIXME should be somewhere else. does term expansion work with member?
+:- rdf_meta(my_member(t,+)).
+my_member(A,B) :- member(A,B).
+
 		 /*******************************
 		 *	    LIFE TIME		*
 		 *******************************/
@@ -174,6 +178,12 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @MaterialTerm List of material properties
 %
 object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
+	{ var(Obj), 
+	  object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm)
+	}.
+
+object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
+	{ atom(Obj) }, 
 	triple(Obj,soma:hasShape,Shape),
 	triple(Shape,dul:hasRegion,ShapeRegion),
 	{ rdf_split_url(_,Frame,Obj),
@@ -182,11 +192,86 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 	},
 	object_shape_material(Obj,MaterialTerm).
 
+
+object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+	once((var(Obj);Obj0=Obj)),
+	findall([Obj0,Shape,ShapeRegion,ShapeP,ShapeV],
+		ask(aggregate([
+			triple(Obj0,soma:hasShape,Shape),
+			triple(Shape,dul:hasRegion,ShapeRegion),
+			% optional: get origin, fallback to unit transform
+			%optional(triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin)),
+			%optional(triple(ground(Origin), soma:hasPositionVector, term(Pos))),
+			%optional(triple(ground(Origin), soma:hasOrientationVector, term(Rot))),
+			% TODO: it would be possible to get all properties of an individual,
+			%        but then no join is possible.
+			%        maybe exception with once concept.
+			%all(triple(ShapeRegion,_,_),ShapeAttributes)
+			triple(ShapeRegion,ShapeP,ShapeV)
+			%,optional([
+			%	triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin),
+			%	triple(Origin, soma:hasPositionVector, term(Pos)),
+			%	triple(Origin, soma:hasOrientationVector, term(Rot))
+			%])
+		])),
+		ObjectShapes
+	),
+	
+	%% can we do this better?
+	findall(X, member([X|_],ObjectShapes),Objects),
+	list_to_set(Objects,Objects0),
+	member(Obj,Objects0),
+	
+	findall([Po,Vo],
+		member([Obj,_,_,Po,Vo],ObjectShapes),
+		ShapeAttributes),
+	
+	
+	rdf_split_url(_,Frame,Obj),
+	
+	shape_data2(ShapeAttributes,ShapeTerm),
+	
+	%% TODO
+	%shape_origin2(ShapeRegion,[Pos,Rot]),
+	[Pos,Rot]=[[0,0,0],[0,0,0,1]],
+	%% TODO
+	%object_shape_material(Obj,MaterialTerm)
+	MaterialTerm=material([]).
+	
+
 %%
 object_shape_material(Obj,material([rgb(RGB)])) ?>
 	object_color_rgb(Obj,RGB),
 	{ ! }.
 object_shape_material(_,material([])) ?> { true }.
+
+%%
+shape_data2(ShapeAttributes,mesh(File,Scale)) :-
+	my_member([soma:hasFilePath,File],ShapeAttributes),
+	shape_scale2(ShapeAttributes,Scale),
+	!.
+
+shape_data2(ShapeAttributes,box(X,Y,Z)) :-
+	my_member([soma:hasWidth,  X],ShapeAttributes),
+	my_member([soma:hasHeight, Y],ShapeAttributes),
+	my_member([soma:hasDepth,  Z],ShapeAttributes),
+	!.
+
+shape_data2(ShapeAttributes,cylinder(Radius,Length)) :-
+	my_member([soma:hasLength, Length],ShapeAttributes),
+	my_member([soma:hasRadius, Radius],ShapeAttributes),
+	!.
+
+shape_data2(ShapeAttributes,sphere(Radius)) :-
+	my_member([soma:hasRadius, Radius],ShapeAttributes),
+	!.
+
+shape_scale2(ShapeAttributes,[X,Y,Z]) :-
+	% TODO: knowrob namespace should not be used here
+	my_member(['http://knowrob.org/kb/knowrob.owl#hasXScale', X],ShapeAttributes),
+	my_member(['http://knowrob.org/kb/knowrob.owl#hasYScale', Y],ShapeAttributes),
+	my_member(['http://knowrob.org/kb/knowrob.owl#hasZScale', Z],ShapeAttributes).
+shape_scale2(_,[1,1,1]).
 
 %%
 shape_data(ShapeRegion,mesh(File,Scale)) :-

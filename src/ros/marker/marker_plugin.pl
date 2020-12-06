@@ -24,13 +24,13 @@
 :- multifile marker_factory/3.
 
 % define some settings
-:- setting(auto, boolean, true,
-	'Toggle whether marker messages are generated automatically when an object changes.').
-:- setting(reference_frame, atom, '',
-	'The reference frame in which the position of markers is published.').
+%:- setting(auto, boolean, true,
+%	'Toggle whether marker messages are generated automatically when an object changes.').
+%:- setting(reference_frame, atom, '',
+%	'The reference frame in which the position of markers is published.').
 
 %%
-:- message_queue_create(_,[alias(ros_marker_queue)]).
+%:- message_queue_create(_,[alias(ros_marker_queue)]).
 
 %% marker_action(?ActionTerm,?ActionID) is det.
 %
@@ -82,12 +82,14 @@ show_marker(MarkerID, MarkerTerm) :-
 % @param MarkerTerm marker term
 % @param Options marker options
 %
-show_marker(MarkerID, MarkerTerm, Options) :-
+show_marker(_MarkerID, _MarkerTerm, _Options) :-
+	writeln('WARNING show_marker called'),
+	fail.
 	% TODO: validate MarkerTerm
-	thread_send_message(
-		ros_marker_queue,
-		marker(add, MarkerID, MarkerTerm, Options)
-	).
+%	thread_send_message(
+%		ros_marker_queue,
+%		marker(add, MarkerID, MarkerTerm, Options)
+%	).
 
 
 %% show_marker(+TimePoint) is semidet.
@@ -98,10 +100,26 @@ show_marker(MarkerID, MarkerTerm, Options) :-
 %
 show_markers(Timepoint) :-
 	time_scope(=<(Timepoint), >=(Timepoint), Scope),
-	forall(
-		ask(is_physical_object(PO)),
-		show_marker(PO, PO, [scope(Scope)])
+	%forall(
+	%	ask(is_physical_object(PO)),
+	%	show_marker(PO, PO, [scope(Scope)])
+	%).
+	findall(Msg,
+		(	object_marker(_Obj,[[],Scope]->_,ID,Data),
+			marker_message_new(ID,Data,Msg)
+		),
+		MessageList
+	),
+	(	MessageList=[] -> true
+	;	marker_array_publish(MessageList)
 	).
+
+%%
+% Republish all object markers.
+%
+republish :-
+	get_time(Now),
+	show_markers(Now).
 
 
 %% hide_marker(+MarkerID) is det.
@@ -110,25 +128,18 @@ show_markers(Timepoint) :-
 %
 % @param MarkerID marker id
 %
-hide_marker(MarkerID) :-
-	thread_send_message(
-		ros_marker_queue,
-		marker(delete, MarkerID, _, [])
-	).
+hide_marker(_MarkerID) :-
+	writeln('WARNING hide_marker called'),
+	fail.
+%	thread_send_message(
+%		ros_marker_queue,
+%		marker(delete, MarkerID, _, [])
+%	).
 
 %%
-% Get marker data as Prolog list:
-%   [Action,ID,Type,Pose,Scale,Color,Mesh,Text]
-%
-marker_message(marker(add,ID,Term,Parameters),
-		[Action,ID0,Type,Pose,Scale,Color,Mesh,Text]) :-
+marker_message_new(MarkerID,Data,
+		[Action,MarkerID,Type,Pose,Scale,Color,Mesh,Text]) :-
 	!,
-	%% get marker data
-	get_marker_scope(Parameters,Scope),
-	marker_message1(Term,[[],Scope]->_,ID->ID0,Data0),
-	%% overwrite parameters
-	merge_options(Parameters,Data0,Data),
-	%%
 	option(type(TypeTerm),Data),
 	option(pose(Pose),Data),
 	option(scale(Scale),Data,[1,1,1]),
@@ -138,6 +149,20 @@ marker_message(marker(add,ID,Term,Parameters),
 	%%
 	marker_action(add,Action),
 	marker_type(TypeTerm,Type).
+
+%%
+% Get marker data as Prolog list:
+%   [Action,ID,Type,Pose,Scale,Color,Mesh,Text]
+%
+marker_message(marker(add,ID,Term,Parameters),Msg) :-
+	!,
+	%% get marker data
+	get_marker_scope(Parameters,Scope),
+	marker_message1(Term,[[],Scope]->_,ID->ID0,Data0),
+	%% overwrite parameters
+	merge_options(Parameters,Data0,Data),
+	%%
+	marker_message_new(ID0,Data,Msg).
 
 marker_message(marker(modify,ID,Term,Opts),Msg) :-
 	marker_message(marker(add,ID,Term,Opts),Msg),
@@ -183,70 +208,67 @@ get_marker_scope(_,Scope) :-
 %%
 % Get all queued markers.
 %
-marker_pull_all([Head|Rest],Opts) :-
-	thread_get_message(
-		ros_marker_queue,
-		Head,
-		Opts),
-	!,
-	marker_pull_all(Rest,[timeout(0)]).
-
-marker_pull_all([], _).
+%marker_pull_all([Head|Rest],Opts) :-
+%	thread_get_message(
+%		ros_marker_queue,
+%		Head,
+%		Opts),
+%	!,
+%	marker_pull_all(Rest,[timeout(0)]).
+%
+%marker_pull_all([], _).
 
 %%
 % Delete redundant markers.
 %
-marker_to_set([marker(_,ID,_,_)|Xs],Ys) :-
-	% ignore in case another marker with same ID is in Xs
-	member(marker(_,ID,_,_),Xs),
-	!,
-	marker_to_set(Xs,Ys).
-
-marker_to_set([X|Xs],[X|Ys]) :-
-	!,
-	marker_to_set(Xs,Ys).
-
-marker_to_set([],[]).
+%marker_to_set([marker(_,ID,_,_)|Xs],Ys) :-
+%	% ignore in case another marker with same ID is in Xs
+%	member(marker(_,ID,_,_),Xs),
+%	!,
+%	marker_to_set(Xs,Ys).
+%
+%marker_to_set([X|Xs],[X|Ys]) :-
+%	!,
+%	marker_to_set(Xs,Ys).
+%
+%marker_to_set([],[]).
 
 %%
 % Loop and publish queued markers.
 %
-marker_loop :-
-	repeat,
-	%%
-	marker_pull_all(MarkerTerms,[]),
-	marker_to_set(MarkerTerms,MarkerTerms0),
-	findall(MarkerMessage,
-		(	member(MarkerTerm,MarkerTerms0),
-			marker_message(MarkerTerm,MarkerMessage)
-		),
-		MessageList),
-	(	MessageList=[] -> true
-	;	marker_array_publish(MessageList)
-	),
-	%%
-	fail.
-
-%%
-% Republish all object markers.
-%
-republish :-
-	current_scope(Scope),
-	forall(
-		ask(is_physical_object(PO)),
-		ignore(show_marker(PO, PO, [scope(Scope)]))
-	).
+%marker_loop :-
+%	repeat,
+%	%%
+%	log_info(loop0),
+%	marker_pull_all(MarkerTerms,[]),
+%	log_info(loop1),
+%	get_time(T0),
+%	marker_to_set(MarkerTerms,MarkerTerms0),
+%	findall(MarkerMessage,
+%		(	member(MarkerTerm,MarkerTerms0),
+%			marker_message(MarkerTerm,MarkerMessage)
+%		),
+%		MessageList),
+%	(	MessageList=[] -> true
+%	;	marker_array_publish(MessageList)
+%	),
+%	get_time(T1),
+%	length(MarkerTerms0,Count),
+%	Took is T1 - T0,
+%	log_info(looped(Took,Count)),
+%	%%
+%	fail.
 
 %%
 % Start thread when this file is consulted.
 %
-:- thread_create(marker_loop,_).
+%:- thread_create(marker_loop,_).
 
 %%
 % notify_hook is called whenever an object changes.
 %
-notify:notify_hook(object_changed(Obj)) :-
-	( setting(marker_plugin:auto,true)
-	-> show_marker(Obj, Obj, [])
-	;  true
-	).
+%notify:notify_hook(object_changed(Obj)) :-
+%	( setting(marker_plugin:auto,true)
+%	-> show_marker(Obj, Obj, [])
+%	;  true
+%	).

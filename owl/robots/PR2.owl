@@ -552,11 +552,11 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_L">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_palm_link</urdf:hasBaseLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_tip_frame</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_tip_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_led_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_accelerometer_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_screw_link</urdf:hasEndLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_tool_frame</urdf:hasEndLinkName>
         <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LR"/>
         <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LL"/>
@@ -570,11 +570,11 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_R">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_palm_link</urdf:hasBaseLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_tip_frame</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_tip_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_led_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_accelerometer_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_screw_link</urdf:hasEndLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_tool_frame</urdf:hasEndLinkName>
         <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RR"/>
         <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RL"/>
