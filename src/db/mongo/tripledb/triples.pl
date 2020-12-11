@@ -270,9 +270,9 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	option(graph(Graph), Options, user),
 	triple_db(DB,Coll),
 	%%
-	read_triple_(FirstTriple,S,P,Operator,Value,Unit),
+	read_triple_(FirstTriple,S,P,Operator,Value,Unit,none),
 	read_vars_(S,P,Value,FirstTripleVars),
-	read_vars_2(FirstTripleVars,FirstVars),
+	read_vars_2(none,FirstTripleVars,FirstVars),
 	%%
 	triple_aggregate1(Coll,Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
 	%%
@@ -317,74 +317,66 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 
 %%
 triple_aggregate1(_,[],_,_,Vars,[],Vars) :- !.
-triple_aggregate1(Coll,[Triple|Xs],QScope,Graph,Vars0,
-		[Lookup0,Unwind0,Scopes0,Project0|Doc_inner],
-		Vars_n) :-
-	read_triple_(Triple,S,P,Operator,Value,Unit),
+triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
+	read_triple_(Triple,S,P,Operator,Value,Unit,Modifier),
 	read_vars_(S,P,Value,TripleVars),
-	% find all joins with input documents
-	findall([Field_j,Value_j],
-		(	member([Field_j,_,Value_j],TripleVars),
-			member([Field_j,_],Vars0)
-		),
-		Joins
-	),
 	%%%%%% recursion
-	read_vars_2(TripleVars,Vars1),
+	read_vars_2(Modifier,TripleVars,Vars1),
 	append(Vars0,Vars1,Vars_new),
 	list_to_set(Vars_new,Vars2),
 	triple_aggregate1(Coll,Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
-    %%%%%% $lookup
+	%%%%%% 
 	triple_query_document_(S,P,
-			Operator,Value,Unit,
-			QScope,Graph,QueryDoc),
-	aggregate_match_(Joins,MatchDoc),
-	findall([Let_key,string(Let_val)],
-		(	member([Let_key,_],Joins),
-			atom_concat('$',Let_key,Let_val)
-		),
-		LetDoc
-	),
-	Lookup0=['$lookup', [
-		['from',string(Coll)],
-		% create a field "next" with all matching documents
-		['as',string('next')],
-		% make fields from input document accessible in pipeline
-		['let',LetDoc],
-		% get matching documents
-		['pipeline', array([['$match', [
-			['$expr', ['$and', array(MatchDoc)]] |
-			QueryDoc
-		]]])]
-	]],
+		Operator,Value,Unit,
+		QScope,Graph,QueryDoc),
+	triple_aggregate2(Modifier,
+		Coll,QueryDoc,
+		Vars0,TripleVars,
+		Doc_inner,
+		TripleDoc).
+
+%%	
+triple_aggregate2(Modifier,
+		Coll,QueryDoc,
+		Vars0,TripleVars,
+		Doc_inner, TripleDoc) :-
+    %%%%%% $lookup
+    aggregate_lookup_(Coll,
+    	QueryDoc,Vars0,TripleVars,
+    	Lookup0),
 	%%%%%% $unwind the next field
-	%% TODO
-%	Unwind0=['$unwind',[
-%		['path', string('$next')],
-%		['preserveNullAndEmptyArrays',bool(true)]
-%	]],
-	Unwind0=['$unwind',string('$next')],
+	aggregate_unwind_(Modifier,Unwind0),
 	%%%%%% $set scopes, $setUnion is used to avoid duplicate scopes
-	Scopes0=['$set',['v_scope',['$setUnion',
-		array([string('$v_scope'), array([string('$next.scope')])])
-	]]],
+	aggregate_scopes_(Modifier,Scopes0),
 	%%%%%% $project
-	findall([Pr_Key,string(Pr_Value)],(
+	findall([Pr_Key,Pr_Value],(
 		%
 		(	Pr_Key='v_scope',
-			atom_concat('$',Pr_Key,Pr_Value)
+			atom_concat('$',Pr_Key,Pr_Value0),
+			Pr_Value=string(Pr_Value0)
 		)
 		% copy value of var e.g. { 'S': '$S' }
 	;	(	member([Pr_Key,_],Vars0),
-			atom_concat('$',Pr_Key,Pr_Value)
+			atom_concat('$',Pr_Key,Pr_Value0),
+			Pr_Value=string(Pr_Value0)
 		)
 		% set new value of var e.g. { 'S': '$next.s' }
 	;	(	member([Pr_Key,_,Field],TripleVars),
 			\+ member([Pr_Key,_],Vars0),
-			atom_concat('$next.',Field,Pr_Value)
+			aggregate_project_(Modifier,Field,Pr_Value)
+		)
+		% findall special case
+	;	(	Modifier=findall(List),
+			read_vars_1([[List,'next']],[[Pr_Key,List,Field]]),
+			aggregate_project_(Modifier,Field,Pr_Value)
 		)
 	), ProjectDoc),
-	Project0=['$project', ProjectDoc].
+	Project0=['$project', ProjectDoc],
+	%%%%%%
+	(	Unwind0=[]
+	->	TripleDoc=[Lookup0,Scopes0,Project0|Doc_inner]
+	;	TripleDoc=[Lookup0,Unwind0,Scopes0,Project0|Doc_inner]
+	).
 
 %%
 triple_aggregate_unify_(_,[]) :- !.
@@ -400,7 +392,22 @@ triple_aggregate_unify_1(Doc,[VarKey,Var]) :-
 	Var=Value.
 
 %%
-aggregate_match_(Joins,MatchDoc) :-
+aggregate_lookup_(Coll,QueryDoc,Vars0,TripleVars,Lookup) :-
+	% find all joins with input documents
+	findall([Field_j,Value_j],
+		(	member([Field_j,_,Value_j],TripleVars),
+			member([Field_j,_],Vars0)
+		),
+		Joins
+	),
+	% pass input document value to lookup
+	findall([Let_key,string(Let_val)],
+		(	member([Let_key,_],Joins),
+			atom_concat('$',Let_key,Let_val)
+		),
+		LetDoc
+	),
+	% perform the join operation (equals the input document value)
 	findall(['$eq', array([string(Match_key),string(Match_val)])],
 		% { $eq: [ "$s",  "$$R" ] },
 		(	member([Join_var,Join_field],Joins),
@@ -408,20 +415,98 @@ aggregate_match_(Joins,MatchDoc) :-
 			atom_concat('$$',Join_var,Match_val)
 		),
 		MatchDoc
-	).
+	),
+	% finally compose the lookup document
+	Lookup=['$lookup', [
+		['from',string(Coll)],
+		% create a field "next" with all matching documents
+		['as',string('next')],
+		% make fields from input document accessible in pipeline
+		['let',LetDoc],
+		% get matching documents
+		['pipeline', array([['$match', [
+			['$expr', ['$and', array(MatchDoc)]] |
+			QueryDoc
+		]]])]
+	]].
+
+%%
+aggregate_unwind_(none,
+	['$unwind',string('$next')]) :- !.
+
+aggregate_unwind_(findall(_), []) :- !.
+
+aggregate_unwind_(ignore,
+	['$unwind',[
+		['path', string('$next')],
+		['preserveNullAndEmptyArrays',bool(true)]
+	]]) :- !.
+
+%%
+aggregate_scopes_(none,
+	['$set',['v_scope',['$setUnion',
+		array([string('$v_scope'), array([string('$next.scope')])])
+	]]]) :- !.
+
+aggregate_scopes_(findall(_),
+	['$set',['v_scope',string('$v_scope')]]) :-
+	% TODO: handle scope in findall
+	!.
+
+aggregate_scopes_(ignore,
+	['$set',['v_scope',['$setUnion', array([
+		string('$v_scope'),
+		['$ifNull', array([
+			string('$next.scope'),
+			array([])
+		])]
+	])]]]) :- !.
+
+%%
+aggregate_project_(none,Field,string(Pr_Value)) :-
+	!,
+	atom_concat('$next.',Field,Pr_Value).
+
+aggregate_project_(findall(_),Field,['$map',[
+		['input',string('$next')],
+		['in',[
+			['s',string('$$this.s')],
+			['p',string('$$this.p')],
+			['o',string('$$this.o')]
+		]]
+	]]) :-
+	!,
+	Field='next'.
+
+aggregate_project_(ignore,Field,['$cond',array([
+		['$not', array([string(Pr_Value)]) ],
+		string('$$REMOVE'),
+		string(Pr_Value)
+	])]) :-
+	atom_concat('$next.',Field,Pr_Value).
 
 %%
 read_triple_(
-		triple(QSubject,QProperty,QValue),
+		TripleTerm,
 		Subject,
 		Property,
-		MngOperator,MngValue,Unit) :-
+		MngOperator,MngValue,Unit,
+		Modifier) :-
+	read_triple_1_(TripleTerm,
+		triple(QSubject,QProperty,QValue),
+		Modifier
+	),
 	strip_variable(QSubject,Subject),
 	strip_variable(QProperty,Property),
 	strip_variable(QValue,ValueQuery),
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit).
 
+read_triple_1_(ignore(X),X,ignore) :- !.
+read_triple_1_(findall(X,Y),X,findall(Y)) :- !.
+read_triple_1_(X,X,none).
+
 %%
+
 read_vars_(S,P,Value,Vars) :-
 	strip_type_(S,_,S0),
 	strip_type_(P,_,P0),
@@ -439,9 +524,12 @@ read_vars_1( [[Var,Field]|Xs],
 	read_vars_1(Xs,Ys).
 
 %%
-read_vars_2([],[]) :- !.
-read_vars_2([[X0,X1,_]|Xs],[[X0,X1]|Ys]) :-
-	read_vars_2(Xs,Ys).
+read_vars_2(findall(List),_,[[Key,List]]) :-
+	!,
+	read_vars_1([[List,'next']],[[Key,List,_]]).
+read_vars_2(_,[],[]) :- !.
+read_vars_2(Modifier,[[X0,X1,_]|Xs],[[X0,X1]|Ys]) :-
+	read_vars_2(Modifier,Xs,Ys).
 
 %%
 %

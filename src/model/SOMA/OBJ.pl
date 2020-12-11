@@ -195,40 +195,31 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 
 object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	once((var(Obj);Obj0=Obj)),
-	findall([Obj0,Shape,ShapeRegion,ShapeP,ShapeV],
+	findall([Obj0,Shape,ShapeRegion,ShapeAttributes0],
 		ask(aggregate([
 			triple(Obj0,soma:hasShape,Shape),
 			triple(Shape,dul:hasRegion,ShapeRegion),
-			% optional: get origin, fallback to unit transform
-			%optional(triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin)),
-			%optional(triple(ground(Origin), soma:hasPositionVector, term(Pos))),
-			%optional(triple(ground(Origin), soma:hasOrientationVector, term(Rot))),
-			% TODO: it would be possible to get all properties of an individual,
-			%        but then no join is possible.
-			%        maybe exception with once concept.
-			%all(triple(ShapeRegion,_,_),ShapeAttributes)
-			triple(ShapeRegion,ShapeP,ShapeV)
-			%,optional([
-			%	triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin),
-			%	triple(Origin, soma:hasPositionVector, term(Pos)),
-			%	triple(Origin, soma:hasOrientationVector, term(Rot))
-			%])
+			%ignore(triple(Obj,soma:hasColor,Color)),
+			%ignore(triple(Color,dul:hasRegion,Region)),
+			%ignore(triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin)),
+			%ignore(triple(Origin, soma:hasPositionVector, term(Pos))),
+			%ignore(triple(Origin, soma:hasOrientationVector, term(Rot))),
+			% get all attributes of ShapeRegion
+			findall(triple(ShapeRegion,_,_), ShapeAttributes0)
 		])),
 		ObjectShapes
 	),
 	
-	%% can we do this better?
-	findall(X, member([X|_],ObjectShapes),Objects),
-	list_to_set(Objects,Objects0),
-	member(Obj,Objects0),
-	
-	findall([Po,Vo],
-		member([Obj,_,_,Po,Vo],ObjectShapes),
-		ShapeAttributes),
-	
+	%%
+	member([Obj,_,_,ShapeAttributes1],ObjectShapes),
+	findall([P1,O1], (
+		member(Doc1, ShapeAttributes1),
+		member(p-string(P1), Doc1),
+		member(o-Ox, Doc1),
+		Ox=..[_,O1]
+	), ShapeAttributes),
 	
 	rdf_split_url(_,Frame,Obj),
-	
 	shape_data2(ShapeAttributes,ShapeTerm),
 	
 	%% TODO
