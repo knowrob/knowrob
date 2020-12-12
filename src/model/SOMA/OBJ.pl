@@ -238,9 +238,12 @@ object_material_(null,_A,material([])) :- !. % FIXME
 
 object_material_(RGB,A,material([rgba([R,G,B,A])])) :-
 	ground([RGB,A]),!,
-	RGB=[R,G,B].
-object_material_(RGB,_A,material([rgb(RGB)])) :-
-	ground(RGB),!.
+	atomic_list_concat(RGBa,',', RGB),
+	maplist(atom_number, RGBa, [R,G,B]).
+object_material_(RGB,_A,material([rgb(RGB0)])) :-
+	ground(RGB),!,
+	atomic_list_concat(RGBa,',', RGB),
+	maplist(atom_number, RGBa, RGB0).
 object_material_(_RGB,_A,material([])).
 
 %%
