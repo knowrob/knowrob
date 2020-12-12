@@ -241,6 +241,24 @@
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_gripper_right_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">camera_holder_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">refills_finger</urdf:hasEndLinkName>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAFinger_0"/>
+        <dul:hasComponent rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAFinger_1"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAFinger_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAFinger_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAFinger"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_gripper_left_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_finger_left_link</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/IIWA.owl#IIWAFinger_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAFinger_1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWAFinger"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_gripper_right_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gripper_finger_right_link</urdf:hasEndLinkName>
     </owl:NamedIndividual>
 
 
