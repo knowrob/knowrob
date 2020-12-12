@@ -10,7 +10,7 @@
       object_color_rgb(r,?),
       object_dimensions(r,?,?,?),
       object_mesh_path(r,?),
-      object_shape(r,-,-,-),
+      object_shape(r,-,-,-,-),
       object_shape_type(r,r),
       %% Features
       is_feature(r),
@@ -177,28 +177,27 @@ object_color_rgb(Obj,[R,G,B]) +>
 % @ShapeOrigin The origin of the shape
 % @MaterialTerm List of material properties
 %
-object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
-	{ var(Obj), 
-	  object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm)
+object_shape(Obj,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
+	{ object_shape_(Obj,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm)
 	}.
 
-object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
-	{ atom(Obj) }, 
-	triple(Obj,soma:hasShape,Shape),
-	triple(Shape,dul:hasRegion,ShapeRegion),
-	{ rdf_split_url(_,Frame,Obj),
-	  shape_data(ShapeRegion,ShapeTerm),
-	  shape_origin(ShapeRegion,[Pos,Rot])
-	},
-	object_shape_material(Obj,MaterialTerm).
+%object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
+%	{ atom(Obj) }, 
+%	triple(Obj,soma:hasShape,Shape),
+%	triple(Shape,dul:hasRegion,ShapeRegion),
+%	{ rdf_split_url(_,Frame,Obj),
+%	  shape_data(ShapeRegion,ShapeTerm),
+%	  shape_origin(ShapeRegion,[Pos,Rot])
+%	},
+%	object_shape_material(Obj,MaterialTerm).
 
 
-object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+object_shape_(Obj,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	once((var(Obj);Obj0=Obj)),
 	findall([Obj0,[RGB0,Alpha0],[Pos0,Rot0],ShapeAttributes0],
 		ask(aggregate([
 			triple(Obj0,soma:hasShape,Shape),
-			%%
+			%% get object color
 			ignore(once(triple(Obj0,soma:hasColor,Color))),
 			ignore(once(triple(Color,dul:hasRegion,CR))),
 			ignore(triple(CR,soma:hasRGBValue,RGB0)),
@@ -225,6 +224,7 @@ object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	), ShapeAttributes),
 	
 	rdf_split_url(_,Frame,Obj),
+	ShapeID=Frame,
 	shape_data2(ShapeAttributes,ShapeTerm),
 	
 	%% handle shape origin
