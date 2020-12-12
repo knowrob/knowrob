@@ -270,7 +270,8 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	option(graph(Graph), Options, user),
 	triple_db(DB,Coll),
 	%%
-	read_triple_(FirstTriple,S,P,Operator,Value,Unit,none),
+	% FIXME: support once/findall in first statement
+	read_triple_(FirstTriple,S,P,Operator,Value,Unit,none,0),
 	read_vars_(S,P,Value,FirstTripleVars),
 	read_vars_2(none,FirstTripleVars,FirstVars),
 	%%
@@ -318,7 +319,7 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 %%
 triple_aggregate1(_,[],_,_,Vars,[],Vars) :- !.
 triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
-	read_triple_(Triple,S,P,Operator,Value,Unit,Modifier),
+	read_triple_(Triple,S,P,Operator,Value,Unit,Modifier,Limit),
 	read_vars_(S,P,Value,TripleVars),
 	%%%%%% recursion
 	read_vars_2(Modifier,TripleVars,Vars1),
@@ -329,20 +330,20 @@ triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
 	triple_query_document_(S,P,
 		Operator,Value,Unit,
 		QScope,Graph,QueryDoc),
-	triple_aggregate2(Modifier,
+	triple_aggregate2(Modifier,Limit,
 		Coll,QueryDoc,
 		Vars0,TripleVars,
 		Doc_inner,
 		TripleDoc).
 
 %%	
-triple_aggregate2(Modifier,
+triple_aggregate2(Modifier,Limit,
 		Coll,QueryDoc,
 		Vars0,TripleVars,
 		Doc_inner, TripleDoc) :-
     %%%%%% $lookup
     aggregate_lookup_(Coll,
-    	QueryDoc,Vars0,TripleVars,
+        QueryDoc,Limit,Vars0,TripleVars,
     	Lookup0),
 	%%%%%% $unwind the next field
 	aggregate_unwind_(Modifier,Unwind0),
@@ -389,10 +390,13 @@ triple_aggregate_unify_1(_,['_id',_]) :-
 triple_aggregate_unify_1(Doc,[VarKey,Var]) :-
 	mng_get_dict(VarKey,Doc,TypedValue),
 	strip_type_(TypedValue,_,Value),
-	Var=Value.
+	(	Value='null' ;
+		Var=Value
+	),
+	!.
 
 %%
-aggregate_lookup_(Coll,QueryDoc,Vars0,TripleVars,Lookup) :-
+aggregate_lookup_(Coll,QueryDoc,Limit,Vars0,TripleVars,Lookup) :-
 	% find all joins with input documents
 	findall([Field_j,Value_j],
 		(	member([Field_j,_,Value_j],TripleVars),
@@ -416,6 +420,12 @@ aggregate_lookup_(Coll,QueryDoc,Vars0,TripleVars,Lookup) :-
 		),
 		MatchDoc
 	),
+	%
+	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]],
+	(	Limit is 0
+	->	Pipeline=[Match]
+	;	Pipeline=[Match,['$limit',int(Limit)]]
+	),
 	% finally compose the lookup document
 	Lookup=['$lookup', [
 		['from',string(Coll)],
@@ -424,10 +434,7 @@ aggregate_lookup_(Coll,QueryDoc,Vars0,TripleVars,Lookup) :-
 		% make fields from input document accessible in pipeline
 		['let',LetDoc],
 		% get matching documents
-		['pipeline', array([['$match', [
-			['$expr', ['$and', array(MatchDoc)]] |
-			QueryDoc
-		]]])]
+		['pipeline', array(Pipeline)]
 	]].
 
 %%
@@ -454,13 +461,13 @@ aggregate_scopes_(findall(_),
 	!.
 
 aggregate_scopes_(ignore,
-	['$set',['v_scope',['$setUnion', array([
+	['$set',['v_scope',['$cond', array([
+		['$not', array([string('$next.scope')]) ],
 		string('$v_scope'),
-		['$ifNull', array([
-			string('$next.scope'),
-			array([])
-		])]
-	])]]]) :- !.
+		['$setUnion', array([ string('$v_scope'),
+			array([ string('$next.scope') ]) ])]
+	])]]]) :-
+	!.
 
 %%
 aggregate_project_(none,Field,string(Pr_Value)) :-
@@ -480,7 +487,9 @@ aggregate_project_(findall(_),Field,['$map',[
 
 aggregate_project_(ignore,Field,['$cond',array([
 		['$not', array([string(Pr_Value)]) ],
-		string('$$REMOVE'),
+		% REMOVE creates problems in next project step, so rather choose some dump value
+		string('null'),
+		%string('$$REMOVE'),
 		string(Pr_Value)
 	])]) :-
 	atom_concat('$next.',Field,Pr_Value).
@@ -491,19 +500,27 @@ read_triple_(
 		Subject,
 		Property,
 		MngOperator,MngValue,Unit,
-		Modifier) :-
+		Modifier,Limit) :-
 	read_triple_1_(TripleTerm,
 		triple(QSubject,QProperty,QValue),
-		Modifier
+		Modifier,Limit
 	),
 	strip_variable(QSubject,Subject),
 	strip_variable(QProperty,Property),
 	strip_variable(QValue,ValueQuery),
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit).
 
-read_triple_1_(ignore(X),X,ignore) :- !.
-read_triple_1_(findall(X,Y),X,findall(Y)) :- !.
-read_triple_1_(X,X,none).
+%%
+read_triple_1_(ignore(X),Y,ignore,Limit) :-
+	!, read_triple_limit_(X,Y,Limit).
+read_triple_1_(findall(X,Y),X,findall(Y),0) :- !.
+read_triple_1_(X,Y,none,Limit) :-
+	read_triple_limit_(X,Y,Limit).
+
+%%
+read_triple_limit_(once(X),X,1) :- !.
+read_triple_limit_(limit(X,N),X,N) :- !.
+read_triple_limit_(X,X,0).
 
 %%
 

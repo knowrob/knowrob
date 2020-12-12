@@ -195,12 +195,17 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 
 object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	once((var(Obj);Obj0=Obj)),
-	findall([Obj0,Shape,ShapeRegion,ShapeAttributes0],
+	findall([Obj0,[RGB0,Alpha0],ShapeAttributes0],
 		ask(aggregate([
 			triple(Obj0,soma:hasShape,Shape),
-			triple(Shape,dul:hasRegion,ShapeRegion),
-			%ignore(triple(Obj,soma:hasColor,Color)),
-			%ignore(triple(Color,dul:hasRegion,Region)),
+			%%
+			ignore(once(triple(Obj0,soma:hasColor,Color))),
+			ignore(once(triple(Color,dul:hasRegion,CR))),
+			ignore(triple(CR,soma:hasRGBValue,RGB0)),
+			ignore(triple(CR,soma:hasTransparencyValue,Alpha0)),
+			%%
+			once(triple(Shape,dul:hasRegion,ShapeRegion)),
+			%% get the shape origin
 			%ignore(triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin)),
 			%ignore(triple(Origin, soma:hasPositionVector, term(Pos))),
 			%ignore(triple(Origin, soma:hasOrientationVector, term(Rot))),
@@ -211,7 +216,7 @@ object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	),
 	
 	%%
-	member([Obj,_,_,ShapeAttributes1],ObjectShapes),
+	member([Obj,[RGB,Alpha],ShapeAttributes1],ObjectShapes),
 	findall([P1,O1], (
 		member(Doc1, ShapeAttributes1),
 		member(p-string(P1), Doc1),
@@ -222,13 +227,21 @@ object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	rdf_split_url(_,Frame,Obj),
 	shape_data2(ShapeAttributes,ShapeTerm),
 	
-	%% TODO
+	%% TODO handle shape origin
 	%shape_origin2(ShapeRegion,[Pos,Rot]),
 	[Pos,Rot]=[[0,0,0],[0,0,0,1]],
-	%% TODO
-	%object_shape_material(Obj,MaterialTerm)
-	MaterialTerm=material([]).
-	
+	%% handle material color
+	object_material_(RGB,Alpha,MaterialTerm).
+
+%%
+object_material_(null,_A,material([])) :- !. % FIXME
+
+object_material_(RGB,A,material([rgba([R,G,B,A])])) :-
+	ground([RGB,A]),!,
+	RGB=[R,G,B].
+object_material_(RGB,_A,material([rgb(RGB)])) :-
+	ground(RGB),!.
+object_material_(_RGB,_A,material([])).
 
 %%
 object_shape_material(Obj,material([rgb(RGB)])) ?>
@@ -243,9 +256,9 @@ shape_data2(ShapeAttributes,mesh(File,Scale)) :-
 	!.
 
 shape_data2(ShapeAttributes,box(X,Y,Z)) :-
-	my_member([soma:hasWidth,  X],ShapeAttributes),
-	my_member([soma:hasHeight, Y],ShapeAttributes),
-	my_member([soma:hasDepth,  Z],ShapeAttributes),
+	my_member([soma:hasDepth,  X],ShapeAttributes),
+	my_member([soma:hasWidth,  Y],ShapeAttributes),
+	my_member([soma:hasHeight, Z],ShapeAttributes),
 	!.
 
 shape_data2(ShapeAttributes,cylinder(Radius,Length)) :-
@@ -271,9 +284,9 @@ shape_data(ShapeRegion,mesh(File,Scale)) :-
 	!.
 
 shape_data(ShapeRegion,box(X,Y,Z)) :-
-	triple(ShapeRegion, soma:hasWidth,  X),
-	triple(ShapeRegion, soma:hasHeight, Y),
-	triple(ShapeRegion, soma:hasDepth,  Z),
+	triple(ShapeRegion, soma:hasDepth,  X),
+	triple(ShapeRegion, soma:hasWidth,  Y),
+	triple(ShapeRegion, soma:hasHeight, Z),
 	!.
 
 shape_data(ShapeRegion,cylinder(Radius,Length)) :-
