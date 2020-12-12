@@ -195,7 +195,7 @@ object_shape(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) ?>
 
 object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	once((var(Obj);Obj0=Obj)),
-	findall([Obj0,[RGB0,Alpha0],ShapeAttributes0],
+	findall([Obj0,[RGB0,Alpha0],[Pos0,Rot0],ShapeAttributes0],
 		ask(aggregate([
 			triple(Obj0,soma:hasShape,Shape),
 			%%
@@ -204,19 +204,19 @@ object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 			ignore(triple(CR,soma:hasRGBValue,RGB0)),
 			ignore(triple(CR,soma:hasTransparencyValue,Alpha0)),
 			%%
-			once(triple(Shape,dul:hasRegion,ShapeRegion)),
+			once(triple(Shape,dul:hasRegion,SR)),
 			%% get the shape origin
-			%ignore(triple(ShapeRegion,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin)),
-			%ignore(triple(Origin, soma:hasPositionVector, term(Pos))),
-			%ignore(triple(Origin, soma:hasOrientationVector, term(Rot))),
+			ignore(once(triple(SR,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin))),
+			ignore(once(triple(Origin, soma:hasPositionVector, term(Pos0)))),
+			ignore(once(triple(Origin, soma:hasOrientationVector, term(Rot0)))),
 			% get all attributes of ShapeRegion
-			findall(triple(ShapeRegion,_,_), ShapeAttributes0)
+			findall(triple(SR,_,_), ShapeAttributes0)
 		])),
 		ObjectShapes
 	),
 	
 	%%
-	member([Obj,[RGB,Alpha],ShapeAttributes1],ObjectShapes),
+	member([Obj,[RGB,Alpha],[Pos1,Rot1],ShapeAttributes1],ObjectShapes),
 	findall([P1,O1], (
 		member(Doc1, ShapeAttributes1),
 		member(p-string(P1), Doc1),
@@ -227,9 +227,10 @@ object_shape_new(Obj,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	rdf_split_url(_,Frame,Obj),
 	shape_data2(ShapeAttributes,ShapeTerm),
 	
-	%% TODO handle shape origin
-	%shape_origin2(ShapeRegion,[Pos,Rot]),
-	[Pos,Rot]=[[0,0,0],[0,0,0,1]],
+	%% handle shape origin
+	% FIXME: why are these atoms?
+	( ground(Pos1) -> term_to_atom(Pos,Pos1) ; Pos=[0,0,0] ),
+	( ground(Rot1) -> term_to_atom(Rot,Rot1) ; Rot=[0,0,0,1] ),
 	%% handle material color
 	object_material_(RGB,Alpha,MaterialTerm).
 

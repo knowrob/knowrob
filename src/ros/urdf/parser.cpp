@@ -124,7 +124,7 @@ PlTerm to_prolog_material(const urdf::MaterialSharedPtr& material) {
 		col_list.append(material->color.b);
 		col_list.append(material->color.a);
 		col_list.close();
-		args.append(PlCompound("color", col_term));
+		args.append(PlCompound("rgba", col_term));
 	}
 	args.close();
 	return PlCompound("material", mat_term);
