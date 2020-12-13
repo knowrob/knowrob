@@ -17,7 +17,7 @@
 	  urdf_link_parent_joint/3,
 	  urdf_link_child_joints/3,
 	  urdf_link_inertial/5,
-	  urdf_link_visual_shape/5,
+	  urdf_link_visual_shape/6,
 	  urdf_link_collision_shape/4,
 	  urdf_joint_type/3,
 	  urdf_joint_child_link/3,
@@ -204,10 +204,11 @@ set_link_pose_(Object,Prefix,LinkName) :-
 
 %%
 %
-urdf_link_visual_shape(Object,Link,ShapeTerm,Origin,MaterialTerm) :-
+urdf_link_visual_shape(Object,Link,ShapeTerm,Origin,MaterialTerm,ShapeID) :-
 	urdf_link_num_visuals(Object,Link,Count),
 	N is Count - 1,
 	between(0,N,Index),
+	atom_concat(Link,Index,ShapeID),
 	urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin,MaterialTerm).
 
 %%
@@ -353,19 +354,19 @@ has_parent_link(Joint,Link) ?+>
 %%
 % TODO: reconsider this
 % 
-object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
-	{ object_shape_urdf(Obj,ShapeTerm,Origin,MaterialTerm) },
+object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) ?>
+	{ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) },
 	% TODO: set universal fact scope? or not needed?
 	{ true }.
 
 %%
-object_shape_urdf(Obj,ShapeTerm,Origin,MaterialTerm) :-
+object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 	has_urdf(Obj,Root),
 	has_base_link_name(Obj,BaseName),
-	get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm).
+	get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,Origin,MaterialTerm).
 
 %%
-get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	% TODO avoid triple lookup for every urdf obj
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
@@ -379,7 +380,7 @@ get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	list_to_set(LinkNames,LinkSet),
 	member(LinkName,LinkSet),
 	urdf_catch(urdf_link_visual_shape(Root,LinkName,
-		ShapeTerm,[Name,Pos,Rot],MaterialTerm)),
+		ShapeTerm,[Name,Pos,Rot],MaterialTerm,ShapeID)),
 	atom_concat(Prefix,Name,Frame).
 
 %%

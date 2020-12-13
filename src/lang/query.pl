@@ -392,7 +392,8 @@ expand_ask_term_(QS->QS, FS->Fx, Goal,
 % expanded such that the contextual parameter is taken into account.
 %
 user:term_expansion((+>(LeftSide,Goal)),
-                    (:-(lang_query:tell(Term,Scope),GoalExpanded))) :-
+                    (:-(lang_query:tell(Term,Scope),
+                    (','(GoalExpanded,!))))) :-
 	(	( LeftSide=(','(Head,Options)) )
 	;	( LeftSide=Head, Options=[] )
 	),

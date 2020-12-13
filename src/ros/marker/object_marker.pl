@@ -5,7 +5,7 @@
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).
 :- use_module(library('model/SOMA/OBJ'),
-    [ object_shape/4
+    [ object_shape/5
     ]).
 :- use_module(library('ros/tf/tf_tree')).
 	
@@ -28,9 +28,9 @@ object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 		(log_error(Exc),fail)
 	).
 
-object_marker0(Obj,QScope,_MarkerID,
+object_marker0(Obj,QScope,MarkerID,
 		[ pose(Origin) | MarkerData ]) :-
-	ask(object_shape(Obj,Shape,Origin,Material),QScope->_),
+	ask(object_shape(Obj,MarkerID,Shape,Origin,Material),QScope->_),
 	object_marker1(Shape,Material,MarkerData).
 
 object_marker1(
