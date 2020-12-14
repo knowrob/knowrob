@@ -535,7 +535,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- these meshes were exported in mm, so scale back to m -->
-        <mesh filename="package://iai_adapters_description/meshes/fwk_fwa_050_simple.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_adapters_description/meshes/fwk_fwa_050_simple.dae" scale="1.0 1.0 1.0"/>
       </geometry>
       <material name="Grey"/>
     </visual>
