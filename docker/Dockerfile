@@ -39,7 +39,7 @@ RUN sh -c 'wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key &
     apt-get -qq -y clean  && \
     rm -rf /var/lib/apt/lists/*  && \
     rm -rf /tmp/*
-RUN pip install -U rosdep
+RUN pip install -U rosdep future
 # ROS environment setup
 RUN cp /opt/ros/melodic/setup.sh /etc/profile.d/ros_melodic.sh && rosdep init
 
