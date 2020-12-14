@@ -1,9 +1,5 @@
 #include <knowrob/ros/tf/republisher.h>
-#include <knowrob/db/mongo/MongoInterface.h>
 #include <std_msgs/Float64.h>
-
-// FIXME
-static MongoCollection *collection=NULL;
 
 TFRepublisher::TFRepublisher(double frequency) :
 		realtime_factor_(1.0),
@@ -15,6 +11,7 @@ TFRepublisher::TFRepublisher(double frequency) :
 		reset_(false),
 		db_name_("neems"),
 		db_collection_("tf"),
+		collection_(NULL),
 		time_min_(0.0),
 		time_max_(0.0),
 		time_(0.0),
@@ -31,9 +28,9 @@ TFRepublisher::~TFRepublisher()
 	is_running_ = false;
 	thread_.join();
 	tick_thread_.join();
-	if(collection) {
-		delete collection;
-		collection = NULL;
+	if(collection_) {
+		delete collection_;
+		collection_ = NULL;
 	}
 }
 
@@ -47,20 +44,28 @@ void TFRepublisher::tick_loop()
 
 	while(ros::ok()) {
 		double this_t = ros::Time::now().toSec();
-		double dt = this_t - last_t;
-		double next_time = time_ + dt*realtime_factor_;
-		// set new time value
-		if(next_time > time_max_) {
-			time_ = time_min_;
-			reset_ = true;
+		
+		if(time_max_ > 0.0 ) {
+			double dt = this_t - last_t;
+			double next_time = time_ + dt*realtime_factor_;
+			// set new time value
+			if(next_time > time_max_) {
+				time_ = time_min_;
+				reset_ = true;
+			}
+			else if(next_time < time_min_) {
+				time_ = time_min_;
+				reset_ = true;
+			}
+			else {
+				time_ = next_time;
+			}
+			// publish time value
+			time_msg.data = time_;
+			tick.publish(time_msg);
 		}
-		else {
-			time_ = next_time;
-		}
+		
 		last_t = this_t;
-		// publish time value
-		time_msg.data = time_;
-		tick.publish(time_msg);
 		// sleep to achieve rate of 10Hz
 		r.sleep();
 		if(!is_running_) break;
@@ -71,7 +76,9 @@ void TFRepublisher::loop()
 {
 	ros::Rate r(frequency_);
 	while(ros::ok()) {
-		advance_cursor();
+		if(time_>0.0) {
+			advance_cursor();
+		}
 		r.sleep();
 		if(!is_running_) break;
 	}
@@ -88,10 +95,6 @@ void TFRepublisher::set_goal(double time_min, double time_max)
 
 void TFRepublisher::create_cursor()
 {
-	if(cursor_!=NULL) {
-		mongoc_cursor_destroy(cursor_);
-		cursor_ = NULL;
-	}
 	// ascending order
 	bson_t *opts = BCON_NEW(
 		"sort", "{", "header.stamp", BCON_INT32 (1), "}"
@@ -104,13 +107,16 @@ void TFRepublisher::create_cursor()
 		"}"
 	);
 	// get the cursor
-	if(collection) {
-		delete collection;
+	if(cursor_!=NULL) {
+		mongoc_cursor_destroy(cursor_);
 	}
-	collection = MongoInterface::get_collection(
+	if(collection_) {
+		delete collection_;
+	}
+	collection_ = MongoInterface::get_collection(
 		db_name_.c_str(),db_collection_.c_str());
 	cursor_ = mongoc_collection_find_with_opts(
-	    (*collection)(), filter, opts, NULL /* read_prefs */ );
+	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
 }
 
 void TFRepublisher::reset_cursor()
@@ -150,7 +156,7 @@ void TFRepublisher::advance_cursor()
 		// read the next transform
 		const bson_t *doc;
 		if(cursor_!=NULL && mongoc_cursor_next(cursor_,&doc)) {
-			read_transform(doc);
+			read_transform(&doc,&ts_);
 			has_next_ = true;
 		}
 		else {

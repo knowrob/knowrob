@@ -15,6 +15,7 @@
 
 #include <knowrob/ros/tf/memory.h>
 #include <knowrob/ros/tf/publisher.h>
+#include <knowrob/db/mongo/MongoInterface.h>
 
 /**
  * A TF publisher that publishes data stored in mongo DB.
@@ -58,6 +59,7 @@ protected:
 
 	std::string db_name_;
 	std::string db_collection_;
+	MongoCollection *collection_;
 
 	mongoc_cursor_t *cursor_;
 	geometry_msgs::TransformStamped ts_;
