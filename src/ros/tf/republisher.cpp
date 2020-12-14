@@ -143,6 +143,15 @@ void TFRepublisher::advance_cursor()
 	}
 	//
 	while(1) {
+		// check if the cursor has an error.
+		// if this is the case, reset next loop.
+		bson_error_t cursor_error;
+		if (mongoc_cursor_error (cursor_, &cursor_error)) {
+			ROS_ERROR("[TFRepublisher] mongo cursor error: %s. Resetting..", cursor_error.message);
+			reset_ = true;
+			break;
+		}
+
 		if(has_next_) {
 			double t_next = (ts_.header.stamp.sec * 1000.0 +
 					ts_.header.stamp.nsec / 1000000.0) / 1000.0;
