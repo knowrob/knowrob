@@ -93,13 +93,24 @@ bool MongoCursor::next(const bson_t **doc)
 			cursor_ = mongoc_collection_find_with_opts(
 			    coll_(), query_, opts_, NULL /* read_prefs */ );
 		}
+		// make sure cursor has no error after creation
+		bson_error_t err1;
+		if(mongoc_cursor_error(cursor_, &err1)) {
+			throw MongoException("cursor_error",err1);
+		}
 	}
-	// make sure cursor has no error
-	bson_error_t err;
-	if(mongoc_cursor_error(cursor_, &err)) {
-		throw MongoException("cursor_error",err);
+	// get next document
+	if(!mongoc_cursor_next(cursor_,doc)) {
+		// make sure cursor has no error after next has been called
+		bson_error_t err2;
+		if(mongoc_cursor_error(cursor_, &err2)) {
+			throw MongoException("cursor_error",err2);
+		}
+		return false;
 	}
-	return mongoc_cursor_next(cursor_,doc);
+	else {
+		return true;
+	}
 }
 
 bool MongoCursor::erase()
