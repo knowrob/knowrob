@@ -62,11 +62,15 @@ tf_republish_set_goal(Time_min, Time_max) :-
 	->	Max is Time_max
 	;	atom_number(Time_max,Max)
 	),
+	% initialize poses to last pose before Min.
+	% TODO: might be faster to do this in C++ code of republisher.
+	tf_republish_load_transforms(Min),
+	% start republishing range [Min,Max]
 	tf_republish_set_goal(DBName, CollectionName, Min, Max).
 
 %%
 tf_republish_load_transforms(Time) :-
-	tf_tree:lookup_transforms_(Time,Transforms),
+	tf_tree:lookup_transforms(Time,Transforms),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],Transforms),
 	        % FIXME avoid this elsewhere
@@ -74,7 +78,7 @@ tf_republish_load_transforms(Time) :-
 	        \+ atom_concat('/',Ref,Frame),
 	        \+ atom_concat('/',Frame,Ref)
 	    ),
-		tf_plugin:tf_republish_set_pose(Frame,[Ref,Pos,Rot])
+		tf_republish_set_pose(Frame,[Ref,Pos,Rot])
 	).
 
 %%
