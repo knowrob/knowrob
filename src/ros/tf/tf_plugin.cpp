@@ -32,6 +32,16 @@ PREDICATE(tf_republish_set_goal, 4) {
 	return true;
 }
 
+PREDICATE(tf_republish_set_time, 1) {
+	double time = (double)PL_A1;
+	get_republisher().set_now(time);
+}
+
+PREDICATE(tf_republish_set_progress, 1) {
+	double percent = (double)PL_A1;
+	get_republisher().set_progress(percent);
+}
+
 // tf_republish_set_loop(RealtimeFactor)
 PREDICATE(tf_republish_set_loop, 1) {
 	get_republisher().set_loop((int)PL_A1);
@@ -50,6 +60,10 @@ PREDICATE(tf_logger_enable, 0) {
 	if(tf_logger) {
 		delete tf_logger;
 	}
+
+	// Clear the tf memory to remove cached transforms
+	memory.clear();
+
 	tf_logger = new TFLogger(node,memory);
 	tf_logger->set_db_name(logger_db_name);
 	tf_logger->set_time_threshold(time_threshold);

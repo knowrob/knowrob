@@ -15,6 +15,7 @@
 
 #include <knowrob/ros/tf/memory.h>
 #include <knowrob/ros/tf/publisher.h>
+#include <knowrob/db/mongo/MongoInterface.h>
 
 /**
  * A TF publisher that publishes data stored in mongo DB.
@@ -43,12 +44,18 @@ public:
 
 	void set_goal(double time_min, double time_max);
 
+	void set_now(double time);
+
+	void set_progress(double percent);
+
 protected:
 	double realtime_factor_;
 	double frequency_;
 	bool loop_;
 	bool is_running_;
 	bool reset_;
+	bool skip_reset_;
+	bool has_been_skipped_;
 	std::thread thread_;
 	std::thread tick_thread_;
 
@@ -58,6 +65,7 @@ protected:
 
 	std::string db_name_;
 	std::string db_collection_;
+	MongoCollection *collection_;
 
 	mongoc_cursor_t *cursor_;
 	geometry_msgs::TransformStamped ts_;
@@ -69,7 +77,7 @@ protected:
 
 	void loop();
 	void tick_loop();
-	void create_cursor();
+	void create_cursor(double start_time);
 	void reset_cursor();
 	void advance_cursor();
 	void read_transform(const bson_t *doc);

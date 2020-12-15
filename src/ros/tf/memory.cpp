@@ -21,6 +21,12 @@ bool TFMemory::is_managed_frame(const std::string &frame) const
 	return managed_frames_.find(frame) != managed_frames_.end();
 }
 
+bool TFMemory::clear()
+{
+	transforms_.clear();
+	return true;
+}
+
 const std::set<std::string>& TFMemory::get_managed_frames() const
 {
 	return managed_frames_;

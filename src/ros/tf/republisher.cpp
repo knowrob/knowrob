@@ -1,9 +1,5 @@
 #include <knowrob/ros/tf/republisher.h>
-#include <knowrob/db/mongo/MongoInterface.h>
 #include <std_msgs/Float64.h>
-
-// FIXME
-static MongoCollection *collection=NULL;
 
 TFRepublisher::TFRepublisher(double frequency) :
 		realtime_factor_(1.0),
@@ -13,8 +9,11 @@ TFRepublisher::TFRepublisher(double frequency) :
 		has_new_goal_(false),
 		is_running_(true),
 		reset_(false),
+		has_been_skipped_(false),
+		skip_reset_(false),
 		db_name_("neems"),
 		db_collection_("tf"),
+		collection_(NULL),
 		time_min_(0.0),
 		time_max_(0.0),
 		time_(0.0),
@@ -31,9 +30,9 @@ TFRepublisher::~TFRepublisher()
 	is_running_ = false;
 	thread_.join();
 	tick_thread_.join();
-	if(collection) {
-		delete collection;
-		collection = NULL;
+	if(collection_) {
+		delete collection_;
+		collection_ = NULL;
 	}
 }
 
@@ -47,20 +46,28 @@ void TFRepublisher::tick_loop()
 
 	while(ros::ok()) {
 		double this_t = ros::Time::now().toSec();
-		double dt = this_t - last_t;
-		double next_time = time_ + dt*realtime_factor_;
-		// set new time value
-		if(next_time > time_max_) {
-			time_ = time_min_;
-			reset_ = true;
+		
+		if(time_max_ > 0.0 ) {
+			double dt = this_t - last_t;
+			double next_time = time_ + dt*realtime_factor_;
+			// set new time value
+			if(next_time > time_max_) {
+				time_ = time_min_;
+				reset_ = true;
+			}
+			else if(next_time < time_min_) {
+				time_ = time_min_;
+				reset_ = true;
+			}
+			else {
+				time_ = next_time;
+			}
+			// publish time value
+			time_msg.data = time_;
+			tick.publish(time_msg);
 		}
-		else {
-			time_ = next_time;
-		}
+		
 		last_t = this_t;
-		// publish time value
-		time_msg.data = time_;
-		tick.publish(time_msg);
 		// sleep to achieve rate of 10Hz
 		r.sleep();
 		if(!is_running_) break;
@@ -71,7 +78,9 @@ void TFRepublisher::loop()
 {
 	ros::Rate r(frequency_);
 	while(ros::ok()) {
-		advance_cursor();
+		if(time_>0.0) {
+			advance_cursor();
+		}
 		r.sleep();
 		if(!is_running_) break;
 	}
@@ -86,12 +95,20 @@ void TFRepublisher::set_goal(double time_min, double time_max)
 	has_new_goal_ = true;
 }
 
-void TFRepublisher::create_cursor()
+void TFRepublisher::set_progress(double percent)
 {
-	if(cursor_!=NULL) {
-		mongoc_cursor_destroy(cursor_);
-		cursor_ = NULL;
-	}
+	time_ = time_min_ + percent*(time_max_ - time_min_);
+	has_been_skipped_ = true;
+}
+
+void TFRepublisher::set_now(double time)
+{
+	time_ = time_min_;
+	has_been_skipped_ = true;
+}
+
+void TFRepublisher::create_cursor(double start_time)
+{
 	// ascending order
 	bson_t *opts = BCON_NEW(
 		"sort", "{", "header.stamp", BCON_INT32 (1), "}"
@@ -99,18 +116,21 @@ void TFRepublisher::create_cursor()
 	// filter documents outside of time interval
 	bson_t *filter = BCON_NEW(
 		"header.stamp", "{",
-			"$gt", BCON_DATE_TIME((unsigned long long)(1000.0*time_min_)),
+			"$gt", BCON_DATE_TIME((unsigned long long)(1000.0*start_time)),
 			"$lt", BCON_DATE_TIME((unsigned long long)(1000.0*time_max_)),
 		"}"
 	);
 	// get the cursor
-	if(collection) {
-		delete collection;
+	if(cursor_!=NULL) {
+		mongoc_cursor_destroy(cursor_);
 	}
-	collection = MongoInterface::get_collection(
+	if(collection_) {
+		delete collection_;
+	}
+	collection_ = MongoInterface::get_collection(
 		db_name_.c_str(),db_collection_.c_str());
 	cursor_ = mongoc_collection_find_with_opts(
-	    (*collection)(), filter, opts, NULL /* read_prefs */ );
+	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
 }
 
 void TFRepublisher::reset_cursor()
@@ -128,15 +148,41 @@ void TFRepublisher::advance_cursor()
 	if(has_new_goal_) {
 		has_new_goal_ = false;
 		has_next_ = false;
-		create_cursor();
+		// TODO: also initialize poses to pose before time_min_
+		// create cursor with documents from time_min_ to time_max_
+		create_cursor(time_min_);
+	}
+	else if(has_been_skipped_) {
+		has_been_skipped_ = false;
+		has_next_ = false;
+		// special reset mode because cursor needs to be recreated with proper start time
+		skip_reset_ = true;
+		// TODO: also initialize poses to pose before this_time
+		// create cursor with documents from this_time to time_max_
+		create_cursor(this_time);
 	}
 	if(reset_) {
 		reset_ = false;
 		has_next_ = false;
-		reset_cursor();
+		if(skip_reset_) {
+			skip_reset_ = false;
+			create_cursor(time_min_);
+		}
+		else {
+			reset_cursor();
+		}
 	}
 	//
 	while(1) {
+		// check if the cursor has an error.
+		// if this is the case, reset next loop.
+		bson_error_t cursor_error;
+		if (mongoc_cursor_error (cursor_, &cursor_error)) {
+			ROS_ERROR("[TFRepublisher] mongo cursor error: %s. Resetting..", cursor_error.message);
+			reset_ = true;
+			break;
+		}
+
 		if(has_next_) {
 			double t_next = (ts_.header.stamp.sec * 1000.0 +
 					ts_.header.stamp.nsec / 1000000.0) / 1000.0;

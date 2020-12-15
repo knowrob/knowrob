@@ -12,6 +12,8 @@
 	  tf_mng_memorize/1,
 	  tf_republish_set_pose/2,
 	  tf_republish_set_goal/2,
+	  tf_republish_set_time/1,
+	  tf_republish_set_progress/1,
 	  tf_republish_set_loop/1,
 	  tf_republish_set_realtime_factor/1,
 	  tf_logger_enable/0,

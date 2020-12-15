@@ -171,27 +171,27 @@ test(link_inertial_mass_pr2_l_elbow_flex_link) :-
   	_, _).
 
 test(link_num_visuals_pr2_r_gripper_led_frame, [fail]) :-
-  urdf_link_visual_shape(pr2, r_gripper_led_frame, _, _, _).
+  urdf_link_visual_shape(pr2, r_gripper_led_frame, _, _, _, _).
 
 test(link_visual_type_pr2_r_gripper_motor_accelerometer_link) :-
-  urdf_link_visual_shape(pr2, r_gripper_motor_accelerometer_link, Shape, _, _),
+  urdf_link_visual_shape(pr2, r_gripper_motor_accelerometer_link, Shape, _, _, _),
   assert_equals(Shape,box(0.001,0.001,0.001)).
 
 test(link_visual_type_pr2_r_gripper_motor_slider_link) :-
-  urdf_link_visual_shape(pr2, r_gripper_motor_slider_link, cylinder(0.002, 0.025), _, _).
+  urdf_link_visual_shape(pr2, r_gripper_motor_slider_link, cylinder(0.002, 0.025), _, _, _).
 
 test(link_visual_geometry_pr2_head_mount_kinect_ir_link) :-
-  urdf_link_visual_shape(pr2, head_mount_kinect_ir_link, sphere(0.0005), _, _).
+  urdf_link_visual_shape(pr2, head_mount_kinect_ir_link, sphere(0.0005), _, _, _).
 
 test(link_visual_geometry_pr2_head_mount_link) :-
-  urdf_link_visual_shape(pr2, head_mount_link, mesh(_, [0.001, 0.001, 0.001]), _, _).
+  urdf_link_visual_shape(pr2, head_mount_link, mesh(_, [0.001, 0.001, 0.001]), _, _, _).
 
 test(link_origin_pr2_r_gripper_motor_slider_link) :-
   urdf_link_visual_shape(pr2, r_gripper_motor_slider_link, _,
 	  [	r_gripper_motor_slider_link,
 	  	[0.0,0.0,0.0],
 	  	[0.7071080798594737, 0.0, 0.0, 0.7071054825112363]
-	  ], _).
+	  ], _, _).
 
 test(link_collision_geometry_pr2_r_gripper_r_finger_link) :-
 	urdf_link_collision_shape(pr2, r_gripper_r_finger_link,
