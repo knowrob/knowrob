@@ -9,6 +9,8 @@ TFRepublisher::TFRepublisher(double frequency) :
 		has_new_goal_(false),
 		is_running_(true),
 		reset_(false),
+		has_been_skipped_(false),
+		skip_reset_(false),
 		db_name_("neems"),
 		db_collection_("tf"),
 		collection_(NULL),
@@ -93,7 +95,19 @@ void TFRepublisher::set_goal(double time_min, double time_max)
 	has_new_goal_ = true;
 }
 
-void TFRepublisher::create_cursor()
+void TFRepublisher::set_progress(double percent)
+{
+	time_ = time_min_ + percent*(time_max_ - time_min_);
+	has_been_skipped_ = true;
+}
+
+void TFRepublisher::set_now(double time)
+{
+	time_ = time_min_;
+	has_been_skipped_ = true;
+}
+
+void TFRepublisher::create_cursor(double start_time)
 {
 	// ascending order
 	bson_t *opts = BCON_NEW(
@@ -102,7 +116,7 @@ void TFRepublisher::create_cursor()
 	// filter documents outside of time interval
 	bson_t *filter = BCON_NEW(
 		"header.stamp", "{",
-			"$gt", BCON_DATE_TIME((unsigned long long)(1000.0*time_min_)),
+			"$gt", BCON_DATE_TIME((unsigned long long)(1000.0*start_time)),
 			"$lt", BCON_DATE_TIME((unsigned long long)(1000.0*time_max_)),
 		"}"
 	);
@@ -134,12 +148,29 @@ void TFRepublisher::advance_cursor()
 	if(has_new_goal_) {
 		has_new_goal_ = false;
 		has_next_ = false;
-		create_cursor();
+		// TODO: also initialize poses to pose before time_min_
+		// create cursor with documents from time_min_ to time_max_
+		create_cursor(time_min_);
+	}
+	else if(has_been_skipped_) {
+		has_been_skipped_ = false;
+		has_next_ = false;
+		// special reset mode because cursor needs to be recreated with proper start time
+		skip_reset_ = true;
+		// TODO: also initialize poses to pose before this_time
+		// create cursor with documents from this_time to time_max_
+		create_cursor(this_time);
 	}
 	if(reset_) {
 		reset_ = false;
 		has_next_ = false;
-		reset_cursor();
+		if(skip_reset_) {
+			skip_reset_ = false;
+			create_cursor(time_min_);
+		}
+		else {
+			reset_cursor();
+		}
 	}
 	//
 	while(1) {
