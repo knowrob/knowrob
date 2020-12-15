@@ -28,6 +28,11 @@ public:
 	bool has_transform(const std::string &frame) const;
 
 	/**
+	 * True if a transform with given frame was added before.
+	 */
+	bool clear() const;
+
+	/**
 	 * Get the transform associated to a frame.
 	 */
 	const geometry_msgs::TransformStamped& get_transform(const std::string &frame);

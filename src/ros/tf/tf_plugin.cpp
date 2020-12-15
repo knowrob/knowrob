@@ -50,6 +50,9 @@ PREDICATE(tf_logger_enable, 0) {
 	if(tf_logger) {
 		delete tf_logger;
 	}
+
+	memory.clear();
+
 	tf_logger = new TFLogger(node,memory);
 	tf_logger->set_db_name(logger_db_name);
 	tf_logger->set_time_threshold(time_threshold);
