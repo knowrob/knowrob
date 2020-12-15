@@ -56,7 +56,7 @@ void TFLogger::callback(const tf::tfMessage::ConstPtr& msg)
 			//       such that we can check for the pose difference in
 			//       ignoreTransform.
 			//       This is only needed for the frames that are not
-			//       managed by robot (e.g. robot frames handled by robot
+			//       managed by knowrob (e.g. robot frames handled by robot
 			//       state publisher).
 			// TODO: not sure if it is worth doing the check here...
 			if(!memory_.is_managed_frame(ts.child_frame_id)) {
