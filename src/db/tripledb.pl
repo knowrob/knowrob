@@ -374,7 +374,10 @@ tripledb_tell(S,P,O,Scope,Options) :-
 %  ;  true
 %  ),
   set_graph_option(Options,Options0),
-  itripledb_tell(S,P,O,Scope,Options0).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to write despite read only access')
+  ;	itripledb_tell(S,P,O,Scope,Options0)
+  ).
 
 %% tripledb_tell(?S,?P,?O,+Scope) is semidet.
 %
@@ -406,7 +409,10 @@ tripledb_tell(S,P,O) :-
 % @implements 'db/itripledb'
 %
 tripledb_bulk_tell(Facts,Scope,Options) :-
-  itripledb_bulk_tell(Facts,Scope,Options).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to write bulk despite read only access')
+  ;	itripledb_bulk_tell(Facts,Scope,Options)
+  ).
 
 %%
 tripledb_stop(S,P,Scope,Options) :-
@@ -418,7 +424,10 @@ tripledb_stop(S,P,Scope,Options) :-
 %
 tripledb_forget(S,P,O,Scope,Options) :-
   set_graph_option(Options,Options0),
-  itripledb_forget(S,P,O,Scope,Options0).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to delete despite read only access')
+  ;	itripledb_forget(S,P,O,Scope,Options0)
+  ).
 
 %% tripledb_forget(?S,?P,?O,+Scope) is semidet.
 %
