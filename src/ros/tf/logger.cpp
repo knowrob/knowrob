@@ -50,7 +50,19 @@ void TFLogger::callback(const tf::tfMessage::ConstPtr& msg)
 	for (it = msg->transforms.begin(); it != msg->transforms.end(); ++it)
 	{
 		const geometry_msgs::TransformStamped &ts = *it;
-		if(!ignoreTransform(ts)) store(ts);
+		if(!ignoreTransform(ts)) {
+			store(ts);
+			// NOTE: IMPORTANT: we assign *ts* to its frame in memory
+			//       such that we can check for the pose difference in
+			//       ignoreTransform.
+			//       This is only needed for the frames that are not
+			//       managed by robot (e.g. robot frames handled by robot
+			//       state publisher).
+			// TODO: not sure if it is worth doing the check here...
+			if(!memory_.is_managed_frame(ts.child_frame_id)) {
+				memory_.set_transform(ts);
+			}
+		}
 	}
 }
 
