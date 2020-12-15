@@ -16,6 +16,7 @@
 	  tf_republish_set_progress/1,
 	  tf_republish_set_loop/1,
 	  tf_republish_set_realtime_factor/1,
+	  tf_republish_clear/0,
 	  tf_logger_enable/0,
 	  tf_logger_disable/0
 	]).

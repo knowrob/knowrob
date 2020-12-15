@@ -36,6 +36,15 @@ TFRepublisher::~TFRepublisher()
 	}
 }
 
+void TFRepublisher::clear()
+{
+	has_next_ = false;
+	time_min_ = 0.0;
+	time_max_ = 0.0;
+	time_ = 0.0;
+	memory_.clear();
+}
+
 void TFRepublisher::tick_loop()
 {
 	ros::NodeHandle node;

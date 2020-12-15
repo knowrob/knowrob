@@ -42,6 +42,10 @@ PREDICATE(tf_republish_set_progress, 1) {
 	get_republisher().set_progress(percent);
 }
 
+PREDICATE(tf_republish_clear, 0) {
+	get_republisher().clear();
+}
+
 // tf_republish_set_loop(RealtimeFactor)
 PREDICATE(tf_republish_set_loop, 1) {
 	get_republisher().set_loop((int)PL_A1);

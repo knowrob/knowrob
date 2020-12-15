@@ -24,6 +24,7 @@ knowrob_load_neem(NEEM_id) :-
 	% load URDF files referred to in triple store
 	urdf_init,
 	% initialize position of each frame for tf publishing
+	tf_plugin:tf_republish_clear,
 	tf_tree:initial_transforms(InitialTransforms),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],InitialTransforms),

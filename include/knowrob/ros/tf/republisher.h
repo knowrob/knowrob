@@ -48,6 +48,8 @@ public:
 
 	void set_progress(double percent);
 
+	void clear();
+
 protected:
 	double realtime_factor_;
 	double frequency_;
