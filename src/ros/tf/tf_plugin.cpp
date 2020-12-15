@@ -51,6 +51,7 @@ PREDICATE(tf_logger_enable, 0) {
 		delete tf_logger;
 	}
 
+	// Clear the tf memory to remove cached transforms
 	memory.clear();
 
 	tf_logger = new TFLogger(node,memory);
