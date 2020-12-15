@@ -30,7 +30,7 @@ public:
 	/**
 	 * True if a transform with given frame was added before.
 	 */
-	bool clear() const;
+	bool clear();
 
 	/**
 	 * Get the transform associated to a frame.
