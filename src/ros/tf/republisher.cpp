@@ -165,7 +165,7 @@ void TFRepublisher::advance_cursor()
 		// read the next transform
 		const bson_t *doc;
 		if(cursor_!=NULL && mongoc_cursor_next(cursor_,&doc)) {
-			read_transform(&doc,&ts_);
+			read_transform(doc);
 			has_next_ = true;
 		}
 		else {
