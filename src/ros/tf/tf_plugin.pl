@@ -4,6 +4,7 @@
 	  tf_get_trajectory/4,
 	  tf_mem_set_pose/3,
 	  tf_mem_get_pose/3,
+  	  tf_mem_clear/0,
 	  tf_mng_store/3,
 	  tf_mng_lookup/6,
 	  tf_mng_range/6,

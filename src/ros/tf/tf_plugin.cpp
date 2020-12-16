@@ -68,9 +68,6 @@ PREDICATE(tf_logger_enable, 0) {
 		delete tf_logger;
 	}
 
-	// Clear the tf memory to remove cached transforms
-	memory.clear();
-
 	tf_logger = new TFLogger(node,memory);
 	tf_logger->set_db_name(logger_db_name);
 	tf_logger->set_time_threshold(time_threshold);
@@ -120,6 +117,13 @@ PREDICATE(tf_logger_get_vectorial_threshold, 1) {
 }
 PREDICATE(tf_logger_get_angular_threshold, 1) {
 	PL_A1 = angular_threshold;
+	return true;
+}
+
+
+// Clear the tf memory to remove cached transforms
+PREDICATE(tf_mem_clear, 0) {
+	memory.clear();
 	return true;
 }
 
