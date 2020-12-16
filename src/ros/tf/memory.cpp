@@ -24,6 +24,7 @@ bool TFMemory::is_managed_frame(const std::string &frame) const
 bool TFMemory::clear()
 {
 	transforms_.clear();
+	managed_frames_.clear();
 	return true;
 }
 
@@ -80,7 +81,11 @@ bool TFMemory::set_pose_term(const std::string &frame, const PlTerm &term, doubl
 {
 	const geometry_msgs::TransformStamped &ts_old = get_transform(frame);
 	// make sure the pose is more recent then the one stored
-	if(get_stamp(ts_old)>stamp) {
+	if(stamp<0.0) {
+		// force setting pose if stamp<0.0
+		stamp = 0.0;
+	}
+	else if(get_stamp(ts_old)>stamp) {
 		return false;
 	}
 	//

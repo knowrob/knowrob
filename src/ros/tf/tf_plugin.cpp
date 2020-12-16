@@ -35,11 +35,18 @@ PREDICATE(tf_republish_set_goal, 4) {
 PREDICATE(tf_republish_set_time, 1) {
 	double time = (double)PL_A1;
 	get_republisher().set_now(time);
+	return true;
 }
 
 PREDICATE(tf_republish_set_progress, 1) {
 	double percent = (double)PL_A1;
 	get_republisher().set_progress(percent);
+	return true;
+}
+
+PREDICATE(tf_republish_clear, 0) {
+	get_republisher().clear();
+	return true;
 }
 
 // tf_republish_set_loop(RealtimeFactor)
@@ -130,7 +137,7 @@ PREDICATE(tf_mem_set_pose, 3) {
 // tf_republish_set_pose(ObjFrame,PoseData)
 PREDICATE(tf_republish_set_pose, 2) {
 	std::string frame((char*)PL_A1);
-	get_republisher().memory().set_pose_term(frame,PL_A2,0.0);
+	get_republisher().memory().set_pose_term(frame,PL_A2,-1.0);
 	return true;
 }
 

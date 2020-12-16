@@ -36,6 +36,15 @@ TFRepublisher::~TFRepublisher()
 	}
 }
 
+void TFRepublisher::clear()
+{
+	has_next_ = false;
+	time_min_ = 0.0;
+	time_max_ = 0.0;
+	time_ = 0.0;
+	memory_.clear();
+}
+
 void TFRepublisher::tick_loop()
 {
 	ros::NodeHandle node;
@@ -129,6 +138,7 @@ void TFRepublisher::create_cursor(double start_time)
 	}
 	collection_ = MongoInterface::get_collection(
 		db_name_.c_str(),db_collection_.c_str());
+	collection_->appendSession(opts);
 	cursor_ = mongoc_collection_find_with_opts(
 	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
 }
@@ -148,18 +158,17 @@ void TFRepublisher::advance_cursor()
 	if(has_new_goal_) {
 		has_new_goal_ = false;
 		has_next_ = false;
-		// TODO: also initialize poses to pose before time_min_
-		// create cursor with documents from time_min_ to time_max_
 		create_cursor(time_min_);
+		// TODO: load initial poses (currently done in Prolog code)
 	}
 	else if(has_been_skipped_) {
 		has_been_skipped_ = false;
 		has_next_ = false;
 		// special reset mode because cursor needs to be recreated with proper start time
 		skip_reset_ = true;
-		// TODO: also initialize poses to pose before this_time
 		// create cursor with documents from this_time to time_max_
 		create_cursor(this_time);
+		// TODO: load initial poses
 	}
 	if(reset_) {
 		reset_ = false;
@@ -171,6 +180,8 @@ void TFRepublisher::advance_cursor()
 		else {
 			reset_cursor();
 		}
+		// TODO: load initial poses to avoid problems with objects sticking at the position
+		//       where they were at the end of the event.
 	}
 	//
 	while(1) {

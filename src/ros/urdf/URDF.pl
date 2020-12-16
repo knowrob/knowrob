@@ -80,9 +80,17 @@ urdf_init(Object,Identifier) :-
 	atomic_list_concat([Identifier,urdf],'.',Filename),
 	path_concat(DATA_URL,Filename,URL),
 	% get XML data
-	http_get(URL,XML_data,[]),
+	(	http_get(URL,XML_data,[]) -> true
+	;	(	log_warn(urdf(download_failed(Object,URL))),
+			fail
+		)
+	),
 	% parse data
-	urdf_load_xml(Object,XML_data),
+	(	urdf_load_xml(Object,XML_data) -> true
+	;	(	log_warn(urdf(parsing_failed(Object,URL))),
+			fail
+		)
+	),
 	% create has_urdf facts
 	forall(
 		(	Y=Object
@@ -91,7 +99,9 @@ urdf_init(Object,Identifier) :-
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
 		)
-	).
+	),
+	log_info(urdf(initialized(Object,Identifier))),
+	!.
 
 %% urdf_load(+Object,+File) is semidet.
 %

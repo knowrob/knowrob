@@ -27,6 +27,7 @@ MongoCursor::MongoCursor(
 {
 	query_ = bson_new();
 	opts_ = bson_new();
+	coll_.appendSession(opts_);
 	// use pointer as id
 	std::stringstream ss;
 	ss << static_cast<const void*>(this);  
