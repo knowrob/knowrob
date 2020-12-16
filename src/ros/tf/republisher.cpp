@@ -19,7 +19,7 @@ TFRepublisher::TFRepublisher(double frequency) :
 		time_(0.0),
 		cursor_(NULL),
 		memory_(),
-		publisher_(memory_,frequency),
+		publisher_(memory_,frequency,true),
 	    thread_(&TFRepublisher::loop, this),
 	    tick_thread_(&TFRepublisher::tick_loop, this)
 {
@@ -202,7 +202,7 @@ void TFRepublisher::advance_cursor()
 				break;
 			}
 			// push the next transform
-			memory_.set_transform(ts_);
+			memory_.set_managed_transform(ts_);
 		}
 		// read the next transform
 		const bson_t *doc;

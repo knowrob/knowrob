@@ -18,13 +18,16 @@
 class TFPublisher
 {
 public:
-	TFPublisher(TFMemory &memory, double frequency=10.0);
+	TFPublisher(TFMemory &memory,
+			double frequency=10.0,
+			bool clear_after_publish=false);
 	~TFPublisher();
 
 protected:
 	TFMemory &memory_;
 	bool is_running_;
 	double frequency_;
+	bool clear_after_publish_;
 	std::thread thread_;
 
 	tf2_ros::TransformBroadcaster tf_broadcaster_;
