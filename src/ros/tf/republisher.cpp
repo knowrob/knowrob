@@ -122,7 +122,6 @@ void TFRepublisher::create_cursor(double start_time)
 	bson_t *opts = BCON_NEW(
 		"sort", "{", "header.stamp", BCON_INT32 (1), "}"
 	);
-	collection_->appendSession(opts);
 	// filter documents outside of time interval
 	bson_t *filter = BCON_NEW(
 		"header.stamp", "{",
@@ -139,6 +138,7 @@ void TFRepublisher::create_cursor(double start_time)
 	}
 	collection_ = MongoInterface::get_collection(
 		db_name_.c_str(),db_collection_.c_str());
+	collection_->appendSession(opts);
 	cursor_ = mongoc_collection_find_with_opts(
 	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
 }
