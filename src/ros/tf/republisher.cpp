@@ -204,7 +204,11 @@ void TFRepublisher::advance_cursor()
 				break;
 			}
 			// push the next transform
+#if CLEAR_MEMORY_AFTER_PUBLISH true
 			memory_.set_managed_transform(ts_);
+#else
+			memory_.set_transform(ts_);
+#endif
 		}
 		// read the next transform
 		const bson_t *doc;
