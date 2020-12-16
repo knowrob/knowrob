@@ -24,6 +24,7 @@ bool TFMemory::is_managed_frame(const std::string &frame) const
 bool TFMemory::clear()
 {
 	transforms_.clear();
+	managed_frames_.clear();
 	return true;
 }
 
