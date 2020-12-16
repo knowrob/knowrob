@@ -122,6 +122,7 @@ void TFRepublisher::create_cursor(double start_time)
 	bson_t *opts = BCON_NEW(
 		"sort", "{", "header.stamp", BCON_INT32 (1), "}"
 	);
+	collection_->appendSession(opts);
 	// filter documents outside of time interval
 	bson_t *filter = BCON_NEW(
 		"header.stamp", "{",

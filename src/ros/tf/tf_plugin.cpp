@@ -35,15 +35,18 @@ PREDICATE(tf_republish_set_goal, 4) {
 PREDICATE(tf_republish_set_time, 1) {
 	double time = (double)PL_A1;
 	get_republisher().set_now(time);
+	return true;
 }
 
 PREDICATE(tf_republish_set_progress, 1) {
 	double percent = (double)PL_A1;
 	get_republisher().set_progress(percent);
+	return true;
 }
 
 PREDICATE(tf_republish_clear, 0) {
 	get_republisher().clear();
+	return true;
 }
 
 // tf_republish_set_loop(RealtimeFactor)
