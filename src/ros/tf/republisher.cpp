@@ -1,6 +1,8 @@
 #include <knowrob/ros/tf/republisher.h>
 #include <std_msgs/Float64.h>
 
+#define CLEAR_MEMORY_AFTER_PUBLISH false
+
 TFRepublisher::TFRepublisher(double frequency) :
 		realtime_factor_(1.0),
 		frequency_(frequency),
@@ -19,7 +21,7 @@ TFRepublisher::TFRepublisher(double frequency) :
 		time_(0.0),
 		cursor_(NULL),
 		memory_(),
-		publisher_(memory_,frequency,true),
+		publisher_(memory_,frequency,CLEAR_MEMORY_AFTER_PUBLISH),
 	    thread_(&TFRepublisher::loop, this),
 	    tick_thread_(&TFRepublisher::tick_loop, this)
 {
