@@ -59,6 +59,19 @@
 % @Root IRI atom
 %
 :- dynamic has_urdf/2.
+:- dynamic urdf_server/1.
+
+%%
+% Initialize prefix for downloading URDF via HTTP
+%%
+urdf_server_init :-
+	once((
+		getenv('KNOWROB_URDF_SERVER', URL)
+	;	URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/'
+	)),
+	retractall(urdf_server(_)),
+	assertz(urdf_server(URL)).
+:- urdf_server_init.
 
 %%
 %
@@ -75,8 +88,7 @@ urdf_init(Object,_) :-
 	!.
 
 urdf_init(Object,Identifier) :-
-	% FIXME: hardcoded URL
-	DATA_URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/',
+	urdf_server(DATA_URL),
 	atomic_list_concat([Identifier,urdf],'.',Filename),
 	path_concat(DATA_URL,Filename,URL),
 	% get XML data
