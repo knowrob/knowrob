@@ -1,7 +1,9 @@
 #include <knowrob/ros/tf/republisher.h>
 #include <std_msgs/Float64.h>
 
-#define CLEAR_MEMORY_AFTER_PUBLISH false
+#define CLEAR_MEMORY_AFTER_PUBLISH 0
+
+// TODO: buffering of poses, i.e. pre-load the next 10s.
 
 TFRepublisher::TFRepublisher(double frequency) :
 		realtime_factor_(1.0),
@@ -204,7 +206,11 @@ void TFRepublisher::advance_cursor()
 				break;
 			}
 			// push the next transform
+#if CLEAR_MEMORY_AFTER_PUBLISH
 			memory_.set_managed_transform(ts_);
+#else
+			memory_.set_transform(ts_);
+#endif
 		}
 		// read the next transform
 		const bson_t *doc;
