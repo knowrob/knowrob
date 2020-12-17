@@ -3,6 +3,8 @@
 
 #define CLEAR_MEMORY_AFTER_PUBLISH 0
 
+// TODO: buffering of poses, i.e. pre-load the next 10s.
+
 TFRepublisher::TFRepublisher(double frequency) :
 		realtime_factor_(1.0),
 		frequency_(frequency),
