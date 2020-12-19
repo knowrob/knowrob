@@ -221,96 +221,14 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 
 %%
 %
-/*
-triple_transitive(triple(Subject,Property,Value),
-		_QScope,FScope,_Options) :-
-	%% read options
-	%option(graph(Graph), Options, user),
-	triple_db(DB,Coll),
-	% match starting document
-	Match=['$match', [
-		['s',string(Subject)],
-		['p*',string(Property)]
-	]],
-	% make a graph query
-	Lookup=['$graphLookup', [
-		['from',string(Coll)],
-		['startWith',string('$o')],
-		['connectFromField',string('o')],
-		['connectToField',string('s')],
-		['as',string('paths')],
-		['restrictSearchWithMatch',['p*',string(Property)]]
-	]],
-	%
-	Concat=['$addFields', ['paths', ['$concatArrays', array([
-		% the array field
-		string('$paths'),
-		% an additional element
-		% TODO: also add s?
-		array([[ 'o', string('$o') ]])
-	])]]],
-	% unwind the paths array
-	Unwind=['$unwind',['path',string('$paths')]],
-	% avoid duplicates
-	Group=['$group',['_id',string('$paths.o')]],
-	%%
-	Doc=[ Match, Lookup, Concat, Unwind, Group ],
-	setup_call_cleanup(
-		% setup: create a query cursor
-		mng_cursor_create(DB,Coll,Cursor),
-		% call: find matching document
-		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
-			mng_cursor_materialize(Cursor,Result_doc),
-			mng_get_dict('_id',Result_doc,string(Value)),
-			%% TODO: handle scope
-			universal_scope(FScope)
-		),
-		% cleanup: destroy cursor again
-		mng_cursor_destroy(Cursor)
-	).
-*/
-
-%%
-%
 triple_aggregate(
-		%[FirstTriple|Xs],
 		Triples,
 		QScope,FScope,Options) :-
 	%% read options 
 	option(graph(Graph), Options, user),
 	triple_db(DB,Coll),
 	%%
-	% FIXME: support once/findall in first statement
-%	read_triple_(FirstTriple,
-%		Query,
-%		Operator_s,S,
-%		Operator_p,P,
-%		Operator,Value,Unit,
-%		none,0),
-	%%
-%	read_vars_(Query,S,P,Value,FirstTripleVars),
-%	read_vars_2([],FirstTripleVars,FirstVars),
-	%%
 	triple_aggregate1(Coll,Triples,QScope,Graph,[],Doc,Vars),
-%	triple_aggregate1(Coll,Xs,QScope,Graph,[],Doc_inner,AllVars),
-	%%
-%	triple_query_document_(
-%			Operator_s,S,
-%			Operator_p,P,
-%			Operator,Value,Unit,
-%			QScope,Graph,QueryDoc),
-%	findall([Pr_Key,string(Pr_Value)], (
-%		%
-%		(	Pr_Key='v_scope',
-%			atom_concat('$',Pr_Key,Pr_Value)
-%		)
-%	;	(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
-%			atom_concat('$',Pr_Value0,Pr_Value)
-%		)
-%	), ProjectDoc),
-%	Doc=[ ['$match', QueryDoc],
-%		  ['$set', ['v_scope', array([string('$scope')]) ]],
-%		  ['$project', ProjectDoc] | Doc_inner],
 	%%
 	setup_call_cleanup(
 		% setup: create a query cursor
@@ -318,7 +236,6 @@ triple_aggregate(
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
 			mng_cursor_materialize(Cursor,Result_doc),
-%			triple_aggregate_unify_(Result_doc,AllVars),
 			triple_aggregate_unify_(Result_doc,Vars),
 			%% handle scope
 			% TODO: it would be possible to compute scope intersections in mongo!
@@ -548,9 +465,10 @@ aggregate_lookup_(Coll,QueryDoc,Options,Vars0,TripleVars,Lookup) :-
 
 %%
 
-aggregate_unwind_(Options, []) :-
+aggregate_unwind_(Options, _) :-
 	memberchk(findall(_),Options),
-	!.
+	!,
+	fail.
 
 aggregate_unwind_(Options,
 	['$unwind',[
