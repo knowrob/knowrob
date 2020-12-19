@@ -198,11 +198,16 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 	strip_variable(QSubject,Subject),
 	strip_variable(QProperty,Property),
 	strip_variable(QValue,ValueQuery),
-	%% parse query value
+	%%
+	% TODO FIXME XXX mng_query_value_/3
+	mng_query_value_(Subject,Operator_s,MngSubject),
+	mng_query_value_(Property,Operator_p,MngProperty),
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
 	setup_call_cleanup(
 		% setup: create a query cursor
-		triple_query_cursor_(Subject,Property,
+		triple_query_cursor_(
+			Operator_s,MngSubject,
+			Operator_p,MngProperty,
 			MngOperator,MngValue,Unit,
 			QScope,Graph,Cursor
 		),
@@ -271,13 +276,21 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 	triple_db(DB,Coll),
 	%%
 	% FIXME: support once/findall in first statement
-	read_triple_(FirstTriple,S,P,Operator,Value,Unit,none,0),
-	read_vars_(S,P,Value,FirstTripleVars),
+	read_triple_(FirstTriple,
+		Query,
+		Operator_s,S,
+		Operator_p,P,
+		Operator,Value,Unit,
+		none,0),
+	%%
+	read_vars_(Query,S,P,Value,FirstTripleVars),
 	read_vars_2(none,FirstTripleVars,FirstVars),
 	%%
 	triple_aggregate1(Coll,Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
 	%%
-	triple_query_document_(S,P,
+	triple_query_document_(
+			Operator_s,S,
+			Operator_p,P,
 			Operator,Value,Unit,
 			QScope,Graph,QueryDoc),
 	findall([Pr_Key,string(Pr_Value)], (
@@ -319,15 +332,23 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 %%
 triple_aggregate1(_,[],_,_,Vars,[],Vars) :- !.
 triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
-	read_triple_(Triple,S,P,Operator,Value,Unit,Modifier,Limit),
-	read_vars_(S,P,Value,TripleVars),
+	read_triple_(Triple,
+		Query,
+		Operator_s,S,
+		Operator_p,P,
+		Operator,Value,Unit,
+		Modifier,Limit),
+	%% 
+	read_vars_(Query,S,P,Value,TripleVars),
 	%%%%%% recursion
 	read_vars_2(Modifier,TripleVars,Vars1),
 	append(Vars0,Vars1,Vars_new),
 	list_to_set(Vars_new,Vars2),
 	triple_aggregate1(Coll,Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
 	%%%%%% 
-	triple_query_document_(S,P,
+	triple_query_document_(
+		Operator_s,S,
+		Operator_p,P,
 		Operator,Value,Unit,
 		QScope,Graph,QueryDoc),
 	triple_aggregate2(Modifier,Limit,
@@ -497,17 +518,20 @@ aggregate_project_(ignore,Field,['$cond',array([
 %%
 read_triple_(
 		TripleTerm,
-		Subject,
-		Property,
+		triple(QSubject,QProperty,QValue),
+		Operator_s,Subject,
+		Operator_p,Property,
 		MngOperator,MngValue,Unit,
 		Modifier,Limit) :-
 	read_triple_1_(TripleTerm,
 		triple(QSubject,QProperty,QValue),
 		Modifier,Limit
 	),
-	strip_variable(QSubject,Subject),
-	strip_variable(QProperty,Property),
+	strip_variable(QSubject,SubjectQuery),
+	strip_variable(QProperty,PropertyQuery),
 	strip_variable(QValue,ValueQuery),
+	mng_query_value_(SubjectQuery,Operator_s,Subject),
+	mng_query_value_(PropertyQuery,Operator_p,Property),
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit).
 
 %%
@@ -524,10 +548,10 @@ read_triple_limit_(X,X,0).
 
 %%
 
-read_vars_(S,P,Value,Vars) :-
-	strip_type_(S,_,S0),
-	strip_type_(P,_,P0),
-	strip_type_(Value,_,Value0),
+read_vars_(triple(QS,QP,QV),S,P,Value,Vars) :-
+	once(( QS=(_->S0)     ; strip_type_(S,_,S0) )),
+	once(( QP=(_->P0)     ; strip_type_(P,_,P0) )),
+	once(( QV=(_->Value0) ; strip_type_(Value,_,Value0) )),
 	read_vars_1([ [S0,'s'], [P0,'p'], [Value0,'o'] ],Vars).
 read_vars_1( [],[] ) :- !.
 read_vars_1( [[Var,_]|Xs], Ys ) :-
@@ -554,11 +578,15 @@ triple_erase(Subject,Property,ValueQuery,QScope,Options) :-
 	%% read options
 	option(graph(Graph), Options, user),
 	%% parse query value
+	mng_query_value_(Subject,Operator_s,MngSubject),
+	mng_query_value_(Property,Operator_p,MngProperty),
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
 	%%
 	setup_call_cleanup(
 		% setup: create a query cursor
-		triple_query_cursor_(Subject,Property,
+		triple_query_cursor_(
+			Operator_s,MngSubject,
+			Operator_p,MngProperty,
 			MngOperator,MngValue,Unit,
 			QScope,Graph,Cursor
 		),
@@ -573,7 +601,9 @@ triple_ask_overlapping_(Subject,Property,MngValue,Unit,FScope,Graph,OverlappingD
 	findall(X,scope_overlaps_query(FScope,X),QScopes),
 	setup_call_cleanup(
 		% setup: create a query cursor
-		triple_query_cursor_(Subject,Property,
+		triple_query_cursor_(
+			'$eq',Subject,
+			'$eq',Property,
 			'$eq',MngValue,Unit,
 			QScopes,Graph,Cursor
 		),
@@ -611,20 +641,33 @@ get_supclasses_(Cls,SuperClasses) :-
 		 *******************************/
 
 %% create a query cursor
-triple_query_document_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Filter) :-
+triple_query_document_(
+		Operator_s, Subject,
+		Operator_p, Property,
+		Operator,MngValue,Unit,Scope,Graph,Filter) :-
 	( taxonomical_property(Property,_,_)
 	-> ( Key_p='p',  Key_o='o*' )
 	;  ( Key_p='p*', Key_o='o' )
 	),
 	%%
 	( atom(Subject)
-	-> Query_s=string(Subject)
-	;  Query_s=Subject
+	-> Query_s0=string(Subject)
+	;  Query_s0=Subject
 	),
-	( atom(Property)
-	-> Query_p=string(Property)
-	;  Query_p=Property
+	(	Operator_s='$eq'
+	->	Query_s=Query_s0
+	;	Query_s=[Operator_s,Query_s0]
 	),
+	%%
+	(	atom(Property)
+	->	Query_p0=string(Property)
+	;	Query_p0=Property
+	),
+	(	Operator_p='$eq'
+	->	Query_p=Query_p0
+	;	Query_p=[Operator_p,Query_p0]
+	),
+	%%
 	( Operator='$eq'
 	-> Query_o=MngValue
 	;  Query_o=[Operator,MngValue]
@@ -641,8 +684,13 @@ triple_query_document_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Filte
 		Filter
 	).
 
-triple_query_cursor_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Cursor) :-
-	triple_query_document_(Subject,Property,Operator,MngValue,Unit,Scope,Graph,Filter),
+triple_query_cursor_(
+		Operator_s, Subject,
+		Operator_p, Property,
+		Operator,MngValue,Unit,Scope,Graph,Cursor) :-
+	triple_query_document_(
+		Operator_s, Subject,
+		Operator_p, Property,Operator,MngValue,Unit,Scope,Graph,Filter),
 	triple_db(DB,Coll),
 	mng_cursor_create(DB,Coll,Cursor,[Filter]),
 	!.
@@ -764,6 +812,13 @@ get_query_variable(QValue,Var) :-
 		 *******************************/
 
 %%
+mng_query_value_(Query,Operator,Value) :-
+	% get operator
+	strip_operator_(Query,Operator0,Value),
+	operator_mapping_(Operator0,Operator),
+	!.
+
+%%
 mng_query_value_(Query,Operator,Value,Unit) :-
 	% get operator
 	strip_operator_(Query,Operator0,Query0),
@@ -872,6 +927,8 @@ operator_mapping_('>=','$gte').
 operator_mapping_('=<','$lte').
 operator_mapping_('>', '$gt').
 operator_mapping_('<', '$lt').
+operator_mapping_('in', '$in').
+operator_mapping_('nin', '$nin').
 
 %%
 strip_operator_(    X, =,X) :- var(X).
@@ -880,9 +937,14 @@ strip_operator_(>=(X),>=,X).
 strip_operator_(=<(X),=<,X).
 strip_operator_( <(X), <,X).
 strip_operator_( >(X), >,X).
+strip_operator_(in(X), in,X).
+strip_operator_(nin(X),nin,X).
 strip_operator_(    X, =,X).
 
 %%
+strip_type_(List,array,List) :-
+	is_list(List),
+	!.
 strip_type_(Term,Type,X) :-
 	compound(Term),
 	!,

@@ -86,10 +86,6 @@ test('tripledb_tell_list_as_an_argument') :-
 	assert_true(is_list(Actual)),
 	assert_equals(Actual,DataTerm).
 
-% remove the triple at the end of test
-test('tripledb tests: forget triple with various XSD DataTypes') :-
-    assert_true(tripledb_forget(test_datatype:'Lecturer3', _, _)).
-
 % test for time scope
 test('tripledb tell triple with time scope'):-
     time_scope(=(5), =(10), T_S1),
@@ -109,6 +105,52 @@ test('tripledb tell triple with Unit'):-
     assert_false(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
     assert_true(tripledb_tell(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))),
     assert_true(tripledb_ask(test_datatype:'Lecturer4', test_datatype:'height', unit(double(2.1),'meter'))).
+
+test('tripledb >= actual'):-
+	tripledb_ask(
+		test_datatype:'Lecturer4',
+		test_datatype:'height',
+		>=(unit(double(2.0),'meter'))->V
+	),
+	assert_equals(V,2.1).
+
+test('tripledb in'):-
+	findall(LastName,
+		tripledb_ask(
+			in(array([
+				string(test_datatype:'Lecturer3'),
+				string(test_datatype:'Lecturer4')
+			])),
+			test_datatype:'last_name',
+			LastName),
+		Names
+	),
+	assert_unifies(Names,[_,_]),
+	assert_true(member('Muller',Names)),
+	assert_true(member('Spiendler',Names)).
+
+test('tripledb in actual'):-
+	findall([Lecturer,LastName],
+		tripledb_ask(
+			in(array([
+				string(test_datatype:'Lecturer3'),
+				string(test_datatype:'Lecturer4')
+			])) -> Lecturer,
+			test_datatype:'last_name',
+			LastName),
+		LecturerList
+	),
+	assert_unifies(LecturerList,[_,_]),
+	assert_true(member(
+		[test_datatype:'Lecturer3','Muller'],
+		LecturerList)),
+	assert_true(member(
+		[test_datatype:'Lecturer4','Spiendler'],
+		LecturerList)).
+
+% remove the triple at the end of test
+test('tripledb tests: forget triple with various XSD DataTypes') :-
+    assert_true(tripledb_forget(test_datatype:'Lecturer3', _, _)).
     
 test('tripledb graph_drop'):-
     tripledb:tripledb_graph_drop(datatype_test).

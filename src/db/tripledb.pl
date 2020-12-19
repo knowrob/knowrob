@@ -5,11 +5,11 @@
       tripledb_load/3,
       tripledb_tell(r,r,t),
       tripledb_tell(r,r,t,+),
-      tripledb_ask(r,r,t,+,-,+),
-      tripledb_ask(r,r,t,+,-),
-      tripledb_ask(r,r,t),
-      tripledb_forget(r,r,t,+),
-      tripledb_forget(r,r,t)
+      tripledb_ask(t,t,t,+,-,+),
+      tripledb_ask(t,t,t,+,-),
+      tripledb_ask(t,t,t),
+      tripledb_forget(t,t,t,+),
+      tripledb_forget(t,t,t)
     ]).
 /** <module> Interface for loading, storing, and retrieving triple data.
 
