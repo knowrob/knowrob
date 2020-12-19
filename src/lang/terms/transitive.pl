@@ -51,7 +51,9 @@ transitive(Query) ?>
 
 transitive(triple(S,P,O)) ?>
 	{ ! },
-	aggregate(transitive(triple(S,P,O))).
+	aggregate([
+		transitive(triple(S,P,O))
+	]).
 
 transitive(Query) ?>
   options(Options),
