@@ -50,6 +50,7 @@ transitive(Query) ?>
   include_parents(Query).
 
 transitive(triple(S,P,O)) ?>
+	{ ! },
 	aggregate(transitive(triple(S,P,O))).
 
 transitive(Query) ?>
