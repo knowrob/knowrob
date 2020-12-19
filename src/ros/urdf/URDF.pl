@@ -255,6 +255,10 @@ urdf_chain(Object,FromLink,ToLink,Node) :-
 
 %%
 urdf_iri(Object,URDFPrefix,Name,IRI) :-
+	%%
+	% FIXME: BUG: providing a prefix with '/' breaks rdf_split_url
+	%             for link individuals!!
+	%%
 	rdf_split_url(IRIPrefix,_,Object),
 	atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI).
 
