@@ -49,7 +49,6 @@
           tripledb_bulk_tell/3        as itripledb_bulk_tell,
           tripledb_ask/6              as itripledb_ask,
           tripledb_aggregate/4        as itripledb_aggregate,
-          tripledb_transitive/4       as itripledb_transitive,
           tripledb_forget/5           as itripledb_forget,
           tripledb_cache_get/3        as itripledb_cache_get,
           tripledb_cache_add/3        as itripledb_cache_add,
@@ -493,13 +492,6 @@ tripledb_ask(S,P,O) :-
 tripledb_aggregate(Triples,QScope,FScope,Options) :-
   set_graph_option(Options,Options0),
   itripledb_aggregate(Triples,QScope,FScope,Options0).
-
-%%
-% @implements 'db/itripledb'
-%
-tripledb_transitive(Triple,QScope,FScope,Options) :-
-  set_graph_option(Options,Options0),
-  itripledb_transitive(Triple,QScope,FScope,Options0).
 
 %% 
 % @implements 'db/itripledb'

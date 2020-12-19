@@ -6,7 +6,6 @@
       triple_tell(r,r,t,+,+),
       triple_ask(r,r,t,+,+,-),
       triple_aggregate(t,+,+,-),
-      triple_transitive(t,+,+,-),
       triple_erase(r,r,t,+,+)
     ]).
 /** <module> Triple store backend using mongo DB.
@@ -222,6 +221,7 @@ triple_ask(QSubject,QProperty,QValue,QScope,FScope,Options) :-
 
 %%
 %
+/*
 triple_transitive(triple(Subject,Property,Value),
 		_QScope,FScope,_Options) :-
 	%% read options
@@ -244,9 +244,10 @@ triple_transitive(triple(Subject,Property,Value),
 	%
 	Concat=['$addFields', ['paths', ['$concatArrays', array([
 		% the array field
-		string("$paths"),
+		string('$paths'),
 		% an additional element
-		array([[ "o", string("$o") ]])
+		% TODO: also add s?
+		array([[ 'o', string('$o') ]])
 	])]]],
 	% unwind the paths array
 	Unwind=['$unwind',['path',string('$paths')]],
@@ -267,44 +268,49 @@ triple_transitive(triple(Subject,Property,Value),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
+*/
 
 %%
 %
-triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
+triple_aggregate(
+		%[FirstTriple|Xs],
+		Triples,
+		QScope,FScope,Options) :-
 	%% read options 
 	option(graph(Graph), Options, user),
 	triple_db(DB,Coll),
 	%%
 	% FIXME: support once/findall in first statement
-	read_triple_(FirstTriple,
-		Query,
-		Operator_s,S,
-		Operator_p,P,
-		Operator,Value,Unit,
-		none,0),
+%	read_triple_(FirstTriple,
+%		Query,
+%		Operator_s,S,
+%		Operator_p,P,
+%		Operator,Value,Unit,
+%		none,0),
 	%%
-	read_vars_(Query,S,P,Value,FirstTripleVars),
-	read_vars_2(none,FirstTripleVars,FirstVars),
+%	read_vars_(Query,S,P,Value,FirstTripleVars),
+%	read_vars_2([],FirstTripleVars,FirstVars),
 	%%
-	triple_aggregate1(Coll,Xs,QScope,Graph,FirstVars,Doc_inner,AllVars),
+	triple_aggregate1(Coll,Triples,QScope,Graph,[],Doc,Vars),
+%	triple_aggregate1(Coll,Xs,QScope,Graph,[],Doc_inner,AllVars),
 	%%
-	triple_query_document_(
-			Operator_s,S,
-			Operator_p,P,
-			Operator,Value,Unit,
-			QScope,Graph,QueryDoc),
-	findall([Pr_Key,string(Pr_Value)], (
-		%
-		(	Pr_Key='v_scope',
-			atom_concat('$',Pr_Key,Pr_Value)
-		)
-	;	(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
-			atom_concat('$',Pr_Value0,Pr_Value)
-		)
-	), ProjectDoc),
-	Doc=[ ['$match', QueryDoc],
-		  ['$set', ['v_scope', array([string('$scope')]) ]],
-		  ['$project', ProjectDoc] | Doc_inner],
+%	triple_query_document_(
+%			Operator_s,S,
+%			Operator_p,P,
+%			Operator,Value,Unit,
+%			QScope,Graph,QueryDoc),
+%	findall([Pr_Key,string(Pr_Value)], (
+%		%
+%		(	Pr_Key='v_scope',
+%			atom_concat('$',Pr_Key,Pr_Value)
+%		)
+%	;	(	member([Pr_Key,_,Pr_Value0],FirstTripleVars),
+%			atom_concat('$',Pr_Value0,Pr_Value)
+%		)
+%	), ProjectDoc),
+%	Doc=[ ['$match', QueryDoc],
+%		  ['$set', ['v_scope', array([string('$scope')]) ]],
+%		  ['$project', ProjectDoc] | Doc_inner],
 	%%
 	setup_call_cleanup(
 		% setup: create a query cursor
@@ -312,7 +318,8 @@ triple_aggregate([FirstTriple|Xs],QScope,FScope,Options) :-
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor,['pipeline',array(Doc)]),
 			mng_cursor_materialize(Cursor,Result_doc),
-			triple_aggregate_unify_(Result_doc,AllVars),
+%			triple_aggregate_unify_(Result_doc,AllVars),
+			triple_aggregate_unify_(Result_doc,Vars),
 			%% handle scope
 			% TODO: it would be possible to compute scope intersections in mongo!
 			%
@@ -337,11 +344,15 @@ triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
 		Operator_s,S,
 		Operator_p,P,
 		Operator,Value,Unit,
-		Modifier,Limit),
+		Options0),
+	(	Vars0=[]
+	->	Options=[first,property(P)|Options0]
+	;	Options=[property(P)|Options0]
+	),
 	%% 
 	read_vars_(Query,S,P,Value,TripleVars),
 	%%%%%% recursion
-	read_vars_2(Modifier,TripleVars,Vars1),
+	read_vars_2(Options,TripleVars,Vars1),
 	append(Vars0,Vars1,Vars_new),
 	list_to_set(Vars_new,Vars2),
 	triple_aggregate1(Coll,Xs,QScope,Graph,Vars2,Doc_inner,Vars_n),
@@ -351,25 +362,104 @@ triple_aggregate1(Coll, [Triple|Xs], QScope, Graph, Vars0, TripleDoc, Vars_n) :-
 		Operator_p,P,
 		Operator,Value,Unit,
 		QScope,Graph,QueryDoc),
-	triple_aggregate2(Modifier,Limit,
+	triple_aggregate2(Options,
 		Coll,QueryDoc,
 		Vars0,TripleVars,
 		Doc_inner,
 		TripleDoc).
 
 %%	
-triple_aggregate2(Modifier,Limit,
+triple_aggregate2(Options,
 		Coll,QueryDoc,
 		Vars0,TripleVars,
 		Doc_inner, TripleDoc) :-
-    %%%%%% $lookup
-    aggregate_lookup_(Coll,
-        QueryDoc,Limit,Vars0,TripleVars,
-    	Lookup0),
-	%%%%%% $unwind the next field
-	aggregate_unwind_(Modifier,Unwind0),
+	findall(Step,
+		aggregate_step(Options,Coll,QueryDoc,
+				Vars0,TripleVars,
+				Step),
+		Steps
+	),
+	append(Steps,Doc_inner,TripleDoc).
+
+%%
+aggregate_step(Options,_Coll,QueryDoc,[],_,Step) :-
+	%% first step in the pipeline needs special handling:
+	%% it uses $match instead of $lookup as first step does not have
+	%% any input documents to join with in lookup.
+	memberchk(first,Options),
+	(	% find matching documents
+		Step=['$match', QueryDoc]
+	;	% move matching document into field *next* for next steps
+		Step=['$set',
+			['next.s', string('$s')],
+			['next.p', string('$p')],
+			['next.o', string('$o')],
+			['next.scope', string('$scope')]
+		]
+	).
+
+aggregate_step(Options,Coll,QueryDoc,Vars0,TripleVars,Step) :-
+	%% the *join* step
+	\+ memberchk(first,Options),
+    (	aggregate_lookup_(Coll,
+			QueryDoc,Options,Vars0,TripleVars,
+			Step)
+    ;	aggregate_unwind_(Options,Step)
+    ).
+
+aggregate_step(Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
+	%% this step is used to harmonize documents
+	\+ memberchk(transitive,Options),
+	(	% assign *start* field in case of reflexive property
+		(	memberchk(reflexive,Options),
+			Step=['$set', ['start', string('$next')]]
+		)
+	;	% transform next into single-element array
+		Step=['$set', ['next', array([string('$next')])]]
+	).
+
+aggregate_step(Options,Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
+	%% 
+	memberchk(transitive,Options),
+	memberchk(poperty(Property),Options),
+	(	Step=['$graphLookup', [
+			['from',string(Coll)],
+			['startWith',string('$next.o')],
+			['connectFromField',string('o')],
+			['connectToField',string('s')],
+			['as',string('paths')],
+			['restrictSearchWithMatch',['p*',string(Property)]]
+		]]
+	;	Step=['$addFields', ['paths', ['$concatArrays', array([
+			string('$paths'),
+			array([string('$next')])
+		])]]]
+	;	Step=['$set', ['start', string('$next')]]
+	;	Step=['$set', ['next', string('$paths')]]
+	).
+
+aggregate_step(Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
+	memberchk(reflexive,Options),
+	Step=['$set', ['next', ['$concatArrays',
+		array(['$next', array([[
+			[string('s'),string('$start.s')],
+			[string('p'),string('$start.p')],
+			[string('o'),string('$start.s')],
+			[string('scope'),string('$start.scope')]
+		]])])
+	]]].
+
+aggregate_step(_Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
+	Step = ['$unwind',string('$next')].
+
+aggregate_step(Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
 	%%%%%% $set scopes, $setUnion is used to avoid duplicate scopes
-	aggregate_scopes_(Modifier,Scopes0),
+	aggregate_scopes_(Options,Step).
+
+aggregate_step(Options,
+		_Coll,_QueryDoc,
+		Vars0,TripleVars,
+		['$project', ProjectDoc]) :-
 	%%%%%% $project
 	findall([Pr_Key,Pr_Value],(
 		%
@@ -385,20 +475,14 @@ triple_aggregate2(Modifier,Limit,
 		% set new value of var e.g. { 'S': '$next.s' }
 	;	(	member([Pr_Key,_,Field],TripleVars),
 			\+ member([Pr_Key,_],Vars0),
-			aggregate_project_(Modifier,Field,Pr_Value)
+			aggregate_project_(Options,Field,Pr_Value)
 		)
 		% findall special case
-	;	(	Modifier=findall(List),
+	;	(	member(findall(List),Options),
 			read_vars_1([[List,'next']],[[Pr_Key,List,Field]]),
-			aggregate_project_(Modifier,Field,Pr_Value)
+			aggregate_project_(Options,Field,Pr_Value)
 		)
-	), ProjectDoc),
-	Project0=['$project', ProjectDoc],
-	%%%%%%
-	(	Unwind0=[]
-	->	TripleDoc=[Lookup0,Scopes0,Project0|Doc_inner]
-	;	TripleDoc=[Lookup0,Unwind0,Scopes0,Project0|Doc_inner]
-	).
+	), ProjectDoc).
 
 %%
 triple_aggregate_unify_(_,[]) :- !.
@@ -417,7 +501,7 @@ triple_aggregate_unify_1(Doc,[VarKey,Var]) :-
 	!.
 
 %%
-aggregate_lookup_(Coll,QueryDoc,Limit,Vars0,TripleVars,Lookup) :-
+aggregate_lookup_(Coll,QueryDoc,Options,Vars0,TripleVars,Lookup) :-
 	% find all joins with input documents
 	findall([Field_j,Value_j],
 		(	member([Field_j,_,Value_j],TripleVars),
@@ -443,9 +527,9 @@ aggregate_lookup_(Coll,QueryDoc,Limit,Vars0,TripleVars,Lookup) :-
 	),
 	%
 	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]],
-	(	Limit is 0
-	->	Pipeline=[Match]
-	;	Pipeline=[Match,['$limit',int(Limit)]]
+	(	member(limit(Limit),Options)
+	->	Pipeline=[Match,['$limit',int(Limit)]]
+	;	Pipeline=[Match]
 	),
 	% finally compose the lookup document
 	Lookup=['$lookup', [
@@ -459,43 +543,48 @@ aggregate_lookup_(Coll,QueryDoc,Limit,Vars0,TripleVars,Lookup) :-
 	]].
 
 %%
-aggregate_unwind_(none,
-	['$unwind',string('$next')]) :- !.
 
-aggregate_unwind_(findall(_), []) :- !.
+aggregate_unwind_(Options, []) :-
+	memberchk(findall(_),Options),
+	!.
 
-aggregate_unwind_(ignore,
+aggregate_unwind_(Options,
 	['$unwind',[
 		['path', string('$next')],
 		['preserveNullAndEmptyArrays',bool(true)]
-	]]) :- !.
-
-%%
-aggregate_scopes_(none,
-	['$set',['v_scope',['$setUnion',
-		array([string('$v_scope'), array([string('$next.scope')])])
-	]]]) :- !.
-
-aggregate_scopes_(findall(_),
-	['$set',['v_scope',string('$v_scope')]]) :-
-	% TODO: handle scope in findall
+	]]) :-
+	memberchk(ignore,Options),
 	!.
 
-aggregate_scopes_(ignore,
+aggregate_unwind_(_,
+	['$unwind',string('$next')]) :- !.
+
+%%
+
+aggregate_scopes_(Options,
+	['$set',['v_scope',string('$v_scope')]]) :-
+	% TODO: handle scope in findall
+	memberchk(findall(_),Options),
+	!.
+
+aggregate_scopes_(Options,
 	['$set',['v_scope',['$cond', array([
 		['$not', array([string('$next.scope')]) ],
 		string('$v_scope'),
 		['$setUnion', array([ string('$v_scope'),
 			array([ string('$next.scope') ]) ])]
 	])]]]) :-
+	memberchk(ignore,Options),
 	!.
 
-%%
-aggregate_project_(none,Field,string(Pr_Value)) :-
-	!,
-	atom_concat('$next.',Field,Pr_Value).
+aggregate_scopes_(_,
+	['$set',['v_scope',['$setUnion',
+		array([string('$v_scope'), array([string('$next.scope')])])
+	]]]) :- !.
 
-aggregate_project_(findall(_),Field,['$map',[
+%%
+
+aggregate_project_(Options,Field,['$map',[
 		['input',string('$next')],
 		['in',[
 			['s',string('$$this.s')],
@@ -503,16 +592,23 @@ aggregate_project_(findall(_),Field,['$map',[
 			['o',string('$$this.o')]
 		]]
 	]]) :-
+	memberchk(findall(_),Options),
 	!,
 	Field='next'.
 
-aggregate_project_(ignore,Field,['$cond',array([
+aggregate_project_(Options,Field,['$cond',array([
 		['$not', array([string(Pr_Value)]) ],
 		% REMOVE creates problems in next project step, so rather choose some dump value
 		string('null'),
 		%string('$$REMOVE'),
 		string(Pr_Value)
 	])]) :-
+	memberchk(ignore,Options),
+	!,
+	atom_concat('$next.',Field,Pr_Value).
+
+aggregate_project_(_,Field,string(Pr_Value)) :-
+	!,
 	atom_concat('$next.',Field,Pr_Value).
 
 %%
@@ -522,10 +618,10 @@ read_triple_(
 		Operator_s,Subject,
 		Operator_p,Property,
 		MngOperator,MngValue,Unit,
-		Modifier,Limit) :-
+		Options) :-
 	read_triple_1_(TripleTerm,
 		triple(QSubject,QProperty,QValue),
-		Modifier,Limit
+		Options
 	),
 	strip_variable(QSubject,SubjectQuery),
 	strip_variable(QProperty,PropertyQuery),
@@ -535,16 +631,25 @@ read_triple_(
 	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit).
 
 %%
-read_triple_1_(ignore(X),Y,ignore,Limit) :-
-	!, read_triple_limit_(X,Y,Limit).
-read_triple_1_(findall(X,Y),X,findall(Y),0) :- !.
-read_triple_1_(X,Y,none,Limit) :-
-	read_triple_limit_(X,Y,Limit).
+read_triple_1_(transitive(X),Y,[transitive|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
 
-%%
-read_triple_limit_(once(X),X,1) :- !.
-read_triple_limit_(limit(X,N),X,N) :- !.
-read_triple_limit_(X,X,0).
+read_triple_1_(reflexive(X),Y,[reflexive|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
+
+read_triple_1_(ignore(X),Y,[ignore|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
+
+read_triple_1_(once(X),Y,[limit(1)|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
+
+read_triple_1_(limit(X,N),Y,[limit(N)|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
+
+read_triple_1_(findall(X,L),Y,[findall(L)|Opts]) :-
+	!, read_triple_1_(X,Y,Opts).
+
+read_triple_1_(X,X,[]) :- !.
 
 %%
 
@@ -565,12 +670,13 @@ read_vars_1( [[Var,Field]|Xs],
 	read_vars_1(Xs,Ys).
 
 %%
-read_vars_2(findall(List),_,[[Key,List]]) :-
+read_vars_2(Options,_,[[Key,List]]) :-
+	member(findall(List),Options),
 	!,
 	read_vars_1([[List,'next']],[[Key,List,_]]).
 read_vars_2(_,[],[]) :- !.
-read_vars_2(Modifier,[[X0,X1,_]|Xs],[[X0,X1]|Ys]) :-
-	read_vars_2(Modifier,Xs,Ys).
+read_vars_2(Options,[[X0,X1,_]|Xs],[[X0,X1]|Ys]) :-
+	read_vars_2(Options,Xs,Ys).
 
 %%
 %
