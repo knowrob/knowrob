@@ -390,16 +390,17 @@ aggregate_step(Options,_Coll,QueryDoc,[],_,Step) :-
 	(	% find matching documents
 		Step=['$match', QueryDoc]
 	;	% move matching document into field *next* for next steps
-		Step=['$set',
+		Step=['$set', [
 			['next.s', string('$s')],
 			['next.p', string('$p')],
 			['next.o', string('$o')],
 			['next.scope', string('$scope')]
-		]
+		]]
+	;	Step=['$set', ['v_scope', array([string('$scope')]) ]]
 	).
 
 aggregate_step(Options,Coll,QueryDoc,Vars0,TripleVars,Step) :-
-	%% the *join* step
+	%% regular *join* step
 	\+ memberchk(first,Options),
     (	aggregate_lookup_(Coll,
 			QueryDoc,Options,Vars0,TripleVars,
@@ -421,7 +422,7 @@ aggregate_step(Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
 aggregate_step(Options,Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
 	%% 
 	memberchk(transitive,Options),
-	memberchk(poperty(Property),Options),
+	memberchk(property(Property),Options),
 	(	Step=['$graphLookup', [
 			['from',string(Coll)],
 			['startWith',string('$next.o')],
@@ -440,12 +441,15 @@ aggregate_step(Options,Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
 
 aggregate_step(Options,_Coll,_QueryDoc,_Vars0,_TripleVars,Step) :-
 	memberchk(reflexive,Options),
+	%% FIXME: this creates redundant results for the case of graph queries
+	%%        that receive multiple documents with the same subject as input.
+	%%        not sure how we can avoid the duplicates as here...
 	Step=['$set', ['next', ['$concatArrays',
-		array(['$next', array([[
-			[string('s'),string('$start.s')],
-			[string('p'),string('$start.p')],
-			[string('o'),string('$start.s')],
-			[string('scope'),string('$start.scope')]
+		array([string('$next'), array([[
+			['s',string('$start.s')],
+			['p',string('$start.p')],
+			['o',string('$start.s')],
+			['scope',string('$start.scope')]
 		]])])
 	]]].
 
@@ -654,9 +658,9 @@ read_triple_1_(X,X,[]) :- !.
 %%
 
 read_vars_(triple(QS,QP,QV),S,P,Value,Vars) :-
-	once(( QS=(_->S0)     ; strip_type_(S,_,S0) )),
-	once(( QP=(_->P0)     ; strip_type_(P,_,P0) )),
-	once(( QV=(_->Value0) ; strip_type_(Value,_,Value0) )),
+	once(( (nonvar(QS),QS=(_->S0))     ; strip_type_(S,_,S0) )),
+	once(( (nonvar(QP),QP=(_->P0))     ; strip_type_(P,_,P0) )),
+	once(( (nonvar(QV),QV=(_->Value0)) ; strip_type_(Value,_,Value0) )),
 	read_vars_1([ [S0,'s'], [P0,'p'], [Value0,'o'] ],Vars).
 read_vars_1( [],[] ) :- !.
 read_vars_1( [[Var,_]|Xs], Ys ) :-

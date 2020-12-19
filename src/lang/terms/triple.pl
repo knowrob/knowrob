@@ -69,6 +69,11 @@ aggregate(Triples) ?>
     [ namespace('http://knowrob.org/kb/swrl_test#')
     ]).
 
+test('aggregate simple') :-
+	assert_true(ask(aggregate([
+		triple(_,owl:onProperty,_)
+	]))).
+
 test('aggregate query') :-
 	findall([R0,P0,M0,O0],
 		(	triple(R0,owl:onProperty,P0),

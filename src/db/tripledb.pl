@@ -8,6 +8,7 @@
       tripledb_ask(t,t,t,+,-,+),
       tripledb_ask(t,t,t,+,-),
       tripledb_ask(t,t,t),
+      tripledb_aggregate(t),
       tripledb_forget(t,t,t,+),
       tripledb_forget(t,t,t)
     ]).
@@ -492,6 +493,12 @@ tripledb_ask(S,P,O) :-
 tripledb_aggregate(Triples,QScope,FScope,Options) :-
   set_graph_option(Options,Options0),
   itripledb_aggregate(Triples,QScope,FScope,Options0).
+
+%%
+%
+tripledb_aggregate(Triples) :-
+  wildcard_scope(QScope),
+  tripledb_aggregate(Triples,QScope,_,[]).
 
 %% 
 % @implements 'db/itripledb'

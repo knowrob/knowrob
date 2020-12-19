@@ -129,7 +129,10 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 				pl_array.append(PlCompound("double", PlTerm(sec_since_epoch)));
 			}
 			else {
-				std::cout << "WARN: unsupported array type for key '" << key << "'" << std::endl;
+				bson_type_t iter_t = bson_iter_type(&array_iter);
+				std::cout << "WARN: unsupported array type '" <<
+						iter_t <<
+						"' for key '" << key << "'" << std::endl;
 			}
 		}
 	}

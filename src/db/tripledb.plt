@@ -171,5 +171,30 @@ test('tripledb ask for triple with special character already stored in db(wrong/
 test('tripledb_ask_for_non_existant_triples'):-
     assert_false(tripledb_ask(test_datatype:'xyz', test_datatype:'last_name', _)).
 
+test('aggregate transitive') :-
+	findall(X,
+		tripledb_aggregate([
+			transitive(triple(swrl_tests:'Rex',swrl_tests:isParentOf,X))
+		]),
+		Ancestors),
+	assert_unifies(Ancestors,[_,_,_]),
+	assert_true(member(swrl_tests:'Ernest', Ancestors)),
+	assert_true(member(swrl_tests:'Fred', Ancestors)),
+	assert_true(member(swrl_tests:'Lea', Ancestors)).
+
+test('aggregate transitive+reflexive') :-
+	findall(X,
+		tripledb_aggregate([
+			transitive( reflexive(
+				triple(swrl_tests:'Rex',swrl_tests:isParentOf,X)
+			))
+		]),
+		Ancestors),
+	assert_unifies(Ancestors,[_,_,_,_]),
+	assert_true(member(swrl_tests:'Rex', Ancestors)),
+	assert_true(member(swrl_tests:'Ernest', Ancestors)),
+	assert_true(member(swrl_tests:'Fred', Ancestors)),
+	assert_true(member(swrl_tests:'Lea', Ancestors)).
+
 :- end_tests('tripledb').
 
