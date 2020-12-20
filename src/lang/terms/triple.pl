@@ -7,6 +7,8 @@
 @license BSD
 */
 
+:- use_module(library('http/json')).
+
 %% triple(?Subject, ?Property, ?Value) is nondet.
 %
 % Query values of a property on some subject in the triple DB.
@@ -41,6 +43,16 @@ triple(Subject,Property,Value) +>
 	{ tripledb_tell(Subject,Property,Value,QScope,Options)
 	}.
 
+%% reads json data and asserts into mongodb
+%
+% @param FilePath - Path to the json file
+%
+
+triple_import_json(FilePath) :-
+	open(FilePath,read,Stream),
+	read_data(Stream,Triples),
+	close(Stream).
+
 %% aggregate(?Triples) is nondet.
 %
 % Query a conjunction of triples.
@@ -58,6 +70,21 @@ aggregate(Triples) ?>
 	% query the triple DB
 	{ tripledb_aggregate(Triples,QScope,FScope,Options)
 	}.
+
+read_data(Stream,[]):-
+  at_end_of_stream(Stream).
+
+read_data(Stream,[TriplesDict | Rest]):-
+  \+ at_end_of_stream(Stream),
+  json:json_read_dict(Stream, TriplesDict),
+  assert_triple_data(TriplesDict),
+  read_data(Stream,Rest).
+
+assert_triple_data(Triples) :-
+	term_to_atom(Triples.get(s), S),
+	term_to_atom(Triples.get(p), P),
+	term_to_atom(Triples.get(o), O),
+	tell(triple(S, P, O)).
 
      /*******************************
      *	    UNIT TESTS	     		    *
