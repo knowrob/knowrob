@@ -19,6 +19,6 @@ setting(mng_client:read_only, true).
 
 %	Remote Mongo Setting
 setting(mng_client:db_name, 'neems').
-setting(mng_client:collection_prefix, '5f22b1f512db5aed7cd1961a').
+setting(mng_client:collection_prefix, '5fc8ff968f880006aa208e19').
 
 
