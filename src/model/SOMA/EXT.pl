@@ -7,7 +7,8 @@
       time_interval_duration(r,?),
       time_interval_equal(r,r),
       time_interval_start(r,?),
-      time_interval_end(r,?)
+      time_interval_end(r,?),
+      event_interval(r,?,?)
       %constraint_term(r,?),
       %has_constrained_concept(r,r,r),
       %has_dependent_concept(r,r,r),
@@ -215,3 +216,19 @@ time_interval_end(Entity, End) :-
 %building_has_room(Map,Room) ?+>
   %holds(Map,knowrob:'hasLevels',Level),
   %holds(Level,knowrob:'hasRooms',Room).
+
+%% event_interval(?Event,?Since,?Until) is nondet.
+%
+% Returns the start and end time of an event
+%
+% @param Evt An individual of type dul:'Event'.
+% @param Since begin of the interval
+% @param Until end of the interval
+%
+event_interval(Event,Since,Until) ?>
+  aggregate([
+    triple(Event,rdf:type,dul:'Event'),
+    triple(Event,dul:hasTimeInterval,Interval),
+    triple(Interval, soma:hasIntervalBegin, Since),
+    triple(Interval, soma:hasIntervalEnd, Until)
+  ]).
