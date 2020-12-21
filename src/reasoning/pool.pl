@@ -19,6 +19,9 @@
 :- dynamic reasoner_module_/1.
 :- dynamic active_query_/2.
 
+:- setting(disabled, atom, false,
+		'Toggle whether reasoner should be disabled.').
+
 %% rendering of messages
 prolog:message(reasoner(Module,inferred(Fact))) -->
 	[ 'A reasoner (~w) has inferred new knowledge (~w)'-[Module,Fact] ].
@@ -46,6 +49,7 @@ can_answer__(holds_data(S,P,O)   , holds(S,P,O)).
 %
 %
 infer(Query0,Fact,QScope->FScope) :-
+  setting(reasoning_pool:disabled,false),
   once(can_answer__(Query0,Query)),
   query_string_(Query,QueryStr),
   % get list of reasoner that already answered this
