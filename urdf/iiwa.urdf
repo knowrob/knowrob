@@ -535,7 +535,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- these meshes were exported in mm, so scale back to m -->
-        <mesh filename="package://iai_adapters_description/meshes/fwk_fwa_050_simple.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_adapters_description/meshes/fwk_fwa_050_simple.dae" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="Grey"/>
     </visual>
@@ -617,7 +617,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0 0"/>
       <geometry>
-        <mesh filename="package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.dae" scale="1.0 1.0 1.0"/>
         <!--box size="0.0175 0.03 0.024"/-->
       </geometry>
       <material name="black">
@@ -655,7 +655,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0 0"/>
       <geometry>
-        <mesh filename="package://iai_wsg_50_description/meshes/WSG-FMF.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_wsg_50_description/meshes/WSG-FMF.dae" scale="1.0 1.0 1.0"/>
       </geometry>
       <material name="black">
         <color rgba="0 0 0 1"/>
@@ -698,7 +698,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0 0"/>
       <geometry>
-        <mesh filename="package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.dae" scale="1.0 1.0 1.0"/>
         <!--box size="0.0175 0.03 0.024"/-->
       </geometry>
       <material name="black">
@@ -733,7 +733,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0 0"/>
       <geometry>
-        <mesh filename="package://iai_wsg_50_description/meshes/WSG-FMF.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iai_wsg_50_description/meshes/WSG-FMF.dae" scale="1.0 1.0 1.0"/>
       </geometry>
       <material name="black">
         <color rgba="0 0 0 1"/>

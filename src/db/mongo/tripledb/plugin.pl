@@ -106,12 +106,6 @@ tripledb_aggregate(Triples,QScope,FScope,Options) :-
 	% 
 	triple_aggregate(Triples,QScope,FScope,Options).
 
-%% 
-% @implements 'db/itripledb'
-%
-tripledb_transitive(Triple,QScope,FScope,Options) :-
-	triple_transitive(Triple,QScope,FScope,Options).
-
 %%
 % @implements 'db/itripledb'
 %

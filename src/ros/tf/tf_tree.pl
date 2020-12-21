@@ -20,7 +20,7 @@ tf_tree_get(Stamp,Dict) :-
 
 tf_tree_get(Stamp,Dict) :-
 	% read all required transforms
-	lookup_transforms_(Stamp,Transforms),
+	lookup_transforms(Stamp,Transforms),
 	% create a tree structure for traversal operation
 	tf_tree_create_(Transforms,Tree0),
 	% compute world poses
@@ -134,7 +134,7 @@ initial_transforms(Transforms) :-
 				])]]],
 				['$sort',[
 					['child_frame_id',int(1)],
-					['header.stamp',int(1)]
+					['header.stamp',int(-1)]
 				]],
 				['$limit',int(1)]
 			])]
@@ -157,7 +157,7 @@ initial_transforms(Transforms) :-
 	).
 
 %%
-lookup_transforms_(Stamp,Transforms) :-
+lookup_transforms(Stamp,Transforms) :-
 	tf_plugin:tf_db(DB,Coll),
 	Query=[
 		% get distinct frames

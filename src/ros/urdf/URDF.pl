@@ -17,7 +17,7 @@
 	  urdf_link_parent_joint/3,
 	  urdf_link_child_joints/3,
 	  urdf_link_inertial/5,
-	  urdf_link_visual_shape/5,
+	  urdf_link_visual_shape/6,
 	  urdf_link_collision_shape/4,
 	  urdf_joint_type/3,
 	  urdf_joint_child_link/3,
@@ -59,6 +59,19 @@
 % @Root IRI atom
 %
 :- dynamic has_urdf/2.
+:- dynamic urdf_server/1.
+
+%%
+% Initialize prefix for downloading URDF via HTTP
+%%
+urdf_server_init :-
+	once((
+		getenv('KNOWROB_URDF_SERVER', URL)
+	;	URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/'
+	)),
+	retractall(urdf_server(_)),
+	assertz(urdf_server(URL)).
+:- urdf_server_init.
 
 %%
 %
@@ -75,14 +88,21 @@ urdf_init(Object,_) :-
 	!.
 
 urdf_init(Object,Identifier) :-
-	% FIXME: hardcoded URL
-	DATA_URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/',
+	urdf_server(DATA_URL),
 	atomic_list_concat([Identifier,urdf],'.',Filename),
 	path_concat(DATA_URL,Filename,URL),
 	% get XML data
-	http_get(URL,XML_data,[]),
+	(	http_get(URL,XML_data,[]) -> true
+	;	(	log_warn(urdf(download_failed(Object,URL))),
+			fail
+		)
+	),
 	% parse data
-	urdf_load_xml(Object,XML_data),
+	(	urdf_load_xml(Object,XML_data) -> true
+	;	(	log_warn(urdf(parsing_failed(Object,URL))),
+			fail
+		)
+	),
 	% create has_urdf facts
 	forall(
 		(	Y=Object
@@ -91,7 +111,9 @@ urdf_init(Object,Identifier) :-
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
 		)
-	).
+	),
+	log_info(urdf(initialized(Object,Identifier))),
+	!.
 
 %% urdf_load(+Object,+File) is semidet.
 %
@@ -204,10 +226,11 @@ set_link_pose_(Object,Prefix,LinkName) :-
 
 %%
 %
-urdf_link_visual_shape(Object,Link,ShapeTerm,Origin,MaterialTerm) :-
+urdf_link_visual_shape(Object,Link,ShapeTerm,Origin,MaterialTerm,ShapeID) :-
 	urdf_link_num_visuals(Object,Link,Count),
 	N is Count - 1,
 	between(0,N,Index),
+	atom_concat(Link,Index,ShapeID),
 	urdf_link_nth_visual_shape(Object,Link,Index,ShapeTerm,Origin,MaterialTerm).
 
 %%
@@ -232,6 +255,10 @@ urdf_chain(Object,FromLink,ToLink,Node) :-
 
 %%
 urdf_iri(Object,URDFPrefix,Name,IRI) :-
+	%%
+	% FIXME: BUG: providing a prefix with '/' breaks rdf_split_url
+	%             for link individuals!!
+	%%
 	rdf_split_url(IRIPrefix,_,Object),
 	atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI).
 
@@ -353,14 +380,20 @@ has_parent_link(Joint,Link) ?+>
 %%
 % TODO: reconsider this
 % 
-object_shape(Obj,ShapeTerm,Origin,MaterialTerm) ?>
-	{ has_urdf(Obj,Root) },
-	has_base_link_name(Obj,BaseName),
-	{ ! },
-	{ get_object_shape_(Obj,Root,BaseName,ShapeTerm,Origin,MaterialTerm) }.
+object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) ?>
+	{ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) },
+	% TODO: set universal fact scope? or not needed?
+	{ true }.
 
 %%
-get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
+	has_urdf(Obj,Root),
+	has_base_link_name(Obj,BaseName),
+	get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,Origin,MaterialTerm).
+
+%%
+get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+	% TODO avoid triple lookup for every urdf obj
 	(	has_urdf_prefix(Root,Prefix)
 	;	Prefix=''
 	),!,
@@ -373,7 +406,7 @@ get_object_shape_(Obj,Root,BaseName,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
 	list_to_set(LinkNames,LinkSet),
 	member(LinkName,LinkSet),
 	urdf_catch(urdf_link_visual_shape(Root,LinkName,
-		ShapeTerm,[Name,Pos,Rot],MaterialTerm)),
+		ShapeTerm,[Name,Pos,Rot],MaterialTerm,ShapeID)),
 	atom_concat(Prefix,Name,Frame).
 
 %%

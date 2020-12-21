@@ -7,33 +7,97 @@ static double get_stamp(const geometry_msgs::TransformStamped &ts)
 	return (double)(time/1000.0);
 }
 
-TFMemory::TFMemory()
+static geometry_msgs::TransformStamped dummy;
+
+TFMemory::TFMemory() :
+		buffer_index_(0)
 {
 }
 
 bool TFMemory::has_transform(const std::string &frame) const
 {
-	return transforms_.find(frame) != transforms_.end();
+	return transforms_[buffer_index_].find(frame) != transforms_[buffer_index_].end();
 }
 
 bool TFMemory::is_managed_frame(const std::string &frame) const
 {
-	return managed_frames_.find(frame) != managed_frames_.end();
+	return managed_frames_[buffer_index_].find(frame) != managed_frames_[buffer_index_].end();
 }
 
-const std::set<std::string>& TFMemory::get_managed_frames() const
+bool TFMemory::clear()
 {
-	return managed_frames_;
+	std::lock_guard<std::mutex> guard1(transforms_lock_);
+	std::lock_guard<std::mutex> guard2(names_lock_);
+	transforms_[buffer_index_].clear();
+	managed_frames_[buffer_index_].clear();
+	return true;
 }
 
-const geometry_msgs::TransformStamped& TFMemory::get_transform(const std::string &frame)
+const geometry_msgs::TransformStamped& TFMemory::get_transform(
+		const std::string &frame, int buffer_index) const
 {
-	return transforms_[frame];
+	const std::map<std::string, geometry_msgs::TransformStamped>::const_iterator
+		&needle = transforms_[buffer_index].find(frame);
+	if(needle != transforms_[buffer_index].end()) {
+		return needle->second;
+	}
+	else {
+		return dummy;
+	}
 }
 
 void TFMemory::set_transform(const geometry_msgs::TransformStamped &ts)
 {
-	transforms_[ts.child_frame_id] = ts;
+	std::lock_guard<std::mutex> guard(transforms_lock_);
+	transforms_[buffer_index_][ts.child_frame_id] = ts;
+}
+
+void TFMemory::set_managed_transform(const geometry_msgs::TransformStamped &ts)
+{
+	std::lock_guard<std::mutex> guard1(transforms_lock_);
+	std::lock_guard<std::mutex> guard2(names_lock_);
+	managed_frames_[buffer_index_].insert(ts.child_frame_id);
+	transforms_[buffer_index_][ts.child_frame_id] = ts;
+}
+
+bool TFMemory::loadTF(tf::tfMessage &tf_msg, bool clear_memory)
+{
+	if(managed_frames_[buffer_index_].empty()) {
+		return true;
+	}
+
+	if(clear_memory) {
+		int pong = buffer_index_;
+		// ping-pong. pong buffer can then be used without lock.
+		// and other threads start writing into ping buffer.
+		buffer_index_ = (pong==0 ? 1 : 0);
+		// load transforms without locking
+		loadTF_internal(tf_msg,pong);
+		// clear the pong buffer
+		managed_frames_[pong].clear();
+		transforms_[pong].clear();
+	}
+	else {
+		// load transforms while locking *managed_frames_*.
+		// it is ok though if transforms_ is written to.
+		std::lock_guard<std::mutex> guard(names_lock_);
+		loadTF_internal(tf_msg,buffer_index_);
+	}
+	return true;
+}
+
+void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
+{
+	const ros::Time& time = ros::Time::now();
+	// loop over all frames
+	for(std::set<std::string>::const_iterator
+			it=managed_frames_[buffer_index].begin();
+			it!=managed_frames_[buffer_index].end(); ++it)
+	{
+		geometry_msgs::TransformStamped tf_transform = get_transform(*it,buffer_index);
+		tf_transform.header.stamp = time;
+		tf_msg.transforms.push_back(tf_transform);
+	}
 }
 
 bool TFMemory::get_pose_term(const std::string &frame, PlTerm *term, double *stamp)
@@ -74,14 +138,17 @@ bool TFMemory::set_pose_term(const std::string &frame, const PlTerm &term, doubl
 {
 	const geometry_msgs::TransformStamped &ts_old = get_transform(frame);
 	// make sure the pose is more recent then the one stored
-	if(get_stamp(ts_old)>stamp) {
+	if(stamp<0.0) {
+		// force setting pose if stamp<0.0
+		stamp = 0.0;
+	}
+	else if(get_stamp(ts_old)>stamp) {
 		return false;
 	}
 	//
 	geometry_msgs::TransformStamped ts = ts_old;
 	create_transform(&ts,frame,term,stamp);
-	managed_frames_.insert(frame);
-	set_transform(ts);
+	set_managed_transform(ts);
 	return true;
 }
 

@@ -106,7 +106,7 @@ get_objects_without_location(POWithoutLocation) :-
 get_objects_without_shape(POWithoutShape) :-
    findall(Object,
     ( is_physical_object(Object),
-    (\+ object_shape(Object, Shape, Pos, Material); \+ ros_urdf:object_shape(Object, Shape, Pos, Material))),
+    (\+ object_shape(Object, _, Shape, Pos, Material); \+ ros_urdf:object_shape(Object, _, Shape, Pos, Material))),
     PO),
   list_to_set(PO, POWithoutShape),
   length(POWithoutShape, Listlength),

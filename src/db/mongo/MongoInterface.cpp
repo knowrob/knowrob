@@ -91,7 +91,10 @@ MongoInterface::MongoInterface()
 			char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
 			std::stringstream ss;
 			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw 
-				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database;
+				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database
+				// FIXME: this should be a parameter
+				//<< "?authSource=admin"
+				;
 			mongo_uri = ss.str();
 		}
 		else {

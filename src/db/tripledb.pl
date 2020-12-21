@@ -5,11 +5,12 @@
       tripledb_load/3,
       tripledb_tell(r,r,t),
       tripledb_tell(r,r,t,+),
-      tripledb_ask(r,r,t,+,-,+),
-      tripledb_ask(r,r,t,+,-),
-      tripledb_ask(r,r,t),
-      tripledb_forget(r,r,t,+),
-      tripledb_forget(r,r,t)
+      tripledb_ask(t,t,t,+,-,+),
+      tripledb_ask(t,t,t,+,-),
+      tripledb_ask(t,t,t),
+      tripledb_aggregate(t),
+      tripledb_forget(t,t,t,+),
+      tripledb_forget(t,t,t)
     ]).
 /** <module> Interface for loading, storing, and retrieving triple data.
 
@@ -49,7 +50,6 @@
           tripledb_bulk_tell/3        as itripledb_bulk_tell,
           tripledb_ask/6              as itripledb_ask,
           tripledb_aggregate/4        as itripledb_aggregate,
-          tripledb_transitive/4       as itripledb_transitive,
           tripledb_forget/5           as itripledb_forget,
           tripledb_cache_get/3        as itripledb_cache_get,
           tripledb_cache_add/3        as itripledb_cache_add,
@@ -374,7 +374,10 @@ tripledb_tell(S,P,O,Scope,Options) :-
 %  ;  true
 %  ),
   set_graph_option(Options,Options0),
-  itripledb_tell(S,P,O,Scope,Options0).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to write despite read only access')
+  ;	itripledb_tell(S,P,O,Scope,Options0)
+  ).
 
 %% tripledb_tell(?S,?P,?O,+Scope) is semidet.
 %
@@ -406,7 +409,10 @@ tripledb_tell(S,P,O) :-
 % @implements 'db/itripledb'
 %
 tripledb_bulk_tell(Facts,Scope,Options) :-
-  itripledb_bulk_tell(Facts,Scope,Options).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to write bulk despite read only access')
+  ;	itripledb_bulk_tell(Facts,Scope,Options)
+  ).
 
 %%
 tripledb_stop(S,P,Scope,Options) :-
@@ -418,7 +424,10 @@ tripledb_stop(S,P,Scope,Options) :-
 %
 tripledb_forget(S,P,O,Scope,Options) :-
   set_graph_option(Options,Options0),
-  itripledb_forget(S,P,O,Scope,Options0).
+  (	setting(mng_client:read_only, true)
+  -> print_message(warning, 'Tried to delete despite read only access')
+  ;	itripledb_forget(S,P,O,Scope,Options0)
+  ).
 
 %% tripledb_forget(?S,?P,?O,+Scope) is semidet.
 %
@@ -486,11 +495,10 @@ tripledb_aggregate(Triples,QScope,FScope,Options) :-
   itripledb_aggregate(Triples,QScope,FScope,Options0).
 
 %%
-% @implements 'db/itripledb'
 %
-tripledb_transitive(Triple,QScope,FScope,Options) :-
-  set_graph_option(Options,Options0),
-  itripledb_transitive(Triple,QScope,FScope,Options0).
+tripledb_aggregate(Triples) :-
+  wildcard_scope(QScope),
+  tripledb_aggregate(Triples,QScope,_,[]).
 
 %% 
 % @implements 'db/itripledb'

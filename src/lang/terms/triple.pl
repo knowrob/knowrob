@@ -43,16 +43,6 @@ triple(Subject,Property,Value) +>
 	{ tripledb_tell(Subject,Property,Value,QScope,Options)
 	}.
 
-%% reads json data and asserts into mongodb
-%
-% @param FilePath - Path to the json file
-%
-
-triple_import_json(FilePath) :-
-	open(FilePath,read,Stream),
-	read_data(Stream,Triples),
-	close(Stream).
-
 %% aggregate(?Triples) is nondet.
 %
 % Query a conjunction of triples.
@@ -70,6 +60,16 @@ aggregate(Triples) ?>
 	% query the triple DB
 	{ tripledb_aggregate(Triples,QScope,FScope,Options)
 	}.
+
+%% reads json data and asserts into mongodb
+%
+% @param FilePath - Path to the json file
+%
+
+triple_import_json(FilePath) :-
+	open(FilePath,read,Stream),
+	read_data(Stream,_Triples),
+	close(Stream).
 
 read_data(Stream,[]):-
   at_end_of_stream(Stream).
@@ -95,6 +95,11 @@ assert_triple_data(Triples) :-
     'package://knowrob/owl/test/swrl.owl',
     [ namespace('http://knowrob.org/kb/swrl_test#')
     ]).
+
+test('aggregate simple') :-
+	assert_true(ask(aggregate([
+		triple(_,owl:onProperty,_)
+	]))).
 
 test('aggregate query') :-
 	findall([R0,P0,M0,O0],

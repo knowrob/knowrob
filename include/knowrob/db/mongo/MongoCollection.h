@@ -19,11 +19,16 @@ public:
 		const char *coll_name);
 	~MongoCollection();
 	
+	void appendSession(bson_t *opts);
+
+	mongoc_client_session_t* session() { return session_; }
+
 	mongoc_collection_t* operator()();
 	
 private:
 	mongoc_client_pool_t *pool_;
 	mongoc_client_t *client_;
+	mongoc_client_session_t *session_;
 	mongoc_collection_t *coll_;
 };
 

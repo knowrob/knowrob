@@ -32,6 +32,23 @@ PREDICATE(tf_republish_set_goal, 4) {
 	return true;
 }
 
+PREDICATE(tf_republish_set_time, 1) {
+	double time = (double)PL_A1;
+	get_republisher().set_now(time);
+	return true;
+}
+
+PREDICATE(tf_republish_set_progress, 1) {
+	double percent = (double)PL_A1;
+	get_republisher().set_progress(percent);
+	return true;
+}
+
+PREDICATE(tf_republish_clear, 0) {
+	get_republisher().clear();
+	return true;
+}
+
 // tf_republish_set_loop(RealtimeFactor)
 PREDICATE(tf_republish_set_loop, 1) {
 	get_republisher().set_loop((int)PL_A1);
@@ -50,6 +67,7 @@ PREDICATE(tf_logger_enable, 0) {
 	if(tf_logger) {
 		delete tf_logger;
 	}
+
 	tf_logger = new TFLogger(node,memory);
 	tf_logger->set_db_name(logger_db_name);
 	tf_logger->set_time_threshold(time_threshold);
@@ -102,6 +120,13 @@ PREDICATE(tf_logger_get_angular_threshold, 1) {
 	return true;
 }
 
+
+// Clear the tf memory to remove cached transforms
+PREDICATE(tf_mem_clear, 0) {
+	memory.clear();
+	return true;
+}
+
 // tf_mem_set_pose(ObjFrame,PoseData,Since)
 PREDICATE(tf_mem_set_pose, 3) {
 	std::string frame((char*)PL_A1);
@@ -112,7 +137,7 @@ PREDICATE(tf_mem_set_pose, 3) {
 // tf_republish_set_pose(ObjFrame,PoseData)
 PREDICATE(tf_republish_set_pose, 2) {
 	std::string frame((char*)PL_A1);
-	get_republisher().memory().set_pose_term(frame,PL_A2,0.0);
+	get_republisher().memory().set_pose_term(frame,PL_A2,-1.0);
 	return true;
 }
 
