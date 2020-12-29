@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob)
 
-set(SOMA_VERSION "1.0.0")
+set(SOMA_VERSION "1.1.0")
 
 # include additional CMake macros
 include("cmake/ontologies.cmake")

@@ -34,7 +34,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAArm">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Arm"/>
-        <rdfs:comment>todo: X DoF?</rdfs:comment>
     </owl:Class>
 
     <!-- http://knowrob.org/kb/IIWA.owl#IIWABase -->
@@ -61,8 +60,6 @@
                 <owl:onClass rdf:resource="http://knowrob.org/kb/IIWA.owl#IIWALaserScanner_Front"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: base widht&amp;depth 668mm??</rdfs:comment>
-        <rdfs:comment>todo: speed 1 m/s??</rdfs:comment>
     </owl:Class>
 
     <!-- http://knowrob.org/kb/IIWA.owl#IIWAFinger -->
@@ -75,7 +72,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/IIWA.owl#IIWAGripper">
         <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
-        <rdfs:comment>todo: 1 DoF</rdfs:comment>
     </owl:Class>
 
     <!-- http://knowrob.org/kb/IIWA.owl#IIWAManipulationCamera -->

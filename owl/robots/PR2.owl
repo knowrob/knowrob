@@ -148,7 +148,6 @@
                 <owl:hasValue rdf:resource="http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: 4 DoF</rdfs:comment>
     </owl:Class>
     
 
@@ -170,8 +169,6 @@
                 <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Wheel"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: base widht&amp;depth 668mm</rdfs:comment>
-        <rdfs:comment>todo: speed 1 m/s</rdfs:comment>
     </owl:Class>
     
 
@@ -216,7 +213,6 @@
                 <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: 1 DoF</rdfs:comment>
     </owl:Class>
     
 
@@ -255,7 +251,6 @@
                 <owl:onClass rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: describe projector</rdfs:comment>
     </owl:Class>
     
 
@@ -342,8 +337,6 @@
                 <owl:onClass rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>todo: desccribe torso lift</rdfs:comment>
-        <rdfs:comment>todo: wrist torque 4 Nm</rdfs:comment>
         <rdfs:seeAlso>http://www.willowgarage.com/pages/pr2/specs</rdfs:seeAlso>
     </owl:Class>
     
