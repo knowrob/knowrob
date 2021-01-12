@@ -23,7 +23,8 @@
       mng_cursor_limit/2,
       mng_cursor_next/2,
       mng_cursor_materialize/2,
-      mng_get_dict/3
+      mng_get_dict/3,
+      mng_strip_type/3
     ]).
 /** <module> A mongo DB client for Prolog.
 
@@ -35,17 +36,19 @@
 :- use_foreign_library('libmongo_kb.so').
 :- dynamic mng_db_name/1.
 
+% register message formatters
+:- ensure_loaded('messages').
+
 % define some settings
 :- setting(db_name, atom, roslog,
-		'Name of the Mongo DB used by KnowRob.').
+	'Name of the Mongo DB used by KnowRob.').
 :- setting(mng_client:collection_prefix, atom, '',
-    'Id of the current neem. Empty if neemhub is not used').
+	'ID of the current neem. Empty if neemhub is not used').
 :- setting(mng_client:read_only, atom, false,
-    'Flag if the tripledb is read only').
+	'Flag if the tripledb is read only').
 
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
-
 
 
 %% mng_get_db(?DB, -CollectionName, +DBType) is det.
@@ -262,6 +265,47 @@ mng_restore(_DB,Dir) :-
   ),
   wait(PID,exited(0)).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % typed terms
+
+%% mng_strip_type(+TypedValue,?Type,?Value) is det.
+%
+% DocValue is a typed json document value.
+% That is, e.g. `TypedValue=int(7)` in which case `Type=int` and `Value=7`.
+%
+% @TypedValue a value returned by mongo DB
+% @Type type atom
+% @Value the value without type
+%
+mng_strip_type(List,array,List) :-
+	is_list(List),
+	!.
+mng_strip_type(Term,Type,X) :-
+	compound(Term),
+	!,
+	Term=..[Type,X],
+	type_mapping_(Type,_).
+mng_strip_type(X,double,X) :-
+	number(X),
+	!.
+mng_strip_type(X,bool,X) :-
+	ground(X),
+	(	X=true
+	;	X=false
+	),
+	!.
+mng_strip_type(X,string,X).
+
+%%
+type_mapping_(float,   double) :- !.
+type_mapping_(number,  double) :- !.
+type_mapping_(integer, int) :- !.
+type_mapping_(long,    int)    :- !.
+type_mapping_(short,   int)    :- !.
+type_mapping_(byte,    int)    :- !.
+type_mapping_(term,    string) :- !.
+type_mapping_(X,       X)      :- !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
