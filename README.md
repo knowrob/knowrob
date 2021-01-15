@@ -17,7 +17,7 @@ These instructions will get you a copy of KnowRob up and running on your local m
 - ROS (*ROS melodic* for the master branch)
 - SWI Prolog >= 7.6
 - mongo DB server >= 4.2 and libmongoc
-- Python future
+- [rosprolog](https://github.com/knowrob/rosprolog)
 
 ### Installation
 
