@@ -6,7 +6,8 @@
       triple_tell(r,r,t,+,+),
       triple_ask(r,r,t,+,+,-),
       triple_aggregate(t,+,+,-),
-      triple_erase(r,r,t,+,+)
+      triple_erase(r,r,t,+,+),
+      mng_triple_doc(t,-,t)
     ]).
 /** <module> Triple store backend using mongo DB.
 
@@ -187,6 +188,29 @@ triple_tell1(S,P,MngValue,Unit,Scope,Graph,Options) :-
 	mng_store(DB,Coll,Doc),
 	% update other documents
 	propagate_assertion_(Doc,CacheKey,S,Graph,Options).
+
+%%
+%
+mng_triple_doc(triple(S,P,O), Doc, Context) :-
+	%% read options
+	option(graph(Graph), Context, user),
+	option(scope(QScope), Context),
+	%%
+	strip_variable(S, Subject),
+	strip_variable(P, Property),
+	strip_variable(O, ValueQuery),
+	%%
+	% TODO FIXME XXX mng_query_value_/3
+	mng_query_value_(Subject,Operator_s,MngSubject),
+	mng_query_value_(Property,Operator_p,MngProperty),
+	mng_query_value_(ValueQuery,MngOperator,MngValue,Unit),
+	triple_query_document_(
+		Operator_s, MngSubject,
+		Operator_p, MngProperty,
+		MngOperator, MngValue, Unit,
+		QScope,
+		Graph,
+		Doc).
 
 %%
 %
@@ -725,6 +749,9 @@ triple_query_cursor_(
 
 %%
 filter_graph_('*',_) :- !, fail.
+
+% TODO: problems with filtering with this?
+filter_graph_('user',_) :- !, fail.
 
 filter_graph_(=(GraphName),['graph',string(GraphName)]) :- !.
 
