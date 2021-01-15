@@ -21,7 +21,8 @@
 :- use_module(library('db/scope'),
     [ scope_intersect/3,
       scope_update/3,
-      scope_remove/4
+      scope_remove/4,
+      current_scope/1
     ]).
 %:- use_module(library('reasoning/pool'),
     %[ infer/3 ]).
