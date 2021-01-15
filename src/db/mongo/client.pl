@@ -1,6 +1,7 @@
 :- module(mng_client,
     [ mng_db_name/1,
       mng_get_db/3,
+      mng_one_db/2,
       mng_collection/2,
       mng_distinct_values/4,
       mng_drop/2,
@@ -66,6 +67,16 @@ mng_get_db(DB, CollectionName, DBType) :-
     -> atomic_list_concat([Id,'_',DBType], CollectionName)
     ; CollectionName = DBType
   ).
+
+%% mng_one_db(-DB, -Coll) is det.
+%
+% Get a special DB collection with just one empty document.
+% This is used for feeding just this one document into aggregate
+% pipelines.
+%
+mng_one_db(DB, Coll) :-
+	mng_db_name(DB),
+	Coll=one.
 
 read_json_(JSON,Dict) :-
   atom_to_chars(JSON,Chars),
