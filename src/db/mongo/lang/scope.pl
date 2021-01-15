@@ -4,7 +4,11 @@
 
 %% scope_step(+Context, -Step) is nondet.
 %
-%
+% The step expects input documents with "v_scope"
+% field, and another field "next.scope".
+% The step uses these field to compute an intersection
+% beteween both scopes.
+% It will fail in case the intersection is empty.
 %
 scope_step(Context, Step) :-
 	(	scope_intersect_(Context, Step)

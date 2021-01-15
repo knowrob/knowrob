@@ -12,10 +12,6 @@
 mng_query:step_expand(
 		facet([]),
 		facet([]), _Context).
-%mng_query:step_expand(
-%		facet([step(X,Y)|Xs]),
-%		facet([step(X,Y)|Ys]), Context) :-
-%	mng_query:step_expand(facet(Xs), facet(Ys), Context).
 mng_query:step_expand(
 		facet([X|Xs]),
 		facet([Y|Ys]), Context) :-

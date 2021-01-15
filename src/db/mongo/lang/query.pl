@@ -16,8 +16,6 @@ into aggregate pipelines in this module.
 
 % TODO:
 % - *tell* case is missing
-% - cut operator
-%		- maybe via lookup with $limit as last step?
 % - recursion in rules impossible?
 %		- $graphLookup allows limited recursion, what exactly are the limits?
 %		- can we make recursion with chains of properties in graphLookup?
@@ -31,12 +29,14 @@ into aggregate pipelines in this module.
 % - CUT OPERATOR
 %     -- often used so that only one clause triggers
 %     -- or to avoid matching remaining caluse args
-%     -- can be supported? $limit stage? would have no effect on facet
+%     -- can be supported? $lookup + $limit.
+%        but would not work nice with disjunctions!
 % - string commands might be needed
 % - term commands?
 % - implement unify operator =/2, i.e. $set if var, $match if ground.
 % - include_parents is needed? should be taken into account to yield
 %         all elements in p* of triples
+% - add commands for rdf comments
 %
 
 :- use_module('compiler').
@@ -53,8 +53,6 @@ into aggregate pipelines in this module.
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
 % in a mongo query.
-% Command is a term used for unification, e.g. `match(_)` for
-% the *match* command as it expectes a single argument.
 % NOTE: to implement a command several multifile predicates in
 % mng_query and mng_compiler must be implemented by a command. 
 %
@@ -73,8 +71,9 @@ mng_query_command(Command) :-
 % @Options query options
 %
 mng_ask(Statement, QScope, FScope, Options) :-
-	Context = [ask, scope(QScope) | Options],
-	query_(Statement, Context, FScope, ask).
+	query_(Statement,
+		[scope(QScope)|Options],
+		FScope, ask).
 
 %% mng_tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -86,24 +85,24 @@ mng_ask(Statement, QScope, FScope, Options) :-
 % @Options query options
 %
 mng_tell(Statement, QScope, FScope, Options) :-
-	Context = [tell, cope(QScope) | Options],
-	query_(Statement, Context, FScope, tell).
+	query_(Statement,
+		[scope(QScope)|Options],
+		FScope, tell).
 
 %%
 query_(Goal, Context, FScope, Mode) :-
 	% expand goals into terminal symbols
 	mng_expand(Goal, Expanded, Mode),
 	% get the pipeline document
-	mng_compile(Expanded, pipeline(Doc,Vars), Context),
+	mng_compile(Expanded, pipeline(Doc,Vars), [Mode|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope).
 
 query_1(Pipeline, Vars, FScope) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
-	% TODO: what about the tell-case ?
 	mng_one_db(DB, Coll),
-	%% run the query
+	% run the query
 	setup_call_cleanup(
 		% setup: create a query cursor
 		mng_cursor_create(DB, Coll, Cursor),
@@ -111,10 +110,7 @@ query_1(Pipeline, Vars, FScope) :-
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
 			mng_cursor_materialize(Cursor, Result),
 			% read accumulated fact scope
-			once((
-				mng_get_dict('v_scope', Result, FScope)
-			;	universal_scope(FScope)
-			)),
+			mng_get_dict('v_scope', Result, FScope),
 			% unify variables
 			unify_(Result, Vars)
 		),
@@ -245,7 +241,6 @@ expand_term_1(Goal, Expanded, Context) :-
 
 %% strip all modifiers from the goal and call expand_term_3
 expand_term_2(Goal, Expanded, Context) :-
-	% TODO: print warning if modifiers are used that are not supported
 	strip_all_modifier(Goal, Stripped, Modifier),
 	expand_term_3(Stripped, Modifier, Expanded, Context).
 
@@ -253,6 +248,7 @@ expand_term_2(Goal, Expanded, Context) :-
 expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Context) :-
 	Goal =.. [Functor|_Args],
 	step_command(Functor), !,
+	% TODO: verify that Modifier are supported by command
 	(	step_expand(Goal, Expanded, Context)
 	->	true
 	;	Expanded = Goal
@@ -263,6 +259,7 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
+	% TODO: do we need to create a copy of Terminals here, or not needed?
 	bagof(Terminals,
 		mng_query(Functor, Args, Terminals, Context),
 		TerminalsList),
@@ -274,8 +271,12 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	),
 	% need to wrap in facet/1 to indicate that there are multiple clauses.
 	% the case of multiple clauses is handled using the $facet command.
+	% TODO: how should modifier be handled? I think it would
+	%        not be appropiate to just apply them to every command in TerminalsList
+	%    - ignore/once/limit coud be handled by wrapping everything in a $lookup
+	%    - transitive/reflexive is more difficult
+	%
 	(	TerminalsList=[List]
-	% TODO: handle Modifier0 here?
 	->	Expanded = List
 	;	Expanded = [step(facet(TerminalsList),Modifier0)]
 	).

@@ -189,7 +189,6 @@ transitivity_(Context, Step) :-
 %%
 % FIXME: this creates redundant results for the case of graph queries
 %        that receive multiple documents with the same subject as input.
-%        not sure how we can avoid the duplicates here...
 reflexivity_(Context, Step) :-
 	memberchk(reflexive,Context),
 	Step=['$set', ['next', ['$concatArrays',

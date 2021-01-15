@@ -48,8 +48,9 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars, Vars_new),
 	list_to_set(Vars_new, V1),
-	% compile JSON document for this step
+	% add modifier to context
 	append(Modifier, Context, InnerContext),
+	% compile JSON document for this step
 	(	step_compile(Term, [
 				step_vars(StepVars),
 				outer_vars(V0) |

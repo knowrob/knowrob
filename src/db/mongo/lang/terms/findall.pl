@@ -53,7 +53,6 @@ lookup_(Terminals, Context, Lookup) :-
 	% in the inner scope.
 	% this is done through the *let* field of $lookup. e.g. when there is a
 	% var "v_fg8t4" in the outer scope, we generate: ['let', ['v_fg8t4', '$v_fg8t4']].
-	% TODO: also add v_scope to let vars
 	findall(Var,
 		(	member([Var,_], InnerVars),
 			member([Var,_], OuterVars)
@@ -119,17 +118,3 @@ set_result_1(L, X) :-
 			)
 		),
 		X).
-
-%set_result_1([Var], string(X)) :-
-%	% single variable -> list of values
-%	mng_compiler:var_key(Var, Key),
-%	atom_concat('$$this.', Key, X).
-%
-%set_result_1(L, array(X)) :-
-%	% multi variable -> list of value arrays
-%	findall(string(Val),
-%		(	member(Var,L),
-%			mng_compiler:var_key(Var, Key),
-%			atom_concat('$$this.', Key, Val)
-%		),
-%		X).
