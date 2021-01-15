@@ -4,8 +4,8 @@
 :- use_module(library('db/mongo/lang/query')).
 
 %% register query commands
-:- mng_query_command(ground(_)).
-:- mng_query_command(var(_)).
+:- mng_query_command(ground).
+:- mng_query_command(var).
 
 %%
 mng_compiler:step_var(ground(X), [V,X]) :- mng_compiler:var_key(X, V).

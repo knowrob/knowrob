@@ -3,14 +3,11 @@
 :- use_module(library('db/mongo/lang/compiler')).
 :- use_module(library('db/mongo/lang/query')).
 
-%% register query commands
-:- mng_query_command(triple(_,_,_)).
+:- use_module(library('db/mongo/tripledb/triples'),
+		[mng_triple_doc/3]).
 
-%%
-% triple command needs input documents from triples collection
-%
-mng_compiler:step_collection(triple(_,_,_),Coll) :-
-	triple_db(_DB, Coll).
+%% register query commands
+:- mng_query_command(triple).
 
 %%
 % expose subject/predicate/object argument variables.
@@ -18,12 +15,16 @@ mng_compiler:step_collection(triple(_,_,_),Coll) :-
 mng_compiler:step_var(
 		triple(S,P,O),
 		[Key, Var]) :-
-	% make choicepoints for S/P/O
-	member(X, [S,P,O]),
-	% parse variable
+	(	triple_var_(S, [Key, Var])
+	;	triple_var_(P, [Key, Var])
+	;	triple_var_(O, [Key, Var])
+	).
+
+%%
+triple_var_(Arg, [Key, Var]) :-
 	once((
-		( nonvar(X), X=(_->Var) )
-	;	mng_strip_type(X,_,Var)
+		( nonvar(Arg), Arg=(_->Var) )
+	;	mng_strip_type(Arg,_,Var)
 	)),
 	mng_compiler:var_key(Var, Key).
 
@@ -37,8 +38,9 @@ mng_compiler:step_compile(
 		Pipeline) :-
 	option(ask, Context),
 	% get the collection name
+	% TODO: do this during expansion
 	(	option(collection(Coll), Context)
-	;	triple_db(_DB, Coll)
+	;	mng_get_db(_DB, Coll, 'triples')
 	),
 	% extend the context
 	Context0 = [
@@ -50,7 +52,7 @@ mng_compiler:step_compile(
 	findall(Step,
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
-		(	filter_(triple(S,P,O), Context0, Step)
+		(	lookup_(triple(S,P,O), Context0, Step)
 		% conditionally needed to harmonize 'next' field
 		;	set_next_(Context0, Step)
 		% add additional results if P is a transitive property
@@ -61,12 +63,9 @@ mng_compiler:step_compile(
 		% that is unwinded here.
 		;	Step=['$unwind',string('$next')]
 		% compute the intersection of scope so far with scope of next document
-		;	scope_intersect_(Context0, Step)
-		% skip documents with empty scope
-		;	Step = ['$match', ['v_scope.time.since',
-				['$lt', string('$v_scope.time.until')]]]
+		;	scope_step(Context0, Step)
 		% project new variable groundings
-		;	project_(Context0, Step)
+		;	project_(triple(S,P,O), Context0, Step)
 		),
 		Pipeline
 	).
@@ -76,35 +75,10 @@ mng_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-% first step in the pipeline needs special handling:
-% it uses $match instead of $lookup as first step does not have
-% any input documents to join with in lookup.
-%
-filter_(Triple, Context, Step) :-
-	mng_triple_doc(Triple, Context, QueryDoc),
-	(	memberchk(first,Context)
-	->	match_(QueryDoc, Step)
-	;	lookup_(QueryDoc, Context, Step)
-	).
-
-%%
-match_(QueryDoc, Step) :-
-	(	% find matching documents
-		Step=['$match', QueryDoc]
-	;	% move matching document into field *next* for next steps
-		Step=['$set', [
-			['next.s', string('$s')],
-			['next.p', string('$p')],
-			['next.o', string('$o')],
-			['next.scope', string('$scope')]
-		]]
-	;	Step=['$set', ['v_scope', array([string('$scope')]) ]]
-	).
-
-%%
-lookup_(QueryDoc, Context, Step) :-
+lookup_(Triple, Context, Step) :-
+	mng_triple_doc(Triple, QueryDoc, Context),
 	% lookup matching documents and store in 'next' field
-    (	lookup_1(QueryDoc, Context, Step)
+    (	lookup_1(Triple, QueryDoc, Context, Step)
     % unwind the 'next' field
     ;	lookup_unwind_(Context, Step)
     ).
@@ -121,11 +95,17 @@ lookup_unwind_(_,
 	['$unwind',string('$next')]).
 
 %% 
-lookup_1(QueryDoc, Context, Lookup) :-
+lookup_1(triple(S,P,O), QueryDoc, Context, Lookup) :-
 	% read options
 	memberchk(outer_vars(QueryVars), Context),
-	memberchk(collection(Coll), TripleOpts),
-	triple_vars_(Context, TripleVars),
+	memberchk(collection(Coll), Context),
+	%
+	findall([Key,Field],
+		(	member([Field,Arg], [[s,S],[p,P],[o,O]]),
+			triple_var_(Arg, [Key, _Var])
+		),
+		TripleVars
+	),
 	% find all joins with input documents
 	findall([Field_j,Value_j],
 		(	member([Field_j,Value_j], TripleVars),
@@ -147,8 +127,11 @@ lookup_1(QueryDoc, Context, Lookup) :-
 		),
 		MatchDoc),
 	%
-	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]],
-	(	member(limit(Limit),TripleOpts)
+	(	MatchDoc=[]
+	->	Match=['$match', QueryDoc]
+	;	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]]
+	),
+	(	member(limit(Limit),Context)
 	->	Pipeline=[Match,['$limit',int(Limit)]]
 	;	Pipeline=[Match]
 	),
@@ -218,38 +201,20 @@ reflexivity_(Context, Step) :-
 		]])])
 	]]].
 
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% SCOPE INTERSECTION
-%%%%%%%%%%%%%%%%%%%%%%%
-
-%% 
-scope_intersect_(Context,
-		['$set', ['v_scope', Doc]]) :-
-	% intersect old and new scope
-	Intersect = [
-		['time.since', ['$max', array([string('$v_scope.time.since'),
-		                               string('$next.scope.time.since')])]],
-		['time.until', ['$min', array([string('$v_scope.time.until'),
-		                               string('$next.scope.time.until')])]]
-	],
-	(	memberchk(ignore,Context)
-	->	Doc = ['$cond', array([
-			['$not', array([string('$next.scope')]) ],
-			string('$v_scope'),
-			Intersect
-		])]
-	;	Doc = Intersect
-	).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% PROJECTION
 %%%%%%%%%%%%%%%%%%%%%%%
 
-project_(Context, ['$project', ProjectDoc]) :-
+project_(triple(S,P,O), Context, ['$project', ProjectDoc]) :-
 	% read options
 	memberchk(outer_vars(QueryVars), Context),
-	triple_vars_(Context, TripleVars),
+	%
+	findall([Key,Field],
+		(	member([Field,Arg], [[s,S],[p,P],[o,O]]),
+			triple_var_(Arg, [Key, _Var])
+		),
+		TripleVars
+	),
 	% 
 	findall([Pr_Key,Pr_Value],(
 		% copy scope
@@ -285,15 +250,3 @@ project_1(_,Field,string(Pr_Value)) :-
 	!,
 	atom_concat('$next.',Field,Pr_Value).
 
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% helper
-%%%%%%%%%%%%%%%%%%%%%%%
-
-triple_vars_(Contex, [
-		[S_key,s],
-		[P_key,p],
-		[O_key,o]]) :-
-	memberchk(step_vars([
-		[S_key,_],
-		[P_key,_],
-		[O_key,_]]), Contex).

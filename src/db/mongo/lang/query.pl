@@ -1,7 +1,7 @@
 :- module(mng_query,
     [ mng_assert(t),
-      mng_ask(t,+,+),
-      mng_tell(t,+,+),
+      mng_ask(t,+,-,+),
+      mng_tell(t,+,-,+),
       mng_expand/3,
       mng_query_command/1
     ]).
@@ -16,10 +16,6 @@ into aggregate pipelines in this module.
 
 % TODO:
 % - *tell* case is missing
-% - check fact scope unification
-%		- seems missing!
-% - look into building list with patterns in findall
-%		- shouldn't be hard to do in unififcation step (just need to store pattern with var)
 % - cut operator
 %		- maybe via lookup with $limit as last step?
 % - recursion in rules impossible?
@@ -32,13 +28,18 @@ into aggregate pipelines in this module.
 %           holds(A,B,kg(X)), holds(C,B,kg(X))
 %        best would be if aggregate pipeline performs the conversion.
 %        needs arithmetic expression to compute value
-% - list commands might be needed
+% - CUT OPERATOR
+%     -- often used so that only one clause triggers
+%     -- or to avoid matching remaining caluse args
+%     -- can be supported? $limit stage? would have no effect on facet
 % - string commands might be needed
 % - term commands?
 % - implement unify operator =/2, i.e. $set if var, $match if ground.
 % - include_parents is needed? should be taken into account to yield
 %         all elements in p* of triples
 %
+
+:- use_module('compiler').
 
 %% Stores list of terminal terms for each clause. 
 :- dynamic mng_query/4.
@@ -71,9 +72,9 @@ mng_query_command(Command) :-
 % @Scope the scope of the statement
 % @Options query options
 %
-mng_ask(Statement, Scope, Options) :-
-	Context = [ask, scope(Scope) | Options],
-	query_(Statement, Context).
+mng_ask(Statement, QScope, FScope, Options) :-
+	Context = [ask, scope(QScope) | Options],
+	query_(Statement, Context, FScope, ask).
 
 %% mng_tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -84,22 +85,24 @@ mng_ask(Statement, Scope, Options) :-
 % @Scope the scope of the statement
 % @Options query options
 %
-mng_tell(Statement, Scope, Options) :-
-	Context = [ask, scope(Scope) | Options],
-	query_(Statement, Context).
+mng_tell(Statement, QScope, FScope, Options) :-
+	Context = [tell, cope(QScope) | Options],
+	query_(Statement, Context, FScope, tell).
 
 %%
-query_(Goal, Context) :-
-	%% expand goals into terminal symbols
-	mng_expand(Goal, Expanded, Context),
-	%% get the pipeline document
+query_(Goal, Context, FScope, Mode) :-
+	% expand goals into terminal symbols
+	mng_expand(Goal, Expanded, Mode),
+	% get the pipeline document
 	mng_compile(Expanded, pipeline(Doc,Vars), Context),
-	%% run the pipeline
-	query_1(Doc, Vars).
+	% run the pipeline
+	query_1(Doc, Vars, FScope).
 
-query_1(Pipeline, Vars) :-
-	%% get DB for cursor creation
-	triple_db(DB, Coll),
+query_1(Pipeline, Vars, FScope) :-
+	% get DB for cursor creation. use collection with just a
+	% single document as starting point.
+	% TODO: what about the tell-case ?
+	mng_one_db(DB, Coll),
 	%% run the query
 	setup_call_cleanup(
 		% setup: create a query cursor
@@ -107,6 +110,12 @@ query_1(Pipeline, Vars) :-
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
 			mng_cursor_materialize(Cursor, Result),
+			% read accumulated fact scope
+			once((
+				mng_get_dict('v_scope', Result, FScope)
+			;	universal_scope(FScope)
+			)),
+			% unify variables
 			unify_(Result, Vars)
 		),
 		% cleanup: destroy cursor again
@@ -120,12 +129,49 @@ unify_(Doc, [X|Xs]) :-
 	unify_(Doc, Xs).
 
 unify_1(_, ['_id', _]).
+unify_1(Doc, [VarKey, Term]) :-
+	nonvar(Term),
+	Term=list(Var,Pattern),
+	!,
+	mng_get_dict(VarKey, Doc, ArrayValue),
+	unify_list(ArrayValue, Pattern, Var).
+
 unify_1(Doc, [VarKey, Var]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
 	mng_strip_type(TypedValue, _, Value),
 	(	Value='null' ;
 		Var=Value
 	).
+
+%%
+unify_list(array([]),_,[]) :- !.
+unify_list(array([X|Xs]),Pattern,[Y|Ys]) :-
+	dict_pairs(Dict, _, X),
+	unify_list_1(Dict, Pattern, Y),
+	unify_list(array(Xs), Pattern, Ys).
+
+%%
+unify_list_1(_, Ground, Ground) :-
+	ground(Ground),!.
+
+unify_list_1(Doc, Var, Elem) :-
+	var(Var),!,
+	mng_compiler:var_key(Var, Key),
+	unify_1(Doc, [Key, Elem]).
+
+unify_list_1(Doc, List, Elem) :-
+	is_list(List),!,
+	findall(Y,
+		(	member(X,List),
+			unify_list_1(Doc,X,Y)
+		),
+		Elem).
+
+unify_list_1(Doc, Term, Elem) :-
+	compound(Term),!,
+	Term =.. List0,
+	unify_list_1(Doc, List0, List1),
+	Elem =.. List1.
 
 %% mng_assert(+Rule) is semidet.
 %
@@ -143,10 +189,10 @@ unify_1(Doc, [VarKey, Var]) :-
 %
 % @Rule the rule to assert.
 %
-mng_assert(Head ?> Body) :-
+mng_assert((?>(Head,Body))) :-
 	mng_assert1(Head, Body, ask).
 
-mng_assert(Head +> Body) :-
+mng_assert((+>(Head,Body))) :-
 	mng_assert1(Head, Body, tell).
 
 mng_assert1(Head, Body, Context) :-
@@ -159,6 +205,7 @@ mng_assert1(Head, Body, Context) :-
 			fail
 		)
 	),
+	log_info(mongo(expanded(Functor, Args, Expanded, Context))),
 	%% store expanded query
 	assertz(mng_query(Functor, Args, Expanded, Context)).
 
@@ -172,22 +219,21 @@ mng_assert1(Head, Body, Context) :-
 % @Context 'ask' or 'tell'
 %
 mng_expand(Goal, Expanded, Context) :-
+	comma_list(Goal, Terms),
 	catch(
-		expand_term_0(Goal, Expanded, Context),
+		expand_term_0(Terms, Expanded, Context),
 		expansion_failed(FailedGoal),
 		(	log_error(mongo(expansion_failed(FailedGoal, Goal))),
 			fail
 		)
 	).
 
-expand_term_0(Goal, Expanded, Context) :-
-	comma_list(Goal, Terms),
-	findall(X,
-		(	member(Term, Terms),
-			expand_term_1(Term, X, Context)
-		),
-		Expanded
-	).
+%%
+expand_term_0([], [], _Context) :- !.
+expand_term_0([X|Xs], Expanded, Context) :-
+	expand_term_1(X, X_expanded, Context),
+	expand_term_0(Xs, Xs_expanded, Context),
+	append(X_expanded, Xs_expanded, Expanded).
 
 %% try expanding disjuntion, else call expand_term_2
 expand_term_1(Goal, Expanded, Context) :-
@@ -198,23 +244,26 @@ expand_term_1(Goal, Expanded, Context) :-
 	).
 
 %% strip all modifiers from the goal and call expand_term_3
-expand_term_2(Goal, step(Expanded, ModifierList), Context) :-
+expand_term_2(Goal, Expanded, Context) :-
 	% TODO: print warning if modifiers are used that are not supported
-	strip_all_modifier(Goal, Stripped, ModifierList),
-	expand_term_3(Stripped, Expanded, Context).
+	strip_all_modifier(Goal, Stripped, Modifier),
+	expand_term_3(Stripped, Modifier, Expanded, Context).
 
 %% finally expand rules that were asserted before
-expand_term_3(Goal, Expanded, Context) :-
-	step_command(Goal, _), !,
+expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Context) :-
+	Goal =.. [Functor|_Args],
+	step_command(Functor), !,
 	(	step_expand(Goal, Expanded, Context)
 	->	true
 	;	Expanded = Goal
 	).
 
-expand_term_3(Goal, Expanded, Context) :-
+expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	% find all asserted rules matching the functor and args
 	Goal =.. [Functor|Args],
-	findall(Terminals,
+	% NOTE: do not use findall here because findall would not preserve
+	%       variables in Terminals
+	bagof(Terminals,
 		mng_query(Functor, Args, Terminals, Context),
 		TerminalsList),
 	% handle the case that a predicate is referred to that wasn't
@@ -226,8 +275,9 @@ expand_term_3(Goal, Expanded, Context) :-
 	% need to wrap in facet/1 to indicate that there are multiple clauses.
 	% the case of multiple clauses is handled using the $facet command.
 	(	TerminalsList=[List]
-	->	member(Expanded,List)
-	;	expand_term_2(facet(TerminalsList), Expanded, Context)
+	% TODO: handle Modifier0 here?
+	->	Expanded = List
+	;	Expanded = [step(facet(TerminalsList),Modifier0)]
 	).
 
 %% modifiers are stripped from terms and stored separately
@@ -243,4 +293,3 @@ strip_modifier(once(X),limit(1),X).
 strip_modifier(limit(X,N),limit(N),X).
 strip_modifier(transitive(X),transitive,X).
 strip_modifier(reflexive(X),reflexive,X).
-

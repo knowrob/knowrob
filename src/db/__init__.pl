@@ -4,3 +4,5 @@
 :- use_module('tripledb_tests').
 :- use_module('tripledb').
 :- use_module('obda').
+
+:- use_directory('mongo').

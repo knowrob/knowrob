@@ -4,13 +4,21 @@
 :- use_module(library('db/mongo/lang/query')).
 
 %% register query commands
-:- mng_query_command(facet(_)).
+:- mng_query_command(facet).
 
 %%
 % Each facet is a KnowRob language expression and needs to be expanded.
 %
-mng_query:step_expand(facet([]), facet([]), _Context).
-mng_query:step_expand(facet([X|Xs]), facet([Y|Ys]), Context) :-
+mng_query:step_expand(
+		facet([]),
+		facet([]), _Context).
+%mng_query:step_expand(
+%		facet([step(X,Y)|Xs]),
+%		facet([step(X,Y)|Ys]), Context) :-
+%	mng_query:step_expand(facet(Xs), facet(Ys), Context).
+mng_query:step_expand(
+		facet([X|Xs]),
+		facet([Y|Ys]), Context) :-
 	mng_expand(X,Y,Context),
 	mng_query:step_expand(facet(Xs), facet(Ys), Context).
 

@@ -6,13 +6,13 @@
 :- use_module(library('db/mongo/lang/query')).
 
 %% register query commands
-:- mng_query_command(match(_)).
+:- mng_query_command(match).
 
 %%
 % Operators that can be used in match/1 queries.
 %
 match_operator('=',		'$eq').
-match_operator('\=',	'$ne').
+match_operator('\\=',	'$ne').
 match_operator('>=',	'$gte').
 match_operator('=<',	'$lte').
 match_operator('>',		'$gt').

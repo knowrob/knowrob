@@ -14,8 +14,6 @@ A sequence of terminals can be compiled into an aggregate query.
 :- multifile step_compile/3.
 %% implemented by query commands to provide variables exposed to the outside
 :- multifile step_var/2.
-%% optionally implemented by query commands that require documents from some named collection
-:- multifile step_collection/2.
 
 %% mng_compile(+Terminals, -Pipeline, +Context) is semidet.
 %
@@ -27,9 +25,8 @@ A sequence of terminals can be compiled into an aggregate query.
 % @Context the query context
 %
 mng_compile(Terminals, pipeline(Doc, Vars), Context) :-
-	once(mark_first_(Terminals,Terminals0)),
 	catch(
-		compile_1(Terminals0, Doc, []->Vars, Context),
+		compile_1(Terminals, Doc, []->Vars, Context),
 		compilation_failed(FailedTerm),
 		(	log_error(mongo(compilation_failed(FailedTerm,Terminals))),
 			fail
@@ -47,44 +44,20 @@ compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
-	findall(Vs, step_var(Term, Vs), StepVars),
+	bagof(Vs, step_var(Term, Vs), StepVars),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars, Vars_new),
 	list_to_set(Vars_new, V1),
 	% compile JSON document for this step
 	append(Modifier, Context, InnerContext),
-	(	step_compile(Term, Doc, [
+	(	step_compile(Term, [
 				step_vars(StepVars),
 				outer_vars(V0) |
 				InnerContext
-		])
+		], Doc)
 	->	true
 	;	throw(compilation_failed(Term, InnerContext))
 	).
-
-% mark first triple in list.
-% this is needed because the first triple needs special treatment
-% in aggregate queries.
-mark_first_(
-	[step(X,Opt0)|Xs]
-	[step(X,[first|Opt0])|Xs]) :-
-	(	option(collection(_Coll), Opt0)
-	;	step_collection(X,_Coll)
-	),
-	!.
-mark_first_([X|Xs],[X|Ys]) :-
-	mark_first_(Xs,Ys).
-
-%% compiler needs to know the first collection from which documents are drawn
-first_collection([step(X,Opts)|Xs], Coll) :-
-	(	option(collection(Coll), Opts)
-	;	step_collection(X,Coll)
-	;	first_collection(Xs,Coll)
-	),
-	!.
-
-first_collection([], Coll) :-
-	triple_db(_DB, Coll).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries

@@ -4,7 +4,7 @@
 :- use_module(library('db/mongo/lang/query')).
 
 %% register query commands
-:- mng_query_command(findall(_,_,_)).
+:- mng_query_command(findall).
 
 %%
 mng_query:step_expand(
@@ -15,19 +15,11 @@ mng_query:step_expand(
 
 %%
 % findall only exposes the List variable to the outside.
-% FIXME: also need to remember the pattern such that the
-%         pattern can be used to construct a list when doing unification.
-%		  - but is there a problem with referring to list variable internally?
 %
 mng_compiler:step_var(
-		findall(_, _, List),
-		[List_var, List]) :-
+		findall(Pattern, _, List),
+		[List_var, list(List,Pattern)]) :-
 	mng_compiler:var_key(List, List_var).
-
-%mng_compiler:step_var(
-%		findall(Pattern, _, List),
-%		[List_var, list(List,Pattern)]) :-
-%	mng_compiler:var_key(List, List_var).
 
 %%
 % findall(Pattern,Terminals,List) builds a list from matching
@@ -50,9 +42,8 @@ mng_compiler:step_compile(
 lookup_(Terminals, Context, Lookup) :-
 	% get variables referred to before
 	option(outer_vars(OuterVars), Context),
-	% get the db collection from which documents are drawn by the first
-	% statement in Temrinals.
-	mng_compiler:first_collection(Terminals, Coll),
+	% join collection with single document
+	mng_one_db(_DB, Coll),
 	% generate inner pipeline first,
 	% need to get access to variables for computing a join
 	mng_compile(Terminals,
@@ -62,6 +53,7 @@ lookup_(Terminals, Context, Lookup) :-
 	% in the inner scope.
 	% this is done through the *let* field of $lookup. e.g. when there is a
 	% var "v_fg8t4" in the outer scope, we generate: ['let', ['v_fg8t4', '$v_fg8t4']].
+	% TODO: also add v_scope to let vars
 	findall(Var,
 		(	member([Var,_], InnerVars),
 			member([Var,_], OuterVars)
@@ -80,6 +72,11 @@ lookup_(Terminals, Context, Lookup) :-
 			atom_concat('$$',Y,Y0)
 		),
 		SetVars),
+	%
+	(	SetVars=[]
+	->	Pipeline0=Pipeline
+	;	Pipeline0=[['$set', SetVars] | Pipeline]
+	),
 	% finally compose the lookup document
 	Lookup=['$lookup', [
 		['from',string(Coll)],
@@ -88,10 +85,7 @@ lookup_(Terminals, Context, Lookup) :-
 		% make fields from input document accessible in pipeline
 		['let',LetDoc],
 		% get matching documents
-		['pipeline', array([
-			['$set', SetVars]
-		|	Pipeline
-		])]
+		['pipeline', array(Pipeline0)]
 	]].
 
 %%
@@ -118,9 +112,11 @@ set_result_(Pattern, List,
 %
 set_result_1(L, X) :-
 	findall([Key, string(Val)],
-		(	member(Var,L),
-			mng_compiler:var_key(Var, Key),
-			atom_concat('$$this.', Key, Val)
+		(	(	Key='v_scope', Val='$$this.v_scope' )
+		;	(	member(Var,L),
+				mng_compiler:var_key(Var, Key),
+				atom_concat('$$this.', Key, Val)
+			)
 		),
 		X).
 
