@@ -30,7 +30,7 @@ mng_compiler:step_compile(
 		findall(Pattern, Terminals, List),
 		Context,
 		[ Lookup, SetList, UnsetNext ]) :-
-	option(ask, Context),!,
+	option(ask, Context), !,
 	% perform findall, collect results in 'next' array
 	lookup_(Terminals, Context, Lookup),
 	% $set the list variable field from 'next' field

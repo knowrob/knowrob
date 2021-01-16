@@ -15,22 +15,30 @@ into aggregate pipelines in this module.
 */
 
 % TODO:
-% - *tell* case is missing
+%
 % - recursion in rules impossible?
 %		- $graphLookup allows limited recursion, what exactly are the limits?
 %		- can we make recursion with chains of properties in graphLookup?
+%
 % - UNITS
 %     -- units are optionally stored in the document
 %     -- qudt RDF model defines unit conversion
+% rdf(Type, qudt:quantityKind,         Kind ),
+% rdf(Type, qudt:symbol,               Symbol),
+% rdf(Type, qudt:conversionMultiplier, MultiplierA),
+% rdf(Type, qudt:conversionOffset,     OffsetA),
+% ValueO is (((NumI * MultiplierI + OffsetI) - OffsetO) / MultiplierO).
 %     -- holds allows unit conversion, e.g.
 %           holds(A,B,kg(X)), holds(C,B,kg(X))
 %        best would be if aggregate pipeline performs the conversion.
 %        needs arithmetic expression to compute value
+%
 % - CUT OPERATOR
-%     -- often used so that only one clause triggers
-%     -- or to avoid matching remaining caluse args
-%     -- can be supported? $lookup + $limit.
-%        but would not work nice with disjunctions!
+%     -- 1. within a clause `cut` wraps terms before
+%             in a lookup with $limit
+%     -- 2. disjunctions keep track of cut in disjuncts
+%             and does not proceed if cut+matching docs in previous step
+%
 % - string commands might be needed
 % - term commands?
 % - implement unify operator =/2, i.e. $set if var, $match if ground.
@@ -96,9 +104,9 @@ query_(Goal, Context, FScope, Mode) :-
 	% get the pipeline document
 	mng_compile(Expanded, pipeline(Doc,Vars), [Mode|Context]),
 	% run the pipeline
-	query_1(Doc, Vars, FScope).
+	query_1(Doc, Vars, FScope, Mode).
 
-query_1(Pipeline, Vars, FScope) :-
+query_1(Pipeline, Vars, FScope, Mode) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
 	mng_one_db(DB, Coll),
@@ -109,20 +117,35 @@ query_1(Pipeline, Vars, FScope) :-
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
 			mng_cursor_materialize(Cursor, Result),
-			% read accumulated fact scope
-			mng_get_dict('v_scope', Result, FScope),
-			% unify variables
-			unify_(Result, Vars)
+			(	Mode=tell
+			->	remove_flagged_
+			;	unify_(Result, Vars, FScope)
+			)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
 
 %%
-unify_(_, []) :- !.
-unify_(Doc, [X|Xs]) :-
+% remove all documents that have been flagged to be removed
+% by the aggregate pipeline for tell
+%
+remove_flagged_ :-
+	mng_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, ['remove', bool(true)]).
+
+%%
+% read accumulated fact scope and
+% unify variables.
+%
+unify_(Result, Vars, FScope) :-
+	mng_get_dict('v_scope', Result, FScope),
+	unify_0(Result, Vars).
+
+unify_0(_, []) :- !.
+unify_0(Doc, [X|Xs]) :-
 	once(unify_1(Doc, X)),
-	unify_(Doc, Xs).
+	unify_0(Doc, Xs).
 
 unify_1(_, ['_id', _]).
 unify_1(Doc, [VarKey, Term]) :-

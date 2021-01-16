@@ -26,11 +26,19 @@ A sequence of terminals can be compiled into an aggregate query.
 %
 mng_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
-		compile_1(Terminals, Doc, []->Vars, Context),
+		compile_0(Terminals, Doc, []->Vars, Context),
 		compilation_failed(FailedTerm),
 		(	log_error(mongo(compilation_failed(FailedTerm,Terminals))),
 			fail
 		)
+	).
+
+%%
+compile_0(Terminals, Doc, Vars, Context) :-
+	compile_1(Terminals, Doc0, []->Vars, Context),
+	(	member(ask, Context)
+	->	Doc=Doc0
+	;	compile_tell_(Doc0, Doc)
 	).
 
 %%
@@ -58,6 +66,24 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 		], Doc)
 	->	true
 	;	throw(compilation_failed(Term, InnerContext))
+	).
+
+%%
+compile_tell_(Doc0, Doc1) :-
+	% tell merges into triples DB
+	mng_get_db(_DB, Coll, 'triples'),
+	% append some steps to Doc0
+	findall(Step,
+		(	member(Step,Doc0)
+		% the "triples" field holds an array of documents to be merged
+		;	Step=['$unwind',string('$triples')]
+		% make unwinded triple root of the document
+		;	Step=['$replaceRoot',['newRoot','$triples']]
+		% merge document into triples collection
+		% NOTE: $merge must be last step
+		;	Step=['$merge',string(Coll)]
+		),
+		Doc1
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%

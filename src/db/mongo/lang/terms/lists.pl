@@ -37,6 +37,7 @@ mng_compiler:step_compile(
 		nth(Index, List, _Elem),
 		Context,
 		Pipeline) :-
+	option(ask, Context), !,
 	mng_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
@@ -78,6 +79,7 @@ mng_compiler:step_compile(
 		member(_Pattern, List),
 		Context,
 		Pipeline) :-
+	option(ask, Context), !,
 	mng_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline

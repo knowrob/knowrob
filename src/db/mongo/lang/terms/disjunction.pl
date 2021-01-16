@@ -46,7 +46,8 @@ mng_compiler:step_compile(
 		facet(Facets),
 		Context,
 		Pipeline) :-
-	option(step_vars(StepVars)),
+	option(ask, Context), !,
+	option(step_vars(StepVars), Context),
 	% get a list of tuples (pipeline, list variable key)
 	% the result of each pipeline is written to a list,
 	% and resulting lists are concatenated later to

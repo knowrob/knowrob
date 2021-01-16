@@ -6,6 +6,7 @@
 :- use_module(library('db/mongo/tripledb/triples'),
 		[mng_triple_doc/3]).
 
+
 %% register query commands
 :- mng_query_command(triple).
 
@@ -29,7 +30,7 @@ triple_var_(Arg, [Key, Var]) :-
 	mng_compiler:var_key(Var, Key).
 
 %%
-% triple(S,P,O,Opts) uses $lookup to join input documents with
+% ask(triple(S,P,O)) uses $lookup to join input documents with
 % the ones matching the triple pattern provided.
 %
 mng_compiler:step_compile(
@@ -70,9 +71,154 @@ mng_compiler:step_compile(
 		Pipeline
 	).
 
+%%
+% tell(triple(S,P,O)) uses $lookup to find matching triples
+% with overlapping scope which are toggled to be removed in next stage.
+% then the union of their scopes is computed and used for output document.
+%
+mng_compiler:step_compile(
+		triple(S,rdf:type,Cls),
+		Context, Pipeline) :-
+	option(tell, Context),
+	!,
+	% handle the case var(S), in that case, generate a new symbol
+	% TODO: calls is_resource. either table it or gen name in mongo
+	once((nonvar(S) ; lang_is_a:unique_name(Cls, S))),
+	%
+	triple_tell(
+		triple(S,rdf:type,Cls), _,
+		parents(Cls,rdfs:subClassOf),
+		[ array([string(rdf:type)]),
+		  string('$parents') ],
+		Context, Pipeline).
+
+mng_compiler:step_compile(
+		triple(Sub,rdfs:subClassOf,Sup),
+		Context, Pipeline) :-
+	option(tell, Context),
+	!,
+	triple_tell(
+		triple(Sub,rdfs:subClassOf,Sup), _,
+		parents(Sup,rdfs:subClassOf),
+		[ array([string(rdfs:subClassOf)]),
+		  string('$parents') ],
+		[ propagate|Context ],
+		Pipeline).
+
+mng_compiler:step_compile(
+		triple(Sub,rdfs:subPropertyOf,Sup),
+		Context, Pipeline) :-
+	option(tell, Context),
+	!,
+	triple_tell(
+		triple(Sub,rdfs:subPropertyOf,Sup), _,
+		parents(Sup,rdfs:subPropertyOf),
+		[ array([string(rdfs:subPropertyOf)]),
+		  string('$parents') ],
+		[ propagate|Context ],
+		Pipeline).
+
+mng_compiler:step_compile(
+		triple(S,P,O),
+		Context, Pipeline) :-
+	option(tell, Context),
+	!,
+	triple_tell(
+		triple(S,P,O), MngValue,
+		parents(P,rdfs:subPropertyOf),
+		[ string('$parents'),
+		  array([MngValue]) ],
+		Context, Pipeline).
+
+%%
+triple_tell(
+		triple(S,P,O),
+		parents(Child,Property),
+		[Pstar, Ostar],
+		Context, Pipeline) :-
+	option(graph(Graph), Context, user),
+	% get the collection name
+	mng_get_db(_DB, Coll, 'triples'),
+	% strip the value, assert that operator must be $eq
+	% all others do not make sense fro tell.
+	mng_query_value_(O,'$eq',MngValue,Unit),
+	% extend the context
+	Context0 = [
+		property(P),
+		collection(Coll)
+	|	Context],
+	% build triple docuemnt
+	TripleDoc0=[
+		['s', string(S)],
+		['p', string(P)],
+		['o', MngValue],
+		['p*', Pstar],
+		['o*', Ostar],
+		['graph', string(Graph)],
+		['scope', string('$v_scope')]
+	],
+	(	ground(Unit)
+	->	TripleDoc=[['unit',string(Unit)]|TripleDoc0]
+	;	TripleDoc=TripleDoc0
+	),
+	% compute steps of the aggregate pipeline
+	% TODO: if just one document, update instead of delete
+	findall(Step,
+		% TODO: assign v_scope field. 
+		(	set_scope_(Context0, Step)
+		% lookup documents that overlap with triple into 'next' field,
+		% and toggle their delete flag to true
+		;	lookup_overlapping_(TripleDoc0, Context0, Step)
+		% lookup parent documents into the 'parents' field
+		;	lookup_parents_(Child, Property, Context0, Step)
+		% compute the union of scopes in next
+		;	scope_union_(Context0, Step)
+		% add triples to triples array that have been queued to be removed
+		;	array_concat_('triples', string('$next'), Step)
+		% add merged triple document to triples array
+		;	array_concat_('triples', array([TripleDoc]), Step)
+		;	(	option(propagate,Context),
+				propagate_tell_(S, Context0, Step)
+			)
+		),
+		Pipeline
+	).
+
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% FILTERING documents based on triple pattern
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+lookup_overlapping_(TripleDoc, Context, ['$lookup', [
+			['from',string(Coll)],
+			% create a field "next" with all matching documents
+			['as',string('next')],
+			% get matching documents
+			['pipeline',array(Pipeline)]
+		]]) :-
+	option(collection(Coll), Context),
+	% read triple data
+	memberchk(['s',S], TripleDoc),
+	memberchk(['p',P], TripleDoc),
+	memberchk(['o',O], TripleDoc),
+	% read scope data
+	option(scope(Scope), Context),
+	time_scope_data(Scope,[Since,Until]),
+	% build pipeline
+	findall(Step,
+		% $match s,p,o and overlapping scope
+		(	Step=['$match',[
+				['s',S],
+				['p',P],
+				['o',O],
+				['scope.time.since',['$lte',double(Until)]],
+				['scope.time.until',['$gte',double(Since)]]
+			]]
+		% toggle delete flag
+		;	Step=['$set',['delete',bool(true)]]
+		),
+		Pipeline
+	).
 
 %%
 lookup_(Triple, Context, Step) :-
@@ -248,4 +394,112 @@ project_1(Context, Field,
 project_1(_,Field,string(Pr_Value)) :-
 	!,
 	atom_concat('$next.',Field,Pr_Value).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% SCOPE
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+set_scope_(Context, ['$set',['v_scope',[
+		['time',[
+			['since', double(Since)],
+			['until', double(Since)]
+		]]]]]) :-
+	% read scope data
+	option(scope(Scope), Context),
+	time_scope_data(Scope,[Since,Until]).
+
+%%
+scope_union_(Step) :-
+	% create array with all scope.time.since values
+	(	Step=['$set',['num_array',['$map',[
+			['input', '$next'],
+			['in', '$$this.scope.time.since']
+		]]]]
+	;	array_concat_('num_array',
+			array([string('$v_scope.time.since')]))
+	% set the minimum of since values
+	;	Step=['$set',['v_scope.time.since',
+			['$min',string('$num_array')]
+		]]
+	% create array with all scope.time.until values
+	;	Step=['$set',['num_array',['$map',[
+			['input', '$next'],
+			['in', '$$this.scope.time.until']
+		]]]]
+	;	array_concat_('num_array',
+			array([string('$v_scope.time.until')]))
+	% set the maximum of until values
+	;	Step=['$set',['v_scope.time.until',
+			['$max',string('$num_array')]
+		]]
+	;	Step=['$unset','num_array']
+	).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% PROPAGATION
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+lookup_parents_(Child, Property, Context, Step) :-
+	memberchk(collection(Coll), Context),
+	% first, lookup matching documents and yield o* in parents array
+	(	Step=['$lookup', [
+			['from',string(Coll)],
+			% create a field "next" with all matching documents
+			['as',string('parents')],
+			% get matching documents
+			['pipeline',array([
+				['$match', [
+					['s',string(Child)],
+					['p',string(Property)]
+				]],
+				['$project', ['o*', int(1)]],
+				['$unwind', string('$o*')]
+			])]
+		]]
+	% convert parents from list of documents to list of strings.
+	;	Step=['$set',['parents',['$map',[
+			['input','$parents'],
+			['in',string('$$this.o*')]
+		]]]]
+	% also add child to parents list
+	;	array_concat_('parents', array([string(Child)]), Step)
+	).
+
+%%
+propagate_tell_(S, Context, Step) :-
+	memberchk(collection(Coll), Context),
+	% the inner lookup matches documents with S in o*
+	findall(X,
+		% match every document with S in o*
+		(	X=['$match', [['o*',string(S)]]]
+		% and add parent field from input documents to o*
+		;	array_concat_('o*', string('$$parents'), X)
+		),
+		Inner),
+	% first, lookup matching documents and update o*
+	(	Step=['$lookup', [
+			['from',string(Coll)],
+			% create a field "next" with all matching documents
+			['as',string('next')],
+			% make fields from input document accessible in pipeline
+			['let',['parents','$parents']],
+			% get matching documents
+			['pipeline',array(Inner)]
+		]]
+	% second, add each document to triples array
+	;	array_concat_('triples', string('$next'), Step)
+	).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% helper
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+array_concat_(Key,Arr,['$set',
+		[Key,['$setUnion',
+			array([string(Arr0),Arr])]
+		]]) :-
+	atom_concat('$',Key,Arr0).
 

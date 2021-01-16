@@ -29,6 +29,12 @@
 
 :- multifile tell/2, ask2/2.
 
+%%
+% NOTE: SWI strip_module acts strange
+strip_module_(:(Module,Term),Module,Term) :- !.
+strip_module_(Term,_,Term).
+
+
 %% ask(+Statement) is nondet.
 %
 % Same as ask/2 with wildcard scope.
@@ -455,11 +461,6 @@ expand_tell_term_(QS->QS, Statement,
 user:term_expansion((?+>(Head,Goal)), [X1,X2]) :-
   user:term_expansion((?>(Head,Goal)),X1),
   user:term_expansion((+>(Head,Goal)),X2).
-
-%%
-% NOTE: SWI strip_module acts strange
-strip_module_(:(Module,Term),Module,Term) :- !.
-strip_module_(Term,_,Term).
 
 %%
 context_update_([Options0,Scope0],New,[Options1,Scope1]) :-
