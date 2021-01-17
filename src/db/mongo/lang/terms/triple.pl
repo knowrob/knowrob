@@ -90,7 +90,7 @@ mng_compiler:step_compile(
 	!,
 	% handle the case var(S), in that case, generate a new symbol
 	% TODO: calls is_resource. either table it or gen name in mongo
-	once((nonvar(S) ; lang_is_a:unique_name(Cls, S))),
+	once((nonvar(S) ; get_unique_name(Cls, S))),
 	%
 	triple_tell(
 		triple(S,rdf:type,Cls), _,
@@ -517,3 +517,23 @@ array_concat_(Key,Arr,['$set',
 		]]) :-
 	atom_concat('$',Key,Arr0).
 
+%%
+is_unique_name(Name) :-
+	mng_get_db(DB, Coll, 'triples'),
+	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
+
+%%
+get_unique_name(Type_IRI, Name) :-
+	% generate 8 random alphabetic characters
+	randseq(8, 25, Seq_random),
+	maplist(plus(65), Seq_random, Alpha_random),
+	atom_codes(Sub, Alpha_random),
+	% TODO: what IRI prefix? Currently we re-use the one of the type.
+	%        but that seems not optimal. Probably best to
+	%        have this in query context, and some meaningful default.
+	atomic_list_concat([Type_IRI,'_',Sub], IRI),
+	% check if there is no triple with this identifier as subject or object yet
+	(	is_unique_name(IRI)
+	->	Name=IRI
+	;	unique_name(Type_IRI,Name)
+	).
