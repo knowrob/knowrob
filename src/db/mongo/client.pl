@@ -25,6 +25,7 @@
       mng_cursor_next/2,
       mng_cursor_run/1,
       mng_cursor_materialize/2,
+      mng_find/4,
       mng_get_dict/3,
       mng_strip_type/3
     ]).
@@ -125,6 +126,22 @@ mng_distinct_values(DB,Collection,Key,DistinctValues) :-
       member(V_mng,ValuesMng),
       mng_doc_value(V_mng,V)
   ), DistinctValues).
+
+%% mng_find(+DB, +Collection, +Filter, -Result) is nondet.
+%
+% Creates a cursor with given filter and yields its results.
+%
+mng_find(DB, Collection, Filter, Result) :-
+	setup_call_cleanup(
+		% setup: create a query cursor
+		(	mng_cursor_create(DB, Collection, Cursor),
+			mng_cursor_filter(Cursor, Filter)
+		),
+		% call: find matching document
+		mng_cursor_materialize(Cursor, Result),
+		% cleanup: destroy cursor again
+		mng_cursor_destroy(Cursor)
+	).
   
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
