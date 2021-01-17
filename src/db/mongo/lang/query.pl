@@ -20,19 +20,6 @@ into aggregate pipelines in this module.
 %		- $graphLookup allows limited recursion, what exactly are the limits?
 %		- can we make recursion with chains of properties in graphLookup?
 %
-% - UNITS
-%     -- units are optionally stored in the document
-%     -- qudt RDF model defines unit conversion
-% rdf(Type, qudt:quantityKind,         Kind ),
-% rdf(Type, qudt:symbol,               Symbol),
-% rdf(Type, qudt:conversionMultiplier, MultiplierA),
-% rdf(Type, qudt:conversionOffset,     OffsetA),
-% ValueO is (((NumI * MultiplierI + OffsetI) - OffsetO) / MultiplierO).
-%     -- holds allows unit conversion, e.g.
-%           holds(A,B,kg(X)), holds(C,B,kg(X))
-%        best would be if aggregate pipeline performs the conversion.
-%        needs arithmetic expression to compute value
-%
 % - CUT OPERATOR
 %     -- 1. within a clause `cut` wraps terms before
 %             in a lookup with $limit
