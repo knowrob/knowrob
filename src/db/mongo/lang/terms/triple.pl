@@ -498,7 +498,7 @@ propagate_tell_(S, Context, Step) :-
 			% create a field "next" with all matching documents
 			['as',string('next')],
 			% make fields from input document accessible in pipeline
-			['let',['parents','$parents']],
+			['let',[['parents',string('$parents')]]],
 			% get matching documents
 			['pipeline',array(Inner)]
 		]]

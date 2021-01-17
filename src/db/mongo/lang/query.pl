@@ -133,11 +133,10 @@ query_2(tell, Cursor, _Vars, _FScope) :-
 	% NOTE: tell cannot materialize the cursor
 	% because there are no output documents (due to $merge command)
 	mng_cursor_run(Cursor),
-	% remove all documents that have been flagged to be removed
-	% by the aggregate pipeline.
+	% remove all documents that have been flagged by the aggregate pipeline.
 	% this is needed because it seems not possible to merge+delete
 	% in one pipeline, so the first pass just tags the documents
-	% that need to be removed in a second pass.
+	% that need to be removed.
 	mng_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, ['delete', bool(true)]).
 
