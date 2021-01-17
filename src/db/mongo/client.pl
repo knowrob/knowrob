@@ -23,6 +23,7 @@
       mng_cursor_ascending/2,
       mng_cursor_limit/2,
       mng_cursor_next/2,
+      mng_cursor_run/1,
       mng_cursor_materialize/2,
       mng_get_dict/3,
       mng_strip_type/3
