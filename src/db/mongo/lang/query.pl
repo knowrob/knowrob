@@ -1,7 +1,7 @@
 :- module(mng_query,
     [ mng_assert(t),
       mng_ask(t,+,-,+),
-      mng_tell(t,+,-,+),
+      mng_tell(t,+,+),
       mng_expand/3,
       mng_query_command/1
     ]).
@@ -92,10 +92,10 @@ mng_ask(Statement, QScope, FScope, Options) :-
 % @Scope the scope of the statement
 % @Options query options
 %
-mng_tell(Statement, QScope, FScope, Options) :-
+mng_tell(Statement, FScope, Options) :-
 	query_(Statement,
-		[scope(QScope)|Options],
-		FScope, tell).
+		[scope(FScope)|Options],
+		_, tell).
 
 %%
 query_(Goal, Context, FScope, Mode) :-
@@ -116,23 +116,30 @@ query_1(Pipeline, Vars, FScope, Mode) :-
 		mng_cursor_create(DB, Coll, Cursor),
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
-			mng_cursor_materialize(Cursor, Result),
-			(	Mode=tell
-			->	remove_flagged_
-			;	unify_(Result, Vars, FScope)
-			)
+			query_2(Mode, Cursor, Vars, FScope)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
 
 %%
-% remove all documents that have been flagged to be removed
-% by the aggregate pipeline for tell
-%
-remove_flagged_ :-
+query_2(ask, Cursor, Vars, FScope) :-
+	!,
+	mng_cursor_materialize(Cursor, Result),
+	unify_(Result, Vars, FScope).
+
+query_2(tell, Cursor, _Vars, _FScope) :-
+	!,
+	% NOTE: tell cannot materialize the cursor
+	% because there are no output documents (due to $merge command)
+	mng_cursor_run(Cursor),
+	% remove all documents that have been flagged to be removed
+	% by the aggregate pipeline.
+	% this is needed because it seems not possible to merge+delete
+	% in one pipeline, so the first pass just tags the documents
+	% that need to be removed in a second pass.
 	mng_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, ['remove', bool(true)]).
+	mng_remove(DB, Coll, ['delete', bool(true)]).
 
 %%
 % read accumulated fact scope and

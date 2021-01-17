@@ -10,10 +10,16 @@ A sequence of terminals can be compiled into an aggregate query.
 @license BSD
 */
 
+:- use_module(library('semweb/rdf_db'),
+	    [ rdf_meta/1
+	    ]).
+
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3.
 %% implemented by query commands to provide variables exposed to the outside
 :- multifile step_var/2.
+
+:- rdf_meta(step_compile(t,t,t)).
 
 %% mng_compile(+Terminals, -Pipeline, +Context) is semidet.
 %
@@ -35,7 +41,7 @@ mng_compile(Terminals, pipeline(Doc, Vars), Context) :-
 
 %%
 compile_0(Terminals, Doc, Vars, Context) :-
-	compile_1(Terminals, Doc0, []->Vars, Context),
+	compile_1(Terminals, Doc0, Vars, Context),
 	(	member(ask, Context)
 	->	Doc=Doc0
 	;	compile_tell_(Doc0, Doc)
@@ -52,7 +58,10 @@ compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
-	bagof(Vs, step_var(Term, Vs), StepVars),
+	(	bagof(Vs, step_var(Term, Vs), StepVars)
+	->	true
+	;	StepVars=[]
+	),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars, Vars_new),
 	list_to_set(Vars_new, V1),
@@ -68,17 +77,24 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	;	throw(compilation_failed(Term, InnerContext))
 	).
 
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% tell rules
+%%%%%%%%%%%%%%%%%%%%%%%
+
 %%
 compile_tell_(Doc0, Doc1) :-
 	% tell merges into triples DB
 	mng_get_db(_DB, Coll, 'triples'),
 	% append some steps to Doc0
 	findall(Step,
-		(	member(Step,Doc0)
+		% create an empty array in 'triples' field
+		(	Step=['$set',['triples',array([])]]
+		% draw steps from language expression
+		;	member(Step,Doc0)
 		% the "triples" field holds an array of documents to be merged
 		;	Step=['$unwind',string('$triples')]
 		% make unwinded triple root of the document
-		;	Step=['$replaceRoot',['newRoot','$triples']]
+		;	Step=['$replaceRoot',['newRoot',string('$triples')]]
 		% merge document into triples collection
 		% NOTE: $merge must be last step
 		;	Step=['$merge',string(Coll)]

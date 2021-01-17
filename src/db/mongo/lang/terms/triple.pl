@@ -1,11 +1,18 @@
 :- module(mng_term_triple, []).
 
+:- use_module(library('semweb/rdf_db'),
+	    [ rdf_meta/1
+	    ]).
 :- use_module(library('db/mongo/lang/compiler')).
 :- use_module(library('db/mongo/lang/query')).
-
 :- use_module(library('db/mongo/tripledb/triples'),
-		[mng_triple_doc/3]).
+		[ mng_triple_doc/3
+		]).
+:- use_module(library('lang/scopes/temporal'),
+		[ time_scope_data/2
+		]).
 
+:- rdf_meta(triple_tell(t,t,t,t,t,-)).
 
 %% register query commands
 :- mng_query_command(triple).
@@ -133,6 +140,7 @@ mng_compiler:step_compile(
 %%
 triple_tell(
 		triple(S,P,O),
+		MngValue,
 		parents(Child,Property),
 		[Pstar, Ostar],
 		Context, Pipeline) :-
@@ -141,7 +149,8 @@ triple_tell(
 	mng_get_db(_DB, Coll, 'triples'),
 	% strip the value, assert that operator must be $eq
 	% all others do not make sense fro tell.
-	mng_query_value_(O,'$eq',MngValue,Unit),
+	% FIXME: move to client.pl
+	mng_triples:mng_query_value_(O,'$eq',MngValue,Unit),
 	% extend the context
 	Context0 = [
 		property(P),
@@ -154,6 +163,7 @@ triple_tell(
 		['o', MngValue],
 		['p*', Pstar],
 		['o*', Ostar],
+		%['o*', array([MngValue])],
 		['graph', string(Graph)],
 		['scope', string('$v_scope')]
 	],
@@ -172,7 +182,7 @@ triple_tell(
 		% lookup parent documents into the 'parents' field
 		;	lookup_parents_(Child, Property, Context0, Step)
 		% compute the union of scopes in next
-		;	scope_union_(Context0, Step)
+		;	scope_union_(Step)
 		% add triples to triples array that have been queued to be removed
 		;	array_concat_('triples', string('$next'), Step)
 		% add merged triple document to triples array
@@ -208,12 +218,12 @@ lookup_overlapping_(TripleDoc, Context, ['$lookup', [
 	findall(Step,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
-				['s',S],
-				['p',P],
-				['o',O],
+				['s',S], ['p',P], ['o',O],
 				['scope.time.since',['$lte',double(Until)]],
 				['scope.time.until',['$gte',double(Since)]]
 			]]
+		% only keep scope field
+		;	Step=['$project',[['scope',int(1)]]]
 		% toggle delete flag
 		;	Step=['$set',['delete',bool(true)]]
 		),
@@ -403,7 +413,7 @@ project_1(_,Field,string(Pr_Value)) :-
 set_scope_(Context, ['$set',['v_scope',[
 		['time',[
 			['since', double(Since)],
-			['until', double(Since)]
+			['until', double(Until)]
 		]]]]]) :-
 	% read scope data
 	option(scope(Scope), Context),
@@ -413,27 +423,29 @@ set_scope_(Context, ['$set',['v_scope',[
 scope_union_(Step) :-
 	% create array with all scope.time.since values
 	(	Step=['$set',['num_array',['$map',[
-			['input', '$next'],
-			['in', '$$this.scope.time.since']
+			['input', string('$next')],
+			['in', string('$$this.scope.time.since')]
 		]]]]
 	;	array_concat_('num_array',
-			array([string('$v_scope.time.since')]))
+			array([string('$v_scope.time.since')]),
+			Step)
 	% set the minimum of since values
 	;	Step=['$set',['v_scope.time.since',
 			['$min',string('$num_array')]
 		]]
 	% create array with all scope.time.until values
 	;	Step=['$set',['num_array',['$map',[
-			['input', '$next'],
-			['in', '$$this.scope.time.until']
+			['input', string('$next')],
+			['in', string('$$this.scope.time.until')]
 		]]]]
 	;	array_concat_('num_array',
-			array([string('$v_scope.time.until')]))
+			array([string('$v_scope.time.until')]),
+			Step)
 	% set the maximum of until values
 	;	Step=['$set',['v_scope.time.until',
 			['$max',string('$num_array')]
 		]]
-	;	Step=['$unset','num_array']
+	;	Step=['$unset',string('num_array')]
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -454,13 +466,13 @@ lookup_parents_(Child, Property, Context, Step) :-
 					['s',string(Child)],
 					['p',string(Property)]
 				]],
-				['$project', ['o*', int(1)]],
+				['$project', [['o*', int(1)]]],
 				['$unwind', string('$o*')]
 			])]
 		]]
 	% convert parents from list of documents to list of strings.
 	;	Step=['$set',['parents',['$map',[
-			['input','$parents'],
+			['input',string('$parents')],
 			['in',string('$$this.o*')]
 		]]]]
 	% also add child to parents list
@@ -476,6 +488,8 @@ propagate_tell_(S, Context, Step) :-
 		(	X=['$match', [['o*',string(S)]]]
 		% and add parent field from input documents to o*
 		;	array_concat_('o*', string('$$parents'), X)
+		% only replace o*
+		;	X=['$project',[['o*',int(1)]]]
 		),
 		Inner),
 	% first, lookup matching documents and update o*
