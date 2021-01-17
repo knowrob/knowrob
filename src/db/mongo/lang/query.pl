@@ -26,12 +26,9 @@ into aggregate pipelines in this module.
 %     -- 2. disjunctions keep track of cut in disjuncts
 %             and does not proceed if cut+matching docs in previous step
 %
-% - string commands might be needed
-% - term commands?
-% - implement unify operator =/2, i.e. $set if var, $match if ground.
+% - pragma command
 % - include_parents is needed? should be taken into account to yield
 %         all elements in p* of triples
-% - add commands for rdf comments
 %
 
 :- use_module('compiler').

@@ -3,14 +3,15 @@
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1
 	    ]).
-:- use_module(library('db/mongo/lang/compiler')).
-:- use_module(library('db/mongo/lang/query')).
 :- use_module(library('db/mongo/tripledb/triples'),
 		[ mng_triple_doc/3
 		]).
 :- use_module(library('lang/scopes/temporal'),
 		[ time_scope_data/2
 		]).
+
+:- use_module(library('db/mongo/lang/compiler')).
+:- use_module(library('db/mongo/lang/query')).
 
 :- rdf_meta(triple_tell(t,t,t,t,t,-)).
 
