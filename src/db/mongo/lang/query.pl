@@ -26,7 +26,6 @@ into aggregate pipelines in this module.
 %     -- 2. disjunctions keep track of cut in disjuncts
 %             and does not proceed if cut+matching docs in previous step
 %
-% - pragma command
 % - include_parents is needed? should be taken into account to yield
 %         all elements in p* of triples
 %

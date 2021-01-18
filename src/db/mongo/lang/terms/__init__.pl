@@ -6,3 +6,4 @@
 :- use_module('lists').
 :- use_module('disjunction').
 :- use_module('annotation').
+:- use_module('pragma').
