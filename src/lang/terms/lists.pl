@@ -1,29 +1,29 @@
-:- module(mng_term_member, []).
+:- module(lang_lists, []).
 
-:- use_module(library('db/mongo/lang/compiler')).
-:- use_module(library('db/mongo/lang/query')).
+:- use_module(library('db/mongo/compiler')).
+:- use_module(library('db/mongo/query')).
 
 % TODO: support more list commands
-%:- mng_query_command(memberchk).
-%:- mng_query_command(sort).
-%:- mng_query_command(reverse).
-%:- mng_query_command(list_to_set).
-%:- mng_query_command(max_list).
-%:- mng_query_command(min_list).
-%:- mng_query_command(sum_list).
-%:- mng_query_command(length).
+%:- add_query_command(memberchk).
+%:- add_query_command(sort).
+%:- add_query_command(reverse).
+%:- add_query_command(list_to_set).
+%:- add_query_command(max_list).
+%:- add_query_command(min_list).
+%:- add_query_command(sum_list).
+%:- add_query_command(length).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% nth/3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- mng_query_command(nth).
+:- add_query_command(nth).
 
 %%
 % nth/3 exposes variables of the pattern.
 %
-mng_compiler:step_var(
+query_compiler:step_var(
 		nth(_Index, _List, Pattern),
 		[Key, Var]) :-
 	pattern_variables_(Pattern, Vars),
@@ -33,12 +33,12 @@ mng_compiler:step_var(
 % nth/3 retrieves an a document at given index
 % from some array field.
 %
-mng_compiler:step_compile(
+query_compiler:step_compile(
 		nth(Index, List, _Elem),
 		Context,
 		Pipeline) :-
 	option(ask, Context), !,
-	mng_compiler:var_key(List, ListKey),
+	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
@@ -60,12 +60,12 @@ mng_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- mng_query_command(member).
+:- add_query_command(member).
 
 %%
 % member exposes variables of the pattern.
 %
-mng_compiler:step_var(
+query_compiler:step_var(
 		member(Pattern, _List),
 		[Key, Var]) :-
 	pattern_variables_(Pattern, Vars),
@@ -75,12 +75,12 @@ mng_compiler:step_var(
 % member(Pattern,List) unwinds a list variable holding documents
 % and exposes variables in Pattern to the rest of the pipeline.
 %
-mng_compiler:step_compile(
+query_compiler:step_compile(
 		member(_Pattern, List),
 		Context,
 		Pipeline) :-
 	option(ask, Context), !,
-	mng_compiler:var_key(List, ListKey),
+	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
@@ -127,5 +127,5 @@ pattern_variables_(Pattern, Vars) :-
 
 pattern_variables_1([], []) :- !.
 pattern_variables_1([X|Xs], [[Key,X]|Ys]) :-
-	mng_compiler:var_key(X,Key),
+	query_compiler:var_key(X,Key),
 	pattern_variables_1(Xs, Ys).

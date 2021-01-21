@@ -46,7 +46,7 @@ workflow_sequence(Steps, StepSequence) :-
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(temporal_workflow,
+:- begin_rdf_tests(temporal_workflow,
 		'package://knowrob/owl/test/pancake.owl',
 		[ namespace('http://knowrob.org/kb/pancake.owl#')
 		]).
@@ -70,4 +70,4 @@ test('WF_Baking_0 sequence', [nondet]) :-
 		  test:'FlippingAPancake_0'
 		]).
 
-:- end_tripledb_tests(temporal_workflow).
+:- end_rdf_tests(temporal_workflow).

@@ -31,12 +31,6 @@
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_description/1).
-:- table(g_is_situation/1).
-:- table(g_is_goal/1).
-:- table(g_is_plan/1).
-
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
@@ -48,8 +42,8 @@
 %
 % @param Entity An entity IRI.
 %
-is_description(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Description').
+is_description(Entity) ?+>
+	has_type(Entity, dul:'Description').
 
 %% is_situation(?Entity) is nondet.
 %
@@ -57,8 +51,8 @@ is_description(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_situation(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Situation').
+is_situation(Entity) ?+>
+	has_type(Entity, dul:'Situation').
 
 %% is_goal(?Entity) is nondet.
 %
@@ -66,8 +60,8 @@ is_situation(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_goal(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Goal').
+is_goal(Entity) ?+>
+	has_type(Entity, dul:'Goal').
 
 %% is_design(?Entity) is nondet.
 %
@@ -76,7 +70,7 @@ is_goal(Entity), [table(?)] ?+>
 % @param Entity An entity IRI.
 %
 is_design(Entity) ?+>
-  has_type(Entity, dul:'Design').
+	has_type(Entity, dul:'Design').
 
 %% is_diagnosis(?Entity) is nondet.
 %
@@ -85,7 +79,7 @@ is_design(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_diagnosis(Entity) ?+>
-  has_type(Entity, dul:'Diagnosis').
+	has_type(Entity, dul:'Diagnosis').
 
 %% is_plan(?Entity) is nondet.
 %
@@ -93,8 +87,8 @@ is_diagnosis(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_plan(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Plan').
+is_plan(Entity) ?+>
+	has_type(Entity, dul:'Plan').
 
 %% is_plan_execution(?Entity) is nondet.
 %
@@ -103,7 +97,7 @@ is_plan(Entity), [table(?)] ?+>
 % @param Entity An entity IRI.
 %
 is_plan_execution(Entity) ?+>
-  has_type(Entity, dul:'PlanExecution').
+	has_type(Entity, dul:'PlanExecution').
 
 % TODO
 %is_plan_execution(Entity,Plan,Action) ?+>
@@ -121,7 +115,7 @@ is_plan_execution(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_norm(Entity) ?+>
-  has_type(Entity, dul:'Norm').
+	has_type(Entity, dul:'Norm').
 
 %% is_transition(?Entity) is nondet.
 %
@@ -130,7 +124,7 @@ is_norm(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_transition(Entity) ?+>
-  has_type(Entity, dul:'Transition').
+	has_type(Entity, dul:'Transition').
 
 %% plan_has_goal(?Plan,?Goal) is nondet.
 %
@@ -140,8 +134,8 @@ is_transition(Entity) ?+>
 % @param Goal An individual of type dul:'Description'.
 %
 plan_has_goal(Plan,Goal) ?+>
-  holds(Plan,dul:hasComponent,Goal),
-  has_type(Goal,dul:'Goal').
+	holds(Plan,dul:hasComponent,Goal),
+	has_type(Goal,dul:'Goal').
 
 %% satisfies(?Sit,?Descr) is nondet.
 %
@@ -152,7 +146,7 @@ plan_has_goal(Plan,Goal) ?+>
 % @param Descr An individual of type dul:'Description'.
 %
 satisfies(Sit,Descr) ?+>
-  holds(Sit,dul:satisfies,Descr).
+	holds(Sit,dul:satisfies,Descr).
 
 %% is_setting_for(+Sit,+Entity) is nondet.
 %
@@ -165,23 +159,23 @@ satisfies(Sit,Descr) ?+>
 % @param Entity A named individual.
 %
 is_setting_for(Sit,Entity) ?>
-  holds(Sit,dul:isSettingFor,Entity).
+	holds(Sit,dul:isSettingFor,Entity).
 
 is_setting_for(Sit,Entity) +>
-  { ask(is_action(Entity)) },
-  holds(Sit,dul:includesAction,Entity).
+	ask(is_action(Entity)),
+	holds(Sit,dul:includesAction,Entity).
 
 is_setting_for(Sit,Entity) +>
-  { ask(is_event(Entity)) },
-  holds(Sit,dul:includesEvent,Entity).
+	ask(is_event(Entity)),
+	holds(Sit,dul:includesEvent,Entity).
 
 is_setting_for(Sit,Entity) +>
-  { ask(is_agent(Entity)) },
-  holds(Sit,dul:includesAgent,Entity).
+	ask(is_agent(Entity)),
+	holds(Sit,dul:includesAgent,Entity).
 
 is_setting_for(Sit,Entity) +>
-  { ask(is_object(Entity)) },
-  holds(Sit,dul:includesObject,Entity).
+	ask(is_object(Entity)),
+	holds(Sit,dul:includesObject,Entity).
 
 is_setting_for(Sit,Entity) +>
-  holds(Sit,dul:isSettingFor,Entity).
+	holds(Sit,dul:isSettingFor,Entity).

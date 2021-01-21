@@ -46,9 +46,7 @@
 
 % initialize databases
 :- use_directory('db').
-:- tripledb_init.
-:- tripledb_add_subgraph(user,common).
-:- tripledb_add_subgraph(test,user).
+:- knowrob_init.
 
 % load init files in sub-directories
 :- use_directory('lang').

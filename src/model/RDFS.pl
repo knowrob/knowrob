@@ -16,18 +16,11 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3,
-      rdf_current_ns/2,
-      rdf_split_url/3
-    ]).
-:- rdf_register_ns(rdfs,
-    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+	[ rdf_register_ns/3
+	]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_resource/1).
-:- table(g_is_property/1).
-:- table(g_is_literal/1).
-:- table(g_is_datatype/1).
+:- rdf_register_ns(rdfs,
+	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
 %% is_resource(+Entity) is semidet.
 %
@@ -39,8 +32,8 @@
 %
 % @param Entity An entity IRI.
 %
-is_resource(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Resource').
+is_resource(Entity) ?+>
+	has_type(Entity, rdfs:'Resource').
 
 %% is_property(+Entity) is semidet.
 %
@@ -49,8 +42,8 @@ is_resource(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_property(Entity), [table(?)] ?+>
-  has_type(Entity, rdf:'Property').
+is_property(Entity) ?+>
+	has_type(Entity, rdf:'Property').
 
 %% is_literal(+Entity) is semidet.
 %
@@ -63,8 +56,8 @@ is_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_literal(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Literal').
+is_literal(Entity) ?+>
+	has_type(Entity, rdfs:'Literal').
 
 %% is_datatype(+Entity) is semidet.
 %
@@ -76,8 +69,8 @@ is_literal(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_datatype(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Datatype').
+is_datatype(Entity) ?+>
+	has_type(Entity, rdfs:'Datatype').
 
 %% has_type(+Resource,?Type) is semidet.
 %
@@ -88,11 +81,12 @@ is_datatype(Entity), [table(?)] ?+>
 % @param Type a rdf:type of the resource
 %
 has_type(Resource,Type) ?>
-  { \+ compound(Type) },
-  triple(Resource, rdf:type, Type).
+	% TODO: this seems not a good idea, e.g. Type could be a regex/1 term.
+	pragma(\+ compound(Type)),
+	triple(Resource, rdf:type, Type).
 
 has_type(Resource,Type) +>
-  instance_of(Resource,Type).
+	instance_of(Resource,Type).
 
 %% has_range(?Property,?Range) is nondet.
 %
@@ -103,7 +97,7 @@ has_type(Resource,Type) +>
 % @param Range the range of the property
 %
 has_range(Property,Range) ?+>
-  triple(Property, rdfs:range, Range).
+	triple(Property, rdfs:range, Range).
 
 %% has_domain(?Property,?Domain) is nondet.
 %
@@ -114,7 +108,7 @@ has_range(Property,Range) ?+>
 % @param Domain the range of the property
 %
 has_domain(Property,Domain) ?+>
-  triple(Property, rdfs:domain, Domain).
+	triple(Property, rdfs:domain, Domain).
 
 %% has_label(+Resource,?Comment) is semidet.
 %
@@ -125,7 +119,7 @@ has_domain(Property,Domain) ?+>
 % @param Label a label atom
 %
 has_label(Resource,Label) ?+>
-  triple(Resource, rdfs:label, Label).
+	triple(Resource, rdfs:label, Label).
 
 %% has_comment(+Resource,?Comment) is semidet.
 %
@@ -136,29 +130,51 @@ has_label(Resource,Label) ?+>
 % @param Comment a comment atom
 %
 has_comment(Resource,Comment) ?+>
-  triple(Resource, rdfs:comment, Comment).
+	triple(Resource, rdfs:comment, Comment).
 
-%% is_rdf_list(+RDFList,-PrologList) is semidet.
+%% is_rdf_list(+RDF_list, -Pl_List) is semidet.
 %
 %
-is_rdf_list('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',[]) ?+> { ! }.
+is_rdf_list(RDF_list, Pl_List) ?>
+	ground(RDF_list),
+	findall(X,
+		(	reflexive(transitive(
+				triple(RDF_list,rdf:rest,Ys)
+			)),
+			triple(Ys, rdf:first, X)
+		),
+		Pl_List).
 
-is_rdf_list(RDFList,[X|Xs]) ?>
-  triple(RDFList, rdf:first, X),
-  triple(RDFList, rdf:rest, Ys),
-  is_rdf_list(Ys,Xs).
+is_rdf_list(RDF_list, Pl_List) +>
+	pragma(expand_list_(Pl_List, Expanded)),
+	call([
+		has_type(RDF_list, rdf:'List')
+	|	Expanded
+	]).
 
-is_rdf_list(RDFList,[X|Xs]) +>
-  is_rdf_list(Ys,Xs),
-  has_type(RDFList, rdf:'List'),
-  triple(RDFList, rdf:first, X),
-  triple(RDFList, rdf:rest, Ys).
+		 /*******************************
+		 *	    helper	     		*
+		 *******************************/
+
+%%
+expand_list_(
+		'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',
+		[], []) :-
+	!.
+
+expand_list_(This, [Child|Rest],
+		[	triple(This, rdf:first, Child),
+			has_type(Next, rdf:'List'),
+			triple(This, rdf:rest, Next)
+		|	Xs
+		]) :-
+	expand_list_(Next, Rest, Xs).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'model_RDFS',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
@@ -175,4 +191,4 @@ test('is_property') :-
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
 
-:- end_tripledb_tests('model_RDFS').
+:- end_rdf_tests('model_RDFS').

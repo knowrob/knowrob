@@ -32,12 +32,6 @@ In DUL, Region is defined as:
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2, tripledb_ask/3 ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_region/1).
-:- table(g_is_parameter/1).
-:- table(g_is_time_interval/1).
-:- table(g_is_space_region/1).
-
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
@@ -49,8 +43,8 @@ In DUL, Region is defined as:
 %
 % @param Entity An entity IRI.
 %
-is_region(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Region').
+is_region(Entity) ?+>
+	has_type(Entity, dul:'Region').
 
 %% is_parameter(?Entity) is nondet.
 %
@@ -58,8 +52,8 @@ is_region(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_parameter(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Parameter').
+is_parameter(Entity) ?+>
+	has_type(Entity, dul:'Parameter').
 
 %% is_space_region(?Entity) is nondet.
 %
@@ -67,8 +61,8 @@ is_parameter(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_space_region(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'SpaceRegion').
+is_space_region(Entity) ?+>
+	has_type(Entity, dul:'SpaceRegion').
 
 %% is_amount(?Entity) is nondet.
 %
@@ -77,7 +71,7 @@ is_space_region(Entity), [table(?)] ?+>
 % @param Entity An entity IRI.
 %
 is_amount(Entity) ?+>
-  has_type(Entity, dul:'Amount').
+	has_type(Entity, dul:'Amount').
 
 %% is_physical_attribute(?Entity) is nondet.
 %
@@ -86,7 +80,7 @@ is_amount(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_physical_attribute(Entity) ?+>
-  has_type(Entity, dul:'PhysicalAttribute').
+	has_type(Entity, dul:'PhysicalAttribute').
 
 %% is_social_attribute(?Entity) is nondet.
 %
@@ -95,7 +89,7 @@ is_physical_attribute(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_social_attribute(Entity) ?+>
-  has_type(Entity, dul:'SocialAttribute').
+	has_type(Entity, dul:'SocialAttribute').
 
 %% is_time_interval(?Entity) is nondet.
 %
@@ -103,8 +97,8 @@ is_social_attribute(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_time_interval(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'TimeInterval').
+is_time_interval(Entity) ?+>
+	has_type(Entity, dul:'TimeInterval').
 
 %% has_region(?Entity,?Region) is nondet.
 %
@@ -117,7 +111,7 @@ is_time_interval(Entity), [table(?)] ?+>
 % @param Region An region IRI.
 %
 has_region(Entity,Region) ?+>
-  holds(Entity, dul:hasRegion, Region).
+	holds(Entity, dul:hasRegion, Region).
 
 %% has_parameter(?Entity,?Param) is nondet.
 %
@@ -130,7 +124,7 @@ has_region(Entity,Region) ?+>
 % @param Param An parameter IRI.
 %
 has_parameter(Entity,Param) ?+>
-  holds(Entity,dul:hasParameter,Param).
+	holds(Entity,dul:hasParameter,Param).
 
 %% has_parameter(?Entity,?Param,?ParamType) is nondet.
 %
@@ -142,8 +136,8 @@ has_parameter(Entity,Param) ?+>
 % @param Param parameter type IRI.
 %
 has_parameter(Entity,Param,ParamType) ?>
-  holds(Entity,dul:hasParameter,Param),
-  has_object_type(Param,ParamType).
+	holds(Entity,dul:hasParameter,Param),
+	has_object_type(Param,ParamType).
 
 %% has_parameter_range(?Entity,?Param,?Range) is nondet.
 %
@@ -155,8 +149,8 @@ has_parameter(Entity,Param,ParamType) ?>
 % @param Range parameter range IRI.
 %
 has_parameter_range(Entity,Param,Range) ?>
-  holds(Entity,dul:hasParameter,Param),
-  holds(Param,dul:classifies,only(Range)).
+	holds(Entity,dul:hasParameter,Param),
+	holds(Param,dul:classifies,only(Range)).
 
 %% has_assignment(?Param,?Region) is nondet.
 %
@@ -166,7 +160,7 @@ has_parameter_range(Entity,Param,Range) ?>
 % @param Region region IRI.
 %
 has_assignment(Param,Region) ?+>
-  holds(Param,dul:classifies,Region).
+	holds(Param,dul:classifies,Region).
 
 %% has_data_value(?Entity,?DataValue) is nondet.
 %
@@ -176,10 +170,10 @@ has_assignment(Param,Region) ?+>
 % @param DataValue typed data value.
 %
 has_data_value(Entity,DataValue) ?+>
-  holds(Entity,dul:hasDataValue,DataValue).
+	holds(Entity,dul:hasDataValue,DataValue).
 
 %% has_time_interval(+Entity,?Interval) is semidet. 
 %
 %
 has_time_interval(Entity,TimeInterval) ?+>
-  triple(Entity,dul:hasTimeInterval,TimeInterval).
+	triple(Entity,dul:hasTimeInterval,TimeInterval).

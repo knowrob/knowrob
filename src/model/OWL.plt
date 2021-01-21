@@ -10,7 +10,7 @@
 :- use_module(library('rostest')).
 :- use_module(library('semweb/rdf_db')).
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
         'model_OWL',
         'package://knowrob/owl/test/test_owl.owl',
         [ namespace('http://knowrob.org/kb/test_owl#')]

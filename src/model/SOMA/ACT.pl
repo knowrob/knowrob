@@ -38,7 +38,7 @@
 % @param Entity An entity IRI.
 %
 is_manipulation_action(Entity) ?+>
-  has_type(Entity, soma:'ManipulationAction').
+	has_type(Entity, soma:'ManipulationAction').
 
 %% is_mental_action(?Entity) is nondet.
 %
@@ -47,7 +47,7 @@ is_manipulation_action(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_mental_action(Entity) ?+>
-  has_type(Entity, soma:'MentalAction').
+	has_type(Entity, soma:'MentalAction').
 
 %% is_physical_task(?Entity) is nondet.
 %
@@ -56,7 +56,7 @@ is_mental_action(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_physical_task(Entity) ?+>
-  has_type(Entity, soma:'PhysicalTask').
+	has_type(Entity, soma:'PhysicalTask').
 
 %% is_mental_task(?Entity) is nondet.
 %
@@ -65,7 +65,7 @@ is_physical_task(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_mental_task(Entity) ?+>
-  has_type(Entity, soma:'MentalTask').
+	has_type(Entity, soma:'MentalTask').
 
 %% is_performed_by(?Act,?Agent) is nondet.
 %
@@ -75,28 +75,28 @@ is_mental_task(Entity) ?+>
 % @param Agent An individual of type dul:'Agent'.
 %
 is_performed_by(Act,Agent) ?+>
-  holds(Act, soma:isPerformedBy, Agent).
+	holds(Act, soma:isPerformedBy, Agent).
 
 %% has_subevent(+Event,?Sub) is nondet.
 %
 %
 has_subevent(Event,Sub) ?>
-  holds(Event,dul:hasConstituent,Sub).
+	holds(Event,dul:hasConstituent,Sub).
 
 has_subevent(Event,Sub) ?>
-  holds(Event,soma:hasPhase,Sub).
+	holds(Event,soma:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
-  { is_action(Sub) },
-  holds(Event,dul:hasConstituent,Sub).
+	ask(is_action(Sub)),
+	holds(Event,dul:hasConstituent,Sub).
 
 has_subevent(Event,Sub) +>
-  { is_process(Sub) },
-  holds(Event,soma:hasPhase,Sub).
+	ask(is_process(Sub)),
+	holds(Event,soma:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
-  { is_state(Sub) },
-  holds(Event,soma:hasPhase,Sub).
+	ask(is_state(Sub)),
+	holds(Event,soma:hasPhase,Sub).
 
 %% action_status(?Act,?Status) is semidet.
 %
@@ -106,7 +106,7 @@ has_subevent(Event,Sub) +>
 % @param Status The execution status of Act.
 %
 action_status(Act,Status) ?+>
-  holds(Act, soma:hasExecutionState, Status).
+	holds(Act, soma:hasExecutionState, Status).
 
 %% action_succeeded(?Act) is det.
 %
@@ -115,7 +115,7 @@ action_status(Act,Status) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_succeeded(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Succeeded').
+	action_status(Act, soma:'ExecutionState_Succeeded').
 
 %% action_failed(?Act) is det.
 %
@@ -124,7 +124,7 @@ action_succeeded(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_failed(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Failed').
+	action_status(Act, soma:'ExecutionState_Failed').
 
 %% action_active(?Act) is det.
 %
@@ -133,7 +133,7 @@ action_failed(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_active(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Active').
+	action_status(Act, soma:'ExecutionState_Active').
 
 %% action_paused(?Act) is det.
 %
@@ -142,7 +142,7 @@ action_active(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_paused(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Paused').
+	action_status(Act, soma:'ExecutionState_Paused').
 
 %% action_pending(?Act) is det.
 %
@@ -151,7 +151,7 @@ action_paused(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_pending(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Pending').
+	action_status(Act, soma:'ExecutionState_Pending').
 
 %% action_cancelled(?Act) is det.
 %
@@ -160,7 +160,7 @@ action_pending(Act) ?+>
 % @param Act An individual of type dul:'Action'.
 %
 action_cancelled(Act) ?+>
-  action_status(Act, soma:'ExecutionState_Cancelled').
+	action_status(Act, soma:'ExecutionState_Cancelled').
 
 %% task_effect(?EventType, ?Effect) is nondet
 %

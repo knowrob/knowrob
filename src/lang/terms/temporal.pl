@@ -9,10 +9,6 @@
 @license BSD
 */
 
-:- use_module(library('lang/scopes/temporal'),
-    [ time_scope/3,
-      time_scope_data/2 ]).
-
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
 :- op(800, yfx, user:until).
@@ -25,28 +21,36 @@
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
 %
-during(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,TimeTerm) }.
+during(Query, [Since,Until]) ?>
+	number(Since),
+	number(Until),
+	call(Query, _{
+		time: _{ since: =<(Since), until: >=(Until) }
+	}).
 
-during(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,ground(Since),ground(Until)),
-	  time_scope(=<(Since),>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+during(Query, Event) ?>
+	ground(Event),
+	has_interval_data(Event, Since, Until),
+	call(Query, _{
+		time: _{ since: =<(Since), until: >=(Until) }
+	}).
 
-during(Query,TimeTerm) +>
-	option(update(union)),
-	{ interval_data_(TimeTerm,ground(Since),ground(Until)),
-	  time_scope(=(Since),=(Until),Scope)
-	  %time_scope(=<(Since),>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+during(Query, [Since,Until]) ?>
+	var(Since),
+	var(Until),
+	call(Query),
+	% FIXME this is not really accurate as get('v_scope')
+	% yields the accumulated scope so far.
+	% but we only want the accumulated scope in Query
+	% here. would be possible with e.g. an additional $lookup.
+	get_fact_scope(_{
+		time: _{ since: Since, until: Until }
+	}).
+
+during(Query, [Since, Until]) +>
+	call(Query, _{
+		time: _{ since: =(Since), until: =(Until) }
+	}).
 
 %% since(+Statement,?Interval) is nondet.
 %
@@ -56,32 +60,30 @@ during(Query,TimeTerm) +>
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
 %
-since(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,[TimeTerm,_]) }.
+since(Query, Time) ?>
+	number(Time),
+	call(Query, _{
+		time: _{ since: =<(Time) }
+	}).
 
-since(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,ground(Since),_),
-	  time_scope(=<(Since),_,Scope)
-	},
-	call(Query,[scope(Scope)]).
+since(Query, Event) ?>
+	atom(Event),
+	has_interval_data(Event, Time, _),
+	call(Query, _{
+		time: _{ since: =<(Time) }
+	}).
 
-since(Query,TimeTerm) +>
-	option(update(intersect)),
-	{ interval_data_(TimeTerm,ground(Since),_),
-	  % TODO: it is not true that this implies it holds until end of time.
-	  %       better would be to represent that it holds at least until some instant.
-	  %       However, to properly handle this a notion of uncertainty might be needed.
-	  time_scope(=(Since),=('Infinity'),Scope)
-	  %get_time(Now), time_scope(=(Since),=(Now),Scope)
-	  %time_scope(=(Since),>=(Since),Scope)
-	},
-	call(Query,[scope(Scope)]).
+since(Query, Time) ?>
+	var(Time),
+	call(Query),
+	get_fact_scope(_{
+		time: _{ since: Time }
+	}).
+
+since(Query, Time) +>
+	call(Query, _{
+		time: _{ since: =(Time) }
+	}).
 
 %% until(+Statement,?Interval) is nondet.
 %
@@ -91,52 +93,37 @@ since(Query,TimeTerm) +>
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
 %
-until(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,[_,TimeTerm]) }.
+until(Query, Time) ?>
+	number(Time),
+	call(Query, _{
+		time: _{ until: >=(Time) }
+	}).
 
-until(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,_,ground(Until)),
-	  time_scope(_,>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+until(Query, Event) ?>
+	atom(Event),
+	has_interval_data(Event, Time, _),
+	call(Query, _{
+		time: _{ until: >=(Time) }
+	}).
 
-until(Query,TimeTerm) +>
-	option(update(intersect)),
-	{ interval_data_(TimeTerm,_,ground(Until)),
-	  % TODO: it is not true that this implies it holds since begin of time.
-	  %       better would be to represent that it holds at least since some instant.
-	  %       However, to properly handle this a notion of uncertainty might be needed.
-	  time_scope(=(0),=(Until),Scope)
-	  %time_scope(=(Until),=(Until),Scope)
-	  %time_scope(=<(Until),=(Until),UntilScope)
-	},
-	call(Query,[scope(Scope)]).
+until(Query, Time) ?>
+	var(Time),
+	call(Query),
+	get_fact_scope(_{
+		time: _{ until: Time }
+	}).
 
-%%
-interval_data_(Term,Since,Until) :-
-	ask(has_interval_data(Term,X,Y))
-	-> ( interval_data__(Term,Since,X),
-	     interval_data__(Term,Until,Y) )
-	;  ( throw(temporal_scope(interval_data(nodata(Term)))) ).
-
-interval_data__(Term,ground(Y),Y) :-
-	!,
-	( ground(Y) -> true
-	; throw(temporal_scope(interval_data(not_ground(Term))))
-	).
-interval_data__(_,X,X).
+until(Query, Time) +>
+	number(Time),
+	call(Query, _{
+		time: _{ until: =(Time) }
+	}).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'lang_temporal',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
@@ -171,4 +158,4 @@ test('Lea not hasNumber during') :-
 	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [5,20]),
 	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [34,44]).
 
-:- end_tripledb_tests('lang_temporal').
+:- end_rdf_tests('lang_temporal').

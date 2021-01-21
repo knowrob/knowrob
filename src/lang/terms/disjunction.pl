@@ -1,35 +1,35 @@
-:- module(mng_term_facet, []).
+:- module(lang_facet, []).
 
-:- use_module(library('db/mongo/lang/compiler')).
-:- use_module(library('db/mongo/lang/query')).
+:- use_module(library('db/mongo/compiler')).
+:- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- mng_query_command(facet).
+:- add_query_command(facet).
 
 %%
 % Each facet is a KnowRob language expression and needs to be expanded.
 %
-mng_query:step_expand(
+query_compiler:step_expand(
 		facet([]),
 		facet([]), _Context).
-mng_query:step_expand(
+query_compiler:step_expand(
 		facet([X|Xs]),
 		facet([Y|Ys]), Context) :-
-	mng_expand(X,Y,Context),
-	mng_query:step_expand(facet(Xs), facet(Ys), Context).
+	query_expand(X,Y,Context),
+	query_compiler:step_expand(facet(Xs), facet(Ys), Context).
 
 %%
 % expose variables to the outside that appear in every facet.
 % NOTE: thus it is not possible to to get the value of variables that
 %       appear only in some facets.
 %
-mng_compiler:step_var(facet([First|Rest]), Var) :-
+query_compiler:step_var(facet([First|Rest]), Var) :-
 	% make choicepoint for each variable in First
-	mng_compiler:step_var(First, Var),
+	query_compiler:step_var(First, Var),
 	% only proceed if Var is a variable in each facet
 	forall(
 		member(Y, Rest),
-		mng_compiler:step_var(Y, Var)
+		query_compiler:step_var(Y, Var)
 	).
 
 %%
@@ -42,7 +42,7 @@ mng_compiler:step_var(facet([First|Rest]), Var) :-
 %
 % TODO: seems like a good usecase for map-reduce?
 %
-mng_compiler:step_compile(
+query_compiler:step_compile(
 		facet(Facets),
 		Context,
 		Pipeline) :-
@@ -101,8 +101,8 @@ compile_facet_(StepVars, Facet, Pipeline, VarKey, Context) :-
 	% create findall pattern from step variables
 	maplist(nth0(1), StepVars, Pattern),
 	% compile the step
-	mng_compiler:step_compile(
+	query_compiler:step_compile(
 		findall(Pattern, Facet, Var),
 		Context,
 		Pipeline),
-	mng_compiler:var_key(Var, VarKey).
+	query_compiler:var_key(Var, VarKey).

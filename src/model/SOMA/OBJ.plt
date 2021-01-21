@@ -1,9 +1,9 @@
-:- use_module(library('db/tripledb_tests')).
+:- use_module(library('lang/rdf_tests')).
 
 :- use_module(library('lang/query'),
     [ synchronize/1, tell/1 ]).
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'model_SOMA_OBJ',
 		'package://knowrob/owl/test/test_knowrob_objects.owl',
 		[ namespace('http://knowrob.org/kb/test_knowrob_objects.owl#')
@@ -56,5 +56,4 @@ test(assert_an_object_color) :-
   tell(object_color_rgb(Object, [1.0,1.0,1.0])),
   object_color_rgb(Object, [R,G,B]).
 
-
-:- end_tripledb_tests('model_SOMA_OBJ').
+:- end_rdf_tests('model_SOMA_OBJ').

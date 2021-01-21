@@ -1,16 +1,20 @@
 
-:- use_module('./query.pl').
+:- use_module('messages').
+:- use_module('subgraph').
+:- use_module('query').
+:- use_module('compiler').
+:- use_module('export').
+
+:- use_module('rdf_tests').
+
+% TODO:
+%:- use_module('scope1').
+%:- use_module('scope2').
 :- use_module('./scopes/temporal.pl').
 
-:- use_module('./computable.pl').
-:- use_module('./designator.pl').
-:- use_module('./export.pl').
-
 % query terms
-:- use_module('./terms/temporal.pl').
-:- use_module('./terms/transitive.pl').
-:- use_module('./terms/triple.pl').
-:- use_module('./terms/holds.pl').
-:- use_module('./terms/is_a.pl').
-:- use_module('./terms/is_at.pl').
-:- use_module('./terms/occurs.pl').
+:- use_directory('terms').
+
+% TODO:
+%:- use_module('computable').
+%:- use_module('designator').

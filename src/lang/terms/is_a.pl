@@ -12,12 +12,6 @@
 
 :- op(1000, xfx, user:is_a).
 
-:- use_module(library('semweb/rdf_db'),
-	[ rdf_equal/2 ]).
-:- use_module(library('utility/notify'),
-    [ notify/1 ]).
-:- use_module(library('model/RDFS'),
-    [ is_resource/1 ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
       is_individual/1
@@ -36,21 +30,29 @@
 % @param Resource a RDF resource
 % @param Type the type of the resource
 %
-is_a(A,_B) ?+>
-  { var(A),! },
-  { throw(error(instantiation_error, is_a(resource_is_var))) }.
+
+%is_a(A,_B) ?+>
+%	var(A),
+%	!,
+%	throw(error(instantiation_error, is_a(resource_is_var))).
   
-is_a(A,B) ?+>
-  { is_individual(A),! },
-  instance_of(A,B).
+is_a(A,B) ?>
+	ground(A),
+	is_individual(A),
+	!,
+	instance_of(A,B).
 
-is_a(A,B) ?+>
-  { is_class(A),! },
-  subclass_of(A,B).
+is_a(A,B) ?>
+	ground(A),
+	is_class(A),
+	!,
+	subclass_of(A,B).
 
-is_a(A,B) ?+>
-  { is_property(A),! },
-  subproperty_of(A,B).
+is_a(A,B) ?>
+	ground(A),
+	is_property(A),
+	!,
+	subproperty_of(A,B).
 
 %% instance_of(?Entity,?Type) is nondet.
 %
@@ -64,39 +66,13 @@ is_a(A,B) ?+>
 % @param Entity a named individual
 % @param Type the type of the entity
 %
-instance_of(A,B) ?>
-  has_type(A,B),
-  { \+ rdf_equal(B,owl:'NamedIndividual') }.
+
+%instance_of(A,B) ?+>
+%	pragma(is_list(B)),
+%	instance_of_all(A,B).
 
 instance_of(A,B) ?+>
-  { is_list(B), ! },
-  instance_of_all(A,B).
-
-instance_of(A,B) +>
-  % special handling of intersection classes:
-  %    auto expand into multiple assertions.
-  has_description(B,intersection_of(List)),
-  { ! },
-  instance_of_all(A,List).
-
-instance_of(A,B) +>
-  % generate a new name in case A is a variable
-  { var(A), ! },
-  { unique_name(B,A) },
-  instance_of(A,B),
-  { is_class(B) ->
-    tell(is_individual(A)) ;
-    true }.
-
-instance_of(A,B) +>
-  triple(A,rdf:type,B),
-  notify(individual(A)).
-
-%%
-instance_of_all(_S,[])          ?+> { true }.
-instance_of_all(S,[First|Rest]) ?+>
-  instance_of(S,First),
-  instance_of_all(S,Rest).
+	triple(A,rdf:type,B).
 
 %% subclass_of(?Class,?SuperClass) is nondet.
 %
@@ -106,12 +82,12 @@ instance_of_all(S,[First|Rest]) ?+>
 % @param Class a class IRI
 % @param SuperClass a class IRI
 %
-subclass_of(A,B) ?> { ground([A,B]), A=B, ! }.
 subclass_of(A,B) ?+>
-  % avoid that class description terms are passed to tripledb lookup
-  { \+ compound(A) },
-  { \+ compound(B) },
-  triple(A,rdfs:subClassOf,B).
+	% avoid that class description terms are passed to tripledb lookup
+	% FIXME: but what about e.g. foo->V
+	pragma(\+ compound(A)),
+	pragma(\+ compound(B)),
+	triple(A, rdfs:subClassOf, B).
 
 %% subproperty_of(?Property,?SuperProperty) is nondet.
 %
@@ -120,39 +96,36 @@ subclass_of(A,B) ?+>
 % @param Property a property IRI
 % @param SuperProperty a property IRI
 %
-subproperty_of(A,B) ?> { ground([A,B]), A=B, ! }.
 subproperty_of(A,B) ?+>
-  % avoid that class description terms are passed to tripledb lookup
-  { \+ compound(B) },
-  triple(A,rdfs:subPropertyOf,B).
+	triple(A, rdfs:subPropertyOf, B).
 
 %%
 % Obtain IRI not yet used by any resource.
 %
-unique_name(Type,Name) :-
-  once((Type=[Type_IRI|_] ; Type_IRI=Type)),
-  unique_name1(Type_IRI,Name).
-
-unique_name1(Type_IRI, Name) :-
-  % generate 8 random alphabetic characters
-  randseq(8, 25, Seq_random),
-  maplist(plus(65), Seq_random, Alpha_random),
-  atom_codes(Sub, Alpha_random),
-  % TODO: what IRI prefix? Currently we re-use the one of the type.
-  %        but that seems not optimal. Probably best to
-  %        have this in query context, and some meaningful default.
-  atomic_list_concat([Type_IRI,'_',Sub], IRI),
-  % check if there is no triple with this identifier as subject or object yet
-  ( is_resource(IRI) ->
-    unique_name(Type_IRI,Name);
-    Name = IRI
-  ).
+%unique_name(Type,Name) :-
+%  once((Type=[Type_IRI|_] ; Type_IRI=Type)),
+%  unique_name1(Type_IRI,Name).
+%
+%unique_name1(Type_IRI, Name) :-
+%  % generate 8 random alphabetic characters
+%  randseq(8, 25, Seq_random),
+%  maplist(plus(65), Seq_random, Alpha_random),
+%  atom_codes(Sub, Alpha_random),
+%  % TODO: what IRI prefix? Currently we re-use the one of the type.
+%  %        but that seems not optimal. Probably best to
+%  %        have this in query context, and some meaningful default.
+%  atomic_list_concat([Type_IRI,'_',Sub], IRI),
+%  % check if there is no triple with this identifier as subject or object yet
+%  ( is_resource(IRI) ->
+%    unique_name(Type_IRI,Name);
+%    Name = IRI
+%  ).
 
      /*******************************
      *          UNIT TESTS          *
      *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
     lang_is_a,
     'package://knowrob/owl/test/swrl.owl',
     [ namespace('http://knowrob.org/kb/swrl_test#')
@@ -186,4 +159,4 @@ test("ask and tell sub property of") :-
 test("ask _ is a Person", [throws(error(instantiation_error, _))]) :-
   is_a(_, dul:'Person').
 
-:- end_tripledb_tests(lang_is_a).
+:- end_rdf_tests(lang_is_a).

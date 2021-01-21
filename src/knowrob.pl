@@ -9,6 +9,16 @@
 % define some settings
 :- setting(plugins, list, [], 'List of auto-loaded plugins').
 
+%%
+%
+%
+knowrob_init :-
+	% initialize hierachical organization of triple graphs
+	add_subgraph(user,common),
+	add_subgraph(test,user),
+	load_graph_structure.
+	
+
 %% knowrob_load_neem(+NEEM_id) is det.
 %
 % Configure KnowRob to use the DB associated to some NEEM,
@@ -20,7 +30,7 @@ knowrob_load_neem(NEEM_id) :-
 	% re-initialize the triple DB
 	% this is important e.g. to establish triple graph hierarchy.
 	% else we may get orphaned graphs.
-	tripledb_init,
+	knowrob_init,
 	% load URDF files referred to in triple store
 	urdf_init,
 	% initialize position of each frame for tf publishing

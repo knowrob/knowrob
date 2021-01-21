@@ -25,7 +25,7 @@
 % @param Entity An entity IRI.
 %
 is_binding(Entity) ?+>
-  has_type(Entity, soma:'Binding').
+	has_type(Entity, soma:'Binding').
 
 %% is_succeedence(?Entity) is nondet.
 %
@@ -34,7 +34,7 @@ is_binding(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_succeedence(Entity) ?+>
-  has_type(Entity, soma:'Succeedence').
+	has_type(Entity, soma:'Succeedence').
 
 %% plan_defines_task(?Plan,?Tsk) is semidet.
 %
@@ -44,7 +44,7 @@ is_succeedence(Entity) ?+>
 % @param Tsk An individual of type dul:'Task'.
 %
 plan_defines_task(Plan,Tsk) ?+>
-  holds(Plan,soma:isPlanFor,Tsk).
+	holds(Plan,soma:isPlanFor,Tsk).
 
 %% plan_has_goal(?WF,?Step) is semidet.
 %
@@ -54,7 +54,7 @@ plan_defines_task(Plan,Tsk) ?+>
 % @param Step An individual of type dul:'Task'.
 %
 workflow_step(WF,Step) ?+>
-  holds(WF,soma:hasStep,Step).
+	holds(WF,soma:hasStep,Step).
 
 %% workflow_first_step(?WF,?Step) is semidet.
 %
@@ -64,15 +64,20 @@ workflow_step(WF,Step) ?+>
 % @param Step An individual of type dul:'Task'.
 %
 workflow_first_step(WF,Step) ?+>
-  holds(WF,soma:hasFirstStep,Step).
+	holds(WF,soma:hasFirstStep,Step).
 
 %% workflow_constituent(+WF, ?Constituent) is semidet.
 %
 % @param WF A workflow.
 %
-workflow_constituent(WF,X) ?> holds(WF,dul:describes,X).
-workflow_constituent(WF,X) ?> holds(WF,dul:definesTask,X).
-workflow_constituent(WF,X) ?> holds(WF,soma:definesProcess,X).
+workflow_constituent(WF,X) ?>
+	holds(WF,dul:describes,X).
+
+workflow_constituent(WF,X) ?>
+	holds(WF,dul:definesTask,X).
+
+workflow_constituent(WF,X) ?>
+	holds(WF,soma:definesProcess,X).
 
 %% workflow_role_range(?WF,?Role,?ObjectType) is semidet.
 %
@@ -85,5 +90,5 @@ workflow_constituent(WF,X) ?> holds(WF,soma:definesProcess,X).
 % @param ObjectType A sub-class of dul:'Object'.
 %
 workflow_role_range(WF,Role,ObjectType) ?>
-  workflow_constituent(WF,Tsk),
-  task_role_range(Tsk,Role,ObjectType).
+	workflow_constituent(WF,Tsk),
+	task_role_range(Tsk,Role,ObjectType).

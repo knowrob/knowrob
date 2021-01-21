@@ -1,11 +1,11 @@
-:- module(mng_term_annotation, []).
+:- module(lang_annotation, []).
 
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1
 	    ]).
 
-:- use_module(library('db/mongo/lang/compiler')).
-:- use_module(library('db/mongo/lang/query')).
+:- use_module(library('db/mongo/compiler')).
+:- use_module(library('db/mongo/query')).
 
 :- rdf_meta(query_(t,t,t,t,-)).
 
@@ -13,13 +13,34 @@
 %	- e.g. DUL has comments in different langs
 %
 
+%%
+% register the "annotations" collection.
+% This is needed for import/export.
+%
+:- kb_collection_init(annotations).
+
+%%
+% Create indices for fast annotation retrieval.
+%
+create_search_inidces_ :-
+	setting(mng_client:read_only, true),
+	!.
+create_search_inidces_ :-
+	mng_get_db(DB, Coll, 'annotations'),
+	mng_index_create(DB, Coll, ['s']),
+	mng_index_create(DB, Coll, ['p']),
+	mng_index_create(DB, Coll, ['s','p']).
+
+:- create_search_inidces_.
+
 %% register query commands
-:- mng_query_command(comment).
+:- add_query_command(comment).
+%:- add_query_command(seeAlso).
 
 %%
 % expose argument variables.
 %
-mng_compiler:step_var(
+query_compiler:step_var(
 		comment(Entity, Comment),
 		[Key, Var]) :-
 	(	annotation_var_(Entity, [Key, Var])
@@ -29,7 +50,7 @@ mng_compiler:step_var(
 %%
 annotation_var_(Arg, [Key, Var]) :-
 	mng_strip_type(Arg,_,Var),
-	mng_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Key).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -41,7 +62,7 @@ annotation_var_(Arg, [Key, Var]) :-
 % of entities. These are stored in a separate collection
 % to avoid generating a regular index over the comment values. 
 %
-mng_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
+query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
 	option(ask, Ctx), !,
 	query_(S, rdfs:comment, C, Ctx, Pipeline).
 
@@ -74,7 +95,7 @@ lookup_(Entity, Property, Comment, Context, Step) :-
 		),
 		QueryDoc),
 	% we can use generator for triple command here
-	mng_term_triple:lookup_1(
+	lang_triple:lookup_1(
 		triple(Entity, Property, Comment),
 		QueryDoc, Context, Step).
 
@@ -82,7 +103,7 @@ lookup_(Entity, Property, Comment, Context, Step) :-
 set_result_(Comment,
 		['$set', [Key, string('$next.v')]]) :-
 	mng_strip_type(Comment,_,Var),
-	mng_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Key).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TELL

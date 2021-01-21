@@ -1,4 +1,4 @@
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
     'ros_urdf',
     'package://knowrob/owl/test/swrl.owl',
     [ namespace('http://knowrob.org/kb/swrl_test#')
@@ -221,4 +221,4 @@ test(link_collision_origin_pr2_r_gripper_r_finger_link) :-
 test(urdf_unload) :-
   urdf_unload_file(pr2).
 
-:- end_tripledb_tests('ros_urdf').
+:- end_rdf_tests('ros_urdf').

@@ -11,8 +11,7 @@ setting(marker_plugin:auto, false).
 setting(tf_plugin:use_logger, false).
 
 %	Triple DB
-setting(tripledb:path, 'db/mongo/tripledb/plugin').
-setting(tripledb:drop_graphs, []).
+setting(lang_query:drop_graphs, []).
 
 % Flag for read only mongo databases
 setting(mng_client:read_only, true).

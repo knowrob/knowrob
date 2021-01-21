@@ -27,16 +27,6 @@ In DUL, Object is defined as:
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_object/1).
-:- table(g_is_quality/1).
-:- table(g_is_concept/1).
-:- table(g_is_role/1).
-:- table(g_is_agent/1).
-:- table(g_is_physical_object/1).
-:- table(g_is_physical_artifact/1).
-:- table(g_is_social_object/1).
-
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
@@ -48,8 +38,8 @@ In DUL, Object is defined as:
 %
 % @param Entity An entity IRI.
 %
-is_object(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Object').
+is_object(Entity) ?+>
+	has_type(Entity, dul:'Object').
 
 %% is_quality(?Entity) is nondet.
 %
@@ -57,8 +47,8 @@ is_object(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_quality(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Quality').
+is_quality(Entity) ?+>
+	has_type(Entity, dul:'Quality').
 
 %% is_concept(?Entity) is nondet.
 %
@@ -66,8 +56,8 @@ is_quality(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_concept(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Concept').
+is_concept(Entity) ?+>
+	has_type(Entity, dul:'Concept').
 
 %% is_role(?Entity) is nondet.
 %
@@ -75,8 +65,8 @@ is_concept(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_role(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Role').
+is_role(Entity) ?+>
+	has_type(Entity, dul:'Role').
 
 %% is_agent(?Entity) is nondet.
 %
@@ -84,8 +74,8 @@ is_role(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_agent(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Agent').
+is_agent(Entity) ?+>
+	has_type(Entity, dul:'Agent').
 
 %% is_physical_object(?Entity) is nondet.
 %
@@ -93,8 +83,8 @@ is_agent(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_physical_object(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'PhysicalObject').
+is_physical_object(Entity) ?+>
+	has_type(Entity, dul:'PhysicalObject').
 
 %% is_physical_artifact(?Entity) is nondet.
 %
@@ -102,8 +92,8 @@ is_physical_object(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_physical_artifact(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'PhysicalArtifact').
+is_physical_artifact(Entity) ?+>
+	has_type(Entity, dul:'PhysicalArtifact').
 
 %% is_social_object(?Entity) is nondet.
 %
@@ -111,8 +101,8 @@ is_physical_artifact(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_social_object(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'SocialObject').
+is_social_object(Entity) ?+>
+	has_type(Entity, dul:'SocialObject').
 
 %% has_quality_type(+Entity,?Type) is nondet.
 %
@@ -123,10 +113,10 @@ is_social_object(Entity), [table(?)] ?+>
 % @param Type class resource
 %
 has_quality_type(Entity,Type) ?>
-  has_type(Entity,Type),
-  triple(Type,rdfs:subClassOf,dul:'Quality'),
-  % only yield one type
-  { ! }.
+	has_type(Entity,Type),
+	triple(Type,rdfs:subClassOf,dul:'Quality'),
+	% only yield one type
+	!.
 
 %% has_object_type(+Entity,?Type) is nondet.
 %
@@ -137,10 +127,10 @@ has_quality_type(Entity,Type) ?>
 % @param Type class resource
 %
 has_object_type(Entity,Type) ?>
-  has_type(Entity,Type),
-  triple(Type,rdfs:subClassOf,dul:'Object'),
-  % only yield one type
-  { ! }.
+	has_type(Entity,Type),
+	triple(Type,rdfs:subClassOf,dul:'Object'),
+	% only yield one type
+	!.
 
 %% has_location(?Object, ?Location) is nondet.
 %
@@ -153,7 +143,7 @@ has_object_type(Entity,Type) ?>
 % @param Location named individual
 %
 has_location(Object, Location) ?+>
-  holds(Object, dul:hasLocation, Location).
+	holds(Object, dul:hasLocation, Location).
 
 %% has_role(?Entity,?Role) is nondet.
 %
@@ -163,7 +153,7 @@ has_location(Object, Location) ?+>
 % @param Role named individual
 %
 has_role(Entity,Role) ?+>
-  holds(Role, dul:classifies, Entity).
+	holds(Role, dul:classifies, Entity).
 
 %% has_part(?Entity,?Part) is nondet.
 %
@@ -175,4 +165,4 @@ has_role(Entity,Role) ?+>
 % TODO: not object related, probably best to add a module DUL.pl and add it there
 %
 has_part(Entity,Part) ?+>
-  holds(Entity, dul:hasPart, Part).
+	holds(Entity, dul:hasPart, Part).

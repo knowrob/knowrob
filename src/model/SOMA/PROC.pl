@@ -24,7 +24,7 @@
 % @param Entity An entity IRI.
 %
 is_chemical_process(Entity) ?+>
-  has_type(Entity, soma:'ChemicalProcess').
+	has_type(Entity, soma:'ChemicalProcess').
 
 %% is_physical_process(?Entity) is nondet.
 %
@@ -33,7 +33,7 @@ is_chemical_process(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_physical_process(Entity) ?+>
-  has_type(Entity, soma:'PhysicalProcess').
+	has_type(Entity, soma:'PhysicalProcess').
 
 %% is_process_flow(?Entity) is nondet.
 %
@@ -42,7 +42,7 @@ is_physical_process(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_process_flow(Entity) ?+>
-  has_type(Entity, soma:'ProcessFlow').
+	has_type(Entity, soma:'ProcessFlow').
 
 %% is_process_type(?Entity) is nondet.
 %
@@ -51,7 +51,7 @@ is_process_flow(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_process_type(Entity) ?+>
-  has_type(Entity, soma:'ProcessType').
+	has_type(Entity, soma:'ProcessType').
 
 %% is_motion(?Entity) is nondet.
 %
@@ -60,7 +60,7 @@ is_process_type(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_motion(Entity) ?+>
-  has_type(Entity, soma:'Motion').
+	has_type(Entity, soma:'Motion').
 
 %% is_force_interaction(?Entity) is nondet.
 %
@@ -69,7 +69,7 @@ is_motion(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_force_interaction(Entity) ?+>
-  has_type(Entity, soma:'ForceInteraction').
+	has_type(Entity, soma:'ForceInteraction').
 
 %% is_progression(?Entity) is nondet.
 %
@@ -78,7 +78,7 @@ is_force_interaction(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_progression(Entity) ?+>
-  has_type(Entity, soma:'Progression').
+	has_type(Entity, soma:'Progression').
 
 %% has_process_role(?ProcType,?Role) is nondet.
 %
@@ -88,4 +88,4 @@ is_progression(Entity) ?+>
 % @param Role An individual of type dul:'Role'.
 %
 has_process_role(Tsk,Role) ?+>
-  holds(Tsk, soma:isProcessTypeOf ,Role).
+	holds(Tsk, soma:isProcessTypeOf ,Role).

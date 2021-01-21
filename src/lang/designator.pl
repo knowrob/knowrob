@@ -1,6 +1,6 @@
 :- module(lang_designator,
-	[ is_designator(t),
-	  has_designator(r,t)
+	[ is_designator(t) %,
+	  %has_designator(r,t)
 	]).
 /** <module> Implementation of entity designators.
 
@@ -23,12 +23,12 @@ is_designator([an,_|_]) :- !.
 %
 % Find entities denoted by some designator.
 %
-has_designator(Entity,Designator) ?>
-	{ ground(Designator), ! },
-	% get conjunction of statements
-	{ get_designator_statements(Entity,Designator,Statements) },
-	% issue a query
-	call(Statements).
+%has_designator(Entity,Designator) ?>
+%	{ ground(Designator), ! },
+%	% get conjunction of statements
+%	{ get_designator_statements(Entity,Designator,Statements) },
+%	% issue a query
+%	call(Statements).
 
 %%
 get_designator_statements(Entity,Designator,Statements) :-
@@ -111,7 +111,7 @@ get_iri(Name, IRI, Formatter) :-
      *	    UNIT TESTS	     		    *
      *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
     'lang_designator',
     'package://knowrob/owl/test/swrl.owl',
     [ namespace('http://knowrob.org/kb/swrl_test#')
@@ -163,4 +163,4 @@ test('has-designator') :-
 	assert_true(has_designator(test:'Lea',[a,woman,[has_parent,fred]])),
 	assert_false(has_designator(test:'Lea',[an,action])).
 
-:- end_tripledb_tests('lang_designator').
+:- end_rdf_tests('lang_designator').

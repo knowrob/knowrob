@@ -1,10 +1,11 @@
-:- module(mng_query,
-    [ mng_assert(t),
-      mng_ask(t,+,-,+),
-      mng_tell(t,+,+),
-      mng_expand/3,
-      mng_query_command/1
-    ]).
+:- module(query_compiler,
+	[ add_query_command/1,
+	  query_assert(t),
+	  query_ask(t,+,-,+),
+	  query_tell(t,+,+),
+	  query_expand/3,
+	  query_compile/3
+	]).
 /** <module> Integration of KnowRob language terms with mongo DB.
 
 KnowRob language terms are defined in rules which are translated
@@ -14,32 +15,36 @@ into aggregate pipelines in this module.
 @license BSD
 */
 
-% TODO:
-%
-% - recursion in rules impossible?
-%		- $graphLookup allows limited recursion, what exactly are the limits?
-%		- can we make recursion with chains of properties in graphLookup?
-%
-% - CUT OPERATOR
+% TODO: recursion in rules
+%		- transitive(triple) performs recursive $graphLookup
+%		- $graphLookup has limits, what exactly are these?
+%		- how to handle transitive chains i.e. transitive(p1 o ... o pn)?
+%		- how to handle more complex structures?
+
+% TODO: cut operator
 %     -- 1. within a clause `cut` wraps terms before
 %             in a lookup with $limit
 %     -- 2. disjunctions keep track of cut in disjuncts
 %             and does not proceed if cut+matching docs in previous step
-%
-% - include_parents is needed? should be taken into account to yield
-%         all elements in p* of triples
-%
 
-:- use_module('compiler').
+:- use_module(library('semweb/rdf_db'),
+	    [ rdf_meta/1
+	    ]).
 
 %% Stores list of terminal terms for each clause. 
-:- dynamic mng_query/4.
+:- dynamic query/4.
 %% set of registered query commands.
 :- dynamic step_command/1.
 %% optionally implemented by query commands.
 :- multifile step_expand/3.
+%% implemented by query commands to compile query documents
+:- multifile step_compile/3.
+%% implemented by query commands to provide variables exposed to the outside
+:- multifile step_var/2.
 
-%% mng_query_command(+Command) is det.
+:- rdf_meta(step_compile(t,t,t)).
+
+%% add_query_command(+Command) is det.
 %
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
@@ -49,8 +54,9 @@ into aggregate pipelines in this module.
 %
 % @Command a command term.
 %
-mng_query_command(Command) :-
+add_query_command(Command) :-
 	assertz(step_command(Command)).
+
 
 %% mng_ask(+Statement, +Scope, +Options) is nondet.
 %
@@ -61,7 +67,7 @@ mng_query_command(Command) :-
 % @Scope the scope of the statement
 % @Options query options
 %
-mng_ask(Statement, QScope, FScope, Options) :-
+query_ask(Statement, QScope, FScope, Options) :-
 	query_(Statement,
 		[scope(QScope)|Options],
 		FScope, ask).
@@ -75,7 +81,7 @@ mng_ask(Statement, QScope, FScope, Options) :-
 % @Scope the scope of the statement
 % @Options query options
 %
-mng_tell(Statement, FScope, Options) :-
+query_tell(Statement, FScope, Options) :-
 	query_(Statement,
 		[scope(FScope)|Options],
 		_, tell).
@@ -83,9 +89,9 @@ mng_tell(Statement, FScope, Options) :-
 %%
 query_(Goal, Context, FScope, Mode) :-
 	% expand goals into terminal symbols
-	mng_expand(Goal, Expanded, Mode),
+	query_expand(Goal, Expanded, Mode),
 	% get the pipeline document
-	mng_compile(Expanded, pipeline(Doc,Vars), [Mode|Context]),
+	query_compile(Expanded, pipeline(Doc,Vars), [Mode|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope, Mode).
 
@@ -164,7 +170,7 @@ unify_list_1(_, Ground, Ground) :-
 
 unify_list_1(Doc, Var, Elem) :-
 	var(Var),!,
-	mng_compiler:var_key(Var, Key),
+	var_key(Var, Key),
 	unify_1(Doc, [Key, Elem]).
 
 unify_list_1(Doc, List, Elem) :-
@@ -181,7 +187,7 @@ unify_list_1(Doc, Term, Elem) :-
 	unify_list_1(Doc, List0, List1),
 	Elem =.. List1.
 
-%% mng_assert(+Rule) is semidet.
+%% query_assert(+Rule) is semidet.
 %
 % Asserts a rule executable in a mongo query.
 % The rule is internally translated into a form
@@ -197,17 +203,17 @@ unify_list_1(Doc, Term, Elem) :-
 %
 % @Rule the rule to assert.
 %
-mng_assert((?>(Head,Body))) :-
-	mng_assert1(Head, Body, ask).
+query_assert((?>(Head,Body))) :-
+	query_assert1(Head, Body, ask).
 
-mng_assert((+>(Head,Body))) :-
-	mng_assert1(Head, Body, tell).
+query_assert((+>(Head,Body))) :-
+	query_assert1(Head, Body, tell).
 
-mng_assert1(Head, Body, Context) :-
+query_assert1(Head, Body, Context) :-
 	%% get the functor of the predicate
 	Head =.. [Functor|Args],
 	%% expand goals into terminal symbols
-	(	mng_expand(Body, Expanded, Context)
+	(	query_expand(Body, Expanded, Context)
 	->	true
 	;	(	log_error(mongo(assertion_failed(Functor,Body))),
 			fail
@@ -215,9 +221,9 @@ mng_assert1(Head, Body, Context) :-
 	),
 	log_info(mongo(expanded(Functor, Args, Expanded, Context))),
 	%% store expanded query
-	assertz(mng_query(Functor, Args, Expanded, Context)).
+	assertz(query(Functor, Args, Expanded, Context)).
 
-%% mng_expand(+Goal, -Expanded, +Context) is det.
+%% query_expand(+Goal, -Expanded, +Context) is det.
 %
 % Translates a KnowRob langauge term into a sequence
 % of commands that can be executed by mongo DB.
@@ -226,7 +232,7 @@ mng_assert1(Head, Body, Context) :-
 % @Expanded sequence of commands
 % @Context 'ask' or 'tell'
 %
-mng_expand(Goal, Expanded, Context) :-
+query_expand(Goal, Expanded, Context) :-
 	comma_list(Goal, Terms),
 	catch(
 		expand_term_0(Terms, Expanded, Context),
@@ -256,6 +262,20 @@ expand_term_2(Goal, Expanded, Context) :-
 	strip_all_modifier(Goal, Stripped, Modifier),
 	expand_term_3(Stripped, Modifier, Expanded, Context).
 
+%% handle goals wrapped in call.
+expand_term_3(call(Goal), _Modifier, Expanded, Context) :-
+	!,
+	mng_expand(Goal, Expanded, Context).
+
+%% handle goals wrapped in ask. this is especially used for conditional tel clauses.
+expand_term_3(ask(Goal), _Modifier, Expanded, Context) :-
+	(	select_option(tell, Context, Context0)
+	->	Context1=[ask|Context0]
+	;	Context1=Context
+	),
+	!,
+	query_expand(Goal, Expanded, Context1).
+
 %% finally expand rules that were asserted before
 expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Context) :-
 	Goal =.. [Functor|_Args],
@@ -273,7 +293,7 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	%       variables in Terminals
 	% TODO: do we need to create a copy of Terminals here, or not needed?
 	bagof(Terminals,
-		mng_query(Functor, Args, Terminals, Context),
+		query(Functor, Args, Terminals, Context),
 		TerminalsList),
 	% handle the case that a predicate is referred to that wasn't
 	% asserted before
@@ -293,6 +313,87 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	;	Expanded = [step(facet(TerminalsList),Modifier0)]
 	).
 
+%% query_compile(+Terminals, -Pipeline, +Context) is semidet.
+%
+% Compile an aggregate pipeline given a list of terminal symbols
+% and the context in which they shall hold.
+%
+% @Terminals list of terminal symbols
+% @Pipeline a term pipeline(Doc,Vars)
+% @Context the query context
+%
+query_compile(Terminals, pipeline(Doc, Vars), Context) :-
+	catch(
+		compile_0(Terminals, Doc, []->Vars, Context),
+		compilation_failed(FailedTerm),
+		(	log_error(mongo(compilation_failed(FailedTerm,Terminals))),
+			fail
+		)
+	).
+
+%%
+compile_0(Terminals, Doc, Vars, Context) :-
+	compile_1(Terminals, Doc0, Vars, Context),
+	(	memberchk(ask, Context)
+	->	Doc=Doc0
+	;	compile_tell_(Doc0, Doc)
+	).
+
+%%
+compile_1([], [], V0->V0, _) :- !.
+compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
+	compile_2(X,  Pipeline_x,  V0->V1, Context),
+	compile_1(Xs, Pipeline_xs, V1->Vn, Context),
+	% TODO: avoid append
+	append(Pipeline_x, Pipeline_xs, Pipeline).
+
+%% Compile a single command (Term) into an aggregate pipeline (Doc).
+compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
+	% read all variables referred to in Step into list StepVars
+	(	bagof(Vs, step_var(Term, Vs), StepVars)
+	->	true
+	;	StepVars=[]
+	),
+	% merge StepVars with variables in previous steps (V0)
+	append(V0, StepVars, Vars_new),
+	list_to_set(Vars_new, V1),
+	% add modifier to context
+	append(Modifier, Context, InnerContext),
+	% compile JSON document for this step
+	(	step_compile(Term, [
+				step_vars(StepVars),
+				outer_vars(V0) |
+				InnerContext
+		], Doc)
+	->	true
+	;	throw(compilation_failed(Term, InnerContext))
+	).
+
+%%
+compile_tell_(Doc0, Doc1) :-
+	% tell merges into triples DB
+	mng_get_db(_DB, Coll, 'triples'),
+	% append some steps to Doc0
+	findall(Step,
+		% create an empty array in 'triples' field
+		(	Step=['$set',['triples',array([])]]
+		% draw steps from language expression
+		;	member(Step,Doc0)
+		% the "triples" field holds an array of documents to be merged
+		;	Step=['$unwind',string('$triples')]
+		% make unwinded triple root of the document
+		;	Step=['$replaceRoot',['newRoot',string('$triples')]]
+		% merge document into triples collection
+		% NOTE: $merge must be last step
+		;	Step=['$merge',string(Coll)]
+		),
+		Doc1
+	).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% MODIFIER
+%%%%%%%%%%%%%%%%%%%%%%%
+
 %% modifiers are stripped from terms and stored separately
 strip_all_modifier(In, Out, [Mod0|Mods]) :-
 	strip_modifier(In,In0,Mod0),
@@ -306,3 +407,55 @@ strip_modifier(once(X),limit(1),X).
 strip_modifier(limit(X,N),limit(N),X).
 strip_modifier(transitive(X),transitive,X).
 strip_modifier(reflexive(X),reflexive,X).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% VARIABLES in queries
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+% Map a Prolog variable to the key that used to
+% refer to this variable in mongo queries.
+%
+var_key(Var,Key) :-
+	var(Var),
+	term_to_atom(Var,Atom),
+	atom_concat('v',Atom,Key).
+
+%%
+% yield either the key of a variable in mongo,
+% or a typed term for some constant value provided
+% in the query.
+%
+var_key_or_val(In, Out) :-
+	mng_strip_operator(In, Operator, In0),
+	var_key_or_val0(In0, Out0),
+	mng_strip_operator(Out, Operator, Out0).
+	
+var_key_or_val0(In, string(Key)) :-
+	mng_strip_type(In, _, In0),
+	var_key(In0, Out),
+	atom_concat('$',Out,Key),
+	!.
+
+var_key_or_val0(In, Out) :-
+	atomic(In),!,
+	once(get_constant_(In,Out)).
+
+var_key_or_val0(In, array(L)) :-
+	is_list(In),!,
+	findall(X,
+		(	member(Y,In),
+			var_key_or_val0(Y,X)
+		),
+		L).
+
+var_key_or_val0(In,In) :-
+	compound(In).
+
+%% in case of atomic in query
+get_constant_(Value, double(Value)) :- number(Value).
+get_constant_(true,  bool(true)).
+get_constant_(false, bool(false)).
+get_constant_(Value, string(Value)) :- atom(Value).
+get_constant_(Value, string(Value)) :- string(Value).
+

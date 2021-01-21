@@ -1,5 +1,5 @@
-:- use_module(library('db/tripledb_tests')).
-:- begin_tripledb_tests(
+:- use_module(library('lang/rdf_tests')).
+:- begin_rdf_tests(
 		'swrl',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
@@ -257,5 +257,5 @@ test(swrl_phrase_hasUncle, [nondet]) :-
                      'http://knowrob.org/kb/swrl_test#'),
   holds(test:'Lea', test:'hasUncle', test:'Ernest').
 
-:- end_tripledb_tests('swrl').
+:- end_rdf_tests('swrl').
 

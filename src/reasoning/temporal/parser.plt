@@ -3,7 +3,7 @@
 :- use_module(library('rostest')).
 :- use_module('parser').
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'activity_parser',
 		'package://knowrob/owl/test/parser-test.owl',
 		[ namespace('http://knowrob.org/kb/parser-test.owl#')

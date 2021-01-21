@@ -57,21 +57,24 @@
       is_rdf_list/2
     ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_class/1).
-:- table(g_is_restriction/1).
-:- table(g_is_individual/1).
-:- table(g_is_object_property/1).
-:- table(g_is_data_property/1).
-:- table(g_is_functional_property/1).
-:- table(g_is_transitive_property/1).
-:- table(g_is_symmetric_property/1).
-
 % load OWL model
 :- tripledb_load('http://www.w3.org/2002/07/owl.rdf',
     [ graph(common),
       namespace(owl,'http://www.w3.org/2002/07/owl#')
     ]).
+
+%% is_restriction_term(+Term) is semidet.
+%
+%
+is_restriction_term(only(_,_)).
+is_restriction_term(some(_,_)).
+is_restriction_term(value(_,_)).
+is_restriction_term(min(_,_)).
+is_restriction_term(min(_,_,_)).
+is_restriction_term(max(_,_,_)).
+is_restriction_term(max(_,_)).
+is_restriction_term(exactly(_,_)).
+is_restriction_term(exactly(_,_,_)).
 
 %% is_class(+Entity) is semidet.
 %
@@ -79,8 +82,8 @@
 %
 % @param Entity An entity IRI.
 %
-is_class(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'Class').
+is_class(Entity) ?+>
+	has_type(Entity, owl:'Class').
 
 %% is_restriction(+Entity) is semidet.
 %
@@ -88,8 +91,8 @@ is_class(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_restriction(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'Restriction').
+is_restriction(Entity) ?+>
+	has_type(Entity, owl:'Restriction').
 
 %% is_individual(+Entity) is semidet.
 %
@@ -97,8 +100,8 @@ is_restriction(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_individual(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'NamedIndividual').
+is_individual(Entity) ?+>
+	has_type(Entity, owl:'NamedIndividual').
 
 %% is_object_property(+Entity) is semidet.
 %
@@ -106,8 +109,8 @@ is_individual(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_object_property(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'ObjectProperty').
+is_object_property(Entity) ?+>
+	has_type(Entity, owl:'ObjectProperty').
 
 %% is_functional_property(+Entity) is semidet.
 %
@@ -115,8 +118,8 @@ is_object_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_functional_property(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'FunctionalProperty').
+is_functional_property(Entity) ?+>
+	has_type(Entity, owl:'FunctionalProperty').
 
 %% is_transitive_property(+Entity) is semidet.
 %
@@ -124,8 +127,8 @@ is_functional_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_transitive_property(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'TransitiveProperty').
+is_transitive_property(Entity) ?+>
+	has_type(Entity, owl:'TransitiveProperty').
 
 %% is_symmetric_property(+Entity) is semidet.
 %
@@ -133,8 +136,8 @@ is_transitive_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_symmetric_property(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'SymmetricProperty').
+is_symmetric_property(Entity) ?+>
+	has_type(Entity, owl:'SymmetricProperty').
 
 %% is_data_property(+Entity) is semidet.
 %
@@ -142,8 +145,8 @@ is_symmetric_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_data_property(Entity), [table(?)] ?+>
-  has_type(Entity, owl:'DatatypeProperty').
+is_data_property(Entity) ?+>
+	has_type(Entity, owl:'DatatypeProperty').
 
 %% has_description(+Class,-Descr) is semidet.
 %
@@ -175,49 +178,20 @@ is_data_property(Entity), [table(?)] ?+>
 % @param Class an OWL class
 % @param Descr Prolog term representing the class
 %
-has_description(Descr,Descr0) ?>
-  { compound(Descr), ! },
-  { Descr0=Descr }.
-
 has_description(Class,_) ?>
-  { \+ ground(Class), ! },
-  { throw(error(instantiation_error, has_description)) }.
+	var(Class),
+	!,
+	throw(error(instantiation_error, has_description)).
 
-has_description(Class,Descr) ?> is_restriction1(Class,Descr), { ! }.
-has_description(Class,Descr) ?> is_union_of(Class,Descr), { ! }.
-has_description(Class,Descr) ?> is_intersection_of(Class,Descr), { ! }.
-has_description(Class,Descr) ?> is_complement_of(Class,Descr), { ! }.
-has_description(Class,class(Class)) ?> { true }.
-
-%% is_description_of(+Descr,-Class) is semidet.
-%
-% TODO: why not has_description in two directions?
-%
-is_description_of(Descr,Resource) ?>
-  { is_owl_description_of_(Descr,Resource) }.
-
-is_owl_description_of_(class(Cls),Cls) :-
-  !.
-
-is_owl_description_of_(union_of(L),Resource) :-
-  tell_if_unknown_(is_union_of(Resource,union_of(L))).
-
-is_owl_description_of_(intersection_of(L),Resource) :-
-  tell_if_unknown_(is_intersection_of(Resource,intersection_of(L))).
-
-is_owl_description_of_(not(L),Resource) :-
-  tell_if_unknown_(is_complement_of(Resource,not(L))).
-
-is_owl_description_of_(Descr,Resource) :-
-  is_restriction_term_(Descr),
-  tell_if_unknown_(is_restriction(Resource,Descr)).
-
-%%
-% TODO: move to query.pl ?
-tell_if_unknown_(Statement) :-
-  ask(Statement)
-  -> true
-  ;  tell(Statement).
+has_description(Class,Descr) ?>
+	(	is_restriction1(Class,Descr)
+	;	is_union_of(Class,Descr)
+	;	is_intersection_of(Class,Descr)
+	;	is_complement_of(Class,Descr)
+	% FIXME: =/2 not supported yet
+	;	Descr = class(Class)
+	),
+	!.
 
 %% is_restriction(?Restr,?Descr) is nondet.
 %
@@ -226,68 +200,58 @@ tell_if_unknown_(Statement) :-
 % @param Restr OWL restriction class
 % @param Descr Prolog term representing the class
 %
-is_restriction(R,Descr) +>
-  % try to find existing restriction first.
-  { ask(is_restriction1(R,Descr)) },
-  { ! }.
+
+%is_restriction(R,Descr) +>
+%  % try to find existing restriction first.
+%  { ask(is_restriction1(R,Descr)) },
+%  { ! }.
 
 is_restriction(R,Descr) +>
-  is_restriction(R),
-  is_restriction1(R,Descr).
+	is_restriction(R),
+	is_restriction1(R,Descr).
 
 is_restriction(R,Descr) ?>
-  is_restriction1(R,Descr).
+	is_restriction1(R,Descr).
 
 %%
-is_restriction1(R,only(P,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:allValuesFrom,O).
+is_restriction1(R, only(P,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:allValuesFrom,O).
 
-is_restriction1(R,some(P,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:someValuesFrom,O).
+is_restriction1(R, some(P,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:someValuesFrom,O).
 
-is_restriction1(R,value(P,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:hasValue,O).
+is_restriction1(R, value(P,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:hasValue,O).
 
-is_restriction1(R,min(P,M,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:minQualifiedCardinality,M),
-  triple(R,owl:onClass,O).
+is_restriction1(R, min(P,M,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:minQualifiedCardinality,M),
+	triple(R,owl:onClass,O).
 
-is_restriction1(R,min(P,M)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:minCardinality,M).
+is_restriction1(R, min(P,M)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:minCardinality,M).
 
-is_restriction1(R,max(P,M,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:maxQualifiedCardinality,M),
-  triple(R,owl:onClass,O).
+is_restriction1(R, max(P,M,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:maxQualifiedCardinality,M),
+	triple(R,owl:onClass,O).
 
-is_restriction1(R,max(P,M)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:maxCardinality,M).
+is_restriction1(R, max(P,M)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:maxCardinality,M).
 
-is_restriction1(R,exactly(P,M,O)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:qualifiedCardinality,M),
-  triple(R,owl:onClass,O).
+is_restriction1(R, exactly(P,M,O)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:qualifiedCardinality,M),
+	triple(R,owl:onClass,O).
 
-is_restriction1(R,exactly(P,M)) ?+>
-  triple(R,owl:onProperty,P),
-  triple(R,owl:cardinality,M).
-
-%%
-is_restriction_term_(only(_,_)).
-is_restriction_term_(some(_,_)).
-is_restriction_term_(value(_,_)).
-is_restriction_term_(min(_,_)).
-is_restriction_term_(min(_,_,_)).
-is_restriction_term_(max(_,_,_)).
-is_restriction_term_(max(_,_)).
-is_restriction_term_(exactly(_,_)).
-is_restriction_term_(exactly(_,_,_)).
+is_restriction1(R, exactly(P,M)) ?+>
+	triple(R,owl:onProperty,P),
+	triple(R,owl:cardinality,M).
 
 %% is_union_of(?UnionClass,?Descr) is nondet.
 %
@@ -296,14 +260,14 @@ is_restriction_term_(exactly(_,_,_)).
 % @param UnionClass OWL union class
 % @param Descr Prolog term representing the class
 %
-is_union_of(UnionClass,union_of(List_pl)) +>
-  is_rdf_list(List_rdf,List_pl),
-  is_class(UnionClass),
-  triple(UnionClass,owl:unionOf,List_rdf).
+is_union_of(UnionClass, union_of(List_pl)) +>
+	is_rdf_list(List_rdf, List_pl),
+	is_class(UnionClass),
+	triple(UnionClass, owl:unionOf, List_rdf).
 
-is_union_of(UnionClass,union_of(List_pl)) ?>
-  triple(UnionClass,owl:unionOf,List_rdf),
-  is_rdf_list(List_rdf,List_pl).
+is_union_of(UnionClass, union_of(List_pl)) ?>
+	triple(UnionClass, owl:unionOf, List_rdf),
+	is_rdf_list(List_rdf, List_pl).
 
 %% is_intersection_of(?IntersectionClass,?Descr) is nondet.
 %
@@ -312,14 +276,14 @@ is_union_of(UnionClass,union_of(List_pl)) ?>
 % @param IntersectionClass OWL intersection class
 % @param Descr Prolog term representing the class
 %
-is_intersection_of(IntersectionClass,intersection_of(List_pl)) +>
-  is_rdf_list(List_rdf,List_pl),
-  is_class(IntersectionClass),
-  triple(IntersectionClass,owl:intersectionOf,List_rdf).
+is_intersection_of(IntersectionClass, intersection_of(List_pl)) +>
+	is_rdf_list(List_rdf,List_pl),
+	is_class(IntersectionClass),
+	triple(IntersectionClass, owl:intersectionOf, List_rdf).
 
-is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
-  triple(IntersectionClass,owl:intersectionOf,List_rdf),
-  is_rdf_list(List_rdf,List_pl).
+is_intersection_of(IntersectionClass, intersection_of(List_pl)) ?>
+	triple(IntersectionClass, owl:intersectionOf, List_rdf),
+	is_rdf_list(List_rdf,List_pl).
 
 %% is_complement_of(?ComplementClass,?Descr) is nondet.
 %
@@ -328,12 +292,8 @@ is_intersection_of(IntersectionClass,intersection_of(List_pl)) ?>
 % @param ComplementClass an OWL restriction class
 % @param Descr Prolog term representing the class
 %
-is_complement_of(ComplementClass,not(Class)) +>
-  is_class(ComplementClass),
-  triple(ComplementClass,owl:complementOf,Class).
-
-is_complement_of(ComplementClass,not(Class)) ?>
-  triple(ComplementClass,owl:complementOf,Class).
+is_complement_of(ComplementClass, not(Class)) ?+>
+	triple(ComplementClass, owl:complementOf, Class).
 
 %% is_all_disjoint_classes(?AllDisjointClasses) is nondet.
 %
@@ -342,7 +302,7 @@ is_complement_of(ComplementClass,not(Class)) ?>
 % @param Entity An entity IRI.
 %
 is_all_disjoint_classes(Entity) ?+>
-    has_type(Entity, owl:'AllDisjointClasses').
+	has_type(Entity, owl:'AllDisjointClasses').
 
 %% has_inverse_property(?Property, ?Inverse) is nondet.
 %
@@ -351,11 +311,11 @@ is_all_disjoint_classes(Entity) ?+>
 % @param Property property resource
 % @param Inverse inverse of the property
 %
-has_inverse_property(P,P_inv) ?+>
-  triple(P,owl:inverseOf,P_inv).
+has_inverse_property(P, P_inv) ?+>
+	triple(P, owl:inverseOf, P_inv).
 
-has_inverse_property(P,P_inv) ?>
-  triple(P_inv,owl:inverseOf,P).
+has_inverse_property(P, P_inv) ?>
+	triple(P_inv, owl:inverseOf, P).
 
 %% has_property_chain(?Property, -Chain) is nondet.
 %
@@ -364,9 +324,50 @@ has_inverse_property(P,P_inv) ?>
 % @param Property property resource
 % @param Chain list of property resources
 %
-has_property_chain(P,Chain) ?>
-  triple(P,owl:propertyChainAxiom,RDFList),
-  is_rdf_list(RDFList,Chain).
+has_property_chain(P, Chain) +>
+	is_rdf_list(RDFList, Chain),
+	triple(P, owl:propertyChainAxiom, RDFList).
+
+has_property_chain(P, Chain) ?>
+	triple(P, owl:propertyChainAxiom, RDFList),
+	is_rdf_list(RDFList, Chain).
+
+%% has_equivalent_class(?Class1, ?Class2) is nondet.
+%
+% Maps an OWL class to classes it is equivalent to.
+% This is in particular important for classification
+% as suffcicient conditions can be defined using equivalent
+% class statements.
+%
+% @param Class1 OWL class
+% @param Class2 an equivalent OWL class
+%
+has_equivalent_class(X,Y) ?>
+	ground(X),
+	transitive(triple(X, owl:equivalentClass, Y)).
+
+has_equivalent_class(X,Y) ?>
+	ground(Y),
+	transitive(triple(Y, owl:equivalentClass, X)).
+
+has_equivalent_class(X,Y) +>
+	triple(X, owl:equivalentClass, Y).
+
+%% same_as(?X, ?Y) is nondet.
+%
+% True if X and Y are  identical   or  connected by the owl:sameAs
+% relation. Considers owl:sameAs transitive and symmetric.
+%
+same_as(X,Y) ?>
+	ground(X),
+	reflective(transitive(triple(X, owl:sameAs, Y))).
+
+same_as(X,Y) ?>
+	ground(Y),
+	reflective(transitive(triple(Y, owl:sameAs, X))).
+
+same_as(X,Y) +>
+	triple(X, owl:sameAs, Y).
 
 %% has_disjoint_class(?Class1, ?Class2) is nondet.
 %
@@ -375,6 +376,8 @@ has_property_chain(P,Chain) ?>
 %
 % @param Class1 OWL class
 % @param Class2 a disjoint OWL class
+%
+% TODO: convert into ask queries
 %
 has_disjoint_class(A,B) :-
   ground([A,B]), A=B, !, fail.
@@ -420,100 +423,6 @@ has_disjoint_class2(A,B) :-
 unify_disjoint_(B,Disjoint) :-
   ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
 
-%% has_equivalent_class(?Class1, ?Class2) is nondet.
-%
-% Maps an OWL class to classes it is equivalent to.
-% This is in particular important for classification
-% as suffcicient conditions can be defined using equivalent
-% class statements.
-%
-% @param Class1 OWL class
-% @param Class2 an equivalent OWL class
-%
-has_equivalent_class(Cls,EQ) :-
-  ground(Cls),!,
-  has_equivalent_class1([Cls],EQList,[]),
-  member(EQ,EQList),
-  EQ \= Cls.
-
-has_equivalent_class(Cls,EQ) :-
-  ground(EQ),!,
-  has_equivalent_class1([EQ],ClsList,[]),
-  member(Cls,ClsList),
-  EQ \= Cls.
-
-has_equivalent_class(Cls,EQ) :-
-  is_class(Cls),
-  has_equivalent_class(Cls,EQ).
-
-%%
-has_equivalent_class1([],Visited,Visited).
-
-has_equivalent_class1([Entity|Queue],Same,Visited) :-
-  findall(Next, (
-    has_equivalent_direct(Entity,Next),
-    Entity \= Next,
-    \+ memberchk(Next,Visited),
-    \+ memberchk(Next,Queue)
-  ), List),
-  append(Queue,List,Queue0),
-  has_equivalent_class1(Queue0,Same,[Entity|Visited]).
-
-has_equivalent_direct(Cls,EQ) :-
-  tripledb_ask(Cls, owl:equivalentClass, EQ) ;
-  tripledb_ask(EQ,  owl:equivalentClass, Cls).
-
-%% same_as(?X, ?Y) is nondet.
-%
-% True if X and Y are  identical   or  connected by the owl:sameAs
-% relation. Considers owl:sameAs transitive and symmetric.
-%
-same_as(Entity,Same) :-
-  ground(Entity),!,
-  same_as1([Entity],Same,[]).
-
-same_as(Entity,Same) :-
-  ground(Same),!,
-  same_as1([Same],Entity,[]).
-
-same_as(Entity,Same) :-
-  is_individual(Entity),
-  same_as(Entity,Same).
-
-%%
-same_as1([Entity|_],Entity,_).
-
-same_as1([Entity|Queue],Same,Visited) :-
-  atom(Entity),
-  findall(Next, (
-    same_as_direct(Entity,Next),
-    \+ memberchk(Next,Visited),
-    \+ memberchk(Next,Queue)
-  ), List),
-  append(Queue,List,Queue0),
-  same_as1(Queue0,Same,[Entity|Visited]).
-
-same_as_direct(Entity,Same) :-
-  tripledb_ask(Entity, owl:sameAs, string(Same)) ;
-  tripledb_ask(Same,   owl:sameAs, string(Entity)).
-
-% TODO: needs to be handled elsewhere
-%tripledb_tell(S,P,O,Scope,Graph) :-
-  %% HACK: in many cases convinient, but could cause issues
-  %%           to avoid adding more then one value to a functional property
-  %is_functional_property(P),!,
-  %time_scope_data(Scope,[Since,_]),
-  %tripledb_stop(S,P,Since),
-  %tripledb_tell1(S,P,O,Scope,Graph).
-
-% TODO: needs to be handled elsewhere
-%tripledb_tell1(S,P,O,Scope,Graph) :-
-  %itripledb_tell(S,P,O,Scope,Graph),
-  %( is_symmetric_property(P) ->
-    %itripledb_tell(O,P,S,Scope);
-    %true
-  %).
-
 
 		 /*******************************
 		 *	    LANGUAGE EXTENSIONS		*
@@ -522,95 +431,49 @@ same_as_direct(Entity,Same) :-
 %%
 % Allow OWL descriptions in subclass_of expressions.
 %
-subclass_of(S,Descr) ?+>
-  { compound(Descr) },
-  subclass_of_description(S,Descr).
-
-%%
-subclass_of_description(Class,Descr) ?>
-  % equal class
-  has_description(Class,Descr).
-
-subclass_of_description(Class,intersection_of(List)) ?+>
-  { ! }, subclass_of_description_(Class,intersection_of(List),is_intersection_of).
-
-subclass_of_description(Class,union_of(List)) ?+>
-  { ! }, subclass_of_description_(Class,union_of(List),is_union_of).
-  
-subclass_of_description(Class,not(O)) ?+>
-  { ! }, subclass_of_description_(Class,not(O),is_complement_of).
-
-subclass_of_description(Class,Descr) ?+>
-  { is_restriction_term_(Descr),! },
-  subclass_of_description_(Class,Descr,is_restriction).
-
-%%
-subclass_of_description_(Class,Descr,_Goal) ?>
-  { ground(Class), ! },
-  triple(Class,rdfs:subClassOf,SuperClass),
-  has_description(SuperClass,Descr).
-
-subclass_of_description_(Class,Descr,Goal) ?+>
-  { Goal0=..[Goal,Restriction,Descr] },
-  call(Goal0),
-  subclass_of_description1_(Class,Restriction).
-
-subclass_of_description1_(Class0,Class1) ?+> { ground([Class0,Class1]), Class0=Class1, true,! }.
-subclass_of_description1_(Class,Restr)   ?+> triple(Class,rdfs:subClassOf,Restr).
+subclass_of(Class, Descr) ?>
+	pragma(is_owl_term(Descr)),
+	ground(Class),
+	% TODO: yields all values in o*
+	include_parents(
+		triple(Class, rdfs:subClassOf, SuperClass)
+	),
+	has_description(SuperClass, Descr).
 
 %%
 % Allow OWL descriptions in instance_of expressions.
 %
 instance_of(S,Descr) ?+>
-  { compound(Descr) },
-  instance_of_description(S,Descr).
+	pragma(is_owl_term(Descr)),
+	instance_of_description(S,Descr).
 
 %%
-instance_of_description(S,intersection_of(List)) ?+>
-  { ! }, instance_of_all(S,List).
-
-instance_of_description(S,union_of(List)) ?+>
-  { ! }, instance_of_description_(S,union_of(List),is_union_of).
+instance_of_description(S, value(P,O)) ?>
+	var(P),
+	triple(S,P,O),
+	(	is_object_property(P)
+	;	is_data_property(P)
+	).
   
-instance_of_description(S,not(Cls)) ?+>
-  { ! }, instance_of_description_(S,not(Cls),is_complement_of).
+instance_of_description(S, value(P,O)) ?>
+	ground(P),
+	triple(S,P,O).
 
-instance_of_description(S,value(P,O)) ?>
-  { var(P),! },
-  triple(S,P,O),
-  { is_object_property(P) ;
-    is_data_property(P)
-  }.
-  
-instance_of_description(S,value(P,O)) ?>
-  triple(S,P,O).
-
-instance_of_description(S,Descr) ?+>
-  { is_restriction_term_(Descr),! },
-  instance_of_description_(S,Descr,is_restriction).
-
-%%
-instance_of_description_(S,Descr,_Goal) ?>
-  { ground(S), ! },
-  has_type(S,SType),
-  { \+ rdf_equal(SType,owl:'NamedIndividual') },
-  subclass_of(SType,Descr).
-
-instance_of_description_(S,Descr,Goal) ?+>
-  { Goal0=..[Goal,SType,Descr] },
-  call(Goal0),
-  has_type(S,SType).
+instance_of_description(S, Descr) ?>
+	ground(S),
+	has_type(S, SType),
+	subclass_of(SType, Descr).
 
 %%
 % Allow OWL descriptions in holds expressions.
 %
 holds(S,P,O) ?>
-  { \+ compound(O) },
-  instance_of_description_(S,value(P,O),is_restriction).
+	pragma(\+ is_owl_term(O)),
+	instance_of_restriction(S, value(P,O)).
 
 holds(S,P,Descr) ?+>
-  { compound(Descr) },
-  holds_description(S,P,Descr).
+	pragma(is_owl_term(Descr)),
+	holds_description(S,P,Descr).
 
 holds_description(S,P,only(O))      ?+> instance_of(S,only(P,O)).
 holds_description(S,P,some(O))      ?+> instance_of(S,some(P,O)).

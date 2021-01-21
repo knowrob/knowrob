@@ -21,7 +21,7 @@
 % @param Entity An entity IRI.
 %
 is_state(Entity) ?+>
-  has_type(Entity, soma:'State').
+	has_type(Entity, soma:'State').
 
 %% is_physical_state(?Entity) is nondet.
 %
@@ -30,7 +30,7 @@ is_state(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_physical_state(Entity) ?+>
-  has_type(Entity, soma:'PhysicalState').
+	has_type(Entity, soma:'PhysicalState').
 
 %% is_social_state(?Entity) is nondet.
 %
@@ -39,7 +39,7 @@ is_physical_state(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_social_state(Entity) ?+>
-  has_type(Entity, soma:'SocialState').
+	has_type(Entity, soma:'SocialState').
 
 %% is_configuration(?Entity) is nondet.
 %
@@ -48,7 +48,7 @@ is_social_state(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_configuration(Entity) ?+>
-  has_type(Entity, soma:'Configuration').
+	has_type(Entity, soma:'Configuration').
 
 %% is_state_type(?Entity) is nondet.
 %
@@ -57,4 +57,4 @@ is_configuration(Entity) ?+>
 % @param Entity An entity IRI.
 %
 is_state_type(Entity) ?+>
-  has_type(Entity, soma:'StateType').
+	has_type(Entity, soma:'StateType').

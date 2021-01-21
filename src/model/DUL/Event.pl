@@ -33,13 +33,6 @@ In DUL, Object is defined as:
 :- use_module(library('db/tripledb'),
     [ tripledb_load/2 ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_event/1).
-:- table(g_is_event_type/1).
-:- table(g_is_action/1).
-:- table(g_is_process/1).
-:- table(g_is_task/1).
-
 % load RDF data
 :- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
@@ -51,8 +44,8 @@ In DUL, Object is defined as:
 %
 % @param Entity An entity IRI.
 %
-is_event(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Event').
+is_event(Entity) ?+>
+	has_type(Entity, dul:'Event').
 
 %% is_event_type(?Entity) is nondet.
 %
@@ -60,8 +53,8 @@ is_event(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_event_type(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'EventType').
+is_event_type(Entity) ?+>
+	has_type(Entity, dul:'EventType').
 
 %% is_action(?Entity) is nondet.
 %
@@ -69,8 +62,8 @@ is_event_type(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_action(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Action').
+is_action(Entity) ?+>
+	has_type(Entity, dul:'Action').
 
 %% is_task(?Entity) is nondet.
 %
@@ -78,8 +71,8 @@ is_action(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_task(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Task').
+is_task(Entity) ?+>
+	has_type(Entity, dul:'Task').
 
 %% is_process(?Entity) is nondet.
 %
@@ -87,8 +80,8 @@ is_task(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_process(Entity), [table(?)] ?+>
-  has_type(Entity, dul:'Process').
+is_process(Entity) ?+>
+	has_type(Entity, dul:'Process').
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %
@@ -102,11 +95,11 @@ is_process(Entity), [table(?)] ?+>
 % @param Class The most specific type of Participant.
 %
 has_participant(Evt,Participant) ?+>
-  holds(Evt,dul:hasParticipant,Participant).
+	holds(Evt,dul:hasParticipant,Participant).
 
 has_participant(Evt,Participant,Class) ?>
-  holds(Evt,dul:hasParticipant,Participant),
-  has_object_type(Participant,Class).
+	holds(Evt,dul:hasParticipant,Participant),
+	has_object_type(Participant,Class).
 
 %% is_classified_by(+Evt, ?Tsk) is nondet
 %
@@ -115,7 +108,7 @@ has_participant(Evt,Participant,Class) ?>
 % @param Evt The Event
 % @param Task The task that classifies the Event
 is_classified_by(Evt, Task) ?+>
-  holds(Evt,dul:isClassifiedBy,Task).
+	holds(Evt,dul:isClassifiedBy,Task).
 
 
 %% executes_task(?Act,?Tsk) is nondet.
@@ -128,7 +121,7 @@ is_classified_by(Evt, Task) ?+>
 % @param Tsk An individual of type dul:'Task'.
 %
 executes_task(Act,Tsk) ?+>
-  holds(Act,dul:executesTask,Tsk).
+	holds(Act,dul:executesTask,Tsk).
 
 %% task_role(?Tsk,?Role) is nondet.
 %
@@ -140,9 +133,10 @@ executes_task(Act,Tsk) ?+>
 % @param Role An individual of type dul:'Role'.
 %
 task_role(Tsk,Role) ?+>
-  holds(Tsk, dul:isTaskOf ,Role).
+	holds(Tsk, dul:isTaskOf ,Role).
 
-has_task_role(Tsk,Role) ?+> task_role(Tsk,Role).
+has_task_role(Tsk,Role) ?+>
+	task_role(Tsk,Role).
 
 %% task_role_type(?Tsk,?Role,?RoleType) is nondet.
 %
@@ -154,8 +148,8 @@ has_task_role(Tsk,Role) ?+> task_role(Tsk,Role).
 % @param RoleType A sub-class of dul:'Role'.
 %
 task_role_type(Tsk,Role,RoleType) ?>
-  holds(Tsk, dul:isTaskOf, Role),
-  has_object_type(Role,RoleType).
+	holds(Tsk, dul:isTaskOf, Role),
+	has_object_type(Role,RoleType).
 
 %% task_role_range(?Tsk,?Role,?Range) is nondet.
 %
@@ -167,5 +161,5 @@ task_role_type(Tsk,Role,RoleType) ?>
 % @param Range A sub-class of dul:'Object'.
 %
 task_role_range(Tsk,Role,Range) ?>
-  holds(Tsk,dul:isTaskOf,Role),
-  holds(Role,dul:classifies,only(Range)).
+	holds(Tsk,dul:isTaskOf,Role),
+	holds(Role,dul:classifies,only(Range)).

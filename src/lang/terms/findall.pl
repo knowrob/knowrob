@@ -1,32 +1,32 @@
-:- module(mng_term_findall, []).
+:- module(lang_findall, []).
 
-:- use_module(library('db/mongo/lang/compiler')).
-:- use_module(library('db/mongo/lang/query')).
+:- use_module(library('db/mongo/compiler')).
+:- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- mng_query_command(findall).
+:- add_query_command(findall).
 
 %%
-mng_query:step_expand(
+query_compiler:step_expand(
 		findall(Pattern, Goal, List),
 		findall(Pattern, Expanded, List),
 		Context) :-
-	mng_expand(Goal, Expanded, Context).
+	query_expand(Goal, Expanded, Context).
 
 %%
 % findall only exposes the List variable to the outside.
 %
-mng_compiler:step_var(
+query_compiler:step_var(
 		findall(Pattern, _, List),
 		[List_var, list(List,Pattern)]) :-
-	mng_compiler:var_key(List, List_var).
+	query_compiler:var_key(List, List_var).
 
 %%
 % findall(Pattern,Terminals,List) builds a list from matching
 % documents. Pattern is a variable or list with variables
 % referred to in Terminals list.
 %
-mng_compiler:step_compile(
+query_compiler:step_compile(
 		findall(Pattern, Terminals, List),
 		Context,
 		[ Lookup, SetList, UnsetNext ]) :-
@@ -46,7 +46,7 @@ lookup_(Terminals, Context, Lookup) :-
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline first,
 	% need to get access to variables for computing a join
-	mng_compile(Terminals,
+	query_compile(Terminals,
 		pipeline(Pipeline, InnerVars),
 		Context),
 	% pass variables from outer scope to inner if they are referred to
@@ -99,7 +99,7 @@ set_result_(Pattern, List,
 			['in', ElemProjection]
 		]]]
 	]) :-
-	mng_compiler:var_key(List, List_Key),
+	query_compiler:var_key(List, List_Key),
 	term_variables(Pattern, PatternVars),
 	set_result_1(PatternVars, ElemProjection).
 
@@ -113,7 +113,7 @@ set_result_1(L, X) :-
 	findall([Key, string(Val)],
 		(	(	Key='v_scope', Val='$$this.v_scope' )
 		;	(	member(Var,L),
-				mng_compiler:var_key(Var, Key),
+				query_compiler:var_key(Var, Key),
 				atom_concat('$$this.', Key, Val)
 			)
 		),

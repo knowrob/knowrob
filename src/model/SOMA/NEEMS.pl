@@ -4,7 +4,7 @@
 
 :- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
  
-:- begin_tripledb_tests(model_EASE_NEEMS,
+:- begin_rdf_tests(model_EASE_NEEMS,
 		'package://knowrob/owl/test/memory.owl',
 		[ namespace('http://knowrob.org/kb/mem-test.owl#')
 		]).
@@ -107,4 +107,4 @@ test('is_masterful') :-
   %mem_event_assignment(TskNode,
       %test:'predicate1_Argument2',test:'Artifact_0').
 
-:- end_tripledb_tests(model_EASE_NEEMS).
+:- end_rdf_tests(model_EASE_NEEMS).

@@ -1,6 +1,6 @@
 :- module(lang_transitive,
-    [ transitive(t),      % +Query
-      include_parents(t)  % +Query
+    [ %transitive(t),      % +Query
+      %include_parents(t)  % +Query
     ]).
 /** <module> Treat a query term as transitive relation.
 
@@ -26,8 +26,8 @@ transitive_db_(triple(_,rdfs:subPropertyOf,_)).
 %
 % @param A query term.
 %
-include_parents(Query) ?>
-  call(Query, [options([include_parents(true)])]).
+%include_parents(Query) ?>
+%  call(Query, [options([include_parents(true)])]).
 
 %% transitive(+Query) is nondet.
 %
@@ -45,21 +45,21 @@ include_parents(Query) ?>
 %
 % @param Query A query term.
 %
-transitive(Query) ?>
-  { transitive_db_(Query),! },
-  include_parents(Query).
+%transitive(Query) ?>
+%  { transitive_db_(Query),! },
+%  include_parents(Query).
 
-transitive(triple(S,P,O)) ?>
-	{ ! },
-	aggregate([
-		transitive(triple(S,P,O))
-	]).
-
-transitive(Query) ?>
-  options(Options),
-  query_scope(QScope),
-  fact_scope(FScope),
-  { transitive_(Query,[Options,QScope]->FScope) }.
+%transitive(triple(S,P,O)) ?>
+%	{ ! },
+%	aggregate([
+%		transitive(triple(S,P,O))
+%	]).
+%
+%transitive(Query) ?>
+%  options(Options),
+%  query_scope(QScope),
+%  fact_scope(FScope),
+%  { transitive_(Query,[Options,QScope]->FScope) }.
 
 %%
 transitive_(Query,Scope) :-
@@ -112,14 +112,14 @@ call_(Functor,S,P,O,Scope) :-
      *        UNIT TESTS            *
      *******************************/
 
-:- begin_tripledb_tests(
-    'lang_transitive',
-    'package://knowrob/owl/test/swrl.owl',
-    [ namespace('http://knowrob.org/kb/swrl_test#')
-    ]).
-
-test("ask ancestor of Lea") :-
-  assert_true(transitive(holds(test:'Lea', test:'hasAncestor', test:'Rex'))),
-  assert_false(holds(test:'Lea', test:'hasAncestor', test:'Rex')).
-
-:- end_tripledb_tests('lang_transitive').
+%:- begin_rdf_tests(
+%    'lang_transitive',
+%    'package://knowrob/owl/test/swrl.owl',
+%    [ namespace('http://knowrob.org/kb/swrl_test#')
+%    ]).
+%
+%test("ask ancestor of Lea") :-
+%  assert_true(transitive(holds(test:'Lea', test:'hasAncestor', test:'Rex'))),
+%  assert_false(holds(test:'Lea', test:'hasAncestor', test:'Rex')).
+%
+%:- end_rdf_tests('lang_transitive').

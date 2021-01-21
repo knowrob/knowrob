@@ -8,7 +8,7 @@
 
 :- use_module('./tf_plugin.pl').
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'tf_plugin',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#'),
