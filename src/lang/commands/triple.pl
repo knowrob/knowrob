@@ -1,15 +1,14 @@
-:- module(lang_triple, []).
+:- module(lang_triple,
+		[ mng_triple_doc(t,-,t)
+		]).
 
-:- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1 ]).
-:- use_module(library('db/mongo/tripledb/triples'),
-		[ mng_triple_doc/3 ]).
-:- use_module(library('lang/scopes/temporal'),
-		[ time_scope_data/2 ]).
-
+:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
+:- use_module(library('lang/subgraph')).
 :- use_module(library('lang/compiler')).
+:- use_module(library('lang/scope')).
 
 :- rdf_meta(triple_tell(t,t,t,t,t,-)).
+:- rdf_meta(taxonomical_property(r,-,-)).
 
 %%
 % register the "annotations" collection.
@@ -45,10 +44,38 @@
 :- query_compiler:add_command(triple).
 
 %%
+% For "taxonomical" properties, not only the value is stored in the document,
+% but as well all its parents (using the key "o*").
 %
+taxonomical_property(P) :- var(P),!,fail.
+taxonomical_property(rdf:type).
+taxonomical_property(rdfs:subClassOf).
+taxonomical_property(rdfs:subPropertyOf).
+
+%% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
 %
-triple_db(DB, Name) :- 
-	mng_get_db(DB, Name, 'triples').
+mng_triple_doc(triple(S,P,O), Doc, Context) :-
+	%% read options
+	option(graph(Graph), Context, user),
+	option(scope(Scope), Context),
+	% special handling for some properties
+	(	taxonomical_property(P,_,_)
+	->	( Key_p='p',  Key_o='o*' )
+	;	( Key_p='p*', Key_o='o' )
+	),
+	% remove unit from O, it is handled separately
+	strip_unit(O,Unit,V),
+	%
+	findall(X,
+		(	( mng_query_value(S,Query_s), X=['s',Query_s] )
+		;	( mng_query_value(P,Query_p), X=[Key_p,Query_p] )
+		;	( mng_query_value(V,Query_v), X=[Key_o,Query_v] )
+		;	( ground(Unit),               X=['unit',string(Unit)] )
+		;	graph_doc(Graph,X)
+		;	scope_doc(Scope,X)
+		),
+		Doc
+	).
 
 %%
 % expose subject/predicate/object argument variables.
@@ -184,7 +211,8 @@ compile_tell1(
 	% strip the value, assert that operator must be $eq
 	% all others do not make sense fro tell.
 	% FIXME: move to client.pl
-	mng_triples:mng_query_value_(O,'$eq',MngValue,Unit),
+	strip_unit(O, Unit, WithoutUnit),
+	mng_query_value(WithoutUnit, ['$eq', MngValue]),
 	% extend the context
 	Context0 = [
 		property(P),
@@ -544,6 +572,39 @@ propagate_tell_(S, Context, Step) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+strip_unit(In, Unit, Out) :-
+	mng_strip_variable(In, X0),
+	mng_strip_operator(X0, Op, X1),
+	mng_strip_unit(X1, Unit, X2),
+	mng_strip_operator(Out, Op, X2).
+
+%%
+graph_doc('*', _)    :- !, fail.
+graph_doc('user', _) :- !, fail.
+graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
+graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
+	get_supgraphs(GraphName,Graphs).
+
+%%
+scope_doc(QScope, [Key,Value]) :-
+	get_dict(ScopeName, QScope, ScopeData),
+	scope_doc(ScopeData, SubPath, Value),
+	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
+
+scope_doc(Scope, Path, Value) :-
+	is_dict(Scope),
+	!,
+	get_dict(Key,Scope,Data),
+	scope_doc(Data,SubPath,Value),
+	(	SubPath=''
+	->	Path=Key
+	;	atomic_list_concat([Key,SubPath],'.',Path)
+	).
+
+scope_doc(Value, '', Query) :-
+	mng_query_value(Value, Query).
 
 %%
 array_concat_(Key,Arr,['$set',

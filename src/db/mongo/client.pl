@@ -25,9 +25,12 @@
       mng_cursor_materialize/2,
       mng_find/4,
       mng_get_dict/3,
+      mng_query_value/2,
       mng_strip/4,
       mng_strip_type/3,
       mng_strip_operator/3,
+      mng_strip_unit/3,
+      mng_strip_variable/2,
       mng_operator/2
     ]).
 /** <module> A mongo DB client for Prolog.
@@ -279,9 +282,32 @@ mng_restore(_DB,Dir) :-
 % % % % % typed terms
 
 %%
+%
+% Creates a document for querying a value of a field
+% in mongo. The input value can be a term:
+% `$operator(unit($type($value),$unit))->Var`.
+%
+mng_query_value(Value0, [Operator, Value1]) :-
+	% remove _->_ expression for vars 
+	mng_strip_variable(Value0, X0),
+	% get the mongo DB operator e.g. $eq
+	mng_strip_operator(X0, Operator0, X1),
+	mng_operator(Operator0,Operator),
+	% ensure the value is wrapped in type term
+	mng_strip_type(X1, Type, X2),
+	% convert terms to atoms for storage
+	(	(Type=term,compound(X2))
+	->	term_to_atom(X2,X3)
+	;	X3=X2
+	),
+	% finally wrap value in type again
+	mng_strip_type(Value1, Type, X3).
+
+%%
 mng_strip(Term, Operator, Type, Value) :-
-	mng_strip_operator(Term, Operator, Term0),
-	mng_strip_type(Term0, Type, Value).
+	mng_strip_variable(Term, Term0),
+	mng_strip_operator(Term0, Operator, Term1),
+	mng_strip_type(Term1, Type, Value).
 
 %% mng_strip_type(+TypedValue,?Type,?Value) is det.
 %
@@ -349,15 +375,15 @@ mng_operator('nin', '$nin').
 
 % TODO: better use units as replacement of type.
 %          I guess all qudt units are double basetype?
-strip_unit(Term,Unit,X) :-
+mng_strip_unit(Term,Unit,X) :-
 	compound(Term),
 	Term=unit(X,Unit),
 	!.
-strip_unit(X,_,X).
+mng_strip_unit(X,_,X).
 
 %%
-strip_variable(X->_,X) :- nonvar(X), !.
-strip_variable(X,X) :- !.
+mng_strip_variable(X->_,X) :- nonvar(X), !.
+mng_strip_variable(X,X) :- !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

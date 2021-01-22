@@ -223,38 +223,38 @@ test('scope_data([=<3,20])') :-
 	assertion(Data = [=<(3),20]).
 
 test('subscope_of(current,universal)') :-
-	time_scope_universal(S1),
-	time_scope_now(S2),
-	assertion(time_subscope_of(S2,S1)).
+	universal_scope(S1),
+	current_scope(S2),
+	assertion(subscope_of(S2,S1)).
 
 test('subscope_of([15,18],[10,20])') :-
 	time_scope(=(10),=(20),S1),
 	time_scope(=(15),=(18),S2),
-	assertion(   time_subscope_of(S2,S1)),
-	assertion(\+ time_subscope_of(S1,S2)).
+	assertion(   subscope_of(S2,S1)),
+	assertion(\+ subscope_of(S1,S2)).
 
 test('subscope_of([15,18],[15,20])') :-
 	time_scope(=(15),=(20),S1),
 	time_scope(=(15),=(18),S2),
-	assertion(   time_subscope_of(S2,S1)),
-	assertion(\+ time_subscope_of(S1,S2)).
+	assertion(   subscope_of(S2,S1)),
+	assertion(\+ subscope_of(S1,S2)).
 
 test('subscope_of([15,18],[15,18])') :-
 	time_scope(=(15),=(18),S1),
 	time_scope(=(15),=(18),S2),
-	assertion(time_subscope_of(S2,S1)),
-	assertion(time_subscope_of(S1,S2)).
+	assertion(subscope_of(S2,S1)),
+	assertion(subscope_of(S1,S2)).
 
 test('subscope_of([15,18],[10,>=20])') :-
 	time_scope(=(10),>=(20),S1),
 	time_scope(=(15),=(18),S2),
-	assertion(   time_subscope_of(S2,S1)),
-	assertion(\+ time_subscope_of(S1,S2)).
+	assertion(   subscope_of(S2,S1)),
+	assertion(\+ subscope_of(S1,S2)).
 
 test('intersect_scope([5,18],[10,20])') :-
 	time_scope(=(5),  =(18), S1),
 	time_scope(=(10), =(20), S2),
-	time_scope_intersect(S1, S2, S3),
+	scope_intersect(S1, S2, S3),
 	time_scope_data(S3,Data),
 	assertion(ground(Data)),
 	assertion(Data = [10, 18]).
@@ -262,7 +262,7 @@ test('intersect_scope([5,18],[10,20])') :-
 test('intersect_scope([5,10],[10,20])') :-
 	time_scope(=(5),  =(10), S1),
 	time_scope(=(10), =(20), S2),
-	time_scope_intersect(S1, S2, S3),
+	scope_intersect(S1, S2, S3),
 	time_scope_data(S3,Data),
 	assertion(ground(Data)),
 	assertion(Data = [10,10]).
@@ -270,12 +270,12 @@ test('intersect_scope([5,10],[10,20])') :-
 test('intersect_scope([5,9],[10,20])') :-
 	time_scope(=(5),  =(9),  S1),
 	time_scope(=(10), =(20), S2),
-	assertion(\+ time_scope_intersect(S1,S2,_)).
+	assertion(\+ scope_intersect(S1,S2,_)).
 
 test('intersect_scope([5,18],[10,>=20])') :-
 	time_scope(=(5),   =(18), S1),
 	time_scope(=(10), >=(20), S2),
-	time_scope_intersect(S1, S2, S3),
+	scope_intersect(S1, S2, S3),
 	time_scope_data(S3,Data),
 	assertion(ground(Data)),
 	assertion(Data = [10,18]).
@@ -283,7 +283,7 @@ test('intersect_scope([5,18],[10,>=20])') :-
 test('intersect_scope([5,>=18],[10,>=20])') :-
 	time_scope(=(5),  >=(18), S1),
 	time_scope(=(10), >=(20), S2),
-	time_scope_intersect(S1, S2, S3),
+	scope_intersect(S1, S2, S3),
 	time_scope_data(S3,Data),
 	assertion(ground(Data)),
 	assertion(Data = [10,(>=(18))]).
