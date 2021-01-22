@@ -140,20 +140,6 @@ holds(S,P,O) ?+>
 %data_term_unify_('=',DataValue,DataValue,_).
 
 %%
-% Extract operator from value term.
-% Note that operators can be defined externaly, so X here may
-% still be a compound afterwards (e.g. in case of units, or OWL operators
-% such as only).
-%
-%strip_operator_(X,     X, =) :- var(X), !.
-%strip_operator_(=(X),  X, Operator) :- !, Operator='='.
-%strip_operator_(>(X),  X, Operator) :- !, Operator='>'.
-%strip_operator_(<(X),  X, Operator) :- !, Operator='<'.
-%strip_operator_(=<(X), X, Operator) :- !, Operator='=<'.
-%strip_operator_(>=(X), X, Operator) :- !, Operator='>='.
-%strip_operator_(X,     X, =).
-
-%%
 % Extract unit from value term.
 %
 %data_term_unit_(DataTerm,_,_) :- var(DataTerm), !.

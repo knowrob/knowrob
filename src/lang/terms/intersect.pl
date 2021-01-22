@@ -4,7 +4,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(intersect).
+:- query_command_add(intersect).
 
 %%
 query_compiler:step_var(intersect(Scope), Var) :-

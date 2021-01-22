@@ -37,8 +37,8 @@
 
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3, rdf_meta/1 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
+:- use_module(library('lang/db'),
+    [ load_owl/2 ]).
 :- use_module(library('lang/query')).
 :- use_module(library('utility/url'), [ url_resolve/2 ]).
 :- use_module(library('utility/filesystem'), [ path_concat/3 ]).
@@ -46,7 +46,7 @@
 
 :- use_foreign_library('liburdf_parser.so').
 
-:- tripledb_load('http://knowrob.org/kb/URDF.owl',
+:- load_owl('http://knowrob.org/kb/URDF.owl',
     [ namespace(urdf,'http://knowrob.org/kb/urdf.owl#')
     ]).
 

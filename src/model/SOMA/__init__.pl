@@ -1,5 +1,5 @@
 
-:- tripledb_load('http://www.ease-crc.org/ont/SOMA.owl',
+:- load_owl('http://www.ease-crc.org/ont/SOMA.owl',
     [ namespace(soma)
     ]).
 

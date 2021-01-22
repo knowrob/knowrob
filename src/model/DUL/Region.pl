@@ -29,11 +29,11 @@ In DUL, Region is defined as:
     [ is_event/1 ]).
 :- use_module('./Situation.pl',
     [ is_situation/1 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2, tripledb_ask/3 ]).
+:- use_module(library('lang/db'),
+    [ load_owl/2 ]).
 
 % load RDF data
-:- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
+:- load_owl('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
     ]).
 

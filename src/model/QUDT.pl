@@ -21,7 +21,7 @@
 :- rdf_register_ns(qudt,
     'http://data.nasa.gov/qudt/owl/qudt#', [keep(true)]).
 % TODO load into DB backend
-%:- tripledb_load('http://...',
+%:- load_owl('http://...',
     %[ graph(qudt),
       %namespace(qudt)
     %]).

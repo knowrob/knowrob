@@ -1,9 +1,10 @@
-:- module(lang_export,
-    [ tripledb_load/1,
-      tripledb_load/2,
-      tripledb_load/3,
+:- module(lang_db,
+    [ load_owl/1,
+      load_owl/2,
+      load_owl/3,
       remember/1,
-      memorize/1
+      memorize/1,
+      drop_graph/1
     ]).
 /** <module> Interface for dumping knowledge and restoring it.
 
@@ -11,10 +12,14 @@
 @license BSD
 */
 
-:- use_module(library(rdf),              [ load_rdf/3 ]).
-:- use_module(library('semweb/rdf_db'),  [ rdf_equal/2, rdf_register_ns/3 ]).
-:- use_module(library('http/http_open'), [ http_open/3 ]).
-
+:- use_module(library(rdf),
+		[ load_rdf/3 ]).
+:- use_module(library('semweb/rdf_db'), 
+		[ rdf_equal/2,
+		  rdf_register_ns/3
+		]).
+:- use_module(library('http/http_open'),
+		[ http_open/3 ]).
 :- use_module(library('utility/url'),
 		[ url_resolve/2 ]).
 :- use_module(library('model/XSD'),
@@ -25,17 +30,12 @@
 		]).
 :- use_module(library('db/subgraph')).
 
-:- multifile remember_hook/1.
-:- multifile memorize_hook/1.
-
-:- dynamic kb_collection_name/1.
+% define some settings
+:- setting(drop_graphs, list, [user],
+		'List of named graphs that should initially by erased.').
 
 %%
-% Needs to be called for each DB collection to be
-% taken into account during import/export.
-%
-kb_collection_init(Name) :-
-	assert(kb_collection_name(Name)).
+:- multifile collection_name/1.
 
 %% remember(+Directory) is det.
 %
@@ -44,14 +44,13 @@ kb_collection_init(Name) :-
 % @param Directory filesystem path
 %
 remember(Directory) :-
-	mng_import(Directory),
-	forall(remember_hook(Directory), true).
+	mng_import(Directory).
 
 %%
 mng_import(Dir) :-
 	mng_db_name(DB),
 	forall(
-		kb_collection_name(Collection),
+		collection_name(Collection),
 		(	path_concat(Dir, Collection, Dir0),
 			mng_restore(DB, Dir0)
 		)
@@ -64,42 +63,61 @@ mng_import(Dir) :-
 % @param Directory filesystem path
 %
 memorize(Directory) :-
-	mng_export(Directory),
-	forall(memorize_hook(Directory), true).
+	mng_export(Directory).
 
 %%
 mng_export(Dir) :-
 	mng_db_name(DB),
 	forall(
-		mng_collection_name(Collection),
+		collection_name(Collection),
 		(	path_concat(Dir, Collection, Dir0),
 			mng_dump_collection(DB, Collection, Dir0)
 		)
 	).
 
-     /*******************************
-     *    LOADING ONTOLOGIES        *
-     *******************************/
-
-%% tripledb_load(+URL) is det.
+%% drop_graph(+Name) is det.
 %
-% Same as tripledb_load/2 with empty Options list.
+% Deletes all triples asserted into given named graph.
+%
+% @Name the graph name.
+%
+drop_graph(Name) :-
+	mng_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, [
+		[graph, string(Name)]
+	]).
+
+%%
+% Drop graphs on startup if requested through settings.
+% This is usually done to start with an empty "user" graph
+% when KnowRob is started.
+%
+auto_drop_graphs :-
+	\+ setting(mng_client:read_only, true),
+	setting(lang_db:drop_graphs, L),
+	forall(member(X,L), drop_graph(X)).
+
+:- ignore(auto_drop_graphs).
+
+%% load_owl(+URL) is det.
+%
+% Same as load_owl/2 with empty Options list.
 %
 % @param URL URL of a RDF file.
 % 
-tripledb_load(URL) :-
-	tripledb_load(URL, []).
+load_owl(URL) :-
+	load_owl(URL, []).
 
-%% tripledb_load(+URL,+Options) is semidet.
+%% load_owl(+URL,+Options) is semidet.
 %
-% Same as tripledb_load/3 with universal scope,
+% Same as load_owl/3 with universal scope,
 % and graph name argument as given in the options list
 % or "user" if none is given.
 %
 % @param URL URL of a RDF file.
 % @param Options List of options.
 %
-tripledb_load(URL, Options) :-
+load_owl(URL, Options) :-
 	is_list(Options),
 	!,
 	% register namespace
@@ -120,9 +138,9 @@ tripledb_load(URL, Options) :-
 	),
 	% get fact scope
 	universal_scope(Scope),
-	tripledb_load(URL, Scope, Graph).
+	load_owl(URL, Scope, Graph).
 
-%% tripledb_load(+URL,+Scope,+Graph) is semidet.
+%% load_owl(+URL,+Scope,+Graph) is semidet.
 %
 % Load RDF data from file, and assert it into
 % the triple DB using the scope provided, and
@@ -132,7 +150,7 @@ tripledb_load(URL, Options) :-
 % @param Scope The subject of a triple.
 % @param Graph The graph name.
 %
-tripledb_load(URL, Scope, SubGraph) :-
+load_owl(URL, Scope, SubGraph) :-
 	(	url_resolve(URL,Resolved)
 	->	true
 	;	Resolved=URL 
@@ -155,10 +173,10 @@ tripledb_load(URL, Scope, SubGraph) :-
 	%%
 	(	setting(mng_client:read_only, true)
 	->	true
-	;	tripledb_load0(Resolved, Scope, OntoGraph, SubGraph)
+	;	load_owl0(Resolved, Scope, OntoGraph, SubGraph)
 	).
 
-tripledb_load0(Resolved,_,OntoGraph,_) :-
+load_owl0(Resolved,_,OntoGraph,_) :-
 	% test whether the ontology is already loaded
 	get_ontology_version(OntoGraph,Version),
 	file_version(Resolved,Version),
@@ -178,38 +196,36 @@ tripledb_load0(Resolved,_,OntoGraph,_) :-
 	),
 	!.
 
-tripledb_load0(Resolved,Scope,OntoGraph,SubGraph) :-
+load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
 	rdf_equal(owl:'Ontology',OWL_Ontology),
 	rdf_equal(rdf:'type',RDF_Type),
 	% erase old triples
-	triple_graph_drop(OntoGraph),
+	drop_graph(OntoGraph),
 	%
 	load_rdf_(Resolved, Triples),
 	% get ontology IRI
 	(	member(rdf(Unresolved,RDF_Type,OWL_Ontology), Triples)
 	->	true
-	;	(	log_error(type_error(ontology,Resolved)),
-			fail
-		)
+	;	log_error_and_fail(type_error(ontology,Resolved))
 	),
 	% first, load RDF data of imported ontologies
 	forall(
 		member(rdf(Unresolved,OWL_Imports,I), Triples),
 		(	ontology_graph(I,ImportedGraph),
 			add_subgraph(OntoGraph,ImportedGraph),
-			tripledb_load(I,Scope,SubGraph)
+			load_owl(I,Scope,SubGraph)
 		)
 	),
 	% assert a version string
 	file_version(Resolved, Version),
 	set_ontology_version(Unresolved, Version, OntoGraph),
 	% load data into triple DB
-	tripledb_load1(Unresolved,Triples,Scope,OntoGraph),
+	load_owl1(Unresolved,Triples,Scope,OntoGraph),
 	!.
 
 %%
-tripledb_load1(IRI, Triples, Scope, Graph) :-
+load_owl1(IRI, Triples, Scope, Graph) :-
 	% debug how long loading takes
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),

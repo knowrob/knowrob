@@ -30,11 +30,11 @@ In DUL, Object is defined as:
     [ has_type/2 ]).
 :- use_module('./Object.pl',
     [ has_object_type/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2 ]).
+:- use_module(library('lang/db'),
+    [ load_owl/2 ]).
 
 % load RDF data
-:- tripledb_load('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
+:- load_owl('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
     [ namespace(dul)
     ]).
 

@@ -19,11 +19,11 @@
 
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
-	tripledb_load(
+	load_owl(
 		'package://knowrob/owl/test/swrl.owl',
 		[ graph(test)
 		]),
-	tripledb_load(
+	load_owl(
 		'package://knowrob/owl/test/datatype_test.owl',
 		[ graph(test)
 		]).

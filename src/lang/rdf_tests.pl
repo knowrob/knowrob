@@ -12,12 +12,9 @@ written into a special named graph that is deleted again in cleanup step.
 */
 
 :- use_module('query',
-	[ forget/2,
-	  set_default_graph/1
-	]).
-:- use_module('export',
-	[ tripledb_load/2
-	]).
+	[ forget/2 ]).
+:- use_module('db',
+	[ load_owl/2 ]).
 
 %%
 begin_rdf_tests(Name,RDFFile,Options0) :-
@@ -45,24 +42,19 @@ end_rdf_tests(Name) :-
 
 %%
 setup(RDFFile) :-
-	set_default_graph(test),
-	tripledb_load(RDFFile).
+	lang_query:set_default_graph(test),
+	load_owl(RDFFile).
 
 %%
 cleanup(RDFFile) :-
 	cleanup,
-	%%
-	wildcard_scope(QScope),
 	lang_export:ontology_graph(RDFFile, OntoGraph),
-	forget(triple(_,_,_),
-		[[graph(=(OntoGraph))], QScope]).
+	drop_graph(OntoGraph).
 
 %%
 cleanup :-
-	wildcard_scope(QScope),
-	forget(triple(_,_,_),
-		[[graph(=(test))], QScope]),
-	set_default_graph(user).
+	drop_graph(test),
+	lang_query:set_default_graph(user).
 
 %%
 add_option_goal(OptionsIn,NewOpt,[MergedOpt|Rest]) :-

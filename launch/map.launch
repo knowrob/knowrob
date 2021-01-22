@@ -9,6 +9,6 @@
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="tripledb_load('$(arg owl_file)'), urdf_load('$(arg object_iri)', '$(arg urdf_file)', [load_rdf]), urdf_set_pose_to_origin('$(arg object_iri)',map), sleep(1.0), marker_plugin:republish" />
+    <arg name="initial_goal" default="load_owl'$(arg owl_file)'), urdf_load('$(arg object_iri)', '$(arg urdf_file)', [load_rdf]), urdf_set_pose_to_origin('$(arg object_iri)',map), sleep(1.0), marker_plugin:republish" />
   </include>
 </launch>

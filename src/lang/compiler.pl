@@ -1,15 +1,16 @@
 :- module(query_compiler,
-	[ add_query_command/1,
+	[ query_command_add/1,
 	  query_assert(t),
 	  query_ask(t,+,-,+),
 	  query_tell(t,+,+),
+	  query_forget(t,+,+),
 	  query_expand/3,
 	  query_compile/3
 	]).
-/** <module> Integration of KnowRob language terms with mongo DB.
+/** <module> Compilation of KnowRob rules into DB queries.
 
 KnowRob language terms are defined in rules which are translated
-into aggregate pipelines in this module.
+into aggregate pipelines that can be processed by mongo DB.
 
 @author Daniel Beßler
 @license BSD
@@ -44,7 +45,7 @@ into aggregate pipelines in this module.
 
 :- rdf_meta(step_compile(t,t,t)).
 
-%% add_query_command(+Command) is det.
+%% query_command_add(+Command) is det.
 %
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
@@ -54,7 +55,7 @@ into aggregate pipelines in this module.
 %
 % @Command a command term.
 %
-add_query_command(Command) :-
+query_command_add(Command) :-
 	assertz(step_command(Command)).
 
 
@@ -85,6 +86,12 @@ query_tell(Statement, FScope, Options) :-
 	query_(Statement,
 		[scope(FScope)|Options],
 		_, tell).
+
+%%
+%
+query_forget(Statement, FScope, Options) :-
+	% TODO
+	fail.
 
 %%
 query_(Goal, Context, FScope, Mode) :-
@@ -119,10 +126,11 @@ query_2(ask, Cursor, Vars, FScope) :-
 
 query_2(tell, Cursor, _Vars, _FScope) :-
 	!,
+	% first, run the query.
 	% NOTE: tell cannot materialize the cursor
 	% because there are no output documents (due to $merge command)
 	mng_cursor_run(Cursor),
-	% remove all documents that have been flagged by the aggregate pipeline.
+	% second, remove all documents that have been flagged by the aggregate pipeline.
 	% this is needed because it seems not possible to merge+delete
 	% in one pipeline, so the first pass just tags the documents
 	% that need to be removed.
@@ -215,11 +223,9 @@ query_assert1(Head, Body, Context) :-
 	%% expand goals into terminal symbols
 	(	query_expand(Body, Expanded, Context)
 	->	true
-	;	(	log_error(mongo(assertion_failed(Functor,Body))),
-			fail
-		)
+	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
-	log_info(mongo(expanded(Functor, Args, Expanded, Context))),
+	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
@@ -236,10 +242,8 @@ query_expand(Goal, Expanded, Context) :-
 	comma_list(Goal, Terms),
 	catch(
 		expand_term_0(Terms, Expanded, Context),
-		expansion_failed(FailedGoal),
-		(	log_error(mongo(expansion_failed(FailedGoal, Goal))),
-			fail
-		)
+		Exc,
+		log_error_and_fail(lang(Exc, Goal))
 	).
 
 %%
@@ -279,7 +283,8 @@ expand_term_3(ask(Goal), _Modifier, Expanded, Context) :-
 %% finally expand rules that were asserted before
 expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Context) :-
 	Goal =.. [Functor|_Args],
-	step_command(Functor), !,
+	step_command(Functor),
+	!,
 	% TODO: verify that Modifier are supported by command
 	(	step_expand(Goal, Expanded, Context)
 	->	true
@@ -292,14 +297,13 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
 	% TODO: do we need to create a copy of Terminals here, or not needed?
-	bagof(Terminals,
-		query(Functor, Args, Terminals, Context),
-		TerminalsList),
+	(	bagof(Terminals,
+			query(Functor, Args, Terminals, Context),
+			TerminalsList)
+	->	true
 	% handle the case that a predicate is referred to that wasn't
 	% asserted before
-	(	TerminalsList=[]
-	->	throw(expansion_failed(Goal))
-	;	true
+	;	throw(expansion_failed(Goal))
 	),
 	% need to wrap in facet/1 to indicate that there are multiple clauses.
 	% the case of multiple clauses is handled using the $facet command.
@@ -325,17 +329,15 @@ expand_term_3(Goal, Modifier0, Expanded, Context) :-
 query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
 		compile_0(Terminals, Doc, []->Vars, Context),
-		compilation_failed(FailedTerm),
-		(	log_error(mongo(compilation_failed(FailedTerm,Terminals))),
-			fail
-		)
+		Exc,
+		log_error_and_fail(lang(Exc, Terminals))
 	).
 
 %%
 compile_0(Terminals, Doc, Vars, Context) :-
 	compile_1(Terminals, Doc0, Vars, Context),
 	(	memberchk(ask, Context)
-	->	Doc=Doc0
+	->	compile_ask_(Doc0, Doc)
 	;	compile_tell_(Doc0, Doc)
 	).
 
@@ -368,6 +370,10 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	->	true
 	;	throw(compilation_failed(Term, InnerContext))
 	).
+
+%%
+compile_ask_(Doc, Doc) :-
+	!.
 
 %%
 compile_tell_(Doc0, Doc1) :-

@@ -9,11 +9,11 @@
 :- use_module('./DUL/Event.pl').
 
 % load additional ontologies
-:- tripledb_load(
+:- load_owl(
         'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
         [ namespace(io)
         ]).
-:- tripledb_load(
+:- load_owl(
         'http://knowrob.org/kb/knowrob.owl',
         [ namespace(knowrob)
         ]).

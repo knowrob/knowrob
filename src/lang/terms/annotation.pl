@@ -17,7 +17,7 @@
 % register the "annotations" collection.
 % This is needed for import/export.
 %
-:- kb_collection_init(annotations).
+:- lang_db:collection_name(annotations).
 
 %%
 % Create indices for fast annotation retrieval.
@@ -34,8 +34,8 @@ create_search_inidces_ :-
 :- create_search_inidces_.
 
 %% register query commands
-:- add_query_command(comment).
-%:- add_query_command(seeAlso).
+:- query_command_add(comment).
+%:- query_command_add(seeAlso).
 
 %%
 % expose argument variables.

@@ -4,11 +4,11 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(ground).
-:- add_query_command(var).
-:- add_query_command(number).
-:- add_query_command(atom).
-:- add_query_command(is_list).
+:- query_command_add(ground).
+:- query_command_add(var).
+:- query_command_add(number).
+:- query_command_add(atom).
+:- query_command_add(is_list).
 
 %%
 query_compiler:step_var(ground(X),  [V,X]) :- query_compiler:var_key(X, V).

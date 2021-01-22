@@ -48,9 +48,8 @@
 :- use_module(library('semweb/rdf_db'),
     [ rdf_register_ns/3,
       rdf_equal/2 ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2,
-      tripledb_ask/3
+:- use_module(library('lang/db'),
+    [ load_owl/2
     ]).
 :- use_module('./RDFS.pl',
     [ has_type/2,
@@ -58,7 +57,7 @@
     ]).
 
 % load OWL model
-:- tripledb_load('http://www.w3.org/2002/07/owl.rdf',
+:- load_owl('http://www.w3.org/2002/07/owl.rdf',
     [ graph(common),
       namespace(owl,'http://www.w3.org/2002/07/owl#')
     ]).

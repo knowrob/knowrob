@@ -11,7 +11,7 @@ setting(marker_plugin:auto, false).
 setting(tf_plugin:use_logger, false).
 
 %	Triple DB
-setting(lang_query:drop_graphs, []).
+setting(lang_db:drop_graphs, []).
 
 % Flag for read only mongo databases
 setting(mng_client:read_only, true).

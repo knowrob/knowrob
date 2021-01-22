@@ -6,7 +6,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(pragma).
+:- query_command_add(pragma).
 
 %%
 % pragma(Goal) is evaluated compile-time by calling

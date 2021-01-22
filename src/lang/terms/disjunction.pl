@@ -4,7 +4,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(facet).
+:- query_command_add(facet).
 
 %%
 % Each facet is a KnowRob language expression and needs to be expanded.

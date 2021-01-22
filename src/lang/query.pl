@@ -1,12 +1,13 @@
 :- module(lang_query,
-    [ ask(t),      % +Statement
-      ask(t,t),    % +Statement, +Scope
-      tell(t),     % +Statement
-      tell(t,t),   % +Statement, +Scope
-      forget(t),
-      forget(t,t)
-      %update(t),  % +Statement
-      %update(t,t) % +Statement, +Scope
+    [ ask(t),        % +Statement
+      ask(t,t,t),    % +Statement, +QScope, -FScope
+      ask(t,t,t,t),  % +Statement, +QScope, -FScope, +Options
+      tell(t),       % +Statement
+      tell(t,t),     % +Statement, +Scope
+      tell(t,t,t),   % +Statement, +Scope, +Options
+      forget(t),     % +Statement
+      forget(t,t),   % +Statement, +Scope
+      forget(t,t,t)  % +Statement, +Scope, +Options
     ]).
 /** <module> Main interface predicates for querying the knowledge base.
 
@@ -22,27 +23,10 @@
     [ current_scope/1,
       universal_scope/1
     ]).
-:- use_module(library('lang/scopes/temporal')).
 :- use_module(library('compiler')).
 
-% define some settings
-:- setting(drop_graphs, list, [user],
-		'List of named graphs that should initially by erased.').
-
-%
+% fallback graph for tell/forget
 :- dynamic default_graph/1.
-%
-default_graph(user).
-
-% TODO search for where tripledb init is called
-query_init :-
-	% drop some graphs on start-up
-	(	setting(mng_client:read_only, true)
-	->	true
-	;	(	setting(tripledb:drop_graphs,L),
-			forall(member(X,L), drop_graph(X))
-		)
- 	).
 
 %%
 % Set the name of the graph where triples are asserted and retrieved
@@ -52,19 +36,52 @@ set_default_graph(Graph) :-
 	retractall(default_graph(_)),
 	assertz(default_graph(Graph)).
 
-%%
-set_graph_option(Options,Options) :-
-	option(graph(_),Options),!.
-
-set_graph_option(Options,Merged) :-
-	default_graph(DG),
-	merge_options([graph(DG)],Options,Merged).
+:- set_default_graph(user).
 
 %%
 % NOTE: SWI strip_module acts strange
 strip_module_(:(Module,Term),Module,Term) :- !.
 strip_module_(Term,_,Term).
 
+%% ask(+Statement, +QScope, -FScope, +Options) is nondet.
+%
+% True if Statement term holds within the requested scope (QScope).
+% Statement can also be a list of statements.
+% FactScope the actual scope of the statement being true that overlaps
+% with the requested scope.
+% The list of options is passed to the compiler.
+%
+% @param Statement a statement term.
+% @param QScope the requested scope.
+% @param FScope the actual scope.
+% @param Options list of options.
+%
+ask(Statements, QScope, FScope, Options) :-
+	is_list(Statements),
+	!,
+	comma_list(Goal, Statements),
+	ask(Goal, QScope, FScope, Options).
+
+ask(Statement, QScope, FScope, Options) :-
+	% grounded statements have no variables
+	% in this case we can limit to one solution here
+	ground(Statement),
+	!,
+	once(query_ask(Statement, QScope, FScope, Options)).
+
+ask(Statement, QScope, FScope, Options) :-
+	%\+ nonground(Statement),
+	query_ask(Statement, QScope, FScope, Options).
+
+%% ask(+Statement, +QScope, -FScope) is nondet.
+%
+% Same as ask/4 with empty options list.
+%
+% @param Statement a statement term.
+%
+ask(Statement, QScope, FScope) :-
+	current_scope(QScope),
+	ask(Statement, QScope, FScope, []).
 
 %% ask(+Statement) is nondet.
 %
@@ -75,39 +92,43 @@ strip_module_(Term,_,Term).
 %
 ask(Statement) :-
 	current_scope(QScope),
-	ask(Statement,[[],QScope]->_).
+	ask(Statement, QScope, _, []).
 
-%% ask(+Statement,+Scope) is nondet.
+%% tell(+Statement, +Scope, +Options) is semidet.
 %
-% True if Statement term holds within the requested scope.
-% Scope is a term `[Options,QueryScope]->FactScope` where QueryScope
-% is the scope requested, and FactScope the actual scope
-% of the statement being true.
+% Tell the knowledge base that some statement is true.
+% Scope is the scope of the statement being true.
 % Statement can also be a list of statements.
+% The list of options is passed to the compiler.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+% @param Options list of options.
+%
+tell(Statements, Scope, Options) :-
+	is_list(Statements),
+	!,
+	comma_list(Statement, Statements),
+	tell(Statement, Scope, Options).
+
+tell(Statement, Scope, Options) :-
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% compile and call statement
+	(	setting(mng_client:read_only, true)
+	->	log_warning(db(read_only(tell)))
+	;	query_tell(Statement, Scope, Options0)
+	).
+
+%% tell(+Statement, +Scope) is nondet.
+%
+% Same as tell/3 with empty options list.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-ask(Statements, QScope->FScope) :-
-	is_list(Statements),
-	!,
-	comma_list(Goal, Statements),
-	ask(Goal, Scope).
-
-ask(Statement,Scope) :-
-	% grounded statements have no variables
-	% in this case we can limit to one solution here
-	ground(Statement),
-	!,
-	once(ask1(Statement,Scope)).
-
-ask(Statement,Scope) :-
-	%\+ nonground(Statement),
-	ask1(Statement,Scope).
-
-%%
-ask_1(Statement, [Options,QScope]->FScope) :-
-	query_ask(Statement, QScope, FScope, Options).
+tell(Statement, Scope) :-
+	tell(Statement, Scope, []).
 
 %% tell(+Statement) is nondet.
 %
@@ -116,76 +137,48 @@ ask_1(Statement, [Options,QScope]->FScope) :-
 % @param Statement a statement term.
 %
 tell(Statement) :-
-	universal_scope(FScope),
-	tell(Statement,[[],FScope]).
+	universal_scope(Scope),
+	tell(Statement, Scope, []).
 
-%% tell(+Statement,+Scope) is det.
+%% forget(+Statement, +Scope, +Options) is semidet.
 %
-% Tell the knowledge base that some statement is true.
-% Scope is a term `[Options,FactScope]` where FactScope
-% the scope of the statement being true.
+% Forget that some statement is true.
+% Scope is the scope of the statement to forget.
 % Statement can also be a list of statements.
-%
-% tell/2 is a multifile predicate. Meaning that clauses may be
-% decalared in multiple files.
-% Specifically, declaring a rule using the tell operator `+>`,
-% or the ask-tell operator `?+>` will generate a clause of the tell rule.
+% The list of options is passed to the compiler.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
+% @param Options list of options.
 %
-tell(Statements, Scope) :-
-	is_list(Statements),
-	!,
-	comma_list(Goal, Statements),
-	tell(Goal, Scope).
-
-tell(Statement, [Options,Scope]) :-
-	% TODO
-%	(	setting(mng_client:read_only, true)
-%  	-> print_message(warning, 'Tried to write despite read only access')
-%  	;	itripledb_tell(S,P,O,Scope,Options0)
-%  	),
-	query_tell(Statement, FScope, Options).
-
-%%
-forget(Statement) :-
-	wildcard_scope(Scope),
-	forget(Statement, [[],Scope]).
-
-forget(Statement, [Opt,Scope]) :-
-	set_graph_option(Opt, Opt0),
+forget(Statement, Scope, Options) :-
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% compile and call statement
 	(	setting(mng_client:read_only, true)
 	->	print_message(warning, 'Tried to delete despite read only access')
-	;	forget_(Statement, [Opt0,Scope])
+	;	query_forget(Statement, Scope, Options0)
 	).
 
-%%
-drop_graph(Name) :-
-	wildcard_scope(QScope),
-	forget(triple(_,_,_), [[graph(=(Name))],QScope]).
-
-%% update(+Statement) is nondet.
+%% forget(+Statement, +Scope) is nondet.
 %
-% Same as tell/1 but replaces existing overlapping values.
+% Same as forget/3 with empty options list.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-%update(Statement) :-
-%	universal_scope(FScope),
-%	update(Statement,[[],FScope]).
+forget(Statement, Scope) :-
+	forget(Statement, Scope, []).
 
-%% update(+Statement,+Scope) is nondet.
+%% forget(+Statement) is nondet.
 %
-% Same as tell/2 but replaces existing overlapping values.
+% Same as forget/2 with universal scope.
 %
 % @param Statement a statement term.
-% @param Scope the scope of the statement.
 %
-%update(Statement,Scope0) :-
-%	context_update_(Scope0,[options([functional])],Scope1),
-%	tell(Statement,Scope1).
+forget(Statement) :-
+	wildcard_scope(Scope),
+	forget(Statement, Scope, []).
 
 		 /*******************************
 		 *	    TERM EXPANSION     		*
@@ -230,3 +223,16 @@ user:term_expansion((?+>(Head,Goal)), [X1,X2]) :-
 	user:term_expansion((?>(Head,Goal)),X1),
 	user:term_expansion((+>(Head,Goal)),X2).
 
+
+		 /*******************************
+		 *      	  HELPER     		*
+		 *******************************/
+
+%%
+set_graph_option(Options, Options) :-
+	option(graph(_), Options),
+	!.
+
+set_graph_option(Options, Merged) :-
+	default_graph(DG),
+	merge_options([graph(DG)], Options, Merged).

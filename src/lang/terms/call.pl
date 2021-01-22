@@ -6,7 +6,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(call).
+:- query_command_add(call).
 
 %%
 query_compiler:step_expand(

@@ -4,21 +4,21 @@
 :- use_module(library('db/mongo/query')).
 
 % TODO: support more list commands
-%:- add_query_command(memberchk).
-%:- add_query_command(sort).
-%:- add_query_command(reverse).
-%:- add_query_command(list_to_set).
-%:- add_query_command(max_list).
-%:- add_query_command(min_list).
-%:- add_query_command(sum_list).
-%:- add_query_command(length).
+%:- query_command_add(memberchk).
+%:- query_command_add(sort).
+%:- query_command_add(reverse).
+%:- query_command_add(list_to_set).
+%:- query_command_add(max_list).
+%:- query_command_add(min_list).
+%:- query_command_add(sum_list).
+%:- query_command_add(length).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% nth/3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- add_query_command(nth).
+:- query_command_add(nth).
 
 %%
 % nth/3 exposes variables of the pattern.
@@ -60,7 +60,7 @@ query_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- add_query_command(member).
+:- query_command_add(member).
 
 %%
 % member exposes variables of the pattern.

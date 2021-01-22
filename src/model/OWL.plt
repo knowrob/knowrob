@@ -3,10 +3,6 @@
     [ subclass_of/2,
       subproperty_of/2
     ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_load/2,
-      tripledb_ask/3
-    ]).
 :- use_module(library('rostest')).
 :- use_module(library('semweb/rdf_db')).
 

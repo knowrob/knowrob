@@ -5,7 +5,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(match).
+:- query_command_add(match).
 
 %%
 % match uses 2-ary operator whose arguments maybe variables.

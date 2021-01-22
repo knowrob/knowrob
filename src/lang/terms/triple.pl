@@ -19,7 +19,7 @@
 % register the "annotations" collection.
 % This is needed for import/export.
 %
-:- kb_collection_init(triples).
+:- lang_db:collection_name(triples).
 
 % TODO: handle units in ask rules
 % - store qudt unit data in mongo
@@ -38,7 +38,7 @@
 %
 
 %% register query commands
-:- add_query_command(triple).
+:- query_command_add(triple).
 
 %%
 %

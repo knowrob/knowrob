@@ -4,7 +4,7 @@
 :- use_module(library('db/mongo/query')).
 
 %% register query commands
-:- add_query_command(context).
+:- query_command_add(context).
 
 %%
 % context(-Option) and context(-Option, +Default) are used to read

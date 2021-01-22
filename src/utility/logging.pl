@@ -3,7 +3,8 @@
       log_error(t),
       log_warning(t),
       log_info(t),
-      log_debug(t)
+      log_debug(t),
+      log_error_and_fail(t)
     ]).
 
 :- multifile prolog:message//1.
@@ -39,3 +40,5 @@ log_error(Term)   :- log_message(error,Term).
 log_warning(Term) :- log_message(warning,Term).
 log_info(Term)    :- log_message(informational,Term).
 log_debug(Term)   :- log_message(debug(kb),Term).
+%
+log_error_and_fail(Term) :- log_message(error,Term), fail.
