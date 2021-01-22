@@ -2,8 +2,7 @@
     [ match_operator/2
     ]).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 %% register query commands
 :- query_command_add(call).
@@ -13,7 +12,7 @@ query_compiler:step_expand(
 		call(Goal, Scope),
 		call(Expanded, Scope),
 		Context) :-
-	mng_expand(Goal, Expanded, Context).
+	query_expand(Goal, Expanded, Context).
 
 %%
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
@@ -28,18 +27,16 @@ query_compiler:step_var(call(_Terminals, Scope), Var) :-
 
 %%
 query_compiler:step_compile(
-		call(Terminals, Scope),
-		Context,
+		call(Terminals, Scope0),
+		Context0,
 		Pipeline) :-
 	% get since/until values
-	time_scope(Since, Until, Scope),
-	query_compiler:var_key_or_val(Since,Since0),
-	query_compiler:var_key_or_val(Until,Until0),
-	time_scope(Since0, Until0, Scope0),
+	Scope0=_{ time: _{ since: Since0, until: Until0 }},
+	Scope1=_{ time: _{ since: Since1, until: Until1 }},
+	query_compiler:var_key_or_val(Since0,Since1),
+	query_compiler:var_key_or_val(Until0,Until1),
 	% remove previous scope from context
-	select_option(scope(_), Context, Context0),
+	merge_options([scope(Scope1)], Context0, Context1),
 	% finally compile called goal
 	% and replace the scope in compile context
-	query_compile(Terminals,
-		Pipeline,
-		[scope(Scope0)|Context0]).
+	query_compile(Terminals, Pipeline, Context1).

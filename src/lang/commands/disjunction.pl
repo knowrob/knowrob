@@ -1,7 +1,6 @@
 :- module(lang_facet, []).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 %% register query commands
 :- query_command_add(facet).
@@ -43,11 +42,11 @@ query_compiler:step_var(facet([First|Rest]), Var) :-
 % TODO: seems like a good usecase for map-reduce?
 %
 query_compiler:step_compile(
-		facet(Facets),
-		Context,
-		Pipeline) :-
-	option(ask, Context), !,
+		facet(Facets), Context, Pipeline) :-
+	% read options from context
+	option(ask, Context),
 	option(step_vars(StepVars), Context),
+	!,
 	% get a list of tuples (pipeline, list variable key)
 	% the result of each pipeline is written to a list,
 	% and resulting lists are concatenated later to

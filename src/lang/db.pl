@@ -4,7 +4,8 @@
       load_owl/3,
       remember/1,
       memorize/1,
-      drop_graph/1
+      drop_graph/1,
+      setup_collection/2
     ]).
 /** <module> Interface for dumping knowledge and restoring it.
 
@@ -37,6 +38,11 @@
 %%
 :- multifile collection_name/1.
 
+%%
+collection_data(Name, Indices) :-
+	assertz(collection_data_(Name, Indices)),
+	create_indices(Name, Indices).
+
 %% remember(+Directory) is det.
 %
 % Restore memory previously stored into given directory.
@@ -48,9 +54,10 @@ remember(Directory) :-
 
 %%
 mng_import(Dir) :-
-	mng_db_name(DB),
 	forall(
-		collection_name(Collection),
+		(	collection_name(Name),
+			mng_get_db(DB, Collection, Name)
+		),
 		(	path_concat(Dir, Collection, Dir0),
 			mng_restore(DB, Dir0)
 		)
@@ -67,9 +74,10 @@ memorize(Directory) :-
 
 %%
 mng_export(Dir) :-
-	mng_db_name(DB),
 	forall(
-		collection_name(Collection),
+		(	collection_name(Name),
+			mng_get_db(DB, Collection, Name)
+		),
 		(	path_concat(Dir, Collection, Dir0),
 			mng_dump_collection(DB, Collection, Dir0)
 		)
@@ -346,6 +354,28 @@ is_version_string(Atom) :-
 version_matcher --> "v", version_matcher.
 version_matcher --> digits(_), ".", digits(_), ".", digits(_).
 version_matcher --> digits(_), ".", digits(_).
+
+     /*******************************
+     *        SEARCH INDEX          *
+     *******************************/
+
+%%
+create_indices :-
+	forall(
+		collection_data_(Name, Indices),
+		create_indices(Name, Indices)
+	).
+
+%% Create indices for fast annotation retrieval.
+create_indices(_Name, _Indices) :-
+	setting(mng_client:read_only, true),
+	!.
+create_indices(Name, Indices) :-
+	mng_get_db(DB, Coll, Name),
+	forall(
+		member(Index, Indices),
+		mng_index_create(DB, Coll, Index)
+	).
 
      /*******************************
      *          UNIT TESTS          *

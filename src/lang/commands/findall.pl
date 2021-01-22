@@ -1,7 +1,6 @@
 :- module(lang_findall, []).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 %% register query commands
 :- query_command_add(findall).
@@ -30,7 +29,8 @@ query_compiler:step_compile(
 		findall(Pattern, Terminals, List),
 		Context,
 		[ Lookup, SetList, UnsetNext ]) :-
-	option(ask, Context), !,
+	option(ask, Context),
+	!,
 	% perform findall, collect results in 'next' array
 	lookup_(Terminals, Context, Lookup),
 	% $set the list variable field from 'next' field

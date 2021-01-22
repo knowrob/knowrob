@@ -10,8 +10,7 @@
 		[ time_scope_data/2
 		]).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 :- rdf_meta(triple_tell(t,t,t,t,t,-)).
 
@@ -19,7 +18,15 @@
 % register the "annotations" collection.
 % This is needed for import/export.
 %
-:- lang_db:collection_name(triples).
+:- setup_collection(triples, [
+		['s'], ['p'], ['o'],
+		['p*'], ['o*'],
+		['s','p'], ['s','o'], ['o','p'],
+		['s','p*'], ['s','o*'], ['o','p*'], ['p','o*'],
+		['s','o','p'],
+		['s','o','p*'],
+		['s','o*','p']
+]).
 
 % TODO: handle units in ask rules
 % - store qudt unit data in mongo
@@ -45,39 +52,6 @@
 %
 triple_db(DB, Name) :- 
 	mng_get_db(DB, Name, 'triples').
-
-%%
-% The set of composed indices over triples.
-% NOTE: it is not allowed to generate an index over more then one vector field!
-%
-search_index_(['s']).
-search_index_(['p']).
-search_index_(['p*']).
-search_index_(['o']).
-search_index_(['o*']).
-search_index_(['s','p']).
-search_index_(['s','p*']).
-search_index_(['s','o']).
-search_index_(['s','o*']).
-search_index_(['o','p']).
-search_index_(['o','p*']).
-search_index_(['p','o*']).
-search_index_(['s','o','p']).
-search_index_(['s','o','p*']).
-search_index_(['s','o*','p']).
-
-%%
-create_search_inidces_ :-
-	setting(mng_client:read_only, true),
-	!.
-create_search_inidces_ :-
-	mng_get_db(DB, Coll, 'triples'),
-	forall(
-		search_index_(Keys),
-		mng_index_create(DB, Coll, Keys)
-	).
-
-:- create_search_inidces_.
 
 %%
 % expose subject/predicate/object argument variables.
@@ -579,10 +553,6 @@ array_concat_(Key,Arr,['$set',
 			array([string(Arr0),Arr])]
 		]]) :-
 	atom_concat('$',Key,Arr0).
-
-%%
-strip_variable(X->_,X) :- nonvar(X), !.
-strip_variable(X,X) :- !.
 
 %%
 is_unique_name(Name) :-

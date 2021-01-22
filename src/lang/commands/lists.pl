@@ -1,7 +1,6 @@
 :- module(lang_lists, []).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 % TODO: support more list commands
 %:- query_command_add(memberchk).
@@ -37,7 +36,8 @@ query_compiler:step_compile(
 		nth(Index, List, _Elem),
 		Context,
 		Pipeline) :-
-	option(ask, Context), !,
+	option(ask, Context),
+	!,
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
@@ -79,7 +79,8 @@ query_compiler:step_compile(
 		member(_Pattern, List),
 		Context,
 		Pipeline) :-
-	option(ask, Context), !,
+	option(ask, Context),
+	!,
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline

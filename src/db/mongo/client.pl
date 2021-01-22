@@ -355,6 +355,10 @@ strip_unit(Term,Unit,X) :-
 	!.
 strip_unit(X,_,X).
 
+%%
+strip_variable(X->_,X) :- nonvar(X), !.
+strip_variable(X,X) :- !.
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % C++ predicates

@@ -1,8 +1,7 @@
 :- module(lang_match,
     []).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 %% register query commands
 :- query_command_add(match).
@@ -12,7 +11,9 @@
 %
 query_compiler:step_var(match(Expr), [VarKey, Var]) :-
 	Expr =.. [_Functor, A, B],
-	( Var=A ; Var=B ),
+	(	Var=A
+	;	Var=B
+	),
 	query_compiler:var_key(Var, VarKey).
 
 %%
@@ -27,7 +28,8 @@ query_compiler:step_compile(
 		[['$match', [
 			[X, [A, B]]
 		]]]) :-
-	option(ask, Context),!,
+	option(ask, Context),
+	!,
 	% unpack expression
 	Expr =.. [X0,A0,B0],
 	mng_operator(X0, X),

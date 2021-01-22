@@ -1,7 +1,6 @@
 :- module(lang_context, []).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 %% register query commands
 :- query_command_add(context).

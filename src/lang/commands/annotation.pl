@@ -4,8 +4,7 @@
 	    [ rdf_meta/1
 	    ]).
 
-:- use_module(library('db/mongo/compiler')).
-:- use_module(library('db/mongo/query')).
+:- use_module(library('lang/compiler')).
 
 :- rdf_meta(query_(t,t,t,t,-)).
 
@@ -15,27 +14,13 @@
 
 %%
 % register the "annotations" collection.
-% This is needed for import/export.
+% This is needed for import/export and search indices.
 %
-:- lang_db:collection_name(annotations).
-
-%%
-% Create indices for fast annotation retrieval.
-%
-create_search_inidces_ :-
-	setting(mng_client:read_only, true),
-	!.
-create_search_inidces_ :-
-	mng_get_db(DB, Coll, 'annotations'),
-	mng_index_create(DB, Coll, ['s']),
-	mng_index_create(DB, Coll, ['p']),
-	mng_index_create(DB, Coll, ['s','p']).
-
-:- create_search_inidces_.
+:- setup_collection(annotations,
+		[['s'], ['p'], ['s','p']]).
 
 %% register query commands
 :- query_command_add(comment).
-%:- query_command_add(seeAlso).
 
 %%
 % expose argument variables.
@@ -52,18 +37,14 @@ annotation_var_(Arg, [Key, Var]) :-
 	mng_strip_type(Arg,_,Var),
 	query_compiler:var_key(Var, Key).
 
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% ASK
-%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
 % ask(comment(Entity, Comment)) looks up the comment
 % of entities. These are stored in a separate collection
 % to avoid generating a regular index over the comment values. 
 %
 query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
-	option(ask, Ctx), !,
+	option(ask, Ctx),
+	!,
 	query_(S, rdfs:comment, C, Ctx, Pipeline).
 
 %% 
@@ -104,10 +85,6 @@ set_result_(Comment,
 		['$set', [Key, string('$next.v')]]) :-
 	mng_strip_type(Comment,_,Var),
 	query_compiler:var_key(Var, Key).
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% TELL
-%%%%%%%%%%%%%%%%%%%%%%%
 
 %%
 % TODO: support tell(comment)
