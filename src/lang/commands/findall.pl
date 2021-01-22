@@ -3,7 +3,7 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_command_add(findall).
+:- query_compiler:add_command(findall).
 
 %%
 query_compiler:step_expand(
@@ -29,8 +29,13 @@ query_compiler:step_compile(
 		findall(Pattern, Terminals, List),
 		Context,
 		[ Lookup, SetList, UnsetNext ]) :-
-	option(ask, Context),
-	!,
+	% tell+findall is not allowed
+	(	option(mode(tell), Context)
+	->	throw(compilation_failed(
+			findall(Pattern, Terminals, List), Context)
+	;	true
+	),
+	% option(mode(ask), Context),
 	% perform findall, collect results in 'next' array
 	lookup_(Terminals, Context, Lookup),
 	% $set the list variable field from 'next' field

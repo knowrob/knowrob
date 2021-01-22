@@ -1,9 +1,7 @@
 :- module(query_compiler,
-	[ query_command_add/1,
-	  query_assert(t),
+	[ query_assert(t),
 	  query_ask(t,+,-,+),
 	  query_tell(t,+,+),
-	  query_forget(t,+,+),
 	  query_expand/3,
 	  query_compile/3
 	]).
@@ -45,7 +43,7 @@ into aggregate pipelines that can be processed by mongo DB.
 
 :- rdf_meta(step_compile(t,t,t)).
 
-%% query_command_add(+Command) is det.
+%% add_command(+Command) is det.
 %
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
@@ -55,7 +53,7 @@ into aggregate pipelines that can be processed by mongo DB.
 %
 % @Command a command term.
 %
-query_command_add(Command) :-
+add_command(Command) :-
 	assertz(step_command(Command)).
 
 
@@ -86,12 +84,6 @@ query_tell(Statement, FScope, Options) :-
 	query_(Statement,
 		[scope(FScope)|Options],
 		_, tell).
-
-%%
-%
-query_forget(Statement, FScope, Options) :-
-	% TODO
-	fail.
 
 %%
 query_(Goal, Context, FScope, Mode) :-
@@ -362,14 +354,11 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	% add modifier to context
 	append(Modifier, Context, InnerContext),
 	% compile JSON document for this step
-	(	step_compile(Term, [
-				step_vars(StepVars),
-				outer_vars(V0) |
-				InnerContext
-		], Doc)
-	->	true
-	;	throw(compilation_failed(Term, InnerContext))
-	).
+	once(step_compile(Term, [
+			step_vars(StepVars),
+			outer_vars(V0) |
+			InnerContext
+	], Doc)).
 
 %%
 compile_ask_(Doc, Doc) :-

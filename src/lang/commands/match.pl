@@ -4,7 +4,7 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_command_add(match).
+:- query_compiler:add_command(match).
 
 %%
 % match uses 2-ary operator whose arguments maybe variables.
@@ -28,8 +28,12 @@ query_compiler:step_compile(
 		[['$match', [
 			[X, [A, B]]
 		]]]) :-
-	option(ask, Context),
-	!,
+	% tell+match is not allowed
+	(	option(mode(tell), Context)
+	->	throw(compilation_failed(match(Expr), Context)
+	;	true
+	),
+	% option(mode(ask), Context),
 	% unpack expression
 	Expr =.. [X0,A0,B0],
 	mng_operator(X0, X),

@@ -3,11 +3,11 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_command_add(ground).
-:- query_command_add(var).
-:- query_command_add(number).
-:- query_command_add(atom).
-:- query_command_add(is_list).
+:- query_compiler:add_command(ground).
+:- query_compiler:add_command(var).
+:- query_compiler:add_command(number).
+:- query_compiler:add_command(atom).
+:- query_compiler:add_command(is_list).
 
 %%
 query_compiler:step_var(ground(X),  [V,X]) :- query_compiler:var_key(X, V).
@@ -58,8 +58,6 @@ query_compiler:step_compile(number(A0), _Context, []) :-
 	% is grounded already compile-time
 	ground(A0),
 	!,
-	% TODO: is it even ok to yield false here to skip a step?
-	%           could be that this causes an exception being thrown.
 	number(A0).
 	
 query_compiler:step_compile(

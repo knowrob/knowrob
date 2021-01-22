@@ -1,14 +1,11 @@
 :- module(lang_triple, []).
 
 :- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1
-	    ]).
+	    [ rdf_meta/1 ]).
 :- use_module(library('db/mongo/tripledb/triples'),
-		[ mng_triple_doc/3
-		]).
+		[ mng_triple_doc/3 ]).
 :- use_module(library('lang/scopes/temporal'),
-		[ time_scope_data/2
-		]).
+		[ time_scope_data/2 ]).
 
 :- use_module(library('lang/compiler')).
 
@@ -45,7 +42,7 @@
 %
 
 %% register query commands
-:- query_command_add(triple).
+:- query_compiler:add_command(triple).
 
 %%
 %
@@ -73,14 +70,19 @@ triple_var_(Arg, [Key, Var]) :-
 	query_compiler:var_key(Var, Key).
 
 %%
+query_compiler:step_compile(
+		triple(S,P,O),
+		Context, Pipeline) :-
+	(	option(mode(ask), Context)
+	->	compile_ask( triple(S,P,O), Context, Pipeline)
+	;	compile_tell(triple(S,P,O), Context, Pipeline)
+	).
+
+%%
 % ask(triple(S,P,O)) uses $lookup to join input documents with
 % the ones matching the triple pattern provided.
 %
-query_compiler:step_compile(
-		triple(S,P,O),
-		Context,
-		Pipeline) :-
-	option(ask, Context),
+compile_ask(triple(S,P,O), Context, Pipeline) :-
 	% get the collection name
 	% TODO: do this during expansion
 	(	option(collection(Coll), Context)
@@ -107,7 +109,10 @@ query_compiler:step_compile(
 		% that is unwinded here.
 		;	Step=['$unwind',string('$next')]
 		% compute the intersection of scope so far with scope of next document
-		;	scope_step(Context0, Step)
+		;	mng_scope_intersect('v_scope',
+				string('$next.scope.time.since'),
+				string('$next.scope.time.until'),
+				Context0, Step)
 		% project new variable groundings
 		;	project_(triple(S,P,O), Context0, Step)
 		),
@@ -119,28 +124,23 @@ query_compiler:step_compile(
 % with overlapping scope which are toggled to be removed in next stage.
 % then the union of their scopes is computed and used for output document.
 %
-query_compiler:step_compile(
+compile_tell(
 		triple(S,rdf:type,Cls),
 		Context, Pipeline) :-
-	option(tell, Context),
-	!,
 	% handle the case var(S), in that case, generate a new symbol
-	% TODO: calls is_resource. either table it or gen name in mongo
 	once((nonvar(S) ; get_unique_name(Cls, S))),
 	%
-	triple_tell(
+	compile_tell1(
 		triple(S,rdf:type,Cls), _,
 		parents(Cls,rdfs:subClassOf),
 		[ array([string(rdf:type)]),
 		  string('$parents') ],
 		Context, Pipeline).
 
-query_compiler:step_compile(
+compile_tell(
 		triple(Sub,rdfs:subClassOf,Sup),
 		Context, Pipeline) :-
-	option(tell, Context),
-	!,
-	triple_tell(
+	compile_tell1(
 		triple(Sub,rdfs:subClassOf,Sup), _,
 		parents(Sup,rdfs:subClassOf),
 		[ array([string(rdfs:subClassOf)]),
@@ -148,12 +148,10 @@ query_compiler:step_compile(
 		[ propagate|Context ],
 		Pipeline).
 
-query_compiler:step_compile(
+compile_tell(
 		triple(Sub,rdfs:subPropertyOf,Sup),
 		Context, Pipeline) :-
-	option(tell, Context),
-	!,
-	triple_tell(
+	compile_tell1(
 		triple(Sub,rdfs:subPropertyOf,Sup), _,
 		parents(Sup,rdfs:subPropertyOf),
 		[ array([string(rdfs:subPropertyOf)]),
@@ -161,12 +159,12 @@ query_compiler:step_compile(
 		[ propagate|Context ],
 		Pipeline).
 
-query_compiler:step_compile(
+compile_tell(
 		triple(S,P,O),
 		Context, Pipeline) :-
 	option(tell, Context),
 	!,
-	triple_tell(
+	compile_tell1(
 		triple(S,P,O), MngValue,
 		parents(P,rdfs:subPropertyOf),
 		[ string('$parents'),
@@ -174,7 +172,7 @@ query_compiler:step_compile(
 		Context, Pipeline).
 
 %%
-triple_tell(
+compile_tell1(
 		triple(S,P,O),
 		MngValue,
 		parents(Child,Property),

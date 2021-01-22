@@ -1,30 +1,82 @@
-:- module(lang_intersect, []).
+:- module(lang_intersect,
+		[ mng_scope_intersect/5
+		]).
 
 :- use_module(library('lang/compiler')).
 
+%% mng_scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
+%
+% The step expects input documents with VarKey
+% field, and another field Since1/Until1.
+% The step uses these field to compute an intersection
+% beteween both scopes.
+% It will fail in case the intersection is empty.
+%
+mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
+	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
+	atomic_list_concat(['$',VarKey,'.time.since'], '', Until0),
+	atomic_list_concat(['$',VarKey], '', VarKey0),
+	%
+	Intersect = ['time', [
+		['since', ['$max', array([string(Since0), Since1])]],
+		['until', ['$min', array([string(Until0), Until1])]]
+	]],
+	% check if ignore flag if set, if so use a conditional step
+	(	memberchk(ignore, Options)
+	->	IntersectStep = ['$cond', array([
+			['$not', array([Since1])],
+			string(VarKey0),
+			Intersect
+		])]
+	;	IntersectStep = Intersect
+	),
+	% first compute the intersection
+	(	Step=IntersectStep
+	% then verify that the scope is non empty
+	;	Step=['$match', ['$expr',
+			['$lt', array([string(Since0), string(Until0)])]
+		]]
+	).
+	
+scope_intersect_(Context,
+		['$set', ['v_scope', Doc]]) :-
+	% intersect old and new scope
+	TimeScope = ['time', [
+		['since', ['$max', array([string('$v_scope.time.since'),
+		                          string('$next.scope.time.since')])]],
+		['until', ['$min', array([string('$v_scope.time.until'),
+		                          string('$next.scope.time.until')])]]
+	]],
+	(	memberchk(ignore,Context)
+	->	Doc = ['$cond', array([
+			['$not', array([string('$next.scope')]) ],
+			string('$v_scope'),
+			TimeScope
+		])]
+	;	Doc = TimeScope
+	).
+
 %% register query commands
-:- query_command_add(intersect).
+:- query_compiler:add_command(intersect).
 
 %%
 query_compiler:step_var(intersect(Scope), Var) :-
-	Scope=_{ time: _{ since: Since, until: Until }},
+	time_scope(Since, Until, Scope),
 	member(X, [Since,Until]),
 	mng_strip(X, '=', _Type, Y),
 	query_compiler:step_var(Y, Var).
 
 %%
 query_compiler:step_compile(
-		intersect(Scope), _Context,
-		[	['$set', ['v_scope', ['time', [
-				['since', ['$max', array([string('$v_scope.time.since'),Since0])]],
-				['until', ['$min', array([string('$v_scope.time.until'),Until0])]]
-			]]]],
-			ValidationStep
-		]) :-
+		intersect(Scope), Context,
+		Pipeline) :-
 	% get since/until values
-	Scope=_{ time: _{ since: Since, until: Until }},
+	time_scope(Since, Until, Scope),
 	query_compiler:var_key_or_val(Since,Since0),
 	query_compiler:var_key_or_val(Until,Until0),
-	% ensure the scope is not empty after intersection
-	scope_validation(ValidationStep).
+	% get scope intersection pipeline
+	findall(Step,
+		mng_scope_intersect('v_scope', Since0, Until0, Context, Step),
+		Pipeline
+	).
 	

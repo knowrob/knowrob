@@ -5,7 +5,7 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_command_add(pragma).
+:- query_compiler:add_command(pragma).
 
 %%
 % pragma(Goal) is evaluated compile-time by calling
@@ -13,7 +13,5 @@
 % used in the aggregation pipeline from the call context.
 %
 query_compiler:step_compile(
-		pragma(Goal),
-		_Context, []) :-
+		pragma(Goal), _Context, []) :-
 	call(Goal).
-

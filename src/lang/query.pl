@@ -143,22 +143,39 @@ tell(Statement) :-
 %% forget(+Statement, +Scope, +Options) is semidet.
 %
 % Forget that some statement is true.
+% Statement must be a term triple/3. 
+% It can also be a list of such terms.
 % Scope is the scope of the statement to forget.
-% Statement can also be a list of statements.
 % The list of options is passed to the compiler.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
-forget(Statement, Scope, Options) :-
+forget(_, _, _) :-
+	setting(mng_client:read_only, true),
+	!,
+	log_warning(db(read_only(forget))).
+
+forget(Statements, Scope, Options) :-
+	is_list(Statements),
+	!,
+	forall(
+		member(Statement, Statements),
+		forget(Statement, Scope, Options)
+	).
+
+% TODO: support other language terms?
+forget(triple(S,P,O), Scope, Options) :-
 	% ensure there is a graph option
 	set_graph_option(Options, Options0),
-	% compile and call statement
-	(	setting(mng_client:read_only, true)
-	->	print_message(warning, 'Tried to delete despite read only access')
-	;	query_forget(Statement, Scope, Options0)
-	).
+	% append scope to options
+	merge_options([scope(Scope)], Options0, Options1),
+	% get the query document
+	mng_triple_doc(triple(S,P,O), Doc, Options1),
+	% run a remove query
+	mng_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, Doc).
 
 %% forget(+Statement, +Scope) is nondet.
 %

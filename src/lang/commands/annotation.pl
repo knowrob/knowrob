@@ -6,7 +6,7 @@
 
 :- use_module(library('lang/compiler')).
 
-:- rdf_meta(query_(t,t,t,t,-)).
+:- rdf_meta(ask_annotation(t,t,t,t,-)).
 
 % TODO: language handling.
 %	- e.g. DUL has comments in different langs
@@ -19,8 +19,8 @@
 :- setup_collection(annotations,
 		[['s'], ['p'], ['s','p']]).
 
-%% register query commands
-:- query_command_add(comment).
+%% register query command
+:- query_compiler:add_command(comment).
 
 %%
 % expose argument variables.
@@ -43,12 +43,17 @@ annotation_var_(Arg, [Key, Var]) :-
 % to avoid generating a regular index over the comment values. 
 %
 query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
-	option(ask, Ctx),
-	!,
-	query_(S, rdfs:comment, C, Ctx, Pipeline).
+	% tell+comment not supported yet
+	(	option(mode(tell), Ctx)
+	->	throw(compilation_failed(comment(S, C)), Ctx)
+	;	true
+	),
+	%%
+	%option(mode(ask), Ctx),
+	ask_annotation(S, rdfs:comment, C, Ctx, Pipeline).
 
 %% 
-query_(Entity, Property, Comment, Context, Pipeline) :-
+ask_annotation(Entity, Property, Comment, Context, Pipeline) :-
 	% get the DB collection
 	mng_get_db(_DB, Coll, 'annotations'),
 	% extend the context
@@ -66,6 +71,30 @@ query_(Entity, Property, Comment, Context, Pipeline) :-
 		),
 		Pipeline
 	).
+
+%%
+% TODO: support tell(comment)
+% tell(comment(Entity, Comment)) adds a comment to an entity.
+% comments may contain special characters.
+%
+%tell_annotation(Entity, Property, Comment, Context, Pipeline) :-
+%	annotation_db(DB,Coll),
+%	once((	Annotation=string(Stripped)
+%	;		Annotation=Stripped
+%	)),
+%	% TODO: add another field for language?
+%	once((	Stripped=lang(_,Stripped0)
+%	;		Stripped=Stripped0
+%	)),
+%	% enforce UTF8 encoding
+%	atom_codes(Stripped0, Codes),
+%	phrase(utf8_codes(Codes), UTF8),
+%	% finally write to DB
+%	mng_store(DB,Coll,[
+%		['s', string(Entity)],
+%		['p', string(Property)],
+%		['v', string(UTF8)]
+%	]).
 
 %% 
 lookup_(Entity, Property, Comment, Context, Step) :-
@@ -85,33 +114,3 @@ set_result_(Comment,
 		['$set', [Key, string('$next.v')]]) :-
 	mng_strip_type(Comment,_,Var),
 	query_compiler:var_key(Var, Key).
-
-%%
-% TODO: support tell(comment)
-% tell(comment(Entity, Comment)) adds a comment to an entity.
-% comments may contain special characters.
-%
-%mng_compiler:step_compile(
-%		comment(Entity, Comment),
-%		Context,
-%		Pipeline) :-
-%	option(tell, Context), !,
-%	 	- but not possible with $merge into triples collection!!
-%	
-%	annotation_db(DB,Coll),
-%	once((	Annotation=string(Stripped)
-%	;		Annotation=Stripped
-%	)),
-%	% TODO: add another field for language?
-%	once((	Stripped=lang(_,Stripped0)
-%	;		Stripped=Stripped0
-%	)),
-%	% enforce UTF8 encoding
-%	atom_codes(Stripped0, Codes),
-%	phrase(utf8_codes(Codes), UTF8),
-%	% finally write to DB
-%	mng_store(DB,Coll,[
-%		['s', string(Entity)],
-%		['p', string(Property)],
-%		['v', string(UTF8)]
-%	]).

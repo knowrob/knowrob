@@ -3,21 +3,21 @@
 :- use_module(library('lang/compiler')).
 
 % TODO: support more list commands
-%:- query_command_add(memberchk).
-%:- query_command_add(sort).
-%:- query_command_add(reverse).
-%:- query_command_add(list_to_set).
-%:- query_command_add(max_list).
-%:- query_command_add(min_list).
-%:- query_command_add(sum_list).
-%:- query_command_add(length).
+%:- query_compiler:add_command(memberchk).
+%:- query_compiler:add_command(sort).
+%:- query_compiler:add_command(reverse).
+%:- query_compiler:add_command(list_to_set).
+%:- query_compiler:add_command(max_list).
+%:- query_compiler:add_command(min_list).
+%:- query_compiler:add_command(sum_list).
+%:- query_compiler:add_command(length).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% nth/3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- query_command_add(nth).
+:- query_compiler:add_command(nth).
 
 %%
 % nth/3 exposes variables of the pattern.
@@ -36,8 +36,12 @@ query_compiler:step_compile(
 		nth(Index, List, _Elem),
 		Context,
 		Pipeline) :-
-	option(ask, Context),
-	!,
+	% tell+nth is not allowed
+	(	option(mode(tell), Context)
+	->	throw(compilation_failed(nth(Index, List), Context)
+	;	true
+	),
+	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
@@ -46,7 +50,10 @@ query_compiler:step_compile(
 		(	Step=['$set',['next', ['$arrayElemAt',
 					[string(ListKey0),integer(Index)]]]]
 		% compute the intersection of scope so far with scope of next document
-		;	scope_step(Context, Step)
+		;	mng_scope_intersect('v_scope',
+				string('$next.scope.time.since'),
+				string('$next.scope.time.until'),
+				Context, Step)
 		% project new variable groundings (the ones referred to in pattern)
 		;	set_vars_(Context, ListKey, Step)
 		% remove the next field again
@@ -60,7 +67,7 @@ query_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- query_command_add(member).
+:- query_compiler:add_command(member).
 
 %%
 % member exposes variables of the pattern.
@@ -76,11 +83,15 @@ query_compiler:step_var(
 % and exposes variables in Pattern to the rest of the pipeline.
 %
 query_compiler:step_compile(
-		member(_Pattern, List),
+		member(Pattern, List),
 		Context,
 		Pipeline) :-
-	option(ask, Context),
-	!,
+	% tell+member is not allowed
+	(	option(mode(tell), Context)
+	->	throw(compilation_failed(member(Pattern, List), Context)
+	;	true
+	),
+	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
@@ -91,7 +102,10 @@ query_compiler:step_compile(
 		% that is unwinded here.
 		;	Step=['$unwind',string('$next')]
 		% compute the intersection of scope so far with scope of next document
-		;	scope_step(Context, Step)
+		;	mng_scope_intersect('v_scope',
+				string('$next.scope.time.since'),
+				string('$next.scope.time.until'),
+				Context, Step)
 		% project new variable groundings (the ones referred to in pattern)
 		;	set_vars_(Context, ListKey, Step)
 		% remove the next field again
