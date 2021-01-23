@@ -1,6 +1,7 @@
 
 :- use_module('annotation').
 :- use_module('arithmetic').
+:- use_module('atoms').
 :- use_module('call').
 :- use_module('context').
 :- use_module('disjunction').
