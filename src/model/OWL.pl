@@ -1,24 +1,26 @@
 :- module(model_OWL,
-    [ is_class(r),
-      is_restriction(r),
-      is_restriction(r,t),
-      is_union_of(r,t),
-      is_intersection_of(r,t),
-      is_complement_of(r,t),
-      is_all_disjoint_classes(r),
-      is_individual(r),
-      is_object_property(r),
-      is_data_property(r),
-      is_functional_property(r),
-      is_transitive_property(r),
-      is_symmetric_property(r),
-      has_inverse_property(r,r),
-      has_property_chain(r,t),
-      has_disjoint_class(r,r),
-      has_equivalent_class(r,r),
-      has_description(r,t),
-      same_as(r,r)
-    ]).
+	[ is_owl_term(t),
+	  is_restriction_term(t),
+	  is_class(r),
+	  is_restriction(r),
+	  is_restriction(r,t),
+	  is_union_of(r,t),
+	  is_intersection_of(r,t),
+	  is_complement_of(r,t),
+	  is_all_disjoint_classes(r),
+	  is_individual(r),
+	  is_object_property(r),
+	  is_data_property(r),
+	  is_functional_property(r),
+	  is_transitive_property(r),
+	  is_symmetric_property(r),
+	  has_inverse_property(r,r),
+	  has_property_chain(r,t),
+	  has_disjoint_class(r,r),
+	  has_equivalent_class(r,r),
+	  has_description(r,t),
+	  same_as(r,r)
+	]).
 /** <module> The Web Ontology Language (OWL) model.
 
 @author Daniel Beßler
@@ -39,28 +41,34 @@
 %:- op(1000, fy, user:max).
 %:- op(1000, fy, user:exactly).
 %:- op(1000, xfy, user:that).
-:- op(999,  fy, user:not).
+%:- op(999,  fy, user:not).
 % TODO: allow expressions (A and B and (C or D))
 %        stop using intersection_of and union_of terms
 %:- op(998, xfy, user:and).
 %:- op(997, xfy, user:or).
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3,
-      rdf_equal/2 ]).
+	[ rdf_register_ns/3, rdf_equal/2 ]).
 :- use_module(library('lang/db'),
-    [ load_owl/2
-    ]).
-:- use_module('./RDFS.pl',
-    [ has_type/2,
-      is_rdf_list/2
-    ]).
+	[ load_owl/2 ]).
+:- use_module('RDFS',
+	[ has_type/2, is_rdf_list/2 ]).
 
 % load OWL model
 :- load_owl('http://www.w3.org/2002/07/owl.rdf',
-    [ graph(common),
-      namespace(owl,'http://www.w3.org/2002/07/owl#')
-    ]).
+	[ graph(common),
+	  namespace(owl,'http://www.w3.org/2002/07/owl#')
+	]).
+
+%% is_owl_term(+Term) is semidet.
+%
+%
+is_owl_term(union_of(_)) :- !.
+is_owl_term(intersection_of(_)) :- !.
+is_owl_term(complement_of(_)) :- !.
+is_owl_term(one_of(_)) :- !.
+is_owl_term(Term) :-
+	is_restriction_term(Term).
 
 %% is_restriction_term(+Term) is semidet.
 %
@@ -152,7 +160,6 @@ is_data_property(Entity) ?+>
 % Convert an OWL class into a Prolog representation.  This
 % representation is:
 %
-%    * class(Class)
 %    * only(Property,Class)
 %    * some(Property,Class)
 %    * min(Property,Min,Class)
@@ -160,7 +167,7 @@ is_data_property(Entity) ?+>
 %    * exactly(Property,Count,Class)
 %    * union_of(Classes)
 %    * intersection_of(Classes)
-%    * not(Class)
+%    * complement_of(Class)
 %    * one_of(Individuals)
 %
 %  For example, the union-of can be the result of
@@ -187,8 +194,6 @@ has_description(Class,Descr) ?>
 	;	is_union_of(Class,Descr)
 	;	is_intersection_of(Class,Descr)
 	;	is_complement_of(Class,Descr)
-	% FIXME: =/2 not supported yet
-	;	Descr = class(Class)
 	),
 	!.
 
@@ -202,8 +207,8 @@ has_description(Class,Descr) ?>
 
 %is_restriction(R,Descr) +>
 %  % try to find existing restriction first.
-%  { ask(is_restriction1(R,Descr)) },
-%  { ! }.
+%  ask(is_restriction1(R,Descr)),
+%  !.
 
 is_restriction(R,Descr) +>
 	is_restriction(R),
@@ -291,7 +296,7 @@ is_intersection_of(IntersectionClass, intersection_of(List_pl)) ?>
 % @param ComplementClass an OWL restriction class
 % @param Descr Prolog term representing the class
 %
-is_complement_of(ComplementClass, not(Class)) ?+>
+is_complement_of(ComplementClass, complement_of(Class)) ?+>
 	triple(ComplementClass, owl:complementOf, Class).
 
 %% is_all_disjoint_classes(?AllDisjointClasses) is nondet.

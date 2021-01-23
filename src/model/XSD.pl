@@ -1,11 +1,11 @@
 :- module(model_XSD,
-    [ xsd_data_type(r),
-      xsd_numeric_type(r),
-      xsd_string_type(r),
-      xsd_misc_type(r),
-      xsd_data_basetype(r,?),
-      xsd_data_type_name(r,?)
-    ]).
+	[ xsd_data_type(r),
+	  xsd_numeric_type(r),
+	  xsd_string_type(r),
+	  xsd_misc_type(r),
+	  xsd_data_basetype(r,?),
+	  xsd_data_type_name(r,?)
+	]).
 /** <module> XML Schema Data Types.
 
 @author Daniel Beßler
@@ -18,11 +18,11 @@
 % @param DataType a XSD data type
 %
 xsd_data_type(DataType) :-
-  ( xsd_numeric_type(DataType);
-    xsd_string_type(DataType);
-    xsd_date_type(DataType);
-    xsd_misc_type(DataType)
-  ).
+	(	xsd_numeric_type(DataType)
+	;	xsd_string_type(DataType)
+	;	xsd_date_type(DataType)
+	;	xsd_misc_type(DataType)
+	).
 
 %% xsd_data_basetype(?DataType,?PrologType) is nondet.
 %
@@ -31,7 +31,7 @@ xsd_data_type(DataType) :-
 % @param DataType a XSD data type
 %
 xsd_data_basetype(DataType,integer) :-
-  xsd_numeric_type(DataType).
+	xsd_numeric_type(DataType).
 
 xsd_data_basetype(xsd:double,double).
 xsd_data_basetype(xsd:float,double).
@@ -39,11 +39,11 @@ xsd_data_basetype(xsd:float,double).
 xsd_data_basetype(xsd:boolean,bool).
 
 xsd_data_basetype(DataType,string) :-
-  xsd_string_type(DataType).
+	xsd_string_type(DataType).
 xsd_data_basetype(xsd:anyURI,string).
 
 xsd_data_basetype(DataType,date) :-
-  xsd_date_type(DataType).
+	xsd_date_type(DataType).
 
 xsd_data_basetype(xsd:base64Binary,blob).
 xsd_data_basetype(xsd:hexBinary,blob).
@@ -56,8 +56,8 @@ xsd_data_basetype(xsd:hexBinary,blob).
 % @param Name the XSD data type without IRI prefix
 %
 xsd_data_type_name(DataType,Name) :-
-  ground(DataType),
-  atom_concat('http://www.w3.org/2001/XMLSchema#',Name,DataType).
+	ground(DataType),
+	atom_concat('http://www.w3.org/2001/XMLSchema#',Name,DataType).
 
 %% xsd_string_type(?DataType) is nondet.
 %

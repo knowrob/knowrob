@@ -16,8 +16,7 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-	[ rdf_register_ns/3
-	]).
+	[ rdf_register_ns/3 ]).
 
 :- rdf_register_ns(rdfs,
 	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
@@ -146,6 +145,9 @@ is_rdf_list(RDF_list, Pl_List) ?>
 		Pl_List).
 
 is_rdf_list(RDF_list, Pl_List) +>
+	% TODO: I think in this case recursion is fine,
+	%          as it can be expanded compile-time given the list.
+	%		   so rather do a recursive call of is_rdf_list here?
 	pragma(expand_list_(Pl_List, Expanded)),
 	call([
 		has_type(RDF_list, rdf:'List')
