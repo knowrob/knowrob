@@ -15,13 +15,10 @@
 
 :- use_module(library('dcg/basics')).
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_current_prefix/2,
-      rdf_split_url/3 ]).
+    [ rdf_current_prefix/2, rdf_split_url/3 ]).
 :- use_module(library('model/OWL'),
-    [ is_data_property/1,
-      is_object_property/1 ]).
-
-:- use_module('./swrl.pl').
+    [ is_data_property/1, is_object_property/1 ]).
+:- use_module('swrl').
 
 :- dynamic swrl_file_store/3,
            swrl_assertion_store/3.

@@ -32,7 +32,7 @@ can be casted as grammar for the parser.
 
 :- use_module(library('model/RDFS'),
     [ has_type/2 ]).
-:- use_module(library('model/SOMA/WF'),
+:- use_module(library('model/SOMA'),
     [ workflow_step/2, plan_defines_task/2 ]).
 :- use_module(library('lang/terms/is_a'),
     [ instance_of/2, subclass_of/2 ]).
@@ -41,9 +41,9 @@ can be casted as grammar for the parser.
 :- use_module(library('lang/terms/holds'),
     [ holds/3 ]).
 
-:- use_module('./interval.pl',
+:- use_module('interval',
 	[ interval_constraint/3 ]).
-:- use_module('./esg.pl').
+:- use_module('esg').
 
 :- rdf_meta endpoint_type_(t,r),
             parser_grammar_(?,r,r,t),

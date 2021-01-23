@@ -1,5 +1,5 @@
 :- module(spatial_topogical,
-    [ shape_contains(r,r) -> knowrob:isInsideOf
+    [ shape_contains(r,r) %-> knowrob:isInsideOf
     ]).
 /** <module> Inferring relations of the Dimensionally Extended nine-Intersection Model (DE-9IM).
 

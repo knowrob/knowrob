@@ -2,7 +2,7 @@
     [ implements('../ireasoner.pl')
     ]).
 
-:- use_module(library('db/scope'), [ universal_scope/1 ]).
+:- use_module(library('lang/scope'), [ universal_scope/1 ]).
 
 :- use_module('./plowl/class.pl',      [ owl_subclass_of/2 ]).
 :- use_module('./plowl/individual.pl', [ owl_individual_of/3 ]).

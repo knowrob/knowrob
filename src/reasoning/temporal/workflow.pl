@@ -6,16 +6,12 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('model/SOMA/WF'),
-	[ workflow_step/2
-	]).
-:- use_module('./interval.pl',
-	[ interval_constraint/3
-	]).
-:- use_module('./esg.pl',
-	[ esg_truncated/4,
-	  esg_event_sequence/2
-	]).
+:- use_module(library('model/SOMA'),
+	[ workflow_step/2 ]).
+:- use_module('interval',
+	[ interval_constraint/3 ]).
+:- use_module('esg',
+	[ esg_truncated/4, esg_event_sequence/2 ]).
 
 %% workflow_sequence(+WF, ?StepSequence) is semidet.
 %

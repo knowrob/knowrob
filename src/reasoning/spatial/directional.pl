@@ -1,8 +1,8 @@
 :- module(spatial_directional,
-    [ is_ontop_of(r,r)     -> knowrob:isOntopOf
-    , is_below_of(r,r)     -> knowrob:isBelowOf
-    , is_above_of(r,r)     -> knowrob:isAboveOf
-    , is_centered_at(r,r)  -> knowrob:isInCenterOf
+    [ is_ontop_of(r,r)     %-> knowrob:isOntopOf
+    , is_below_of(r,r)     %-> knowrob:isBelowOf
+    , is_above_of(r,r)     %-> knowrob:isAboveOf
+    , is_centered_at(r,r)  %-> knowrob:isInCenterOf
     %, is_infront_of(r,r)   -> knowrob:isInFrontOf
     %, is_right_of(r,r)     -> knowrob:isRightOf
     %, is_left_of(r,r)      -> knowrob:isLeftOf
@@ -25,13 +25,16 @@
 % @param Bottom Identifier of the lower Object
 %
 is_ontop_of(Top, Bottom) ?>
-  { ground([Top,Bottom]) },
-  % FIXME: hardcoded map
-  is_at(Top,    [map, [_,_,TZ], _]),
-  is_at(Bottom, [map, [_,_,BZ], _]),
-  { Top \= Bottom },
-  % the criterion is if the difference between them is less than epsilon=5cm
-  { Dist is TZ-BZ, Dist>=0.0, Dist=<0.05 }.
+	ground(Top),
+	ground(Bottom),
+	% FIXME: hardcoded map
+	is_at(Top,    [map, [_,_,TZ], _]),
+	is_at(Bottom, [map, [_,_,BZ], _]),
+	Top \= Bottom,
+	% the criterion is if the difference between them is less than epsilon=5cm
+	Dist is TZ-BZ,
+	Dist >= 0.0,
+	Dist =< 0.05.
 
 %% is_above_of(?Top, ?Bottom) is nondet.
 %
@@ -44,12 +47,13 @@ is_ontop_of(Top, Bottom) ?>
 % @param Bottom Identifier of the lower Object
 %
 is_above_of(Top, Bottom) ?>
-  { ground([Top,Bottom]) },
-  % FIXME: hardcoded map
-  is_at(Top,    [map, [_,_,TZ], _]),
-  is_at(Bottom, [map, [_,_,BZ], _]),
-  { Top \= Bottom },
-  { <( BZ, TZ) }.
+	ground(Top),
+	ground(Bottom),
+	% FIXME: hardcoded map
+	is_at(Top,    [map, [_,_,TZ], _]),
+	is_at(Bottom, [map, [_,_,BZ], _]),
+	Top \= Bottom,
+	<( BZ, TZ).
 
 %% is_below_of(?Bottom, ?Top) is nondet.
 %
@@ -62,7 +66,7 @@ is_above_of(Top, Bottom) ?>
 % @param Top Identifier of the upper Object
 %
 is_below_of(Bottom, Top) ?>
-  is_above_of(Top, Bottom).
+	is_above_of(Top, Bottom).
 
 %% is_centered_at(?Inner, ?Outer) is nondet.
 %
@@ -76,16 +80,16 @@ is_below_of(Bottom, Top) ?>
 % @param Outer Identifier of the outer Object
 %
 is_centered_at(Inner, Outer) ?>
-  { ground([Inner,Outer]) },
-  % FIXME: hardcoded map
-  is_at(Inner, [map, [IX,IY,IZ], _]),
-  is_at(Outer, [map, [OX,OY,OZ], _]),
-  { Inner \= Outer },
-  % less than 20cm x/y/z diff
-  { =<( abs( IX - OX), 0.20),
-    =<( abs( IY - OY), 0.20),
-    =<( abs( IZ - OZ), 0.20) 
-  }.
+	ground(Inner),
+	ground(Outer),
+	% FIXME: hardcoded map
+	is_at(Inner, [map, [IX,IY,IZ], _]),
+	is_at(Outer, [map, [OX,OY,OZ], _]),
+	Inner \= Outer,
+	% less than 20cm x/y/z diff
+	=<( abs( IX - OX), 0.20),
+	=<( abs( IY - OY), 0.20),
+	=<( abs( IZ - OZ), 0.20).
 
 %% is_left_of(?Left, ?Right) is nondet.
 %
