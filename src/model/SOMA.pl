@@ -833,7 +833,7 @@ shape_bbox(ShapeRegion, Depth, Width, Height) ?+>
 %
 object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
 	triple(Obj,soma:hasShape,Shape),
-	split_url(_, Frame, Obj),
+	iri_xml_namespace(Obj, _, Frame),
 	% SHAPE
 	once(triple(Shape,dul:hasRegion,SR)),
 	shape_term(SR, ShapeTerm),
