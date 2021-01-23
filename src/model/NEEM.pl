@@ -1,4 +1,4 @@
-:- module(model_SOMA_NEEMS,
+:- module(model_NEEM,
     [
     ]).
 

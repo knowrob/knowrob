@@ -38,6 +38,7 @@
 	  %          then prefer this over user
 	  %is_process(r),
 	  is_classified_by(r,r),
+	  event_interval(r,?,?),
 	  has_participant(r,r),
 	  has_participant(r,r,r),
 	  executes_task(r,r),
@@ -52,6 +53,10 @@
       has_assignment(r,r),
       has_data_value(r,?),
       has_time_interval(r,r),
+      has_interval_begin(r,?),
+      has_interval_end(r,?),
+      has_interval_duration(r,?),
+      is_interval_equal(r,r),
       plan_has_goal(r,r),
       satisfies(r,r),
       is_setting_for(r,r)
@@ -74,6 +79,8 @@ for modeling physical and social contexts.
 % load RDF data
 :- load_owl('http://www.ontologydesignpatterns.org/ont/dul/DUL.owl',
 	[ namespace(dul) ]).
+:- load_owl('http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
+	[ namespace(io) ]).
 
 %% is_object(?Entity) is nondet.
 %
@@ -250,6 +257,25 @@ is_task(Entity) ?+>
 %
 is_process(Entity) ?+>
 	has_type(Entity, dul:'Process').
+
+%% event_interval(?Event,?Since,?Until) is nondet.
+%
+% Returns the start and end time of an event
+%
+% @param Evt An individual of type dul:'Event'.
+% @param Since begin of the interval
+% @param Until end of the interval
+%
+event_interval(EV, Since, Until) ?>
+	triple(EV, dul:hasTimeInterval, TI),
+	triple(TI, soma:hasIntervalBegin, Since),
+	triple(TI, soma:hasIntervalEnd, Until).
+
+event_interval(EV, Since, Until) +>
+	has_type(TI, dul:'TimeInterval'),
+	triple(EV, dul:hasTimeInterval, TI),
+	triple(TI, soma:hasIntervalBegin, Since),
+	triple(TI, soma:hasIntervalEnd, Until).
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %
@@ -472,6 +498,50 @@ has_data_value(Entity,DataValue) ?+>
 %
 has_time_interval(Entity,TimeInterval) ?+>
 	triple(Entity,dul:hasTimeInterval,TimeInterval).
+
+%% has_interval_begin(I,End) is semidet.
+%
+% The start time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+has_interval_begin(TI, Begin) ?+>
+	holds(TI, soma:hasIntervalBegin, Begin).
+
+%% has_interval_end(I,End) is semidet.
+%
+% The end time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+has_interval_end(TI, End) :-
+	holds(TI, soma:hasIntervalEnd, End).
+
+%% has_interval_duration(Event, Duration) is nondet.
+%
+% Calculate the duration of the the TemporalThing Event
+%
+% @param Event Identifier of a TemporalThing
+% @param Duration Duration of the event
+%
+has_interval_duration(TI, Duration) :-
+	has_interval_begin(TI, Begin),
+	has_interval_end(TI, End),
+	% TODO: transform into ask query
+	Duration is (End-Begin).
+
+%% is_interval_equal(?I1,?I2) is semidet.
+%
+% Interval I1 is equal to I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+is_interval_equal(TI1, TI2) ?>
+	has_interval_begin(TI1, Begin),
+	has_interval_begin(TI2, Begin),
+	has_interval_end(TI1, End),
+	has_interval_end(TI2, End).
 
 %% is_description(?Entity) is nondet.
 %
