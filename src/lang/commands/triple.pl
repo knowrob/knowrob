@@ -2,10 +2,21 @@
 		[ mng_triple_doc(t,-,t)
 		]).
 
-:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
-:- use_module(library('lang/subgraph')).
+:- use_module(library('semweb/rdf_db'),
+		[ rdf_meta/1 ]).
+:- use_module(library('lang/subgraph'),
+		[ get_supgraphs/2 ]).
+:- use_module(library('lang/scope'),
+		[ mng_scope_intersect/5, time_scope_data/2 ]).
+:- use_module(library('db/mongo/client'),
+		[ mng_get_db/3,
+		  mng_find/4,
+		  mng_query_value/2,
+		  mng_strip_type/3,
+		  mng_strip_variable/2,
+		  mng_strip_operator/3,
+		  mng_strip_unit/3 ]).
 :- use_module(library('lang/compiler')).
-:- use_module(library('lang/scope')).
 
 :- rdf_meta(triple_tell(t,t,t,t,t,-)).
 :- rdf_meta(taxonomical_property(r,-,-)).
@@ -41,7 +52,7 @@
 %
 
 %% register query commands
-:- query_compiler:add_command(triple).
+:- query_compiler:add_command(triple, [ask,tell]).
 
 %%
 % For "taxonomical" properties, not only the value is stored in the document,

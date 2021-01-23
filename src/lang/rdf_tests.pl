@@ -11,10 +11,10 @@ written into a special named graph that is deleted again in cleanup step.
 @license BSD
 */
 
-:- use_module('query',
-	[ forget/2 ]).
 :- use_module('db',
-	[ load_owl/2 ]).
+	[ load_owl/1,
+	  drop_graph/1
+	]).
 
 %%
 begin_rdf_tests(Name,RDFFile,Options0) :-

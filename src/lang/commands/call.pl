@@ -2,10 +2,14 @@
     [ match_operator/2
     ]).
 
+:- use_module(library('lang/scope'),
+		[ time_scope/3 ]).
+:- use_module(library('db/mongo/client'),
+		[ mng_strip/4 ]).
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(call).
+:- query_compiler:add_command(call, [ask,tell]).
 
 %%
 query_compiler:step_expand(

@@ -13,6 +13,10 @@
 @license BSD
 */
 
+:- use_module(library('db/mongo/client'),
+	[ mng_strip_operator/3
+	]).
+
 %% universal_scope(-Scope) is det.
 %
 % The scope of facts that are universally true.
@@ -106,7 +110,7 @@ time_scope_intersect(A, B, Intersection) :-
 %
 % @param Scope A scope dict.
 %
-time_scope(Scope,Since,Until) :-
+time_scope(Since,Until,Scope) :-
 	(	Scope=_{ time: X }
 	;	X=Scope
 	),

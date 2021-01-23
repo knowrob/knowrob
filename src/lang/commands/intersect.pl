@@ -2,6 +2,8 @@
 		[ mng_scope_intersect/5
 		]).
 
+:- use_module(library('lang/scope'),
+		[ time_scope/3 ]).
 :- use_module(library('lang/compiler')).
 
 %% mng_scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
@@ -37,27 +39,9 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 			['$lt', array([string(Since0), string(Until0)])]
 		]]
 	).
-	
-scope_intersect_(Context,
-		['$set', ['v_scope', Doc]]) :-
-	% intersect old and new scope
-	TimeScope = ['time', [
-		['since', ['$max', array([string('$v_scope.time.since'),
-		                          string('$next.scope.time.since')])]],
-		['until', ['$min', array([string('$v_scope.time.until'),
-		                          string('$next.scope.time.until')])]]
-	]],
-	(	memberchk(ignore,Context)
-	->	Doc = ['$cond', array([
-			['$not', array([string('$next.scope')]) ],
-			string('$v_scope'),
-			TimeScope
-		])]
-	;	Doc = TimeScope
-	).
 
 %% register query commands
-:- query_compiler:add_command(intersect).
+:- query_compiler:add_command(intersect, [ask]).
 
 %%
 query_compiler:step_var(intersect(Scope), Var) :-
@@ -78,5 +62,25 @@ query_compiler:step_compile(
 	findall(Step,
 		mng_scope_intersect('v_scope', Since0, Until0, Context, Step),
 		Pipeline
+	).
+
+
+%%
+scope_intersect_(Context,
+		['$set', ['v_scope', Doc]]) :-
+	% intersect old and new scope
+	TimeScope = ['time', [
+		['since', ['$max', array([string('$v_scope.time.since'),
+		                          string('$next.scope.time.since')])]],
+		['until', ['$min', array([string('$v_scope.time.until'),
+		                          string('$next.scope.time.until')])]]
+	]],
+	(	memberchk(ignore,Context)
+	->	Doc = ['$cond', array([
+			['$not', array([string('$next.scope')]) ],
+			string('$v_scope'),
+			TimeScope
+		])]
+	;	Doc = TimeScope
 	).
 	

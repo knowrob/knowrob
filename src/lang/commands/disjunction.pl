@@ -4,7 +4,7 @@
 
 %% register query commands
 % TODO: switch to use ; everywhere
-:- query_compiler:add_command(facet).
+:- query_compiler:add_command(facet, [ask]).
 
 %%
 % Each facet is a KnowRob language expression and needs to be expanded.
@@ -44,11 +44,6 @@ query_compiler:step_var(facet([First|Rest]), Var) :-
 %
 query_compiler:step_compile(
 		facet(Facets), Context, Pipeline) :-
-	% tell+disunction is not allowed
-	(	option(mode(tell), Context)
-	->	throw(compilation_failed(facet(Facets), Context)
-	;	true
-	),
 	% read options from context
 	% option(mode(ask), Context),
 	option(step_vars(StepVars), Context),
@@ -105,12 +100,7 @@ compile_facet_(StepVars, Facet, Pipeline, VarKey, Context) :-
 	% create findall pattern from step variables
 	maplist(nth0(1), StepVars, Pattern),
 	% compile the step
-	catch(
-		query_compiler:step_compile(
-			findall(Pattern, Facet, Var),
-			Context,
-			Pipeline),
-		compilation_surpressed(_),
-		(fail, !)
-	),
+	query_compiler:step_compile(
+		findall(Pattern, Facet, Var),
+		Context, Pipeline),
 	query_compiler:var_key(Var, VarKey).

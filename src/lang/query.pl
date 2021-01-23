@@ -19,7 +19,7 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
-:- use_module(library('db/scope'),
+:- use_module(library('scope'),
     [ current_scope/1,
       universal_scope/1
     ]).
@@ -166,6 +166,7 @@ forget(Statements, Scope, Options) :-
 	).
 
 % TODO: support other language terms?
+% FIXME: need to propagate deletion for rdf:type etc.
 forget(triple(S,P,O), Scope, Options) :-
 	% ensure there is a graph option
 	set_graph_option(Options, Options0),
@@ -208,7 +209,7 @@ forget(Statement) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(Head,ask_query(Body, QScope, _FScope, [])))) :-
+		(:-(Head,query_ask(Body, QScope, _FScope, [])))) :-
 	strip_module_(Head,_Module,Term),
 	current_scope(QScope),
 	query_assert((?>(Term,Body))).

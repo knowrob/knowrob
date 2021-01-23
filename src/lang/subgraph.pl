@@ -10,6 +10,11 @@
 @license BSD
 */
 
+:- use_module(library('db/mongo/client'),
+	[ mng_get_db/3,
+	  mng_distinct_values/4
+	]).
+
 :- dynamic subgraph_of/2.
 
 %%
@@ -18,7 +23,7 @@
 % when KnowRob is started.
 %
 load_graph_structure :-
-	mng_get_db(DB, Coll, 'triples')
+	mng_get_db(DB, Coll, 'triples'),
 	mng_distinct_values(DB, Coll, 'graph', Names),
 	forall(
 		member(NameString,Names),

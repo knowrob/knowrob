@@ -5,7 +5,7 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(pragma).
+:- query_compiler:add_command(pragma, [ask,tell]).
 
 %%
 % pragma(Goal) is evaluated compile-time by calling

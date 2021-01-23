@@ -16,20 +16,17 @@
 :- use_module(library(rdf),
 		[ load_rdf/3 ]).
 :- use_module(library('semweb/rdf_db'), 
-		[ rdf_equal/2,
-		  rdf_register_ns/3
-		]).
+		[ rdf_equal/2, rdf_register_ns/3 ]).
 :- use_module(library('http/http_open'),
 		[ http_open/3 ]).
 :- use_module(library('utility/url'),
 		[ url_resolve/2 ]).
 :- use_module(library('model/XSD'),
 		[ xsd_data_basetype/2 ]).
-:- use_module(library('db/scope'),
-		[ universal_scope/1,
-		  wildcard_scope/1
-		]).
-:- use_module(library('db/subgraph')).
+:- use_module(library('db/mongo/client')).
+:- use_module(library('scope'),
+		[ universal_scope/1 ]).
+:- use_module(library('subgraph')).
 
 % define some settings
 :- setting(drop_graphs, list, [user],
@@ -185,20 +182,21 @@ load_owl(URL, Scope, SubGraph) :-
 	).
 
 load_owl0(Resolved,_,OntoGraph,_) :-
+	rdf_equal(owl:'imports',OWL_Imports),
 	% test whether the ontology is already loaded
 	get_ontology_version(OntoGraph,Version),
 	file_version(Resolved,Version),
 	% no triples to load if versions unify
 	% but we must make sure the graph is a sub-graph
 	% of all imported ontologies.
-	wildcard_scope(QScope),
+	mng_get_db(DB, Coll, 'triples'),
 	forall(
-		once(mng_ask(
-			triple(_, owl:'imports', string(Imported)),
-			QScope, _FScope,
-			[graph(=(OntoGraph))]
-		)),
-		(	ontology_graph(Imported,ImportedGraph),
+		mng_find(DB, Coll, [
+			['p',     string(OWL_Imports)],
+			['graph', string(OntoGraph)]
+		], Doc),
+		(	mng_get_dict('o', Doc, string(Imported)),
+			ontology_graph(Imported,ImportedGraph),
 			add_subgraph(OntoGraph,ImportedGraph)
 		)
 	),
@@ -238,7 +236,9 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
 	% TODO: better use bulk insert interface
-	lang_query:tell(Terms, [[graph(Graph)],Scope]),
+	%	- then it would be problematic to do the propagation
+	%	- tell should not be used here, and cannot be imported at the top
+	lang_query:tell(Terms, Scope, [graph(Graph)]),
 	get_time(Time1),
 	% debug
 	length(Triples,NumTriples),
@@ -307,22 +307,22 @@ ontology_graph(URL,Name) :-
 
 %% The version/last modification time of a loaded ontology
 get_ontology_version(OntoGraph, Version) :-
-	wildcard_scope(QScope),
-	% find value of property "tripledbVersionString" in ontology graph
-	once(mng_ask(
-		triple(_, tripledbVersionString, string(Version)),
-		QScope, _FScope,
-		[graph(=(OntoGraph))]
-	)).
+	mng_get_db(DB, Coll, 'triples'),
+	once(mng_find(DB, Coll, [
+		['p',     string(tripledbVersionString)],
+		['graph', string(OntoGraph)]
+	], Doc)),
+	mng_get_dict(o, Doc, string(Version)).
 
 %% Write version string into DB
 set_ontology_version(URL, Version, OntoGraph) :-
-	universal_scope(Scope),
-	once(mng_tell(
-		triple(URL, tripledbVersionString, string(Version)),
-		Scope,
-		[graph(=(OntoGraph))]
-	)).
+	mng_get_db(DB, Coll, 'triples'),
+	mng_store(DB, Coll, [
+		['s',     string(URL)],
+		['p',     string(tripledbVersionString)],
+		['o',     string(Version)],
+		['graph', string(OntoGraph)]
+	]).
 
 %% get modification time of local file.
 %% this is to cause re-loading the file in case of it has changed locally.

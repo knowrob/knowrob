@@ -27,13 +27,13 @@ into aggregate pipelines that can be processed by mongo DB.
 %             and does not proceed if cut+matching docs in previous step
 
 :- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1
-	    ]).
+	    [ rdf_meta/1 ]).
+:- use_module(library('db/mongo/client')).
 
 %% Stores list of terminal terms for each clause. 
 :- dynamic query/4.
 %% set of registered query commands.
-:- dynamic step_command/1.
+:- dynamic step_command/2.
 %% optionally implemented by query commands.
 :- multifile step_expand/3.
 %% implemented by query commands to compile query documents
@@ -43,7 +43,7 @@ into aggregate pipelines that can be processed by mongo DB.
 
 :- rdf_meta(step_compile(t,t,t)).
 
-%% add_command(+Command) is det.
+%% add_command(+Command,+Modes) is det.
 %
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
@@ -53,8 +53,8 @@ into aggregate pipelines that can be processed by mongo DB.
 %
 % @Command a command term.
 %
-add_command(Command) :-
-	assertz(step_command(Command)).
+add_command(Command,Modes) :-
+	assertz(step_command(Command,Modes)).
 
 
 %% mng_ask(+Statement, +Scope, +Options) is nondet.
@@ -67,9 +67,7 @@ add_command(Command) :-
 % @Options query options
 %
 query_ask(Statement, QScope, FScope, Options) :-
-	query_(Statement,
-		[scope(QScope)|Options],
-		FScope, ask).
+	query_(Statement, [scope(QScope)|Options], FScope, ask).
 
 %% mng_tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -81,16 +79,14 @@ query_ask(Statement, QScope, FScope, Options) :-
 % @Options query options
 %
 query_tell(Statement, FScope, Options) :-
-	query_(Statement,
-		[scope(FScope)|Options],
-		_, tell).
+	query_(Statement, [scope(FScope)|Options], _, tell).
 
 %%
 query_(Goal, Context, FScope, Mode) :-
 	% expand goals into terminal symbols
 	query_expand(Goal, Expanded, Mode),
 	% get the pipeline document
-	query_compile(Expanded, pipeline(Doc,Vars), [Mode|Context]),
+	query_compile(Expanded, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope, Mode).
 
@@ -221,81 +217,79 @@ query_assert1(Head, Body, Context) :-
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
-%% query_expand(+Goal, -Expanded, +Context) is det.
+%% query_expand(+Goal, -Expanded, +Mode) is det.
 %
 % Translates a KnowRob langauge term into a sequence
 % of commands that can be executed by mongo DB.
 %
 % @Goal a KnowRob language term
 % @Expanded sequence of commands
-% @Context 'ask' or 'tell'
+% @Mode 'ask' or 'tell'
 %
-query_expand(Goal, Expanded, Context) :-
+query_expand(Goal, Expanded, Mode) :-
 	comma_list(Goal, Terms),
 	catch(
-		expand_term_0(Terms, Expanded, Context),
+		expand_term_0(Terms, Expanded, Mode),
 		Exc,
 		log_error_and_fail(lang(Exc, Goal))
 	).
 
 %%
-expand_term_0([], [], _Context) :- !.
-expand_term_0([X|Xs], Expanded, Context) :-
-	expand_term_1(X, X_expanded, Context),
-	expand_term_0(Xs, Xs_expanded, Context),
+expand_term_0([], [], _Mode) :- !.
+expand_term_0([X|Xs], Expanded, Mode) :-
+	expand_term_1(X, X_expanded, Mode),
+	expand_term_0(Xs, Xs_expanded, Mode),
 	append(X_expanded, Xs_expanded, Expanded).
 
 %% try expanding disjuntion, else call expand_term_2
-expand_term_1(Goal, Expanded, Context) :-
+expand_term_1(Goal, Expanded, Mode) :-
 	semicolon_list(Goal, Terms),
 	(	Terms=[_]
-	->	expand_term_2(Goal, Expanded, Context)
-	;	expand_term_2(facet(Terms), Expanded, Context)
+	->	expand_term_2(Goal, Expanded, Mode)
+	;	expand_term_2(facet(Terms), Expanded, Mode)
 	).
 
 %% strip all modifiers from the goal and call expand_term_3
-expand_term_2(Goal, Expanded, Context) :-
+expand_term_2(Goal, Expanded, Mode) :-
 	strip_all_modifier(Goal, Stripped, Modifier),
-	expand_term_3(Stripped, Modifier, Expanded, Context).
+	once(expand_term_3(Stripped, Modifier, Expanded, Mode)).
 
 %% handle goals wrapped in call.
-expand_term_3(call(Goal), _Modifier, Expanded, Context) :-
-	!,
-	mng_expand(Goal, Expanded, Context).
+expand_term_3(call(Goal), _Modifier, Expanded, Mode) :-
+	query_expand(Goal, Expanded, Mode).
 
 %% handle goals wrapped in ask. this is especially used for conditional tel clauses.
-expand_term_3(ask(Goal), _Modifier, Expanded, Context) :-
-	(	select_option(tell, Context, Context0)
-	->	Context1=[ask|Context0]
-	;	Context1=Context
-	),
-	!,
-	query_expand(Goal, Expanded, Context1).
+expand_term_3(ask(Goal), _Modifier, Expanded, _Mode) :-
+	query_expand(Goal, Expanded, ask).
 
 %% finally expand rules that were asserted before
-expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Context) :-
+expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Mode) :-
 	Goal =.. [Functor|_Args],
-	step_command(Functor),
-	!,
-	% TODO: verify that Modifier are supported by command
-	(	step_expand(Goal, Expanded, Context)
+	step_command(Functor,Modes),
+	% verify that the command can be expanded into the current mode
+	(	member(Mode,Modes)
+	->	true
+	;	throw(expansion_failed(Goal,Mode)
+	),
+	% finally allow the goal to recursively expand
+	(	step_expand(Goal, Expanded, Mode)
 	->	true
 	;	Expanded = Goal
 	).
 
-expand_term_3(Goal, Modifier0, Expanded, Context) :-
+expand_term_3(Goal, Modifier0, Expanded, Mode) :-
 	% find all asserted rules matching the functor and args
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
 	% TODO: do we need to create a copy of Terminals here, or not needed?
 	(	bagof(Terminals,
-			query(Functor, Args, Terminals, Context),
+			query(Functor, Args, Terminals, Mode),
 			TerminalsList)
 	->	true
 	% handle the case that a predicate is referred to that wasn't
 	% asserted before
-	;	throw(expansion_failed(Goal))
+	;	throw(expansion_failed(Goal,Mode))
 	),
 	% need to wrap in facet/1 to indicate that there are multiple clauses.
 	% the case of multiple clauses is handled using the $facet command.
@@ -388,6 +382,13 @@ compile_tell_(Doc0, Doc1) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% MODIFIER
 %%%%%%%%%%%%%%%%%%%%%%%
+
+% TODO: can we transform them to commands?
+%	- currently only triple supports these
+%	- ignore/once/limit can be done with $lookup
+%	- what about transitive/reflexive?
+%		- only meaningful for binary predicates
+%		- can $graphLookup do transitive predicates?
 
 %% modifiers are stripped from terms and stored separately
 strip_all_modifier(In, Out, [Mod0|Mods]) :-

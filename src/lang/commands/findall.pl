@@ -1,9 +1,11 @@
 :- module(lang_findall, []).
 
+:- use_module(library('db/mongo/client'),
+		[ mng_one_db/2 ]).
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(findall).
+:- query_compiler:add_command(findall, [ask]).
 
 %%
 query_compiler:step_expand(
@@ -29,12 +31,6 @@ query_compiler:step_compile(
 		findall(Pattern, Terminals, List),
 		Context,
 		[ Lookup, SetList, UnsetNext ]) :-
-	% tell+findall is not allowed
-	(	option(mode(tell), Context)
-	->	throw(compilation_failed(
-			findall(Pattern, Terminals, List), Context)
-	;	true
-	),
 	% option(mode(ask), Context),
 	% perform findall, collect results in 'next' array
 	lookup_(Terminals, Context, Lookup),
@@ -83,11 +79,11 @@ lookup_(Terminals, Context, Lookup) :-
 	),
 	% finally compose the lookup document
 	Lookup=['$lookup', [
-		['from',string(Coll)],
+		['from', string(Coll)],
 		% create a field "next" with all matching documents
-		['as',string('next')],
+		['as', string('next')],
 		% make fields from input document accessible in pipeline
-		['let',LetDoc],
+		['let', LetDoc],
 		% get matching documents
 		['pipeline', array(Pipeline0)]
 	]].

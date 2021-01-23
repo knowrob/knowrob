@@ -1,9 +1,10 @@
 :- module(lang_annotation, []).
 
 :- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1
-	    ]).
-
+	    [ rdf_meta/1 ]).
+:- use_module(library('db/mongo/client')
+		[ mng_get_db/3, mng_strip_type/3 ]).
+:- use_module(library('lang/db')).
 :- use_module(library('lang/compiler')).
 
 :- rdf_meta(ask_annotation(t,t,t,t,-)).
@@ -20,7 +21,7 @@
 		[['s'], ['p'], ['s','p']]).
 
 %% register query command
-:- query_compiler:add_command(comment).
+:- query_compiler:add_command(comment, [ask]).
 
 %%
 % expose argument variables.
@@ -43,12 +44,6 @@ annotation_var_(Arg, [Key, Var]) :-
 % to avoid generating a regular index over the comment values. 
 %
 query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
-	% tell+comment not supported yet
-	(	option(mode(tell), Ctx)
-	->	throw(compilation_failed(comment(S, C)), Ctx)
-	;	true
-	),
-	%%
 	%option(mode(ask), Ctx),
 	ask_annotation(S, rdfs:comment, C, Ctx, Pipeline).
 

@@ -1,5 +1,7 @@
 :- module(lang_lists, []).
 
+:- use_module(library('lang/scope'),
+		[ mng_scope_intersect/5 ]).
 :- use_module(library('lang/compiler')).
 
 % TODO: support more list commands
@@ -17,7 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- query_compiler:add_command(nth).
+:- query_compiler:add_command(nth, [ask]).
 
 %%
 % nth/3 exposes variables of the pattern.
@@ -36,11 +38,6 @@ query_compiler:step_compile(
 		nth(Index, List, _Elem),
 		Context,
 		Pipeline) :-
-	% tell+nth is not allowed
-	(	option(mode(tell), Context)
-	->	throw(compilation_failed(nth(Index, List), Context)
-	;	true
-	),
 	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
@@ -67,7 +64,7 @@ query_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% register query commands
-:- query_compiler:add_command(member).
+:- query_compiler:add_command(member, [ask]).
 
 %%
 % member exposes variables of the pattern.
@@ -83,14 +80,9 @@ query_compiler:step_var(
 % and exposes variables in Pattern to the rest of the pipeline.
 %
 query_compiler:step_compile(
-		member(Pattern, List),
+		member(_Pattern, List),
 		Context,
 		Pipeline) :-
-	% tell+member is not allowed
-	(	option(mode(tell), Context)
-	->	throw(compilation_failed(member(Pattern, List), Context)
-	;	true
-	),
 	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),

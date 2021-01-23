@@ -3,7 +3,7 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(context).
+:- query_compiler:add_command(context, [ask,tell]).
 
 %%
 % context(-Option) and context(-Option, +Default) are used to read

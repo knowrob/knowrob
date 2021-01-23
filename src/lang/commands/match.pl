@@ -1,10 +1,12 @@
 :- module(lang_match,
     []).
 
+:- use_module(library('db/mongo/client'),
+		[ mng_operator/2 ]).
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(match).
+:- query_compiler:add_command(match, [ask]).
 
 %%
 % match uses 2-ary operator whose arguments maybe variables.
@@ -24,15 +26,10 @@ query_compiler:step_var(match(Expr), [VarKey, Var]) :-
 %
 query_compiler:step_compile(
 		match(Expr),
-		Context,
+		_Context,
 		[['$match', [
 			[X, [A, B]]
 		]]]) :-
-	% tell+match is not allowed
-	(	option(mode(tell), Context)
-	->	throw(compilation_failed(match(Expr), Context)
-	;	true
-	),
 	% option(mode(ask), Context),
 	% unpack expression
 	Expr =.. [X0,A0,B0],

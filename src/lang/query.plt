@@ -95,8 +95,8 @@ test('tell list') :-
 
 % test for time scope
 test('tell with scope'):-
-	T_S1=_{ time: _{ since: =(double(5)), until: =(double(10)) }},
-	T_S2=_{ time: _{ since: =(double(5)), until: =(double(20)) }},
+	time_scope(=(double(5)), =(double(10)), T_S1),
+	time_scope(=(double(5)), =(double(20)), T_S2),
 	rdf_equal(S, test_datatype:'Lecturer4'),
 	rdf_equal(P, test_datatype:'last_name'),
 	%%
@@ -106,8 +106,8 @@ test('tell with scope'):-
 
 % test for time scope extension
 test('extend time scope'):-
-	T_S1=_{ time: _{ since: =(double(10)), until: =(double(20)) }},
-	T_S2=_{ time: _{ since: =(double(5)),  until: =(double(20)) }},
+	time_scope(=(double(10)), =(double(20)), T_S1),
+	time_scope(=(double(5)),  =(double(20)), T_S2),
 	rdf_equal(S, test_datatype:'Lecturer4'),
 	rdf_equal(P, test_datatype:'last_name'),
 	%%
