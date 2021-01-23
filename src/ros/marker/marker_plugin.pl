@@ -15,10 +15,10 @@
 %
 
 :- use_module(library(settings)).
-:- use_module(library('db/scope'),
-    [ current_scope/1
-    ]).
+:- use_module(library('lang/scope'),
+    [ current_scope/1 ]).
 :- use_module('object_marker').
+
 :- use_foreign_library('libmarker_plugin.so').
 
 :- multifile marker_factory/3.
@@ -105,7 +105,7 @@ show_markers(Timepoint) :-
 	%	show_marker(PO, PO, [scope(Scope)])
 	%).
 	findall(Msg,
-		(	object_marker(_Obj,[[],Scope]->_,ID,Data),
+		(	object_marker(_Obj,Scope,_,ID,Data),
 			marker_message_new(ID,Data,Msg)
 		),
 		MessageList

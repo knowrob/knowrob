@@ -28,26 +28,24 @@
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).
 :- use_module(library('utility/algebra'),
-	[ transform_between/3,
-	  transform_interpolate/4,
-	  transform_multiply/3
-	]).
+	[ transform_between/3, transform_interpolate/4, transform_multiply/3 ]).
 :- use_module(library('utility/filesystem'),
-	[ path_concat/3
-	]).
-:- use_module(library('db/scope'),
-	[ scope_intersect/3,
-	  subscope_of/2
-	]).
-:- use_module(library('lang/scopes/temporal'),
-	[ time_scope/5,
-	  time_scope_data/2
-	]).
+	[ path_concat/3 ]).
+:- use_module(library('lang/scope'),
+	[ scope_intersect/3, subscope_of/2, time_scope/5, time_scope_data/2 ]).
 :- use_module(library('db/mongo/client')).
 
 % define some settings
 :- setting(use_logger, boolean, true,
 	'Toggle whether TF messages are logged into the mongo DB.').
+
+%%
+% register the "tf" collection.
+% This is needed for import/export.
+%
+:- setup_collection(tf, [
+		['child_frame_id','header.stamp'],
+		['header.stamp']]).
 
 tf_db(DB, Name) :- 
 	mng_get_db(DB, Name, 'tf').
@@ -88,28 +86,6 @@ tf_mng_whipe :-
 	tf_db(DB, Name),
 	mng_drop(DB,Name).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % import/export
-
-%%
-tf_mng_remember(Directory) :-
-	mng_db_name(DB),
-	tf_mng_whipe,
-	tf_logger_set_db_name(DB),
-	path_concat(Directory,ros_tf,TFDir),
-	mng_restore(DB,TFDir),
-	mng_index_create(DB,tf,['child_frame_id','header.stamp']).
-
-%%
-tf_mng_memorize(Directory) :-
-	%mng_db_name(DB),
-	path_concat(Directory,ros_tf,TFDir),
-	mng_export_collection(tf,TFDir).
-
-%%
-lang_export:remember_hook(Directory) :- tf_mng_remember(Directory).
-lang_export:memorize_hook(Directory) :- tf_mng_memorize(Directory).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -117,15 +93,16 @@ lang_export:memorize_hook(Directory) :- tf_mng_memorize(Directory).
 
 %% is_at(?Object,-PoseData) is nondet.
 %
-is_at(Obj,[RefFrame,Pos,Rot]) +>
-	fact_scope(FS),
-	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) },
-	notify(object_changed(Obj)).
-
-is_at(Obj,[RefFrame,Pos,Rot]) ?>
-	query_scope(QS),
-	{ tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,FS) },
-	fact_scope(FS).
+% TODO
+%is_at(Obj,[RefFrame,Pos,Rot]) +>
+%	fact_scope(FS),
+%	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) },
+%	notify(object_changed(Obj)).
+%
+%is_at(Obj,[RefFrame,Pos,Rot]) ?>
+%	query_scope(QS),
+%	{ tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,FS) },
+%	fact_scope(FS).
 
 %%
 tf_set_pose(Obj,PoseData,FS) :-
@@ -264,10 +241,6 @@ tf_get_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
 %
 tf_mng_init :-
 	mng_db_name(DB),
-	tf_db(DB, Name),
-	mng_index_create(DB,Name,[+'child_frame_id',-'header.stamp']),
-	mng_index_create(DB,Name,[+'header.stamp']),
-	%%
 	(	setting(tf_plugin:use_logger,false)
 	->	true
 	;	tf_logger_set_db_name(DB)

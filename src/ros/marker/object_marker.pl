@@ -4,9 +4,8 @@
 
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).
-:- use_module(library('model/SOMA/OBJ'),
-    [ object_shape/5
-    ]).
+:- use_module(library('model/SOMA'),
+    [ object_shape/5 ]).
 :- use_module(library('ros/tf/tf_tree')).
 	
 %% object_marker
@@ -16,12 +15,12 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
-object_marker(Obj,_,_,_) :-
+object_marker(Obj,_,_,_,_) :-
 	atom(Obj),
 	is_urdf_joint(Obj), !,
 	fail.
 
-object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
+object_marker(Obj,QScope,_,MarkerID,MarkerData) :-
 	catch(
 		object_marker0(Obj,QScope,MarkerID,MarkerData),
 		Exc,
@@ -30,7 +29,7 @@ object_marker(Obj,QScope->_,MarkerID,MarkerData) :-
 
 object_marker0(Obj,QScope,MarkerID,
 		[ pose(Origin) | MarkerData ]) :-
-	ask(object_shape(Obj,MarkerID,Shape,Origin,Material),QScope->_),
+	ask(object_shape(Obj,MarkerID,Shape,Origin,Material), QScope),
 	object_marker1(Shape,Material,MarkerData).
 
 object_marker1(

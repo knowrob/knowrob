@@ -8,7 +8,7 @@
 	  transform_multiply/3
 	]).
 :- use_module(library('db/mongo/client')).
-:- use_module('./tf_plugin').
+:- use_module('tf_plugin').
 
 %%
 :- dynamic tf_tree_chache/2.

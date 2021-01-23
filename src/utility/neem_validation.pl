@@ -13,11 +13,11 @@
       validate_episode(r)
     ]).
 
-:- use_module(library('db/scope')).
-:- use_module(library('model/DUL/Event')).
-:- use_module(library('model/DUL/Object')).
-:- use_module(library('ros/tf/tf_plugin')).
 :- use_module(library('db/mongo/client')).
+:- use_module(library('lang/scope')).
+:- use_module(library('model/DUL')).
+:- use_module(library('model/SOMA')).
+:- use_module(library('ros/tf/tf_plugin')).
 :- use_module(library('ros/urdf/URDF')).
 
 

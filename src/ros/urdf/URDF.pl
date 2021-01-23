@@ -324,17 +324,14 @@ set_links_(Part,Prefix) :-
 /*********** LANG EXTENSIONS **********/
 /**************************************/
 
-:- table(g_is_urdf_link/1).
-:- table(g_is_urdf_joint/1).
-
 %% is_urdf_link(?Entity) is semidet.
 %
-is_urdf_link(Entity), [table(?)] ?+>
+is_urdf_link(Entity) ?+>
   has_type(Entity, urdf:'Link').
 
 %% is_urdf_joint(?Entity) is semidet.
 %
-is_urdf_joint(Entity), [table(?)] ?+>
+is_urdf_joint(Entity) ?+>
   has_type(Entity, urdf:'Joint').
 
 %% has_urdf_prefix(?Obj,?Prefix) is semidet.
@@ -380,10 +377,10 @@ has_parent_link(Joint,Link) ?+>
 %%
 % TODO: reconsider this
 % 
-object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) ?>
-	{ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) },
-	% TODO: set universal fact scope? or not needed?
-	{ true }.
+%object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) ?>
+%	{ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) },
+%	% TODO: set universal fact scope? or not needed?
+%	{ true }.
 
 %%
 object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
