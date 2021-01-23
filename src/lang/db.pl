@@ -2,6 +2,7 @@
     [ load_owl/1,
       load_owl/2,
       load_owl/3,
+      load_json_rdf/1,
       remember/1,
       memorize/1,
       drop_graph/1,
@@ -245,6 +246,33 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	PerSec is NumTriples/(Time1-Time0),
 	log_debug(tripledb(loaded(
 		ntriples(NumTriples),persecond(PerSec)))).
+
+%% reads json data and asserts into mongodb
+%
+% @param FilePath - Path to the json file
+%
+load_json_rdf(FilePath) :-
+	open(FilePath,read,Stream),
+	read_data(Stream,_Triples),
+	close(Stream).
+
+read_data(Stream,[]):-
+	at_end_of_stream(Stream),
+	!.
+
+read_data(Stream,[TriplesDict | Rest]):-
+	json:json_read_dict(Stream, TriplesDict),
+	assert_triple_data(TriplesDict),
+	read_data(Stream,Rest).
+
+assert_triple_data(Triples) :-
+	term_to_atom(Triples.get(s), S),
+	term_to_atom(Triples.get(p), P),
+	term_to_atom(Triples.get(o), O),
+	% TODO: also support to import scope information
+	% TODO: it would be faster to call tell only once with
+	% array of triples
+	lang_query:tell(triple(S, P, O)).
 
 % wrapper around load_rdf/3
 load_rdf_(URL,Triples) :-
