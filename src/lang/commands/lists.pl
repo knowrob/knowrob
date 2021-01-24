@@ -9,20 +9,22 @@
 %          - probably would need better handling of terms.
 
 %% query commands
-:- query_compiler:add_command(member,      [ask]).
-:- query_compiler:add_command(nth,         [ask]).
 :- query_compiler:add_command(length,      [ask]).
-:- query_compiler:add_command(list_to_set, [ask]).
-% TODO: support more list commands
+:- query_compiler:add_command(max_list,    [ask]).
+:- query_compiler:add_command(min_list,    [ask]).
+:- query_compiler:add_command(sum_list,    [ask]).
+:- query_compiler:add_command(member,      [ask]).
 %:- query_compiler:add_command(memberchk,   [ask]).
-%:- query_compiler:add_command(max_list,    [ask]).
-%:- query_compiler:add_command(min_list,    [ask]).
-%:- query_compiler:add_command(sum_list,    [ask]).
+:- query_compiler:add_command(nth,         [ask]).
+:- query_compiler:add_command(list_to_set, [ask]).
 %:- query_compiler:add_command(sort,        [ask]).
 %:- query_compiler:add_command(reverse,     [ask]).
 
 %% query variables
 query_compiler:step_var(length(A,B), Var)      :- query_compiler:get_var([A,B], Var).
+query_compiler:step_var(max_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
+query_compiler:step_var(min_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
+query_compiler:step_var(sum_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
 query_compiler:step_var(list_to_set(A,B), Var) :- query_compiler:get_var([A,B], Var).
 
 query_compiler:step_var(nth(List, N, Pattern), Var) :-
@@ -38,25 +40,33 @@ query_compiler:step_var(member(Pattern, List), Var) :-
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.
 %
-query_compiler:step_compile(
-		length(List, Length), _,
-		Pipeline) :-
+query_compiler:step_compile(length(List, Length), _, Pipeline) :-
 	% FIXME: SWI Prolog allows var(List), then yields lists with variables
 	%          as elements. It is also allowed that both args are variables.
 	%          the SWIPL generates infinite number of lists.
-	query_compiler:var_key_or_val(List,List0),
-	query_compiler:var_key_or_val(Length,Length0),
-	findall(Step,
-		(	Step=['$set', ['t_size', ['$size', List0]]]
-		;	query_compiler:set_if_var(Length,    string('$t_size'), Step)
-		;	query_compiler:match_equals(Length0, string('$t_size'), Step)
-		;	Step=['$unset', string('t_size')]
-		),
-		Pipeline).
+	compile_list_attribute(List, Length, '$size', Pipeline).
+
+%% max_list(+List:list(number), -Max:number)
+% True if Max is the largest number in List. Fails if List is empty. 
+%
+query_compiler:step_compile(max_list(List, Max), _, Pipeline) :-
+	compile_list_attribute(List, Max, '$max', Pipeline).
+
+%% min_list(+List, ?Min)
+% True if Min is the smallest number in List. Fails if List is empty.
+%
+query_compiler:step_compile(min_list(List, Min), _, Pipeline) :-
+	compile_list_attribute(List, Min, '$min', Pipeline).
+
+%% sum_list(+List, -Sum)
+% Sum is the result of adding all numbers in List.
+%
+query_compiler:step_compile(sum_list(List, Sum), _, Pipeline) :-
+	compile_list_attribute(List, Sum, '$sum', Pipeline).
 
 %% list_to_set(+List, -Set)
 % Removes duplicates from a list.
-% List may *not* contain variables.
+% List may *not* contain variables when this is evaluated.
 %
 query_compiler:step_compile(
 		list_to_set(List, Set), _,
@@ -129,6 +139,26 @@ query_compiler:step_compile(
 %%%%%%%%%%% helper
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% +List, ?Attribute
+% Applies an operator on grounded array (List) and unifies the
+% second argument with the result (i.e. Attribute maybe ground or var).
+%
+compile_list_attribute(List, Attribute, Operator, Pipeline) :-
+	query_compiler:var_key_or_val(List,List0),
+	query_compiler:var_key_or_val(Attribute,Attribute0),
+	findall(Step,
+		% first compute the attribute
+		(	Step=['$set', ['t_val', [Operator, List0]]]
+		% then assign the value to the attribute if it is a variable
+		;	query_compiler:set_if_var(Attribute,    string('$t_val'), Step)
+		% then ensure that the attribute has the right value
+		;	query_compiler:match_equals(Attribute0, string('$t_val'), Step)
+		% finally remove temporary field again
+		;	Step=['$unset', string('t_val')]
+		),
+		Pipeline
+	).
+
 %%
 set_vars_(Context, ListKey, ['$set', SetVars]) :-
 	memberchk(step_vars(QueryVars), Context),
@@ -140,6 +170,7 @@ set_vars_(Context, ListKey, ['$set', SetVars]) :-
 %%
 set_vars_1([], [], []) :- !.
 set_vars_1([X|Xs], [Y|Ys], [Z|Zs]) :-
+	% TODO: might be redundant?
 	X=[Key,_],
 	Y=[ListKey,_],
 	atom_concat('$next.', ListKey, Val),
