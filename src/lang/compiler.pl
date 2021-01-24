@@ -43,7 +43,7 @@ into aggregate pipelines that can be processed by mongo DB.
 % language expressions and which is implemented
 % in a mongo query.
 % NOTE: to implement a command several multifile predicates in
-% mng_query and mng_compiler must be implemented by a command. 
+% query_compiler must be implemented by a command. 
 %
 % @Command a command term.
 %
@@ -51,7 +51,7 @@ add_command(Command,Modes) :-
 	assertz(step_command(Command,Modes)).
 
 
-%% mng_ask(+Statement, +Scope, +Options) is nondet.
+%% query_ask(+Statement, +Scope, +Options) is nondet.
 %
 % Run a mongo query to find out if Statement holds
 % within Scope.
@@ -63,7 +63,7 @@ add_command(Command,Modes) :-
 query_ask(Statement, QScope, FScope, Options) :-
 	query_(Statement, [scope(QScope)|Options], FScope, ask).
 
-%% mng_tell(+Statement, +Scope, +Options) is semidet.
+%% query_tell(+Statement, +Scope, +Options) is semidet.
 %
 % Run a mongo query to assert that a Statement holds
 % within Scope.
@@ -231,33 +231,20 @@ query_expand(Goal, Expanded, Mode) :-
 %%
 expand_term_0([], [], _Mode) :- !.
 expand_term_0([X|Xs], Expanded, Mode) :-
-	expand_term_1(X, X_expanded, Mode),
+	once(expand_term_1(X, X_expanded, Mode)),
 	expand_term_0(Xs, Xs_expanded, Mode),
 	append(X_expanded, Xs_expanded, Expanded).
 
-%% try expanding disjuntion, else call expand_term_2
-expand_term_1(Goal, Expanded, Mode) :-
-	semicolon_list(Goal, Terms),
-	(	Terms=[_]
-	->	expand_term_2(Goal, Expanded, Mode)
-	;	expand_term_2(facet(Terms), Expanded, Mode)
-	).
-
-%% strip all modifiers from the goal and call expand_term_3
-expand_term_2(Goal, Expanded, Mode) :-
-	strip_all_modifier(Goal, Stripped, Modifier),
-	once(expand_term_3(Stripped, Modifier, Expanded, Mode)).
-
 %% handle goals wrapped in call.
-expand_term_3(call(Goal), _Modifier, Expanded, Mode) :-
+expand_term_1(call(Goal), Expanded, Mode) :-
 	query_expand(Goal, Expanded, Mode).
 
 %% handle goals wrapped in ask. this is especially used for conditional tel clauses.
-expand_term_3(ask(Goal), _Modifier, Expanded, _Mode) :-
+expand_term_1(ask(Goal), Expanded, _Mode) :-
 	query_expand(Goal, Expanded, ask).
 
 %% finally expand rules that were asserted before
-expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Mode) :-
+expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|_Args],
 	step_command(Functor,Modes),
 	% verify that the command can be expanded into the current mode
@@ -271,7 +258,7 @@ expand_term_3(Goal, Modifier, [step(Expanded,Modifier)], Mode) :-
 	;	Expanded = Goal
 	).
 
-expand_term_3(Goal, Modifier0, Expanded, Mode) :-
+expand_term_1(Goal, Expanded, Mode) :-
 	% find all asserted rules matching the functor and args
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
@@ -285,17 +272,8 @@ expand_term_3(Goal, Modifier0, Expanded, Mode) :-
 	% asserted before
 	;	throw(expansion_failed(Goal,Mode))
 	),
-	% need to wrap in facet/1 to indicate that there are multiple clauses.
-	% the case of multiple clauses is handled using the $facet command.
-	% TODO: how should modifier be handled? I think it would
-	%        not be appropiate to just apply them to every command in TerminalsList
-	%    - ignore/once/limit coud be handled by wrapping everything in a $lookup
-	%    - transitive/reflexive is more difficult
-	%
-	(	TerminalsList=[List]
-	->	Expanded = List
-	;	Expanded = [step(facet(TerminalsList),Modifier0)]
-	).
+	% wrap different clauses into ';'
+	semicolon_list(Expanded, TerminalsList).
 
 %% query_compile(+Terminals, -Pipeline, +Context) is semidet.
 %
@@ -330,7 +308,7 @@ compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
 	append(Pipeline_x, Pipeline_xs, Pipeline).
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
-compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
+compile_2(Term, Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
 	(	bagof(Vs, step_var(Term, Vs), StepVars)
 	->	true
@@ -339,13 +317,11 @@ compile_2(step(Term,Modifier), Doc, V0->V1, Context) :-
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars, Vars_new),
 	list_to_set(Vars_new, V1),
-	% add modifier to context
-	append(Modifier, Context, InnerContext),
 	% compile JSON document for this step
 	once(step_compile(Term, [
 			step_vars(StepVars),
 			outer_vars(V0) |
-			InnerContext
+			Context
 	], Doc)).
 
 %%
@@ -374,36 +350,97 @@ compile_tell_(Doc0, Doc1) :-
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% MODIFIER
-%%%%%%%%%%%%%%%%%%%%%%%
-
-% TODO: can we transform them to commands?
-%	- currently only triple supports these
-%	- ignore/once/limit can be done with $lookup
-%	- what about transitive/reflexive?
-%		- only meaningful for binary predicates
-%		- can $graphLookup do transitive predicates?
-
-%% modifiers are stripped from terms and stored separately
-strip_all_modifier(In, Out, [Mod0|Mods]) :-
-	strip_modifier(In,In0,Mod0),
-	!,
-	strip_all_modifier(In0,Out,Mods).
-strip_all_modifier(In, In, []).
-
-%%
-strip_modifier(ignore(X),ignore,X).
-strip_modifier(once(X),limit(1),X).
-strip_modifier(limit(X,N),limit(N),X).
-strip_modifier(transitive(X),transitive,X).
-strip_modifier(reflexive(X),reflexive,X).
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% COMMANDS
+%%%%%%%%% QUERY DOCUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
 match_equals(X, Exp, ['$match', ['$eq', array([X,Exp])]]).
+
+%%
+lookup_let_doc(InnerVars, OuterVars, LetDoc) :-
+	findall([X,string(X0)],
+		(	member([Var,_], InnerVars),
+			member([Var,_], OuterVars),
+			atom_concat('$',X,X0)
+		),
+		LetDoc).
+
+%%
+lookup_set_vars(InnerVars, OuterVars, SetVars) :-
+	findall([Y,string(Y0)],
+		(	member([Y,_], InnerVars),
+			member([Y,_], OuterVars),
+			atom_concat('$$',Y,Y0)
+		),
+		SetVars).
+
+%%
+% find all records matching a query and store them
+% in an array.
+%
+lookup_next_array(Terminals,
+		Prefix, Suffix,
+		Context, InnerVars,
+		['$lookup', [
+			['from', string(Coll)],
+			['as', string('next')],
+			['let', LetDoc],
+			['pipeline', array(Pipeline1)]
+		]]) :-
+	% get variables referred to in query
+	option(outer_vars(OuterVars), Context),
+	% join collection with single document
+	mng_one_db(_DB, Coll),
+	% generate inner pipeline
+	query_compile(Terminals,
+		pipeline(Pipeline, InnerVars),
+		Context),
+	% pass variables from outer scope to inner if they are referred to
+	% in the inner scope.
+	lookup_let_doc(InnerVars, OuterVars, LetDoc),
+	% set all let variables so that they can be accessed
+	% without aggregate operators in Pipeline
+	lookup_set_vars(InnerVars, OuterVars, SetVars),
+	% compose inner pipeline
+	(	SetVars=[] -> Prefix0=Prefix
+	;	Prefix0=[['$set', SetVars] | Prefix]
+	),
+	append(Prefix0,Pipeline,Pipeline0),
+	append(Pipeline0,Suffix,Pipeline1).
+
+%%
+lookup_next_unwind(Terminals,
+		Prefix, Suffix,
+		Context, Step) :-
+	% generate steps
+	(	lookup_next_array(Terminals, Prefix, Suffix,
+			Context, InnerVars, Step)
+	% unwind "next" field
+	;	Step=['$unwind',string('$next')]
+	% compute the intersection of scope
+	;	mng_scope_intersect('v_scope',
+			string('$next.v_scope.time.since'),
+			string('$next.v_scope.time.until'),
+			Context, Step)
+	% set variables from "next" field
+	;	set_next_vars(InnerVars, Step)
+	% remove "next" field again
+	;	Step=['$unset',string('next')]
+	).
+
+%%
+% FIXME: could also be that var is ground before, then no update needed
+%            but $set wouldn't hurt much
+% FIXME: I guess conditional set needed due to ignore
+%		['$cond',array([
+%			['$not', array([string(Pr_Value)]) ],
+%			string('null'),
+%			%string('$$REMOVE'),
+%			string(Pr_Value)
+%		])]) :-
+set_next_vars(InnerVars, ['$set', [Key,string(Val)]]) :--
+	member([Key,_], InnerVars),
+	atom_concat(['$next.',Key],Val).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries

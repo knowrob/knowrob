@@ -10,6 +10,7 @@
 %%%% query commands
 :- query_compiler:add_command(call,   [ask,tell]).
 :- query_compiler:add_command(once,   [ask,tell]).
+:- query_compiler:add_command(limit,  [ask,tell]).
 :- query_compiler:add_command(ignore, [ask,tell]).
 
 %%%% query expansion
@@ -30,13 +31,21 @@ query_compiler:step_expand(
 		ignore(Goal), Expanded, Context) :-
 	query_expand(((call(Goal), !) ; true), Expanded, Context).
 
+%%
 query_compiler:step_expand(
-		call(Goal, Scope),
-		call(Expanded, Scope),
+		limit(Count, Goal),
+		limit(Count, Expanded),
 		Context) :-
 	query_expand(Goal, Expanded, Context).
 
-%%%% query compilation
+%%
+query_compiler:step_var(limit(_Count, Terminals), Var) :-
+	member(X,Terminals),
+	query_compiler:step_var(X, Var).
+
+query_compiler:step_var(limit(Count, _Terminals), Var) :-
+	query_compiler:get_var([Count], Var).
+
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
 	member(X,Terminals),
 	query_compiler:step_var(X, Var).
@@ -46,6 +55,24 @@ query_compiler:step_var(call(_Terminals, Scope), Var) :-
 	member(X, [Since,Until]),
 	mng_strip(X, _Operator, _Type, Y),
 	query_compiler:step_var(Y, Var).
+
+%% limit(+Count, :Goal)
+% Limit the number of solutions.
+% True if Goal is true, returning at most Count solutions.
+%
+query_compiler:step_compile(
+		limit(Count, Terminals),
+		Context, Pipeline) :-
+	query_compiler:var_key_or_val(Count,Count0),
+	% appended to inner pipeline of lookup
+	Prefix=[],
+	Suffix=[['$limit',Count0]],
+	% create a lookup and append $limit to inner pipeline,
+	% then unwind next and assign variables to the toplevel document.
+	findall(Step,
+		query_compiler:lookup_next_unwind(Terminals,
+			Prefix, Suffix, Context, Step),
+		Pipeline).
 
 %%
 query_compiler:step_compile(

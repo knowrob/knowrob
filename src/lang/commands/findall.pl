@@ -29,64 +29,18 @@ query_compiler:step_var(
 %
 query_compiler:step_compile(
 		findall(Pattern, Terminals, List),
-		Context,
-		[ Lookup, SetList, UnsetNext ]) :-
+		Context, Pipeline) :-
 	% option(mode(ask), Context),
-	% perform findall, collect results in 'next' array
-	lookup_(Terminals, Context, Lookup),
-	% $set the list variable field from 'next' field
-	set_result_(Pattern, List, SetList),
-	% array at 'next' field not needed anymore
-	UnsetNext=['$unset', string('next')].
-
-%%
-lookup_(Terminals, Context, Lookup) :-
-	% get variables referred to before
-	option(outer_vars(OuterVars), Context),
-	% join collection with single document
-	mng_one_db(_DB, Coll),
-	% generate inner pipeline first,
-	% need to get access to variables for computing a join
-	query_compile(Terminals,
-		pipeline(Pipeline, InnerVars),
-		Context),
-	% pass variables from outer scope to inner if they are referred to
-	% in the inner scope.
-	% this is done through the *let* field of $lookup. e.g. when there is a
-	% var "v_fg8t4" in the outer scope, we generate: ['let', ['v_fg8t4', '$v_fg8t4']].
-	findall(Var,
-		(	member([Var,_], InnerVars),
-			member([Var,_], OuterVars)
+	findall(Step,
+		% perform findall, collect results in 'next' array
+		(	query_compiler:lookup_next_array(Terminals,
+				[], [], Context, _, Step)
+		% $set the list variable field from 'next' field
+		;	set_result_(Pattern, List, Step)
+		% array at 'next' field not needed anymore
+		;	Step=['$unset', string('next')]
 		),
-		SharedVars),
-	findall([X,string(X0)],
-		(	member(X, SharedVars),
-			atom_concat('$',X,X0)
-		),
-		LetDoc),
-	% first step: set all let variables so that they can be accessed
-	% without aggregate operators in Pipeline, e.g.
-	%     ['$set', ['v_fg8t4', '$$v_fg8t4']]
-	findall([Y,string(Y0)],
-		(	member(Y, SharedVars),
-			atom_concat('$$',Y,Y0)
-		),
-		SetVars),
-	%
-	(	SetVars=[]
-	->	Pipeline0=Pipeline
-	;	Pipeline0=[['$set', SetVars] | Pipeline]
-	),
-	% finally compose the lookup document
-	Lookup=['$lookup', [
-		['from', string(Coll)],
-		% create a field "next" with all matching documents
-		['as', string('next')],
-		% make fields from input document accessible in pipeline
-		['let', LetDoc],
-		% get matching documents
-		['pipeline', array(Pipeline0)]
-	]].
+		Pipeline).
 
 %%
 % findall $set receives a list of matching documents in "next" field.
@@ -102,20 +56,12 @@ set_result_(Pattern, List,
 	]) :-
 	query_compiler:var_key(List, List_Key),
 	term_variables(Pattern, PatternVars),
-	set_result_1(PatternVars, ElemProjection).
-
-%%
-% result is an array of documents that assigns a value to each
-% variable in findall pattern.
-% using array of documents is important to allow unwinding
-% the array later.
-%
-set_result_1(L, X) :-
+	%
 	findall([Key, string(Val)],
 		(	(	Key='v_scope', Val='$$this.v_scope' )
-		;	(	member(Var,L),
+		;	(	member(Var,PatternVars),
 				query_compiler:var_key(Var, Key),
 				atom_concat('$$this.', Key, Val)
 			)
 		),
-		X).
+		ElemProjection).

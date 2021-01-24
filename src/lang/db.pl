@@ -6,6 +6,8 @@
       remember/1,
       memorize/1,
       drop_graph/1,
+      get_unique_name(r,-),
+      is_unique_name(r),
       setup_collection/2
     ]).
 /** <module> Interface for dumping knowledge and restoring it.
@@ -92,6 +94,33 @@ drop_graph(Name) :-
 	mng_remove(DB, Coll, [
 		[graph, string(Name)]
 	]).
+
+%% is_unique_name(+Name) is semidet.
+%
+% True is Name is not the subject of any known fact.
+%
+is_unique_name(Name) :-
+	mng_get_db(DB, Coll, 'triples'),
+	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
+
+%% get_unique_name(+Prefix, -Name) is semidet.
+%
+% Generates a unique name with given prefix.
+%
+get_unique_name(Prefix, Name) :-
+	% generate 8 random alphabetic characters
+	randseq(8, 25, Seq_random),
+	maplist(plus(65), Seq_random, Alpha_random),
+	atom_codes(Sub, Alpha_random),
+	% TODO: what IRI prefix? Currently we re-use the one of the type.
+	%        but that seems not optimal. Probably best to
+	%        have this in query context, and some meaningful default.
+	atomic_list_concat([Prefix,'_',Sub], IRI),
+	% check if there is no triple with this identifier as subject or object yet
+	(	is_unique_name(IRI)
+	->	Name=IRI
+	;	unique_name(Prefix,Name)
+	).
 
 %%
 % Drop graphs on startup if requested through settings.

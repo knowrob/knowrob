@@ -8,16 +8,17 @@
 :- query_compiler:add_command(fail,  [ask,tell]).
 :- query_compiler:add_command('\\+', [ask]).
 :- query_compiler:add_command('!',   [ask,tell]).
-% TODO: switch to use ; everywhere
-:- query_compiler:add_command(facet, [ask]).
+:- query_compiler:add_command(';',   [ask]).
 
 
 %%
 % expose variables to the outside that appear in every facet.
 % NOTE: thus it is not possible to to get the value of variables that
 %       appear only in some facets.
+% TODO: reconsider this
 %
-query_compiler:step_var(facet([First|Rest]), Var) :-
+query_compiler:step_var(';'(A,B), Var) :-
+	semicolon_list(';'(A,B), [First|Rest]),
 	% make choicepoint for each variable in First
 	query_compiler:step_var(First, Var),
 	% only proceed if Var is a variable in each facet
@@ -53,13 +54,11 @@ query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
 		Expanded, Mode).
 
 %%
-% Each facet is a KnowRob language expression and needs to be expanded.
+% Expand each goal of a conjunction.
 %
-query_compiler:step_expand(facet([]), facet([]), _).
-query_compiler:step_expand(facet([X|Xs]), facet([Y|Ys]), Context) :-
-	query_expand(X,Y,Context),
-	query_compiler:step_expand(facet(Xs), facet(Ys), Context).
-
+query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Context) :-
+	query_expand(A0,A1,Context),
+	query_expand(B0,B1,Context).
 
 %% true
 %
@@ -89,18 +88,38 @@ query_compiler:step_compile('!', Context, Pipeline) :-
 	%             and does not proceed if cut+matching docs in previous step
 	fail.
 
-%%
-% facet(Facets) creates a disjunction of aggregate pipelines.
-% unfortunately mongo does not support this as of now.
-% so we proceed as follows:
+%% TODO: :Condition -> :Action
+% If-then and If-Then-Else.
+% The ->/2 construct commits to the choices made at its left-hand side,
+% destroying choice points created inside the clause (by ;/2),
+% or by goals called by this clause.
+%
+% FIXME: semantics is different when embedded in ;, because the other clause
+%            must be pruned by cut here
+%
+%'->'(If,Then) ?> call(If), !, call(Then).
+% TODO: support *-> operator, seems difficult
+%'*->'(If,Then) ?> call(If), call(Then).
+query_compiler:step_compile(';'('->'(A,B),C), Context, Pipeline) :-
+	fail.
+query_compiler:step_compile('->'(A,B), Context, Pipeline) :-
+	fail.
+query_compiler:step_compile('*->'(A,B), Context, Pipeline) :-
+	fail.
+
+%% :Goal1 ; :Goal2
+% The ‘or' predicate.
+% Unfortunately mongo does not support disjunction of aggregate pipelines.
+% So we proceed as follows:
 % 1. for each facet, generate findall/3 expression and store this into some array field
 % 2. then concat all these array fields into single array stored in field 'next'
 % 3. unwind the next array
 %
 % TODO: seems like a good usecase for map-reduce?
 %
-query_compiler:step_compile(
-		facet(Facets), Context, Pipeline) :-
+query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
+	% get disjunction as list
+	semicolon_list(';'(A,B), Facets),
 	% read options from context
 	% option(mode(ask), Context),
 	option(step_vars(StepVars), Context),
@@ -138,18 +157,18 @@ query_compiler:step_compile(
 		Pipeline
 	).
 
-%% TODO: :Condition -> :Action
-% If-then and If-Then-Else.
-% The ->/2 construct commits to the choices made at its left-hand side,
-% destroying choice points created inside the clause (by ;/2),
-% or by goals called by this clause.
+%%
+% each facet compiles into an aggregate pipeline without restrictions
+% the result is written into a list, which is accomplished by a findall command.
 %
-% FIXME: semantics is different when embedded in ;, because the other clause
-%            must be pruned by cut here
-%
-%'->'(If,Then) ?> call(If), !, call(Then).
-% TODO: support *-> operator, seems difficult
-%'*->'(If,Then) ?> call(If), call(Then).
+compile_facet_(StepVars, Facet, Pipeline, VarKey, Context) :-
+	% create findall pattern from step variables
+	maplist(nth0(1), StepVars, Pattern),
+	% compile the step
+	query_compiler:step_compile(
+		findall(Pattern, Facet, Var),
+		Context, Pipeline),
+	query_compiler:var_key(Var, VarKey).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -166,17 +185,4 @@ set_vars_(Vars, ['$set', SetVars]) :-
 		),
 		SetVars
 	).
-
-%%
-% each facet compiles into an aggregate pipeline without restrictions
-% the result is written into a list, which is accomplished by a findall command.
-%
-compile_facet_(StepVars, Facet, Pipeline, VarKey, Context) :-
-	% create findall pattern from step variables
-	maplist(nth0(1), StepVars, Pattern),
-	% compile the step
-	query_compiler:step_compile(
-		findall(Pattern, Facet, Var),
-		Context, Pipeline),
-	query_compiler:var_key(Var, VarKey).
 
