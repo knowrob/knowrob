@@ -4,7 +4,6 @@
 :- use_module('atoms').
 :- use_module('context').
 :- use_module('control').
-:- use_module('disjunction').
 :- use_module('equality').
 :- use_module('findall').
 :- use_module('intersect').
@@ -12,5 +11,6 @@
 :- use_module('match').
 :- use_module('meta').
 :- use_module('pragma').
+:- use_module('sgml').
 :- use_module('triple').
 :- use_module('typecheck').

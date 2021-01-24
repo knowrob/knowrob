@@ -65,8 +65,7 @@ query_compiler:step_compile(
 
 
 %%
-scope_intersect_(Context,
-		['$set', ['v_scope', Doc]]) :-
+scope_intersect_(Context, ['$set', ['v_scope', Doc]]) :-
 	% intersect old and new scope
 	TimeScope = ['time', [
 		['since', ['$max', array([string('$v_scope.time.since'),

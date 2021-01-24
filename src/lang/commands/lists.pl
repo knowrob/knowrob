@@ -4,48 +4,86 @@
 		[ mng_scope_intersect/5 ]).
 :- use_module(library('lang/compiler')).
 
+% TODO: handling of patterns is not nice at the moment.
+%          - it is limiting that elements in lists must all have same pattern
+%          - probably would need better handling of terms.
+
+%% query commands
+:- query_compiler:add_command(member,      [ask]).
+:- query_compiler:add_command(nth,         [ask]).
+:- query_compiler:add_command(length,      [ask]).
+:- query_compiler:add_command(list_to_set, [ask]).
 % TODO: support more list commands
-%:- query_compiler:add_command(memberchk).
-%:- query_compiler:add_command(sort).
-%:- query_compiler:add_command(reverse).
-%:- query_compiler:add_command(list_to_set).
-%:- query_compiler:add_command(max_list).
-%:- query_compiler:add_command(min_list).
-%:- query_compiler:add_command(sum_list).
-%:- query_compiler:add_command(length).
+%:- query_compiler:add_command(memberchk,   [ask]).
+%:- query_compiler:add_command(max_list,    [ask]).
+%:- query_compiler:add_command(min_list,    [ask]).
+%:- query_compiler:add_command(sum_list,    [ask]).
+%:- query_compiler:add_command(sort,        [ask]).
+%:- query_compiler:add_command(reverse,     [ask]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% nth/3
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% query variables
+query_compiler:step_var(length(A,B), Var)      :- query_compiler:get_var([A,B], Var).
+query_compiler:step_var(list_to_set(A,B), Var) :- query_compiler:get_var([A,B], Var).
 
-%% register query commands
-:- query_compiler:add_command(nth, [ask]).
+query_compiler:step_var(nth(List, N, Pattern), Var) :-
+	(	pattern_var_key(Pattern, Var)
+	;	query_compiler:get_var([List,N], Var)
+	).
 
-%%
-% nth/3 exposes variables of the pattern.
-%
-query_compiler:step_var(
-		nth(_Index, _List, Pattern),
-		[Key, Var]) :-
-	pattern_variables_(Pattern, Vars),
-	member([Key, Var], Vars).
+query_compiler:step_var(member(Pattern, List), Var) :-
+	(	pattern_var_key(Pattern, Var)
+	;	query_compiler:get_var([List], Var)
+	).
 
-%%
-% nth/3 retrieves an a document at given index
-% from some array field.
+%% length(+List, ?Length)
+% True if Length represents the number of elements in List.
 %
 query_compiler:step_compile(
-		nth(Index, List, _Elem),
-		Context,
+		length(List, Length), _,
 		Pipeline) :-
+	% FIXME: SWI Prolog allows var(List), then yields lists with variables
+	%          as elements. It is also allowed that both args are variables.
+	%          the SWIPL generates infinite number of lists.
+	query_compiler:var_key_or_val(List,List0),
+	query_compiler:var_key_or_val(Length,Length0),
+	findall(Step,
+		(	Step=['$set', ['t_size', ['$size', List0]]]
+		;	query_compiler:set_if_var(Length,    string('$t_size'), Step)
+		;	query_compiler:match_equals(Length0, string('$t_size'), Step)
+		;	Step=['$unset', string('t_size')]
+		),
+		Pipeline).
+
+%% list_to_set(+List, -Set)
+% Removes duplicates from a list.
+% List may *not* contain variables.
+%
+query_compiler:step_compile(
+		list_to_set(List, Set), _,
+		[Step]) :-
+	% FIXME: SWI Prolog allows ground(Set)
+	% FIXME: Set and List have same ordering in SWI Prolog, but mongo does not ensure this.
+	query_compiler:var_key_or_val(List,List0),
+	query_compiler:var_key(Set, SetKey),
+	Step=['$addToSet', [SetKey, ['$each', List0]]].
+
+
+%% member(?Elem, ?List)
+% True if Elem is a member of List. 
+%
+query_compiler:step_compile(
+		member(_Pattern, List),
+		Context, Pipeline) :-
 	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
-		% retrieve array element and store in 'next' field
-		(	Step=['$set',['next', ['$arrayElemAt',
-					[string(ListKey0),integer(Index)]]]]
+		% copy the list to the next field for unwinding
+		(	Step=['$set',['next', string(ListKey0)]]
+		% at this point 'next' field holds an array of matching documents
+		% that is unwinded here.
+		;	Step=['$unwind',string('$next')]
 		% compute the intersection of scope so far with scope of next document
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
@@ -59,40 +97,21 @@ query_compiler:step_compile(
 		Pipeline
 	).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% member/2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% register query commands
-:- query_compiler:add_command(member, [ask]).
-
 %%
-% member exposes variables of the pattern.
-%
-query_compiler:step_var(
-		member(Pattern, _List),
-		[Key, Var]) :-
-	pattern_variables_(Pattern, Vars),
-	member([Key, Var], Vars).
-
-%%
-% member(Pattern,List) unwinds a list variable holding documents
-% and exposes variables in Pattern to the rest of the pipeline.
+% nth/3 retrieves an a document at given index
+% from some array field.
 %
 query_compiler:step_compile(
-		member(_Pattern, List),
-		Context,
-		Pipeline) :-
+		nth(Index, List, _Elem),
+		Context, Pipeline) :-
 	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
-		% copy the list to the next field for unwinding
-		(	Step=['$set',['next', string(ListKey0)]]
-		% at this point 'next' field holds an array of matching documents
-		% that is unwinded here.
-		;	Step=['$unwind',string('$next')]
+		% retrieve array element and store in 'next' field
+		(	Step=['$set',['next', ['$arrayElemAt',
+					[string(ListKey0),integer(Index)]]]]
 		% compute the intersection of scope so far with scope of next document
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
@@ -126,6 +145,11 @@ set_vars_1([X|Xs], [Y|Ys], [Z|Zs]) :-
 	atom_concat('$next.', ListKey, Val),
 	Z=[Key,string(Val)],
 	set_vars_1(Xs, Ys, Zs).
+
+%%
+pattern_var_key(Pattern, [Key, Var]) :-
+	pattern_variables_(Pattern, Vars),
+	member([Key, Var], Vars).
 
 %%
 pattern_variables_(Pattern, Vars) :-

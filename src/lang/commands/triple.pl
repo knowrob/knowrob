@@ -104,7 +104,10 @@ query_compiler:step_var(
 %%
 triple_var_(Arg, [Key, Var]) :-
 	once((
+		% FIXME: left side of -> could also have var? e.g. `in(List)->Elem`
+		% TODO: sure that Var is assigned in pipeline? 
 		( nonvar(Arg), Arg=(_->Var) )
+		% FIXME: strip operator must be called?
 	;	mng_strip_type(Arg,_,Var)
 	)),
 	query_compiler:var_key(Var, Key).

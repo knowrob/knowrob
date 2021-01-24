@@ -7,32 +7,36 @@
 :- use_module(library('lang/compiler')).
 :- use_module(library('lang/query')).
 
-%%
+%%%% query commands
+:- query_compiler:add_command(call,   [ask,tell]).
+:- query_compiler:add_command(once,   [ask,tell]).
+:- query_compiler:add_command(ignore, [ask,tell]).
+
+%%%% query expansion
+
+%% once(:Goal)
 % Make a possibly nondet goal semidet, i.e., succeed at most once.
-%
 % TODO: triple has special handling for this (modifier), remove it?
 %
-once(Goal) ?+> call(Goal), !.
+query_compiler:step_expand(
+		once(Goal), Expanded, Context) :-
+	query_expand((call(Goal), !), Expanded, Context).
 
-%%
-% Make a possibly nondet goal semidet, i.e., succeed at most once.
-%
+%% ignore(:Goal)
+% Calls Goal as once/1, but succeeds, regardless of whether Goal succeeded or not.
 % TODO: triple has special handling for this (modifier), remove it?
 %
-ignore(Goal)  ?+> call(Goal), !.
-ignore(_Goal) ?+> true.
+query_compiler:step_expand(
+		ignore(Goal), Expanded, Context) :-
+	query_expand(((call(Goal), !) ; true), Expanded, Context).
 
-%% query commands
-:- query_compiler:add_command(call, [ask,tell]).
-
-%% query expansion
 query_compiler:step_expand(
 		call(Goal, Scope),
 		call(Expanded, Scope),
 		Context) :-
 	query_expand(Goal, Expanded, Context).
 
-%% query compilation
+%%%% query compilation
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
 	member(X,Terminals),
 	query_compiler:step_var(X, Var).

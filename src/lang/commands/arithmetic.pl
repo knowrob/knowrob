@@ -49,8 +49,10 @@ expression_var(Exp, Key, Var) :-
 
 %% $set var to evaluated number
 assignment(Var, Exp, ['$set', [Varkey, Doc]]) :-
+	% FIXME: SWI Prolog allows to write e.g. `7 is 7`,
+	%           so we need to expand into $set + $match(=:=) pipeline
 	query_compiler:var_key(Var, Varkey),
-	expression(Exp, Doc).
+	expression(Exp,Doc).
 
 %% compare two expressions
 comparison(Operator, Exp1, Exp2,

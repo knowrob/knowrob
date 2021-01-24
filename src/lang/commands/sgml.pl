@@ -9,8 +9,7 @@
 query_compiler:step_var(
 		iri_xml_namespace(IRI,Namespace,Localname),
 		Var) :-
-	% TODO: move atom_var predicate to some common place
-	lang_atoms:atom_var([IRI,Namespace,Localname],Var).
+	query_compiler:get_var([IRI,Namespace,Localname],Var).
 
 %% query compilation
 query_compiler:step_compile(

@@ -399,8 +399,36 @@ strip_modifier(transitive(X),transitive,X).
 strip_modifier(reflexive(X),reflexive,X).
 
 %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+match_equals(X, Exp, ['$match', ['$eq', array([X,Exp])]]).
+
+%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+% Conditional $set command for ungrounded vars.
+%
+set_if_var(X, Exp,
+		['$set', [Key, ['$cond', array([
+			% if X is still a variable
+			['$not', array([KeyExp])],
+			% evaluate the expression and set new value
+			Exp,
+			% else value remains the same
+			KeyExp
+		])]]]) :-
+	query_compiler:var_key(X, Key),
+	atom_concat('$',Key,KeyExp).
+
+%%
+get_var(Term, [Key,Var]) :-
+	term_variables(Term,Vars),
+	member(Var,Vars),
+	var_key(Var,Key).
 
 %%
 % Map a Prolog variable to the key that used to
