@@ -1,6 +1,5 @@
 :- module(lang_triple,
-		[ mng_triple_doc(t,-,t)
-		]).
+		[ mng_triple_doc(t,-,t) ]).
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1 ]).
@@ -20,6 +19,9 @@
 
 :- rdf_meta(triple_tell(t,t,t,t,t,-)).
 :- rdf_meta(taxonomical_property(r,-,-)).
+
+% TODO: include_parents modifier
+% [OWL.pl] subclass_of needs include_parents (o*) values
 
 %%
 % register the "annotations" collection.

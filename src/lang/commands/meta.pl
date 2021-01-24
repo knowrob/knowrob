@@ -1,24 +1,38 @@
-:- module(lang_call,
-    [ match_operator/2
-    ]).
+:- module(meta_commands, []).
 
 :- use_module(library('lang/scope'),
 		[ time_scope/3 ]).
 :- use_module(library('db/mongo/client'),
 		[ mng_strip/4 ]).
 :- use_module(library('lang/compiler')).
-
-%% register query commands
-:- query_compiler:add_command(call, [ask,tell]).
+:- use_module(library('lang/query')).
 
 %%
+% Make a possibly nondet goal semidet, i.e., succeed at most once.
+%
+% TODO: triple has special handling for this (modifier), remove it?
+%
+once(Goal) ?+> call(Goal), !.
+
+%%
+% Make a possibly nondet goal semidet, i.e., succeed at most once.
+%
+% TODO: triple has special handling for this (modifier), remove it?
+%
+ignore(Goal)  ?+> call(Goal), !.
+ignore(_Goal) ?+> true.
+
+%% query commands
+:- query_compiler:add_command(call, [ask,tell]).
+
+%% query expansion
 query_compiler:step_expand(
 		call(Goal, Scope),
 		call(Expanded, Scope),
 		Context) :-
 	query_expand(Goal, Expanded, Context).
 
-%%
+%% query compilation
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
 	member(X,Terminals),
 	query_compiler:step_var(X, Var).
@@ -44,3 +58,4 @@ query_compiler:step_compile(
 	% finally compile called goal
 	% and replace the scope in compile context
 	query_compile(Terminals, Pipeline, Context1).
+

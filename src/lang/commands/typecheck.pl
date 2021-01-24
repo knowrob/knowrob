@@ -1,4 +1,4 @@
-:- module(lang_typecheck, []).
+:- module(typecheck_commands, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -20,11 +20,9 @@ query_compiler:step_var(is_list(X), [V,X]) :- query_compiler:var_key(X, V).
 % ground(X) holds iff a previous step has assigned
 % a value to the variable key.
 %
-query_compiler:step_compile(
-		ground(A0), _Context, []) :-
+query_compiler:step_compile(ground(A0), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0),
-	!.
+	ground(A0), !.
 
 query_compiler:step_compile(
 		ground(A0), _Context,
@@ -37,11 +35,9 @@ query_compiler:step_compile(
 % var(X) holds iff no previous step has assigned
 % a value to the variable key.
 %
-query_compiler:step_compile(
-		var(A0), _Context, []) :-
+query_compiler:step_compile(var(A0), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0),
-	!,
+	ground(A0), !,
 	fail.
 
 query_compiler:step_compile(
@@ -56,8 +52,7 @@ query_compiler:step_compile(
 %
 query_compiler:step_compile(number(A0), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0),
-	!,
+	ground(A0), !,
 	number(A0).
 	
 query_compiler:step_compile(
@@ -87,8 +82,7 @@ query_compiler:step_compile(
 %%
 match_type_(Arg, Goal, _Type, []) :-
 	% argument is grounded already compile-time
-	ground(Arg),
-	!,
+	ground(Arg), !,
 	call(Goal, [Arg]).
 
 match_type_(Arg, _Goal, Type, 

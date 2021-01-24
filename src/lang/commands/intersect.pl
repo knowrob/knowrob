@@ -1,6 +1,5 @@
 :- module(lang_intersect,
-		[ mng_scope_intersect/5
-		]).
+		[ mng_scope_intersect/5 ]).
 
 :- use_module(library('lang/scope'),
 		[ time_scope/3 ]).

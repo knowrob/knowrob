@@ -1,6 +1,4 @@
-:- module(lang_pragma,
-    [ match_operator/2
-    ]).
+:- module(lang_pragma, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -12,6 +10,5 @@
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the call context.
 %
-query_compiler:step_compile(
-		pragma(Goal), _Context, []) :-
+query_compiler:step_compile(pragma(Goal), _, []) :-
 	call(Goal).

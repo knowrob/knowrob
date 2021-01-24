@@ -1,4 +1,4 @@
-:- module(lang_lists, []).
+:- module(list_commands, []).
 
 :- use_module(library('lang/scope'),
 		[ mng_scope_intersect/5 ]).

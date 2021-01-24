@@ -1,5 +1,4 @@
-:- module(lang_match,
-    []).
+:- module(lang_match, []).
 
 :- use_module(library('db/mongo/client'),
 		[ mng_operator/2 ]).

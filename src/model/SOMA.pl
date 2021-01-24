@@ -71,6 +71,9 @@
 @license BSD
 */
 
+% TODO: how to handle tell new quality values if quality
+%		does not exist yet? --> should be done via a special predicate
+
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_equal/2 ]).
 :- use_module('RDFS',

@@ -1,4 +1,4 @@
-:- module(lang_context, []).
+:- module(context_commands, []).
 
 :- use_module(library('lang/compiler')).
 

@@ -20,12 +20,6 @@ into aggregate pipelines that can be processed by mongo DB.
 %		- how to handle transitive chains i.e. transitive(p1 o ... o pn)?
 %		- how to handle more complex structures?
 
-% TODO: cut operator
-%     -- 1. within a clause `cut` wraps terms before
-%             in a lookup with $limit
-%     -- 2. disjunctions keep track of cut in disjuncts
-%             and does not proceed if cut+matching docs in previous step
-
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1 ]).
 :- use_module(library('db/mongo/client')).

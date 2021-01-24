@@ -30,7 +30,7 @@ is_ontop_of(Top, Bottom) ?>
 	% FIXME: hardcoded map
 	is_at(Top,    [map, [_,_,TZ], _]),
 	is_at(Bottom, [map, [_,_,BZ], _]),
-	Top \= Bottom,
+	Top \== Bottom,
 	% the criterion is if the difference between them is less than epsilon=5cm
 	Dist is TZ-BZ,
 	Dist >= 0.0,
@@ -52,7 +52,7 @@ is_above_of(Top, Bottom) ?>
 	% FIXME: hardcoded map
 	is_at(Top,    [map, [_,_,TZ], _]),
 	is_at(Bottom, [map, [_,_,BZ], _]),
-	Top \= Bottom,
+	Top \== Bottom,
 	<( BZ, TZ).
 
 %% is_below_of(?Bottom, ?Top) is nondet.
@@ -85,7 +85,7 @@ is_centered_at(Inner, Outer) ?>
 	% FIXME: hardcoded map
 	is_at(Inner, [map, [IX,IY,IZ], _]),
 	is_at(Outer, [map, [OX,OY,OZ], _]),
-	Inner \= Outer,
+	Inner \== Outer,
 	% less than 20cm x/y/z diff
 	=<( abs( IX - OX), 0.20),
 	=<( abs( IY - OY), 0.20),
