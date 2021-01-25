@@ -1,9 +1,27 @@
 :- module(lang_sgml, []).
 
 :- use_module(library('lang/compiler')).
+:- use_module(library('lang/db')
+		[ get_unique_name/2 ]).
 
 %% query commands
 :- query_compiler:add_command(iri_xml_namespace, [ask]).
+:- query_compiler:add_command(new_iri,           [tell]).
+
+
+%%
+% tell queries can use new_iri/1 and new_iri/2 to generate
+% IRI's that have not been used so far.
+%
+% FIXME: it could happen that if in one compilation multiple new_iri's
+%         are generated that both have the same IRI. very unlikely, but still...
+%
+query_compiler:step_expand(new_iri(IRI),
+		pragma(get_unique_name(dul:'Entity',IRI)), _).
+
+query_compiler:step_expand(new_iri(IRI,Type),
+		pragma(get_unique_name(Type,IRI)), _).
+
 
 %% query variables
 query_compiler:step_var(
