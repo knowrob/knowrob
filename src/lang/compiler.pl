@@ -287,7 +287,7 @@ expand_term_1(Goal, Expanded, Mode) :-
 
 %%
 % Each conjunction with cut operator [X0,...,Xn,!|_]
-% is rewritten as [call([X0,....,Xn,!]|_].
+% is rewritten as [limit(1,[X0,....,Xn])|_].
 %
 expand_cut([],[]) :- !.
 expand_cut(Terms,Expanded) :-
@@ -298,8 +298,7 @@ expand_cut(Terms,Expanded) :-
 	% that needs to be applied to goals in Taken
 	;	(	Remaining=[!|WithoutCut],
 			expand_cut(WithoutCut, Remaining_Expanded),
-			append(Taken, ['!'], PrunedGoal),
-			Expanded=[call(PrunedGoal)|Remaining_Expanded]
+			Expanded=[limit(1,Taken)|Remaining_Expanded]
 		)
 	).
 

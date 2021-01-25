@@ -106,11 +106,12 @@ query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]]).
 % appear in a term that is subject to meta-calling (call/1) only affect choice points
 % created by the meta-called term.
 %
-% To realize cut, every clause [X0,...,Xn,!|_] is rewritten as [call([X0,....,Xn,!]|_]
+% To realize cut, every clause [X0,...,Xn,!|_] is rewritten as [limit(1, [X0,....,Xn])|_]
 % NOTE: the rewriting is currently a special case in compiler.pl and cannot be handled
 %         through existing interfaces for commands in this file.
+% NOTE: but disjunction below handles cut in disunction goals
 %
-query_compiler:step_compile('!', _, [['$limit',int(1)]]).
+%query_compiler:step_compile('!', _, [['$limit',int(1)]]).
 
 %% :Goal1 ; :Goal2
 % The ‘or' predicate.

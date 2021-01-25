@@ -6,29 +6,42 @@
 
 %% register query commands
 :- query_compiler:add_command(findall, [ask]).
+% TODO: support bagof (then, setof := bagof o sort)
+%:- query_compiler:add_command(bagof,   [ask]).
+%:- query_compiler:add_command(setof,   [ask]).
 
 %%
 query_compiler:step_expand(
-		findall(Pattern, Goal, List),
-		findall(Pattern, Expanded, List),
+		findall(Template, Goal, List),
+		findall(Template, Expanded, List),
 		Context) :-
 	query_expand(Goal, Expanded, Context).
+
+%% setof(+Template, +Goal, -Set)
+% Equivalent to bagof/3, but sorts the result using sort/2 to
+% get a sorted list of alternatives without duplicates.
+%
+%query_compiler:step_expand(
+%		setof(Template, Goal, Set),
+%		[ bagof(Template, Expanded, List), sort(List, Set) ],
+%		Context) :-
+%	query_expand(Goal, Expanded, Context).
 
 %%
 % findall only exposes the List variable to the outside.
 %
 query_compiler:step_var(
-		findall(Pattern, _, List),
-		[List_var, list(List,Pattern)]) :-
+		findall(Template, _, List),
+		[List_var, list(List,Template)]) :-
 	query_compiler:var_key(List, List_var).
 
-%%
-% findall(Pattern,Terminals,List) builds a list from matching
-% documents. Pattern is a variable or list with variables
-% referred to in Terminals list.
+%% findall(+Template, :Goal, -Bag)
+% Create a list of the instantiations Template gets successively on
+% backtracking over Goal and unify the result with Bag.
+% Succeeds with an empty list if Goal has no solutions.
 %
 query_compiler:step_compile(
-		findall(Pattern, Terminals, List),
+		findall(Template, Terminals, List),
 		Context, Pipeline) :-
 	% option(mode(ask), Context),
 	findall(Step,
@@ -36,7 +49,7 @@ query_compiler:step_compile(
 		(	query_compiler:lookup_array('next',Terminals,
 				[], [], Context, _, Step)
 		% $set the list variable field from 'next' field
-		;	set_result(Pattern, List, Step)
+		;	set_result(Template, List, Step)
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', string('next')]
 		),
@@ -45,9 +58,9 @@ query_compiler:step_compile(
 %%
 % findall $set receives a list of matching documents in "next" field.
 % $set uses additional $map operation to only keep the fields of
-% variables referred to in Pattern.
+% variables referred to in Template.
 %
-set_result(Pattern, List,
+set_result(Template, List,
 	['$set',
 		[List_Key, ['$map',[
 			['input',string('$next')],
@@ -55,7 +68,7 @@ set_result(Pattern, List,
 		]]]
 	]) :-
 	query_compiler:var_key(List, List_Key),
-	term_variables(Pattern, PatternVars),
+	term_variables(Template, PatternVars),
 	%
 	findall([Key, string(Val)],
 		(	(	Key='v_scope', Val='$$this.v_scope' )

@@ -32,8 +32,8 @@ query_compiler:step_var(nth(List, N, Pattern), Var) :-
 	;	query_compiler:get_var([List,N], Var)
 	).
 
-query_compiler:step_var(member(Pattern, List), Var) :-
-	(	pattern_var_key(Pattern, Var)
+query_compiler:step_var(member(Elem, List), Var) :-
+	(	pattern_var_key(Elem, Var)
 	;	query_compiler:get_var([List], Var)
 	).
 
@@ -82,7 +82,7 @@ query_compiler:step_compile(
 % True if Elem is a member of List. 
 %
 query_compiler:step_compile(
-		member(_Pattern, List),
+		member(_Elem, List),
 		Context, Pipeline) :-
 	% option(mode(ask), Context),
 	query_compiler:var_key(List, ListKey),
@@ -110,6 +110,7 @@ query_compiler:step_compile(
 %%
 % nth/3 retrieves an a document at given index
 % from some array field.
+% TODO: harmonize this with SWIPL nth predicates
 %
 query_compiler:step_compile(
 		nth(Index, List, _Elem),

@@ -99,6 +99,7 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 		;	set_triple_vars(S, P, O, Step)
 		% remove next field again
 		;	Step=['$unset',string('next')]
+		;	Step=['$unset',string('start')]
 		),
 		Pipeline
 	).
@@ -283,7 +284,6 @@ transitivity(Context, Step) :-
 	;	Step=['$set', ['start', string('$next')]]
 	;	Step=['$set', ['next', string('$paths')]]
 	% remove "paths" field again
-	% TODO: "start" field ios nowhere removed
 	;	Step=['$unset', string('paths')]
 	).
 
