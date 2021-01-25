@@ -340,12 +340,12 @@ compile_2(Term, Doc, V0->V1, Context) :-
 	(	bagof(Vs, step_var(Term, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
+	list_to_set(StepVars, StepVars_unique),
 	% merge StepVars with variables in previous steps (V0)
-	append(V0, StepVars, Vars_new),
-	list_to_set(Vars_new, V1),
+	append(V0, StepVars_unique, V1),
 	% compile JSON document for this step
 	once(step_compile(Term, [
-			step_vars(StepVars),
+			step_vars(StepVars_unique),
 			outer_vars(V0) |
 			Context
 	], Doc)).
@@ -389,6 +389,8 @@ lookup_let_doc(InnerVars, OuterVars, LetDoc) :-
 
 %%
 lookup_set_vars(InnerVars, OuterVars, SetVars) :-
+	% NOTE: at the moment, let doc above ensures all vars are ground.
+	%       if that changes a $cond command must be added here.
 	findall([Y,string(Y0)],
 		(	member([Y,_], InnerVars),
 			member([Y,_], OuterVars),
@@ -400,12 +402,12 @@ lookup_set_vars(InnerVars, OuterVars, SetVars) :-
 % find all records matching a query and store them
 % in an array.
 %
-lookup_next_array(Terminals,
+lookup_array(ArrayKey, Terminals,
 		Prefix, Suffix,
 		Context, InnerVars,
 		['$lookup', [
 			['from', string(Coll)],
-			['as', string('next')],
+			['as', string(ArrayKey)],
 			['let', LetDoc],
 			['pipeline', array(Pipeline1)]
 		]]) :-
@@ -435,7 +437,7 @@ lookup_next_unwind(Terminals,
 		Prefix, Suffix,
 		Context, Step) :-
 	% generate steps
-	(	lookup_next_array(Terminals, Prefix, Suffix,
+	(	lookup_array('next', Terminals, Prefix, Suffix,
 			Context, InnerVars, Step)
 	% unwind "next" field
 	;	Step=['$unwind',string('$next')]
@@ -451,22 +453,38 @@ lookup_next_unwind(Terminals,
 	).
 
 %%
-% FIXME: could also be that var is ground before, then no update needed
-%            but $set wouldn't hurt much
-% FIXME: I guess conditional set needed due to ignore
-%		['$cond',array([
-%			['$not', array([string(Pr_Value)]) ],
-%			string('null'),
-%			%string('$$REMOVE'),
-%			string(Pr_Value)
-%		])]) :-
-set_next_vars(InnerVars, ['$set', [Key,string(Val)]]) :--
+% Move ground variables in "next" document to the
+% document root.
+% However, not all variables referred to in the goal may
+% have a grounding, so we need to make a conditional $set here.
+% FIXME: unfortunately using $$REMOVE to remove the field entirely
+%        does currently not work with lookup_let_doc/2 because it requires
+%        all variables referred to before to be ground in the document,
+%        so we fallback to value "null" here which might cause several bugs
+%        when the variable is referred to later again.
+%
+set_next_vars(InnerVars, ['$set', [Key,
+		['$cond',array([
+			['$not', array([string(Val)])],
+			%string('$$REMOVE'),
+			string('null'), % HACK
+			string(Val)
+		])]]]) :-
 	member([Key,_], InnerVars),
 	atom_concat(['$next.',Key],Val).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+% since ',' is expanded into lists by the compiler,
+% a step_var clause for lists must be provided.
+%
+step_var(List,Var) :-
+	is_list(List),!,
+	member(X,List),
+	step_var(X,Var).
 
 %%
 % Conditional $set command for ungrounded vars.

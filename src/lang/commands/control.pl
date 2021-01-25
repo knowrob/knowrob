@@ -32,10 +32,10 @@ query_compiler:step_expand(not(Goal), Expanded, Mode) :-
 % the backslash (\) is normally used to indicate negation in Prolog).
 %
 query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
-	% \+ is true iff findall yields an empty list
-	query_expand(
-		[ findall([], once(Goal), L), length(L,0) ],
-		Expanded, Mode).
+	% another way to write it:
+	%Rewritten=((call(Goal),!,fail) ; true),
+	Rewritten=(findall([], once(Goal), L), length(L,0)),
+	query_expand(Rewritten, Expanded, Mode).
 
 %% :Condition -> :Action
 % If-then and If-Then-Else.
@@ -79,20 +79,11 @@ query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Context) :-
 	query_expand(A0,A1,Context),
 	query_expand(B0,B1,Context).
 
+
 %%
-% expose variables to the outside that appear in every facet.
-% NOTE: thus it is not possible to to get the value of variables that
-%       appear only in some facets.
-% TODO: reconsider this
-%
 query_compiler:step_var(';'(A,B), Var) :-
-	semicolon_list(';'(A,B), [First|Rest]),
-	% make choicepoint for each variable in First
-	query_compiler:step_var(First, Var),
-	% only proceed if Var is a variable in each facet
-	forall(
-		member(Y, Rest),
-		query_compiler:step_var(Y, Var)
+	(	query_compiler:step_var(A, Var)
+	;	query_compiler:step_var(B, Var)
 	).
 
 %% true
@@ -125,11 +116,9 @@ query_compiler:step_compile('!', _, [['$limit',int(1)]]).
 % The ‘or' predicate.
 % Unfortunately mongo does not support disjunction of aggregate pipelines.
 % So we proceed as follows:
-% 1. for each facet, generate findall/3 expression and store this into some array field
+% 1. for each goal, use $lookup to store results into some array field
 % 2. then concat all these array fields into single array stored in field 'next'
 % 3. unwind the next array
-%
-% TODO: seems like a good usecase for map-reduce?
 %
 query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% get disjunction as list
@@ -158,8 +147,8 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 		;	Stage=['$unset', array(VarKeys)]
 		% unwind all solutions from disjunction
 		;	Stage=['$unwind', string('$next')]
-		% finally project a facet result
-		;	set_vars_(StepVars, Stage)
+		% finally project the result of a disjunction goal
+		;	query_compiler:set_next_vars(StepVars, Stage)
 		% and unset the next field
 		;	Stage=['$unset', string('next')]
 		),
@@ -167,17 +156,12 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	).
 
 %%
-% each goal in a disjunction compiles into a lookup expression,
-% then results of different goals are merged together.
+% each goal in a disjunction compiles into a lookup expression.
 %
 compile_disjunction([], _, _, []) :- !.
 compile_disjunction(
 		[Goal|Xs], CutVars, Context,
 		[[Stage,Key]|Ys]) :-
-	% create findall pattern from step variables
-	% TODO: reconsider this
-	option(step_vars(StepVars), Context),
-	maplist(nth0(1), StepVars, Pattern),
 	% ensure goal is a list
 	(	is_list(Goal) -> Goal0=Goal
 	;	comma_list(Goal, Goal0)
@@ -188,38 +172,26 @@ compile_disjunction(
 	findall(match(size(CutVar,int(0))),
 		member([_, CutVar],CutVars),
 		CutMatches),
-	append(CutMatches, Goal0, GoalExtended),
 	% since step_var does not list CutVars, we need to add them here to context
-	% such that they will be accessible in findall's lookup
+	% such that they will be accessible in lookup
 	select(outer_vars(OuterVars), Context, Context0),
 	append(OuterVars, CutVars, OuterVars0),
 	% compile the step
-	query_compiler:step_compile(
-		findall(Pattern, GoalExtended, Var),
-		[outer_vars(OuterVars0)|Context0],
-		Stage),
 	query_compiler:var_key(Var, Key),
-	%
+	query_compiler:lookup_array(Key, Goal0, CutMatches, [],
+		[outer_vars(OuterVars0)|Context0], _,
+		Stage),
+	% check if this goal has a cut, if so extend CutVars list
 	(	has_cut(Goal) -> CutVars0=[[Key,Var]|CutVars]
 	;	CutVars0=CutVars
 	),
+	% continue with rest
 	compile_disjunction(Xs, CutVars0, Context, Ys).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% HELPER
 %%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-% copies variable assignments from nested field "next" to root of document
-%
-set_vars_(Vars, ['$set', SetVars]) :-
-	findall([Key,Val],
-		(	member([Key,_],Vars),
-			atom_concat('$next.', Key, Val)
-		),
-		SetVars
-	).
 
 %%
 has_cut('!') :- !.

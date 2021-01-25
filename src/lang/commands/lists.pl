@@ -170,7 +170,7 @@ set_vars_(Context, ListKey, ['$set', SetVars]) :-
 %%
 set_vars_1([], [], []) :- !.
 set_vars_1([X|Xs], [Y|Ys], [Z|Zs]) :-
-	% TODO: might be redundant?
+	% FIXME: need condition $set here? i.e. because a variable is not grounded
 	X=[Key,_],
 	Y=[ListKey,_],
 	atom_concat('$next.', ListKey, Val),

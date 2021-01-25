@@ -32,11 +32,11 @@ query_compiler:step_compile(
 		Context, Pipeline) :-
 	% option(mode(ask), Context),
 	findall(Step,
-		% perform findall, collect results in 'next' array
-		(	query_compiler:lookup_next_array(Terminals,
+		% perform lookup, collect results in 'next' array
+		(	query_compiler:lookup_array('next',Terminals,
 				[], [], Context, _, Step)
 		% $set the list variable field from 'next' field
-		;	set_result_(Pattern, List, Step)
+		;	set_result(Pattern, List, Step)
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', string('next')]
 		),
@@ -47,7 +47,7 @@ query_compiler:step_compile(
 % $set uses additional $map operation to only keep the fields of
 % variables referred to in Pattern.
 %
-set_result_(Pattern, List,
+set_result(Pattern, List,
 	['$set',
 		[List_Key, ['$map',[
 			['input',string('$next')],
@@ -60,6 +60,8 @@ set_result_(Pattern, List,
 	findall([Key, string(Val)],
 		(	(	Key='v_scope', Val='$$this.v_scope' )
 		;	(	member(Var,PatternVars),
+				% FIXME: could be that Var is not ground, thus we need conditional
+				%           set, then set to fallback value null or $$REMOVE field
 				query_compiler:var_key(Var, Key),
 				atom_concat('$$this.', Key, Val)
 			)
