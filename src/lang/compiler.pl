@@ -221,12 +221,26 @@ query_assert1(Head, Body, Context) :-
 % @Mode 'ask' or 'tell'
 %
 query_expand(Goal, Expanded, Mode) :-
+	\+ is_list(Goal), !,
 	comma_list(Goal, Terms),
+	query_expand(Terms, Expanded, Mode).
+
+query_expand(Terms, Expanded, Mode) :-
+	is_list(Terms), !,
 	catch(
-		expand_term_0(Terms, Expanded, Mode),
+		expand_term_0(Terms, Expanded0, Mode),
 		Exc,
-		log_error_and_fail(lang(Exc, Goal))
-	).
+		log_error_and_fail(lang(Exc, Terms))
+	),
+	% Handle cut after term expansion.
+	% It is important that this is done _after_ expansion because
+	% the cut within the call would yield an infinite recursion
+	% otherwhise.
+	% TODO: it is not so nice doing it here. would be better if it could be
+	%       done in control.pl where cut operator is implemented but current
+	%       interfaces don't allow to do the following operation in control.pl.
+	%		(without special handling of ',' it could be done, I think)
+	expand_cut(Expanded0, Expanded).
 
 %%
 expand_term_0([], [], _Mode) :- !.
@@ -235,11 +249,7 @@ expand_term_0([X|Xs], Expanded, Mode) :-
 	expand_term_0(Xs, Xs_expanded, Mode),
 	append(X_expanded, Xs_expanded, Expanded).
 
-%% handle goals wrapped in call.
-expand_term_1(call(Goal), Expanded, Mode) :-
-	query_expand(Goal, Expanded, Mode).
-
-%% handle goals wrapped in ask. this is especially used for conditional tel clauses.
+%% handle goals wrapped in ask. this can be used for conditional tell clauses.
 expand_term_1(ask(Goal), Expanded, _Mode) :-
 	query_expand(Goal, Expanded, ask).
 
@@ -275,6 +285,25 @@ expand_term_1(Goal, Expanded, Mode) :-
 	% wrap different clauses into ';'
 	semicolon_list(Expanded, TerminalsList).
 
+%%
+% Each conjunction with cut operator [X0,...,Xn,!|_]
+% is rewritten as [call([X0,....,Xn,!]|_].
+%
+expand_cut([],[]) :- !.
+expand_cut(Terms,Expanded) :-
+	take_until_cut(Terms, Taken, Remaining),
+	% no cut if Remaining=[]
+	(	Remaining=[] -> Expanded=Terms
+	% else the first element in Remaining must be a cut
+	% that needs to be applied to goals in Taken
+	;	(	Remaining=[!|WithoutCut],
+			expand_cut(WithoutCut, Remaining_Expanded),
+			append(Taken, ['!'], PrunedGoal),
+			Expanded=[call(PrunedGoal)|Remaining_Expanded]
+		)
+	).
+
+
 %% query_compile(+Terminals, -Pipeline, +Context) is semidet.
 %
 % Compile an aggregate pipeline given a list of terminal symbols
@@ -294,9 +323,8 @@ query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 %%
 compile_0(Terminals, Doc, Vars, Context) :-
 	compile_1(Terminals, Doc0, Vars, Context),
-	(	memberchk(ask, Context)
-	->	compile_ask_(Doc0, Doc)
-	;	compile_tell_(Doc0, Doc)
+	(	memberchk(ask, Context) -> true
+	;	compile_tell(Doc0, Doc)
 	).
 
 %%
@@ -304,14 +332,12 @@ compile_1([], [], V0->V0, _) :- !.
 compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
 	compile_2(X,  Pipeline_x,  V0->V1, Context),
 	compile_1(Xs, Pipeline_xs, V1->Vn, Context),
-	% TODO: avoid append
 	append(Pipeline_x, Pipeline_xs, Pipeline).
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_2(Term, Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
-	(	bagof(Vs, step_var(Term, Vs), StepVars)
-	->	true
+	(	bagof(Vs, step_var(Term, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
 	% merge StepVars with variables in previous steps (V0)
@@ -325,11 +351,7 @@ compile_2(Term, Doc, V0->V1, Context) :-
 	], Doc)).
 
 %%
-compile_ask_(Doc, Doc) :-
-	!.
-
-%%
-compile_tell_(Doc0, Doc1) :-
+compile_tell(Doc0, Doc1) :-
 	% tell merges into triples DB
 	mng_get_db(_DB, Coll, 'triples'),
 	% append some steps to Doc0
@@ -513,4 +535,14 @@ get_constant_(true,  bool(true)).
 get_constant_(false, bool(false)).
 get_constant_(Value, string(Value)) :- atom(Value).
 get_constant_(Value, string(Value)) :- string(Value).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% helper
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+take_until_cut([],[],[]) :- !.
+take_until_cut(['!'|Xs],[],['!'|Xs]) :- !.
+take_until_cut([X|Xs],[X|Ys],Remaining) :-
+	take_until_cut(Xs,Ys,Remaining).
 

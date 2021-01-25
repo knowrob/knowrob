@@ -14,22 +14,23 @@
 :- query_compiler:add_command(ignore, [ask,tell]).
 
 %%%% query expansion
+	
 
 %% once(:Goal)
 % Make a possibly nondet goal semidet, i.e., succeed at most once.
-% TODO: triple has special handling for this (modifier), remove it?
 %
 query_compiler:step_expand(
 		once(Goal), Expanded, Context) :-
-	query_expand((call(Goal), !), Expanded, Context).
+	append_cut(Goal, WithCut),
+	query_expand(WithCut, Expanded, Context).
 
 %% ignore(:Goal)
 % Calls Goal as once/1, but succeeds, regardless of whether Goal succeeded or not.
-% TODO: triple has special handling for this (modifier), remove it?
 %
 query_compiler:step_expand(
 		ignore(Goal), Expanded, Context) :-
-	query_expand(((call(Goal), !) ; true), Expanded, Context).
+	append_cut(Goal, WithCut),
+	query_expand((WithCut ; true), Expanded, Context).
 
 %%
 query_compiler:step_expand(
@@ -39,12 +40,27 @@ query_compiler:step_expand(
 	query_expand(Goal, Expanded, Context).
 
 %%
+query_compiler:step_expand(
+		call(Goal),
+		call(Expanded), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(
+		call(Goal,Args),
+		call(Expanded,Args), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+%%
 query_compiler:step_var(limit(_Count, Terminals), Var) :-
 	member(X,Terminals),
 	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(limit(Count, _Terminals), Var) :-
 	query_compiler:get_var([Count], Var).
+
+query_compiler:step_var(call(Terminals), Var) :-
+	member(X,Terminals),
+	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
 	member(X,Terminals),
@@ -74,11 +90,24 @@ query_compiler:step_compile(
 			Prefix, Suffix, Context, Step),
 		Pipeline).
 
+%% call(:Goal)
+% Call Goal. This predicate is normally used for goals that are not known at compile time.
+%
+query_compiler:step_compile(
+		call(Terminals), Context, Pipeline) :-
+	findall(Step,
+		query_compiler:lookup_next_unwind(Terminals,
+			[], [], Context, Step),
+		Pipeline).
+
 %%
+% FIXME: there is actually a call/2 in SWI Prolog working
+%           entirely different then this command.
+%           better rename this command!
+%
 query_compiler:step_compile(
 		call(Terminals, Scope0),
-		Context0,
-		Pipeline) :-
+		Context0, Pipeline) :-
 	% get since/until values
 	time_scope(Since0, Until0, Scope0),
 	time_scope(Since1, Until1, Scope1),
@@ -88,5 +117,17 @@ query_compiler:step_compile(
 	merge_options([scope(Scope1)], Context0, Context1),
 	% finally compile called goal
 	% and replace the scope in compile context
-	query_compile(Terminals, Pipeline, Context1).
+	query_compile(call(Terminals), Pipeline, Context1).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% helper
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+append_cut(Goal, WithCut) :-
+	(	is_list(Goal) -> Terms=Goal
+	;	comma_list(Goal,Terms)
+	),
+	append(Terms, ['!'], X),
+	comma_list(WithCut, X).

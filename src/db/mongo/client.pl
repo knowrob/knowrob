@@ -372,6 +372,7 @@ mng_operator('>', '$gt').
 mng_operator('<', '$lt').
 mng_operator('in', '$in').
 mng_operator('nin', '$nin').
+mng_operator('size', '$size').
 
 % TODO: better use units as replacement of type.
 %          I guess all qudt units are double basetype?
