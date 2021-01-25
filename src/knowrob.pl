@@ -5,6 +5,7 @@
 	]).
 
 :- use_module(library(settings)).
+:- use_module(library('lang/subgraph')).
 
 % define some settings
 :- setting(plugins, list, [], 'List of auto-loaded plugins').
@@ -12,7 +13,7 @@
 %%
 %
 %
-knowrob_init :-
+initialize_db :-
 	% initialize hierachical organization of triple graphs
 	add_subgraph(user,common),
 	add_subgraph(test,user),

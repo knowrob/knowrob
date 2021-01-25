@@ -2,7 +2,7 @@
 
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1 ]).
-:- use_module(library('db/mongo/client')
+:- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_strip_type/3 ]).
 :- use_module(library('lang/db')).
 :- use_module(library('lang/compiler')).

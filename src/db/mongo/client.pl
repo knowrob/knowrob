@@ -47,9 +47,6 @@
 
 :- dynamic mng_db_name/1.
 
-% register message formatters
-:- ensure_loaded('messages').
-
 % define some settings
 :- setting(db_name, atom, roslog,
 	'Name of the Mongo DB used by KnowRob.').

@@ -66,7 +66,7 @@ query_compiler:step_compile(
 	findall(Step,
 		(	query_compiler:set_if_var(Left, ['$substr', array([Atom0,
 				int(0),
-				['$subtract', array([['$strLenCP',Atom0],['$strLenCP',Right0]]]
+				['$subtract', array([ ['$strLenCP',Atom0], ['$strLenCP',Right0] ])]
 			])], Step)
 		;	query_compiler:set_if_var(Right, ['$substr', array([Atom0,
 				['$strLenCP',Left0],
@@ -83,7 +83,7 @@ query_compiler:step_compile(
 	maplist(query_compiler:var_key_or_val, List, List0),
 	query_compiler:var_key_or_val(Atom, Atom0),
 	findall(Step,
-		;	query_compiler:set_if_var(Atom0,   ['$concat', array(List0)], Step)
+		(	query_compiler:set_if_var(Atom0,   ['$concat', array(List0)], Step)
 		;	query_compiler:match_equals(Atom0, ['$concat', array(List0)], Step)
 		),
 		Pipeline).
@@ -96,7 +96,7 @@ query_compiler:step_compile(
 	query_compiler:var_key_or_val(Atom, Atom0),
 	add_separator(List0, Sep0, List1),
 	findall(Step,
-		;	query_compiler:set_if_var(Atom,    ['$concat', array(List1)], Step)
+		(	query_compiler:set_if_var(Atom,    ['$concat', array(List1)], Step)
 		;	query_compiler:match_equals(Atom0, ['$concat', array(List1)], Step)
 		),
 		Pipeline).

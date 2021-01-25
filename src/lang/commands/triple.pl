@@ -6,12 +6,14 @@
 :- use_module(library('lang/subgraph'),
 		[ get_supgraphs/2 ]).
 :- use_module(library('lang/scope'),
-		[ mng_scope_intersect/5, time_scope_data/2 ]).
+		[ time_scope_data/2 ]).
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_find/4, mng_query_value/2,
 		  mng_strip_type/3, mng_strip_variable/2,
 		  mng_strip_operator/3, mng_strip_unit/3 ]).
 :- use_module(library('lang/compiler')).
+:- use_module('intersect',
+		[ mng_scope_intersect/5 ]).
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(propagate_tell(r)).
@@ -349,7 +351,7 @@ lookup_parents(Triple, Context, Step) :-
 lookup_parents_property(triple(_,rdf:type,O),           [O,rdfs:subClassOf]).
 lookup_parents_property(triple(_,rdfs:subClassOf,O),    [O,rdfs:subClassOf]).
 lookup_parents_property(triple(_,rdfs:subPropertyOf,O), [O,rdfs:subPropertyOf]).
-lookup_parents_property(triple(_,P,_)                   [P,rdfs:subPropertyOf]).
+lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
 
 %%
 propagate_tell(S, Context, Step) :-
@@ -457,7 +459,7 @@ extend_context(triple(_,P,O), Context, Context0) :-
 	% extend the context
 	findall(Opt,
 		(	Opt=property(P)
-		;	Opt=collection(Coll)|
+		;	Opt=collection(Coll)
 		;	member(Opt, O_opts)
 		;	member(Opt, P_opts)
 		;	member(Opt, Context)

@@ -258,13 +258,11 @@ expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|_Args],
 	step_command(Functor,Modes),
 	% verify that the command can be expanded into the current mode
-	(	member(Mode,Modes)
-	->	true
-	;	throw(expansion_failed(Goal,Mode)
+	(	member(Mode,Modes) -> true
+	;	throw(expansion_failed(Goal,Mode))
 	),
 	% finally allow the goal to recursively expand
-	(	step_expand(Goal, Expanded, Mode)
-	->	true
+	(	step_expand(Goal, Expanded, Mode) -> true
 	;	Expanded = Goal
 	).
 
@@ -435,9 +433,10 @@ lookup_array(ArrayKey, Terminals,
 lookup_next_unwind(Terminals,
 		Prefix, Suffix,
 		Context, Step) :-
+	lookup_array('next', Terminals, Prefix, Suffix,
+			Context, InnerVars, Lookup),
 	% generate steps
-	(	lookup_array('next', Terminals, Prefix, Suffix,
-			Context, InnerVars, Step)
+	(	Step=Lookup
 	% unwind "next" field
 	;	Step=['$unwind',string('$next')]
 	% compute the intersection of scope

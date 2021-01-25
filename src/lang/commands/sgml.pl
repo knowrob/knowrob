@@ -1,7 +1,7 @@
 :- module(lang_sgml, []).
 
 :- use_module(library('lang/compiler')).
-:- use_module(library('lang/db')
+:- use_module(library('lang/db'),
 		[ get_unique_name/2 ]).
 
 %% query commands

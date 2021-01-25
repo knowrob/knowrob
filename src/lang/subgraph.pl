@@ -2,7 +2,7 @@
 	[ add_subgraph/2,
 	  get_supgraphs/2,
 	  get_subgraphs/2,
-	  load_graph_structure/1
+	  load_graph_structure/0
 	]).
 /** <module> subgraph-of relationship between RDF graphs.
 

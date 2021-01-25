@@ -3,31 +3,31 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command('is',  [ask]).
-:- query_compiler:add_command('>',   [ask]).
-:- query_compiler:add_command('<',   [ask]).
-:- query_compiler:add_command('=<',  [ask]).
-:- query_compiler:add_command('>=',  [ask]).
-:- query_compiler:add_command('=\=', [ask]).
-:- query_compiler:add_command('=:=', [ask]).
+:- query_compiler:add_command(is,  [ask]).
+:- query_compiler:add_command(>,   [ask]).
+:- query_compiler:add_command(<,   [ask]).
+:- query_compiler:add_command(=<,  [ask]).
+:- query_compiler:add_command(>=,  [ask]).
+:- query_compiler:add_command(=\=, [ask]).
+:- query_compiler:add_command(=:=, [ask]).
 
 %% query variables
-query_compiler:step_var(   is(X,Y), Var) :- assignment_var(X,Y,Var).
-query_compiler:step_var(  '<'(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var(  '>'(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var( '=<'(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var( '>='(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var('=\='(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var('=:='(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var( is(X,Y), Var) :- assignment_var(X,Y,Var).
+query_compiler:step_var(  <(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var(  >(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var( =<(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var( >=(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var(=\=(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var(=:=(X,Y), Var) :- comparison_var(X,Y,Var).
 
 %% query compilation
-query_compiler:step_compile(   is(X,Y), _, Z) :- assignment(X,Y,Z).
-query_compiler:step_compile(  '<'(X,Y), _, Z) :- comparison('$lt',X,Y,Z).
-query_compiler:step_compile( '=<'(X,Y), _, Z) :- comparison('$lte',X,Y,Z).
-query_compiler:step_compile(  '>'(X,Y), _, Z) :- comparison('$gt',X,Y,Z).
-query_compiler:step_compile( '>='(X,Y), _, Z) :- comparison('$gte',X,Y,Z).
-query_compiler:step_compile('=\='(X,Y), _, Z) :- comparison('$ne',X,Y,Z).
-query_compiler:step_compile('=:='(X,Y), _, Z) :- comparison('$eq',X,Y,Z).
+query_compiler:step_compile( is(X,Y), _, Z) :- assignment(X,Y,Z).
+query_compiler:step_compile(  <(X,Y), _, Z) :- comparison('$lt',X,Y,Z).
+query_compiler:step_compile( =<(X,Y), _, Z) :- comparison('$lte',X,Y,Z).
+query_compiler:step_compile(  >(X,Y), _, Z) :- comparison('$gt',X,Y,Z).
+query_compiler:step_compile( >=(X,Y), _, Z) :- comparison('$gte',X,Y,Z).
+query_compiler:step_compile(=\=(X,Y), _, Z) :- comparison('$ne',X,Y,Z).
+query_compiler:step_compile(=:=(X,Y), _, Z) :- comparison('$eq',X,Y,Z).
 
 %%
 assignment_var(Var, _Exp, [VarKey, Var]) :-
@@ -104,9 +104,9 @@ expression_function(atan,     '$atan').
 expression_function(atan2,    '$atan2').
 expression_function(max,      '$max').
 expression_function(min,      '$min').
-expression_function('+',      '$add').
-expression_function('-',      '$subtract').
-expression_function('/',      '$divide').
-expression_function('*',      '$multiply').
+expression_function(+,        '$add').
+expression_function(-,        '$subtract').
+expression_function(/,        '$divide').
+expression_function(*,        '$multiply').
 %expression_function(_,'$sum').
 %expression_function(_,'$avg').

@@ -1,8 +1,8 @@
 :- module(list_commands, []).
 
-:- use_module(library('lang/scope'),
-		[ mng_scope_intersect/5 ]).
 :- use_module(library('lang/compiler')).
+:- use_module('intersect',
+		[ mng_scope_intersect/5 ]).
 
 % TODO: handling of patterns is not nice at the moment.
 %          - it is limiting that elements in lists must all have same pattern

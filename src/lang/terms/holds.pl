@@ -8,6 +8,8 @@
 @license BSD
 */
 
+:- use_module('temporal').
+
 %:- use_module(library('model/XSD'),
 %    [ xsd_data_basetype/2 ]).
 %:- use_module(library('model/RDFS'),

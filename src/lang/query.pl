@@ -19,11 +19,9 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
-:- use_module(library('scope'),
-    [ current_scope/1,
-      universal_scope/1
-    ]).
-:- use_module(library('compiler')).
+:- use_module('scope',
+    [ current_scope/1, universal_scope/1 ]).
+:- use_module('compiler').
 
 % fallback graph for tell/forget
 :- dynamic default_graph/1.

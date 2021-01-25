@@ -27,9 +27,9 @@
 :- use_module(library('model/XSD'),
 		[ xsd_data_basetype/2 ]).
 :- use_module(library('db/mongo/client')).
-:- use_module(library('scope'),
+:- use_module('scope',
 		[ universal_scope/1 ]).
-:- use_module(library('subgraph')).
+:- use_module('subgraph').
 
 % define some settings
 :- setting(drop_graphs, list, [user],
@@ -39,7 +39,7 @@
 :- multifile collection_name/1.
 
 %%
-collection_data(Name, Indices) :-
+setup_collection(Name, Indices) :-
 	assertz(collection_data_(Name, Indices)),
 	create_indices(Name, Indices).
 
