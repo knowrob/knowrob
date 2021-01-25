@@ -90,8 +90,15 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
 				Context0, Step)
+		% the triple doc contains parents of the P at p*
+		% and parents of O at o*.
+		% these can be unwinded to yield a solution for each parent.
+		;	unwind_parents(Context0, Step)
+		% TODO: unwind p* o* if requested: first unwind, then $set o $o*
 		% project new variable groundings
 		;	set_triple_vars(S, P, O, Step)
+		% remove next field again
+		;	Step=['$unset',string('next')]
 		),
 		Pipeline
 	).
@@ -112,8 +119,8 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 	mng_query_value(WithoutUnit, ['$eq', MngValue]),
 	% build triple docuemnt
 	% TODO: do all docs have o*?
-	once(tell_pstar_value(P, Pstar)),
-	once(tell_ostar_value(P, MngValue, Ostar)),
+	once(pstar_value(P, Pstar)),
+	once(ostar_value(P, MngValue, Ostar)),
 	TripleDoc0=[
 		['s', string(S)], ['p', string(P)], ['o', MngValue],
 		['p*', Pstar], ['o*', Ostar],
@@ -154,16 +161,16 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 	).
 
 %%
-tell_pstar_value(rdf:type,           array([string(rdf:type)])).
-tell_pstar_value(rdfs:subClassOf,    array([string(rdfs:subClassOf)])).
-tell_pstar_value(rdfs:subPropertyOf, array([string(rdfs:subPropertyOf)])).
-tell_pstar_value(_,                  string('$parents')).
+pstar_value(rdf:type,           array([string(rdf:type)])).
+pstar_value(rdfs:subClassOf,    array([string(rdfs:subClassOf)])).
+pstar_value(rdfs:subPropertyOf, array([string(rdfs:subPropertyOf)])).
+pstar_value(_,                  string('$parents')).
 
 %%
-tell_ostar_value(rdf:type,           _, string('$parents')).
-tell_ostar_value(rdfs:subClassOf,    _, string('$parents')).
-tell_ostar_value(rdfs:subPropertyOf, _, string('$parents')).
-tell_ostar_value(_,                  O, array([O])).
+ostar_value(rdf:type,           _, string('$parents')).
+ostar_value(rdfs:subClassOf,    _, string('$parents')).
+ostar_value(rdfs:subPropertyOf, _, string('$parents')).
+ostar_value(_,                  O, array([O])).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
@@ -275,6 +282,9 @@ transitivity(Context, Step) :-
 		])]]]
 	;	Step=['$set', ['start', string('$next')]]
 	;	Step=['$set', ['next', string('$paths')]]
+	% remove "paths" field again
+	% TODO: "start" field ios nowhere removed
+	;	Step=['$unset', string('paths')]
 	).
 
 %%
@@ -282,6 +292,7 @@ transitivity(Context, Step) :-
 %        that receive multiple documents with the same subject as input.
 reflexivity(Context, Step) :-
 	memberchk(reflexive,Context),
+	% TODO: o* and p* missing, why not copy whole document instead?
 	Step=['$set', ['next', ['$concatArrays',
 		array([string('$next'), array([[
 			['s',string('$start.s')],
@@ -294,6 +305,19 @@ reflexivity(Context, Step) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% PROPAGATION
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+unwind_parents(Context, Step) :-
+	option(pstar, Context),
+	(	Step=['$unwind', string('$next.p*')]
+	;	Step=['$set', ['next.p', ['$next.p*']]]
+	).
+
+unwind_parents(Context, Step) :-
+	option(ostar, Context),
+	(	Step=['$unwind', string('$next.o*')]
+	;	Step=['$set', ['next.o', ['$next.o*']]]
+	).
 
 %%
 lookup_parents(Triple, Context, Step) :-
@@ -419,14 +443,26 @@ taxonomical_property(rdfs:subClassOf).
 taxonomical_property(rdfs:subPropertyOf).
 
 %%
-extend_context(triple(_,P,_), Context, Context0) :-
+extend_context(triple(_,P,O), Context, Context0) :-
 	% get the collection name
 	(	option(collection(Coll), Context)
 	;	mng_get_db(_DB, Coll, 'triples')
 	),
+	% read options from argument terms
+	% e.g. properties can be wrapped in transitive/1 term to
+	% indicate that the property is transitive which will then
+	% generate an additional step in the aggregate pipeline.
+	strip_property_modifier(P,P_opts,_),
+	strip_object_modifier(O,O_opts,_),
 	% extend the context
-	% TODO: strip P before?
-	Context0 = [property(P),collection(Coll)|Context].
+	findall(Opt,
+		(	Opt=property(P)
+		;	Opt=collection(Coll)|
+		;	member(Opt, O_opts)
+		;	member(Opt, P_opts)
+		;	member(Opt, Context)
+		),
+		Context0).
 
 %% this step is used to harmonize documents
 harmonize_next(Context, Step) :-
@@ -441,13 +477,14 @@ harmonize_next(Context, Step) :-
 
 %%
 triple_var(Arg, [Key, Var]) :-
+	% strip variable
+	% TODO: left side of -> could also have var? e.g. `in(List)->Elem`
 	once((
-		% FIXME: left side of -> could also have var? e.g. `in(List)->Elem`
-		% TODO: sure that Var is assigned in pipeline? 
-		( nonvar(Arg), Arg=(_->Var) )
-		% FIXME: strip operator must be called?
-	;	mng_strip_type(Arg,_,Var)
+		( nonvar(Arg), Arg=(_->Var0) )
+	;	Var0=Arg
 	)),
+	strip_modifier(Var0, Var1),
+	mng_strip(Var1, _, _, Var),
 	query_compiler:var_key(Var, Key).
 
 %%
@@ -473,6 +510,29 @@ strip_unit(In, Unit, Out) :-
 	mng_strip_operator(X0, Op, X1),
 	mng_strip_unit(X1, Unit, X2),
 	mng_strip_operator(Out, Op, X2).
+
+%%
+strip_modifier(Term, Stripped) :-
+	strip_object_modifier(Term, _, Stripped0),
+	strip_property_modifier(Stripped0, _, Stripped).
+
+%%
+strip_object_modifier(Term,[X|Xs],Stripped) :-
+	strip_object_modifier1(Term,X,Term0), !,
+	strip_object_modifier(Term0,Xs,Stripped).
+strip_object_modifier(Stripped,[],Stripped).
+
+strip_object_modifier1(include_parents(X), ostar, X).
+
+%%
+strip_property_modifier(Term,[X|Xs],Stripped) :-
+	strip_property_modifier1(Term,X,Term0), !,
+	strip_property_modifier(Term0,Xs,Stripped).
+strip_property_modifier(Stripped,[],Stripped).
+
+strip_property_modifier1(transitive(X),      transitive, X).
+strip_property_modifier1(reflexive(X),       reflexive,  X).
+strip_property_modifier1(include_parents(X), pstar,      X).
 
 %%
 array_concat(Key,Arr,['$set',

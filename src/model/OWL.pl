@@ -438,10 +438,7 @@ unify_disjoint_(B,Disjoint) :-
 subclass_of(Class, Descr) ?>
 	pragma(is_owl_term(Descr)),
 	ground(Class),
-	% TODO: yields all values in o*
-	include_parents(
-		triple(Class, rdfs:subClassOf, SuperClass)
-	),
+	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
 	has_description(SuperClass, Descr).
 
 %%
