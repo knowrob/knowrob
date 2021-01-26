@@ -19,7 +19,8 @@
 	  has_disjoint_class(r,r),
 	  has_equivalent_class(r,r),
 	  has_description(r,t),
-	  same_as(r,r)
+	  same_as(r,r),
+	  is_a(r,r)          % +Resource, ?Type
 	]).
 /** <module> The Web Ontology Language (OWL) model.
 
@@ -46,6 +47,7 @@
 %        stop using intersection_of and union_of terms
 %:- op(998, xfy, user:and).
 %:- op(997, xfy, user:or).
+:- op(1000, xfx, user:is_a).
 
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_register_ns/3, rdf_equal/2 ]).
@@ -483,3 +485,36 @@ holds_description(S,P,min(M,O))     ?+> instance_of(S,min(P,M,O)).
 holds_description(S,P,max(M,O))     ?+> instance_of(S,max(P,M,O)).
 holds_description(S,P,exactly(M,O)) ?+> instance_of(S,exactly(P,M,O)).
 holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
+
+
+%% is_a(+Resource,?Type) is nondet.
+%
+% Wrapper around instance_of, subclass_of, and subproperty_of.
+% Using this is a bit slower as an additional type check
+% is needed.
+% For example: `Cat is_a Animal` and `Nibbler is_a Cat`.
+% 
+% Note that contrary to wrapped predicates, is_a/2 requires
+% the Resource to be ground.
+%
+% @param Resource a RDF resource
+% @param Type the type of the resource
+%
+is_a(A,B) ?>
+	ground(A),
+	is_individual(A),
+	!,
+	instance_of(A,B).
+
+is_a(A,B) ?>
+	ground(A),
+	is_class(A),
+	!,
+	subclass_of(A,B).
+
+is_a(A,B) ?>
+	ground(A),
+	is_property(A),
+	!,
+	subproperty_of(A,B).
+

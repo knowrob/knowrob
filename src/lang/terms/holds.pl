@@ -24,17 +24,6 @@
 %      qudt_conv/4
 %    ]).
 
-%% holds(+Query) is nondet.
-%
-% Same as holds/3 with arguments wrapped into a single
-% term `Property(Subject,Value)`.
-%
-% @param Query the query term.
-%
-holds(Query) ?+>
-	pragma(Query =.. [P,S,O]),
-	holds(S,P,O).
-
 %% holds(?Subject, ?Property, ?Value) is nondet.
 %
 % Query values of a property on some subject.
@@ -176,6 +165,17 @@ holds(S,P,O) ?+>
 %data_base_type_(_Property,DataValue,string) :- string(DataValue),!.
 %data_base_type_(_Property,true,bool) :- !.
 %data_base_type_(_Property,false,bool) :- !.
+
+%% holds(+Query) is nondet.
+%
+% Same as holds/3 with arguments wrapped into a single
+% term `Property(Subject,Value)`.
+%
+% @param Query the query term.
+%
+holds(Query) ?+>
+	pragma(Query =.. [P,S,O]),
+	holds(S,P,O).
 
      /*******************************
      *	    UNIT TESTS	     		    *

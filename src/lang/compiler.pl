@@ -203,8 +203,7 @@ query_assert1(Head, Body, Context) :-
 	%% get the functor of the predicate
 	Head =.. [Functor|Args],
 	%% expand goals into terminal symbols
-	(	query_expand(Body, Expanded, Context)
-	->	true
+	(	query_expand(Body, Expanded, Context) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
@@ -220,6 +219,14 @@ query_assert1(Head, Body, Context) :-
 % @Expanded sequence of commands
 % @Mode 'ask' or 'tell'
 %
+query_expand(Goal, Goal, _) :-
+	% goals maybe not known during expansion, i.e. in case of
+	% higher-level predicates receiving a goal as an argument.
+	% these var goals need to be expanded compile-time
+	% (call-time is not possible)
+	%
+	var(Goal), !.
+
 query_expand(Goal, Expanded, Mode) :-
 	\+ is_list(Goal), !,
 	comma_list(Goal, Terms),
@@ -244,10 +251,12 @@ query_expand(Terms, Expanded, Mode) :-
 
 %%
 expand_term_0([], [], _Mode) :- !.
-expand_term_0([X|Xs], Expanded, Mode) :-
+expand_term_0([X|Xs], [X_expanded|Xs_expanded], Mode) :-
 	once(expand_term_1(X, X_expanded, Mode)),
-	expand_term_0(Xs, Xs_expanded, Mode),
-	append(X_expanded, Xs_expanded, Expanded).
+	expand_term_0(Xs, Xs_expanded, Mode). %,
+	%writeln(expand_term_04(X_expanded, Xs_expanded)),
+	%append(X_expanded, Xs_expanded, Expanded),
+	%writeln(expand_term_05(Expanded)).
 
 %% handle goals wrapped in ask. this can be used for conditional tell clauses.
 expand_term_1(ask(Goal), Expanded, _Mode) :-
@@ -333,15 +342,17 @@ compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_2(Term, Doc, V0->V1, Context) :-
+	% try expansion (maybe the goal was not known during the expansion phase)
+	query_expand(Term, Expanded, ask),
 	% read all variables referred to in Step into list StepVars
-	(	bagof(Vs, step_var(Term, Vs), StepVars) -> true
+	(	bagof(Vs, step_var(Expanded, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
 	list_to_set(StepVars, StepVars_unique),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars_unique, V1),
 	% compile JSON document for this step
-	once(step_compile(Term, [
+	once(step_compile(Expanded, [
 			step_vars(StepVars_unique),
 			outer_vars(V0) |
 			Context

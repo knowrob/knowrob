@@ -6,6 +6,7 @@
 
 %% register query commands
 :- query_compiler:add_command(match, [ask]).
+:- query_compiler:add_command(set,   [ask,tell]).
 
 %%
 % match uses 2-ary operator whose arguments maybe variables.
@@ -16,6 +17,9 @@ query_compiler:step_var(match(Expr), [VarKey, Var]) :-
 	;	Var=B
 	),
 	query_compiler:var_key(Var, VarKey).
+
+query_compiler:step_var(set(A,_Val), Var) :-
+	query_compiler:get_var(A,Var).
 
 %%
 % match(Expr) uses $match operator on existing variables
@@ -36,4 +40,10 @@ query_compiler:step_compile(
 	% 
 	query_compiler:var_key_or_val(A0, A),
 	query_compiler:var_key_or_val(B0, B).
+
+%%
+query_compiler:step_compile(
+		set(Var,Value), _Context,
+		[['$set', [[Key,Value]]]]) :-
+	query_compiler:var_key(Var,Key).
 

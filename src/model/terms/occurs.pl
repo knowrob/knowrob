@@ -16,7 +16,7 @@
 % @param Event an event instance.
 %
 occurs(Evt) ?>
-	has_interval_data(Evt, Since, Until),
+	event_interval(Evt, Since, Until),
 	% intersect fact scope with event interval
 	intersect(_{
 		time: _{ since: Since, until: Until }
@@ -33,7 +33,7 @@ occurs(Evt) +>
 	% call tell with universal scope
 	call(
 		[ is_event(Evt),
-		  has_interval_data(Evt, Since, Until))
+		  event_interval(Evt, Since, Until)
 		],
 		_{ time: _{
 			since: =(double(0)),

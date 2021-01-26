@@ -529,4 +529,14 @@ test('same_as') :-
   % Negative Case
   assert_false(same_as(test:'aIndiv',test:'doesNotExists')).
 
+test("ask and tell woman is a person") :-
+  assert_true(is_a(test:'Woman', test:'TestThing')),
+  assert_false(is_a(test:'Woman', test:'Person')),
+  assert_true(tell(is_a(test:'Woman', test:'Person'))),
+  assert_true(is_a(test:'Woman', test:'Person')).
+
+% expect instantiation error as is_a expects a ground variable
+test("ask _ is a Person", [throws(error(instantiation_error, _))]) :-
+  is_a(_, dul:'Person').
+
 :- end_tests(model_OWL).

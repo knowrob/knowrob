@@ -8,7 +8,10 @@
       has_domain(r,r),
       has_label(r,?),
       has_comment(r,?),
-      is_rdf_list(r,t)
+      is_rdf_list(r,t),
+      instance_of(r,r),   % ?Individual, ?Class
+      subclass_of(r,r),   % ?Class, ?SuperClass
+      subproperty_of(r,r) % ?Property, ?SuperProperty
     ]).
 /** <module> The Resource Description Framework Schema model.
 
@@ -128,8 +131,48 @@ has_label(Resource,Label) ?+>
 % @param Resource a RDF resource
 % @param Comment a comment atom
 %
-has_comment(Resource,Comment) ?+>
-	triple(Resource, rdfs:comment, Comment).
+has_comment(Resource,Comment) ?>
+	comment(Resource, Comment).
+
+%% instance_of(?Entity,?Type) is nondet.
+%
+% The type of an entity (rdf:type).
+% For example: `Nibbler instance_of Cat`.
+%
+% Note: that the *tell* clause of this rule allows
+% Entity to be a variable, in which case a new entity
+% symbol is generated.
+%
+% @param Entity a named individual
+% @param Type the type of the entity
+%
+instance_of(A,B) ?+>
+	triple(A,rdf:type,B).
+
+%% subclass_of(?Class,?SuperClass) is nondet.
+%
+% The subclass-of relation (rdfs:subClassOf).
+% For example: `Cat subclass_of Animal`.
+%
+% @param Class a class IRI
+% @param SuperClass a class IRI
+%
+subclass_of(A,B) ?+>
+	% avoid that class description terms are passed to tripledb lookup
+	% FIXME: but what about e.g. foo->V
+	pragma(\+ compound(A)),
+	pragma(\+ compound(B)),
+	triple(A, rdfs:subClassOf, B).
+
+%% subproperty_of(?Property,?SuperProperty) is nondet.
+%
+% The subproperty-of relation (rdfs:subPropertyOf).
+%
+% @param Property a property IRI
+% @param SuperProperty a property IRI
+%
+subproperty_of(A,B) ?+>
+	triple(A, rdfs:subPropertyOf, B).
 
 %% is_rdf_list(+RDF_list, -Pl_List) is semidet.
 %
@@ -192,5 +235,23 @@ test('is_property') :-
 	assert_true(is_property(test:'hasNumber')),
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
+
+test("ask and tell instances of Rex") :-
+	assert_true(instance_of(test:'Rex', test:'Man')),
+	assert_false(instance_of(test:'Rex', test:'Adult')),
+	assert_true(tell(instance_of(test:'Rex', test:'Adult'))),
+	assert_true(instance_of(test:'Rex', test:'Adult')).
+
+test("ask and tell list instance of Greta") :-
+	assert_false(instance_of('Greta', [test:'Woman', dul:'Person'])),
+	assert_true(tell(instance_of('Greta', [test:'Woman', dul:'Person']))),
+	assert_true(ask(instance_of_all('Greta', [test:'Woman', dul:'Person']))),
+	assert_true(ask(instance_of('Greta', [test:'Woman', dul:'Person']))).
+
+test("ask and tell sub property of") :-
+	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
+	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
+	assert_true(tell(subproperty_of(test:'hasBrother', test:'hasSibling'))),
+	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 :- end_rdf_tests('model_RDFS').

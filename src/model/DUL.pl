@@ -277,6 +277,28 @@ event_interval(EV, Since, Until) +>
 	triple(TI, soma:hasIntervalBegin, Since),
 	triple(TI, soma:hasIntervalEnd, Until).
 
+% TODO: seem misplaced here
+during(Query, Event) ?>
+	atom(Event),
+	event_interval(Event, Since, Until),
+	call(Query, _{
+		time: _{ since: =<(Since), until: >=(Until) }
+	}).
+
+since(Query, Event) ?>
+	atom(Event),
+	event_interval(Event, Time, _),
+	call(Query, _{
+		time: _{ since: =<(Time) }
+	}).
+
+until(Query, Event) ?>
+	atom(Event),
+	event_interval(Event, Time, _),
+	call(Query, _{
+		time: _{ until: >=(Time) }
+	}).
+
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %
 % A relation between an object and a process, e.g.

@@ -28,13 +28,6 @@ during(Query, [Since,Until]) ?>
 		time: _{ since: =<(Since), until: >=(Until) }
 	}).
 
-during(Query, Event) ?>
-	ground(Event),
-	has_interval_data(Event, Since, Until),
-	call(Query, _{
-		time: _{ since: =<(Since), until: >=(Until) }
-	}).
-
 during(Query, [Since,Until]) ?>
 	var(Since),
 	var(Until),
@@ -42,10 +35,10 @@ during(Query, [Since,Until]) ?>
 	% FIXME this is not really accurate as get('v_scope')
 	% yields the accumulated scope so far.
 	% but we only want the accumulated scope in Query
-	% here. would be possible with e.g. an additional $lookup.
-	get_fact_scope(_{
-		time: _{ since: Since, until: Until }
-	}).
+	% here.
+	% SOLUTION: do the get within the *call*
+	set(Since, string('$v_scope.time.since')),
+	set(Until, string('$v_scope.time.until')).
 
 during(Query, [Since, Until]) +>
 	call(Query, _{
@@ -66,19 +59,10 @@ since(Query, Time) ?>
 		time: _{ since: =<(Time) }
 	}).
 
-since(Query, Event) ?>
-	atom(Event),
-	has_interval_data(Event, Time, _),
-	call(Query, _{
-		time: _{ since: =<(Time) }
-	}).
-
 since(Query, Time) ?>
 	var(Time),
 	call(Query),
-	get_fact_scope(_{
-		time: _{ since: Time }
-	}).
+	set(Time, string('$v_scope.time.since')).
 
 since(Query, Time) +>
 	call(Query, _{
@@ -99,19 +83,10 @@ until(Query, Time) ?>
 		time: _{ until: >=(Time) }
 	}).
 
-until(Query, Event) ?>
-	atom(Event),
-	has_interval_data(Event, Time, _),
-	call(Query, _{
-		time: _{ until: >=(Time) }
-	}).
-
 until(Query, Time) ?>
 	var(Time),
 	call(Query),
-	get_fact_scope(_{
-		time: _{ until: Time }
-	}).
+	set(Time, string('$v_scope.time.until')).
 
 until(Query, Time) +>
 	number(Time),
