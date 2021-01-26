@@ -106,7 +106,7 @@ urdf_init(Object,Identifier) :-
 	% create has_urdf facts
 	forall(
 		(	Y=Object
-		;	transitive(triple(Object,dul:hasComponent,Y))
+		;	holds(Object,transitive(dul:hasComponent),Y)
 		),
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
@@ -159,7 +159,7 @@ urdf_load(Object,URL,Options) :-
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
-	findall(X, transitive(triple(Object,dul:hasComponent,X)), Parts),
+	findall(X, holds(Object,transitive(dul:hasComponent),X), Parts),
 	% set component poses relative to links
 	forall(
 		(	member(Y,[Object|Parts]),
@@ -327,12 +327,12 @@ set_links_(Part,Prefix) :-
 %% is_urdf_link(?Entity) is semidet.
 %
 is_urdf_link(Entity) ?+>
-  has_type(Entity, urdf:'Link').
+	has_type(Entity, urdf:'Link').
 
 %% is_urdf_joint(?Entity) is semidet.
 %
 is_urdf_joint(Entity) ?+>
-  has_type(Entity, urdf:'Joint').
+	has_type(Entity, urdf:'Joint').
 
 %% has_urdf_prefix(?Obj,?Prefix) is semidet.
 %

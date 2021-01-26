@@ -9,14 +9,12 @@
 
 :- use_module(library('model/RDFS'),
     [ has_range/2,
-      has_domain/2
+      has_domain/2,
+      subclass_of/2
     ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
       has_description/2
-    ]).
-:- use_module(library('lang/terms/is_a'),
-    [ subclass_of/2
     ]).
 :- use_module('./property.pl',
     [ owl_cardinality/5

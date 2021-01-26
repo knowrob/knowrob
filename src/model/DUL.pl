@@ -536,7 +536,7 @@ has_interval_begin(TI, Begin) ?+>
 %
 % @param I Time point, interval or temporally extended entity
 % 
-has_interval_end(TI, End) :-
+has_interval_end(TI, End) ?+>
 	holds(TI, soma:hasIntervalEnd, End).
 
 %% has_interval_duration(Event, Duration) is nondet.

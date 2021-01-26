@@ -60,9 +60,10 @@
 	  is_intrinsic(r),
 	  is_extrinsic(r),
 	  object_localization(r,r),
+	  object_shape(r,?,?,?,?),
 	  object_shape_type(r,r),
 	  object_mesh_path(r,?),
-	  object_color_rgb(r,?),
+	  object_color_rgb(r,?,?,?),
 	  object_dimensions(r,?,?,?)
 	]).
 /** <module> Predicates for the SOMA ontology.
@@ -78,7 +79,7 @@
 	[ rdf_equal/2 ]).
 :- use_module('RDFS',
 	[ has_type/2 ]).
-:- use_module('DUL'),
+:- use_module('DUL',
 	[ has_parameter_range/3, task_role_range/3 ]).
 
 :- load_owl('http://www.ease-crc.org/ont/SOMA.owl',
@@ -138,27 +139,6 @@ is_episode(Entity) ?+>
 %
 is_performed_by(Act,Agent) ?+>
 	holds(Act, soma:isPerformedBy, Agent).
-
-%% has_subevent(+Event,?Sub) is nondet.
-%
-%
-has_subevent(Event,Sub) ?>
-	holds(Event,dul:hasConstituent,Sub).
-
-has_subevent(Event,Sub) ?>
-	holds(Event,soma:hasPhase,Sub).
-
-has_subevent(Event,Sub) +>
-	ask(is_action(Sub)),
-	holds(Event,dul:hasConstituent,Sub).
-
-has_subevent(Event,Sub) +>
-	ask(is_process(Sub)),
-	holds(Event,soma:hasPhase,Sub).
-
-has_subevent(Event,Sub) +>
-	ask(is_state(Sub)),
-	holds(Event,soma:hasPhase,Sub).
 
 %% action_status(?Act,?Status) is semidet.
 %
@@ -454,6 +434,29 @@ is_configuration(Entity) ?+>
 %
 is_state_type(Entity) ?+>
 	has_type(Entity, soma:'StateType').
+
+
+%% has_subevent(+Event,?Sub) is nondet.
+%
+%
+has_subevent(Event,Sub) ?>
+	holds(Event,dul:hasConstituent,Sub).
+
+has_subevent(Event,Sub) ?>
+	holds(Event,soma:hasPhase,Sub).
+
+has_subevent(Event,Sub) +>
+	ask(is_action(Sub)),
+	holds(Event,dul:hasConstituent,Sub).
+
+has_subevent(Event,Sub) +>
+	ask(is_process(Sub)),
+	holds(Event,soma:hasPhase,Sub).
+
+has_subevent(Event,Sub) +>
+	ask(is_state(Sub)),
+	holds(Event,soma:hasPhase,Sub).
+
 
 		 /*******************************
 		 *	    DESCRIPTIONS		*
@@ -781,6 +784,19 @@ object_color_rgb(OBJ, R, G, B) ?+>
 object_color_rgb(OBJ, R, G, B) ?>
 	holds(OBJ, soma:hasRGBValue, term([R,G,B])).
 
+%%
+shape_bbox(ShapeRegion, Depth, Width, Height) ?+>
+	holds(ShapeRegion, soma:hasDepth, Depth),
+	holds(ShapeRegion, soma:hasWidth, Width),
+	holds(ShapeRegion, soma:hasHeight, Height),
+	!.
+
+% TODO
+%shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
+%	holds(ShapeRegion, soma:hasRadius, Radius),
+%	Diameter is 2 * Radius,
+%	!.
+
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
 % True if Depth x Width x Height are (exactly) the extends of the bounding box of Obj.
@@ -802,52 +818,6 @@ object_dimensions(Obj, Depth, Width, Height) ?+>
 object_dimensions(Obj, Depth, Width, Height) ?>
 	shape_bbox(Obj, Depth, Width, Height).
 
-%%
-shape_bbox(ShapeRegion, Depth, Width, Height) ?+>
-	holds(ShapeRegion, soma:hasDepth, Depth),
-	holds(ShapeRegion, soma:hasWidth, Width),
-	holds(ShapeRegion, soma:hasHeight, Height),
-	!.
-
-% TODO
-%shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
-%	holds(ShapeRegion, soma:hasRadius, Radius),
-%	Diameter is 2 * Radius,
-%	!.
-
-%% object_shape(?Obj, ?Frame, ?ShapeTerm, ?ShapeOrigin, ?MaterialTerm) is nondet.
-%
-% Relates objects to shapes and their origin (usually a pose relative to the object).
-% The shape is represented as a Prolog term that encodes the shape type
-% and its geometrical properties.
-%
-% ShapeTerm may be one of:
-% - mesh(File,Scale)
-% - box(X,Y,Z)
-% - cylinder(Radius,Length)
-% - sphere(Radius)
-%
-% ShapeOrigin is a list of frame-position-quaternion.
-%
-% @Obj IRI atom
-% @ShapeTerm A shape term
-% @ShapeOrigin The origin of the shape
-% @MaterialTerm List of material properties
-%
-object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
-	triple(Obj,soma:hasShape,Shape),
-	iri_xml_namespace(Obj, _, Frame),
-	% SHAPE
-	once(triple(Shape,dul:hasRegion,SR)),
-	shape_term(SR, ShapeTerm),
-	shape_origin(SR, Pos, Rot),
-	% COLOR
-	% TODO: use object_color_rgb when ignore supports this
-	% ignore(object_color_rgb(Obj,R,G,B)),
-	ignore(once(triple(Obj,soma:hasColor,Color))),
-	ignore(once(triple(Color,dul:hasRegion,CR))),
-	ignore(triple(CR, soma:hasRGBValue, term([R,G,B]))),
-	ignore(triple(CR, soma:hasTransparencyValue,A)).
 
 %%
 shape_term(SR, mesh(File, [X,Y,Z])) ?>
@@ -887,3 +857,38 @@ shape_origin(SR, Pos, Rot) ?>
 
 shape_origin(_SR, [0,0,0], [0,0,0,1]) ?>
 	true.
+
+%% object_shape(?Obj, ?Frame, ?ShapeTerm, ?ShapeOrigin, ?MaterialTerm) is nondet.
+%
+% Relates objects to shapes and their origin (usually a pose relative to the object).
+% The shape is represented as a Prolog term that encodes the shape type
+% and its geometrical properties.
+%
+% ShapeTerm may be one of:
+% - mesh(File,Scale)
+% - box(X,Y,Z)
+% - cylinder(Radius,Length)
+% - sphere(Radius)
+%
+% ShapeOrigin is a list of frame-position-quaternion.
+%
+% @Obj IRI atom
+% @ShapeTerm A shape term
+% @ShapeOrigin The origin of the shape
+% @MaterialTerm List of material properties
+%
+object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
+	triple(Obj,soma:hasShape,Shape),
+	iri_xml_namespace(Obj, _, Frame),
+	% SHAPE
+	once(triple(Shape,dul:hasRegion,SR)),
+	shape_term(SR, ShapeTerm),
+	shape_origin(SR, Pos, Rot),
+	% COLOR
+	% TODO: use object_color_rgb when ignore supports this
+	% ignore(object_color_rgb(Obj,R,G,B)),
+	ignore(once(triple(Obj,soma:hasColor,Color))),
+	ignore(once(triple(Color,dul:hasRegion,CR))),
+	ignore(triple(CR, soma:hasRGBValue, term([R,G,B]))),
+	ignore(triple(CR, soma:hasTransparencyValue,A)).
+

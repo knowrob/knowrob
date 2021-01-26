@@ -15,12 +15,12 @@
 % @param Obj object IRI
 % @param MarkerData marker parameters
 %
-object_marker(Obj,_,_,_,_) :-
+object_marker(Obj,_,_,_) :-
 	atom(Obj),
 	is_urdf_joint(Obj), !,
 	fail.
 
-object_marker(Obj,QScope,_,MarkerID,MarkerData) :-
+object_marker(Obj,QScope,MarkerID,MarkerData) :-
 	catch(
 		object_marker0(Obj,QScope,MarkerID,MarkerData),
 		Exc,

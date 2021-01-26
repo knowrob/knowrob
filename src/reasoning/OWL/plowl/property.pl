@@ -19,7 +19,7 @@
       has_property_chain/2,
       same_as/2
     ]).
-:- use_module(library('lang/terms/is_a'),
+:- use_module(library('model/RDFS'),
     [ instance_of/2
     ]).
 

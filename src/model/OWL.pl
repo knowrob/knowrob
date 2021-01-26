@@ -157,68 +157,6 @@ is_symmetric_property(Entity) ?+>
 is_data_property(Entity) ?+>
 	has_type(Entity, owl:'DatatypeProperty').
 
-%% has_description(+Class,-Descr) is semidet.
-%
-% Convert an OWL class into a Prolog representation.  This
-% representation is:
-%
-%    * only(Property,Class)
-%    * some(Property,Class)
-%    * min(Property,Min,Class)
-%    * max(Property,Max,Class)
-%    * exactly(Property,Count,Class)
-%    * union_of(Classes)
-%    * intersection_of(Classes)
-%    * complement_of(Class)
-%    * one_of(Individuals)
-%
-%  For example, the union-of can be the result of
-%
-%  ==
-%  <rdfs:Class rdf:ID="myclass">
-%    <owl:unionOf parseType=Collection>
-%      <rdf:Description rdf:about="gnu"/>
-%      <rdf:Description rdf:about="gnat"/>
-%    </owl:unionOf>
-%  </rdfs:Class>
-%  ==
-%
-% @param Class an OWL class
-% @param Descr Prolog term representing the class
-%
-has_description(Class,_) ?>
-	var(Class),
-	!,
-	throw(error(instantiation_error, has_description)).
-
-has_description(Class,Descr) ?>
-	(	is_restriction1(Class,Descr)
-	;	is_union_of(Class,Descr)
-	;	is_intersection_of(Class,Descr)
-	;	is_complement_of(Class,Descr)
-	),
-	!.
-
-%% is_restriction(?Restr,?Descr) is nondet.
-%
-% Convert an OWL restriction class into a Prolog representation.
-%
-% @param Restr OWL restriction class
-% @param Descr Prolog term representing the class
-%
-
-%is_restriction(R,Descr) +>
-%  % try to find existing restriction first.
-%  ask(is_restriction1(R,Descr)),
-%  !.
-
-is_restriction(R,Descr) +>
-	is_restriction(R),
-	is_restriction1(R,Descr).
-
-is_restriction(R,Descr) ?>
-	is_restriction1(R,Descr).
-
 %%
 is_restriction1(R, only(P,O)) ?+>
 	triple(R,owl:onProperty,P),
@@ -258,6 +196,26 @@ is_restriction1(R, exactly(P,M,O)) ?+>
 is_restriction1(R, exactly(P,M)) ?+>
 	triple(R,owl:onProperty,P),
 	triple(R,owl:cardinality,M).
+
+%% is_restriction(?Restr,?Descr) is nondet.
+%
+% Convert an OWL restriction class into a Prolog representation.
+%
+% @param Restr OWL restriction class
+% @param Descr Prolog term representing the class
+%
+
+%is_restriction(R,Descr) +>
+%  % try to find existing restriction first.
+%  ask(is_restriction1(R,Descr)),
+%  !.
+
+is_restriction(R,Descr) +>
+	is_restriction(R),
+	is_restriction1(R,Descr).
+
+is_restriction(R,Descr) ?>
+	is_restriction1(R,Descr).
 
 %% is_union_of(?UnionClass,?Descr) is nondet.
 %
@@ -300,6 +258,52 @@ is_intersection_of(IntersectionClass, intersection_of(List_pl)) ?>
 %
 is_complement_of(ComplementClass, complement_of(Class)) ?+>
 	triple(ComplementClass, owl:complementOf, Class).
+
+
+%% has_description(+Class,-Descr) is semidet.
+%
+% Convert an OWL class into a Prolog representation.  This
+% representation is:
+%
+%    * only(Property,Class)
+%    * some(Property,Class)
+%    * min(Property,Min,Class)
+%    * max(Property,Max,Class)
+%    * exactly(Property,Count,Class)
+%    * union_of(Classes)
+%    * intersection_of(Classes)
+%    * complement_of(Class)
+%    * one_of(Individuals)
+%
+%  For example, the union-of can be the result of
+%
+%  ==
+%  <rdfs:Class rdf:ID="myclass">
+%    <owl:unionOf parseType=Collection>
+%      <rdf:Description rdf:about="gnu"/>
+%      <rdf:Description rdf:about="gnat"/>
+%    </owl:unionOf>
+%  </rdfs:Class>
+%  ==
+%
+% @param Class an OWL class
+% @param Descr Prolog term representing the class
+%
+has_description(Class,_) ?>
+	var(Class),
+	!,
+	% TODO: throw exception once supported
+	%throw(error(instantiation_error, has_description)).
+	fail.
+
+has_description(Class,Descr) ?>
+	(	is_restriction1(Class,Descr)
+	;	is_union_of(Class,Descr)
+	;	is_intersection_of(Class,Descr)
+	;	is_complement_of(Class,Descr)
+	),
+	!.
+
 
 %% is_all_disjoint_classes(?AllDisjointClasses) is nondet.
 %
@@ -350,11 +354,11 @@ has_property_chain(P, Chain) ?>
 %
 has_equivalent_class(X,Y) ?>
 	ground(X),
-	transitive(triple(X, owl:equivalentClass, Y)).
+	triple(X, transitive(owl:equivalentClass), Y).
 
 has_equivalent_class(X,Y) ?>
 	ground(Y),
-	transitive(triple(Y, owl:equivalentClass, X)).
+	triple(Y, transitive(owl:equivalentClass), X).
 
 has_equivalent_class(X,Y) +>
 	triple(X, owl:equivalentClass, Y).
@@ -366,11 +370,11 @@ has_equivalent_class(X,Y) +>
 %
 same_as(X,Y) ?>
 	ground(X),
-	reflective(transitive(triple(X, owl:sameAs, Y))).
+	triple(X, reflective(transitive(owl:sameAs)), Y).
 
 same_as(X,Y) ?>
 	ground(Y),
-	reflective(transitive(triple(Y, owl:sameAs, X))).
+	triple(Y, reflective(transitive(owl:sameAs)), X).
 
 same_as(X,Y) +>
 	triple(X, owl:sameAs, Y).
@@ -444,13 +448,6 @@ subclass_of(Class, Descr) ?>
 	has_description(SuperClass, Descr).
 
 %%
-% Allow OWL descriptions in instance_of expressions.
-%
-instance_of(S,Descr) ?+>
-	pragma(is_owl_term(Descr)),
-	instance_of_description(S,Descr).
-
-%%
 instance_of_description(S, value(P,O)) ?>
 	var(P),
 	triple(S,P,O),
@@ -468,16 +465,15 @@ instance_of_description(S, Descr) ?>
 	subclass_of(SType, Descr).
 
 %%
-% Allow OWL descriptions in holds expressions.
+% Allow OWL descriptions in instance_of expressions.
 %
-holds(S,P,O) ?>
-	pragma(\+ is_owl_term(O)),
-	instance_of_restriction(S, value(P,O)).
-
-holds(S,P,Descr) ?+>
+% TODO: allow tell(instance_of(S,Descr))
+%
+instance_of(S,Descr) ?>
 	pragma(is_owl_term(Descr)),
-	holds_description(S,P,Descr).
+	instance_of_description(S,Descr).
 
+%%
 holds_description(S,P,only(O))      ?+> instance_of(S,only(P,O)).
 holds_description(S,P,some(O))      ?+> instance_of(S,some(P,O)).
 holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
@@ -485,6 +481,17 @@ holds_description(S,P,min(M,O))     ?+> instance_of(S,min(P,M,O)).
 holds_description(S,P,max(M,O))     ?+> instance_of(S,max(P,M,O)).
 holds_description(S,P,exactly(M,O)) ?+> instance_of(S,exactly(P,M,O)).
 holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
+
+%%
+% Allow OWL descriptions in holds expressions.
+%
+holds(S,P,O) ?>
+	pragma(\+ is_owl_term(O)),
+	instance_of_description(S, value(P,O)).
+
+holds(S,P,Descr) ?+>
+	pragma(is_owl_term(Descr)),
+	holds_description(S,P,Descr).
 
 
 %% is_a(+Resource,?Type) is nondet.

@@ -24,6 +24,22 @@
 :- rdf_register_ns(rdfs,
 	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
+%% has_type(+Resource,?Type) is semidet.
+%
+% rdf:type is an instance of rdf:Property that is used to
+% state that a resource is an instance of a class.
+%
+% @param Resource a RDF resource
+% @param Type a rdf:type of the resource
+%
+has_type(Resource,Type) ?>
+	% TODO: this seems not a good idea, e.g. Type could be a regex/1 term.
+	pragma(\+ compound(Type)),
+	triple(Resource, rdf:type, Type).
+
+has_type(Resource,Type) +>
+	triple(Resource, rdf:type, Type).
+
 %% is_resource(+Entity) is semidet.
 %
 % All things described by RDF are called resources,
@@ -73,22 +89,6 @@ is_literal(Entity) ?+>
 %
 is_datatype(Entity) ?+>
 	has_type(Entity, rdfs:'Datatype').
-
-%% has_type(+Resource,?Type) is semidet.
-%
-% rdf:type is an instance of rdf:Property that is used to
-% state that a resource is an instance of a class.
-%
-% @param Resource a RDF resource
-% @param Type a rdf:type of the resource
-%
-has_type(Resource,Type) ?>
-	% TODO: this seems not a good idea, e.g. Type could be a regex/1 term.
-	pragma(\+ compound(Type)),
-	triple(Resource, rdf:type, Type).
-
-has_type(Resource,Type) +>
-	instance_of(Resource,Type).
 
 %% has_range(?Property,?Range) is nondet.
 %
@@ -180,9 +180,9 @@ subproperty_of(A,B) ?+>
 is_rdf_list(RDF_list, Pl_List) ?>
 	ground(RDF_list),
 	findall(X,
-		(	reflexive(transitive(
-				triple(RDF_list,rdf:rest,Ys)
-			)),
+		(	triple(RDF_list,
+				reflexive(transitive(rdf:rest)),
+				Ys),
 			triple(Ys, rdf:first, X)
 		),
 		Pl_List).
@@ -191,7 +191,10 @@ is_rdf_list(RDF_list, Pl_List) +>
 	% TODO: I think in this case recursion is fine,
 	%          as it can be expanded compile-time given the list.
 	%		   so rather do a recursive call of is_rdf_list here?
-	pragma(expand_list_(Pl_List, Expanded)),
+	pragma((
+		ground(Pl_List),
+		expand_list_(Pl_List, Expanded)
+	)),
 	call([
 		has_type(RDF_list, rdf:'List')
 	|	Expanded

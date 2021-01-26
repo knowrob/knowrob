@@ -167,8 +167,7 @@ load_owl(URL, Options) :-
 	;	true
 	),
 	% get graph name
-	(	member(graph(Graph), Options)
-	->	true
+	(	member(graph(Graph), Options) -> true
 	;	Graph=_
 	),
 	% get fact scope
@@ -186,28 +185,24 @@ load_owl(URL, Options) :-
 % @param Graph The graph name.
 %
 load_owl(URL, Scope, SubGraph) :-
-	(	url_resolve(URL,Resolved)
-	->	true
+	(	url_resolve(URL,Resolved) -> true
 	;	Resolved=URL 
 	),
 	ontology_graph(Resolved,OntoGraph),
 	%% setup graph structure
-	(	SubGraph == common
-	->	true
+	(	SubGraph == common -> true
 	;	(	add_subgraph(OntoGraph,common),
 			add_subgraph(user,OntoGraph)
 		)
 	),
-	(	ground(SubGraph)
-	->	(	add_subgraph(SubGraph,OntoGraph),
+	(	var(SubGraph) -> true
+	;	(	add_subgraph(SubGraph,OntoGraph),
 			add_subgraph(user,SubGraph)
 		)
-	;	true
 	),
 	!,
 	%%
-	(	setting(mng_client:read_only, true)
-	->	true
+	(	setting(mng_client:read_only, true) -> true
 	;	load_owl0(Resolved, Scope, OntoGraph, SubGraph)
 	).
 
@@ -230,7 +225,8 @@ load_owl0(Resolved,_,OntoGraph,_) :-
 			add_subgraph(OntoGraph,ImportedGraph)
 		)
 	),
-	!.
+	!,
+	log_info(db(ontology_detected(OntoGraph,Version))).
 
 load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
@@ -241,8 +237,7 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	%
 	load_rdf_(Resolved, Triples),
 	% get ontology IRI
-	(	member(rdf(Unresolved,RDF_Type,OWL_Ontology), Triples)
-	->	true
+	(	member(rdf(Unresolved,RDF_Type,OWL_Ontology), Triples) -> true
 	;	log_error_and_fail(type_error(ontology,Resolved))
 	),
 	% first, load RDF data of imported ontologies
@@ -258,7 +253,8 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	set_ontology_version(Unresolved, Version, OntoGraph),
 	% load data into triple DB
 	load_owl1(Unresolved,Triples,Scope,OntoGraph),
-	!.
+	!,
+	log_info(db(ontology_loaded(OntoGraph,Version))).
 
 %%
 load_owl1(IRI, Triples, Scope, Graph) :-

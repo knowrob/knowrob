@@ -228,12 +228,15 @@ query_expand(Goal, Goal, _) :-
 	var(Goal), !.
 
 query_expand(Goal, Expanded, Mode) :-
-	\+ is_list(Goal), !,
+	% NOTE: do not use is_list/1 here, it cannot handle list that have not
+	%       been completely resolved as in `[a|_]`.
+	%       Here we chack just the head of the list.
+	\+ has_list_head(Goal), !,
 	comma_list(Goal, Terms),
 	query_expand(Terms, Expanded, Mode).
 
 query_expand(Terms, Expanded, Mode) :-
-	is_list(Terms), !,
+	has_list_head(Terms), !,
 	catch(
 		expand_term_0(Terms, Expanded0, Mode),
 		Exc,
@@ -253,10 +256,10 @@ query_expand(Terms, Expanded, Mode) :-
 expand_term_0([], [], _Mode) :- !.
 expand_term_0([X|Xs], [X_expanded|Xs_expanded], Mode) :-
 	once(expand_term_1(X, X_expanded, Mode)),
-	expand_term_0(Xs, Xs_expanded, Mode). %,
-	%writeln(expand_term_04(X_expanded, Xs_expanded)),
-	%append(X_expanded, Xs_expanded, Expanded),
-	%writeln(expand_term_05(Expanded)).
+	% could be that expand-time the list is not fully resolved
+	(	var(Xs) -> Xs_expanded=Xs
+	;	expand_term_0(Xs, Xs_expanded, Mode)
+	).
 
 %% handle goals wrapped in ask. this can be used for conditional tell clauses.
 expand_term_1(ask(Goal), Expanded, _Mode) :-
@@ -568,8 +571,18 @@ get_constant_(Value, string(Value)) :- string(Value).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
+% split list at cut operator.
+%
 take_until_cut([],[],[]) :- !.
 take_until_cut(['!'|Xs],[],['!'|Xs]) :- !.
 take_until_cut([X|Xs],[X|Ys],Remaining) :-
 	take_until_cut(Xs,Ys,Remaining).
+
+%%
+% do not use is_list/1 here, it cannot handle list that have not
+% been completely resolved as in `[a|_]`.
+% Here we check just the head of the list.
+%
+has_list_head([]) :- !.
+has_list_head([_|_]).
 

@@ -25,7 +25,7 @@
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
 %
-shape_contains(InnerObj, OuterObj) ?>
+shape_contains(InnerObj, OuterObj) :-
   ground(InnerObj),
   ground(OuterObj),
   % FIXME: hardcoded map

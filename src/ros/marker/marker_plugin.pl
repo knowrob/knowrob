@@ -105,7 +105,7 @@ show_markers(Timepoint) :-
 	%	show_marker(PO, PO, [scope(Scope)])
 	%).
 	findall(Msg,
-		(	object_marker(_Obj,Scope,_,ID,Data),
+		(	object_marker(_Obj,Scope,ID,Data),
 			marker_message_new(ID,Data,Msg)
 		),
 		MessageList

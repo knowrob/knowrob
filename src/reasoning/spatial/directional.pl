@@ -24,7 +24,7 @@
 % @param Top Identifier of the upper Object
 % @param Bottom Identifier of the lower Object
 %
-is_ontop_of(Top, Bottom) ?>
+is_ontop_of(Top, Bottom) :-
 	ground(Top),
 	ground(Bottom),
 	% FIXME: hardcoded map
@@ -46,7 +46,7 @@ is_ontop_of(Top, Bottom) ?>
 % @param Top Identifier of the upper Object
 % @param Bottom Identifier of the lower Object
 %
-is_above_of(Top, Bottom) ?>
+is_above_of(Top, Bottom) :-
 	ground(Top),
 	ground(Bottom),
 	% FIXME: hardcoded map
@@ -65,7 +65,7 @@ is_above_of(Top, Bottom) ?>
 % @param Bottom Identifier of the lower Object
 % @param Top Identifier of the upper Object
 %
-is_below_of(Bottom, Top) ?>
+is_below_of(Bottom, Top) :-
 	is_above_of(Top, Bottom).
 
 %% is_centered_at(?Inner, ?Outer) is nondet.
@@ -79,7 +79,7 @@ is_below_of(Bottom, Top) ?>
 % @param Inner Identifier of the inner Object
 % @param Outer Identifier of the outer Object
 %
-is_centered_at(Inner, Outer) ?>
+is_centered_at(Inner, Outer) :-
 	ground(Inner),
 	ground(Outer),
 	% FIXME: hardcoded map

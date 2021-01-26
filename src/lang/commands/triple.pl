@@ -130,7 +130,7 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 		['graph', string(Graph)],
 		['scope', string('$v_scope')]
 	],
-	(	nonground(Unit) -> TripleDoc=TripleDoc0
+	(	\+ ground(Unit) -> TripleDoc=TripleDoc0
 	;	TripleDoc=[['unit',string(Unit)]|TripleDoc0]
 	),
 	% compute steps of the aggregate pipeline
@@ -519,6 +519,7 @@ strip_modifier(Term, Stripped) :-
 	strip_property_modifier(Stripped0, _, Stripped).
 
 %%
+strip_object_modifier(Var,[],Var) :- var(Var), !.
 strip_object_modifier(Term,[X|Xs],Stripped) :-
 	strip_object_modifier1(Term,X,Term0), !,
 	strip_object_modifier(Term0,Xs,Stripped).
@@ -527,6 +528,7 @@ strip_object_modifier(Stripped,[],Stripped).
 strip_object_modifier1(include_parents(X), ostar, X).
 
 %%
+strip_property_modifier(Var,[],Var) :- var(Var), !.
 strip_property_modifier(Term,[X|Xs],Stripped) :-
 	strip_property_modifier1(Term,X,Term0), !,
 	strip_property_modifier(Term0,Xs,Stripped).

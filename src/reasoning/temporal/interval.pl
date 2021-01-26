@@ -13,7 +13,7 @@
       interval_finished_by(r,r),   %-> soma:finishedBy,
       interval_overlaps(r,r),      %-> soma:overlappedOn,
       interval_overlapped_by(r,r), %-> soma:overlappedBy,
-      interval_during(r,r),        %-> soma:during
+      interval_during(r,r)         %-> soma:during
     ]).
 /** <module> Allen calculus implementation using Event Endpoint Graphs (ESGs).
 
@@ -175,7 +175,7 @@ interval_starts(I0, I1) :-
 % @param I1 Instance of a knowrob:TimeInterval
 % @param I2 Instance of a knowrob:TimeInterval
 % 
-interval_started_by(I1,I2) ?>
+interval_started_by(I1,I2) :-
 	interval_starts(I2,I1).
 
 %% interval_finishes(I0,I1) is semidet.

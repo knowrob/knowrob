@@ -68,7 +68,7 @@ ask(Statement, QScope, FScope, Options) :-
 	once(query_ask(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
-	%\+ nonground(Statement),
+	%\+ ground(Statement),
 	query_ask(Statement, QScope, FScope, Options).
 
 %% ask(+Statement, +QScope, -FScope) is nondet.

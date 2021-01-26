@@ -9,8 +9,6 @@
 	  tf_mng_lookup/6,
 	  tf_mng_range/6,
 	  tf_mng_whipe/0,
-	  tf_mng_remember/1,
-	  tf_mng_memorize/1,
 	  tf_republish_set_pose/2,
 	  tf_republish_set_goal/2,
 	  tf_republish_set_time/1,
@@ -32,7 +30,7 @@
 :- use_module(library('utility/filesystem'),
 	[ path_concat/3 ]).
 :- use_module(library('lang/scope'),
-	[ scope_intersect/3, subscope_of/2, time_scope/5, time_scope_data/2 ]).
+	[ scope_intersect/3, subscope_of/2, time_scope/3, time_scope_data/2 ]).
 :- use_module(library('db/mongo/client')).
 
 % define some settings
@@ -130,12 +128,12 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	% get local pose data and scope
 	tf_mem_get_pose(ObjFrame,PoseData,Since),
 	get_time(Now),
-	time_scope(Since,=,Now,=,FS),
+	time_scope(Since,=(Now),=(FS)),
 	% make sure there is an overlap with the query scope
 	time_scope_data(QS,[QSince,QUntil]),
 	strip_operator_(QSince,QSince0),
 	strip_operator_(QUntil,QUntil0),
-	time_scope(QSince0,=,QUntil0,=,QS0),
+	time_scope(QSince0,=(QUntil0),=(QS0)),
 	scope_intersect(FS,QS0,_),
 	% skip other results in case the fact scope is a superscope of the query scope
 	(  subscope_of(QS,FS)
@@ -148,7 +146,7 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	strip_operator_(QSince,QSince0),
 	strip_operator_(QUntil,QUntil0),
 	tf_mng_lookup(ObjFrame,QSince0,QUntil0,PoseData,FSince,FUntil),
-	time_scope(FSince,=,FUntil,=,FS).
+	time_scope(FSince,=(FUntil),=(FS)).
 
 % FIXME redundant
 strip_operator_( <(X),X) :- !.

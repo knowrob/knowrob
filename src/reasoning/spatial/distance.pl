@@ -12,7 +12,7 @@
 % @param B         Instance of SpatialThing
 % @param Distance  The current distance between A and B
 %
-object_distance(A,B,Distance) ?>
+object_distance(A,B,Distance) :-
 	ground(A),
 	ground(B),
 	% FIXME: hardcoded map
