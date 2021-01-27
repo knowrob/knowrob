@@ -1,4 +1,8 @@
 
+:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
+
+:- rdf_meta(triple(t,t,t)).
+
 :- use_module(messages).
 :- use_module(subgraph).
 :- use_module(scope).

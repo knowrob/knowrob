@@ -2,8 +2,8 @@
 	[ query_assert(t),
 	  query_ask(t,+,-,+),
 	  query_tell(t,+,+),
-	  query_expand/3,
-	  query_compile/3
+	  query_expand(t,-,+),
+	  query_compile(t,-,+)
 	]).
 /** <module> Compilation of KnowRob rules into DB queries.
 
@@ -207,6 +207,7 @@ query_assert1(Head, Body, Context) :-
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
+%	writeln(lang(expanded(Expanded))),
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
@@ -250,7 +251,11 @@ query_expand(Terms, Expanded, Mode) :-
 	%       done in control.pl where cut operator is implemented but current
 	%       interfaces don't allow to do the following operation in control.pl.
 	%		(without special handling of ',' it could be done, I think)
-	expand_cut(Expanded0, Expanded).
+	expand_cut(Expanded0, Expanded1),
+	%%
+	(	Expanded1=[One] -> Expanded=One
+	;	Expanded=Expanded1
+	).
 
 %%
 expand_term_0([], [], _Mode) :- !.
@@ -324,29 +329,47 @@ expand_cut(Terms,Expanded) :-
 %
 query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
-		compile_0(Terminals, Doc, []->Vars, Context),
+		query_compile1(Terminals, Doc, []->Vars, Context),
 		Exc,
 		log_error_and_fail(lang(Exc, Terminals))
 	).
 
 %%
-compile_0(Terminals, Doc, Vars, Context) :-
-	compile_1(Terminals, Doc0, Vars, Context),
-	(	memberchk(ask, Context) -> true
+query_compile1(Terminals, Doc, Vars, Context) :-
+	compile_terms(Terminals, Doc0, Vars, Context),
+	(	memberchk(mode(ask), Context) -> Doc=Doc0
 	;	compile_tell(Doc0, Doc)
 	).
 
 %%
-compile_1([], [], V0->V0, _) :- !.
-compile_1([X|Xs], Pipeline, V0->Vn, Context) :-
-	compile_2(X,  Pipeline_x,  V0->V1, Context),
-	compile_1(Xs, Pipeline_xs, V1->Vn, Context),
+compile_terms(Goal, Pipeline, Vars, Context) :-
+	\+ is_list(Goal), !,
+	compile_terms([Goal], Pipeline, Vars, Context).
+
+compile_terms([], [], V0->V0, _) :- !.
+compile_terms([X|Xs], Pipeline, V0->Vn, Context) :-
+	compile_term(X,  Pipeline_x,  V0->V1, Context),
+	compile_terms(Xs, Pipeline_xs, V1->Vn, Context),
 	append(Pipeline_x, Pipeline_xs, Pipeline).
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
-compile_2(Term, Doc, V0->V1, Context) :-
+compile_term(Term, Doc, V0->V1, Context) :-
 	% try expansion (maybe the goal was not known during the expansion phase)
 	query_expand(Term, Expanded, ask),
+	compile_expanded_terms(Expanded, Doc, V0->V1, Context).
+
+%%
+compile_expanded_terms(Goal, Doc, Vars, Context) :-
+	\+ is_list(Goal), !,
+	compile_expanded_terms([Goal], Doc, Vars, Context).
+
+compile_expanded_terms([], [], V0->V0, _) :- !.
+compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
+	compile_expanded_term(Expanded, Doc0, V0->V1, Context),
+	compile_expanded_terms(Rest, Doc1, V1->Vn, Context),
+	append(Doc0, Doc1, Doc).
+	
+compile_expanded_term(Expanded, Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
 	(	bagof(Vs, step_var(Expanded, Vs), StepVars) -> true
 	;	StepVars=[]
@@ -354,7 +377,6 @@ compile_2(Term, Doc, V0->V1, Context) :-
 	list_to_set(StepVars, StepVars_unique),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars_unique, V1),
-	% compile JSON document for this step
 	once(step_compile(Expanded, [
 			step_vars(StepVars_unique),
 			outer_vars(V0) |

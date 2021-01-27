@@ -19,6 +19,8 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_global_term/2 ]).
 :- use_module('scope',
     [ current_scope/1, universal_scope/1 ]).
 :- use_module('compiler').
@@ -207,10 +209,14 @@ forget(Statement) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(Head,query_ask(Body, QScope, _FScope, [])))) :-
-	strip_module_(Head,_Module,Term),
+		(:-(HeadGlobal, query_ask(BodyGlobal, QScope, _FScope, [])))) :-
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
 	current_scope(QScope),
-	query_assert((?>(Term,Body))).
+	% add the rule to the DB backend
+	query_assert((?>(Term, BodyGlobal))).
 
 %%
 % Term expansion for *tell* rules using the (+>) operator.
@@ -220,8 +226,12 @@ user:term_expansion(
 user:term_expansion(
 		(+>(Head,Body)),
 		[]) :-
-	strip_module_(Head,_Module,Term),
-	query_assert((+>(Term,Body))).
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	% add the rule to the DB backend
+	query_assert((+>(Term,BodyGlobal))).
 
 %%
 % Term expansion for *tell-ask* rules using the (?+>) operator.

@@ -15,7 +15,7 @@
 %
 mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
-	atomic_list_concat(['$',VarKey,'.time.since'], '', Until0),
+	atomic_list_concat(['$',VarKey,'.time.until'], '', Until0),
 	atomic_list_concat(['$',VarKey], '', VarKey0),
 	%
 	Intersect = ['time', [
@@ -32,7 +32,7 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 	;	IntersectStep = Intersect
 	),
 	% first compute the intersection
-	(	Step=IntersectStep
+	(	Step=['$set', ['v_scope', IntersectStep]]
 	% then verify that the scope is non empty
 	;	Step=['$match', ['$expr',
 			['$lt', array([string(Since0), string(Until0)])]

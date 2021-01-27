@@ -90,6 +90,13 @@ mng_export(Dir) :-
 % @Name the graph name.
 %
 drop_graph(Name) :-
+	get_subgraphs(Name,SubGraphs),
+	forall(
+		member(X,SubGraphs),
+		drop_graph1(X)
+	).
+	
+drop_graph1(Name) :-
 	mng_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, [
 		[graph, string(Name)]
@@ -264,7 +271,17 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	% TODO: better use bulk insert interface
 	%	- then it would be problematic to do the propagation
 	%	- tell should not be used here, and cannot be imported at the top
-	lang_query:tell(Terms, Scope, [graph(Graph)]),
+	writeln(tell(Terms)),
+	writeln(scope(Scope)),
+	writeln(graph(Graph)),
+	forall(
+		member(XXX,Terms),
+		(	writeln(XXX),
+			lang_query:tell(XXX, Scope, [graph(Graph)])
+		)
+	),
+	writeln(tell2(Terms)),
+%	lang_query:tell(Terms, Scope, [graph(Graph)]),
 	get_time(Time1),
 	% debug
 	length(Triples,NumTriples),

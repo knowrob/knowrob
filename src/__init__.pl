@@ -9,6 +9,10 @@
         ]).
 :- set_prolog_flag(float_format, '%.12g').
 
+% tell/ask queries generate discontiguous clauses.
+% TODO: find a better solution then disabling this globally.
+:- style_check(-discontiguous).
+
 % load some standard Prolog libraries into user
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2]).
 %:- use_module(library('semweb/rdf_portray')).
@@ -46,9 +50,9 @@
 % load init files in sub-directories
 :- use_directory('lang').
 :- use_directory('model').
-:- use_directory('reasoning').
-:- use_directory('ros').
-:- use_directory('vis').
+%:- use_directory('reasoning').
+%:- use_directory('ros').
+%:- use_directory('vis').
 
 % load additional modules
 :- knowrob_load_plugins.

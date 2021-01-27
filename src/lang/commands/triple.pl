@@ -321,10 +321,16 @@ unwind_parents(Context, Step) :-
 	;	Step=['$set', ['next.o', ['$next.o*']]]
 	).
 
+%% set "parents" field by looking up subject+property then yielding o* field
+lookup_parents_property(triple(_,rdf:type,O),           [O,rdfs:subClassOf]).
+lookup_parents_property(triple(_,rdfs:subClassOf,O),    [O,rdfs:subClassOf]).
+lookup_parents_property(triple(_,rdfs:subPropertyOf,O), [O,rdfs:subPropertyOf]).
+lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
+
 %%
 lookup_parents(Triple, Context, Step) :-
 	memberchk(collection(Coll), Context),
-	once(lookup_parents_property(Triple, Child, Property)),
+	once(lookup_parents_property(Triple, [Child, Property])),
 	% first, lookup matching documents and yield o* in parents array
 	(	Step=['$lookup', [
 			['from',string(Coll)],
@@ -346,12 +352,6 @@ lookup_parents(Triple, Context, Step) :-
 	% also add child to parents list
 	;	array_concat('parents', array([string(Child)]), Step)
 	).
-
-%% set "parents" field by looking up subject+property then yielding o* field
-lookup_parents_property(triple(_,rdf:type,O),           [O,rdfs:subClassOf]).
-lookup_parents_property(triple(_,rdfs:subClassOf,O),    [O,rdfs:subClassOf]).
-lookup_parents_property(triple(_,rdfs:subPropertyOf,O), [O,rdfs:subPropertyOf]).
-lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
 
 %%
 propagate_tell(S, Context, Step) :-
@@ -504,7 +504,8 @@ set_triple_vars(S, P, O, ['$set', ProjectDoc]) :-
 		(	member([Key, Field], TripleVars),
 			atom_concat('$next.', Field, NextValue)
 		),
-		ProjectDoc).
+		ProjectDoc),
+	ProjectDoc \= [].
 
 %%
 strip_unit(In, Unit, Out) :-
@@ -553,7 +554,7 @@ reduce_num_array(ArrayKey, Operator, Path, ValKey, Step) :-
 			['input', ArrayKey],
 			['in', string(Path0)]
 		]]]]
-	;	array_concat_('num_array', array([string(ValKey0)]), Step)
-	;	Step=['$set', [ValKey0, [Operator, string('$num_array')]]]
+	;	array_concat('num_array', array([string(ValKey0)]), Step)
+	;	Step=['$set', [ValKey, [Operator, string('$num_array')]]]
 	;	Step=['$unset',string('num_array')]
 	).

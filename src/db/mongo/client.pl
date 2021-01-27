@@ -315,6 +315,12 @@ mng_strip(Term, Operator, Type, Value) :-
 % @Type type atom
 % @Value the value without type
 %
+mng_strip_type(Typed, Type, Untyped) :-
+	var(Typed),!,
+	ground(Type),
+	ground(Untyped),
+	Typed =.. [Type, Untyped].
+	
 mng_strip_type(List, array, List) :-
 	is_list(List),
 	!.
@@ -351,15 +357,15 @@ type_mapping_(term,    string) :- !.
 type_mapping_(X,       X)      :- !.
 
 %%
-mng_strip_operator(    X,    =, X) :- var(X).
-mng_strip_operator( =(X),    =, X).
-mng_strip_operator(>=(X),   >=, X).
-mng_strip_operator(=<(X),   =<, X).
-mng_strip_operator( <(X),    <, X).
-mng_strip_operator( >(X),    >, X).
-mng_strip_operator(in(X),   in, X).
-mng_strip_operator(nin(X), nin, X).
-mng_strip_operator(    X,    =, X).
+mng_strip_operator(    X,    =, X) :- var(X), !.
+mng_strip_operator( =(X),    =, X) :- !.
+mng_strip_operator(>=(X),   >=, X) :- !.
+mng_strip_operator(=<(X),   =<, X) :- !.
+mng_strip_operator( <(X),    <, X) :- !.
+mng_strip_operator( >(X),    >, X) :- !.
+mng_strip_operator(in(X),   in, X) :- !.
+mng_strip_operator(nin(X), nin, X) :- !.
+mng_strip_operator(    X,    =, X) :- !.
 
 %%
 mng_operator('=', '$eq').

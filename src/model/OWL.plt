@@ -1,5 +1,5 @@
 :- use_module('./OWL.pl').
-:- use_module(library('lang/terms/is_a'),
+:- use_module(library('model/RDFS'),
     [ subclass_of/2,
       subproperty_of/2
     ]).

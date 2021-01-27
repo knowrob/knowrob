@@ -8,7 +8,6 @@
 :- query_compiler:add_command(iri_xml_namespace, [ask]).
 :- query_compiler:add_command(new_iri,           [tell]).
 
-
 %%
 % tell queries can use new_iri/1 and new_iri/2 to generate
 % IRI's that have not been used so far.
