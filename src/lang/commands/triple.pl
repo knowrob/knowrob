@@ -96,7 +96,6 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 		% and parents of O at o*.
 		% these can be unwinded to yield a solution for each parent.
 		;	unwind_parents(Context0, Step)
-		% TODO: unwind p* o* if requested: first unwind, then $set o $o*
 		% project new variable groundings
 		;	set_triple_vars(S, P, O, Step)
 		% remove next field again

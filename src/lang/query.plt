@@ -19,12 +19,31 @@
 		'http://knowrob.org/kb/datatype_test#',
 		[keep(true)]).
 
-test('tell fact') :-
-	% TODO: why string/1 needed here?
+test('tell triple(a,b,c)') :-
 	assert_true(lang_query:tell(triple(a,b,c))).
 
-test('ask fact') :-
+test('ask triple(a,b,c)') :-
 	assert_true(lang_query:ask(triple(a,b,c))).
+
+test('ask triple(A,b,c)') :-
+	lang_query:ask(triple(A,b,c)),
+	assert_equals(A,a).
+
+test('ask triple(a,B,c)') :-
+	lang_query:ask(triple(a,B,c)),
+	assert_equals(B,b).
+
+test('ask triple(a,b,C)') :-
+	lang_query:ask(triple(a,b,C)),
+	assert_equals(C,c).
+
+test('ask triple(A,b,C)') :-
+	lang_query:ask(triple(A,b,C)),
+	assert_equals(A,a),
+	assert_equals(C,c).
+
+test('tell triple(a,b,_)') :-
+	assert_false(lang_query:tell(triple(a,b,_))).
 
 % load swrl owl file for tripledb testing
 %test('load local owl file') :-

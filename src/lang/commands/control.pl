@@ -199,7 +199,7 @@ has_cut('!') :- !.
 has_cut(Goal) :-
 	% list of goals
 	is_list(Goal), !,
-	member(call(SubGoal)),
+	member(call(SubGoal),Goal),
 	comma_list(SubGoal,List),
 	memberchk('!',List).
 has_cut(Goal) :-

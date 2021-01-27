@@ -176,12 +176,19 @@ mng_cursor_next(Cursor,Dict) :-
 	mng_cursor_next_pairs(Cursor,Pairs),
 	dict_pairs(Dict,_,Pairs).
 
-%% 
+%%
 mng_cursor_materialize(Cursor,Next) :-
-	mng_cursor_next(Cursor, X),
-	(	Next=X
-	;	mng_cursor_materialize(Cursor,Next)
+	mng_cursor_next(Cursor,X),
+	% pull next result and avoid choicepoint in case
+	% there is no additional result available.
+	mng_cursor_materialize(Cursor,X,Next).
+
+mng_cursor_materialize(Cursor,First,Next) :-
+	mng_cursor_next(Cursor,Second),!,
+	(	Next=First
+	;	mng_cursor_materialize(Cursor,Second,Next)
 	).
+mng_cursor_materialize(_,Next,Next).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -287,6 +294,8 @@ mng_restore(_DB,Dir) :-
 mng_query_value(Value0, [Operator, Value1]) :-
 	% remove _->_ expression for vars 
 	mng_strip_variable(Value0, X0),
+	% rest term must be grounded
+	ground(X0),
 	% get the mongo DB operator e.g. $eq
 	mng_strip_operator(X0, Operator0, X1),
 	mng_operator(Operator0,Operator),
@@ -315,11 +324,15 @@ mng_strip(Term, Operator, Type, Value) :-
 % @Type type atom
 % @Value the value without type
 %
-mng_strip_type(Typed, Type, Untyped) :-
-	var(Typed),!,
+mng_strip_type(Var, Type, Untyped) :-
+	var(Var),
 	ground(Type),
-	ground(Untyped),
-	Typed =.. [Type, Untyped].
+	ground(Untyped),!,
+	Var =.. [Type, Untyped].
+
+mng_strip_type(Var, _, Var) :-
+	var(Var),
+	!.
 	
 mng_strip_type(List, array, List) :-
 	is_list(List),
