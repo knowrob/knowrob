@@ -48,7 +48,7 @@ setup(RDFFile) :-
 %%
 cleanup(RDFFile) :-
 	cleanup,
-	lang_export:ontology_graph(RDFFile, OntoGraph),
+	lang_db:ontology_graph(RDFFile, OntoGraph),
 	drop_graph(OntoGraph).
 
 %%

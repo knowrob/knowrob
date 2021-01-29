@@ -268,18 +268,6 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	% debug how long loading takes
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
-	% TODO: better use bulk insert interface
-	%	- then it would be problematic to do the propagation
-	%	- tell should not be used here, and cannot be imported at the top
-%	writeln(tell(Terms)),
-%	writeln(scope(Scope)),
-%	writeln(graph(Graph)),
-%	forall(
-%		member(XXX,Terms),
-%		(	writeln(XXX),
-%			lang_query:tell(XXX, Scope, [graph(Graph)])
-%		)
-%	),
 	lang_query:tell(Terms, Scope, [graph(Graph)]),
 	get_time(Time1),
 	% debug

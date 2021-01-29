@@ -67,7 +67,7 @@ query_compiler:step_var(call(Terminals, _Scope), Var) :-
 	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(call(_Terminals, Scope), Var) :-
-	time_scope(Scope, Since, Until),
+	time_scope(Since, Until, Scope),
 	member(X, [Since,Until]),
 	mng_strip(X, _Operator, _Type, Y),
 	query_compiler:step_var(Y, Var).
@@ -108,6 +108,7 @@ query_compiler:step_compile(
 query_compiler:step_compile(
 		call(Terminals, Scope0),
 		Context0, Pipeline) :-
+	option(outer_vars(V0), Context0),
 	% get since/until values
 	time_scope(Since0, Until0, Scope0),
 	time_scope(Since1, Until1, Scope1),
@@ -117,8 +118,11 @@ query_compiler:step_compile(
 	merge_options([scope(Scope1)], Context0, Context1),
 	% finally compile called goal
 	% and replace the scope in compile context
-	query_compile(call(Terminals), Pipeline, Context1).
-
+	query_compiler:compile_terms(
+		call(Terminals),
+		Pipeline,
+		V0->_,
+		Context1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% helper

@@ -207,7 +207,6 @@ query_assert1(Head, Body, Context) :-
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
-%	writeln(lang(expanded(Expanded))),
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
@@ -377,11 +376,12 @@ compile_expanded_term(Expanded, Doc, V0->V1, Context) :-
 	list_to_set(StepVars, StepVars_unique),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars_unique, V1),
-	once(step_compile(Expanded, [
-			step_vars(StepVars_unique),
-			outer_vars(V0) |
-			Context
-	], Doc)).
+	% create inner context
+	merge_options(
+		[step_vars(StepVars_unique),outer_vars(V0)],
+		Context, InnerContext),
+	% and finall compile expanded terms
+	once(step_compile(Expanded, InnerContext, Doc)).
 
 %%
 compile_tell(Doc0, Doc1) :-
@@ -449,8 +449,9 @@ lookup_array(ArrayKey, Terminals,
 	% join collection with single document
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline
-	query_compile(Terminals,
-		pipeline(Pipeline, InnerVars),
+	compile_terms(Terminals,
+		Pipeline,
+		OuterVars->InnerVars,
 		Context),
 	% pass variables from outer scope to inner if they are referred to
 	% in the inner scope.
