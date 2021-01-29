@@ -105,8 +105,9 @@ until(Query, Time) +>
 		]).
 
 test('tell Lea hasNumber during') :-
-	tell( holds(test:'Lea', test:hasNumber, '+493455247') during [10,34] ),
-	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [34,64] ).
+	gtrace,
+	tell( triple(test:'Lea', test:hasNumber, '+493455247') during [10,34] ),
+	tell( triple(test:'Lea', test:hasNumber, '+493455249') during [34,64] ).
 
 test('tell Lea hasNumber overlapping') :-
 	% assert additional interval during which a statement holds that overlaps
@@ -114,6 +115,7 @@ test('tell Lea hasNumber overlapping') :-
 	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [54,84] ).
 
 test('Lea hasNumber during') :-
+	writeln(baz),
 	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [10,34]),
 	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [14,24]),
 	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [34,44]),
@@ -132,5 +134,17 @@ test('Lea not hasNumber during') :-
 	assert_false(holds(test:'Lea', test:hasNumber, '+493455249') during [12,20]),
 	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [5,20]),
 	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [34,44]).
+
+test('tell the rectangle size during a time interval') :-
+	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200]),
+	assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200])),
+	assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593302400),
+	assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1593349200),
+	assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388800,1593435600])),
+	assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593389900),
+	assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388900,1593434600]),
+	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1594434300),
+	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593288900),
+	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1592434300,1592464300]).
 
 :- end_rdf_tests('lang_temporal').

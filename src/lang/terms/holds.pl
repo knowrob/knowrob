@@ -187,49 +187,16 @@ holds(Query) ?+>
     [ namespace('http://knowrob.org/kb/swrl_test#')
     ]).
 
-
-test('ask triples holds') :-
-  assert_true(holds(test:'Ernest', test:'hasSibling', test:'Fred')).
-
 test('ask holds with arity 1', [ blocked('rdf term expansion is not working as expected while using namespace with ":"') ]) :-
   assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).
 
-test('ask holds using operators >, <, = a value in float') :-
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 13.5)),
-  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 13.5))),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', =(13.5))),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', <(15.0))),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', >(10.5))).
-
-test('ask holds using operators = < > a value in integer') :-
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', =(6))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', =<(9))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', <(7))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', >=(5))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', >(3))).
+test('ask triples holds') :-
+  assert_true(holds(test:'Ernest', test:'hasSibling', test:'Fred')).
 
 test('tell Lea hasNumber') :-
   assert_false(holds(test:'Lea', test:'hasNumber', '+493564754647')),
   assert_true(tell(holds(test:'Lea', test:'hasNumber', '+493564754647'))),
   assert_true(holds(test:'Lea', test:'hasNumber', '+493564754647')).
-
-test('tell the rectangle size during a time interval') :-
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200]),
-  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200])),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593302400),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1593349200),
-  assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388800,1593435600])),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593389900),
-  assert_true(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593388900,1593434600]),
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) until 1594434300),
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) since 1593288900),
-  assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1592434300,1592464300]).
-
-test('ask holds unit conversion') :-
-  assert_true(tell(holds(test:'RectangleSmall',test:'hasHeightInMeters', m(6.5)))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(650))),
-  assert_true(holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(650.0))),
-  holds(test:'RectangleSmall',test:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); fail.
 
 test('ask holds without an object or data type property') :-
   assert_false(holds(test:'Alex', rdf:'type', test:'Woman')).

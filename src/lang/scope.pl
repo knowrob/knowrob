@@ -138,10 +138,11 @@ time_scope_data(Scope,[Since,Until]) :-
 time_scope_data_(Key,Dict,Val) :-
 	get_dict(Key,Dict,Val0),
 	!,
-	mng_strip_operator(Val0, Op, double(Val1)),
+	mng_strip_operator(Val0,Op,Val1),
+	mng_strip_type(Val1,_,Val2),
 	(	Op='='
-	->	Val=Val1
-	;	strip_operator_(Val,Op,Val1)
+	->	Val=Val2
+	;	mng_strip_operator(Val,Op,Val2)
 	).
 
 time_scope_data_(_,_,_).
@@ -162,10 +163,10 @@ get_min(X0,X1,Min) :-
 	mng_strip_operator(X1, Op1, V1),
 	operator_polarization(Op0,P0),
 	operator_polarization(Op1,P1),
-	( P0<P1 -> is_equal_(X0,Min)
-	; P1<P0 -> is_equal_(X1,Min)
-	; V0<V1 -> is_equal_(X0,Min)
-	; is_equal_(X1,Min)
+	( P0<P1 -> is_equal(X0,Min)
+	; P1<P0 -> is_equal(X1,Min)
+	; V0<V1 -> is_equal(X0,Min)
+	; is_equal(X1,Min)
 	).
 
 % get max number, supports ungrounded values and 'Infinity' value
@@ -206,7 +207,7 @@ is_equal(X,Y) :-
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tests(temporal_scope).
+:- begin_tests(lang_scope).
 
 test('scope_data([3,20])') :-
 	time_scope(=(3), =(20), S),
@@ -292,4 +293,4 @@ test('intersect_scope([5,>=18],[10,>=20])') :-
 	assertion(ground(Data)),
 	assertion(Data = [10,(>=(18))]).
 
-:- end_tests(temporal_scope).
+:- end_tests(lang_scope).

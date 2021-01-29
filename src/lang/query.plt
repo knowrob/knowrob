@@ -152,13 +152,19 @@ test('query units'):-
 	ask(triple(S, P, unit(double(2.1),X))),
 	assert_equals(X, 'meter').
 
-test('query operator >='):-
-	ask(triple(
-		test_datatype:'Lecturer4',
-		test_datatype:'height',
-		>=(unit(double(2.0),'meter'))->V
-	)),
-	assert_equals(V,2.1).
+%test('unit conversion') :-
+%	assert_true(tell(holds(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', m(6.5)))),
+%	assert_true(holds(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', cm(650))),
+%	assert_true(holds(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', cm(650.0))),
+%	holds(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); fail.
+
+test('query value operators') :-
+	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =(6)))),
+	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =<(9)))),
+	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', <(7)))),
+	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', >=(5)))),
+	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', >(3.5)))),
+	assert_false(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', <(3)))).
 
 test('query operator in'):-
 	findall(LastName,
