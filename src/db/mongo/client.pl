@@ -26,6 +26,7 @@
       mng_cursor_materialize/2,
       mng_get_dict/3,
       mng_query_value/2,
+      mng_typed_value/2,
       mng_strip/4,
       mng_strip_type/3,
       mng_strip_operator/3,
@@ -307,7 +308,13 @@ mng_query_value(Value0, [Operator, Value1]) :-
 	;	X3=X2
 	),
 	% finally wrap value in type again
-	mng_strip_type(Value1, Type, X3).
+	type_mapping_(Type, MngType),
+	mng_strip_type(Value1, MngType, X3).
+
+%%
+mng_typed_value(Term, TypedValue) :-
+	mng_strip(Term, _Operator, Type, Value),
+	mng_strip_type(TypedValue, Type, Value).
 
 %%
 mng_strip(Term, Operator, Type, Value) :-

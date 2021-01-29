@@ -10,7 +10,8 @@
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_find/4, mng_query_value/2,
 		  mng_strip_type/3, mng_strip_variable/2,
-		  mng_strip_operator/3, mng_strip_unit/3 ]).
+		  mng_strip_operator/3, mng_strip_unit/3,
+		  mng_typed_value/2 ]).
 :- use_module(library('lang/compiler')).
 :- use_module('intersect',
 		[ mng_scope_intersect/5 ]).
@@ -54,6 +55,8 @@
 % expose subject/predicate/object argument variables.
 %
 query_compiler:step_var(triple(S,P,O), [Key, Var]) :-
+	% FIXME: it is needed for terms at the moment that the requested type is stored
+	%          to know that term_to_atom must be called during unification.
 	(	triple_var(S, [Key, Var])
 	;	triple_var(P, [Key, Var])
 	;	triple_var(O, [Key, Var])
@@ -72,12 +75,12 @@ query_compiler:step_compile(triple(S,P,O), Context, Pipeline) :-
 %
 compile_ask(triple(S,P,O), Context, Pipeline) :-
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), Context, Context0),
+	extend_context(triple(S,P,O), [P1,O1], Context, Context0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
-		(	lookup_triple(triple(S,P,O), Context0, Step)
+		(	lookup_triple(triple(S,P1,O1), Context0, Step)
 		% conditionally needed to harmonize 'next' field
 		;	harmonize_next(Context0, Step)
 		% add additional results if P is a transitive property
@@ -97,7 +100,7 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 		% these can be unwinded to yield a solution for each parent.
 		;	unwind_parents(Context0, Step)
 		% project new variable groundings
-		;	set_triple_vars(S, P, O, Step)
+		;	set_triple_vars(S,P1,O1,Step)
 		% remove next field again
 		;	Step=['$unset',string('next')]
 		;	Step=['$unset',string('start')]
@@ -115,16 +118,16 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 	option(scope(Scope), Context),
 	time_scope_data(Scope, [Since,Until]),
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), Context, Context0),
+	extend_context(triple(S,P,O), [P1,O1], Context, Context0),
 	% strip the value, assert that operator must be $eq
-	strip_unit(O, Unit, WithoutUnit),
+	strip_unit(O1, Unit, WithoutUnit),
 	mng_query_value(WithoutUnit, ['$eq', MngValue]),
 	% build triple docuemnt
 	% TODO: do all docs have o*?
-	once(pstar_value(P, Pstar)),
-	once(ostar_value(P, MngValue, Ostar)),
+	once(pstar_value(P1, Pstar)),
+	once(ostar_value(P1, MngValue, Ostar)),
 	TripleDoc0=[
-		['s', string(S)], ['p', string(P)], ['o', MngValue],
+		['s', string(S)], ['p', string(P1)], ['o', MngValue],
 		['p*', Pstar], ['o*', Ostar],
 		['graph', string(Graph)],
 		['scope', string('$v_scope')]
@@ -144,7 +147,7 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 		% and toggle their delete flag to true
 		;	delete_overlapping(TripleDoc0, Context0, Step)
 		% lookup parent documents into the 'parents' field
-		;	lookup_parents(triple(S,P,O), Context0, Step)
+		;	lookup_parents(triple(S,P1,O1), Context0, Step)
 		% get min since of scopes in $next, update v_scope.time.since
 		;	reduce_num_array(string('$next'), '$min',
 				'scope.time.since', 'v_scope.time.since', Step)
@@ -330,14 +333,17 @@ lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
 lookup_parents(Triple, Context, Step) :-
 	memberchk(collection(Coll), Context),
 	once(lookup_parents_property(Triple, [Child, Property])),
+	% make sure value is wrapped in type term
+	mng_typed_value(Child,   TypedValue),
+	mng_typed_value(Property,TypedProperty),
 	% first, lookup matching documents and yield o* in parents array
 	(	Step=['$lookup', [
 			['from',string(Coll)],
 			['as',string('parents')],
 			['pipeline',array([
 				['$match', [
-					['s',string(Child)],
-					['p',string(Property)]
+					['s',TypedValue],
+					['p',TypedProperty]
 				]],
 				['$project', [['o*', int(1)]]],
 				['$unwind', string('$o*')]
@@ -349,16 +355,17 @@ lookup_parents(Triple, Context, Step) :-
 			['in',string('$$this.o*')]
 		]]]]
 	% also add child to parents list
-	;	array_concat('parents', array([string(Child)]), Step)
+	;	array_concat('parents', array([TypedValue]), Step)
 	).
 
 %%
 propagate_tell(S, Context, Step) :-
 	memberchk(collection(Coll), Context),
+	mng_typed_value(S,TypedS),
 	% the inner lookup matches documents with S in o*
 	findall(X,
 		% match every document with S in o*
-		(	X=['$match', [['o*',string(S)]]]
+		(	X=['$match', [['o*',TypedS]]]
 		% and add parent field from input documents to o*
 		;	array_concat('o*', string('$$parents'), X)
 		% only replace o*
@@ -444,7 +451,7 @@ taxonomical_property(rdfs:subClassOf).
 taxonomical_property(rdfs:subPropertyOf).
 
 %%
-extend_context(triple(_,P,O), Context, Context0) :-
+extend_context(triple(_,P,O), [P1,O1], Context, Context0) :-
 	% get the collection name
 	(	option(collection(Coll), Context)
 	;	mng_get_db(_DB, Coll, 'triples')
@@ -453,11 +460,11 @@ extend_context(triple(_,P,O), Context, Context0) :-
 	% e.g. properties can be wrapped in transitive/1 term to
 	% indicate that the property is transitive which will then
 	% generate an additional step in the aggregate pipeline.
-	strip_property_modifier(P,P_opts,_),
-	strip_object_modifier(O,O_opts,_),
+	strip_property_modifier(P,P_opts,P1),
+	strip_object_modifier(O,O_opts,O1),
 	% extend the context
 	findall(Opt,
-		(	Opt=property(P)
+		(	Opt=property(P1)
 		;	Opt=collection(Coll)
 		;	member(Opt, O_opts)
 		;	member(Opt, P_opts)

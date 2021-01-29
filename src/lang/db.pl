@@ -90,13 +90,6 @@ mng_export(Dir) :-
 % @Name the graph name.
 %
 drop_graph(Name) :-
-	get_subgraphs(Name,SubGraphs),
-	forall(
-		member(X,SubGraphs),
-		drop_graph1(X)
-	).
-	
-drop_graph1(Name) :-
 	mng_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, [
 		[graph, string(Name)]
@@ -195,25 +188,30 @@ load_owl(URL, Scope, SubGraph) :-
 	(	url_resolve(URL,Resolved) -> true
 	;	Resolved=URL 
 	),
-	ontology_graph(Resolved,OntoGraph),
+	(	ground(SubGraph) -> OntoGraph=SubGraph
+	;	ontology_graph(Resolved,OntoGraph)
+	),
 	%% setup graph structure
-	(	SubGraph == common -> true
-	;	(	add_subgraph(OntoGraph,common),
-			add_subgraph(user,OntoGraph)
-		)
+	(	add_subgraph(OntoGraph,common),
+		add_subgraph(user,OntoGraph)
 	),
-	(	var(SubGraph) -> true
-	;	(	add_subgraph(SubGraph,OntoGraph),
-			add_subgraph(user,SubGraph)
-		)
-	),
+%	(	SubGraph == common -> true
+%	;	(	add_subgraph(OntoGraph,common),
+%			add_subgraph(user,OntoGraph)
+%		)
+%	),
+%	(	var(SubGraph) -> true
+%	;	(	add_subgraph(SubGraph,OntoGraph),
+%			add_subgraph(user,SubGraph)
+%		)
+%	),
 	!,
 	%%
 	(	setting(mng_client:read_only, true) -> true
 	;	load_owl0(Resolved, Scope, OntoGraph, SubGraph)
 	).
 
-load_owl0(Resolved,_,OntoGraph,_) :-
+load_owl0(Resolved, _, OntoGraph, _SubGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
 	% test whether the ontology is already loaded
 	get_ontology_version(OntoGraph,Version),
@@ -240,7 +238,9 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	rdf_equal(owl:'Ontology',OWL_Ontology),
 	rdf_equal(rdf:'type',RDF_Type),
 	% erase old triples
-	drop_graph(OntoGraph),
+	(	ground(SubGraph) -> true
+	;	drop_graph(OntoGraph)
+	),
 	%
 	load_rdf_(Resolved, Triples),
 	% get ontology IRI
@@ -271,17 +271,16 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	% TODO: better use bulk insert interface
 	%	- then it would be problematic to do the propagation
 	%	- tell should not be used here, and cannot be imported at the top
-	writeln(tell(Terms)),
-	writeln(scope(Scope)),
-	writeln(graph(Graph)),
-	forall(
-		member(XXX,Terms),
-		(	writeln(XXX),
-			lang_query:tell(XXX, Scope, [graph(Graph)])
-		)
-	),
-	writeln(tell2(Terms)),
-%	lang_query:tell(Terms, Scope, [graph(Graph)]),
+%	writeln(tell(Terms)),
+%	writeln(scope(Scope)),
+%	writeln(graph(Graph)),
+%	forall(
+%		member(XXX,Terms),
+%		(	writeln(XXX),
+%			lang_query:tell(XXX, Scope, [graph(Graph)])
+%		)
+%	),
+	lang_query:tell(Terms, Scope, [graph(Graph)]),
 	get_time(Time1),
 	% debug
 	length(Triples,NumTriples),

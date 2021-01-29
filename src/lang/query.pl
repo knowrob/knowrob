@@ -80,7 +80,6 @@ ask(Statement, QScope, FScope, Options) :-
 % @param Statement a statement term.
 %
 ask(Statement, QScope, FScope) :-
-	current_scope(QScope),
 	ask(Statement, QScope, FScope, []).
 
 %% ask(+Statement) is nondet.

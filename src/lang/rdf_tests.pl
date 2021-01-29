@@ -43,7 +43,7 @@ end_rdf_tests(Name) :-
 %%
 setup(RDFFile) :-
 	lang_query:set_default_graph(test),
-	load_owl(RDFFile).
+	load_owl(RDFFile,[graph(test)]).
 
 %%
 cleanup(RDFFile) :-

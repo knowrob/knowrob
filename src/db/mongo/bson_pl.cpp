@@ -17,6 +17,7 @@
 static PlAtom ATOM_Pos_Infinity("Infinity");
 static PlAtom ATOM_Neg_Infinity("-Infinity");
 static PlAtom ATOM_int("int");
+static PlAtom ATOM_integer("integer");
 static PlAtom ATOM_bool("bool");
 static PlAtom ATOM_double("double");
 static PlAtom ATOM_id("id");
@@ -199,7 +200,7 @@ static bool bsonpl_append_typed(bson_t *doc, const char *key, const PlTerm &term
 	else if(type_atom == ATOM_time) {
 		BSON_APPEND_DATE_TIME(doc,key,(unsigned long long)(1000.0*((double)pl_value)));
 	}
-	else if(type_atom == ATOM_int) {
+	else if(type_atom == ATOM_int || type_atom == ATOM_integer) {
 		BSON_APPEND_INT32(doc,key,(int)pl_value);
 	}
 	else if(type_atom == ATOM_bool) {
