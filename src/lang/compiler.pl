@@ -601,6 +601,15 @@ get_constant_(false, bool(false)).
 get_constant_(Value, string(Value)) :- atom(Value).
 get_constant_(Value, string(Value)) :- string(Value).
 
+%%
+% True iff Arg has been referred to in the query before.
+% That is, Arg has been added to the "outer variables"
+% of the compile context.
+%
+is_referenced(Arg,Context) :-
+	option(outer_vars(OuterVars),Context),
+	memberchk([_,Arg], OuterVars).
+
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
 %%%%%%%%%%%%%%%%%%%%%%%

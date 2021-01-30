@@ -38,9 +38,9 @@ during(Goal, [Since,Until]) ?>
 	}),
 	% FIXME this is not really accurate as get('v_scope')
 	% yields the accumulated scope so far.
-	% but we only want the accumulated scope in Query
-	% here.
+	% but we only want the accumulated scope for Goal here.
 	% SOLUTION: do the get within the *call*
+	% same for since and until.
 	set(Since, string('$v_scope.time.since')),
 	set(Until, string('$v_scope.time.until')).
 

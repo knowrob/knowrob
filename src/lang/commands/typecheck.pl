@@ -21,8 +21,13 @@ query_compiler:step_var(is_list(X), [V,X]) :- query_compiler:var_key(X, V).
 % a value to the variable key.
 %
 query_compiler:step_compile(ground(Arg), _Context, []) :-
-	% is grounded already compile-time
+	% argument is grounded already compile-time
 	ground(Arg), !.
+
+query_compiler:step_compile(ground(Arg), Context, []) :-
+	% argument was not referred to before in query, thus cannot be ground
+	\+ query_compiler:is_referenced(Arg,Context), !,
+	fail.
 
 query_compiler:step_compile(
 		ground(Arg), _Context,
@@ -36,10 +41,13 @@ query_compiler:step_compile(
 % a value to the variable key.
 %
 query_compiler:step_compile(var(Arg), _Context, []) :-
-	% is grounded already compile-time
-	% TODO: if var(Arg) and the arg was not referred before, succeed without this step
+	% argument is grounded already compile-time, thus cannot be var
 	ground(Arg), !,
 	fail.
+
+query_compiler:step_compile(var(Arg), Context, []) :-
+	% argument was not referred to before in query, thus must be var
+	\+ query_compiler:is_referenced(Arg,Context), !.
 
 query_compiler:step_compile(
 		var(Arg), _Context,
@@ -52,9 +60,14 @@ query_compiler:step_compile(
 %
 %
 query_compiler:step_compile(number(Arg), _Context, []) :-
-	% is grounded already compile-time
+	% argument is grounded already compile-time
 	ground(Arg), !,
 	number(Arg).
+
+query_compiler:step_compile(number(Arg), Context, []) :-
+	% argument was not referred to before in query, thus cannot be number
+	\+ query_compiler:is_referenced(Arg,Context), !,
+	fail.
 
 % NOTE: mongo DB 4.4 has $isNumber command
 query_compiler:step_compile(
@@ -64,23 +77,21 @@ query_compiler:step_compile(
 			[Key, ['$type', int(16)]],
 			[Key, ['$type', int(18)]]
 		])]]]) :-
-	% TODO: if not ground in the call and not referred to before,
-	%        this step can be skipped and step_compile should fail then.
 	query_compiler:var_key(Arg, Key).
 
 %%
 %
 %
 query_compiler:step_compile(
-		atom(Arg), _Context, Pipeline) :-
-	match_type_(Arg, atom, string, Pipeline).
+		atom(Arg), Context, Pipeline) :-
+	match_type_(Arg, atom, string, Context, Pipeline).
 
 %%
 %
 %
 query_compiler:step_compile(
-		is_list(Arg), _Context, Pipeline) :-
-	match_type_(Arg, is_list, array, Pipeline).
+		is_list(Arg), Context, Pipeline) :-
+	match_type_(Arg, is_list, array, Context, Pipeline).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -88,15 +99,18 @@ query_compiler:step_compile(
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-match_type_(Arg, Goal, _Type, []) :-
+match_type_(Arg, Goal, _Type, _Context, []) :-
 	% argument is grounded already compile-time
 	ground(Arg), !,
 	call(Goal, [Arg]).
 
-match_type_(Arg, _Goal, Type, 
+match_type_(Arg, _, _Type, Context, []) :-
+	% argument was not referred to before in query, so cannot be ground
+	\+ query_compiler:is_referenced(Arg,Context), !,
+	fail.
+
+match_type_(Arg, _Goal, Type, _Context,
 		[['$match',
 			[Key, ['$type', string(Type)]]
 		]]) :-
-	% TODO: if not ground in the call and not referred to before,
-	%        this step can be skipped and step_compile should fail then.
 	query_compiler:var_key(Arg, Key).
