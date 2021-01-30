@@ -21,6 +21,8 @@ query_compiler:step_var(=\=(X,Y), Var) :- comparison_var(X,Y,Var).
 query_compiler:step_var(=:=(X,Y), Var) :- comparison_var(X,Y,Var).
 
 %% query compilation
+% TODO: early evaluation if ground at compile-time!
+%
 query_compiler:step_compile( is(X,Y), _, Z) :- assignment(X,Y,Z).
 query_compiler:step_compile(  <(X,Y), _, Z) :- comparison('$lt',X,Y,Z).
 query_compiler:step_compile( =<(X,Y), _, Z) :- comparison('$lte',X,Y,Z).

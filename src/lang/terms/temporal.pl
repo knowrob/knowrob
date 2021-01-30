@@ -9,32 +9,46 @@
 @license BSD
 */
 
+:- use_module(library('lang/scope'),
+		[ time_scope/3 ]).
+
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
 :- op(800, yfx, user:until).
 
-%% during(+Statement,?Time) is nondet.
+%% during(+Statement,?Interval) is nondet.
 %
-% True for statements that hold during the whole
-% duration of some time interval.
+% True iff Statement holds during the whole
+% duration of a time interval.
+% during/2 is defined as an operator such that
+% queries can be written as `Statement during Interval`.
+% The Interval is represented as 2-element list `[Since,Until]`
+% where Since and Until are the interval boundaries (unix timestamp, double).
+% Note that it is currently not allowed to call this predicate
+% with one of the boundaries grounded and the other not.
+% Either both boundaries must be ground or both variables.
+% If used in *tell* expressions, during/2 will scope all
+% assertions in Statement with the interval provided.
 %
 % @param Statement A language term.
-% @param Interval A time interval, instant, or event.
+% @param Interval A 2-element list.
 %
-during(Query, [Since,Until]) ?>
+during(Statement, [Since,Until]) ?>
 	number(Since),
 	number(Until),
-	call(Query, _{
-		time: _{ since: =<(Since), until: >=(Until) }
+	call(Statement, _{
+		time: _{ since: =<(Since),
+		         until: >=(Until) }
 	}).
 
-during(Goal, [Since,Until]) ?>
+during(Statement, [Since,Until]) ?>
 	var(Since),
 	var(Until),
 	% Note: goal must be called with "wildcard" scope to include all records.
 	%       the default mode is to only include records that are still true.
-	call(Goal, _{
-		time: _{ since:  >=(double(0)), until: =<(double('Infinity')) }
+	call(Statement, _{
+		time: _{ since: >=(double(0)),
+		         until: =<(double('Infinity')) }
 	}),
 	% FIXME this is not really accurate as get('v_scope')
 	% yields the accumulated scope so far.
@@ -44,33 +58,53 @@ during(Goal, [Since,Until]) ?>
 	set(Since, string('$v_scope.time.since')),
 	set(Until, string('$v_scope.time.until')).
 
-during(Query, [Since, Until]) +>
-	call(Query, _{
-		time: _{ since: =(Since), until: =(Until) }
+during(Statement, [Since, Until]) +>
+	call(Statement, _{
+		time: _{ since: =(Since),
+		         until: =(Until) }
 	}).
 
-%% since(+Statement,?Interval) is nondet.
+%% since(+Statement, ?Instant) is nondet.
 %
 % True for statements that hold (at least) since some time
-% instant.
+% instant, _and_ until at least the current time.
+% since/2 is defined as an operator such that
+% queries can be written as `Statement since Instant`.
+% Instant is a unix timestamp represented as floating point number.
+% If used in *tell* expressions, since/2 will scope all
+% assertions in Statement with an interval that begins
+% at given time instant, and whose end is not known yet.
 %
 % @param Statement A language term.
-% @param Interval A time interval, instant, or event.
+% @param Instant A time instant.
 %
-since(Query, Time) ?>
-	number(Time),
-	call(Query, _{
-		time: _{ since: =<(Time) }
+since(Statement, Instant) ?>
+	number(Instant),
+	pragma(get_time(Now)),
+	call(Statement, _{
+		time: _{ since: =<(Instant),
+		         until: >=(Now) }
 	}).
 
-since(Query, Time) ?>
-	var(Time),
-	call(Query),
-	set(Time, string('$v_scope.time.since')).
+since(Statement, Instant) ?>
+	var(Instant),
+	pragma(get_time(Now)),
+	call(Statement, _{
+		time: _{ since: >=(0),
+		         until: >=(Now) }
+	}),
+	% FIXME: see above during/2
+	set(Instant, string('$v_scope.time.since')).
 
-since(Query, Time) +>
-	call(Query, _{
-		time: _{ since: =(Time) }
+since(Statement, Instant) +>
+	number(Instant),
+	% FIXME: until time is set to infinity here, however, the interpretation
+	%        is that we don't know yet when it ends.
+	%        the problem is we cannot distinguish this from records that are known
+	%        to hold forever!
+	call(Statement, _{
+		time: _{ since: =(Instant),
+		         until: =(double('Infinity')) }
 	}).
 
 %% until(+Statement,?Interval) is nondet.
@@ -89,10 +123,15 @@ until(Query, Time) ?>
 
 until(Query, Time) ?>
 	var(Time),
-	call(Query),
+	call(Query, _{
+		time: _{ since:  >=(double(0)), until: =<(double('Infinity')) }
+	}),
+	% FIXME: see above during/2
 	set(Time, string('$v_scope.time.until')).
 
 until(Query, Time) +>
+	% FIXME: tell(until) should handle when statement is known until longer
+	%         e.g. chnging inf to until time?
 	number(Time),
 	call(Query, _{
 		time: _{ until: =(Time) }
@@ -109,7 +148,7 @@ until(Query, Time) +>
 		]).
 
 
-test('tell during') :-
+test('during can be asserted and queried') :-
 	assert_true(lang_query:tell(
 		triple(test:'Lea', test:hasNumber, '+493455247')
 		during [10,34]
@@ -123,7 +162,7 @@ test('tell during') :-
 		during [14,24]
 	)).
 
-test('tell Lea hasNumber overlapping') :-
+test('during works with overlapping scope') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
 	assert_true(lang_query:tell(
@@ -143,7 +182,7 @@ test('tell Lea hasNumber overlapping') :-
 		during [38,80]
 	)).
 
-test('Lea not hasNumber during') :-
+test('during does not yield false records') :-
 	assert_false(lang_query:ask(
 		triple(test:'Lea', test:hasNumber, '+999999999')
 		during [5,20]
@@ -161,10 +200,41 @@ test('Lea not hasNumber during') :-
 		during [34,44]
 	)).
 
-test('Lea hasNumber during X') :-
-	assert_true(ask(triple(test:'Lea', test:hasNumber, '+493455247') during _)),
-	ask(triple(test:'Lea', test:hasNumber, '+493455247') during X),
+test('during handles ungrounded scope') :-
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during _
+	)),
+	lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during X
+	),
 	assert_equals(X,[10.0,34.0]).
+
+
+test('since can be asserted and queried') :-
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+499955247')
+		since 800
+	)),
+	assert_true(lang_query:tell(
+		triple(test:'Lea', test:hasNumber, '+499955247')
+		since 800
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+499955247')
+		since 800
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+499955247')
+		since 1000
+	)).
+
+test('since does not yield false records') :-
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+499955247')
+		since 600
+	)).
 
 %test('tell the rectangle size during a time interval') :-
 %	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200]),

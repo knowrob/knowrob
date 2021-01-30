@@ -10,5 +10,7 @@
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
-query_compiler:step_compile(pragma(Goal), _, []) :-
-	call(Goal).
+query_compiler:step_compile(pragma(Goal), Context, []) :-
+	(	option(ignore_pragma,Context) -> true
+	;	call(Goal)
+	).

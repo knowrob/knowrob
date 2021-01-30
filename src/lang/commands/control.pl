@@ -139,12 +139,23 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% in StepVars being assigned.
 	compile_disjunction(Goals, FindallVars, [], Context, FindallStages),
 	FindallStages \= [],
-	% special handling in case the disunction compiles into a single goal
-	% FIXME seems not working
+	% special handling in case the disjunction compiles into a single goal
+	% no disjunction needed then.
 	(	FindallStages=[[_,_,SingleGoal]]
-	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_, Context)
+	->	compile_without_pragma(SingleGoal, OuterVars, Context, Pipeline)
 	;	aggregate_disjunction(FindallStages, StepVars, Pipeline)
 	).
+
+%%
+% compile_disjunction above evaluates all pragma commands which potentially
+% grounds variables (e.g. as in the case of binding current time to a var in pragma).
+% thus it may be problematic to compile pragma's twice.
+% here we add a flag to compile context that causes all pragma commands to be ignored
+% entirely for the goal provided.
+%
+compile_without_pragma(Goal, OuterVars, Context, Pipeline) :-
+	merge_options([ignore_pragma], Context, Context0),
+	query_compiler:compile_term(Goal, Pipeline, OuterVars->_, Context0).
 
 %%
 aggregate_disjunction(FindallStages, StepVars, Pipeline) :-
