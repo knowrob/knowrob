@@ -6,7 +6,7 @@
 :- use_module(library('lang/subgraph'),
 		[ get_supgraphs/2 ]).
 :- use_module(library('lang/scope'),
-		[ time_scope_data/2 ]).
+		[ time_scope/3, time_scope_data/2 ]).
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_find/4, mng_query_value/2,
 		  mng_strip_type/3, mng_strip_variable/2,
@@ -39,8 +39,9 @@
 %
 
 %%
-% register the "annotations" collection.
+% register the "triples" collection.
 % This is needed for import/export.
+% It also creates search indices.
 %
 :- setup_collection(triples, [
 		['s'], ['p'], ['o'], ['p*'], ['o*'],
@@ -55,7 +56,7 @@
 % expose subject/predicate/object argument variables.
 %
 query_compiler:step_var(triple(S,P,O), [Key, Var]) :-
-	% FIXME: it is needed for terms at the moment that the requested type is stored
+	% FIXME: it would be needed for terms at the moment that the requested type is stored
 	%          to know that term_to_atom must be called during unification.
 	(	triple_var(S, [Key, Var])
 	;	triple_var(P, [Key, Var])
@@ -114,11 +115,11 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 % then the union of their scopes is computed and used for output document.
 %
 compile_tell(triple(S,P,O), Context, Pipeline) :-
-	option(graph(Graph), Context, user),
-	option(scope(Scope), Context),
-	time_scope_data(Scope, [Since,Until]),
 	% add additional options to the compile context
 	extend_context(triple(S,P,O), [P1,O1], Context, Context0),
+	option(graph(Graph), Context0, user),
+	option(scope(Scope), Context0),
+	time_scope_data(Scope, [Since,Until]),
 	% strip the value, assert that operator must be $eq
 	strip_unit(O1, Unit, WithoutUnit),
 	mng_query_value(WithoutUnit, ['$eq', MngValue]),
@@ -135,6 +136,12 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 	(	\+ ground(Unit) -> TripleDoc=TripleDoc0
 	;	TripleDoc=[['unit',string(Unit)]|TripleDoc0]
 	),
+	% configure the operation performed on scopes.
+	% the default is to compute the union of scopes.
+	(	option(intersect_scope, Context)
+	->	(SinceOp='$max', UntilOp='$min')
+	;	(SinceOp='$min', UntilOp='$max')
+	),
 	% compute steps of the aggregate pipeline
 	% TODO: if just one document, update instead of delete
 	findall(Step,
@@ -148,11 +155,11 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 		;	delete_overlapping(TripleDoc0, Context0, Step)
 		% lookup parent documents into the 'parents' field
 		;	lookup_parents(triple(S,P1,O1), Context0, Step)
-		% get min since of scopes in $next, update v_scope.time.since
-		;	reduce_num_array(string('$next'), '$min',
+		% update v_scope.time.since
+		;	reduce_num_array(string('$next'), SinceOp,
 				'scope.time.since', 'v_scope.time.since', Step)
 		% get max until of scopes in $next, update v_scope.time.until
-		;	reduce_num_array(string('$next'), '$max',
+		;	reduce_num_array(string('$next'), UntilOp,
 				'scope.time.until', 'v_scope.time.until', Step)
 		% add triples to triples array that have been queued to be removed
 		;	array_concat('triples', string('$next'), Step)
@@ -245,13 +252,24 @@ delete_overlapping(TripleDoc, Context,
 	% read scope data
 	option(scope(Scope), Context),
 	time_scope_data(Scope,[Since,Until]),
+	% set Since=Until in case of scope intersection.
+	% this is to limit to results that do hold at Until timestamp.
+	% FIXME: when overlap yields no results, zero is used as since
+	%        by until. but then the new document could overlap
+	%        with existing docs, which is not wanted.
+	%		 so better remove special handling here?
+	%        but then the until time maybe is set to an unwanted value? 
+	(	option(intersect_scope, Context)
+	->	Since0=Until
+	;	Since0=Since
+	),
 	% build pipeline
 	findall(Step,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
 				['s',S], ['p',P], ['o',O],
 				['scope.time.since',['$lte',double(Until)]],
-				['scope.time.until',['$gte',double(Since)]]
+				['scope.time.until',['$gte',double(Since0)]]
 			]]
 		% only keep scope field
 		;	Step=['$project',[['scope',int(1)]]]

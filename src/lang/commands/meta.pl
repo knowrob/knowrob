@@ -13,6 +13,8 @@
 :- query_compiler:add_command(limit,  [ask,tell]).
 :- query_compiler:add_command(ignore, [ask,tell]).
 
+:- query_compiler:add_command(call_with_context, [ask,tell]).
+
 %%%% query expansion
 	
 
@@ -46,8 +48,8 @@ query_compiler:step_expand(
 	query_expand(Goal, Expanded, Context).
 
 query_compiler:step_expand(
-		call(Goal,Args),
-		call(Expanded,Args), Context) :-
+		call_with_context(Goal,Args),
+		call_with_context(Expanded,Args), Context) :-
 	query_expand(Goal, Expanded, Context).
 
 %%
@@ -64,13 +66,15 @@ query_compiler:step_var(call(Terminals), Var) :-
 	compound(X),
 	query_compiler:step_var(X, Var).
 
-query_compiler:step_var(call(Terminals, _Scope), Var) :-
+query_compiler:step_var(call_with_context(Terminals, _Context), Var) :-
 	ensure_list(Terminals,List),
 	member(X,List),
 	compound(X),
 	query_compiler:step_var(X, Var).
 
-query_compiler:step_var(call(_Terminals, Scope), Var) :-
+query_compiler:step_var(call_with_context(_Terminals, Context), Var) :-
+	% currently only scope values may be grounded in a query
+	option(scope(Scope), Context),
 	time_scope(Since, Until, Scope),
 	member(Value, [Since,Until]),
 	query_compiler:get_var([Value], Var).
@@ -108,29 +112,33 @@ query_compiler:step_compile(
 		Pipeline).
 
 %%
-% FIXME: there is actually a call/2 in SWI Prolog working
-%           entirely different then this command.
-%           better rename this command!
 %
 query_compiler:step_compile(
-		call(Terminals, Scope0),
-		Context0, Pipeline) :-
-	option(outer_vars(V0), Context0),
-	% get since/until values
-	time_scope(Since0, Until0, Scope0),
-	time_scope(Since1, Until1, Scope1),
-	query_compiler:var_key_or_val(Since0,Since1),
-	query_compiler:var_key_or_val(Until0,Until1),
-	% remove previous scope from context
-	merge_options([scope(Scope1)], Context0, Context1),
-	% finally compile call goal
-	% and replace the scope in compile context
-	(	option(mode(tell),Context0) -> Goal=Terminals
+		call_with_context(Terminals, NewContext),
+		OldContext, Pipeline) :-
+	option(outer_vars(V0), OldContext),
+	% resolve since/until values.
+	% this is needed if the values are grounded within the query
+	% by mongo DB and not provided in the call context.
+	resolve_scope(NewContext, NewContext0),
+	% add provided options to context
+	merge_options(NewContext0, OldContext, Context),
+	% finally compile call goal with new context
+	(	option(mode(tell),Context) -> Goal=Terminals
 	;	Goal=call(Terminals)
 	),
 	query_compiler:compile_terms(
 		Goal, Pipeline,
-		V0->_, Context1).
+		V0->_, Context).
+
+%%
+resolve_scope(In, [scope(Scope1)|Rest]) :-
+	select_option(scope(Scope0),In,Rest),!,
+	time_scope(Since0, Until0, Scope0),
+	time_scope(Since1, Until1, Scope1),
+	query_compiler:var_key_or_val(Since0,Since1),
+	query_compiler:var_key_or_val(Until0,Until1).
+resolve_scope(In, In).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% helper

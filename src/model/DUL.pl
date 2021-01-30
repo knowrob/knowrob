@@ -281,23 +281,23 @@ event_interval(EV, Since, Until) +>
 during(Query, Event) ?>
 	atom(Event),
 	event_interval(Event, Since, Until),
-	call(Query, _{
+	call_with_context(Query, [scope(_{
 		time: _{ since: =<(Since), until: >=(Until) }
-	}).
+	})]).
 
 since(Query, Event) ?>
 	atom(Event),
 	event_interval(Event, Time, _),
-	call(Query, _{
+	call_with_context(Query, [scope(_{
 		time: _{ since: =<(Time) }
-	}).
+	})]).
 
 until(Query, Event) ?>
 	atom(Event),
 	event_interval(Event, Time, _),
-	call(Query, _{
+	call_with_context(Query, [scope(_{
 		time: _{ until: >=(Time) }
-	}).
+	}]).
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %

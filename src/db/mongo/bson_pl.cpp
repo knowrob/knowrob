@@ -14,6 +14,8 @@
 #define APPEND_BSON_PL_PAIR(list,key,value,type) ((PlTail*)list)->append(PlCompound("-", \
 		PlTermv(PlTerm(key), PlCompound(type, PlTerm(value))))) && false
 
+// TODO: better use 'inf' on the Prolog side!
+// TODO: support 'nan' as well
 static PlAtom ATOM_Pos_Infinity("Infinity");
 static PlAtom ATOM_Neg_Infinity("-Infinity");
 static PlAtom ATOM_int("int");
