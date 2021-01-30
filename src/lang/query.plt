@@ -5,6 +5,8 @@
 		    cleanup(rdf_tests:cleanup)
 		]).
 
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_global_term/2 ]).
 :- use_module(library('rostest.pl')).
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_register_ns/3 ]).

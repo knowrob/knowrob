@@ -206,7 +206,9 @@ query_assert1(Head, Body, Context) :-
 	(	query_expand(Body, Expanded, Context) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
+	%%
 	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
+%	writeln(lang(expanded(Functor, Args, Expanded, Context))),
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
@@ -413,17 +415,27 @@ match_equals(X, Exp, ['$match', ['$eq', array([X,Exp])]]).
 
 %%
 lookup_let_doc(InnerVars, OuterVars, LetDoc) :-
-	findall([X,string(X0)],
-		(	member([Var,_], InnerVars),
-			member([Var,_], OuterVars),
-			atom_concat('$',X,X0)
+	findall([Key,string(Value)],
+		(	member([Key,_], InnerVars),
+			member([Key,_], OuterVars),
+			atom_concat('$',Key,Value)
 		),
 		LetDoc).
 
 %%
 lookup_set_vars(InnerVars, OuterVars, SetVars) :-
-	% NOTE: at the moment, let doc above ensures all vars are ground.
-	%       if that changes a $cond command must be added here.
+	% NOTE: let doc above ensures all vars can be accessed.
+	%       this does also work if the let var was undefined.
+	%       then the set below is basically a no-op.
+	%       e.g. this runs through _without_ assigning "key" field:
+	%
+	%       db.one.aggregate([{'$lookup': {
+	%			from: "one",
+	%			as: "next",
+	%			let: { "test": "$test"},
+	%			pipeline: [{'$set': {"key": "$$test"}}]
+	%		}}])
+	%
 	findall([Y,string(Y0)],
 		(	member([Y,_], InnerVars),
 			member([Y,_], OuterVars),
@@ -506,7 +518,7 @@ set_next_vars(InnerVars, ['$set', [Key,
 			string(Val)
 		])]]]) :-
 	member([Key,_], InnerVars),
-	atom_concat(['$next.',Key],Val).
+	atom_concat('$next.',Key,Val).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries

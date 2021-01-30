@@ -20,59 +20,67 @@ query_compiler:step_var(is_list(X), [V,X]) :- query_compiler:var_key(X, V).
 % ground(X) holds iff a previous step has assigned
 % a value to the variable key.
 %
-query_compiler:step_compile(ground(A0), _Context, []) :-
+query_compiler:step_compile(ground(Arg), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0), !.
+	ground(Arg), !.
 
 query_compiler:step_compile(
-		ground(A0), _Context,
+		ground(Arg), _Context,
 		[['$match', [
-			[A, ['$exists', bool(true)]]
+			[Key, ['$exists', bool(true)]]
 		]]]) :-
-	query_compiler:var_key(A0, A).
+	query_compiler:var_key(Arg, Key).
 
 %%
 % var(X) holds iff no previous step has assigned
 % a value to the variable key.
 %
-query_compiler:step_compile(var(A0), _Context, []) :-
+query_compiler:step_compile(var(Arg), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0), !,
+	% TODO: if var(Arg) and the arg was not referred before, succeed without this step
+	ground(Arg), !,
 	fail.
 
 query_compiler:step_compile(
-		var(A0), _Context,
+		var(Arg), _Context,
 		[['$match', [
-			[A, ['$exists', bool(false)]]
+			[Key, ['$exists', bool(false)]]
 		]]]) :-
-	query_compiler:var_key(A0, A).
+	query_compiler:var_key(Arg, Key).
 
 %%
 %
 %
-query_compiler:step_compile(number(A0), _Context, []) :-
+query_compiler:step_compile(number(Arg), _Context, []) :-
 	% is grounded already compile-time
-	ground(A0), !,
-	number(A0).
-	
+	ground(Arg), !,
+	number(Arg).
+
+% NOTE: mongo DB 4.4 has $isNumber command
 query_compiler:step_compile(
-		number(A0), _Context,
-		[['$match', ['$isNumber', A]]]) :-
-	query_compiler:var_key(A0, A).
+		number(Arg), _Context,
+		[['$match', ['$or', array([
+			[Key, ['$type', int(1)]],
+			[Key, ['$type', int(16)]],
+			[Key, ['$type', int(18)]]
+		])]]]) :-
+	% TODO: if not ground in the call and not referred to before,
+	%        this step can be skipped and step_compile should fail then.
+	query_compiler:var_key(Arg, Key).
 
 %%
 %
 %
 query_compiler:step_compile(
-		atom(A0), _Context, Pipeline) :-
-	match_type_(A0, atom, string, Pipeline).
+		atom(Arg), _Context, Pipeline) :-
+	match_type_(Arg, atom, string, Pipeline).
 
 %%
 %
 %
 query_compiler:step_compile(
-		is_list(A0), _Context, Pipeline) :-
-	match_type_(A0, is_list, array, Pipeline).
+		is_list(Arg), _Context, Pipeline) :-
+	match_type_(Arg, is_list, array, Pipeline).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -89,4 +97,6 @@ match_type_(Arg, _Goal, Type,
 		[['$match',
 			[Key, ['$type', string(Type)]]
 		]]) :-
+	% TODO: if not ground in the call and not referred to before,
+	%        this step can be skipped and step_compile should fail then.
 	query_compiler:var_key(Arg, Key).

@@ -28,10 +28,14 @@ during(Query, [Since,Until]) ?>
 		time: _{ since: =<(Since), until: >=(Until) }
 	}).
 
-during(Query, [Since,Until]) ?>
+during(Goal, [Since,Until]) ?>
 	var(Since),
 	var(Until),
-	call(Query),
+	% Note: goal must be called with "wildcard" scope to include all records.
+	%       the default mode is to only include records that are still true.
+	call(Goal, _{
+		time: _{ since:  >=(double(0)), until: =<(double('Infinity')) }
+	}),
 	% FIXME this is not really accurate as get('v_scope')
 	% yields the accumulated scope so far.
 	% but we only want the accumulated scope in Query
@@ -104,32 +108,64 @@ until(Query, Time) +>
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-test('tell Lea hasNumber during') :-
-	tell( holds(test:'Lea', test:hasNumber, '+493455247') during [10,34] ),
-	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [34,64] ).
+
+test('tell during') :-
+	assert_true(lang_query:tell(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during [10,34]
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during [10,34]
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during [14,24]
+	)).
 
 test('tell Lea hasNumber overlapping') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
-	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [54,84] ).
+	assert_true(lang_query:tell(
+		triple(test:'Lea', test:hasNumber, '+493455249')
+		during [44,84]
+	)),
+	assert_true(lang_query:tell(
+		triple(test:'Lea', test:hasNumber, '+493455249')
+		during [24,54]
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455249')
+		during [34,44]
+	)),
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455249')
+		during [38,80]
+	)).
 
-test('Lea hasNumber during') :-
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [10,34]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [14,24]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [34,44]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [38,80]).
+test('Lea not hasNumber during') :-
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+999999999')
+		during [5,20]
+	)),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455249')
+		during [12,20]
+	)),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during [5,20]
+	)),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247')
+		during [34,44]
+	)).
 
-%test('Lea hasNumber during X') :-
-%	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during _),
-%	ask(triple(test:'Lea', test:hasNumber, '+493455247') during X),
-%	assert_equals(X,[[10.0,34.0]]).
+test('Lea hasNumber during X') :-
+	assert_true(ask(triple(test:'Lea', test:hasNumber, '+493455247') during _)),
+	ask(triple(test:'Lea', test:hasNumber, '+493455247') during X),
+	assert_equals(X,[10.0,34.0]).
 
-%test('Lea not hasNumber during') :-
-%	assert_false(holds(test:'Lea', test:hasNumber, '+999999999') during [5,20]),
-%	assert_false(holds(test:'Lea', test:hasNumber, '+493455249') during [12,20]),
-%	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [5,20]),
-%	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [34,44]).
-%
 %test('tell the rectangle size during a time interval') :-
 %	assert_false(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200]),
 %	assert_true(tell(holds(test:'RectangleBig',test:'hasHeightInMeters', 15.2) during [1593302400,1593349200])),

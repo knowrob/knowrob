@@ -127,23 +127,41 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% read options from context
 	% option(mode(ask), Context),
 	option(step_vars(StepVars), Context),
+	option(outer_vars(OuterVars), Context),
+	% generate one variable for each goal
+	length(Goals,NumGoals),
+	length(FindallVars,NumGoals),
 	% get a list of tuples (pipeline, list variable key)
 	% the result of each pipeline is written to a list,
 	% and resulting lists are concatenated later to
 	% achieve disjunction.
 	% elements of the list are documents with variables
 	% in StepVars being assigned.
-	compile_disjunction(Goals, [], Context, FindallStages),
+	compile_disjunction(Goals, FindallVars, [], Context, FindallStages),
+	FindallStages \= [],
+	% special handling in case the disunction compiles into a single goal
+	% FIXME seems not working
+	(	FindallStages=[[_,_,SingleGoal]]
+	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_, Context)
+	;	aggregate_disjunction(FindallStages, StepVars, Pipeline)
+	).
+
+%%
+aggregate_disjunction(FindallStages, StepVars, Pipeline) :-
 	% get a list of list variable keys
-	findall(string(VarKey1),
-		member([_,VarKey1],FindallStages),
+	findall(string(X),
+		member([_,X,_],FindallStages),
 		VarKeys),
+	% prepend "$" for accessing values
+	maplist([string(In),string(Out)]>>
+		atom_concat('$',In,Out),
+		VarKeys, VarValues),
 	%
 	findall(Stage,
 		% first, compute array of results for each facet
-		(	member([Stage,_], FindallStages)
+		(	member([Stage,_,_], FindallStages)
 		% second, concatenate the results
-		;	Stage=['$set', ['next', ['$concatArrays', array(VarKeys)]]]
+		;	Stage=['$set', ['next', ['$concatArrays', array(VarValues)]]]
 		% third, delete unneeded array
 		;	Stage=['$unset', array(VarKeys)]
 		% unwind all solutions from disjunction
@@ -159,10 +177,13 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 %%
 % each goal in a disjunction compiles into a lookup expression.
 %
-compile_disjunction([], _, _, []) :- !.
+compile_disjunction([], [], _, _, []) :- !.
+
 compile_disjunction(
-		[Goal|Xs], CutVars, Context,
-		[[Stage,Key]|Ys]) :-
+		[Goal|RestGoals],
+		[Var|RestVars],
+		CutVars, Context,
+		[[Stage,Key,Goal]|Ys]) :-
 	% ensure goal is a list
 	(	is_list(Goal) -> Goal0=Goal
 	;	comma_list(Goal, Goal0)
@@ -182,12 +203,18 @@ compile_disjunction(
 	query_compiler:lookup_array(Key, Goal0, CutMatches, [],
 		[outer_vars(OuterVars0)|Context0], _,
 		Stage),
+	!,
 	% check if this goal has a cut, if so extend CutVars list
 	(	has_cut(Goal) -> CutVars0=[[Key,Var]|CutVars]
 	;	CutVars0=CutVars
 	),
 	% continue with rest
-	compile_disjunction(Xs, CutVars0, Context, Ys).
+	compile_disjunction(RestGoals, RestVars,
+		CutVars0, Context, Ys).
+
+compile_disjunction([_|Goals], [_|Vars], CutVars, Context, Pipelines) :-
+	% skip goal if compilation was "surpressed" above
+	compile_disjunction(Goals, Vars, CutVars, Context, Pipelines).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%

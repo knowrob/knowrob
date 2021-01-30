@@ -59,18 +59,25 @@ query_compiler:step_var(limit(Count, _Terminals), Var) :-
 	query_compiler:get_var([Count], Var).
 
 query_compiler:step_var(call(Terminals), Var) :-
-	member(X,Terminals),
+	ensure_list(Terminals,List),
+	member(X,List),
+	compound(X),
 	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(call(Terminals, _Scope), Var) :-
-	member(X,Terminals),
+	ensure_list(Terminals,List),
+	member(X,List),
+	compound(X),
 	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(call(_Terminals, Scope), Var) :-
 	time_scope(Since, Until, Scope),
-	member(X, [Since,Until]),
-	mng_strip(X, _Operator, _Type, Y),
-	query_compiler:step_var(Y, Var).
+	member(Value, [Since,Until]),
+	query_compiler:get_var([Value], Var).
+
+%%
+ensure_list(List,List) :- is_list(List), !.
+ensure_list(X,[X]).
 
 %% limit(+Count, :Goal)
 % Limit the number of solutions.
@@ -116,13 +123,14 @@ query_compiler:step_compile(
 	query_compiler:var_key_or_val(Until0,Until1),
 	% remove previous scope from context
 	merge_options([scope(Scope1)], Context0, Context1),
-	% finally compile called goal
+	% finally compile call goal
 	% and replace the scope in compile context
+	(	option(mode(tell),Context0) -> Goal=Terminals
+	;	Goal=call(Terminals)
+	),
 	query_compiler:compile_terms(
-		call(Terminals),
-		Pipeline,
-		V0->_,
-		Context1).
+		Goal, Pipeline,
+		V0->_, Context1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%% helper
