@@ -435,6 +435,38 @@ create_indices(Name, Indices) :-
 	).
 
      /*******************************
+     *    SPECIAL COLLECTIONS       *
+     *******************************/
+
+%%
+% True if "one" collection has a document.
+%
+has_one_db :-
+	mng_one_db(DB, Collection),
+	mng_find(DB, Collection, [], _),
+	!.
+
+%%
+% Ensure that "one" collection has one document.
+%
+initialize_one_db :-
+	has_one_db, !.
+
+initialize_one_db :-
+	mng_one_db(DB, Collection),
+	mng_store(DB, Collection, [
+		['v_scope', [
+			['time', [
+				['since',double(0)],
+				['until',double('Infinity')]
+			]]
+		]]
+	]).
+
+% make sure collection "one" has a document
+:- initialize_one_db.
+
+     /*******************************
      *          UNIT TESTS          *
      *******************************/
 
