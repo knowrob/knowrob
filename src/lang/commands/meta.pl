@@ -73,14 +73,14 @@ query_compiler:step_var(call_with_context(Terminals, _Context), Var) :-
 	query_compiler:step_var(X, Var).
 
 query_compiler:step_var(call_with_context(_Terminals, Context), Var) :-
-	% currently only scope values may be grounded in a query
+	% only scope values may be variables
 	option(scope(Scope), Context),
 	time_scope(Since, Until, Scope),
 	member(Value, [Since,Until]),
 	query_compiler:get_var([Value], Var).
 
 %%
-ensure_list(List,List) :- is_list(List), !.
+ensure_list([X|Xs],[X|Xs]) :- !.
 ensure_list(X,[X]).
 
 %% limit(+Count, :Goal)
@@ -132,6 +132,10 @@ query_compiler:step_compile(
 		V0->_, Context).
 
 %%
+% variables maybe used in the scope.
+% if this is the case, they must be replaces by variable
+% keys to be referred to in queries.
+%
 resolve_scope(In, [scope(Scope1)|Rest]) :-
 	select_option(scope(Scope0),In,Rest),!,
 	time_scope(Since0, Until0, Scope0),

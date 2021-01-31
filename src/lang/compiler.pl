@@ -514,7 +514,7 @@ lookup_next_unwind(Terminals,
 % have a grounding, so we need to make a conditional $set here.
 % FIXME: unfortunately using $$REMOVE to remove the field entirely
 %        does currently not work with lookup_let_doc/2 because it requires
-%        all variables referred to before to be ground in the document,
+%        all variables referred to before to be ground in the document -- TODO: no it doesn't!,
 %        so we fallback to value "null" here which might cause several bugs
 %        when the variable is referred to later again.
 %
@@ -616,7 +616,8 @@ get_constant_(Value, string(Value)) :- string(Value).
 %
 is_referenced(Arg,Context) :-
 	option(outer_vars(OuterVars),Context),
-	memberchk([_,Arg], OuterVars).
+	var_key(Arg, Key),
+	memberchk([Key,_], OuterVars).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper

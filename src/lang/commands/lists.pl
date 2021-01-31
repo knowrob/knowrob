@@ -40,6 +40,10 @@ query_compiler:step_var(member(Elem, List), Var) :-
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.
 %
+query_compiler:step_compile(length(List, Length), _, []) :-
+	ground(List),!,
+	length(List, Length).
+
 query_compiler:step_compile(length(List, Length), _, Pipeline) :-
 	% FIXME: SWI Prolog allows var(List), then yields lists with variables
 	%          as elements. It is also allowed that both args are variables.
@@ -49,18 +53,30 @@ query_compiler:step_compile(length(List, Length), _, Pipeline) :-
 %% max_list(+List:list(number), -Max:number)
 % True if Max is the largest number in List. Fails if List is empty. 
 %
+query_compiler:step_compile(max_list(List, Max), _, []) :-
+	ground(List),!,
+	max_list(List, Max).
+
 query_compiler:step_compile(max_list(List, Max), _, Pipeline) :-
 	compile_list_attribute(List, Max, '$max', Pipeline).
 
 %% min_list(+List, ?Min)
 % True if Min is the smallest number in List. Fails if List is empty.
 %
+query_compiler:step_compile(min_list(List, Min), _, []) :-
+	ground(List),!,
+	min_list(List, Min).
+
 query_compiler:step_compile(min_list(List, Min), _, Pipeline) :-
 	compile_list_attribute(List, Min, '$min', Pipeline).
 
 %% sum_list(+List, -Sum)
 % Sum is the result of adding all numbers in List.
 %
+query_compiler:step_compile(sum_list(List, Sum), _, []) :-
+	ground(List),!,
+	sum_list(List, Sum).
+
 query_compiler:step_compile(sum_list(List, Sum), _, Pipeline) :-
 	compile_list_attribute(List, Sum, '$sum', Pipeline).
 
@@ -68,6 +84,10 @@ query_compiler:step_compile(sum_list(List, Sum), _, Pipeline) :-
 % Removes duplicates from a list.
 % List may *not* contain variables when this is evaluated.
 %
+query_compiler:step_compile(list_to_set(List, Set), _, []) :-
+	ground(List),!,
+	list_to_set(List, Set).
+
 query_compiler:step_compile(
 		list_to_set(List, Set), _,
 		[Step]) :-

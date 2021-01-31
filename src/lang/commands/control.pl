@@ -135,8 +135,6 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% the result of each pipeline is written to a list,
 	% and resulting lists are concatenated later to
 	% achieve disjunction.
-	% elements of the list are documents with variables
-	% in StepVars being assigned.
 	compile_disjunction(Goals, FindallVars, [], Context, FindallStages),
 	FindallStages \= [],
 	% special handling in case the disjunction compiles into a single goal

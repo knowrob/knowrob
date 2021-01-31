@@ -24,12 +24,12 @@ query_compiler:step_var(=:=(X,Y), Var) :- comparison_var(X,Y,Var).
 % TODO: early evaluation if ground at compile-time!
 %
 query_compiler:step_compile( is(X,Y), _, Z) :- assignment(X,Y,Z).
-query_compiler:step_compile(  <(X,Y), _, Z) :- comparison('$lt',X,Y,Z).
-query_compiler:step_compile( =<(X,Y), _, Z) :- comparison('$lte',X,Y,Z).
-query_compiler:step_compile(  >(X,Y), _, Z) :- comparison('$gt',X,Y,Z).
-query_compiler:step_compile( >=(X,Y), _, Z) :- comparison('$gte',X,Y,Z).
-query_compiler:step_compile(=\=(X,Y), _, Z) :- comparison('$ne',X,Y,Z).
-query_compiler:step_compile(=:=(X,Y), _, Z) :- comparison('$eq',X,Y,Z).
+query_compiler:step_compile(  <(X,Y), _, Z) :- comparison(  <(X,Y),Z).
+query_compiler:step_compile( =<(X,Y), _, Z) :- comparison( =<(X,Y),Z).
+query_compiler:step_compile(  >(X,Y), _, Z) :- comparison(  >(X,Y),Z).
+query_compiler:step_compile( >=(X,Y), _, Z) :- comparison( >=(X,Y),Z).
+query_compiler:step_compile(=\=(X,Y), _, Z) :- comparison(=\=(X,Y),Z).
+query_compiler:step_compile(=:=(X,Y), _, Z) :- comparison(=:=(X,Y),Z).
 
 %%
 assignment_var(Var, _Exp, [VarKey, Var]) :-
@@ -50,17 +50,26 @@ expression_var(Exp, Key, Var) :-
 	query_compiler:var_key(Var, Key).
 
 %% $set var to evaluated number
+assignment(Var, Exp, []) :-
+	ground(Exp),!,
+	Var is Exp.
+
 assignment(Var, Exp, ['$set', [Varkey, Doc]]) :-
 	% FIXME: SWI Prolog allows to write e.g. `7 is 7`,
-	%           so we need to expand into $set + $match(=:=) pipeline
+	%           so this needs to be expanded into $set + $match pipeline
 	query_compiler:var_key(Var, Varkey),
 	expression(Exp,Doc).
 
 %% compare two expressions
-comparison(Operator, Exp1, Exp2,
-		['$match', [Operator, array([Doc1,Doc2])]]) :-
-	expression(Exp1,Doc1),
-	expression(Exp2,Doc2).
+comparison(Exp, []) :-
+	ground(Exp),!,
+	call(Exp).
+
+comparison(Exp, ['$match', [MngOperator, array([Doc1,Doc2])]]) :-
+	Exp =.. [PlOperator, Left, Right],
+	expression_operator(PlOperator, MngOperator),
+	expression(Left, Doc1),
+	expression(Right, Doc2).
 
 %% variables
 expression(Var, string(Key)) :-
@@ -84,6 +93,14 @@ expression(e,       double(V))          :- V is e,!.
 expression(epsilon, double(V))          :- V is epsilon,!.
 expression(inf,     double('Infinity')) :- !.
 expression(nan,     double('NaN'))      :- !.
+
+%% arithmetic operators
+expression_operator(  <, '$lt').
+expression_operator( =<, '$lte').
+expression_operator(  >, '$gt').
+expression_operator( >=, '$gte').
+expression_operator(=\=, '$ne').
+expression_operator(=:=, '$eq').
 
 %% arithmetic functions
 expression_function(abs,      '$abs').

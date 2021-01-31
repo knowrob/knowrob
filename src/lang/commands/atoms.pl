@@ -20,6 +20,12 @@ query_compiler:step_var(atomic_list_concat(List,A), Var)     :- query_compiler:g
 %% query compilation
 query_compiler:step_compile(
 		atom_number(Atom,Number), _,
+		[]) :-
+	(ground(Atom);ground(Number)),!,
+	atom_number(Atom,Number).
+
+query_compiler:step_compile(
+		atom_number(Atom,Number), _,
 		Pipeline) :-
 	query_compiler:var_key_or_val(Atom,Atom0),
 	query_compiler:var_key_or_val(Number,Number0),
@@ -29,6 +35,10 @@ query_compiler:step_compile(
 		;	query_compiler:match_equals(Atom0, ['$toString', Number0], Step)
 		),
 		Pipeline).
+
+query_compiler:step_compile(atom_length(Atom,Length), _, []) :-
+	ground(Atom),!,
+	atom_length(Atom,Length).
 
 query_compiler:step_compile(
 		atom_length(Atom,Length), _,
@@ -40,6 +50,10 @@ query_compiler:step_compile(
 		;	query_compiler:match_equals(Atom0, ['$toString', Length0], Step)
 		),
 		Pipeline).
+
+query_compiler:step_compile(atom_prefix(Atom,Prefix), _, []) :-
+	ground([Atom,Prefix]),!,
+	atom_prefix(Atom,Prefix).
 
 query_compiler:step_compile(
 		atom_prefix(Atom,Prefix), _,
@@ -54,6 +68,11 @@ query_compiler:step_compile(
 			['$strLenCP', Prefix0]
 		])],
 		Step).
+
+query_compiler:step_compile(atom_concat(Left,Right,Atom), _, []) :-
+	ground(Left),
+	ground(Right),!,
+	atom_concat(Left,Right,Atom).
 
 query_compiler:step_compile(
 		atom_concat(Left,Right,Atom), _,
@@ -77,6 +96,10 @@ query_compiler:step_compile(
 		),
 		Pipeline).
 
+query_compiler:step_compile(atomic_list_concat(List, Atom), _, []) :-
+	ground(List),!,
+	atomic_list_concat(List, Atom).
+
 query_compiler:step_compile(
 		atomic_list_concat(List, Atom), _,
 		Pipeline) :-
@@ -87,6 +110,11 @@ query_compiler:step_compile(
 		;	query_compiler:match_equals(Atom0, ['$concat', array(List0)], Step)
 		),
 		Pipeline).
+
+query_compiler:step_compile(atomic_list_concat(List, Sep, Atom), _, []) :-
+	ground(Sep),
+	(ground(List);ground(Atom)),!,
+	atomic_list_concat(List, Sep, Atom).
 
 query_compiler:step_compile(
 		atomic_list_concat(List, Sep, Atom), _,
