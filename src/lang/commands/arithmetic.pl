@@ -54,7 +54,7 @@ assignment(Var, Exp, []) :-
 	ground(Exp),!,
 	Var is Exp.
 
-assignment(Var, Exp, ['$set', [Varkey, Doc]]) :-
+assignment(Var, Exp, [['$set', [Varkey, Doc]]]) :-
 	% FIXME: SWI Prolog allows to write e.g. `7 is 7`,
 	%           so this needs to be expanded into $set + $match pipeline
 	query_compiler:var_key(Var, Varkey),
@@ -65,16 +65,21 @@ comparison(Exp, []) :-
 	ground(Exp),!,
 	call(Exp).
 
-comparison(Exp, ['$match', [MngOperator, array([Doc1,Doc2])]]) :-
+comparison(Exp, [
+		['$set',   ['t_success', [MngOperator, array([Doc1,Doc2])]]],
+		['$match', ['t_success', bool(true)]],
+		['$unset', string('t_success')]
+	]) :-
 	Exp =.. [PlOperator, Left, Right],
 	expression_operator(PlOperator, MngOperator),
 	expression(Left, Doc1),
 	expression(Right, Doc2).
 
 %% variables
-expression(Var, string(Key)) :-
+expression(Var, string(VarValue)) :-
 	var(Var),!,
-	query_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var,Key),
+	atom_concat('$',Key,VarValue).
 %% functions
 expression(Exp, Doc) :-
 	compound(Exp),!,
@@ -129,3 +134,43 @@ expression_function(/,        '$divide').
 expression_function(*,        '$multiply').
 %expression_function(_,'$sum').
 %expression_function(_,'$avg').
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('lang_arithmetic').
+
+test('var is constant'):-
+	lang_query:test_command(
+		(Y is X), X, double(-3.25)),
+	assert_equals(Y, -3.25).
+
+test('var is exp'):-
+	lang_query:test_command(
+		(Y is (X + 0.5)*2), X, double(2.5)),
+	assert_equals(Y, 6.0).
+
+test('constant is constant', [fixme('left-side of is/2 cannot be ground')]):-
+	assert_true(lang_query:test_command(
+		(3.0 is X), X, double(-3))),
+	assert_false(lang_query:test_command(
+		(4.0 is X), X, double(-3))).
+
+test('var < constant'):-
+	assert_true(lang_query:test_command(
+		(X < 7.0), X, double(6))),
+	assert_false(lang_query:test_command(
+		(X < 7.0), X, double(8))),
+	assert_false(lang_query:test_command(
+		(X < 7.0), X, double(7))).
+
+test('exp < exp'):-
+	assert_true(lang_query:test_command(
+		((X*2) < (X + 5)), X, double(2))),
+	assert_false(lang_query:test_command(
+		((X*2) < (X + 5)), X, double(5))),
+	assert_false(lang_query:test_command(
+		((X*2) < (X + 5)), X, double(6))).
+
+:- end_tests('lang_arithmetic').

@@ -419,7 +419,11 @@ compile_tell(Doc0, Doc1) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-match_equals(X, Exp, ['$match', ['$eq', array([X,Exp])]]).
+match_equals(X, Exp, Step) :-
+	(	Step=['$set', ['t_is_equal', ['$eq', array([X,Exp])]]]
+	;	Step=['$match', ['t_is_equal', bool(true)]]
+	;	Step=['$unset', string('t_is_equal')]
+	).
 
 %%
 lookup_let_doc(InnerVars, OuterVars, LetDoc) :-
@@ -547,11 +551,11 @@ step_var(List,Var) :-
 set_if_var(X, Exp,
 		['$set', [Key, ['$cond', array([
 			% if X is still a variable
-			['$not', array([KeyExp])],
+			['$not', array([string(KeyExp)])],
 			% evaluate the expression and set new value
 			Exp,
 			% else value remains the same
-			KeyExp
+			string(KeyExp)
 		])]]]) :-
 	query_compiler:var_key(X, Key),
 	atom_concat('$',Key,KeyExp).
@@ -577,9 +581,8 @@ var_key(Var,Key) :-
 % in the query.
 %
 var_key_or_val(In, Out) :-
-	mng_strip_operator(In, Operator, In0),
-	var_key_or_val0(In0, Out0),
-	mng_strip_operator(Out, Operator, Out0).
+	mng_strip_operator(In, '=', In0),
+	var_key_or_val0(In0, Out).
 	
 var_key_or_val0(In, string(Key)) :-
 	mng_strip_type(In, _, In0),

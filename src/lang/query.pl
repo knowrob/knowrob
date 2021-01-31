@@ -248,6 +248,15 @@ user:term_expansion((?+>(Head,Goal)), [X1,X2]) :-
 	user:term_expansion((?>(Head,Goal)),X1),
 	user:term_expansion((+>(Head,Goal)),X2).
 
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+%%
+test_command(Goal, Var, Value) :-
+	WithSet=(','(set(Var,Value), Goal)),
+	lang_query:ask(WithSet).
+
 
 		 /*******************************
 		 *      	  HELPER     		*
