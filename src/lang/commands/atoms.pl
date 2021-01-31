@@ -228,4 +228,10 @@ test('atomic_list_concat(+List,-Atom)'):-
 		X1, string('foo')),
 	assert_equals(Atom, 'foobar').
 
+test('atomic_list_concat(+List,+Sep,-Atom)'):-
+	lang_query:test_command(
+		atomic_list_concat([X1, 'bar'], '-', Atom),
+		X1, string('foo')),
+	assert_equals(Atom, 'foo-bar').
+
 :- end_tests('lang_atoms').
