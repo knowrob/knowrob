@@ -1,4 +1,4 @@
-:- module(lang_equality, []).
+:- module(lang_comparison, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -42,8 +42,11 @@ query_compiler:step_compile(==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X == Y.
 
-query_compiler:step_compile(==(X,Y), _,
-		[['$match', ['$eq', array([X0,Y0])]]]) :-
+query_compiler:step_compile(==(X,Y), _, [
+		['$set',   ['t_equal', ['$eq', array([X0,Y0])]]],
+		['$match', ['t_equal', bool(true)]],
+		['$unset', string('t_equal')]
+	]) :-
 	query_compiler:var_key_or_val(X,X0),
 	query_compiler:var_key_or_val(Y,Y0).
 
@@ -51,8 +54,11 @@ query_compiler:step_compile(\==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X \== Y.
 
-query_compiler:step_compile(\==(X,Y), _,
-		[['$match', ['$ne', array([X0,Y0])]]]) :-
+query_compiler:step_compile(\==(X,Y), _, [
+		['$set',   ['t_equal', ['$eq', array([X0,Y0])]]],
+		['$match', ['t_equal', bool(false)]],
+		['$unset', string('t_equal')]
+	]) :-
 	query_compiler:var_key_or_val(X,X0),
 	query_compiler:var_key_or_val(Y,Y0).
 
@@ -61,4 +67,34 @@ query_compiler:step_compile(\==(X,Y), _,
 %
 %query_compiler:step_compile(=(Term1, Term2), Context, Pipeline) :-
 %	fail.
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('lang_comparison').
+
+test('==(+Term1,+Term2)'):-
+	assert_true(lang_query:test_command(
+		(Atom == '4.5'), Atom, string('4.5'))),
+	assert_true(lang_query:test_command(
+		(Atom == 'foo'), Atom, string('foo'))),
+	assert_true(lang_query:test_command(
+		(Atom == 4.5), Atom, double(4.5))),
+	assert_false(lang_query:test_command(
+		(Atom == 'foo'), Atom, string('4.5'))),
+	assert_false(lang_query:test_command(
+		(Atom == 4.5), Atom, string('4.5'))).
+
+test('\\==(+Term1,+Term2)'):-
+	assert_false(lang_query:test_command(
+		(Atom \== 'foo'), Atom, string('foo'))),
+	assert_false(lang_query:test_command(
+		(Atom \== 4.5), Atom, double(4.5))),
+	assert_true(lang_query:test_command(
+		(Atom \== 'foo'), Atom, string('4.5'))),
+	assert_true(lang_query:test_command(
+		(Atom \== 4.5), Atom, string('4.5'))).
+
+:- end_tests('lang_comparison').
 	

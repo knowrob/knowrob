@@ -69,28 +69,19 @@ query_compiler:step_compile(number(Arg), Context, []) :-
 	\+ query_compiler:is_referenced(Arg,Context), !,
 	fail.
 
-% NOTE: mongo DB 4.4 has $isNumber command
-query_compiler:step_compile(
-		number(Arg), _Context,
-		[['$match', ['$or', array([
-			[Key, ['$type', int(1)]],
-			[Key, ['$type', int(16)]],
-			[Key, ['$type', int(18)]]
-		])]]]) :-
-	query_compiler:var_key(Arg, Key).
+query_compiler:step_compile(number(Arg), Context, Pipeline) :-
+	match_type_(Arg, number, number, Context, Pipeline).
 
 %%
 %
 %
-query_compiler:step_compile(
-		atom(Arg), Context, Pipeline) :-
+query_compiler:step_compile(atom(Arg), Context, Pipeline) :-
 	match_type_(Arg, atom, string, Context, Pipeline).
 
 %%
 %
 %
-query_compiler:step_compile(
-		is_list(Arg), Context, Pipeline) :-
+query_compiler:step_compile(is_list(Arg), Context, Pipeline) :-
 	match_type_(Arg, is_list, array, Context, Pipeline).
 
 
@@ -114,3 +105,44 @@ match_type_(Arg, _Goal, Type, _Context,
 			[Key, ['$type', string(Type)]]
 		]]) :-
 	query_compiler:var_key(Arg, Key).
+
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('typecheck_commands').
+
+test('ground(?Term)'):-
+	assert_true(lang_query:test_command(
+		ground(Number), Number, double(4.5))),
+	assert_false(lang_query:test_command(
+		ground(_), _, double(4.5))).
+
+test('var(?Term)'):-
+	assert_true(lang_query:test_command(
+		var(_), _, double(4.5))),
+	assert_false(lang_query:test_command(
+		var(Number), Number, double(4.5))).
+
+test('number(+Number)'):-
+	assert_true(lang_query:test_command(
+		number(Number), Number, double(4.5))),
+	assert_false(lang_query:test_command(
+		number(Number), Number, string('foo'))),
+	assert_false(lang_query:test_command(
+		number(Number), Number, string('4.5'))).
+
+test('atom(+Atom)'):-
+	assert_true(lang_query:test_command(
+		atom(Atom), Atom, string('4.5'))),
+	assert_false(lang_query:test_command(
+		atom(Atom), Atom, double(4.5))).
+
+test('is_list(+List)'):-
+	assert_true(lang_query:test_command(
+		is_list(List), List, array([string('4.5')]))),
+	assert_false(lang_query:test_command(
+		is_list(List), List, double(4.5))).
+
+:- end_tests('typecheck_commands').
