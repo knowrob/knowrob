@@ -140,20 +140,9 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% special handling in case the disjunction compiles into a single goal
 	% no disjunction needed then.
 	(	FindallStages=[[_,_,SingleGoal]]
-	->	compile_without_pragma(SingleGoal, OuterVars, Context, Pipeline)
+	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_, Context)
 	;	aggregate_disjunction(FindallStages, StepVars, Pipeline)
 	).
-
-%%
-% compile_disjunction above evaluates all pragma commands which potentially
-% grounds variables (e.g. as in the case of binding current time to a var in pragma).
-% thus it may be problematic to compile pragma's twice.
-% here we add a flag to compile context that causes all pragma commands to be ignored
-% entirely for the goal provided.
-%
-compile_without_pragma(Goal, OuterVars, Context, Pipeline) :-
-	merge_options([ignore_pragma], Context, Context0),
-	query_compiler:compile_term(Goal, Pipeline, OuterVars->_, Context0).
 
 %%
 aggregate_disjunction(FindallStages, StepVars, Pipeline) :-
@@ -327,6 +316,14 @@ test('(+Goal ; $early_evaluated)'):-
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5,Results)),
 	assert_true(memberchk(15.0,Results)).
+
+test('(+Goal ; +PrunedGoal)'):-
+	lang_query:test_command(
+		(	(X is (Num + 5))
+		;	(7 < 5, X is (Num * 2))
+		),
+		Num, double(4.5)),
+	assert_equals(X,9.5).
 
 test('((+Goal ; +Goal), !)'):-
 	lang_query:test_command(

@@ -148,9 +148,9 @@ unify_1(_, [_, Term]) :-
 	% variable was unified in pragma command
 	ground(Term), !.
 
-unify_1(Doc, [VarKey, Var]) :-
+unify_1(Doc, [VarKey, Val]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
-	mng_strip_type(TypedValue, _, Var).
+	mng_strip_type(TypedValue, _, Val).
 
 %%
 unify_list(array([]),_,[]) :- !.
@@ -166,6 +166,7 @@ unify_list_1(_, Ground, Ground) :-
 unify_list_1(Doc, Var, Elem) :-
 	var(Var),!,
 	% FIXME
+	writeln(fixme),
 	var_key(Var, Key),
 	unify_1(Doc, [Key, Elem]).
 
@@ -214,7 +215,6 @@ query_assert1(Head, Body, Context) :-
 	),
 	%%
 	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
-%	writeln(lang(expanded(Functor, Args, Expanded, Context))),
 	%% store expanded query
 	assertz(query(Functor, Args, Expanded, Context)).
 
@@ -531,12 +531,9 @@ lookup_next_unwind(Terminals,
 %
 set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
-			% if the field does not exist
-			['$not', array([string(Val)])],
-			% do not add a new field at Key
-			string('$$REMOVE'),
-			% else write Val into field at Key
-			string(Val)
+			['$not', array([string(Val)])], % if the field does not exist
+			string('$$REMOVE'),             % do not add a new field at Key
+			string(Val)                     % else write Val into field at Key
 		])]]]) :-
 	member([Key,_], InnerVars),
 	atom_concat('$next.',Key,Val).

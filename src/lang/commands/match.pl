@@ -28,8 +28,7 @@ query_compiler:step_var(set(A,_Val), Ctx, Var) :-
 %	=, \=, >=, =<, >, <, in, nin
 %
 query_compiler:step_compile(
-		match(Expr),
-		Ctx,
+		match(Expr), Ctx,
 		[['$match', [
 			[X, [A, B]]
 		]]]) :-
