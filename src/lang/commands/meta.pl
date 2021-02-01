@@ -14,8 +14,10 @@
 :- query_compiler:add_command(ignore, [ask,tell]).
 
 :- query_compiler:add_command(call_with_context, [ask,tell]).
+% TODO: move these to somewhere else
 :- query_compiler:add_command(set, [ask,tell]).
 :- query_compiler:add_command(pragma, [ask,tell]).
+:- query_compiler:add_command(context, [ask,tell]).
 
 %%%% query expansion
 	
@@ -154,6 +156,18 @@ query_compiler:step_compile(pragma(Goal), Ctx, []) :-
 	(	option(ignore_pragma,Ctx) -> true
 	;	call(Goal)
 	).
+
+%%
+% context(-Option) and context(-Option, +Default) are used to read
+% options from compile context to make them accessible in rules.
+% The main usecase is that some temporal predicates need to access
+% the query scope.
+%
+query_compiler:step_compile(context(Option), Ctx, []) :-
+	option(Option, Ctx).
+
+query_compiler:step_compile(context(Option, Default), Ctx, []) :-
+	option(Option, Ctx, Default).
 
 %%
 % variables maybe used in the scope.
