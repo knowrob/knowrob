@@ -150,7 +150,14 @@ unify_1(_, [_, Term]) :-
 
 unify_1(Doc, [VarKey, Val]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
-	mng_strip_type(TypedValue, _, Val).
+	mng_strip_type(TypedValue, _, Val0),
+	(	\+ is_list(Val0) -> Val=Val0
+	;	findall(Stripped,
+			(	member(X,Val0),
+				mng_strip_type(X, _, Stripped)
+			),
+			Val)
+	).
 
 %%
 unify_list(array([]),_,[]) :- !.
