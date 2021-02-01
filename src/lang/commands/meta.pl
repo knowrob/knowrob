@@ -144,14 +144,64 @@ resolve_scope(In, [scope(Scope1)|Rest]) :-
 	query_compiler:var_key_or_val(Until0,Until1).
 resolve_scope(In, In).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% helper
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
+% append cut operator at the end of a goal.
+%
 append_cut(Goal, WithCut) :-
 	(	is_list(Goal) -> Terms=Goal
 	;	comma_list(Goal,Terms)
 	),
 	append(Terms, ['!'], X),
 	comma_list(WithCut, X).
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('meta_commands').
+
+test('once(+Goal)'):-
+	lang_query:test_command(
+		once((
+			(X is (Num + 5))
+		;	(X is (Num * 2))
+		)),
+		Num, double(4.5)),
+	assert_equals(X,9.5).
+
+test('limit(1, +Goal)'):-
+	lang_query:test_command(
+		limit(1, (
+			(X is (Num + 5))
+		;	(X is (Num * 2))
+		)),
+		Num, double(4.5)),
+	assert_equals(X,9.5).
+
+test('limit(2, +Goal)'):-
+	findall(X,
+		lang_query:test_command(
+			limit(2, (
+				(X is (Num + 5))
+			;	(X is (Num * 2))
+			;	(X is (Num * 2))
+			)),
+			Num, double(4.5)),
+		Results
+	),
+	assert_unifies(Results,[_,_]),
+	assert_true(memberchk(9.5, Results)),
+	assert_true(memberchk(9.0, Results)).
+
+test('ignore(+Goal)'):-
+	lang_query:test_command(
+		ignore(((Num < 3), (X is (Num * 2)))),
+		Num, double(4.5)),
+	assert_unifies(X,_).
+
+test('call(+Goal)'):-
+	lang_query:test_command(
+		call(Y is X), X, double(-3.25)),
+	assert_equals(Y, -3.25).
+
+:- end_tests('meta_commands').
