@@ -11,15 +11,15 @@
 %%
 % match uses 2-ary operator whose arguments maybe variables.
 %
-query_compiler:step_var(match(Expr), [VarKey, Var]) :-
+query_compiler:step_var(match(Expr), Ctx, [VarKey, Var]) :-
 	Expr =.. [_Functor, A, B],
 	(	Var=A
 	;	Var=B
 	),
-	query_compiler:var_key(Var, VarKey).
+	query_compiler:var_key(Var, Ctx, VarKey).
 
-query_compiler:step_var(set(A,_Val), Var) :-
-	query_compiler:get_var(A,Var).
+query_compiler:step_var(set(A,_Val), Ctx, Var) :-
+	query_compiler:get_var(A, Ctx, Var).
 
 %%
 % match(Expr) uses $match operator on existing variables
@@ -29,7 +29,7 @@ query_compiler:step_var(set(A,_Val), Var) :-
 %
 query_compiler:step_compile(
 		match(Expr),
-		_Context,
+		Ctx,
 		[['$match', [
 			[X, [A, B]]
 		]]]) :-
@@ -38,12 +38,12 @@ query_compiler:step_compile(
 	Expr =.. [X0,A0,B0],
 	mng_operator(X0, X),
 	% 
-	query_compiler:var_key_or_val(A0, A),
-	query_compiler:var_key_or_val(B0, B).
+	query_compiler:var_key_or_val(A0, Ctx, A),
+	query_compiler:var_key_or_val(B0, Ctx, B).
 
 %%
 query_compiler:step_compile(
-		set(Var,Value), _Context,
+		set(Var,Value), Ctx,
 		[['$set', [[Key,Value]]]]) :-
-	query_compiler:var_key(Var,Key).
+	query_compiler:var_key(Var,Ctx,Key).
 

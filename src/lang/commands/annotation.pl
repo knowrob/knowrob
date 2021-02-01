@@ -28,15 +28,15 @@
 %
 query_compiler:step_var(
 		comment(Entity, Comment),
-		[Key, Var]) :-
-	(	annotation_var_(Entity, [Key, Var])
-	;	annotation_var_(Comment, [Key, Var])
+		Ctx, [Key, Var]) :-
+	(	annotation_var_(Entity,  Ctx, [Key, Var])
+	;	annotation_var_(Comment, Ctx, [Key, Var])
 	).
 
 %%
-annotation_var_(Arg, [Key, Var]) :-
+annotation_var_(Arg, Ctx, [Key, Var]) :-
 	mng_strip_type(Arg,_,Var),
-	query_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Ctx, Key).
 
 %%
 % ask(comment(Entity, Comment)) looks up the comment
@@ -60,7 +60,7 @@ ask_annotation(Entity, Property, Comment, Context, Pipeline) :-
 				Comment, Context0, Step)
 		;	Step=['$unwind',string('$next')]
 		% set variable field
-		;	set_result_(Context0, Step)
+		;	set_result_(Context0, Context0, Step)
 		% remove next field
 		;	Step=['$unset',string('next')]
 		),
@@ -105,7 +105,7 @@ lookup_(Entity, Property, Comment, Context, Step) :-
 		QueryDoc, Context, Step).
 
 %%
-set_result_(Comment,
+set_result_(Comment, Ctx,
 		['$set', [Key, string('$next.v')]]) :-
 	mng_strip_type(Comment,_,Var),
-	query_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Ctx, Key).

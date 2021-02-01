@@ -33,7 +33,7 @@ into aggregate pipelines that can be processed by mongo DB.
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3.
 %% implemented by query commands to provide variables exposed to the outside
-:- multifile step_var/2.
+:- multifile step_var/3.
 
 :- rdf_meta(step_compile(t,t,t)).
 
@@ -168,6 +168,7 @@ unify_list_1(_, Ground, Ground) :-
 
 unify_list_1(Doc, Var, Elem) :-
 	var(Var),!,
+	% FIXME
 	var_key(Var, Key),
 	unify_1(Doc, [Key, Elem]).
 
@@ -380,7 +381,7 @@ compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
 	
 compile_expanded_term(Expanded, Doc, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
-	(	bagof(Vs, step_var(Expanded, Vs), StepVars) -> true
+	(	bagof(Vs, step_var(Expanded, Context, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
 	list_to_set(StepVars, StepVars_unique),
@@ -421,7 +422,7 @@ compile_tell(Doc0, Doc1) :-
 
 %%
 match_equals(X, Exp, Step) :-
-	(	Step=['$set', ['t_is_equal', ['$eq', array([X,Exp])]]]
+	(	Step=['$set',   ['t_is_equal', ['$eq', array([X,Exp])]]]
 	;	Step=['$match', ['t_is_equal', bool(true)]]
 	;	Step=['$unset', string('t_is_equal')]
 	).
@@ -471,6 +472,7 @@ lookup_array(ArrayKey, Terminals,
 		]]) :-
 	% get variables referred to in query
 	option(outer_vars(OuterVars), Context),
+	option(step_vars(StepVars), Context),
 	% join collection with single document
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline
@@ -489,7 +491,19 @@ lookup_array(ArrayKey, Terminals,
 	;	Prefix0=[['$set', SetVars] | Prefix]
 	),
 	append(Prefix0,Pipeline,Pipeline0),
-	append(Pipeline0,Suffix,Pipeline1).
+	% $set compile-time grounded vars for later unification.
+	% this is needed because different branches cannot ground the same
+	% variable to different values compile-time.
+	findall([Key,TypedValue],
+		(	member([Key,Val],StepVars),
+			ground(Val),
+			mng_typed_value(Val,TypedValue)
+		),
+		GroundVars),
+	(	GroundVars=[] -> Suffix0=Suffix
+	;	Suffix0=[['$set', GroundVars] | Suffix]
+	),
+	append(Pipeline0,Suffix0,Pipeline1).
 
 %%
 lookup_next_unwind(Terminals,
@@ -541,15 +555,15 @@ set_next_vars(InnerVars, ['$set', [Key,
 % since ',' is expanded into lists by the compiler,
 % a step_var clause for lists must be provided.
 %
-step_var(List,Var) :-
+step_var(List, Ctx, Var) :-
 	is_list(List),!,
 	member(X,List),
-	step_var(X,Var).
+	step_var(X, Ctx, Var).
 
 %%
 % Conditional $set command for ungrounded vars.
 %
-set_if_var(X, Exp,
+set_if_var(X, Exp, Ctx,
 		['$set', [Key, ['$cond', array([
 			% if X is still a variable
 			['$not', array([string(KeyExp)])],
@@ -558,20 +572,27 @@ set_if_var(X, Exp,
 			% else value remains the same
 			string(KeyExp)
 		])]]]) :-
-	query_compiler:var_key(X, Key),
+	query_compiler:var_key(X, Ctx, Key),
 	atom_concat('$',Key,KeyExp).
 
 %%
-get_var(Term, [Key,Var]) :-
+get_var(Term, Ctx, [Key,Var]) :-
 	term_variables(Term,Vars),
 	member(Var,Vars),
-	var_key(Var,Key).
+	var_key(Var, Ctx, Key).
 
 %%
 % Map a Prolog variable to the key that used to
 % refer to this variable in mongo queries.
 %
-var_key(Var,Key) :-
+var_key(Var, Ctx, Key) :-
+	(	option(step_vars(Vars), Ctx)
+	;	option(outer_vars(Vars), Ctx)
+	),
+	member([Key,ReferredVar],Vars),
+	ReferredVar == Var,
+	!.
+var_key(Var, _Ctx, Key) :-
 	var(Var),
 	term_to_atom(Var,Atom),
 	atom_concat('v',Atom,Key).
@@ -581,29 +602,29 @@ var_key(Var,Key) :-
 % or a typed term for some constant value provided
 % in the query.
 %
-var_key_or_val(In, Out) :-
+var_key_or_val(In, Ctx, Out) :-
 	mng_strip_operator(In, '=', In0),
-	var_key_or_val0(In0, Out).
+	var_key_or_val0(In0, Ctx, Out).
 	
-var_key_or_val0(In, string(Key)) :-
+var_key_or_val0(In, Ctx, string(Key)) :-
 	mng_strip_type(In, _, In0),
-	var_key(In0, Out),
+	var_key(In0, Ctx, Out),
 	atom_concat('$',Out,Key),
 	!.
 
-var_key_or_val0(In, Out) :-
+var_key_or_val0(In, _Ctx, Out) :-
 	atomic(In),!,
 	once(get_constant_(In,Out)).
 
-var_key_or_val0(In, array(L)) :-
+var_key_or_val0(In, Ctx, array(L)) :-
 	is_list(In),!,
 	findall(X,
 		(	member(Y,In),
-			var_key_or_val0(Y,X)
+			var_key_or_val0(Y, Ctx, X)
 		),
 		L).
 
-var_key_or_val0(In,In) :-
+var_key_or_val0(In, _Ctx, In) :-
 	compound(In).
 
 %% in case of atomic in query
@@ -618,9 +639,9 @@ get_constant_(Value, string(Value)) :- string(Value).
 % That is, Arg has been added to the "outer variables"
 % of the compile context.
 %
-is_referenced(Arg,Context) :-
-	option(outer_vars(OuterVars),Context),
-	var_key(Arg, Key),
+is_referenced(Arg, Ctx) :-
+	option(outer_vars(OuterVars),Ctx),
+	var_key(Arg, Ctx, Key),
 	memberchk([Key,_], OuterVars).
 
 %%%%%%%%%%%%%%%%%%%%%%%

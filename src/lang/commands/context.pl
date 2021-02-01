@@ -13,10 +13,10 @@
 %
 query_compiler:step_compile(
 		context(Option),
-		Context, []) :-
-	option(Option, Context).
+		Ctx, []) :-
+	option(Option, Ctx).
 
 query_compiler:step_compile(
 		context(Option, Default),
-		Context, []) :-
-	option(Option, Context, Default).
+		Ctx, []) :-
+	option(Option, Ctx, Default).

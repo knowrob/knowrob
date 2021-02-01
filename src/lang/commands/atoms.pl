@@ -10,12 +10,12 @@
 :- query_compiler:add_command(atomic_list_concat,  [ask]).
 
 %% query variables
-query_compiler:step_var(atom_number(A,N), Var)      :- query_compiler:get_var([A,N],Var).
-query_compiler:step_var(atom_length(A,L), Var)      :- query_compiler:get_var([A,L],Var).
-query_compiler:step_var(atom_prefix(A,P), Var)      :- query_compiler:get_var([A,P],Var).
-query_compiler:step_var(atom_concat(A1,A2,A3), Var) :- query_compiler:get_var([A1,A2,A3],Var).
-query_compiler:step_var(atomic_list_concat(List,Sep,A), Var) :- query_compiler:get_var([A,Sep|List],Var).
-query_compiler:step_var(atomic_list_concat(List,A), Var)     :- query_compiler:get_var([A|List],Var).
+query_compiler:step_var(atom_number(A,N), Ctx, Var)      :- query_compiler:get_var([A,N],Ctx,Var).
+query_compiler:step_var(atom_length(A,L), Ctx, Var)      :- query_compiler:get_var([A,L],Ctx,Var).
+query_compiler:step_var(atom_prefix(A,P), Ctx, Var)      :- query_compiler:get_var([A,P],Ctx,Var).
+query_compiler:step_var(atom_concat(A1,A2,A3), Ctx, Var) :- query_compiler:get_var([A1,A2,A3],Ctx,Var).
+query_compiler:step_var(atomic_list_concat(List,Sep,A), Ctx, Var) :- query_compiler:get_var([A,Sep|List],Ctx,Var).
+query_compiler:step_var(atomic_list_concat(List,A), Ctx, Var)     :- query_compiler:get_var([A|List],Ctx,Var).
 
 %% query compilation
 query_compiler:step_compile(
@@ -25,13 +25,13 @@ query_compiler:step_compile(
 	atom_number(Atom,Number).
 
 query_compiler:step_compile(
-		atom_number(Atom,Number), _,
-		Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Atom0),
-	query_compiler:var_key_or_val(Number,Number0),
+		atom_number(Atom,Number),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	query_compiler:var_key_or_val(Number,Ctx,Number0),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$toString', Number0], Step)
-		;	query_compiler:set_if_var(Number,  ['$toDouble', Atom0],   Step)
+		(	query_compiler:set_if_var(Atom,    ['$toString', Number0], Ctx, Step)
+		;	query_compiler:set_if_var(Number,  ['$toDouble', Atom0],   Ctx, Step)
 		;	query_compiler:match_equals(Atom0, ['$toString', Number0], Step)
 		),
 		Pipeline).
@@ -41,12 +41,12 @@ query_compiler:step_compile(atom_length(Atom,Length), _, []) :-
 	atom_length(Atom,Length).
 
 query_compiler:step_compile(
-		atom_length(Atom,Length), _,
-		Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Atom0),
-	query_compiler:var_key_or_val(Length,Length0),
+		atom_length(Atom,Length),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	query_compiler:var_key_or_val(Length,Ctx,Length0),
 	findall(Step,
-		(	query_compiler:set_if_var(Length,    ['$strLenCP', Atom0],   Step)
+		(	query_compiler:set_if_var(Length,    ['$strLenCP', Atom0], Ctx, Step)
 		;	query_compiler:match_equals(Length0, ['$strLenCP', Atom0], Step)
 		),
 		Pipeline).
@@ -56,12 +56,12 @@ query_compiler:step_compile(atom_prefix(Atom,Prefix), _, []) :-
 	atom_prefix(Atom,Prefix).
 
 query_compiler:step_compile(
-		atom_prefix(Atom,Prefix), _,
-		Pipeline) :-
+		atom_prefix(Atom,Prefix),
+		Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows atom(Atom), var(Prefix), and then
 	%         yields all possible prefixes.
-	query_compiler:var_key_or_val(Atom,Atom0),
-	query_compiler:var_key_or_val(Prefix,Prefix0),
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	query_compiler:var_key_or_val(Prefix,Ctx,Prefix0),
 	findall(Step,
 		query_compiler:match_equals(Prefix0,
 			['$substr', array([
@@ -77,23 +77,23 @@ query_compiler:step_compile(atom_concat(Left,Right,Atom), _, []) :-
 	atom_concat(Left,Right,Atom).
 
 query_compiler:step_compile(
-		atom_concat(Left,Right,Atom), _,
-		Pipeline) :-
+		atom_concat(Left,Right,Atom),
+		Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows var(Left), var(Right), atom(Atom), and then
 	%         yields all possible concatenations.
-	query_compiler:var_key_or_val(Left,Left0),
-	query_compiler:var_key_or_val(Right,Right0),
-	query_compiler:var_key_or_val(Atom,Atom0),
+	query_compiler:var_key_or_val(Left,Ctx,Left0),
+	query_compiler:var_key_or_val(Right,Ctx,Right0),
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
 	findall(Step,
 		(	query_compiler:set_if_var(Left, ['$substr', array([Atom0,
 				int(0),
 				['$subtract', array([ ['$strLenCP',Atom0], ['$strLenCP',Right0] ])]
-			])], Step)
+			])], Ctx, Step)
 		;	query_compiler:set_if_var(Right, ['$substr', array([Atom0,
 				['$strLenCP',Left0],
 				['$strLenCP',Atom0]
-			])], Step)
-		;	query_compiler:set_if_var(Atom,    ['$concat', array([Left0,Right0])], Step)
+			])], Ctx, Step)
+		;	query_compiler:set_if_var(Atom,    ['$concat', array([Left0,Right0])], Ctx, Step)
 		;	query_compiler:match_equals(Atom0, ['$concat', array([Left0,Right0])], Step)
 		),
 		Pipeline).
@@ -103,12 +103,16 @@ query_compiler:step_compile(atomic_list_concat(List, Atom), _, []) :-
 	atomic_list_concat(List, Atom).
 
 query_compiler:step_compile(
-		atomic_list_concat(List, Atom), _,
-		Pipeline) :-
-	maplist(query_compiler:var_key_or_val, List, List0),
-	query_compiler:var_key_or_val(Atom, Atom0),
+		atomic_list_concat(List, Atom),
+		Ctx, Pipeline) :-
+	findall(Resolved,
+		(	member(Unresolved,List),
+			query_compiler:var_key_or_val(Unresolved,Ctx,Resolved)
+		),
+		List0),
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$concat', array(List0)], Step)
+		(	query_compiler:set_if_var(Atom,    ['$concat', array(List0)], Ctx, Step)
 		;	query_compiler:match_equals(Atom0, ['$concat', array(List0)], Step)
 		),
 		Pipeline).
@@ -119,14 +123,18 @@ query_compiler:step_compile(atomic_list_concat(List, Sep, Atom), _, []) :-
 	atomic_list_concat(List, Sep, Atom).
 
 query_compiler:step_compile(
-		atomic_list_concat(List, Sep, Atom), _,
-		Pipeline) :-
-	maplist(query_compiler:var_key_or_val, List, List0),
-	query_compiler:var_key_or_val(Sep, Sep0),
-	query_compiler:var_key_or_val(Atom, Atom0),
+		atomic_list_concat(List, Sep, Atom),
+		Ctx, Pipeline) :-
+	findall(Resolved,
+		(	member(Unresolved,List),
+			query_compiler:var_key_or_val(Unresolved,Ctx,Resolved)
+		),
+		List0),
+	query_compiler:var_key_or_val(Sep, Ctx, Sep0),
+	query_compiler:var_key_or_val(Atom, Ctx, Atom0),
 	add_separator(List0, Sep0, List1),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$concat', array(List1)], Step)
+		(	query_compiler:set_if_var(Atom,    ['$concat', array(List1)], Ctx, Step)
 		;	query_compiler:match_equals(Atom0, ['$concat', array(List1)], Step)
 		),
 		Pipeline).

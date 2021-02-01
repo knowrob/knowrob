@@ -12,92 +12,97 @@
 :- query_compiler:add_command(=:=, [ask]).
 
 %% query variables
-query_compiler:step_var( is(X,Y), Var) :- assignment_var(X,Y,Var).
-query_compiler:step_var(  <(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var(  >(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var( =<(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var( >=(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var(=\=(X,Y), Var) :- comparison_var(X,Y,Var).
-query_compiler:step_var(=:=(X,Y), Var) :- comparison_var(X,Y,Var).
+query_compiler:step_var( is(X,Y), Ctx, Var) :- assignment_var(X,Y,Ctx,Var).
+query_compiler:step_var(  <(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var(  >(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var( =<(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var( >=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var(=\=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var(=:=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
 
 %% query compilation
 % TODO: early evaluation if ground at compile-time!
 %
-query_compiler:step_compile( is(X,Y), _, Z) :- assignment(X,Y,Z).
-query_compiler:step_compile(  <(X,Y), _, Z) :- comparison(  <(X,Y),Z).
-query_compiler:step_compile( =<(X,Y), _, Z) :- comparison( =<(X,Y),Z).
-query_compiler:step_compile(  >(X,Y), _, Z) :- comparison(  >(X,Y),Z).
-query_compiler:step_compile( >=(X,Y), _, Z) :- comparison( >=(X,Y),Z).
-query_compiler:step_compile(=\=(X,Y), _, Z) :- comparison(=\=(X,Y),Z).
-query_compiler:step_compile(=:=(X,Y), _, Z) :- comparison(=:=(X,Y),Z).
+query_compiler:step_compile( is(X,Y), Ctx, Z) :- assignment(X,Y,Ctx,Z).
+query_compiler:step_compile(  <(X,Y), Ctx, Z) :- comparison(  <(X,Y),Ctx,Z).
+query_compiler:step_compile( =<(X,Y), Ctx, Z) :- comparison( =<(X,Y),Ctx,Z).
+query_compiler:step_compile(  >(X,Y), Ctx, Z) :- comparison(  >(X,Y),Ctx,Z).
+query_compiler:step_compile( >=(X,Y), Ctx, Z) :- comparison( >=(X,Y),Ctx,Z).
+query_compiler:step_compile(=\=(X,Y), Ctx, Z) :- comparison(=\=(X,Y),Ctx,Z).
+query_compiler:step_compile(=:=(X,Y), Ctx, Z) :- comparison(=:=(X,Y),Ctx,Z).
 
 %%
-assignment_var(Var, _Exp, [VarKey, Var]) :-
-	query_compiler:var_key(Var, VarKey).
-assignment_var(_Var, Exp, [VarKey, Var]) :-
-	expression_var(Exp, VarKey, Var).
+assignment_var(Var, _Exp, Ctx, [VarKey, Var]) :-
+	query_compiler:var_key(Var, Ctx, VarKey).
+assignment_var(_Var, Exp, Ctx, [VarKey, Var]) :-
+	expression_var(Exp, VarKey, Ctx, Var).
 
 %%
-comparison_var(Exp1, Exp2, [VarKey, Var]) :-
-	(	expression_var(Exp1, VarKey, Var)
-	;	expression_var(Exp2, VarKey, Var)
+comparison_var(Exp1, Exp2, Ctx, [VarKey, Var]) :-
+	(	expression_var(Exp1, VarKey, Ctx, Var)
+	;	expression_var(Exp2, VarKey, Ctx, Var)
 	).
 
 %%
-expression_var(Exp, Key, Var) :-
+expression_var(Exp, Key, Ctx, Var) :-
 	term_variables(Exp, ExpVars),
 	member(Var, ExpVars),
-	query_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Ctx, Key).
 
 %% $set var to evaluated number
-assignment(Var, Exp, []) :-
+assignment(Var, Exp, _Ctx, []) :-
 	ground(Exp),!,
 	Var is Exp.
 
-assignment(Var, Exp, [['$set', [Varkey, Doc]]]) :-
+assignment(Var, Exp, Ctx, [['$set', [Varkey, Doc]]]) :-
 	% FIXME: SWI Prolog allows to write e.g. `7 is 7`,
 	%           so this needs to be expanded into $set + $match pipeline
-	query_compiler:var_key(Var, Varkey),
-	expression(Exp,Doc).
+	query_compiler:var_key(Var, Ctx, Varkey),
+	expression(Exp, Ctx, Doc).
 
 %% compare two expressions
-comparison(Exp, []) :-
+comparison(Exp, _Ctx, []) :-
 	ground(Exp),!,
 	call(Exp).
 
-comparison(Exp, [
+comparison(Exp, Ctx, [
 		['$set',   ['t_success', [MngOperator, array([Doc1,Doc2])]]],
 		['$match', ['t_success', bool(true)]],
 		['$unset', string('t_success')]
 	]) :-
 	Exp =.. [PlOperator, Left, Right],
 	expression_operator(PlOperator, MngOperator),
-	expression(Left, Doc1),
-	expression(Right, Doc2).
+	expression(Left, Ctx, Doc1),
+	expression(Right, Ctx, Doc2).
 
 %% variables
-expression(Var, string(VarValue)) :-
+expression(Var, Ctx, string(VarValue)) :-
 	var(Var),!,
-	query_compiler:var_key(Var,Key),
+	query_compiler:var_key(Var,Ctx,Key),
 	atom_concat('$',Key,VarValue).
 %% functions
-expression(Exp, Doc) :-
+expression(Exp, Ctx, Doc) :-
 	compound(Exp),!,
 	Exp =.. [Functor|Args],
 	expression_function(Functor, Operator),
-	maplist(expression, Args, SubDocs),
+	findall(Out,
+		(	member(In,Args),
+			expression(In,Ctx,Out)
+		),
+		SubDocs
+	),
 	(	SubDocs=[Single]
 	->	Doc=[Operator, Single]
 	;	Doc=[Operator, array(SubDocs)]
 	).
 %% constant values
-expression(Val, double(Val)) :- number(Val),!.
+expression(Val, _Ctx, double(Val)) :- number(Val),!.
 %% named constants
-expression(pi,      double(V))          :- V is pi,!.
-expression(e,       double(V))          :- V is e,!.
-expression(epsilon, double(V))          :- V is epsilon,!.
-expression(inf,     double('Infinity')) :- !.
-expression(nan,     double('NaN'))      :- !.
+expression(pi,      _Ctx, double(V))          :- V is pi,!.
+expression(e,       _Ctx, double(V))          :- V is e,!.
+expression(epsilon, _Ctx, double(V))          :- V is epsilon,!.
+expression(inf,     _Ctx, double('Infinity')) :- !.
+expression(nan,     _Ctx, double('NaN'))      :- !.
 
 %% arithmetic operators
 expression_operator(  <, '$lt').

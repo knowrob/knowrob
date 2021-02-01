@@ -32,8 +32,9 @@ query_compiler:step_expand(
 %
 query_compiler:step_var(
 		findall(Template, _, List),
+		Ctx,
 		[List_var, list(List,Template)]) :-
-	query_compiler:var_key(List, List_var).
+	query_compiler:var_key(List, Ctx, List_var).
 
 %% findall(+Template, :Goal, -Bag)
 % Create a list of the instantiations Template gets successively on
@@ -42,14 +43,14 @@ query_compiler:step_var(
 %
 query_compiler:step_compile(
 		findall(Template, Terminals, List),
-		Context, Pipeline) :-
+		Ctx, Pipeline) :-
 	% option(mode(ask), Context),
 	findall(Step,
 		% perform lookup, collect results in 'next' array
 		(	query_compiler:lookup_array('next',Terminals,
-				[], [], Context, _, Step)
+				[], [], Ctx, _, Step)
 		% $set the list variable field from 'next' field
-		;	set_result(Template, List, Step)
+		;	set_result(Template, List, Ctx, Step)
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', string('next')]
 		),
@@ -60,14 +61,14 @@ query_compiler:step_compile(
 % $set uses additional $map operation to only keep the fields of
 % variables referred to in Template.
 %
-set_result(Template, List,
+set_result(Template, List, Ctx,
 	['$set',
 		[List_Key, ['$map',[
 			['input',string('$next')],
 			['in', ElemProjection]
 		]]]
 	]) :-
-	query_compiler:var_key(List, List_Key),
+	query_compiler:var_key(List, Ctx, List_Key),
 	term_variables(Template, PatternVars),
 	%
 	findall([Key, string(Val)],
@@ -75,7 +76,7 @@ set_result(Template, List,
 		;	(	member(Var,PatternVars),
 				% FIXME: could be that Var is not ground, thus we need conditional
 				%           set, then set to fallback value null or $$REMOVE field
-				query_compiler:var_key(Var, Key),
+				query_compiler:var_key(Var, Ctx, Key),
 				atom_concat('$$this.', Key, Val)
 			)
 		),

@@ -81,9 +81,9 @@ query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Context) :-
 
 
 %%
-query_compiler:step_var(';'(A,B), Var) :-
-	(	query_compiler:step_var(A, Var)
-	;	query_compiler:step_var(B, Var)
+query_compiler:step_var(';'(A,B), Ctx, Var) :-
+	(	query_compiler:step_var(A, Ctx, Var)
+	;	query_compiler:step_var(B, Ctx, Var)
 	).
 
 %% true
@@ -191,12 +191,22 @@ compile_disjunction([], [], _, _, []) :- !.
 compile_disjunction(
 		[Goal|RestGoals],
 		[Var|RestVars],
-		CutVars, Context,
+		CutVars, Ctx,
 		[[Stage,Key,Goal]|Ys]) :-
 	% ensure goal is a list
 	(	is_list(Goal) -> Goal0=Goal
 	;	comma_list(Goal, Goal0)
 	),
+	% compile-time grounding of variables can be done in goals of a disjunction.
+	% however, a variable referred to in different goals of a disjunction cannot
+	% be instantiated to the same value compile-time.
+	% the workaround is to create a copy of the goal here,
+	% and make sure the different variables are accessed in mongo with a common key.
+	% Then, the unification is outcarried later, after mongo has returned a match.
+	copy_term(Goal0, GoalCopy),
+	term_variables(Goal0,    VarsOrig),
+	term_variables(GoalCopy, VarsCopy),
+	copy_context(Ctx, VarsOrig, VarsCopy, CtxCopy),
 	% add match command checking for all previous goals with cut having
 	% no solutions (size=0)
 	findall([CutVarKey, ['$size', int(0)]],
@@ -207,14 +217,12 @@ compile_disjunction(
 	),
 	% since step_var does not list CutVars, we need to add them here to context
 	% such that they will be accessible in lookup
-	select(outer_vars(OuterVars), Context, Context0),
+	select(outer_vars(OuterVars), CtxCopy, InnerCtx),
 	append(OuterVars, CutVars, OuterVars0),
 	% compile the step
-	% FIXME: there is a bug here with early grounding of vars that appear
-	%        in different goals of the conjunction.
-	query_compiler:var_key(Var, Key),
-	query_compiler:lookup_array(Key, Goal0, CutMatches, [],
-		[outer_vars(OuterVars0)|Context0], _,
+	query_compiler:var_key(Var, Ctx, Key),
+	query_compiler:lookup_array(Key, GoalCopy, CutMatches, [],
+		[outer_vars(OuterVars0)|InnerCtx], _,
 		Stage),
 	!,
 	% check if this goal has a cut, if so extend CutVars list
@@ -223,11 +231,38 @@ compile_disjunction(
 	),
 	% continue with rest
 	compile_disjunction(RestGoals, RestVars,
-		CutVars0, Context, Ys).
+		CutVars0, Ctx, Ys).
 
-compile_disjunction([_|Goals], [_|Vars], CutVars, Context, Pipelines) :-
+compile_disjunction([_|Goals], [_|Vars], CutVars, Ctx, Pipelines) :-
 	% skip goal if compilation was "surpressed" above
-	compile_disjunction(Goals, Vars, CutVars, Context, Pipelines).
+	compile_disjunction(Goals, Vars, CutVars, Ctx, Pipelines).
+
+%%
+copy_context(Orig, VarsOrig, VarsCopy,
+		[ outer_vars(OuterVarsCopy),
+		  step_vars(StepVarsCopy) | Buf1 ]) :-
+	select(outer_vars(OuterVars), Orig, Buf0),
+	select(step_vars(StepVars), Buf0, Buf1),
+	copy_context_vars(OuterVars, VarsOrig, VarsCopy, OuterVarsCopy),
+	copy_context_vars(StepVars, VarsOrig, VarsCopy, StepVarsCopy).
+
+copy_context_vars([], _, _, []) :- !.
+copy_context_vars([X|Xs], VarsOrig, VarsCopy, [Y|Ys]) :-
+	once((
+		copy_context_var(X, VarsOrig, VarsCopy, Y)
+	;	Y=X
+	)),
+	copy_context_vars(Xs, VarsOrig, VarsCopy, Ys).
+
+copy_context_var([Key,VarOrig], VarsOrig, VarsCopy, [Key,VarCopy]) :-
+	% NOTE: nth0/3 unifies unbound variables, so we _cannot_ call:
+	%        `nth0(Index, VarsOrig, VarOrig)`
+	% TODO: is there a variant of nth0 using equality check instead of unification?
+	%          or map to varkeys before in VarsOrig
+	nth0(Index, VarsOrig, X),
+	X == VarOrig,
+	nth0(Index, VarsCopy, VarCopy),
+	!.
 
 %%
 has_cut('!') :- !.
@@ -281,8 +316,7 @@ test('(+Goal ; true)'):-
 
 test('(+Goal ; $early_evaluated)'):-
 	% `X is 15` is evaluated compile-time, while
-	% the other term must be computed at run-time.
-	% FIXME: early evaluation grounds var in all goals of disjunction!! 
+	% the other term must be computed at run-time. 
 	findall(X,
 		lang_query:test_command(
 			(	(X is (Num + 5))
@@ -292,7 +326,7 @@ test('(+Goal ; $early_evaluated)'):-
 		Results),
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5,Results)),
-	assert_true(memberchk(15,Results)).
+	assert_true(memberchk(15.0,Results)).
 
 test('((+Goal ; +Goal), !)'):-
 	lang_query:test_command(

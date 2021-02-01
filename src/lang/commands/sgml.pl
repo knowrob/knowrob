@@ -25,16 +25,16 @@ query_compiler:step_expand(new_iri(IRI,Type),
 %% query variables
 query_compiler:step_var(
 		iri_xml_namespace(IRI,Namespace,Localname),
-		Var) :-
-	query_compiler:get_var([IRI,Namespace,Localname],Var).
+		Ctx, Var) :-
+	query_compiler:get_var([IRI,Namespace,Localname],Ctx,Var).
 
 %% query compilation
 query_compiler:step_compile(
-		iri_xml_namespace(IRI,NS,Name), _,
-		Pipeline) :-
-	query_compiler:var_key_or_val(IRI,IRI0),
-	query_compiler:var_key_or_val(NS,NS0),
-	query_compiler:var_key_or_val(Name,Name0),
+		iri_xml_namespace(IRI,NS,Name),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(IRI, Ctx, IRI0),
+	query_compiler:var_key_or_val(NS, Ctx, NS0),
+	query_compiler:var_key_or_val(Name, Ctx, Name0),
 	findall(Step,
 		% first extract the name from the IRI and set new field "t_name".
 		% here we use the remainder after the last '#' as name.
@@ -49,8 +49,8 @@ query_compiler:step_compile(
 				])]
 			])]]]
 		% unify arguments if needed using fields created above
-		;	set_if_var(NS,   string('$t_ns'),   Step)
-		;	set_if_var(Name, string('$t_name'), Step)
+		;	set_if_var(NS,   string('$t_ns'),   Ctx, Step)
+		;	set_if_var(Name, string('$t_name'), Ctx, Step)
 		% finally match using concat operator
 		;	match_equals(IRI0, ['$concat', array([NS0,Name0])], Step)
 		% cleanup

@@ -53,31 +53,31 @@ query_compiler:step_expand(
 	query_expand(Goal, Expanded, Context).
 
 %%
-query_compiler:step_var(limit(_Count, Terminals), Var) :-
+query_compiler:step_var(limit(_Count, Terminals), Ctx, Var) :-
 	member(X,Terminals),
-	query_compiler:step_var(X, Var).
+	query_compiler:step_var(X, Ctx, Var).
 
-query_compiler:step_var(limit(Count, _Terminals), Var) :-
-	query_compiler:get_var([Count], Var).
+query_compiler:step_var(limit(Count, _Terminals), Ctx, Var) :-
+	query_compiler:get_var([Count], Ctx, Var).
 
-query_compiler:step_var(call(Terminals), Var) :-
+query_compiler:step_var(call(Terminals), Ctx, Var) :-
 	ensure_list(Terminals,List),
 	member(X,List),
 	compound(X),
-	query_compiler:step_var(X, Var).
+	query_compiler:step_var(X, Ctx, Var).
 
-query_compiler:step_var(call_with_context(Terminals, _Context), Var) :-
+query_compiler:step_var(call_with_context(Terminals, _Context), Ctx, Var) :-
 	ensure_list(Terminals,List),
 	member(X,List),
 	compound(X),
-	query_compiler:step_var(X, Var).
+	query_compiler:step_var(X, Ctx, Var).
 
-query_compiler:step_var(call_with_context(_Terminals, Context), Var) :-
+query_compiler:step_var(call_with_context(_Terminals, Context), Ctx, Var) :-
 	% only scope values may be variables
 	option(scope(Scope), Context),
 	time_scope(Since, Until, Scope),
 	member(Value, [Since,Until]),
-	query_compiler:get_var([Value], Var).
+	query_compiler:get_var([Value], Ctx, Var).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.
@@ -89,8 +89,8 @@ ensure_list(X,[X]).
 %
 query_compiler:step_compile(
 		limit(Count, Terminals),
-		Context, Pipeline) :-
-	query_compiler:var_key_or_val(Count,Count0),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Count,Ctx,Count0),
 	% appended to inner pipeline of lookup
 	Prefix=[],
 	Suffix=[['$limit',Count0]],
@@ -98,51 +98,51 @@ query_compiler:step_compile(
 	% then unwind next and assign variables to the toplevel document.
 	findall(Step,
 		query_compiler:lookup_next_unwind(Terminals,
-			Prefix, Suffix, Context, Step),
+			Prefix, Suffix, Ctx, Step),
 		Pipeline).
 
 %% call(:Goal)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
 %
 query_compiler:step_compile(
-		call(Terminals), Context, Pipeline) :-
+		call(Terminals), Ctx, Pipeline) :-
 	findall(Step,
 		query_compiler:lookup_next_unwind(Terminals,
-			[], [], Context, Step),
+			[], [], Ctx, Step),
 		Pipeline).
 
 %%
 %
 query_compiler:step_compile(
-		call_with_context(Terminals, NewContext),
-		OldContext, Pipeline) :-
-	option(outer_vars(V0), OldContext),
+		call_with_context(Terminals, NewCtx),
+		OldCtx, Pipeline) :-
+	option(outer_vars(V0), OldCtx),
 	% resolve since/until values.
 	% this is needed if the values are grounded within the query
 	% by mongo DB and not provided in the call context.
-	resolve_scope(NewContext, NewContext0),
+	resolve_scope(NewCtx, OldCtx, NewCtx0),
 	% add provided options to context
-	merge_options(NewContext0, OldContext, Context),
+	merge_options(NewCtx0, OldCtx, Ctx),
 	% finally compile call goal with new context
-	(	option(mode(tell),Context) -> Goal=Terminals
+	(	option(mode(tell),Ctx) -> Goal=Terminals
 	;	Goal=call(Terminals)
 	),
 	query_compiler:compile_terms(
 		Goal, Pipeline,
-		V0->_, Context).
+		V0->_, Ctx).
 
 %%
 % variables maybe used in the scope.
 % if this is the case, they must be replaces by variable
 % keys to be referred to in queries.
 %
-resolve_scope(In, [scope(Scope1)|Rest]) :-
+resolve_scope(In, Ctx, [scope(Scope1)|Rest]) :-
 	select_option(scope(Scope0),In,Rest),!,
 	time_scope(Since0, Until0, Scope0),
 	time_scope(Since1, Until1, Scope1),
-	query_compiler:var_key_or_val(Since0,Since1),
-	query_compiler:var_key_or_val(Until0,Until1).
-resolve_scope(In, In).
+	query_compiler:var_key_or_val(Since0,Ctx,Since1),
+	query_compiler:var_key_or_val(Until0,Ctx,Until1).
+resolve_scope(In, _, In).
 
 %%
 % append cut operator at the end of a goal.
@@ -193,11 +193,17 @@ test('limit(2, +Goal)'):-
 	assert_true(memberchk(9.5, Results)),
 	assert_true(memberchk(9.0, Results)).
 
-test('ignore(+Goal)'):-
+test('ignore(+Failing)'):-
 	lang_query:test_command(
 		ignore(((Num < 3), (X is (Num * 2)))),
 		Num, double(4.5)),
 	assert_unifies(X,_).
+
+test('ignore(+Failing), +Goal'):-
+	lang_query:test_command(
+		(ignore(Num < 3), (X is (Num * 2))),
+		Num, double(4.5)),
+	assert_equals(X,9.0).
 
 test('call(+Goal)'):-
 	lang_query:test_command(

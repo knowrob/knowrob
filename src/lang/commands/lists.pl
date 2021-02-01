@@ -21,20 +21,20 @@
 %:- query_compiler:add_command(reverse,     [ask]).
 
 %% query variables
-query_compiler:step_var(length(A,B), Var)      :- query_compiler:get_var([A,B], Var).
-query_compiler:step_var(max_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
-query_compiler:step_var(min_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
-query_compiler:step_var(sum_list(A,B), Var)    :- query_compiler:get_var([A,B], Var).
-query_compiler:step_var(list_to_set(A,B), Var) :- query_compiler:get_var([A,B], Var).
+query_compiler:step_var(length(A,B),      Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
+query_compiler:step_var(max_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
+query_compiler:step_var(min_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
+query_compiler:step_var(sum_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
+query_compiler:step_var(list_to_set(A,B), Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
 
-query_compiler:step_var(nth(List, N, Pattern), Var) :-
-	(	pattern_var_key(Pattern, Var)
-	;	query_compiler:get_var([List,N], Var)
+query_compiler:step_var(nth(List, N, Pattern), Ctx, Var) :-
+	(	pattern_var_key(Pattern, Ctx, Var)
+	;	query_compiler:get_var([List,N], Ctx, Var)
 	).
 
-query_compiler:step_var(member(Elem, List), Var) :-
-	(	pattern_var_key(Elem, Var)
-	;	query_compiler:get_var([List], Var)
+query_compiler:step_var(member(Elem, List), Ctx, Var) :-
+	(	pattern_var_key(Elem, Ctx, Var)
+	;	query_compiler:get_var([List], Ctx, Var)
 	).
 
 %% length(+List, ?Length)
@@ -44,11 +44,11 @@ query_compiler:step_compile(length(List, Length), _, []) :-
 	ground(List),!,
 	length(List, Length).
 
-query_compiler:step_compile(length(List, Length), _, Pipeline) :-
+query_compiler:step_compile(length(List, Length), Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows var(List), then yields lists with variables
 	%          as elements. It is also allowed that both args are variables.
 	%          the SWIPL generates infinite number of lists.
-	compile_list_attribute(List, Length, '$size', Pipeline).
+	compile_list_attribute(List, Length, '$size', Ctx, Pipeline).
 
 %% max_list(+List:list(number), -Max:number)
 % True if Max is the largest number in List. Fails if List is empty. 
@@ -57,8 +57,8 @@ query_compiler:step_compile(max_list(List, Max), _, []) :-
 	ground(List),!,
 	max_list(List, Max).
 
-query_compiler:step_compile(max_list(List, Max), _, Pipeline) :-
-	compile_list_attribute(List, Max, '$max', Pipeline).
+query_compiler:step_compile(max_list(List, Max), Ctx, Pipeline) :-
+	compile_list_attribute(List, Max, '$max', Ctx, Pipeline).
 
 %% min_list(+List, ?Min)
 % True if Min is the smallest number in List. Fails if List is empty.
@@ -67,8 +67,8 @@ query_compiler:step_compile(min_list(List, Min), _, []) :-
 	ground(List),!,
 	min_list(List, Min).
 
-query_compiler:step_compile(min_list(List, Min), _, Pipeline) :-
-	compile_list_attribute(List, Min, '$min', Pipeline).
+query_compiler:step_compile(min_list(List, Min), Ctx, Pipeline) :-
+	compile_list_attribute(List, Min, '$min', Ctx, Pipeline).
 
 %% sum_list(+List, -Sum)
 % Sum is the result of adding all numbers in List.
@@ -77,8 +77,8 @@ query_compiler:step_compile(sum_list(List, Sum), _, []) :-
 	ground(List),!,
 	sum_list(List, Sum).
 
-query_compiler:step_compile(sum_list(List, Sum), _, Pipeline) :-
-	compile_list_attribute(List, Sum, '$sum', Pipeline).
+query_compiler:step_compile(sum_list(List, Sum), Ctx, Pipeline) :-
+	compile_list_attribute(List, Sum, '$sum', Ctx, Pipeline).
 
 %% list_to_set(+List, -Set)
 % Removes duplicates from a list.
@@ -89,12 +89,12 @@ query_compiler:step_compile(list_to_set(List, Set), _, []) :-
 	list_to_set(List, Set).
 
 query_compiler:step_compile(
-		list_to_set(List, Set), _,
+		list_to_set(List, Set), Ctx,
 		[Step]) :-
 	% FIXME: SWI Prolog allows ground(Set)
 	% FIXME: Set and List have same ordering in SWI Prolog, but mongo does not ensure this.
-	query_compiler:var_key_or_val(List,List0),
-	query_compiler:var_key(Set, SetKey),
+	query_compiler:var_key_or_val(List,Ctx,List0),
+	query_compiler:var_key(Set,Ctx,SetKey),
 	Step=['$addToSet', [SetKey, ['$each', List0]]].
 
 
@@ -103,9 +103,9 @@ query_compiler:step_compile(
 %
 query_compiler:step_compile(
 		member(_Elem, List),
-		Context, Pipeline) :-
+		Ctx, Pipeline) :-
 	% option(mode(ask), Context),
-	query_compiler:var_key(List, ListKey),
+	query_compiler:var_key(List, Ctx, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
@@ -118,9 +118,9 @@ query_compiler:step_compile(
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
-				Context, Step)
+				Ctx, Step)
 		% project new variable groundings (the ones referred to in pattern)
-		;	set_vars_(Context, ListKey, Step)
+		;	set_vars_(Ctx, ListKey, Ctx, Step)
 		% remove the next field again
 		;	Step=['$unset', string('next')]
 		),
@@ -134,9 +134,9 @@ query_compiler:step_compile(
 %
 query_compiler:step_compile(
 		nth(Index, List, _Elem),
-		Context, Pipeline) :-
+		Ctx, Pipeline) :-
 	% option(mode(ask), Context),
-	query_compiler:var_key(List, ListKey),
+	query_compiler:var_key(List, Ctx, ListKey),
 	atom_concat('$', ListKey, ListKey0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
@@ -147,9 +147,9 @@ query_compiler:step_compile(
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
-				Context, Step)
+				Ctx, Step)
 		% project new variable groundings (the ones referred to in pattern)
-		;	set_vars_(Context, ListKey, Step)
+		;	set_vars_(Ctx, ListKey, Step)
 		% remove the next field again
 		;	Step=['$unset', string('next')]
 		),
@@ -164,14 +164,14 @@ query_compiler:step_compile(
 % Applies an operator on grounded array (List) and unifies the
 % second argument with the result (i.e. Attribute maybe ground or var).
 %
-compile_list_attribute(List, Attribute, Operator, Pipeline) :-
-	query_compiler:var_key_or_val(List,List0),
-	query_compiler:var_key_or_val(Attribute,Attribute0),
+compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(List, Ctx, List0),
+	query_compiler:var_key_or_val(Attribute, Ctx, Attribute0),
 	findall(Step,
 		% first compute the attribute
 		(	Step=['$set', ['t_val', [Operator, List0]]]
 		% then assign the value to the attribute if it is a variable
-		;	query_compiler:set_if_var(Attribute,    string('$t_val'), Step)
+		;	query_compiler:set_if_var(Attribute,    string('$t_val'), Ctx, Step)
 		% then ensure that the attribute has the right value
 		;	query_compiler:match_equals(Attribute0, string('$t_val'), Step)
 		% finally remove temporary field again
@@ -181,11 +181,11 @@ compile_list_attribute(List, Attribute, Operator, Pipeline) :-
 	).
 
 %%
-set_vars_(Context, ListKey, ['$set', SetVars]) :-
+set_vars_(Context, ListKey, Ctx, ['$set', SetVars]) :-
 	memberchk(step_vars(QueryVars), Context),
 	memberchk(outer_vars(OuterVars), Context),
 	memberchk([ListKey, list(_,Pattern)], OuterVars),
-	pattern_variables_(Pattern,ListVars),
+	pattern_variables_(Pattern,Ctx,ListVars),
 	set_vars_1(QueryVars, ListVars, SetVars).
 
 %%
@@ -199,16 +199,16 @@ set_vars_1([X|Xs], [Y|Ys], [Z|Zs]) :-
 	set_vars_1(Xs, Ys, Zs).
 
 %%
-pattern_var_key(Pattern, [Key, Var]) :-
-	pattern_variables_(Pattern, Vars),
+pattern_var_key(Pattern, Ctx, [Key, Var]) :-
+	pattern_variables_(Pattern, Ctx, Vars),
 	member([Key, Var], Vars).
 
 %%
-pattern_variables_(Pattern, Vars) :-
+pattern_variables_(Pattern, Ctx, Vars) :-
 	term_variables(Pattern, PatternVars),
-	pattern_variables_1(PatternVars, Vars).
+	pattern_variables_1(PatternVars, Ctx, Vars).
 
-pattern_variables_1([], []) :- !.
-pattern_variables_1([X|Xs], [[Key,X]|Ys]) :-
-	query_compiler:var_key(X,Key),
-	pattern_variables_1(Xs, Ys).
+pattern_variables_1([], _, []) :- !.
+pattern_variables_1([X|Xs], Ctx, [[Key,X]|Ys]) :-
+	query_compiler:var_key(X,Ctx,Key),
+	pattern_variables_1(Xs,Ctx,Ys).

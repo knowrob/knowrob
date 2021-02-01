@@ -55,39 +55,39 @@
 %%
 % expose subject/predicate/object argument variables.
 %
-query_compiler:step_var(triple(S,P,O), [Key, Var]) :-
+query_compiler:step_var(triple(S,P,O), Ctx, [Key, Var]) :-
 	% FIXME: it would be needed for terms at the moment that the requested type is stored
 	%          to know that term_to_atom must be called during unification.
-	(	triple_var(S, [Key, Var])
-	;	triple_var(P, [Key, Var])
-	;	triple_var(O, [Key, Var])
+	(	triple_var(S, Ctx, [Key, Var])
+	;	triple_var(P, Ctx, [Key, Var])
+	;	triple_var(O, Ctx, [Key, Var])
 	).
 
 %%
-query_compiler:step_compile(triple(S,P,O), Context, Pipeline) :-
-	(	option(mode(ask), Context)
-	->	compile_ask( triple(S,P,O), Context, Pipeline)
-	;	compile_tell(triple(S,P,O), Context, Pipeline)
+query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-
+	(	option(mode(ask), Ctx)
+	->	compile_ask( triple(S,P,O), Ctx, Pipeline)
+	;	compile_tell(triple(S,P,O), Ctx, Pipeline)
 	).
 
 %%
 % ask(triple(S,P,O)) uses $lookup to join input documents with
 % the ones matching the triple pattern provided.
 %
-compile_ask(triple(S,P,O), Context, Pipeline) :-
+compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), [P1,O1], Context, Context0),
+	extend_context(triple(S,P,O), [P1,O1], Ctx, Ctx0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
-		(	lookup_triple(triple(S,P1,O1), Context0, Step)
+		(	lookup_triple(triple(S,P1,O1), Ctx0, Step)
 		% conditionally needed to harmonize 'next' field
-		;	harmonize_next(Context0, Step)
+		;	harmonize_next(Ctx0, Step)
 		% add additional results if P is a transitive property
-		;	transitivity(Context0, Step)
+		;	transitivity(Ctx0, Step)
 		% add additional results if P is a reflexive property
-		;	reflexivity(Context0, Step)
+		;	reflexivity(Ctx0, Step)
 		% at this point 'next' field holds an array of matching documents
 		% that is unwinded here.
 		;	Step=['$unwind',string('$next')]
@@ -95,13 +95,13 @@ compile_ask(triple(S,P,O), Context, Pipeline) :-
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
-				Context0, Step)
+				Ctx0, Step)
 		% the triple doc contains parents of the P at p*
 		% and parents of O at o*.
 		% these can be unwinded to yield a solution for each parent.
-		;	unwind_parents(Context0, Step)
+		;	unwind_parents(Ctx0, Step)
 		% project new variable groundings
-		;	set_triple_vars(S,P1,O1,Step)
+		;	set_triple_vars(S,P1,O1,Ctx0,Step)
 		% remove next field again
 		;	Step=['$unset',string('next')]
 		;	Step=['$unset',string('start')]
@@ -189,19 +189,19 @@ ostar_value(_,                  O, array([O])).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-lookup_triple(triple(S,P,O), Context, Step) :-
-	memberchk(outer_vars(QueryVars), Context),
-	memberchk(collection(Coll), Context),
+lookup_triple(triple(S,P,O), Ctx, Step) :-
+	memberchk(outer_vars(QueryVars), Ctx),
+	memberchk(collection(Coll), Ctx),
 	% get query pattern, and variables in term
-	mng_triple_doc(triple(S,P,O), QueryDoc, Context),
-	get_triple_vars(S,P,O,TripleVars),
+	mng_triple_doc(triple(S,P,O), QueryDoc, Ctx),
+	get_triple_vars(S,P,O,Ctx,TripleVars),
 	% match triple pattern _and_ grounded variables (if any)
 	(	lookup_join_vars(TripleVars, QueryVars, MatchDoc)
 	->	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]]
 	;	Match=['$match', QueryDoc]
 	),
 	% append $limit after $match if requested in Context
-	(	member(limit(Limit),Context)
+	(	member(limit(Limit),Ctx)
 	->	Pipeline=[Match,['$limit',int(Limit)]]
 	;	Pipeline=[Match]
 	),
@@ -502,7 +502,7 @@ harmonize_next(Context, Step) :-
 	).
 
 %%
-triple_var(Arg, [Key, Var]) :-
+triple_var(Arg, Ctx, [Key, Var]) :-
 	% strip variable
 	% TODO: left side of -> could also have var? e.g. `in(List)->Elem`
 	once((
@@ -511,19 +511,19 @@ triple_var(Arg, [Key, Var]) :-
 	)),
 	strip_modifier(Var0, Var1),
 	mng_strip(Var1, _, _, Var),
-	query_compiler:var_key(Var, Key).
+	query_compiler:var_key(Var, Ctx, Key).
 
 %%
-get_triple_vars(S, P, O, Vars) :-
+get_triple_vars(S, P, O, Ctx, Vars) :-
 	findall([Key,Field],
 		(	member([Field,Arg], [[s,S],[p,P],[o,O]]),
-			triple_var(Arg, [Key, _Var])
+			triple_var(Arg, Ctx, [Key, _Var])
 		),
 		Vars).
 
 %%
-set_triple_vars(S, P, O, ['$set', ProjectDoc]) :-
-	get_triple_vars(S,P,O,TripleVars),
+set_triple_vars(S, P, O, Ctx, ['$set', ProjectDoc]) :-
+	get_triple_vars(S,P,O,Ctx,TripleVars),
 	findall([Key, string(NextValue)],
 		(	member([Key, Field], TripleVars),
 			atom_concat('$next.', Field, NextValue)
