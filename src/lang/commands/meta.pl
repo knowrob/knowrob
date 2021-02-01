@@ -208,6 +208,18 @@ test('ignore(+Failing), +Goal'):-
 		Num, double(4.5)),
 	assert_equals(X,9.0).
 
+test('ignore(+FailingWithVar), +Goal'):-
+	% test with variable Z being assigned only in failing ignored
+	% goal. Then no grounding will be part of result set and Z still a variable
+	% after the call.
+	lang_query:test_command(
+		(	ignore((Num < 3, Z is Num + 2)),
+			X is (Num * 2)
+		),
+		Num, double(4.5)),
+	assert_equals(X,9.0),
+	assert_unifies(Z,_).
+
 test('call(+Goal)'):-
 	lang_query:test_command(
 		call(Y is X), X, double(-3.25)),

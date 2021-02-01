@@ -150,10 +150,7 @@ unify_1(_, [_, Term]) :-
 
 unify_1(Doc, [VarKey, Var]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
-	mng_strip_type(TypedValue, _, Value),
-	(	Value='null' ;
-		Var=Value
-	).
+	mng_strip_type(TypedValue, _, Var).
 
 %%
 unify_list(array([]),_,[]) :- !.
@@ -531,17 +528,14 @@ lookup_next_unwind(Terminals,
 % document root.
 % However, not all variables referred to in the goal may
 % have a grounding, so we need to make a conditional $set here.
-% FIXME: unfortunately using $$REMOVE to remove the field entirely
-%        does currently not work with lookup_let_doc/2 because it requires
-%        all variables referred to before to be ground in the document -- TODO: no it doesn't!,
-%        so we fallback to value "null" here which might cause several bugs
-%        when the variable is referred to later again.
 %
 set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
+			% if the field does not exist
 			['$not', array([string(Val)])],
-			%string('$$REMOVE'),
-			string('null'), % HACK
+			% do not add a new field at Key
+			string('$$REMOVE'),
+			% else write Val into field at Key
 			string(Val)
 		])]]]) :-
 	member([Key,_], InnerVars),
