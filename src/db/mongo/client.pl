@@ -340,10 +340,18 @@ mng_strip_type(Var, Type, Untyped) :-
 mng_strip_type(Var, _, Var) :-
 	var(Var),
 	!.
-	
+
 mng_strip_type(List, array, List) :-
 	is_list(List),
 	!.
+
+mng_strip_type(array(List), array, Stripped) :-
+	is_list(List),!,
+	findall(Y,
+		(	member(X,List),
+			mng_strip_type(X, _, Y)
+		),
+		Stripped).
 
 mng_strip_type(Term, Type, X) :-
 	compound(Term),

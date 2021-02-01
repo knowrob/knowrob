@@ -69,6 +69,27 @@ static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64
 	return APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"double");
 }
 
+static bool bson_visit_decimal128(const bson_iter_t *iter, const bson_decimal128_t *v_decimal128, void *data)
+{
+	PlTail *v_pl = (PlTail*)data;
+	// positive infinity
+	if(v_decimal128->high == 0x7800000000000000) {
+		v_pl->append(PlCompound("double", PlTerm(ATOM_Pos_Infinity)));
+	}
+	// negative infinity
+	else if(v_decimal128->high == 0xf800000000000000) {
+		v_pl->append(PlCompound("double", PlTerm(ATOM_Neg_Infinity)));
+	}
+	else {
+		char buffer[BSON_DECIMAL128_STRING];
+		bson_decimal128_to_string(v_decimal128,buffer);
+		setlocale(LC_NUMERIC,"C");
+		v_pl->append(PlCompound("double", PlTerm(atof(buffer))));
+		setlocale(LC_NUMERIC,"");
+	}
+	return false; // NOTE: returning true stops further iteration of the document
+}
+
 static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
 {
 	PlTail *out_list = (PlTail*)data;
@@ -114,6 +135,11 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 			else if(BSON_ITER_HOLDS_DOUBLE(&array_iter)) {
 				pl_array.append(PlCompound("double",
 						PlTerm(bson_iter_double(&array_iter))));
+			}
+			else if(BSON_ITER_HOLDS_DECIMAL128(&array_iter)) {
+				bson_decimal128_t v_decimal128;
+				bson_iter_decimal128(&array_iter, &v_decimal128);
+				bson_visit_decimal128(&array_iter, &v_decimal128, &pl_array);
 			}
 			else if(BSON_ITER_HOLDS_INT32(&array_iter)) {
 				pl_array.append(PlCompound("int",
