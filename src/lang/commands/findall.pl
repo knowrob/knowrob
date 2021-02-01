@@ -135,7 +135,7 @@ test('findall with ungrounded'):-
 	assert_unifies(Results,[_,9.0]),
 	assert_true(((Results=[Var|_],var(Var)))).
 
-test('findall with list pattern', [fixme('findall with pattern not working')]):-
+test('findall with list pattern', [fixme('findall cannot be used with term pattern')]):-
 	lang_query:test_command(
 		(	findall([X,Y],
 				(	(X is (Num + 5), Y is X + 1)
@@ -147,7 +147,7 @@ test('findall with list pattern', [fixme('findall with pattern not working')]):-
 	),
 	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
 
-test('findall with term pattern', [fixme('findall with pattern not working')]):-
+test('findall with term pattern', [fixme('findall cannot be used with term pattern')]):-
 	lang_query:test_command(
 		(	findall(test(X,Y),
 				(	(X is (Num + 5), Y is X + 1)

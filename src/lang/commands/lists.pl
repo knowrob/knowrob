@@ -212,3 +212,65 @@ pattern_variables_1([], _, []) :- !.
 pattern_variables_1([X|Xs], Ctx, [[Key,X]|Ys]) :-
 	query_compiler:var_key(X,Ctx,Key),
 	pattern_variables_1(Xs,Ctx,Ys).
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('list_commands').
+
+test('findall+length'):-
+	lang_query:test_command(
+		(	findall(X,
+				((X is Num + 5);(X is Num * 2)),
+				List),
+			length(List, Length)
+		),
+		Num, double(4.5)),
+	assert_equals(Length, 2).
+
+test('max_list(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			Y is Num * 2,
+			max_list([X,Y], Max)
+		),
+		Num, double(4.5)),
+	assert_equals(Max, 9.5).
+
+test('min_list(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			Y is Num * 2,
+			min_list([X,Y], Max)
+		),
+		Num, double(4.5)),
+	assert_equals(Max, 9.0).
+
+test('sum_list(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			Y is Num * 2,
+			sum_list([X,Y], Max)
+		),
+		Num, double(4.5)),
+	assert_equals(Max, 18.5).
+
+test('findall+max_list'):-
+	lang_query:test_command(
+		(	findall(X,
+				X is Num + 5,
+				NumberList),
+			max_list(NumberList, Max)
+		),
+		Num, double(4.5)),
+	assert_equals(Max, 9.5).
+
+%:- query_compiler:add_command(member,      [ask]).
+%%:- query_compiler:add_command(memberchk,   [ask]).
+%:- query_compiler:add_command(nth,         [ask]).
+%:- query_compiler:add_command(list_to_set, [ask]).
+%%:- query_compiler:add_command(sort,        [ask]).
+%%:- query_compiler:add_command(reverse,     [ask]).
+
+:- end_tests('list_commands').
