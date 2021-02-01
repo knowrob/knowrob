@@ -256,7 +256,7 @@ test('sum_list(+Numbers)'):-
 		Num, double(4.5)),
 	assert_equals(Max, 18.5).
 
-test('findall+max_list'):-
+test('findall+max_list', [fixme('findall yields docs with scope that cannot be handled by list commands yet')]):-
 	lang_query:test_command(
 		(	findall(X,
 				X is Num + 5,
@@ -266,10 +266,47 @@ test('findall+max_list'):-
 		Num, double(4.5)),
 	assert_equals(Max, 9.5).
 
-%:- query_compiler:add_command(member,      [ask]).
+test('member(+Numbers)'):-
+	findall(Val,
+		lang_query:test_command(
+			(	X is Num + 5,
+				Y is Num * 2,
+				member(Val, [X,Y])
+			),
+			Num, double(4.5)),
+		Results),
+	assert_equals(Results,[9.5,9.0]).
+
+test('findall+member'):-
+	findall(Val,
+		lang_query:test_command(
+			(	findall(X,
+					((X is Num + 5);(X is Num * 2)),
+					List),
+				member(Val, List)
+			),
+			Num, double(4.5)),
+		Results),
+	assert_equals(Results,[9.5,9.0]).
+
+test('nth(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			Y is Num * 2,
+			nth(1, [X,Y], Second)
+		),
+		Num, double(4.5)),
+	assert_equals(Second, 9.0).
+
+test('list_to_set(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			list_to_set([X,X], Set)
+		),
+		Num, double(4.5)),
+	assert_equals(Set, [9.5]).
+
 %%:- query_compiler:add_command(memberchk,   [ask]).
-%:- query_compiler:add_command(nth,         [ask]).
-%:- query_compiler:add_command(list_to_set, [ask]).
 %%:- query_compiler:add_command(sort,        [ask]).
 %%:- query_compiler:add_command(reverse,     [ask]).
 
