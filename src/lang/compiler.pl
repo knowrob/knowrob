@@ -165,9 +165,7 @@ unify_list_1(_, Ground, Ground) :-
 
 unify_list_1(Doc, Var, Elem) :-
 	var(Var),!,
-	% FIXME
-	writeln(fixme),
-	var_key(Var, Key),
+	var_key(Var, [], Key),
 	unify_1(Doc, [Key, Elem]).
 
 unify_list_1(Doc, List, Elem) :-

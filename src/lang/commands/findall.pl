@@ -31,8 +31,7 @@ query_compiler:step_expand(
 % findall only exposes the List variable to the outside.
 %
 query_compiler:step_var(
-		findall(Template, _, List),
-		Ctx,
+		findall(Template, _, List), Ctx,
 		[List_var, list(List,Template)]) :-
 	query_compiler:var_key(List, Ctx, List_var).
 
@@ -74,10 +73,93 @@ set_result(Template, List, Ctx,
 	findall([Key, string(Val)],
 		(	(	Key='v_scope', Val='$$this.v_scope' )
 		;	(	member(Var,PatternVars),
-				% FIXME: could be that Var is not ground, thus we need conditional
-				%           set, then set to fallback value null or $$REMOVE field
 				query_compiler:var_key(Var, Ctx, Key),
 				atom_concat('$$this.', Key, Val)
 			)
 		),
 		ElemProjection).
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('lang_findall').
+
+test('findall(+Succeeds ; +Succeeds)'):-
+	lang_query:test_command(
+		(	findall(X,
+				(	(X is (Num + 5))
+				;	(X is (Num * 2))
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_equals(Results,[9.5,9.0]).
+
+test('findall(+Succeeds ; +Fails)'):-
+	lang_query:test_command(
+		(	findall(X,
+				(	(X is (Num + 5))
+				;	(Num > 5, X is (Num * 2))
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_equals(Results,[9.5]).
+
+test('findall(+Succeeds ; +Fails ; +Succeeds)'):-
+	lang_query:test_command(
+		(	findall(X,
+				(	(X is (Num + 5))
+				;	(Num > 5, X is (Num * 2))
+				;	(X is (Num + 6))
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_equals(Results,[9.5,10.5]).
+
+test('findall with ungrounded'):-
+	lang_query:test_command(
+		(	findall(X,
+				(	true
+				;	(X is (Num * 2))
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_unifies(Results,[_,9.0]),
+	assert_true(((Results=[Var|_],var(Var)))).
+
+test('findall with list pattern', [fixme('findall with pattern not working')]):-
+	lang_query:test_command(
+		(	findall([X,Y],
+				(	(X is (Num + 5), Y is X + 1)
+				;	(X is (Num * 2), Y is X + 2)
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
+
+test('findall with term pattern', [fixme('findall with pattern not working')]):-
+	lang_query:test_command(
+		(	findall(test(X,Y),
+				(	(X is (Num + 5), Y is X + 1)
+				;	(X is (Num * 2), Y is X + 2)
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_unifies(Results,[
+		test(9.5,10.5),
+		test(9.0,11.0)
+	]).
+
+:- end_tests('lang_findall').
