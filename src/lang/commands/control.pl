@@ -6,11 +6,11 @@
 :- query_compiler:add_command(true,  [ask,tell]).
 :- query_compiler:add_command(false, [ask,tell]).
 :- query_compiler:add_command(fail,  [ask,tell]).
-:- query_compiler:add_command('\\+', [ask]).
-:- query_compiler:add_command('!',   [ask,tell]).
-:- query_compiler:add_command('->',  [ask]).
-%:- query_compiler:add_command('*->', [ask]).
-:- query_compiler:add_command(';',   [ask]).
+:- query_compiler:add_command(\+,    [ask]).
+:- query_compiler:add_command(!,     [ask,tell]).
+:- query_compiler:add_command(->,    [ask]).
+%:- query_compiler:add_command(*->, [ask]).
+:- query_compiler:add_command(;,     [ask]).
 
 %% false
 %
@@ -199,15 +199,19 @@ compile_disjunction(
 	),
 	% add match command checking for all previous goals with cut having
 	% no solutions (size=0)
-	% TODO: change to use just one match command with larger document
-	findall(match(size(CutVar,int(0))),
-		member([_, CutVar],CutVars),
-		CutMatches),
+	findall([CutVarKey, ['$size', int(0)]],
+		member([CutVarKey, _],CutVars),
+		CutMatches0),
+	(	CutMatches0=[] -> CutMatches=[]
+	;	CutMatches=[['$match', CutMatches0]]
+	),
 	% since step_var does not list CutVars, we need to add them here to context
 	% such that they will be accessible in lookup
 	select(outer_vars(OuterVars), Context, Context0),
 	append(OuterVars, CutVars, OuterVars0),
 	% compile the step
+	% FIXME: there is a bug here with early grounding of vars that appear
+	%        in different goals of the conjunction.
 	query_compiler:var_key(Var, Key),
 	query_compiler:lookup_array(Key, Goal0, CutMatches, [],
 		[outer_vars(OuterVars0)|Context0], _,
@@ -225,21 +229,100 @@ compile_disjunction([_|Goals], [_|Vars], CutVars, Context, Pipelines) :-
 	% skip goal if compilation was "surpressed" above
 	compile_disjunction(Goals, Vars, CutVars, Context, Pipelines).
 
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% HELPER
-%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
 has_cut('!') :- !.
 has_cut(Goal) :-
-	% list of goals
 	is_list(Goal), !,
-	member(call(SubGoal),Goal),
-	comma_list(SubGoal,List),
-	memberchk('!',List).
+	memberchk(limit(1,_),Goal).
 has_cut(Goal) :-
-	% conjunction
 	comma_list(Goal,List),
 	has_cut(List).
 
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('control_commands').
+
+test('(+Goal ; +Goal)'):-
+	findall(X,
+		lang_query:test_command(
+			(	(X is (Num + 5))
+			;	(X is (Num * 2))
+			),
+			Num, double(4.5)),
+		Results),
+	assert_unifies(Results,[_,_]),
+	assert_true(memberchk(9.5,Results)),
+	assert_true(memberchk(9.0,Results)).
+
+test('(+Goal ; fail)'):-
+	findall(X,
+		lang_query:test_command(
+			(	(X is (Num + 5))
+			;	fail
+			),
+			Num, double(4.5)),
+		Results),
+	assert_equals(Results,[9.5]).
+
+test('(+Goal ; true)'):-
+	findall(X,
+		lang_query:test_command(
+			(	(X is (Num + 5))
+			;	true
+			),
+			Num, double(4.5)),
+		Results),
+	assert_unifies(Results,[_,_]),
+	assert_true(memberchk(9.5,Results)),
+	assert_true(once((member(Var,Results), var(Var)))).
+
+test('(+Goal ; $early_evaluated)'):-
+	% `X is 15` is evaluated compile-time, while
+	% the other term must be computed at run-time.
+	% FIXME: early evaluation grounds var in all goals of disjunction!! 
+	findall(X,
+		lang_query:test_command(
+			(	(X is (Num + 5))
+			;	(X is 15)
+			),
+			Num, double(4.5)),
+		Results),
+	assert_unifies(Results,[_,_]),
+	assert_true(memberchk(9.5,Results)),
+	assert_true(memberchk(15,Results)).
+
+test('((+Goal ; +Goal), !)'):-
+	lang_query:test_command(
+		(	(	(X is (Num + 5))
+			;	(X is (Num * 2))
+			), !
+		),
+		Num, double(4.5)),
+	assert_equals(X,9.5).
+
+test('((+If -> +Then) ; +Else)::Then') :-
+	lang_query:test_command(
+		(	Num > 5 -> X is Num * 2
+		;	X is Num + 2
+		),
+		Num, double(5.5)),
+	assert_equals(X,11.0).
+
+test('((+If -> +Then) ; +Else)::Else'):-
+	lang_query:test_command(
+		(	Num > 5 -> X is Num * 2
+		;	X is Num + 2
+		),
+		Num, double(4.5)),
+	assert_equals(X,6.5).
+
+test('\\+(+Goal)'):-
+	assert_true(lang_query:test_command(
+		\+(Number > 5), Number, double(4.5))),
+	assert_false(lang_query:test_command(
+		\+(Number > 4), Number, double(4.5))).
+
+:- end_tests('control_commands').

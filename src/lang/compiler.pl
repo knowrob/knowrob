@@ -385,7 +385,8 @@ compile_expanded_term(Expanded, Doc, V0->V1, Context) :-
 	),
 	list_to_set(StepVars, StepVars_unique),
 	% merge StepVars with variables in previous steps (V0)
-	append(V0, StepVars_unique, V1),
+	append(V0, StepVars_unique, V11),
+	list_to_set(V11, V1),
 	% create inner context
 	merge_options(
 		[step_vars(StepVars_unique),outer_vars(V0)],
