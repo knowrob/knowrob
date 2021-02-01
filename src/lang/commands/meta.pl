@@ -14,6 +14,8 @@
 :- query_compiler:add_command(ignore, [ask,tell]).
 
 :- query_compiler:add_command(call_with_context, [ask,tell]).
+:- query_compiler:add_command(set, [ask,tell]).
+:- query_compiler:add_command(pragma, [ask,tell]).
 
 %%%% query expansion
 	
@@ -82,6 +84,9 @@ query_compiler:step_var(call_with_context(_Terminals, Context), Ctx, Var) :-
 	member(Value, [Since,Until]),
 	query_compiler:get_var([Value], Ctx, Var).
 
+query_compiler:step_var(set(A,_Val), Ctx, Var) :-
+	query_compiler:get_var(A, Ctx, Var).
+
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.
 ensure_list(X,[X]).
@@ -133,6 +138,22 @@ query_compiler:step_compile(
 	query_compiler:compile_terms(
 		Goal, Pipeline,
 		V0->_, Ctx).
+
+%%
+query_compiler:step_compile(
+		set(Var,Value), Ctx,
+		[['$set', [[Key,Value]]]]) :-
+	query_compiler:var_key(Var,Ctx,Key).
+
+%%
+% pragma(Goal) is evaluated compile-time by calling
+% the Goal. This is usually done to unify variables
+% used in the aggregation pipeline from the compile context.
+%
+query_compiler:step_compile(pragma(Goal), Ctx, []) :-
+	(	option(ignore_pragma,Ctx) -> true
+	;	call(Goal)
+	).
 
 %%
 % variables maybe used in the scope.
