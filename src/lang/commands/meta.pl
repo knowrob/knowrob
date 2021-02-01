@@ -54,7 +54,10 @@ query_compiler:step_expand(
 
 %%
 query_compiler:step_var(limit(_Count, Terminals), Ctx, Var) :-
-	member(X,Terminals),
+	(	\+ is_list(Terminals)
+	->	X=Terminals
+	;	member(X,Terminals)
+	),
 	query_compiler:step_var(X, Ctx, Var).
 
 query_compiler:step_var(limit(Count, _Terminals), Ctx, Var) :-
@@ -160,15 +163,6 @@ append_cut(Goal, WithCut) :-
 
 :- begin_tests('meta_commands').
 
-test('once(+Goal)'):-
-	lang_query:test_command(
-		once((
-			(X is (Num + 5))
-		;	(X is (Num * 2))
-		)),
-		Num, double(4.5)),
-	assert_equals(X,9.5).
-
 test('limit(1, +Goal)'):-
 	lang_query:test_command(
 		limit(1, (
@@ -192,6 +186,15 @@ test('limit(2, +Goal)'):-
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5, Results)),
 	assert_true(memberchk(9.0, Results)).
+
+test('once(+Goal)'):-
+	lang_query:test_command(
+		once((
+			(X is (Num + 5))
+		;	(X is (Num * 2))
+		)),
+		Num, double(4.5)),
+	assert_equals(X,9.5).
 
 test('ignore(+Failing)'):-
 	lang_query:test_command(
