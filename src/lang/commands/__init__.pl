@@ -3,7 +3,6 @@
 :- use_module('arithmetic').
 :- use_module('atoms').
 :- use_module('comparison').
-:- use_module('context').
 :- use_module('control').
 :- use_module('findall').
 :- use_module('intersect').
