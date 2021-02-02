@@ -30,7 +30,6 @@
       mng_strip/4,
       mng_strip_type/3,
       mng_strip_operator/3,
-      mng_strip_unit/3,
       mng_strip_variable/2,
       mng_operator/2
     ]).
@@ -396,14 +395,6 @@ mng_operator('<', '$lt').
 mng_operator('in', '$in').
 mng_operator('nin', '$nin').
 mng_operator('size', '$size').
-
-% TODO: better use units as replacement of type.
-%          I guess all qudt units are double basetype?
-mng_strip_unit(Term,Unit,X) :-
-	compound(Term),
-	Term=unit(X,Unit),
-	!.
-mng_strip_unit(X,_,X).
 
 %%
 mng_strip_variable(X->_,X) :- nonvar(X), !.

@@ -10,7 +10,7 @@
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_find/4, mng_query_value/2,
 		  mng_strip_type/3, mng_strip_variable/2,
-		  mng_strip_operator/3, mng_strip_unit/3,
+		  mng_strip_operator/3,
 		  mng_typed_value/2 ]).
 :- use_module(library('lang/compiler')).
 :- use_module('intersect',
@@ -105,21 +105,18 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 	option(scope(Scope), Context0),
 	time_scope_data(Scope, [Since,Until]),
 	% strip the value, assert that operator must be $eq
-	strip_unit(O1, Unit, WithoutUnit),
-	mng_query_value(WithoutUnit, ['$eq', MngValue]),
+	mng_strip_variable(O1, V),
+	mng_query_value(V, ['$eq', MngValue]),
 	% build triple docuemnt
 	% TODO: do all docs have o*?
 	once(pstar_value(P1, Pstar)),
 	once(ostar_value(P1, MngValue, Ostar)),
-	TripleDoc0=[
+	TripleDoc=[
 		['s', string(S)], ['p', string(P1)], ['o', MngValue],
 		['p*', Pstar], ['o*', Ostar],
 		['graph', string(Graph)],
 		['scope', string('$v_scope')]
 	],
-	(	\+ ground(Unit) -> TripleDoc=TripleDoc0
-	;	TripleDoc=[['unit',string(Unit)]|TripleDoc0]
-	),
 	% configure the operation performed on scopes.
 	% the default is to compute the union of scopes.
 	(	option(intersect_scope, Context)
@@ -136,7 +133,7 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 			]]]]]
 		% lookup documents that overlap with triple into 'next' field,
 		% and toggle their delete flag to true
-		;	delete_overlapping(TripleDoc0, Context0, Step)
+		;	delete_overlapping(TripleDoc, Context0, Step)
 		% lookup parent documents into the 'parents' field
 		;	lookup_parents(triple(S,P1,O1), Context0, Step)
 		% update v_scope.time.since
@@ -404,14 +401,13 @@ mng_triple_doc(triple(S,P,O), Doc, Context) :-
 	->	( Key_p='p',  Key_o='o*' )
 	;	( Key_p='p*', Key_o='o' )
 	),
-	% remove unit from O, it is handled separately
-	strip_unit(O,Unit,V),
+	% strip term ->(Term,Var)
+	mng_strip_variable(O, V),
 	% get the query pattern
 	findall(X,
 		(	( mng_query_value(S,Query_s), X=['s',Query_s] )
 		;	( mng_query_value(P,Query_p), X=[Key_p,Query_p] )
 		;	( mng_query_value(V,Query_v), X=[Key_o,Query_v] )
-		;	( ground(Unit),               X=['unit',string(Unit)] )
 		;	graph_doc(Graph,X)
 		;	scope_doc(Scope,X)
 		),
@@ -514,13 +510,6 @@ set_triple_vars(S, P, O, Ctx, ['$set', ProjectDoc]) :-
 		),
 		ProjectDoc),
 	ProjectDoc \= [].
-
-%%
-strip_unit(In, Unit, Out) :-
-	mng_strip_variable(In, X0),
-	mng_strip_operator(X0, Op, X1),
-	mng_strip_unit(X1, Unit, X2),
-	mng_strip_operator(Out, Op, X2).
 
 %%
 strip_modifier(Term, Stripped) :-

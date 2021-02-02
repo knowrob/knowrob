@@ -138,22 +138,6 @@ test('extend time scope'):-
 	tell(triple(S, P, 'Spiendler'), T_S1),
 	assert_true(ask(triple(S, P, 'Spiendler'), T_S2, _)).
 
-% test for unit
-test('query units'):-
-	rdf_global_term(test_datatype:'Lecturer4',S),
-	rdf_global_term(test_datatype:'height',P),
-	% value is not there initially 
-	assert_false(ask(triple(S, P, unit(double(2.1),'meter')))),
-	% then assert the value with unit
-	assert_true(tell(triple(S, P, unit(double(2.1),'meter')))),
-	% and test if the value and unit can be retrieved again
-	assert_true( ask(triple(S, P, unit(double(2.1),'meter')))),
-	% test that query fails with wrong unit
-	assert_false(ask(triple(S, P, unit(double(2.1),'centimeter')))),
-	% test that query can ask for the unit of the value
-	ask(triple(S, P, unit(double(2.1),X))),
-	assert_equals(X, 'meter').
-
 test('query value operators') :-
 	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =(6)))),
 	assert_true(ask(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =<(9)))),
