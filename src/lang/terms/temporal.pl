@@ -76,6 +76,7 @@ during(Statement, [Since, Until]) +>
 %
 % @param Statement A language term.
 % @param Instant A time instant.
+% @todo better handling of unknown until of interval
 %
 since(Statement, Instant) ?>
 	number(Instant),
@@ -123,6 +124,8 @@ since(Statement, Instant) +>
 %
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
+% @todo tell until has unclear semantic
+% @todo better handling of unknown since of interval
 %
 until(Statement, Instant) ?>
 	number(Instant),
