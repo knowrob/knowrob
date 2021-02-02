@@ -166,10 +166,10 @@ test('atom_number(+Atom,+Num)'):-
 		atom_number(Atom, -2.25),
 		Atom, string('-2.25'))).
 
-test('atom_number(NaN,_)') :- %, [throws(failed_assertion(_,_))]):-
-	assert_false(lang_query:test_command(
+test('atom_number(NaN,_)', [throws(mng_error(_))]):-
+	lang_query:test_command(
 		atom_number(Atom,_),
-		Atom, string('not a number'))).
+		Atom, string('not a number')).
 
 test('atom_length(+Atom,-Length)'):-
 	lang_query:test_command(
