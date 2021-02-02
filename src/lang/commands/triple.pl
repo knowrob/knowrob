@@ -22,22 +22,6 @@
 :- rdf_meta(ostar_value(r,r,t)).
 :- rdf_meta(lookup_parents_property(t,t)).
 
-% TODO: handle units in ask rules
-% - store qudt unit data in mongo
-%	- maybe use separate collection?
-% - if unit is requested in query:
-%	- assume numeric data property
-%	- $lookup requested unit data (multiplier+offset)
-%	- $set unit_m1, unit_o1
-%	- then for each matching triple document
-%		- $lookup triple unit data (multiplier+offset)
-%			- default to base unit [m=1,o=0]
-%		- $set unit_m2, unit_o2
-%		- $set fields
-%			- o <- ((($o * unit_m2 + unit_o2) - unit_o1) / unit_m1)
-%			- unit <- requested
-%
-
 %%
 % register the "triples" collection.
 % This is needed for import/export.

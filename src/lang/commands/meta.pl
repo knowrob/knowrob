@@ -12,6 +12,7 @@
 :- query_compiler:add_command(once,   [ask,tell]).
 :- query_compiler:add_command(limit,  [ask,tell]).
 :- query_compiler:add_command(ignore, [ask,tell]).
+:- query_compiler:add_command(call_with_args, [ask,tell]).
 
 :- query_compiler:add_command(call_with_context, [ask,tell]).
 % TODO: move these to somewhere else
@@ -46,9 +47,23 @@ query_compiler:step_expand(
 	query_expand(Goal, Expanded, Context).
 
 %%
-query_compiler:step_expand(
-		call(Goal),
-		call(Expanded), Context) :-
+query_compiler:step_expand(call(Goal), call(Expanded), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(call(Goal,Arg1),
+		call_with_args(Expanded,[Arg1]), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(call(Goal,Arg1,Arg2),
+		call_with_args(Expanded,[Arg1,Arg2]), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(call(Goal,Arg1,Arg2,Arg3),
+		call_with_args(Expanded,[Arg1,Arg2,Arg3]), Context) :-
+	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
+		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4]), Context) :-
 	query_expand(Goal, Expanded, Context).
 
 query_compiler:step_expand(
@@ -67,11 +82,16 @@ query_compiler:step_var(limit(_Count, Terminals), Ctx, Var) :-
 query_compiler:step_var(limit(Count, _Terminals), Ctx, Var) :-
 	query_compiler:get_var([Count], Ctx, Var).
 
-query_compiler:step_var(call(Terminals), Ctx, Var) :-
-	ensure_list(Terminals,List),
+query_compiler:step_var(call(Goal), Ctx, Var) :-
+	ensure_list(Goal,List),
 	member(X,List),
 	compound(X),
 	query_compiler:step_var(X, Ctx, Var).
+
+query_compiler:step_var(call_with_args(Goal, Args), Ctx, Var) :-
+	(	query_compiler:step_var(call(Goal), Ctx, Var)
+	;	query_compiler:get_var(Args, Ctx, Var)
+	).
 
 query_compiler:step_var(call_with_context(Terminals, _Context), Ctx, Var) :-
 	ensure_list(Terminals,List),
@@ -120,6 +140,16 @@ query_compiler:step_compile(
 		query_compiler:lookup_next_unwind(Terminals,
 			[], [], Ctx, Step),
 		Pipeline).
+
+%% call_with_args(:Goal,:Args)
+% Call Goal. This predicate is normally used for goals that are not known at compile time.
+%
+query_compiler:step_compile(
+		call_with_args(Term0,Args), Ctx, Pipeline) :-
+	Term0 =.. Buf0,
+	append(Buf0, Args, Buf1),
+	Term1 =.. Buf1,
+	query_compiler:step_compile(call(Term1), Ctx, Pipeline).
 
 %%
 %
@@ -259,5 +289,11 @@ test('call(+Goal)'):-
 	lang_query:test_command(
 		call(Y is X), X, double(-3.25)),
 	assert_equals(Y, -3.25).
+
+test('call(+Functor, -Arg1, +Arg2)'):-
+	lang_query:test_command(
+		call(is, Arg1, Arg2),
+		Arg2, double(-3.25)),
+	assert_equals(Arg1, -3.25).
 
 :- end_tests('meta_commands').
