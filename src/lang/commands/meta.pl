@@ -12,8 +12,7 @@
 :- query_compiler:add_command(once,   [ask,tell]).
 :- query_compiler:add_command(limit,  [ask,tell]).
 :- query_compiler:add_command(ignore, [ask,tell]).
-:- query_compiler:add_command(call_with_args, [ask,tell]).
-
+:- query_compiler:add_command(call_with_args,    [ask,tell]).
 :- query_compiler:add_command(call_with_context, [ask,tell]).
 % TODO: move these to somewhere else
 :- query_compiler:add_command(set, [ask,tell]).

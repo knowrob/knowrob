@@ -257,6 +257,8 @@ copy_context_var([Key,VarOrig], VarsOrig, VarsCopy, [Key,VarCopy]) :-
 has_cut('!') :- !.
 has_cut(Goal) :-
 	is_list(Goal), !,
+	% FIXME: cut was replaced with limit before. seems at the moment
+	%        we cannot distinguish cut from regular limit(1) here :/
 	memberchk(limit(1,_),Goal).
 has_cut(Goal) :-
 	comma_list(Goal,List),

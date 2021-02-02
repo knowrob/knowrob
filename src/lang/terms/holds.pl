@@ -29,10 +29,11 @@ strip_unit(Term, Operator, Multiplier, Offset, Value) :-
 	nonvar(Term),
 	% strip opearator if any
 	mng_strip_operator(Term, MngOperator, WithoutOperator),
+	compound(WithoutOperator),
 	% try to gather unit data
 	WithoutOperator =.. [Symbol, WithoutUnit],
 	qudt_unit(Symbol, _Kind, Multiplier, Offset),
-	% make sure we Operator is a known command that can be called
+	% make sure Operator is a known command that can be called
 	arithmetic_operator(MngOperator, Operator),
 	% remove type info (must be numeric)
 	mng_strip_type(WithoutUnit, _, Value).

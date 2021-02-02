@@ -1,12 +1,14 @@
 :- module(lang_sgml, []).
 
-:- use_module(library('lang/compiler')).
+:- use_module(library('semweb/rdf_db'),
+		[ rdf_global_term/2 ]).
 :- use_module(library('lang/db'),
 		[ get_unique_name/2 ]).
+:- use_module(library('lang/compiler')).
 
 %% query commands
 :- query_compiler:add_command(iri_xml_namespace, [ask]).
-:- query_compiler:add_command(new_iri,           [tell]).
+:- query_compiler:add_command(new_iri,           [ask,tell]).
 
 %%
 % tell queries can use new_iri/1 and new_iri/2 to generate
@@ -16,7 +18,8 @@
 %         are generated that both have the same IRI. very unlikely, but still...
 %
 query_compiler:step_expand(new_iri(IRI),
-		pragma(get_unique_name(dul:'Entity',IRI)), _).
+		pragma(get_unique_name(Type,IRI)), _) :-
+	rdf_global_term(rdf:'Resource', Type).
 
 query_compiler:step_expand(new_iri(IRI,Type),
 		pragma(get_unique_name(Type,IRI)), _).
@@ -40,20 +43,45 @@ query_compiler:step_compile(
 		% here we use the remainder after the last '#' as name.
 		% FIXME: this is not entirely accurate, see the documentation of iri_xml_namespace:
 		%			https://www.swi-prolog.org/pldoc/man?predicate=iri_xml_namespace/3
-		(	['$set', ['t_name', ['$last', ['$split', array([IRI0, string('#')])]]]]
+		(	Step=['$set', ['t_name', ['$last', ['$split', array([IRI0, string('#')])]]]]
 		% next set field "t_ns" to remaining prefix of IRI
-		;	['$set', ['t_ns',   ['$substr', array([IRI0, int(0),
+		;	Step=['$set', ['t_ns',   ['$substr', array([IRI0, int(0),
 				['$subtract', array([
 					['$strLenCP',IRI0],
 					['$strLenCP',string('$t_name')]
 				])]
 			])]]]
-		% unify arguments if needed using fields created above
-		;	set_if_var(NS,   string('$t_ns'),   Ctx, Step)
-		;	set_if_var(Name, string('$t_name'), Ctx, Step)
+		% assign arguments if needed using fields created above
+		;	query_compiler:set_if_var(NS,   string('$t_ns'),   Ctx, Step)
+		;	query_compiler:set_if_var(Name, string('$t_name'), Ctx, Step)
 		% finally match using concat operator
-		;	match_equals(IRI0, ['$concat', array([NS0,Name0])], Step)
+		;	query_compiler:match_equals(IRI0, ['$concat', array([NS0,Name0])], Step)
 		% cleanup
-		;	['$unset', array([string('t_ns'),string('t_name')])]
+		;	Step=['$unset', array([string('t_ns'),string('t_name')])]
 		),
 		Pipeline).
+
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('lang_sgml').
+
+test('new_iri(-IRI)'):-
+	lang_query:test_command(
+		(new_iri(IRI), atom_concat(IRI,foo,X)),
+		X, string(foo)),
+	assert_true(atom(X)),
+	assert_true(atom_concat(_,foo,X)).
+
+test('iri_xml_namespace(+IRI,-NS,-Name)'):-
+	rdf_global_term(rdf:'Resource', Resource),
+	lang_query:test_command(
+		iri_xml_namespace(X,NS,Name),
+		X, string(Resource)),
+	assert_true(atom(NS)),
+	assert_equals(Name,'Resource'),
+	assert_true(atomic_concat(NS,Name,Resource)).
+
+:- end_tests('lang_sgml').
