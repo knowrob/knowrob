@@ -3,13 +3,13 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(is,  [ask]).
-:- query_compiler:add_command(>,   [ask]).
-:- query_compiler:add_command(<,   [ask]).
-:- query_compiler:add_command(=<,  [ask]).
-:- query_compiler:add_command(>=,  [ask]).
-:- query_compiler:add_command(=\=, [ask]).
-:- query_compiler:add_command(=:=, [ask]).
+:- query_compiler:add_command(is,  [ask,tell]).
+:- query_compiler:add_command(>,   [ask,tell]).
+:- query_compiler:add_command(<,   [ask,tell]).
+:- query_compiler:add_command(=<,  [ask,tell]).
+:- query_compiler:add_command(>=,  [ask,tell]).
+:- query_compiler:add_command(=\=, [ask,tell]).
+:- query_compiler:add_command(=:=, [ask,tell]).
 
 %% query variables
 query_compiler:step_var( is(X,Y), Ctx, Var) :- assignment_var(X,Y,Ctx,Var).
@@ -54,11 +54,15 @@ assignment(Var, Exp, _Ctx, []) :-
 	ground(Exp),!,
 	Var is Exp.
 
-assignment(Var, Exp, Ctx, [['$set', [Varkey, Doc]]]) :-
-	% FIXME: SWI Prolog allows to write e.g. `7 is 7`,
-	%           so this needs to be expanded into $set + $match pipeline
-	query_compiler:var_key(Var, Ctx, Varkey),
-	expression(Exp, Ctx, Doc).
+assignment(Number, Exp, Ctx, Pipeline) :-
+	% NOTE: SWI Prolog allows to write e.g. `7 is 7`, so here we use set+match
+	query_compiler:var_key_or_val(Number,Ctx,Number0),
+	expression(Exp, Ctx, Doc),
+	findall(Step,
+		(	query_compiler:set_if_var(Number,  Doc,   Ctx, Step)
+		;	query_compiler:match_equals(Number0, Doc, Step)
+		),
+		Pipeline).
 
 %% compare two expressions
 comparison(Exp, _Ctx, []) :-
@@ -146,23 +150,23 @@ expression_function(*,        '$multiply').
 
 :- begin_tests('lang_arithmetic').
 
-test('var is constant'):-
+test('is(-Y,+X)'):-
 	lang_query:test_command(
 		(Y is X), X, double(-3.25)),
 	assert_equals(Y, -3.25).
 
-test('var is exp'):-
+test('is(-Y,+Exp)'):-
 	lang_query:test_command(
 		(Y is (X + 0.5)*2), X, double(2.5)),
 	assert_equals(Y, 6.0).
 
-test('constant is constant', [fixme('left-side of is/2 cannot be ground')]):-
+test('is(+Y,+X)') :-
 	assert_true(lang_query:test_command(
-		(3.0 is X), X, double(-3))),
+		(3.0 is X), X, double(3))),
 	assert_false(lang_query:test_command(
-		(4.0 is X), X, double(-3))).
+		(4.0 is X), X, double(3))).
 
-test('var < constant'):-
+test('<(+X,+Y)'):-
 	assert_true(lang_query:test_command(
 		(X < 7.0), X, double(6))),
 	assert_false(lang_query:test_command(
@@ -170,7 +174,7 @@ test('var < constant'):-
 	assert_false(lang_query:test_command(
 		(X < 7.0), X, double(7))).
 
-test('exp < exp'):-
+test('<(+Exp1,+Exp2)'):-
 	assert_true(lang_query:test_command(
 		((X*2) < (X + 5)), X, double(2))),
 	assert_false(lang_query:test_command(
