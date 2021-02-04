@@ -105,8 +105,10 @@ query_compiler:step_var(call_with_context(_Terminals, Context), Ctx, Var) :-
 	member(Value, [Since,Until]),
 	query_compiler:get_var([Value], Ctx, Var).
 
-query_compiler:step_var(set(A,_Val), Ctx, Var) :-
-	query_compiler:get_var(A, Ctx, Var).
+query_compiler:step_var(set(A,Val), Ctx, Var) :-
+	(	query_compiler:get_var(A, Ctx, Var)
+	;	query_compiler:get_var(Val, Ctx, Var)
+	).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.
@@ -173,7 +175,8 @@ query_compiler:step_compile(
 %%
 query_compiler:step_compile(
 		set(Var,Value), Ctx,
-		[['$set', [[Key,Value]]]]) :-
+		[['$set', [[Key,Value0]]]]) :-
+	query_compiler:var_key_or_val(Value, [], Value0),
 	query_compiler:var_key(Var,Ctx,Key).
 
 %%
@@ -233,7 +236,7 @@ test('limit(1, +Goal)'):-
 			(X is (Num + 5))
 		;	(X is (Num * 2))
 		)),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.5).
 
 test('limit(2, +Goal)'):-
@@ -244,7 +247,7 @@ test('limit(2, +Goal)'):-
 			;	(X is (Num * 2))
 			;	(X is (Num * 2))
 			)),
-			Num, double(4.5)),
+			Num, 4.5),
 		Results
 	),
 	assert_unifies(Results,[_,_]),
@@ -257,19 +260,19 @@ test('once(+Goal)'):-
 			(X is (Num + 5))
 		;	(X is (Num * 2))
 		)),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.5).
 
 test('ignore(+Failing)'):-
 	lang_query:test_command(
 		ignore(((Num < 3), (X is (Num * 2)))),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_unifies(X,_).
 
 test('ignore(+Failing), +Goal'):-
 	lang_query:test_command(
 		(ignore(Num < 3), (X is (Num * 2))),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.0).
 
 test('ignore(+FailingWithVar), +Goal'):-
@@ -280,19 +283,18 @@ test('ignore(+FailingWithVar), +Goal'):-
 		(	ignore((Num < 3, Z is Num + 2)),
 			X is (Num * 2)
 		),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.0),
 	assert_unifies(Z,_).
 
 test('call(+Goal)'):-
 	lang_query:test_command(
-		call(Y is X), X, double(-3.25)),
+		call(Y is X), X, -3.25),
 	assert_equals(Y, -3.25).
 
 test('call(+Functor, -Arg1, +Arg2)'):-
 	lang_query:test_command(
-		call(is, Arg1, Arg2),
-		Arg2, double(-3.25)),
+		call(is, Arg1, Arg2), Arg2, -3.25),
 	assert_equals(Arg1, -3.25).
 
 :- end_tests('meta_commands').

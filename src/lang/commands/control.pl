@@ -277,7 +277,7 @@ test('(+Goal ; +Goal)'):-
 			(	(X is (Num + 5))
 			;	(X is (Num * 2))
 			),
-			Num, double(4.5)),
+			Num, 4.5),
 		Results),
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5,Results)),
@@ -289,7 +289,7 @@ test('(+Goal ; fail)'):-
 			(	(X is (Num + 5))
 			;	fail
 			),
-			Num, double(4.5)),
+			Num, 4.5),
 		Results),
 	assert_equals(Results,[9.5]).
 
@@ -299,7 +299,7 @@ test('(+Goal ; true)'):-
 			(	(X is (Num + 5))
 			;	true
 			),
-			Num, double(4.5)),
+			Num, 4.5),
 		Results),
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5,Results)),
@@ -313,7 +313,7 @@ test('(+Goal ; $early_evaluated)'):-
 			(	(X is (Num + 5))
 			;	(X is 15)
 			),
-			Num, double(4.5)),
+			Num, 4.5),
 		Results),
 	assert_unifies(Results,[_,_]),
 	assert_true(memberchk(9.5,Results)),
@@ -324,7 +324,7 @@ test('(+Goal ; +PrunedGoal)'):-
 		(	(X is (Num + 5))
 		;	(7 < 5, X is (Num * 2))
 		),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.5).
 
 test('((+Goal ; +Goal), !)'):-
@@ -333,7 +333,7 @@ test('((+Goal ; +Goal), !)'):-
 			;	(X is (Num * 2))
 			), !
 		),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,9.5).
 
 test('((+If -> +Then) ; +Else)::Then') :-
@@ -341,7 +341,7 @@ test('((+If -> +Then) ; +Else)::Then') :-
 		(	Num > 5 -> X is Num * 2
 		;	X is Num + 2
 		),
-		Num, double(5.5)),
+		Num, 5.5),
 	assert_equals(X,11.0).
 
 test('((+If -> +Then) ; +Else)::Else'):-
@@ -349,13 +349,13 @@ test('((+If -> +Then) ; +Else)::Else'):-
 		(	Num > 5 -> X is Num * 2
 		;	X is Num + 2
 		),
-		Num, double(4.5)),
+		Num, 4.5),
 	assert_equals(X,6.5).
 
 test('\\+(+Goal)'):-
 	assert_true(lang_query:test_command(
-		\+(Number > 5), Number, double(4.5))),
+		\+(Number > 5), Number, 4.5)),
 	assert_false(lang_query:test_command(
-		\+(Number > 4), Number, double(4.5))).
+		\+(Number > 4), Number, 4.5)).
 
 :- end_tests('control_commands').

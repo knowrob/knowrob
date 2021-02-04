@@ -4,21 +4,41 @@
 :- use_module('intersect',
 		[ mng_scope_intersect/5 ]).
 
-% TODO: handling of patterns is not nice at the moment.
-%          - it is limiting that elements in lists must all have same pattern
-%          - probably would need better handling of terms.
-
 %% query commands
-:- query_compiler:add_command(length,      [ask]).
-:- query_compiler:add_command(max_list,    [ask]).
-:- query_compiler:add_command(min_list,    [ask]).
-:- query_compiler:add_command(sum_list,    [ask]).
-:- query_compiler:add_command(member,      [ask]).
-%:- query_compiler:add_command(memberchk,   [ask]).
-:- query_compiler:add_command(nth0,        [ask]).
-:- query_compiler:add_command(list_to_set, [ask]).
+:- query_compiler:add_command(length,      [ask,tell]).
+:- query_compiler:add_command(max_list,    [ask,tell]).
+:- query_compiler:add_command(min_list,    [ask,tell]).
+:- query_compiler:add_command(sum_list,    [ask,tell]).
+:- query_compiler:add_command(member,      [ask,tell]).
+:- query_compiler:add_command(memberchk,   [ask,tell]).
+:- query_compiler:add_command(nth0,        [ask,tell]).
+:- query_compiler:add_command(list_to_set, [ask,tell]).
 %:- query_compiler:add_command(sort,        [ask]).
 %:- query_compiler:add_command(reverse,     [ask]).
+
+%% member(?Elem, +List)
+% True if Elem is a member of List. 
+% NOTE: here list cannot be a variable which is allowed in SWI Prolog.
+%       Prolog then generates all possible list with Elem as member.
+%
+query_compiler:step_expand(member(Elem, List), Expanded, Context) :-
+	query_expand((
+		ground(List),
+		% get size of list
+		length(List, Size),
+		Size0 is Size - 1,
+		% iterate over the list
+		between(0, Size0, Index),
+		% unify Elem using nth0/3
+		nth0(Index, List, Elem)
+	), Expanded, Context).
+
+%% memberchk(?Elem, +List)
+% True when Elem is an element of List. This variant of member/2 is
+% semi deterministic and typically used to test membership of a list. 
+%
+query_compiler:step_expand(memberchk(Elem, List), Expanded, Context) :-
+	query_expand(limit(1, member(Elem,List)), Expanded, Context).
 
 %% query variables
 query_compiler:step_var(length(A,B),      Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
@@ -30,11 +50,6 @@ query_compiler:step_var(list_to_set(A,B), Ctx, Var) :- query_compiler:get_var([A
 query_compiler:step_var(nth0(List, N, Pattern), Ctx, Var) :-
 	(	pattern_var_key(Pattern, Ctx, Var)
 	;	query_compiler:get_var([List,N], Ctx, Var)
-	).
-
-query_compiler:step_var(member(Elem, List), Ctx, Var) :-
-	(	pattern_var_key(Elem, Ctx, Var)
-	;	query_compiler:get_var([List], Ctx, Var)
 	).
 
 %% length(+List, ?Length)
@@ -97,60 +112,37 @@ query_compiler:step_compile(
 	query_compiler:var_key(Set,Ctx,SetKey),
 	Step=['$set', [SetKey, ['$setUnion', array([List0])]]].
 
-
-%% member(?Elem, ?List)
-% True if Elem is a member of List. 
+%% nth0(?Index, +List, ?Elem)
+% True when Elem is the Index’th element of List. Counting starts at 0. 
+%
+% NOTE: List must be kwown here. SWI Prolog also allows that List is a var.
 %
 query_compiler:step_compile(
-		member(_Elem, List),
+		nth0(Index, List, Elem),
 		Ctx, Pipeline) :-
-	% option(mode(ask), Context),
-	query_compiler:var_key(List, Ctx, ListKey),
-	atom_concat('$', ListKey, ListKey0),
+	% TODO: below is a bit redundant with unification.pl
+	%		- it also does not handle var-var bindings!
+	%
+	query_compiler:var_key_or_val(Index,Ctx,Index0),
+	query_compiler:var_key_or_val(List,Ctx,List0),
+	query_compiler:var_key_or_val(Elem,Ctx,Elem0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
-		% copy the list to the next field for unwinding
-		(	Step=['$set',['next', string(ListKey0)]]
-		% at this point 'next' field holds an array of matching documents
-		% that is unwinded here.
-		;	Step=['$unwind',string('$next')]
-		% compute the intersection of scope so far with scope of next document
-		;	mng_scope_intersect('v_scope',
-				string('$next.scope.time.since'),
-				string('$next.scope.time.until'),
-				Ctx, Step)
-		% project new variable groundings (the ones referred to in pattern)
-		;	set_vars_(Ctx, ListKey, Ctx, Step)
-		% remove the next field again
-		;	Step=['$unset', string('next')]
-		),
-		Pipeline
-	).
-
-%%
-% nth/3 retrieves an a document at given index
-% from some array field.
-%
-query_compiler:step_compile(
-		nth0(Index, List, _Elem),
-		Ctx, Pipeline) :-
-	% option(mode(ask), Context),
-	query_compiler:var_key_or_val(List, Ctx, ListVal),
-	% compute steps of the aggregate pipeline
-	findall(Step,
-		% retrieve array element and store in 'next' field
-		% FIXME: if list only holds atomic values, next is never unified with Elem
-		(	Step=['$set',['next', ['$arrayElemAt',
-					array([ListVal,integer(Index)]) ]]]
-		% compute the intersection of scope so far with scope of next document
-		;	mng_scope_intersect('v_scope',
-				string('$next.scope.time.since'),
-				string('$next.scope.time.until'),
-				Ctx, Step)
-		% project new variable groundings (the ones referred to in pattern)
-		;	set_vars_(Ctx, ListVal, Ctx, Step)
-		% remove the next field again
-		;	Step=['$unset', string('next')]
+		(	query_compiler:set_if_var(Elem,
+				['$arrayElemAt', array([List0,Index0])], Ctx, Step)
+		;	query_compiler:set_if_var(Index,
+				['$indexOfArray', array([List0,Elem0])], Ctx, Step)
+		% unify terms
+		;	Step=['$set', ['t_term1', Elem0]]
+		;	Step=['$set', ['t_term2', ['$arrayElemAt', array([List0,Index0])]]]
+		% assign vars in term1 to values of arguments in term2
+		;	lang_unification:set_term_arguments('t_term1', 't_term2', Step)
+		% perform equality test
+		;	query_compiler:match_equals(string('$t_term1'), string('$t_term2'), Step)
+		% project new variable groundings
+		;	lang_unification:set_term_vars(Elem, 't_term1', Ctx, Step)
+		% and cleanup
+		;	Step=['$unset', array([string('t_term1'),string('t_term2')])]
 		),
 		Pipeline
 	).
@@ -168,7 +160,7 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 	query_compiler:var_key_or_val(Attribute, Ctx, Attribute0),
 	findall(Step,
 		% first compute the attribute
-		(	Step=['$set', ['t_val', [Operator, List0]]]
+		(	Step=['$set', ['t_val', [Operator, array([List0])]]]
 		% then assign the value to the attribute if it is a variable
 		;	query_compiler:set_if_var(Attribute,    string('$t_val'), Ctx, Step)
 		% then ensure that the attribute has the right value
@@ -179,33 +171,6 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 		Pipeline
 	).
 
-%%
-set_vars_(Context, ListKey, Ctx, ['$set', SetVars]) :-
-	memberchk(step_vars(QueryVars), Context),
-	findall([Key,string(Value)],
-		(	member([Key,_],QueryVars),
-			atom_concat('$next.', Key, Value)
-		),
-		SetVars
-	).
-
-%set_vars_(Context, ListKey, Ctx, ['$set', SetVars]) :-
-%	memberchk(step_vars(QueryVars), Context),
-%	memberchk(outer_vars(OuterVars), Context),
-%	memberchk([ListKey, list(_,Pattern)], OuterVars),
-%	pattern_variables_(Pattern,Ctx,ListVars),
-%	set_vars_1(QueryVars, ListVars, SetVars).
-%
-%%%
-%set_vars_1([], [], []) :- !.
-%set_vars_1([X|Xs], [Y|Ys], [Z|Zs]) :-
-%	% FIXME: need condition $set here? i.e. because a variable is not grounded
-%	X=[Key,_],
-%	Y=[ListKey,_],
-%	atom_concat('$next.', ListKey, Val),
-%	Z=[Key,string(Val)],
-%	set_vars_1(Xs, Ys, Zs).
-%
 %%
 pattern_var_key(Pattern, Ctx, [Key, Var]) :-
 	pattern_variables_(Pattern, Ctx, Vars),
@@ -246,7 +211,7 @@ test('max_list(+Numbers)'):-
 		Num, double(4.5)),
 	assert_equals(Max, 9.5).
 
-test('findall+max_list', [fixme('findall yields docs with scope that cannot be handled by list commands yet')]):-
+test('findall+max_list'):-
 	lang_query:test_command(
 		(	findall(X,
 				X is Num + 5,
@@ -282,7 +247,16 @@ test('list_to_set(+Numbers)'):-
 		Num, double(4.5)),
 	assert_equals(Set, [9.5]).
 
-test('member(+Numbers)', [fixme('member cannot handle atomic values in list')]):-
+test('nth0(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			Y is Num * 2,
+			nth0(1, [X,Y], Second)
+		),
+		Num, double(4.5)),
+	assert_equals(Second, 9.0).
+
+test('member(+Numbers)'):-
 	findall(Val,
 		lang_query:test_command(
 			(	X is Num + 5,
@@ -293,7 +267,7 @@ test('member(+Numbers)', [fixme('member cannot handle atomic values in list')]):
 		Results),
 	assert_equals(Results,[9.5,9.0]).
 
-test('findall+member', [fixme('there is a bug in list pattern handling')]):-
+test('findall+member'):-
 	findall(Val,
 		lang_query:test_command(
 			(	findall(X,
@@ -304,15 +278,6 @@ test('findall+member', [fixme('there is a bug in list pattern handling')]):-
 			Num, double(4.5)),
 		Results),
 	assert_equals(Results,[9.5,9.0]).
-
-test('nth0(+Numbers)', [fixme('nth0 cannot handle atomic values in list')]):-
-	lang_query:test_command(
-		(	X is Num + 5,
-			Y is Num * 2,
-			nth0(1, [X,Y], Second)
-		),
-		Num, double(4.5)),
-	assert_equals(Second, 9.0).
 
 %%:- query_compiler:add_command(memberchk,   [ask]).
 %%:- query_compiler:add_command(sort,        [ask]).

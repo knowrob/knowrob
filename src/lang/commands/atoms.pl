@@ -8,6 +8,10 @@
 :- query_compiler:add_command(atom_prefix,         [ask]).
 :- query_compiler:add_command(atom_concat,         [ask]).
 :- query_compiler:add_command(atomic_list_concat,  [ask]).
+% TODO: support term_to_atom
+% - atom parsing is a bit difficult
+% - $split can be used, but then e.g. string "7" would need to be mapped to number 7 somehow.
+%:- query_compiler:add_command(term_to_atom, [ask]).
 
 %% query variables
 query_compiler:step_var(atom_number(A,N), Ctx, Var)      :- query_compiler:get_var([A,N],Ctx,Var).
@@ -154,92 +158,80 @@ add_separator([X0,X1|Xs], Sep, [X0,Sep,X1|Ys]) :-
 
 test('atom_number(+Atom,-Num)'):-
 	lang_query:test_command(
-		atom_number(Atom, Num),
-		Atom, string('4.5')),
+		atom_number(Atom, Num), Atom, '4.5'),
 	assert_equals(Num, 4.5).
 
 test('atom_number(+Atom,+Num)'):-
 	assert_true(lang_query:test_command(
-		atom_number(Atom, 4.5),
-		Atom, string('4.5'))),
+		atom_number(Atom, 4.5), Atom, '4.5')),
 	assert_true(lang_query:test_command(
-		atom_number(Atom, -2.25),
-		Atom, string('-2.25'))).
+		atom_number(Atom, -2.25), Atom, '-2.25')).
 
 test('atom_number(NaN,_)', [throws(mng_error(_))]):-
 	lang_query:test_command(
-		atom_number(Atom,_),
-		Atom, string('not a number')).
+		atom_number(Atom,_), Atom, 'not a number').
 
 test('atom_length(+Atom,-Length)'):-
 	lang_query:test_command(
-		atom_length(Atom, Len),
-		Atom, string('4.5')),
+		atom_length(Atom, Len), Atom, '4.5'),
 	assert_equals(Len, 3).
 
 test('atom_length(+Atom,+Length)'):-
 	assert_true(lang_query:test_command(
-		atom_length(Atom, 3),
-		Atom, string('foo'))),
+		atom_length(Atom, 3), Atom, 'foo')),
 	assert_false(lang_query:test_command(
-		atom_length(Atom, 2),
-		Atom, string('foo'))),
+		atom_length(Atom, 2), Atom, 'foo')),
 	assert_true(lang_query:test_command(
-		atom_length(Atom, 0),
-		Atom, string(''))).
+		atom_length(Atom, 0), Atom, '')).
 
 test('atom_prefix(+Atom,+Prefix)'):-
 	assert_true(lang_query:test_command(
-		atom_prefix(Atom, 'f'),
-		Atom, string('foo'))),
+		atom_prefix(Atom, 'f'), Atom, 'foo')),
 	assert_true(lang_query:test_command(
-		atom_prefix(Atom, 'fo'),
-		Atom, string('foo'))),
+		atom_prefix(Atom, 'fo'), Atom, 'foo')),
 	assert_true(lang_query:test_command(
-		atom_prefix(Atom, 'foo'),
-		Atom, string('foo'))),
+		atom_prefix(Atom, 'foo'), Atom, 'foo')),
 	assert_false(lang_query:test_command(
-		atom_prefix(Atom, 'bar'),
-		Atom, string('foo'))).
+		atom_prefix(Atom, 'bar'), Atom, 'foo')).
 
 test('atom_concat(+A1,+A2,+A3)'):-
 	assert_true(lang_query:test_command(
 		atom_concat('foo', 'bar', Atom),
-		Atom, string('foobar'))).
+		Atom, 'foobar')).
 
 test('atom_concat(+A1,+A2,-A3)'):-
 	lang_query:test_command(
 		atom_concat(A1, 'bar', A3),
-		A1, string('foo')),
+		A1, 'foo'),
 	assert_equals(A3, 'foobar').
 
 test('atom_concat(+A1,-A2,+A3)'):-
 	lang_query:test_command(
 		atom_concat(A1, A2, 'foobar'),
-		A1, string('foo')),
+		A1, 'foo'),
 	assert_equals(A2, 'bar').
 
 test('atom_concat(-A1,+A2,+A3)'):-
 	lang_query:test_command(
 		atom_concat(A1, A2, 'foobar'),
-		A2, string('bar')),
+		A2, 'bar'),
 	assert_equals(A1, 'foo').
 
 test('atomic_list_concat(+List,+Atom)'):-
 	assert_true(lang_query:test_command(
 		atomic_list_concat(['foo', 'bar'], Atom),
-		Atom, string('foobar'))).
+		Atom, 'foobar')).
 
 test('atomic_list_concat(+List,-Atom)'):-
 	lang_query:test_command(
 		atomic_list_concat([X1, 'bar'], Atom),
-		X1, string('foo')),
+		X1, 'foo'),
 	assert_equals(Atom, 'foobar').
 
 test('atomic_list_concat(+List,+Sep,-Atom)'):-
 	lang_query:test_command(
 		atomic_list_concat([X1, 'bar'], '-', Atom),
-		X1, string('foo')),
+		X1, 'foo'),
 	assert_equals(Atom, 'foo-bar').
 
 :- end_tests('lang_atoms').

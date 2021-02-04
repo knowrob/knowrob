@@ -10,6 +10,7 @@
 :- query_compiler:add_command(>=,  [ask,tell]).
 :- query_compiler:add_command(=\=, [ask,tell]).
 :- query_compiler:add_command(=:=, [ask,tell]).
+:- query_compiler:add_command(between, [ask,tell]).
 
 %% query variables
 query_compiler:step_var( is(X,Y), Ctx, Var) :- assignment_var(X,Y,Ctx,Var).
@@ -19,6 +20,8 @@ query_compiler:step_var( =<(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
 query_compiler:step_var( >=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
 query_compiler:step_var(=\=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
 query_compiler:step_var(=:=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
+query_compiler:step_var(between(X,Y,Z), Ctx, Var) :-
+	query_compiler:get_var([X,Y,Z],Ctx,Var).
 
 %% query compilation
 % TODO: early evaluation if ground at compile-time!
@@ -30,6 +33,29 @@ query_compiler:step_compile(  >(X,Y), Ctx, Z) :- comparison(  >(X,Y),Ctx,Z).
 query_compiler:step_compile( >=(X,Y), Ctx, Z) :- comparison( >=(X,Y),Ctx,Z).
 query_compiler:step_compile(=\=(X,Y), Ctx, Z) :- comparison(=\=(X,Y),Ctx,Z).
 query_compiler:step_compile(=:=(X,Y), Ctx, Z) :- comparison(=:=(X,Y),Ctx,Z).
+
+%% between(+Low, +High, -Value)
+% Low and High are integers, High >=Low. If Value is an integer, Low =<Value =<High.
+% When Value is a variable it is successively bound to all integers between Low and High. 
+%
+query_compiler:step_compile(
+		between(Low, High, Value),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Low,Ctx,Low0),
+	query_compiler:var_key_or_val(High,Ctx,High0),
+	query_compiler:var_key_or_val(Value,Ctx,Value0),
+	findall(Step,
+		% TODO: conditional $set to array holding only Value if Value is given
+		%       this would avoid iteration between Low and High for faster between checking.
+		(	Step=['$set', ['t_index', ['$range',
+				array([ Low0, ['$add', array([High0, integer(1)]) ]])
+			]]]
+		;	Step=['$unwind',string('$t_index')]
+		;	query_compiler:set_if_var(Value, string('$t_index'), Ctx, Step)
+		;	query_compiler:match_equals(Value0, string('$t_index'), Step)
+		;	Step=['$unset', string('t_index')]
+		),
+		Pipeline).
 
 %%
 assignment_var(Var, _Exp, Ctx, [VarKey, Var]) :-
@@ -59,7 +85,7 @@ assignment(Number, Exp, Ctx, Pipeline) :-
 	query_compiler:var_key_or_val(Number,Ctx,Number0),
 	expression(Exp, Ctx, Doc),
 	findall(Step,
-		(	query_compiler:set_if_var(Number,  Doc,   Ctx, Step)
+		(	query_compiler:set_if_var(Number, Doc, Ctx, Step)
 		;	query_compiler:match_equals(Number0, Doc, Step)
 		),
 		Pipeline).
@@ -152,34 +178,41 @@ expression_function(*,        '$multiply').
 
 test('is(-Y,+X)'):-
 	lang_query:test_command(
-		(Y is X), X, double(-3.25)),
+		(Y is X), X, -3.25),
 	assert_equals(Y, -3.25).
 
 test('is(-Y,+Exp)'):-
 	lang_query:test_command(
-		(Y is (X + 0.5)*2), X, double(2.5)),
+		(Y is (X + 0.5)*2), X, 2.5),
 	assert_equals(Y, 6.0).
 
 test('is(+Y,+X)') :-
 	assert_true(lang_query:test_command(
-		(3.0 is X), X, double(3))),
+		(3.0 is X), X, 3)),
 	assert_false(lang_query:test_command(
-		(4.0 is X), X, double(3))).
+		(4.0 is X), X, 3)).
 
 test('<(+X,+Y)'):-
 	assert_true(lang_query:test_command(
-		(X < 7.0), X, double(6))),
+		(X < 7.0), X, 6)),
 	assert_false(lang_query:test_command(
-		(X < 7.0), X, double(8))),
+		(X < 7.0), X, 8)),
 	assert_false(lang_query:test_command(
-		(X < 7.0), X, double(7))).
+		(X < 7.0), X, 7)).
 
 test('<(+Exp1,+Exp2)'):-
 	assert_true(lang_query:test_command(
-		((X*2) < (X + 5)), X, double(2))),
+		((X*2) < (X + 5)), X, 2)),
 	assert_false(lang_query:test_command(
-		((X*2) < (X + 5)), X, double(5))),
+		((X*2) < (X + 5)), X, 5)),
 	assert_false(lang_query:test_command(
-		((X*2) < (X + 5)), X, double(6))).
+		((X*2) < (X + 5)), X, 6)).
+
+test('between(+Low,+High,-Value)'):-
+	findall(Value,
+		lang_query:test_command(
+			between(Low,10,Value), Low, 8),
+		Values),
+	assert_equals(Values, [8,9,10]).
 
 :- end_tests('lang_arithmetic').

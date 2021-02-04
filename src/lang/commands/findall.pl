@@ -31,8 +31,8 @@ query_compiler:step_expand(
 % findall only exposes the List variable to the outside.
 %
 query_compiler:step_var(
-		findall(Template, _, List), Ctx,
-		[List_var, list(List,Template)]) :-
+		findall(_, _, List), Ctx,
+		[List_var, List]) :-
 	query_compiler:var_key(List, Ctx, List_var).
 
 %% findall(+Template, :Goal, -Bag)
@@ -43,41 +43,60 @@ query_compiler:step_var(
 query_compiler:step_compile(
 		findall(Template, Terminals, List),
 		Ctx, Pipeline) :-
-	% option(mode(ask), Context),
+	% TODO: how does this interfere with scopes?
+	%	- within findall body scopes maybe computed
+	%	- member with scope should do scope intersection
+	%	- for now scopes in findall are _ignored_!
+	query_compiler:var_key(List, Ctx, List_Key),
+	% Get the $map expression to instantiate the template for each list element.
+	% NOTE: it is not allowed due to handling here to construct
+	% the pattern in a query, it must be given in the findall command compile-time.
+	% if really needed it could be done more dynamic, I think.
+	template_instantiation(Template, Ctx, Instantiation),
 	findall(Step,
 		% perform lookup, collect results in 'next' array
 		(	query_compiler:lookup_array('next',Terminals,
 				[], [], Ctx, _, Step)
 		% $set the list variable field from 'next' field
-		;	set_result(Template, List, Ctx, Step)
+		;	Step=['$set', [List_Key, ['$map',[
+					['input',string('$next')],
+					['in', Instantiation] ]]]]
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', string('next')]
 		),
 		Pipeline).
 
 %%
-% findall $set receives a list of matching documents in "next" field.
-% $set uses additional $map operation to only keep the fields of
-% variables referred to in Template.
+% findall template must be given compile-time to construct the mongo expression
+% to map lookup results to be a proper instantiation of the template.
+% the currently mapped array element is referred to as "$$this"
 %
-set_result(Template, List, Ctx,
-	['$set',
-		[List_Key, ['$map',[
-			['input',string('$next')],
-			['in', ElemProjection]
-		]]]
-	]) :-
-	query_compiler:var_key(List, Ctx, List_Key),
-	term_variables(Template, PatternVars),
-	%
-	findall([Key, string(Val)],
-		(	(	Key='v_scope', Val='$$this.v_scope' )
-		;	(	member(Var,PatternVars),
-				query_compiler:var_key(Var, Ctx, Key),
-				atom_concat('$$this.', Key, Val)
-			)
+template_instantiation(Var, Ctx, string(Val)) :-
+	query_compiler:var_key(Var, Ctx, Key),
+	atom_concat('$$this.', Key, Val).
+	
+template_instantiation(List, Ctx, array(Elems)) :-
+	is_list(List),!,
+	findall(Y,
+		(	member(X,List),
+			template_instantiation(X, Ctx, Y)
 		),
-		ElemProjection).
+		Elems).
+
+template_instantiation(Template, Ctx, [
+		['type', string('compound')],
+		['value', [
+			['functor', Functor],
+			['args', Args0]
+		]]
+	]) :-
+	compound(Template),!,
+	Template =.. [Functor|Args],
+	template_instantiation(Args, Ctx, Args0).
+	
+template_instantiation(Atomic, _Ctx, Constant) :-
+	atomic(Atomic),
+	query_compiler:get_constant(Atomic, Constant).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
@@ -135,7 +154,7 @@ test('findall with ungrounded'):-
 	assert_unifies(Results,[_,9.0]),
 	assert_true(((Results=[Var|_],var(Var)))).
 
-test('findall with list pattern', [fixme('findall cannot be used with term pattern')]):-
+test('findall with list pattern'):-
 	lang_query:test_command(
 		(	findall([X,Y],
 				(	(X is (Num + 5), Y is X + 1)
@@ -147,7 +166,7 @@ test('findall with list pattern', [fixme('findall cannot be used with term patte
 	),
 	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
 
-test('findall with term pattern', [fixme('findall cannot be used with term pattern')]):-
+test('findall with term pattern'):-
 	lang_query:test_command(
 		(	findall(test(X,Y),
 				(	(X is (Num + 5), Y is X + 1)

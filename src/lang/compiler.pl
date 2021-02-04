@@ -137,12 +137,12 @@ unify_0(Doc, [X|Xs]) :-
 	unify_0(Doc, Xs).
 
 unify_1(_, ['_id', _]).
-unify_1(Doc, [VarKey, Term]) :-
-	nonvar(Term),
-	Term=list(Var,Pattern),
-	!,
-	mng_get_dict(VarKey, Doc, ArrayValue),
-	unify_list(ArrayValue, Pattern, Var).
+%unify_1(Doc, [VarKey, Term]) :-
+%	nonvar(Term),
+%	Term=list(Var,Pattern),
+%	!,
+%	mng_get_dict(VarKey, Doc, ArrayValue),
+%	unify_list(ArrayValue, Pattern, Var).
 
 unify_1(_, [_, Term]) :-
 	% variable was unified in pragma command
@@ -150,44 +150,34 @@ unify_1(_, [_, Term]) :-
 
 unify_1(Doc, [VarKey, Val]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
-	mng_strip_type(TypedValue, _, Val0),
-	(	\+ is_list(Val0) -> Val=Val0
-	;	findall(Stripped,
-			(	member(X,Val0),
-				mng_strip_type(X, _, Stripped)
-			),
-			Val)
-	).
+	unify_2(TypedValue, Val).
 
 %%
-unify_list(array([]),_,[]) :- !.
-unify_list(array([X|Xs]),Pattern,[Y|Ys]) :-
-	dict_pairs(Dict, _, X),
-	unify_list_1(Dict, Pattern, Y),
-	unify_list(array(Xs), Pattern, Ys).
+unify_2(array(In),Out) :-
+	% a variable was instantiated to a list
+	!,
+	maplist(unify_2, In, Out).
 
-%%
-unify_list_1(_, Ground, Ground) :-
-	ground(Ground),!.
+unify_2([K-V|Rest],Out) :-
+	!,
+	dict_pairs(Dict,_,[K-V|Rest]),
+	unify_2(Dict,Out).
 
-unify_list_1(Doc, Var, Elem) :-
-	var(Var),!,
-	var_key(Var, [], Key),
-	unify_1(Doc, [Key, Elem]).
+unify_2(_{ type: string('compound'), value: Val }, Out) :-
+	% a variable was instantiated to a compound
+	!,
+	mng_get_dict('functor', Val, string(Functor)),
+	mng_get_dict('args', Val, Args),
+	unify_2(Args, Args0),
+	Out =.. [Functor|Args0].
 
-unify_list_1(Doc, List, Elem) :-
-	is_list(List),!,
-	findall(Y,
-		(	member(X,List),
-			unify_list_1(Doc,X,Y)
-		),
-		Elem).
+unify_2(_{ type: string('var'), value: _ }, _Out) :-
+	% a variable was not instantiated
+	!.
 
-unify_list_1(Doc, Term, Elem) :-
-	compound(Term),!,
-	Term =.. List0,
-	unify_list_1(Doc, List0, List1),
-	Elem =.. List1.
+unify_2(TypedValue,Value) :-
+	% a variable was instantiated to an atomic value
+	mng_strip_type(TypedValue, _, Value).
 
 %% query_assert(+Rule) is semidet.
 %
@@ -300,7 +290,6 @@ expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
-	% TODO: do we need to create a copy of Terminals here, or not needed?
 	(	bagof(Terminals,
 			query(Functor, Args, Terminals, Mode),
 			TerminalsList)
@@ -381,12 +370,21 @@ compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
 	compile_expanded_terms(Rest, Doc1, V1->Vn, Context),
 	append(Doc0, Doc1, Doc).
 	
-compile_expanded_term(Expanded, Doc, V0->V1, Context) :-
+compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
 	(	bagof(Vs, step_var(Expanded, Context, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
 	list_to_set(StepVars, StepVars_unique),
+	% create a field for each variable that was not referred to before
+	findall([VarKey,[['type',string('var')], ['value',string(VarKey)]]],
+		(	member([VarKey,_], StepVars_unique),
+			\+ member([VarKey,_], V0)
+		),
+		VarDocs),
+	(	VarDocs=[] -> Pipeline=Doc
+	;	Pipeline=[['$set', VarDocs]|Doc]
+	),
 	% merge StepVars with variables in previous steps (V0)
 	append(V0, StepVars_unique, V11),
 	list_to_set(V11, V1),
@@ -536,6 +534,7 @@ lookup_next_unwind(Terminals,
 %
 set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
+			% FIXME: should be is_var test here or?
 			['$not', array([string(Val)])], % if the field does not exist
 			string('$$REMOVE'),             % do not add a new field at Key
 			string(Val)                     % else write Val into field at Key
@@ -561,15 +560,16 @@ step_var(List, Ctx, Var) :-
 %
 set_if_var(X, Exp, Ctx,
 		['$set', [Key, ['$cond', array([
-			% if X is still a variable
-			['$not', array([string(KeyExp)])],
+			% if X is a variable
+			['$eq', array([string(TypeVal), string('var')])],
 			% evaluate the expression and set new value
 			Exp,
 			% else value remains the same
-			string(KeyExp)
+			string(XVal)
 		])]]]) :-
 	query_compiler:var_key(X, Ctx, Key),
-	atom_concat('$',Key,KeyExp).
+	atom_concat('$',Key,XVal),
+	atom_concat(XVal,'.type',TypeVal).
 
 %%
 get_var(Term, Ctx, [Key,Var]) :-
@@ -610,7 +610,7 @@ var_key_or_val0(In, Ctx, string(Key)) :-
 
 var_key_or_val0(In, _Ctx, Out) :-
 	atomic(In),!,
-	once(get_constant_(In,Out)).
+	once(get_constant(In,Out)).
 
 var_key_or_val0(In, Ctx, array(L)) :-
 	is_list(In),!,
@@ -620,15 +620,34 @@ var_key_or_val0(In, Ctx, array(L)) :-
 		),
 		L).
 
-var_key_or_val0(In, _Ctx, In) :-
-	compound(In).
+var_key_or_val0(TypedValue, _Ctx, TypedValue) :-
+	compound(TypedValue),
+	TypedValue =.. [Type|_],
+	mng_client:type_mapping(Type,_),
+	!.
+
+var_key_or_val0(Term, Ctx, [
+		['type', string('compound')],
+		['value', [
+			['functor', string(Functor)],
+			['args', array(Vals)]
+		]]
+	]) :-
+	mng_strip_type(Term, term, Stripped),
+	compound(Stripped),
+	Stripped =.. [Functor|Args],
+	findall(X,
+		(	member(Y,Args),
+			var_key_or_val0(Y, Ctx, X)
+		),
+		Vals).
 
 %% in case of atomic in query
-get_constant_(Value, double(Value)) :- number(Value).
-get_constant_(true,  bool(true)).
-get_constant_(false, bool(false)).
-get_constant_(Value, string(Value)) :- atom(Value).
-get_constant_(Value, string(Value)) :- string(Value).
+get_constant(Value, double(Value)) :- number(Value).
+get_constant(true,  bool(true)).
+get_constant(false, bool(false)).
+get_constant(Value, string(Value)) :- atom(Value).
+get_constant(Value, string(Value)) :- string(Value).
 
 %%
 % True iff Arg has been referred to in the query before.

@@ -70,8 +70,7 @@ query_compiler:step_compile(
 
 test('new_iri(-IRI)'):-
 	lang_query:test_command(
-		(new_iri(IRI), atom_concat(IRI,foo,X)),
-		X, string(foo)),
+		(new_iri(IRI), atom_concat(IRI,foo,X)), X, foo),
 	assert_true(atom(X)),
 	assert_true(atom_concat(_,foo,X)).
 
@@ -79,7 +78,7 @@ test('iri_xml_namespace(+IRI,-NS,-Name)'):-
 	rdf_global_term(rdf:'Resource', Resource),
 	lang_query:test_command(
 		iri_xml_namespace(X,NS,Name),
-		X, string(Resource)),
+		X, Resource),
 	assert_true(atom(NS)),
 	assert_equals(Name,'Resource'),
 	assert_true(atomic_concat(NS,Name,Resource)).

@@ -307,7 +307,7 @@ mng_query_value(Value0, [Operator, Value1]) :-
 	;	X3=X2
 	),
 	% finally wrap value in type again
-	type_mapping_(Type, MngType),
+	type_mapping(Type, MngType),
 	mng_strip_type(Value1, MngType, X3).
 
 %%
@@ -346,9 +346,13 @@ mng_strip_type(List, array, List) :-
 
 mng_strip_type(Term, Type, X) :-
 	compound(Term),
-	!,
 	Term=..[Type,X],
-	type_mapping_(Type,_).
+	type_mapping(Type,_),
+	!.
+
+mng_strip_type(Term, term, Term) :-
+	compound(Term),
+	!.
 
 mng_strip_type(X, double, X) :-
 	number(X),
@@ -366,14 +370,20 @@ mng_strip_type(X, bool, X) :-
 mng_strip_type(X, string, X).
 
 %%
-type_mapping_(float,   double) :- !.
-type_mapping_(number,  double) :- !.
-type_mapping_(integer, int) :- !.
-type_mapping_(long,    int)    :- !.
-type_mapping_(short,   int)    :- !.
-type_mapping_(byte,    int)    :- !.
-type_mapping_(term,    string) :- !.
-type_mapping_(X,       X)      :- !.
+type_mapping(double,  double) :- !.
+type_mapping(float,   double) :- !.
+type_mapping(number,  double) :- !.
+type_mapping(int,     int)    :- !.
+type_mapping(integer, int)    :- !.
+type_mapping(long,    int)    :- !.
+type_mapping(short,   int)    :- !.
+type_mapping(byte,    int)    :- !.
+type_mapping(string,  string) :- !.
+type_mapping(atom,    string) :- !.
+type_mapping(array,   array) :- !.
+type_mapping(list,    array) :- !.
+%type_mapping(term,    string) :- !.
+%type_mapping(X,       X)      :- !.
 
 %%
 mng_strip_operator(    X,    =, X) :- var(X), !.
@@ -394,7 +404,6 @@ mng_operator('>', '$gt').
 mng_operator('<', '$lt').
 mng_operator('in', '$in').
 mng_operator('nin', '$nin').
-mng_operator('size', '$size').
 
 %%
 mng_strip_variable(X->_,X) :- nonvar(X), !.
