@@ -110,7 +110,7 @@ set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
 		['$arrayElemAt', array([string(ArrayField),integer(Index)])]]]) :-
 	% nonvar(Term),
 	% get arguments of the term
-	Term =.. [_Functor,Args],
+	Term =.. [_Functor|Args],
 	% the value query to obtain the argument array in mongo
 	atomic_list_concat(['$',Field,'.value.args'], ArrayField),
 	% iterate over arguments
@@ -148,7 +148,11 @@ test('compound unification'):-
 	assert_true(lang_query:test_command(=(_,X), X, foo(a,b))),
 	assert_false(lang_query:test_command(=(foo(a,c),X), X, foo(a,b))).
 
-test('unification vars'):-
+test('unification 1-ary term with var'):-
+	lang_query:test_command(=(foo(Y),X), X, foo(a)),
+	assert_equals(Y,a).
+
+test('unification 2-ary term with var'):-
 	lang_query:test_command(=(foo(a,Y),X), X, foo(a,b)),
 	assert_equals(Y,b).
 
