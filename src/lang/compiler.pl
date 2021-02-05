@@ -125,6 +125,7 @@ query_2(tell, Cursor, _Vars, _FScope) :-
 %
 unify_(Result, Vars, FScope) :-
 	mng_get_dict('v_scope', Result, FScope),
+	unify_vars(Result, Vars, Vars),
 	unify_0(Result, Vars).
 
 unify_0(_, []) :- !.
@@ -137,12 +138,6 @@ unify_0(Doc, [X|Xs]) :-
 	unify_0(Doc, Xs).
 
 unify_1(_, ['_id', _]).
-%unify_1(Doc, [VarKey, Term]) :-
-%	nonvar(Term),
-%	Term=list(Var,Pattern),
-%	!,
-%	mng_get_dict(VarKey, Doc, ArrayValue),
-%	unify_list(ArrayValue, Pattern, Var).
 
 unify_1(_, [_, Term]) :-
 	% variable was unified in pragma command
@@ -180,6 +175,22 @@ unify_2(_{ type: string('var'), value: _ }, _Out) :-
 unify_2(TypedValue,Value) :-
 	% a variable was instantiated to an atomic value
 	mng_strip_type(TypedValue, _, Value).
+
+%%
+unify_vars(_, _, []) :- !.
+unify_vars(Result, Vars, [X|Xs]) :-
+	ignore(unify_var(Result, Vars, X)),
+	unify_vars(Result, Vars, Xs).
+
+unify_var(Result, Vars, [VarKey0, Val0]) :-
+	var(Val0),
+	mng_get_dict(VarKey0, Result, _{
+		type: string('var'),
+		value: string(VarKey1)
+	}),
+	VarKey0 \= VarKey1,
+	memberchk([VarKey1, Val1], Vars),
+	Val0 = Val1.
 
 %% query_assert(+Rule) is semidet.
 %
