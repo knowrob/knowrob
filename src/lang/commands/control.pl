@@ -336,6 +336,16 @@ test('((+Goal ; +Goal), !)'):-
 		Num, 4.5),
 	assert_equals(X,9.5).
 
+test('(((+Goal,+Goal) ; (+Goal,+Goal)))') :-
+	findall([X,Y],
+		lang_query:test_command(
+			(	(X is Num, Y is X + 1)
+			;	(X is Num, Y is X + 2)
+			),
+			Num, 4.5),
+		Results),
+	assert_equals(Results, [[4.5,5.5], [4.5,6.5]]).
+
 test('((+If -> +Then) ; +Else)::Then') :-
 	lang_query:test_command(
 		(	Num > 5 -> X is Num * 2

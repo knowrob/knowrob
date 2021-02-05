@@ -86,7 +86,7 @@ template_instantiation(List, Ctx, array(Elems)) :-
 template_instantiation(Template, Ctx, [
 		['type', string('compound')],
 		['value', [
-			['functor', Functor],
+			['functor', string(Functor)],
 			['args', Args0]
 		]]
 	]) :-
@@ -152,9 +152,21 @@ test('findall with ungrounded'):-
 		Num, double(4.5)
 	),
 	assert_unifies(Results,[_,9.0]),
-	assert_true(((Results=[Var|_],var(Var)))).
+	( Results=[Var|_] -> assert_true(var(Var)) ; true ).
 
-test('findall with list pattern'):-
+test('findall 1-element list'):-
+	lang_query:test_command(
+		(	findall([X],
+				(	X is Num + 5
+				;	X is Num * 2
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_unifies(Results,[[9.5],[9.0]]).
+
+test('findall 2-element list'):-
 	lang_query:test_command(
 		(	findall([X,Y],
 				(	(X is (Num + 5), Y is X + 1)
@@ -166,7 +178,19 @@ test('findall with list pattern'):-
 	),
 	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
 
-test('findall with term pattern'):-
+test('findall 1-ary term'):-
+	lang_query:test_command(
+		(	findall(test(X),
+				(	X is (Num + 5)
+				;	X is (Num * 2)
+				),
+				Results)
+		),
+		Num, double(4.5)
+	),
+	assert_unifies(Results,[test(9.5), test(9.0)]).
+
+test('findall 2-ary term'):-
 	lang_query:test_command(
 		(	findall(test(X,Y),
 				(	(X is (Num + 5), Y is X + 1)
@@ -177,8 +201,6 @@ test('findall with term pattern'):-
 		Num, double(4.5)
 	),
 	assert_unifies(Results,[
-		test(9.5,10.5),
-		test(9.0,11.0)
-	]).
+		test(9.5,10.5), test(9.0,11.0) ]).
 
 :- end_tests('lang_findall').

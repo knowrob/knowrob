@@ -166,8 +166,10 @@ unify_2([K-V|Rest],Out) :-
 unify_2(_{ type: string('compound'), value: Val }, Out) :-
 	% a variable was instantiated to a compound
 	!,
-	mng_get_dict('functor', Val, string(Functor)),
-	mng_get_dict('args', Val, Args),
+	unify_2(Val, Out).
+
+unify_2(_{ functor: string(Functor), args: Args }, Out) :-
+	!,
 	unify_2(Args, Args0),
 	Out =.. [Functor|Args0].
 
@@ -536,7 +538,8 @@ set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
 			% FIXME: should be is_var test here or?
 			['$not', array([string(Val)])], % if the field does not exist
-			string('$$REMOVE'),             % do not add a new field at Key
+			%string('$$REMOVE'),             % do not add a new field at Key
+			[['type',string('var')], ['value',string('_')]],
 			string(Val)                     % else write Val into field at Key
 		])]]]) :-
 	member([Key,_], InnerVars),
@@ -554,6 +557,11 @@ step_var(List, Ctx, Var) :-
 	is_list(List),!,
 	member(X,List),
 	step_var(X, Ctx, Var).
+
+step_var(','(A,B), Ctx, Var) :-
+	!,
+	comma_list(','(A,B), List),
+	step_var(List, Ctx, Var).
 
 %%
 % Conditional $set command for ungrounded vars.
