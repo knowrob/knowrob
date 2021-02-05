@@ -114,6 +114,68 @@ static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, cons
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
+static bool bson_iter_append_array(bson_iter_t *iter, PlTail *pl_array)
+{
+	if(BSON_ITER_HOLDS_UTF8(iter)) {
+		pl_array->append(PlCompound("string",
+				PlTerm(bson_iter_utf8(iter,NULL))));
+	}
+	else if(BSON_ITER_HOLDS_DOCUMENT(iter)) {
+		const uint8_t *data = NULL;
+		uint32_t len = 0;
+		bson_iter_document(iter, &len, &data);
+		bson_t *doc = bson_new_from_data(data, len);
+		pl_array->append(bson_to_term(doc));
+	}
+	else if(BSON_ITER_HOLDS_ARRAY(iter)) {
+		const uint8_t *array = NULL;
+		uint32_t array_len = 0;
+		bson_iter_array(iter, &array_len, &array);
+		bson_t *inner_doc = bson_new_from_data(array, array_len);
+		bson_iter_t inner_iter;
+		PlTerm inner_term;
+		PlTail inner_array(inner_term);
+		if(bson_iter_init(&inner_iter, inner_doc)) {
+			while(bson_iter_next(&inner_iter)) {
+				bson_iter_append_array(&inner_iter,&inner_array);
+			}
+		}
+		inner_array.close();
+		pl_array->append(PlCompound("array",inner_term));
+	}
+	else if(BSON_ITER_HOLDS_DOUBLE(iter)) {
+		pl_array->append(PlCompound("double",
+				PlTerm(bson_iter_double(iter))));
+	}
+	else if(BSON_ITER_HOLDS_DECIMAL128(iter)) {
+		bson_decimal128_t v_decimal128;
+		bson_iter_decimal128(iter, &v_decimal128);
+		bson_visit_decimal128(iter, &v_decimal128, pl_array);
+	}
+	else if(BSON_ITER_HOLDS_INT32(iter)) {
+		pl_array->append(PlCompound("int",
+				PlTerm((long)bson_iter_int32(iter))));
+	}
+	else if(BSON_ITER_HOLDS_INT64(iter)) {
+		pl_array->append(PlCompound("int",
+				PlTerm((long)bson_iter_int32(iter))));
+	}
+	else if(BSON_ITER_HOLDS_BOOL(iter)) {
+		pl_array->append(PlCompound("bool",
+				PlTerm((long)bson_iter_bool(iter))));
+	}
+	else if(BSON_ITER_HOLDS_DATE_TIME(iter)) {
+		double sec_since_epoch = ((double)bson_iter_date_time(iter))/1000.0;
+		pl_array->append(PlCompound("double", PlTerm(sec_since_epoch)));
+	}
+	else {
+		bson_type_t iter_t = bson_iter_type(iter);
+		std::cout << "WARN: unsupported array type '" << iter_t << "'" << std::endl;
+		return false;
+	}
+	return true;
+}
+
 static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bson_t *v_array, void *data)
 {
 	PlTermv av(1);
@@ -121,48 +183,7 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 	bson_iter_t array_iter;
 	if(bson_iter_init(&array_iter, v_array)) {
 		while(bson_iter_next(&array_iter)) {
-			if(BSON_ITER_HOLDS_UTF8(&array_iter)) {
-				pl_array.append(PlCompound("string",
-						PlTerm(bson_iter_utf8(&array_iter,NULL))));
-			}
-			else if(BSON_ITER_HOLDS_DOCUMENT(&array_iter)) {
-				const uint8_t *data = NULL;
-				uint32_t len = 0;
-				bson_iter_document(&array_iter, &len, &data);
-				bson_t *doc = bson_new_from_data(data, len);
-				pl_array.append(bson_to_term(doc));
-			}
-			else if(BSON_ITER_HOLDS_DOUBLE(&array_iter)) {
-				pl_array.append(PlCompound("double",
-						PlTerm(bson_iter_double(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_DECIMAL128(&array_iter)) {
-				bson_decimal128_t v_decimal128;
-				bson_iter_decimal128(&array_iter, &v_decimal128);
-				bson_visit_decimal128(&array_iter, &v_decimal128, &pl_array);
-			}
-			else if(BSON_ITER_HOLDS_INT32(&array_iter)) {
-				pl_array.append(PlCompound("int",
-						PlTerm((long)bson_iter_int32(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_INT64(&array_iter)) {
-				pl_array.append(PlCompound("int",
-						PlTerm((long)bson_iter_int32(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_BOOL(&array_iter)) {
-				pl_array.append(PlCompound("bool",
-						PlTerm((long)bson_iter_bool(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_DATE_TIME(&array_iter)) {
-				double sec_since_epoch = ((double)bson_iter_date_time(&array_iter))/1000.0;
-				pl_array.append(PlCompound("double", PlTerm(sec_since_epoch)));
-			}
-			else {
-				bson_type_t iter_t = bson_iter_type(&array_iter);
-				std::cout << "WARN: unsupported array type '" <<
-						iter_t <<
-						"' for key '" << key << "'" << std::endl;
-			}
+			bson_iter_append_array(&array_iter, &pl_array);
 		}
 	}
 	pl_array.close();
