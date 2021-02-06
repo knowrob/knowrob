@@ -111,7 +111,7 @@ query_compiler:step_compile(
 	mng_one_db(_DB, Coll),
 	% compute steps of the aggregate pipeline
 	findall(Step,
-		(	Step=['$set', ['t_list', List0]]
+		(	Step=['$set', ['t_list', ['$setUnion', array([List0])]]]
 		;	Step=['$lookup', [
 				['from', string(Coll)],
 				['as', string('t_array')],
@@ -252,8 +252,8 @@ test('sort(+Numbers)'):-
 		(	X is Num + 5,
 			sort([4,X,Num,2], Sorted)
 		),
-		Num, double(5)),
-	assert_equals(Sorted, [2.0, 4.0, 5.0, 10.0]).
+		Num, double(4)),
+	assert_equals(Sorted, [2.0, 4.0, 9.0]).
 
 test('sort(+Atoms)'):-
 	lang_query:test_command(
