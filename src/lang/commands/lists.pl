@@ -13,7 +13,7 @@
 :- query_compiler:add_command(memberchk).
 :- query_compiler:add_command(nth0).
 :- query_compiler:add_command(list_to_set).
-%:- query_compiler:add_command(sort).
+:- query_compiler:add_command(sort).
 %:- query_compiler:add_command(reverse).
 
 %% member(?Elem, +List)
@@ -100,6 +100,37 @@ query_compiler:step_compile(
 	query_compiler:var_key(Set,Ctx,SetKey),
 	Step=['$set', [SetKey, ['$setUnion', array([List0])]]].
 
+%% sort(+List, -Sorted)
+% True if Sorted can be unified with a list holding the elements of List,
+% sorted to the standard order in mongo. Duplicates are removed.
+%
+query_compiler:step_compile(
+		sort(List, Sorted), Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(List,Ctx,List0),
+	query_compiler:var_key(Sorted,Ctx,SortedKey),
+	mng_one_db(_DB, Coll),
+	% compute steps of the aggregate pipeline
+	findall(Step,
+		(	Step=['$set', ['t_list', List0]]
+		;	Step=['$lookup', [
+				['from', string(Coll)],
+				['as', string('t_array')],
+				['let', [['t_list', string('$t_list')]]],
+				['pipeline', array([
+					['$set', ['elem', string('$$t_list')]],
+					['$unwind', string('$elem')],
+					['$sort', ['elem', integer(1)]]
+				])]
+			]]
+		;	Step=['$set', [SortedKey, ['$map', [
+				['input', string('$t_array')],
+				['in', string('$$this.elem')]
+			]]]]
+		;	Step=['$unset', array([string('t_list'), string('t_array')])]
+		),
+		Pipeline
+	).
+
 %% nth0(?Index, +List, ?Elem)
 % True when Elem is the Index’th element of List. Counting starts at 0. 
 %
@@ -135,10 +166,6 @@ query_compiler:step_compile(
 		Pipeline
 	).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% helper
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %% +List, ?Attribute
 % Applies an operator on grounded array (List) and unifies the
 % second argument with the result (i.e. Attribute maybe ground or var).
@@ -158,21 +185,6 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 		),
 		Pipeline
 	).
-
-%%
-pattern_var_key(Pattern, Ctx, [Key, Var]) :-
-	pattern_variables_(Pattern, Ctx, Vars),
-	member([Key, Var], Vars).
-
-%%
-pattern_variables_(Pattern, Ctx, Vars) :-
-	term_variables(Pattern, PatternVars),
-	pattern_variables_1(PatternVars, Ctx, Vars).
-
-pattern_variables_1([], _, []) :- !.
-pattern_variables_1([X|Xs], Ctx, [[Key,X]|Ys]) :-
-	query_compiler:var_key(X,Ctx,Key),
-	pattern_variables_1(Xs,Ctx,Ys).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
@@ -234,6 +246,24 @@ test('list_to_set(+Numbers)'):-
 		),
 		Num, double(4.5)),
 	assert_equals(Set, [9.5]).
+
+test('sort(+Numbers)'):-
+	lang_query:test_command(
+		(	X is Num + 5,
+			sort([4,X,Num,2], Sorted)
+		),
+		Num, double(5)),
+	assert_equals(Sorted, [2.0, 4.0, 5.0, 10.0]).
+
+test('sort(+Atoms)'):-
+	lang_query:test_command(
+		sort([d,a,X,b], Sorted), X, string(s)),
+	assert_equals(Sorted, [a,b,d,s]).
+
+test('sort(+AtomsAndNumbers)'):-
+	lang_query:test_command(
+		sort([9,a,X,7], Sorted), X, string(s)),
+	assert_equals(Sorted, [7.0,9.0,a,s]).
 
 test('nth0(+Numbers)'):-
 	lang_query:test_command(
