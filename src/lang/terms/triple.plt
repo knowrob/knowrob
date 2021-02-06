@@ -1,6 +1,6 @@
-:- use_module('rdf_tests').
+:- use_module(library('lang/rdf_tests')).
 :- begin_tests(
-		'lang_query',
+		'lang_triple',
 		[   setup(lang_query:set_default_graph(test)),
 		    cleanup(rdf_tests:cleanup)
 		]).
@@ -10,9 +10,9 @@
 :- use_module(library('rostest.pl')).
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_register_ns/3 ]).
-:- use_module('query').
-:- use_module('db').
-:- use_module('scope').
+:- use_module(library('lang/query')).
+:- use_module(library('lang/db')).
+:- use_module(library('lang/scope')).
 
 % register namespaces for following tests
 :- rdf_register_ns(swrl_tests,
@@ -231,4 +231,4 @@ test('transitive+reflexive') :-
 	assert_true(member(swrl_tests:'Fred', Ancestors)),
 	assert_true(member(swrl_tests:'Lea', Ancestors)).
 
-:- end_tests('lang_query').
+:- end_tests('lang_triple').
