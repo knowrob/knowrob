@@ -23,7 +23,7 @@ query_compiler:step_expand(
 %
 %query_compiler:step_expand(
 %		setof(Template, Goal, Set),
-%		[ bagof(Template, Expanded, List), sort(List, Set) ],
+%		','(bagof(Template, Expanded, List), sort(List, Set)),
 %		Context) :-
 %	query_expand(Goal, Expanded, Context).
 

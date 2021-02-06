@@ -14,7 +14,6 @@
 :- query_compiler:add_command(nth0).
 :- query_compiler:add_command(list_to_set).
 :- query_compiler:add_command(sort).
-%:- query_compiler:add_command(reverse).
 
 %% member(?Elem, +List)
 % True if Elem is a member of List. 
@@ -112,9 +111,10 @@ query_compiler:step_compile(
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		(	Step=['$set', ['t_list', ['$setUnion', array([List0])]]]
+		% use lookup to sort the array by using $unwind+$sort in lookup pipeline
 		;	Step=['$lookup', [
 				['from', string(Coll)],
-				['as', string('t_array')],
+				['as', string('t_sorted')],
 				['let', [['t_list', string('$t_list')]]],
 				['pipeline', array([
 					['$set', ['elem', string('$$t_list')]],
@@ -122,11 +122,12 @@ query_compiler:step_compile(
 					['$sort', ['elem', integer(1)]]
 				])]
 			]]
+		% map from array of documents to array of values
 		;	Step=['$set', [SortedKey, ['$map', [
-				['input', string('$t_array')],
+				['input', string('$t_sorted')],
 				['in', string('$$this.elem')]
 			]]]]
-		;	Step=['$unset', array([string('t_list'), string('t_array')])]
+		;	Step=['$unset', array([string('t_list'), string('t_sorted')])]
 		),
 		Pipeline
 	).
@@ -296,9 +297,5 @@ test('findall+member'):-
 			Num, double(4.5)),
 		Results),
 	assert_equals(Results,[9.5,9.0]).
-
-%%:- query_compiler:add_command(memberchk,   [ask]).
-%%:- query_compiler:add_command(sort,        [ask]).
-%%:- query_compiler:add_command(reverse,     [ask]).
 
 :- end_tests('list_commands').
