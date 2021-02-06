@@ -228,13 +228,13 @@ expand_list_(This, [Child|Rest],
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-test('is_resource') :-
+test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'Lea')),
 	assert_true(is_resource(test:'Adult')),
 	assert_false(is_resource(test:'hasNumber')),
 	assert_false(is_resource(test:'NotExisting')).
 
-test('is_property') :-
+test('is_property(+Property)') :-
 	assert_true(is_property(test:'hasNumber')),
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
@@ -245,13 +245,7 @@ test("ask and tell instances of Rex") :-
 	assert_true(tell(instance_of(test:'Rex', test:'Adult'))),
 	assert_true(instance_of(test:'Rex', test:'Adult')).
 
-test("ask and tell list instance of Greta") :-
-	assert_false(instance_of('Greta', [test:'Woman', dul:'Person'])),
-	assert_true(tell(instance_of('Greta', [test:'Woman', dul:'Person']))),
-	assert_true(ask(instance_of_all('Greta', [test:'Woman', dul:'Person']))),
-	assert_true(ask(instance_of('Greta', [test:'Woman', dul:'Person']))).
-
-test("ask and tell sub property of") :-
+test("subproperty_of(+Sub,+Sup)") :-
 	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
 	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
 	assert_true(tell(subproperty_of(test:'hasBrother', test:'hasSibling'))),

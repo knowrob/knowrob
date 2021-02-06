@@ -300,7 +300,9 @@ expand_term_1(Goal, Expanded, Mode) :-
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
 	(	bagof(Terminals,
-			query(Functor, Args, Terminals, Mode),
+			(	copy_term(Args, Args0),
+				query(Functor, Args0, Terminals, Mode)
+			),
 			TerminalsList)
 	->	true
 	% handle the case that a predicate is referred to that wasn't

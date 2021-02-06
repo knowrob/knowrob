@@ -65,6 +65,7 @@
 %% is_owl_term(+Term) is semidet.
 %
 %
+is_owl_term(Var) :- var(Var), !, fail.
 is_owl_term(union_of(_)) :- !.
 is_owl_term(intersection_of(_)) :- !.
 is_owl_term(complement_of(_)) :- !.
@@ -75,6 +76,7 @@ is_owl_term(Term) :-
 %% is_restriction_term(+Term) is semidet.
 %
 %
+is_restriction_term(Var) :- var(Var), !, fail.
 is_restriction_term(only(_,_)).
 is_restriction_term(some(_,_)).
 is_restriction_term(value(_,_)).
@@ -411,14 +413,14 @@ has_disjoint_class1(A,B) :-
   % with disjointness axiom.
   % TODO rather use triple(_,rdfs:subClassOf,_) here?
   ( Sup_A=A ; transitive(subclass_of(A,Sup_A)) ),
-  ( tripledb_ask(Sup_A,owl:disjointWith,Sup_B) ;
-    tripledb_ask(Sup_B,owl:disjointWith,Sup_A) ),
+  ( lang_query:ask(triple(Sup_A,owl:disjointWith,Sup_B)) ;
+    lang_query:ask(triple(Sup_B,owl:disjointWith,Sup_A)) ),
   ( unify_disjoint_(B,Sup_B) ).
 
 %% OWL2 AllDisjointClasses
 has_disjoint_class2(A,B) :-
   is_all_disjoint_classes(DC),
-  tripledb_ask(DC,owl:members,RDF_list),
+  lang_query:ask(triple(DC,owl:members,RDF_list)),
   is_rdf_list(RDF_list,List),
   once((
     member(Sup_A,List), 

@@ -49,7 +49,7 @@
 
 % load init files in sub-directories
 :- use_directory('lang').
-%:- use_directory('model').
+:- use_directory('model').
 %:- use_directory('reasoning').
 %:- use_directory('ros').
 %:- use_directory('vis').

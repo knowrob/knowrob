@@ -253,9 +253,9 @@ user:term_expansion(
 % This is valid because, in this case, has_type/2 has
 % clauses for ask and tell.
 %
-user:term_expansion((?+>(Head,Goal)), [X1,X2]) :-
+user:term_expansion((?+>(Head,Goal)), X1) :-
 	user:term_expansion((?>(Head,Goal)),X1),
-	user:term_expansion((+>(Head,Goal)),X2).
+	user:term_expansion((+>(Head,Goal)),_X2).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
