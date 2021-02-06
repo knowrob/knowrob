@@ -7,8 +7,8 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(iri_xml_namespace, [ask]).
-:- query_compiler:add_command(new_iri,           [ask,tell]).
+:- query_compiler:add_command(iri_xml_namespace).
+:- query_compiler:add_command(new_iri).
 
 %%
 % tell queries can use new_iri/1 and new_iri/2 to generate

@@ -21,7 +21,7 @@
 		[['s'], ['p'], ['s','p']]).
 
 %% register query command
-:- query_compiler:add_command(comment, [ask]).
+:- query_compiler:add_command(comment).
 
 %%
 % ask(comment(Entity, Comment)) looks up the comment

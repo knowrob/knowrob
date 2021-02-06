@@ -27,7 +27,7 @@ into aggregate pipelines that can be processed by mongo DB.
 %% Stores list of terminal terms for each clause. 
 :- dynamic query/4.
 %% set of registered query commands.
-:- dynamic step_command/2.
+:- dynamic step_command/1.
 %% optionally implemented by query commands.
 :- multifile step_expand/3.
 %% implemented by query commands to compile query documents
@@ -37,7 +37,7 @@ into aggregate pipelines that can be processed by mongo DB.
 
 :- rdf_meta(step_compile(t,t,t)).
 
-%% add_command(+Command,+Modes) is det.
+%% add_command(+Command) is det.
 %
 % register a command that can be used in KnowRob
 % language expressions and which is implemented
@@ -47,8 +47,8 @@ into aggregate pipelines that can be processed by mongo DB.
 %
 % @Command a command term.
 %
-add_command(Command,Modes) :-
-	assertz(step_command(Command,Modes)).
+add_command(Command) :-
+	assertz(step_command(Command)).
 
 
 %% query_ask(+Statement, +Scope, +Options) is nondet.
@@ -286,15 +286,10 @@ expand_term_0([X|Xs], [X_expanded|Xs_expanded], Mode) :-
 expand_term_1(ask(Goal), Expanded, _Mode) :-
 	query_expand(Goal, Expanded, ask).
 
-%% finally expand rules that were asserted before
 expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|_Args],
-	step_command(Functor,Modes),
-	% verify that the command can be expanded into the current mode
-	(	member(Mode,Modes) -> true
-	;	throw(expansion_failed(Goal,Mode))
-	),
-	% finally allow the goal to recursively expand
+	step_command(Functor),
+	% allow the goal to recursively expand
 	(	step_expand(Goal, Expanded, Mode) -> true
 	;	Expanded = Goal
 	).

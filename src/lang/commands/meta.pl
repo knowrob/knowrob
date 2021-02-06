@@ -8,16 +8,16 @@
 :- use_module(library('lang/query')).
 
 %%%% query commands
-:- query_compiler:add_command(call,   [ask,tell]).
-:- query_compiler:add_command(once,   [ask,tell]).
-:- query_compiler:add_command(limit,  [ask,tell]).
-:- query_compiler:add_command(ignore, [ask,tell]).
-:- query_compiler:add_command(call_with_args,    [ask,tell]).
-:- query_compiler:add_command(call_with_context, [ask,tell]).
+:- query_compiler:add_command(call).
+:- query_compiler:add_command(once).
+:- query_compiler:add_command(limit).
+:- query_compiler:add_command(ignore).
+:- query_compiler:add_command(call_with_args).
+:- query_compiler:add_command(call_with_context).
 % TODO: move these to somewhere else
-:- query_compiler:add_command(set, [ask,tell]).
-:- query_compiler:add_command(pragma, [ask,tell]).
-:- query_compiler:add_command(context, [ask,tell]).
+:- query_compiler:add_command(set).
+:- query_compiler:add_command(pragma).
+:- query_compiler:add_command(context).
 
 %%%% query expansion
 	

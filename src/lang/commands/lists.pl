@@ -5,16 +5,16 @@
 		[ mng_scope_intersect/5 ]).
 
 %% query commands
-:- query_compiler:add_command(length,      [ask,tell]).
-:- query_compiler:add_command(max_list,    [ask,tell]).
-:- query_compiler:add_command(min_list,    [ask,tell]).
-:- query_compiler:add_command(sum_list,    [ask,tell]).
-:- query_compiler:add_command(member,      [ask,tell]).
-:- query_compiler:add_command(memberchk,   [ask,tell]).
-:- query_compiler:add_command(nth0,        [ask,tell]).
-:- query_compiler:add_command(list_to_set, [ask,tell]).
-%:- query_compiler:add_command(sort,        [ask]).
-%:- query_compiler:add_command(reverse,     [ask]).
+:- query_compiler:add_command(length).
+:- query_compiler:add_command(max_list).
+:- query_compiler:add_command(min_list).
+:- query_compiler:add_command(sum_list).
+:- query_compiler:add_command(member).
+:- query_compiler:add_command(memberchk).
+:- query_compiler:add_command(nth0).
+:- query_compiler:add_command(list_to_set).
+%:- query_compiler:add_command(sort).
+%:- query_compiler:add_command(reverse).
 
 %% member(?Elem, +List)
 % True if Elem is a member of List. 

@@ -3,8 +3,8 @@
 :- use_module(library('lang/compiler')).
 
 %% query_compiler:add_command
-:- query_compiler:add_command( =, [ask]).
-:- query_compiler:add_command(\=, [ask]).
+:- query_compiler:add_command(=).
+:- query_compiler:add_command(\=).
 
 %% @Term1 \= @Term2
 %

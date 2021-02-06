@@ -3,13 +3,13 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(functor,        [ask,tell]).
-:- query_compiler:add_command(arg,            [ask,tell]).
-:- query_compiler:add_command(copy_term,      [ask,tell]).
+:- query_compiler:add_command(functor).
+:- query_compiler:add_command(arg).
+:- query_compiler:add_command(copy_term).
 % TODO: support more term commands
-%:- query_compiler:add_command(same_term,      [ask,tell]).
-%:- query_compiler:add_command(term_variables, [ask,tell]).
-:- query_compiler:add_command(=..,            [ask,tell]).
+%:- query_compiler:add_command(same_term).
+%:- query_compiler:add_command(term_variables).
+:- query_compiler:add_command(=..).
 
 %% functor(?Term, ?Name, ?Arity) [ISO]
 % True when Term is a term with functor Name/Arity.

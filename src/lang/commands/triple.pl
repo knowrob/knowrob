@@ -34,7 +34,7 @@
 		['s','o','p'], ['s','o','p*'], ['s','o*','p'] ]).
 
 %% register query commands
-:- query_compiler:add_command(triple, [ask,tell]).
+:- query_compiler:add_command(triple).
 
 %%
 query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-

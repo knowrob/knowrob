@@ -3,8 +3,8 @@
 :- use_module(library('lang/compiler')).
 
 %% query_compiler:add_command
-:- query_compiler:add_command( ==, [ask]).
-:- query_compiler:add_command(\==, [ask]).
+:- query_compiler:add_command(==).
+:- query_compiler:add_command(\==).
 
 %% @Term1 == @Term2
 % True if Term1 is equivalent to Term2. A variable is only identical to a sharing variable

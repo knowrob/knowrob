@@ -3,14 +3,14 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(is,  [ask,tell]).
-:- query_compiler:add_command(>,   [ask,tell]).
-:- query_compiler:add_command(<,   [ask,tell]).
-:- query_compiler:add_command(=<,  [ask,tell]).
-:- query_compiler:add_command(>=,  [ask,tell]).
-:- query_compiler:add_command(=\=, [ask,tell]).
-:- query_compiler:add_command(=:=, [ask,tell]).
-:- query_compiler:add_command(between, [ask,tell]).
+:- query_compiler:add_command(is).
+:- query_compiler:add_command(>).
+:- query_compiler:add_command(<).
+:- query_compiler:add_command(=<).
+:- query_compiler:add_command(>=).
+:- query_compiler:add_command(=\=).
+:- query_compiler:add_command(=:=).
+:- query_compiler:add_command(between).
 
 %% query compilations
 %

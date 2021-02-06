@@ -3,12 +3,12 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(ground,   [ask,tell]).
-:- query_compiler:add_command(var,      [ask,tell]).
-:- query_compiler:add_command(number,   [ask,tell]).
-:- query_compiler:add_command(atom,     [ask,tell]).
-:- query_compiler:add_command(is_list,  [ask,tell]).
-:- query_compiler:add_command(compound, [ask,tell]).
+:- query_compiler:add_command(ground).
+:- query_compiler:add_command(var).
+:- query_compiler:add_command(number).
+:- query_compiler:add_command(atom).
+:- query_compiler:add_command(is_list).
+:- query_compiler:add_command(compound).
 
 %%
 % ground(X) holds iff a previous step has assigned

@@ -5,10 +5,10 @@
 :- use_module(library('lang/compiler')).
 
 %% register query commands
-:- query_compiler:add_command(findall, [ask]).
+:- query_compiler:add_command(findall).
 % TODO: support bagof (then, setof := bagof o sort)
-%:- query_compiler:add_command(bagof,   [ask]).
-%:- query_compiler:add_command(setof,   [ask]).
+%:- query_compiler:add_command(bagof).
+%:- query_compiler:add_command(setof).
 
 %%
 query_compiler:step_expand(

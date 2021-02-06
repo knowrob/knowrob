@@ -40,7 +40,7 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 	).
 
 %% register query commands
-:- query_compiler:add_command(intersect, [ask]).
+:- query_compiler:add_command(intersect).
 
 %%
 query_compiler:step_compile(

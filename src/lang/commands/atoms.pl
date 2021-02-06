@@ -3,15 +3,15 @@
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(atom_number,         [ask]).
-:- query_compiler:add_command(atom_length,         [ask]).
-:- query_compiler:add_command(atom_prefix,         [ask]).
-:- query_compiler:add_command(atom_concat,         [ask]).
-:- query_compiler:add_command(atomic_list_concat,  [ask]).
+:- query_compiler:add_command(atom_number).
+:- query_compiler:add_command(atom_length).
+:- query_compiler:add_command(atom_prefix).
+:- query_compiler:add_command(atom_concat).
+:- query_compiler:add_command(atomic_list_concat).
 % TODO: support term_to_atom
 % - atom parsing is a bit difficult
 % - $split can be used, but then e.g. string "7" would need to be mapped to number 7 somehow.
-%:- query_compiler:add_command(term_to_atom, [ask]).
+%:- query_compiler:add_command(term_to_atom).
 
 %% query compilation
 query_compiler:step_compile(
