@@ -13,5 +13,5 @@
 :- use_module(query).
 %:- use_module(computable).
 %:- use_module(designator).
-:- use_directory(commands).
+:- use_directory(mongolog).
 :- use_directory(terms).

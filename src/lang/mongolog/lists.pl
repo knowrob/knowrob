@@ -1,8 +1,6 @@
 :- module(list_commands, []).
 
 :- use_module(library('lang/compiler')).
-:- use_module('intersect',
-		[ mng_scope_intersect/5 ]).
 
 %% query commands
 :- query_compiler:add_command(length).
@@ -110,6 +108,7 @@ query_compiler:step_compile(
 	mng_one_db(_DB, Coll),
 	% compute steps of the aggregate pipeline
 	findall(Step,
+		% assign list field and remove duplicates
 		(	Step=['$set', ['t_list', ['$setUnion', array([List0])]]]
 		% use lookup to sort the array by using $unwind+$sort in lookup pipeline
 		;	Step=['$lookup', [
