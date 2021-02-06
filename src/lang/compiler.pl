@@ -125,72 +125,73 @@ query_2(tell, Cursor, _Vars, _FScope) :-
 %
 unify_(Result, Vars, FScope) :-
 	mng_get_dict('v_scope', Result, FScope),
-	unify_vars(Result, Vars, Vars),
-	unify_0(Result, Vars).
+	%unify_vars(Result, Vars, Vars),
+	unify_0(Result, Vars, Vars).
 
-unify_0(_, []) :- !.
-unify_0(Doc, [X|Xs]) :-
+unify_0(_, _, []) :- !.
+unify_0(Doc, Vars, [X|Xs]) :-
 	% it is ignored here if some variables referred
 	% to are not properly grounded.
 	% this can happen e.g. in expressions such as (A=a;B=b)
 	% where the first solution has grounded A but not B.
-	ignore(unify_1(Doc, X)),
-	unify_0(Doc, Xs).
+	ignore(unify_1(Doc, Vars, X)),
+	unify_0(Doc, Vars, Xs).
 
-unify_1(_, ['_id', _]).
+unify_1(_, _, ['_id', _]).
 
-unify_1(_, [_, Term]) :-
+unify_1(_, _, [_, Term]) :-
 	% variable was unified in pragma command
 	ground(Term), !.
 
-unify_1(Doc, [VarKey, Val]) :-
+unify_1(Doc, Vars, [VarKey, Val]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),
-	unify_2(TypedValue, Val).
+	unify_2(TypedValue, Vars, Val).
 
 %%
-unify_2(array(In),Out) :-
+unify_2(array(In), Vars, Out) :-
 	% a variable was instantiated to a list
 	!,
-	maplist(unify_2, In, Out).
+	unify_array(In, Vars, Out).
 
-unify_2([K-V|Rest],Out) :-
+unify_2([K-V|Rest], Vars, Out) :-
 	!,
 	dict_pairs(Dict,_,[K-V|Rest]),
-	unify_2(Dict,Out).
+	unify_2(Dict, Vars, Out).
 
-unify_2(_{ type: string('compound'), value: Val }, Out) :-
-	% a variable was instantiated to a compound
+unify_2(_{
+		type: string(var),
+		value: string(VarKey)
+	}, Vars, Out) :-
+	% a variable was not instantiated
 	!,
-	unify_2(Val, Out).
+	memberchk([VarKey, VarVal], Vars),
+	Out = VarVal. 
 
-unify_2(_{ functor: string(Functor), args: Args }, Out) :-
+unify_2(_{
+		type: string(compound),
+		value: Val
+	}, Vars, Out) :-
+	% a variable was instantiated to a compound term
 	!,
-	unify_2(Args, Args0),
+	unify_2(Val, Vars, Out).
+
+unify_2(_{
+		functor: string(Functor),
+		args: Args
+	}, Vars, Out) :-
+	!,
+	unify_2(Args, Vars, Args0),
 	Out =.. [Functor|Args0].
 
-unify_2(_{ type: string('var'), value: _ }, _Out) :-
-	% a variable was not instantiated
-	!.
-
-unify_2(TypedValue,Value) :-
+unify_2(TypedValue, _, Value) :-
 	% a variable was instantiated to an atomic value
 	mng_strip_type(TypedValue, _, Value).
 
 %%
-unify_vars(_, _, []) :- !.
-unify_vars(Result, Vars, [X|Xs]) :-
-	ignore(unify_var(Result, Vars, X)),
-	unify_vars(Result, Vars, Xs).
-
-unify_var(Result, Vars, [VarKey0, Val0]) :-
-	var(Val0),
-	mng_get_dict(VarKey0, Result, _{
-		type: string('var'),
-		value: string(VarKey1)
-	}),
-	VarKey0 \= VarKey1,
-	memberchk([VarKey1, Val1], Vars),
-	Val0 = Val1.
+unify_array([], _, []) :- !.
+unify_array([X|Xs], Vars, [Y|Ys]) :-
+	unify_2(X, Vars, Y),
+	unify_array(Xs, Vars, Ys).
 
 %% query_assert(+Rule) is semidet.
 %
