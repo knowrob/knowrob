@@ -11,27 +11,6 @@
 %:- query_compiler:add_command(term_variables, [ask,tell]).
 :- query_compiler:add_command(=..,            [ask,tell]).
 
-%% query variables
-query_compiler:step_var(functor(Term,Functor,Arity), Ctx, Var) :-
-	(	query_compiler:get_var(Term, Ctx, Var)
-	;	query_compiler:get_var([Functor,Arity], Ctx, Var)
-	).
-
-query_compiler:step_var(arg(Arg,Term,Value), Ctx, Var) :-
-	(	query_compiler:get_var(Term, Ctx, Var)
-	;	query_compiler:get_var([Arg,Value], Ctx, Var)
-	).
-
-query_compiler:step_var(copy_term(In,Out), Ctx, Var) :-
-	(	query_compiler:get_var(In, Ctx, Var)
-	;	query_compiler:get_var(Out, Ctx, Var)
-	).
-
-query_compiler:step_var(=..(Term,List), Ctx, Var) :-
-	(	query_compiler:get_var(Term, Ctx, Var)
-	;	query_compiler:get_var(List, Ctx, Var)
-	).
-
 %% functor(?Term, ?Name, ?Arity) [ISO]
 % True when Term is a term with functor Name/Arity.
 %

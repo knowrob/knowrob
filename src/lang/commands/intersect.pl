@@ -43,13 +43,6 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 :- query_compiler:add_command(intersect, [ask]).
 
 %%
-query_compiler:step_var(intersect(Scope), Ctx, Var) :-
-	time_scope(Since, Until, Scope),
-	member(X, [Since,Until]),
-	mng_strip(X, '=', _Type, Y),
-	query_compiler:step_var(Y, Ctx, Var).
-
-%%
 query_compiler:step_compile(
 		intersect(Scope), Ctx,
 		Pipeline) :-

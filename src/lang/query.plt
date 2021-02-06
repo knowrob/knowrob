@@ -50,10 +50,8 @@ test('ask triple(A,b,C)') :-
 
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
-	load_owl('package://knowrob/owl/test/swrl.owl',
-		[ graph(test) ]),
-	load_owl('package://knowrob/owl/test/datatype_test.owl',
-		[ graph(test) ]).
+	assert_true(load_owl('package://knowrob/owl/test/swrl.owl', [ graph(test) ])),
+	assert_true(load_owl('package://knowrob/owl/test/datatype_test.owl', [ graph(test) ])).
 
 % check via tripledb_ask if individual triple exists
 test('ask triple') :-
@@ -105,7 +103,7 @@ test('ask XSD') :-
 	assert_true(forall(ask(triple(_, test_datatype:'height',     H)), float(H))).
 
 % test for list as an argument
-test('tell list') :-
+test('tell list', fixme('terms cannot be used as values')) :-
 	rdf_global_term(test_datatype:'Lecturer3',S),
 	DataTerm=[255,99,71],
 	% test asserting list value

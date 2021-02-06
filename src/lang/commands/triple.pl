@@ -39,13 +39,15 @@
 %%
 % expose subject/predicate/object argument variables.
 %
-query_compiler:step_var(triple(S,P,O), Ctx, [Key, Var]) :-
+query_compiler:step_vars(triple(S,P,O), Ctx, Vars) :-
 	% FIXME: it would be needed for terms at the moment that the requested type is stored
 	%          to know that term_to_atom must be called during unification.
-	(	triple_var(S, Ctx, [Key, Var])
-	;	triple_var(P, Ctx, [Key, Var])
-	;	triple_var(O, Ctx, [Key, Var])
-	).
+	bagof([Key, Var],
+		(	triple_var(S, Ctx, [Key, Var])
+		;	triple_var(P, Ctx, [Key, Var])
+		;	triple_var(O, Ctx, [Key, Var])
+		),
+		Vars).
 
 %%
 query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-

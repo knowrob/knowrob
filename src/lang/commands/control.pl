@@ -79,13 +79,6 @@ query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Context) :-
 	query_expand(A0,A1,Context),
 	query_expand(B0,B1,Context).
 
-
-%%
-query_compiler:step_var(';'(A,B), Ctx, Var) :-
-	(	query_compiler:step_var(A, Ctx, Var)
-	;	query_compiler:step_var(B, Ctx, Var)
-	).
-
 %% true
 %
 % Always succeed. 

@@ -12,17 +12,6 @@
 :- query_compiler:add_command(=:=, [ask,tell]).
 :- query_compiler:add_command(between, [ask,tell]).
 
-%% query variables
-query_compiler:step_var( is(X,Y), Ctx, Var) :- assignment_var(X,Y,Ctx,Var).
-query_compiler:step_var(  <(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var(  >(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var( =<(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var( >=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var(=\=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var(=:=(X,Y), Ctx, Var) :- comparison_var(X,Y,Ctx,Var).
-query_compiler:step_var(between(X,Y,Z), Ctx, Var) :-
-	query_compiler:get_var([X,Y,Z],Ctx,Var).
-
 %% query compilation
 % TODO: early evaluation if ground at compile-time!
 %
@@ -56,24 +45,6 @@ query_compiler:step_compile(
 		;	Step=['$unset', string('t_index')]
 		),
 		Pipeline).
-
-%%
-assignment_var(Var, _Exp, Ctx, [VarKey, Var]) :-
-	query_compiler:var_key(Var, Ctx, VarKey).
-assignment_var(_Var, Exp, Ctx, [VarKey, Var]) :-
-	expression_var(Exp, VarKey, Ctx, Var).
-
-%%
-comparison_var(Exp1, Exp2, Ctx, [VarKey, Var]) :-
-	(	expression_var(Exp1, VarKey, Ctx, Var)
-	;	expression_var(Exp2, VarKey, Ctx, Var)
-	).
-
-%%
-expression_var(Exp, Key, Ctx, Var) :-
-	term_variables(Exp, ExpVars),
-	member(Var, ExpVars),
-	query_compiler:var_key(Var, Ctx, Key).
 
 %% $set var to evaluated number
 assignment(Var, Exp, _Ctx, []) :-

@@ -71,48 +71,14 @@ query_compiler:step_expand(
 	query_expand(Goal, Expanded, Context).
 
 %%
-query_compiler:step_var(limit(_Count, Terminals), Ctx, Var) :-
-	(	\+ is_list(Terminals)
-	->	X=Terminals
-	;	member(X,Terminals)
-	),
-	query_compiler:step_var(X, Ctx, Var).
-
-query_compiler:step_var(limit(Count, _Terminals), Ctx, Var) :-
-	query_compiler:get_var([Count], Ctx, Var).
-
-query_compiler:step_var(call(Goal), Ctx, Var) :-
-	ensure_list(Goal,List),
-	member(X,List),
-	compound(X),
-	query_compiler:step_var(X, Ctx, Var).
-
-query_compiler:step_var(call_with_args(Goal, Args), Ctx, Var) :-
-	(	query_compiler:step_var(call(Goal), Ctx, Var)
-	;	query_compiler:get_var(Args, Ctx, Var)
-	).
-
-query_compiler:step_var(call_with_context(Terminals, _Context), Ctx, Var) :-
-	ensure_list(Terminals,List),
-	member(X,List),
-	compound(X),
-	query_compiler:step_var(X, Ctx, Var).
-
-query_compiler:step_var(call_with_context(_Terminals, Context), Ctx, Var) :-
-	% only scope values may be variables
-	option(scope(Scope), Context),
-	time_scope(Since, Until, Scope),
-	member(Value, [Since,Until]),
-	query_compiler:get_var([Value], Ctx, Var).
-
-query_compiler:step_var(set(A,Val), Ctx, Var) :-
-	(	query_compiler:get_var(A, Ctx, Var)
-	;	query_compiler:get_var(Val, Ctx, Var)
-	).
-
-%%
 ensure_list([X|Xs],[X|Xs]) :- !.
 ensure_list(X,[X]).
+
+%%
+% ignore vars referred to in pragma as these are handled compile-time.
+% only the ones also referred to in parts of the query are added to the document.
+%
+query_compiler:step_vars(pragma(_),_,[]).
 
 %% limit(+Count, :Goal)
 % Limit the number of solutions.
@@ -184,10 +150,8 @@ query_compiler:step_compile(
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
-query_compiler:step_compile(pragma(Goal), Ctx, []) :-
-	(	option(ignore_pragma,Ctx) -> true
-	;	call(Goal)
-	).
+query_compiler:step_compile(pragma(Goal), _, []) :-
+	call(Goal).
 
 %%
 % context(-Option) and context(-Option, +Default) are used to read
@@ -210,9 +174,16 @@ resolve_scope(In, Ctx, [scope(Scope1)|Rest]) :-
 	select_option(scope(Scope0),In,Rest),!,
 	time_scope(Since0, Until0, Scope0),
 	time_scope(Since1, Until1, Scope1),
-	query_compiler:var_key_or_val(Since0,Ctx,Since1),
-	query_compiler:var_key_or_val(Until0,Ctx,Until1).
+	resolve_scope1(Since0,Ctx,Since1),
+	resolve_scope1(Until0,Ctx,Until1).
 resolve_scope(In, _, In).
+
+%%
+resolve_scope1(In, Ctx, Out) :-
+	mng_strip_operator(In, Operator, Time1),
+	query_compiler:var_key_or_val(Time1, Ctx, Time2),
+	mng_strip_operator(Out, Operator, Time2).
+	
 
 %%
 % append cut operator at the end of a goal.

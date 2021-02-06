@@ -6,12 +6,6 @@
 :- query_compiler:add_command( ==, [ask]).
 :- query_compiler:add_command(\==, [ask]).
 
-
-%% query_compiler:step_var
-query_compiler:step_var( ==(X,Y), Ctx, Var) :- query_compiler:get_var([X,Y],Ctx,Var).
-query_compiler:step_var(\==(X,Y), Ctx, Var) :- query_compiler:get_var([X,Y],Ctx,Var).
-
-
 %% @Term1 == @Term2
 % True if Term1 is equivalent to Term2. A variable is only identical to a sharing variable
 %

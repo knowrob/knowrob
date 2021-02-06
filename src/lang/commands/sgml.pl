@@ -24,13 +24,6 @@ query_compiler:step_expand(new_iri(IRI),
 query_compiler:step_expand(new_iri(IRI,Type),
 		pragma(get_unique_name(Type,IRI)), _).
 
-
-%% query variables
-query_compiler:step_var(
-		iri_xml_namespace(IRI,Namespace,Localname),
-		Ctx, Var) :-
-	query_compiler:get_var([IRI,Namespace,Localname],Ctx,Var).
-
 %% query compilation
 query_compiler:step_compile(
 		iri_xml_namespace(IRI,NS,Name),

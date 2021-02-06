@@ -11,14 +11,6 @@
 :- query_compiler:add_command(compound, [ask,tell]).
 
 %%
-query_compiler:step_var(ground(X),  Ctx, [V,X]) :- query_compiler:var_key(X, Ctx, V).
-query_compiler:step_var(var(X),     Ctx, [V,X]) :- query_compiler:var_key(X, Ctx, V).
-query_compiler:step_var(number(X),  Ctx, [V,X]) :- query_compiler:var_key(X, Ctx, V).
-query_compiler:step_var(atom(X),    Ctx, [V,X]) :- query_compiler:var_key(X, Ctx, V).
-query_compiler:step_var(is_list(X), Ctx, [V,X]) :- query_compiler:var_key(X, Ctx, V).
-query_compiler:step_var(compound(X), Ctx, Var)  :- query_compiler:get_var(X, Ctx, Var).
-
-%%
 % ground(X) holds iff a previous step has assigned
 % a value to the variable key.
 %
@@ -130,7 +122,7 @@ query_compiler:step_compile(
 match_type_(Arg, Goal, _Type, _Ctx, []) :-
 	% argument is grounded already compile-time
 	ground(Arg), !,
-	call(Goal, [Arg]).
+	call(Goal, Arg).
 
 match_type_(Arg, _, _Type, Ctx, []) :-
 	% argument was not referred to before in query, so cannot be ground

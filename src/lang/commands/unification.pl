@@ -17,10 +17,6 @@
 query_compiler:step_expand(\=(A,B), Expanded, Mode) :-
 	query_compiler:step_expand(\+(=(A,B)), Expanded, Mode).
 
-%%
-query_compiler:step_var(=(Term1, Term2), Ctx, Var) :-
-	query_compiler:get_var([Term1, Term2],Ctx,Var).
-
 %% ?Term1 = ?Term2
 % Unify Term1 with Term2. True if the unification succeeds.
 %

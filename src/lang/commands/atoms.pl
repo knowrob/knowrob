@@ -13,14 +13,6 @@
 % - $split can be used, but then e.g. string "7" would need to be mapped to number 7 somehow.
 %:- query_compiler:add_command(term_to_atom, [ask]).
 
-%% query variables
-query_compiler:step_var(atom_number(A,N), Ctx, Var)      :- query_compiler:get_var([A,N],Ctx,Var).
-query_compiler:step_var(atom_length(A,L), Ctx, Var)      :- query_compiler:get_var([A,L],Ctx,Var).
-query_compiler:step_var(atom_prefix(A,P), Ctx, Var)      :- query_compiler:get_var([A,P],Ctx,Var).
-query_compiler:step_var(atom_concat(A1,A2,A3), Ctx, Var) :- query_compiler:get_var([A1,A2,A3],Ctx,Var).
-query_compiler:step_var(atomic_list_concat(List,Sep,A), Ctx, Var) :- query_compiler:get_var([A,Sep|List],Ctx,Var).
-query_compiler:step_var(atomic_list_concat(List,A), Ctx, Var)     :- query_compiler:get_var([A|List],Ctx,Var).
-
 %% query compilation
 query_compiler:step_compile(
 		atom_number(Atom,Number), _,

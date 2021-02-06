@@ -33,7 +33,7 @@ into aggregate pipelines that can be processed by mongo DB.
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3.
 %% implemented by query commands to provide variables exposed to the outside
-:- multifile step_var/3.
+:- multifile step_vars/3.
 
 :- rdf_meta(step_compile(t,t,t)).
 
@@ -385,7 +385,7 @@ compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
 	
 compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
-	(	bagof(Vs, step_var(Expanded, Context, Vs), StepVars) -> true
+	(	bagof(Vs, goal_var(Expanded, Context, Vs), StepVars) -> true
 	;	StepVars=[]
 	),
 	list_to_set(StepVars, StepVars_unique),
@@ -549,7 +549,6 @@ set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
 			% FIXME: should be is_var test here or?
 			['$not', array([string(Val)])], % if the field does not exist
-			%string('$$REMOVE'),             % do not add a new field at Key
 			[['type',string('var')], ['value',string('_')]],
 			string(Val)                     % else write Val into field at Key
 		])]]]) :-
@@ -561,18 +560,31 @@ set_next_vars(InnerVars, ['$set', [Key,
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-% since ',' is expanded into lists by the compiler,
-% a step_var clause for lists must be provided.
-%
-step_var(List, Ctx, Var) :-
+goal_var(Var, Ctx, [Key,Var]) :-
+	var(Var),!,
+	var_key(Var, Ctx, Key).
+
+goal_var(Goal, Ctx, Var) :-
+	step_vars(Goal, Ctx, Vars),!,
+	member(Var,Vars).
+
+goal_var(List, Ctx, Var) :-
 	is_list(List),!,
 	member(X,List),
-	step_var(X, Ctx, Var).
+	goal_var(X, Ctx, Var).
 
-step_var(','(A,B), Ctx, Var) :-
-	!,
-	comma_list(','(A,B), List),
-	step_var(List, Ctx, Var).
+goal_var(Dict, Ctx, Var) :-
+	is_dict(Dict),!,
+	get_dict(Key, Dict, Value),
+	(	goal_var(Key,Ctx,Var)
+	;	goal_var(Value,Ctx,Var)
+	).
+
+goal_var(Compound, Ctx, Var) :-
+	compound(Compound),!,
+	Compound =.. [_Functor|Args],
+	member(Arg,Args),
+	goal_var(Arg, Ctx, Var).
 
 %%
 % Conditional $set command for ungrounded vars.

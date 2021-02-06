@@ -24,21 +24,6 @@
 :- query_compiler:add_command(comment, [ask]).
 
 %%
-% expose argument variables.
-%
-query_compiler:step_var(
-		comment(Entity, Comment),
-		Ctx, [Key, Var]) :-
-	(	annotation_var_(Entity,  Ctx, [Key, Var])
-	;	annotation_var_(Comment, Ctx, [Key, Var])
-	).
-
-%%
-annotation_var_(Arg, Ctx, [Key, Var]) :-
-	mng_strip_type(Arg,_,Var),
-	query_compiler:var_key(Var, Ctx, Key).
-
-%%
 % ask(comment(Entity, Comment)) looks up the comment
 % of entities. These are stored in a separate collection
 % to avoid generating a regular index over the comment values. 

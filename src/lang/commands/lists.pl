@@ -40,18 +40,6 @@ query_compiler:step_expand(member(Elem, List), Expanded, Context) :-
 query_compiler:step_expand(memberchk(Elem, List), Expanded, Context) :-
 	query_expand(limit(1, member(Elem,List)), Expanded, Context).
 
-%% query variables
-query_compiler:step_var(length(A,B),      Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
-query_compiler:step_var(max_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
-query_compiler:step_var(min_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
-query_compiler:step_var(sum_list(A,B),    Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
-query_compiler:step_var(list_to_set(A,B), Ctx, Var) :- query_compiler:get_var([A,B], Ctx, Var).
-
-query_compiler:step_var(nth0(List, N, Pattern), Ctx, Var) :-
-	(	pattern_var_key(Pattern, Ctx, Var)
-	;	query_compiler:get_var([List,N], Ctx, Var)
-	).
-
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.
 %

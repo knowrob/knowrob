@@ -30,9 +30,9 @@ query_compiler:step_expand(
 %%
 % findall only exposes the List variable to the outside.
 %
-query_compiler:step_var(
+query_compiler:step_vars(
 		findall(_, _, List), Ctx,
-		[List_var, List]) :-
+		[[List_var, List]]) :-
 	query_compiler:var_key(List, Ctx, List_var).
 
 %% findall(+Template, :Goal, -Bag)
