@@ -1,6 +1,6 @@
 :- module(lang_designator,
-	[ is_designator(t) %,
-	  %has_designator(r,t)
+	[ is_designator(t),
+	  has_designator(r,t)
 	]).
 /** <module> Implementation of entity designators.
 
@@ -10,6 +10,9 @@ of their identity.
 @author Daniel Beßler
 @license BSD
 */
+
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_equal/2 ]).
 
 %% is_designator(+Designator) is semidet.
 %
@@ -23,12 +26,12 @@ is_designator([an,_|_]) :- !.
 %
 % Find entities denoted by some designator.
 %
-%has_designator(Entity,Designator) ?>
-%	{ ground(Designator), ! },
-%	% get conjunction of statements
-%	{ get_designator_statements(Entity,Designator,Statements) },
-%	% issue a query
-%	call(Statements).
+has_designator(Entity, Designator) :-
+	ground(Designator), !,
+	% get conjunction of statements
+	get_designator_statements(Entity,Designator,Statements),
+	% issue a query
+	lang_query:ask(Statements).
 
 %%
 get_designator_statements(Entity,Designator,Statements) :-
@@ -75,7 +78,8 @@ get_designator_statement2(Entity,Property,AtomicValue,
 	get_designator_value(Property,AtomicValue,Value).
 
 %%
-get_type_statement(Entity,DesignatorType,instance_of(Entity,RDFType)) :-
+get_type_statement(Entity,DesignatorType,triple(Entity,Property,RDFType)) :-
+	rdf_equal(rdf:type, Property),
 	get_iri(DesignatorType,RDFType,camelcase).
 
 %%
@@ -83,10 +87,11 @@ get_designator_property(DesignatorKey,RDFProperty) :-
 	get_iri(DesignatorKey,RDFProperty,lower_camelcase).
 
 %%
-get_designator_value(Property,DesignatorValue,RDFValue) :-
-	is_object_property(Property),
-	!,
-	get_iri(DesignatorValue,RDFValue,camelcase).
+get_designator_value(_Property,DesignatorValue,RDFValue) :-
+%	is_object_property(Property),
+%	!,
+	get_iri(DesignatorValue,RDFValue,camelcase),
+	!.
 
 get_designator_value(_Property,Value,Value) :-
 	!.
@@ -101,11 +106,11 @@ get_iri(IRI, IRI, _Formatter) :-
 	atom_concat('http://',_,IRI),
 	!.
 
-get_iri(Name, IRI, Formatter) :-
+get_iri(Name, regex(Pattern), Formatter) :-
+	atom(Name),
 	call(Formatter, Name, RDFName),
 	% query for the full IRI using regex
-	atomic_list_concat(['^.*#',RDFName,'$'], '', Pattern),
-	once(tripledb_ask(regex(Pattern)->IRI,rdf:type,_)).
+	atomic_list_concat(['^.*#',RDFName,'$'], '', Pattern).
 
      /*******************************
      *	    UNIT TESTS	     		    *
@@ -128,32 +133,32 @@ test_designator(Entity,Designator,Expected) :-
 
 test('designator type IRI') :-
 	test_designator(X,
-		[ an, dul:'Action' ],
-		[ instance_of(X,dul:'Action') ]
+		[ an, test:'Adult' ],
+		[ triple(X,rdf:type,test:'Adult') ]
 	).
 
 test('designator type name') :-
 	test_designator(X,
-		[ an, action ],
-		[ instance_of(X,dul:'Action') ]
+		[ an, adult ],
+		[ triple(X,rdf:type,regex('^.*#Adult$')) ]
 	).
 
 test('designator property') :-
 	test_designator(X,
-		[ an, object, [ has_part, Part] ],
-		[ holds(X,dul:'hasPart',Part),
-		  instance_of(X,dul:'Object')
+		[ an, adult, [ has_age, 70] ],
+		[ holds(X,regex('^.*#hasAge$'), 70),
+		  triple(X,rdf:type,regex('^.*#Adult$'))
 		]
 	).
 
 test('designator nested') :-
 	test_designator(X,
-		[ an, object, [ has_part,
-			[ an, object, [ iri, Part ]]
+		[ an, adult, [ has_parent,
+			[ an, adult, [ iri, Part ]]
 		]],
-		[ instance_of(Part,dul:'Object'),
-		  holds(X,dul:'hasPart',Part),
-		  instance_of(X,dul:'Object')
+		[ triple(Part,rdf:type,regex('^.*#Adult$')),
+		  holds(X,regex('^.*#hasParent$'),Part),
+		  triple(X,rdf:type,regex('^.*#Adult$'))
 		]
 	).
 
@@ -161,6 +166,6 @@ test('has-designator') :-
 	assert_true(has_designator(test:'Lea',[a,man])),
 	assert_true(has_designator(test:'Lea',[a,woman])),
 	assert_true(has_designator(test:'Lea',[a,woman,[has_parent,fred]])),
-	assert_false(has_designator(test:'Lea',[an,action])).
+	assert_false(has_designator(test:'Lea',[a,car])).
 
 :- end_rdf_tests('lang_designator').

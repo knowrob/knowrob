@@ -394,13 +394,23 @@ mng_triple_doc(triple(S,P,O), Doc, Context) :-
 	mng_strip_variable(O, V),
 	% get the query pattern
 	findall(X,
-		(	( mng_query_value(S,Query_s), X=['s',Query_s] )
-		;	( mng_query_value(P,Query_p), X=[Key_p,Query_p] )
-		;	( mng_query_value(V,Query_v), X=[Key_o,Query_v] )
+		(	( query_value(S,Query_s), X=['s',Query_s] )
+		;	( query_value(P,Query_p), X=[Key_p,Query_p] )
+		;	( query_value(V,Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
 		;	scope_doc(Scope,X)
 		),
 		Doc
+	).
+
+%%
+query_value(In, Out) :-
+	% strip $eq operator not needed in triple query.
+	% this is needed for current handling of regular expression patterns.
+	mng_query_value(In, X),
+	(	X=['$eq',Y]
+	->	Out=Y
+	;	Out=X
 	).
 
 %%

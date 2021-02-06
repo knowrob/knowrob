@@ -291,7 +291,7 @@ mng_restore(_DB,Dir) :-
 % in mongo. The input value can be a term:
 % `$operator(unit($type($value),$unit))->Var`.
 %
-mng_query_value(Value0, [Operator, Value1]) :-
+mng_query_value(Value0, Out) :-
 	% remove _->_ expression for vars 
 	mng_strip_variable(Value0, X0),
 	% rest term must be grounded
@@ -308,7 +308,13 @@ mng_query_value(Value0, [Operator, Value1]) :-
 	),
 	% finally wrap value in type again
 	type_mapping(Type, MngType),
-	mng_strip_type(Value1, MngType, X3).
+	mng_strip_type(Value1, MngType, X3),
+	% do not spell out $eq
+	% NOTE: this is at the moment important for regex patterns.
+	Out=[Operator, Value1].
+%	(	Operator=='$eq' -> Out=Value1
+%	;	Out=[Operator, Value1]
+%	).
 
 %%
 mng_typed_value(Term, TypedValue) :-
@@ -380,6 +386,7 @@ type_mapping(short,   int)    :- !.
 type_mapping(byte,    int)    :- !.
 type_mapping(string,  string) :- !.
 type_mapping(atom,    string) :- !.
+type_mapping(regex,   regex) :- !.
 type_mapping(array,   array)  :- !.
 type_mapping(list,    array)  :- !.
 type_mapping(bool,    bool)   :- !.
