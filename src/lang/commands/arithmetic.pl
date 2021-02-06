@@ -12,8 +12,7 @@
 :- query_compiler:add_command(=:=, [ask,tell]).
 :- query_compiler:add_command(between, [ask,tell]).
 
-%% query compilation
-% TODO: early evaluation if ground at compile-time!
+%% query compilations
 %
 query_compiler:step_compile( is(X,Y), Ctx, Z) :- assignment(X,Y,Ctx,Z).
 query_compiler:step_compile(  <(X,Y), Ctx, Z) :- comparison(  <(X,Y),Ctx,Z).

@@ -37,19 +37,6 @@
 :- query_compiler:add_command(triple, [ask,tell]).
 
 %%
-% expose subject/predicate/object argument variables.
-%
-query_compiler:step_vars(triple(S,P,O), Ctx, Vars) :-
-	% FIXME: it would be needed for terms at the moment that the requested type is stored
-	%          to know that term_to_atom must be called during unification.
-	bagof([Key, Var],
-		(	triple_var(S, Ctx, [Key, Var])
-		;	triple_var(P, Ctx, [Key, Var])
-		;	triple_var(O, Ctx, [Key, Var])
-		),
-		Vars).
-
-%%
 query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-
 	(	option(mode(ask), Ctx)
 	->	compile_ask( triple(S,P,O), Ctx, Pipeline)
@@ -484,22 +471,10 @@ harmonize_next(Context, Step) :-
 	).
 
 %%
-triple_var(Arg, Ctx, [Key, Var]) :-
-	% strip variable
-	% TODO: left side of -> could also have var? e.g. `in(List)->Elem`
-	once((
-		( nonvar(Arg), Arg=(_->Var0) )
-	;	Var0=Arg
-	)),
-	strip_modifier(Var0, Var1),
-	mng_strip(Var1, _, _, Var),
-	query_compiler:var_key(Var, Ctx, Key).
-
-%%
 get_triple_vars(S, P, O, Ctx, Vars) :-
 	findall([Key,Field],
 		(	member([Field,Arg], [[s,S],[p,P],[o,O]]),
-			triple_var(Arg, Ctx, [Key, _Var])
+			query_compiler:goal_var(Arg, Ctx, [Key, _Var])
 		),
 		Vars).
 
