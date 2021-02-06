@@ -29,7 +29,6 @@
 % to avoid generating a regular index over the comment values. 
 %
 query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
-	%option(mode(ask), Ctx),
 	ask_annotation(S, rdfs:comment, C, Ctx, Pipeline).
 
 %% 

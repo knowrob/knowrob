@@ -195,16 +195,6 @@ load_owl(URL, Scope, SubGraph) :-
 	(	add_subgraph(OntoGraph,common),
 		add_subgraph(user,OntoGraph)
 	),
-%	(	SubGraph == common -> true
-%	;	(	add_subgraph(OntoGraph,common),
-%			add_subgraph(user,OntoGraph)
-%		)
-%	),
-%	(	var(SubGraph) -> true
-%	;	(	add_subgraph(SubGraph,OntoGraph),
-%			add_subgraph(user,SubGraph)
-%		)
-%	),
 	!,
 	%%
 	(	setting(mng_client:read_only, true) -> true
@@ -466,22 +456,3 @@ initialize_one_db :-
 % make sure collection "one" has a document
 :- initialize_one_db.
 
-     /*******************************
-     *          UNIT TESTS          *
-     *******************************/
-
-:- begin_tests('lang_export').
-
-get_path(Path):-
-  working_directory(X,X), string_concat(X, "test_lang_export", Path).
-
-test('stores knowledge in test_lang_export directory and restores the same', 
-  [ blocked('Not possible to set a different database in runtime at the moment'),
-    setup(get_path(Path)),
-    cleanup(shell('cd $(rospack find knowrob); rm -rf test_lang_export'))
-  ]) :-
-  assert_true(memorize(Path)),
-  assert_true(tripledb_whipe),
-  assert_true(remember(Path)).
-
-:- end_tests('lang_export').

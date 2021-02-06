@@ -197,6 +197,15 @@ forget(Statement) :-
 	wildcard_scope(Scope),
 	forget(Statement, Scope, []).
 
+
+%%
+set_graph_option(Options, Options) :-
+	option(graph(_), Options),
+	!.
+set_graph_option(Options, Merged) :-
+	default_graph(DG),
+	merge_options([graph(DG)], Options, Merged).
+
 		 /*******************************
 		 *	    TERM EXPANSION     		*
 		 *******************************/
@@ -257,16 +266,3 @@ test_command(Goal, Var, Value) :-
 	WithSet=(','(set(Var,Value), Goal)),
 	lang_query:ask(WithSet).
 
-
-		 /*******************************
-		 *      	  HELPER     		*
-		 *******************************/
-
-%%
-set_graph_option(Options, Options) :-
-	option(graph(_), Options),
-	!.
-
-set_graph_option(Options, Merged) :-
-	default_graph(DG),
-	merge_options([graph(DG)], Options, Merged).
