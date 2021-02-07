@@ -202,30 +202,37 @@ test('ask non existant'):-
 		triple(test_datatype:'xyz', test_datatype:'last_name', _)
 	)).
 
-test('transitive') :-
-	findall(X,
-		ask(triple(
-			swrl_tests:'Rex',
-			transitive(swrl_tests:isParentOf),
-			X
-		)),
-		Ancestors),
-	assert_unifies(Ancestors,[_,_,_]),
-	assert_true(member(swrl_tests:'Ernest', Ancestors)),
-	assert_true(member(swrl_tests:'Fred', Ancestors)),
-	assert_true(member(swrl_tests:'Lea', Ancestors)).
+test('triple(+,transitive(+),+') :-
+	assert_true(ask(triple(
+		swrl_tests:'Rex',
+		transitive(swrl_tests:isParentOf),
+		swrl_tests:'Ernest'))),
+	assert_true(ask(triple(
+		swrl_tests:'Rex',
+		transitive(swrl_tests:isParentOf),
+		swrl_tests:'Lea'))).
 
-test('transitive+reflexive') :-
+test('triple(-,transitive(+),+') :-
+	findall(X,
+		ask(triple(X,
+			transitive(swrl_tests:isParentOf),
+			swrl_tests:'Lea')),
+		Ancestors),
+	assert_unifies(Ancestors,[_,_]),
+	assert_true(member(swrl_tests:'Fred', Ancestors)),
+	assert_true(member(swrl_tests:'Rex', Ancestors)),
+	%%
+	assert_false(member(swrl_tests:'Ernest', Ancestors)).
+
+test('triple(+,reflexive(transitive(+)),-)') :-
 	findall(X,
 		ask(triple(
 			swrl_tests:'Rex',
 			transitive(reflexive(swrl_tests:isParentOf)),
 			X)),
 		Ancestors),
-	%% FIXME: reflexive may create some redundant results
-	%assert_unifies(Ancestors,[_,_,_,_]),
-	list_to_set(Ancestors,Ancestors0),
-	assert_unifies(Ancestors0,[_,_,_,_]),
+	length(Ancestors,NumAncestors),
+	assert_equals(NumAncestors, 4),
 	assert_true(member(swrl_tests:'Rex', Ancestors)),
 	assert_true(member(swrl_tests:'Ernest', Ancestors)),
 	assert_true(member(swrl_tests:'Fred', Ancestors)),

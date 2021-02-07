@@ -222,10 +222,29 @@ query_assert1(Head, Body, Context) :-
 	(	query_expand(Body, Expanded, Context) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
+	%% handle instantiated arguments
+	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
+	->	(Expanded0=[ArgsGoal|Expanded], Args0=ExpandedArgs)
+	;	(Expanded0=Expanded, Args0=Args)
+	),
 	%%
-	log_debug(lang(expanded(Functor, Args, Expanded, Context))),
+	log_debug(lang(expanded(Functor, Args0, Expanded0, Context))),
 	%% store expanded query
-	assertz(query(Functor, Args, Expanded, Context)).
+	assertz(query(Functor, Args0, Expanded0, Context)).
+
+%%
+expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
+	expand_arguments1(Args, Expanded, Pairs),
+	Pairs \= [],
+	pairs_keys_values(Pairs, Values, Vars).
+	
+
+expand_arguments1([], [], []) :- !.
+expand_arguments1([X|Xs], [X|Ys], Zs) :-
+	var(X),!,
+	expand_arguments1(Xs, Ys, Zs).
+expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
+	expand_arguments1(Xs, Ys, Zs).
 
 %% query_expand(+Goal, -Expanded, +Mode) is det.
 %
@@ -299,10 +318,13 @@ expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
+	% FIXME: I think this is still wrong!! because copy_terms create different vars in each term
+	%          the problem is that Args cannot be unified with args of query/4 when these
+	%          are instantiated.
+	%	     The solution is to replace instantiated args with new variables and add an additional
+	%        unification step for each argument.
 	(	bagof(Terminals,
-			(	copy_term(Args, Args0),
-				query(Functor, Args0, Terminals, Mode)
-			),
+			query(Functor, Args, Terminals, Mode),
 			TerminalsList)
 	->	true
 	% handle the case that a predicate is referred to that wasn't

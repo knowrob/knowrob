@@ -10,7 +10,7 @@
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_find/4, mng_query_value/2,
 		  mng_strip_type/3, mng_strip_variable/2,
-		  mng_strip_operator/3,
+		  mng_strip_operator/3, mng_operator/2,
 		  mng_typed_value/2 ]).
 :- use_module(library('lang/compiler')).
 :- use_module('intersect',
@@ -55,15 +55,6 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
 		(	lookup_triple(triple(S,P1,O1), Ctx0, Step)
-		% conditionally needed to harmonize 'next' field
-		;	harmonize_next(Ctx0, Step)
-		% add additional results if P is a transitive property
-		;	transitivity(Ctx0, Step)
-		% add additional results if P is a reflexive property
-		;	reflexivity(Ctx0, Step)
-		% at this point 'next' field holds an array of matching documents
-		% that is unwinded here.
-		;	Step=['$unwind',string('$next')]
 		% compute the intersection of scope so far with scope of next document
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
@@ -160,8 +151,9 @@ ostar_value(_,                  O, array([O])).
 
 %%
 lookup_triple(triple(S,P,O), Ctx, Step) :-
-	memberchk(outer_vars(QueryVars), Ctx),
+	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
+	memberchk(outer_vars(QueryVars), Ctx),
 	% get query pattern, and variables in term
 	mng_triple_doc(triple(S,P,O), QueryDoc, Ctx),
 	get_triple_vars(S,P,O,Ctx,TripleVars),
@@ -175,6 +167,11 @@ lookup_triple(triple(S,P,O), Ctx, Step) :-
 	->	Pipeline=[Match,['$limit',int(Limit)]]
 	;	Pipeline=[Match]
 	),
+	%
+	(	memberchk(['s',_],QueryDoc)
+	->	StartValue='$start.s'
+	;	StartValue='$start.o'
+	),
 	% pass input document value to lookup
 	query_compiler:lookup_let_doc(TripleVars, QueryVars, LetDoc),
 	% lookup matching documents and store in 'next' field
@@ -186,7 +183,117 @@ lookup_triple(triple(S,P,O), Ctx, Step) :-
 		]]
     % unwind the 'next' field
     ;	Step=['$unwind',string('$next')]
-    ).
+	% assign *start* field in case of reflexive property
+	;	(	memberchk(reflexive,Ctx),
+			Step=['$set', ['start', string('$next')]]
+		)
+	% transform next into single-element array
+	;	Step=['$set', ['next', array([string('$next')])]]
+	% add additional results if P is a reflexive property
+	;	reflexivity(StartValue, Ctx, Step)
+	% at this point 'next' field holds an array of matching documents
+	% that is unwinded here.
+	;	Step=['$unwind',string('$next')]
+	).
+
+%%
+lookup_triple(triple(S,P,V), Ctx, Step) :-
+	% read options
+	option(transitive, Ctx),
+	option(collection(Coll), Ctx),
+%	option(graph(Graph), Ctx, user),
+%	option(scope(Scope), Ctx),
+	mng_one_db(_DB, OneColl),
+	% infer lookup parameters
+	query_value(P,Query_p),
+	% TODO: can query operators be supported?
+	mng_strip_variable(S, S0),
+	mng_strip_variable(V, V0),
+	query_compiler:var_key_or_val(S0, Ctx, S_val),
+	query_compiler:var_key_or_val(V0, Ctx, V_val),
+	
+	% FIXME: a runtime condition is needed to cover the case where S was
+	%        referred to in ignore'd goal that failed.
+	(	has_value(S0,Ctx)
+	->	(Start=S_val, To='s', From='o', StartValue='$start.s')
+	;	(Start=V_val, To='o', From='s', StartValue='$start.o')
+	),
+	
+	% match doc for restring the search
+	findall(Restriction,
+		(	Restriction=['p*',Query_p]
+		% TODO: see how scope can be included
+		%;	graph_doc(Graph,Restriction)
+		%;	scope_doc(Scope,Restriction)
+		),
+		MatchDoc
+	),
+	% recursive lookup
+	(	Step=['$graphLookup', [
+			['from',                    string(Coll)],
+			['startWith',               Start],
+			['connectToField',          string(To)],
+			['connectFromField',        string(From)],
+			['as',                      string('t_paths')],
+			['depthField',              string('depth')],
+			['restrictSearchWithMatch', MatchDoc]
+		]]
+	% $graphLookup does not ensure order, so we need to order by recursion depth
+	% in a separate step
+	;	Step=['$lookup', [
+			['from',     string(OneColl)],
+			['as',       string('t_sorted')],
+			['let',      [['t_paths', string('$t_paths')]]],
+			['pipeline', array([
+				['$set', ['t_paths', string('$$t_paths')]],
+				['$unwind', string('$t_paths')],
+				['$replaceRoot', ['newRoot', string('$t_paths')]],
+				['$sort', ['depth', integer(1)]]
+			])]
+		]]
+	;	Step=['$set', ['next', string('$t_sorted')]]
+	;	Step=['$set', ['start', ['$arrayElemAt',
+			array([string('$next'), integer(0)])
+		]]]
+	;	Step=['$unset', string('t_paths')]
+	;	Step=['$unset', string('t_sorted')]
+	% add additional triple in next if P is a reflexive property
+	;	reflexivity(StartValue, Ctx, Step)
+	% iterate over results
+	;	Step=['$unwind',string('$next')]
+	% match values with expression given in query
+	;	(	To=='s', has_value(V0,Ctx),
+			Step=['$match', ['next.o', V_val]]
+		)
+	).
+
+%%
+% FIXME: need to do runtime check for ignored goals!
+%
+has_value(X, _Ctx) :-
+	ground(X),!.
+has_value(X, Ctx) :-
+	term_variables(X,Vars),
+	member(Var,Vars),
+	query_compiler:is_referenced(Var, Ctx).
+
+%%
+reflexivity(StartValue, Ctx, Step) :-
+	memberchk(reflexive,Ctx),
+	(	Step=['$set', ['t_refl', [
+			['s',string(StartValue)],
+			['p',string('$start.p')],
+			['p*',string('$start.p*')],
+			['o',string(StartValue)],
+			['o*',array([string(StartValue)])],
+			['graph',string('$start.graph')],
+			['scope',string('$start.scope')]
+		]]]
+	;	Step=['$set', ['next', ['$concatArrays',
+			array([array([string('$t_refl')]), string('$next')])
+		]]]
+	;	Step=['$unset', string('t_refl')]
+	).
 
 %%
 lookup_join_vars(TripleVars, QueryVars, Doc) :-
@@ -250,51 +357,6 @@ delete_overlapping(TripleDoc, Context,
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% PROPERTY SEMANTICS
-%%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-transitivity(Context, Step) :-
-	% TODO: does it work if triple is ground? i.e. to find out if there is a path.
-	% read options
-	memberchk(transitive, Context),
-	memberchk(collection(Coll), Context),
-	memberchk(property(Property), Context),
-	% yield steps
-	(	Step=['$graphLookup', [
-			['from',string(Coll)],
-			['startWith',string('$next.o')],
-			['connectFromField',string('o')],
-			['connectToField',string('s')],
-			['as',string('paths')],
-			['restrictSearchWithMatch',['p*',string(Property)]]
-		]]
-	;	Step=['$addFields', ['paths', ['$concatArrays', array([
-			string('$paths'),
-			array([string('$next')])
-		])]]]
-	;	Step=['$set', ['start', string('$next')]]
-	;	Step=['$set', ['next', string('$paths')]]
-	% remove "paths" field again
-	;	Step=['$unset', string('paths')]
-	).
-
-%%
-% FIXME: this creates redundant results for the case of graph queries
-%        that receive multiple documents with the same subject as input.
-reflexivity(Context, Step) :-
-	memberchk(reflexive,Context),
-	% TODO: o* and p* missing, why not copy whole document instead?
-	Step=['$set', ['next', ['$concatArrays',
-		array([string('$next'), array([[
-			['s',string('$start.s')],
-			['p',string('$start.p')],
-			['o',string('$start.s')],
-			['scope',string('$start.scope')]
-		]])])
-	]]].
-
-%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% PROPAGATION
 %%%%%%%%%%%%%%%%%%%%%%%
 
@@ -308,7 +370,7 @@ unwind_parents(Context, Step) :-
 unwind_parents(Context, Step) :-
 	option(ostar, Context),
 	(	Step=['$unwind', string('$next.o*')]
-	;	Step=['$set', ['next.o', ['$next.o*']]]
+	;	Step=['$set', ['next.o', string('$next.o*')]]
 	).
 
 %% set "parents" field by looking up subject+property then yielding o* field
@@ -468,17 +530,6 @@ extend_context(triple(_,P,O), [P1,O1], Context, Context0) :-
 		;	member(Opt, Context)
 		),
 		Context0).
-
-%% this step is used to harmonize documents
-harmonize_next(Context, Step) :-
-	\+ memberchk(transitive,Context),
-	(	% assign *start* field in case of reflexive property
-		(	memberchk(reflexive,Context),
-			Step=['$set', ['start', string('$next')]]
-		)
-	;	% transform next into single-element array
-		Step=['$set', ['next', array([string('$next')])]]
-	).
 
 %%
 get_triple_vars(S, P, O, Ctx, Vars) :-

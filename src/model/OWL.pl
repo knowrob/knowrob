@@ -54,7 +54,7 @@
 :- use_module(library('lang/db'),
 	[ load_owl/2 ]).
 :- use_module('RDFS',
-	[ has_type/2, is_rdf_list/2 ]).
+	[ has_type/2, rdf_list/2 ]).
 
 % load OWL model
 :- load_owl('http://www.w3.org/2002/07/owl.rdf',
@@ -227,13 +227,19 @@ is_restriction(R,Descr) ?>
 % @param Descr Prolog term representing the class
 %
 is_union_of(UnionClass, union_of(List_pl)) +>
-	is_rdf_list(List_rdf, List_pl),
+	rdf_list(List_rdf, List_pl),
 	is_class(UnionClass),
 	triple(UnionClass, owl:unionOf, List_rdf).
 
 is_union_of(UnionClass, union_of(List_pl)) ?>
+	var(List_pl),
 	triple(UnionClass, owl:unionOf, List_rdf),
-	is_rdf_list(List_rdf, List_pl).
+	rdf_list(List_rdf, List_pl).
+
+is_union_of(UnionClass, union_of(List_pl)) ?>
+	ground(List_pl),
+	rdf_list(List_rdf, List_pl),
+	triple(UnionClass, owl:unionOf, List_rdf).
 
 %% is_intersection_of(?IntersectionClass,?Descr) is nondet.
 %
@@ -243,13 +249,19 @@ is_union_of(UnionClass, union_of(List_pl)) ?>
 % @param Descr Prolog term representing the class
 %
 is_intersection_of(IntersectionClass, intersection_of(List_pl)) +>
-	is_rdf_list(List_rdf,List_pl),
+	rdf_list(List_rdf,List_pl),
 	is_class(IntersectionClass),
 	triple(IntersectionClass, owl:intersectionOf, List_rdf).
 
 is_intersection_of(IntersectionClass, intersection_of(List_pl)) ?>
+	var(List_pl),
 	triple(IntersectionClass, owl:intersectionOf, List_rdf),
-	is_rdf_list(List_rdf,List_pl).
+	rdf_list(List_rdf,List_pl).
+
+is_intersection_of(IntersectionClass, intersection_of(List_pl)) ?>
+	ground(List_pl),
+	rdf_list(List_rdf, List_pl),
+	triple(IntersectionClass, owl:intersectionOf, List_rdf).
 
 %% is_complement_of(?ComplementClass,?Descr) is nondet.
 %
@@ -337,12 +349,18 @@ has_inverse_property(P, P_inv) ?>
 % @param Chain list of property resources
 %
 has_property_chain(P, Chain) +>
-	is_rdf_list(RDFList, Chain),
+	rdf_list(RDFList, Chain),
 	triple(P, owl:propertyChainAxiom, RDFList).
 
 has_property_chain(P, Chain) ?>
+	var(Chain),
 	triple(P, owl:propertyChainAxiom, RDFList),
-	is_rdf_list(RDFList, Chain).
+	rdf_list(RDFList, Chain).
+
+has_property_chain(P, Chain) ?>
+	ground(Chain),
+	rdf_list(RDFList, Chain),
+	triple(P, owl:propertyChainAxiom, RDFList).
 
 %% has_equivalent_class(?Class1, ?Class2) is nondet.
 %
@@ -355,11 +373,9 @@ has_property_chain(P, Chain) ?>
 % @param Class2 an equivalent OWL class
 %
 has_equivalent_class(X,Y) ?>
-	ground(X),
 	triple(X, transitive(owl:equivalentClass), Y).
 
 has_equivalent_class(X,Y) ?>
-	ground(Y),
 	triple(Y, transitive(owl:equivalentClass), X).
 
 has_equivalent_class(X,Y) +>
@@ -371,15 +387,52 @@ has_equivalent_class(X,Y) +>
 % relation. Considers owl:sameAs transitive and symmetric.
 %
 same_as(X,Y) ?>
-	ground(X),
-	triple(X, reflective(transitive(owl:sameAs)), Y).
+	(ground(X);ground(Y)),
+	X = Y.
 
 same_as(X,Y) ?>
-	ground(Y),
-	triple(Y, reflective(transitive(owl:sameAs)), X).
+	ground(X),!,
+	triple(X, transitive(owl:sameAs), Y).
 
-same_as(X,Y) +>
+same_as(X,Y) ?>
+	ground(Y),!,
+	triple(Y, transitive(owl:sameAs), X).
+
+same_as(X,Y) ?+>
 	triple(X, owl:sameAs, Y).
+
+%%
+%
+has_disjoint_direct(A,B) ?>
+	% OWL1 disjointness axioms
+	triple(A, transitive(owl:disjointWith), B).
+
+has_disjoint_direct(A,B) ?>
+	% OWL1 disjointness axioms
+	triple(B, transitive(owl:disjointWith), A).
+
+%has_disjoint_direct(A,B) ?>
+%	% OWL2 disjointness axioms
+%	% ground(A),
+%	% iterate over all lists where A is an element
+%	triple(SubList, rdf:first, A),
+%	rdf_list_head(SubList, ListHead),
+%	% only proceed for lists of OWL2 disjointness axioms
+%	triple(DC, owl:members, ListHead),
+%	is_all_disjoint_classes(DC),
+%	% yield all members of the list except of A
+%	rdf_list(ListHead, PrologList),
+%	member(B, PrologList),
+%	B \= A.
+
+%%
+has_disjoint_indirect(A,B) ?>
+	% ground(A),
+	triple(A, rdfs:subClassOf, include_parents(SupA)),
+	has_disjoint_direct(SupA, SupB),
+	(	B==SupB
+	;	triple(B, rdfs:subClassOf, SupB)
+	).
 
 %% has_disjoint_class(?Class1, ?Class2) is nondet.
 %
@@ -389,51 +442,48 @@ same_as(X,Y) +>
 % @param Class1 OWL class
 % @param Class2 a disjoint OWL class
 %
-% TODO: convert into ask queries
-%
-has_disjoint_class(A,B) :-
-  ground([A,B]), A=B, !, fail.
+%has_disjoint_class(A,B) :-
+%  ground([A,B]), A=B, !, fail.
 
-has_disjoint_class(A,B) :-
-  ground(A),!,
-  ( has_disjoint_class1(A,B);
-    has_disjoint_class2(A,B) ).
+has_disjoint_class(A,B) ?>
+	has_disjoint_direct(A,B).
 
-has_disjoint_class(A,B) :-
-  ground(B),!,
-  has_disjoint_class(B,A).
+has_disjoint_class(A,B) ?>
+	ground(A),!,
+	has_disjoint_indirect(A,B).
 
-has_disjoint_class(A,B) :-
-  is_class(A),
-  has_disjoint_class(A,B).
+has_disjoint_class(A,B) ?>
+	ground(B),!,
+	has_disjoint_indirect(B,A).
   
 %% OWL1 disjointWith
-has_disjoint_class1(A,B) :-
-  % test if there are super-classes of A and B (including A and B)
-  % with disjointness axiom.
-  % TODO rather use triple(_,rdfs:subClassOf,_) here?
-  ( Sup_A=A ; transitive(subclass_of(A,Sup_A)) ),
-  ( lang_query:ask(triple(Sup_A,owl:disjointWith,Sup_B)) ;
-    lang_query:ask(triple(Sup_B,owl:disjointWith,Sup_A)) ),
-  ( unify_disjoint_(B,Sup_B) ).
+%has_disjoint_class1(A,B) :-
+%  % test if there are super-classes of A and B (including A and B)
+%  % with disjointness axiom.
+%  % TODO rather use triple(_,rdfs:subClassOf,_) here?
+%%  ( Sup_A=A ; transitive(subclass_of(A,Sup_A)) ),
+%  ( Sup_A=A ; subclass_of(A,Sup_A) ),
+%  ( lang_query:ask(triple(Sup_A,owl:disjointWith,Sup_B)) ;
+%    lang_query:ask(triple(Sup_B,owl:disjointWith,Sup_A)) ),
+%  ( unify_disjoint_(B,Sup_B) ).
 
 %% OWL2 AllDisjointClasses
-has_disjoint_class2(A,B) :-
-  is_all_disjoint_classes(DC),
-  lang_query:ask(triple(DC,owl:members,RDF_list)),
-  is_rdf_list(RDF_list,List),
-  once((
-    member(Sup_A,List), 
-    subclass_of(A,Sup_A)
-  )),
-  (
-    member(Sup_B,List), 
-    unify_disjoint_(B,Sup_B),
-    Sup_B \= Sup_A
-  ).
-
-unify_disjoint_(B,Disjoint) :-
-  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
+%has_disjoint_class2(A,B) :-
+%  is_all_disjoint_classes(DC),
+%  lang_query:ask(triple(DC,owl:members,RDF_list)),
+%  rdf_list(RDF_list,List),
+%  once((
+%    member(Sup_A,List), 
+%    subclass_of(A,Sup_A)
+%  )),
+%  (
+%    member(Sup_B,List), 
+%    unify_disjoint_(B,Sup_B),
+%    Sup_B \= Sup_A
+%  ).
+%
+%unify_disjoint_(B,Disjoint) :-
+%  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
 
 
 		 /*******************************

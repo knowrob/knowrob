@@ -8,7 +8,7 @@
       has_domain(r,r),
       has_label(r,?),
       has_comment(r,?),
-      is_rdf_list(r,t),
+      rdf_list(r,t),
       instance_of(r,r),   % ?Individual, ?Class
       subclass_of(r,r),   % ?Class, ?SuperClass
       subproperty_of(r,r) % ?Property, ?SuperProperty
@@ -174,49 +174,53 @@ subclass_of(A,B) ?+>
 subproperty_of(A,B) ?+>
 	triple(A, rdfs:subPropertyOf, B).
 
-%% is_rdf_list(+RDF_list, -Pl_List) is semidet.
+%%
+expand_list(
+		'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',
+		[], []) :- !.
+
+expand_list(This, [Child|Rest],
+		[	triple(This, rdf:first, Child),
+			triple(This, rdf:rest, Next)
+		|	Xs
+		]) :-
+	expand_list(Next, Rest, Xs).
+
+%% rdf_list(+RDF_list, -Pl_List) is semidet.
 %
 %
-is_rdf_list(RDF_list, Pl_List) ?>
-	ground(RDF_list),
+rdf_list(RDF_list, Pl_List) ?>
+	var(Pl_List),
 	findall(X,
-		(	triple(RDF_list,
-				reflexive(transitive(rdf:rest)),
-				Ys),
+		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
 			triple(Ys, rdf:first, X)
 		),
 		Pl_List).
 
-is_rdf_list(RDF_list, Pl_List) +>
-	% TODO: I think in this case recursion is fine,
-	%          as it can be expanded compile-time given the list.
-	%		   so rather do a recursive call of is_rdf_list here?
+rdf_list(RDF_list, Pl_List) ?>
 	pragma((
 		ground(Pl_List),
-		expand_list_(Pl_List, Expanded)
+		model_RDFS:expand_list(RDF_list, Pl_List, Expanded)
+	)),
+	call(Expanded).
+
+rdf_list(RDF_list, Pl_List) +>
+	pragma((
+		ground(Pl_List),
+		model_RDFS:expand_list(RDF_list, Pl_List, Expanded)
 	)),
 	call([
 		has_type(RDF_list, rdf:'List')
 	|	Expanded
 	]).
 
-		 /*******************************
-		 *	    helper	     		*
-		 *******************************/
-
 %%
-expand_list_(
-		'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',
-		[], []) :-
+rdf_list_head(SubList, ListHead) ?>
+	triple(ListHead, transitive(rdf:rest), SubList),
 	!.
 
-expand_list_(This, [Child|Rest],
-		[	triple(This, rdf:first, Child),
-			has_type(Next, rdf:'List'),
-			triple(This, rdf:rest, Next)
-		|	Xs
-		]) :-
-	expand_list_(Next, Rest, Xs).
+rdf_list_head(SubList, ListHead) ?>
+	ListHead = SubList.
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*

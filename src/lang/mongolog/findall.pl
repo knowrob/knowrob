@@ -47,7 +47,7 @@ query_compiler:step_compile(
 	%	- within findall body scopes maybe computed
 	%	- member with scope should do scope intersection
 	%	- for now scopes in findall are _ignored_!
-	query_compiler:var_key(List, Ctx, List_Key),
+	query_compiler:var_key_or_val(List, Ctx, List0),
 	% Get the $map expression to instantiate the template for each list element.
 	% NOTE: it is not allowed due to handling here to construct
 	% the pattern in a query, it must be given in the findall command compile-time.
@@ -55,14 +55,16 @@ query_compiler:step_compile(
 	template_instantiation(Template, Ctx, Instantiation),
 	findall(Step,
 		% perform lookup, collect results in 'next' array
-		(	query_compiler:lookup_array('next',Terminals,
+		(	query_compiler:lookup_array('t_next',Terminals,
 				[], [], Ctx, _, Step)
 		% $set the list variable field from 'next' field
-		;	Step=['$set', [List_Key, ['$map',[
-					['input',string('$next')],
+		;	Step=['$set', ['t_list', ['$map',[
+					['input',string('$t_next')],
 					['in', Instantiation] ]]]]
+		;	query_compiler:set_if_var(List, string('$t_list'), Ctx, Step)
+		;	query_compiler:match_equals(List0, string('$t_list'), Step)
 		% array at 'next' field not needed anymore
-		;	Step=['$unset', string('next')]
+		;	Step=['$unset', array([string('t_next'), string('t_list')])]
 		),
 		Pipeline).
 
@@ -115,6 +117,16 @@ test('findall(+Succeeds ; +Succeeds)'):-
 		Num, double(4.5)
 	),
 	assert_equals(Results,[9.5,9.0]).
+
+test('findall(+,:,+)'):-
+	assert_true(lang_query:test_command(
+		(	findall(X,
+				(	(X is (Num + 5))
+				;	(X is (Num * 2))
+				),
+				[9.5,9.0])
+		),
+		Num, double(4.5))).
 
 test('findall(+Succeeds ; +Fails)'):-
 	lang_query:test_command(
