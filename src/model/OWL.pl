@@ -16,7 +16,7 @@
 	  is_symmetric_property(r),
 	  has_inverse_property(r,r),
 	  has_property_chain(r,t),
-	  has_disjoint_class(r,r),
+	  disjoint_with(r,r),
 	  disjoint_with_direct(r,r),
 	  has_equivalent_class(r,r),
 	  has_description(r,t),
@@ -431,11 +431,11 @@ disjoint_with_indirect(A,B) ?>
 	% ground(A),
 	triple(A, rdfs:subClassOf, include_parents(SupA)),
 	disjoint_with_direct(SupA, SupB),
-	(	B=SupB
+	(	var(B) -> B=SupB
 	;	triple(B, rdfs:subClassOf, SupB)
 	).
 
-%% has_disjoint_class(?Class1, ?Class2) is nondet.
+%% disjoint_with(?Class1, ?Class2) is nondet.
 %
 % Tests if Class1 and Class2 are disjoint, taking both individual disjointWith
 % properties and the OWL2 AllDisjointClasses into account.
@@ -443,17 +443,17 @@ disjoint_with_indirect(A,B) ?>
 % @param Class1 OWL class
 % @param Class2 a disjoint OWL class
 %
-%has_disjoint_class(A,B) :-
+%disjoint_with(A,B) :-
 %  ground([A,B]), A=B, !, fail.
 
-has_disjoint_class(A,B) ?>
+disjoint_with(A,B) ?>
 	disjoint_with_direct(A,B).
 
-has_disjoint_class(A,B) ?>
+disjoint_with(A,B) ?>
 	ground(A),!,
 	disjoint_with_indirect(A,B).
 
-has_disjoint_class(A,B) ?>
+disjoint_with(A,B) ?>
 	ground(B),!,
 	disjoint_with_indirect(B,A).
 

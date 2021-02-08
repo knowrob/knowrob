@@ -387,55 +387,55 @@ test('same_as(-,-)') :-
   % Both arguments are unbound
   assert_true(same_as(_,_)).
 
-% OWL1 disjointness axioms:
-% - DisjClsChain1 owl:disjointWith DisjClsChain2
-% - DisjClsChain2 owl:disjointWith DisjClsChain3
-% - DisjClsChain1SubSub subClassOf DisjClsChain1Sub subClassOf DisjClsChain1
-% - DisjClsChain2Sub subClassOf DisjClsChain2
-% - DisjCls2Sub subClassOf DisjCls2
-
 test('disjoint_with_direct(+,+)::OWL1') :-
-  assert_true(disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain2')),
-  assert_true(disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain1')),
-  assert_true(disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain3')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain2')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain1')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain3')),
   %
-  assert_false(disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain3')),
-  assert_false(disjoint_with_direct(test:'A',test:'B')).
+  assert_false(model_OWL:disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain3')),
+  assert_false(model_OWL:disjoint_with_direct(test:'A',test:'B')).
 
 test('disjoint_with_direct(+,-)::OWL1') :-
-  findall(A, disjoint_with_direct(test:'DisjClsChain1',A), List),
+  findall(A, model_OWL:disjoint_with_direct(test:'DisjClsChain1',A), List),
   assert_equals(List, [test:'DisjClsChain2']).
 
 test('disjoint_with_direct(-,+)::OWL1') :-
-  findall(A, disjoint_with_direct(A,test:'DisjClsChain1'), List),
+  findall(A, model_OWL:disjoint_with_direct(A,test:'DisjClsChain1'), List),
   assert_equals(List, [test:'DisjClsChain2']).
 
-test('has_disjoint_class(+,+)::OWL1::direct') :-
-  assert_true(disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain1')),
-  assert_true(disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain3')),
-  assert_false(disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain3')).
+test('disjoint_with_direct(+,+)::OWL1::direct') :-
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain1')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain2',test:'DisjClsChain3')),
+  %%
+  assert_false(model_OWL:disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain3')).
+
+test('disjoint_with_indirect(+,+)::OWL1::indirect') :-
+  assert_true(model_OWL:disjoint_with_indirect(
+      test:'DisjClsChain1Sub',test:'DisjClsChain2Sub')),
+  assert_true(model_OWL:disjoint_with_indirect(
+      test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')).
 
 test('has_disjoint_class(+,+)::OWL1::indirect') :-
-  assert_true(has_disjoint_class(test:'DisjClsChain1Sub',test:'DisjClsChain2Sub')),
-  assert_true(has_disjoint_class(test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')).
+  assert_true(disjoint_with(test:'DisjClsChain1Sub',test:'DisjClsChain2Sub')),
+  assert_true(disjoint_with(test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')).
 
 test('has_disjoint_class(-,+)::OWL1') :-
-  findall(A, has_disjoint_class(A,test:'DisjClsChain1Sub'), AList),
-  findall(B, has_disjoint_class(B,test:'DisjClsChain1SubSub'), BList),
-  findall(C, has_disjoint_class(C,test:'DisjClsChain2'), CList),
-  assert_true(memberchk(test:'DisjClsChain1', AList)),
-  assert_true(memberchk(test:'DisjClsChain3', BList)),
-  assert_true(memberchk(test:'DisjClsChain2Sub', CList)),
-  assert_true(memberchk(test:'DisjClsChain2SubSub', CList)).
+  % NOTE: it is intended that only the direct disjoint classes
+  %       are yielded for unbound vars to avoid redundancy.
+  findall(A, disjoint_with(A,test:'DisjClsChain1Sub'),    AList),
+  findall(B, disjoint_with(B,test:'DisjClsChain1SubSub'), BList),
+  assert_equals(AList, [test:'DisjClsChain2']),
+  assert_equals(BList, [test:'DisjClsChain2']),
+  findall(C, disjoint_with(C,test:'DisjClsChain2'), CList),
+  assert_equals(CList, [test:'DisjClsChain1',test:'DisjClsChain3']).
 
-%test('has_disjoint_class(+,-)::OWL1') :-
-%  findall(C, has_disjoint_class(test:'DisjClsChain1Sub',C), CList),
-%  findall(D, has_disjoint_class(test:'DisjClsChain1SubSub',D), DList),
-%  findall(A, has_disjoint_class(test:'DisjClsChain2',A), AList),
-%  assert_true(memberchk(test:'DisjClsChain2Sub', CList)),
-%  assert_true(memberchk(test:'DisjClsChain2Sub', DList)),
-%  assert_true(memberchk(test:'DisjClsChain1', AList)),
-%  assert_true(memberchk(test:'DisjClsChain3', AList)).
+test('has_disjoint_class(+,-)::OWL1') :-
+  findall(C, disjoint_with(test:'DisjClsChain1Sub',C),    AList),
+  findall(D, disjoint_with(test:'DisjClsChain1SubSub',D), BList),
+  assert_equals(AList, [test:'DisjClsChain2']),
+  assert_equals(BList, [test:'DisjClsChain2']),
+  findall(A, disjoint_with(test:'DisjClsChain2',A), CList),
+  assert_equals(CList, [test:'DisjClsChain3',test:'DisjClsChain1']).
 
 %test('has_disjoint_class(-,-)::OWL1', fail) :-
 %  assert_true(has_disjoint_class(_,_)).

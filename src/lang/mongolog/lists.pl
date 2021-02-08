@@ -285,6 +285,16 @@ test('member(+Numbers)'):-
 		Results),
 	assert_equals(Results,[9.5,9.0]).
 
+test('findall+nth0'):-
+	lang_query:test_command(
+		(	findall(X,
+				((X is Num + 5);(X is Num * 2)),
+				List),
+			nth0(0, List, Val)
+		),
+		Num, double(4.5)),
+	assert_equals(Val,9.5).
+
 test('findall+member'):-
 	findall(Val,
 		lang_query:test_command(
