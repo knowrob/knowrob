@@ -17,6 +17,7 @@
 	  has_inverse_property(r,r),
 	  has_property_chain(r,t),
 	  has_disjoint_class(r,r),
+	  disjoint_with_direct(r,r),
 	  has_equivalent_class(r,r),
 	  has_description(r,t),
 	  same_as(r,r),
@@ -401,15 +402,15 @@ same_as(X,Y) ?>
 same_as(X,Y) ?+>
 	triple(X, owl:sameAs, Y).
 
-%%
+%% disjoint_with_direct(?Cls, ?Disjoint) is semidet.
 %
-has_disjoint_direct(A,B) ?>
-	% OWL1 disjointness axioms
-	triple(A, transitive(owl:disjointWith), B).
-
-has_disjoint_direct(A,B) ?>
-	% OWL1 disjointness axioms
-	triple(B, transitive(owl:disjointWith), A).
+% True if there is a disjointness axioms for Cls and
+% Disjoint, not taking into account the super classes of both.
+%
+disjoint_with_direct(A,B) ?>
+	(	triple(A, owl:disjointWith, B)
+	;	triple(B, owl:disjointWith, A)
+	).
 
 %has_disjoint_direct(A,B) ?>
 %	% OWL2 disjointness axioms
@@ -426,11 +427,11 @@ has_disjoint_direct(A,B) ?>
 %	B \= A.
 
 %%
-has_disjoint_indirect(A,B) ?>
+disjoint_with_indirect(A,B) ?>
 	% ground(A),
 	triple(A, rdfs:subClassOf, include_parents(SupA)),
-	has_disjoint_direct(SupA, SupB),
-	(	B==SupB
+	disjoint_with_direct(SupA, SupB),
+	(	B=SupB
 	;	triple(B, rdfs:subClassOf, SupB)
 	).
 
@@ -446,45 +447,15 @@ has_disjoint_indirect(A,B) ?>
 %  ground([A,B]), A=B, !, fail.
 
 has_disjoint_class(A,B) ?>
-	has_disjoint_direct(A,B).
+	disjoint_with_direct(A,B).
 
 has_disjoint_class(A,B) ?>
 	ground(A),!,
-	has_disjoint_indirect(A,B).
+	disjoint_with_indirect(A,B).
 
 has_disjoint_class(A,B) ?>
 	ground(B),!,
-	has_disjoint_indirect(B,A).
-  
-%% OWL1 disjointWith
-%has_disjoint_class1(A,B) :-
-%  % test if there are super-classes of A and B (including A and B)
-%  % with disjointness axiom.
-%  % TODO rather use triple(_,rdfs:subClassOf,_) here?
-%%  ( Sup_A=A ; transitive(subclass_of(A,Sup_A)) ),
-%  ( Sup_A=A ; subclass_of(A,Sup_A) ),
-%  ( lang_query:ask(triple(Sup_A,owl:disjointWith,Sup_B)) ;
-%    lang_query:ask(triple(Sup_B,owl:disjointWith,Sup_A)) ),
-%  ( unify_disjoint_(B,Sup_B) ).
-
-%% OWL2 AllDisjointClasses
-%has_disjoint_class2(A,B) :-
-%  is_all_disjoint_classes(DC),
-%  lang_query:ask(triple(DC,owl:members,RDF_list)),
-%  rdf_list(RDF_list,List),
-%  once((
-%    member(Sup_A,List), 
-%    subclass_of(A,Sup_A)
-%  )),
-%  (
-%    member(Sup_B,List), 
-%    unify_disjoint_(B,Sup_B),
-%    Sup_B \= Sup_A
-%  ).
-%
-%unify_disjoint_(B,Disjoint) :-
-%  ( var(B) -> B=Disjoint ; subclass_of(B,Disjoint) ).
-
+	disjoint_with_indirect(B,A).
 
 		 /*******************************
 		 *	    LANGUAGE EXTENSIONS		*

@@ -75,9 +75,9 @@ query_compiler:step_expand('->'(If,Then), Epanded, Mode) :-
 %% :Goal1 ; :Goal2
 % Make sure goals of disjunction are expanded.
 %
-query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Context) :-
-	query_expand(A0,A1,Context),
-	query_expand(B0,B1,Context).
+query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
+	query_expand(A0,B0,Ctx),
+	query_expand(A1,B1,Ctx).
 
 %% true
 %

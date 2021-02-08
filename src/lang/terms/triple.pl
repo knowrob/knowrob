@@ -522,7 +522,8 @@ extend_context(triple(_,P,O), [P1,O1], Context, Context0) :-
 	strip_property_modifier(P,P_opts,P1),
 	strip_object_modifier(O,O_opts,O1),
 	% extend the context
-	findall(Opt,
+	% NOTE: do not use findall here to keep var references in Context valid
+	bagof(Opt,
 		(	Opt=property(P1)
 		;	Opt=collection(Coll)
 		;	member(Opt, O_opts)
