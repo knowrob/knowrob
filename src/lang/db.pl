@@ -258,7 +258,15 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	% debug how long loading takes
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
-	lang_query:tell(Terms, Scope, [graph(Graph)]),
+	% FIXME: BUG: o* for subClassOf only includes direct super class
+	%             when loading a list of triples at once.
+	%             this does not seem to occur when loading each triple
+	%             individually.
+	%lang_query:tell(Terms, Scope, [graph(Graph)]),
+	forall(
+		member(Term, Terms),
+		lang_query:tell(Term, Scope, [graph(Graph)])
+	),
 	get_time(Time1),
 	% debug
 	length(Triples,NumTriples),
