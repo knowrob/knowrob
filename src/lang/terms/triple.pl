@@ -72,19 +72,25 @@ triple_import_json(FilePath) :-
 	close(Stream).
 
 read_data(Stream,[]):-
-  at_end_of_stream(Stream).
+	at_end_of_stream(Stream).
 
 read_data(Stream,[TriplesDict | Rest]):-
-  \+ at_end_of_stream(Stream),
-  json:json_read_dict(Stream, TriplesDict),
-  assert_triple_data(TriplesDict),
-  read_data(Stream,Rest).
+	json:json_read_dict(Stream, TriplesDict),
+	assert_triple_data(TriplesDict),
+	read_data(Stream,Rest).
 
 assert_triple_data(Triples) :-
-	term_to_atom(Triples.get(s), S),
-	term_to_atom(Triples.get(p), P),
-	term_to_atom(Triples.get(o), O),
-	tell(triple(S, P, O)).
+	get_dict(s, Triples, S),
+	get_dict(p, Triples, P),
+	get_dict(o, Triples, O),
+	(is_dict(O) ->
+	findall(Value, (Value = O.Key), Values),
+	member(Object, Values),
+	atom_string(O_atom,Object);
+	atom_string(O_atom, O)),
+	atom_string(S_atom, S),
+	atom_string(P_atom, P),
+	tell(triple(S_atom, P_atom, O_atom)).
 
      /*******************************
      *	    UNIT TESTS	     		    *
