@@ -17,7 +17,7 @@
 		[ mng_scope_intersect/5 ]).
 
 :- rdf_meta(taxonomical_property(r)).
-:- rdf_meta(propagate_tell(r)).
+:- rdf_meta(must_propagate_tell(r)).
 :- rdf_meta(pstar_value(r,t)).
 :- rdf_meta(ostar_value(r,r,t)).
 :- rdf_meta(lookup_parents_property(t,t)).
