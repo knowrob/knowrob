@@ -94,7 +94,7 @@ assert_triple_data(Triples) :-
 	tell(triple(S_atom, P_atom, O_atom)).
 
 assert_triple_data(TriplesList) :-
-    %handle case when given given triples are list
+    %handle case when given triples are list
     is_list(TriplesList),!,
     forall(member(X,TriplesList), assert_triple_data(X)).
 
