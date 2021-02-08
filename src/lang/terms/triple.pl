@@ -80,6 +80,7 @@ read_data(Stream,[TriplesDict | Rest]):-
 	read_data(Stream,Rest).
 
 assert_triple_data(Triples) :-
+	is_dict(Triples),!,
 	get_dict(s, Triples, S),
 	get_dict(p, Triples, P),
 	get_dict(o, Triples, O),
@@ -91,6 +92,11 @@ assert_triple_data(Triples) :-
 	atom_string(S_atom, S),
 	atom_string(P_atom, P),
 	tell(triple(S_atom, P_atom, O_atom)).
+
+assert_triple_data(TriplesList) :-
+    %handle case when given given triples are list
+    is_list(TriplesList),!,
+    forall(member(X,TriplesList), assert_triple_data(X)).
 
      /*******************************
      *	    UNIT TESTS	     		    *
