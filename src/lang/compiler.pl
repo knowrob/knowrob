@@ -79,6 +79,12 @@ query_tell(Statement, FScope, Options) :-
 query_(Goal, Context, FScope, Mode) :-
 	% expand goals into terminal symbols
 	query_expand(Goal, Expanded, Mode),
+	%% FIXME BUG in some cases SWIPL replaces variables in the compile step
+	%            below. But it does not happen when running with gtrace,
+	%            and also when adding writeln calls. very strange...
+	%            for some reason it does not appear to happen when doing something
+	%            with the vars here at the toplevel?!?
+	touch_term_vars(Expanded),
 	% get the pipeline document
 	query_compile(Expanded, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	% run the pipeline
@@ -193,6 +199,15 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
+%%
+
+touch_term_vars(Expanded) :-
+	term_variables(Expanded, ExpandedVars),
+	forall(
+		member(ExpandedVar,ExpandedVars),
+		put_attr(ExpandedVar, test, 1)
+	).
+
 %% query_assert(+Rule) is semidet.
 %
 % Asserts a rule executable in a mongo query.
@@ -306,6 +321,11 @@ expand_term_1(ask(Goal), Expanded, _Mode) :-
 	query_expand(Goal, Expanded, ask).
 
 expand_term_1(Goal, Expanded, Mode) :-
+	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
+	is_list(Goal),!,
+	expand_term_0(Goal, Expanded, Mode).
+
+expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|_Args],
 	step_command(Functor),
 	% allow the goal to recursively expand
@@ -318,11 +338,6 @@ expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
-	% FIXME: I think this is still wrong!! because copy_terms create different vars in each term
-	%          the problem is that Args cannot be unified with args of query/4 when these
-	%          are instantiated.
-	%	     The solution is to replace instantiated args with new variables and add an additional
-	%        unification step for each argument.
 	(	bagof(Terminals,
 			query(Functor, Args, Terminals, Mode),
 			TerminalsList)
