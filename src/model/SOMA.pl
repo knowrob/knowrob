@@ -886,7 +886,7 @@ object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
 	shape_origin(SR, Pos, Rot),
 	% COLOR
 	% TODO: use object_color_rgb when ignore supports this
-	% ignore(object_color_rgb(Obj,R,G,B)),
+	% ignore(object_color_rgba(Obj,R,G,B,A)),
 	ignore(once(triple(Obj,soma:hasColor,Color))),
 	ignore(once(triple(Color,dul:hasRegion,CR))),
 	ignore(triple(CR, soma:hasRGBValue, term([R,G,B]))),

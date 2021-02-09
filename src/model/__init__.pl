@@ -8,6 +8,8 @@
 :- use_module('DUL').
 :- use_module('SOMA').
 
+:- use_module('terms').
+
 % load additional ontologies
 :- load_owl('http://knowrob.org/kb/knowrob.owl',
 	[ namespace(knowrob) ]).

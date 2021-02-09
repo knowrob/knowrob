@@ -1,4 +1,4 @@
-:- module(lang_occurs,
+:- module(model_terms,
     [ occurs(r) % ?Event
     ]).
 /** <module> The occurs predicate.
@@ -40,6 +40,27 @@ occurs(Evt) +>
 			until: =(double('Infinity'))
 		}}
 	).
+
+%lang_temporal:during(Query, Event) ?>
+%	atom(Event),
+%	event_interval(Event, Since, Until),
+%	call_with_context(Query, [scope(_{
+%		time: _{ since: =<(Since), until: >=(Until) }
+%	})]).
+%
+%lang_temporal:since(Query, Event) ?>
+%	atom(Event),
+%	event_interval(Event, Time, _),
+%	call_with_context(Query, [scope(_{
+%		time: _{ since: =<(Time) }
+%	})]).
+%
+%lang_temporal:until(Query, Event) ?>
+%	atom(Event),
+%	event_interval(Event, Time, _),
+%	call_with_context(Query, [scope(_{
+%		time: _{ until: >=(Time) }
+%	}]).
 
      /*******************************
      *        UNIT TESTS            *
