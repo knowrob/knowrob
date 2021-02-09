@@ -408,23 +408,27 @@ same_as(X,Y) ?+>
 % Disjoint, not taking into account the super classes of both.
 %
 disjoint_with_direct(A,B) ?>
+	% OWL1 disjointness axioms
 	(	triple(A, owl:disjointWith, B)
 	;	triple(B, owl:disjointWith, A)
 	).
 
-%has_disjoint_direct(A,B) ?>
-%	% OWL2 disjointness axioms
-%	% ground(A),
-%	% iterate over all lists where A is an element
-%	triple(SubList, rdf:first, A),
-%	rdf_list_head(SubList, ListHead),
-%	% only proceed for lists of OWL2 disjointness axioms
-%	triple(DC, owl:members, ListHead),
-%	is_all_disjoint_classes(DC),
-%	% yield all members of the list except of A
-%	rdf_list(ListHead, PrologList),
-%	member(B, PrologList),
-%	B \= A.
+disjoint_with_direct(A,B) ?>
+	% OWL2 disjointness axioms
+	% ground(A),
+	% iterate over all lists where A is an element.
+	% here we assume that this is more efficient compared to
+	% iterating over all AllDisjointClasses resources and parsing
+	% a list for each.
+	triple(SubList, rdf:first, A),
+	rdf_list_head(SubList, ListHead),
+	% only proceed for lists of OWL2 disjointness axioms
+	triple(DC, owl:members, ListHead),
+	is_all_disjoint_classes(DC),
+	% yield all members of the list except of A
+	rdf_list(ListHead, PrologList),
+	member(B, PrologList),
+	B \== A.
 
 %%
 disjoint_with_indirect(A,B) ?>

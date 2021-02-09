@@ -216,11 +216,14 @@ rdf_list(RDF_list, Pl_List) +>
 
 %%
 rdf_list_head(SubList, ListHead) ?>
-	triple(ListHead, transitive(rdf:rest), SubList),
-	!.
-
-rdf_list_head(SubList, ListHead) ?>
-	ListHead = SubList.
+	findall(X,
+		(	X = SubList
+		;	triple(X, transitive(rdf:rest), SubList)
+		),
+		ListHeads),
+	length(ListHeads,NumHeads),
+	Index is NumHeads-1,
+	nth0(Index, ListHeads, ListHead).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*

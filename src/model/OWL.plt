@@ -415,11 +415,11 @@ test('disjoint_with_indirect(+,+)::OWL1::indirect') :-
   assert_true(model_OWL:disjoint_with_indirect(
       test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')).
 
-test('has_disjoint_class(+,+)::OWL1::indirect') :-
+test('disjoint_with(+,+)::OWL1::indirect') :-
   assert_true(disjoint_with(test:'DisjClsChain1Sub',test:'DisjClsChain2Sub')),
   assert_true(disjoint_with(test:'DisjClsChain1SubSub',test:'DisjClsChain2Sub')).
 
-test('has_disjoint_class(-,+)::OWL1') :-
+test('disjoint_with(-,+)::OWL1') :-
   % NOTE: it is intended that only the direct disjoint classes
   %       are yielded for unbound vars to avoid redundancy.
   findall(A, disjoint_with(A,test:'DisjClsChain1Sub'),    AList),
@@ -429,7 +429,7 @@ test('has_disjoint_class(-,+)::OWL1') :-
   findall(C, disjoint_with(C,test:'DisjClsChain2'), CList),
   assert_equals(CList, [test:'DisjClsChain1',test:'DisjClsChain3']).
 
-test('has_disjoint_class(+,-)::OWL1') :-
+test('disjoint_with(+,-)::OWL1') :-
   findall(C, disjoint_with(test:'DisjClsChain1Sub',C),    AList),
   findall(D, disjoint_with(test:'DisjClsChain1SubSub',D), BList),
   assert_equals(AList, [test:'DisjClsChain2']),
@@ -437,38 +437,34 @@ test('has_disjoint_class(+,-)::OWL1') :-
   findall(A, disjoint_with(test:'DisjClsChain2',A), CList),
   assert_equals(CList, [test:'DisjClsChain3',test:'DisjClsChain1']).
 
-%test('has_disjoint_class(-,-)::OWL1', fail) :-
-%  assert_true(has_disjoint_class(_,_)).
-%
-%test('has_disjoint_class(+,+)::AllDisjointClasses') :-
-%  assert_true(has_disjoint_class(test:'DisjCls1',test:'DisjCls2')),
-%  assert_true(has_disjoint_class(test:'DisjCls3',test:'DisjCls2')),
-%  assert_true(has_disjoint_class(test:'DisjCls1',test:'DisjCls3')),
-%  assert_true(has_disjoint_class(test:'DisjCls1Sub',test:'DisjCls2Sub')),
-%  assert_true(has_disjoint_class(test:'DisjCls1Sub',test:'DisjCls3')),
-%  assert_true(has_disjoint_class(test:'DisjCls1SubSub',test:'DisjCls2Sub')),
-%  assert_true(has_disjoint_class(test:'DisjCls1SubSub',test:'DisjCls3')).
-%
-%test('has_disjoint_class(-,+)::AllDisjointClasses') :-
-%  findall(A, has_disjoint_class(A,test:'DisjCls2'), AList),
-%  findall(B, has_disjoint_class(B,test:'DisjCls1Sub'), BList),
-%  assert_true(memberchk(test:'DisjCls1', AList)),
-%  assert_true(memberchk(test:'DisjCls3', AList)),
-%  assert_true(memberchk(test:'DisjCls3', BList)).
-%
-%test('has_disjoint_class(+,-)::AllDisjointClasses') :-
-%  findall(E, has_disjoint_class(test:'DisjCls2',E), List),
-%  assert_true(memberchk(test:'DisjCls1', List)),
-%  assert_true(memberchk(test:'DisjCls3', List)).
+test('disjoint_with(-,-)::OWL1') :-
+  assert_true(disjoint_with(_,_)).
 
-%test("ask and tell woman is a person") :-
-%  assert_true(is_a(test:'Woman', test:'TestThing')),
-%  assert_false(is_a(test:'Woman', test:'Person')),
-%  assert_true(tell(is_a(test:'Woman', test:'Person'))),
-%  assert_true(is_a(test:'Woman', test:'Person')).
-%
-%% expect instantiation error as is_a expects a ground variable
-%test("ask _ is a Person", [throws(error(instantiation_error, _))]) :-
-%  is_a(_, dul:'Person').
+test('disjoint_with_direct(+,+)::OWL2') :-
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjCls1',test:'DisjCls2')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjCls3',test:'DisjCls2')),
+  assert_true(model_OWL:disjoint_with_direct(test:'DisjCls1',test:'DisjCls3')).
+
+test('disjoint_with_direct(-,+)::OWL2') :-
+  findall(A, model_OWL:disjoint_with_direct(A,test:'DisjCls2'), List),
+  assert_equals(List, [test:'DisjCls1', test:'DisjCls3']).
+
+test('disjoint_with_direct(+,-)::OWL2') :-
+  findall(A, model_OWL:disjoint_with_direct(test:'DisjCls2',A), List),
+  assert_equals(List, [test:'DisjCls1', test:'DisjCls3']).
+
+test('disjoint_with(+,+)::OWL2') :-
+  assert_true(disjoint_with(test:'DisjCls1Sub',test:'DisjCls2Sub')),
+  assert_true(disjoint_with(test:'DisjCls1Sub',test:'DisjCls3')),
+  assert_true(disjoint_with(test:'DisjCls1SubSub',test:'DisjCls2Sub')),
+  assert_true(disjoint_with(test:'DisjCls1SubSub',test:'DisjCls3')).
+
+test('disjoint_with(-,+)::OWL2') :-
+  findall(A, disjoint_with(A,test:'DisjCls1Sub'), List),
+  assert_equals(List, [test:'DisjCls2', test:'DisjCls3']).
+
+test('disjoint_with(+,-)::OWL2') :-
+  findall(A, disjoint_with(test:'DisjCls1Sub',A), List),
+  assert_equals(List, [test:'DisjCls2', test:'DisjCls3']).
 
 :- end_tests(model_OWL).
