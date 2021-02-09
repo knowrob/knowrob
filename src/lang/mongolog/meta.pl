@@ -85,6 +85,12 @@ query_compiler:step_vars(pragma(_),_,[]).
 % True if Goal is true, returning at most Count solutions.
 %
 query_compiler:step_compile(
+		limit(_, Terminals), _Ctx, []) :-
+	is_list(Terminals),
+	Terminals=[],
+	!.
+
+query_compiler:step_compile(
 		limit(Count, Terminals),
 		Ctx, Pipeline) :-
 	query_compiler:var_key_or_val(Count,Ctx,Count0),
