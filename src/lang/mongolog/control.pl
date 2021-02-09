@@ -50,9 +50,9 @@ query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
 % This unusual semantics is part of the ISO and all de-facto Prolog standards. 
 %
 query_compiler:step_expand(';'('->'(If,Then),Else), ';'(X,Y), Mode) :-
-	% (If -> Then) ; Else -> (If, !, Then) ; (!, Else)
+	% (If -> Then) ; Else -> (If, !, Then) ; Else
 	query_expand([If, !, Then], X, Mode),
-	query_expand([!, Else],     Y, Mode).
+	query_expand(Else,          Y, Mode).
 
 query_compiler:step_expand('->'(If,Then), Epanded, Mode) :-
 	% (If -> Then) -> (If -> Then ; fail)
