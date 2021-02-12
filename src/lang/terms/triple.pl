@@ -8,9 +8,11 @@
 :- use_module(library('lang/scope'),
 		[ time_scope/3, time_scope_data/2 ]).
 :- use_module(library('db/mongo/client'),
-		[ mng_get_db/3, mng_find/4, mng_query_value/2,
-		  mng_strip_type/3, mng_strip_variable/2,
-		  mng_strip_operator/3, mng_operator/2,
+		[ mng_get_db/3,
+		  mng_strip_variable/2,
+		  mng_strip_operator/3,
+		  mng_operator/2,
+		  mng_query_value/2,
 		  mng_typed_value/2 ]).
 :- use_module(library('lang/compiler')).
 :- use_module('intersect',
@@ -18,8 +20,6 @@
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_tell(r)).
-:- rdf_meta(pstar_value(r,t)).
-:- rdf_meta(ostar_value(r,r,t)).
 :- rdf_meta(lookup_parents_property(t,t)).
 
 %%
@@ -174,17 +174,12 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 				triple_arg_var(Arg, ArgVar),
 				query_compiler:var_key(ArgVar, Ctx, ArgKey),
 				atom_concat('$$',ArgKey,ArgValue),
-				%% TODO: need to check if key exists?
-				%atom_concat('$',FieldKey,FieldValue),
-				%['$and', array([[FieldKey, ['$exists', bool(true)]], ['$expr', ArgExpr]])]
-				% variables are documents with a "type" field set to "var"
 				atom_concat(ArgValue,'.type',ArgType),
 				triple_arg_value(Arg, ArgValue, FieldValue, Ctx, ArgExpr),
 				MatchQuery=['$expr', ['$or', array([
 					% pass through if var is not grounded
 					['$eq', array([string(ArgType), string('var')])],
-					% else perform a match
-					ArgExpr
+					ArgExpr % else perform a match
 				])]]
 			)
 		;	scope_match(Ctx, MatchQuery)
@@ -233,8 +228,6 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% read options
 	option(transitive, Ctx),
 	option(collection(Coll), Ctx),
-%	option(graph(Graph), Ctx, user),
-%	option(scope(Scope), Ctx),
 	mng_one_db(_DB, OneColl),
 	% infer lookup parameters
 	query_value(P,Query_p),
@@ -247,8 +240,8 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% FIXME: a runtime condition is needed to cover the case where S was
 	%        referred to in ignore'd goal that failed.
 	(	has_value(S0,Ctx)
-	->	(Start=S_val, To='s', From='o', StartValue='$start.s')
-	;	(Start=V_val, To='o', From='s', StartValue='$start.o')
+	->	( Start=S_val, To='s', From='o', StartValue='$start.s' )
+	;	( Start=V_val, To='o', From='s', StartValue='$start.o' )
 	),
 	
 	% match doc for restring the search
@@ -374,8 +367,18 @@ delete_overlapping(triple(S,P,V), Ctx,
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% PROPAGATION
+%%%%%%%%% RDFS
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+taxonomical_property(P) :- var(P),!,fail.
+taxonomical_property(Term) :-
+	compound(Term),!,
+	Term =.. [_Functor,Arg],
+	taxonomical_property(Arg).
+taxonomical_property(rdf:type).
+taxonomical_property(rdfs:subClassOf).
+taxonomical_property(rdfs:subPropertyOf).
 
 %%
 unwind_parents(Context, Step) :-
@@ -383,7 +386,6 @@ unwind_parents(Context, Step) :-
 	(	Step=['$unwind', string('$next.p*')]
 	;	Step=['$set', ['next.p', ['$next.p*']]]
 	).
-
 unwind_parents(Context, Step) :-
 	option(ostar, Context),
 	(	Step=['$unwind', string('$next.o*')]
@@ -393,7 +395,7 @@ unwind_parents(Context, Step) :-
 %% set "parents" field by looking up subject+property then yielding o* field
 lookup_parents_property(triple(_,rdf:type,O),           [O,rdfs:subClassOf]).
 lookup_parents_property(triple(_,rdfs:subClassOf,O),    [O,rdfs:subClassOf]).
-lookup_parents_property(triple(_,rdfs:subPropertyOf,O), [O,rdfs:subPropertyOf]).
+lookup_parents_property(triple(_,rdfs:subPropertyOf,P), [P,rdfs:subPropertyOf]).
 lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
 
 %%
@@ -574,16 +576,6 @@ scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
 %%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-taxonomical_property(P) :- var(P),!,fail.
-taxonomical_property(Term) :-
-	compound(Term),!,
-	Term =.. [_Functor,Arg],
-	taxonomical_property(Arg).
-taxonomical_property(rdf:type).
-taxonomical_property(rdfs:subClassOf).
-taxonomical_property(rdfs:subPropertyOf).
 
 %%
 extend_context(triple(_,P,_), P1, Context, Context0) :-
