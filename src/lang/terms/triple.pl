@@ -8,7 +8,6 @@
 */
 
 :- use_module(library('http/json')).
-
 %% triple(?Subject, ?Property, ?Value) is nondet.
 %
 % Query values of a property on some subject in the triple DB.
@@ -80,23 +79,45 @@ read_data(Stream,[TriplesDict | Rest]):-
 	read_data(Stream,Rest).
 
 assert_triple_data(Triples) :-
-	is_dict(Triples),!,
+    is_dict(Triples),!,
 	get_dict(s, Triples, S),
 	get_dict(p, Triples, P),
 	get_dict(o, Triples, O),
-	(is_dict(O) ->
-	findall(Value, (Value = O.Key), Values),
-	member(Object, Values),
-	atom_string(O_atom,Object);
-	atom_string(O_atom, O)),
+	triple_json_scope(Triples,Scope),
+	triple_json_object(O,O_value),
 	atom_string(S_atom, S),
 	atom_string(P_atom, P),
-	tell(triple(S_atom, P_atom, O_atom)).
+	tripledb_tell(S_atom, P_atom, O_value, Scope).
 
 assert_triple_data(TriplesList) :-
     %handle case when given triples are list
     is_list(TriplesList),!,
     forall(member(X,TriplesList), assert_triple_data(X)).
+
+%% triple_json_object(+Dict,-O) is semidet.
+triple_json_object(Dict,O) :-
+    % if Dict is dictionary
+    is_dict(Dict),!,
+    get_dict('$numberDecimal', Dict, Json_Object),
+    (	atom(Json_Object)   -> atom_number(Json_Object,O)
+    ;	string(Json_Object) -> number_string(O,Json_Object)
+    ;	O is Json_Object
+    ).
+
+triple_json_object(O,O).
+
+triple_json_scope(Triples,Scope) :-
+    % check if 'since' and 'until' are part of triple, if not then create universal scope(0 to Inf)
+    get_dict(since, Triples, Since),
+	get_dict(until, Triples, Until),!,
+	% check if given 'Since' and 'Until' are numbers
+	(number(Since) -> true; throw(type_error(number, Since))),
+	(number(Until) -> true; throw(type_error(number, Until))),
+	time_scope(Since, Until, Scope).
+
+triple_json_scope(_Triples,Scope) :-
+    % create universal scope when either of 'since' or 'until' are not provided in triple
+    universal_scope(Scope).
 
      /*******************************
      *	    UNIT TESTS	     		    *
