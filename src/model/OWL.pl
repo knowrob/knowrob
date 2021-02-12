@@ -432,7 +432,7 @@ disjoint_with_direct(A,B) ?>
 %%
 disjoint_with_indirect(A,B) ?>
 	% ground(A),
-	triple(A, rdfs:subClassOf, include_parents(SupA)),
+	triple(A, transitive(rdfs:subClassOf), SupA),
 	disjoint_with_direct(SupA, SupB),
 %	triple(B, reflexive(rdfs:subClassOf), SupB).
 	(	var(B) -> B=SupB

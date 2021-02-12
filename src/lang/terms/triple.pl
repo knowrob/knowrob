@@ -57,12 +57,12 @@ query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-
 %
 compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), [P1,O1], Ctx, Ctx0),
+	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
-		(	lookup_triple(triple(S,P1,O1), Ctx0, Step)
+		(	lookup_triple(triple(S,P1,O), Ctx0, Step)
 		% compute the intersection of scope so far with scope of next document
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
@@ -73,7 +73,7 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		% these can be unwinded to yield a solution for each parent.
 		;	unwind_parents(Ctx0, Step)
 		% project new variable groundings
-		;	set_triple_vars(S,P1,O1,Ctx0,Step)
+		;	set_triple_vars(S,P1,O,Ctx0,Step)
 		% remove next field again
 		;	Step=['$unset',string('next')]
 		),
@@ -87,20 +87,22 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 %
 compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), [P1,O1], Ctx, Ctx0),
+	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	option(graph(Graph), Ctx0, user),
 	option(scope(Scope), Ctx0),
 	time_scope_data(Scope, [Since,Until]),
 	% input validation
-	query_compiler:all_ground([S,O1], Ctx),
+	query_compiler:all_ground([S,O], Ctx),
 	% strip the value, assert that operator must be $eq
 	query_compiler:var_key_or_val(S, Ctx, S_query),
-	query_compiler:var_key_or_val(O1, Ctx, V_query),
-	% build triple docuemnt
+	query_compiler:var_key_or_val(O, Ctx, V_query),
+	% special handling for RDFS semantic
 	% FIXME: with below code P can not be inferred in query
-	% TODO: do all docs have o*?
-	once(pstar_value(P1, Pstar)),
-	once(ostar_value(P1, V_query, Ostar)),
+	(	taxonomical_property(P1)
+	->	( Pstar=array([string(P1)]), Ostar=string('$parents') )
+	;	( Pstar=string('$parents'),  Ostar=array([V_query]) )
+	),
+	% build triple docuemnt
 	TripleDoc=[
 		['s', S_query], ['p', string(P1)], ['o', V_query],
 		['p*', Pstar], ['o*', Ostar],
@@ -125,7 +127,7 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 		% and toggle their delete flag to true
 		;	delete_overlapping(triple(S,P,O), Ctx0, Step)
 		% lookup parent documents into the 'parents' field
-		;	lookup_parents(triple(S,P1,O1), Ctx0, Step)
+		;	lookup_parents(triple(S,P1,O), Ctx0, Step)
 		% update v_scope.time.since
 		;	reduce_num_array(string('$next'), SinceOp,
 				'scope.time.since', 'v_scope.time.since', Step)
@@ -142,18 +144,6 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 		),
 		Pipeline
 	).
-
-%%
-pstar_value(rdf:type,           array([string(rdf:type)])).
-pstar_value(rdfs:subClassOf,    array([string(rdfs:subClassOf)])).
-pstar_value(rdfs:subPropertyOf, array([string(rdfs:subPropertyOf)])).
-pstar_value(_,                  string('$parents')).
-
-%%
-ostar_value(rdf:type,           _, string('$parents')).
-ostar_value(rdfs:subClassOf,    _, string('$parents')).
-ostar_value(rdfs:subPropertyOf, _, string('$parents')).
-ostar_value(_,                  O, array([O])).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
@@ -587,12 +577,16 @@ scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 
 %%
 taxonomical_property(P) :- var(P),!,fail.
+taxonomical_property(Term) :-
+	compound(Term),!,
+	Term =.. [_Functor,Arg],
+	taxonomical_property(Arg).
 taxonomical_property(rdf:type).
 taxonomical_property(rdfs:subClassOf).
 taxonomical_property(rdfs:subPropertyOf).
 
 %%
-extend_context(triple(_,P,O), [P1,O1], Context, Context0) :-
+extend_context(triple(_,P,_), P1, Context, Context0) :-
 	% get the collection name
 	(	option(collection(Coll), Context)
 	;	mng_get_db(_DB, Coll, 'triples')
@@ -602,13 +596,11 @@ extend_context(triple(_,P,O), [P1,O1], Context, Context0) :-
 	% indicate that the property is transitive which will then
 	% generate an additional step in the aggregate pipeline.
 	strip_property_modifier(P,P_opts,P1),
-	strip_object_modifier(O,O_opts,O1),
 	% extend the context
 	% NOTE: do not use findall here to keep var references in Context valid
 	bagof(Opt,
 		(	Opt=property(P1)
 		;	Opt=collection(Coll)
-		;	member(Opt, O_opts)
 		;	member(Opt, P_opts)
 		;	member(Opt, Context)
 		),
@@ -633,26 +625,13 @@ set_triple_vars(S, P, O, Ctx, ['$set', ProjectDoc]) :-
 	ProjectDoc \= [].
 
 %%
-strip_modifier(Term, Stripped) :-
-	strip_object_modifier(Term, _, Stripped0),
-	strip_property_modifier(Stripped0, _, Stripped).
-
-%%
-strip_object_modifier(Var,[],Var) :- var(Var), !.
-strip_object_modifier(Term,[X|Xs],Stripped) :-
-	strip_object_modifier1(Term,X,Term0), !,
-	strip_object_modifier(Term0,Xs,Stripped).
-strip_object_modifier(Stripped,[],Stripped).
-
-strip_object_modifier1(include_parents(X), ostar, X).
-
-%%
 strip_property_modifier(Var,[],Var) :- var(Var), !.
 strip_property_modifier(Term,[X|Xs],Stripped) :-
 	strip_property_modifier1(Term,X,Term0), !,
 	strip_property_modifier(Term0,Xs,Stripped).
 strip_property_modifier(Stripped,[],Stripped).
 
+strip_property_modifier1(transitive(X),      ostar,      X) :- taxonomical_property(X),!.
 strip_property_modifier1(transitive(X),      transitive, X).
 strip_property_modifier1(reflexive(X),       reflexive,  X).
 strip_property_modifier1(include_parents(X), pstar,      X).
