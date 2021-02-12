@@ -20,10 +20,12 @@
 :- op(1100, xfx, user:(?+>)).
 
 :- use_module(library('semweb/rdf_db'),
-	[ rdf_global_term/2 ]).
+	[ rdf_global_term/2, rdf_meta/1 ]).
 :- use_module('scope',
     [ current_scope/1, universal_scope/1 ]).
 :- use_module('compiler').
+
+:- rdf_meta(test_command(t,?,t)).
 
 % fallback graph for tell/forget
 :- dynamic default_graph/1.

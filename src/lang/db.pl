@@ -39,6 +39,15 @@
 :- multifile collection_name/1.
 
 %%
+annotation_property('http://www.w3.org/2000/01/rdf-schema#comment').
+annotation_property('http://www.w3.org/2000/01/rdf-schema#seeAlso').
+annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
+
+%%
+is_annotation_triple(triple(_,P,_)) :-
+	once(annotation_property(P)).
+
+%%
 setup_collection(Name, Indices) :-
 	assertz(collection_data_(Name, Indices)),
 	create_indices(Name, Indices).
@@ -258,13 +267,21 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	% debug how long loading takes
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
+	% NOTE: annotations are stored in a separate collection.
+	%       the reason is that we create a search index over the value
+	%       of a triple, and that mongo cannot generate such an index
+	%       over values with special characters.
+	exclude(is_annotation_triple, Terms, DataTerms),
+	% TODO: handle annotation properties.
+	%       currently they are entirely ignored.
+	%include(is_annotation_triple, Terms, AnnotationTerms),
 	% FIXME: BUG: o* for subClassOf only includes direct super class
 	%             when loading a list of triples at once.
 	%             this does not seem to occur when loading each triple
 	%             individually.
 	%lang_query:tell(Terms, Scope, [graph(Graph)]),
 	forall(
-		member(Term, Terms),
+		member(Term, DataTerms),
 		lang_query:tell(Term, Scope, [graph(Graph)])
 	),
 	get_time(Time1),

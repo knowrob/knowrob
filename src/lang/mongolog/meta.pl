@@ -102,7 +102,9 @@ query_compiler:step_compile(
 	findall(Step,
 		query_compiler:lookup_next_unwind(Terminals,
 			Prefix, Suffix, Ctx, Step),
-		Pipeline).
+		Pipeline),
+	% the inner goal of limit is not satisfiable if Pipeline==[]
+	Pipeline \== [].
 
 %% call(:Goal)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.

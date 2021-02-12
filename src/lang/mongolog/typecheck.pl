@@ -27,6 +27,7 @@ query_compiler:step_compile(ground(Arg), Ctx, []) :-
 
 query_compiler:step_compile(ground(Arg), Ctx, Pipeline) :-
 	query_compiler:var_key_or_val(Arg, Ctx, Arg0),
+	% FIXME: ground(ListVar) seems broken
 	findall(Step,
 		(	Step=['$set', ['t_term', Arg0]]
 		% fail if t_term is a variable

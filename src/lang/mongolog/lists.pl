@@ -20,7 +20,6 @@
 %
 query_compiler:step_expand(member(Elem, List), Expanded, Context) :-
 	query_expand((
-		ground(List),
 		% get size of list
 		length(List, Size),
 		Size0 is Size - 1,

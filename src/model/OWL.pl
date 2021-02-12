@@ -54,8 +54,7 @@
 	[ rdf_register_ns/3, rdf_equal/2 ]).
 :- use_module(library('lang/db'),
 	[ load_owl/2 ]).
-:- use_module('RDFS',
-	[ has_type/2, rdf_list/2 ]).
+:- use_module('RDFS').
 
 % load OWL model
 :- load_owl('http://www.w3.org/2002/07/owl.rdf',
@@ -435,6 +434,7 @@ disjoint_with_indirect(A,B) ?>
 	% ground(A),
 	triple(A, rdfs:subClassOf, include_parents(SupA)),
 	disjoint_with_direct(SupA, SupB),
+%	triple(B, reflexive(rdfs:subClassOf), SupB).
 	(	var(B) -> B=SupB
 	;	triple(B, rdfs:subClassOf, SupB)
 	).
@@ -468,11 +468,11 @@ disjoint_with(A,B) ?>
 %%
 % Allow OWL descriptions in subclass_of expressions.
 %
-subclass_of(Class, Descr) ?>
-	pragma(is_owl_term(Descr)),
-	ground(Class),
-	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
-	has_description(SuperClass, Descr).
+%subclass_of(Class, Descr) ?>
+%	pragma(is_owl_term(Descr)),
+%	ground(Class),
+%	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
+%	has_description(SuperClass, Descr).
 
 %%
 instance_of_description(S, value(P,O)) ?>
@@ -496,9 +496,9 @@ instance_of_description(S, Descr) ?>
 %
 % TODO: allow tell(instance_of(S,Descr))
 %
-instance_of(S,Descr) ?>
-	pragma(is_owl_term(Descr)),
-	instance_of_description(S,Descr).
+%instance_of(S,Descr) ?>
+%	pragma(is_owl_term(Descr)),
+%	instance_of_description(S,Descr).
 
 %%
 holds_description(S,P,only(O))      ?+> instance_of(S,only(P,O)).
@@ -512,13 +512,13 @@ holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
 %%
 % Allow OWL descriptions in holds expressions.
 %
-holds(S,P,O) ?>
-	pragma(\+ is_owl_term(O)),
-	instance_of_description(S, value(P,O)).
-
-holds(S,P,Descr) ?+>
-	pragma(is_owl_term(Descr)),
-	holds_description(S,P,Descr).
+%holds(S,P,O) ?>
+%	pragma(\+ is_owl_term(O)),
+%	instance_of_description(S, value(P,O)).
+%
+%holds(S,P,Descr) ?+>
+%	pragma(is_owl_term(Descr)),
+%	holds_description(S,P,Descr).
 
 
 %% is_a(+Resource,?Type) is nondet.

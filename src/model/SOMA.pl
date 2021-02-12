@@ -30,6 +30,7 @@
 	  action_paused(r),
 	  action_pending(r),
 	  action_cancelled(r),
+	  event_interval(r,?,?),
 	  task_effect(r,t),
 	  has_kinematics_file(r,?,?),
 	  has_process_role(r,r),
@@ -203,6 +204,25 @@ action_pending(Act) ?+>
 %
 action_cancelled(Act) ?+>
 	action_status(Act, soma:'ExecutionState_Cancelled').
+
+%% event_interval(?Event,?Since,?Until) is nondet.
+%
+% Returns the start and end time of an event
+%
+% @param Evt An individual of type dul:'Event'.
+% @param Since begin of the interval
+% @param Until end of the interval
+%
+event_interval(EV, Since, Until) ?>
+	triple(EV, dul:hasTimeInterval, TI),
+	triple(TI, soma:hasIntervalBegin, Since),
+	triple(TI, soma:hasIntervalEnd, Until).
+
+event_interval(EV, Since, Until) +>
+	has_type(TI, dul:'TimeInterval'),
+	triple(EV, dul:hasTimeInterval, TI),
+	triple(TI, soma:hasIntervalBegin, Since),
+	triple(TI, soma:hasIntervalEnd, Until).
 
 %% task_effect(?EventType, ?Effect) is nondet
 %

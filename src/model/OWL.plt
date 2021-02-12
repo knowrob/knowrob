@@ -125,7 +125,7 @@ test('has_property_chain(-,+)') :-
   -> assert_equals(A, test:'t')
   ;  true
   ).
- 
+
 test('has_property_chain(+,-)') :-
   assert_true(has_property_chain(test:'t',_)),
   findall(X, has_property_chain(test:'t',X), List),
@@ -138,7 +138,6 @@ test('has_property_chain(+,-)') :-
   ).
 
 test('has_property_chain(-,-)') :-
-  % Both arguments are unbound
   assert_true(once(has_property_chain(_,_))).
 
 test('is_complement_of(+,+)') :-
@@ -247,9 +246,9 @@ test('is_restriction(+,-)') :-
       is_restriction(A,only(test:'s', test:'Range2'))
   ))).
 
-test('is_restriction(-,-)') :-
-  % Both arguments are unbound
-  assert_true(once(is_restriction(_,_))).
+% TODO
+%test('is_restriction(-,-)', throws(instantiation_error(_))) :-
+%  assert_true(is_restriction(_,_)).
 
 test('is_union_of(+,+)') :-
   assert_true((
@@ -267,7 +266,6 @@ test('is_union_of(+,+)') :-
   assert_false(is_union_of(test:'A',test:'B')).
 
 test('is_union_of(-,+)') :-
-  % Left argument is unbound
   assert_true(is_union_of(_,union_of([test:'E1',test:'E2']))),
   (  is_union_of(Union, union_of([test:'E1',test:'E2']))
   -> assert_true(subclass_of(test:'EUnion', Union))
@@ -275,7 +273,6 @@ test('is_union_of(-,+)') :-
   ).
 
 test('is_union_of(+,-)') :-
-  % Right argument is unbound
   assert_true((subclass_of(test:'EUnion',Union4),is_union_of(Union4,_))),
   assert_true(
     once((
@@ -286,7 +283,6 @@ test('is_union_of(+,-)') :-
   ).
 
 test('is_union_of(-,-)') :-
-  % Both arguments are unbound
   assert_true(once(is_union_of(_,_))).
 
 test('is_intersection_of(+,+)') :-
@@ -305,7 +301,6 @@ test('is_intersection_of(+,+)') :-
   assert_false(is_intersection_of(test:'A',test:'B')).
 
 test('is_intersection_of(-,+)') :-
-  % Left argument is unbound
   assert_true(is_intersection_of(_,intersection_of([test:'C1',test:'C2']))),
   (
     (
@@ -317,7 +312,6 @@ test('is_intersection_of(-,+)') :-
   ).
 
 test('is_intersection_of(+,-)') :-
-  % Right argument is unbound
   assert_true((
     subclass_of(test:'CInter',CInter4),
     is_intersection_of(CInter4,_)
@@ -332,7 +326,6 @@ test('is_intersection_of(+,-)') :-
   ).
 
 test('is_intersection_of(-,-)') :-
-  % Both arguments are unbound
   assert_true(is_intersection_of(_,_)).
 
 test('has_equivalent_class(+,+)') :-
@@ -371,21 +364,20 @@ test('same_as(+,+)') :-
   assert_false(same_as(test:'aIndiv',test:'doesNotExists')).
 
 test('same_as(-,+)') :-
-  % Make sure that there is only one individual (except the individual itself) that is the same as the tested individual
+  % Make sure that there is only one individual (except the individual itself) that
+  % is the same as the tested individual
   findall(X, (same_as(X,test:'aIndiv')), Xs),
   assert_unifies(Xs,[_,_]),
-  % Left argument is unbound
+  %
   assert_true(same_as(_,test:'bIndiv')),
   assert_true(once((same_as(A,test:'aIndiv'),A=test:'bIndiv'))).
 
 test('same_as(+,-)') :-
-  % Right argument is unbound
   assert_true(same_as(test:'aIndiv',_)),
   assert_true(once((same_as(test:'aIndiv',B), test:'bIndiv'=B))).
 
-test('same_as(-,-)') :-
-  % Both arguments are unbound
-  assert_true(same_as(_,_)).
+%test('same_as(-,-)') :-
+%  assert_true(same_as(_,_)).
 
 test('disjoint_with_direct(+,+)::OWL1') :-
   assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain2')),
@@ -437,9 +429,6 @@ test('disjoint_with(+,-)::OWL1') :-
   findall(A, disjoint_with(test:'DisjClsChain2',A), CList),
   assert_equals(CList, [test:'DisjClsChain3',test:'DisjClsChain1']).
 
-test('disjoint_with(-,-)::OWL1') :-
-  assert_true(disjoint_with(_,_)).
-
 test('disjoint_with_direct(+,+)::OWL2') :-
   assert_true(model_OWL:disjoint_with_direct(test:'DisjCls1',test:'DisjCls2')),
   assert_true(model_OWL:disjoint_with_direct(test:'DisjCls3',test:'DisjCls2')),
@@ -466,5 +455,8 @@ test('disjoint_with(-,+)::OWL2') :-
 test('disjoint_with(+,-)::OWL2') :-
   findall(A, disjoint_with(test:'DisjCls1Sub',A), List),
   assert_equals(List, [test:'DisjCls2', test:'DisjCls3']).
+
+test('disjoint_with(-,-)::OWL1') :-
+  assert_true(disjoint_with(_,_)).
 
 :- end_tests(model_OWL).

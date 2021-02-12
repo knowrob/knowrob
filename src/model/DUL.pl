@@ -38,7 +38,6 @@
 	  %          then prefer this over user
 	  %is_process(r),
 	  is_classified_by(r,r),
-	  event_interval(r,?,?),
 	  has_participant(r,r),
 	  has_participant(r,r,r),
 	  executes_task(r,r),
@@ -257,25 +256,6 @@ is_task(Entity) ?+>
 %
 is_process(Entity) ?+>
 	has_type(Entity, dul:'Process').
-
-%% event_interval(?Event,?Since,?Until) is nondet.
-%
-% Returns the start and end time of an event
-%
-% @param Evt An individual of type dul:'Event'.
-% @param Since begin of the interval
-% @param Until end of the interval
-%
-event_interval(EV, Since, Until) ?>
-	triple(EV, dul:hasTimeInterval, TI),
-	triple(TI, soma:hasIntervalBegin, Since),
-	triple(TI, soma:hasIntervalEnd, Until).
-
-event_interval(EV, Since, Until) +>
-	has_type(TI, dul:'TimeInterval'),
-	triple(EV, dul:hasTimeInterval, TI),
-	triple(TI, soma:hasIntervalBegin, Since),
-	triple(TI, soma:hasIntervalEnd, Until).
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %

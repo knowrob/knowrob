@@ -22,11 +22,17 @@
 		'http://knowrob.org/kb/datatype_test#',
 		[keep(true)]).
 
+test('tell(set(C,c), triple(a,b,C))') :-
+	assert_true(lang_query:tell((
+		set(C,g),
+		triple(e,f,C)
+	))).
+
 test('tell triple(a,b,c)') :-
 	assert_true(lang_query:tell(triple(a,b,c))).
 
-test('tell triple(a,b,_)') :-
-	assert_false(lang_query:tell(triple(a,b,_))).
+test('tell triple(a,b,_)', [throws(error(instantiation_error,triple(a,b,_)))]) :-
+	lang_query:tell(triple(a,b,_)).
 
 test('ask triple(a,b,c)') :-
 	assert_true(lang_query:ask(triple(a,b,c))).
@@ -237,5 +243,18 @@ test('triple(+,reflexive(transitive(+)),-)') :-
 	assert_true(member(swrl_tests:'Ernest', Ancestors)),
 	assert_true(member(swrl_tests:'Fred', Ancestors)),
 	assert_true(member(swrl_tests:'Lea', Ancestors)).
+
+test('call(+Triple)') :-
+	lang_query:ask(call(triple(
+		swrl_tests:'Rex',
+		swrl_tests:isParentOf,
+		swrl_tests:'Ernest'))).
+
+test('call_with_context(+Triple,+Context)') :-
+	lang_query:test_command(
+		call_with_context(
+			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Ernest'),
+			[ scope(_{ time: _{ since: =<(Time), until: >=(Time) } }) ]
+		), Time, 999).
 
 :- end_tests('lang_triple').

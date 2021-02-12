@@ -37,6 +37,14 @@
 :- query_compiler:add_command(triple).
 
 %%
+query_compiler:step_vars(triple(S,P,O), Ctx, Vars) :-
+	bagof(Var,
+		(	query_compiler:goal_var([S,P,O], Ctx, Var)
+		;	query_compiler:context_var(Ctx, Var)
+		),
+		Vars).
+
+%%
 query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-
 	(	option(mode(ask), Ctx)
 	->	compile_ask( triple(S,P,O), Ctx, Pipeline)
@@ -68,7 +76,6 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		;	set_triple_vars(S,P1,O1,Ctx0,Step)
 		% remove next field again
 		;	Step=['$unset',string('next')]
-		;	Step=['$unset',string('start')]
 		),
 		Pipeline
 	).
@@ -78,28 +85,31 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 % with overlapping scope which are toggled to be removed in next stage.
 % then the union of their scopes is computed and used for output document.
 %
-compile_tell(triple(S,P,O), Context, Pipeline) :-
+compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
-	extend_context(triple(S,P,O), [P1,O1], Context, Context0),
-	option(graph(Graph), Context0, user),
-	option(scope(Scope), Context0),
+	extend_context(triple(S,P,O), [P1,O1], Ctx, Ctx0),
+	option(graph(Graph), Ctx0, user),
+	option(scope(Scope), Ctx0),
 	time_scope_data(Scope, [Since,Until]),
+	% input validation
+	query_compiler:all_ground([S,O1], Ctx),
 	% strip the value, assert that operator must be $eq
-	mng_strip_variable(O1, V),
-	mng_query_value(V, ['$eq', MngValue]),
+	query_compiler:var_key_or_val(S, Ctx, S_query),
+	query_compiler:var_key_or_val(O1, Ctx, V_query),
 	% build triple docuemnt
+	% FIXME: with below code P can not be inferred in query
 	% TODO: do all docs have o*?
 	once(pstar_value(P1, Pstar)),
-	once(ostar_value(P1, MngValue, Ostar)),
+	once(ostar_value(P1, V_query, Ostar)),
 	TripleDoc=[
-		['s', string(S)], ['p', string(P1)], ['o', MngValue],
+		['s', S_query], ['p', string(P1)], ['o', V_query],
 		['p*', Pstar], ['o*', Ostar],
 		['graph', string(Graph)],
 		['scope', string('$v_scope')]
 	],
 	% configure the operation performed on scopes.
 	% the default is to compute the union of scopes.
-	(	option(intersect_scope, Context)
+	(	option(intersect_scope, Ctx)
 	->	(SinceOp='$max', UntilOp='$min')
 	;	(SinceOp='$min', UntilOp='$max')
 	),
@@ -113,9 +123,9 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 			]]]]]
 		% lookup documents that overlap with triple into 'next' field,
 		% and toggle their delete flag to true
-		;	delete_overlapping(TripleDoc, Context0, Step)
+		;	delete_overlapping(triple(S,P,O), Ctx0, Step)
 		% lookup parent documents into the 'parents' field
-		;	lookup_parents(triple(S,P1,O1), Context0, Step)
+		;	lookup_parents(triple(S,P1,O1), Ctx0, Step)
 		% update v_scope.time.since
 		;	reduce_num_array(string('$next'), SinceOp,
 				'scope.time.since', 'v_scope.time.since', Step)
@@ -127,7 +137,7 @@ compile_tell(triple(S,P,O), Context, Pipeline) :-
 		% add merged triple document to triples array
 		;	array_concat('triples', array([TripleDoc]), Step)
 		;	(	once(must_propagate_tell(P)),
-				propagate_tell(S, Context0, Step)
+				propagate_tell(S, Ctx0, Step)
 			)
 		),
 		Pipeline
@@ -150,47 +160,79 @@ ostar_value(_,                  O, array([O])).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-lookup_triple(triple(S,P,O), Ctx, Step) :-
+lookup_triple(triple(S,P,V), Ctx, Step) :-
 	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
 	memberchk(outer_vars(QueryVars), Ctx),
-	% get query pattern, and variables in term
-	mng_triple_doc(triple(S,P,O), QueryDoc, Ctx),
-	get_triple_vars(S,P,O,Ctx,TripleVars),
-	% match triple pattern _and_ grounded variables (if any)
-	(	lookup_join_vars(TripleVars, QueryVars, MatchDoc)
-	->	Match=['$match', [['$expr', ['$and', array(MatchDoc)]] | QueryDoc ]]
-	;	Match=['$match', QueryDoc]
-	),
-	% append $limit after $match if requested in Context
-	(	member(limit(Limit),Ctx)
-	->	Pipeline=[Match,['$limit',int(Limit)]]
-	;	Pipeline=[Match]
-	),
-	%
+	memberchk(step_vars(StepVars), Ctx),
+	% FIXME: revise below
+	mng_triple_doc(triple(S,P,V), QueryDoc, Ctx),
 	(	memberchk(['s',_],QueryDoc)
 	->	StartValue='$start.s'
 	;	StartValue='$start.o'
 	),
-	% pass input document value to lookup
-	query_compiler:lookup_let_doc(TripleVars, QueryVars, LetDoc),
+	%
+	(	taxonomical_property(P)
+	->	( Key_p='$p',  Key_o='$o*' )
+	;	( Key_p='$p*', Key_o='$o' )
+	),
+	findall(MatchQuery,
+		% first match what is grounded in compile context
+		(	MatchQuery=QueryDoc
+		% next match variables grounded in call context
+		;	(	member([Arg,FieldValue],[[S,'$s'],[P,Key_p],[V,Key_o]]),
+				triple_arg_var(Arg, ArgVar),
+				query_compiler:var_key(ArgVar, Ctx, ArgKey),
+				atom_concat('$$',ArgKey,ArgValue),
+				%% TODO: need to check if key exists?
+				%atom_concat('$',FieldKey,FieldValue),
+				%['$and', array([[FieldKey, ['$exists', bool(true)]], ['$expr', ArgExpr]])]
+				% variables are documents with a "type" field set to "var"
+				atom_concat(ArgValue,'.type',ArgType),
+				triple_arg_value(Arg, ArgValue, FieldValue, Ctx, ArgExpr),
+				MatchQuery=['$expr', ['$or', array([
+					% pass through if var is not grounded
+					['$eq', array([string(ArgType), string('var')])],
+					% else perform a match
+					ArgExpr
+				])]]
+			)
+		;	scope_match(Ctx, MatchQuery)
+		;	graph_match(Ctx, MatchQuery)
+		),
+		MatchQueries
+	),
+	%
+	findall(InnerStep,
+		% match input triples with query pattern
+		(	(	MatchQueries=[FirstMatch]
+			->	InnerStep=['$match', FirstMatch]
+			;	InnerStep=['$match', ['$and', array(MatchQueries)]]
+			)
+		% limit results if requested
+		;	(	member(limit(Limit),Ctx),
+				InnerStep=['$limit',int(Limit)]
+			)
+		),
+		InnerPipeline
+	),
+	% pass input document values to lookup
+	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
 	% lookup matching documents and store in 'next' field
     (	Step=['$lookup', [
 			['from',string(Coll)],
 			['as',string('next')],
 			['let',LetDoc],
-			['pipeline', array(Pipeline)]
+			['pipeline', array(InnerPipeline)]
 		]]
-    % unwind the 'next' field
-    ;	Step=['$unwind',string('$next')]
-	% assign *start* field in case of reflexive property
-	;	(	memberchk(reflexive,Ctx),
-			Step=['$set', ['start', string('$next')]]
-		)
-	% transform next into single-element array
-	;	Step=['$set', ['next', array([string('$next')])]]
 	% add additional results if P is a reflexive property
-	;	reflexivity(StartValue, Ctx, Step)
+	;	(	memberchk(reflexive,Ctx),
+			(	Step=['$unwind',string('$next')]
+			;	Step=['$set', ['start', string('$next')]]
+			;	Step=['$set', ['next', array([string('$next')])]]
+			;	reflexivity(StartValue, Ctx, Step)
+			)
+		)
 	% at this point 'next' field holds an array of matching documents
 	% that is unwinded here.
 	;	Step=['$unwind',string('$next')]
@@ -245,10 +287,10 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 			['as',       string('t_sorted')],
 			['let',      [['t_paths', string('$t_paths')]]],
 			['pipeline', array([
-				['$set', ['t_paths', string('$$t_paths')]],
-				['$unwind', string('$t_paths')],
+				['$set',         ['t_paths', string('$$t_paths')]],
+				['$unwind',      string('$t_paths')],
 				['$replaceRoot', ['newRoot', string('$t_paths')]],
-				['$sort', ['depth', integer(1)]]
+				['$sort',        ['depth', integer(1)]]
 			])]
 		]]
 	;	Step=['$set', ['next', string('$t_sorted')]]
@@ -292,42 +334,26 @@ reflexivity(StartValue, Ctx, Step) :-
 	;	Step=['$set', ['next', ['$concatArrays',
 			array([array([string('$t_refl')]), string('$next')])
 		]]]
-	;	Step=['$unset', string('t_refl')]
+	;	Step=['$unset', array([string('t_refl'),string('start')])]
 	).
 
 %%
-lookup_join_vars(TripleVars, QueryVars, Doc) :-
-	% find all joins with input documents
-	findall([Field_j,Value_j],
-		(	member([Field_j,Value_j], TripleVars),
-			member([Field_j,_], QueryVars)
-		),
-		Joins),
-	% perform the join operation (equals the input document value)
-	findall(['$eq', array([string(Match_key),string(Match_val)])],
-		% { $eq: [ "$s",  "$$R" ] },
-		(	member([Join_var,Join_field],Joins),
-			atom_concat('$',Join_field,Match_key),
-			atom_concat('$$',Join_var,Match_val)
-		),
-		Doc),
-	% make sure list is not empty
-	Doc \== [].
-
-%%
-delete_overlapping(TripleDoc, Context,
+delete_overlapping(triple(S,P,V), Ctx,
 		['$lookup', [
 			['from',string(Coll)],
 			['as',string('next')],
+			['let',LetDoc],
 			['pipeline',array(Pipeline)]
 		]]) :-
-	option(collection(Coll), Context),
+	memberchk(collection(Coll), Ctx),
+	memberchk(outer_vars(QueryVars), Ctx),
+	memberchk(step_vars(StepVars), Ctx),
 	% read triple data
-	memberchk(['s',S], TripleDoc),
-	memberchk(['p',P], TripleDoc),
-	memberchk(['o',O], TripleDoc),
+	query_compiler:var_key_or_val1(P, Ctx, P0),
+	query_compiler:var_key_or_val1(S, Ctx, S0),
+	query_compiler:var_key_or_val1(V, Ctx, V0),
 	% read scope data
-	option(scope(Scope), Context),
+	option(scope(Scope), Ctx),
 	time_scope_data(Scope,[Since,Until]),
 	% set Since=Until in case of scope intersection.
 	% this is to limit to results that do hold at Until timestamp.
@@ -336,15 +362,16 @@ delete_overlapping(TripleDoc, Context,
 	%        with existing docs, which is not wanted.
 	%		 so better remove special handling here?
 	%        but then the until time maybe is set to an unwanted value? 
-	(	option(intersect_scope, Context)
+	(	option(intersect_scope, Ctx)
 	->	Since0=Until
 	;	Since0=Since
 	),
+	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
 	% build pipeline
 	findall(Step,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
-				['s',S], ['p',P], ['o',O],
+				['s',S0], ['p',P0], ['o',V0],
 				['scope.time.since',['$lte',double(Until)]],
 				['scope.time.until',['$gte',double(Since0)]]
 			]]
@@ -469,11 +496,30 @@ mng_triple_doc(triple(S,P,O), Doc, Context) :-
 query_value(In, Out) :-
 	% strip $eq operator not needed in triple query.
 	% this is needed for current handling of regular expression patterns.
+	% FIXME: still needed after $exp fix?
 	mng_query_value(In, X),
 	(	X=['$eq',Y]
 	->	Out=Y
 	;	Out=X
 	).
+
+%%
+triple_arg_var(Arg, ArgVar) :-
+	mng_strip_variable(Arg, X),
+	term_variables(X, [ArgVar]).
+
+%%
+triple_arg_value(_Arg, ArgValue, FieldValue, _Ctx, ['$in',
+		array([ string(ArgValue), string(FieldValue) ])]) :-
+	% FIXME: operators are ignored!!
+	% TODO: can be combined with other operators??
+	atom_concat(_,'*',FieldValue),!.
+	
+triple_arg_value(Arg, ArgValue, FieldValue, _Ctx, [ArgOperator,
+		array([ string(FieldValue), string(ArgValue) ])]) :-
+	mng_strip_variable(Arg, X),
+	mng_strip_operator(X, Operator1, _),
+	mng_operator(Operator1, ArgOperator).
 
 %%
 graph_doc('*', _)    :- !, fail.
@@ -483,7 +529,24 @@ graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 	get_supgraphs(GraphName,Graphs).
 
 %%
+graph_match(Ctx, ['$expr', [Operator,
+		array([ string(GraphValue), ArgVal ])
+	]]) :-
+	option(graph(Graph), Ctx, user),
+	graph_doc(Graph, [GraphKey, Arg]),
+	atom_concat('$',GraphKey,GraphValue),
+	(	(   is_list(Arg), Arg=[Operator,ArgVal])
+	;	(\+ is_list(Arg), Arg=[ArgVal], Operator='$eq')
+	).
+
+%%
 scope_doc(QScope, [Key,Value]) :-
+	scope_doc1(QScope, [Key,Value]),
+	% do not proceed for variables in scope
+	% these are handled later
+	(Value=[_,string(_)] -> fail ; true).
+
+scope_doc1(QScope, [Key,Value]) :-
 	get_dict(ScopeName, QScope, ScopeData),
 	scope_doc(ScopeData, SubPath, Value),
 	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
@@ -498,6 +561,25 @@ scope_doc(Scope, Path, Value) :-
 
 scope_doc(Value, '', Query) :-
 	mng_query_value(Value, Query).
+
+%%
+scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
+	option(scope(Scope), Ctx),
+	findall([Operator, array([string(ScopeValue),string(Val)])],
+		(	scope_doc1(Scope, [ScopeKey,Arg]),
+			atom_concat('$',ScopeKey,ScopeValue),
+			(	(   is_list(Arg), Arg=[Operator,ArgVal])
+			;	(\+ is_list(Arg), Arg=ArgVal, Operator='$eq')
+			),
+			% only proceed for variables in scope
+			% constants are handled earlier
+			ArgVal=string(Val0),
+			atom_concat('$',Val0,Val)
+		),
+		List
+	),
+	List \== [].
+			
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper

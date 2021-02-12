@@ -21,7 +21,7 @@ into aggregate pipelines that can be processed by mongo DB.
 %		- how to handle more complex structures?
 
 :- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1 ]).
+	    [ rdf_meta/1, rdf_global_term/2 ]).
 :- use_module(library('db/mongo/client')).
 
 %% Stores list of terminal terms for each clause. 
@@ -78,15 +78,10 @@ query_tell(Statement, FScope, Options) :-
 %%
 query_(Goal, Context, FScope, Mode) :-
 	% expand goals into terminal symbols
-	query_expand(Goal, Expanded, Mode),
-	%% FIXME BUG in some cases SWIPL replaces variables in the compile step
-	%            below. But it does not happen when running with gtrace,
-	%            and also when adding writeln calls. very strange...
-	%            for some reason it does not appear to happen when doing something
-	%            with the vars here at the toplevel?!?
-	touch_term_vars(Expanded),
+	%query_expand(Goal, Expanded, Mode),
 	% get the pipeline document
-	query_compile(Expanded, pipeline(Doc,Vars), [mode(Mode)|Context]),
+	%query_compile(Expanded, pipeline(Doc,Vars), [mode(Mode)|Context]),
+	query_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope, Mode).
 
@@ -199,15 +194,6 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%%
-
-touch_term_vars(Expanded) :-
-	term_variables(Expanded, ExpandedVars),
-	forall(
-		member(ExpandedVar,ExpandedVars),
-		put_attr(ExpandedVar, test, 1)
-	).
-
 %% query_assert(+Rule) is semidet.
 %
 % Asserts a rule executable in a mongo query.
@@ -293,6 +279,8 @@ query_expand(Terms, Expanded, Mode) :-
 		Exc,
 		log_error_and_fail(lang(Exc, Terms))
 	),
+	comma_list(Buf,Expanded0),
+	comma_list(Buf,Expanded1),
 	% Handle cut after term expansion.
 	% It is important that this is done _after_ expansion because
 	% the cut within the call would yield an infinite recursion
@@ -301,10 +289,10 @@ query_expand(Terms, Expanded, Mode) :-
 	%       done in control.pl where cut operator is implemented but current
 	%       interfaces don't allow to do the following operation in control.pl.
 	%		(without special handling of ',' it could be done, I think)
-	expand_cut(Expanded0, Expanded1),
+	expand_cut(Expanded1, Expanded2),
 	%%
-	(	Expanded1=[One] -> Expanded=One
-	;	Expanded=Expanded1
+	(	Expanded2=[One] -> Expanded=One
+	;	Expanded=Expanded2
 	).
 
 %%
@@ -347,7 +335,8 @@ expand_term_1(Goal, Expanded, Mode) :-
 	;	throw(expansion_failed(Goal,Mode))
 	),
 	% wrap different clauses into ';'
-	semicolon_list(Expanded, TerminalsList).
+	semicolon_list(Goal0, TerminalsList),
+	query_expand(Goal0, Expanded, Mode).
 
 %%
 % Each conjunction with cut operator [X0,...,Xn,!|_]
@@ -379,8 +368,9 @@ expand_cut(Terms,Expanded) :-
 query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
 		query_compile1(Terminals, Doc, []->Vars, Context),
-		Exc,
-		log_error_and_fail(lang(Exc, Terminals))
+		% catch error's, add context, and throw again
+		error(Formal),
+		throw(error(Formal,Terminals))
 	).
 
 %%
@@ -404,7 +394,8 @@ compile_terms([X|Xs], Pipeline, V0->Vn, Context) :-
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_term(Term, Doc, V0->V1, Context) :-
 	% try expansion (maybe the goal was not known during the expansion phase)
-	query_expand(Term, Expanded, ask),
+	option(mode(Mode), Context),
+	query_expand(Term, Expanded, Mode),
 	compile_expanded_terms(Expanded, Doc, V0->V1, Context).
 
 %%
@@ -417,6 +408,10 @@ compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
 	compile_expanded_term(Expanded, Doc0, V0->V1, Context),
 	compile_expanded_terms(Rest, Doc1, V1->Vn, Context),
 	append(Doc0, Doc1, Doc).
+	
+compile_expanded_term(List, Doc, Vars, Context) :-
+	is_list(List),!,
+	compile_expanded_terms(List, Doc, Vars, Context).
 	
 compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
 	% read all variables referred to in Step into list StepVars
@@ -476,16 +471,20 @@ match_equals(X, Exp, Step) :-
 	).
 
 %%
-lookup_let_doc(InnerVars, OuterVars, LetDoc) :-
+lookup_let_doc(InnerVars, _OuterVars, LetDoc) :-
+	% TODO: remove OuterVars argument
 	findall([Key,string(Value)],
 		(	member([Key,_], InnerVars),
-			member([Key,_], OuterVars),
+			% pass on all inner vars as for each of them there is a field
+			% in the outer docment already
+			%member([Key,_], OuterVars),
 			atom_concat('$',Key,Value)
 		),
 		LetDoc).
 
 %%
-lookup_set_vars(InnerVars, OuterVars, SetVars) :-
+lookup_set_vars(InnerVars, _OuterVars, SetVars) :-
+	% TODO: remove OuterVars argument
 	% NOTE: let doc above ensures all vars can be accessed.
 	%       this does also work if the let var was undefined.
 	%       then the set below is basically a no-op.
@@ -500,7 +499,7 @@ lookup_set_vars(InnerVars, OuterVars, SetVars) :-
 	%
 	findall([Y,string(Y0)],
 		(	member([Y,_], InnerVars),
-			member([Y,_], OuterVars),
+			%member([Y,_], OuterVars),
 			atom_concat('$$',Y,Y0)
 		),
 		SetVars).
@@ -564,6 +563,8 @@ lookup_next_unwind(Terminals,
 	% unwind "next" field
 	;	Step=['$unwind',string('$next')]
 	% compute the intersection of scope
+	% TODO: this should be optional, or better not handled here.
+	%        - only if Terminas contains a triple we need to handle scope.
 	;	mng_scope_intersect('v_scope',
 			string('$next.v_scope.time.since'),
 			string('$next.v_scope.time.until'),
@@ -583,6 +584,7 @@ lookup_next_unwind(Terminals,
 set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
 			% FIXME: should be is_var test here or?
+			% or unconditionally set?
 			['$not', array([string(Val)])], % if the field does not exist
 			[['type',string('var')], ['value',string('_')]],
 			string(Val)                     % else write Val into field at Key
@@ -622,6 +624,23 @@ goal_var(Compound, Ctx, Var) :-
 	goal_var(Arg, Ctx, Var).
 
 %%
+context_var(Ctx, [Key,ReferredVar]) :-
+	option(scope(Scope), Ctx),
+	% NOTE: vars are resolved to keys in scope already!
+	%       e.g. `Since == =<(string($v_235472))`
+	time_scope(Since, Until, Scope),
+	member(X, [Since, Until]),
+	mng_strip(X, _, string, Stripped),
+	atom(Stripped),
+	atom_concat('$', Key, Stripped),
+	once((
+		(	option(step_vars(Vars), Ctx)
+		;	option(outer_vars(Vars), Ctx)
+		),
+		member([Key,ReferredVar],Vars)
+	)).
+
+%%
 % Conditional $set command for ungrounded vars.
 %
 set_if_var(X, Exp, Ctx,
@@ -648,6 +667,7 @@ get_var(Term, Ctx, [Key,Var]) :-
 % refer to this variable in mongo queries.
 %
 var_key(Var, Ctx, Key) :-
+	var(Var),
 	(	option(step_vars(Vars), Ctx)
 	;	option(outer_vars(Vars), Ctx)
 	),
@@ -686,6 +706,9 @@ var_key_or_val0(In, Ctx, array(L)) :-
 		),
 		L).
 
+var_key_or_val0(:(NS,Atom), _, _) :-
+	throw(unexpanded_namespace(NS,Atom)).
+
 var_key_or_val0(TypedValue, _Ctx, TypedValue) :-
 	compound(TypedValue),
 	TypedValue =.. [Type|_],
@@ -708,6 +731,14 @@ var_key_or_val0(Term, Ctx, [
 		),
 		Vals).
 
+var_key_or_val1(In, Ctx, Out) :-
+	var_key_or_val(In, Ctx, X),
+	
+	(	(X=string(Str), atom(Str), atom_concat('$',_,Str))
+	->	(X=string(Str), atom_concat('$',Str,Y), Out=string(Y))
+	;	Out=X
+	).
+
 %% in case of atomic in query
 get_constant(Value, double(Value)) :- number(Value).
 get_constant(true,  bool(true)).
@@ -724,6 +755,23 @@ is_referenced(Arg, Ctx) :-
 	option(outer_vars(OuterVars),Ctx),
 	var_key(Arg, Ctx, Key),
 	memberchk([Key,_], OuterVars).
+
+%%
+all_ground(Args, Ctx) :-
+	forall(
+		member(Arg,Args),
+		(	is_instantiated(Arg, Ctx) -> true
+		;	throw(error(instantiation_error))
+		)
+	).
+
+is_instantiated(Arg, Ctx) :-
+	mng_strip_variable(Arg, Arg0),
+	term_variables(Arg0, Vars),
+	forall(
+		member(Var, Vars),
+		query_compiler:is_referenced(Var, Ctx)
+	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper

@@ -19,10 +19,12 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-	[ rdf_register_ns/3 ]).
+	[ rdf_register_ns/3, rdf_meta/1 ]).
 
 :- rdf_register_ns(rdfs,
 	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+
+:- rdf_meta(expand_list(r,t,t)).
 
 %% has_type(+Resource,?Type) is semidet.
 %
@@ -175,9 +177,7 @@ subproperty_of(A,B) ?+>
 	triple(A, rdfs:subPropertyOf, B).
 
 %%
-expand_list(
-		'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',
-		[], []) :- !.
+expand_list(rdf:nil, [], []) :- !.
 
 expand_list(This, [Child|Rest],
 		[	triple(This, rdf:first, Child),

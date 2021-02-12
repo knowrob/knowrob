@@ -12,6 +12,10 @@
 :- use_module(library('lang/scope'),
 		[ time_scope/3, universal_scope/1 ]).
 
+:- multifile during/2.
+:- multifile since/2.
+:- multifile until/2.
+
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
 :- op(800, yfx, user:until).
@@ -165,7 +169,6 @@ until(Statement, Instant) +>
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
-
 
 test('during can be asserted and queried') :-
 	assert_true(lang_query:tell(

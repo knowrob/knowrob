@@ -32,10 +32,15 @@ query_compiler:step_expand(not(Goal), Expanded, Mode) :-
 % the backslash (\) is normally used to indicate negation in Prolog).
 %
 query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
+	query_expand(Goal, GoalExpanded, Mode),
+	Expanded = (
+		findall([], once(GoalExpanded), L),
+		length(L,0)
+	).
 	% another way to write it:
 	%Rewritten=((call(Goal),!,fail) ; true),
-	Rewritten=(findall([], once(Goal), L), length(L,0)),
-	query_expand(Rewritten, Expanded, Mode).
+%	Rewritten=(findall([], once(Goal), L), length(L,0)),
+%	query_expand(Rewritten, Expanded, Mode).
 
 %% :Condition -> :Action
 % If-then and If-Then-Else.
