@@ -75,12 +75,12 @@ void MongoCursor::aggregate(const PlTerm &query_term)
 	if(!bsonpl_concat(query_, query_term, &err)) {
 		throw MongoException("invalid_term",err);
 	}
-//	else {
-//		size_t len;
-//		char *str = bson_as_canonical_extended_json (query_, &len);
-//		std::cout << str << std::endl;
-//		bson_free (str);
-//	}
+	else {
+		size_t len;
+		char *str = bson_as_canonical_extended_json (query_, &len);
+		std::cout << str << std::endl;
+		bson_free (str);
+	}
 }
 
 bool MongoCursor::next(const bson_t **doc, bool ignore_empty)

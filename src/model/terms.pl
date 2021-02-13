@@ -76,15 +76,16 @@ lang_temporal:until(Query, Event) ?>
 
 test('during(occurs(+),+Interval)') :-
 	assert_true(occurs(test:'Short4') during [1377777009, 1377777011]),
+	nl,nl,nl,
 	assert_false(occurs(test:'Short4') during [1377777001, 1377777004]).
 
-test('during(occurs(+),+Event)') :-
-	assert_true(occurs(test:'Short1') during test:'Short1'),
-	assert_true(occurs(test:'Long') during test:'Short1'),
-	assert_true(occurs(test:'Long') during test:'Short3'),
-	assert_true(occurs(test:'Long') during test:'Short4'),
-	assert_false(occurs(test:'Short1') during test:'Short3'),
-	assert_false(occurs(test:'Short1') during test:'Short4').
+%test('during(occurs(+),+Event)') :-
+%	assert_true(occurs(test:'Short1') during test:'Short1'),
+%	assert_true(occurs(test:'Long') during test:'Short1'),
+%	assert_true(occurs(test:'Long') during test:'Short3'),
+%	assert_true(occurs(test:'Long') during test:'Short4'),
+%	assert_false(occurs(test:'Short1') during test:'Short3'),
+%	assert_false(occurs(test:'Short1') during test:'Short4').
 
 %test('tell(during(occurs(+),+Event))') :-
 %	assert_true(tell(occurs(test:'Event6') during test:'Time_Long')),
