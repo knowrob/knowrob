@@ -590,14 +590,13 @@ lookup_next_unwind(Terminals,
 %
 set_next_vars(InnerVars, ['$set', [Key,
 		['$cond',array([
-			% FIXME: should be is_var test here or?
-			% or unconditionally set?
-			['$not', array([string(Val)])], % if the field does not exist
-			[['type',string('var')], ['value',string('_')]],
-			string(Val)                     % else write Val into field at Key
+			['$not', array([string(NewVal)])], % if the field does not exist in 'next'
+			string(OldVal),                    % set the field to its current value
+			string(NewVal)                     % else overwrite with value in next
 		])]]]) :-
 	member([Key,_], InnerVars),
-	atom_concat('$next.',Key,Val).
+	atom_concat('$',Key,OldVal),
+	atom_concat('$next.',Key,NewVal).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries

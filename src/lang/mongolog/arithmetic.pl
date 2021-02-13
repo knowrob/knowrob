@@ -1,6 +1,8 @@
 :- module(lang_arithmetic, []).
 
 :- use_module(library('lang/compiler')).
+:- use_module(library('db/mongo/client'),
+		[ mng_strip_operator/3 ]).
 
 %% query commands
 :- query_compiler:add_command(is).
@@ -82,7 +84,7 @@ expression(Var, Ctx, string(VarValue)) :-
 	atom_concat('$',Key,VarValue).
 %% functions
 expression(Exp, Ctx, Doc) :-
-	compound(Exp),!,
+	compound(Exp),
 	Exp =.. [Functor|Args],
 	expression_function(Functor, Operator),
 	findall(Out,
@@ -95,6 +97,10 @@ expression(Exp, Ctx, Doc) :-
 	->	Doc=[Operator, Single]
 	;	Doc=[Operator, array(SubDocs)]
 	).
+%% typed values
+expression(Exp, _, Exp) :-
+	compound(Exp),
+	Exp =.. [_Type,_Val].
 %% constant values
 expression(Val, _Ctx, double(Val)) :- number(Val),!.
 %% named constants
