@@ -134,10 +134,9 @@ format_doc([X-Y0|Rest0], [[X,Y1]|Rest1]) :-
 format_doc(X, X).
 
 %%
-bulk_operation(Doc, remove([['filter', Selector]])) :-
+bulk_operation(Doc, remove([['_id',id(ID)]])) :-
 	memberchk(['delete',bool(Val)],Doc),!,
 	memberchk(['_id',id(ID)],Doc),
-	Selector=[['_id',id(ID)]],
 	once((Val==true ; Val==1)).
 
 bulk_operation(Doc0, update(Selector,['$set', Update])) :-
