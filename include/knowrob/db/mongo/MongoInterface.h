@@ -38,6 +38,8 @@ public:
 	
 	void remove(const char *db_name, const char *coll_name, const PlTerm &doc_term);
 	
+	void bulk_write(const char *db_name, const char *coll_name, const PlTerm &doc_term);
+
 	void create_index(const char *db_name, const char *coll_name, const PlTerm &keys_term);
 	
 	

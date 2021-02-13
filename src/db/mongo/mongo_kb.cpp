@@ -82,6 +82,13 @@ PREDICATE(mng_update, 4) {
 	return TRUE;
 }
 
+PREDICATE(mng_bulk_write, 3) {
+	char* db_name   = (char*)PL_A1;
+	char* coll_name = (char*)PL_A2;
+	MongoInterface::get().bulk_write(db_name,coll_name,PL_A3);
+	return TRUE;
+}
+
 PREDICATE(mng_index_create_core, 3) {
 	char* db_name   = (char*)PL_A1;
 	char* coll_name = (char*)PL_A2;

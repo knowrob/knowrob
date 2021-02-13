@@ -7,11 +7,7 @@
 :- use_module(library('lang/db')).
 :- use_module(library('lang/compiler')).
 
-:- rdf_meta(ask_annotation(t,t,t,t,-)).
-
-% TODO: language handling.
-%	- e.g. DUL has comments in different langs
-%
+:- rdf_meta(query_annotation(+,r,+,+,-)).
 
 %%
 % register the "annotations" collection.
@@ -20,76 +16,123 @@
 :- setup_collection(annotations,
 		[['s'], ['p'], ['s','p']]).
 
-%% register query command
-:- query_compiler:add_command(comment).
+%% query commands
+:- query_compiler:add_command(annotation).
 
-%%
-% ask(comment(Entity, Comment)) looks up the comment
-% of entities. These are stored in a separate collection
-% to avoid generating a regular index over the comment values. 
+%% annotation(+Entity, +Property, -Annotation)
 %
-query_compiler:step_compile(comment(S, C), Ctx, Pipeline) :-
-	ask_annotation(S, rdfs:comment, C, Ctx, Pipeline).
+query_compiler:step_compile(
+		annotation(Entity, Property, Annotation),
+		Ctx, Pipeline) :-
+	query_annotation(Entity, Property, Annotation, Ctx, Pipeline).
 
 %% 
-ask_annotation(Entity, Property, Comment, Context, Pipeline) :-
+query_annotation(Entity, Property, Annotation, Ctx, Pipeline) :-
+	option(mode(ask),Ctx),!,
+	option(outer_vars(QueryVars), Ctx),
+	option(step_vars(StepVars),   Ctx),
+	% throw instantiation_error if one of the arguments was not referred to before
+	query_compiler:all_ground([Entity, Property], Ctx),
 	% get the DB collection
 	mng_get_db(_DB, Coll, 'annotations'),
-	% extend the context
-	Context0 = [collection(Coll)|Context],
+	query_compiler:var_key_or_val(Annotation,  Ctx, Annotation0),
+	query_compiler:var_key_or_val1(Entity,     Ctx, Entity0),
+	query_compiler:var_key_or_val1(Property,   Ctx, Property0),
+	% pass input document values to lookup
+	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% look-up comments into 'next' field
-		(	lookup_(Entity, Property,
-				Comment, Context0, Step)
+		(	Step=['$lookup', [
+				['from', string(Coll)],
+				['as', string('next')],
+				['let', LetDoc],
+				['pipeline', array([['$match', [
+					[s, Entity0],
+					[p, Property0]
+				]]])]
+			]]
+		% unwind lookup results and assign variable
 		;	Step=['$unwind',string('$next')]
-		% set variable field
-		;	set_result_(Context0, Context0, Step)
-		% remove next field
+		;	query_compiler:set_if_var(Annotation, string('$next.v'), Ctx, Step)
+		;	query_compiler:match_equals(Annotation0, string('$next.v'), Step)
 		;	Step=['$unset',string('next')]
 		),
 		Pipeline
 	).
 
-%%
-% TODO: support tell(comment)
-% tell(comment(Entity, Comment)) adds a comment to an entity.
-% comments may contain special characters.
-%
-%tell_annotation(Entity, Property, Comment, Context, Pipeline) :-
-%	annotation_db(DB,Coll),
-%	once((	Annotation=string(Stripped)
-%	;		Annotation=Stripped
-%	)),
-%	% TODO: add another field for language?
-%	once((	Stripped=lang(_,Stripped0)
-%	;		Stripped=Stripped0
-%	)),
-%	% enforce UTF8 encoding
-%	atom_codes(Stripped0, Codes),
-%	phrase(utf8_codes(Codes), UTF8),
-%	% finally write to DB
-%	mng_store(DB,Coll,[
-%		['s', string(Entity)],
-%		['p', string(Property)],
-%		['v', string(UTF8)]
-%	]).
-
-%% 
-lookup_(Entity, Property, Comment, Context, Step) :-
-	% get filter for Entity/Property
-	findall(X,
-		(	( ground(Entity),   X=['s',string(Entity)] )
-		;	( ground(Property), X=['p',string(Property)] )
-		),
-		QueryDoc),
-	% we can use generator for triple command here
-	lang_triple:lookup_1(
-		triple(Entity, Property, Comment),
-		QueryDoc, Context, Step).
+query_annotation(Entity, Property, Annotation, Ctx,
+		[['$set', ['annotations', ['$setUnion',
+			array([string('$annotations'),array([[
+				['s', Entity0],
+				['p', Property0],
+				['v', Annotation0]
+			]])])
+		]]]]) :-
+	option(mode(tell),Ctx),!,
+	mng_strip_type(Annotation, _, UnTyped),
+	% only load annotations written in English
+	strip_lang(UnTyped, en, Stripped),
+	% enforce UTF8 encoding
+	utf8_value(Stripped, Annotation_en),
+	% throw instantiation_error if one of the arguments was not referred to before
+	query_compiler:all_ground([Entity, Property, Annotation_en], Ctx),
+	% resolve arguments
+	query_compiler:var_key_or_val(Entity,         Ctx, Entity0),
+	query_compiler:var_key_or_val(Property,       Ctx, Property0),
+	query_compiler:var_key_or_val(Annotation_en,  Ctx, Annotation0).
 
 %%
-set_result_(Comment, Ctx,
-		['$set', [Key, string('$next.v')]]) :-
-	mng_strip_type(Comment,_,Var),
-	query_compiler:var_key(Var, Ctx, Key).
+utf8_value(Atom, string(UTF8)) :-
+	atom(Atom),!,
+	atom_codes(Atom, Codes),
+	phrase(utf8_codes(Codes), UTF8).
+utf8_value(X, string(X)).
+
+%%
+strip_lang(Var, en, Var) :- var(Var), !.
+strip_lang(lang(Lang,Val), Lang, Val) :- !.
+strip_lang(Val, en, Val).
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+test_cleanup :-
+	mng_get_db(DB, Coll, 'annotations'),
+	mng_remove(DB, Coll, [[s,string(e)]]),
+	mng_remove(DB, Coll, [[s,string(a)]]).
+
+:- begin_tests('lang_annotation',
+		[ cleanup(lang_annotation:test_cleanup) ]).
+
+test('tell(set(C,c), annotation(+,+,+))') :-
+	assert_true(lang_query:tell((
+		set(C,g),
+		annotation(e,f,C)
+	))).
+
+test('tell(annotation(+,+,+))') :-
+	assert_true(lang_query:tell(annotation(a,b,c))).
+
+test('tell(annotation(+,+,-))', [throws(error(instantiation_error,annotation(a,b,_)))]) :-
+	lang_query:tell(annotation(a,b,_)).
+
+test('annotation(+,+,-)') :-
+	lang_query:ask(annotation(a,b,C)),
+	assert_equals(C,c).
+
+test('annotation(+,+,+)') :-
+	assert_true(lang_query:ask(annotation(a,b,c))),
+	assert_false(lang_query:ask(annotation(a,b,d))).
+
+test('annotation(-,+,+)', [throws(error(instantiation_error,annotation(_,b,c)))]) :-
+	lang_query:ask(annotation(_,b,c)).
+
+test('annotation(+,-,+)', [throws(error(instantiation_error,annotation(a,_,c)))]) :-
+	lang_query:ask(annotation(a,_,c)).
+
+test('annotation(-,+,-)', [throws(error(instantiation_error,annotation(_,b,_)))]) :-
+	lang_query:ask(annotation(_,b,_)).
+
+:- end_tests('lang_annotation').

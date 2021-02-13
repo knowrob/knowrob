@@ -14,12 +14,6 @@ into aggregate pipelines that can be processed by mongo DB.
 @license BSD
 */
 
-% TODO: recursion in rules
-%		- transitive(triple) performs recursive $graphLookup
-%		- $graphLookup has limits, what exactly are these?
-%		- how to handle transitive chains i.e. transitive(p1 o ... o pn)?
-%		- how to handle more complex structures?
-
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1, rdf_global_term/2 ]).
 :- use_module(library('db/mongo/client')).
@@ -77,10 +71,7 @@ query_tell(Statement, FScope, Options) :-
 
 %%
 query_(Goal, Context, FScope, Mode) :-
-	% expand goals into terminal symbols
-	%query_expand(Goal, Expanded, Mode),
 	% get the pipeline document
-	%query_compile(Expanded, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	query_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope, Mode).
@@ -109,16 +100,51 @@ query_2(ask, Cursor, Vars, FScope) :-
 
 query_2(tell, Cursor, _Vars, _FScope) :-
 	!,
-	% first, run the query.
-	% NOTE: tell cannot materialize the cursor
-	% because there are no output documents (due to $merge command)
-	mng_cursor_run(Cursor),
-	% second, remove all documents that have been flagged by the aggregate pipeline.
-	% this is needed because it seems not possible to merge+delete
-	% in one pipeline, so the first pass just tags the documents
-	% that need to be removed.
-	mng_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, ['delete', bool(true)]).
+	% run the query, the result document
+	% contains arrays of triples/annotations that will be added
+	% in a second stage.
+	% The reason this is needed is that $merge cannot modify
+	% different collections in one query.
+	mng_cursor_materialize(Cursor, Result),
+	assert_documents(Result, 'triples'),
+	assert_documents(Result, 'annotations').
+
+%%
+assert_documents(Result, Key) :-
+	mng_get_dict(Key, Result, Docs),
+	assert_documents1(Docs, Key).
+
+assert_documents1(array([]), _) :- !.
+assert_documents1([], _) :- !.
+assert_documents1(array(Docs), Key) :-
+	% NOTE: the mongo client currently return documents as pairs A-B instead of
+	%       [A,B] which is required as input.
+	% TODO: make the client return docs in a format that it accepts as input.
+	maplist(format_doc, Docs, Docs0),
+	maplist(bulk_operation, Docs0, BulkOperations),
+	mng_get_db(DB, Coll, Key),
+	mng_bulk_write(DB, Coll, BulkOperations).
+
+%%
+format_doc([], []) :- !.
+format_doc([X-Y0|Rest0], [[X,Y1]|Rest1]) :-
+	!,
+	format_doc(Y0,Y1),
+	format_doc(Rest0,Rest1).
+format_doc(X, X).
+
+%%
+bulk_operation(Doc, remove([['filter', Selector]])) :-
+	memberchk(['delete',bool(Val)],Doc),!,
+	memberchk(['_id',id(ID)],Doc),
+	Selector=[['_id',id(ID)]],
+	once((Val==true ; Val==1)).
+
+bulk_operation(Doc0, update(Selector,['$set', Update])) :-
+	select(['_id',id(ID)],Doc0,Update),!,
+	Selector=[['_id',id(ID)]].
+
+bulk_operation(Doc, insert(Doc)).
 
 %%
 % read accumulated fact scope and
@@ -377,7 +403,10 @@ query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 query_compile1(Terminals, Doc, Vars, Context) :-
 	compile_terms(Terminals, Doc0, Vars, Context),
 	(	memberchk(mode(ask), Context) -> Doc=Doc0
-	;	compile_tell(Doc0, Doc)
+	;	Doc=[['$set',[
+			['triples',array([])],
+			['annotations',array([])]]]|
+			Doc0]
 	).
 
 %%
@@ -437,27 +466,6 @@ compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
 		Context, InnerContext),
 	% and finall compile expanded terms
 	once(step_compile(Expanded, InnerContext, Doc)).
-
-%%
-compile_tell(Doc0, Doc1) :-
-	% tell merges into triples DB
-	mng_get_db(_DB, Coll, 'triples'),
-	% append some steps to Doc0
-	findall(Step,
-		% create an empty array in 'triples' field
-		(	Step=['$set',['triples',array([])]]
-		% draw steps from language expression
-		;	member(Step,Doc0)
-		% the "triples" field holds an array of documents to be merged
-		;	Step=['$unwind',string('$triples')]
-		% make unwinded triple root of the document
-		;	Step=['$replaceRoot',['newRoot',string('$triples')]]
-		% merge document into triples collection
-		% NOTE: $merge must be last step
-		;	Step=['$merge',string(Coll)]
-		),
-		Doc1
-	).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% QUERY DOCUMENTS

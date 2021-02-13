@@ -7,6 +7,7 @@
  */
 
 #include "knowrob/db/mongo/bson_pl.h"
+#include "knowrob/db/mongo/MongoException.h"
 #include <sstream>
 #include <iostream>
 
@@ -55,7 +56,12 @@ static bool bson_visit_oid(const bson_iter_t *iter, const char *key, const bson_
 
 static bool bson_visit_bool(const bson_iter_t *iter, const char *key, bool v_bool, void *data)
 {
-	return APPEND_BSON_PL_PAIR(data,key,(long)v_bool,"bool");
+	if(v_bool) {
+		return APPEND_BSON_PL_PAIR(data,key,ATOM_true,"bool");
+	}
+	else {
+		return APPEND_BSON_PL_PAIR(data,key,ATOM_false,"bool");
+	}
 }
 
 static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_utf8_len, const char *v_utf8, void *data)
@@ -161,8 +167,12 @@ static bool bson_iter_append_array(bson_iter_t *iter, PlTail *pl_array)
 				PlTerm((long)bson_iter_int32(iter))));
 	}
 	else if(BSON_ITER_HOLDS_BOOL(iter)) {
-		pl_array->append(PlCompound("bool",
-				PlTerm((long)bson_iter_bool(iter))));
+		if(bson_iter_bool(iter)) {
+			pl_array->append(PlCompound("bool", PlTerm(ATOM_true)));
+		}
+		else {
+			pl_array->append(PlCompound("bool", PlTerm(ATOM_false)));
+		}
 	}
 	else if(BSON_ITER_HOLDS_DATE_TIME(iter)) {
 		double sec_since_epoch = ((double)bson_iter_date_time(iter))/1000.0;
@@ -222,7 +232,14 @@ PlTerm bson_to_term(const bson_t *doc)
 	PlTerm term;
 	PlTail out_list(term);
 	if (bson_iter_init(&iter, doc)) {
-		bson_iter_visit_all(&iter, &visitor, &out_list);
+		if(bson_iter_visit_all(&iter, &visitor, &out_list)) {
+			bson_error_t err;
+			bson_set_error(&err,
+				MONGOC_ERROR_BSON,
+				MONGOC_ERROR_BSON_INVALID,
+				"BSON iteration prematurely stopped.");
+			throw MongoException("bson",err);
+		}
 	}
 	out_list.close();
 	return term;

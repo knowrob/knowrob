@@ -123,7 +123,7 @@ has_domain(Property,Domain) ?+>
 % @param Label a label atom
 %
 has_label(Resource,Label) ?+>
-	triple(Resource, rdfs:label, Label).
+	annotation(Resource, rdfs:label, Label).
 
 %% has_comment(+Resource,?Comment) is semidet.
 %
@@ -134,7 +134,7 @@ has_label(Resource,Label) ?+>
 % @param Comment a comment atom
 %
 has_comment(Resource,Comment) ?>
-	comment(Resource, Comment).
+	annotation(Resource, rdfs:comment, Comment).
 
 %% instance_of(?Entity,?Type) is nondet.
 %

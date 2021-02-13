@@ -271,17 +271,20 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%       the reason is that we create a search index over the value
 	%       of a triple, and that mongo cannot generate such an index
 	%       over values with special characters.
-	exclude(is_annotation_triple, Terms, DataTerms),
-	% TODO: handle annotation properties.
-	%       currently they are entirely ignored.
-	%include(is_annotation_triple, Terms, AnnotationTerms),
+	exclude(is_annotation_triple, Terms, TripleTerms),
+	include(is_annotation_triple, Terms, AnnotationTriples),
+	maplist([tripel(S,P,O),annotation(S,P,O)]>>true,
+		AnnotationTriples, AnnotationTerms),
 	% FIXME: BUG: o* for subClassOf only includes direct super class
 	%             when loading a list of triples at once.
 	%             this does not seem to occur when loading each triple
 	%             individually.
-	%lang_query:tell(Terms, Scope, [graph(Graph)]),
+	%lang_query:tell(TripleTerms, Scope, [graph(Graph)]),
+	%lang_query:tell(AnnotationTerms, Scope, [graph(Graph)]),
 	forall(
-		member(Term, DataTerms),
+		(	member(Term, TripleTerms)
+		;	member(Term, AnnotationTerms)
+		),
 		lang_query:tell(Term, Scope, [graph(Graph)])
 	),
 	get_time(Time1),

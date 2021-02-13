@@ -91,9 +91,9 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	option(graph(Graph), Ctx0, user),
 	option(scope(Scope), Ctx0),
 	time_scope_data(Scope, [Since,Until]),
-	% input validation
+	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([S,O], Ctx),
-	% strip the value, assert that operator must be $eq
+	% resolve arguments
 	query_compiler:var_key_or_val(S, Ctx, S_query),
 	query_compiler:var_key_or_val(O, Ctx, V_query),
 	% special handling for RDFS semantic
