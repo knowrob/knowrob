@@ -1,6 +1,6 @@
 :- module(reasoning_pool,
     [ register_reasoner/1,
-      infer(t,-,t)
+      infer/3
     ]).
 /** <module> TODO ...
 

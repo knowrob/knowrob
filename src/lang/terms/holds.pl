@@ -15,6 +15,8 @@
 :- use_module(library('model/QUDT'),
 	[ qudt_unit/4 ]).
 
+:- dynamic holds/3.
+
 %%
 % Enforce arithmetic operator.
 %

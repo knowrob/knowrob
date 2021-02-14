@@ -21,6 +21,8 @@
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_register_ns/3, rdf_meta/1 ]).
 
+:- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
+
 :- rdf_register_ns(rdfs,
 	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
