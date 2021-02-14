@@ -18,6 +18,7 @@
 :- query_compiler:add_command(set).
 :- query_compiler:add_command(pragma).
 :- query_compiler:add_command(context).
+:- query_compiler:add_command(ask).
 
 %%%% query expansion
 	
@@ -69,6 +70,9 @@ query_compiler:step_expand(
 		call_with_context(Goal,Args),
 		call_with_context(Expanded,Args), Context) :-
 	query_expand(Goal, Expanded, Context).
+
+query_compiler:step_expand(ask(Goal), ask(Expanded), _Context) :-
+	query_expand(Goal, Expanded, ask).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.
@@ -172,6 +176,13 @@ query_compiler:step_compile(context(Option), Ctx, []) :-
 
 query_compiler:step_compile(context(Option, Default), Ctx, []) :-
 	option(Option, Ctx, Default).
+
+%% ask(:Goal)
+% Call Goal in ask mode.
+%
+query_compiler:step_compile(ask(Goal), Ctx, Pipeline) :-
+	merge_options([mode(ask)], Ctx, Ctx0),
+	query_compiler:step_compile(call(Goal), Ctx0, Pipeline).
 
 %%
 % variables maybe used in the scope.

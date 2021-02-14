@@ -35,8 +35,7 @@ occurs(Evt) ?>
 	max(EventBegin,Since1) =< min(EventEnd,Until1).
 
 occurs(Evt) +>
-	% read time scope provided by e.g. during/2
-	% as in `occurs(Evt) during [Since,Until]`
+	% read time scope provided by e.g. during/2 as in `occurs(Evt) during [Since,Until]`
 	% from compile context.
 	% TODO: this will be [0,inf] if not provided? is this a problem?
 	context(scope(_{
@@ -94,6 +93,13 @@ test('during(occurs(+),+Interval)') :-
 	assert_false(occurs(test:'Short4') during [1377777012, 1377777019]),
 	assert_false(occurs(test:'Short4') during [1377777001, 1377777004]).
 
+test('tell(during(occurs(+),+Interval))') :-
+	assert_false(occurs(a) during [8,12]),
+	assert_true(tell(occurs(a) during [8,12])),
+	assert_true(occurs(a) during [8,12]),
+	assert_true(occurs(a) during [10,20]),
+	assert_false(occurs(a) during [5,7]).
+
 test('during(occurs(+),+Event)') :-
 	assert_true(occurs(test:'Short1') during test:'Short1'),
 	assert_true(occurs(test:'Long') during test:'Short1'),
@@ -102,13 +108,8 @@ test('during(occurs(+),+Event)') :-
 	assert_false(occurs(test:'Short1') during test:'Short3'),
 	assert_false(occurs(test:'Short1') during test:'Short4').
 
-%test('tell(during(occurs(+),+Event))') :-
-%	assert_true(tell(occurs(test:'Event6') during test:'Short1')),
-%	assert_true(occurs(test:'Event6') during test:'Short1').
-
-%test('tell and ask an event occurs during an event') :-
-%	assert_true(tell(holds(test:'Event6',dul:'hasTimeInterval', test:'Time_Long'))),
-%	assert_true(tell(occurs(test:'Event0') during test:'Event6')),
-%	assert_true(occurs(test:'Event0') during test:'Event6').
+test('tell(during(occurs(+),+Event))') :-
+	assert_true(tell(occurs(test:'Event6') during test:'Short1')),
+	assert_true(occurs(test:'Event6') during test:'Short1').
 
 :- end_rdf_tests(model_terms).

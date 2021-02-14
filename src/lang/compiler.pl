@@ -329,10 +329,6 @@ expand_term_0([X|Xs], [X_expanded|Xs_expanded], Mode) :-
 	;	expand_term_0(Xs, Xs_expanded, Mode)
 	).
 
-%% handle goals wrapped in ask. this can be used for conditional tell clauses.
-expand_term_1(ask(Goal), Expanded, _Mode) :-
-	query_expand(Goal, Expanded, ask).
-
 expand_term_1(Goal, Expanded, Mode) :-
 	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
 	is_list(Goal),!,

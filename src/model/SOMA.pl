@@ -219,6 +219,7 @@ event_interval(EV, Since, Until) ?>
 	triple(TI, soma:hasIntervalEnd, Until).
 
 event_interval(EV, Since, Until) +>
+	new_iri(TI, dul:'TimeInterval'),
 	has_type(TI, dul:'TimeInterval'),
 	triple(EV, dul:hasTimeInterval, TI),
 	triple(TI, soma:hasIntervalBegin, Since),
