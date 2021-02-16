@@ -78,63 +78,61 @@ query_compiler:step_expand(ask(Goal), ask(Expanded), _Context) :-
 ensure_list([X|Xs],[X|Xs]) :- !.
 ensure_list(X,[X]).
 
-%%
-% ignore vars referred to in pragma as these are handled compile-time.
-% only the ones also referred to in parts of the query are added to the document.
-%
-query_compiler:step_vars(pragma(_),_,[]).
-
 %% limit(+Count, :Goal)
 % Limit the number of solutions.
 % True if Goal is true, returning at most Count solutions.
 %
 query_compiler:step_compile(
-		limit(_, Terminals), _Ctx, []) :-
+		limit(_, Terminals), _Ctx, [], []) :-
 	is_list(Terminals),
 	Terminals=[],
 	!.
 
 query_compiler:step_compile(
 		limit(Count, Terminals),
-		Ctx, Pipeline) :-
+		Ctx, Pipeline, StepVars) :-
 	query_compiler:var_key_or_val(Count,Ctx,Count0),
 	% appended to inner pipeline of lookup
 	Prefix=[],
 	Suffix=[['$limit',Count0]],
 	% create a lookup and append $limit to inner pipeline,
 	% then unwind next and assign variables to the toplevel document.
-	findall(Step,
-		query_compiler:lookup_next_unwind(Terminals,
-			Prefix, Suffix, Ctx, Step),
-		Pipeline),
-	% the inner goal of limit is not satisfiable if Pipeline==[]
-	Pipeline \== [].
+	query_compiler:lookup_next_unwind(Terminals,
+		Prefix, Suffix, Ctx, Pipeline, StepVars0),
+	%
+	(	query_compiler:goal_var(Count,Ctx,Count_var)
+	->	StepVars=[Count_var|StepVars0]
+	;	StepVars=StepVars0
+	).
 
 %% call(:Goal)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
 %
 query_compiler:step_compile(
-		call(Terminals), Ctx, Pipeline) :-
-	findall(Step,
-		query_compiler:lookup_next_unwind(Terminals,
-			[], [], Ctx, Step),
-		Pipeline).
+		call(Terminals), Ctx, Pipeline, StepVars) :-
+%	option(outer_vars(V0), Ctx),
+%	query_compiler:compile_terms(
+%		Terminals, Pipeline,
+%		V0->_, StepVars, Ctx).
+	% TODO: why above renders a test failing?
+	query_compiler:lookup_next_unwind(Terminals,
+		[], [], Ctx, Pipeline, StepVars).
 
 %% call_with_args(:Goal,:Args)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
 %
 query_compiler:step_compile(
-		call_with_args(Term0,Args), Ctx, Pipeline) :-
+		call_with_args(Term0,Args), Ctx, Pipeline, StepVars) :-
 	Term0 =.. Buf0,
 	append(Buf0, Args, Buf1),
 	Term1 =.. Buf1,
-	query_compiler:step_compile(call(Term1), Ctx, Pipeline).
+	query_compiler:step_compile(call(Term1), Ctx, Pipeline, StepVars).
 
 %%
 %
 query_compiler:step_compile(
 		call_with_context(Terminals, NewCtx),
-		OldCtx, Pipeline) :-
+		OldCtx, Pipeline, StepVars) :-
 	option(outer_vars(V0), OldCtx),
 	% resolve since/until values.
 	% this is needed if the values are grounded within the query
@@ -143,12 +141,19 @@ query_compiler:step_compile(
 	% add provided options to context
 	merge_options(NewCtx0, OldCtx, Ctx),
 	% finally compile call goal with new context
-	(	option(mode(tell),Ctx) -> Goal=Terminals
-	;	Goal=call(Terminals)
-	),
+%	(	option(mode(tell),Ctx) -> Goal=Terminals
+%	;	Goal=call(Terminals)
+%	),
 	query_compiler:compile_terms(
-		Goal, Pipeline,
-		V0->_, Ctx).
+		Terminals, Pipeline,
+		V0->_, StepVars, Ctx).
+
+%% ask(:Goal)
+% Call Goal in ask mode.
+%
+query_compiler:step_compile(ask(Goal), Ctx, Pipeline, StepVars) :-
+	merge_options([mode(ask)], Ctx, Ctx0),
+	query_compiler:step_compile(call(Goal), Ctx0, Pipeline, StepVars).
 
 %%
 query_compiler:step_compile(
@@ -162,7 +167,10 @@ query_compiler:step_compile(
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
-query_compiler:step_compile(pragma(Goal), _, []) :-
+query_compiler:step_compile(pragma(Goal), _, [], StepVars) :-
+	% ignore vars referred to in pragma as these are handled compile-time.
+	% only the ones also referred to in parts of the query are added to the document.
+	StepVars=[],
 	call(Goal).
 
 %%
@@ -176,13 +184,6 @@ query_compiler:step_compile(context(Option), Ctx, []) :-
 
 query_compiler:step_compile(context(Option, Default), Ctx, []) :-
 	option(Option, Ctx, Default).
-
-%% ask(:Goal)
-% Call Goal in ask mode.
-%
-query_compiler:step_compile(ask(Goal), Ctx, Pipeline) :-
-	merge_options([mode(ask)], Ctx, Ctx0),
-	query_compiler:step_compile(call(Goal), Ctx0, Pipeline).
 
 %%
 % variables maybe used in the scope.
@@ -241,6 +242,7 @@ test('limit(2, +Goal)'):-
 		Results
 	),
 	assert_unifies(Results,[_,_]),
+	assert_true(ground(Results)),
 	assert_true(memberchk(9.5, Results)),
 	assert_true(memberchk(9.0, Results)).
 

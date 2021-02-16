@@ -170,110 +170,76 @@ until(Statement, Instant) +>
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-test('during can be asserted and queried') :-
+test('during(+Triple,+Interval)') :-
 	assert_true(lang_query:tell(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during [10,34]
-	)),
+		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during [10,34]
-	)),
+		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during [14,24]
-	)).
+		triple(test:'Lea', test:hasNumber, '+493455247') during [14,24])),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+999999999') during [5,20])),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [12,20])),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [5,20])),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [34,44])).
 
-test('during works with overlapping scope') :-
+test('during(+Triple,+Overlapping)') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
 	assert_true(lang_query:tell(
-		triple(test:'Lea', test:hasNumber, '+493455249')
-		during [44,84]
-	)),
+		triple(test:'Lea', test:hasNumber, '+493455249') during [44,84])),
 	assert_true(lang_query:tell(
-		triple(test:'Lea', test:hasNumber, '+493455249')
-		during [24,54]
-	)),
+		triple(test:'Lea', test:hasNumber, '+493455249') during [24,54])),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455249')
-		during [34,44]
-	)),
+		triple(test:'Lea', test:hasNumber, '+493455249') during [34,44])),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455249')
-		during [38,80]
-	)).
+		triple(test:'Lea', test:hasNumber, '+493455249') during [38,80])),
+	assert_false(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [140,240])).
 
-test('during does not yield false records') :-
-	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+999999999')
-		during [5,20]
-	)),
-	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455249')
-		during [12,20]
-	)),
-	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during [5,20]
-	)),
-	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during [34,44]
-	)).
-
-test('during handles ungrounded scope') :-
+test('during(+Triple,[-Since,-Until])') :-
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during _
-	)),
-	lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+493455247')
-		during X
-	),
-	assert_equals(X,[10.0,34.0]).
+		triple(test:'Lea', test:hasNumber, '+493455247') during [_,_])),
+	(	lang_query:ask(
+			triple(test:'Lea', test:hasNumber, '+493455247') during [Since,Until])
+	->	assert_equals([Since,Until], [10.0,34.0])
+	;	true
+	).
 
+test('during(+Triple,-Interval)') :-
+	assert_true(lang_query:ask(
+		triple(test:'Lea', test:hasNumber, '+493455247') during _)),
+	(	lang_query:ask(
+			triple(test:'Lea', test:hasNumber, '+493455247') during X)
+	->	assert_equals(X,[10.0,34.0])
+	;	true
+	).
 
-test('since ask+tell') :-
+test('since(+Triple,+Instant)') :-
 	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		since 800
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
 	assert_true(lang_query:tell(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		since 800
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		since 800
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		since 1000
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') since 1000)),
 	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		since 600
-	)).
+		triple(test:'Lea', test:hasNumber, '+499955247') since 600)).
 
-test('until ask+tell') :-
+test('until(+Triple,+Instant)') :-
 	% before tell until=inf
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		until 1000
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)),
 	assert_true(lang_query:tell(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		until 900
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
 	% after tell until=900
 	assert_true(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		until 900
-	)),
+		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
 	assert_false(lang_query:ask(
-		triple(test:'Lea', test:hasNumber, '+499955247')
-		until 1000
-	)).
+		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)).
 
 :- end_rdf_tests('lang_temporal').

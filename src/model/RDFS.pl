@@ -151,6 +151,9 @@ has_comment(Resource,Comment) ?>
 % @param Type the type of the entity
 %
 instance_of(A,B) ?+>
+	% avoid that class description terms are passed to tripledb lookup
+	% FIXME: but what about e.g. foo->V
+	pragma(\+ compound(B)),
 	triple(A,rdf:type,B).
 
 %% subclass_of(?Class,?SuperClass) is nondet.

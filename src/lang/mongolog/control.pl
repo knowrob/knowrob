@@ -88,13 +88,13 @@ query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
 %
 % Always succeed. 
 %
-query_compiler:step_compile(true,  _, []).
+query_compiler:step_compile(true,  _, [], []).
 
 %% fail
 %
 % Always fail. 
 %
-query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]]).
+query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 
 %% !
 % Cut. Discard all choice points created since entering the predicate in which
@@ -119,12 +119,10 @@ query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]]).
 % 2. then concat all these array fields into single array stored in field 'next'
 % 3. unwind the next array
 %
-query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
+query_compiler:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
 	% get disjunction as list
 	semicolon_list(';'(A,B), Goals),
 	% read options from context
-	% option(mode(ask), Context),
-	option(step_vars(StepVars), Context),
 	option(outer_vars(OuterVars), Context),
 	% generate one variable for each goal
 	length(Goals,NumGoals),
@@ -133,17 +131,17 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline) :-
 	% the result of each pipeline is written to a list,
 	% and resulting lists are concatenated later to
 	% achieve disjunction.
-	compile_disjunction(Goals, FindallVars, [], Context, FindallStages),
+	compile_disjunction(Goals, FindallVars, [], Context, FindallStages, StepVars0),
 	FindallStages \= [],
 	% special handling in case the disjunction compiles into a single goal
 	% no disjunction needed then.
 	(	FindallStages=[[_,_,SingleGoal]]
-	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_, Context)
-	;	aggregate_disjunction(FindallStages, StepVars, Pipeline)
+	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_InnerVars, StepVars, Context)
+	;	aggregate_disjunction(FindallStages, StepVars0, Pipeline, StepVars)
 	).
 
 %%
-aggregate_disjunction(FindallStages, StepVars, Pipeline) :-
+aggregate_disjunction(FindallStages, StepVars, Pipeline, StepVars) :-
 	% get a list of list variable keys
 	findall(string(X),
 		member([_,X,_],FindallStages),
@@ -173,13 +171,16 @@ aggregate_disjunction(FindallStages, StepVars, Pipeline) :-
 %%
 % each goal in a disjunction compiles into a lookup expression.
 %
-compile_disjunction([], [], _, _, []) :- !.
+compile_disjunction([], [], _, _, [], []) :- !.
 
 compile_disjunction(
 		[Goal|RestGoals],
 		[Var|RestVars],
 		CutVars, Ctx,
-		[[Stage,Key,Goal]|Ys]) :-
+		[[Stage,Key,Goal]|Ys],
+		StepVars) :-
+	option(outer_vars(OuterVarsOrig), Ctx),
+	option(disj_vars(DisjVars), Ctx, []),
 	% ensure goal is a list
 	(	is_list(Goal) -> Goal0=Goal
 	;	comma_list(Goal, Goal0)
@@ -189,11 +190,11 @@ compile_disjunction(
 	% be instantiated to the same value compile-time.
 	% the workaround is to create a copy of the goal here,
 	% and make sure the different variables are accessed in mongo with a common key.
-	% Then, the unification is outcarried later, after mongo has returned a match.
 	copy_term(Goal0, GoalCopy),
 	term_variables(Goal0,    VarsOrig),
 	term_variables(GoalCopy, VarsCopy),
-	copy_context(Ctx, VarsOrig, VarsCopy, CtxCopy),
+	copy_vars(OuterVarsOrig, VarsOrig, VarsCopy, OuterVarsCopy),
+	copy_vars(DisjVars,      VarsOrig, VarsCopy, DisjVarsCopy),
 	% add match command checking for all previous goals with cut having
 	% no solutions (size=0)
 	findall([CutVarKey, ['$size', int(0)]],
@@ -204,52 +205,52 @@ compile_disjunction(
 	),
 	% since step_var does not list CutVars, we need to add them here to context
 	% such that they will be accessible in lookup
-	select(outer_vars(OuterVars), CtxCopy, InnerCtx),
-	append(OuterVars, CutVars, OuterVars0),
+	append(OuterVarsCopy, CutVars, OuterVarsCopy0),
+	merge_options([
+		outer_vars(OuterVarsCopy0),
+		disj_vars(DisjVarsCopy),
+		additional_vars(CutVars)
+	], Ctx, InnerCtx),
 	% compile the step
 	query_compiler:var_key(Var, Ctx, Key),
 	query_compiler:lookup_array(Key, GoalCopy, CutMatches, [],
-		[outer_vars(OuterVars0)|InnerCtx], _,
-		Stage),
+		InnerCtx, StepVars_copy, Stage),
 	!,
 	% check if this goal has a cut, if so extend CutVars list
 	(	has_cut(Goal) -> CutVars0=[[Key,Var]|CutVars]
 	;	CutVars0=CutVars
 	),
-	% continue with rest
-	compile_disjunction(RestGoals, RestVars,
-		CutVars0, Ctx, Ys).
+	copy_vars(StepVars_copy, VarsCopy, VarsOrig, StepVars_this),
+	append(StepVars_this, DisjVars, DisjVars0),
+	list_to_set(DisjVars0, DisjVars1),
+	% compile remaining goals
+	merge_options([
+		outer_vars(OuterVarsOrig),
+		disj_vars(DisjVars1)
+	], Ctx, RestCtx),
+	compile_disjunction(RestGoals, RestVars, CutVars0,
+		RestCtx, Ys, StepVars_rest),
+	%
+	%resolve_vars(StepVars_copy, OuterVarsOrig0, StepVars_this),
+	append(StepVars_this, StepVars_rest, StepVars0),
+	list_to_set(StepVars0, StepVars).
 
-compile_disjunction([_|Goals], [_|Vars], CutVars, Ctx, Pipelines) :-
+compile_disjunction([_|Goals], [_|Vars], CutVars, Ctx, Pipelines, StepVars) :-
 	% skip goal if compilation was "surpressed" above
-	compile_disjunction(Goals, Vars, CutVars, Ctx, Pipelines).
+	compile_disjunction(Goals, Vars, CutVars, Ctx, Pipelines, StepVars).
 
 %%
-copy_context(Orig, VarsOrig, VarsCopy,
-		[ outer_vars(OuterVarsCopy),
-		  step_vars(StepVarsCopy) | Buf1 ]) :-
-	select(outer_vars(OuterVars), Orig, Buf0),
-	select(step_vars(StepVars), Buf0, Buf1),
-	copy_context_vars(OuterVars, VarsOrig, VarsCopy, OuterVarsCopy),
-	copy_context_vars(StepVars, VarsOrig, VarsCopy, StepVarsCopy).
-
-copy_context_vars([], _, _, []) :- !.
-copy_context_vars([X|Xs], VarsOrig, VarsCopy, [Y|Ys]) :-
-	once((
-		copy_context_var(X, VarsOrig, VarsCopy, Y)
-	;	Y=X
-	)),
-	copy_context_vars(Xs, VarsOrig, VarsCopy, Ys).
-
-copy_context_var([Key,VarOrig], VarsOrig, VarsCopy, [Key,VarCopy]) :-
-	% NOTE: nth0/3 unifies unbound variables, so we _cannot_ call:
-	%        `nth0(Index, VarsOrig, VarOrig)`
-	% TODO: is there a variant of nth0 using equality check instead of unification?
-	%          or map to varkeys before in VarsOrig
-	nth0(Index, VarsOrig, X),
-	X == VarOrig,
-	nth0(Index, VarsCopy, VarCopy),
-	!.
+% Create a copy of a variable map with fresh variables in the copy
+% but the same keys.
+%
+copy_vars(_, [], [], []) :- !.
+copy_vars(ReferredVars, [X|Xs], [Y|Ys], [[Key,Y]|Zs]) :-
+	member([Key,Z], ReferredVars),
+	Z == X,
+	!,
+	copy_vars(ReferredVars, Xs, Ys, Zs).
+copy_vars(ReferredVars, [_|Xs], [_|Ys], Zs) :-
+	copy_vars(ReferredVars, Xs, Ys, Zs).
 
 %%
 has_cut('!') :- !.
@@ -278,6 +279,7 @@ test('(+Goal ; +Goal)'):-
 			Num, 4.5),
 		Results),
 	assert_unifies(Results,[_,_]),
+	assert_true(ground(Results)),
 	assert_true(memberchk(9.5,Results)),
 	assert_true(memberchk(9.0,Results)).
 
@@ -290,6 +292,10 @@ test('(+Goal ; fail)'):-
 			Num, 4.5),
 		Results),
 	assert_equals(Results,[9.5]).
+
+test('(fail ; fail)'):-
+	assert_false(lang_query:test_command(
+		((Num > 5) ; fail), Num, 4.5)).
 
 test('(+Goal ; true)'):-
 	findall(X,

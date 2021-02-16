@@ -37,18 +37,18 @@
 :- query_compiler:add_command(triple).
 
 %%
-query_compiler:step_vars(triple(S,P,O), Ctx, Vars) :-
-	bagof(Var,
-		(	query_compiler:goal_var([S,P,O], Ctx, Var)
-		;	query_compiler:context_var(Ctx, Var)
-		),
-		Vars).
-
-%%
-query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline) :-
+query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
+	(	bagof(Var,
+			(	query_compiler:goal_var([S,P,O], Ctx, Var)
+			;	query_compiler:context_var(Ctx, Var)
+			),
+			StepVars)
+	;	StepVars=[]
+	),
+	merge_options([step_vars(StepVars)], Ctx, Ctx0),
 	(	option(mode(ask), Ctx)
-	->	compile_ask( triple(S,P,O), Ctx, Pipeline)
-	;	compile_tell(triple(S,P,O), Ctx, Pipeline)
+	->	compile_ask( triple(S,P,O), Ctx0, Pipeline)
+	;	compile_tell(triple(S,P,O), Ctx0, Pipeline)
 	).
 
 %%
@@ -153,7 +153,6 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 lookup_triple(triple(S,P,V), Ctx, Step) :-
 	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
-	memberchk(outer_vars(QueryVars), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
 	% FIXME: revise below
 	mng_triple_doc(triple(S,P,V), QueryDoc, Ctx),
@@ -202,7 +201,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 		InnerPipeline
 	),
 	% pass input document values to lookup
-	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
+	query_compiler:lookup_let_doc(StepVars, LetDoc),
 	% lookup matching documents and store in 'next' field
     (	Step=['$lookup', [
 			['from',string(Coll)],
@@ -329,7 +328,6 @@ delete_overlapping(triple(S,P,V), Ctx,
 			['pipeline',array(Pipeline)]
 		]]) :-
 	memberchk(collection(Coll), Ctx),
-	memberchk(outer_vars(QueryVars), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
 	% read triple data
 	query_compiler:var_key_or_val1(P, Ctx, P0),
@@ -349,7 +347,7 @@ delete_overlapping(triple(S,P,V), Ctx,
 	->	Since0=Until
 	;	Since0=Since
 	),
-	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
+	query_compiler:lookup_let_doc(StepVars, LetDoc),
 	% build pipeline
 	findall(Step,
 		% $match s,p,o and overlapping scope

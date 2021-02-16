@@ -43,25 +43,21 @@ swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
 	!, swrl_implication_pl(Fact, Fact_pl, Vars).
 
 swrl_rule_pl(
-		Impl    :- Cond,
-		Impl_pl ?> Cond_pl,
-		Vars) :-
-	swrl_implication_pl(Impl, Impl_pl, Vars),
-	swrl_condition_pl(Cond, Cond_pl, Vars),!.
-
-%% swrl_implication_pl
-swrl_implication_pl(
-		class(Cls,S),
-		model_RDFS:instance_of(S_var,Cls),
-		Vars) :-
-	swrl_var(Vars, S, S_var), !.
-
-swrl_implication_pl(
-		property(S,P,O),
-		lang_holds:holds(S_var,P,O_var),
+		class(Cls,S)                      :- Cond,
+		model_RDFS:instance_of(S_var,Cls) ?> Cond_pl,
 		Vars) :-
 	swrl_var(Vars, S, S_var),
-	swrl_var(Vars, O, O_var), !.
+	swrl_condition_pl(Cond, Cond_pl0, Vars),!,
+	Cond_pl=[pragma(\+ compound(Cls)) | Cond_pl0].
+
+swrl_rule_pl(
+		property(S,P,O)                 :- Cond,
+		lang_holds:holds(S_var,P,O_var) ?> Cond_pl,
+		Vars) :-
+	swrl_var(Vars, S, S_var),
+	swrl_var(Vars, O, O_var),
+	swrl_condition_pl(Cond, Cond_pl0, Vars),!,
+	Cond_pl=[pragma(\+ compound(O_var)) | Cond_pl0].
   
 %% swrl_condition_pl
 swrl_condition_pl([], [], _) :- !.

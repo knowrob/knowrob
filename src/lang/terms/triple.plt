@@ -35,24 +35,31 @@ test('tell triple(a,b,_)', [throws(error(instantiation_error,triple(a,b,_)))]) :
 	lang_query:tell(triple(a,b,_)).
 
 test('ask triple(a,b,c)') :-
-	assert_true(lang_query:ask(triple(a,b,c))).
+	assert_true(lang_query:ask(triple(a,b,c))),
+	assert_false(lang_query:ask(triple(x,b,c))),
+	assert_false(lang_query:ask(triple(a,x,c))),
+	assert_false(lang_query:ask(triple(a,b,x))).
 
 test('ask triple(A,b,c)') :-
 	lang_query:ask(triple(A,b,c)),
-	assert_equals(A,a).
+	assert_equals(A,a),
+	assert_false(lang_query:ask(triple(_,x,c))).
 
 test('ask triple(a,B,c)') :-
 	lang_query:ask(triple(a,B,c)),
-	assert_equals(B,b).
+	assert_equals(B,b),
+	assert_false(lang_query:ask(triple(x,_,c))).
 
 test('ask triple(a,b,C)') :-
 	lang_query:ask(triple(a,b,C)),
-	assert_equals(C,c).
+	assert_equals(C,c),
+	assert_false(lang_query:ask(triple(a,x,_))).
 
 test('ask triple(A,b,C)') :-
 	lang_query:ask(triple(A,b,C)),
 	assert_equals(A,a),
-	assert_equals(C,c).
+	assert_equals(C,c),
+	assert_false(lang_query:ask(triple(_,x,_))).
 
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
@@ -82,16 +89,21 @@ test('forget triple') :-
 
 % add triple and check if it exists in db
 test('tell to triplestore and check if triple exists') :-
-    assert_true( tell( triple(
-    	swrl_tests:'Adult',
-    	rdfs:'subClassOf',
-    	swrl_tests:'TestThing'
-    ))),
-    assert_true( ask( triple(
-    	swrl_tests:'Adult',
-    	rdfs:'subClassOf',
-    	swrl_tests:'TestThing'
-    ))).
+	assert_true( tell( triple(
+		swrl_tests:'Adult',
+		rdfs:'subClassOf',
+		swrl_tests:'TestThing'
+	))),
+	assert_true( ask( triple(
+		swrl_tests:'Adult',
+		rdfs:'subClassOf',
+		swrl_tests:'TestThing'
+	))),
+	assert_false( ask( triple(
+		swrl_tests:'Adult',
+		rdfs:'subClassOf',
+		swrl_tests:'Car'
+	))).
 
 % test for xsd:integer, Str, float
 test('tell XSD') :-
@@ -216,7 +228,11 @@ test('triple(+,transitive(+),+') :-
 	assert_true(ask(triple(
 		swrl_tests:'Rex',
 		transitive(swrl_tests:isParentOf),
-		swrl_tests:'Lea'))).
+		swrl_tests:'Lea'))),
+	assert_false(ask(triple(
+		swrl_tests:'Rex',
+		transitive(swrl_tests:isParentOf),
+		swrl_tests:'Person'))).
 
 test('triple(-,transitive(+),+') :-
 	findall(X,
@@ -245,16 +261,26 @@ test('triple(+,reflexive(transitive(+)),-)') :-
 	assert_true(member(swrl_tests:'Lea', Ancestors)).
 
 test('call(+Triple)') :-
-	lang_query:ask(call(triple(
+	assert_true(lang_query:ask(call(triple(
 		swrl_tests:'Rex',
 		swrl_tests:isParentOf,
-		swrl_tests:'Ernest'))).
+		swrl_tests:'Ernest')))),
+	assert_false(lang_query:ask(call(triple(
+		swrl_tests:'Rex',
+		swrl_tests:isParentOf,
+		test_datatype:'Lecturer3')))).
 
 test('call_with_context(+Triple,+Context)') :-
-	lang_query:test_command(
+	assert_true(lang_query:test_command(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Ernest'),
 			[ scope(_{ time: _{ since: =<(Time), until: >=(Time) } }) ]
-		), Time, 999).
+		), Time, 999)),
+	%
+	assert_false(lang_query:test_command(
+		call_with_context(
+			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Rex'),
+			[ scope(_{ time: _{ since: =<(Time), until: >=(Time) } }) ]
+		), Time, 999)).
 
 :- end_tests('lang_triple').

@@ -23,23 +23,22 @@
 %
 query_compiler:step_compile(
 		annotation(Entity, Property, Annotation),
-		Ctx, Pipeline) :-
-	query_annotation(Entity, Property, Annotation, Ctx, Pipeline).
+		Ctx, Pipeline, StepVars) :-
+	query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars).
 
 %% 
-query_annotation(Entity, Property, Annotation, Ctx, Pipeline) :-
+query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	option(mode(ask),Ctx),!,
-	option(outer_vars(QueryVars), Ctx),
-	option(step_vars(StepVars),   Ctx),
 	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([Entity, Property], Ctx),
+	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars),
 	% get the DB collection
 	mng_get_db(_DB, Coll, 'annotations'),
 	query_compiler:var_key_or_val(Annotation,  Ctx, Annotation0),
 	query_compiler:var_key_or_val1(Entity,     Ctx, Entity0),
 	query_compiler:var_key_or_val1(Property,   Ctx, Property0),
 	% pass input document values to lookup
-	query_compiler:lookup_let_doc(StepVars, QueryVars, LetDoc),
+	query_compiler:lookup_let_doc(StepVars, LetDoc),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% look-up comments into 'next' field
@@ -68,7 +67,7 @@ query_annotation(Entity, Property, Annotation, Ctx,
 				['p', Property0],
 				['v', Annotation0]
 			]])])
-		]]]]) :-
+		]]]], StepVars) :-
 	option(mode(tell),Ctx),!,
 	mng_strip_type(Annotation, _, UnTyped),
 	% only load annotations written in English
@@ -77,6 +76,7 @@ query_annotation(Entity, Property, Annotation, Ctx,
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([Entity, Property, Annotation_en], Ctx),
+	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars),
 	% resolve arguments
 	query_compiler:var_key_or_val(Entity,         Ctx, Entity0),
 	query_compiler:var_key_or_val(Property,       Ctx, Property0),

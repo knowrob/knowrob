@@ -25,11 +25,10 @@ into aggregate pipelines that can be processed by mongo DB.
 %% optionally implemented by query commands.
 :- multifile step_expand/3.
 %% implemented by query commands to compile query documents
-:- multifile step_compile/3.
-%% implemented by query commands to provide variables exposed to the outside
-:- multifile step_vars/3.
+:- multifile step_compile/3, step_compile/4.
 
 :- rdf_meta(step_compile(t,t,t)).
+:- rdf_meta(step_compile(t,t,t,-)).
 
 %% add_command(+Command) is det.
 %
@@ -151,7 +150,6 @@ bulk_operation(Doc, insert(Doc)).
 %
 unify_(Result, Vars, FScope) :-
 	mng_get_dict('v_scope', Result, FScope),
-	%unify_vars(Result, Vars, Vars),
 	unify_0(Result, Vars, Vars).
 
 unify_0(_, _, []) :- !.
@@ -249,12 +247,14 @@ query_assert1(Head, Body, Context) :-
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	%% handle instantiated arguments
+	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
+	%             then to instantiate the args implicit instantiation might be needed.
+	%             A solution could be adding a =/2 call _at the end_ to avoid the need
+	%             for implicit instantiation.
 	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
 	->	(Expanded0=[ArgsGoal|Expanded], Args0=ExpandedArgs)
 	;	(Expanded0=Expanded, Args0=Args)
 	),
-	%%
-	log_debug(lang(expanded(Functor, Args0, Expanded0, Context))),
 	%% store expanded query
 	assertz(query(Functor, Args0, Expanded0, Context)).
 
@@ -286,13 +286,12 @@ query_expand(Goal, Goal, _) :-
 	% higher-level predicates receiving a goal as an argument.
 	% these var goals need to be expanded compile-time
 	% (call-time is not possible)
-	%
 	var(Goal), !.
 
 query_expand(Goal, Expanded, Mode) :-
 	% NOTE: do not use is_list/1 here, it cannot handle list that have not
 	%       been completely resolved as in `[a|_]`.
-	%       Here we chack just the head of the list.
+	%       Here we check just the head of the list.
 	\+ has_list_head(Goal), !,
 	comma_list(Goal, Terms),
 	query_expand(Terms, Expanded, Mode).
@@ -347,6 +346,8 @@ expand_term_1(Goal, Expanded, Mode) :-
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
+	% NOTE: Args in query only contain vars, for instantiated vars in rule
+	%       heads, pragma/1 calls are generated in Terminals (i.e. the body of the rule).
 	(	bagof(Terminals,
 			query(Functor, Args, Terminals, Mode),
 			TerminalsList)
@@ -396,7 +397,7 @@ query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 
 %%
 query_compile1(Terminals, Doc, Vars, Context) :-
-	compile_terms(Terminals, Doc0, Vars, Context),
+	compile_terms(Terminals, Doc0, Vars, _StepVars, Context),
 	(	memberchk(mode(ask), Context) -> Doc=Doc0
 	;	Doc=[['$set',[
 			['triples',array([])],
@@ -405,44 +406,49 @@ query_compile1(Terminals, Doc, Vars, Context) :-
 	).
 
 %%
-compile_terms(Goal, Pipeline, Vars, Context) :-
+compile_terms(Goal, Pipeline, Vars, StepVars, Context) :-
 	\+ is_list(Goal), !,
-	compile_terms([Goal], Pipeline, Vars, Context).
+	compile_terms([Goal], Pipeline, Vars, StepVars, Context).
 
-compile_terms([], [], V0->V0, _) :- !.
-compile_terms([X|Xs], Pipeline, V0->Vn, Context) :-
-	compile_term(X,  Pipeline_x,  V0->V1, Context),
-	compile_terms(Xs, Pipeline_xs, V1->Vn, Context),
-	append(Pipeline_x, Pipeline_xs, Pipeline).
+compile_terms([], [], V0->V0, [], _) :- !.
+compile_terms([X|Xs], Pipeline, V0->Vn, StepVars, Context) :-
+	compile_term(X,  Pipeline_x,  V0->V1, StepVars0, Context),
+	compile_terms(Xs, Pipeline_xs, V1->Vn, StepVars1, Context),
+	append(Pipeline_x, Pipeline_xs, Pipeline),
+	append(StepVars0, StepVars1, StepVars).
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
-compile_term(Term, Doc, V0->V1, Context) :-
+compile_term(Term, Doc, V0->V1, StepVars, Context) :-
 	% try expansion (maybe the goal was not known during the expansion phase)
 	option(mode(Mode), Context),
 	query_expand(Term, Expanded, Mode),
-	compile_expanded_terms(Expanded, Doc, V0->V1, Context).
+	compile_expanded_terms(Expanded, Doc, V0->V1, StepVars, Context).
 
 %%
-compile_expanded_terms(Goal, Doc, Vars, Context) :-
+compile_expanded_terms(Goal, Doc, Vars, StepVars, Context) :-
 	\+ is_list(Goal), !,
-	compile_expanded_terms([Goal], Doc, Vars, Context).
+	compile_expanded_terms([Goal], Doc, Vars, StepVars, Context).
 
-compile_expanded_terms([], [], V0->V0, _) :- !.
-compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, Context) :-
-	compile_expanded_term(Expanded, Doc0, V0->V1, Context),
-	compile_expanded_terms(Rest, Doc1, V1->Vn, Context),
-	append(Doc0, Doc1, Doc).
+compile_expanded_terms([], [], V0->V0, [], _) :- !.
+compile_expanded_terms([Expanded|Rest], Doc, V0->Vn, StepVars, Context) :-
+	compile_expanded_term(Expanded, Doc0, V0->V1, StepVars0, Context),
+	compile_expanded_terms(Rest, Doc1, V1->Vn, StepVars1, Context),
+	append(Doc0, Doc1, Doc),
+	append(StepVars0, StepVars1, StepVars).
 	
-compile_expanded_term(List, Doc, Vars, Context) :-
+compile_expanded_term(List, Doc, Vars, StepVars, Context) :-
 	is_list(List),!,
-	compile_expanded_terms(List, Doc, Vars, Context).
+	compile_expanded_terms(List, Doc, Vars, StepVars, Context).
 	
-compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
-	% read all variables referred to in Step into list StepVars
-	(	bagof(Vs, goal_var(Expanded, Context, Vs), StepVars) -> true
-	;	StepVars=[]
-	),
+compile_expanded_term(Expanded, Pipeline, V0->V1, StepVars_unique, Context) :-
+	% create inner context
+	merge_options([outer_vars(V0)], Context, InnerContext),
+	% and finall compile expanded terms
+	once(step_compile(Expanded, InnerContext, Doc, StepVars)),
+	% merge StepVars with variables in previous steps (V0)
 	list_to_set(StepVars, StepVars_unique),
+	append(V0, StepVars_unique, V11),
+	list_to_set(V11, V1),
 	% create a field for each variable that was not referred to before
 	findall([VarKey,[['type',string('var')], ['value',string(VarKey)]]],
 		(	member([VarKey,_], StepVars_unique),
@@ -451,16 +457,12 @@ compile_expanded_term(Expanded, Pipeline, V0->V1, Context) :-
 		VarDocs),
 	(	VarDocs=[] -> Pipeline=Doc
 	;	Pipeline=[['$set', VarDocs]|Doc]
-	),
-	% merge StepVars with variables in previous steps (V0)
-	append(V0, StepVars_unique, V11),
-	list_to_set(V11, V1),
-	% create inner context
-	merge_options(
-		[step_vars(StepVars_unique),outer_vars(V0)],
-		Context, InnerContext),
-	% and finall compile expanded terms
-	once(step_compile(Expanded, InnerContext, Doc)).
+	).
+
+%%
+step_compile(Step, Ctx, Doc, StepVars) :-
+	step_compile(Step, Ctx, Doc),
+	step_vars(Step, Ctx, StepVars).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% QUERY DOCUMENTS
@@ -474,20 +476,16 @@ match_equals(X, Exp, Step) :-
 	).
 
 %%
-lookup_let_doc(InnerVars, _OuterVars, LetDoc) :-
-	% TODO: remove OuterVars argument
+lookup_let_doc(InnerVars, LetDoc) :-
 	findall([Key,string(Value)],
 		(	member([Key,_], InnerVars),
-			% pass on all inner vars as for each of them there is a field
-			% in the outer docment already
-			%member([Key,_], OuterVars),
 			atom_concat('$',Key,Value)
 		),
-		LetDoc).
+		LetDoc0),
+	list_to_set(LetDoc0,LetDoc).
 
 %%
-lookup_set_vars(InnerVars, _OuterVars, SetVars) :-
-	% TODO: remove OuterVars argument
+lookup_set_vars(InnerVars, SetVars) :-
 	% NOTE: let doc above ensures all vars can be accessed.
 	%       this does also work if the let var was undefined.
 	%       then the set below is basically a no-op.
@@ -505,7 +503,8 @@ lookup_set_vars(InnerVars, _OuterVars, SetVars) :-
 			%member([Y,_], OuterVars),
 			atom_concat('$$',Y,Y0)
 		),
-		SetVars).
+		SetVars0),
+	list_to_set(SetVars0,SetVars).
 
 %%
 % find all records matching a query and store them
@@ -513,7 +512,7 @@ lookup_set_vars(InnerVars, _OuterVars, SetVars) :-
 %
 lookup_array(ArrayKey, Terminals,
 		Prefix, Suffix,
-		Context, InnerVars,
+		Context, StepVars,
 		['$lookup', [
 			['from', string(Coll)],
 			['as', string(ArrayKey)],
@@ -522,20 +521,35 @@ lookup_array(ArrayKey, Terminals,
 		]]) :-
 	% get variables referred to in query
 	option(outer_vars(OuterVars), Context),
-	option(step_vars(StepVars), Context),
 	% join collection with single document
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline
-	compile_terms(Terminals,
-		Pipeline,
-		OuterVars->InnerVars,
-		Context),
+	compile_terms(Terminals, Pipeline,
+		OuterVars->_InnerVars,
+		StepVars, Context),
+	(	option(additional_vars(AddVars), Context)
+	->	append(AddVars, StepVars, StepVars0)
+	;	StepVars0 = StepVars
+	),
+	%% FIXME: why needed?
+	%  - it should be enough that triple yields these as step vars!
+	%  - probably the problem is if triple is inside of disjunction!
+	% FIXME: I suspect that context_var may not always yield same results for same context
+	%
+	once((
+		bagof(Var,
+			(	member(Var,StepVars0)
+			;	query_compiler:context_var(Context, Var)
+			),
+			StepVars1)
+	;	StepVars1=StepVars0
+	)),
 	% pass variables from outer scope to inner if they are referred to
 	% in the inner scope.
-	lookup_let_doc(InnerVars, OuterVars, LetDoc),
+	lookup_let_doc(StepVars1, LetDoc),
 	% set all let variables so that they can be accessed
 	% without aggregate operators in Pipeline
-	lookup_set_vars(InnerVars, OuterVars, SetVars),
+	lookup_set_vars(StepVars1, SetVars),
 	% compose inner pipeline
 	(	SetVars=[] -> Prefix0=Prefix
 	;	Prefix0=[['$set', SetVars] | Prefix]
@@ -545,7 +559,7 @@ lookup_array(ArrayKey, Terminals,
 	% this is needed because different branches cannot ground the same
 	% variable to different values compile-time.
 	findall([Key,TypedValue],
-		(	member([Key,Val],StepVars),
+		(	member([Key,Val],StepVars1),
 			ground(Val),
 			mng_typed_value(Val,TypedValue)
 		),
@@ -558,25 +572,29 @@ lookup_array(ArrayKey, Terminals,
 %%
 lookup_next_unwind(Terminals,
 		Prefix, Suffix,
-		Context, Step) :-
+		Ctx, Pipeline, StepVars) :-
 	lookup_array('next', Terminals, Prefix, Suffix,
-			Context, InnerVars, Lookup),
-	% generate steps
-	(	Step=Lookup
-	% unwind "next" field
-	;	Step=['$unwind',string('$next')]
-	% compute the intersection of scope
-	% TODO: this should be optional, or better not handled here.
-	%        - only if Terminas contains a triple we need to handle scope.
-	;	mng_scope_intersect('v_scope',
-			string('$next.v_scope.time.since'),
-			string('$next.v_scope.time.until'),
-			Context, Step)
-	% set variables from "next" field
-	;	set_next_vars(InnerVars, Step)
-	% remove "next" field again
-	;	Step=['$unset',string('next')]
-	).
+			Ctx, StepVars, Lookup),
+	findall(Step,
+		% generate steps
+		(	Step=Lookup
+		% unwind "next" field
+		;	Step=['$unwind',string('$next')]
+		% compute the intersection of scope
+		% TODO: this should be optional, or better not handled here.
+		%        - only if Terminas contains a triple we need to handle scope.
+		;	mng_scope_intersect('v_scope',
+				string('$next.v_scope.time.since'),
+				string('$next.v_scope.time.until'),
+				Ctx, Step)
+		% set variables from "next" field
+		;	set_next_vars(StepVars, Step)
+		% remove "next" field again
+		;	Step=['$unset',string('next')]
+		),
+		Pipeline),
+	% the inner goal is not satisfiable if Pipeline==[]
+	Pipeline \== [].
 
 %%
 % Move ground variables in "next" document to the
@@ -590,7 +608,8 @@ set_next_vars(InnerVars, ['$set', [Key,
 			string(OldVal),                    % set the field to its current value
 			string(NewVal)                     % else overwrite with value in next
 		])]]]) :-
-	member([Key,_], InnerVars),
+	setof(Key0, member([Key0,_], InnerVars), Keys),
+	member(Key, Keys),
 	atom_concat('$',Key,OldVal),
 	atom_concat('$next.',Key,NewVal).
 
@@ -598,14 +617,16 @@ set_next_vars(InnerVars, ['$set', [Key,
 %%%%%%%%% VARIABLES in queries
 %%%%%%%%%%%%%%%%%%%%%%%
 
+% read all variables referred to in Step into list StepVars
+step_vars(Step, Ctx, StepVars) :-
+	(	bagof(Vs, goal_var(Step, Ctx, Vs), StepVars)
+	;	StepVars=[]
+	),!.
+
 %%
 goal_var(Var, Ctx, [Key,Var]) :-
 	var(Var),!,
 	var_key(Var, Ctx, Key).
-
-goal_var(Goal, Ctx, Var) :-
-	step_vars(Goal, Ctx, Vars),!,
-	member(Var,Vars).
 
 goal_var(List, Ctx, Var) :-
 	is_list(List),!,
@@ -636,8 +657,8 @@ context_var(Ctx, [Key,ReferredVar]) :-
 	atom(Stripped),
 	atom_concat('$', Key, Stripped),
 	once((
-		(	option(step_vars(Vars), Ctx)
-		;	option(outer_vars(Vars), Ctx)
+		(	option(outer_vars(Vars), Ctx)
+		;	option(disj_vars(Vars), Ctx)
 		),
 		member([Key,ReferredVar],Vars)
 	)).
@@ -649,10 +670,8 @@ set_if_var(X, Exp, Ctx,
 		['$set', [Key, ['$cond', array([
 			% if X is a variable
 			['$eq', array([string(TypeVal), string('var')])],
-			% evaluate the expression and set new value
-			Exp,
-			% else value remains the same
-			string(XVal)
+			Exp,          % evaluate the expression and set new value
+			string(XVal)  % else value remains the same
 		])]]]) :-
 	query_compiler:var_key(X, Ctx, Key),
 	atom_concat('$',Key,XVal),
@@ -670,8 +689,8 @@ get_var(Term, Ctx, [Key,Var]) :-
 %
 var_key(Var, Ctx, Key) :-
 	var(Var),
-	(	option(step_vars(Vars), Ctx)
-	;	option(outer_vars(Vars), Ctx)
+	(	option(outer_vars(Vars), Ctx)
+	;	option(disj_vars(Vars), Ctx)
 	),
 	member([Key,ReferredVar],Vars),
 	ReferredVar == Var,
@@ -735,7 +754,6 @@ var_key_or_val0(Term, Ctx, [
 
 var_key_or_val1(In, Ctx, Out) :-
 	var_key_or_val(In, Ctx, X),
-	
 	(	(X=string(Str), atom(Str), atom_concat('$',_,Str))
 	->	(X=string(Str), atom_concat('$',Str,Y), Out=string(Y))
 	;	Out=X

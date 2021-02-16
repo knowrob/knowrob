@@ -27,14 +27,6 @@ query_compiler:step_expand(
 %		Context) :-
 %	query_expand(Goal, Expanded, Context).
 
-%%
-% findall only exposes the List variable to the outside.
-%
-query_compiler:step_vars(
-		findall(_, _, List), Ctx,
-		[[List_var, List]]) :-
-	query_compiler:var_key(List, Ctx, List_var).
-
 %% findall(+Template, :Goal, -Bag)
 % Create a list of the instantiations Template gets successively on
 % backtracking over Goal and unify the result with Bag.
@@ -42,26 +34,39 @@ query_compiler:step_vars(
 %
 query_compiler:step_compile(
 		findall(Template, Terminals, List),
-		Ctx, Pipeline) :-
+		Ctx, Pipeline, StepVars) :-
+	% findall only exposes the List variable to the outside.
+	query_compiler:step_vars(List, Ctx, StepVars),
 	% TODO: how does this interfere with scopes?
 	%	- within findall body scopes maybe computed
 	%	- member with scope should do scope intersection
 	%	- for now scopes in findall are _ignored_!
 	query_compiler:var_key_or_val(List, Ctx, List0),
+	% add template vars to compile context.
+	% this is important to enforce that vars in Template are referred
+	% to with a common key within findall.
+	% note that the vars should not be added to the "outer_vars"
+	% array as variables in template are _not_ exposed to the outside.
+	query_compiler:step_vars(Template, Ctx, TemplateVars),
+	% TODO: redundant, make an interface in query compiler
+	once((select(disj_vars(DisjVars), Ctx, Ctx0);(DisjVars=[],Ctx0=Ctx))),
+	append(DisjVars, TemplateVars, DisjVars0),
+	list_to_set(DisjVars0,DisjVars1),
+	Ctx1=[disj_vars(DisjVars1)|Ctx0],
 	% Get the $map expression to instantiate the template for each list element.
 	% NOTE: it is not allowed due to handling here to construct
 	% the pattern in a query, it must be given in the findall command compile-time.
 	% if really needed it could be done more dynamic, I think.
-	template_instantiation(Template, Ctx, Instantiation),
+	template_instantiation(Template, Ctx1, Instantiation),
 	findall(Step,
 		% perform lookup, collect results in 'next' array
 		(	query_compiler:lookup_array('t_next',Terminals,
-				[], [], Ctx, _, Step)
+				[], [], Ctx1, _, Step)
 		% $set the list variable field from 'next' field
 		;	Step=['$set', ['t_list', ['$map',[
 					['input',string('$t_next')],
 					['in', Instantiation] ]]]]
-		;	query_compiler:set_if_var(List, string('$t_list'), Ctx, Step)
+		;	query_compiler:set_if_var(List, string('$t_list'), Ctx1, Step)
 		;	query_compiler:match_equals(List0, string('$t_list'), Step)
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', array([string('t_next'), string('t_list')])]
@@ -74,9 +79,11 @@ query_compiler:step_compile(
 % the currently mapped array element is referred to as "$$this"
 %
 template_instantiation(Var, Ctx, string(Val)) :-
+	% for variables in template, lookup in compile context
+	% or create a key used in mongo to refer to the var
 	query_compiler:var_key(Var, Ctx, Key),
 	atom_concat('$$this.', Key, Val).
-	
+
 template_instantiation(List, Ctx, array(Elems)) :-
 	is_list(List),!,
 	findall(Y,
@@ -106,6 +113,16 @@ template_instantiation(Atomic, _Ctx, Constant) :-
 
 :- begin_tests('lang_findall').
 
+test('findall(+Succeeds)'):-
+	lang_query:test_command(
+		findall(X,
+			X is (Num + 5),
+			Results),
+		Num, double(4.5)
+	),
+	assert_true(ground(Results)),
+	assert_equals(Results,[9.5]).
+
 test('findall(+Succeeds ; +Succeeds)'):-
 	lang_query:test_command(
 		(	findall(X,
@@ -116,6 +133,7 @@ test('findall(+Succeeds ; +Succeeds)'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_equals(Results,[9.5,9.0]).
 
 test('findall(+,:,+)'):-
@@ -138,6 +156,7 @@ test('findall(+Succeeds ; +Fails)'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_equals(Results,[9.5]).
 
 test('findall(+Succeeds ; +Fails ; +Succeeds)'):-
@@ -151,6 +170,7 @@ test('findall(+Succeeds ; +Fails ; +Succeeds)'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_equals(Results,[9.5,10.5]).
 
 test('findall with ungrounded'):-
@@ -176,6 +196,7 @@ test('findall 1-element list'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_unifies(Results,[[9.5],[9.0]]).
 
 test('findall 2-element list'):-
@@ -188,6 +209,7 @@ test('findall 2-element list'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
 
 test('findall 1-ary term'):-
@@ -200,6 +222,7 @@ test('findall 1-ary term'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_unifies(Results,[test(9.5), test(9.0)]).
 
 test('findall 2-ary term'):-
@@ -212,6 +235,7 @@ test('findall 2-ary term'):-
 		),
 		Num, double(4.5)
 	),
+	assert_true(ground(Results)),
 	assert_unifies(Results,[
 		test(9.5,10.5), test(9.0,11.0) ]).
 
