@@ -13,11 +13,8 @@ query_compiler:step_compile(==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X == Y.
 
-query_compiler:step_compile(==(X,Y), Ctx, [
-		['$set',   ['t_equal', ['$eq', array([X0,Y0])]]],
-		['$match', ['t_equal', bool(true)]],
-		['$unset', string('t_equal')]
-	]) :-
+query_compiler:step_compile(==(X,Y), Ctx,
+		[['$match', ['$expr', ['$eq', array([X0,Y0])]]]]) :-
 	% FIXME: unified variables are thought to be equal, eg.
 	%			?- A=B, foo(A) == foo(B).
 	%
@@ -31,11 +28,8 @@ query_compiler:step_compile(\==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X \== Y.
 
-query_compiler:step_compile(\==(X,Y), Ctx, [
-		['$set',   ['t_equal', ['$eq', array([X0,Y0])]]],
-		['$match', ['t_equal', bool(false)]],
-		['$unset', string('t_equal')]
-	]) :-
+query_compiler:step_compile(\==(X,Y), Ctx,
+		[['$match', ['$expr', ['$ne', array([X0,Y0])]]]]) :-
 	query_compiler:var_key_or_val(X,Ctx,X0),
 	query_compiler:var_key_or_val(Y,Ctx,Y0).
 
