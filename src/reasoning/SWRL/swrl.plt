@@ -96,7 +96,7 @@ test(swrl_parse_NonHuman, [nondet]) :-
   test_swrl_parse(
     ['(not Person)(?x)', '->', 'NonHuman(?x)'],
     [ class(test:'NonHuman', var(x)) ] :-
-      [ class(not(dul:'Person'), var(x)) ]
+      [ class(complement_of(dul:'Person'), var(x)) ]
   ).
 
 test(swrl_parse_Adult1, [nondet]) :-
@@ -129,7 +129,7 @@ test(swrl_parse_nested, [nondet]) :-
   test_swrl_parse(
     ['(Driver or (not (Car and NonHuman)))(?x)', '->', 'Person(?x)'],
     [ class(dul:'Person', var(x)) ] :-
-      [ class(union_of([test:'Driver', not(intersection_of(
+      [ class(union_of([test:'Driver', complement_of(intersection_of(
           [test:'Car',test:'NonHuman'])) ]), var(x)) ]
   ).
 

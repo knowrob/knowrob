@@ -20,8 +20,7 @@
 	  disjoint_with_direct(r,r),
 	  has_equivalent_class(r,r),
 	  has_description(r,t),
-	  same_as(r,r),
-	  is_a(r,r)          % +Resource, ?Type
+	  same_as(r,r)
 	]).
 /** <module> The Web Ontology Language (OWL) model.
 
@@ -466,15 +465,6 @@ disjoint_with(A,B) ?>
 		 *******************************/
 
 %%
-% Allow OWL descriptions in subclass_of expressions.
-%
-%subclass_of(Class, Descr) ?>
-%	pragma(is_owl_term(Descr)),
-%	ground(Class),
-%	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
-%	has_description(SuperClass, Descr).
-
-%%
 instance_of_description(S, value(P,O)) ?>
 	var(P),
 	triple(S,P,O),
@@ -492,15 +482,6 @@ instance_of_description(S, Descr) ?>
 	subclass_of(SType, Descr).
 
 %%
-% Allow OWL descriptions in instance_of expressions.
-%
-% TODO: allow tell(instance_of(S,Descr))
-%
-%instance_of(S,Descr) ?>
-%	pragma(is_owl_term(Descr)),
-%	instance_of_description(S,Descr).
-
-%%
 holds_description(S,P,only(O))      ?+> instance_of(S,only(P,O)).
 holds_description(S,P,some(O))      ?+> instance_of(S,some(P,O)).
 holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
@@ -508,47 +489,3 @@ holds_description(S,P,min(M,O))     ?+> instance_of(S,min(P,M,O)).
 holds_description(S,P,max(M,O))     ?+> instance_of(S,max(P,M,O)).
 holds_description(S,P,exactly(M,O)) ?+> instance_of(S,exactly(P,M,O)).
 holds_description(S,P,value(O))     ?+> instance_of(S,value(P,O)).
-
-%%
-% Allow OWL descriptions in holds expressions.
-%
-%holds(S,P,O) ?>
-%	pragma(\+ is_owl_term(O)),
-%	instance_of_description(S, value(P,O)).
-%
-%holds(S,P,Descr) ?+>
-%	pragma(is_owl_term(Descr)),
-%	holds_description(S,P,Descr).
-
-
-%% is_a(+Resource,?Type) is nondet.
-%
-% Wrapper around instance_of, subclass_of, and subproperty_of.
-% Using this is a bit slower as an additional type check
-% is needed.
-% For example: `Cat is_a Animal` and `Nibbler is_a Cat`.
-% 
-% Note that contrary to wrapped predicates, is_a/2 requires
-% the Resource to be ground.
-%
-% @param Resource a RDF resource
-% @param Type the type of the resource
-%
-is_a(A,B) ?>
-	ground(A),
-	is_individual(A),
-	!,
-	instance_of(A,B).
-
-is_a(A,B) ?>
-	ground(A),
-	is_class(A),
-	!,
-	subclass_of(A,B).
-
-is_a(A,B) ?>
-	ground(A),
-	is_property(A),
-	!,
-	subproperty_of(A,B).
-

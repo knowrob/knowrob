@@ -1,5 +1,6 @@
 :- module(model_terms,
-    [ occurs(r) % ?Event
+    [ occurs(r),    % ?Event
+	  is_a(r,r)     % +Resource, ?Type
     ]).
 /** <module> The occurs predicate.
 
@@ -74,6 +75,67 @@ lang_temporal:until(Query, Event) ?+>
 	call_with_context(Query, [scope(_{
 		time: _{ until: >=(Time) }
 	})]).
+
+%%
+% Allow OWL descriptions in instance_of expressions.
+%
+% TODO: allow tell(instance_of(S,Descr))
+%
+%instance_of(S,Descr) ?>
+%	pragma(is_owl_term(Descr)),
+%	instance_of_description(S,Descr).
+
+%%
+% Allow OWL descriptions in subclass_of expressions.
+%
+%subclass_of(Class, Descr) ?>
+%	pragma(is_owl_term(Descr)),
+%	ground(Class),
+%	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
+%	has_description(SuperClass, Descr).
+
+%%
+% Allow OWL descriptions in holds expressions.
+%
+%holds(S,P,O) ?>
+%	pragma(\+ is_owl_term(O)),
+%	instance_of_description(S, value(P,O)).
+%
+%holds(S,P,Descr) ?+>
+%	pragma(is_owl_term(Descr)),
+%	holds_description(S,P,Descr).
+
+%% is_a(+Resource,?Type) is nondet.
+%
+% Wrapper around instance_of, subclass_of, and subproperty_of.
+% Using this is a bit slower as an additional type check
+% is needed.
+% For example: `Cat is_a Animal` and `Nibbler is_a Cat`.
+% 
+% Note that contrary to wrapped predicates, is_a/2 requires
+% the Resource to be ground.
+%
+% @param Resource a RDF resource
+% @param Type the type of the resource
+%
+is_a(A,B) ?>
+	ground(A),
+	is_individual(A),
+	!,
+	instance_of(A,B).
+
+is_a(A,B) ?>
+	ground(A),
+	is_class(A),
+	!,
+	subclass_of(A,B).
+
+is_a(A,B) ?>
+	ground(A),
+	is_property(A),
+	!,
+	subproperty_of(A,B).
+
 
      /*******************************
      *        UNIT TESTS            *

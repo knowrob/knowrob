@@ -33,14 +33,12 @@ query_compiler:step_expand(not(Goal), Expanded, Mode) :-
 %
 query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
 	query_expand(Goal, GoalExpanded, Mode),
+	% another way to write it:
+	%Expanded=((call(GoalExpanded),!,fail) ; true),
 	Expanded = (
 		findall([], once(GoalExpanded), L),
 		length(L,0)
 	).
-	% another way to write it:
-	%Rewritten=((call(Goal),!,fail) ; true),
-%	Rewritten=(findall([], once(Goal), L), length(L,0)),
-%	query_expand(Rewritten, Expanded, Mode).
 
 %% :Condition -> :Action
 % If-then and If-Then-Else.
@@ -107,7 +105,7 @@ query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 % To realize cut, every clause [X0,...,Xn,!|_] is rewritten as [limit(1, [X0,....,Xn])|_]
 % NOTE: the rewriting is currently a special case in compiler.pl and cannot be handled
 %         through existing interfaces for commands in this file.
-% NOTE: but disjunction below handles cut in disunction goals
+% NOTE: but disjunction below handles cut in disjunction goals
 %
 %query_compiler:step_compile('!', _, [['$limit',int(1)]]).
 

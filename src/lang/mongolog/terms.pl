@@ -52,7 +52,7 @@ query_compiler:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
 	% FIXME: arg also need to handle var unification as in:
 	%         arg(0,foo(X),Y) would imply X=Y
 	%		- can be handled with conditional $set, add [X,Y] to
-	%         var array iff both of them are vars
+	%         var array if both of them are vars
 	%
 	query_compiler:var_key_or_val(Arg,Ctx,Arg0),
 	query_compiler:var_key_or_val(Term,Ctx,Term0),
@@ -117,7 +117,7 @@ query_compiler:step_compile(copy_term(In,Out), Ctx, Pipeline) :-
 query_compiler:step_compile(=..(Term,List), Ctx, Pipeline) :-
 	% FIXME: it won't work to unify two variables with univ yet, as in:
 	%			foo(X,a) =.. [foo,Z,a] would imply X=Z which is not handled here yet!
-	%          - needs additional map/filter opeartion
+	%          - needs additional map/filter operation
 	%				- get args that are different vars in list and term, then add to var array
 	%
 	query_compiler:var_key_or_val(Term,Ctx,Term0),

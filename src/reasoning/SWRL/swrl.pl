@@ -204,7 +204,7 @@ swrl_builtin_pl(
 
 swrl_builtin_pl(
 		startsWith(A,X),
-		atom_concat(X_atom, _, A_atom),
+		atom_prefix(A_atom, X_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 

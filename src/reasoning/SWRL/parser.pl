@@ -202,7 +202,7 @@ swrl_literal(BuiltinTerm,_NS) -->
   { BuiltinTerm =.. [Predicate|Args] }.
 
 %%
-swrl_class_atom(not(Cls),NS) -->
+swrl_class_atom(complement_of(Cls),NS) -->
   ['('], ['not'], swrl_class_atom(Cls,NS), [')'].
 
 swrl_class_atom(intersection_of([X|Xs]),NS) -->

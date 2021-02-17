@@ -10,9 +10,8 @@
 :- query_compiler:add_command(is_list).
 :- query_compiler:add_command(compound).
 
-%%
-% ground(X) holds iff a previous step has assigned
-% a value to the variable key.
+%% ground(@Term)
+% True if Term holds no free variables. 
 %
 query_compiler:step_compile(ground(Arg), _Ctx, []) :-
 	% argument is grounded already compile-time
@@ -52,9 +51,8 @@ query_compiler:step_compile(ground(Arg), Ctx, Pipeline) :-
 		),
 		Pipeline).
 
-%%
-% var(X) holds iff no previous step has assigned
-% a value to the variable key.
+%% var(@Term)
+% True if Term currently is a free variable.
 %
 query_compiler:step_compile(var(Arg), _Ctx, []) :-
 	% argument is nonvar already compile-time, thus cannot be var
@@ -73,19 +71,19 @@ query_compiler:step_compile(
 	query_compiler:var_key(Arg, Ctx, Key),
 	atom_concat(Key, '.type', Key0).
 
-%%
-%
+%% number(@Term)
+% True if Term is bound to a rational number (including integers) or a floating point number.
 %
 query_compiler:step_compile(number(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, number, number, Ctx, Pipeline).
 
-%%
-%
+%% atom(@Term)
+% True if Term is bound to an atom.
 %
 query_compiler:step_compile(atom(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, atom, string, Ctx, Pipeline).
 
-%%
+%% is_list(+Term)
 %
 %
 query_compiler:step_compile(is_list(Arg), Ctx, Pipeline) :-

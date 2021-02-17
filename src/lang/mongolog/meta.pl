@@ -141,9 +141,6 @@ query_compiler:step_compile(
 	% add provided options to context
 	merge_options(NewCtx0, OldCtx, Ctx),
 	% finally compile call goal with new context
-%	(	option(mode(tell),Ctx) -> Goal=Terminals
-%	;	Goal=call(Terminals)
-%	),
 	query_compiler:compile_terms(
 		Terminals, Pipeline,
 		V0->_, StepVars, Ctx).

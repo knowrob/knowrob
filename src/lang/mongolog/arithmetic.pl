@@ -143,8 +143,6 @@ expression_function(+,        '$add').
 expression_function(-,        '$subtract').
 expression_function(/,        '$divide').
 expression_function(*,        '$multiply').
-%expression_function(_,'$sum').
-%expression_function(_,'$avg').
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*

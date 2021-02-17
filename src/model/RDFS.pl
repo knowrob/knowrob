@@ -28,6 +28,10 @@
 
 :- rdf_meta(expand_list(r,t,t)).
 
+%:- multifile instance_of/2.
+%:- multifile subclass_of/2.
+%:- multifile subproperty_of/2.
+
 %% has_type(+Resource,?Type) is semidet.
 %
 % rdf:type is an instance of rdf:Property that is used to
