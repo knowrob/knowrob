@@ -8,6 +8,8 @@
 :- query_compiler:add_command(atom_prefix).
 :- query_compiler:add_command(atom_concat).
 :- query_compiler:add_command(atomic_list_concat).
+:- query_compiler:add_command(upcase_atom).
+:- query_compiler:add_command(downcase_atom).
 % TODO: support term_to_atom
 % - atom parsing is a bit difficult
 % - $split can be used, but then e.g. string "7" would need to be mapped to number 7 somehow.
@@ -15,8 +17,7 @@
 
 %% query compilation
 query_compiler:step_compile(
-		atom_number(Atom,Number), _,
-		[]) :-
+		atom_number(Atom,Number), _, []) :-
 	(ground(Atom);ground(Number)),!,
 	atom_number(Atom,Number).
 
@@ -44,6 +45,36 @@ query_compiler:step_compile(
 	findall(Step,
 		(	query_compiler:set_if_var(Length,    ['$strLenCP', Atom0], Ctx, Step)
 		;	query_compiler:match_equals(Length0, ['$strLenCP', Atom0], Step)
+		),
+		Pipeline).
+
+query_compiler:step_compile(upcase_atom(Atom,UpperCase), _, []) :-
+	ground(Atom),!,
+	upcase_atom(Atom,UpperCase).
+
+query_compiler:step_compile(
+		upcase_atom(Atom,UpperCase),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	query_compiler:var_key_or_val(UpperCase,Ctx,UpperCase0),
+	findall(Step,
+		(	query_compiler:set_if_var(UpperCase,    ['$toUpper', Atom0], Ctx, Step)
+		;	query_compiler:match_equals(UpperCase0, ['$toUpper', Atom0], Step)
+		),
+		Pipeline).
+
+query_compiler:step_compile(downcase_atom(Atom,UpperCase), _, []) :-
+	ground(Atom),!,
+	downcase_atom(Atom,UpperCase).
+
+query_compiler:step_compile(
+		downcase_atom(Atom,LowerCase),
+		Ctx, Pipeline) :-
+	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	query_compiler:var_key_or_val(LowerCase,Ctx,LowerCase0),
+	findall(Step,
+		(	query_compiler:set_if_var(LowerCase,    ['$toLower', Atom0], Ctx, Step)
+		;	query_compiler:match_equals(LowerCase0, ['$toLower', Atom0], Step)
 		),
 		Pipeline).
 
@@ -167,6 +198,31 @@ test('atom_length(+Atom,-Length)'):-
 	lang_query:test_command(
 		atom_length(Atom, Len), Atom, '4.5'),
 	assert_equals(Len, 3).
+
+test('upcase_atom(+Atom,+Uppercase)'):-
+	assert_true(lang_query:test_command(
+		upcase_atom(Atom, 'FOO 3'), Atom, 'foo 3')),
+	assert_true(lang_query:test_command(
+		upcase_atom(Atom, 'FOO BAR'), Atom, 'foo BAR')),
+	assert_true(lang_query:test_command(
+		upcase_atom(Atom, ''), Atom, '')),
+	assert_false(lang_query:test_command(
+		upcase_atom(Atom, 'Foo Bar'), Atom, 'foo BAR')).
+
+test('upcase_atom(+Atom,-Uppercase)'):-
+	lang_query:test_command(
+		upcase_atom(Atom, Uppercase), Atom, 'foo Bar'),
+	assert_equals(Uppercase, 'FOO BAR').
+
+test('downcase_atom(+Atom,+Uppercase)'):-
+	assert_true(lang_query:test_command(
+		downcase_atom(Atom, 'foo 3'), Atom, 'foo 3')),
+	assert_true(lang_query:test_command(
+		downcase_atom(Atom, 'foo bar'), Atom, 'foo BAR')),
+	assert_true(lang_query:test_command(
+		downcase_atom(Atom, ''), Atom, '')),
+	assert_false(lang_query:test_command(
+		downcase_atom(Atom, 'Foo Bar'), Atom, 'foo BAR')).
 
 test('atom_length(+Atom,+Length)'):-
 	assert_true(lang_query:test_command(
