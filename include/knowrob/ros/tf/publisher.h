@@ -30,10 +30,7 @@ protected:
 	bool clear_after_publish_;
 	std::thread thread_;
 
-	tf2_ros::TransformBroadcaster tf_broadcaster_;
-//	tf2_ros::StaticTransformBroadcaster static_tf_broadcaster_;
-
-	void publishTransforms();
+	void publishTransforms(tf2_ros::TransformBroadcaster &tf_broadcaster);
 	void loop();
 };
 

@@ -20,17 +20,18 @@ TFPublisher::~TFPublisher()
 
 void TFPublisher::loop()
 {
+	tf2_ros::TransformBroadcaster tf_broadcaster;
 	ros::Rate r(frequency_);
 	while(ros::ok()) {
-		publishTransforms();
+		publishTransforms(tf_broadcaster);
 		r.sleep();
 		if(!is_running_) break;
 	}
 }
 
-void TFPublisher::publishTransforms()
+void TFPublisher::publishTransforms(tf2_ros::TransformBroadcaster &tf_broadcaster)
 {
 	tf::tfMessage tf_msg;
 	memory_.loadTF(tf_msg, clear_after_publish_);
-	tf_broadcaster_.sendTransform(tf_msg.transforms);
+	tf_broadcaster.sendTransform(tf_msg.transforms);
 }
