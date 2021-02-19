@@ -8,11 +8,8 @@
 :- use_module(library('semweb/rdf_db'),    [ rdf_equal/2 ]).
 :- use_module(library('model/RDFS'),       [ has_type/2, instance_of/2 ]).
 :- use_module(library('lang/terms/holds'), [ holds/3 ]).
-:- use_module(library('reasoning/pool'),   [ register_reasoner/1 ]).
 :- use_module('swrl').
 :- use_module('parser').
-
-:- register_reasoner(swrl).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing

@@ -153,19 +153,30 @@ unify_(Result, Vars, FScope) :-
 	unify_0(Result, Vars, Vars).
 
 unify_0(_, _, []) :- !.
-unify_0(Doc, Vars, [X|Xs]) :-
+unify_0(Doc, Vars, [[VarKey, Term]|Xs]) :-
 	% it is ignored here if some variables referred
 	% to are not properly grounded.
 	% this can happen e.g. in expressions such as (A=a;B=b)
 	% where the first solution has grounded A but not B.
-	ignore(unify_1(Doc, Vars, X)),
+	(	ground(Term)
+	->	once(unify_grounded(Doc, [VarKey, Term]))
+	;	ignore(unify_1(Doc, Vars, [VarKey, Term]))
+	),
 	unify_0(Doc, Vars, Xs).
 
-unify_1(_, _, ['_id', _]).
-
-unify_1(_, _, [_, Term]) :-
+unify_grounded(Doc, [VarKey, Term]) :-
 	% variable was unified in pragma command
-	ground(Term), !.
+	% make sure it did not get another grounding in the query
+	mng_get_dict(VarKey, Doc, TypedValue),
+	mng_strip_type(TypedValue, _, Value),
+	(	Term=Value;
+		(	number(Term),
+			number(Value),
+			Term=:=Value
+		)
+	).
+
+unify_1(_, _, ['_id', _]).
 
 unify_1(Doc, Vars, [VarKey, Val]) :-
 	mng_get_dict(VarKey, Doc, TypedValue),

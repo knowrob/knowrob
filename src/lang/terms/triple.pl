@@ -58,11 +58,15 @@ query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
+	findall(LookupStep,
+		lookup_triple(triple(S,P1,O), Ctx0, LookupStep),
+		LookupSteps),
+	LookupSteps \== [],
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% filter out documents that do not match the triple pattern.
 		% this is done using $match or $lookup operators.
-		(	lookup_triple(triple(S,P1,O), Ctx0, Step)
+		(	member(Step, LookupSteps)
 		% compute the intersection of scope so far with scope of next document
 		;	mng_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
@@ -460,7 +464,7 @@ must_propagate_tell(rdfs:subPropertyOf).
 
 %% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
 %
-mng_triple_doc(triple(S,P,O), Doc, Context) :-
+mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
 	option(graph(Graph), Context, user),
 	option(scope(Scope), Context),
@@ -470,17 +474,24 @@ mng_triple_doc(triple(S,P,O), Doc, Context) :-
 	;	( Key_p='p*', Key_o='o' )
 	),
 	% strip term ->(Term,Var)
-	mng_strip_variable(O, V),
+	mng_strip_variable(S, S1),
+	mng_strip_variable(P, P1),
+	mng_strip_variable(V, V1),
 	% get the query pattern
+	% FIXME: query_value may silently fail on invalid input and this rule still succeeds
 	findall(X,
-		(	( query_value(S,Query_s), X=['s',Query_s] )
-		;	( query_value(P,Query_p), X=[Key_p,Query_p] )
-		;	( query_value(V,Query_v), X=[Key_o,Query_v] )
+		(	( query_value(S1,Query_s), X=['s',Query_s] )
+		;	( query_value(P1,Query_p), X=[Key_p,Query_p] )
+		;	( query_value(V1,Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
 		;	scope_doc(Scope,X)
 		),
 		Doc
-	).
+	),
+	% ensure doc has value if input is grounded
+	once((\+ ground(S1) ; memberchk(['s',_],Doc))),
+	once((\+ ground(P1) ; memberchk([Key_p,_],Doc))),
+	once((\+ ground(V1) ; memberchk([Key_o,_],Doc))).
 
 %%
 query_value(In, Out) :-

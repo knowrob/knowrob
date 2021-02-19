@@ -8,6 +8,7 @@
 
 :- use_module(library('lang/terms/holds'),
 		[ holds/3 ]).
+:- use_module(library('model/OWL')).
 
 %% swrl_assert(+Rule).
 %

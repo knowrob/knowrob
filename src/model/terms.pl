@@ -8,6 +8,7 @@
 @license BSD
 */
 
+:- use_module('OWL').
 :- use_module('SOMA').
 
 :- op(1000, xf, occurs).
@@ -75,35 +76,6 @@ lang_temporal:until(Query, Event) ?+>
 	call_with_context(Query, [scope(_{
 		time: _{ until: >=(Time) }
 	})]).
-
-%%
-% Allow OWL descriptions in instance_of expressions.
-%
-% TODO: allow tell(instance_of(S,Descr))
-%
-%instance_of(S,Descr) ?>
-%	pragma(is_owl_term(Descr)),
-%	instance_of_description(S,Descr).
-
-%%
-% Allow OWL descriptions in subclass_of expressions.
-%
-%subclass_of(Class, Descr) ?>
-%	pragma(is_owl_term(Descr)),
-%	ground(Class),
-%	triple(Class, rdfs:subClassOf, include_parents(SuperClass)),
-%	has_description(SuperClass, Descr).
-
-%%
-% Allow OWL descriptions in holds expressions.
-%
-%holds(S,P,O) ?>
-%	pragma(\+ is_owl_term(O)),
-%	instance_of_description(S, value(P,O)).
-%
-%holds(S,P,Descr) ?+>
-%	pragma(is_owl_term(Descr)),
-%	holds_description(S,P,Descr).
 
 %% is_a(+Resource,?Type) is nondet.
 %

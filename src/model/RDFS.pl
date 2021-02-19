@@ -21,6 +21,7 @@
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_register_ns/3, rdf_meta/1 ]).
 
+:- multifile instance_of/2, subclass_of/2, subproperty_of/2.
 :- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
 
 :- rdf_register_ns(rdfs,
@@ -155,9 +156,6 @@ has_comment(Resource,Comment) ?>
 % @param Type the type of the entity
 %
 instance_of(A,B) ?+>
-	% avoid that class description terms are passed to tripledb lookup
-	% FIXME: but what about e.g. foo->V
-	pragma(\+ compound(B)),
 	triple(A,rdf:type,B).
 
 %% subclass_of(?Class,?SuperClass) is nondet.
@@ -169,10 +167,6 @@ instance_of(A,B) ?+>
 % @param SuperClass a class IRI
 %
 subclass_of(A,B) ?+>
-	% avoid that class description terms are passed to tripledb lookup
-	% FIXME: but what about e.g. foo->V
-	pragma(\+ compound(A)),
-	pragma(\+ compound(B)),
 	triple(A, rdfs:subClassOf, B).
 
 %% subproperty_of(?Property,?SuperProperty) is nondet.

@@ -504,10 +504,9 @@ has_interval_end(TI, End) ?+>
 % @param Event Identifier of a TemporalThing
 % @param Duration Duration of the event
 %
-has_interval_duration(TI, Duration) :-
+has_interval_duration(TI, Duration) ?>
 	has_interval_begin(TI, Begin),
 	has_interval_end(TI, End),
-	% TODO: transform into ask query
 	Duration is (End-Begin).
 
 %% is_interval_equal(?I1,?I2) is semidet.

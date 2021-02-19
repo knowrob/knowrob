@@ -16,7 +16,7 @@
 	[ qudt_unit/4 ]).
 
 :- dynamic holds/3.
-%:- multifile holds/3.
+:- multifile holds/3.
 
 %%
 % Enforce arithmetic operator.

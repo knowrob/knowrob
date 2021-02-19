@@ -191,6 +191,23 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 
 :- begin_tests('list_commands').
 
+test('length(+,+)'):-
+	assert_true(lang_query:test_command(
+		length(List, 2), List, [2,4])),
+	assert_true(lang_query:test_command(
+		length([2,4], Count), Count, 2)),
+	assert_true(lang_query:test_command(
+		length([], Count), Count, 0)),
+	assert_false(lang_query:test_command(
+		length(List, 3), List, [2,4])),
+	assert_false(lang_query:test_command(
+		length([2,4], Count), Count, 3)).
+
+test('length(+,-)'):-
+	lang_query:test_command(
+		length(List, Length), List, [2,4]),
+	assert_equals(Length, 2).
+
 test('findall+length'):-
 	lang_query:test_command(
 		(	findall(X,
@@ -220,23 +237,23 @@ test('findall+max_list'):-
 		Num, double(4.5)),
 	assert_equals(Max, 9.5).
 
-test('min_list(+Numbers)'):-
+test('min_list(+Numbers,-Min)'):-
 	lang_query:test_command(
 		(	X is Num + 5,
 			Y is Num * 2,
-			min_list([X,Y], Max)
+			min_list([X,Y], Min)
 		),
 		Num, double(4.5)),
-	assert_equals(Max, 9.0).
+	assert_equals(Min, 9.0).
 
-test('sum_list(+Numbers)'):-
+test('sum_list(+Numbers,-Sum)'):-
 	lang_query:test_command(
 		(	X is Num + 5,
 			Y is Num * 2,
-			sum_list([X,Y], Max)
+			sum_list([X,Y], Sum)
 		),
 		Num, double(4.5)),
-	assert_equals(Max, 18.5).
+	assert_equals(Sum, 18.5).
 
 test('list_to_set(+Numbers)'):-
 	lang_query:test_command(
@@ -272,6 +289,16 @@ test('nth0(+Numbers)'):-
 		),
 		Num, double(4.5)),
 	assert_equals(Second, 9.0).
+
+test('member(+Number)'):-
+	findall(Val,
+		lang_query:test_command(
+			(	X is Num + 5,
+				member(Val, [X])
+			),
+			Num, double(4.5)),
+		Results),
+	assert_equals(Results,[9.5]).
 
 test('member(+Numbers)'):-
 	findall(Val,

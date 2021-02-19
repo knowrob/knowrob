@@ -63,7 +63,7 @@ query_compiler:step_compile(
 
 test('new_iri(-IRI)'):-
 	lang_query:test_command(
-		(new_iri(IRI), atom_concat(IRI,foo,X)), X, foo),
+		(new_iri(IRI), atom_concat(IRI,Suffix,X)), Suffix, foo),
 	assert_true(atom(X)),
 	assert_true(atom_concat(_,foo,X)).
 
