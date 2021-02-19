@@ -107,13 +107,13 @@ triple_json_object(Dict,O) :-
 triple_json_object(O,O).
 
 triple_json_scope(Triples,Scope) :-
-	% check if 'since' and 'until' are part of triple, if not then create universal scope(0 to Inf)
-	get_dict(since, Triples, Since),
+    % check if 'since' and 'until' are part of triple, if not then create universal scope(0 to Inf)
+    get_dict(since, Triples, Since),
 	get_dict(until, Triples, Until),!,
-	% check if given 'Since' and 'Until' are numbers
-	(number(Since) -> true; throw(type_error(number, Since))),
-	(number(Until) -> true; throw(type_error(number, Until))),
-	time_scope(Since, Until, Scope).
+	% check if given 'Since' and 'Until' are numbers if they are not then convert them into numbers first and then use them into scope
+	(number(Since) -> Since_number = Since; atom_number(Since, Since_number) ; throw(type_error(number, Since))),
+	(number(Until) -> Until_number = Until; atom_number(Until, Until_number) ; throw(type_error(number, Until))),
+	time_scope(Since_number, Until_number, Scope).
 
 triple_json_scope(_Triples,Scope) :-
 	% create universal scope when either of 'since' or 'until' are not provided in triple
