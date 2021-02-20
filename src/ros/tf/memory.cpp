@@ -21,6 +21,7 @@ TFMemory::TFMemory() :
 	far_away.transform.translation.x = 99999.9;
 	far_away.transform.translation.y = 99999.9;
 	far_away.transform.translation.z = 99999.9;
+	far_away.header.frame_id = "map";
 #endif
 }
 
@@ -122,6 +123,7 @@ void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
 #ifdef SEND_UNKNOWN_FAR_AWAY
 		else {
 			far_away.header.stamp = time;
+			far_away.child_frame_id = name;
 			tf_msg.transforms.push_back(far_away);
 		}
 #endif
