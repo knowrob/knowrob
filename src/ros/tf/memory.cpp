@@ -21,6 +21,10 @@ TFMemory::TFMemory() :
 	far_away.transform.translation.x = 99999.9;
 	far_away.transform.translation.y = 99999.9;
 	far_away.transform.translation.z = 99999.9;
+	far_away.transform.rotation.x = 0.0;
+	far_away.transform.rotation.y = 0.0;
+	far_away.transform.rotation.z = 0.0;
+	far_away.transform.rotation.w = 1.0;
 	far_away.header.frame_id = "map";
 #endif
 }
