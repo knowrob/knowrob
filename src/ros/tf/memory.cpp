@@ -1,6 +1,6 @@
 #include <knowrob/ros/tf/memory.h>
 
-static double get_stamp(const geometry_msgs::TransformStamped &ts)
+static inline double get_stamp(const geometry_msgs::TransformStamped &ts)
 {
 	unsigned long long time = (unsigned long long)(
 			ts.header.stamp.sec * 1000.0 + ts.header.stamp.nsec / 1000000.0);
@@ -30,6 +30,13 @@ bool TFMemory::clear()
 	std::lock_guard<std::mutex> guard2(names_lock_);
 	transforms_[buffer_index_].clear();
 	managed_frames_[buffer_index_].clear();
+	return true;
+}
+
+bool TFMemory::clear_transforms_only()
+{
+	std::lock_guard<std::mutex> guard1(transforms_lock_);
+	transforms_[buffer_index_].clear();
 	return true;
 }
 
@@ -94,9 +101,14 @@ void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
 			it=managed_frames_[buffer_index].begin();
 			it!=managed_frames_[buffer_index].end(); ++it)
 	{
-		geometry_msgs::TransformStamped tf_transform = get_transform(*it,buffer_index);
-		tf_transform.header.stamp = time;
-		tf_msg.transforms.push_back(tf_transform);
+		const std::string &name = *it;
+		std::map<std::string, geometry_msgs::TransformStamped>::iterator
+			needle = transforms_[buffer_index].find(name);
+		if(needle != transforms_[buffer_index].end()) {
+			geometry_msgs::TransformStamped &tf_transform = needle->second;
+			tf_transform.header.stamp = time;
+			tf_msg.transforms.push_back(tf_transform);
+		}
 	}
 }
 
