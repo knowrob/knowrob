@@ -1,11 +1,14 @@
 :- module(swrl_parser,
     [ swrl_file_path/3,
       swrl_file_parse/3,
+      swrl_file_fire/1,
+      swrl_file_fire/2,
       swrl_file_load/1,
       swrl_file_load/2,
       swrl_file_unload/1,
       swrl_file_unload/2,
       swrl_phrase/3,
+      swrl_phrase_fire/2,
       swrl_phrase_assert/2
     ]).
 /** <module> Prolog-based SWRL representation.
@@ -31,6 +34,19 @@ swrl_file_path(Pkg,Filename,Filepath) :-
     '/',
     Filepath
   ).
+
+%%
+swrl_file_fire(Filepath,Label) :-
+	swrl_file_parse(Filepath,Rule,Args),
+	get_dict(label,Args,Label),!,
+	swrl_fire(Rule).
+
+%%
+swrl_file_fire(Filepath) :-
+	forall(
+		swrl_file_parse(Filepath,Rule,_Args),
+		swrl_fire(Rule)
+	).
 
 %% swrl_file_unload(+Filepath) is det.
 %% swrl_file_unload(+Filepath,+Label) is det.
@@ -126,6 +142,14 @@ swrl_file_args_([Key-Value|Xs]) -->
     atom_codes(Value, ValueCodes)
   }.
 swrl_file_args_([]) --> "".
+
+%% swrl_phrase_fire(+Phrase,+NS).
+%
+% Fires SWRL rule given in human readable Syntax.
+%
+swrl_phrase_fire(Phrase,NS) :-
+  swrl_phrase(Term, Phrase, NS),
+  swrl_fire(Term).
 
 %% swrl_phrase_assert(+Phrase,+NS).
 %

@@ -1,5 +1,6 @@
 :- module(swrl,
-		[ swrl_assert/1
+		[ swrl_fire/1
+		  %,swrl_assert/1
 		]).
 /** <module> Prolog-based SWRL representation.
 
@@ -9,6 +10,36 @@
 :- use_module(library('lang/terms/holds'),
 		[ holds/3 ]).
 :- use_module(library('model/OWL')).
+
+%% swrl_fire(+Rule,+Args).
+%
+% "Fires" a rule, that is running it over the whole knowledge base
+% and asserting inferred facts.
+%
+% @param Rule Prolog-based representation of SWRL rule.
+%
+swrl_fire([] :- _) :- !.
+
+swrl_fire([HeadAtom|Xs] :- Body) :-
+	swrl_fire1(HeadAtom :- Body),
+	swrl_fire(Xs :- Body).
+
+swrl_fire1(HeadAtom :- Body) :-
+	swrl_vars([HeadAtom] :- Body, Vars),
+	swrl_rule_pl(
+		HeadAtom :- Body,
+		Rule_pl, [var('swrl:scope',_)|Vars]),
+	Rule_pl=(?>(Impl_pl,Cond_pl)),
+	findall(Fact,
+		(	lang_query:ask(Cond_pl),
+			swrl_fact(Impl_pl, Fact)
+		),
+		Facts),
+	lang_query:tell(Facts).
+
+%%
+swrl_fact(model_RDFS:instance_of(X,Y), has_type(X,Y)) :- !.
+swrl_fact(lang_holds:holds(X,Y,Z),     holds(X,Y,Z)) :- !.
 
 %% swrl_assert(+Rule).
 %
@@ -48,8 +79,7 @@ swrl_rule_pl(
 		model_RDFS:instance_of(S_var,Cls) ?> Cond_pl,
 		Vars) :-
 	swrl_var(Vars, S, S_var),
-	swrl_condition_pl(Cond, Cond_pl0, Vars),!,
-	Cond_pl=[pragma(\+ compound(Cls)) | Cond_pl0].
+	swrl_condition_pl(Cond, Cond_pl, Vars),!.
 
 swrl_rule_pl(
 		property(S,P,O)                 :- Cond,
@@ -57,8 +87,7 @@ swrl_rule_pl(
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var),
-	swrl_condition_pl(Cond, Cond_pl0, Vars),!,
-	Cond_pl=[pragma(\+ compound(O_var)) | Cond_pl0].
+	swrl_condition_pl(Cond, Cond_pl, Vars),!.
   
 %% swrl_condition_pl
 swrl_condition_pl([], [], _) :- !.
