@@ -9,9 +9,19 @@ static inline double get_stamp(const geometry_msgs::TransformStamped &ts)
 
 static geometry_msgs::TransformStamped dummy;
 
+//#define SEND_UNKNOWN_FAR_AWAY
+#ifdef SEND_UNKNOWN_FAR_AWAY
+static geometry_msgs::TransformStamped far_away;
+#endif
+
 TFMemory::TFMemory() :
 		buffer_index_(0)
 {
+#ifdef SEND_UNKNOWN_FAR_AWAY
+	far_away.transform.translation.x = 99999.9;
+	far_away.transform.translation.y = 99999.9;
+	far_away.transform.translation.z = 99999.9;
+#endif
 }
 
 bool TFMemory::has_transform(const std::string &frame) const
@@ -109,6 +119,12 @@ void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
 			tf_transform.header.stamp = time;
 			tf_msg.transforms.push_back(tf_transform);
 		}
+#ifdef SEND_UNKNOWN_FAR_AWAY
+		else {
+			far_away.header.stamp = time;
+			tf_msg.transforms.push_back(far_away);
+		}
+#endif
 	}
 }
 
