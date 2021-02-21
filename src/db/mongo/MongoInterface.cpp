@@ -76,6 +76,11 @@ MongoCollection* MongoInterface::get_collection(const char *db_name, const char 
 	return new MongoCollection(MongoInterface::get().pool_,db_name,coll_name);
 }
 
+MongoWatch* get_watch()
+{
+	return MongoInterface::get().watch_;
+}
+
 /*********************************/
 /********** MongoInterface *******/
 /*********************************/
@@ -110,10 +115,15 @@ MongoInterface::MongoInterface()
 	}
 	pool_ = mongoc_client_pool_new(uri_);
 	mongoc_client_pool_set_error_api(pool_, 2);
+	watch_ = new MongoWatch(pool_);
 }
 
 MongoInterface::~MongoInterface()
 {
+	if(watch_ != NULL) {
+		delete watch_;
+		watch_ = NULL;
+	}
 	mongoc_client_pool_destroy(pool_);
 	mongoc_uri_destroy(uri_);
 	mongoc_cleanup();

@@ -22,6 +22,7 @@
 #include <knowrob/db/mongo/MongoDatabase.h>
 #include <knowrob/db/mongo/MongoCollection.h>
 #include <knowrob/db/mongo/MongoCursor.h>
+#include <knowrob/db/mongo/MongoWatch.h>
 
 class MongoInterface {
 public:
@@ -51,6 +52,10 @@ public:
 	
 	static MongoCursor* cursor(const char *curser_id);
 	
+	static MongoWatch* get_watch();
+
+	MongoWatch *watch_;
+
 private:
 	MongoInterface();
 	~MongoInterface();

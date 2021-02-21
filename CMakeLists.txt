@@ -72,7 +72,8 @@ add_library(mongo_kb
 	src/db/mongo/MongoInterface.cpp
 	src/db/mongo/MongoDatabase.cpp
 	src/db/mongo/MongoCollection.cpp
-	src/db/mongo/MongoCursor.cpp)
+	src/db/mongo/MongoCursor.cpp
+	src/db/mongo/MongoWatch.cpp)
 target_link_libraries(mongo_kb
 	${SWIPL_LIBRARIES}
 	${MONGOC_LIBRARIES}

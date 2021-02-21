@@ -82,6 +82,20 @@ PREDICATE(mng_update, 4) {
 	return TRUE;
 }
 
+PREDICATE(mng_watch, 4) {
+	char* db_name       = (char*)PL_A1;
+	char* coll_name     = (char*)PL_A2;
+	char* callback_goal = (char*)PL_A3;
+	MongoInterface::get_watch()->watch(db_name,coll_name,callback_goal,PL_A4);
+	return TRUE;
+}
+
+PREDICATE(mng_unwatch, 1) {
+	char* callback_goal = (char*)PL_A1;
+	MongoInterface::get_watch()->unwatch(callback_goal);
+	return TRUE;
+}
+
 PREDICATE(mng_bulk_write, 3) {
 	char* db_name   = (char*)PL_A1;
 	char* coll_name = (char*)PL_A2;
