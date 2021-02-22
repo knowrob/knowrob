@@ -128,7 +128,7 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	% get local pose data and scope
 	tf_mem_get_pose(ObjFrame,PoseData,Since),
 	get_time(Now),
-	time_scope(Since,=(Now),=(FS)),
+	time_scope(=(Since),=(Now),FS),
 	% make sure there is an overlap with the query scope
 	time_scope_data(QS,[QSince,QUntil]),
 	strip_operator_(QSince,QSince0),
@@ -146,7 +146,7 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	strip_operator_(QSince,QSince0),
 	strip_operator_(QUntil,QUntil0),
 	tf_mng_lookup(ObjFrame,QSince0,QUntil0,PoseData,FSince,FUntil),
-	time_scope(FSince,=(FUntil),=(FS)).
+	time_scope(=(FSince),=(FUntil),FS).
 
 % FIXME redundant
 strip_operator_( <(X),X) :- !.
