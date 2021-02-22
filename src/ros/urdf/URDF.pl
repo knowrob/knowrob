@@ -106,7 +106,7 @@ urdf_init(Object,Identifier) :-
 	% create has_urdf facts
 	forall(
 		(	Y=Object
-		;	holds(Object,transitive(dul:hasComponent),Y)
+		;	ask(triple(Object,transitive(dul:hasComponent),Y))
 		),
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
@@ -159,7 +159,7 @@ urdf_load(Object,URL,Options) :-
 	;	tell(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
-	findall(X, holds(Object,transitive(dul:hasComponent),X), Parts),
+	findall(X, ask(triple(Object,transitive(dul:hasComponent),X)), Parts),
 	% set component poses relative to links
 	forall(
 		(	member(Y,[Object|Parts]),
@@ -377,10 +377,8 @@ has_parent_link(Joint,Link) ?+>
 %%
 % TODO: reconsider this
 % 
-%object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) ?>
-%	{ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) },
-%	% TODO: set universal fact scope? or not needed?
-%	{ true }.
+model_SOMA:object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
+	object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm).
 
 %%
 object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
