@@ -60,7 +60,18 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 		Pipeline
 	).
 
-query_annotation(Entity, Property, Annotation, Ctx,
+query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
+	option(mode(tell),Ctx),!,
+	mng_strip_type(Annotation, _, UnTyped),
+	% only load annotations written in English
+	% silently do nothing for other languages
+	(	strip_lang(UnTyped, en, Stripped)
+	->	tell_annotation(Entity, Property, Stripped, Ctx, Pipeline, StepVars)
+	;	(Pipeline=[], StepVars=[])
+	).
+
+%%
+tell_annotation(Entity, Property, Stripped, Ctx,
 		[['$set', ['annotations', ['$setUnion',
 			array([string('$annotations'),array([[
 				['s', Entity0],
@@ -68,10 +79,6 @@ query_annotation(Entity, Property, Annotation, Ctx,
 				['v', Annotation0]
 			]])])
 		]]]], StepVars) :-
-	option(mode(tell),Ctx),!,
-	mng_strip_type(Annotation, _, UnTyped),
-	% only load annotations written in English
-	strip_lang(UnTyped, en, Stripped),
 	% enforce UTF8 encoding
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
@@ -91,7 +98,7 @@ utf8_value(X, string(X)).
 
 %%
 strip_lang(Var, en, Var) :- var(Var), !.
-strip_lang(lang(Lang,Val), Lang, Val) :- !.
+strip_lang(lang(Lang0,Val), Lang1, Val) :- !, Lang0 = Lang1.
 strip_lang(Val, en, Val).
 
 		 /*******************************

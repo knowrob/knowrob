@@ -169,53 +169,49 @@ load_owl(URL, Options) :-
 	is_list(Options),
 	!,
 	% register namespace
-	(	member(namespace(NS), Options)
+	(	option(namespace(NS), Options)
 	->	(	atom_concat(URL, '#', Prefix),
 			rdf_register_ns(NS, Prefix, [keep(true)])
 		)
 	;	true
 	),
-	(	member(namespace(NS,Prefix), Options)
+	(	option(namespace(NS,Prefix), Options)
 	->	rdf_register_ns(NS, Prefix, [keep(true)])
 	;	true
 	),
-	% get graph name
-	(	member(graph(Graph), Options) -> true
-	;	Graph=_
-	),
+	% get parent graph name, fall back to "common"
+	option(parent_graph(ParentGraph), Options, common),
 	% get fact scope
 	universal_scope(Scope),
-	load_owl(URL, Scope, Graph).
+	load_owl(URL, Scope, ParentGraph).
 
-%% load_owl(+URL,+Scope,+Graph) is semidet.
+%% load_owl(+URL,+Scope,+ParentGraph) is semidet.
 %
-% Load RDF data from file, and assert it into
-% the triple DB using the scope provided, and
-% into the graph with the name provided.
+% Load RDF data from URL, and assert it into
+% the triple DB using the scope provided
+% and into a graph named according to the ontology.
+% The named graph is added as child graph of ParentGraph.
 %
 % @param URL URL of a RDF file.
 % @param Scope The subject of a triple.
-% @param Graph The graph name.
+% @param ParentGraph The parent graph name.
 %
-load_owl(URL, Scope, SubGraph) :-
+load_owl(URL, Scope, ParentGraph) :-
 	(	url_resolve(URL,Resolved) -> true
 	;	Resolved=URL 
 	),
-	(	ground(SubGraph) -> OntoGraph=SubGraph
-	;	ontology_graph(Resolved,OntoGraph)
-	),
+	ontology_graph(Resolved,OntoGraph),
 	%% setup graph structure
-	(	add_subgraph(OntoGraph,common),
+	(	add_subgraph(OntoGraph,ParentGraph),
 		add_subgraph(user,OntoGraph)
 	),
 	!,
 	%%
 	(	setting(mng_client:read_only, true) -> true
-	;	load_owl0(Resolved, Scope, OntoGraph, SubGraph)
+	;	load_owl0(Resolved, Scope, OntoGraph, ParentGraph)
 	).
 
-load_owl0(Resolved, _, OntoGraph, _SubGraph) :-
-	writeln(load_owl(Resolved)),
+load_owl0(Resolved, _, OntoGraph, _ParentGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
 	% test whether the ontology is already loaded
 	get_ontology_version(OntoGraph,Version),
@@ -237,14 +233,12 @@ load_owl0(Resolved, _, OntoGraph, _SubGraph) :-
 	!,
 	log_info(db(ontology_detected(OntoGraph,Version))).
 
-load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
+load_owl0(Resolved, Scope, OntoGraph, ParentGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
 	rdf_equal(owl:'Ontology',OWL_Ontology),
 	rdf_equal(rdf:'type',RDF_Type),
 	% erase old triples
-	(	ground(SubGraph) -> true
-	;	drop_graph(OntoGraph)
-	),
+	drop_graph(OntoGraph),
 	%
 	load_rdf_(Resolved, Triples),
 	% get ontology IRI
@@ -254,9 +248,9 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 	% first, load RDF data of imported ontologies
 	forall(
 		member(rdf(Unresolved,OWL_Imports,I), Triples),
-		(	ontology_graph(I,ImportedGraph),
-			add_subgraph(OntoGraph,ImportedGraph),
-			load_owl(I,Scope,SubGraph)
+		(	ontology_graph(I, ImportedGraph),
+			add_subgraph(OntoGraph, ImportedGraph),
+			load_owl(I, Scope, ParentGraph)
 		)
 	),
 	% assert a version string
@@ -269,9 +263,6 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 
 %%
 load_owl1(IRI, Triples, Scope, Graph) :-
-	writeln(load_owl1(IRI)),
-	% debug how long loading takes
-	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
 	% NOTE: annotations are stored in a separate collection.
 	%       the reason is that we create a search index over the value
@@ -289,18 +280,10 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%lang_query:tell(AnnotationTerms, Scope, [graph(Graph)]),
 	forall(
 		(	member(Term, TripleTerms)
-		%;	member(Term, AnnotationTerms)
+		;	member(Term, AnnotationTerms)
 		),
-		(	%writeln(Term),
-			lang_query:tell(Term, Scope, [graph(Graph)])
-		)
-	),
-	get_time(Time1),
-	% debug
-	length(Triples,NumTriples),
-	PerSec is NumTriples/(Time1-Time0),
-	log_debug(tripledb(loaded(
-		ntriples(NumTriples),persecond(PerSec)))).
+		lang_query:tell(Term, Scope, [graph(Graph)])
+	).
 
 %% reads json data and asserts into mongodb
 %

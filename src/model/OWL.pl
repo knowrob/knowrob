@@ -57,8 +57,7 @@
 
 % load OWL model
 :- load_owl('http://www.w3.org/2002/07/owl.rdf',
-	[ graph(common),
-	  namespace(owl,'http://www.w3.org/2002/07/owl#')
+	[ namespace(owl,'http://www.w3.org/2002/07/owl#')
 	]).
 
 %% is_owl_term(+Term) is semidet.
