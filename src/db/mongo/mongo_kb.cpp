@@ -82,17 +82,19 @@ PREDICATE(mng_update, 4) {
 	return TRUE;
 }
 
-PREDICATE(mng_watch, 4) {
-	char* db_name       = (char*)PL_A1;
-	char* coll_name     = (char*)PL_A2;
-	char* callback_goal = (char*)PL_A3;
-	MongoInterface::get_watch()->watch(db_name,coll_name,callback_goal,PL_A4);
+PREDICATE(mng_watch, 5) {
+	char* db_name   = (char*)PL_A1;
+	char* coll_name = (char*)PL_A2;
+	char* callback  = (char*)PL_A3;
+	long id = MongoInterface::get_watch()->watch(
+			db_name, coll_name, callback, PL_A4);
+	PL_A5 = PlTerm(id);
 	return TRUE;
 }
 
 PREDICATE(mng_unwatch, 1) {
-	char* callback_goal = (char*)PL_A1;
-	MongoInterface::get_watch()->unwatch(callback_goal);
+	long watcher_id = (long)PL_A1;
+	MongoInterface::get_watch()->unwatch(watcher_id);
 	return TRUE;
 }
 

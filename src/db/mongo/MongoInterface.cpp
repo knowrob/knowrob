@@ -76,7 +76,7 @@ MongoCollection* MongoInterface::get_collection(const char *db_name, const char 
 	return new MongoCollection(MongoInterface::get().pool_,db_name,coll_name);
 }
 
-MongoWatch* get_watch()
+MongoWatch* MongoInterface::get_watch()
 {
 	return MongoInterface::get().watch_;
 }

@@ -54,8 +54,6 @@ public:
 	
 	static MongoWatch* get_watch();
 
-	MongoWatch *watch_;
-
 private:
 	MongoInterface();
 	~MongoInterface();
@@ -67,6 +65,7 @@ private:
 	mongoc_client_pool_t *pool_;
 	
 	std::map<std::string, MongoCursor*> cursors_;
+	MongoWatch *watch_;
 
 	std::mutex mongo_mutex_;
 };

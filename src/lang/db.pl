@@ -5,6 +5,9 @@
       load_json_rdf/1,
       remember/1,
       memorize/1,
+      watch(t,t,-),
+      watch_event(+,+),
+      unwatch(+),
       drop_graph/1,
       get_unique_name(r,-),
       is_unique_name(r),
@@ -41,6 +44,7 @@
 %%
 annotation_property('http://www.w3.org/2000/01/rdf-schema#comment').
 annotation_property('http://www.w3.org/2000/01/rdf-schema#seeAlso').
+annotation_property('http://www.w3.org/2000/01/rdf-schema#label').
 annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
 
 %%
@@ -211,6 +215,7 @@ load_owl(URL, Scope, SubGraph) :-
 	).
 
 load_owl0(Resolved, _, OntoGraph, _SubGraph) :-
+	writeln(load_owl(Resolved)),
 	rdf_equal(owl:'imports',OWL_Imports),
 	% test whether the ontology is already loaded
 	get_ontology_version(OntoGraph,Version),
@@ -264,6 +269,7 @@ load_owl0(Resolved,Scope,OntoGraph,SubGraph) :-
 
 %%
 load_owl1(IRI, Triples, Scope, Graph) :-
+	writeln(load_owl1(IRI)),
 	% debug how long loading takes
 	get_time(Time0),
 	maplist(convert_rdf_(IRI), Triples, Terms),
@@ -273,7 +279,7 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%       over values with special characters.
 	exclude(is_annotation_triple, Terms, TripleTerms),
 	include(is_annotation_triple, Terms, AnnotationTriples),
-	maplist([tripel(S,P,O),annotation(S,P,O)]>>true,
+	maplist([triple(S,P,O),annotation(S,P,O)]>>true,
 		AnnotationTriples, AnnotationTerms),
 	% FIXME: BUG: o* for subClassOf only includes direct super class
 	%             when loading a list of triples at once.
@@ -283,9 +289,11 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%lang_query:tell(AnnotationTerms, Scope, [graph(Graph)]),
 	forall(
 		(	member(Term, TripleTerms)
-		;	member(Term, AnnotationTerms)
+		%;	member(Term, AnnotationTerms)
 		),
-		lang_query:tell(Term, Scope, [graph(Graph)])
+		(	%writeln(Term),
+			lang_query:tell(Term, Scope, [graph(Graph)])
+		)
 	),
 	get_time(Time1),
 	% debug
@@ -429,6 +437,91 @@ is_version_string(Atom) :-
 version_matcher --> "v", version_matcher.
 version_matcher --> digits(_), ".", digits(_), ".", digits(_).
 version_matcher --> digits(_), ".", digits(_).
+
+     /*******************************
+     *          DB EVENTS           *
+     *******************************/
+
+:- dynamic watcher/2.
+
+%% watch(+Goal, +Callback, -WatcherID) is semidet.
+%
+% Start watching possible instantiations of variables in Goal.
+% Callback is called whenever the set of possible instantiations changes,
+% and it is provided with information about the change.
+% The change information is encoded in a term that is appended to
+% already existing arguments of Callback, if any.
+%
+% NOTE: currently Goal must be a term triple/3. No other language terms
+%       are supported yet.
+% FIXME: callback is currently not called when documents are removed!
+%
+watch(Goal, Callback, WatcherID) :-
+	% create match filter based on Goal
+	% NOTE: it is not possible to $match remove events like this
+	%       because the document values are _not_ included in the event :/
+	%       this means additional bookeeping is needed to be able to handle
+	%       remove events (e.g. to add additional watcher on document ID of
+	%       documents returned by watch before), and then the watcher would
+	%       need to be able to handle document IDs.
+	watch_filter(Goal, DB, Coll, WatchFilter),
+	% start receiving events about documents that match the filter
+	mng_watch(DB, Coll,
+		watch_event,
+		[pipeline, array([
+			['$match', WatchFilter]
+		])],
+		WatcherID),
+	% FIXME: there is a risk watch_event is called
+	%        before this fact is asserted
+	assertz(watcher(WatcherID, Callback)).
+
+unwatch(WatcherID) :-
+	once(watcher(WatcherID, _)),
+	mng_unwatch(WatcherID),
+	retractall(watcher(WatcherID, _)).
+
+%% watch_event(+WatcherID, +Event)
+%
+% Event is a change stream response document.
+% The field "operationType" must be one of:
+%  insert, delete, replace, update, drop, rename, dropDatabase, or invalidate.
+% For insert, replace, and update, the "fullDocument" field holds the
+% modified document.
+%
+% @see https://docs.mongodb.com/manual/reference/change-events/#change-stream-output
+%
+watch_event(WatcherID, Event) :-
+	once(watcher(WatcherID, CallbackGoal)),
+	dict_pairs(Dict, _, Event),
+	mng_get_dict(operationType, Dict, string(OpType)),
+	memberchk(OpType, [insert, update]),
+	% read the triple document from "fullDocument" field
+	mng_get_dict(fullDocument,  Dict, FullDoc),
+	mng_get_dict('_id', FullDoc, DocID),
+	% parse triple
+	mng_get_dict(s, FullDoc, string(S)),
+	mng_get_dict(p, FullDoc, string(P)),
+	mng_get_dict(o, FullDoc, TypedValue),
+	mng_strip_type(TypedValue, _, Value),
+	% finally call the watcher
+	UpdateTerm = event(OpType, DocID, [
+		new_value(triple(S,P,Value))
+	]),
+	catch(
+		call(CallbackGoal, UpdateTerm),
+		Exc,
+		log_error_and_fail(lang(Exc, watch_callback(CallbackGoal, UpdateTerm)))
+	).
+
+watch_filter(triple(S,P,V), DB, Coll, WatchFilter) :-
+	% TODO: howto handle scope of facts here?
+	mng_get_db(DB, Coll, 'triples'),
+	lang_triple:mng_triple_doc(triple(S,P,V), Doc, []),
+	% the event holds the updated document in a field "fullDocument" 
+	maplist([[Key0,Val],[Key1,Val]]>>
+		atom_concat('fullDocument.', Key0, Key1),
+		Doc, WatchFilter).
 
      /*******************************
      *        SEARCH INDEX          *

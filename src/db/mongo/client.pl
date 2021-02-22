@@ -10,6 +10,8 @@
       mng_remove/3,
       mng_bulk_write/3,
       mng_find/4,
+      mng_watch/5,
+      mng_unwatch/1,
       mng_index_create/2,
       mng_index_create/3,
       mng_dump/2,
