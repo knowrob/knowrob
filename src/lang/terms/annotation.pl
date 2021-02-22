@@ -66,12 +66,13 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	% only load annotations written in English
 	% silently do nothing for other languages
 	(	strip_lang(UnTyped, en, Stripped)
-	->	tell_annotation(Entity, Property, Stripped, Ctx, Pipeline, StepVars)
+	->	tell_annotation(Entity, Property, Annotation,
+			Stripped, Ctx, Pipeline, StepVars)
 	;	(Pipeline=[], StepVars=[])
 	).
 
 %%
-tell_annotation(Entity, Property, Stripped, Ctx,
+tell_annotation(Entity, Property, Annotation, Stripped, Ctx,
 		[['$set', ['annotations', ['$setUnion',
 			array([string('$annotations'),array([[
 				['s', Entity0],

@@ -99,13 +99,13 @@ show_marker(_MarkerID, _MarkerTerm, _Options) :-
 % @param Timepoint The given timepoint
 %
 show_markers(Timepoint) :-
-	time_scope(=<(Timepoint), >=(Timepoint), Scope),
+	%time_scope(=<(Timepoint), >=(Timepoint), Scope),
 	%forall(
 	%	ask(is_physical_object(PO)),
 	%	show_marker(PO, PO, [scope(Scope)])
 	%).
 	findall(Msg,
-		(	object_marker(_Obj,Scope,ID,Data),
+		(	object_marker(_Obj,ID,Data),
 			marker_message_new(ID,Data,Msg)
 		),
 		MessageList
