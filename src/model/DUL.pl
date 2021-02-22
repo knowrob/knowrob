@@ -52,10 +52,6 @@
       has_assignment(r,r),
       has_data_value(r,?),
       has_time_interval(r,r),
-      has_interval_begin(r,?),
-      has_interval_end(r,?),
-      has_interval_duration(r,?),
-      is_interval_equal(r,r),
       plan_has_goal(r,r),
       satisfies(r,r),
       is_setting_for(r,r)
@@ -471,56 +467,13 @@ has_assignment(Param,Region) ?+>
 % @param DataValue typed data value.
 %
 has_data_value(Entity,DataValue) ?+>
-	holds(Entity,dul:hasDataValue,DataValue).
+	triple(Entity,dul:hasDataValue,DataValue).
 
 %% has_time_interval(+Entity,?Interval) is semidet. 
 %
 %
 has_time_interval(Entity,TimeInterval) ?+>
 	triple(Entity,dul:hasTimeInterval,TimeInterval).
-
-%% has_interval_begin(I,End) is semidet.
-%
-% The start time of I 
-%
-% @param I Time point, interval or temporally extended entity
-% 
-has_interval_begin(TI, Begin) ?+>
-	holds(TI, soma:hasIntervalBegin, Begin).
-
-%% has_interval_end(I,End) is semidet.
-%
-% The end time of I 
-%
-% @param I Time point, interval or temporally extended entity
-% 
-has_interval_end(TI, End) ?+>
-	holds(TI, soma:hasIntervalEnd, End).
-
-%% has_interval_duration(Event, Duration) is nondet.
-%
-% Calculate the duration of the the TemporalThing Event
-%
-% @param Event Identifier of a TemporalThing
-% @param Duration Duration of the event
-%
-has_interval_duration(TI, Duration) ?>
-	has_interval_begin(TI, Begin),
-	has_interval_end(TI, End),
-	Duration is (End-Begin).
-
-%% is_interval_equal(?I1,?I2) is semidet.
-%
-% Interval I1 is equal to I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-is_interval_equal(TI1, TI2) ?>
-	has_interval_begin(TI1, Begin),
-	has_interval_begin(TI2, Begin),
-	has_interval_end(TI1, End),
-	has_interval_end(TI2, End).
 
 %% is_description(?Entity) is nondet.
 %

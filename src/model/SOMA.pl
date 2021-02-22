@@ -39,6 +39,10 @@
 	  workflow_first_step(r,r),
 	  workflow_role_range(r,r,r),
 	  workflow_constituent(r,r),
+      has_interval_begin(r,?),
+      has_interval_end(r,?),
+      has_interval_duration(r,?),
+      is_interval_equal(r,r),
 	  %% Features
 	  is_feature(r),
 	  object_feature(r,r),
@@ -747,6 +751,49 @@ is_intrinsic(Entity) ?+>
 %
 is_extrinsic(Entity) ?+>
 	has_type(Entity, soma:'Extrinsic').
+
+%% has_interval_begin(I,End) is semidet.
+%
+% The start time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+has_interval_begin(TI, Begin) ?+>
+	triple(TI, soma:hasIntervalBegin, Begin).
+
+%% has_interval_end(I,End) is semidet.
+%
+% The end time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+has_interval_end(TI, End) ?+>
+	triple(TI, soma:hasIntervalEnd, End).
+
+%% has_interval_duration(Event, Duration) is nondet.
+%
+% Calculate the duration of the the TemporalThing Event
+%
+% @param Event Identifier of a TemporalThing
+% @param Duration Duration of the event
+%
+has_interval_duration(TI, Duration) ?>
+	has_interval_begin(TI, Begin),
+	has_interval_end(TI, End),
+	Duration is (End-Begin).
+
+%% is_interval_equal(?I1,?I2) is semidet.
+%
+% Interval I1 is equal to I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+is_interval_equal(TI1, TI2) ?>
+	has_interval_begin(TI1, Begin),
+	has_interval_begin(TI2, Begin),
+	has_interval_end(TI1, End),
+	has_interval_end(TI2, End).
 
 %% object_localization(?Obj, ?Loc) is nondet.
 %

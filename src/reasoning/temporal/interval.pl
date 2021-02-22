@@ -22,6 +22,8 @@
 */
 
 :- use_module('esg').
+:- use_module(library('model/DUL')).
+:- use_module(library('model/SOMA')).
 
 %%
 %
@@ -43,18 +45,18 @@ allen_symbol(d).
 interval_constraint(Resource,Constraint) :-
 	interval_constraint(Resource,Constraint,_).
 
-interval_constraint(A,  =(A,B), B) :- triple(A,soma:simultaneous,B).
-interval_constraint(A,  <(A,B), B) :- triple(A,soma:before,B).
-interval_constraint(A,  >(A,B), B) :- triple(A,soma:after,B).
-interval_constraint(A,  m(A,B), B) :- triple(A,soma:meets,B).
-interval_constraint(A, mi(A,B), B) :- triple(A,soma:metBy,B).
-interval_constraint(A,  o(A,B), B) :- triple(A,soma:overlappedOn,B).
-interval_constraint(A, oi(A,B), B) :- triple(A,soma:overlappedBy,B).
-interval_constraint(A,  s(A,B), B) :- triple(A,soma:starts,B).
-interval_constraint(A, si(A,B), B) :- triple(A,soma:startedBy,B).
-interval_constraint(A,  f(A,B), B) :- triple(A,soma:finishes,B).
-interval_constraint(A, fi(A,B), B) :- triple(A,soma:finishedBy,B).
-interval_constraint(A,  d(A,B), B) :- triple(A,soma:during,B).
+interval_constraint(A,  =(A,B), B) :- holds(A,soma:simultaneous,B).
+interval_constraint(A,  <(A,B), B) :- holds(A,soma:before,B).
+interval_constraint(A,  >(A,B), B) :- holds(A,soma:after,B).
+interval_constraint(A,  m(A,B), B) :- holds(A,soma:meets,B).
+interval_constraint(A, mi(A,B), B) :- holds(A,soma:metBy,B).
+interval_constraint(A,  o(A,B), B) :- holds(A,soma:overlappedOn,B).
+interval_constraint(A, oi(A,B), B) :- holds(A,soma:overlappedBy,B).
+interval_constraint(A,  s(A,B), B) :- holds(A,soma:starts,B).
+interval_constraint(A, si(A,B), B) :- holds(A,soma:startedBy,B).
+interval_constraint(A,  f(A,B), B) :- holds(A,soma:finishes,B).
+interval_constraint(A, fi(A,B), B) :- holds(A,soma:finishedBy,B).
+interval_constraint(A,  d(A,B), B) :- holds(A,soma:during,B).
 
 %%
 %
@@ -70,6 +72,17 @@ interval_query( si(A,B) ) :- interval_starts(B,A).
 interval_query(  f(A,B) ) :- interval_finishes(A,B).
 interval_query( fi(A,B) ) :- interval_finishes(B,A).
 interval_query(  d(A,B) ) :- interval_during(A,B).
+
+%% FIXME: move somewhere else?
+time_interval_data(Event, Begin, End) ?>
+%	is_event(Event),!,
+	has_time_interval(Event, TI),
+	has_interval_begin(TI, Begin),
+	has_interval_end(TI, End).
+
+%time_interval_data(TI, Begin, End) ?>
+%	has_interval_begin(TI, Begin),
+%	has_interval_end(TI, End).
 
 %% interval_equals(I0,I1) is semidet.
 %
