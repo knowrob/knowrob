@@ -134,7 +134,7 @@ load_logs(Folder) :-
   remember(Path),
   tf_mng_remember(Path).
 
-validate_episode(WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame
+validate_episode(_WorldFrame):- % Set the name of the folder with the logs as Foldername, the desired world frame
   get_actions_without_timeinterval(_),
   get_actions_with_participants_without_role(_),
   get_actions_without_tasks(_),

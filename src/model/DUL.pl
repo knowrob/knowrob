@@ -589,27 +589,12 @@ satisfies(Sit,Descr) ?+>
 % @param Entity A named individual.
 %
 is_setting_for(Sit,Entity) ?>
-	holds(Sit,dul:isSettingFor,Entity).
+	triple(Sit,dul:isSettingFor,Entity).
 
 is_setting_for(Sit,Entity) +>
-	ask(is_action(Entity)),
-	!,
-	holds(Sit,dul:includesAction,Entity).
-
-is_setting_for(Sit,Entity) +>
-	ask(is_event(Entity)),
-	!,
-	holds(Sit,dul:includesEvent,Entity).
-
-is_setting_for(Sit,Entity) +>
-	ask(is_agent(Entity)),
-	!,
-	holds(Sit,dul:includesAgent,Entity).
-
-is_setting_for(Sit,Entity) +>
-	ask(is_object(Entity)),
-	!,
-	holds(Sit,dul:includesObject,Entity).
-
-is_setting_for(Sit,Entity) +>
-	holds(Sit,dul:isSettingFor,Entity).
+	(	ask(is_action(Entity)) -> triple(Sit,dul:includesAction,Entity)
+	;	ask(is_event(Entity))  -> triple(Sit,dul:includesEvent,Entity)
+	;	ask(is_agent(Entity))  -> triple(Sit,dul:includesAgent,Entity)
+	;	ask(is_object(Entity)) -> triple(Sit,dul:includesObject,Entity)
+	;	triple(Sit,dul:isSettingFor,Entity)
+	).

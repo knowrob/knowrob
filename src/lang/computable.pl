@@ -12,10 +12,6 @@
     [ is_object_property/1,
       is_data_property/1
     ]).
-:- use_module(library('db/obda'),        [ obda_add/1 ]).
-:- use_module(library('reasoning/pool'), [ register_reasoner/1 ]).
-:- use_module('./terms/is_a.pl',         [ subproperty_of/2 ]).
-:- use_module('./terms/transitive.pl',   [ transitive/1 ]).
 
 %% computables(+Computables) is det.
 %

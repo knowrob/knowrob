@@ -50,9 +50,9 @@
 % load init files in sub-directories
 :- use_directory('lang').
 :- use_directory('model').
-%:- use_directory('reasoning').
-%:- use_directory('ros').
-%:- use_directory('vis').
+:- use_directory('reasoning').
+:- use_directory('ros').
+:- use_directory('vis').
 
 % load additional modules
 :- knowrob_load_plugins.
