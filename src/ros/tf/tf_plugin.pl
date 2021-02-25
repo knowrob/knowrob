@@ -48,6 +48,66 @@
 tf_db(DB, Name) :- 
 	mng_get_db(DB, Name, 'tf').
 
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% QUERY COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%
+
+:- query_compiler:add_command(tf_transform).
+%:- query_compiler:add_command(tf_transform_world).
+
+%%
+query_compiler:step_compile(
+		tf_transform(Child, [Parent, [X,Y,Z], [QX,QY,QZ,QW]]),
+		Ctx, Pipeline, StepVars) :-
+	option(mode(ask), Ctx),!,
+	mng_get_db(_DB, Coll, 'tf'),
+	query_compiler:var_key_or_val(Child, Ctx, Child0),
+	VarMapping=[
+		[Parent, 'tf.header.frame_id'],
+		[X,      'tf.transform.translation.x'],
+		[Y,      'tf.transform.translation.y'],
+		[Z,      'tf.transform.translation.z'],
+		[QX,     'tf.transform.rotation.x'],
+		[QY,     'tf.transform.rotation.y'],
+		[QZ,     'tf.transform.rotation.z'],
+		[QW,     'tf.transform.rotation.w']
+	],
+	findall(Step,
+		% look-up tf documents into 'tf' field
+		(	Step=['$lookup', [
+				['from', string(Coll)],
+				['as', string('tf')],
+				['let', LetDoc],
+				['pipeline', array([
+					['$match', [
+						['child_frame_id', Child0],
+						['header.stamp', ['$lte', time(QUntil)]]
+					]],
+					['$sort',[
+						['header.stamp',int(-1)]
+					]],
+					['$limit',int(1)]
+				])]
+			]]
+		% unwind lookup results and assign variable
+		;	Step=['$unwind', string('$tf')]
+		;	(	member([Var,TFKey], VarMapping),
+				query_compiler:var_key(Var,Ctx,VarKey),
+				Step=['$set', [VarKey, string(TFKey)]]
+			)
+		;	Step=['$unset', string('tf')]
+		),
+		Pipeline
+	).
+
+query_compiler:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
+	option(mode(tell), Ctx),!,
+	fail.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% TF REPUBLISHER
+%%%%%%%%%%%%%%%%%%%%%%%
+
 %%
 tf_republish_set_goal(Time_min, Time_max) :-
 	tf_db(DBName, CollectionName),
