@@ -9,7 +9,7 @@
 
 %% query commands
 :- query_compiler:add_command(assert).
-%:- query_compiler:add_command(retract).
+:- query_compiler:add_command(retractall).
 
 %% add_database_predicate(+Functor, +Fields, +Options) is semidet.
 %
@@ -50,10 +50,14 @@ drop_database_predicate(Functor) :-
 	mng_drop(DB, Collection).
 
 %%
-query_compiler:step_compile(Term, Ctx, Pipeline, StepVars) :-
+is_database_predicate(Term, ArgFields) :-
 	compound(Term),
 	Term =.. [Functor|_],
-	database_predicate(Functor, ArgFields),
+	database_predicate(Functor, ArgFields).
+
+%%
+query_compiler:step_compile(Term, Ctx, Pipeline, StepVars) :-
+	is_database_predicate(Term, ArgFields),
 	!,
 	query_compiler:step_vars(Term, Ctx, StepVars0),
 	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
@@ -64,7 +68,13 @@ query_compiler:step_compile(Term, Ctx, Pipeline, StepVars) :-
 	).
 
 query_compiler:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
+%	is_database_predicate(Term,_),
 	merge_options([mode(tell)], Ctx, Ctx0),
+	query_compiler:step_compile(Term, Ctx0, Pipeline, StepVars).
+
+query_compiler:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
+%	is_database_predicate(Term,_),
+	merge_options([mode(ask),retractall], Ctx, Ctx0),
 	query_compiler:step_compile(Term, Ctx0, Pipeline, StepVars).
 	
 %%
@@ -75,17 +85,24 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 	unpack_compound(Zipped, Unpacked),
 	%
 	query_compiler:lookup_let_doc(StepVars, LetDoc),
-	merge_options([disj_vars(StepVars)], Ctx, Ctx0),
-	match_predicate(Unpacked, Ctx0, Match),
-	% compound arguments with free variables need to be handled
-	% separately because we cannot write path queries that
-	% access array elements.
-	(	set_nested_args(Unpacked,SetArgs)
-	->	(	match_nested(Unpacked, Ctx0, MatchNested),
-			InnerPipeline=[Match,SetArgs,MatchNested]
-		)
-	;	InnerPipeline=[Match]
-	),
+	match_predicate(Unpacked, Ctx, Match),
+	findall(InnerStep,
+		(	InnerStep=Match
+		% compound arguments with free variables need to be handled
+		% separately because we cannot write path queries that
+		% access array elements.
+		;	(	set_nested_args(Unpacked,SetArgs),
+				match_nested(Unpacked, Ctx, MatchNested),
+				(InnerStep = SetArgs ; InnerStep = MatchNested)
+			)
+		% retractall first performs match, then only projects the id of the document
+		;	(	option(retractall, Ctx),
+				(	InnerStep=['$project',[['_id',int(1)]]]
+				;	InnerStep=['$set',['delete',bool(true)]]
+				)
+			)
+		),
+		InnerPipeline),
 	%
 	findall(Step,
 		% look-up documents into 't_pred' array field
@@ -96,12 +113,19 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 				['pipeline', array(InnerPipeline)]
 			]]
 		% unwind lookup results and assign variables
-		;	Step=['$unwind', string('$t_pred')]
-		;	(	member([FieldPath0,Var,Is], Unpacked),
-				query_compiler:var_key(Var,Ctx0,VarKey),
-				atomic_list_concat([FieldPath0|Is],'_',FieldPath),
-				atom_concat('$t_pred.', FieldPath, FieldQuery),
-				Step=['$set', [VarKey, string(FieldQuery)]]
+		;	(	\+ option(retractall, Ctx),
+				(	Step=['$unwind', string('$t_pred')]
+				;	(	member([FieldPath0,Var,Is], Unpacked),
+						query_compiler:var_key(Var,Ctx,VarKey),
+						atomic_list_concat([FieldPath0|Is],'_',FieldPath),
+						atom_concat('$t_pred.', FieldPath, FieldQuery),
+						Step=['$set', [VarKey, string(FieldQuery)]]
+					)
+				)
+			)
+		% add removed facts to assertions list
+		;	(	option(retractall, Ctx),
+				query_compiler:add_assertions(string('$t_pred'), Collection, Step)
 			)
 		;	Step=['$unset', string('t_pred')]
 		),
@@ -267,6 +291,11 @@ test('woman(-)') :-
 	assert_true(ground(Xs)),
 	assert_true(memberchk(mia,Xs)),
 	assert_true(memberchk(jody,Xs)).
+
+test('retract(woman)') :-
+	assert_true(ask(woman(jody))),
+	assert_true(ask(retractall(woman(jody)))),
+	assert_false(ask(woman(jody))).
 
 test('assert(loves)') :-
 	assert_true(ask(assert(loves(vincent,mia)))),

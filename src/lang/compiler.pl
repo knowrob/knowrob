@@ -650,11 +650,11 @@ add_assertion(Doc, Coll, Step) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-add_assertion_var(StepVars0, Ctx, StepVars) :-
-	(	option(mode(ask), Ctx)
-	->	StepVars=StepVars0
-	;	StepVars=[['g_assertions',_]|StepVars0]
-	).
+add_assertion_var(StepVars, Ctx, [['g_assertions',_]|StepVars]) :-
+	(	option(mode(tell), Ctx)
+	;	option(retract, Ctx)
+	),!.
+add_assertion_var(StepVars, _, StepVars).
 
 % read all variables referred to in Step into list StepVars
 step_vars(Step, Ctx, StepVars) :-
