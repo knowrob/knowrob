@@ -487,7 +487,7 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	findall(X,
 		(	( query_value(S1,Query_s), X=['s',Query_s] )
 		;	( query_value(P1,Query_p), X=[Key_p,Query_p] )
-		;	( query_value(V1,Query_v), X=[Key_o,Query_v] )
+		;	( query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
 		;	scope_doc(Scope,X)
 		),
@@ -497,6 +497,10 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	once((\+ ground(S1) ; memberchk(['s',_],Doc))),
 	once((\+ ground(P1) ; memberchk([Key_p,_],Doc))),
 	once((\+ ground(V1) ; memberchk([Key_o,_],Doc))).
+
+%%
+is_term_query([[type,string(compound)],_]).
+is_term_query([_, [[type,string(compound)],_]]).
 
 %%
 query_value(In, Out) :-
