@@ -122,10 +122,10 @@ test('tf_transform_pose') :-
 	test_transform_pose(test:'Alex',Stamp1,[world,[2.0,1.4,2.32],_]),
 	test_transform_pose(test:'Fred',Stamp1,['Alex',_,_]).
 
-test('tf_is_at') :-
-	test_pose_fred0(Pose0,Stamp0),
-	assert_true(ask(
-		during(is_at(test:'Fred',Pose0), [Stamp0,Stamp0])
-	)).
+%test('tf_is_at') :-
+%	test_pose_fred0(Pose0,Stamp0),
+%	assert_true(ask(
+%		during(is_at(test:'Fred',Pose0), [Stamp0,Stamp0])
+%	)).
 
 :- end_tests('tf_plugin').

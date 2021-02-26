@@ -3,6 +3,7 @@
 :- use_module(atoms).
 :- use_module(comparison).
 :- use_module(control).
+:- use_module(database).
 :- use_module(findall).
 :- use_module(lists).
 :- use_module(meta).

@@ -15,6 +15,9 @@ written into a special named graph that is deleted again in cleanup step.
 	[ load_owl/1,
 	  drop_graph/1
 	]).
+:- use_module('subgraph',
+	[ get_subgraphs/2
+	]).
 
 %%
 begin_rdf_tests(Name,RDFFile,Options0) :-
@@ -53,7 +56,11 @@ cleanup(RDFFile) :-
 
 %%
 cleanup :-
-	drop_graph(test),
+	get_subgraphs(test,Subs),
+	forall(
+		member(string(Sub),Subs),
+		drop_graph(Sub)
+	),
 	lang_query:set_default_graph(user).
 
 %%

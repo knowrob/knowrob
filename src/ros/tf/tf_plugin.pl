@@ -30,7 +30,7 @@
 :- use_module(library('utility/filesystem'),
 	[ path_concat/3 ]).
 :- use_module(library('lang/scope'),
-	[ scope_intersect/3, subscope_of/2, time_scope/3, time_scope_data/2 ]).
+	[ scope_intersect/3, subscope_of/2, time_scope/3, time_scope_data/2, current_scope/1 ]).
 :- use_module(library('db/mongo/client')).
 
 % define some settings
@@ -57,9 +57,15 @@ tf_db(DB, Name) :-
 
 %%
 query_compiler:step_compile(
-		tf_transform(Child, [Parent, [X,Y,Z], [QX,QY,QZ,QW]]),
+		tf_transform(Child, Pose),
 		Ctx, Pipeline, StepVars) :-
 	option(mode(ask), Ctx),!,
+	option(scope(Scope), Ctx),
+	% FIXME: time handling bad here
+	time_scope_data(Scope, [_QSince1,QUntil1]),
+	mng_strip_operator(QUntil1, _, QUntil),
+	
+	Pose=[Parent, [X,Y,Z], [QX,QY,QZ,QW]],
 	mng_get_db(_DB, Coll, 'tf'),
 	query_compiler:var_key_or_val(Child, Ctx, Child0),
 	VarMapping=[
@@ -72,6 +78,8 @@ query_compiler:step_compile(
 		[QZ,     'tf.transform.rotation.z'],
 		[QW,     'tf.transform.rotation.w']
 	],
+	query_compiler:step_vars(tf_transform(Child, Pose), Ctx, StepVars),
+	query_compiler:lookup_let_doc(StepVars, LetDoc),
 	findall(Step,
 		% look-up tf documents into 'tf' field
 		(	Step=['$lookup', [
@@ -93,16 +101,17 @@ query_compiler:step_compile(
 		;	Step=['$unwind', string('$tf')]
 		;	(	member([Var,TFKey], VarMapping),
 				query_compiler:var_key(Var,Ctx,VarKey),
-				Step=['$set', [VarKey, string(TFKey)]]
+				atom_concat('$',TFKey,TFVal),
+				Step=['$set', [VarKey, string(TFVal)]]
 			)
 		;	Step=['$unset', string('tf')]
 		),
 		Pipeline
 	).
 
-query_compiler:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
-	option(mode(tell), Ctx),!,
-	fail.
+%query_compiler:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
+%	option(mode(tell), Ctx),!,
+%	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TF REPUBLISHER
@@ -151,16 +160,14 @@ tf_mng_whipe :-
 
 %% is_at(?Object,-PoseData) is nondet.
 %
-% TODO
 %is_at(Obj,[RefFrame,Pos,Rot]) +>
 %	fact_scope(FS),
 %	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) },
 %	notify(object_changed(Obj)).
-%
-%is_at(Obj,[RefFrame,Pos,Rot]) ?>
-%	query_scope(QS),
-%	{ tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,FS) },
-%	fact_scope(FS).
+
+is_at(Obj,[RefFrame,Pos,Rot]) :-
+	current_scope(QS),
+	tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,_FS).
 
 %%
 tf_set_pose(Obj,PoseData,FS) :-
@@ -191,8 +198,8 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	time_scope(=(Since),=(Now),FS),
 	% make sure there is an overlap with the query scope
 	time_scope_data(QS,[QSince,QUntil]),
-	strip_operator_(QSince,QSince0),
-	strip_operator_(QUntil,QUntil0),
+	mng_strip_operator(QSince, _, QSince0),
+	mng_strip_operator(QUntil, _, QUntil0),
 	time_scope(QSince0,=(QUntil0),=(QS0)),
 	scope_intersect(FS,QS0,_),
 	% skip other results in case the fact scope is a superscope of the query scope
@@ -203,18 +210,10 @@ is_at_direct(ObjFrame,PoseData,QS,FS) :-
 
 is_at_direct(ObjFrame,PoseData,QS,FS) :-
 	time_scope_data(QS,[QSince,QUntil]),
-	strip_operator_(QSince,QSince0),
-	strip_operator_(QUntil,QUntil0),
+	mng_strip_operator(QSince, _, QSince0),
+	mng_strip_operator(QUntil, _, QUntil0),
 	tf_mng_lookup(ObjFrame,QSince0,QUntil0,PoseData,FSince,FUntil),
 	time_scope(=(FSince),=(FUntil),FS).
-
-% FIXME redundant
-strip_operator_( <(X),X) :- !.
-strip_operator_( >(X),X) :- !.
-strip_operator_(=<(X),X) :- !.
-strip_operator_(>=(X),X) :- !.
-strip_operator_( =(X),X) :- !.
-strip_operator_( X,X) :- !.
   
 %%
 is_at_indirect(ObjFrame,PoseQuery,DirectPose,QS,FS) :-

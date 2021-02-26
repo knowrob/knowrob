@@ -72,23 +72,24 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	).
 
 %%
-tell_annotation(Entity, Property, Annotation, Stripped, Ctx,
-		[['$set', ['annotations', ['$setUnion',
-			array([string('$annotations'),array([[
-				['s', Entity0],
-				['p', Property0],
-				['v', Annotation0]
-			]])])
-		]]]], StepVars) :-
+tell_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :-
+	mng_get_db(_DB, Collection, 'annotations'),
 	% enforce UTF8 encoding
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([Entity, Property, Annotation_en], Ctx),
-	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars),
+	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars0),
+	StepVars=[['g_assertions',_]|StepVars0],
 	% resolve arguments
 	query_compiler:var_key_or_val(Entity,         Ctx, Entity0),
 	query_compiler:var_key_or_val(Property,       Ctx, Property0),
-	query_compiler:var_key_or_val(Annotation_en,  Ctx, Annotation0).
+	query_compiler:var_key_or_val(Annotation_en,  Ctx, Annotation0),
+	% get the query
+	query_compiler:add_assertion([
+				['s', Entity0],
+				['p', Property0],
+				['v', Annotation0]
+			], Collection, Step).
 
 %%
 utf8_value(Atom, string(UTF8)) :-

@@ -63,8 +63,8 @@ test('ask triple(A,b,C)') :-
 
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
-	assert_true(load_owl('package://knowrob/owl/test/swrl.owl', [ graph(test) ])),
-	assert_true(load_owl('package://knowrob/owl/test/datatype_test.owl', [ graph(test) ])).
+	assert_true(load_owl('package://knowrob/owl/test/swrl.owl', [ parent_graph(test) ])),
+	assert_true(load_owl('package://knowrob/owl/test/datatype_test.owl', [ parent_graph(test) ])).
 
 % check via tripledb_ask if individual triple exists
 test('ask triple') :-

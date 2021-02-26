@@ -92,26 +92,37 @@ query_1(Pipeline, Vars, FScope, Mode) :-
 	).
 
 %%
-query_2(ask, Cursor, Vars, FScope) :-
+query_2(Mode, Cursor, Vars, FScope) :-
 	!,
 	mng_cursor_materialize(Cursor, Result),
-	unify_(Result, Vars, FScope).
-
-query_2(tell, Cursor, _Vars, _FScope) :-
-	!,
-	% run the query, the result document
-	% contains arrays of triples/annotations that will be added
-	% in a second stage.
-	% The reason this is needed is that $merge cannot modify
-	% different collections in one query.
-	mng_cursor_materialize(Cursor, Result),
-	assert_documents(Result, 'triples'),
-	assert_documents(Result, 'annotations').
+	(	Mode==ask
+	->	unify_(Result, Vars, FScope)
+	;	true
+	),
+	assert_documents(Result).
 
 %%
-assert_documents(Result, Key) :-
-	mng_get_dict(Key, Result, Docs),
-	assert_documents1(Docs, Key).
+assert_documents(Result) :-
+	mng_get_dict('g_assertions', Result, array(Assertions)),
+	once((setof(X,
+		(	member(A,Assertions),
+			member(collection-string(X),A)
+		),
+		Collections
+	);Collections=[])),
+	assert_documents0(Collections, Assertions).
+
+assert_documents0([],_) :- !.
+assert_documents0([Coll|Next], Assertions) :-
+	findall(Doc,
+		(	member(A,Assertions),
+			memberchk(collection-string(Coll),A),
+			memberchk(documents-array(Docs),A),
+			member(Doc,Docs)
+		),
+		Docs),
+	assert_documents1(array(Docs), Coll),
+	assert_documents0(Next, Assertions).
 
 assert_documents1(array([]), _) :- !.
 assert_documents1([], _) :- !.
@@ -400,7 +411,7 @@ expand_cut(Terms,Expanded) :-
 %
 query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
-		query_compile1(Terminals, Doc, []->Vars, Context),
+		query_compile1(Terminals, Doc, Vars, Context),
 		% catch error's, add context, and throw again
 		error(Formal),
 		throw(error(Formal,Terminals))
@@ -408,13 +419,9 @@ query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 
 %%
 query_compile1(Terminals, Doc, Vars, Context) :-
-	compile_terms(Terminals, Doc0, Vars, _StepVars, Context),
-	(	memberchk(mode(ask), Context) -> Doc=Doc0
-	;	Doc=[['$set',[
-			['triples',array([])],
-			['annotations',array([])]]]|
-			Doc0]
-	).
+	DocVars=[['g_assertions',_]],
+	compile_terms(Terminals, Doc0, DocVars->Vars, _StepVars, Context),
+	Doc=[['$set',['g_assertions',array([])]] | Doc0].
 
 %%
 compile_terms(Goal, Pipeline, Vars, StepVars, Context) :-
@@ -619,10 +626,24 @@ set_next_vars(InnerVars, ['$set', [Key,
 			string(OldVal),                    % set the field to its current value
 			string(NewVal)                     % else overwrite with value in next
 		])]]]) :-
-	setof(Key0, member([Key0,_], InnerVars), Keys),
+	findall(Key0, member([Key0,_], InnerVars), Keys0),
+	list_to_set(Keys0, Keys),
 	member(Key, Keys),
 	atom_concat('$',Key,OldVal),
 	atom_concat('$next.',Key,NewVal).
+
+%%
+add_assertions(Docs, Coll,
+	['$set', ['g_assertions',['$concatArrays', array([
+		string('$g_assertions'),
+		array([[
+			['collection', string(Coll)],
+			['documents', Docs]
+		]])
+	])]]]).
+
+add_assertion(Doc, Coll, Step) :-
+	add_assertions(array([Doc]), Coll, Step).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% VARIABLES in queries

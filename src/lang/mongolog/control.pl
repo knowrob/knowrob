@@ -241,14 +241,28 @@ compile_disjunction([_|Goals], [_|Vars], CutVars, Ctx, Pipelines, StepVars) :-
 % Create a copy of a variable map with fresh variables in the copy
 % but the same keys.
 %
-copy_vars(_, [], [], []) :- !.
-copy_vars(ReferredVars, [X|Xs], [Y|Ys], [[Key,Y]|Zs]) :-
+copy_vars(ReferredVars, TermVarsOrig, TermVarsCopy, CopiedVars) :-
+	copy_vars1(ReferredVars, TermVarsOrig, TermVarsCopy, CopiedVars0),
+	copy_vars2(ReferredVars, CopiedVars0, CopiedVars).
+	
+copy_vars1(_, [], [], []) :- !.
+copy_vars1(ReferredVars, [X|Xs], [Y|Ys], [[Key,Y]|Zs]) :-
 	member([Key,Z], ReferredVars),
 	Z == X,
 	!,
-	copy_vars(ReferredVars, Xs, Ys, Zs).
-copy_vars(ReferredVars, [_|Xs], [_|Ys], Zs) :-
-	copy_vars(ReferredVars, Xs, Ys, Zs).
+	copy_vars1(ReferredVars, Xs, Ys, Zs).
+copy_vars1(ReferredVars, [_|Xs], [_|Ys], Zs) :-
+	copy_vars1(ReferredVars, Xs, Ys, Zs).
+
+%%
+copy_vars2([], _, []) :- !.
+copy_vars2([[Key,X]|Xs], Vars1, [[Key,Z]|Ys]) :-
+	(	memberchk([Key,Y],Vars1)
+	->	Z=Y
+	;	Z=X
+	),
+	copy_vars2(Xs,Vars1,Ys).
+	
 
 %%
 has_cut('!') :- !.

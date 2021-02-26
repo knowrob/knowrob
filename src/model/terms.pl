@@ -119,11 +119,6 @@ is_a(A,B) ?>
     [ namespace('http://knowrob.org/kb/test_events.owl#')
     ]).
 
-test('occurs(+)') :-
-	assert_true(occurs(test:'Short4')),
-	assert_true(occurs(test:'Long')),
-	assert_false(occurs(test:'xyz')).
-
 test('during(occurs(+),+Interval)') :-
 	assert_true(occurs(test:'Short4') during [1377777009, 1377777011]),
 	assert_true(occurs(test:'Short4') during [1377777010, 1377777011]),

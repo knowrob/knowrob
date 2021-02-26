@@ -42,8 +42,12 @@ query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 			(	query_compiler:goal_var([S,P,O], Ctx, Var)
 			;	query_compiler:context_var(Ctx, Var)
 			),
-			StepVars)
-	;	StepVars=[]
+			StepVars0)
+	;	StepVars0=[]
+	),
+	(	option(mode(ask), Ctx)
+	->	StepVars=StepVars0
+	;	StepVars=[['g_assertions',_]|StepVars0]
 	),
 	merge_options([step_vars(StepVars)], Ctx, Ctx0),
 	(	option(mode(ask), Ctx)
@@ -92,6 +96,7 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
+	option(collection(Collection), Ctx0),
 	option(graph(Graph), Ctx0, user),
 	option(scope(Scope), Ctx0),
 	time_scope_data(Scope, [Since,Until]),
@@ -139,9 +144,9 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 		;	reduce_num_array(string('$next'), UntilOp,
 				'scope.time.until', 'v_scope.time.until', Step)
 		% add triples to triples array that have been queued to be removed
-		;	array_concat('triples', string('$next'), Step)
+		;	query_compiler:add_assertions(string('$next'), Collection, Step)
 		% add merged triple document to triples array
-		;	array_concat('triples', array([TripleDoc]), Step)
+		;	query_compiler:add_assertion(TripleDoc, Collection, Step)
 		;	(	once(must_propagate_tell(P)),
 				propagate_tell(S, Ctx0, Step)
 			)
@@ -431,7 +436,7 @@ lookup_parents(Triple, Context, Step) :-
 
 %%
 propagate_tell(S, Context, Step) :-
-	memberchk(collection(Coll), Context),
+	memberchk(collection(Collection), Context),
 	mng_typed_value(S,TypedS),
 	% the inner lookup matches documents with S in o*
 	findall(X,
@@ -445,13 +450,13 @@ propagate_tell(S, Context, Step) :-
 		Inner),
 	% first, lookup matching documents and update o*
 	(	Step=['$lookup', [
-			['from',string(Coll)],
+			['from',string(Collection)],
 			['as',string('next')],
 			['let',[['parents',string('$parents')]]],
 			['pipeline',array(Inner)]
 		]]
 	% second, add each document to triples array
-	;	array_concat('triples', string('$next'), Step)
+	;	query_compiler:add_assertions(string('$next'), Collection, Step)
 	).
 
 %% the properties for which assertions must be propagated
