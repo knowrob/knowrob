@@ -79,7 +79,7 @@ tell_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :
 	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([Entity, Property, Annotation_en], Ctx),
 	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars0),
-	StepVars=[['g_assertions',_]|StepVars0],
+	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
 	% resolve arguments
 	query_compiler:var_key_or_val(Entity,         Ctx, Entity0),
 	query_compiler:var_key_or_val(Property,       Ctx, Property0),

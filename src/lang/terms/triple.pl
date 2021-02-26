@@ -45,10 +45,7 @@ query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 			StepVars0)
 	;	StepVars0=[]
 	),
-	(	option(mode(ask), Ctx)
-	->	StepVars=StepVars0
-	;	StepVars=[['g_assertions',_]|StepVars0]
-	),
+	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
 	merge_options([step_vars(StepVars)], Ctx, Ctx0),
 	(	option(mode(ask), Ctx)
 	->	compile_ask( triple(S,P,O), Ctx0, Pipeline)

@@ -649,6 +649,13 @@ add_assertion(Doc, Coll, Step) :-
 %%%%%%%%% VARIABLES in queries
 %%%%%%%%%%%%%%%%%%%%%%%
 
+%%
+add_assertion_var(StepVars0, Ctx, StepVars) :-
+	(	option(mode(ask), Ctx)
+	->	StepVars=StepVars0
+	;	StepVars=[['g_assertions',_]|StepVars0]
+	).
+
 % read all variables referred to in Step into list StepVars
 step_vars(Step, Ctx, StepVars) :-
 	(	bagof(Vs, goal_var(Step, Ctx, Vs), StepVars)
