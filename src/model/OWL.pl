@@ -435,7 +435,7 @@ disjoint_with_indirect(A,B) ?>
 	disjoint_with_direct(SupA, SupB),
 %	triple(B, reflexive(rdfs:subClassOf), SupB).
 	(	var(B) -> B=SupB
-	;	triple(B, rdfs:subClassOf, SupB)
+	;	(B=SupB ; triple(B, rdfs:subClassOf, SupB))
 	).
 
 %% disjoint_with(?Class1, ?Class2) is nondet.
