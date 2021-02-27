@@ -413,7 +413,7 @@ disjoint_with_direct(A,B) ?>
 
 disjoint_with_direct(A,B) ?>
 	% OWL2 disjointness axioms
-	% ground(A),
+	ground(A),
 	% iterate over all lists where A is an element.
 	% here we assume that this is more efficient compared to
 	% iterating over all AllDisjointClasses resources and parsing

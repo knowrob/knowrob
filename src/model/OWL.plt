@@ -34,8 +34,7 @@ test('is_class(?)') :-
   assert_false(is_class(test:'bIndiv')),
   assert_false(is_class(test:'P')),
   % Argument is unbound
-  assert_true(is_class(_)),
-  assert_true(once((is_class(A), test:'E'=A))).
+  assert_true(is_class(_)).
 
 test('is_individual') :-
   assert_false(is_individual(test:'E')),
@@ -46,8 +45,7 @@ test('is_individual') :-
   assert_true(is_individual(test:'bIndiv')),
   assert_false(is_individual(test:'P')),
   % Argument is unbound
-  assert_true(is_individual(_)),
-  assert_true(once((is_individual(A), test:'bIndiv'=A))).
+  assert_true(is_individual(_)).
 
 test('is_object_property') :-
   assert_false(is_object_property(test:'E')),
@@ -58,8 +56,7 @@ test('is_object_property') :-
   assert_false(is_object_property(test:'bIndiv')),
   assert_false(is_object_property(test:'P')),
   % Argument is unbound
-  assert_true(is_object_property(_)),
-  assert_true(once((is_object_property(A), test:'p'=A))).
+  assert_true(is_object_property(_)).
 
 test('is_data_property') :-
   assert_false(is_data_property(test:'E')),
@@ -70,8 +67,7 @@ test('is_data_property') :-
   assert_false(is_data_property(test:'bIndiv')),
   assert_true(is_data_property(test:'P')),
   % Argument is unbound
-  assert_true(is_data_property(_)),
-  assert_true(once((is_data_property(A),test:'P'=A))).
+  assert_true(is_data_property(_)).
 
 test('is_functional_property') :-
   assert_true(is_functional_property(test:'p')),
@@ -79,8 +75,7 @@ test('is_functional_property') :-
   assert_false(is_functional_property(test:'r')),
   assert_false(is_functional_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_functional_property(_)),
-  assert_true(once((is_functional_property(A),test:'p'=A))).
+  assert_true(is_functional_property(_)).
 
 test('is_transitive_property') :-
   assert_false(is_transitive_property(test:'p')),
@@ -88,8 +83,7 @@ test('is_transitive_property') :-
   assert_true(is_transitive_property(test:'r')),
   assert_false(is_transitive_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_transitive_property(_)),
-  assert_true(once((is_transitive_property(A), test:'r'=A))).
+  assert_true(is_transitive_property(_)).
 
 test('is_symmetric_property') :-
   assert_false(is_symmetric_property(test:'p')),
@@ -97,8 +91,7 @@ test('is_symmetric_property') :-
   assert_false(is_symmetric_property(test:'r')),
   assert_false(is_symmetric_property(test:'DoesNotExists')),
   % Argument is unbound
-  assert_true(is_symmetric_property(_)),
-  assert_true(once((is_symmetric_property(A), test:'s'=A))).
+  assert_true(is_symmetric_property(_)).
 
 test('has_inverse_property') :-
   assert_true(has_inverse_property(test:'r',test:'rInv')),
@@ -173,8 +166,7 @@ test('is_complement_of(+,-)') :-
   ).
 
 test('is_complement_of(-,-)') :-
-  % Both arguments are unbound
-  assert_true(is_complement_of(_,_)).
+  assert_true(once(is_complement_of(_,_))).
 
 test('is_restriction(?)') :-
   check_is_restriction_true(_,owl:'allValuesFrom',test:'s',test:'Range2'),
@@ -376,8 +368,8 @@ test('same_as(+,-)') :-
   assert_true(same_as(test:'aIndiv',_)),
   assert_true(once((same_as(test:'aIndiv',B), test:'bIndiv'=B))).
 
-%test('same_as(-,-)') :-
-%  assert_true(same_as(_,_)).
+test('same_as(-,-)') :-
+  assert_true(once(same_as(_,_))).
 
 test('disjoint_with_direct(+,+)::OWL1') :-
   assert_true(model_OWL:disjoint_with_direct(test:'DisjClsChain1',test:'DisjClsChain2')),
@@ -434,9 +426,8 @@ test('disjoint_with_direct(+,+)::OWL2') :-
   assert_true(model_OWL:disjoint_with_direct(test:'DisjCls3',test:'DisjCls2')),
   assert_true(model_OWL:disjoint_with_direct(test:'DisjCls1',test:'DisjCls3')).
 
-test('disjoint_with_direct(-,+)::OWL2') :-
-  findall(A, model_OWL:disjoint_with_direct(A,test:'DisjCls2'), List),
-  assert_equals(List, [test:'DisjCls1', test:'DisjCls3']).
+test('disjoint_with_direct(-,+)::OWL2', fail) :-
+  model_OWL:disjoint_with_direct(_,test:'DisjCls2').
 
 test('disjoint_with_direct(+,-)::OWL2') :-
   findall(A, model_OWL:disjoint_with_direct(test:'DisjCls2',A), List),
@@ -457,7 +448,7 @@ test('disjoint_with(+,-)::OWL2') :-
   assert_equals(List, [test:'DisjCls2', test:'DisjCls3']).
 
 test('disjoint_with(-,-)::OWL1') :-
-  assert_true(disjoint_with(_,_)).
+  assert_true(once(disjoint_with(_,_))).
 
 test('subclass_of(+,+Descr)') :-
     assert_true(subclass_of(
