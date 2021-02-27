@@ -93,7 +93,9 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 		% access array elements.
 		;	(	set_nested_args(Unpacked,SetArgs),
 				match_nested(Unpacked, Ctx, MatchNested),
-				(InnerStep = SetArgs ; InnerStep = MatchNested)
+				(	InnerStep = SetArgs
+				;	InnerStep = MatchNested
+				)
 			)
 		% retractall first performs match, then only projects the id of the document
 		;	(	option(retractall, Ctx),
