@@ -24,7 +24,8 @@
 :- use_module('swrl').
 
 :- dynamic swrl_file_store/3,
-           swrl_assertion_store/3.
+           swrl_assertion_store/3,
+           swrl_iri/2.
 
 %%
 swrl_file_path(Pkg,Filename,Filepath) :-
@@ -311,14 +312,19 @@ swrl_match_instance(_,'true',_)  :- !, fail.
 swrl_match_instance(_,'false',_) :- !, fail.
 swrl_match_instance(_,Name,_)    :- swrl_is_builtin(Name), !, fail.
 
+swrl_match_instance(Iri,Name,_NS) :-
+	var(Iri), atom(Name),
+	swrl_iri(Name, Iri),!.
+
 swrl_match_instance(Iri,Name,NS) :-
-  var(Iri), atom(Name), atom(NS),
-  % try to use user-specified namespace to find the entity
-  atom_concat(NS,Name,Iri),
-  once(ask(triple(Iri,rdf:type,_))),!.
+	var(Iri), atom(Name), atom(NS),
+	% try to use user-specified namespace to find the entity
+	atom_concat(NS,Name,Iri),
+	once(ask(triple(Iri,rdf:type,_))),!,
+	assertz(swrl_iri(Name,Iri)).
 
 swrl_match_instance(Iri,Name,_NS) :-
-  var(Iri), atom(Name),
-  rdf_current_prefix(_, Uri),
-  rdf_split_url(Uri, Name, Iri),
-  once(ask(triple(Iri,rdf:type,_))).
+	var(Iri), atom(Name),
+	atomic_list_concat(['^.*#',Name,'$'],Pattern),
+	ask(once(triple(regex(Pattern)->Iri,rdf:type,_))),!,
+	assertz(swrl_iri(Name,Iri)).
