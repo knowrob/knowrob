@@ -96,7 +96,7 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	option(collection(Collection), Ctx0),
 	option(graph(Graph), Ctx0, user),
 	option(scope(Scope), Ctx0),
-	time_scope_data(Scope, [Since,Until]),
+	time_scope_values(Scope, SinceTyped, UntilTyped),
 	% throw instantiation_error if one of the arguments was not referred to before
 	query_compiler:all_ground([S,O], Ctx),
 	% resolve arguments
@@ -126,8 +126,8 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	findall(Step,
 		% assign v_scope field. 
 		(	Step=['$set', ['v_scope', [['time',[
-					['since', double(Since)],
-					['until', double(Until)]
+					['since', SinceTyped],
+					['until', UntilTyped]
 			]]]]]
 		% lookup documents that overlap with triple into 'next' field,
 		% and toggle their delete flag to true
@@ -150,6 +150,20 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 		),
 		Pipeline
 	).
+
+%%
+time_scope_values(Scope, SinceValue, UntilValue) :-
+	time_scope_data(Scope, [Since,Until]),
+	time_scope_value1(Since, SinceValue),
+	time_scope_value1(Until, UntilValue).
+
+time_scope_value1(V0, Value) :-
+	mng_strip_operator(V0, _, V1),
+	once(time_scope_value2(V1, Value)).
+
+time_scope_value2('Infinity', double('Infinity')).
+time_scope_value2(Num,  double(Num))  :- number(Num).
+time_scope_value2(Atom, string(Atom)) :- atom(Atom).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
@@ -341,7 +355,7 @@ delete_overlapping(triple(S,P,V), Ctx,
 	query_compiler:var_key_or_val1(V, Ctx, V0),
 	% read scope data
 	option(scope(Scope), Ctx),
-	time_scope_data(Scope,[Since,Until]),
+	time_scope_values(Scope, Since, Until),
 	% set Since=Until in case of scope intersection.
 	% this is to limit to results that do hold at Until timestamp.
 	% FIXME: when overlap yields no results, zero is used as since
@@ -359,8 +373,8 @@ delete_overlapping(triple(S,P,V), Ctx,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
 				['s',S0], ['p',P0], ['o',V0],
-				['scope.time.since',['$lte',double(Until)]],
-				['scope.time.until',['$gte',double(Since0)]]
+				['scope.time.since',['$lte',Until]],
+				['scope.time.until',['$gte',Since0]]
 			]]
 		% only keep scope field
 		;	Step=['$project',[['scope',int(1)]]]
