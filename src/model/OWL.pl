@@ -20,7 +20,8 @@
 	  disjoint_with_direct(r,r),
 	  has_equivalent_class(r,r),
 	  has_description(r,t),
-	  same_as(r,r)
+	  same_as(r,r),
+	  instance_of_description(r,t)
 	]).
 /** <module> The Web Ontology Language (OWL) model.
 
@@ -470,6 +471,22 @@ subclass_of_description(Class, Descr) ?>
 	has_description(SuperClass, Descr).
 
 %%
+instance_of_expand(_S,
+		intersection_of([]), []) :- !.
+instance_of_expand(S,
+		intersection_of([X|Xs]),
+		[instance_of(S,X)|Ys]) :-
+	instance_of_expand(S, intersection_of(Xs), Ys).
+
+instance_of_expand(S, union_of(Classes), Expanded) :-
+	instance_of_expand_union(S, Classes, List),
+	semicolon_list(Expanded, List).
+
+instance_of_expand_union(_S, [], []) :- !.
+instance_of_expand_union(S, [X|Xs], [instance_of(S,X)|Ys]) :-
+	instance_of_expand_union(S, Xs, Ys).
+
+%%
 %instance_of_description(S, value(P,O)) ?>
 %	var(P),
 %	triple(S,P,O),
@@ -481,6 +498,12 @@ subclass_of_description(Class, Descr) ?>
 %instance_of_description(S, value(P,O)) ?>
 %	ground(P),
 %	triple(S,P,O).
+
+instance_of_description(S, Descr) ?>
+	pragma(compound(Descr)),
+	pragma(model_OWL:instance_of_expand(S, Descr, Expanded)),
+	!,
+	call(Expanded).
 
 instance_of_description(S, Descr) ?>
 	ground(S),
