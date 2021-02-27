@@ -283,6 +283,12 @@
   <rdfs:label>DataRange</rdfs:label>
 </rdfs:Class>
 
+<rdfs:Class rdf:ID="NamedIndividual">
+  <rdfs:comment>The class of named individuals.</rdfs:comment>
+  <rdfs:label>NamedIndividual</rdfs:label>
+  <rdfs:subClassOf rdf:resource="#Thing"/>
+</rdfs:Class>
+
 
 </rdf:RDF>
 

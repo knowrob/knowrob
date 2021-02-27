@@ -239,8 +239,8 @@ rdf_list_head(SubList, ListHead) ?>
 		]).
 
 test('is_resource(+Resource)') :-
-	assert_true(is_resource(test:'Lea')),
 	assert_true(is_resource(test:'Adult')),
+	assert_false(is_resource(test:'Lea')),
 	assert_false(is_resource(test:'hasNumber')),
 	assert_false(is_resource(test:'NotExisting')).
 
