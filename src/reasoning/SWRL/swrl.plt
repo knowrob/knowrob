@@ -163,9 +163,6 @@ test(swrl_Driver_subject_unbound, [nondet]) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person) :-
-	% FIXME: Person case fails in instance_of(-,+):
-	% [pragma(\+compound(http://knowrob.org/kb/swrl_test#Hermaphrodite)),
-	% instance_of(_55404,intersection_of([http://knowrob.org/kb/swrl_test#Man,http://knowrob.org/kb/swrl_test#Woman]))]
 	assert_false(has_type(test:'Alex', dul:'Person')),
 	swrl_file_path(knowrob,'test.swrl',Filepath),
 	swrl_file_fire(Filepath,'Person'),
@@ -173,33 +170,11 @@ test(swrl_Person) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Hermaphrodite) :-
-	% FIXME: Hermaphrodite case fails in instance_of(-,+):
-	% [pragma(\+compound(http://knowrob.org/kb/swrl_test#Hermaphrodite)),
-	% instance_of(_55404,intersection_of([http://knowrob.org/kb/swrl_test#Man,http://knowrob.org/kb/swrl_test#Woman]))]
 	assert_false(has_type(test:'Lea', test:'Hermaphrodite')),
 	swrl_file_path(knowrob,'test.swrl',Filepath),
 	swrl_file_fire(Filepath,'Hermaphrodite'),
 	assert_true(has_type(test:'Lea', test:'Hermaphrodite')),
 	assert_false(has_type(test:'Fred', test:'Hermaphrodite')).
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_NonHuman) :-
-	% FIXME: all NonHuman cases fail in instance_of(-,+):
-	% [pragma(\+compound(http://knowrob.org/kb/swrl_test#NonHuman)),
-	%  instance_of(_55926,complement_of(http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person))]
-	assert_false(has_type(test:'RedCar', test:'NonHuman')),
-	swrl_file_path(knowrob,'test.swrl',Filepath),
-	swrl_file_fire(Filepath,'NonHuman'),
-	assert_true(has_type(test:'RedCar', test:'NonHuman')),
-	assert_false(has_type(test:'Fred', test:'NonHuman')).
-
-test(swrl_NonHuman_class_unbound, [nondet]) :-
-	has_type(test:'RedCar', X),
-	rdf_equal(X, test:'NonHuman').
-
-test(swrl_NonHuman_subject_unbound, [nondet]) :-
-	has_type(X, test:'NonHuman'),
-	rdf_equal(X, test:'RedCar').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_area) :-

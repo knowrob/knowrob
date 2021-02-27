@@ -98,6 +98,13 @@ swrl_condition_pl([X|Xs], [Y|Ys], Vars) :-
   
 swrl_condition_pl(
 		class(Cls,S),
+		instance_of_description(S_var,Cls),
+		Vars) :-
+	compound(Cls),!,
+	swrl_var(Vars, S, S_var).
+
+swrl_condition_pl(
+		class(Cls,S),
 		instance_of(S_var,Cls),
 		Vars) :-
 	swrl_var(Vars, S, S_var).
