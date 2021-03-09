@@ -129,9 +129,10 @@ test('tell list', fixme('terms cannot be used as values')) :-
 	% test ask with ground value
 	assert_true( ask(triple(S, test_datatype:'hasHairColor', term(DataTerm)))),
 	% test ask with var value
-	ask(triple(S, test_datatype:'hasHairColor', term(Actual))),
-	assert_true(is_list(Actual)),
-	assert_equals(Actual,DataTerm).
+	(	ask(triple(S, test_datatype:'hasHairColor', term(Actual)))
+	->	assert_equals(Actual,DataTerm)
+	;	true
+	).
 
 % test for time scope
 test('tell with scope'):-
