@@ -676,7 +676,7 @@ mng_strip_variable(X,X) :- !.
 
 %% mng_cursor_limit(+Cursor, +Limit) is det.
 %
-% Out is the same mongo DB cursor as In but limited to N results.
+% Limit the maximum number of documents a cursor may yield.
 %
 % @param Cursor A mongo DB cursor id
 % @param Limit The maximum number of documents yielded by the cursor
@@ -684,8 +684,7 @@ mng_strip_variable(X,X) :- !.
 
 %% mng_cursor_descending(+Cursor, +Key) is det.
 %
-% Sorts the DB cursor In w.r.t. Key, the sorted collection
-% can be accessed via the new DB cursor Out.
+% Configure a cursor to yield documents in descending order.
 %
 % @param Cursor A mongo DB cursor id
 % @param Key The sort key
@@ -693,8 +692,7 @@ mng_strip_variable(X,X) :- !.
 
 %% mng_cursor_ascending(+Cursor, +Key) is det.
 %
-% Sorts the DB cursor In w.r.t. Key, the sorted collection
-% can be accessed via the new DB cursor Out.
+% Configure a cursor to yield documents in ascending order.
 %
 % @param Cursor A mongo DB cursor id
 % @param Key The sort key

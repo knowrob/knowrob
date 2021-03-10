@@ -42,6 +42,7 @@ can quickly filter out records based on the timestamp when they were acquired.
 `Note` in case of array values (as for tf) it is important
 that the indexed key has identical values for all array members (e.g., the same header stamp
 in case of tf) -- however, *it is advised to avoid generating indices over arrays*.
+For tf, this means that it might be best to store each tranform in an individual document.
 
 ### Querying mongo
 Documents in mongo DB can be retrieved by first creating a cursor on
@@ -71,10 +72,10 @@ More complex filters may use, e.g., disjunction as in:
 
 ```Prolog
 mng_cursor_filter(Cursor,['$or',
-    list([['end',    ['$gte',time(Stamp)]],
-          ['end',    ['$exists',bool(0)]]])]).
+    array([['end',    ['$gte',time(Stamp)]],
+           ['end',    ['$exists',bool(0)]]])]).
 ```
 
-These expressions are generically mapped to bson terms. Hence,
+These expressions are generically mapped to BSON terms. Hence,
 any command supported by your mongo server can be written in such
 an expression.

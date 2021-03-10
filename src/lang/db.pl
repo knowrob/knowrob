@@ -448,9 +448,9 @@ version_matcher --> digits(_), ".", digits(_).
 % No other predicates are supported yet.
 % This might also change in the future.
 %
-% @Goal a KnowRob language term with free variables.
-% @Callback a predicate called for each change event.
-% @WatcherID a unique identifier of the watching operation.
+% @param Goal a KnowRob language term with free variables.
+% @param Callback a predicate called for each change event.
+% @param WatcherID a unique identifier of the watching operation.
 %
 watch(Goal, Callback, WatcherID) :-
 	% create match filter based on Goal
@@ -476,7 +476,7 @@ watch(Goal, Callback, WatcherID) :-
 % This will fail if WatcherID does not belong to
 % a active watch operation.
 %
-% @WatcherID a unique identifier of the watching operation.
+% @param WatcherID a unique identifier of the watching operation.
 %
 unwatch(WatcherID) :-
 	once(watcher(WatcherID, _)),
@@ -489,8 +489,8 @@ unwatch(WatcherID) :-
 % changes are received in a watch operation.
 % Event is a change stream response document.
 %
-% @WatcherID a unique identifier of the watching operation.
-% @Event a change stream output document.
+% @param WatcherID a unique identifier of the watching operation.
+% @param Event a change stream output document.
 %
 % @see https://docs.mongodb.com/manual/reference/change-events/#change-stream-output
 %
