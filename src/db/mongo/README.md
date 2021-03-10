@@ -1,4 +1,4 @@
-knowrob_mongo
+A mongo DB client for Prolog
 ===
 
 This package implements a mongo client using libmongoc-1.0.0,

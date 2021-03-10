@@ -25,7 +25,6 @@
       mng_cursor_ascending/2,
       mng_cursor_limit/2,
       mng_cursor_next/2,
-      mng_cursor_run/1,
       mng_cursor_materialize/2,
       mng_get_dict/3,
       mng_query_value/2,
@@ -37,6 +36,11 @@
       mng_operator/2
     ]).
 /** <module> A mongo DB client for Prolog.
+
+This module provides access to a large part of the
+mongo DB API includig several read and write operations.
+Internally, libmongoc is used to interact with the database server.
+To this end, Prolog datastructures are translated from and into BSON format.
 
 @author Daniel Beßler
 @license BSD
@@ -61,51 +65,80 @@
 :- setting(mng_client:db_name, DBName),
    assertz(mng_db_name(DBName)).
 
-%% mng_get_db(?DB, -CollectionName, +DBType) is det.
+%% mng_db_name(-DB) is det
 %
-% Get db and collection for this type 
-% of data, e.g. triples
+% Get the name of the database the client is connected to.
+%
+
+%% mng_get_db(?DB, -Collection, +DBType) is det.
+%
+% Get database and collection name for type
+% of data denoted by DBType identifier.
+% The type identifier can be choosen freely but should
+% not conflict with another collection in the database.
 %
 % @param DB The database name
-% @param CollectionNAme The Name of the collection for the type
-% @param DBType
+% @param Collection The collection name
+% @param DBType type identifier
 %
-mng_get_db(DB, CollectionName, DBType) :- 
+mng_get_db(DB, Collection, DBType) :-
 	mng_db_name(DB),
 	(	(setting(mng_client:collection_prefix, Id), Id \= '') 
-	->	atomic_list_concat([Id,'_',DBType], CollectionName)
-	;	CollectionName = DBType
+	->	atomic_list_concat([Id,'_',DBType], Collection)
+	;	Collection = DBType
 	).
 
-%% mng_one_db(-DB, -Coll) is det.
+%% mng_one_db(?DB, -Collection) is det.
 %
-% Get a special DB collection with just one empty document.
+% Get a special database collection with just one empty document.
 % This is used for feeding just this one document into aggregate
 % pipelines.
 %
-mng_one_db(DB, Coll) :-
-	mng_db_name(DB),
-	Coll=one.
+% @param DB The database name
+% @param Collection The collection name
+%
+mng_one_db(DB, one) :-
+	mng_db_name(DB).
 
-%%
-mng_drop(DB,Coll) :-
+%% mng_drop(+DB,+Collection) is det.
+%
+% Drop a named collection. That is delete all documents
+% it contains, and remove all references to it in the database.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @see https://docs.mongodb.com/manual/reference/method/db.collection.drop/index.html
+%
+mng_drop(DB,Collection) :-
 	catch(
-		mng_drop_unsafe(DB,Coll),
+		mng_drop_unsafe(DB,Collection),
 		% collection does not exist yet
 		mng_error(drop_failed('ns not found')),
 		true
 	).
 
-%% mng_collection(+DB,?Collection) is det
+%% mng_collection(+DB,?Collection) is nondet
 %
-% True iff *Collection* is an existing collection
-% in the current DB.
+% True if Collection is an existing collection
+% in the named database.
+%
+% @param DB The database name
+% @param Collection The collection name
 %
 mng_collection(DB, Collection) :-
 	mng_collections(DB, Collections),
 	memberchk(Collection, Collections).
 
-%%
+%% mng_distinct_values(+DB, +Collection, +Key, -DistinctValues) is det
+%
+% Find all distinct values associated to Key in
+% the given named database collection.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Key The document key of interest
+% @param DistinctValues List of distinct values
+%
 mng_distinct_values(DB, Collection, Key, DistinctValues) :-
 	mng_distinct_values_json(DB, Collection, Key, DistinctJSON),
 	read_json_(DistinctJSON, DistinctDict),
@@ -124,7 +157,20 @@ read_json_(JSON,Dict) :-
 
 %% mng_find(+DB, +Collection, +Filter, -Result) is nondet.
 %
-% Creates a cursor with given filter and yields its results.
+% Create a database cursor with given filter query and yield its results.
+% The filter must be translatable into a BSON document, and be given as
+% list datastructure as in:
+%
+%    mng_find(roslog, triples, ['s',['$eq',string('Obj1')]], Result)
+%
+% Result is a Prolog dictionary instantiated from the JSON document
+% returned by mongo DB.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Filter A mongo DB query
+% @param Result A document matching the query
+% @see https://docs.mongodb.com/manual/reference/method/db.collection.find/index.html
 %
 mng_find(DB, Collection, Filter, Result) :-
 	setup_call_cleanup(
@@ -174,12 +220,27 @@ mng_regex_prefix_([X|Xs],[BS,X|Ys]) :-
 
 %% mng_cursor_next(+Cursor,?Dict) is semidet.
 %
+% Yields the next matching document of the given
+% database cursor, if any.
+% The matching document is encoded as Prolog dictionary.
+%
+% @param Cursor The database cursor.
+% @param Dict The next matching document of the cursor.
+% @see http://mongoc.org/libmongoc/current/mongoc_cursor_next.html
 %
 mng_cursor_next(Cursor,Dict) :-
 	mng_cursor_next_pairs(Cursor,Pairs),
 	dict_pairs(Dict,_,Pairs).
 
-%%
+%% mng_cursor_materialize(+Cursor,?Dict) is nondet.
+%
+% Yields results of the given database cursor, if any.
+% Each matching document is encoded as Prolog dictionary.
+%
+% @param Cursor The database cursor.
+% @param Dict The next matching document of the cursor.
+% @see http://mongoc.org/libmongoc/current/mongoc_cursor_next.html
+%
 mng_cursor_materialize(Cursor,Next) :-
 	mng_cursor_next(Cursor,X),
 	% pull next result and avoid choicepoint in case
@@ -199,11 +260,12 @@ mng_cursor_materialize(_,Next,Next).
 
 %% mng_index_create(+DB,+Collection,+Keys) is det
 %
-% Creates search index.
+% Creates a compound search index.
 %
 % @param DB The database name
 % @param Collection The collection name
 % @param Keys List of keys for which an index shall be created
+% @see https://docs.mongodb.com/manual/core/index-compound/
 %
 mng_index_create(DB,Collection,Keys) :-
 	findall(K,
@@ -217,7 +279,18 @@ mng_index_create(DB,Collection,Keys) :-
     ;	mng_index_create_core(DB,Collection,Keys0)
     ).
 
-%%
+%% mng_index_create(+DB,+Indices) is det
+%
+% Creates compound search indices.
+% Indices is a list of tuples where the first
+% argument is the name of the collection, and
+% the second argument a list of keys passed
+% to mng_index_create/3.
+%
+% @param DB The database name
+% @param Indices Sequence of search indices
+% @see https://docs.mongodb.com/manual/core/index-compound/
+%
 mng_index_create(DB,Indices) :-
 	forall(
 		member([Coll,Keys],Indices),
@@ -232,8 +305,10 @@ format_key_(  K, +(K)) :- !.
 
 %% mng_get_dict(?Key,+Doc,?PlValue) is semidet.
 %
-% Get a key-value pair from a dictionary, and map
-% any data value to native Prolog types using mng_pl_value/2.
+% Get a key-value pair from a dictionary.
+% If the value is a document, it will be
+% mapped to a Prolog dictionary.
+% This is done recursively.
 %
 mng_get_dict(Key,Doc,PlValue) :-
 	get_dict(Key,Doc,MngValue),
@@ -251,35 +326,48 @@ mng_doc_value([X|Xs],PlValue) :-
 
 mng_doc_value(PlValue,PlValue).
 
-%% mng_dump(+DB, +Dir) is det.
+%% mng_dump(+DB, +Directory) is det.
 %
-% Dump mongo DB.
+% Dump a named database by calling the `mongodump` commandline
+% tool.
 %
-mng_dump(DB,Dir) :-
+% @param DB the database name
+% @param Directory absolute path to output directory
+%
+mng_dump(DB,Directory) :-
 	process_create(path(mongodump),
-		[ '--db', DB, '--out', Dir ],
+		[ '--db', DB, '--out', Directory ],
 		[ process(PID) ]
 	),
 	wait(PID,exited(0)).
 
-%% mng_dump_collection(+DB, +Collection, +Dir) is det.
+%% mng_dump_collection(+DB, +Collection, +Directory) is det.
 %
-% Dump mongo DB.
+% Dump a named database collection by calling the `mongodump` commandline
+% tool.
 %
-mng_dump_collection(DB,Collection,Dir) :-
+% @param DB the database name
+% @param Collection The collection name
+% @param Directory absolute path to output directory
+%
+mng_dump_collection(DB,Collection,Directory) :-
 	process_create(path(mongodump),
-		[ '--db', DB, '--collection', Collection, '--out', Dir ],
+		[ '--db', DB, '--collection', Collection, '--out', Directory ],
 		[ process(PID) ]
 	),
 	wait(PID,exited(0)).
 
-%% mng_restore(+DB, +Dir) is det.
+%% mng_restore(+DB, +Directory) is det.
 %
-% Restore mongo DB.
+% Restore named database by calling the `mongorestore` commandline
+% tool.
 %
-mng_restore(_DB,Dir) :-
+% @param DB the database name
+% @param Directory absolute path to output directory
+%
+mng_restore(_DB,Directory) :-
 	process_create(path(mongorestore),
-		[ Dir ],
+		[ Directory ],
 		[ process(PID) ]
 	),
 	wait(PID,exited(0)).
@@ -288,11 +376,18 @@ mng_restore(_DB,Dir) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % typed terms
 
-%%
+%% mng_query_value(+Term, -Document) is semidet.
 %
-% Creates a document for querying a value of a field
-% in mongo. The input value can be a term:
-% `$operator(unit($type($value),$unit))->Var`.
+% Creates a query document from a query term.
+% The input value can optionally be wrapped in
+% a unary type term as in `double(4)`.
+% It can further be wrapped in a unary operator term as
+% in `<(4)`.
+% In such a case, it might be useful to retrieve the actual value too.
+% This can be achieved through ->/2 operator as in  `<(4)->Actual`.
+%
+% @param Term The query term
+% @param Document the query document
 %
 mng_query_value(Value0, [Operator, Value1]) :-
 	% remove _->_ expression for vars 
@@ -332,25 +427,66 @@ term_document(Term, [
 		mng_query_value(Arg, ['$eq', Doc]),
 		Args, ArgDocs).
 
-%%
+%% mng_typed_value(+Term, -TypedValue) is det.
+%
+% Ensure that Term includes a unary type term.
+% For example:
+%
+%    mng_typed_value(foo, string(foo))
+%
+% @param Term A potentially untyped value term.
+% @param TypedValue A typed value term.
+%
 mng_typed_value(Term, TypedValue) :-
 	mng_strip(Term, _Operator, Type, Value),
 	mng_strip_type(TypedValue, Type, Value).
 
-%%
+%% mng_operator(?PlOperator, ?MngOperator) is det.
+%
+% A mapping between Prolog operators and mongo DB operators.
+%
+% @param PlOperator A Prolog operator such as '<'
+% @param MngOperator A mongo operator such as '$lt'
+%
+mng_operator('=', '$eq').
+mng_operator('>=','$gte').
+mng_operator('=<','$lte').
+mng_operator('>', '$gt').
+mng_operator('<', '$lt').
+mng_operator('in', '$in').
+mng_operator('nin', '$nin').
+
+%% mng_strip(+Term, ?Operator, ?Type, ?Value) is semidet.
+%
+% Strips a value term from its operator and type.
+% For example:
+%
+%    mng_strip(<(double(2)), <, double, 2)
+%
+%    mng_strip(2, =, double, 2)
+%
+%    mng_strip(<(2)->X, <, double, 2)
+%
+% @param Term A value term.
+% @param Operator The stripped operator or '='.
+% @param Type The stripped type or default type for value.
+% @param Value The bare value.
+%
 mng_strip(Term, Operator, Type, Value) :-
 	mng_strip_variable(Term, Term0),
 	mng_strip_operator(Term0, Operator, Term1),
 	mng_strip_type(Term1, Type, Value).
 
-%% mng_strip_type(+TypedValue,?Type,?Value) is det.
+%% mng_strip_type(+Term, ?Type, ?Value) is det.
 %
-% DocValue is a typed json document value.
-% That is, e.g. `TypedValue=int(7)` in which case `Type=int` and `Value=7`.
+% Strip the type of a value term.
+% That is, e.g. `Term=int(7)` in which case `Type=int` and `Value=7`.
+% If Term is untyped, the type will be determined through the
+% Prolog datatype of the value.
 %
-% @TypedValue a value returned by mongo DB
-% @Type type atom
-% @Value the value without type
+% @param Term a value term
+% @param Type type atom
+% @param Value the value without type
 %
 mng_strip_type(Var, Type, Untyped) :-
 	var(Var),
@@ -387,8 +523,7 @@ mng_strip_type(X, bool, X) :-
 	),
 	!.
 
-% FIXME var(X) always ends in string, but holds takes care of setting type
-%                  better do not require type in query!
+% FIXME var(X) always ends in string, better do not require type in query!
 mng_strip_type(X, string, X).
 
 %%
@@ -407,9 +542,17 @@ type_mapping(array,   array)  :- !.
 type_mapping(list,    array)  :- !.
 type_mapping(bool,    bool)   :- !.
 %type_mapping(term,    string) :- !.
-%type_mapping(X,       X)      :- !.
 
-%%
+%% mng_strip_operator(+Term, ?Operator, ?Stripped) is det.
+%
+% Strip the operator of a value term.
+% That is, e.g. `Term=(<(7))` in which case `Operator='<'` and `Stripped=7`.
+% If Term has no operator, then equality operator is used as fallabck.
+%
+% @param Term A value term
+% @param Operator The stripped operator or '='
+% @param Stripped The value term without operator
+%
 mng_strip_operator(    X,    =, X) :- var(X), !.
 mng_strip_operator( =(X),    =, X) :- !.
 mng_strip_operator(>=(X),   >=, X) :- !.
@@ -420,16 +563,14 @@ mng_strip_operator(in(X),   in, X) :- !.
 mng_strip_operator(nin(X), nin, X) :- !.
 mng_strip_operator(    X,    =, X) :- !.
 
-%%
-mng_operator('=', '$eq').
-mng_operator('>=','$gte').
-mng_operator('=<','$lte').
-mng_operator('>', '$gt').
-mng_operator('<', '$lt').
-mng_operator('in', '$in').
-mng_operator('nin', '$nin').
-
-%%
+%% mng_strip_variable(+Term, ?Stripped) is det.
+%
+% Strips variable from a value term.
+% That is, e.g. `Term=(<(7)->X)` in which case `Stripped=(<(7))`.
+%
+% @param Term A value term
+% @param Stripped The value term without variable
+%
 mng_strip_variable(X->_,X) :- nonvar(X), !.
 mng_strip_variable(X,X) :- !.
 
@@ -437,22 +578,51 @@ mng_strip_variable(X,X) :- !.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % C++ predicates
 
-%% mng_drop(+DB,+Collection) is det.
+%% mng_store(+DB, +Collection, +Document)
 %
-% Drop a collection.
+% Stores a document in a named database collection.
+% Document must be translatable into a BSON document,
+% e.g. `Document=[[foo,string(bar)]]` would create a document
+% with string value "bar" assigned to field with key "foo".
 %
 % @param DB The database name
 % @param Collection The collection name
+% @param Document A database document
 %
 
-%% mng_store(+DB, +Collection, +Dict)
+%% mng_remove(+DB, +Collection, +Query)
 %
-% Stores a dictionary in a mongo DB collection
-% with the provided name.
+% Removes all documents matching Query from a named collection.
+% Query must be translatable into a BSON document,
+% e.g. `Query=[key,['$lt',double(2)]]`.
 %
 % @param DB The database name
 % @param Collection The collection name
-% @param Dict A Prolog dictionary
+% @param Query A query document
+% @see https://docs.mongodb.com/manual/reference/method/db.collection.remove/index.html
+%
+
+%% mng_update(+DB, +Collection, +Query, +Update)
+%
+% Updates all documents in a named collection that match Query.
+% Query und Update must be translatable into a BSON document,
+% e.g. `Query=[key,['$lt',double(2)]]`.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param Query A query document
+% @param Update A update document or pipeline
+% @see https://docs.mongodb.com/manual/reference/method/db.collection.update/index.html
+%
+
+%% mng_bulk_write(+DB, +Collection, +Operations)
+%
+% Performs bulk operations.
+%
+% Operations is a list of operation terms, each being one of:
+% - insert(Document) (see mng_store/3)
+% - remove(Query) (see mng_remove/3)
+% - update(Query,Update) (see mng_update/4)
 %
 
 %% mng_watch(+DB, +Collection, +Callback, +Pipeline, -WatcherID) is det.
@@ -472,10 +642,16 @@ mng_strip_variable(X,X) :- !.
 % @param WatcherID unique identifier of the watch operation
 %
 
+%% mng_unwatch(+WatcherID)
+%
+% Stop an existing change stream associated to the given
+% identifier.
+%
+
 %% mng_cursor_create(+DB, +Collection, -Cursor) is det.
 %
 % Creates a new query cursor.
-% Make sure to call *mng_cursor_destroy/1* once
+% Make sure to call mng_cursor_destroy/1 once
 % you are done querying.
 %
 % @param DB The database name
@@ -522,4 +698,13 @@ mng_strip_variable(X,X) :- !.
 %
 % @param Cursor A mongo DB cursor id
 % @param Key The sort key
+%
+
+%% mng_cursor_filter(+Cursor, +Query) is det.
+%
+% Appends an additional condition for documents matching the cursor.
+% Query is a query term that must be translatable into a BSON document.
+%
+% @param Cursor A mongo DB cursor id
+% @param Query A query document
 %

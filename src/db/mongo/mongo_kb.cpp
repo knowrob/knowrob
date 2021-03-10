@@ -197,14 +197,3 @@ PREDICATE(mng_cursor_next_json, 2) {
 		return FALSE;
 	}
 }
-
-PREDICATE(mng_cursor_run, 1) {
-	char* cursor_id = (char*)PL_A1;
-	const bson_t *doc;
-	if(MongoInterface::cursor(cursor_id)->next(&doc,true)) {
-		return TRUE;
-	}
-	else {
-		return FALSE;
-	}
-}
