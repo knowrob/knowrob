@@ -38,7 +38,7 @@ into aggregate pipelines that can be processed by mongo DB.
 % NOTE: to implement a command several multifile predicates in
 % query_compiler must be implemented by a command. 
 %
-% @Command a command term.
+% @param Command a command term.
 %
 add_command(Command) :-
 	assertz(step_command(Command)).
@@ -49,9 +49,9 @@ add_command(Command) :-
 % Run a mongo query to find out if Statement holds
 % within Scope.
 %
-% @Statement a statement written in KnowRob language
-% @Scope the scope of the statement
-% @Options query options
+% @param Statement a statement written in KnowRob language
+% @param Scope the scope of the statement
+% @param Options query options
 %
 query_ask(Statement, QScope, FScope, Options) :-
 	query_(Statement, [scope(QScope)|Options], FScope, ask).
@@ -61,9 +61,9 @@ query_ask(Statement, QScope, FScope, Options) :-
 % Run a mongo query to assert that a Statement holds
 % within Scope.
 %
-% @Statement a statement written in KnowRob language
-% @Scope the scope of the statement
-% @Options query options
+% @param Statement a statement written in KnowRob language
+% @param Scope the scope of the statement
+% @param Options query options
 %
 query_tell(Statement, FScope, Options) :-
 	query_(Statement, [scope(FScope)|Options], _, tell).
@@ -253,7 +253,7 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 % of being slightly faster compared to doing the translation
 % at runtime (which is also perfectly possible).
 %
-% @Rule the rule to assert.
+% @param Rule the rule to assert.
 %
 query_assert((?>(Head,Body))) :-
 	query_assert1(Head, Body, ask).
@@ -299,9 +299,9 @@ expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 % Translates a KnowRob langauge term into a sequence
 % of commands that can be executed by mongo DB.
 %
-% @Goal a KnowRob language term
-% @Expanded sequence of commands
-% @Mode 'ask' or 'tell'
+% @param Goal a KnowRob language term
+% @param Expanded sequence of commands
+% @param Mode 'ask' or 'tell'
 %
 query_expand(Goal, Goal, _) :-
 	% goals maybe not known during expansion, i.e. in case of
@@ -405,9 +405,9 @@ expand_cut(Terms,Expanded) :-
 % Compile an aggregate pipeline given a list of terminal symbols
 % and the context in which they shall hold.
 %
-% @Terminals list of terminal symbols
-% @Pipeline a term pipeline(Doc,Vars)
-% @Context the query context
+% @param Terminals list of terminal symbols
+% @param Pipeline a term pipeline(Doc,Vars)
+% @param Context the query context
 %
 query_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(

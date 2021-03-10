@@ -100,7 +100,7 @@ mng_export(Dir) :-
 %
 % Deletes all triples asserted into given named graph.
 %
-% @Name the graph name.
+% @param Name the graph name.
 %
 drop_graph(Name) :-
 	mng_get_db(DB, Coll, 'triples'),

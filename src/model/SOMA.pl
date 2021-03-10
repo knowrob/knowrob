@@ -942,10 +942,10 @@ shape_origin(_SR, [0,0,0], [0,0,0,1]) ?>
 %
 % ShapeOrigin is a list of frame-position-quaternion.
 %
-% @Obj IRI atom
-% @ShapeTerm A shape term
-% @ShapeOrigin The origin of the shape
-% @MaterialTerm List of material properties
+% @param Obj IRI atom
+% @param ShapeTerm A shape term
+% @param ShapeOrigin The origin of the shape
+% @param MaterialTerm List of material properties
 %
 object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
 	triple(Obj,soma:hasShape,Shape),

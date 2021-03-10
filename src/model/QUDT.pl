@@ -24,10 +24,10 @@
 %
 % Facts about units in the QUDT model.
 %
-% @Symbol SI symbol of the unit
-% @Kind the quantity kind
-% @Multiplier multiplication factor for conversion
-% @Offset offset for conversion
+% @param Symbol SI symbol of the unit
+% @param Kind the quantity kind
+% @param Multiplier multiplication factor for conversion
+% @param Offset offset for conversion
 %
 qudt_unit(Symbol, Kind, Multiplier, Offset) :-
 	rdf(Type, qudt:quantityKind,         Kind,                         qudt),
@@ -49,10 +49,10 @@ qudt_unit(Symbol, Kind, Multiplier, Offset) :-
 %
 % Convert a value to another unit of the same kind.
 %
-% @SymbolI SI unit symbol of input
-% @SymbolO SI unit symbol of output
-% @ValueI the input value
-% @ValueO the output value
+% @param SymbolI SI unit symbol of input
+% @param SymbolO SI unit symbol of output
+% @param ValueI the input value
+% @param ValueO the output value
 %
 qudt_conv(SymbolI,_SymbolO,_ValueI,_ValueO) :-
 	\+ ground(SymbolI), !,

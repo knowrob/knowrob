@@ -55,8 +55,8 @@
 % True if Object is a part of RootObject, and RootObject is assigned
 % to some URDF description.
 %
-% @Part IRI atom
-% @Root IRI atom
+% @param Part IRI atom
+% @param Root IRI atom
 %
 :- dynamic has_urdf/2.
 :- dynamic urdf_server/1.
@@ -119,8 +119,8 @@ urdf_init(Object,Identifier) :-
 %
 % Same as urdf_load/3 with empty options list.
 %
-% @Object IRI atom
-% @File Path to URDF file
+% @param Object IRI atom
+% @param File Path to URDF file
 %
 urdf_load(Object,File) :-
 	urdf_load(Object,File,[]).
@@ -133,9 +133,9 @@ urdf_load(Object,File) :-
 % Links and joints in the URDF file may further be mapped
 % to a RDF model and asserted to the triple store.
 %
-% @Object IRI atom
-% @File Path to URDF file
-% @Options List of options
+% @param Object IRI atom
+% @param File Path to URDF file
+% @param Options List of options
 %
 urdf_load(Object,URL,Options) :-
 	(	url_resolve(URL,Resolved)
@@ -182,8 +182,8 @@ urdf_load(Object,URL,Options) :-
 % Same as urdf_set_pose/2 but assigns the base of the
 % URDF to be located exactly at the frame given in the second argument.
 %
-% @Object IRI atom
-% @Frame URDF frame name atom
+% @param Object IRI atom
+% @param Frame URDF frame name atom
 %
 urdf_set_pose_to_origin(Object,Frame) :-
 	urdf_set_pose(Object,[Frame,[0,0,0],[0,0,0,1]]).
@@ -196,8 +196,8 @@ urdf_set_pose_to_origin(Object,Frame) :-
 % The base link of the URDF is assigned to the transform given
 % in the second argument.
 %
-% @Object IRI atom
-% @Frame A pose list of frame-position-quaternion
+% @param Object IRI atom
+% @param Frame A pose list of frame-position-quaternion
 %
 urdf_set_pose(Object,Pose) :-
 	(	has_urdf_prefix(Object,Prefix)

@@ -80,9 +80,9 @@ during(Statement, [Since, Until]) +>
 %
 % @param Statement A language term.
 % @param Instant A time instant.
-% @todo better handling of unknown until of interval
 %
 since(Statement, Instant) ?>
+	% TODO: better handling of unknown until of interval
 	number(Instant),
 	% get current time
 	pragma(get_time(Now)),
@@ -128,10 +128,10 @@ since(Statement, Instant) +>
 %
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
-% @todo tell until has unclear semantic
-% @todo better handling of unknown since of interval
 %
 until(Statement, Instant) ?>
+	% TODO tell until has unclear semantic
+	% TODO better handling of unknown since of interval
 	number(Instant),
 	% only include records that hold at instant
 	pragma(time_scope(=<(Instant), >=(Instant), Scope)),

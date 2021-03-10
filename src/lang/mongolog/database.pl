@@ -24,9 +24,9 @@
 % Current limitation: there cannot be predicates with the same functor,
 % but different arity.
 %
-% @Functor functor of the predicate
-% @Fields field names of predicate arguments
-% @Options option list
+% @param Functor functor of the predicate
+% @param Fields field names of predicate arguments
+% @param Options option list
 %
 add_database_predicate(Functor, _, _) :-
 	database_predicate(Functor, _),
@@ -43,7 +43,7 @@ add_database_predicate(Functor, Fields, Options) :-
 % Deletes all facts associated to predicate with
 % given functor.
 %
-% @Functor functor of the predicate
+% @param Functor functor of the predicate
 %
 drop_database_predicate(Functor) :-
 	mng_get_db(DB, Collection, Functor),

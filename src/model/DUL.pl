@@ -200,8 +200,8 @@ has_role(Entity,Role) ?+>
 %
 % Relates an object to its parts.
 %
-% @Entity IRI atom
-% @Part IRI atom
+% @param Entity IRI atom
+% @param Part IRI atom
 %
 % TODO: not object related, probably best to add a module DUL.pl and add it there
 %
