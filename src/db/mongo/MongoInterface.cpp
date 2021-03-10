@@ -14,15 +14,17 @@
 #include "knowrob/db/mongo/MongoInterface.h"
 #include "knowrob/db/mongo/bson_pl.h"
 
-static mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
+static const mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
 		(mongoc_insert_flags_t)MONGOC_INSERT_NO_VALIDATE;
-static mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
+static const mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
+static const mongoc_update_flags_t UPDATE_FLAGS =
+		(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 
-static PlAtom ATOM_minus("-");
-static PlAtom ATOM_insert("insert");
-static PlAtom ATOM_remove("remove");
-static PlAtom ATOM_update("update");
+static const PlAtom ATOM_minus("-");
+static const PlAtom ATOM_insert("insert");
+static const PlAtom ATOM_remove("remove");
+static const PlAtom ATOM_update("update");
 
 /*********************************/
 /********** static functions *****/
@@ -258,8 +260,6 @@ void MongoInterface::update(
 		const PlTerm &query_term,
 		const PlTerm &update_term)
 {
-	static mongoc_update_flags_t UPDATE_FLAGS =
-			(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 	MongoCollection coll(pool_,db_name,coll_name);
 	bson_error_t err;
 	//
