@@ -2,6 +2,19 @@
 		[ add_database_predicate/3,
 		  drop_database_predicate/1
 		]).
+/** <module> Storage of predicates in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate    | Arguments |
+| ---          | ---       |
+| assert/1     | +Head |
+| retractall/1 | +Head |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=dynpreds
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 
@@ -13,13 +26,13 @@
 
 %% add_database_predicate(+Functor, +Fields, +Options) is semidet.
 %
-% This needs to be called to register a predicate that stores
-% facts in the database.
+% Register a predicate that stores facts in the database.
 % Functor is the functor of a n-ary predicate, and Fields is
 % a n-elemental list of keys associated to the different
 % arguments of the predicate.
 % Options is a list of optional paramers:
-% - indices(List): a list of indices passed to setup_collection/2
+%
+% | indices(List) | a list of indices passed to setup_collection/2 |
 %
 % Current limitation: there cannot be predicates with the same functor,
 % but different arity.

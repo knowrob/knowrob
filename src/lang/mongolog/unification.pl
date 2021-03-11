@@ -1,4 +1,17 @@
 :- module(mongolog_unification, []).
+/** <module> Unification of terms in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate  | Arguments |
+| ---        | ---       |
+| =/2        | ?Term1, ?Term2 |
+| \=/2       | ?Term1, ?Term2 |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=compare
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 

@@ -1,13 +1,31 @@
 :- module(mongolog_control, []).
+/** <module> Control structures in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate   | Arguments |
+| ---         | ---       |
+| fail/0      | |
+| false/0     | |
+| true/0      | |
+| !/0         | |
+| \+/1        | :Goal |
+| ->/2        | :Condition, :Action |
+| ;/2         | :Goal1, :Goal2 |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=control
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 
 %% query commands
-:- query_compiler:add_command(true).
-:- query_compiler:add_command(false).
 :- query_compiler:add_command(fail).
-:- query_compiler:add_command(\+).
+:- query_compiler:add_command(false).
+:- query_compiler:add_command(true).
 :- query_compiler:add_command(!).
+:- query_compiler:add_command(\+).
 :- query_compiler:add_command(->).
 %:- query_compiler:add_command(*->).
 :- query_compiler:add_command(;).

@@ -1,4 +1,19 @@
 :- module(mongolog_meta, []).
+/** <module> Meta predicates in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate    | Arguments |
+| ---          | ---       |
+| call/1       | :Goal |
+| once/1       | :Goal |
+| ignore/1     | :Goal |
+| limit/2      | +Count, :Goal |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=metacall
+@license BSD
+*/
 
 :- use_module(library('lang/scope'),
 		[ time_scope/3 ]).

@@ -1,4 +1,16 @@
 :- module(mongolog_findall, []).
+/** <module> Finding all solutions to a goal in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate    | Arguments |
+| ---          | ---       |
+| findall/3    | +Template, :Goal, -Bag |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=allsolutions
+@license BSD
+*/
 
 :- use_module(library('db/mongo/client'),
 		[ mng_one_db/2 ]).

@@ -1,4 +1,23 @@
 :- module(mongolog_atoms, []).
+/** <module> Analysing and constructing atoms in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate             | Arguments |
+| ---                   | ---       |
+| atom_number/2         | ?Atom, ?Number |
+| atom_length/2         | +Atom, ?Length |
+| atom_prefix/2         | +Atom, +Prefix |
+| atom_concat/3         | ?Atom1, ?Atom2, ?Atom3 |
+| atomic_list_concat/2  | +List, ?Atom |
+| atomic_list_concat/3  | +List, +Separator, ?Atom |
+| upcase_atom/2         | +AnyCase, ?UpperCase |
+| downcase_atom/2       | +AnyCase, ?LowerCase |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=manipatom
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 

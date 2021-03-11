@@ -1,4 +1,21 @@
 :- module(mongolog_typecheck, []).
+/** <module> Verify type of a term in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate    | Arguments |
+| ---          | ---       |
+| ground/1     | @Term |
+| var/1        | @Term |
+| number/1     | @Term |
+| atom/1       | @Term |
+| is_list/1    | @Term |
+| compound/1   | @Term |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=typetest
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 

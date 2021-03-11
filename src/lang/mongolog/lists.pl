@@ -1,4 +1,24 @@
 :- module(mongolog_lists, []).
+/** <module> List manipulation in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate     | Arguments |
+| ---           | ---       |
+| length/2      | +List, ?Length |
+| max_list/2    | +List, ?Max |
+| min_list/2    | +List, ?Min |
+| sum_list/2    | +List, ?Sum |
+| member/2      | ?Elem, +List |
+| memberchk/2   | ?Elem, +List |
+| nth0/3        | ?Index, +List, ?Elem |
+| list_to_set/2 | +List, -Set |
+| sort/2        | +List, -Sorted |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=allsolutions
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 

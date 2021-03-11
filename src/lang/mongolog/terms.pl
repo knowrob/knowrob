@@ -1,4 +1,19 @@
 :- module(mongolog_terms, []).
+/** <module> Analysing and constructing terms in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate    | Arguments |
+| ---          | ---       |
+| functor/3    | ?Term, ?Name, ?Arity |
+| arg/3        | ?Arg, +Term, ?Value |
+| copy_term/2  | +In, -Out |
+| =../2        | ?Term, ?List |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=manipterm
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 

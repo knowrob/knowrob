@@ -1,4 +1,21 @@
 :- module(mongolog_sgml, []).
+/** <module> XML namespaces in mongolog programs.
+
+The following predicates are supported:
+
+| Predicate            | Arguments |
+| ---                  | ---       |
+| iri_xml_namespace/3  | +IRI, -Namespace, -Localname |
+
+In addition, a command new_iri/1 can be used to generate a unique
+name that is not used yet.
+A variant, new_iri/2, allows to provide a IRI prefix
+for the new IRI.
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=xmlns
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_global_term/2 ]).

@@ -1,4 +1,23 @@
 :- module(mongolog_arithmetic, []).
+/** <module> Arithmetic predicates in mongolog programs.
+
+The following set of basic and special purpose predicates are supported:
+
+| Predicate | Arguments |
+| --- | --- |
+| is/2  | ?Number, +Expr |
+| >/2   | +Expr1, +Expr2 |
+| </2   | +Expr1, +Expr2 |
+| =</2  | +Expr1, +Expr2 |
+| >=/2  | +Expr1, +Expr2 |
+| =\=/2 | +Expr1, +Expr2 |
+| =:=/2 | +Expr1, +Expr2 |
+| between/3 | +Low, +High, ?Value |
+
+@author Daniel Beßler
+@see https://www.swi-prolog.org/pldoc/man?section=arith
+@license BSD
+*/
 
 :- use_module(library('lang/compiler')).
 :- use_module(library('db/mongo/client'),
