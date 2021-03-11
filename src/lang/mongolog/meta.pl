@@ -44,7 +44,7 @@ The following predicates are supported:
 mongolog:step_expand(
 		once(Goal), Expanded, Context) :-
 	append_cut(Goal, WithCut),
-	query_expand(WithCut, Expanded, Context).
+	mongolog_expand(WithCut, Expanded, Context).
 
 %% ignore(:Goal)
 % Calls Goal as once/1, but succeeds, regardless of whether Goal succeeded or not.
@@ -52,42 +52,42 @@ mongolog:step_expand(
 mongolog:step_expand(
 		ignore(Goal), Expanded, Context) :-
 	append_cut(Goal, WithCut),
-	query_expand((WithCut ; true), Expanded, Context).
+	mongolog_expand((WithCut ; true), Expanded, Context).
 
 %%
 mongolog:step_expand(
 		limit(Count, Goal),
 		limit(Count, Expanded),
 		Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 %%
 mongolog:step_expand(call(Goal), call(Expanded), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(call(Goal,Arg1),
 		call_with_args(Expanded,[Arg1]), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2),
 		call_with_args(Expanded,[Arg1,Arg2]), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3),
 		call_with_args(Expanded,[Arg1,Arg2,Arg3]), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
 		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4]), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(
 		call_with_context(Goal,Args),
 		call_with_context(Expanded,Args), Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 mongolog:step_expand(ask(Goal), ask(Expanded), _Context) :-
-	query_expand(Goal, Expanded, ask).
+	mongolog_expand(Goal, Expanded, ask).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.

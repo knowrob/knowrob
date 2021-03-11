@@ -69,11 +69,11 @@ ask(Statement, QScope, FScope, Options) :-
 	% in this case we can limit to one solution here
 	ground(Statement),
 	!,
-	once(query_ask(Statement, QScope, FScope, Options)).
+	once(mongolog_ask(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
 	%\+ ground(Statement),
-	query_ask(Statement, QScope, FScope, Options).
+	mongolog_ask(Statement, QScope, FScope, Options).
 
 %% ask(+Statement, +QScope, -FScope) is nondet.
 %
@@ -118,7 +118,7 @@ tell(Statement, Scope, Options) :-
 	% compile and call statement
 	(	setting(mng_client:read_only, true)
 	->	log_warning(db(read_only(tell)))
-	;	query_tell(Statement, Scope, Options0)
+	;	mongolog_tell(Statement, Scope, Options0)
 	).
 
 %% tell(+Statement, +Scope) is nondet.
@@ -219,14 +219,14 @@ set_graph_option(Options, Merged) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, query_ask(BodyGlobal, QScope, _FScope, [])))) :-
+		(:-(HeadGlobal, mongolog_ask(BodyGlobal, QScope, _FScope, [])))) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
 	current_scope(QScope),
 	% add the rule to the DB backend
-	query_assert((?>(Term, BodyGlobal))).
+	mongolog_assert((?>(Term, BodyGlobal))).
 
 %%
 % Term expansion for *tell* rules using the (+>) operator.
@@ -241,7 +241,7 @@ user:term_expansion(
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
 	% add the rule to the DB backend
-	query_assert((+>(Term,BodyGlobal))).
+	mongolog_assert((+>(Term,BodyGlobal))).
 
 %%
 % Term expansion for *tell-ask* rules using the (?+>) operator.

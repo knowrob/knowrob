@@ -39,7 +39,7 @@ The following predicates are supported:
 %       Prolog then generates all possible list with Elem as member.
 %
 mongolog:step_expand(member(Elem, List), Expanded, Context) :-
-	query_expand((
+	mongolog_expand((
 		% get size of list
 		length(List, Size),
 		Size0 is Size - 1,
@@ -54,7 +54,7 @@ mongolog:step_expand(member(Elem, List), Expanded, Context) :-
 % semi deterministic and typically used to test membership of a list. 
 %
 mongolog:step_expand(memberchk(Elem, List), Expanded, Context) :-
-	query_expand(limit(1, member(Elem,List)), Expanded, Context).
+	mongolog_expand(limit(1, member(Elem,List)), Expanded, Context).
 
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.

@@ -1,9 +1,9 @@
 :- module(mongolog,
-	[ query_assert(t),
-	  query_ask(t,+,-,+),
-	  query_tell(t,+,+),
-	  query_expand(t,-,+),
-	  query_compile(t,-,+)
+	[ mongolog_assert(t),
+	  mongolog_ask(t,+,-,+),
+	  mongolog_tell(t,+,+),
+	  mongolog_expand(t,-,+),
+	  mongolog_compile(t,-,+)
 	]).
 /** <module> Compilation of KnowRob rules into DB queries.
 
@@ -44,7 +44,7 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%% query_ask(+Statement, +Scope, +Options) is nondet.
+%% mongolog_ask(+Statement, +QScope, -FScope, +Options) is nondet.
 %
 % Run a mongo query to find out if Statement holds
 % within Scope.
@@ -53,10 +53,10 @@ add_command(Command) :-
 % @param Scope the scope of the statement
 % @param Options query options
 %
-query_ask(Statement, QScope, FScope, Options) :-
+mongolog_ask(Statement, QScope, FScope, Options) :-
 	query_(Statement, [scope(QScope)|Options], FScope, ask).
 
-%% query_tell(+Statement, +Scope, +Options) is semidet.
+%% mongolog_tell(+Statement, +Scope, +Options) is semidet.
 %
 % Run a mongo query to assert that a Statement holds
 % within Scope.
@@ -65,13 +65,13 @@ query_ask(Statement, QScope, FScope, Options) :-
 % @param Scope the scope of the statement
 % @param Options query options
 %
-query_tell(Statement, FScope, Options) :-
+mongolog_tell(Statement, FScope, Options) :-
 	query_(Statement, [scope(FScope)|Options], _, tell).
 
 %%
 query_(Goal, Context, FScope, Mode) :-
 	% get the pipeline document
-	query_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
+	mongolog_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
 	% run the pipeline
 	query_1(Doc, Vars, FScope, Mode).
 
@@ -239,7 +239,7 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%% query_assert(+Rule) is semidet.
+%% mongolog_assert(+Rule) is semidet.
 %
 % Asserts a rule executable in a mongo query.
 % The rule is internally translated into a form
@@ -255,17 +255,17 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 %
 % @param Rule the rule to assert.
 %
-query_assert((?>(Head,Body))) :-
+mongolog_assert((?>(Head,Body))) :-
 	query_assert1(Head, Body, ask).
 
-query_assert((+>(Head,Body))) :-
+mongolog_assert((+>(Head,Body))) :-
 	query_assert1(Head, Body, tell).
 
 query_assert1(Head, Body, Context) :-
 	%% get the functor of the predicate
 	Head =.. [Functor|Args],
 	%% expand goals into terminal symbols
-	(	query_expand(Body, Expanded, Context) -> true
+	(	mongolog_expand(Body, Expanded, Context) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	%% handle instantiated arguments
@@ -294,7 +294,7 @@ expand_arguments1([X|Xs], [X|Ys], Zs) :-
 expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 	expand_arguments1(Xs, Ys, Zs).
 
-%% query_expand(+Goal, -Expanded, +Mode) is det.
+%% mongolog_expand(+Goal, -Expanded, +Mode) is det.
 %
 % Translates a KnowRob langauge term into a sequence
 % of commands that can be executed by mongo DB.
@@ -303,22 +303,22 @@ expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 % @param Expanded sequence of commands
 % @param Mode 'ask' or 'tell'
 %
-query_expand(Goal, Goal, _) :-
+mongolog_expand(Goal, Goal, _) :-
 	% goals maybe not known during expansion, i.e. in case of
 	% higher-level predicates receiving a goal as an argument.
 	% these var goals need to be expanded compile-time
 	% (call-time is not possible)
 	var(Goal), !.
 
-query_expand(Goal, Expanded, Mode) :-
+mongolog_expand(Goal, Expanded, Mode) :-
 	% NOTE: do not use is_list/1 here, it cannot handle list that have not
 	%       been completely resolved as in `[a|_]`.
 	%       Here we check just the head of the list.
 	\+ has_list_head(Goal), !,
 	comma_list(Goal, Terms),
-	query_expand(Terms, Expanded, Mode).
+	mongolog_expand(Terms, Expanded, Mode).
 
-query_expand(Terms, Expanded, Mode) :-
+mongolog_expand(Terms, Expanded, Mode) :-
 	has_list_head(Terms), !,
 	catch(
 		expand_term_0(Terms, Expanded0, Mode),
@@ -380,7 +380,7 @@ expand_term_1(Goal, Expanded, Mode) :-
 	),
 	% wrap different clauses into ';'
 	semicolon_list(Goal0, TerminalsList),
-	query_expand(Goal0, Expanded, Mode).
+	mongolog_expand(Goal0, Expanded, Mode).
 
 %%
 % Each conjunction with cut operator [X0,...,Xn,!|_]
@@ -400,7 +400,7 @@ expand_cut(Terms,Expanded) :-
 	).
 
 
-%% query_compile(+Terminals, -Pipeline, +Context) is semidet.
+%% mongolog_compile(+Terminals, -Pipeline, +Context) is semidet.
 %
 % Compile an aggregate pipeline given a list of terminal symbols
 % and the context in which they shall hold.
@@ -409,7 +409,7 @@ expand_cut(Terms,Expanded) :-
 % @param Pipeline a term pipeline(Doc,Vars)
 % @param Context the query context
 %
-query_compile(Terminals, pipeline(Doc, Vars), Context) :-
+mongolog_compile(Terminals, pipeline(Doc, Vars), Context) :-
 	catch(
 		query_compile1(Terminals, Doc, Vars, Context),
 		% catch error's, add context, and throw again
@@ -439,7 +439,7 @@ compile_terms([X|Xs], Pipeline, V0->Vn, StepVars, Context) :-
 compile_term(Term, Doc, V0->V1, StepVars, Context) :-
 	% try expansion (maybe the goal was not known during the expansion phase)
 	option(mode(Mode), Context),
-	query_expand(Term, Expanded, Mode),
+	mongolog_expand(Term, Expanded, Mode),
 	compile_expanded_terms(Expanded, Doc, V0->V1, StepVars, Context).
 
 %%

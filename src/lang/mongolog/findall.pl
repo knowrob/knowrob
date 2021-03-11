@@ -27,7 +27,7 @@ mongolog:step_expand(
 		findall(Template, Goal, List),
 		findall(Template, Expanded, List),
 		Context) :-
-	query_expand(Goal, Expanded, Context).
+	mongolog_expand(Goal, Expanded, Context).
 
 %% setof(+Template, +Goal, -Set)
 % Equivalent to bagof/3, but sorts the result using sort/2 to
@@ -37,7 +37,7 @@ mongolog:step_expand(
 %		setof(Template, Goal, Set),
 %		','(bagof(Template, Expanded, List), sort(List, Set)),
 %		Context) :-
-%	query_expand(Goal, Expanded, Context).
+%	mongolog_expand(Goal, Expanded, Context).
 
 %% findall(+Template, :Goal, -Bag)
 % Create a list of the instantiations Template gets successively on

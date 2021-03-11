@@ -1,6 +1,6 @@
 :- module(mongolog_database,
-		[ add_database_predicate/3,
-		  drop_database_predicate/1
+		[ mongolog_add_predicate/3,
+		  mongolog_drop_predicate/1
 		]).
 /** <module> Storage of predicates in mongolog programs.
 
@@ -24,7 +24,7 @@ The following predicates are supported:
 :- mongolog:add_command(assert).
 :- mongolog:add_command(retractall).
 
-%% add_database_predicate(+Functor, +Fields, +Options) is semidet.
+%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
 %
 % Register a predicate that stores facts in the database.
 % Functor is the functor of a n-ary predicate, and Fields is
@@ -41,24 +41,24 @@ The following predicates are supported:
 % @param Fields field names of predicate arguments
 % @param Options option list
 %
-add_database_predicate(Functor, _, _) :-
+mongolog_add_predicate(Functor, _, _) :-
 	database_predicate(Functor, _),
 	!,
 	throw(permission_error(modify,database_predicate,Functor)).
 
-add_database_predicate(Functor, Fields, Options) :-
+mongolog_add_predicate(Functor, Fields, Options) :-
 	setup_predicate_collection(Functor, Fields, Options),
 	assertz(database_predicate(Functor, Fields)),
 	mongolog:add_command(Functor).
 
-%% drop_database_predicate(+Functor) is det.
+%% mongolog_drop_predicate(+Functor) is det.
 %
 % Deletes all facts associated to predicate with
 % given functor.
 %
 % @param Functor functor of the predicate
 %
-drop_database_predicate(Functor) :-
+mongolog_drop_predicate(Functor) :-
 	mng_get_db(DB, Collection, Functor),
 	mng_drop(DB, Collection).
 
@@ -288,8 +288,8 @@ setup_predicate_collection(Functor, [FirstField|_], Options) :-
 :- begin_tests('mongolog_database').
 
 test('add_database_predicate') :-
-	assert_true(add_database_predicate(woman, [name], [[name]])),
-	assert_true(add_database_predicate(loves, [a,b], [[a],[b],[a,b]])).
+	assert_true(mongolog_add_predicate(woman, [name], [[name]])),
+	assert_true(mongolog_add_predicate(loves, [a,b], [[a],[b],[a,b]])).
 
 test('assert(woman)') :-
 	assert_true(ask(assert(woman(mia)))),
@@ -335,7 +335,7 @@ test('loves(-,+)') :-
 	assert_true(memberchk(vincent,Xs)).
 
 test('assert(shape)') :-
-	assert_true(add_database_predicate(shape, [name,term], [[name]])),
+	assert_true(mongolog_add_predicate(shape, [name,term], [[name]])),
 	assert_true(ask(assert(shape(obj1,sphere(1.0))))),
 	assert_true(ask(assert(shape(obj3,sphere(2.0))))),
 	assert_true(ask(assert(shape(obj2,box(1.0,2.0,3.0))))).
@@ -374,8 +374,8 @@ test('+Cond->assert(woman);assert(woman)') :-
 	assert_false(ask(woman(foo))).
 
 test('drop_database_predicate') :-
-	assert_true(drop_database_predicate(shape)),
-	assert_true(drop_database_predicate(woman)),
-	assert_true(drop_database_predicate(loves)).
+	assert_true(mongolog_drop_predicate(shape)),
+	assert_true(mongolog_drop_predicate(woman)),
+	assert_true(mongolog_drop_predicate(loves)).
 
 :- end_tests('mongolog_database').

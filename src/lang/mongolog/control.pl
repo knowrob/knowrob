@@ -50,7 +50,7 @@ mongolog:step_expand(not(Goal), Expanded, Mode) :-
 % the backslash (\) is normally used to indicate negation in Prolog).
 %
 mongolog:step_expand(\+(Goal), Expanded, Mode) :-
-	query_expand(Goal, GoalExpanded, Mode),
+	mongolog_expand(Goal, GoalExpanded, Mode),
 	% another way to write it:
 	%Expanded=((call(GoalExpanded),!,fail) ; true),
 	Expanded = (
@@ -72,8 +72,8 @@ mongolog:step_expand(\+(Goal), Expanded, Mode) :-
 %
 mongolog:step_expand(';'('->'(If,Then),Else), ';'(X,Y), Mode) :-
 	% (If -> Then) ; Else -> (If, !, Then) ; Else
-	query_expand([If, !, Then], X, Mode),
-	query_expand(Else,          Y, Mode).
+	mongolog_expand([If, !, Then], X, Mode),
+	mongolog_expand(Else,          Y, Mode).
 
 mongolog:step_expand('->'(If,Then), Epanded, Mode) :-
 	% (If -> Then) -> (If -> Then ; fail)
@@ -97,8 +97,8 @@ mongolog:step_expand('->'(If,Then), Epanded, Mode) :-
 % Make sure goals of disjunction are expanded.
 %
 mongolog:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
-	query_expand(A0,B0,Ctx),
-	query_expand(A1,B1,Ctx).
+	mongolog_expand(A0,B0,Ctx),
+	mongolog_expand(A1,B1,Ctx).
 
 %% true
 %
