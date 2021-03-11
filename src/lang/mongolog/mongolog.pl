@@ -493,11 +493,7 @@ step_compile(Step, Ctx, Doc, StepVars) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-match_equals(X, Exp, Step) :-
-	(	Step=['$set',   ['t_is_equal', ['$eq', array([X,Exp])]]]
-	;	Step=['$match', ['t_is_equal', bool(true)]]
-	;	Step=['$unset', string('t_is_equal')]
-	).
+match_equals(X, Exp, ['$match', ['$expr', ['$eq', array([X,Exp])]]]).
 
 %%
 lookup_let_doc(InnerVars, LetDoc) :-
