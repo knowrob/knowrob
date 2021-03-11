@@ -99,10 +99,11 @@ ask(Statement) :-
 ask_mongolog(Statement, QScope, FScope, Options) :-
 	option(fields(Fields), Options, []),
 	merge_options([
+		mode(ask),
 		scope(QScope),
-		additional_vars([['v_scope',FScope]|Fields])
+		user_vars([['v_scope',FScope]|Fields])
 	], Options, Options1),
-	mongolog_query(Statement, Options1).
+	mongolog_call(Statement, Options1).
 
 %% tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -127,7 +128,10 @@ tell(Statement, Scope, Options) :-
 	% compile and call statement
 	(	setting(mng_client:read_only, true)
 	->	log_warning(db(read_only(tell)))
-	;	mongolog_tell(Statement, [scope(Scope)|Options0])
+	;	mongolog_call(Statement, [
+			mode(tell),
+			scope(Scope)|Options0
+		])
 	).
 
 %% tell(+Statement, +Scope) is nondet.

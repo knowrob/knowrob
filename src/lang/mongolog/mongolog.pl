@@ -1,9 +1,7 @@
 :- module(mongolog,
 	[ mongolog_assert(t),
-	  mongolog_query(t,+),
-	  mongolog_tell(t,+),
 	  mongolog_expand(t,-,+),
-	  mongolog_compile(t,-,+)
+	  mongolog_call(t,+)
 	]).
 /** <module> Compiling goals into aggregation pipelines.
 
@@ -41,37 +39,23 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%% mongolog_query(+Goal, +Options) is nondet.
+%% mongolog_call(+Goal, +Options) is nondet.
 %
-% Call Goal in ask mode.
-%
-% @param Goal A compound term expanding into an aggregation pipeline
-% @param Options Additional options
-%
-mongolog_query(Statement, Options) :-
-	query_(Statement, Options, ask).
-
-%% mongolog_tell(+Goal, +Options) is semidet.
-%
-% Call Goal in tell mode.
+% Call Goal by translating it into an aggregation pipeline.
 %
 % @param Goal A compound term expanding into an aggregation pipeline
 % @param Options Additional options
 %
-mongolog_tell(Statement, Options) :-
-	query_(Statement, Options, tell).
-
-%%
-query_(Goal, Context, Mode) :-
+mongolog_call(Goal, Context) :-
 	% get the pipeline document
-	mongolog_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
+	mongolog_compile(Goal, pipeline(Doc,Vars), Context),
 	%
-	option(additional_vars(Fields), Context, []),
-	append(Vars, Fields, Vars1),
+	option(user_vars(UserVars), Context, []),
+	append(Vars, UserVars, Vars1),
 	% run the pipeline
-	query_1(Doc, Vars1, Mode).
+	query_1(Doc, Vars1).
 
-query_1(Pipeline, Vars, Mode) :-
+query_1(Pipeline, Vars) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
 	mng_one_db(DB, Coll),
@@ -81,19 +65,16 @@ query_1(Pipeline, Vars, Mode) :-
 		mng_cursor_create(DB, Coll, Cursor),
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
-			query_2(Mode, Cursor, Vars)
+			query_2(Cursor, Vars)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
 
 %%
-query_2(Mode, Cursor, Vars) :-
+query_2(Cursor, Vars) :-
 	mng_cursor_materialize(Cursor, Result),
-	(	Mode==ask
-	->	unify_(Result, Vars)
-	;	true
-	),
+	unify_(Result, Vars),
 	assert_documents(Result).
 
 %%
@@ -151,7 +132,6 @@ bulk_operation(Doc0, update(Selector,['$set', Update])) :-
 bulk_operation(Doc, insert(Doc)).
 
 %%
-% read accumulated fact scope and
 % unify variables.
 %
 unify_(Result, Vars) :-
@@ -556,16 +536,17 @@ lookup_array(ArrayKey, Terminals,
 	%  - probably the problem is if triple is inside of disjunction!
 	% FIXME: I suspect that context_var may not always yield same results for same context
 	%
-	once((
-		bagof(Var,
-			(	member(Var,StepVars0)
-			;	context_var(Context, Var)
-			),
-			StepVars1)
-	;	StepVars1=StepVars0
-	)),
-	% pass variables from outer scope to inner if they are referred to
-	% in the inner scope.
+%	once((
+%		bagof(Var,
+%			(	member(Var,StepVars0)
+%			;	context_var(Context, Var)
+%			),
+%			StepVars1)
+%	;	StepVars1=StepVars0
+%	)),
+	StepVars1=StepVars0,
+	% pass variables from outer goal to inner if they are referred to
+	% in the inner goal.
 	lookup_let_doc(StepVars1, LetDoc),
 	% set all let variables so that they can be accessed
 	% without aggregate operators in Pipeline
