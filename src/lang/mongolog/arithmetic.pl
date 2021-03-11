@@ -86,11 +86,8 @@ comparison(Exp, _Ctx, []) :-
 	ground(Exp),!,
 	call(Exp).
 
-comparison(Exp, Ctx, [
-		['$set',   ['t_success', [MngOperator, array([Doc1,Doc2])]]],
-		['$match', ['t_success', bool(true)]],
-		['$unset', string('t_success')]
-	]) :-
+comparison(Exp, Ctx,
+		[['$match', ['$expr', [MngOperator, array([Doc1,Doc2])]]]]) :-
 	Exp =.. [PlOperator, Left, Right],
 	expression_operator(PlOperator, MngOperator),
 	expression(Left, Ctx, Doc1),
