@@ -1,14 +1,11 @@
 :- module(mongolog,
 	[ mongolog_assert(t),
-	  mongolog_ask(t,+,-,+),
+	  mongolog_query(t,+,-,+),
 	  mongolog_tell(t,+,+),
 	  mongolog_expand(t,-,+),
 	  mongolog_compile(t,-,+)
 	]).
-/** <module> Compilation of KnowRob rules into DB queries.
-
-KnowRob language terms are defined in rules which are translated
-into aggregate pipelines that can be processed by mongo DB.
+/** <module> Compiling goals into aggregation pipelines.
 
 @author Daniel Beßler
 @license BSD
@@ -44,26 +41,30 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%% mongolog_ask(+Statement, +QScope, -FScope, +Options) is nondet.
+%% mongolog_query(+Goal, +QueryScope, -FactScope, +Options) is nondet.
 %
-% Run a mongo query to find out if Statement holds
-% within Scope.
+% Call Goal in ask mode.
+% Facts may be scoped, i.e., they may not hold universally.
+% QueryScope determines scope space that must be met by
+% all yielded facts, and FactScope is the actual scope of a yielded fact.
 %
-% @param Statement a statement written in KnowRob language
-% @param Scope the scope of the statement
-% @param Options query options
+% @param Goal A compound term expanding into an aggregation pipeline
+% @param QueryScope Scope space
+% @param FactScope Actual scope
+% @param Options Additional options
 %
-mongolog_ask(Statement, QScope, FScope, Options) :-
+mongolog_query(Statement, QScope, FScope, Options) :-
 	query_(Statement, [scope(QScope)|Options], FScope, ask).
 
-%% mongolog_tell(+Statement, +Scope, +Options) is semidet.
+%% mongolog_tell(+Goal, +FactScope, +Options) is semidet.
 %
-% Run a mongo query to assert that a Statement holds
-% within Scope.
+% Call Goal in tell mode.
+% Facts may be scoped, i.e., they may not hold universally.
+% FactScope determines the scope of all facts inherited by Goal.
 %
-% @param Statement a statement written in KnowRob language
-% @param Scope the scope of the statement
-% @param Options query options
+% @param Goal A compound term expanding into an aggregation pipeline
+% @param FactScope Scope of facts
+% @param Options Additional options
 %
 mongolog_tell(Statement, FScope, Options) :-
 	query_(Statement, [scope(FScope)|Options], _, tell).
@@ -239,21 +240,18 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%% mongolog_assert(+Rule) is semidet.
+%% mongolog_assert(+Term) is semidet.
 %
-% Asserts a rule executable in a mongo query.
-% The rule is internally translated into a form
-% that only contains asequence of commands that can be executed
-% by mongo.
-% This sequence of commands can later be executed
-% as a mongo aggregate query.
-% `Rule` can be either a term `Head ?> Body` or `Head +> Body`.
+% Assert a `mongolog` rule.
+% The rule is internally translated into a sequence
+% of commands that can be executed in an aggregation pipeline.
+% Term can be either a of the form `Head ?> Body` (ask rule) or `Head +> Body` (tell rule).
+% Any non-terminal predicate in Body must have a previously asserted
+% mongolog rule it can expand into.
+% After being asserted, the Head predicate can be referred to in
+% calls of mongolog_query/4.
 %
-% Asserting rule during term expansion has the benefit
-% of being slightly faster compared to doing the translation
-% at runtime (which is also perfectly possible).
-%
-% @param Rule the rule to assert.
+% @param Term A mongolog rule.
 %
 mongolog_assert((?>(Head,Body))) :-
 	query_assert1(Head, Body, ask).
@@ -294,13 +292,16 @@ expand_arguments1([X|Xs], [X|Ys], Zs) :-
 expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 	expand_arguments1(Xs, Ys, Zs).
 
-%% mongolog_expand(+Goal, -Expanded, +Mode) is det.
+%% mongolog_expand(+Term, -Expanded, +Mode) is det.
 %
-% Translates a KnowRob langauge term into a sequence
-% of commands that can be executed by mongo DB.
+% Translate a goal into a sequence of terminal commands.
+% Terminal commands are the core predicates supported by `mongolog`
+% such as arithmetic and comparison predicates.
+% Rules, on the other hand, are "flattened" during term expansion,
+% and translated to a sequence of these terminal commands.
 %
-% @param Goal a KnowRob language term
-% @param Expanded sequence of commands
+% @param Term A compound term, or a list of terms.
+% @param Expanded Sequence of terminal commands
 % @param Mode 'ask' or 'tell'
 %
 mongolog_expand(Goal, Goal, _) :-
@@ -400,13 +401,25 @@ expand_cut(Terms,Expanded) :-
 	).
 
 
-%% mongolog_compile(+Terminals, -Pipeline, +Context) is semidet.
+%% mongolog_compile(+Term, -Pipeline, +Context) is semidet.
 %
-% Compile an aggregate pipeline given a list of terminal symbols
-% and the context in which they shall hold.
+% Translate a goal into an aggregation pipeline.
+% Goal may be a compound term using the various predicates
+% supported by mongolog.
+% The goal must not but can be expanded before (see mongolog_expand/3).
+% An error is thrown in case of compilation failure.
+% One failure case is to refer to an unknown predicate
+% (it is thus necessary to assert all referred predicates before
+% compiling a new predicate).
+% Such an error will also be thrown for recursive rules
+% (i.e. when a predicate refers to itself).
 %
-% @param Terminals list of terminal symbols
-% @param Pipeline a term pipeline(Doc,Vars)
+% This predicate usually does not need to be called directly,
+% but mongolog_assert/1 is called instead to make predicates
+% accessible in other rules.
+%
+% @param Term A compound term, or a list of terms.
+% @param Pipeline a term pipeline(Document,Variables)
 % @param Context the query context
 %
 mongolog_compile(Terminals, pipeline(Doc, Vars), Context) :-

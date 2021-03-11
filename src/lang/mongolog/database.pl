@@ -53,7 +53,7 @@ mongolog_add_predicate(Functor, Fields, Options) :-
 
 %% mongolog_drop_predicate(+Functor) is det.
 %
-% Deletes all facts associated to predicate with
+% Delete all facts associated to predicate with
 % given functor.
 %
 % @param Functor functor of the predicate

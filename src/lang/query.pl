@@ -69,11 +69,11 @@ ask(Statement, QScope, FScope, Options) :-
 	% in this case we can limit to one solution here
 	ground(Statement),
 	!,
-	once(mongolog_ask(Statement, QScope, FScope, Options)).
+	once(mongolog_query(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
 	%\+ ground(Statement),
-	mongolog_ask(Statement, QScope, FScope, Options).
+	mongolog_query(Statement, QScope, FScope, Options).
 
 %% ask(+Statement, +QScope, -FScope) is nondet.
 %
@@ -219,7 +219,7 @@ set_graph_option(Options, Merged) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, mongolog_ask(BodyGlobal, QScope, _FScope, [])))) :-
+		(:-(HeadGlobal, mongolog_query(BodyGlobal, QScope, _FScope, [])))) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
