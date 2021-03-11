@@ -1,4 +1,4 @@
-:- module(meta_commands, []).
+:- module(mongolog_meta, []).
 
 :- use_module(library('lang/scope'),
 		[ time_scope/3 ]).
@@ -216,7 +216,7 @@ append_cut(Goal, WithCut) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('meta_commands').
+:- begin_tests('mongolog_meta').
 
 test('limit(1, +Goal)'):-
 	lang_query:test_command(
@@ -286,4 +286,4 @@ test('call(+Functor, -Arg1, +Arg2)'):-
 		call(is, Arg1, Arg2), Arg2, -3.25),
 	assert_equals(Arg1, -3.25).
 
-:- end_tests('meta_commands').
+:- end_tests('mongolog_meta').

@@ -1,4 +1,4 @@
-:- module(lang_arithmetic, []).
+:- module(mongolog_arithmetic, []).
 
 :- use_module(library('lang/compiler')).
 :- use_module(library('db/mongo/client'),
@@ -148,7 +148,7 @@ expression_function(*,        '$multiply').
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_arithmetic').
+:- begin_tests('mongolog_arithmetic').
 
 test('is(-Y,+X)'):-
 	lang_query:test_command(
@@ -189,4 +189,4 @@ test('between(+Low,+High,-Value)'):-
 		Values),
 	assert_equals(Values, [8,9,10]).
 
-:- end_tests('lang_arithmetic').
+:- end_tests('mongolog_arithmetic').

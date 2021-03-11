@@ -1,4 +1,4 @@
-:- module(lang_findall, []).
+:- module(mongolog_findall, []).
 
 :- use_module(library('db/mongo/client'),
 		[ mng_one_db/2 ]).
@@ -111,7 +111,7 @@ template_instantiation(Atomic, _Ctx, Constant) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_findall').
+:- begin_tests('mongolog_findall').
 
 test('findall(+Succeeds)'):-
 	lang_query:test_command(
@@ -239,4 +239,4 @@ test('findall 2-ary term'):-
 	assert_unifies(Results,[
 		test(9.5,10.5), test(9.0,11.0) ]).
 
-:- end_tests('lang_findall').
+:- end_tests('mongolog_findall').

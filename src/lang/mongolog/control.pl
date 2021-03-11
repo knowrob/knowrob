@@ -1,4 +1,4 @@
-:- module(control_commands, []).
+:- module(mongolog_control, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -280,7 +280,7 @@ has_cut(Goal) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('control_commands').
+:- begin_tests('mongolog_control').
 
 test('(+Goal ; +Goal)'):-
 	findall(X,
@@ -384,4 +384,4 @@ test('\\+(+Goal)'):-
 	assert_false(lang_query:test_command(
 		\+(Number > 4), Number, 4.5)).
 
-:- end_tests('control_commands').
+:- end_tests('mongolog_control').

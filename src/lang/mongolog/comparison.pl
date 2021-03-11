@@ -1,4 +1,4 @@
-:- module(lang_comparison, []).
+:- module(mongolog_comparison, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -37,7 +37,7 @@ query_compiler:step_compile(\==(X,Y), Ctx,
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_comparison').
+:- begin_tests('mongolog_comparison').
 
 test('==(+Atom,+Term)'):-
 	assert_true(lang_query:test_command(
@@ -73,5 +73,5 @@ test('\\==(+Term1,+Term2)'):-
 	assert_true(lang_query:test_command(
 		(Atom \== 4.5), Atom, '4.5')).
 
-:- end_tests('lang_comparison').
+:- end_tests('mongolog_comparison').
 	

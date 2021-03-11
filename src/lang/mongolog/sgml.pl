@@ -1,4 +1,4 @@
-:- module(lang_sgml, []).
+:- module(mongolog_sgml, []).
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_global_term/2 ]).
@@ -59,7 +59,7 @@ query_compiler:step_compile(
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_sgml').
+:- begin_tests('mongolog_sgml').
 
 test('new_iri(-IRI)'):-
 	lang_query:test_command(
@@ -76,4 +76,4 @@ test('iri_xml_namespace(+IRI,-NS,-Name)'):-
 	assert_equals(Name,'Resource'),
 	assert_true(atomic_concat(NS,Name,Resource)).
 
-:- end_tests('lang_sgml').
+:- end_tests('mongolog_sgml').

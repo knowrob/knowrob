@@ -1,4 +1,4 @@
-:- module(lang_atoms, []).
+:- module(mongolog_atoms, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -177,7 +177,7 @@ add_separator([X0,X1|Xs], Sep, [X0,Sep,X1|Ys]) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_atoms').
+:- begin_tests('mongolog_atoms').
 
 test('atom_number(+Atom,-Num)'):-
 	lang_query:test_command(
@@ -282,4 +282,4 @@ test('atomic_list_concat(+List,+Sep,-Atom)'):-
 		X1, 'foo'),
 	assert_equals(Atom, 'foo-bar').
 
-:- end_tests('lang_atoms').
+:- end_tests('mongolog_atoms').

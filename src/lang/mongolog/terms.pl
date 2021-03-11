@@ -1,4 +1,4 @@
-:- module(lang_terms, []).
+:- module(mongolog_terms, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -150,7 +150,7 @@ query_compiler:step_compile(=..(Term,List), Ctx, Pipeline) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_terms').
+:- begin_tests('mongolog_terms').
 
 test('functor(+Term,-Functor,-Arity)'):-
 	lang_query:test_command(
@@ -225,5 +225,5 @@ test('=..(-Term,+List)') :-
 	lang_query:test_command(=..(Term,List), List, [foo,a,b]),
 	assert_equals(Term,foo(a,b)).
 
-:- end_tests('lang_terms').
+:- end_tests('mongolog_terms').
 

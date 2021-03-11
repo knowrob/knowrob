@@ -1,4 +1,4 @@
-:- module(lang_database,
+:- module(mongolog_database,
 		[ add_database_predicate/3,
 		  drop_database_predicate/1
 		]).
@@ -272,7 +272,7 @@ setup_predicate_collection(Functor, [FirstField|_], Options) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_database').
+:- begin_tests('mongolog_database').
 
 test('add_database_predicate') :-
 	assert_true(add_database_predicate(woman, [name], [[name]])),
@@ -365,4 +365,4 @@ test('drop_database_predicate') :-
 	assert_true(drop_database_predicate(woman)),
 	assert_true(drop_database_predicate(loves)).
 
-:- end_tests('lang_database').
+:- end_tests('mongolog_database').

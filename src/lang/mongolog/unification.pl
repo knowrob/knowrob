@@ -1,4 +1,4 @@
-:- module(lang_unification, []).
+:- module(mongolog_unification, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -121,7 +121,7 @@ set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('lang_unification').
+:- begin_tests('mongolog_unification').
 
 test('atom unification'):-
 	assert_true(lang_query:test_command(=(X,a), X, a)),
@@ -162,5 +162,5 @@ test('unified vars can be implicitly instantiated',
 	assert_equals(X,4),
 	assert_equals(Y,4).
 
-:- end_tests('lang_unification').
+:- end_tests('mongolog_unification').
 

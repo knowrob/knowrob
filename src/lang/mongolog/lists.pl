@@ -1,4 +1,4 @@
-:- module(list_commands, []).
+:- module(mongolog_lists, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -154,11 +154,11 @@ query_compiler:step_compile(
 		;	Step=['$set', ['t_term1', Elem0]]
 		;	Step=['$set', ['t_term2', ['$arrayElemAt', array([List0,Index0])]]]
 		% assign vars in term1 to values of arguments in term2
-		;	lang_unification:set_term_arguments('t_term1', 't_term2', Step)
+		;	mongolog_unification:set_term_arguments('t_term1', 't_term2', Step)
 		% perform equality test
 		;	query_compiler:match_equals(string('$t_term1'), string('$t_term2'), Step)
 		% project new variable groundings
-		;	lang_unification:set_term_vars(Elem, 't_term1', Ctx, Step)
+		;	mongolog_unification:set_term_vars(Elem, 't_term1', Ctx, Step)
 		% and cleanup
 		;	Step=['$unset', array([string('t_term1'),string('t_term2')])]
 		),
@@ -189,7 +189,7 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('list_commands').
+:- begin_tests('mongolog_lists').
 
 test('length(+,+)'):-
 	assert_true(lang_query:test_command(
@@ -333,4 +333,4 @@ test('findall+member'):-
 		Results),
 	assert_equals(Results,[9.5,9.0]).
 
-:- end_tests('list_commands').
+:- end_tests('mongolog_lists').

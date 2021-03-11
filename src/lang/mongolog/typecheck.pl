@@ -1,4 +1,4 @@
-:- module(typecheck_commands, []).
+:- module(mongolog_typecheck, []).
 
 :- use_module(library('lang/compiler')).
 
@@ -139,7 +139,7 @@ match_type_(Arg, _Goal, Type, Ctx,
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('typecheck_commands').
+:- begin_tests('mongolog_typecheck').
 
 test('ground(?Term)'):-
 	assert_true(lang_query:test_command(
@@ -183,4 +183,4 @@ test('compound(+Term)'):-
 	assert_false(lang_query:test_command(
 		compound(Term), Term, 4.5)).
 
-:- end_tests('typecheck_commands').
+:- end_tests('mongolog_typecheck').
