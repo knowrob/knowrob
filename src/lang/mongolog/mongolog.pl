@@ -613,10 +613,10 @@ lookup_next_unwind(Terminals,
 		% compute the intersection of scope
 		% TODO: this should be optional, or better not handled here.
 		%        - only if Terminas contains a triple we need to handle scope.
-		;	mng_scope_intersect('v_scope',
-				string('$next.v_scope.time.since'),
-				string('$next.v_scope.time.until'),
-				Ctx, Step)
+%		;	mng_scope_intersect('v_scope',
+%				string('$next.v_scope.time.since'),
+%				string('$next.v_scope.time.until'),
+%				Ctx, Step)
 		% set variables from "next" field
 		;	set_next_vars(StepVars, Step)
 		% remove "next" field again

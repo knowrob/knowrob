@@ -104,8 +104,6 @@ mongolog:step_compile(atom_prefix(Atom,Prefix), _, []) :-
 mongolog:step_compile(
 		atom_prefix(Atom,Prefix),
 		Ctx, Pipeline) :-
-	% FIXME: SWI Prolog allows atom(Atom), var(Prefix), and then
-	%         yields all possible prefixes.
 	mongolog:var_key_or_val(Atom,Ctx,Atom0),
 	mongolog:var_key_or_val(Prefix,Ctx,Prefix0),
 	findall(Step,

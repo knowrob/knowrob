@@ -64,9 +64,6 @@ mongolog:step_compile(length(List, Length), _, []) :-
 	length(List, Length).
 
 mongolog:step_compile(length(List, Length), Ctx, Pipeline) :-
-	% FIXME: SWI Prolog allows var(List), then yields lists with variables
-	%          as elements. It is also allowed that both args are variables.
-	%          then SWIPL generates infinite number of lists.
 	compile_list_attribute(List, Length, '$size', Ctx, Pipeline).
 
 %% max_list(+List:list(number), -Max:number)

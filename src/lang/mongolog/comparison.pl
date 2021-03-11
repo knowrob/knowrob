@@ -28,9 +28,6 @@ mongolog:step_compile(==(X,Y), _, []) :-
 
 mongolog:step_compile(==(X,Y), Ctx,
 		[['$match', ['$expr', ['$eq', array([X0,Y0])]]]]) :-
-	% FIXME: unified variables are thought to be equal, eg.
-	%			?- A=B, foo(A) == foo(B).
-	%
 	mongolog:var_key_or_val(X,Ctx,X0),
 	mongolog:var_key_or_val(Y,Ctx,Y0).
 

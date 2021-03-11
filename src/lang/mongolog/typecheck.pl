@@ -43,7 +43,6 @@ mongolog:step_compile(ground(Arg), Ctx, []) :-
 
 mongolog:step_compile(ground(Arg), Ctx, Pipeline) :-
 	mongolog:var_key_or_val(Arg, Ctx, Arg0),
-	% FIXME: ground(ListVar) seems broken
 	findall(Step,
 		(	Step=['$set', ['t_term', Arg0]]
 		% fail if t_term is a variable
