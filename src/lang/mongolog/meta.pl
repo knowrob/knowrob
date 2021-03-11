@@ -99,8 +99,7 @@ ensure_list(X,[X]).
 %
 mongolog:step_compile(
 		limit(_, Terminals), _Ctx, [], []) :-
-	is_list(Terminals),
-	Terminals=[],
+	Terminals==[],
 	!.
 
 mongolog:step_compile(

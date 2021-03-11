@@ -94,7 +94,6 @@ query_1(Pipeline, Vars, FScope, Mode) :-
 
 %%
 query_2(Mode, Cursor, Vars, FScope) :-
-	!,
 	mng_cursor_materialize(Cursor, Result),
 	(	Mode==ask
 	->	unify_(Result, Vars, FScope)
