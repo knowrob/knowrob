@@ -24,8 +24,8 @@ However, many other aspects are supported by `mongolog`:
 - arithmetic expressions and operators;
 - data structures: atoms, numbers, compound terms, lists, variables;
 - comparison operators;
-- control and meta commands;
-- findall and list commands;
+- control and meta predicates;
+- findall and list predicates;
 - typechecking commands;
 - database interaction (for facts only);
-- unification (does not handle implicit instantiation yet).
+- unification of compound terms (does not handle implicit instantiation yet).
