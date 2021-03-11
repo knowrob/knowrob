@@ -5,7 +5,7 @@
 :- use_module(library('db/mongo/client'),
 		[ mng_get_db/3, mng_strip_type/3 ]).
 :- use_module(library('lang/db')).
-:- use_module(library('lang/compiler')).
+:- use_module(library('lang/mongolog/mongolog')).
 
 :- rdf_meta(query_annotation(+,r,+,+,-)).
 
@@ -17,11 +17,11 @@
 		[['s'], ['p'], ['s','p']]).
 
 %% query commands
-:- query_compiler:add_command(annotation).
+:- mongolog:add_command(annotation).
 
 %% annotation(+Entity, +Property, -Annotation)
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		annotation(Entity, Property, Annotation),
 		Ctx, Pipeline, StepVars) :-
 	query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars).
@@ -30,15 +30,15 @@ query_compiler:step_compile(
 query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	option(mode(ask),Ctx),!,
 	% throw instantiation_error if one of the arguments was not referred to before
-	query_compiler:all_ground([Entity, Property], Ctx),
-	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars),
+	mongolog:all_ground([Entity, Property], Ctx),
+	mongolog:step_vars([Entity,Property,Annotation], Ctx, StepVars),
 	% get the DB collection
 	mng_get_db(_DB, Coll, 'annotations'),
-	query_compiler:var_key_or_val(Annotation,  Ctx, Annotation0),
-	query_compiler:var_key_or_val1(Entity,     Ctx, Entity0),
-	query_compiler:var_key_or_val1(Property,   Ctx, Property0),
+	mongolog:var_key_or_val(Annotation,  Ctx, Annotation0),
+	mongolog:var_key_or_val1(Entity,     Ctx, Entity0),
+	mongolog:var_key_or_val1(Property,   Ctx, Property0),
 	% pass input document values to lookup
-	query_compiler:lookup_let_doc(StepVars, LetDoc),
+	mongolog:lookup_let_doc(StepVars, LetDoc),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% look-up comments into 'next' field
@@ -53,8 +53,8 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 			]]
 		% unwind lookup results and assign variable
 		;	Step=['$unwind',string('$next')]
-		;	query_compiler:set_if_var(Annotation, string('$next.v'), Ctx, Step)
-		;	query_compiler:match_equals(Annotation0, string('$next.v'), Step)
+		;	mongolog:set_if_var(Annotation, string('$next.v'), Ctx, Step)
+		;	mongolog:match_equals(Annotation0, string('$next.v'), Step)
 		;	Step=['$unset',string('next')]
 		),
 		Pipeline
@@ -77,15 +77,15 @@ tell_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :
 	% enforce UTF8 encoding
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
-	query_compiler:all_ground([Entity, Property, Annotation_en], Ctx),
-	query_compiler:step_vars([Entity,Property,Annotation], Ctx, StepVars0),
-	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
+	mongolog:all_ground([Entity, Property, Annotation_en], Ctx),
+	mongolog:step_vars([Entity,Property,Annotation], Ctx, StepVars0),
+	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
 	% resolve arguments
-	query_compiler:var_key_or_val(Entity,         Ctx, Entity0),
-	query_compiler:var_key_or_val(Property,       Ctx, Property0),
-	query_compiler:var_key_or_val(Annotation_en,  Ctx, Annotation0),
+	mongolog:var_key_or_val(Entity,         Ctx, Entity0),
+	mongolog:var_key_or_val(Property,       Ctx, Property0),
+	mongolog:var_key_or_val(Annotation_en,  Ctx, Annotation0),
 	% get the query
-	query_compiler:add_assertion([
+	mongolog:add_assertion([
 				['s', Entity0],
 				['p', Property0],
 				['v', Annotation0]

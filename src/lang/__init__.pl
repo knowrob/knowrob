@@ -9,7 +9,6 @@
 :- use_module(db).
 :- use_module(rdf_tests).
 
-:- use_module(compiler).
 :- use_module(query).
 :- use_directory(mongolog).
 :- use_directory(terms).

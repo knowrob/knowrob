@@ -1,4 +1,4 @@
-:- module(query_compiler,
+:- module(mongolog,
 	[ query_assert(t),
 	  query_ask(t,+,-,+),
 	  query_tell(t,+,+),
@@ -36,7 +36,7 @@ into aggregate pipelines that can be processed by mongo DB.
 % language expressions and which is implemented
 % in a mongo query.
 % NOTE: to implement a command several multifile predicates in
-% query_compiler must be implemented by a command. 
+% mongolog must be implemented by a command. 
 %
 % @param Command a command term.
 %
@@ -557,7 +557,7 @@ lookup_array(ArrayKey, Terminals,
 	once((
 		bagof(Var,
 			(	member(Var,StepVars0)
-			;	query_compiler:context_var(Context, Var)
+			;	context_var(Context, Var)
 			),
 			StepVars1)
 	;	StepVars1=StepVars0
@@ -712,7 +712,7 @@ set_if_var(X, Exp, Ctx,
 			Exp,          % evaluate the expression and set new value
 			string(XVal)  % else value remains the same
 		])]]]) :-
-	query_compiler:var_key(X, Ctx, Key),
+	var_key(X, Ctx, Key),
 	atom_concat('$',Key,XVal),
 	atom_concat(XVal,'.type',TypeVal).
 
@@ -829,7 +829,7 @@ is_instantiated(Arg, Ctx) :-
 	term_variables(Arg0, Vars),
 	forall(
 		member(Var, Vars),
-		query_compiler:is_referenced(Var, Ctx)
+		is_referenced(Var, Ctx)
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%

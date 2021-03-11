@@ -21,11 +21,11 @@ for the new IRI.
 		[ rdf_global_term/2 ]).
 :- use_module(library('lang/db'),
 		[ get_unique_name/2 ]).
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% query commands
-:- query_compiler:add_command(iri_xml_namespace).
-:- query_compiler:add_command(new_iri).
+:- mongolog:add_command(iri_xml_namespace).
+:- mongolog:add_command(new_iri).
 
 %%
 % tell queries can use new_iri/1 and new_iri/2 to generate
@@ -34,20 +34,20 @@ for the new IRI.
 % FIXME: it could happen that if in one compilation multiple new_iri's
 %         are generated that both have the same IRI. very unlikely, but still...
 %
-query_compiler:step_expand(new_iri(IRI),
+mongolog:step_expand(new_iri(IRI),
 		pragma(get_unique_name(Type,IRI)), _) :-
 	rdf_global_term(rdf:'Resource', Type).
 
-query_compiler:step_expand(new_iri(IRI,Type),
+mongolog:step_expand(new_iri(IRI,Type),
 		pragma(get_unique_name(Type,IRI)), _).
 
 %% query compilation
-query_compiler:step_compile(
+mongolog:step_compile(
 		iri_xml_namespace(IRI,NS,Name),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(IRI, Ctx, IRI0),
-	query_compiler:var_key_or_val(NS, Ctx, NS0),
-	query_compiler:var_key_or_val(Name, Ctx, Name0),
+	mongolog:var_key_or_val(IRI, Ctx, IRI0),
+	mongolog:var_key_or_val(NS, Ctx, NS0),
+	mongolog:var_key_or_val(Name, Ctx, Name0),
 	findall(Step,
 		% first extract the name from the IRI and set new field "t_name".
 		% here we use the remainder after the last '#' as name.
@@ -62,10 +62,10 @@ query_compiler:step_compile(
 				])]
 			])]]]
 		% assign arguments if needed using fields created above
-		;	query_compiler:set_if_var(NS,   string('$t_ns'),   Ctx, Step)
-		;	query_compiler:set_if_var(Name, string('$t_name'), Ctx, Step)
+		;	mongolog:set_if_var(NS,   string('$t_ns'),   Ctx, Step)
+		;	mongolog:set_if_var(Name, string('$t_name'), Ctx, Step)
 		% finally match using concat operator
-		;	query_compiler:match_equals(IRI0, ['$concat', array([NS0,Name0])], Step)
+		;	mongolog:match_equals(IRI0, ['$concat', array([NS0,Name0])], Step)
 		% cleanup
 		;	Step=['$unset', array([string('t_ns'),string('t_name')])]
 		),

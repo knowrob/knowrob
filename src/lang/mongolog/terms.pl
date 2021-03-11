@@ -15,26 +15,26 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% query commands
-:- query_compiler:add_command(functor).
-:- query_compiler:add_command(arg).
-:- query_compiler:add_command(copy_term).
+:- mongolog:add_command(functor).
+:- mongolog:add_command(arg).
+:- mongolog:add_command(copy_term).
 % TODO: support more term commands
-%:- query_compiler:add_command(same_term).
-%:- query_compiler:add_command(term_variables).
-:- query_compiler:add_command(=..).
+%:- mongolog:add_command(same_term).
+%:- mongolog:add_command(term_variables).
+:- mongolog:add_command(=..).
 
 %% functor(?Term, ?Name, ?Arity) [ISO]
 % True when Term is a term with functor Name/Arity.
 %
-query_compiler:step_compile(functor(Term,Functor,Arity), Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Term,Ctx,Term0),
-	query_compiler:var_key_or_val(Functor,Ctx,Functor0),
-	query_compiler:var_key_or_val(Arity,Ctx,Arity0),
+mongolog:step_compile(functor(Term,Functor,Arity), Ctx, Pipeline) :-
+	mongolog:var_key_or_val(Term,Ctx,Term0),
+	mongolog:var_key_or_val(Functor,Ctx,Functor0),
+	mongolog:var_key_or_val(Arity,Ctx,Arity0),
 	findall(Step,
-		(	query_compiler:set_if_var(Term, [
+		(	mongolog:set_if_var(Term, [
 				['type', string('compound')],
 				['value', [
 					['functor', Functor0],
@@ -45,10 +45,10 @@ query_compiler:step_compile(functor(Term,Functor,Arity), Ctx, Pipeline) :-
 				]]
 			], Ctx, Step)
 		;	Step=['$set', ['t_term', Term0]]
-		;	query_compiler:set_if_var(Functor,    string('$t_term.value.functor'), Ctx, Step)
-		;	query_compiler:match_equals(Functor0, string('$t_term.value.functor'), Step)
-		;	query_compiler:set_if_var(Arity,    ['$size', string('$t_term.value.args')], Ctx, Step)
-		;	query_compiler:match_equals(Arity0, ['$size', string('$t_term.value.args')], Step)
+		;	mongolog:set_if_var(Functor,    string('$t_term.value.functor'), Ctx, Step)
+		;	mongolog:match_equals(Functor0, string('$t_term.value.functor'), Step)
+		;	mongolog:set_if_var(Arity,    ['$size', string('$t_term.value.args')], Ctx, Step)
+		;	mongolog:match_equals(Arity0, ['$size', string('$t_term.value.args')], Step)
 		;	Step=['$unset', string('t_term')]
 		),
 		Pipeline).
@@ -60,7 +60,7 @@ query_compiler:step_compile(functor(Term,Functor,Arity), Ctx, Pipeline) :-
 % arguments of the term. On successful unification, Arg is unified with the
 % argument number. Backtracking yields alternative solutions.
 %
-query_compiler:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
+mongolog:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
 	% TODO: support var(Arg),var(Value):
 	%	- list all args with their index
 	%	- first add indices to list, then $unwind
@@ -69,20 +69,20 @@ query_compiler:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
 	%		- can be handled with conditional $set, add [X,Y] to
 	%         var array if both of them are vars
 	%
-	query_compiler:var_key_or_val(Arg,Ctx,Arg0),
-	query_compiler:var_key_or_val(Term,Ctx,Term0),
-	query_compiler:var_key_or_val(Value,Ctx,Value0),
+	mongolog:var_key_or_val(Arg,Ctx,Arg0),
+	mongolog:var_key_or_val(Term,Ctx,Term0),
+	mongolog:var_key_or_val(Value,Ctx,Value0),
 	findall(Step,
 		(	Step=['$set', ['t_term', Term0]]
-		;	query_compiler:set_if_var(Arg, ['$add', array([
+		;	mongolog:set_if_var(Arg, ['$add', array([
 					['$indexOfArray', array([ string('$t_term.value.args'), Value0 ])],
 					integer(1)
 			])], Ctx, Step)
-		;	query_compiler:set_if_var(Value, ['$arrayElemAt', array([
+		;	mongolog:set_if_var(Value, ['$arrayElemAt', array([
 					string('$t_term.value.args'),
 					['$subtract', array([Arg0, integer(1)])]	
 			])], Ctx, Step)
-		;	query_compiler:match_equals(Value0, ['$arrayElemAt', array([
+		;	mongolog:match_equals(Value0, ['$arrayElemAt', array([
 					string('$t_term.value.args'),
 					['$subtract', array([Arg0, integer(1)])]	
 			])], Step)
@@ -93,9 +93,9 @@ query_compiler:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
 %% copy_term(+In, -Out) [ISO]
 % Create a version of In with renamed (fresh) variables and unify it to Out.
 %
-query_compiler:step_compile(copy_term(In,Out), Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(In,Ctx,In0),
-	query_compiler:var_key(Out,Ctx,OutKey),
+mongolog:step_compile(copy_term(In,Out), Ctx, Pipeline) :-
+	mongolog:var_key_or_val(In,Ctx,In0),
+	mongolog:var_key(Out,Ctx,OutKey),
 	findall(Step,
 		(	Step=['$set', ['t_term', In0]]
 		;	Step=['$set', [OutKey, ['$cond', [
@@ -129,16 +129,16 @@ query_compiler:step_compile(copy_term(In,Out), Ctx, Pipeline) :-
 % Either side of the predicate may be a variable, but not both.
 % This predicate is called "Univ". 
 %
-query_compiler:step_compile(=..(Term,List), Ctx, Pipeline) :-
+mongolog:step_compile(=..(Term,List), Ctx, Pipeline) :-
 	% FIXME: it won't work to unify two variables with univ yet, as in:
 	%			foo(X,a) =.. [foo,Z,a] would imply X=Z which is not handled here yet!
 	%          - needs additional map/filter operation
 	%				- get args that are different vars in list and term, then add to var array
 	%
-	query_compiler:var_key_or_val(Term,Ctx,Term0),
-	query_compiler:var_key_or_val(List,Ctx,List0),
+	mongolog:var_key_or_val(Term,Ctx,Term0),
+	mongolog:var_key_or_val(List,Ctx,List0),
 	findall(Step,
-		(	query_compiler:set_if_var(Term, [
+		(	mongolog:set_if_var(Term, [
 				['type', string('compound')],
 				['value', [
 					['functor', ['$arrayElemAt', array([List0,integer(0)])]],
@@ -149,11 +149,11 @@ query_compiler:step_compile(=..(Term,List), Ctx, Pipeline) :-
 				]]
 			], Ctx, Step)
 		;	Step=['$set', ['t_term', Term0]]
-		;	query_compiler:set_if_var(List, ['$concatArrays', array([
+		;	mongolog:set_if_var(List, ['$concatArrays', array([
 				array([string('$t_term.value.functor')]),
 				string('$t_term.value.args')
 			])], Ctx, Step)
-		;	query_compiler:match_equals(List0, ['$concatArrays', array([
+		;	mongolog:match_equals(List0, ['$concatArrays', array([
 				array([string('$t_term.value.functor')]),
 				string('$t_term.value.args')
 			])], Step)

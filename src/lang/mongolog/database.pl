@@ -16,13 +16,13 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 :- dynamic database_predicate/2.
 
 %% query commands
-:- query_compiler:add_command(assert).
-:- query_compiler:add_command(retractall).
+:- mongolog:add_command(assert).
+:- mongolog:add_command(retractall).
 
 %% add_database_predicate(+Functor, +Fields, +Options) is semidet.
 %
@@ -49,7 +49,7 @@ add_database_predicate(Functor, _, _) :-
 add_database_predicate(Functor, Fields, Options) :-
 	setup_predicate_collection(Functor, Fields, Options),
 	assertz(database_predicate(Functor, Fields)),
-	query_compiler:add_command(Functor).
+	mongolog:add_command(Functor).
 
 %% drop_database_predicate(+Functor) is det.
 %
@@ -69,26 +69,26 @@ is_database_predicate(Term, ArgFields) :-
 	database_predicate(Functor, ArgFields).
 
 %%
-query_compiler:step_compile(Term, Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
 	is_database_predicate(Term, ArgFields),
 	!,
-	query_compiler:step_vars(Term, Ctx, StepVars0),
-	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
+	mongolog:step_vars(Term, Ctx, StepVars0),
+	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
 	merge_options([step_vars(StepVars)], Ctx, Ctx0),
 	(	option(mode(ask), Ctx)
 	->	query_predicate(Term, ArgFields, Ctx0, Pipeline, StepVars)
 	;	assert_predicate(Term, ArgFields, Ctx0, Pipeline)
 	).
 
-query_compiler:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
 %	is_database_predicate(Term,_),
 	merge_options([mode(tell)], Ctx, Ctx0),
-	query_compiler:step_compile(Term, Ctx0, Pipeline, StepVars).
+	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
 
-query_compiler:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
 %	is_database_predicate(Term,_),
 	merge_options([mode(ask),retractall], Ctx, Ctx0),
-	query_compiler:step_compile(Term, Ctx0, Pipeline, StepVars).
+	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
 	
 %%
 query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
@@ -97,7 +97,7 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 	zip(ArgFields, Args, Zipped),
 	unpack_compound(Zipped, Unpacked),
 	%
-	query_compiler:lookup_let_doc(StepVars, LetDoc),
+	mongolog:lookup_let_doc(StepVars, LetDoc),
 	match_predicate(Unpacked, Ctx, Match),
 	findall(InnerStep,
 		(	InnerStep=Match
@@ -131,7 +131,7 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 		;	(	\+ option(retractall, Ctx),
 				(	Step=['$unwind', string('$t_pred')]
 				;	(	member([FieldPath0,Var,Is], Unpacked),
-						query_compiler:var_key(Var,Ctx,VarKey),
+						mongolog:var_key(Var,Ctx,VarKey),
 						atomic_list_concat([FieldPath0|Is],'_',FieldPath),
 						atom_concat('$t_pred.', FieldPath, FieldQuery),
 						Step=['$set', [VarKey, string(FieldQuery)]]
@@ -140,7 +140,7 @@ query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
 			)
 		% add removed facts to assertions list
 		;	(	option(retractall, Ctx),
-				query_compiler:add_assertions(string('$t_pred'), Collection, Step)
+				mongolog:add_assertions(string('$t_pred'), Collection, Step)
 			)
 		;	Step=['$unset', string('t_pred')]
 		),
@@ -155,12 +155,12 @@ assert_predicate(Term, ArgFields, Ctx, Pipeline) :-
 	% create a document
 	findall([Field,Val],
 		(	member([Field,Arg],Zipped),
-			query_compiler:var_key_or_val(Arg, Ctx, Val)
+			mongolog:var_key_or_val(Arg, Ctx, Val)
 		),
 		PredicateDoc),
 	% and add it to the list of asserted documents
 	findall(Step,
-		query_compiler:add_assertion(PredicateDoc, Collection, Step),
+		mongolog:add_assertion(PredicateDoc, Collection, Step),
 		Pipeline).
 
 %%
@@ -262,7 +262,7 @@ match_conditional(FieldKey, Arg, Ctx, ['$expr', ['$or', array([
 	% get the variable in Arg term
 	mng_strip_variable(Arg, Arg0),
 	term_variables(Arg0, [ArgVar]),!,
-	query_compiler:var_key(ArgVar, Ctx, ArgKey),
+	mongolog:var_key(ArgVar, Ctx, ArgKey),
 	% get the operator
 	mng_strip_operator(Arg0, Operator1, _Arg1),
 	mng_operator(Operator1, ArgOperator),

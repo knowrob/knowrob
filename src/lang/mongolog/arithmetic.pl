@@ -19,40 +19,40 @@ The following set of basic and special purpose predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 :- use_module(library('db/mongo/client'),
 		[ mng_strip_operator/3 ]).
 
 %% query commands
-:- query_compiler:add_command(is).
-:- query_compiler:add_command(>).
-:- query_compiler:add_command(<).
-:- query_compiler:add_command(=<).
-:- query_compiler:add_command(>=).
-:- query_compiler:add_command(=\=).
-:- query_compiler:add_command(=:=).
-:- query_compiler:add_command(between).
+:- mongolog:add_command(is).
+:- mongolog:add_command(>).
+:- mongolog:add_command(<).
+:- mongolog:add_command(=<).
+:- mongolog:add_command(>=).
+:- mongolog:add_command(=\=).
+:- mongolog:add_command(=:=).
+:- mongolog:add_command(between).
 
 %% query compilations
 %
-query_compiler:step_compile( is(X,Y), Ctx, Z) :- assignment(X,Y,Ctx,Z).
-query_compiler:step_compile(  <(X,Y), Ctx, Z) :- comparison(  <(X,Y),Ctx,Z).
-query_compiler:step_compile( =<(X,Y), Ctx, Z) :- comparison( =<(X,Y),Ctx,Z).
-query_compiler:step_compile(  >(X,Y), Ctx, Z) :- comparison(  >(X,Y),Ctx,Z).
-query_compiler:step_compile( >=(X,Y), Ctx, Z) :- comparison( >=(X,Y),Ctx,Z).
-query_compiler:step_compile(=\=(X,Y), Ctx, Z) :- comparison(=\=(X,Y),Ctx,Z).
-query_compiler:step_compile(=:=(X,Y), Ctx, Z) :- comparison(=:=(X,Y),Ctx,Z).
+mongolog:step_compile( is(X,Y), Ctx, Z) :- assignment(X,Y,Ctx,Z).
+mongolog:step_compile(  <(X,Y), Ctx, Z) :- comparison(  <(X,Y),Ctx,Z).
+mongolog:step_compile( =<(X,Y), Ctx, Z) :- comparison( =<(X,Y),Ctx,Z).
+mongolog:step_compile(  >(X,Y), Ctx, Z) :- comparison(  >(X,Y),Ctx,Z).
+mongolog:step_compile( >=(X,Y), Ctx, Z) :- comparison( >=(X,Y),Ctx,Z).
+mongolog:step_compile(=\=(X,Y), Ctx, Z) :- comparison(=\=(X,Y),Ctx,Z).
+mongolog:step_compile(=:=(X,Y), Ctx, Z) :- comparison(=:=(X,Y),Ctx,Z).
 
 %% between(+Low, +High, -Value)
 % Low and High are integers, High >=Low. If Value is an integer, Low =<Value =<High.
 % When Value is a variable it is successively bound to all integers between Low and High. 
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		between(Low, High, Value),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Low,Ctx,Low0),
-	query_compiler:var_key_or_val(High,Ctx,High0),
-	query_compiler:var_key_or_val(Value,Ctx,Value0),
+	mongolog:var_key_or_val(Low,Ctx,Low0),
+	mongolog:var_key_or_val(High,Ctx,High0),
+	mongolog:var_key_or_val(Value,Ctx,Value0),
 	findall(Step,
 		% TODO: conditional $set to array holding only Value if Value is given
 		%       this would avoid iteration between Low and High for faster between checking.
@@ -60,8 +60,8 @@ query_compiler:step_compile(
 				array([ Low0, ['$add', array([High0, integer(1)]) ]])
 			]]]
 		;	Step=['$unwind',string('$t_index')]
-		;	query_compiler:set_if_var(Value, string('$t_index'), Ctx, Step)
-		;	query_compiler:match_equals(Value0, string('$t_index'), Step)
+		;	mongolog:set_if_var(Value, string('$t_index'), Ctx, Step)
+		;	mongolog:match_equals(Value0, string('$t_index'), Step)
 		;	Step=['$unset', string('t_index')]
 		),
 		Pipeline).
@@ -73,11 +73,11 @@ assignment(Var, Exp, _Ctx, []) :-
 
 assignment(Number, Exp, Ctx, Pipeline) :-
 	% NOTE: SWI Prolog allows to write e.g. `7 is 7`, so here we use set+match
-	query_compiler:var_key_or_val(Number,Ctx,Number0),
+	mongolog:var_key_or_val(Number,Ctx,Number0),
 	expression(Exp, Ctx, Doc),
 	findall(Step,
-		(	query_compiler:set_if_var(Number, Doc, Ctx, Step)
-		;	query_compiler:match_equals(Number0, Doc, Step)
+		(	mongolog:set_if_var(Number, Doc, Ctx, Step)
+		;	mongolog:match_equals(Number0, Doc, Step)
 		),
 		Pipeline).
 
@@ -99,7 +99,7 @@ comparison(Exp, Ctx, [
 %% variables
 expression(Var, Ctx, string(VarValue)) :-
 	var(Var),!,
-	query_compiler:var_key(Var,Ctx,Key),
+	mongolog:var_key(Var,Ctx,Key),
 	atom_concat('$',Key,VarValue).
 %% functions
 expression(Exp, Ctx, Doc) :-

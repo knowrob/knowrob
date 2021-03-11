@@ -14,16 +14,16 @@ The following predicates are supported:
 
 :- use_module(library('db/mongo/client'),
 		[ mng_one_db/2 ]).
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% register query commands
-:- query_compiler:add_command(findall).
+:- mongolog:add_command(findall).
 % TODO: support bagof (then, setof := bagof o sort)
-%:- query_compiler:add_command(bagof).
-%:- query_compiler:add_command(setof).
+%:- mongolog:add_command(bagof).
+%:- mongolog:add_command(setof).
 
 %%
-query_compiler:step_expand(
+mongolog:step_expand(
 		findall(Template, Goal, List),
 		findall(Template, Expanded, List),
 		Context) :-
@@ -33,7 +33,7 @@ query_compiler:step_expand(
 % Equivalent to bagof/3, but sorts the result using sort/2 to
 % get a sorted list of alternatives without duplicates.
 %
-%query_compiler:step_expand(
+%mongolog:step_expand(
 %		setof(Template, Goal, Set),
 %		','(bagof(Template, Expanded, List), sort(List, Set)),
 %		Context) :-
@@ -44,22 +44,22 @@ query_compiler:step_expand(
 % backtracking over Goal and unify the result with Bag.
 % Succeeds with an empty list if Goal has no solutions.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		findall(Template, Terminals, List),
 		Ctx, Pipeline, StepVars) :-
 	% findall only exposes the List variable to the outside.
-	query_compiler:step_vars(List, Ctx, StepVars),
+	mongolog:step_vars(List, Ctx, StepVars),
 	% TODO: how does this interfere with scopes?
 	%	- within findall body scopes maybe computed
 	%	- member with scope should do scope intersection
 	%	- for now scopes in findall are _ignored_!
-	query_compiler:var_key_or_val(List, Ctx, List0),
+	mongolog:var_key_or_val(List, Ctx, List0),
 	% add template vars to compile context.
 	% this is important to enforce that vars in Template are referred
 	% to with a common key within findall.
 	% note that the vars should not be added to the "outer_vars"
 	% array as variables in template are _not_ exposed to the outside.
-	query_compiler:step_vars(Template, Ctx, TemplateVars),
+	mongolog:step_vars(Template, Ctx, TemplateVars),
 	% TODO: redundant, make an interface in query compiler
 	once((select(disj_vars(DisjVars), Ctx, Ctx0);(DisjVars=[],Ctx0=Ctx))),
 	append(DisjVars, TemplateVars, DisjVars0),
@@ -72,14 +72,14 @@ query_compiler:step_compile(
 	template_instantiation(Template, Ctx1, Instantiation),
 	findall(Step,
 		% perform lookup, collect results in 'next' array
-		(	query_compiler:lookup_array('t_next',Terminals,
+		(	mongolog:lookup_array('t_next',Terminals,
 				[], [], Ctx1, _, Step)
 		% $set the list variable field from 'next' field
 		;	Step=['$set', ['t_list', ['$map',[
 					['input',string('$t_next')],
 					['in', Instantiation] ]]]]
-		;	query_compiler:set_if_var(List, string('$t_list'), Ctx1, Step)
-		;	query_compiler:match_equals(List0, string('$t_list'), Step)
+		;	mongolog:set_if_var(List, string('$t_list'), Ctx1, Step)
+		;	mongolog:match_equals(List0, string('$t_list'), Step)
 		% array at 'next' field not needed anymore
 		;	Step=['$unset', array([string('t_next'), string('t_list')])]
 		),
@@ -93,7 +93,7 @@ query_compiler:step_compile(
 template_instantiation(Var, Ctx, string(Val)) :-
 	% for variables in template, lookup in compile context
 	% or create a key used in mongo to refer to the var
-	query_compiler:var_key(Var, Ctx, Key),
+	mongolog:var_key(Var, Ctx, Key),
 	atom_concat('$$this.', Key, Val).
 
 template_instantiation(List, Ctx, array(Elems)) :-
@@ -117,7 +117,7 @@ template_instantiation(Template, Ctx, [
 	
 template_instantiation(Atomic, _Ctx, Constant) :-
 	atomic(Atomic),
-	query_compiler:get_constant(Atomic, Constant).
+	mongolog:get_constant(Atomic, Constant).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*

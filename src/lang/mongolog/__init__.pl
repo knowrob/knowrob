@@ -1,4 +1,5 @@
 
+:- use_module(mongolog).
 :- use_module(arithmetic).
 :- use_module(atoms).
 :- use_module(comparison).

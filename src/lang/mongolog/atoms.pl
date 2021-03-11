@@ -19,97 +19,97 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% query commands
-:- query_compiler:add_command(atom_number).
-:- query_compiler:add_command(atom_length).
-:- query_compiler:add_command(atom_prefix).
-:- query_compiler:add_command(atom_concat).
-:- query_compiler:add_command(atomic_list_concat).
-:- query_compiler:add_command(upcase_atom).
-:- query_compiler:add_command(downcase_atom).
+:- mongolog:add_command(atom_number).
+:- mongolog:add_command(atom_length).
+:- mongolog:add_command(atom_prefix).
+:- mongolog:add_command(atom_concat).
+:- mongolog:add_command(atomic_list_concat).
+:- mongolog:add_command(upcase_atom).
+:- mongolog:add_command(downcase_atom).
 % TODO: support term_to_atom
 % - atom parsing is a bit difficult
 % - $split can be used, but then e.g. string "7" would need to be mapped to number 7 somehow.
-%:- query_compiler:add_command(term_to_atom).
+%:- mongolog:add_command(term_to_atom).
 
 %% query compilation
-query_compiler:step_compile(
+mongolog:step_compile(
 		atom_number(Atom,Number), _, []) :-
 	(ground(Atom);ground(Number)),!,
 	atom_number(Atom,Number).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atom_number(Atom,Number),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
-	query_compiler:var_key_or_val(Number,Ctx,Number0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(Number,Ctx,Number0),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$toString', Number0], Ctx, Step)
-		;	query_compiler:set_if_var(Number,  ['$toDouble', Atom0],   Ctx, Step)
-		;	query_compiler:match_equals(Atom0, ['$toString', Number0], Step)
+		(	mongolog:set_if_var(Atom,    ['$toString', Number0], Ctx, Step)
+		;	mongolog:set_if_var(Number,  ['$toDouble', Atom0],   Ctx, Step)
+		;	mongolog:match_equals(Atom0, ['$toString', Number0], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(atom_length(Atom,Length), _, []) :-
+mongolog:step_compile(atom_length(Atom,Length), _, []) :-
 	ground(Atom),!,
 	atom_length(Atom,Length).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atom_length(Atom,Length),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
-	query_compiler:var_key_or_val(Length,Ctx,Length0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(Length,Ctx,Length0),
 	findall(Step,
-		(	query_compiler:set_if_var(Length,    ['$strLenCP', Atom0], Ctx, Step)
-		;	query_compiler:match_equals(Length0, ['$strLenCP', Atom0], Step)
+		(	mongolog:set_if_var(Length,    ['$strLenCP', Atom0], Ctx, Step)
+		;	mongolog:match_equals(Length0, ['$strLenCP', Atom0], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(upcase_atom(Atom,UpperCase), _, []) :-
+mongolog:step_compile(upcase_atom(Atom,UpperCase), _, []) :-
 	ground(Atom),!,
 	upcase_atom(Atom,UpperCase).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		upcase_atom(Atom,UpperCase),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
-	query_compiler:var_key_or_val(UpperCase,Ctx,UpperCase0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(UpperCase,Ctx,UpperCase0),
 	findall(Step,
-		(	query_compiler:set_if_var(UpperCase,    ['$toUpper', Atom0], Ctx, Step)
-		;	query_compiler:match_equals(UpperCase0, ['$toUpper', Atom0], Step)
+		(	mongolog:set_if_var(UpperCase,    ['$toUpper', Atom0], Ctx, Step)
+		;	mongolog:match_equals(UpperCase0, ['$toUpper', Atom0], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(downcase_atom(Atom,UpperCase), _, []) :-
+mongolog:step_compile(downcase_atom(Atom,UpperCase), _, []) :-
 	ground(Atom),!,
 	downcase_atom(Atom,UpperCase).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		downcase_atom(Atom,LowerCase),
 		Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
-	query_compiler:var_key_or_val(LowerCase,Ctx,LowerCase0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(LowerCase,Ctx,LowerCase0),
 	findall(Step,
-		(	query_compiler:set_if_var(LowerCase,    ['$toLower', Atom0], Ctx, Step)
-		;	query_compiler:match_equals(LowerCase0, ['$toLower', Atom0], Step)
+		(	mongolog:set_if_var(LowerCase,    ['$toLower', Atom0], Ctx, Step)
+		;	mongolog:match_equals(LowerCase0, ['$toLower', Atom0], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(atom_prefix(Atom,Prefix), _, []) :-
+mongolog:step_compile(atom_prefix(Atom,Prefix), _, []) :-
 	ground([Atom,Prefix]),!,
 	atom_prefix(Atom,Prefix).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atom_prefix(Atom,Prefix),
 		Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows atom(Atom), var(Prefix), and then
 	%         yields all possible prefixes.
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
-	query_compiler:var_key_or_val(Prefix,Ctx,Prefix0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(Prefix,Ctx,Prefix0),
 	findall(Step,
-		query_compiler:match_equals(Prefix0,
+		mongolog:match_equals(Prefix0,
 			['$substr', array([
 				Atom0, int(0), ['$strLenCP', Prefix0]
 			])],
@@ -117,71 +117,71 @@ query_compiler:step_compile(
 		),
 		Pipeline).
 
-query_compiler:step_compile(atom_concat(Left,Right,Atom), _, []) :-
+mongolog:step_compile(atom_concat(Left,Right,Atom), _, []) :-
 	ground(Left),
 	ground(Right),!,
 	atom_concat(Left,Right,Atom).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atom_concat(Left,Right,Atom),
 		Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows var(Left), var(Right), atom(Atom), and then
 	%         yields all possible concatenations.
-	query_compiler:var_key_or_val(Left,Ctx,Left0),
-	query_compiler:var_key_or_val(Right,Ctx,Right0),
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(Left,Ctx,Left0),
+	mongolog:var_key_or_val(Right,Ctx,Right0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
 	findall(Step,
-		(	query_compiler:set_if_var(Left, ['$substr', array([Atom0,
+		(	mongolog:set_if_var(Left, ['$substr', array([Atom0,
 				int(0),
 				['$subtract', array([ ['$strLenCP',Atom0], ['$strLenCP',Right0] ])]
 			])], Ctx, Step)
-		;	query_compiler:set_if_var(Right, ['$substr', array([Atom0,
+		;	mongolog:set_if_var(Right, ['$substr', array([Atom0,
 				['$strLenCP',Left0],
 				['$strLenCP',Atom0]
 			])], Ctx, Step)
-		;	query_compiler:set_if_var(Atom,    ['$concat', array([Left0,Right0])], Ctx, Step)
-		;	query_compiler:match_equals(Atom0, ['$concat', array([Left0,Right0])], Step)
+		;	mongolog:set_if_var(Atom,    ['$concat', array([Left0,Right0])], Ctx, Step)
+		;	mongolog:match_equals(Atom0, ['$concat', array([Left0,Right0])], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(atomic_list_concat(List, Atom), _, []) :-
+mongolog:step_compile(atomic_list_concat(List, Atom), _, []) :-
 	ground(List),!,
 	atomic_list_concat(List, Atom).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atomic_list_concat(List, Atom),
 		Ctx, Pipeline) :-
 	findall(Resolved,
 		(	member(Unresolved,List),
-			query_compiler:var_key_or_val(Unresolved,Ctx,Resolved)
+			mongolog:var_key_or_val(Unresolved,Ctx,Resolved)
 		),
 		List0),
-	query_compiler:var_key_or_val(Atom,Ctx,Atom0),
+	mongolog:var_key_or_val(Atom,Ctx,Atom0),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$concat', array(List0)], Ctx, Step)
-		;	query_compiler:match_equals(Atom0, ['$concat', array(List0)], Step)
+		(	mongolog:set_if_var(Atom,    ['$concat', array(List0)], Ctx, Step)
+		;	mongolog:match_equals(Atom0, ['$concat', array(List0)], Step)
 		),
 		Pipeline).
 
-query_compiler:step_compile(atomic_list_concat(List, Sep, Atom), _, []) :-
+mongolog:step_compile(atomic_list_concat(List, Sep, Atom), _, []) :-
 	ground(Sep),
 	(ground(List);ground(Atom)),!,
 	atomic_list_concat(List, Sep, Atom).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		atomic_list_concat(List, Sep, Atom),
 		Ctx, Pipeline) :-
 	findall(Resolved,
 		(	member(Unresolved,List),
-			query_compiler:var_key_or_val(Unresolved,Ctx,Resolved)
+			mongolog:var_key_or_val(Unresolved,Ctx,Resolved)
 		),
 		List0),
-	query_compiler:var_key_or_val(Sep, Ctx, Sep0),
-	query_compiler:var_key_or_val(Atom, Ctx, Atom0),
+	mongolog:var_key_or_val(Sep, Ctx, Sep0),
+	mongolog:var_key_or_val(Atom, Ctx, Atom0),
 	add_separator(List0, Sep0, List1),
 	findall(Step,
-		(	query_compiler:set_if_var(Atom,    ['$concat', array(List1)], Ctx, Step)
-		;	query_compiler:match_equals(Atom0, ['$concat', array(List1)], Step)
+		(	mongolog:set_if_var(Atom,    ['$concat', array(List1)], Ctx, Step)
+		;	mongolog:match_equals(Atom0, ['$concat', array(List1)], Step)
 		),
 		Pipeline).
 

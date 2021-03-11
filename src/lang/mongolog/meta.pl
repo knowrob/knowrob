@@ -19,21 +19,21 @@ The following predicates are supported:
 		[ time_scope/3 ]).
 :- use_module(library('db/mongo/client'),
 		[ mng_strip/4 ]).
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 :- use_module(library('lang/query')).
 
 %%%% query commands
-:- query_compiler:add_command(call).
-:- query_compiler:add_command(once).
-:- query_compiler:add_command(limit).
-:- query_compiler:add_command(ignore).
-:- query_compiler:add_command(call_with_args).
-:- query_compiler:add_command(call_with_context).
+:- mongolog:add_command(call).
+:- mongolog:add_command(once).
+:- mongolog:add_command(limit).
+:- mongolog:add_command(ignore).
+:- mongolog:add_command(call_with_args).
+:- mongolog:add_command(call_with_context).
 % TODO: move these to somewhere else
-:- query_compiler:add_command(set).
-:- query_compiler:add_command(pragma).
-:- query_compiler:add_command(context).
-:- query_compiler:add_command(ask).
+:- mongolog:add_command(set).
+:- mongolog:add_command(pragma).
+:- mongolog:add_command(context).
+:- mongolog:add_command(ask).
 
 %%%% query expansion
 	
@@ -41,7 +41,7 @@ The following predicates are supported:
 %% once(:Goal)
 % Make a possibly nondet goal semidet, i.e., succeed at most once.
 %
-query_compiler:step_expand(
+mongolog:step_expand(
 		once(Goal), Expanded, Context) :-
 	append_cut(Goal, WithCut),
 	query_expand(WithCut, Expanded, Context).
@@ -49,44 +49,44 @@ query_compiler:step_expand(
 %% ignore(:Goal)
 % Calls Goal as once/1, but succeeds, regardless of whether Goal succeeded or not.
 %
-query_compiler:step_expand(
+mongolog:step_expand(
 		ignore(Goal), Expanded, Context) :-
 	append_cut(Goal, WithCut),
 	query_expand((WithCut ; true), Expanded, Context).
 
 %%
-query_compiler:step_expand(
+mongolog:step_expand(
 		limit(Count, Goal),
 		limit(Count, Expanded),
 		Context) :-
 	query_expand(Goal, Expanded, Context).
 
 %%
-query_compiler:step_expand(call(Goal), call(Expanded), Context) :-
+mongolog:step_expand(call(Goal), call(Expanded), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(call(Goal,Arg1),
+mongolog:step_expand(call(Goal,Arg1),
 		call_with_args(Expanded,[Arg1]), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(call(Goal,Arg1,Arg2),
+mongolog:step_expand(call(Goal,Arg1,Arg2),
 		call_with_args(Expanded,[Arg1,Arg2]), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(call(Goal,Arg1,Arg2,Arg3),
+mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3),
 		call_with_args(Expanded,[Arg1,Arg2,Arg3]), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
+mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
 		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4]), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(
+mongolog:step_expand(
 		call_with_context(Goal,Args),
 		call_with_context(Expanded,Args), Context) :-
 	query_expand(Goal, Expanded, Context).
 
-query_compiler:step_expand(ask(Goal), ask(Expanded), _Context) :-
+mongolog:step_expand(ask(Goal), ask(Expanded), _Context) :-
 	query_expand(Goal, Expanded, ask).
 
 %%
@@ -97,25 +97,25 @@ ensure_list(X,[X]).
 % Limit the number of solutions.
 % True if Goal is true, returning at most Count solutions.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		limit(_, Terminals), _Ctx, [], []) :-
 	is_list(Terminals),
 	Terminals=[],
 	!.
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		limit(Count, Terminals),
 		Ctx, Pipeline, StepVars) :-
-	query_compiler:var_key_or_val(Count,Ctx,Count0),
+	mongolog:var_key_or_val(Count,Ctx,Count0),
 	% appended to inner pipeline of lookup
 	Prefix=[],
 	Suffix=[['$limit',Count0]],
 	% create a lookup and append $limit to inner pipeline,
 	% then unwind next and assign variables to the toplevel document.
-	query_compiler:lookup_next_unwind(Terminals,
+	mongolog:lookup_next_unwind(Terminals,
 		Prefix, Suffix, Ctx, Pipeline, StepVars0),
 	%
-	(	query_compiler:goal_var(Count,Ctx,Count_var)
+	(	mongolog:goal_var(Count,Ctx,Count_var)
 	->	StepVars=[Count_var|StepVars0]
 	;	StepVars=StepVars0
 	).
@@ -123,29 +123,29 @@ query_compiler:step_compile(
 %% call(:Goal)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		call(Terminals), Ctx, Pipeline, StepVars) :-
 %	option(outer_vars(V0), Ctx),
-%	query_compiler:compile_terms(
+%	mongolog:compile_terms(
 %		Terminals, Pipeline,
 %		V0->_, StepVars, Ctx).
 	% TODO: why above renders a test failing?
-	query_compiler:lookup_next_unwind(Terminals,
+	mongolog:lookup_next_unwind(Terminals,
 		[], [], Ctx, Pipeline, StepVars).
 
 %% call_with_args(:Goal,:Args)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		call_with_args(Term0,Args), Ctx, Pipeline, StepVars) :-
 	Term0 =.. Buf0,
 	append(Buf0, Args, Buf1),
 	Term1 =.. Buf1,
-	query_compiler:step_compile(call(Term1), Ctx, Pipeline, StepVars).
+	mongolog:step_compile(call(Term1), Ctx, Pipeline, StepVars).
 
 %%
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		call_with_context(Terminals, NewCtx),
 		OldCtx, Pipeline, StepVars) :-
 	option(outer_vars(V0), OldCtx),
@@ -156,30 +156,30 @@ query_compiler:step_compile(
 	% add provided options to context
 	merge_options(NewCtx0, OldCtx, Ctx),
 	% finally compile call goal with new context
-	query_compiler:compile_terms(
+	mongolog:compile_terms(
 		Terminals, Pipeline,
 		V0->_, StepVars, Ctx).
 
 %% ask(:Goal)
 % Call Goal in ask mode.
 %
-query_compiler:step_compile(ask(Goal), Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(ask(Goal), Ctx, Pipeline, StepVars) :-
 	merge_options([mode(ask)], Ctx, Ctx0),
-	query_compiler:step_compile(call(Goal), Ctx0, Pipeline, StepVars).
+	mongolog:step_compile(call(Goal), Ctx0, Pipeline, StepVars).
 
 %%
-query_compiler:step_compile(
+mongolog:step_compile(
 		set(Var,Value), Ctx,
 		[['$set', [[Key,Value0]]]]) :-
-	query_compiler:var_key_or_val(Value, [], Value0),
-	query_compiler:var_key(Var,Ctx,Key).
+	mongolog:var_key_or_val(Value, [], Value0),
+	mongolog:var_key(Var,Ctx,Key).
 
 %%
 % pragma(Goal) is evaluated compile-time by calling
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
-query_compiler:step_compile(pragma(Goal), _, [], StepVars) :-
+mongolog:step_compile(pragma(Goal), _, [], StepVars) :-
 	% ignore vars referred to in pragma as these are handled compile-time.
 	% only the ones also referred to in parts of the query are added to the document.
 	StepVars=[],
@@ -191,10 +191,10 @@ query_compiler:step_compile(pragma(Goal), _, [], StepVars) :-
 % The main usecase is that some temporal predicates need to access
 % the query scope.
 %
-query_compiler:step_compile(context(Option), Ctx, []) :-
+mongolog:step_compile(context(Option), Ctx, []) :-
 	option(Option, Ctx).
 
-query_compiler:step_compile(context(Option, Default), Ctx, []) :-
+mongolog:step_compile(context(Option, Default), Ctx, []) :-
 	option(Option, Ctx, Default).
 
 %%
@@ -213,7 +213,7 @@ resolve_scope(In, _, In).
 %%
 resolve_scope1(In, Ctx, Out) :-
 	mng_strip_operator(In, Operator, Time1),
-	query_compiler:var_key_or_val(Time1, Ctx, Time2),
+	mongolog:var_key_or_val(Time1, Ctx, Time2),
 	mng_strip_operator(Out, Operator, Time2).
 	
 

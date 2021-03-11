@@ -3,7 +3,7 @@
 
 :- use_module(library('lang/scope'),
 		[ time_scope/3 ]).
-:- use_module(library('lang/compiler')).
+:- use_module(library('lang/mongolog/mongolog')).
 
 %% mng_scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
 %
@@ -40,16 +40,16 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 	).
 
 %% register query commands
-:- query_compiler:add_command(intersect).
+:- mongolog:add_command(intersect).
 
 %%
-query_compiler:step_compile(
+mongolog:step_compile(
 		intersect(Scope), Ctx,
 		Pipeline) :-
 	% get since/until values
 	time_scope(Since, Until, Scope),
-	query_compiler:var_key_or_val(Since,Ctx,Since0),
-	query_compiler:var_key_or_val(Until,Ctx,Until0),
+	mongolog:var_key_or_val(Since,Ctx,Since0),
+	mongolog:var_key_or_val(Until,Ctx,Until0),
 	% get scope intersection pipeline
 	findall(Step,
 		mng_scope_intersect('v_scope', Since0, Until0, Ctx, Step),

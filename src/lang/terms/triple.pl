@@ -14,7 +14,7 @@
 		  mng_operator/2,
 		  mng_query_value/2,
 		  mng_typed_value/2 ]).
-:- use_module(library('lang/compiler')).
+:- use_module(library('lang/mongolog/mongolog')).
 :- use_module('intersect',
 		[ mng_scope_intersect/5 ]).
 
@@ -34,18 +34,18 @@
 		['s','o','p'], ['s','o','p*'], ['s','o*','p'] ]).
 
 %% register query commands
-:- query_compiler:add_command(triple).
+:- mongolog:add_command(triple).
 
 %%
-query_compiler:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 	(	bagof(Var,
-			(	query_compiler:goal_var([S,P,O], Ctx, Var)
-			;	query_compiler:context_var(Ctx, Var)
+			(	mongolog:goal_var([S,P,O], Ctx, Var)
+			;	mongolog:context_var(Ctx, Var)
 			),
 			StepVars0)
 	;	StepVars0=[]
 	),
-	query_compiler:add_assertion_var(StepVars0, Ctx, StepVars),
+	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
 	merge_options([step_vars(StepVars)], Ctx, Ctx0),
 	(	option(mode(ask), Ctx)
 	->	compile_ask( triple(S,P,O), Ctx0, Pipeline)
@@ -98,10 +98,10 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 	option(scope(Scope), Ctx0),
 	time_scope_values(Scope, SinceTyped, UntilTyped),
 	% throw instantiation_error if one of the arguments was not referred to before
-	query_compiler:all_ground([S,O], Ctx),
+	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
-	query_compiler:var_key_or_val(S, Ctx, S_query),
-	query_compiler:var_key_or_val(O, Ctx, V_query),
+	mongolog:var_key_or_val(S, Ctx, S_query),
+	mongolog:var_key_or_val(O, Ctx, V_query),
 	% special handling for RDFS semantic
 	% FIXME: with below code P can not be inferred in query
 	(	taxonomical_property(P1)
@@ -141,9 +141,9 @@ compile_tell(triple(S,P,O), Ctx, Pipeline) :-
 		;	reduce_num_array(string('$next'), UntilOp,
 				'scope.time.until', 'v_scope.time.until', Step)
 		% add triples to triples array that have been queued to be removed
-		;	query_compiler:add_assertions(string('$next'), Collection, Step)
+		;	mongolog:add_assertions(string('$next'), Collection, Step)
 		% add merged triple document to triples array
-		;	query_compiler:add_assertion(TripleDoc, Collection, Step)
+		;	mongolog:add_assertion(TripleDoc, Collection, Step)
 		;	(	once(must_propagate_tell(P)),
 				propagate_tell(S, Ctx0, Step)
 			)
@@ -191,7 +191,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 		% next match variables grounded in call context
 		;	(	member([Arg,FieldValue],[[S,'$s'],[P,Key_p],[V,Key_o]]),
 				triple_arg_var(Arg, ArgVar),
-				query_compiler:var_key(ArgVar, Ctx, ArgKey),
+				mongolog:var_key(ArgVar, Ctx, ArgKey),
 				atom_concat('$$',ArgKey,ArgValue),
 				atom_concat(ArgValue,'.type',ArgType),
 				triple_arg_value(Arg, ArgValue, FieldValue, Ctx, ArgExpr),
@@ -221,7 +221,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 		InnerPipeline
 	),
 	% pass input document values to lookup
-	query_compiler:lookup_let_doc(StepVars, LetDoc),
+	mongolog:lookup_let_doc(StepVars, LetDoc),
 	% lookup matching documents and store in 'next' field
     (	Step=['$lookup', [
 			['from',string(Coll)],
@@ -253,8 +253,8 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% TODO: can query operators be supported?
 	mng_strip_variable(S, S0),
 	mng_strip_variable(V, V0),
-	query_compiler:var_key_or_val(S0, Ctx, S_val),
-	query_compiler:var_key_or_val(V0, Ctx, V_val),
+	mongolog:var_key_or_val(S0, Ctx, S_val),
+	mongolog:var_key_or_val(V0, Ctx, V_val),
 	
 	% FIXME: a runtime condition is needed to cover the case where S was
 	%        referred to in ignore'd goal that failed.
@@ -319,7 +319,7 @@ has_value(X, _Ctx) :-
 has_value(X, Ctx) :-
 	term_variables(X,Vars),
 	member(Var,Vars),
-	query_compiler:is_referenced(Var, Ctx).
+	mongolog:is_referenced(Var, Ctx).
 
 %%
 reflexivity(StartValue, Ctx, Step) :-
@@ -350,9 +350,9 @@ delete_overlapping(triple(S,P,V), Ctx,
 	memberchk(collection(Coll), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
 	% read triple data
-	query_compiler:var_key_or_val1(P, Ctx, P0),
-	query_compiler:var_key_or_val1(S, Ctx, S0),
-	query_compiler:var_key_or_val1(V, Ctx, V0),
+	mongolog:var_key_or_val1(P, Ctx, P0),
+	mongolog:var_key_or_val1(S, Ctx, S0),
+	mongolog:var_key_or_val1(V, Ctx, V0),
 	% read scope data
 	option(scope(Scope), Ctx),
 	time_scope_values(Scope, Since, Until),
@@ -367,7 +367,7 @@ delete_overlapping(triple(S,P,V), Ctx,
 	->	Since0=Until
 	;	Since0=Since
 	),
-	query_compiler:lookup_let_doc(StepVars, LetDoc),
+	mongolog:lookup_let_doc(StepVars, LetDoc),
 	% build pipeline
 	findall(Step,
 		% $match s,p,o and overlapping scope
@@ -467,7 +467,7 @@ propagate_tell(S, Context, Step) :-
 			['pipeline',array(Inner)]
 		]]
 	% second, add each document to triples array
-	;	query_compiler:add_assertions(string('$next'), Collection, Step)
+	;	mongolog:add_assertions(string('$next'), Collection, Step)
 	).
 
 %% the properties for which assertions must be propagated
@@ -631,7 +631,7 @@ extend_context(triple(_,P,_), P1, Context, Context0) :-
 get_triple_vars(S, P, O, Ctx, Vars) :-
 	findall([Key,Field],
 		(	member([Field,Arg], [[s,S],[p,P],[o,O]]),
-			query_compiler:goal_var(Arg, Ctx, [Key, _Var])
+			mongolog:goal_var(Arg, Ctx, [Key, _Var])
 		),
 		Vars).
 

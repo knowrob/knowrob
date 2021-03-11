@@ -52,11 +52,11 @@ tf_db(DB, Name) :-
 %%%%%%%%% QUERY COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%
 
-:- query_compiler:add_command(tf_transform).
-%:- query_compiler:add_command(tf_transform_world).
+:- mongolog:add_command(tf_transform).
+%:- mongolog:add_command(tf_transform_world).
 
 %%
-query_compiler:step_compile(
+mongolog:step_compile(
 		tf_transform(Child, Pose),
 		Ctx, Pipeline, StepVars) :-
 	option(mode(ask), Ctx),!,
@@ -67,7 +67,7 @@ query_compiler:step_compile(
 	
 	Pose=[Parent, [X,Y,Z], [QX,QY,QZ,QW]],
 	mng_get_db(_DB, Coll, 'tf'),
-	query_compiler:var_key_or_val(Child, Ctx, Child0),
+	mongolog:var_key_or_val(Child, Ctx, Child0),
 	VarMapping=[
 		[Parent, 'tf.header.frame_id'],
 		[X,      'tf.transform.translation.x'],
@@ -78,8 +78,8 @@ query_compiler:step_compile(
 		[QZ,     'tf.transform.rotation.z'],
 		[QW,     'tf.transform.rotation.w']
 	],
-	query_compiler:step_vars(tf_transform(Child, Pose), Ctx, StepVars),
-	query_compiler:lookup_let_doc(StepVars, LetDoc),
+	mongolog:step_vars(tf_transform(Child, Pose), Ctx, StepVars),
+	mongolog:lookup_let_doc(StepVars, LetDoc),
 	findall(Step,
 		% look-up tf documents into 'tf' field
 		(	Step=['$lookup', [
@@ -100,7 +100,7 @@ query_compiler:step_compile(
 		% unwind lookup results and assign variable
 		;	Step=['$unwind', string('$tf')]
 		;	(	member([Var,TFKey], VarMapping),
-				query_compiler:var_key(Var,Ctx,VarKey),
+				mongolog:var_key(Var,Ctx,VarKey),
 				atom_concat('$',TFKey,TFVal),
 				Step=['$set', [VarKey, string(TFVal)]]
 			)
@@ -109,7 +109,7 @@ query_compiler:step_compile(
 		Pipeline
 	).
 
-%query_compiler:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
+%mongolog:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
 %	option(mode(tell), Ctx),!,
 %	fail.
 

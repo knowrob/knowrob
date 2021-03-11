@@ -20,25 +20,25 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% query commands
-:- query_compiler:add_command(length).
-:- query_compiler:add_command(max_list).
-:- query_compiler:add_command(min_list).
-:- query_compiler:add_command(sum_list).
-:- query_compiler:add_command(member).
-:- query_compiler:add_command(memberchk).
-:- query_compiler:add_command(nth0).
-:- query_compiler:add_command(list_to_set).
-:- query_compiler:add_command(sort).
+:- mongolog:add_command(length).
+:- mongolog:add_command(max_list).
+:- mongolog:add_command(min_list).
+:- mongolog:add_command(sum_list).
+:- mongolog:add_command(member).
+:- mongolog:add_command(memberchk).
+:- mongolog:add_command(nth0).
+:- mongolog:add_command(list_to_set).
+:- mongolog:add_command(sort).
 
 %% member(?Elem, +List)
 % True if Elem is a member of List. 
 % NOTE: here list cannot be a variable which is allowed in SWI Prolog.
 %       Prolog then generates all possible list with Elem as member.
 %
-query_compiler:step_expand(member(Elem, List), Expanded, Context) :-
+mongolog:step_expand(member(Elem, List), Expanded, Context) :-
 	query_expand((
 		% get size of list
 		length(List, Size),
@@ -53,17 +53,17 @@ query_compiler:step_expand(member(Elem, List), Expanded, Context) :-
 % True when Elem is an element of List. This variant of member/2 is
 % semi deterministic and typically used to test membership of a list. 
 %
-query_compiler:step_expand(memberchk(Elem, List), Expanded, Context) :-
+mongolog:step_expand(memberchk(Elem, List), Expanded, Context) :-
 	query_expand(limit(1, member(Elem,List)), Expanded, Context).
 
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.
 %
-query_compiler:step_compile(length(List, Length), _, []) :-
+mongolog:step_compile(length(List, Length), _, []) :-
 	ground(List),!,
 	length(List, Length).
 
-query_compiler:step_compile(length(List, Length), Ctx, Pipeline) :-
+mongolog:step_compile(length(List, Length), Ctx, Pipeline) :-
 	% FIXME: SWI Prolog allows var(List), then yields lists with variables
 	%          as elements. It is also allowed that both args are variables.
 	%          then SWIPL generates infinite number of lists.
@@ -72,58 +72,58 @@ query_compiler:step_compile(length(List, Length), Ctx, Pipeline) :-
 %% max_list(+List:list(number), -Max:number)
 % True if Max is the largest number in List. Fails if List is empty. 
 %
-query_compiler:step_compile(max_list(List, Max), _, []) :-
+mongolog:step_compile(max_list(List, Max), _, []) :-
 	ground(List),!,
 	max_list(List, Max).
 
-query_compiler:step_compile(max_list(List, Max), Ctx, Pipeline) :-
+mongolog:step_compile(max_list(List, Max), Ctx, Pipeline) :-
 	compile_list_attribute(List, Max, '$max', Ctx, Pipeline).
 
 %% min_list(+List, ?Min)
 % True if Min is the smallest number in List. Fails if List is empty.
 %
-query_compiler:step_compile(min_list(List, Min), _, []) :-
+mongolog:step_compile(min_list(List, Min), _, []) :-
 	ground(List),!,
 	min_list(List, Min).
 
-query_compiler:step_compile(min_list(List, Min), Ctx, Pipeline) :-
+mongolog:step_compile(min_list(List, Min), Ctx, Pipeline) :-
 	compile_list_attribute(List, Min, '$min', Ctx, Pipeline).
 
 %% sum_list(+List, -Sum)
 % Sum is the result of adding all numbers in List.
 %
-query_compiler:step_compile(sum_list(List, Sum), _, []) :-
+mongolog:step_compile(sum_list(List, Sum), _, []) :-
 	ground(List),!,
 	sum_list(List, Sum).
 
-query_compiler:step_compile(sum_list(List, Sum), Ctx, Pipeline) :-
+mongolog:step_compile(sum_list(List, Sum), Ctx, Pipeline) :-
 	compile_list_attribute(List, Sum, '$sum', Ctx, Pipeline).
 
 %% list_to_set(+List, -Set)
 % Removes duplicates from a list.
 % List may *not* contain variables when this is evaluated.
 %
-query_compiler:step_compile(list_to_set(List, Set), _, []) :-
+mongolog:step_compile(list_to_set(List, Set), _, []) :-
 	ground(List),!,
 	list_to_set(List, Set).
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		list_to_set(List, Set), Ctx,
 		[Step]) :-
 	% FIXME: SWI Prolog allows ground(Set)
 	% FIXME: Set and List have same ordering in SWI Prolog, but mongo does not ensure this.
-	query_compiler:var_key_or_val(List,Ctx,List0),
-	query_compiler:var_key(Set,Ctx,SetKey),
+	mongolog:var_key_or_val(List,Ctx,List0),
+	mongolog:var_key(Set,Ctx,SetKey),
 	Step=['$set', [SetKey, ['$setUnion', array([List0])]]].
 
 %% sort(+List, -Sorted)
 % True if Sorted can be unified with a list holding the elements of List,
 % sorted to the standard order in mongo. Duplicates are removed.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		sort(List, Sorted), Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(List,Ctx,List0),
-	query_compiler:var_key(Sorted,Ctx,SortedKey),
+	mongolog:var_key_or_val(List,Ctx,List0),
+	mongolog:var_key(Sorted,Ctx,SortedKey),
 	mng_one_db(_DB, Coll),
 	% compute steps of the aggregate pipeline
 	findall(Step,
@@ -155,20 +155,20 @@ query_compiler:step_compile(
 %
 % NOTE: List must be kwown here. SWI Prolog also allows that List is a var.
 %
-query_compiler:step_compile(
+mongolog:step_compile(
 		nth0(Index, List, Elem),
 		Ctx, Pipeline) :-
 	% TODO: below is a bit redundant with unification.pl
 	%		- it also does not handle var-var bindings!
 	%
-	query_compiler:var_key_or_val(Index,Ctx,Index0),
-	query_compiler:var_key_or_val(List,Ctx,List0),
-	query_compiler:var_key_or_val(Elem,Ctx,Elem0),
+	mongolog:var_key_or_val(Index,Ctx,Index0),
+	mongolog:var_key_or_val(List,Ctx,List0),
+	mongolog:var_key_or_val(Elem,Ctx,Elem0),
 	% compute steps of the aggregate pipeline
 	findall(Step,
-		(	query_compiler:set_if_var(Elem,
+		(	mongolog:set_if_var(Elem,
 				['$arrayElemAt', array([List0,Index0])], Ctx, Step)
-		;	query_compiler:set_if_var(Index,
+		;	mongolog:set_if_var(Index,
 				['$indexOfArray', array([List0,Elem0])], Ctx, Step)
 		% unify terms
 		;	Step=['$set', ['t_term1', Elem0]]
@@ -176,7 +176,7 @@ query_compiler:step_compile(
 		% assign vars in term1 to values of arguments in term2
 		;	mongolog_unification:set_term_arguments('t_term1', 't_term2', Step)
 		% perform equality test
-		;	query_compiler:match_equals(string('$t_term1'), string('$t_term2'), Step)
+		;	mongolog:match_equals(string('$t_term1'), string('$t_term2'), Step)
 		% project new variable groundings
 		;	mongolog_unification:set_term_vars(Elem, 't_term1', Ctx, Step)
 		% and cleanup
@@ -190,15 +190,15 @@ query_compiler:step_compile(
 % second argument with the result (i.e. Attribute maybe ground or var).
 %
 compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(List, Ctx, List0),
-	query_compiler:var_key_or_val(Attribute, Ctx, Attribute0),
+	mongolog:var_key_or_val(List, Ctx, List0),
+	mongolog:var_key_or_val(Attribute, Ctx, Attribute0),
 	findall(Step,
 		% first compute the attribute
 		(	Step=['$set', ['t_val', [Operator, array([List0])]]]
 		% then assign the value to the attribute if it is a variable
-		;	query_compiler:set_if_var(Attribute,    string('$t_val'), Ctx, Step)
+		;	mongolog:set_if_var(Attribute,    string('$t_val'), Ctx, Step)
 		% then ensure that the attribute has the right value
-		;	query_compiler:match_equals(Attribute0, string('$t_val'), Step)
+		;	mongolog:match_equals(Attribute0, string('$t_val'), Step)
 		% finally remove temporary field again
 		;	Step=['$unset', string('t_val')]
 		),

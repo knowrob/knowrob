@@ -18,38 +18,38 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% query commands
-:- query_compiler:add_command(fail).
-:- query_compiler:add_command(false).
-:- query_compiler:add_command(true).
-:- query_compiler:add_command(!).
-:- query_compiler:add_command(\+).
-:- query_compiler:add_command(->).
-%:- query_compiler:add_command(*->).
-:- query_compiler:add_command(;).
+:- mongolog:add_command(fail).
+:- mongolog:add_command(false).
+:- mongolog:add_command(true).
+:- mongolog:add_command(!).
+:- mongolog:add_command(\+).
+:- mongolog:add_command(->).
+%:- mongolog:add_command(*->).
+:- mongolog:add_command(;).
 
 %% false
 %
 % Same as fail, but the name has a more declarative connotation.
 %
-query_compiler:step_expand(false, fail, _Mode).
+mongolog:step_expand(false, fail, _Mode).
 
 %% not(:Goal):
 %
 % True if Goal cannot be proven.
 % Retained for compatibility only. New code should use \+/1.
 %
-query_compiler:step_expand(not(Goal), Expanded, Mode) :-
-	query_compiler:step_expand(\+(Goal), Expanded, Mode).
+mongolog:step_expand(not(Goal), Expanded, Mode) :-
+	mongolog:step_expand(\+(Goal), Expanded, Mode).
 
 %% \+ :Goal:
 %
 % True if‘Goal' cannot be proven (mnemonic: + refers to provable and
 % the backslash (\) is normally used to indicate negation in Prolog).
 %
-query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
+mongolog:step_expand(\+(Goal), Expanded, Mode) :-
 	query_expand(Goal, GoalExpanded, Mode),
 	% another way to write it:
 	%Expanded=((call(GoalExpanded),!,fail) ; true),
@@ -70,14 +70,14 @@ query_compiler:step_expand(\+(Goal), Expanded, Mode) :-
 % making the construct fail if the condition fails.
 % This unusual semantics is part of the ISO and all de-facto Prolog standards. 
 %
-query_compiler:step_expand(';'('->'(If,Then),Else), ';'(X,Y), Mode) :-
+mongolog:step_expand(';'('->'(If,Then),Else), ';'(X,Y), Mode) :-
 	% (If -> Then) ; Else -> (If, !, Then) ; Else
 	query_expand([If, !, Then], X, Mode),
 	query_expand(Else,          Y, Mode).
 
-query_compiler:step_expand('->'(If,Then), Epanded, Mode) :-
+mongolog:step_expand('->'(If,Then), Epanded, Mode) :-
 	% (If -> Then) -> (If -> Then ; fail)
-	query_compiler:step_expand(';'('->'(If,Then),fail), Epanded, Mode).
+	mongolog:step_expand(';'('->'(If,Then),fail), Epanded, Mode).
 
 %% TODO: :Condition *-> :Action ; :Else
 % This construct implements the so-called‘soft-cut'.
@@ -88,7 +88,7 @@ query_compiler:step_expand('->'(If,Then), Epanded, Mode) :-
 % conjunction of call(Condition) and Action, otherwise execute Else.
 % The construct is known under the name if/3 in some other Prolog implementations. 
 %
-%query_compiler:step_expand(
+%mongolog:step_expand(
 %		';'('*->'(Condition,Action),Else),
 %		';'(X,Y), Mode) :-
 %	fail.
@@ -96,7 +96,7 @@ query_compiler:step_expand('->'(If,Then), Epanded, Mode) :-
 %% :Goal1 ; :Goal2
 % Make sure goals of disjunction are expanded.
 %
-query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
+mongolog:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
 	query_expand(A0,B0,Ctx),
 	query_expand(A1,B1,Ctx).
 
@@ -104,13 +104,13 @@ query_compiler:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
 %
 % Always succeed. 
 %
-query_compiler:step_compile(true,  _, [], []).
+mongolog:step_compile(true,  _, [], []).
 
 %% fail
 %
 % Always fail. 
 %
-query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
+mongolog:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 
 %% !
 % Cut. Discard all choice points created since entering the predicate in which
@@ -125,7 +125,7 @@ query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 %         through existing interfaces for commands in this file.
 % NOTE: but disjunction below handles cut in disjunction goals
 %
-%query_compiler:step_compile('!', _, [['$limit',int(1)]]).
+%mongolog:step_compile('!', _, [['$limit',int(1)]]).
 
 %% :Goal1 ; :Goal2
 % The ‘or' predicate.
@@ -135,7 +135,7 @@ query_compiler:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 % 2. then concat all these array fields into single array stored in field 'next'
 % 3. unwind the next array
 %
-query_compiler:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
+mongolog:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
 	% get disjunction as list
 	semicolon_list(';'(A,B), Goals),
 	% read options from context
@@ -152,7 +152,7 @@ query_compiler:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
 	% special handling in case the disjunction compiles into a single goal
 	% no disjunction needed then.
 	(	FindallStages=[[_,_,SingleGoal]]
-	->	query_compiler:compile_term(SingleGoal, Pipeline, OuterVars->_InnerVars, StepVars, Context)
+	->	mongolog:compile_term(SingleGoal, Pipeline, OuterVars->_InnerVars, StepVars, Context)
 	;	aggregate_disjunction(FindallStages, StepVars0, Pipeline, StepVars)
 	).
 
@@ -177,7 +177,7 @@ aggregate_disjunction(FindallStages, StepVars, Pipeline, StepVars) :-
 		% unwind all solutions from disjunction
 		;	Stage=['$unwind', string('$next')]
 		% finally project the result of a disjunction goal
-		;	query_compiler:set_next_vars(StepVars, Stage)
+		;	mongolog:set_next_vars(StepVars, Stage)
 		% and unset the next field
 		;	Stage=['$unset', string('next')]
 		),
@@ -228,8 +228,8 @@ compile_disjunction(
 		additional_vars(CutVars)
 	], Ctx, InnerCtx),
 	% compile the step
-	query_compiler:var_key(Var, Ctx, Key),
-	query_compiler:lookup_array(Key, GoalCopy, CutMatches, [],
+	mongolog:var_key(Var, Ctx, Key),
+	mongolog:lookup_array(Key, GoalCopy, CutMatches, [],
 		InnerCtx, StepVars_copy, Stage),
 	!,
 	% check if this goal has a cut, if so extend CutVars list

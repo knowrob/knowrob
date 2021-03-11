@@ -13,11 +13,11 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
-%% query_compiler:add_command
-:- query_compiler:add_command(=).
-:- query_compiler:add_command(\=).
+%% mongolog:add_command
+:- mongolog:add_command(=).
+:- mongolog:add_command(\=).
 
 %% @Term1 \= @Term2
 %
@@ -27,19 +27,19 @@ The following predicates are supported:
 % In other cases, such as ?- X \= Y., the predicate fails although there are solutions.
 % This is due to the incomplete nature of \+/1. 
 %
-query_compiler:step_expand(\=(A,B), Expanded, Mode) :-
-	query_compiler:step_expand(\+(=(A,B)), Expanded, Mode).
+mongolog:step_expand(\=(A,B), Expanded, Mode) :-
+	mongolog:step_expand(\+(=(A,B)), Expanded, Mode).
 
 %% ?Term1 = ?Term2
 % Unify Term1 with Term2. True if the unification succeeds.
 %
-query_compiler:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Term1,Ctx,Term1_val),
-	query_compiler:var_key_or_val(Term2,Ctx,Term2_val),
+mongolog:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
+	mongolog:var_key_or_val(Term1,Ctx,Term1_val),
+	mongolog:var_key_or_val(Term2,Ctx,Term2_val),
 	% TODO: if var(Term1) then $set key(Term1) <- t_term1
 	findall(Step,
-		(	query_compiler:set_if_var(Term1, Term2_val, Ctx, Step)
-		;	query_compiler:set_if_var(Term2, Term1_val, Ctx, Step)
+		(	mongolog:set_if_var(Term1, Term2_val, Ctx, Step)
+		;	mongolog:set_if_var(Term2, Term1_val, Ctx, Step)
 		% make both terms accessible via fields
 		;	Step=['$set', ['t_term1', Term1_val]]
 		;	Step=['$set', ['t_term2', Term2_val]]
@@ -48,7 +48,7 @@ query_compiler:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
 		% assign vars in term2 to values of arguments in term1
 		;	set_term_arguments('t_term2', 't_term1', Step)
 		% perform equality test
-		;	query_compiler:match_equals(string('$t_term1'), string('$t_term2'), Step)
+		;	mongolog:match_equals(string('$t_term1'), string('$t_term2'), Step)
 		% project new variable groundings
 		;	set_term_vars(Term1, 't_term1', Ctx, Step)
 		;	set_term_vars(Term2, 't_term2', Ctx, Step)
@@ -112,7 +112,7 @@ set_term_vars(Term, _, _, _) :-
 set_term_vars(Term, Field, Ctx, ['$set', [TermField, string(FieldValue)]]) :-
 	% the term itself is a var -> $set var field
 	var(Term),!,
-	query_compiler:var_key(Term, Ctx, TermField),
+	mongolog:var_key(Term, Ctx, TermField),
 	atom_concat('$', Field, FieldValue).
 
 set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
@@ -128,7 +128,7 @@ set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
 	between(0, NumArgs0, Index),
 	nth0(Index, Args, Arg),
 	% get the varkey or fail if it is not a var
-	query_compiler:var_key(Arg, Ctx, ArgField).
+	mongolog:var_key(Arg, Ctx, ArgField).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*

@@ -17,32 +17,32 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
 %% register query commands
-:- query_compiler:add_command(ground).
-:- query_compiler:add_command(var).
-:- query_compiler:add_command(number).
-:- query_compiler:add_command(atom).
-:- query_compiler:add_command(is_list).
-:- query_compiler:add_command(compound).
+:- mongolog:add_command(ground).
+:- mongolog:add_command(var).
+:- mongolog:add_command(number).
+:- mongolog:add_command(atom).
+:- mongolog:add_command(is_list).
+:- mongolog:add_command(compound).
 
 %% ground(@Term)
 % True if Term holds no free variables. 
 %
-query_compiler:step_compile(ground(Arg), _Ctx, []) :-
+mongolog:step_compile(ground(Arg), _Ctx, []) :-
 	% argument is grounded already compile-time
 	ground(Arg), !.
 
-query_compiler:step_compile(ground(Arg), Ctx, []) :-
+mongolog:step_compile(ground(Arg), Ctx, []) :-
 	% argument was not referred to before in query, thus cannot be ground
 	term_variables(Arg,Vars),
 	member(Var,Vars),
-	\+ query_compiler:is_referenced(Var,Ctx), !,
+	\+ mongolog:is_referenced(Var,Ctx), !,
 	fail.
 
-query_compiler:step_compile(ground(Arg), Ctx, Pipeline) :-
-	query_compiler:var_key_or_val(Arg, Ctx, Arg0),
+mongolog:step_compile(ground(Arg), Ctx, Pipeline) :-
+	mongolog:var_key_or_val(Arg, Ctx, Arg0),
 	% FIXME: ground(ListVar) seems broken
 	findall(Step,
 		(	Step=['$set', ['t_term', Arg0]]
@@ -71,62 +71,62 @@ query_compiler:step_compile(ground(Arg), Ctx, Pipeline) :-
 %% var(@Term)
 % True if Term currently is a free variable.
 %
-query_compiler:step_compile(var(Arg), _Ctx, []) :-
+mongolog:step_compile(var(Arg), _Ctx, []) :-
 	% argument is nonvar already compile-time, thus cannot be var
 	nonvar(Arg), !,
 	fail.
 
-query_compiler:step_compile(var(Arg), Ctx, []) :-
+mongolog:step_compile(var(Arg), Ctx, []) :-
 	% argument was not referred to before in query, thus must be var
-	\+ query_compiler:is_referenced(Arg,Ctx), !.
+	\+ mongolog:is_referenced(Arg,Ctx), !.
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		var(Arg), Ctx,
 		[['$match', [
 			[Key0, ['$eq', string('var')]]
 		]]]) :-
-	query_compiler:var_key(Arg, Ctx, Key),
+	mongolog:var_key(Arg, Ctx, Key),
 	atom_concat(Key, '.type', Key0).
 
 %% number(@Term)
 % True if Term is bound to a rational number (including integers) or a floating point number.
 %
-query_compiler:step_compile(number(Arg), Ctx, Pipeline) :-
+mongolog:step_compile(number(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, number, number, Ctx, Pipeline).
 
 %% atom(@Term)
 % True if Term is bound to an atom.
 %
-query_compiler:step_compile(atom(Arg), Ctx, Pipeline) :-
+mongolog:step_compile(atom(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, atom, string, Ctx, Pipeline).
 
 %% is_list(+Term)
 %
 %
-query_compiler:step_compile(is_list(Arg), Ctx, Pipeline) :-
+mongolog:step_compile(is_list(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, is_list, array, Ctx, Pipeline).
 
 %% compound(@Term) [ISO]
 % True if Term is bound to a compound term.
 %
-query_compiler:step_compile(compound(Arg), _Ctx, []) :-
+mongolog:step_compile(compound(Arg), _Ctx, []) :-
 	% argument is nonvar already compile-time
 	nonvar(Arg), !,
 	compound(Arg).
 
-query_compiler:step_compile(compound(Arg), Ctx, []) :-
+mongolog:step_compile(compound(Arg), Ctx, []) :-
 	% argument was not referred to before in query, thus cannot be compound
-	\+ query_compiler:is_referenced(Arg,Ctx), !,
+	\+ mongolog:is_referenced(Arg,Ctx), !,
 	fail.
 
-query_compiler:step_compile(
+mongolog:step_compile(
 		compound(Arg), Ctx,
 		[['$match', [
 			[Key0, ['$exists', bool(true)]]
 		]]]) :-
 	% compound terms are represented as documents that have
 	% a field "functor"
-	query_compiler:var_key(Arg, Ctx, Key),
+	mongolog:var_key(Arg, Ctx, Key),
 	atom_concat(Key,'.value.functor',Key0).
 
 
@@ -142,14 +142,14 @@ match_type_(Arg, Goal, _Type, _Ctx, []) :-
 
 match_type_(Arg, _, _Type, Ctx, []) :-
 	% argument was not referred to before in query, so cannot be ground
-	\+ query_compiler:is_referenced(Arg,Ctx), !,
+	\+ mongolog:is_referenced(Arg,Ctx), !,
 	fail.
 
 match_type_(Arg, _Goal, Type, Ctx,
 		[['$match',
 			[Key, ['$type', string(Type)]]
 		]]) :-
-	query_compiler:var_key(Arg, Ctx, Key).
+	mongolog:var_key(Arg, Ctx, Key).
 
 
 		 /*******************************

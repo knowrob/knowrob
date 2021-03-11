@@ -23,7 +23,7 @@
 	[ rdf_global_term/2, rdf_meta/1 ]).
 :- use_module('scope',
     [ current_scope/1, universal_scope/1 ]).
-:- use_module('compiler').
+:- use_module('mongolog/mongolog').
 
 :- rdf_meta(test_command(t,?,t)).
 

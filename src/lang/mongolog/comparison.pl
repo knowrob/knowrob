@@ -13,38 +13,38 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/compiler')).
+:- use_module('mongolog').
 
-%% query_compiler:add_command
-:- query_compiler:add_command(==).
-:- query_compiler:add_command(\==).
+%% mongolog:add_command
+:- mongolog:add_command(==).
+:- mongolog:add_command(\==).
 
 %% @Term1 == @Term2
 % True if Term1 is equivalent to Term2. A variable is only identical to a sharing variable
 %
-query_compiler:step_compile(==(X,Y), _, []) :-
+mongolog:step_compile(==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X == Y.
 
-query_compiler:step_compile(==(X,Y), Ctx,
+mongolog:step_compile(==(X,Y), Ctx,
 		[['$match', ['$expr', ['$eq', array([X0,Y0])]]]]) :-
 	% FIXME: unified variables are thought to be equal, eg.
 	%			?- A=B, foo(A) == foo(B).
 	%
-	query_compiler:var_key_or_val(X,Ctx,X0),
-	query_compiler:var_key_or_val(Y,Ctx,Y0).
+	mongolog:var_key_or_val(X,Ctx,X0),
+	mongolog:var_key_or_val(Y,Ctx,Y0).
 
 %% @Term1 \== @Term2
 % Equivalent to \+Term1 == Term2.
 %
-query_compiler:step_compile(\==(X,Y), _, []) :-
+mongolog:step_compile(\==(X,Y), _, []) :-
 	ground([X,Y]),!,
 	X \== Y.
 
-query_compiler:step_compile(\==(X,Y), Ctx,
+mongolog:step_compile(\==(X,Y), Ctx,
 		[['$match', ['$expr', ['$ne', array([X0,Y0])]]]]) :-
-	query_compiler:var_key_or_val(X,Ctx,X0),
-	query_compiler:var_key_or_val(Y,Ctx,Y0).
+	mongolog:var_key_or_val(X,Ctx,X0),
+	mongolog:var_key_or_val(Y,Ctx,Y0).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
