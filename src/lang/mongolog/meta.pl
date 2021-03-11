@@ -111,7 +111,7 @@ mongolog:step_compile(
 	Suffix=[['$limit',Count0]],
 	% create a lookup and append $limit to inner pipeline,
 	% then unwind next and assign variables to the toplevel document.
-	mongolog:lookup_next_unwind(Terminals,
+	lookup_next_unwind(Terminals,
 		Prefix, Suffix, Ctx, Pipeline, StepVars0),
 	%
 	(	mongolog:goal_var(Count,Ctx,Count_var)
@@ -129,7 +129,7 @@ mongolog:step_compile(
 %		Terminals, Pipeline,
 %		V0->_, StepVars, Ctx).
 	% TODO: why above renders a test failing?
-	mongolog:lookup_next_unwind(Terminals,
+	lookup_next_unwind(Terminals,
 		[], [], Ctx, Pipeline, StepVars).
 
 %% call_with_args(:Goal,:Args)
@@ -195,6 +195,26 @@ mongolog:step_compile(context(Option), Ctx, []) :-
 
 mongolog:step_compile(context(Option, Default), Ctx, []) :-
 	option(Option, Ctx, Default).
+
+%%
+lookup_next_unwind(Terminals,
+		Prefix, Suffix,
+		Ctx, Pipeline, StepVars) :-
+	mongolog:lookup_array('next', Terminals, Prefix, Suffix,
+			Ctx, StepVars, Lookup),
+	findall(Step,
+		% generate steps
+		(	Step=Lookup
+		% unwind "next" field
+		;	Step=['$unwind',string('$next')]
+		% set variables from "next" field
+		;	mongolog:set_next_vars(StepVars, Step)
+		% remove "next" field again
+		;	Step=['$unset',string('next')]
+		),
+		Pipeline),
+	% the inner goal is not satisfiable if Pipeline==[]
+	Lookup \== [].
 
 %%
 % variables maybe used in the scope.

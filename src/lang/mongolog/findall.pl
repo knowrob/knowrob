@@ -49,10 +49,6 @@ mongolog:step_compile(
 		Ctx, Pipeline, StepVars) :-
 	% findall only exposes the List variable to the outside.
 	mongolog:step_vars(List, Ctx, StepVars),
-	% TODO: how does this interfere with scopes?
-	%	- within findall body scopes maybe computed
-	%	- member with scope should do scope intersection
-	%	- for now scopes in findall are _ignored_!
 	mongolog:var_key_or_val(List, Ctx, List0),
 	% add template vars to compile context.
 	% this is important to enforce that vars in Template are referred

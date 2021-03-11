@@ -69,11 +69,11 @@ ask(Statement, QScope, FScope, Options) :-
 	% in this case we can limit to one solution here
 	ground(Statement),
 	!,
-	once(mongolog_query(Statement, QScope, FScope, Options)).
+	once(ask_mongolog(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
 	%\+ ground(Statement),
-	mongolog_query(Statement, QScope, FScope, Options).
+	ask_mongolog(Statement, QScope, FScope, Options).
 
 %% ask(+Statement, +QScope, -FScope) is nondet.
 %
@@ -94,6 +94,15 @@ ask(Statement, QScope, FScope) :-
 ask(Statement) :-
 	current_scope(QScope),
 	ask(Statement, QScope, _, []).
+
+%
+ask_mongolog(Statement, QScope, FScope, Options) :-
+	option(fields(Fields), Options, []),
+	merge_options([
+		scope(QScope),
+		additional_vars([['v_scope',FScope]|Fields])
+	], Options, Options1),
+	mongolog_query(Statement, Options1).
 
 %% tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -118,7 +127,7 @@ tell(Statement, Scope, Options) :-
 	% compile and call statement
 	(	setting(mng_client:read_only, true)
 	->	log_warning(db(read_only(tell)))
-	;	mongolog_tell(Statement, Scope, Options0)
+	;	mongolog_tell(Statement, [scope(Scope)|Options0])
 	).
 
 %% tell(+Statement, +Scope) is nondet.
@@ -219,7 +228,7 @@ set_graph_option(Options, Merged) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, mongolog_query(BodyGlobal, QScope, _FScope, [])))) :-
+		(:-(HeadGlobal, lang_query:ask_mongolog(BodyGlobal, QScope, _FScope, [])))) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),

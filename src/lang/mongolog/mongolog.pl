@@ -1,7 +1,7 @@
 :- module(mongolog,
 	[ mongolog_assert(t),
-	  mongolog_query(t,+,-,+),
-	  mongolog_tell(t,+,+),
+	  mongolog_query(t,+),
+	  mongolog_tell(t,+),
 	  mongolog_expand(t,-,+),
 	  mongolog_compile(t,-,+)
 	]).
@@ -41,42 +41,37 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%% mongolog_query(+Goal, +QueryScope, -FactScope, +Options) is nondet.
+%% mongolog_query(+Goal, +Options) is nondet.
 %
 % Call Goal in ask mode.
-% Facts may be scoped, i.e., they may not hold universally.
-% QueryScope determines scope space that must be met by
-% all yielded facts, and FactScope is the actual scope of a yielded fact.
 %
 % @param Goal A compound term expanding into an aggregation pipeline
-% @param QueryScope Scope space
-% @param FactScope Actual scope
 % @param Options Additional options
 %
-mongolog_query(Statement, QScope, FScope, Options) :-
-	query_(Statement, [scope(QScope)|Options], FScope, ask).
+mongolog_query(Statement, Options) :-
+	query_(Statement, Options, ask).
 
-%% mongolog_tell(+Goal, +FactScope, +Options) is semidet.
+%% mongolog_tell(+Goal, +Options) is semidet.
 %
 % Call Goal in tell mode.
-% Facts may be scoped, i.e., they may not hold universally.
-% FactScope determines the scope of all facts inherited by Goal.
 %
 % @param Goal A compound term expanding into an aggregation pipeline
-% @param FactScope Scope of facts
 % @param Options Additional options
 %
-mongolog_tell(Statement, FScope, Options) :-
-	query_(Statement, [scope(FScope)|Options], _, tell).
+mongolog_tell(Statement, Options) :-
+	query_(Statement, Options, tell).
 
 %%
-query_(Goal, Context, FScope, Mode) :-
+query_(Goal, Context, Mode) :-
 	% get the pipeline document
 	mongolog_compile(Goal, pipeline(Doc,Vars), [mode(Mode)|Context]),
+	%
+	option(additional_vars(Fields), Context, []),
+	append(Vars, Fields, Vars1),
 	% run the pipeline
-	query_1(Doc, Vars, FScope, Mode).
+	query_1(Doc, Vars1, Mode).
 
-query_1(Pipeline, Vars, FScope, Mode) :-
+query_1(Pipeline, Vars, Mode) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
 	mng_one_db(DB, Coll),
@@ -86,17 +81,17 @@ query_1(Pipeline, Vars, FScope, Mode) :-
 		mng_cursor_create(DB, Coll, Cursor),
 		% call: find matching document
 		(	mng_cursor_aggregate(Cursor, ['pipeline',array(Pipeline)]),
-			query_2(Mode, Cursor, Vars, FScope)
+			query_2(Mode, Cursor, Vars)
 		),
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
 
 %%
-query_2(Mode, Cursor, Vars, FScope) :-
+query_2(Mode, Cursor, Vars) :-
 	mng_cursor_materialize(Cursor, Result),
 	(	Mode==ask
-	->	unify_(Result, Vars, FScope)
+	->	unify_(Result, Vars)
 	;	true
 	),
 	assert_documents(Result).
@@ -159,8 +154,7 @@ bulk_operation(Doc, insert(Doc)).
 % read accumulated fact scope and
 % unify variables.
 %
-unify_(Result, Vars, FScope) :-
-	mng_get_dict('v_scope', Result, FScope),
+unify_(Result, Vars) :-
 	unify_0(Result, Vars, Vars).
 
 unify_0(_, _, []) :- !.
@@ -248,7 +242,7 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 % Any non-terminal predicate in Body must have a previously asserted
 % mongolog rule it can expand into.
 % After being asserted, the Head predicate can be referred to in
-% calls of mongolog_query/4.
+% calls of mongolog_query/3.
 %
 % @param Term A mongolog rule.
 %
@@ -598,33 +592,6 @@ lookup_array(ArrayKey, Terminals,
 	;	Suffix0=[['$set', GroundVars] | Suffix]
 	),
 	append(Pipeline0,Suffix0,Pipeline1).
-
-%%
-lookup_next_unwind(Terminals,
-		Prefix, Suffix,
-		Ctx, Pipeline, StepVars) :-
-	lookup_array('next', Terminals, Prefix, Suffix,
-			Ctx, StepVars, Lookup),
-	findall(Step,
-		% generate steps
-		(	Step=Lookup
-		% unwind "next" field
-		;	Step=['$unwind',string('$next')]
-		% compute the intersection of scope
-		% TODO: this should be optional, or better not handled here.
-		%        - only if Terminas contains a triple we need to handle scope.
-%		;	mng_scope_intersect('v_scope',
-%				string('$next.v_scope.time.since'),
-%				string('$next.v_scope.time.until'),
-%				Ctx, Step)
-		% set variables from "next" field
-		;	set_next_vars(StepVars, Step)
-		% remove "next" field again
-		;	Step=['$unset',string('next')]
-		),
-		Pipeline),
-	% the inner goal is not satisfiable if Pipeline==[]
-	Pipeline \== [].
 
 %%
 % Move ground variables in "next" document to the
