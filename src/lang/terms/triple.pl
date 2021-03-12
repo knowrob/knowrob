@@ -15,8 +15,6 @@
 		  mng_query_value/2,
 		  mng_typed_value/2 ]).
 :- use_module(library('lang/mongolog/mongolog')).
-:- use_module('intersect',
-		[ mng_scope_intersect/5 ]).
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_tell(r)).
@@ -69,7 +67,7 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		% this is done using $match or $lookup operators.
 		(	member(Step, LookupSteps)
 		% compute the intersection of scope so far with scope of next document
-		;	mng_scope_intersect('v_scope',
+		;	scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
 				Ctx0, Step)
@@ -600,7 +598,41 @@ scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 		List
 	),
 	List \== [].
-			
+
+
+%% scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
+%
+% The step expects input documents with VarKey
+% field, and another field Since1/Until1.
+% The step uses these field to compute an intersection
+% beteween both scopes.
+% It will fail in case the intersection is empty.
+%
+scope_intersect(VarKey, Since1, Until1, Options, Step) :-
+	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
+	atomic_list_concat(['$',VarKey,'.time.until'], '', Until0),
+	atomic_list_concat(['$',VarKey], '', VarKey0),
+	%
+	Intersect = ['time', [
+		['since', ['$max', array([string(Since0), Since1])]],
+		['until', ['$min', array([string(Until0), Until1])]]
+	]],
+	% check if ignore flag if set, if so use a conditional step
+	(	memberchk(ignore, Options)
+	->	IntersectStep = ['$cond', array([
+			['$not', array([Since1])],
+			string(VarKey0),
+			Intersect
+		])]
+	;	IntersectStep = Intersect
+	),
+	% first compute the intersection
+	(	Step=['$set', ['v_scope', IntersectStep]]
+	% then verify that the scope is non empty
+	;	Step=['$match', ['$expr',
+			['$lt', array([string(Since0), string(Until0)])]
+		]]
+	).	
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
