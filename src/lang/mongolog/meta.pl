@@ -91,12 +91,10 @@ mongolog:step_compile(
 		Ctx, Pipeline, StepVars) :-
 	mongolog:var_key_or_val(Count,Ctx,Count0),
 	% appended to inner pipeline of lookup
-	Prefix=[],
 	Suffix=[['$limit',Count0]],
 	% create a lookup and append $limit to inner pipeline,
 	% then unwind next and assign variables to the toplevel document.
-	lookup_next_unwind(Terminals,
-		Prefix, Suffix, Ctx, Pipeline, StepVars0),
+	lookup_next_unwind(Terminals, Suffix, Ctx, Pipeline, StepVars0),
 	%
 	(	mongolog:goal_var(Count,Ctx,Count_var)
 	->	StepVars=[Count_var|StepVars0]
@@ -108,13 +106,7 @@ mongolog:step_compile(
 %
 mongolog:step_compile(
 		call(Terminals), Ctx, Pipeline, StepVars) :-
-%	option(outer_vars(V0), Ctx),
-%	mongolog:compile_terms(
-%		Terminals, Pipeline,
-%		V0->_, StepVars, Ctx).
-	% TODO: why above renders a test failing?
-	lookup_next_unwind(Terminals,
-		[], [], Ctx, Pipeline, StepVars).
+	lookup_next_unwind(Terminals, [], Ctx, Pipeline, StepVars).
 
 %% call_with_args(:Goal,:Args)
 % Call Goal. This predicate is normally used for goals that are not known at compile time.
@@ -127,11 +119,8 @@ mongolog:step_compile(
 	mongolog:step_compile(call(Term1), Ctx, Pipeline, StepVars).
 
 %%
-lookup_next_unwind(Terminals,
-		Prefix, Suffix,
-		Ctx, Pipeline, StepVars) :-
-	mongolog:lookup_array('next', Terminals, Prefix, Suffix,
-			Ctx, StepVars, Lookup),
+lookup_next_unwind(Terminals, Suffix, Ctx, Pipeline, StepVars) :-
+	mongolog:lookup_array('next', Terminals, [], Suffix, Ctx, StepVars, Lookup),
 	findall(Step,
 		% generate steps
 		(	Step=Lookup
