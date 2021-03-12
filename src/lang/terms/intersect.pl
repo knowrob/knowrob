@@ -39,39 +39,4 @@ mng_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 		]]
 	).
 
-%% register query commands
-:- mongolog:add_command(intersect).
-
-%%
-mongolog:step_compile(
-		intersect(Scope), Ctx,
-		Pipeline) :-
-	% get since/until values
-	time_scope(Since, Until, Scope),
-	mongolog:var_key_or_val(Since,Ctx,Since0),
-	mongolog:var_key_or_val(Until,Ctx,Until0),
-	% get scope intersection pipeline
-	findall(Step,
-		mng_scope_intersect('v_scope', Since0, Until0, Ctx, Step),
-		Pipeline
-	).
-
-
-%%
-scope_intersect_(Context, ['$set', ['v_scope', Doc]]) :-
-	% intersect old and new scope
-	TimeScope = ['time', [
-		['since', ['$max', array([string('$v_scope.time.since'),
-		                          string('$next.scope.time.since')])]],
-		['until', ['$min', array([string('$v_scope.time.until'),
-		                          string('$next.scope.time.until')])]]
-	]],
-	(	memberchk(ignore,Context)
-	->	Doc = ['$cond', array([
-			['$not', array([string('$next.scope')]) ],
-			string('$v_scope'),
-			TimeScope
-		])]
-	;	Doc = TimeScope
-	).
 	
