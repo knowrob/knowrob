@@ -1,6 +1,7 @@
 :- module(mongolog,
 	[ mongolog_assert(t),
 	  mongolog_expand(t,-,+),
+	  mongolog_call(t),
 	  mongolog_call(t,+)
 	]).
 /** <module> Compiling goals into aggregation pipelines.
@@ -38,6 +39,15 @@
 add_command(Command) :-
 	assertz(step_command(Command)).
 
+
+%% mongolog_call(+Goal) is nondet.
+%
+% Same as mongolog_call/2 with empty options list.
+%
+% @param Goal A compound term expanding into an aggregation pipeline
+%
+mongolog_call(Goal) :-
+	mongolog_call(Goal,[mode(ask)]).
 
 %% mongolog_call(+Goal, +Options) is nondet.
 %

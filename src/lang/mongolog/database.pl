@@ -292,86 +292,86 @@ test('add_database_predicate') :-
 	assert_true(mongolog_add_predicate(loves, [a,b], [[a],[b],[a,b]])).
 
 test('assert(woman)') :-
-	assert_true(ask(assert(woman(mia)))),
-	assert_true(ask(assert(woman(jody)))).
+	assert_true(mongolog_call(assert(woman(mia)))),
+	assert_true(mongolog_call(assert(woman(jody)))).
 
 test('woman(+)') :-
-	assert_true(ask(woman(mia))),
-	assert_true(ask(woman(jody))),
-	assert_false(ask(woman(vincent))).
+	assert_true(mongolog_call(woman(mia))),
+	assert_true(mongolog_call(woman(jody))),
+	assert_false(mongolog_call(woman(vincent))).
 
 test('woman(-)') :-
-	findall(X, ask(woman(X)), Xs),
+	findall(X, mongolog_call(woman(X)), Xs),
 	assert_unifies([_,_],Xs),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(mia,Xs)),
 	assert_true(memberchk(jody,Xs)).
 
 test('retract(woman)') :-
-	assert_true(ask(woman(jody))),
-	assert_true(ask(retractall(woman(jody)))),
-	assert_false(ask(woman(jody))).
+	assert_true(mongolog_call(woman(jody))),
+	assert_true(mongolog_call(retractall(woman(jody)))),
+	assert_false(mongolog_call(woman(jody))).
 
 test('assert(loves)') :-
-	assert_true(ask(assert(loves(vincent,mia)))),
-	assert_true(ask(assert(loves(marsellus,jody)))),
-	assert_true(ask(assert(loves(pumpkin,honey_bunny)))).
+	assert_true(mongolog_call(assert(loves(vincent,mia)))),
+	assert_true(mongolog_call(assert(loves(marsellus,jody)))),
+	assert_true(mongolog_call(assert(loves(pumpkin,honey_bunny)))).
 
 test('loves(+,+)') :-
-	assert_true(ask(loves(vincent,mia))),
-	assert_true(ask(loves(marsellus,jody))),
-	assert_false(ask(loves(mia,vincent))).
+	assert_true(mongolog_call(loves(vincent,mia))),
+	assert_true(mongolog_call(loves(marsellus,jody))),
+	assert_false(mongolog_call(loves(mia,vincent))).
 
 test('loves(+,-)') :-
-	findall(X, ask(loves(vincent,X)), Xs),
+	findall(X, mongolog_call(loves(vincent,X)), Xs),
 	assert_unifies([_],Xs),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(mia,Xs)).
 
 test('loves(-,+)') :-
-	findall(X, ask(loves(X,mia)), Xs),
+	findall(X, mongolog_call(loves(X,mia)), Xs),
 	assert_unifies([_],Xs),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(vincent,Xs)).
 
 test('assert(shape)') :-
 	assert_true(mongolog_add_predicate(shape, [name,term], [[name]])),
-	assert_true(ask(assert(shape(obj1,sphere(1.0))))),
-	assert_true(ask(assert(shape(obj3,sphere(2.0))))),
-	assert_true(ask(assert(shape(obj2,box(1.0,2.0,3.0))))).
+	assert_true(mongolog_call(assert(shape(obj1,sphere(1.0))))),
+	assert_true(mongolog_call(assert(shape(obj3,sphere(2.0))))),
+	assert_true(mongolog_call(assert(shape(obj2,box(1.0,2.0,3.0))))).
 
 test('shape(+,+)') :-
-	assert_true(ask(shape(obj1,sphere(1.0)))),
-	assert_true(ask(shape(obj2,box(1.0,2.0,3.0)))),
-	assert_false(ask(shape(obj1,cylinder(1.0)))),
-	assert_false(ask(shape(obj2,sphere(1.0)))).
+	assert_true(mongolog_call(shape(obj1,sphere(1.0)))),
+	assert_true(mongolog_call(shape(obj2,box(1.0,2.0,3.0)))),
+	assert_false(mongolog_call(shape(obj1,cylinder(1.0)))),
+	assert_false(mongolog_call(shape(obj2,sphere(1.0)))).
 
 test('shape(+,-)') :-
-	ask(shape(obj1,Term)),
+	mongolog_call(shape(obj1,Term)),
 	assert_equals(Term, sphere(1.0)).
 
 test('shape(-,+)') :-
-	findall(X, ask(shape(X,sphere(1.0))), Xs),
+	findall(X, mongolog_call(shape(X,sphere(1.0))), Xs),
 	assert_unifies([_],Xs),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(obj1,Xs)).
 
 test('shape(+,sphere(-))') :-
-	findall(X, ask(shape(obj1,sphere(X))), Xs),
+	findall(X, mongolog_call(shape(obj1,sphere(X))), Xs),
 	assert_unifies([_],Xs),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(1.0,Xs)).
 
 test('+Cond->assert(woman);assert(woman)') :-
-	assert_false(ask(woman(bar))),
+	assert_false(mongolog_call(woman(bar))),
 	assert_true(lang_query:test_command(
 		(	Num > 5
 		->	assert(woman(foo))
 		;	assert(woman(bar))
 		),
 		Num, 4.5)),
-	assert_true(ask(woman(bar))),
-	assert_false(ask(woman(foo))).
+	assert_true(mongolog_call(woman(bar))),
+	assert_false(mongolog_call(woman(foo))).
 
 test('drop_database_predicate') :-
 	assert_true(mongolog_drop_predicate(shape)),
