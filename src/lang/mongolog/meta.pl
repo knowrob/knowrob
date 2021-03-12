@@ -15,8 +15,6 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('lang/scope'),
-		[ time_scope/3 ]).
 :- use_module(library('db/mongo/client'),
 		[ mng_strip/4 ]).
 :- use_module('mongolog').
@@ -28,12 +26,6 @@ The following predicates are supported:
 :- mongolog:add_command(limit).
 :- mongolog:add_command(ignore).
 :- mongolog:add_command(call_with_args).
-:- mongolog:add_command(call_with_context).
-% TODO: move these to somewhere else
-:- mongolog:add_command(set).
-:- mongolog:add_command(pragma).
-:- mongolog:add_command(context).
-:- mongolog:add_command(ask).
 
 %%%% query expansion
 	
@@ -80,14 +72,6 @@ mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3),
 mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
 		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4]), Context) :-
 	mongolog_expand(Goal, Expanded, Context).
-
-mongolog:step_expand(
-		call_with_context(Goal,Args),
-		call_with_context(Expanded,Args), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
-
-mongolog:step_expand(ask(Goal), ask(Expanded), _Context) :-
-	mongolog_expand(Goal, Expanded, ask).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.
@@ -143,60 +127,6 @@ mongolog:step_compile(
 	mongolog:step_compile(call(Term1), Ctx, Pipeline, StepVars).
 
 %%
-%
-mongolog:step_compile(
-		call_with_context(Terminals, NewCtx),
-		OldCtx, Pipeline, StepVars) :-
-	option(outer_vars(V0), OldCtx),
-	% resolve since/until values.
-	% this is needed if the values are grounded within the query
-	% by mongo DB and not provided in the call context.
-	resolve_scope(NewCtx, OldCtx, NewCtx0),
-	% add provided options to context
-	merge_options(NewCtx0, OldCtx, Ctx),
-	% finally compile call goal with new context
-	mongolog:compile_terms(
-		Terminals, Pipeline,
-		V0->_, StepVars, Ctx).
-
-%% ask(:Goal)
-% Call Goal in ask mode.
-%
-mongolog:step_compile(ask(Goal), Ctx, Pipeline, StepVars) :-
-	merge_options([mode(ask)], Ctx, Ctx0),
-	mongolog:step_compile(call(Goal), Ctx0, Pipeline, StepVars).
-
-%%
-mongolog:step_compile(
-		set(Var,Value), Ctx,
-		[['$set', [[Key,Value0]]]]) :-
-	mongolog:var_key_or_val(Value, [], Value0),
-	mongolog:var_key(Var,Ctx,Key).
-
-%%
-% pragma(Goal) is evaluated compile-time by calling
-% the Goal. This is usually done to unify variables
-% used in the aggregation pipeline from the compile context.
-%
-mongolog:step_compile(pragma(Goal), _, [], StepVars) :-
-	% ignore vars referred to in pragma as these are handled compile-time.
-	% only the ones also referred to in parts of the query are added to the document.
-	StepVars=[],
-	call(Goal).
-
-%%
-% context(-Option) and context(-Option, +Default) are used to read
-% options from compile context to make them accessible in rules.
-% The main usecase is that some temporal predicates need to access
-% the query scope.
-%
-mongolog:step_compile(context(Option), Ctx, []) :-
-	option(Option, Ctx).
-
-mongolog:step_compile(context(Option, Default), Ctx, []) :-
-	option(Option, Ctx, Default).
-
-%%
 lookup_next_unwind(Terminals,
 		Prefix, Suffix,
 		Ctx, Pipeline, StepVars) :-
@@ -215,25 +145,6 @@ lookup_next_unwind(Terminals,
 		Pipeline),
 	% the inner goal is not satisfiable if Pipeline==[]
 	Lookup \== [].
-
-%%
-% variables maybe used in the scope.
-% if this is the case, they must be replaces by variable
-% keys to be referred to in queries.
-%
-resolve_scope(In, Ctx, [scope(Scope1)|Rest]) :-
-	select_option(scope(Scope0),In,Rest),!,
-	time_scope(Since0, Until0, Scope0),
-	time_scope(Since1, Until1, Scope1),
-	resolve_scope1(Since0,Ctx,Since1),
-	resolve_scope1(Until0,Ctx,Until1).
-resolve_scope(In, _, In).
-
-%%
-resolve_scope1(In, Ctx, Out) :-
-	mng_strip_operator(In, Operator, Time1),
-	mongolog:var_key_or_val(Time1, Ctx, Time2),
-	mng_strip_operator(Out, Operator, Time2).
 	
 
 %%

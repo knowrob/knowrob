@@ -278,6 +278,6 @@ user:term_expansion((?+>(Head,Goal)), X1) :-
 
 %%
 test_command(Goal, Var, Value) :-
-	WithSet=(','(set(Var,Value), Goal)),
+	WithSet=(','(assign(Var,Value), Goal)),
 	lang_query:ask(WithSet).
 

@@ -115,9 +115,9 @@ test_cleanup :-
 :- begin_tests('lang_annotation',
 		[ cleanup(lang_annotation:test_cleanup) ]).
 
-test('tell(set(C,c), annotation(+,+,+))') :-
+test('tell(assign(C,c), annotation(+,+,+))') :-
 	assert_true(lang_query:tell((
-		set(C,g),
+		assign(C,g),
 		annotation(e,f,C)
 	))).
 

@@ -60,8 +60,8 @@ during(Statement, [Since,Until]) ?>
 	% but we only want the accumulated scope for Goal here.
 	% SOLUTION: do the get within the *call*
 	% same for since and until.
-	set(Since, string('$v_scope.time.since')),
-	set(Until, string('$v_scope.time.until')).
+	assign(Since, string('$v_scope.time.since')),
+	assign(Until, string('$v_scope.time.until')).
 
 during(Statement, [Since, Until]) +>
 	pragma(time_scope(=(Since), =(Until), Scope)),
@@ -100,7 +100,7 @@ since(Statement, Instant) ?>
 	call_with_context(Statement, [scope(Scope)]),
 	% read computed fact scope
 	% FIXME: see above during/2
-	set(Instant, string('$v_scope.time.since')).
+	assign(Instant, string('$v_scope.time.since')).
 
 since(Statement, Instant) +>
 	number(Instant),
@@ -147,7 +147,7 @@ until(Statement, Instant) ?>
 	)),
 	call_with_context(Statement, [scope(Scope)]),
 	% FIXME: see above during/2
-	set(Instant, string('$v_scope.time.until')).
+	assign(Instant, string('$v_scope.time.until')).
 
 until(Statement, Instant) +>
 	number(Instant),

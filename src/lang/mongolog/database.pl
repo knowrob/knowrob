@@ -33,9 +33,9 @@ mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
 	mongolog:step_vars(Term, Ctx, StepVars0),
 	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
 	merge_options([step_vars(StepVars)], Ctx, Ctx0),
-	(	option(mode(ask), Ctx)
-	->	query_predicate(Term, ArgFields, Ctx0, Pipeline, StepVars)
-	;	assert_predicate(Term, ArgFields, Ctx0, Pipeline)
+	(	option(mode(tell), Ctx)
+	->	assert_predicate(Term, ArgFields, Ctx0, Pipeline)
+	;	query_predicate(Term, ArgFields, Ctx0, Pipeline, StepVars)
 	).
 
 mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-

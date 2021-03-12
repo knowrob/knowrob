@@ -555,6 +555,32 @@ step_compile(Step, Ctx, Doc, StepVars) :-
 	step_compile(Step, Ctx, Doc),
 	step_vars(Step, Ctx, StepVars).
 
+%% ask(:Goal)
+% Call Goal in ask mode.
+%
+step_compile(ask(Goal), Ctx, Doc, StepVars) :-
+	merge_options([mode(ask)], Ctx, Ctx0),
+	mongolog:step_compile(call(Goal), Ctx0, Doc, StepVars).
+
+%%
+% pragma(Goal) is evaluated compile-time by calling
+% the Goal. This is usually done to unify variables
+% used in the aggregation pipeline from the compile context.
+%
+step_compile(pragma(Goal), _, [], StepVars) :-
+	% ignore vars referred to in pragma as these are handled compile-time.
+	% only the ones also referred to in parts of the query are added to the document.
+	StepVars=[],
+	call(Goal).
+
+%%
+step_expand(ask(Goal), ask(Expanded), _Context) :-
+	mongolog_expand(Goal, Expanded, ask).
+
+%%
+step_command(ask).
+step_command(pragma).
+
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% QUERY DOCUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%

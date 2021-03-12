@@ -7,6 +7,7 @@ The following predicates are supported:
 | ---        | ---       |
 | =/2        | ?Term1, ?Term2 |
 | \=/2       | ?Term1, ?Term2 |
+| assign/2   | -Term1, +Term2 |
 
 @author Daniel Beßler
 @see https://www.swi-prolog.org/pldoc/man?section=compare
@@ -18,6 +19,7 @@ The following predicates are supported:
 %% mongolog:add_command
 :- mongolog:add_command(=).
 :- mongolog:add_command(\=).
+:- mongolog:add_command(assign).
 
 %% @Term1 \= @Term2
 %
@@ -29,6 +31,13 @@ The following predicates are supported:
 %
 mongolog:step_expand(\=(A,B), Expanded, Mode) :-
 	mongolog:step_expand(\+(=(A,B)), Expanded, Mode).
+
+%%
+mongolog:step_compile(
+		assign(Var,Value), Ctx,
+		[['$set', [[Key,Value0]]]]) :-
+	mongolog:var_key_or_val(Value, [], Value0),
+	mongolog:var_key(Var,Ctx,Key).
 
 %% ?Term1 = ?Term2
 % Unify Term1 with Term2. True if the unification succeeds.

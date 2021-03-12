@@ -22,9 +22,9 @@
 		'http://knowrob.org/kb/datatype_test#',
 		[keep(true)]).
 
-test('tell(set(C,c), triple(a,b,C))') :-
+test('tell(assign(C,c), triple(a,b,C))') :-
 	assert_true(lang_query:tell((
-		set(C,g),
+		assign(C,g),
 		triple(e,f,C)
 	))).
 
