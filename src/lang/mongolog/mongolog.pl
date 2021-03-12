@@ -618,26 +618,12 @@ lookup_array(ArrayKey, Terminals,
 	->	append(AddVars, StepVars, StepVars0)
 	;	StepVars0 = StepVars
 	),
-	%% FIXME: why needed?
-	%  - it should be enough that triple yields these as step vars!
-	%  - probably the problem is if triple is inside of disjunction!
-	% FIXME: I suspect that context_var may not always yield same results for same context
-	%
-%	once((
-%		bagof(Var,
-%			(	member(Var,StepVars0)
-%			;	context_var(Context, Var)
-%			),
-%			StepVars1)
-%	;	StepVars1=StepVars0
-%	)),
-	StepVars1=StepVars0,
 	% pass variables from outer goal to inner if they are referred to
 	% in the inner goal.
-	lookup_let_doc(StepVars1, LetDoc),
+	lookup_let_doc(StepVars0, LetDoc),
 	% set all let variables so that they can be accessed
 	% without aggregate operators in Pipeline
-	lookup_set_vars(StepVars1, SetVars),
+	lookup_set_vars(StepVars0, SetVars),
 	% compose inner pipeline
 	(	SetVars=[] -> Prefix0=Prefix
 	;	Prefix0=[['$set', SetVars] | Prefix]
@@ -647,7 +633,7 @@ lookup_array(ArrayKey, Terminals,
 	% this is needed because different branches cannot ground the same
 	% variable to different values compile-time.
 	findall([Key,TypedValue],
-		(	member([Key,Val],StepVars1),
+		(	member([Key,Val],StepVars0),
 			ground(Val),
 			mng_typed_value(Val,TypedValue)
 		),
