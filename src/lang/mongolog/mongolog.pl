@@ -1,5 +1,8 @@
 :- module(mongolog,
-	[ mongolog_assert(t),
+	[ mongolog_add_rule(t),
+	  mongolog_drop_rule(t),
+	  mongolog_add_predicate(+,+,+),
+	  mongolog_drop_predicate(+),
 	  mongolog_expand(t,-,+),
 	  mongolog_call(t),
 	  mongolog_call(t,+)
@@ -16,6 +19,8 @@
 
 %% Stores list of terminal terms for each clause. 
 :- dynamic query/4.
+%% Predicates that are stored in a mongo collection
+:- dynamic database_predicate/2.
 %% set of registered query commands.
 :- dynamic step_command/1.
 %% optionally implemented by query commands.
@@ -25,6 +30,7 @@
 
 :- rdf_meta(step_compile(t,t,t)).
 :- rdf_meta(step_compile(t,t,t,-)).
+
 
 %% add_command(+Command) is det.
 %
@@ -38,6 +44,129 @@
 %
 add_command(Command) :-
 	assertz(step_command(Command)).
+
+
+%% mongolog_add_rule(+Term) is semidet.
+%
+% Register a rule that translates into an aggregation pipeline.
+% Term can be either a of the form `Head ?> Body` (ask rule) or `Head +> Body` (tell rule).
+% Any non-terminal predicate in Body must have a previously asserted
+% mongolog rule it can expand into.
+% After being asserted, the Head predicate can be referred to in
+% calls of mongolog_query/3.
+%
+% @param Term A mongolog rule.
+%
+mongolog_add_rule((?>(Head,Body))) :-
+	add_rule(Head, Body, ask).
+
+mongolog_add_rule((+>(Head,Body))) :-
+	add_rule(Head, Body, tell).
+
+add_rule(Head, Body, Context) :-
+	%% get the functor of the predicate
+	Head =.. [Functor|Args],
+	%% expand goals into terminal symbols
+	(	mongolog_expand(Body, Expanded, Context) -> true
+	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
+	),
+	%% handle instantiated arguments
+	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
+	%             then to instantiate the args implicit instantiation might be needed.
+	%             A solution could be adding a =/2 call _at the end_ to avoid the need
+	%             for implicit instantiation.
+	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
+	->	(Expanded0=[ArgsGoal|Expanded], Args0=ExpandedArgs)
+	;	(Expanded0=Expanded, Args0=Args)
+	),
+	%% store expanded query
+	assertz(query(Functor, Args0, Expanded0, Context)).
+
+
+%% mongolog_drop_rule(+Term) is semidet.
+%
+% Drop a previously added `mongolog` rule.
+% That is, erase its database record such that it can
+% not be referred to anymore in rules added after removal.
+%
+% @param Term A mongolog rule.
+%
+mongolog_drop_rule((?>(Head,_Body))) :-
+	!,
+	drop_rule(Head).
+
+mongolog_drop_rule((+>(Head,_Body))) :-
+	!,
+	drop_rule(Head).
+
+mongolog_drop_rule(Head) :-
+	compound(Head),
+	drop_rule(Head).
+
+drop_rule(Head) :-
+	Head =.. [Functor|_],
+	retractall(query(Functor, _, _, _)).
+
+%%
+expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
+	expand_arguments1(Args, Expanded, Pairs),
+	Pairs \= [],
+	pairs_keys_values(Pairs, Values, Vars).
+
+
+expand_arguments1([], [], []) :- !.
+expand_arguments1([X|Xs], [X|Ys], Zs) :-
+	var(X),!,
+	expand_arguments1(Xs, Ys, Zs).
+expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
+	expand_arguments1(Xs, Ys, Zs).
+
+
+%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
+%
+% Register a predicate that stores facts in the database.
+% Functor is the functor of a n-ary predicate, and Fields is
+% a n-elemental list of keys associated to the different
+% arguments of the predicate.
+% Options is a list of optional paramers:
+%
+% | indices(List) | a list of indices passed to setup_collection/2 |
+%
+% Current limitation: there cannot be predicates with the same functor,
+% but different arity.
+%
+% @param Functor functor of the predicate
+% @param Fields field names of predicate arguments
+% @param Options option list
+%
+mongolog_add_predicate(Functor, _, _) :-
+	database_predicate(Functor, _),
+	!,
+	throw(permission_error(modify,database_predicate,Functor)).
+
+mongolog_add_predicate(Functor, Fields, Options) :-
+	setup_predicate_collection(Functor, Fields, Options),
+	assertz(database_predicate(Functor, Fields)),
+	add_command(Functor).
+
+%%
+setup_predicate_collection(Functor, [FirstField|_], Options) :-
+	(	option(indices(Indices), Options)
+	->	setup_collection(Functor, Indices)
+	;	setup_collection(Functor, [[FirstField]])
+	).
+
+
+%% mongolog_drop_predicate(+Functor) is det.
+%
+% Delete all facts associated to predicate with
+% given functor.
+%
+% @param Functor functor of the predicate
+%
+mongolog_drop_predicate(Functor) :-
+	mng_get_db(DB, Collection, Functor),
+	mng_drop(DB, Collection).
 
 
 %% mongolog_call(+Goal) is nondet.
@@ -223,58 +352,6 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%% mongolog_assert(+Term) is semidet.
-%
-% Assert a `mongolog` rule.
-% The rule is internally translated into a sequence
-% of commands that can be executed in an aggregation pipeline.
-% Term can be either a of the form `Head ?> Body` (ask rule) or `Head +> Body` (tell rule).
-% Any non-terminal predicate in Body must have a previously asserted
-% mongolog rule it can expand into.
-% After being asserted, the Head predicate can be referred to in
-% calls of mongolog_query/3.
-%
-% @param Term A mongolog rule.
-%
-mongolog_assert((?>(Head,Body))) :-
-	query_assert1(Head, Body, ask).
-
-mongolog_assert((+>(Head,Body))) :-
-	query_assert1(Head, Body, tell).
-
-query_assert1(Head, Body, Context) :-
-	%% get the functor of the predicate
-	Head =.. [Functor|Args],
-	%% expand goals into terminal symbols
-	(	mongolog_expand(Body, Expanded, Context) -> true
-	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
-	),
-	%% handle instantiated arguments
-	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
-	%             then to instantiate the args implicit instantiation might be needed.
-	%             A solution could be adding a =/2 call _at the end_ to avoid the need
-	%             for implicit instantiation.
-	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
-	->	(Expanded0=[ArgsGoal|Expanded], Args0=ExpandedArgs)
-	;	(Expanded0=Expanded, Args0=Args)
-	),
-	%% store expanded query
-	assertz(query(Functor, Args0, Expanded0, Context)).
-
-%%
-expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
-	expand_arguments1(Args, Expanded, Pairs),
-	Pairs \= [],
-	pairs_keys_values(Pairs, Values, Vars).
-	
-
-expand_arguments1([], [], []) :- !.
-expand_arguments1([X|Xs], [X|Ys], Zs) :-
-	var(X),!,
-	expand_arguments1(Xs, Ys, Zs).
-expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
-	expand_arguments1(Xs, Ys, Zs).
-
 %% mongolog_expand(+Term, -Expanded, +Mode) is det.
 %
 % Translate a goal into a sequence of terminal commands.
@@ -398,7 +475,7 @@ expand_cut(Terms,Expanded) :-
 % (i.e. when a predicate refers to itself).
 %
 % This predicate usually does not need to be called directly,
-% but mongolog_assert/1 is called instead to make predicates
+% but mongolog_add_rule/1 is called instead to make predicates
 % accessible in other rules.
 %
 % @param Term A compound term, or a list of terms.

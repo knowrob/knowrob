@@ -239,7 +239,7 @@ user:term_expansion(
 	strip_module_(HeadGlobal,_Module,Term),
 	current_scope(QScope),
 	% add the rule to the DB backend
-	mongolog_assert((?>(Term, BodyGlobal))).
+	mongolog_add_rule((?>(Term, BodyGlobal))).
 
 %%
 % Term expansion for *tell* rules using the (+>) operator.
@@ -254,7 +254,7 @@ user:term_expansion(
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
 	% add the rule to the DB backend
-	mongolog_assert((+>(Term,BodyGlobal))).
+	mongolog_add_rule((+>(Term,BodyGlobal))).
 
 %%
 % Term expansion for *tell-ask* rules using the (?+>) operator.

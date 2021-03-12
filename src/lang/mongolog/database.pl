@@ -1,7 +1,5 @@
 :- module(mongolog_database,
-		[ mongolog_add_predicate/3,
-		  mongolog_drop_predicate/1
-		]).
+		[]).
 /** <module> Storage of predicates in mongolog programs.
 
 The following predicates are supported:
@@ -18,55 +16,15 @@ The following predicates are supported:
 
 :- use_module('mongolog').
 
-:- dynamic database_predicate/2.
-
 %% query commands
 :- mongolog:add_command(assert).
 :- mongolog:add_command(retractall).
-
-%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
-%
-% Register a predicate that stores facts in the database.
-% Functor is the functor of a n-ary predicate, and Fields is
-% a n-elemental list of keys associated to the different
-% arguments of the predicate.
-% Options is a list of optional paramers:
-%
-% | indices(List) | a list of indices passed to setup_collection/2 |
-%
-% Current limitation: there cannot be predicates with the same functor,
-% but different arity.
-%
-% @param Functor functor of the predicate
-% @param Fields field names of predicate arguments
-% @param Options option list
-%
-mongolog_add_predicate(Functor, _, _) :-
-	database_predicate(Functor, _),
-	!,
-	throw(permission_error(modify,database_predicate,Functor)).
-
-mongolog_add_predicate(Functor, Fields, Options) :-
-	setup_predicate_collection(Functor, Fields, Options),
-	assertz(database_predicate(Functor, Fields)),
-	mongolog:add_command(Functor).
-
-%% mongolog_drop_predicate(+Functor) is det.
-%
-% Delete all facts associated to predicate with
-% given functor.
-%
-% @param Functor functor of the predicate
-%
-mongolog_drop_predicate(Functor) :-
-	mng_get_db(DB, Collection, Functor),
-	mng_drop(DB, Collection).
 
 %%
 is_database_predicate(Term, ArgFields) :-
 	compound(Term),
 	Term =.. [Functor|_],
-	database_predicate(Functor, ArgFields).
+	mongolog:database_predicate(Functor, ArgFields).
 
 %%
 mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
@@ -269,17 +227,6 @@ match_conditional(FieldKey, Arg, Ctx, ['$expr', ['$or', array([
 	atom_concat('$',FieldKey,FieldQuery),
 	atom_concat('$$',ArgKey,ArgValue),
 	atom_concat(ArgValue,'.type',ArgType).
-
-		 /*******************************
-		 *    	  SEARCH INDICES   		*
-		 *******************************/
-
-%%
-setup_predicate_collection(Functor, [FirstField|_], Options) :-
-	(	option(indices(Indices), Options)
-	->	setup_collection(Functor, Indices)
-	;	setup_collection(Functor, [[FirstField]])
-	).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
