@@ -72,7 +72,7 @@ static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_u
 static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64_t msec_since_epoch, void *data)
 {
 	double sec_since_epoch = ((double)msec_since_epoch)/1000.0;
-	return APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"double");
+	return APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"time");
 }
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const bson_decimal128_t *v_decimal128, void *data)
@@ -176,7 +176,7 @@ static bool bson_iter_append_array(bson_iter_t *iter, PlTail *pl_array)
 	}
 	else if(BSON_ITER_HOLDS_DATE_TIME(iter)) {
 		double sec_since_epoch = ((double)bson_iter_date_time(iter))/1000.0;
-		pl_array->append(PlCompound("double", PlTerm(sec_since_epoch)));
+		pl_array->append(PlCompound("time", PlTerm(sec_since_epoch)));
 	}
 	else {
 		bson_type_t iter_t = bson_iter_type(iter);

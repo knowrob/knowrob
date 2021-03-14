@@ -4,7 +4,8 @@
 :- use_module(library('db/mongo/client')).
 :- use_module(library('semweb/rdf_db')).
 
-:- use_module('./tf_plugin.pl').
+:- use_module('tf_plugin').
+:- use_module('tf_mongo').
 
 :- begin_rdf_tests(
 		'tf_plugin',
@@ -21,12 +22,12 @@
 :- rdf_meta(test_is_unlocalized(r,+)).
 
 tf_plugin_setup :-
-	tf_mng_whipe,
+	tf_mng_drop,
 	tf_logger_enable.
 
 tf_plugin_cleanup :-
 	tf_logger_disable,
-	tf_mng_whipe.
+	tf_mng_drop.
 
 % some test facts
 test_pose_fred0([world,[1.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178679.123).
@@ -49,8 +50,8 @@ test_get_pose(Object,Stamp,Expected) :-
 	).
 
 test_trajectory(Obj,Begin,End,Expected) :-
-	assert_true(tf_plugin:tf_get_trajectory(Obj,Begin,End,_)),
-	( tf_plugin:tf_get_trajectory(Obj,Begin,End,Actual)
+	assert_true(tf_mongo:tf_mng_trajectory(Obj,Begin,End,_)),
+	( tf_mongo:tf_mng_trajectory(Obj,Begin,End,Actual)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).

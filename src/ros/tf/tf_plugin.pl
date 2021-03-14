@@ -1,14 +1,9 @@
 :- module(tf_plugin,
 	[ tf_set_pose/3,
 	  tf_get_pose/4,
-	  tf_get_trajectory/4,
 	  tf_mem_set_pose/3,
 	  tf_mem_get_pose/3,
   	  tf_mem_clear/0,
-	  tf_mng_store/3,
-	  tf_mng_lookup/6,
-	  tf_mng_range/6,
-	  tf_mng_whipe/0,
 	  tf_republish_set_pose/2,
 	  tf_republish_set_goal/2,
 	  tf_republish_set_time/1,
@@ -26,92 +21,26 @@
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).
 :- use_module(library('utility/algebra'),
-	[ transform_between/3, transform_interpolate/4, transform_multiply/3 ]).
-:- use_module(library('utility/filesystem'),
-	[ path_concat/3 ]).
+	[ transform_between/3, transform_multiply/3 ]).
 :- use_module(library('lang/scope'),
-	[ scope_intersect/3, subscope_of/2, time_scope/3, time_scope_data/2, current_scope/1 ]).
-:- use_module(library('db/mongo/client')).
+	[ scope_intersect/3,
+	  subscope_of/2,
+	  time_scope/3,
+	  time_scope_data/2,
+	  current_scope/1
+	]).
+:- use_module('tf_mongo', [ tf_mng_lookup/6 ]).
 
 % define some settings
 :- setting(use_logger, boolean, true,
 	'Toggle whether TF messages are logged into the mongo DB.').
 
 %%
-% register the "tf" collection.
-% This is needed for import/export.
-%
-:- setup_collection(tf, [
-		['child_frame_id','header.stamp'],
-		['header.stamp']]).
-
-tf_db(DB, Name) :- 
-	mng_get_db(DB, Name, 'tf').
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% QUERY COMMANDS
-%%%%%%%%%%%%%%%%%%%%%%%
-
-:- mongolog:add_command(tf_transform).
-%:- mongolog:add_command(tf_transform_world).
-
-%%
-mongolog:step_compile(
-		tf_transform(Child, Pose),
-		Ctx, Pipeline, StepVars) :-
-	option(mode(ask), Ctx),!,
-	option(scope(Scope), Ctx),
-	% FIXME: time handling bad here
-	time_scope_data(Scope, [_QSince1,QUntil1]),
-	mng_strip_operator(QUntil1, _, QUntil),
-	
-	Pose=[Parent, [X,Y,Z], [QX,QY,QZ,QW]],
-	mng_get_db(_DB, Coll, 'tf'),
-	mongolog:var_key_or_val(Child, Ctx, Child0),
-	VarMapping=[
-		[Parent, 'tf.header.frame_id'],
-		[X,      'tf.transform.translation.x'],
-		[Y,      'tf.transform.translation.y'],
-		[Z,      'tf.transform.translation.z'],
-		[QX,     'tf.transform.rotation.x'],
-		[QY,     'tf.transform.rotation.y'],
-		[QZ,     'tf.transform.rotation.z'],
-		[QW,     'tf.transform.rotation.w']
-	],
-	mongolog:step_vars(tf_transform(Child, Pose), Ctx, StepVars),
-	mongolog:lookup_let_doc(StepVars, LetDoc),
-	findall(Step,
-		% look-up tf documents into 'tf' field
-		(	Step=['$lookup', [
-				['from', string(Coll)],
-				['as', string('tf')],
-				['let', LetDoc],
-				['pipeline', array([
-					['$match', [
-						['child_frame_id', Child0],
-						['header.stamp', ['$lte', time(QUntil)]]
-					]],
-					['$sort',[
-						['header.stamp',int(-1)]
-					]],
-					['$limit',int(1)]
-				])]
-			]]
-		% unwind lookup results and assign variable
-		;	Step=['$unwind', string('$tf')]
-		;	(	member([Var,TFKey], VarMapping),
-				mongolog:var_key(Var,Ctx,VarKey),
-				atom_concat('$',TFKey,TFVal),
-				Step=['$set', [VarKey, string(TFVal)]]
-			)
-		;	Step=['$unset', string('tf')]
-		),
-		Pipeline
+:-	mng_db_name(DB),
+	(	setting(tf_plugin:use_logger,false)
+	->	true
+	;	tf_logger_set_db_name(DB)
 	).
-
-%mongolog:step_compile(tf_transform(S,P,O), Ctx, Pipeline, StepVars) :-
-%	option(mode(tell), Ctx),!,
-%	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TF REPUBLISHER
@@ -146,12 +75,6 @@ tf_republish_load_transforms(Time) :-
 	    ),
 		tf_republish_set_pose(Frame,[Ref,Pos,Rot])
 	).
-
-%%
-tf_mng_whipe :-
-	mng_db_name(DB),
-	tf_db(DB, Name),
-	mng_drop(DB,Name).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -270,123 +193,3 @@ world_pose1(_, WorldFrame,
 	[WorldFrame|Rest],
 	[WorldFrame|Rest], _, _).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % trajectories
-
-%%
-%
-tf_get_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
-	rdf_split_url(_,ObjFrame,Obj),
-	findall(Stamp-Data,
-		( tf_mng_lookup(ObjFrame,Stamp0,Stamp1,Data,Stamp,_),
-		  Stamp >= Stamp0,
-		  Stamp =< Stamp1
-		),
-		Trajectory0
-	),
-	reverse(Trajectory0,Trajectory).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % mongo backend
-% %
-% % TODO: maybe better do the lookup in C++ for performance reasons? 
-% %
-
-%%
-%
-tf_mng_init :-
-	mng_db_name(DB),
-	(	setting(tf_plugin:use_logger,false)
-	->	true
-	;	tf_logger_set_db_name(DB)
-	).
-%%
-:- tf_mng_init.
-
-%%
-%
-tf_mng_lookup(ObjFrame,QSince,QUntil,PoseData,FSince,FUntil) :-
-	mng_db_name(DB),
-	tf_db(DB, Name),
-	mng_cursor_create(DB,Name,Cursor),
-	mng_cursor_descending(Cursor,'header.stamp'),
-	mng_cursor_filter(Cursor, ['child_frame_id', string(ObjFrame)]),
-	mng_cursor_filter(Cursor, ['header.stamp', ['$lte', time(QUntil)]]),
-	%mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(Stamp0)]]),
-	setup_call_cleanup(
-		true,
-		tf_mng_lookup1(Cursor,QSince,QUntil,_,PoseData,FSince,FUntil),
-		mng_cursor_destroy(Cursor)
-	).
-
-%%
-%
-tf_mng_range(QSince,QUntil,ObjFrame,PoseData,FSince,FUntil) :-
-	mng_db_name(DB),
-	tf_db(DB, Name),
-	mng_cursor_create(DB,Name,Cursor),
-	mng_cursor_filter(Cursor, ['header.stamp', ['$lt', time(QUntil)]]),
-	mng_cursor_filter(Cursor, ['header.stamp', ['$gte', time(QSince)]]),
-	mng_cursor_descending(Cursor,'header.stamp'),
-	setup_call_cleanup(
-		true,
-		tf_mng_lookup1(Cursor,QSince,QUntil,ObjFrame,PoseData,FSince,FUntil),
-		mng_cursor_destroy(Cursor)
-	),
-	% TODO: read frame name
-	true.
-
-tf_mng_lookup1(Cursor,MinStamp,MaxStamp,ObjFrame,PoseData,FSince,FUntil) :-
-	mng_cursor_next(Cursor,First),
-	mng_get_dict(header,First,Header),
-	mng_get_dict(stamp,Header,double(FirstStamp)),
-	( FirstStamp > MaxStamp
-	->	( FirstUntil=FirstStamp,
-	      mng_cursor_next(Cursor,Doc)
-		)
-	;	( FirstUntil='Infinity',
-		  Doc=First
-		)
-	),
-	tf_mng_lookup2(Cursor,Doc,MinStamp,FirstUntil,ObjFrame,PoseData,FSince,FUntil).
-
-tf_mng_lookup2(Cursor,Next,MinStamp,LastStamp,ObjFrame,PoseData,FSince,FUntil) :-
-	tf_mng_doc_pose(Next,_,Stamp,PoseData0),
-	(	( PoseData=PoseData0,
-		  FSince=Stamp,
-		  FUntil=LastStamp,
-		  mng_get_dict(child_frame_id,Next,ObjFrame)
-		)
-	;	( Stamp > MinStamp,
-		  mng_cursor_next(Cursor,X),
-		  tf_mng_lookup2(Cursor,X,MinStamp,Stamp,ObjFrame,PoseData,FSince,FUntil)
-		)
-	).
-
-%%
-% Convert mongo document to pose term.
-%
-tf_mng_doc_pose(Doc,ObjFrame,Time,[ParentFrame,[TX,TY,TZ],[QX,QY,QZ,QW]]) :-
-	get_dict(child_frame_id,Doc,
-		string(ObjFrame)
-	),
-	get_dict(header,Doc,[
-		_,
-		stamp-double(Time),
-		frame_id-string(ParentFrame)
-	]),
-	get_dict(transform,Doc,[
-		translation-[
-			x-double(TX),
-			y-double(TY),
-			z-double(TZ)
-		],
-		rotation-[
-			x-double(QX),
-			y-double(QY),
-			z-double(QZ),
-			w-double(QW)
-		]
-	]).

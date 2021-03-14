@@ -7,6 +7,7 @@
 :- use_module(control).
 :- use_module(database).
 :- use_module(findall).
+:- use_module(fluents).
 :- use_module(lists).
 :- use_module(meta).
 :- use_module(sgml).

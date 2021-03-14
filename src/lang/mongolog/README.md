@@ -21,6 +21,6 @@ However, many other aspects are supported by `mongolog`:
 - comparison operators;
 - control and meta predicates;
 - findall and list predicates;
-- typechecking commands;
+- typechecking predicates;
 - database interaction (for facts only);
 - unification of compound terms (does not handle implicit instantiation yet).

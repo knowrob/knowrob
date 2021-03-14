@@ -541,6 +541,7 @@ type_mapping(regex,   regex) :- !.
 type_mapping(array,   array)  :- !.
 type_mapping(list,    array)  :- !.
 type_mapping(bool,    bool)   :- !.
+type_mapping(time,    time)   :- !.
 %type_mapping(term,    string) :- !.
 
 %% mng_strip_operator(+Term, ?Operator, ?Stripped) is det.

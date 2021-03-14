@@ -1,5 +1,7 @@
 :- module(mongolog_database,
-		[]).
+		[ mongolog_add_predicate(+,+,+),
+		  mongolog_drop_predicate(+)
+		]).
 /** <module> Storage of predicates in mongolog programs.
 
 The following predicates are supported:
@@ -16,100 +18,150 @@ The following predicates are supported:
 
 :- use_module('mongolog').
 
+
+%% Predicates that are stored in a mongo collection
+:- dynamic mongolog_predicate/3.
+
+
 %% query commands
 :- mongolog:add_command(assert).
 :- mongolog:add_command(retractall).
 
-%%
-is_database_predicate(Term, ArgFields) :-
-	compound(Term),
+
+%% mongolog_predicate(+Term, -Fields, -Options) is semidet.
+%
+%
+mongolog_predicate(Term, Fields, Options) :-
+	compound(Term),!,
 	Term =.. [Functor|_],
-	mongolog:database_predicate(Functor, ArgFields).
+	mongolog_predicate(Functor, Fields, Options).
+
+
+%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
+%
+% Register a predicate that stores facts in the database.
+% Functor is the functor of a n-ary predicate, and Fields is
+% a n-elemental list of keys associated to the different
+% arguments of the predicate.
+% Options is a list of optional paramers:
+%
+% | indices(List) | a list of indices passed to setup_collection/2 |
+% | collection(Collection) | name of the collection where predicate is stored, default is to use the functor of the predicate |
+%
+% Current limitation: there cannot be predicates with the same functor,
+% but different arity.
+%
+% @param Functor functor of the predicate
+% @param Fields field names of predicate arguments
+% @param Options option list
+%
+mongolog_add_predicate(Functor, _, _) :-
+	mongolog_predicate(Functor, _, _),
+	!,
+	throw(permission_error(modify,database_predicate,Functor)).
+
+mongolog_add_predicate(Functor, Fields, Options) :-
+	setup_predicate_collection(Functor, Fields, Options),
+	assertz(mongolog_predicate(Functor, Fields, Options)),
+	mongolog:add_command(Functor).
 
 %%
-mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
-	is_database_predicate(Term, ArgFields),
-	!,
-	mongolog:step_vars(Term, Ctx, StepVars0),
-	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
-	merge_options([step_vars(StepVars)], Ctx, Ctx0),
-	(	option(mode(tell), Ctx)
-	->	assert_predicate(Term, ArgFields, Ctx0, Pipeline)
-	;	query_predicate(Term, ArgFields, Ctx0, Pipeline, StepVars)
-	).
+setup_predicate_collection(Functor, [FirstField|_], Options) :-
+	% TODO support fields marked with -/+ here
+	option(indices(Indices), Options, [[FirstField]]),
+	setup_collection(Functor, Indices).
 
+
+%% mongolog_drop_predicate(+Functor) is det.
+%
+% Delete all facts associated to predicate with
+% given functor.
+%
+% @param Functor functor of the predicate
+%
+mongolog_drop_predicate(Functor) :-
+	mng_get_db(DB, Collection, Functor),
+	mng_drop(DB, Collection).
+
+%%
 mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
-%	is_database_predicate(Term,_),
-	merge_options([mode(tell)], Ctx, Ctx0),
+	merge_options([operation(assert),mode(tell)], Ctx, Ctx0),
 	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
 
 mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
-%	is_database_predicate(Term,_),
-	merge_options([mode(ask),retractall], Ctx, Ctx0),
+	merge_options([operation(retractall)], Ctx, Ctx0),
 	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
-	
+
 %%
-query_predicate(Term, ArgFields, Ctx, Pipeline, StepVars) :-
+mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
+	% get predicate fields and options
+	mongolog_predicate(Term, ArgFields, Options),
+	% get predicate functor and arguments
 	Term =.. [Functor|Args],
-	mng_get_db(_DB, Collection, Functor),
+	% get the database collection of the predicate
+	(	option(collection(Collection), Options)
+	;	mng_get_db(_DB, Collection, Functor)
+	),
+	!,
+	% read variable in Term
+	mongolog:step_vars(Term, Ctx, StepVars0),
+	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
+	% add predicate options to compile context
+	merge_options([
+		step_vars(StepVars),
+		collection(Collection)
+	], Ctx, Ctx0),
+	merge_options(Ctx0, Options, Ctx1),
+	% zip field names with predicate arguments
 	zip(ArgFields, Args, Zipped),
+	% get aggregation pipeline
+	(	option(operation(assert), Ctx)     -> mongolog_predicate_assert(Zipped, Ctx1, Pipeline)
+	;	option(operation(retractall), Ctx) -> mongolog_predicate_retractall(Zipped, Ctx1, Pipeline)
+	;	option(mode(tell), Ctx)            -> mongolog_predicate_assert(Zipped, Ctx1, Pipeline)
+	;	mongolog_predicate_call(Zipped, Ctx1, Pipeline)
+	).
+
+%%
+mongolog_predicate_call(Zipped, Ctx, Pipeline) :-
 	unpack_compound(Zipped, Unpacked),
-	%
-	mongolog:lookup_let_doc(StepVars, LetDoc),
-	match_predicate(Unpacked, Ctx, Match),
 	findall(InnerStep,
-		(	InnerStep=Match
-		% compound arguments with free variables need to be handled
-		% separately because we cannot write path queries that
-		% access array elements.
-		;	(	set_nested_args(Unpacked,SetArgs),
-				match_nested(Unpacked, Ctx, MatchNested),
-				(	InnerStep = SetArgs
-				;	InnerStep = MatchNested
-				)
-			)
+		match_predicate(Unpacked, Ctx, InnerStep),
+		InnerPipeline),
+	%
+	findall(Step,
+		% look-up documents into 't_pred' array field
+		(	lookup_predicate('t_pred', InnerPipeline, Ctx, Step)
+		% unwind lookup results and assign variables
+		;	Step=['$unwind', string('$t_pred')]
+		;	project_predicate(Unpacked, Ctx, Step)
+		;	Step=['$unset', string('t_pred')]
+		),
+		Pipeline).
+
+%%
+mongolog_predicate_retractall(Zipped, Ctx, Pipeline) :-
+	option(collection(Collection), Ctx),
+	unpack_compound(Zipped, Unpacked),
+	findall(InnerStep,
+		(	match_predicate(Unpacked, Ctx, InnerStep)
 		% retractall first performs match, then only projects the id of the document
-		;	(	option(retractall, Ctx),
-				(	InnerStep=['$project',[['_id',int(1)]]]
-				;	InnerStep=['$set',['delete',bool(true)]]
-				)
-			)
+		;	project_retract(InnerStep)
 		),
 		InnerPipeline),
 	%
 	findall(Step,
 		% look-up documents into 't_pred' array field
-		(	Step=['$lookup', [
-				['from', string(Collection)],
-				['as', string('t_pred')],
-				['let', LetDoc],
-				['pipeline', array(InnerPipeline)]
-			]]
-		% unwind lookup results and assign variables
-		;	(	\+ option(retractall, Ctx),
-				(	Step=['$unwind', string('$t_pred')]
-				;	(	member([FieldPath0,Var,Is], Unpacked),
-						mongolog:var_key(Var,Ctx,VarKey),
-						atomic_list_concat([FieldPath0|Is],'_',FieldPath),
-						atom_concat('$t_pred.', FieldPath, FieldQuery),
-						Step=['$set', [VarKey, string(FieldQuery)]]
-					)
-				)
-			)
+		(	lookup_predicate('t_pred', InnerPipeline, Ctx, Step)
 		% add removed facts to assertions list
-		;	(	option(retractall, Ctx),
-				mongolog:add_assertions(string('$t_pred'), Collection, Step)
-			)
+		;	mongolog:add_assertions(string('$t_pred'), Collection, Step)
 		;	Step=['$unset', string('t_pred')]
 		),
 		Pipeline
 	).
 
 %%
-assert_predicate(Term, ArgFields, Ctx, Pipeline) :-
-	Term =.. [Functor|Args],
-	mng_get_db(_DB, Collection, Functor),
-	zip(ArgFields, Args, Zipped),
+mongolog_predicate_assert(Zipped, Ctx, Pipeline) :-
+	option(collection(Collection), Ctx),
 	% create a document
 	findall([Field,Val],
 		(	member([Field,Arg],Zipped),
@@ -166,28 +218,35 @@ set_nested_arg(Key, [I|Is], Arg) :-
 	;	set_nested_arg(Y, Is, Y)
 	).
 
-		 /*******************************
-		 *    	 	 $match   			*
-		 *******************************/
+%% $lookup
+%
+lookup_predicate(Field, InnerPipeline, Ctx, ['$lookup', [
+		['from', string(Collection)],
+		['as', string(Field)],
+		['let', LetDoc],
+		['pipeline', array(InnerPipeline)]
+	]]) :-
+	option(collection(Collection), Ctx),
+	option(step_vars(StepVars), Ctx),
+	mongolog:lookup_let_doc(StepVars, LetDoc).
+
+%% $set
+%
+project_predicate(Unpacked, Ctx, Step) :-
+	member([FieldPath0,Var,Is], Unpacked),
+	mongolog:var_key(Var,Ctx,VarKey),
+	atomic_list_concat([FieldPath0|Is],'_',FieldPath),
+	atom_concat('$t_pred.', FieldPath, FieldQuery),
+	Step=['$set', [VarKey, string(FieldQuery)]].
 
 %%
-match_nested(Unpacked, Ctx, Match) :-
-	nested_args(Unpacked, NestedArgs),
-	match_predicate(NestedArgs, Ctx, Match).
+project_retract(Step) :-
+	(	Step=['$project',[['_id',int(1)]]]
+	;	Step=['$set',['delete',bool(true)]]
+	).
 
-%%
-nested_args([], []) :- !.
-
-nested_args([[Key,Val,Is]|Xs], [[Key1,Val,[]]|Ys]) :-
-	Is \== [],!,
-	atomic_list_concat([Key|Is], '_', Key1),
-	nested_args(Xs,Ys).
-
-nested_args([_|Xs], Ys) :-
-	nested_args(Xs,Ys).
-	
-
-%%
+%% $match
+%
 match_predicate(Unpacked, Ctx, Match) :-
 	findall(MatchQuery,
 		% first match what is grounded compile-time
@@ -209,6 +268,32 @@ match_predicate(Unpacked, Ctx, Match) :-
 	->	Match=['$match', FirstMatch]
 	;	Match=['$match', ['$and', array(MatchQueries)]]
 	).
+
+match_predicate(Unpacked, Ctx, Match) :-
+	% compound arguments with free variables need to be handled
+	% separately because we cannot write path queries that
+	% access array elements.
+	set_nested_args(Unpacked,SetArgs),
+	match_nested(Unpacked, Ctx, MatchNested),
+	(	Match = SetArgs
+	;	Match = MatchNested
+	).
+
+%%
+match_nested(Unpacked, Ctx, Match) :-
+	nested_args(Unpacked, NestedArgs),
+	match_predicate(NestedArgs, Ctx, Match).
+
+%%
+nested_args([], []) :- !.
+
+nested_args([[Key,Val,Is]|Xs], [[Key1,Val,[]]|Ys]) :-
+	Is \== [],!,
+	atomic_list_concat([Key|Is], '_', Key1),
+	nested_args(Xs,Ys).
+
+nested_args([_|Xs], Ys) :-
+	nested_args(Xs,Ys).
 
 %%
 match_conditional(FieldKey, Arg, Ctx, ['$expr', ['$or', array([

@@ -1,8 +1,6 @@
 :- module(mongolog,
 	[ mongolog_add_rule(t),
 	  mongolog_drop_rule(t),
-	  mongolog_add_predicate(+,+,+),
-	  mongolog_drop_predicate(+),
 	  mongolog_expand(t,-,+),
 	  mongolog_call(t),
 	  mongolog_call(t,+)
@@ -19,8 +17,6 @@
 
 %% Stores list of terminal terms for each clause. 
 :- dynamic query/4.
-%% Predicates that are stored in a mongo collection
-:- dynamic database_predicate/2.
 %% set of registered query commands.
 :- dynamic step_command/1.
 %% optionally implemented by query commands.
@@ -122,53 +118,6 @@ expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 	expand_arguments1(Xs, Ys, Zs).
 
 
-%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
-%
-% Register a predicate that stores facts in the database.
-% Functor is the functor of a n-ary predicate, and Fields is
-% a n-elemental list of keys associated to the different
-% arguments of the predicate.
-% Options is a list of optional paramers:
-%
-% | indices(List) | a list of indices passed to setup_collection/2 |
-%
-% Current limitation: there cannot be predicates with the same functor,
-% but different arity.
-%
-% @param Functor functor of the predicate
-% @param Fields field names of predicate arguments
-% @param Options option list
-%
-mongolog_add_predicate(Functor, _, _) :-
-	database_predicate(Functor, _),
-	!,
-	throw(permission_error(modify,database_predicate,Functor)).
-
-mongolog_add_predicate(Functor, Fields, Options) :-
-	setup_predicate_collection(Functor, Fields, Options),
-	assertz(database_predicate(Functor, Fields)),
-	add_command(Functor).
-
-%%
-setup_predicate_collection(Functor, [FirstField|_], Options) :-
-	(	option(indices(Indices), Options)
-	->	setup_collection(Functor, Indices)
-	;	setup_collection(Functor, [[FirstField]])
-	).
-
-
-%% mongolog_drop_predicate(+Functor) is det.
-%
-% Delete all facts associated to predicate with
-% given functor.
-%
-% @param Functor functor of the predicate
-%
-mongolog_drop_predicate(Functor) :-
-	mng_get_db(DB, Collection, Functor),
-	mng_drop(DB, Collection).
-
-
 %% mongolog_call(+Goal) is nondet.
 %
 % Same as mongolog_call/2 with empty options list.
@@ -176,7 +125,8 @@ mongolog_drop_predicate(Functor) :-
 % @param Goal A compound term expanding into an aggregation pipeline
 %
 mongolog_call(Goal) :-
-	mongolog_call(Goal,[mode(ask)]).
+	current_scope(QScope),
+	mongolog_call(Goal,[mode(ask),scope(QScope)]).
 
 %% mongolog_call(+Goal, +Options) is nondet.
 %
@@ -589,6 +539,12 @@ step_command(pragma).
 match_equals(X, Exp, ['$match', ['$expr', ['$eq', array([X,Exp])]]]).
 
 %%
+match_scope(['$match', ['$expr', ['$lt', array([
+				string('$v_scope.time.since'),
+				string('$v_scope.time.until')
+			])]]]).
+
+%%
 lookup_let_doc(InnerVars, LetDoc) :-
 	findall([Key,string(Value)],
 		(	member([Key,_], InnerVars),
@@ -783,7 +739,11 @@ get_var(Term, Ctx, [Key,Var]) :-
 %
 var_key(Var, Ctx, Key) :-
 	var(Var),
+	% TODO: can this be done better then iterating over all variables?
+	%		- i.e. by testing if some variable is element of a list
+	%		- member/2 cannot be used as it would unify each array element
 	(	option(outer_vars(Vars), Ctx)
+	;	option(step_vars(Vars), Ctx)
 	;	option(disj_vars(Vars), Ctx)
 	),
 	member([Key,ReferredVar],Vars),
