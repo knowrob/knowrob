@@ -51,9 +51,36 @@ mongolog_add_fluent(Functor, _, _, _) :-
 	throw(permission_error(modify,database_fluent,Functor)).
 
 mongolog_add_fluent(Functor, ArgFields, TimeField, Options) :-
-	mongolog_database:setup_predicate_collection(Functor, ArgFields, Options),
+	setup_fluent_collection(Functor, ArgFields, TimeField, Options),
 	assertz(mongolog_fluent(Functor, ArgFields, TimeField, Options)),
 	mongolog:add_command(Functor).
+
+%%
+setup_fluent_collection(Functor, ArgFields, TimeField, Options) :-
+	option(indices(Indices), Options, auto),
+	setup_fluent_collection1(Indices, Functor, ArgFields, TimeField, Options).
+
+setup_fluent_collection1(auto, Functor, ArgFields, TimeField, Options) :-
+	!,
+	% create default indices:
+	%	- time index
+	%	- time + fluent keys index (if fluent has any keys)
+	%
+	convlist([X,Y]>>
+		(X=(+(Key)), Y=Key),
+		ArgFields, KeyFields),
+	findall(Index,
+		(	Index=[TimeField]
+		;	(	KeyFields \== [],
+				Index=[TimeField|KeyFields]
+			)
+		),
+		Indices),
+	setup_fluent_collection1(Indices, Functor, ArgFields, TimeField, Options).
+
+setup_fluent_collection1(Indices, Functor, _, _, Options) :-
+	fluent_collection(Functor, Options, Collection),
+	setup_collection(Collection, Indices).
 
 
 %% mongolog_add_fluent(+Functor, +ArgFields, +TimeField) is semidet.
@@ -196,9 +223,7 @@ fluent_zip(Term, Ctx, ZippedKeys, ZippedValues, TimeKey, Ctx_zipped) :-
 	% get predicate functor and arguments
 	Term =.. [Functor|Args],
 	% get the database collection of the predicate
-	(	option(collection(Collection), Options)
-	;	mng_get_db(_DB, Collection, Functor)
-	),
+	fluent_collection(Functor, Options, Collection),
 	!,
 	% read variable in Term
 	mongolog:step_vars(Term, Ctx, StepVars0),
@@ -328,6 +353,12 @@ fluent_fact_scope(TimeKey, Step) :-
 	;	mongolog:match_scope(Step)
 	).
 
+%%
+fluent_collection(Functor, Options, Collection) :-
+	(	option(collection(Collection), Options)
+	;	mng_get_db(_DB, Collection, Functor)
+	).
+
 		 /*******************************
 		 *    	  UNIT TESTING     		*
 		 *******************************/
@@ -338,8 +369,7 @@ test('mongolog_add_fluent') :-
 	assert_true(mongolog_add_fluent(
 		test_fluent,   % fluent functor name
 		[-value],      % fluent argument fields
-		time,          % fluent time field
-		[[time]]       % indices
+		time           % fluent time field
 	)).
 
 test('mongolog_assert(test_fluent(+)') :-

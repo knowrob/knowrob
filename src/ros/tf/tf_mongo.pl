@@ -29,11 +29,7 @@
    		% time field
    		'header.stamp',
 		% options
-		[	collection(CollectionName),
-			indices([
-				['child_frame_id','header.stamp'],
-				['header.stamp']
-			])
+		[	collection(CollectionName)
 		]).
 
 %%
