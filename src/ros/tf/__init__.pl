@@ -1,3 +1,3 @@
 
 :- ensure_loaded('tf_plugin').
-:- ensure_loaded('tf_tree').
+:- ensure_loaded('tf_mongo').

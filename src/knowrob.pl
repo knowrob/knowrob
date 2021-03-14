@@ -36,7 +36,7 @@ knowrob_load_neem(NEEM_id) :-
 	urdf_init,
 	% initialize position of each frame for tf publishing
 	tf_plugin:tf_republish_clear,
-	tf_tree:initial_transforms(InitialTransforms),
+	tf_mongo:tf_mng_lookup_all(InitialTransforms),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],InitialTransforms),
 	        % FIXME avoid this elsewhere

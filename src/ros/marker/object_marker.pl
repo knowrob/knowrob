@@ -6,7 +6,6 @@
 	[ rdf_split_url/3 ]).
 :- use_module(library('model/SOMA'),
     [ object_shape/5 ]).
-:- use_module(library('ros/tf/tf_tree')).
 	
 %% object_marker
 %

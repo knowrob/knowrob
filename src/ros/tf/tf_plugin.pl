@@ -29,7 +29,10 @@
 	  time_scope_data/2,
 	  current_scope/1
 	]).
-:- use_module('tf_mongo', [ tf_mng_lookup/6 ]).
+:- use_module('tf_mongo',
+	[ tf_mng_lookup/6,
+	  tf_mng_lookup_all/2
+	]).
 
 % define some settings
 :- setting(use_logger, boolean, true,
@@ -65,7 +68,7 @@ tf_republish_set_goal(Time_min, Time_max) :-
 
 %%
 tf_republish_load_transforms(Time) :-
-	tf_tree:lookup_transforms(Time,Transforms),
+	tf_mng_lookup_all(Transforms, Time),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],Transforms),
 	        % FIXME avoid this elsewhere
