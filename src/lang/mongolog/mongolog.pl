@@ -857,6 +857,8 @@ has_list_head([_|_]).
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
+:- rdf_meta(test_call(t,?,t)).
+
 %%
 test_call(Goal, Var, Value) :-
 	WithSet=(','(assign(Var,Value), Goal)),

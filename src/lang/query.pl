@@ -20,12 +20,10 @@
 :- op(1100, xfx, user:(?+>)).
 
 :- use_module(library('semweb/rdf_db'),
-	[ rdf_global_term/2, rdf_meta/1 ]).
+	[ rdf_global_term/2 ]).
 :- use_module('scope',
     [ current_scope/1, universal_scope/1 ]).
 :- use_module('mongolog/mongolog').
-
-:- rdf_meta(test_command(t,?,t)).
 
 % fallback graph for tell/forget
 :- dynamic default_graph/1.
@@ -273,13 +271,4 @@ user:term_expansion(
 user:term_expansion((?+>(Head,Goal)), X1) :-
 	user:term_expansion((?>(Head,Goal)),X1),
 	user:term_expansion((+>(Head,Goal)),_X2).
-
-		 /*******************************
-		 *    	  UNIT TESTING     		*
-		 *******************************/
-
-%%
-test_command(Goal, Var, Value) :-
-	WithSet=(','(assign(Var,Value), Goal)),
-	lang_query:ask(WithSet).
 
