@@ -23,8 +23,8 @@ The following predicates are supported:
 %%
 mongolog:step_expand(
 		call_with_context(Goal,Args),
-		call_with_context(Expanded,Args), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		call_with_context(Expanded,Args)) :-
+	mongolog_expand(Goal, Expanded).
 
 %%
 % context(-Option) and context(-Option, +Default) are used to read

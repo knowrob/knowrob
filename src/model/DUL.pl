@@ -592,9 +592,9 @@ is_setting_for(Sit,Entity) ?>
 	triple(Sit,dul:isSettingFor,Entity).
 
 is_setting_for(Sit,Entity) +>
-	(	ask(is_action(Entity)) -> triple(Sit,dul:includesAction,Entity)
-	;	ask(is_event(Entity))  -> triple(Sit,dul:includesEvent,Entity)
-	;	ask(is_agent(Entity))  -> triple(Sit,dul:includesAgent,Entity)
-	;	ask(is_object(Entity)) -> triple(Sit,dul:includesObject,Entity)
+	(	is_action(Entity) -> triple(Sit,dul:includesAction,Entity)
+	;	is_event(Entity)  -> triple(Sit,dul:includesEvent,Entity)
+	;	is_agent(Entity)  -> triple(Sit,dul:includesAgent,Entity)
+	;	is_object(Entity) -> triple(Sit,dul:includesObject,Entity)
 	;	triple(Sit,dul:isSettingFor,Entity)
 	).

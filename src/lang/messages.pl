@@ -2,8 +2,8 @@
 
 % a failure during term expansion. Usually caused
 % by referring to a predicate that is not known (yet).
-prolog:message(lang(expansion_failed(Failed,Mode),_Context)) -->
-	[ '~w-query expansion failed at `~w`.'-[Mode,Failed] ].
+prolog:message(lang(expansion_failed(Failed),_Context)) -->
+	[ 'query expansion failed at `~w`.'-[Failed] ].
 
 prolog:message(lang(_Failed, compilation_failed(Term, _Context))) -->
 	[ 'Query compilation failed at command `~w`.'-[Term] ].

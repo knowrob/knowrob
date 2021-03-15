@@ -310,7 +310,7 @@ assert_triple_data(Triples) :-
 	% TODO: also support to import scope information
 	% TODO: it would be faster to call tell only once with
 	% array of triples
-	lang_query:tell(triple(S, P, O)).
+	lang_query:ask(assert(triple(S, P, O))).
 
 % wrapper around load_rdf/3
 load_rdf_(URL,Triples) :-

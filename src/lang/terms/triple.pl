@@ -35,19 +35,36 @@
 :- mongolog:add_command(triple).
 
 %%
+mongolog:step_expand(
+	project(triple(S,P,O)),
+	assert(triple(S,P,O))) :-
+	!.
+
+%%
+mongolog:step_compile(assert(triple(S,P,O)), Ctx, Pipeline, StepVars) :-
+	% add step variables to compile context
+	triple_step_vars(triple(S,P,O), Ctx, StepVars0),
+	mongolog:add_assertion_var(StepVars0, StepVars),
+	merge_options([step_vars(StepVars)], Ctx, Ctx0),
+	% create pipeline
+	compile_tell(triple(S,P,O), Ctx0, Pipeline).
+
 mongolog:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
+	% add step variables to compile context
+	triple_step_vars(triple(S,P,O), Ctx, StepVars),
+	merge_options([step_vars(StepVars)], Ctx, Ctx0),
+	% create pipeline
+	compile_ask(triple(S,P,O), Ctx0, Pipeline).
+
+%%
+triple_step_vars(triple(S,P,O), Ctx, StepVars) :-
+	% FIXME: redundant with above
 	(	bagof(Var,
 			(	mongolog:goal_var([S,P,O], Ctx, Var)
 			;	mongolog:context_var(Ctx, Var)
 			),
-			StepVars0)
-	;	StepVars0=[]
-	),
-	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
-	merge_options([step_vars(StepVars)], Ctx, Ctx0),
-	(	option(mode(ask), Ctx)
-	->	compile_ask( triple(S,P,O), Ctx0, Pipeline)
-	;	compile_tell(triple(S,P,O), Ctx0, Pipeline)
+			StepVars)
+	;	StepVars=[]
 	).
 
 %%

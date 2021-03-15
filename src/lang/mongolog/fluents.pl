@@ -113,30 +113,31 @@ mongolog_drop_fluent(Functor) :-
 	mng_get_db(DB, Collection, Functor),
 	mng_drop(DB, Collection).
 
+%%
+mongolog:step_expand(project(Term), assert(Term)) :-
+	mongolog_fluent(Term, _, _, _),!.
 
 %%
+%
 mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
 	mongolog_fluent(Term, _, _, _),!,
-	fluent_assert(Term, Ctx, Pipeline, StepVars).
+	mongolog_fluent_assert(Term, Ctx, Pipeline, StepVars).
 
 mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
 	mongolog_fluent(Term, _, _, _),!,
-	fluent_retractall(Term, Ctx, Pipeline, StepVars).
+	mongolog_fluent_retractall(Term, Ctx, Pipeline, StepVars).
 
 mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
 	mongolog_fluent(Term, _, _, _),!,
-	(	option(mode(tell), Ctx)            -> fluent_assert(Term, Ctx, Pipeline, StepVars)
-	;	option(operation(assert), Ctx)     -> fluent_assert(Term, Ctx, Pipeline, StepVars)
-	;	option(operation(retractall), Ctx) -> fluent_retractall(Term, Ctx, Pipeline, StepVars)
-	;	fluent_call(Term, Ctx, Pipeline, StepVars)
-	).
+	mongolog_fluent_call(Term, Ctx, Pipeline, StepVars).
 
 %%
-fluent_call(Term, Ctx, Pipeline, StepVars) :-
+%
+mongolog_fluent_call(Term, Ctx, Pipeline, StepVars) :-
 	fluent_zip(Term, Ctx,
 		ZippedKeyFields,
 		ZippedValueFields,
-		TimeField, Ctx_fluent),
+		TimeField, Ctx_fluent, read),
 	option(step_vars(StepVars), Ctx_fluent),
 	% get since+until time
 	option(scope(Scope), Ctx_fluent),
@@ -170,11 +171,12 @@ fluent_call(Term, Ctx, Pipeline, StepVars) :-
 		Pipeline).
 
 %%
-fluent_retractall(Term, Ctx, Pipeline, StepVars) :-
+%
+mongolog_fluent_retractall(Term, Ctx, Pipeline, StepVars) :-
 	fluent_zip(Term, Ctx,
 		ZippedKeyFields,
 		ZippedValueFields,
-		TimeField, Ctx_fluent),
+		TimeField, Ctx_fluent, write),
 	option(step_vars(StepVars), Ctx_fluent),
 	option(collection(Collection), Ctx_fluent),
 	% get since+until time
@@ -198,11 +200,12 @@ fluent_retractall(Term, Ctx, Pipeline, StepVars) :-
 		Pipeline).
 
 %%
-fluent_assert(Term, Ctx, Pipeline, StepVars) :-
+%
+mongolog_fluent_assert(Term, Ctx, Pipeline, StepVars) :-
 	fluent_zip(Term, Ctx,
 		ZippedKeyFields,
 		ZippedValueFields,
-		TimeField, Ctx_fluent),
+		TimeField, Ctx_fluent, write),
 	option(step_vars(StepVars), Ctx_fluent),
 	option(collection(Collection), Ctx_fluent),
 	% add since time to Zipped list
@@ -225,7 +228,8 @@ fluent_assert(Term, Ctx, Pipeline, StepVars) :-
 		Pipeline).
 
 %%
-fluent_zip(Term, Ctx, ZippedKeys, ZippedValues, TimeKey, Ctx_zipped) :-
+%
+fluent_zip(Term, Ctx, ZippedKeys, ZippedValues, TimeKey, Ctx_zipped, ReadOrWrite) :-
 	mongolog_fluent(Term, ArgFields, TimeKey, Options),
 	% get predicate functor and arguments
 	Term =.. [Functor|Args],
@@ -234,7 +238,9 @@ fluent_zip(Term, Ctx, ZippedKeys, ZippedValues, TimeKey, Ctx_zipped) :-
 	!,
 	% read variable in Term
 	mongolog:step_vars(Term, Ctx, StepVars0),
-	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
+	(	ReadOrWrite==read -> StepVars=StepVars0
+	;	mongolog:add_assertion_var(StepVars0, StepVars)
+	),
 	% add predicate options to compile context
 	merge_options([
 		step_vars(StepVars),

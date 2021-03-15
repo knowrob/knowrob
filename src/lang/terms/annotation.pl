@@ -19,8 +19,18 @@
 %% query commands
 :- mongolog:add_command(annotation).
 
+%%
+mongolog:step_expand(
+	project(annotation(S,P,O)),
+	assert(annotation(S,P,O))) :- !.
+
 %% annotation(+Entity, +Property, -Annotation)
 %
+mongolog:step_compile(
+		assert(annotation(Entity, Property, Annotation)),
+		Ctx, Pipeline, StepVars) :-
+	assert_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars).
+
 mongolog:step_compile(
 		annotation(Entity, Property, Annotation),
 		Ctx, Pipeline, StepVars) :-
@@ -28,7 +38,6 @@ mongolog:step_compile(
 
 %% 
 query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
-	option(mode(ask),Ctx),!,
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([Entity, Property], Ctx),
 	mongolog:step_vars([Entity,Property,Annotation], Ctx, StepVars),
@@ -60,26 +69,25 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 		Pipeline
 	).
 
-query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
-	option(mode(tell),Ctx),!,
+%%
+assert_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	mng_strip_type(Annotation, _, UnTyped),
 	% only load annotations written in English
 	% silently do nothing for other languages
 	(	strip_lang(UnTyped, en, Stripped)
-	->	tell_annotation(Entity, Property, Annotation,
+	->	assert_annotation(Entity, Property, Annotation,
 			Stripped, Ctx, Pipeline, StepVars)
 	;	(Pipeline=[], StepVars=[])
 	).
 
-%%
-tell_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :-
+assert_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :-
 	mng_get_db(_DB, Collection, 'annotations'),
 	% enforce UTF8 encoding
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([Entity, Property, Annotation_en], Ctx),
 	mongolog:step_vars([Entity,Property,Annotation], Ctx, StepVars0),
-	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
+	mongolog:add_assertion_var(StepVars0, StepVars),
 	% resolve arguments
 	mongolog:var_key_or_val(Entity,         Ctx, Entity0),
 	mongolog:var_key_or_val(Property,       Ctx, Property0),
@@ -117,14 +125,14 @@ test_cleanup :-
 
 test('tell(assign(C,c), annotation(+,+,+))') :-
 	assert_true(lang_query:tell((
-		assign(C,g),
+		ask(assign(C,g)),
 		annotation(e,f,C)
 	))).
 
 test('tell(annotation(+,+,+))') :-
 	assert_true(lang_query:tell(annotation(a,b,c))).
 
-test('tell(annotation(+,+,-))', [throws(error(instantiation_error,annotation(a,b,_)))]) :-
+test('tell(annotation(+,+,-))', [throws(error(instantiation_error,project(annotation(a,b,_))))]) :-
 	lang_query:tell(annotation(a,b,_)).
 
 test('annotation(+,+,-)') :-

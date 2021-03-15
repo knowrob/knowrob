@@ -1,7 +1,7 @@
 :- module(mongolog,
-	[ mongolog_add_rule(t),
+	[ mongolog_add_rule(t,t),
 	  mongolog_drop_rule(t),
-	  mongolog_expand(t,-,+),
+	  mongolog_expand(t,-),
 	  mongolog_call(t),
 	  mongolog_call(t,+)
 	]).
@@ -16,11 +16,11 @@
 :- use_module(library('db/mongo/client')).
 
 %% Stores list of terminal terms for each clause. 
-:- dynamic query/4.
+:- dynamic query/3.
 %% set of registered query commands.
 :- dynamic step_command/1.
 %% optionally implemented by query commands.
-:- multifile step_expand/3.
+:- multifile step_expand/2.
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3, step_compile/4.
 
@@ -42,28 +42,22 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%% mongolog_add_rule(+Term) is semidet.
+%% mongolog_add_rule(+Head, +Body) is semidet.
 %
 % Register a rule that translates into an aggregation pipeline.
-% Term can be either a of the form `Head ?> Body` (ask rule) or `Head +> Body` (tell rule).
 % Any non-terminal predicate in Body must have a previously asserted
 % mongolog rule it can expand into.
 % After being asserted, the Head predicate can be referred to in
-% calls of mongolog_query/3.
+% calls of mongolog_call/1.
 %
-% @param Term A mongolog rule.
+% @param Head The head of a rule.
+% @param Body The body of a rule.
 %
-mongolog_add_rule((?>(Head,Body))) :-
-	add_rule(Head, Body, ask).
-
-mongolog_add_rule((+>(Head,Body))) :-
-	add_rule(Head, Body, tell).
-
-add_rule(Head, Body, Context) :-
+mongolog_add_rule(Head, Body) :-
 	%% get the functor of the predicate
 	Head =.. [Functor|Args],
 	%% expand goals into terminal symbols
-	(	mongolog_expand(Body, Expanded, Context) -> true
+	(	mongolog_expand(Body, Expanded) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	%% handle instantiated arguments
@@ -72,14 +66,21 @@ add_rule(Head, Body, Context) :-
 	%             A solution could be adding a =/2 call _at the end_ to avoid the need
 	%             for implicit instantiation.
 	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
-	->	(Expanded0=[ArgsGoal|Expanded], Args0=ExpandedArgs)
-	;	(Expanded0=Expanded, Args0=Args)
+	->	(	(	is_list(Expanded)
+			->	Expanded0=[ArgsGoal|Expanded]
+			;	Expanded0=[ArgsGoal,Expanded]
+			),
+			Args0=ExpandedArgs
+		)
+	;	(	Expanded0=Expanded,
+			Args0=Args
+		)
 	),
 	%% store expanded query
-	assertz(query(Functor, Args0, Expanded0, Context)).
+	assertz(query(Functor, Args0, Expanded0)).
 
 
-%% mongolog_drop_rule(+Term) is semidet.
+%% mongolog_drop_rule(+Head) is semidet.
 %
 % Drop a previously added `mongolog` rule.
 % That is, erase its database record such that it can
@@ -87,21 +88,13 @@ add_rule(Head, Body, Context) :-
 %
 % @param Term A mongolog rule.
 %
-mongolog_drop_rule((?>(Head,_Body))) :-
-	!,
-	drop_rule(Head).
-
-mongolog_drop_rule((+>(Head,_Body))) :-
-	!,
-	drop_rule(Head).
-
 mongolog_drop_rule(Head) :-
 	compound(Head),
 	drop_rule(Head).
 
 drop_rule(Head) :-
 	Head =.. [Functor|_],
-	retractall(query(Functor, _, _, _)).
+	retractall(query(Functor, _, _)).
 
 %%
 expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
@@ -126,7 +119,7 @@ expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
 %
 mongolog_call(Goal) :-
 	current_scope(QScope),
-	mongolog_call(Goal,[mode(ask),scope(QScope)]).
+	mongolog_call(Goal,[scope(QScope)]).
 
 %% mongolog_call(+Goal, +Options) is nondet.
 %
@@ -302,7 +295,7 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%% mongolog_expand(+Term, -Expanded, +Mode) is det.
+%% mongolog_expand(+Term, -Expanded) is det.
 %
 % Translate a goal into a sequence of terminal commands.
 % Terminal commands are the core predicates supported by `mongolog`
@@ -312,27 +305,26 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 %
 % @param Term A compound term, or a list of terms.
 % @param Expanded Sequence of terminal commands
-% @param Mode 'ask' or 'tell'
 %
-mongolog_expand(Goal, Goal, _) :-
+mongolog_expand(Goal, Goal) :-
 	% goals maybe not known during expansion, i.e. in case of
 	% higher-level predicates receiving a goal as an argument.
 	% these var goals need to be expanded compile-time
 	% (call-time is not possible)
 	var(Goal), !.
 
-mongolog_expand(Goal, Expanded, Mode) :-
+mongolog_expand(Goal, Expanded) :-
 	% NOTE: do not use is_list/1 here, it cannot handle list that have not
 	%       been completely resolved as in `[a|_]`.
 	%       Here we check just the head of the list.
 	\+ has_list_head(Goal), !,
 	comma_list(Goal, Terms),
-	mongolog_expand(Terms, Expanded, Mode).
+	mongolog_expand(Terms, Expanded).
 
-mongolog_expand(Terms, Expanded, Mode) :-
+mongolog_expand(Terms, Expanded) :-
 	has_list_head(Terms), !,
 	catch(
-		expand_term_0(Terms, Expanded0, Mode),
+		expand_term_0(Terms, Expanded0),
 		Exc,
 		log_error_and_fail(lang(Exc, Terms))
 	),
@@ -353,28 +345,28 @@ mongolog_expand(Terms, Expanded, Mode) :-
 	).
 
 %%
-expand_term_0([], [], _Mode) :- !.
-expand_term_0([X|Xs], [X_expanded|Xs_expanded], Mode) :-
-	once(expand_term_1(X, X_expanded, Mode)),
+expand_term_0([], []) :- !.
+expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
+	once(expand_term_1(X, X_expanded)),
 	% could be that expand-time the list is not fully resolved
 	(	var(Xs) -> Xs_expanded=Xs
-	;	expand_term_0(Xs, Xs_expanded, Mode)
+	;	expand_term_0(Xs, Xs_expanded)
 	).
 
-expand_term_1(Goal, Expanded, Mode) :-
+expand_term_1(Goal, Expanded) :-
 	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
 	is_list(Goal),!,
-	expand_term_0(Goal, Expanded, Mode).
+	expand_term_0(Goal, Expanded).
 
-expand_term_1(Goal, Expanded, Mode) :-
+expand_term_1(Goal, Expanded) :-
 	Goal =.. [Functor|_Args],
 	step_command(Functor),
 	% allow the goal to recursively expand
-	(	step_expand(Goal, Expanded, Mode) -> true
+	(	step_expand(Goal, Expanded) -> true
 	;	Expanded = Goal
 	).
 
-expand_term_1(Goal, Expanded, Mode) :-
+expand_term_1(Goal, Expanded) :-
 	% find all asserted rules matching the functor and args
 	Goal =.. [Functor|Args],
 	% NOTE: do not use findall here because findall would not preserve
@@ -382,16 +374,16 @@ expand_term_1(Goal, Expanded, Mode) :-
 	% NOTE: Args in query only contain vars, for instantiated vars in rule
 	%       heads, pragma/1 calls are generated in Terminals (i.e. the body of the rule).
 	(	bagof(Terminals,
-			query(Functor, Args, Terminals, Mode),
+			query(Functor, Args, Terminals),
 			TerminalsList)
 	->	true
 	% handle the case that a predicate is referred to that wasn't
 	% asserted before
-	;	throw(expansion_failed(Goal,Mode))
+	;	throw(expansion_failed(Goal))
 	),
 	% wrap different clauses into ';'
 	semicolon_list(Goal0, TerminalsList),
-	mongolog_expand(Goal0, Expanded, Mode).
+	mongolog_expand(Goal0, Expanded).
 
 %%
 % Each conjunction with cut operator [X0,...,Xn,!|_]
@@ -460,9 +452,7 @@ compile_terms([X|Xs], Pipeline, V0->Vn, StepVars, Context) :-
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_term(Term, Doc, V0->V1, StepVars, Context) :-
-	% try expansion (maybe the goal was not known during the expansion phase)
-	option(mode(Mode), Context),
-	mongolog_expand(Term, Expanded, Mode),
+	mongolog_expand(Term, Expanded),
 	compile_expanded_terms(Expanded, Doc, V0->V1, StepVars, Context).
 
 %%
@@ -509,8 +499,7 @@ step_compile(Step, Ctx, Doc, StepVars) :-
 % Call Goal in ask mode.
 %
 step_compile(ask(Goal), Ctx, Doc, StepVars) :-
-	merge_options([mode(ask)], Ctx, Ctx0),
-	mongolog:step_compile(call(Goal), Ctx0, Doc, StepVars).
+	mongolog:step_compile(call(Goal), Ctx, Doc, StepVars).
 
 %%
 % pragma(Goal) is evaluated compile-time by calling
@@ -524,10 +513,10 @@ step_compile(pragma(Goal), _, [], StepVars) :-
 	call(Goal).
 
 %%
-step_expand(ask(Goal), ask(Expanded), _Context) :-
-	mongolog_expand(Goal, Expanded, ask).
+step_expand(ask(Goal), ask(Expanded)) :-
+	mongolog_expand(Goal, Expanded).
 
-%%
+
 step_command(ask).
 step_command(pragma).
 
@@ -661,11 +650,7 @@ add_assertion(Doc, Coll, Step) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-add_assertion_var(StepVars, Ctx, [['g_assertions',_]|StepVars]) :-
-	(	option(mode(tell), Ctx)
-	;	option(retract, Ctx)
-	),!.
-add_assertion_var(StepVars, _, StepVars).
+add_assertion_var(StepVars, [['g_assertions',_]|StepVars]).
 
 % read all variables referred to in Step into list StepVars
 step_vars(Step, Ctx, StepVars) :-

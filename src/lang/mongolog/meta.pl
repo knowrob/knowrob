@@ -33,45 +33,42 @@ The following predicates are supported:
 %% once(:Goal)
 % Make a possibly nondet goal semidet, i.e., succeed at most once.
 %
-mongolog:step_expand(
-		once(Goal), Expanded, Context) :-
+mongolog:step_expand(once(Goal), Expanded) :-
 	append_cut(Goal, WithCut),
-	mongolog_expand(WithCut, Expanded, Context).
+	mongolog_expand(WithCut, Expanded).
 
 %% ignore(:Goal)
 % Calls Goal as once/1, but succeeds, regardless of whether Goal succeeded or not.
 %
-mongolog:step_expand(
-		ignore(Goal), Expanded, Context) :-
+mongolog:step_expand(ignore(Goal), Expanded) :-
 	append_cut(Goal, WithCut),
-	mongolog_expand((WithCut ; true), Expanded, Context).
+	mongolog_expand((WithCut ; true), Expanded).
 
 %%
 mongolog:step_expand(
 		limit(Count, Goal),
-		limit(Count, Expanded),
-		Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		limit(Count, Expanded)) :-
+	mongolog_expand(Goal, Expanded).
 
 %%
-mongolog:step_expand(call(Goal), call(Expanded), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+mongolog:step_expand(call(Goal), call(Expanded)) :-
+	mongolog_expand(Goal, Expanded).
 
 mongolog:step_expand(call(Goal,Arg1),
-		call_with_args(Expanded,[Arg1]), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		call_with_args(Expanded,[Arg1])) :-
+	mongolog_expand(Goal, Expanded).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2),
-		call_with_args(Expanded,[Arg1,Arg2]), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		call_with_args(Expanded,[Arg1,Arg2])) :-
+	mongolog_expand(Goal, Expanded).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3),
-		call_with_args(Expanded,[Arg1,Arg2,Arg3]), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		call_with_args(Expanded,[Arg1,Arg2,Arg3])) :-
+	mongolog_expand(Goal, Expanded).
 
 mongolog:step_expand(call(Goal,Arg1,Arg2,Arg3,Arg4),
-		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4]), Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		call_with_args(Expanded,[Arg1,Arg2,Arg3,Arg4])) :-
+	mongolog_expand(Goal, Expanded).
 
 %%
 ensure_list([X|Xs],[X|Xs]) :- !.

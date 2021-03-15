@@ -473,16 +473,11 @@ has_subevent(Event,Sub) ?>
 	holds(Event,soma:hasPhase,Sub).
 
 has_subevent(Event,Sub) +>
-	ask(is_action(Sub)),
-	holds(Event,dul:hasConstituent,Sub).
-
-has_subevent(Event,Sub) +>
-	ask(is_process(Sub)),
-	holds(Event,soma:hasPhase,Sub).
-
-has_subevent(Event,Sub) +>
-	ask(is_state(Sub)),
-	holds(Event,soma:hasPhase,Sub).
+	(	is_action(Sub)  -> holds(Event,dul:hasConstituent,Sub)
+	;	is_process(Sub) -> holds(Event,soma:hasPhase,Sub)
+	;	is_state(Sub)   -> holds(Event,soma:hasPhase,Sub)
+	;	fail
+	).
 
 
 		 /*******************************

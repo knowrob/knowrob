@@ -10,6 +10,7 @@
 :- use_module(fluents).
 :- use_module(lists).
 :- use_module(meta).
+:- use_module(projection).
 :- use_module(sgml).
 :- use_module(terms).
 :- use_module(typecheck).

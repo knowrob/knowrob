@@ -34,23 +34,23 @@ The following predicates are supported:
 %
 % Same as fail, but the name has a more declarative connotation.
 %
-mongolog:step_expand(false, fail, _Mode).
+mongolog:step_expand(false, fail).
 
 %% not(:Goal):
 %
 % True if Goal cannot be proven.
 % Retained for compatibility only. New code should use \+/1.
 %
-mongolog:step_expand(not(Goal), Expanded, Mode) :-
-	mongolog:step_expand(\+(Goal), Expanded, Mode).
+mongolog:step_expand(not(Goal), Expanded) :-
+	mongolog:step_expand(\+(Goal), Expanded).
 
 %% \+ :Goal:
 %
 % True if‘Goal' cannot be proven (mnemonic: + refers to provable and
 % the backslash (\) is normally used to indicate negation in Prolog).
 %
-mongolog:step_expand(\+(Goal), Expanded, Mode) :-
-	mongolog_expand(Goal, GoalExpanded, Mode),
+mongolog:step_expand(\+(Goal), Expanded) :-
+	mongolog_expand(Goal, GoalExpanded),
 	% another way to write it:
 	%Expanded=((call(GoalExpanded),!,fail) ; true),
 	Expanded = (
@@ -70,14 +70,14 @@ mongolog:step_expand(\+(Goal), Expanded, Mode) :-
 % making the construct fail if the condition fails.
 % This unusual semantics is part of the ISO and all de-facto Prolog standards. 
 %
-mongolog:step_expand(';'('->'(If,Then),Else), ';'(X,Y), Mode) :-
+mongolog:step_expand(';'('->'(If,Then),Else), ';'(X,Y)) :-
 	% (If -> Then) ; Else -> (If, !, Then) ; Else
-	mongolog_expand([If, !, Then], X, Mode),
-	mongolog_expand(Else,          Y, Mode).
+	mongolog_expand([If, !, Then], X),
+	mongolog_expand(Else,          Y).
 
-mongolog:step_expand('->'(If,Then), Epanded, Mode) :-
+mongolog:step_expand('->'(If,Then), Epanded) :-
 	% (If -> Then) -> (If -> Then ; fail)
-	mongolog:step_expand(';'('->'(If,Then),fail), Epanded, Mode).
+	mongolog:step_expand(';'('->'(If,Then),fail), Epanded).
 
 %% TODO: :Condition *-> :Action ; :Else
 % This construct implements the so-called‘soft-cut'.
@@ -90,15 +90,15 @@ mongolog:step_expand('->'(If,Then), Epanded, Mode) :-
 %
 %mongolog:step_expand(
 %		';'('*->'(Condition,Action),Else),
-%		';'(X,Y), Mode) :-
+%		';'(X,Y)) :-
 %	fail.
 	
 %% :Goal1 ; :Goal2
 % Make sure goals of disjunction are expanded.
 %
-mongolog:step_expand(';'(A0,A1), ';'(B0,B1), Ctx) :-
-	mongolog_expand(A0,B0,Ctx),
-	mongolog_expand(A1,B1,Ctx).
+mongolog:step_expand(';'(A0,A1), ';'(B0,B1)) :-
+	mongolog_expand(A0,B0),
+	mongolog_expand(A1,B1).
 
 %% true
 %

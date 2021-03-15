@@ -99,7 +99,6 @@ ask(Statement) :-
 ask_mongolog(Statement, QScope, FScope, Options) :-
 	option(fields(Fields), Options, []),
 	merge_options([
-		mode(ask),
 		scope(QScope),
 		user_vars([['v_scope',FScope]|Fields])
 	], Options, Options1),
@@ -128,10 +127,7 @@ tell(Statement, Scope, Options) :-
 	% compile and call statement
 	(	setting(mng_client:read_only, true)
 	->	log_warning(db(read_only(tell)))
-	;	mongolog_call(Statement, [
-			mode(tell),
-			scope(Scope)|Options0
-		])
+	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
 	).
 
 %% tell(+Statement, +Scope) is nondet.
@@ -239,7 +235,7 @@ user:term_expansion(
 	strip_module_(HeadGlobal,_Module,Term),
 	current_scope(QScope),
 	% add the rule to the DB backend
-	mongolog_add_rule((?>(Term, BodyGlobal))).
+	mongolog_add_rule(Term, BodyGlobal).
 
 %%
 % Term expansion for *tell* rules using the (+>) operator.
@@ -253,8 +249,14 @@ user:term_expansion(
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
+	% rewrite functor
+	% TODO: it would be nicer to generate a lot
+	%        clauses for project/1.
+	Term =.. [Functor|Args],
+	atom_concat('project_',Functor,Functor0),
+	Term0 =.. [Functor0|Args],
 	% add the rule to the DB backend
-	mongolog_add_rule((+>(Term,BodyGlobal))).
+	mongolog_add_rule(Term0, project(BodyGlobal)).
 
 %%
 % Term expansion for *tell-ask* rules using the (?+>) operator.

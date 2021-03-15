@@ -51,15 +51,13 @@
 %
 mongolog:step_expand(
 		tf(ChildFrame, ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]),
-		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW),
-		_Context).
+		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 
 %% tf/2
 %
 mongolog:step_expand(
 		tf(ChildFrame, [ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]]),
-		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW),
-		_Context).
+		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 
 %%
 tf_db(DB, Name) :-
@@ -84,8 +82,7 @@ tf_mng_lookup(
 	time_scope(=<(Query_Since), >=(Query_Until), QueryScope),
 	mongolog_call(
 		tf(ObjFrame, PoseData),
-		[ mode(ask),
-		  scope(QueryScope),
+		[ scope(QueryScope),
 		  user_vars([['v_scope',FactScope]])
 		]),
 	% read values from FactScope

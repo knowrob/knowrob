@@ -25,9 +25,8 @@ The following predicates are supported:
 %%
 mongolog:step_expand(
 		findall(Template, Goal, List),
-		findall(Template, Expanded, List),
-		Context) :-
-	mongolog_expand(Goal, Expanded, Context).
+		findall(Template, Expanded, List)) :-
+	mongolog_expand(Goal, Expanded).
 
 %% setof(+Template, +Goal, -Set)
 % Equivalent to bagof/3, but sorts the result using sort/2 to
@@ -35,9 +34,8 @@ mongolog:step_expand(
 %
 %mongolog:step_expand(
 %		setof(Template, Goal, Set),
-%		','(bagof(Template, Expanded, List), sort(List, Set)),
-%		Context) :-
-%	mongolog_expand(Goal, Expanded, Context).
+%		','(bagof(Template, Expanded, List), sort(List, Set))) :-
+%	mongolog_expand(Goal, Expanded).
 
 %% findall(+Template, :Goal, -Bag)
 % Create a list of the instantiations Template gets successively on

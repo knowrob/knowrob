@@ -34,12 +34,14 @@ for the new IRI.
 % FIXME: it could happen that if in one compilation multiple new_iri's
 %         are generated that both have the same IRI. very unlikely, but still...
 %
-mongolog:step_expand(new_iri(IRI),
-		pragma(get_unique_name(Type,IRI)), _) :-
+mongolog:step_expand(
+		new_iri(IRI),
+		pragma(get_unique_name(Type,IRI))) :-
 	rdf_global_term(rdf:'Resource', Type).
 
-mongolog:step_expand(new_iri(IRI,Type),
-		pragma(get_unique_name(Type,IRI)), _).
+mongolog:step_expand(
+		new_iri(IRI,Type),
+		pragma(get_unique_name(Type,IRI))).
 
 %% query compilation
 mongolog:step_compile(

@@ -24,14 +24,14 @@
 
 test('tell(assign(C,c), triple(a,b,C))') :-
 	assert_true(lang_query:tell((
-		assign(C,g),
+		ask(assign(C,g)),
 		triple(e,f,C)
 	))).
 
 test('tell triple(a,b,c)') :-
 	assert_true(lang_query:tell(triple(a,b,c))).
 
-test('tell triple(a,b,_)', [throws(error(instantiation_error,triple(a,b,_)))]) :-
+test('tell triple(a,b,_)', [throws(error(instantiation_error,project(triple(a,b,_))))]) :-
 	lang_query:tell(triple(a,b,_)).
 
 test('ask triple(a,b,c)') :-

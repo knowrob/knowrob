@@ -84,16 +84,84 @@ mongolog_drop_predicate(Functor) :-
 	mng_drop(DB, Collection).
 
 %%
-mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
-	merge_options([operation(assert),mode(tell)], Ctx, Ctx0),
-	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
-
-mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
-	merge_options([operation(retractall)], Ctx, Ctx0),
-	mongolog:step_compile(Term, Ctx0, Pipeline, StepVars).
+mongolog:step_expand(project(Term), assert(Term)) :-
+	mongolog_predicate(Term, _, _),!.
 
 %%
+mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
+	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars).
+
+mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
+	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate_retractall(Term, Ctx, Pipeline, StepVars).
+
 mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
+	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate_call(Term, Ctx, Pipeline, StepVars).
+
+%%
+mongolog_predicate_call(Term, Ctx, Pipeline, StepVars) :-
+	mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_pred, read),
+	option(step_vars(StepVars), Ctx_pred),
+	%
+	unpack_compound(Zipped, Unpacked),
+	findall(InnerStep,
+		match_predicate(Unpacked, Ctx_pred, InnerStep),
+		InnerPipeline),
+	%
+	findall(Step,
+		% look-up documents into 't_pred' array field
+		(	lookup_predicate('t_pred', InnerPipeline, Ctx_pred, Step)
+		% unwind lookup results and assign variables
+		;	Step=['$unwind', string('$t_pred')]
+		;	project_predicate(Unpacked, Ctx_pred, Step)
+		;	Step=['$unset', string('t_pred')]
+		),
+		Pipeline).
+
+%%
+mongolog_predicate_retractall(Term, Ctx, Pipeline, StepVars) :-
+	mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_pred, write),
+	option(collection(Collection), Ctx_pred),
+	option(step_vars(StepVars), Ctx_pred),
+	unpack_compound(Zipped, Unpacked),
+	findall(InnerStep,
+		(	match_predicate(Unpacked, Ctx_pred, InnerStep)
+		% retractall first performs match, then only projects the id of the document
+		;	project_retract(InnerStep)
+		),
+		InnerPipeline),
+	%
+	findall(Step,
+		% look-up documents into 't_pred' array field
+		(	lookup_predicate('t_pred', InnerPipeline, Ctx_pred, Step)
+		% add removed facts to assertions list
+		;	mongolog:add_assertions(string('$t_pred'), Collection, Step)
+		;	Step=['$unset', string('t_pred')]
+		),
+		Pipeline
+	).
+
+%%
+mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars) :-
+	mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_pred, write),
+	option(collection(Collection), Ctx_pred),
+	option(step_vars(StepVars), Ctx_pred),
+	% create a document
+	findall([Field,Val],
+		(	member([Field,Arg],Zipped),
+			mongolog:var_key_or_val(Arg, Ctx_pred, Val)
+		),
+		PredicateDoc),
+	% and add it to the list of asserted documents
+	findall(Step,
+		mongolog:add_assertion(PredicateDoc, Collection, Step),
+		Pipeline).
+
+%%
+%
+mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_zipped, ReadOrWrite) :-
 	% get predicate fields and options
 	mongolog_predicate(Term, ArgFields, Options),
 	% get predicate functor and arguments
@@ -105,73 +173,17 @@ mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
 	!,
 	% read variable in Term
 	mongolog:step_vars(Term, Ctx, StepVars0),
-	mongolog:add_assertion_var(StepVars0, Ctx, StepVars),
+	(	ReadOrWrite==read -> StepVars=StepVars0
+	;	mongolog:add_assertion_var(StepVars0, StepVars)
+	),
 	% add predicate options to compile context
 	merge_options([
 		step_vars(StepVars),
 		collection(Collection)
 	], Ctx, Ctx0),
-	merge_options(Ctx0, Options, Ctx1),
+	merge_options(Ctx0, Options, Ctx_zipped),
 	% zip field names with predicate arguments
-	zip(ArgFields, Args, Zipped),
-	% get aggregation pipeline
-	(	option(operation(assert), Ctx)     -> mongolog_predicate_assert(Zipped, Ctx1, Pipeline)
-	;	option(operation(retractall), Ctx) -> mongolog_predicate_retractall(Zipped, Ctx1, Pipeline)
-	;	option(mode(tell), Ctx)            -> mongolog_predicate_assert(Zipped, Ctx1, Pipeline)
-	;	mongolog_predicate_call(Zipped, Ctx1, Pipeline)
-	).
-
-%%
-mongolog_predicate_call(Zipped, Ctx, Pipeline) :-
-	unpack_compound(Zipped, Unpacked),
-	findall(InnerStep,
-		match_predicate(Unpacked, Ctx, InnerStep),
-		InnerPipeline),
-	%
-	findall(Step,
-		% look-up documents into 't_pred' array field
-		(	lookup_predicate('t_pred', InnerPipeline, Ctx, Step)
-		% unwind lookup results and assign variables
-		;	Step=['$unwind', string('$t_pred')]
-		;	project_predicate(Unpacked, Ctx, Step)
-		;	Step=['$unset', string('t_pred')]
-		),
-		Pipeline).
-
-%%
-mongolog_predicate_retractall(Zipped, Ctx, Pipeline) :-
-	option(collection(Collection), Ctx),
-	unpack_compound(Zipped, Unpacked),
-	findall(InnerStep,
-		(	match_predicate(Unpacked, Ctx, InnerStep)
-		% retractall first performs match, then only projects the id of the document
-		;	project_retract(InnerStep)
-		),
-		InnerPipeline),
-	%
-	findall(Step,
-		% look-up documents into 't_pred' array field
-		(	lookup_predicate('t_pred', InnerPipeline, Ctx, Step)
-		% add removed facts to assertions list
-		;	mongolog:add_assertions(string('$t_pred'), Collection, Step)
-		;	Step=['$unset', string('t_pred')]
-		),
-		Pipeline
-	).
-
-%%
-mongolog_predicate_assert(Zipped, Ctx, Pipeline) :-
-	option(collection(Collection), Ctx),
-	% create a document
-	findall([Field,Val],
-		(	member([Field,Arg],Zipped),
-			mongolog:var_key_or_val(Arg, Ctx, Val)
-		),
-		PredicateDoc),
-	% and add it to the list of asserted documents
-	findall(Step,
-		mongolog:add_assertion(PredicateDoc, Collection, Step),
-		Pipeline).
+	zip(ArgFields, Args, Zipped).
 
 %%
 unpack_compound([], []) :- !.
