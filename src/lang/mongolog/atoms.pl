@@ -197,104 +197,104 @@ add_separator([X0,X1|Xs], Sep, [X0,Sep,X1|Ys]) :-
 :- begin_tests('mongolog_atoms').
 
 test('atom_number(+Atom,-Num)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_number(Atom, Num), Atom, '4.5'),
 	assert_equals(Num, 4.5).
 
 test('atom_number(+Atom,+Num)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_number(Atom, 4.5), Atom, '4.5')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_number(Atom, -2.25), Atom, '-2.25')).
 
 test('atom_number(NaN,_)', [throws(mng_error(_))]):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_number(Atom,_), Atom, 'not a number').
 
 test('atom_length(+Atom,-Length)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_length(Atom, Len), Atom, '4.5'),
 	assert_equals(Len, 3).
 
 test('upcase_atom(+Atom,+Uppercase)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		upcase_atom(Atom, 'FOO 3'), Atom, 'foo 3')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		upcase_atom(Atom, 'FOO BAR'), Atom, 'foo BAR')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		upcase_atom(Atom, ''), Atom, '')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		upcase_atom(Atom, 'Foo Bar'), Atom, 'foo BAR')).
 
 test('upcase_atom(+Atom,-Uppercase)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		upcase_atom(Atom, Uppercase), Atom, 'foo Bar'),
 	assert_equals(Uppercase, 'FOO BAR').
 
 test('downcase_atom(+Atom,+Uppercase)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		downcase_atom(Atom, 'foo 3'), Atom, 'foo 3')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		downcase_atom(Atom, 'foo bar'), Atom, 'foo BAR')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		downcase_atom(Atom, ''), Atom, '')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		downcase_atom(Atom, 'Foo Bar'), Atom, 'foo BAR')).
 
 test('atom_length(+Atom,+Length)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_length(Atom, 3), Atom, 'foo')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		atom_length(Atom, 2), Atom, 'foo')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_length(Atom, 0), Atom, '')).
 
 test('atom_prefix(+Atom,+Prefix)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_prefix(Atom, 'f'), Atom, 'foo')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_prefix(Atom, 'fo'), Atom, 'foo')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_prefix(Atom, 'foo'), Atom, 'foo')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		atom_prefix(Atom, 'bar'), Atom, 'foo')).
 
 test('atom_concat(+A1,+A2,+A3)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom_concat('foo', 'bar', Atom),
 		Atom, 'foobar')).
 
 test('atom_concat(+A1,+A2,-A3)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_concat(A1, 'bar', A3),
 		A1, 'foo'),
 	assert_equals(A3, 'foobar').
 
 test('atom_concat(+A1,-A2,+A3)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_concat(A1, A2, 'foobar'),
 		A1, 'foo'),
 	assert_equals(A2, 'bar').
 
 test('atom_concat(-A1,+A2,+A3)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atom_concat(A1, A2, 'foobar'),
 		A2, 'bar'),
 	assert_equals(A1, 'foo').
 
 test('atomic_list_concat(+List,+Atom)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atomic_list_concat(['foo', 'bar'], Atom),
 		Atom, 'foobar')).
 
 test('atomic_list_concat(+List,-Atom)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atomic_list_concat([X1, 'bar'], Atom),
 		X1, 'foo'),
 	assert_equals(Atom, 'foobar').
 
 test('atomic_list_concat(+List,+Sep,-Atom)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		atomic_list_concat([X1, 'bar'], '-', Atom),
 		X1, 'foo'),
 	assert_equals(Atom, 'foo-bar').

@@ -158,45 +158,45 @@ match_type_(Arg, _Goal, Type, Ctx,
 :- begin_tests('mongolog_typecheck').
 
 test('ground(?Term)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		ground(Number), Number, 4.5)),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		ground(foo(Number)), Number, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		ground(_), _, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		ground(foo(Number,_)), Number, 4.5)).
 
 test('var(?Term)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		var(_), _, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		var(Number), Number, 4.5)).
 
 test('number(+Number)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		number(Number), Number, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		number(Number), Number, 'foo')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		number(Number), Number, '4.5')).
 
 test('atom(+Atom)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		atom(Atom), Atom, '4.5')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		atom(Atom), Atom, 4.5)).
 
 test('is_list(+List)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		is_list(List), List, ['4.5'])),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		is_list(List), List, 4.5)).
 
 test('compound(+Term)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		compound(Term), Term, foo('4.5'))),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		compound(Term), Term, 4.5)).
 
 :- end_tests('mongolog_typecheck').

@@ -150,7 +150,7 @@ append_cut(Goal, WithCut) :-
 :- begin_tests('mongolog_meta').
 
 test('limit(1, +Goal)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		limit(1, (
 			(X is (Num + 5))
 		;	(X is (Num * 2))
@@ -160,7 +160,7 @@ test('limit(1, +Goal)'):-
 
 test('limit(2, +Goal)'):-
 	findall(X,
-		lang_query:test_command(
+		mongolog:test_call(
 			limit(2, (
 				(X is (Num + 5))
 			;	(X is (Num * 2))
@@ -175,7 +175,7 @@ test('limit(2, +Goal)'):-
 	assert_true(memberchk(9.0, Results)).
 
 test('once(+Goal)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		once((
 			(X is (Num + 5))
 		;	(X is (Num * 2))
@@ -184,13 +184,13 @@ test('once(+Goal)'):-
 	assert_equals(X,9.5).
 
 test('ignore(+Failing)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		ignore(((Num < 3), (X is (Num * 2)))),
 		Num, 4.5),
 	assert_unifies(X,_).
 
 test('ignore(+Failing), +Goal'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(ignore(Num < 3), (X is (Num * 2))),
 		Num, 4.5),
 	assert_equals(X,9.0).
@@ -199,7 +199,7 @@ test('ignore(+FailingWithVar), +Goal'):-
 	% test with variable Z being assigned only in failing ignored
 	% goal. Then no grounding will be part of result set and Z still a variable
 	% after the call.
-	lang_query:test_command(
+	mongolog:test_call(
 		(	ignore((Num < 3, Z is Num + 2)),
 			X is (Num * 2)
 		),
@@ -208,12 +208,12 @@ test('ignore(+FailingWithVar), +Goal'):-
 	assert_unifies(Z,_).
 
 test('call(+Goal)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		call(Y is X), X, -3.25),
 	assert_equals(Y, -3.25).
 
 test('call(+Functor, -Arg1, +Arg2)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		call(is, Arg1, Arg2), Arg2, -3.25),
 	assert_equals(Arg1, -3.25).
 

@@ -302,7 +302,7 @@ has_cut(Goal) :-
 
 test('(+Goal ; +Goal)'):-
 	findall(X,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is (Num + 5))
 			;	(X is (Num * 2))
 			),
@@ -315,7 +315,7 @@ test('(+Goal ; +Goal)'):-
 
 test('(+Goal ; fail)'):-
 	findall(X,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is (Num + 5))
 			;	fail
 			),
@@ -324,12 +324,12 @@ test('(+Goal ; fail)'):-
 	assert_equals(Results,[9.5]).
 
 test('(fail ; fail)'):-
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		((Num > 5) ; fail), Num, 4.5)).
 
 test('(+Goal ; true)'):-
 	findall(X,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is (Num + 5))
 			;	true
 			),
@@ -343,7 +343,7 @@ test('(+Goal ; $early_evaluated)'):-
 	% `X is 15` is evaluated compile-time, while
 	% the other term must be computed at run-time. 
 	findall(X,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is (Num + 5))
 			;	(X is 15)
 			),
@@ -354,7 +354,7 @@ test('(+Goal ; $early_evaluated)'):-
 	assert_true(memberchk(15.0,Results)).
 
 test('(+Goal ; +PrunedGoal)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	(X is (Num + 5))
 		;	(7 < 5, X is (Num * 2))
 		),
@@ -362,7 +362,7 @@ test('(+Goal ; +PrunedGoal)'):-
 	assert_equals(X,9.5).
 
 test('((+Goal ; +Goal), !)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	(	(X is (Num + 5))
 			;	(X is (Num * 2))
 			), !
@@ -372,7 +372,7 @@ test('((+Goal ; +Goal), !)'):-
 
 test('(((+Goal,+Goal) ; (+Goal,+Goal)))') :-
 	findall([X,Y],
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is Num, Y is X + 1)
 			;	(X is Num, Y is X + 2)
 			),
@@ -382,7 +382,7 @@ test('(((+Goal,+Goal) ; (+Goal,+Goal)))') :-
 
 test('(((+G ; +G), +G) ; +G)') :-
 	findall([X,Y],
-		lang_query:test_command(
+		mongolog:test_call(
 			(	(X is Num, ((X < 2.0 ; X > 4.0), Y is X + 1))
 			;	(X is Num, Y is X + 2)
 			),
@@ -391,7 +391,7 @@ test('(((+G ; +G), +G) ; +G)') :-
 	assert_equals(Results, [[4.5,5.5], [4.5,6.5]]).
 
 test('((+If -> +Then) ; +Else)::Then') :-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	Num > 5 -> X is Num * 2
 		;	X is Num + 2
 		),
@@ -399,7 +399,7 @@ test('((+If -> +Then) ; +Else)::Then') :-
 	assert_equals(X,11.0).
 
 test('((+If -> +Then) ; +Else)::Else'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	Num > 5 -> X is Num * 2
 		;	X is Num + 2
 		),
@@ -407,9 +407,9 @@ test('((+If -> +Then) ; +Else)::Else'):-
 	assert_equals(X,6.5).
 
 test('\\+(+Goal)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		\+(Number > 5), Number, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		\+(Number > 4), Number, 4.5)).
 
 :- end_tests('mongolog_control').

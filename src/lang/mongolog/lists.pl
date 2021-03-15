@@ -209,24 +209,24 @@ compile_list_attribute(List, Attribute, Operator, Ctx, Pipeline) :-
 :- begin_tests('mongolog_lists').
 
 test('length(+,+)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		length(List, 2), List, [2,4])),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		length([2,4], Count), Count, 2)),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		length([], Count), Count, 0)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		length(List, 3), List, [2,4])),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		length([2,4], Count), Count, 3)).
 
 test('length(+,-)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		length(List, Length), List, [2,4]),
 	assert_equals(Length, 2).
 
 test('findall+length'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				((X is Num + 5);(X is Num * 2)),
 				List),
@@ -236,7 +236,7 @@ test('findall+length'):-
 	assert_equals(Length, 2).
 
 test('max_list(+Numbers)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			Y is Num * 2,
 			max_list([X,Y], Max)
@@ -245,7 +245,7 @@ test('max_list(+Numbers)'):-
 	assert_equals(Max, 9.5).
 
 test('findall+max_list'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				X is Num + 5,
 				NumberList),
@@ -255,7 +255,7 @@ test('findall+max_list'):-
 	assert_equals(Max, 9.5).
 
 test('min_list(+Numbers,-Min)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			Y is Num * 2,
 			min_list([X,Y], Min)
@@ -264,7 +264,7 @@ test('min_list(+Numbers,-Min)'):-
 	assert_equals(Min, 9.0).
 
 test('sum_list(+Numbers,-Sum)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			Y is Num * 2,
 			sum_list([X,Y], Sum)
@@ -273,7 +273,7 @@ test('sum_list(+Numbers,-Sum)'):-
 	assert_equals(Sum, 18.5).
 
 test('list_to_set(+Numbers)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			list_to_set([X,X], Set)
 		),
@@ -281,7 +281,7 @@ test('list_to_set(+Numbers)'):-
 	assert_equals(Set, [9.5]).
 
 test('sort(+Numbers)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			sort([4,X,Num,2], Sorted)
 		),
@@ -289,17 +289,17 @@ test('sort(+Numbers)'):-
 	assert_equals(Sorted, [2.0, 4.0, 9.0]).
 
 test('sort(+Atoms)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		sort([d,a,X,b], Sorted), X, string(s)),
 	assert_equals(Sorted, [a,b,d,s]).
 
 test('sort(+AtomsAndNumbers)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		sort([9,a,X,7], Sorted), X, string(s)),
 	assert_equals(Sorted, [7.0,9.0,a,s]).
 
 test('nth0(+Numbers)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	X is Num + 5,
 			Y is Num * 2,
 			nth0(1, [X,Y], Second)
@@ -309,7 +309,7 @@ test('nth0(+Numbers)'):-
 
 test('member(+Number)'):-
 	findall(Val,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	X is Num + 5,
 				member(Val, [X])
 			),
@@ -319,7 +319,7 @@ test('member(+Number)'):-
 
 test('member(+Numbers)'):-
 	findall(Val,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	X is Num + 5,
 				Y is Num * 2,
 				member(Val, [X,Y])
@@ -329,7 +329,7 @@ test('member(+Numbers)'):-
 	assert_equals(Results,[9.5,9.0]).
 
 test('findall+nth0'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				((X is Num + 5);(X is Num * 2)),
 				List),
@@ -340,7 +340,7 @@ test('findall+nth0'):-
 
 test('findall+member'):-
 	findall(Val,
-		lang_query:test_command(
+		mongolog:test_call(
 			(	findall(X,
 					((X is Num + 5);(X is Num * 2)),
 					List),

@@ -50,37 +50,37 @@ mongolog:step_compile(\==(X,Y), Ctx,
 :- begin_tests('mongolog_comparison').
 
 test('==(+Atom,+Term)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(Atom == '4.5'), Atom, '4.5')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(Atom == 'foo'), Atom, 'foo')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		(Atom == 'foo'), Atom, '4.5')).
 
 test('==(+Number,+Term)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(X == 4.5), X, 4.5)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		(X == 4.5), X, '4.5')).
 		
 test('==(+Term1,+Term2)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(X == foo(2)), X, foo(2))),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(X == foo(bar,2)), X, foo(bar,2))),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(X == foo(Y)), X, foo(Y))),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		(X == foo(3)), X, foo(2))).
 
 test('\\==(+Term1,+Term2)'):-
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		(Atom \== 'foo'), Atom, 'foo')),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		(Atom \== 4.5), Atom, 4.5)),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(Atom \== 'foo'), Atom, '4.5')),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(Atom \== 4.5), Atom, '4.5')).
 
 :- end_tests('mongolog_comparison').

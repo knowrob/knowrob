@@ -168,76 +168,76 @@ mongolog:step_compile(=..(Term,List), Ctx, Pipeline) :-
 :- begin_tests('mongolog_terms').
 
 test('functor(+Term,-Functor,-Arity)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		functor(Term,Functor,Arity),
 		Term, foo(bar,45)),
 	assert_equals(Functor, foo),
 	assert_equals(Arity, 2).
 
 test('functor(-Term,+Functor,+Arity)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		functor(Term,foo,Arity), Arity, 2),
 	assert_unifies(Term, foo(_,_)),
 	assert_false(ground(Term)).
 
 test('arg(+Index,+Term,+Value)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		arg(Index,foo(a,b,c),a), Index, 1)),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		arg(Index,foo(a,b,c),b), Index, 2)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		arg(Index,foo(a,b,c),b), Index, 1)),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		arg(Index,foo(a,b,c),d), Index, 1)).
 
 test('arg(+Index,+Term,-Value)') :-
-	lang_query:test_command(
+	mongolog:test_call(
 		arg(Index,foo(a,b,c),Value), Index, 1),
 	assert_equals(Value,a),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		arg(Index,foo(a,b,c),_), Index, 5)).
 
 test('arg(-Index,+Term,+Value)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		arg(Index,foo(a,b,c),Value), Value, b),
 	assert_equals(Index,2),
-	assert_false(lang_query:test_command(
+	assert_false(mongolog:test_call(
 		arg(_,foo(a,b,c),Value), Value, d)).
 
 test('arg(-UnwindedIndex,+Term,+Value)', fixme('$indexOfArray only returns the first occurence')):-
 	findall(Index,
-		lang_query:test_command(
+		mongolog:test_call(
 			arg(Index,foo(a,b,a),Value), Value, a),
 		Results),
 	assert_equals(Results, [1,3]).
 
 test('copy_term(+In,-Out)::compound') :-
-	lang_query:test_command(copy_term(In,Out), In, foo(a)),
+	mongolog:test_call(copy_term(In,Out), In, foo(a)),
 	assert_equals(Out,foo(a)).
 
 test('copy_term(+In,-Out)::atom') :-
-	lang_query:test_command(copy_term(In,Out), In, a),
+	mongolog:test_call(copy_term(In,Out), In, a),
 	assert_equals(Out,a).
 
 test('copy_term(+In,-Out)::number') :-
-	lang_query:test_command(copy_term(In,Out), In, 7),
+	mongolog:test_call(copy_term(In,Out), In, 7),
 	assert_equals(Out,7.0).
 
 test('copy_term(+In,-Out)::vars') :-
-	lang_query:test_command(copy_term(In,Out), In, foo(a,X)),
+	mongolog:test_call(copy_term(In,Out), In, foo(a,X)),
 	assert_unifies(Out, foo(a,_)),
 	(Out=foo(a,Y) -> assert_true(X \== Y) ; true).
 
 test('=..(+Term,-List)::ground') :-
-	lang_query:test_command(=..(Term,List), Term, foo(a,b)),
+	mongolog:test_call(=..(Term,List), Term, foo(a,b)),
 	assert_equals(List,[foo,a,b]).
 
 test('=..(+Term,-List)::nonground') :-
-	lang_query:test_command(=..(Term,List), Term, foo(a,B)),
+	mongolog:test_call(=..(Term,List), Term, foo(a,B)),
 	assert_equals(List,[foo,a,B]).
 
 test('=..(-Term,+List)') :-
-	lang_query:test_command(=..(Term,List), List, [foo,a,b]),
+	mongolog:test_call(=..(Term,List), List, [foo,a,b]),
 	assert_equals(Term,foo(a,b)).
 
 :- end_tests('mongolog_terms').

@@ -852,3 +852,13 @@ take_until_cut([X|Xs],[X|Ys],Remaining) :-
 has_list_head([]) :- !.
 has_list_head([_|_]).
 
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+%%
+test_call(Goal, Var, Value) :-
+	WithSet=(','(assign(Var,Value), Goal)),
+	mongolog_call(WithSet).
+

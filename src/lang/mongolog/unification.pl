@@ -146,41 +146,41 @@ set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
 :- begin_tests('mongolog_unification').
 
 test('atom unification'):-
-	assert_true(lang_query:test_command(=(X,a), X, a)),
-	assert_true(lang_query:test_command(=(a,X), X, a)),
-	assert_true(lang_query:test_command(=(_,X), X, a)),
-	assert_false(lang_query:test_command(=(b,X), X, a)),
-	assert_false(lang_query:test_command(=(a(b),X), X, a)).
+	assert_true(mongolog:test_call(=(X,a), X, a)),
+	assert_true(mongolog:test_call(=(a,X), X, a)),
+	assert_true(mongolog:test_call(=(_,X), X, a)),
+	assert_false(mongolog:test_call(=(b,X), X, a)),
+	assert_false(mongolog:test_call(=(a(b),X), X, a)).
 
 test('number unification'):-
-	assert_true(lang_query:test_command(=(X,7), X, 7)),
-	assert_true(lang_query:test_command(=(7,X), X, 7)),
-	assert_true(lang_query:test_command(=(_,X), X, 7)),
-	assert_false(lang_query:test_command(=(8,X), X, 7)),
-	assert_false(lang_query:test_command(=(a(7),X), X, 7)).
+	assert_true(mongolog:test_call(=(X,7), X, 7)),
+	assert_true(mongolog:test_call(=(7,X), X, 7)),
+	assert_true(mongolog:test_call(=(_,X), X, 7)),
+	assert_false(mongolog:test_call(=(8,X), X, 7)),
+	assert_false(mongolog:test_call(=(a(7),X), X, 7)).
 
 test('compound unification'):-
-	assert_true(lang_query:test_command(=(X,foo(a,b)), X, foo(a,b))),
-	assert_true(lang_query:test_command(=(foo(a,b),X), X, foo(a,b))),
-	assert_true(lang_query:test_command(=(foo(a,_),X), X, foo(a,b))),
-	assert_true(lang_query:test_command(=(_,X), X, foo(a,b))),
-	assert_false(lang_query:test_command(=(foo(a,c),X), X, foo(a,b))).
+	assert_true(mongolog:test_call(=(X,foo(a,b)), X, foo(a,b))),
+	assert_true(mongolog:test_call(=(foo(a,b),X), X, foo(a,b))),
+	assert_true(mongolog:test_call(=(foo(a,_),X), X, foo(a,b))),
+	assert_true(mongolog:test_call(=(_,X), X, foo(a,b))),
+	assert_false(mongolog:test_call(=(foo(a,c),X), X, foo(a,b))).
 
 test('unification 1-ary term with var'):-
-	lang_query:test_command(=(foo(Y),X), X, foo(a)),
+	mongolog:test_call(=(foo(Y),X), X, foo(a)),
 	assert_equals(Y,a).
 
 test('unification 2-ary term with var'):-
-	lang_query:test_command(=(foo(a,Y),X), X, foo(a,b)),
+	mongolog:test_call(=(foo(a,Y),X), X, foo(a,b)),
 	assert_equals(Y,b).
 
 test('unified vars are equivalent'):-
-	lang_query:test_command(=(X,Y), X, _),
+	mongolog:test_call(=(X,Y), X, _),
 	assert_equals(X,Y).
 
 test('unified vars can be implicitly instantiated',
 		fixme('all equivalent variables must be instantiated together')):-
-	lang_query:test_command((=(X,Y), X is 4), X, _),
+	mongolog:test_call((=(X,Y), X is 4), X, _),
 	assert_equals(X,4),
 	assert_equals(Y,4).
 

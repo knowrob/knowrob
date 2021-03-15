@@ -120,7 +120,7 @@ template_instantiation(Atomic, _Ctx, Constant) :-
 :- begin_tests('mongolog_findall').
 
 test('findall(+Succeeds)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		findall(X,
 			X is (Num + 5),
 			Results),
@@ -130,7 +130,7 @@ test('findall(+Succeeds)'):-
 	assert_equals(Results,[9.5]).
 
 test('findall(+Succeeds ; +Succeeds)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				(	(X is (Num + 5))
 				;	(X is (Num * 2))
@@ -143,7 +143,7 @@ test('findall(+Succeeds ; +Succeeds)'):-
 	assert_equals(Results,[9.5,9.0]).
 
 test('findall(+,:,+)'):-
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(	findall(X,
 				(	(X is (Num + 5))
 				;	(X is (Num * 2))
@@ -153,7 +153,7 @@ test('findall(+,:,+)'):-
 		Num, double(4.5))).
 
 test('findall(+Succeeds ; +Fails)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				(	(X is (Num + 5))
 				;	(Num > 5, X is (Num * 2))
@@ -166,7 +166,7 @@ test('findall(+Succeeds ; +Fails)'):-
 	assert_equals(Results,[9.5]).
 
 test('findall(+Succeeds ; +Fails ; +Succeeds)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				(	(X is (Num + 5))
 				;	(Num > 5, X is (Num * 2))
@@ -180,7 +180,7 @@ test('findall(+Succeeds ; +Fails ; +Succeeds)'):-
 	assert_equals(Results,[9.5,10.5]).
 
 test('findall with ungrounded'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(X,
 				(	true
 				;	(X is (Num * 2))
@@ -193,7 +193,7 @@ test('findall with ungrounded'):-
 	( Results=[Var|_] -> assert_true(var(Var)) ; true ).
 
 test('findall 1-element list'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall([X],
 				(	X is Num + 5
 				;	X is Num * 2
@@ -206,7 +206,7 @@ test('findall 1-element list'):-
 	assert_unifies(Results,[[9.5],[9.0]]).
 
 test('findall 2-element list'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall([X,Y],
 				(	(X is (Num + 5), Y is X + 1)
 				;	(X is (Num * 2), Y is X + 2)
@@ -219,7 +219,7 @@ test('findall 2-element list'):-
 	assert_unifies(Results,[[9.5,10.5],[9.0,11.0]]).
 
 test('findall 1-ary term'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(test(X),
 				(	X is (Num + 5)
 				;	X is (Num * 2)
@@ -232,7 +232,7 @@ test('findall 1-ary term'):-
 	assert_unifies(Results,[test(9.5), test(9.0)]).
 
 test('findall 2-ary term'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(	findall(test(X,Y),
 				(	(X is (Num + 5), Y is X + 1)
 				;	(X is (Num * 2), Y is X + 2)

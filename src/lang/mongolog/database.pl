@@ -408,7 +408,7 @@ test('shape(+,sphere(-))') :-
 
 test('+Cond->assert(woman);assert(woman)') :-
 	assert_false(mongolog_call(woman(bar))),
-	assert_true(lang_query:test_command(
+	assert_true(mongolog:test_call(
 		(	Num > 5
 		->	assert(woman(foo))
 		;	assert(woman(bar))

@@ -81,14 +81,14 @@ mongolog:step_compile(
 :- begin_tests('mongolog_sgml').
 
 test('new_iri(-IRI)'):-
-	lang_query:test_command(
+	mongolog:test_call(
 		(new_iri(IRI), atom_concat(IRI,Suffix,X)), Suffix, foo),
 	assert_true(atom(X)),
 	assert_true(atom_concat(_,foo,X)).
 
 test('iri_xml_namespace(+IRI,-NS,-Name)'):-
 	rdf_global_term(rdf:'Resource', Resource),
-	lang_query:test_command(
+	mongolog:test_call(
 		iri_xml_namespace(X,NS,Name),
 		X, Resource),
 	assert_true(atom(NS)),
