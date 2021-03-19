@@ -48,12 +48,22 @@ infer( holds(S,P,=(unit(Value,Unit))),
 
 infer( holds(S,P,O),
        holds(S,P,O), QScope,FScope) :-
-  swrl_holds1(S,P,O,QScope->FScope).
+  swrl_holds1(S,P,O,QScope->FScope),
+  swrl_infer_scope(FScope).
 
 infer( instance_of(S,O),
        instance_of(S,O), QScope,FScope) :-
   once((var(O);atom(O))),
-  swrl_instance_of(S,O,QScope->FScope).
+  swrl_instance_of(S,O,QScope->FScope),
+  swrl_infer_scope(FScope).
+
+%%
+swrl_infer_scope(FScope) :-
+  nonvar(FScope).
+
+swrl_infer_scope(FScope) :-
+  var(FScope),
+  universal_scope(FScope).
 
 %%
 swrl_holds1(S,P,O,Scope) :-
@@ -200,6 +210,10 @@ swrl_builtin_pl(startsWith(A,X), atom_concat(X_atom, _, A_atom), Vars) :-
 swrl_builtin_pl(endsWith(A,X), atom_concat(_, X_atom, A_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
+%% extensions
+swrl_builtin_pl(makeOWLClass(A), swrl:swrlx_make_individual(A_atom), Vars) :-
+  swrl_atoms([A], [A_atom], Vars).
+
 %%
 swrl_leq(A,B)        :- number_list([A,B],[X,Y]),     X =< Y.
 swrl_less(A,B)       :- number_list([A,B],[X,Y]),     X < Y.
@@ -301,3 +315,11 @@ swrl_nums([],[],_).
 swrl_nums([X|Xs],[Y|Ys],Vars) :-
   swrl_atom_number(X,Y,Vars),
   swrl_nums(Xs,Ys,Vars).
+
+%% swrlx
+swrlx_make_individual(A) :-
+  ground(A).
+
+swrlx_make_individual(A) :-
+  \+ ground(A),
+  tell(instance_of(A, owl:'Thing')).

@@ -37,3 +37,6 @@
 
 # ignore downloaded ontologies
 owl/external/
+
+# ignore vscode-generated folder
+.vscode/
