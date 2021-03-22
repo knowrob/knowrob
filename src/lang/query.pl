@@ -23,6 +23,8 @@
 	[ rdf_global_term/2 ]).
 :- use_module('scope',
     [ current_scope/1, universal_scope/1 ]).
+:- use_module('computable',
+    [ computable_call/5, computable_split/4 ]).
 :- use_module('mongolog/mongolog').
 
 % fallback graph for tell/forget
@@ -67,11 +69,11 @@ ask(Statement, QScope, FScope, Options) :-
 	% in this case we can limit to one solution here
 	ground(Statement),
 	!,
-	once(ask_mongolog(Statement, QScope, FScope, Options)).
+	once(call_query(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
 	%\+ ground(Statement),
-	ask_mongolog(Statement, QScope, FScope, Options).
+	call_query(Statement, QScope, FScope, Options).
 
 %% ask(+Statement, +QScope, -FScope) is nondet.
 %
@@ -93,14 +95,45 @@ ask(Statement) :-
 	current_scope(QScope),
 	ask(Statement, QScope, _, []).
 
-%
-ask_mongolog(Statement, QScope, FScope, Options) :-
+%%
+call_query(Goal, QScope, FScope, Options) :-
 	option(fields(Fields), Options, []),
 	merge_options([
 		scope(QScope),
 		user_vars([['v_scope',FScope]|Fields])
 	], Options, Options1),
-	mongolog_call(Statement, Options1).
+	call_query(Goal, Options1).
+
+%%
+call_query(Goal, Options) :-
+	% split query at first (chain of) computable predicate encountered
+	% into subgoals left-of and sub-goals right-of computables
+	computable_split(Goal, ComputationGoal, LeftGoal, RightGoal),
+	!,
+	% left-side of computables generates input that is streamed into
+	% the computation process
+	(	LeftGoal==[]
+	->	GeneratorGoal=true % first sub-goal is a computable
+	;	GeneratorGoal=mongolog_call(LeftGoal, Options)
+	),
+	% get list of variables that appear in RightGoal _and_ left of it.
+	% these are the inputs when calling RightGoal
+	shared_variables([ComputationGoal,LeftGoal], RightGoal, Pattern),
+	% run the computation.
+	% the instantiations are returned in chunks, and
+	% computation_run creates choicepoints for different
+	% chunks.
+	computable_call(ComputationGoal, GeneratorGoal,
+		Pattern, NSolutions, Options),
+	% avoid choicepoints here, and bake instantiations
+	% into the query
+	RestGoal=','(member(Pattern, NSolutions), RightGoal),
+	% finally do a recursive call
+	call_query(RestGoal, Options).
+
+call_query(Goal, Options) :-
+	% Goal has no computables
+	mongolog_call(Goal, Options).
 
 %% tell(+Statement, +Scope, +Options) is semidet.
 %
@@ -226,7 +259,7 @@ set_graph_option(Options, Merged) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, lang_query:ask_mongolog(BodyGlobal, QScope, _FScope, [])))) :-
+		(:-(HeadGlobal, lang_query:call_query(BodyGlobal, QScope, _FScope, [])))) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
@@ -272,3 +305,11 @@ user:term_expansion((?+>(Head,Goal)), X1) :-
 	user:term_expansion((?>(Head,Goal)),X1),
 	user:term_expansion((+>(Head,Goal)),_X2).
 
+%%
+%
+shared_variables(Term0, Term1, SharedVars) :-
+	term_variables(Term0, Vars0),
+	term_variables(Term1, Vars1),
+	sort(Vars0, Sorted0),
+	sort(Vars1, Sorted1),
+	ord_intersection(Sorted0, Sorted1, SharedVars, _).

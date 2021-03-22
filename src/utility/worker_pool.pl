@@ -1,5 +1,6 @@
 :- module(worker_pool,
-    [ worker_pool_create/2,
+    [ worker_pool_create/1,
+      worker_pool_create/2,
       worker_pool_call/3,
       worker_pool_start_work/4,
       worker_pool_stop_work/2,
@@ -22,6 +23,17 @@ pool_work_queue(WorkerPool, WorkQueue) :-
 pool_active_queue(WorkerPool, ActiveQueue) :-
 	worker_pool(WorkerPool, _, ActiveQueue).
 
+
+%% worker_pool_create(+WorkerPool) is det.
+%
+% Same as worker_pool_create/2 with empty options.
+%
+% @param WorkerPool the worker pool name.
+%
+worker_pool_create(WorkerPool) :-
+	worker_pool_create(WorkerPool, []).
+
+
 %% worker_pool_create(+WorkerPool, +Options) is det.
 %
 % Creates a new thread pool with worker threads.
@@ -40,6 +52,7 @@ worker_pool_create(WorkerPool, Options) :-
 		between(1,Size,_),
 		thread_create(worker_thread(WorkerPool), _, [debug(false)])
 	).
+
 
 %% worker_pool_call(+WorkerPool, +WorkerGoal, +GeneratorGoal) is nondet.
 %
@@ -61,6 +74,7 @@ worker_pool_call(WorkerPool, WorkerGoal, GeneratorGoal) :-
 		worker_pool_stop_work(WorkerPool, WorkID)
 	).
 
+
 %% worker_pool_start_work(+WorkerPool, +WorkerGoal, +GeneratorGoal, -WorkID) is det.
 %
 % Schedules a new work goal.
@@ -79,6 +93,7 @@ worker_pool_start_work(WorkerPool, WorkerGoal, GeneratorGoal, WorkID) :-
 	% create a message queue for work results
 	message_queue_create(WorkID),
 	pool_push(WorkerPool, WorkID, WorkerGoal, GeneratorGoal).
+
 
 %% worker_pool_stop_work(+WorkerPool, -WorkID) is det.
 %
@@ -134,6 +149,7 @@ pool_push1(WorkerPool, WorkID, WorkerMsg) :-
 	pool_work_queue(WorkerPool, WorkQueue),
 	pool_add_reference(WorkerPool, WorkID),
 	thread_send_message(WorkQueue, WorkerMsg).
+
 
 %% worker_pool_pop(+WorkerPool, +WorkID, -Result) is semidet.
 %
