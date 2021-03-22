@@ -29,6 +29,7 @@
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
 :- use_module('utility/url').
+:- use_module('utility/worker_pool').
 
 % tell the user what is going on
 :- log_info(kb(initialization(started))).
