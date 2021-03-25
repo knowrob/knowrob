@@ -256,11 +256,25 @@ mng_dump_collection(DB,Collection,Dir) :-
 % Restore mongo DB.
 %
 mng_restore(_DB,Dir) :-
+( getenv('KNOWROB_MONGO_HOST', Host)
+  -> getenv('KNOWROB_MONGO_USER', User),
+  getenv('KNOWROB_MONGO_PASS', Pass),
+  getenv('KNOWROB_MONGO_DB', Db),
+  getenv('KNOWROB_MONGO_PORT', Port),
+
+  atomic_list_concat(['--uri=mongodb://', User, ':', Pass,
+    '@', Host, ':', Port], URI),
+  atomic_list_concat(['--db=', Db], DB),
+
   process_create(path(mongorestore),
-    [ Dir ],
+    [ URI, DB, Dir ],
     [ process(PID) ]
-  ),
-  wait(PID,exited(0)).
+  );  process_create(path(mongorestore),
+  [ '--uri=mongodb://localhost:27017', Dir ],
+  [ process(PID) ]
+  )
+),
+wait(PID,exited(0)).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
