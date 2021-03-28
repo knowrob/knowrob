@@ -1,8 +1,5 @@
 :- module(mongolog,
-	[ mongolog_add_rule(t,t),
-	  mongolog_drop_rule(t),
-	  mongolog_expand(t,-),
-	  mongolog_call(t),
+	[ mongolog_call(t),
 	  mongolog_call(t,+),
 	  is_mongolog_predicate(+)
 	]).
@@ -16,12 +13,8 @@
 	    [ rdf_meta/1, rdf_global_term/2 ]).
 :- use_module(library('db/mongo/client')).
 
-%% Stores list of terminal terms for each clause. 
-:- dynamic query/3.
 %% set of registered query commands.
 :- dynamic step_command/1.
-%% optionally implemented by query commands.
-:- multifile step_expand/2.
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3, step_compile/4.
 
@@ -43,81 +36,21 @@ add_command(Command) :-
 	assertz(step_command(Command)).
 
 
-%%
+%% is_mongolog_predicate(+PredicateIndicator) is semidet.
 %
+% True if PredicateIndicator corresponds to a known mongolog predicate.
+%
+is_mongolog_predicate((/(Functor,_Arity))) :-
+	!, step_command(Functor).
+	
 is_mongolog_predicate(Goal) :-
+	compound(Goal),!,
 	Goal =.. [Functor|_Args],
-	% TODO: also check arity
 	step_command(Functor).
-
-
-%% mongolog_add_rule(+Head, +Body) is semidet.
-%
-% Register a rule that translates into an aggregation pipeline.
-% Any non-terminal predicate in Body must have a previously asserted
-% mongolog rule it can expand into.
-% After being asserted, the Head predicate can be referred to in
-% calls of mongolog_call/1.
-%
-% @param Head The head of a rule.
-% @param Body The body of a rule.
-%
-mongolog_add_rule(Head, Body) :-
-	%% get the functor of the predicate
-	Head =.. [Functor|Args],
-	%% expand goals into terminal symbols
-	(	mongolog_expand(Body, Expanded) -> true
-	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
-	),
-	%% handle instantiated arguments
-	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
-	%             then to instantiate the args implicit instantiation might be needed.
-	%             A solution could be adding a =/2 call _at the end_ to avoid the need
-	%             for implicit instantiation.
-	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
-	->	(	(	is_list(Expanded)
-			->	Expanded0=[ArgsGoal|Expanded]
-			;	Expanded0=[ArgsGoal,Expanded]
-			),
-			Args0=ExpandedArgs
-		)
-	;	(	Expanded0=Expanded,
-			Args0=Args
-		)
-	),
-	%% store expanded query
-	assertz(query(Functor, Args0, Expanded0)).
-
-
-%% mongolog_drop_rule(+Head) is semidet.
-%
-% Drop a previously added `mongolog` rule.
-% That is, erase its database record such that it can
-% not be referred to anymore in rules added after removal.
-%
-% @param Term A mongolog rule.
-%
-mongolog_drop_rule(Head) :-
-	compound(Head),
-	drop_rule(Head).
-
-drop_rule(Head) :-
-	Head =.. [Functor|_],
-	retractall(query(Functor, _, _)).
-
-%%
-expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
-	expand_arguments1(Args, Expanded, Pairs),
-	Pairs \= [],
-	pairs_keys_values(Pairs, Values, Vars).
-
-
-expand_arguments1([], [], []) :- !.
-expand_arguments1([X|Xs], [X|Ys], Zs) :-
-	var(X),!,
-	expand_arguments1(Xs, Ys, Zs).
-expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
-	expand_arguments1(Xs, Ys, Zs).
+	
+is_mongolog_predicate(Functor) :-
+	atom(Functor),!,
+	step_command(Functor).
 
 
 %% mongolog_call(+Goal) is nondet.
@@ -194,7 +127,7 @@ assert_documents0([Coll|Next], Assertions) :-
 assert_documents1(array([]), _) :- !.
 assert_documents1([], _) :- !.
 assert_documents1(array(Docs), Key) :-
-	% NOTE: the mongo client currently return documents as pairs A-B instead of
+	% NOTE: the mongo client currently returns documents as pairs A-B instead of
 	%       [A,B] which is required as input.
 	% TODO: make the client return docs in a format that it accepts as input.
 	maplist(format_doc, Docs, Docs0),
@@ -304,130 +237,19 @@ unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
 
-%% mongolog_expand(+Term, -Expanded) is det.
-%
-% Translate a goal into a sequence of terminal commands.
-% Terminal commands are the core predicates supported by `mongolog`
-% such as arithmetic and comparison predicates.
-% Rules, on the other hand, are "flattened" during term expansion,
-% and translated to a sequence of these terminal commands.
-%
-% @param Term A compound term, or a list of terms.
-% @param Expanded Sequence of terminal commands
-%
-mongolog_expand(Goal, Goal) :-
-	% goals maybe not known during expansion, i.e. in case of
-	% higher-level predicates receiving a goal as an argument.
-	% these var goals need to be expanded compile-time
-	% (call-time is not possible)
-	var(Goal), !.
-
-mongolog_expand(Goal, Expanded) :-
-	% NOTE: do not use is_list/1 here, it cannot handle list that have not
-	%       been completely resolved as in `[a|_]`.
-	%       Here we check just the head of the list.
-	\+ has_list_head(Goal), !,
-	comma_list(Goal, Terms),
-	mongolog_expand(Terms, Expanded).
-
-mongolog_expand(Terms, Expanded) :-
-	has_list_head(Terms), !,
-	catch(
-		expand_term_0(Terms, Expanded0),
-		Exc,
-		log_error_and_fail(lang(Exc, Terms))
-	),
-	comma_list(Buf,Expanded0),
-	comma_list(Buf,Expanded1),
-	% Handle cut after term expansion.
-	% It is important that this is done _after_ expansion because
-	% the cut within the call would yield an infinite recursion
-	% otherwhise.
-	% TODO: it is not so nice doing it here. would be better if it could be
-	%       done in control.pl where cut operator is implemented but current
-	%       interfaces don't allow to do the following operation in control.pl.
-	%		(without special handling of ',' it could be done, I think)
-	expand_cut(Expanded1, Expanded2),
-	%%
-	(	Expanded2=[One] -> Expanded=One
-	;	Expanded=Expanded2
-	).
-
-%%
-expand_term_0([], []) :- !.
-expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
-	once(expand_term_1(X, X_expanded)),
-	% could be that expand-time the list is not fully resolved
-	(	var(Xs) -> Xs_expanded=Xs
-	;	expand_term_0(Xs, Xs_expanded)
-	).
-
-expand_term_1(Goal, Expanded) :-
-	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
-	is_list(Goal),!,
-	expand_term_0(Goal, Expanded).
-
-expand_term_1(Goal, Expanded) :-
-	Goal =.. [Functor|_Args],
-	step_command(Functor),
-	% allow the goal to recursively expand
-	(	step_expand(Goal, Expanded) -> true
-	;	Expanded = Goal
-	).
-
-expand_term_1(Goal, Expanded) :-
-	% find all asserted rules matching the functor and args
-	Goal =.. [Functor|Args],
-	% NOTE: do not use findall here because findall would not preserve
-	%       variables in Terminals
-	% NOTE: Args in query only contain vars, for instantiated vars in rule
-	%       heads, pragma/1 calls are generated in Terminals (i.e. the body of the rule).
-	(	bagof(Terminals,
-			query(Functor, Args, Terminals),
-			TerminalsList)
-	->	true
-	% handle the case that a predicate is referred to that wasn't
-	% asserted before
-	;	throw(expansion_failed(Goal))
-	),
-	% wrap different clauses into ';'
-	semicolon_list(Goal0, TerminalsList),
-	mongolog_expand(Goal0, Expanded).
-
-%%
-% Each conjunction with cut operator [X0,...,Xn,!|_]
-% is rewritten as [limit(1,[X0,....,Xn])|_].
-%
-expand_cut([],[]) :- !.
-expand_cut(Terms,Expanded) :-
-	take_until_cut(Terms, Taken, Remaining),
-	% no cut if Remaining=[]
-	(	Remaining=[] -> Expanded=Terms
-	% else the first element in Remaining must be a cut
-	% that needs to be applied to goals in Taken
-	;	(	Remaining=[!|WithoutCut],
-			expand_cut(WithoutCut, Remaining_Expanded),
-			Expanded=[limit(1,Taken)|Remaining_Expanded]
-		)
-	).
-
 
 %% mongolog_compile(+Term, -Pipeline, +Context) is semidet.
 %
 % Translate a goal into an aggregation pipeline.
 % Goal may be a compound term using the various predicates
 % supported by mongolog.
-% The goal must not but can be expanded before (see mongolog_expand/3).
+% The goal must not but can be expanded before (see kb_expand/3).
 % An error is thrown in case of compilation failure.
 % One failure case is to refer to an unknown predicate
 % (it is thus necessary to assert all referred predicates before
 % compiling a new predicate).
 % Such an error will also be thrown for recursive rules
 % (i.e. when a predicate refers to itself).
-%
-% This predicate usually does not need to be called directly,
-% but mongolog_add_rule/1 is called instead to make predicates
-% accessible in other rules.
 %
 % @param Term A compound term, or a list of terms.
 % @param Pipeline a term pipeline(Document,Variables)
@@ -461,7 +283,8 @@ compile_terms([X|Xs], Pipeline, V0->Vn, StepVars, Context) :-
 
 %% Compile a single command (Term) into an aggregate pipeline (Doc).
 compile_term(Term, Doc, V0->V1, StepVars, Context) :-
-	mongolog_expand(Term, Expanded),
+	% TODO: do not depend on lang_query
+	lang_query:kb_expand(Term, Expanded),
 	compile_expanded_terms(Expanded, Doc, V0->V1, StepVars, Context).
 
 %%
@@ -520,10 +343,6 @@ step_compile(pragma(Goal), _, [], StepVars) :-
 	% only the ones also referred to in parts of the query are added to the document.
 	StepVars=[],
 	call(Goal).
-
-%%
-step_expand(ask(Goal), ask(Expanded)) :-
-	mongolog_expand(Goal, Expanded).
 
 
 step_command(ask).
@@ -840,26 +659,6 @@ is_instantiated(Arg, Ctx) :-
 		member(Var, Vars),
 		is_referenced(Var, Ctx)
 	).
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% helper
-%%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-% split list at cut operator.
-%
-take_until_cut([],[],[]) :- !.
-take_until_cut(['!'|Xs],[],['!'|Xs]) :- !.
-take_until_cut([X|Xs],[X|Ys],Remaining) :-
-	take_until_cut(Xs,Ys,Remaining).
-
-%%
-% do not use is_list/1 here, it cannot handle list that have not
-% been completely resolved as in `[a|_]`.
-% Here we check just the head of the list.
-%
-has_list_head([]) :- !.
-has_list_head([_|_]).
 
 
 		 /*******************************

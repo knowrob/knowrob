@@ -49,13 +49,13 @@
 
 %% tf/4
 %
-mongolog:step_expand(
+lang_query:step_expand(
 		tf(ChildFrame, ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 
 %% tf/2
 %
-mongolog:step_expand(
+lang_query:step_expand(
 		tf(ChildFrame, [ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 

@@ -35,7 +35,7 @@
 :- mongolog:add_command(triple).
 
 %%
-mongolog:step_expand(
+lang_query:step_expand(
 	project(triple(S,P,O)),
 	assert(triple(S,P,O))) :-
 	!.

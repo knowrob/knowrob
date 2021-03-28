@@ -8,6 +8,9 @@
       forget(t),     % +Statement
       forget(t,t),   % +Statement, +Scope
       forget(t,t,t), % +Statement, +Scope, +Options
+      kb_add_rule(t,t),
+	  kb_drop_rule(t),
+	  kb_expand(t,-),
       is_callable_with(?,t),  % ?Backend, :Goal
       call_with(?,t,+)        % +Backend, :Goal, +Options
     ]).
@@ -27,6 +30,10 @@
     [ current_scope/1, universal_scope/1 ]).
 :- use_module('mongolog/mongolog').
 
+% Stores list of terminal terms for each clause. 
+:- dynamic kb_rule/3.
+% optionally implemented by query commands.
+:- multifile step_expand/2.
 % interface implemented by query backends
 :- multifile is_callable_with/2.
 :- multifile call_with/3.
@@ -102,8 +109,7 @@ ask1(Goal, QScope, FScope, Options) :-
 		],
 		Options, Options1),
 	% expand query, e.g. replace rule heads with bodies etc.
-	% TODO: expansion should not be depending on mongolog
-	mongolog_expand(Goal, Expanded),
+	kb_expand(Goal, Expanded),
 	% FIXME: not so nice that flattening is needed here
 	flatten(Expanded, Flattened),
 	ask1(Flattened, Options1).
@@ -424,9 +430,6 @@ combine_steps(
 % True if Backend is a querying backend that can handle Goal.
 %
 is_callable_with(mongolog, Goal) :-
-	% FIXME: HACK: computables are added as mongolog predicates to make expansion work
-	%              pull expansion out of mongolog, then do not include computables in is_mongolog_predicate
-	\+ is_callable_with(computable, Goal),
 	is_mongolog_predicate(Goal).
 
 
@@ -492,6 +495,261 @@ call_with(mongolog, Goal, Options) :-
 
 
 		 /*******************************
+		 *	    TERM EXPANSION     		*
+		 *******************************/
+
+%% kb_add_rule(+Head, +Body) is semidet.
+%
+% Register a rule that translates into an aggregation pipeline.
+% Any non-terminal predicate in Body must have a previously asserted
+% mongolog rule it can expand into.
+% After being asserted, the Head predicate can be referred to in
+% calls of mongolog_call/1.
+%
+% @param Head The head of a rule.
+% @param Body The body of a rule.
+%
+kb_add_rule(Head, Body) :-
+	%% get the functor of the predicate
+	Head =.. [Functor|Args],
+	%% expand goals into terminal symbols
+	(	kb_expand(Body, Expanded) -> true
+	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
+	),
+	%% handle instantiated arguments
+	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
+	%             then to instantiate the args implicit instantiation might be needed.
+	%             A solution could be adding a =/2 call _at the end_ to avoid the need
+	%             for implicit instantiation.
+	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
+	->	(	(	is_list(Expanded)
+			->	Expanded0=[ArgsGoal|Expanded]
+			;	Expanded0=[ArgsGoal,Expanded]
+			),
+			Args0=ExpandedArgs
+		)
+	;	(	Expanded0=Expanded,
+			Args0=Args
+		)
+	),
+	%% store expanded query
+	assertz(kb_rule(Functor, Args0, Expanded0)).
+
+
+%% kb_drop_rule(+Head) is semidet.
+%
+% Drop a previously added `mongolog` rule.
+% That is, erase its database record such that it can
+% not be referred to anymore in rules added after removal.
+%
+% @param Term A mongolog rule.
+%
+kb_drop_rule(Head) :-
+	compound(Head),
+	Head =.. [Functor|_],
+	retractall(kb_rule(Functor, _, _)).
+
+%%
+expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
+	expand_arguments1(Args, Expanded, Pairs),
+	Pairs \= [],
+	pairs_keys_values(Pairs, Values, Vars).
+
+
+expand_arguments1([], [], []) :- !.
+expand_arguments1([X|Xs], [X|Ys], Zs) :-
+	var(X),!,
+	expand_arguments1(Xs, Ys, Zs).
+expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
+	expand_arguments1(Xs, Ys, Zs).
+
+
+		 /*******************************
+		 *	    TERM EXPANSION     		*
+		 *******************************/
+
+%% kb_expand(+Term, -Expanded) is det.
+%
+% Translate a goal into a sequence of terminal commands.
+% Terminal commands are the core predicates supported in queries
+% such as arithmetic and comparison predicates.
+% Rules, on the other hand, are "flattened" during term expansion,
+% and translated to a sequence of these terminal commands.
+%
+% @param Term A compound term, or a list of terms.
+% @param Expanded Sequence of terminal commands
+%
+kb_expand(Goal, Goal) :-
+	% goals maybe not known during expansion, i.e. in case of
+	% higher-level predicates receiving a goal as an argument.
+	% these var goals need to be expanded compile-time
+	% (call-time is not possible)
+	var(Goal), !.
+
+kb_expand(Goal, Expanded) :-
+	% NOTE: do not use is_list/1 here, it cannot handle list that have not
+	%       been completely resolved as in `[a|_]`.
+	%       Here we check just the head of the list.
+	\+ has_list_head(Goal), !,
+	comma_list(Goal, Terms),
+	kb_expand(Terms, Expanded).
+
+kb_expand(Terms, Expanded) :-
+	has_list_head(Terms), !,
+	catch(
+		expand_term_0(Terms, Expanded0),
+		Exc,
+		log_error_and_fail(lang(Exc, Terms))
+	),
+	comma_list(Buf,Expanded0),
+	comma_list(Buf,Expanded1),
+	% Handle cut after term expansion.
+	% It is important that this is done _after_ expansion because
+	% the cut within the call would yield an infinite recursion
+	% otherwhise.
+	% TODO: it is not so nice doing it here. would be better if it could be
+	%       done in control.pl where cut operator is implemented but current
+	%       interfaces don't allow to do the following operation in control.pl.
+	%		(without special handling of ',' it could be done, I think)
+	expand_cut(Expanded1, Expanded2),
+	%%
+	(	Expanded2=[One] -> Expanded=One
+	;	Expanded=Expanded2
+	).
+
+%%
+expand_term_0([], []) :- !.
+expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
+	once(expand_term_1(X, X_expanded)),
+	% could be that expand-time the list is not fully resolved
+	(	var(Xs) -> Xs_expanded=Xs
+	;	expand_term_0(Xs, Xs_expanded)
+	).
+
+expand_term_1(Goal, Expanded) :-
+	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
+	is_list(Goal),!,
+	expand_term_0(Goal, Expanded).
+
+expand_term_1(Goal, Expanded) :-
+	once(is_callable_with(_,Goal)),
+	%Goal =.. [Functor|_Args],
+	%step_command(Functor),
+	% allow the goal to recursively expand
+	(	step_expand(Goal, Expanded) -> true
+	;	Expanded = Goal
+	).
+
+expand_term_1(Goal, Expanded) :-
+	% find all asserted rules matching the functor and args
+	Goal =.. [Functor|Args],
+	% NOTE: do not use findall here because findall would not preserve
+	%       variables in Terminals
+	% NOTE: Args in query only contain vars, for instantiated vars in rule
+	%       heads, pragma/1 calls are generated in Terminals (i.e. the body of the rule).
+	(	bagof(Terminals,
+			kb_rule(Functor, Args, Terminals),
+			TerminalsList)
+	->	true
+	% handle the case that a predicate is referred to that wasn't
+	% asserted before
+	;	throw(expansion_failed(Goal))
+	),
+	% wrap different clauses into ';'
+	semicolon_list(Goal0, TerminalsList),
+	kb_expand(Goal0, Expanded).
+
+%%
+% Each conjunction with cut operator [X0,...,Xn,!|_]
+% is rewritten as [limit(1,[X0,....,Xn])|_].
+%
+expand_cut([],[]) :- !.
+expand_cut(Terms,Expanded) :-
+	take_until_cut(Terms, Taken, Remaining),
+	% no cut if Remaining=[]
+	(	Remaining=[] -> Expanded=Terms
+	% else the first element in Remaining must be a cut
+	% that needs to be applied to goals in Taken
+	;	(	Remaining=[!|WithoutCut],
+			expand_cut(WithoutCut, Remaining_Expanded),
+			Expanded=[limit(1,Taken)|Remaining_Expanded]
+		)
+	).
+
+%
+step_expand(ask(Goal), ask(Expanded)) :-
+	kb_expand(Goal, Expanded).
+
+% split list at cut operator.
+take_until_cut([],[],[]) :- !.
+take_until_cut(['!'|Xs],[],['!'|Xs]) :- !.
+take_until_cut([X|Xs],[X|Ys],Remaining) :-
+	take_until_cut(Xs,Ys,Remaining).
+
+% 
+has_list_head([]) :- !.
+has_list_head([_|_]).
+
+
+%%
+% Term expansion for *ask* rules using the (?>) operator.
+% The body is rewritten such that mng_ask is called instead
+% with body as argument.
+%
+user:term_expansion(
+		(?>(Head,Body)),
+		(:-(HeadGlobal, lang_query:ask1(BodyGlobal, QScope, _FScope, [])))) :-
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	current_scope(QScope),
+	% add the rule to the DB backend
+	kb_add_rule(Term, BodyGlobal).
+
+%%
+% Term expansion for *tell* rules using the (+>) operator.
+% The rules are only asserted into mongo DB and expanded into
+% empty list.
+%
+user:term_expansion(
+		(+>(Head,Body)),
+		[]) :-
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	% rewrite functor
+	% TODO: it would be nicer to generate a lot
+	%        clauses for project/1.
+	Term =.. [Functor|Args],
+	atom_concat('project_',Functor,Functor0),
+	Term0 =.. [Functor0|Args],
+	% add the rule to the DB backend
+	kb_add_rule(Term0, project(BodyGlobal)).
+
+%%
+% Term expansion for *tell-ask* rules using the (?+>) operator.
+% These are basically clauses that can be used in both contexts.
+%
+% Consider for example following rule:
+%
+%     is_event(Entity) ?+>
+%       has_type(Entity, dul:'Event').
+%
+% This is valid because, in this case, has_type/2 has
+% clauses for ask and tell.
+%
+user:term_expansion((?+>(Head,Goal)), X1) :-
+	user:term_expansion((?>(Head,Goal)),X1),
+	user:term_expansion((+>(Head,Goal)),_X2).
+
+%%
+strip_module_(:(Module,Term),Module,Term) :- !.
+strip_module_(Term,_,Term).
+
+
+		 /*******************************
 		 *	    	OPTIONS		  	 	*
 		 *******************************/
 
@@ -515,66 +773,4 @@ set_graph_option(Options, Options) :-
 set_graph_option(Options, Merged) :-
 	default_graph(DG),
 	merge_options([graph(DG)], Options, Merged).
-
-
-		 /*******************************
-		 *	    TERM EXPANSION     		*
-		 *******************************/
-
-%%
-% Term expansion for *ask* rules using the (?>) operator.
-% The body is rewritten such that mng_ask is called instead
-% with body as argument.
-%
-user:term_expansion(
-		(?>(Head,Body)),
-		(:-(HeadGlobal, lang_query:ask1(BodyGlobal, QScope, _FScope, [])))) :-
-	% expand rdf terms Prefix:Local to IRI atom
-	rdf_global_term(Head, HeadGlobal),
-	rdf_global_term(Body, BodyGlobal),
-	strip_module_(HeadGlobal,_Module,Term),
-	current_scope(QScope),
-	% add the rule to the DB backend
-	mongolog_add_rule(Term, BodyGlobal).
-
-%%
-% Term expansion for *tell* rules using the (+>) operator.
-% The rules are only asserted into mongo DB and expanded into
-% empty list.
-%
-user:term_expansion(
-		(+>(Head,Body)),
-		[]) :-
-	% expand rdf terms Prefix:Local to IRI atom
-	rdf_global_term(Head, HeadGlobal),
-	rdf_global_term(Body, BodyGlobal),
-	strip_module_(HeadGlobal,_Module,Term),
-	% rewrite functor
-	% TODO: it would be nicer to generate a lot
-	%        clauses for project/1.
-	Term =.. [Functor|Args],
-	atom_concat('project_',Functor,Functor0),
-	Term0 =.. [Functor0|Args],
-	% add the rule to the DB backend
-	mongolog_add_rule(Term0, project(BodyGlobal)).
-
-%%
-strip_module_(:(Module,Term),Module,Term) :- !.
-strip_module_(Term,_,Term).
-
-%%
-% Term expansion for *tell-ask* rules using the (?+>) operator.
-% These are basically clauses that can be used in both contexts.
-%
-% Consider for example following rule:
-%
-%     is_event(Entity) ?+>
-%       has_type(Entity, dul:'Event').
-%
-% This is valid because, in this case, has_type/2 has
-% clauses for ask and tell.
-%
-user:term_expansion((?+>(Head,Goal)), X1) :-
-	user:term_expansion((?>(Head,Goal)),X1),
-	user:term_expansion((+>(Head,Goal)),_X2).
 

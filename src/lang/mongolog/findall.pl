@@ -23,19 +23,19 @@ The following predicates are supported:
 %:- mongolog:add_command(setof).
 
 %%
-mongolog:step_expand(
+lang_query:step_expand(
 		findall(Template, Goal, List),
 		findall(Template, Expanded, List)) :-
-	mongolog_expand(Goal, Expanded).
+	lang_query:kb_expand(Goal, Expanded).
 
 %% setof(+Template, +Goal, -Set)
 % Equivalent to bagof/3, but sorts the result using sort/2 to
 % get a sorted list of alternatives without duplicates.
 %
-%mongolog:step_expand(
+%lang_query:step_expand(
 %		setof(Template, Goal, Set),
 %		','(bagof(Template, Expanded, List), sort(List, Set))) :-
-%	mongolog_expand(Goal, Expanded).
+%	lang_query:kb_expand(Goal, Expanded).
 
 %% findall(+Template, :Goal, -Bag)
 % Create a list of the instantiations Template gets successively on

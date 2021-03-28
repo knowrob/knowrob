@@ -84,7 +84,7 @@ mongolog_drop_predicate(Functor) :-
 	mng_drop(DB, Collection).
 
 %%
-mongolog:step_expand(project(Term), assert(Term)) :-
+lang_query:step_expand(project(Term), assert(Term)) :-
 	mongolog_predicate(Term, _, _),!.
 
 %%

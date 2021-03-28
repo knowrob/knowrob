@@ -15,11 +15,7 @@
 %
 add_computable_predicate(Indicator, Goal) :-
 	strip_module(Goal, Module, Goal0),
-	assertz(computable_predicate(Indicator, Module, Goal0)),
-	% TODO: do not use mongolog interface here,
-	%       but it is at the moment needed for expansion purpose
-	Indicator=(/(Functor,_Arity)),
-	mongolog:add_command(Functor).
+	assertz(computable_predicate(Indicator, Module, Goal0)).
 
 %% drop_computable_predicate(+Indicator) is det.
 %

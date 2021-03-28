@@ -38,8 +38,8 @@ The following predicates are supported:
 % NOTE: here list cannot be a variable which is allowed in SWI Prolog.
 %       Prolog then generates all possible list with Elem as member.
 %
-mongolog:step_expand(member(Elem, List), Expanded) :-
-	mongolog_expand((
+lang_query:step_expand(member(Elem, List), Expanded) :-
+	lang_query:kb_expand((
 		% get size of list
 		length(List, Size),
 		Size0 is Size - 1,
@@ -53,8 +53,8 @@ mongolog:step_expand(member(Elem, List), Expanded) :-
 % True when Elem is an element of List. This variant of member/2 is
 % semi deterministic and typically used to test membership of a list. 
 %
-mongolog:step_expand(memberchk(Elem, List), Expanded) :-
-	mongolog_expand(limit(1, member(Elem,List)), Expanded).
+lang_query:step_expand(memberchk(Elem, List), Expanded) :-
+	lang_query:kb_expand(limit(1, member(Elem,List)), Expanded).
 
 %% length(+List, ?Length)
 % True if Length represents the number of elements in List.

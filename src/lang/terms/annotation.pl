@@ -20,7 +20,7 @@
 :- mongolog:add_command(annotation).
 
 %%
-mongolog:step_expand(
+lang_query:step_expand(
 	project(annotation(S,P,O)),
 	assert(annotation(S,P,O))) :- !.
 
