@@ -27,9 +27,7 @@
     [ current_scope/1, universal_scope/1 ]).
 :- use_module('mongolog/mongolog').
 
-% fallback graph for tell/forget
-:- dynamic default_graph/1.
-
+% interface implemented by query backends
 :- multifile is_callable_with/2.
 :- multifile call_with/3.
 
@@ -39,24 +37,9 @@
 % the named thread pool used for query processing
 thread_pool('lang_query').
 
-%%
-% Set the name of the graph where triples are asserted and retrieved
-% if no other graph was specified.
-%
-set_default_graph(Graph) :-
-	retractall(default_graph(_)),
-	assertz(default_graph(Graph)).
-
-:- set_default_graph(user).
-
-%%
-% NOTE: SWI strip_module acts strange
-strip_module_(:(Module,Term),Module,Term) :- !.
-strip_module_(Term,_,Term).
-
 %% ask(+Statement) is nondet.
 %
-% Same as ask/2 with default scope to include
+% Same as ask/3 with default scope to include
 % only facts that hold now.
 %
 % @param Statement a statement term.
@@ -76,11 +59,17 @@ ask(Statement, QScope, FScope) :-
 
 %% ask(+Statement, +QScope, -FScope, +Options) is nondet.
 %
-% True if Statement term holds within the requested scope (QScope).
+% True if Statement holds within QScope.
 % Statement can also be a list of statements.
-% FactScope the actual scope of the statement being true that overlaps
-% with the requested scope.
-% The list of options is passed to the compiler.
+% FactScope is the actual scope of the statement being true that overlaps
+% with QScope. Options include:
+%
+%     - max_queue_size(MaxSize)
+%     Determines the maximum number of messages queued in each stage.  Default is 50.
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
 %
 % @param Statement a statement term.
 % @param QScope the requested scope.
@@ -121,12 +110,13 @@ ask1(Goal, QScope, FScope, Options) :-
 
 %%
 ask1(SubGoals, Options) :-
-	% create a list of step(SubGoal, OutQueue, Backends) terms
+	% create a list of step(SubGoal, OutQueue, Channels) terms
 	maplist([SubGoal,Step]>>
 		query_step(SubGoal,Step),
 		SubGoals, Steps),
 	% combine steps if possible
 	% TODO: use partial results of backends to reduce number of operations
+	%       for some cases
 	combine_steps(Steps, Combined),
 	% need to remember pattern of variables for later unification
 	% TODO: improve the way how instantiations are communicated between steps.
@@ -143,12 +133,36 @@ ask1(SubGoals, Options) :-
 	).
 
 
+%% tell(+Statement) is nondet.
+%
+% Same as tell/2 with universal scope.
+%
+% @param Statement a statement term.
+%
+tell(Statement) :-
+	universal_scope(Scope),
+	tell(Statement, Scope, []).
+
+%% tell(+Statement, +Scope) is nondet.
+%
+% Same as tell/3 with empty options list.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+tell(Statement, Scope) :-
+	tell(Statement, Scope, []).
+
 %% tell(+Statement, +Scope, +Options) is semidet.
 %
 % Tell the knowledge base that some statement is true.
 % Scope is the scope of the statement being true.
-% Statement can also be a list of statements.
-% The list of options is passed to the compiler.
+% Statement can also be a list of statements. Options include:
+%
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
@@ -169,73 +183,6 @@ tell(Statement, Scope, Options) :-
 	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
 	).
 
-%% tell(+Statement, +Scope) is nondet.
-%
-% Same as tell/3 with empty options list.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-tell(Statement, Scope) :-
-	tell(Statement, Scope, []).
-
-%% tell(+Statement) is nondet.
-%
-% Same as tell/2 with universal scope.
-%
-% @param Statement a statement term.
-%
-tell(Statement) :-
-	universal_scope(Scope),
-	tell(Statement, Scope, []).
-
-%% forget(+Statement, +Scope, +Options) is semidet.
-%
-% Forget that some statement is true.
-% Statement must be a term triple/3. 
-% It can also be a list of such terms.
-% Scope is the scope of the statement to forget.
-% The list of options is passed to the compiler.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-% @param Options list of options.
-%
-forget(_, _, _) :-
-	setting(mng_client:read_only, true),
-	!,
-	log_warning(db(read_only(forget))).
-
-forget(Statements, Scope, Options) :-
-	is_list(Statements),
-	!,
-	forall(
-		member(Statement, Statements),
-		forget(Statement, Scope, Options)
-	).
-
-% TODO: support other language terms?
-% FIXME: need to propagate deletion for rdf:type etc.
-forget(triple(S,P,O), Scope, Options) :-
-	% ensure there is a graph option
-	set_graph_option(Options, Options0),
-	% append scope to options
-	merge_options([scope(Scope)], Options0, Options1),
-	% get the query document
-	mng_triple_doc(triple(S,P,O), Doc, Options1),
-	% run a remove query
-	mng_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, Doc).
-
-%% forget(+Statement, +Scope) is nondet.
-%
-% Same as forget/3 with empty options list.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-forget(Statement, Scope) :-
-	forget(Statement, Scope, []).
 
 %% forget(+Statement) is nondet.
 %
@@ -247,6 +194,57 @@ forget(Statement) :-
 	wildcard_scope(Scope),
 	forget(Statement, Scope, []).
 
+%% forget(+Statement, +Scope) is nondet.
+%
+% Same as forget/3 with empty options list.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+forget(Statement, Scope) :-
+	forget(Statement, Scope, []).
+
+%% forget(+Statement, +Scope, +Options) is semidet.
+%
+% Forget that some statement is true.
+% Statement must be a term triple/3. 
+% It can also be a list of such terms.
+% Scope is the scope of the statement to forget. Options include:
+%
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+% @param Options list of options.
+%
+forget(_, _, _) :-
+	setting(mng_client:read_only, true),
+	!.
+
+forget(Statements, Scope, Options) :-
+	is_list(Statements),
+	!,
+	forall(
+		member(Statement, Statements),
+		forget(Statement, Scope, Options)
+	).
+
+forget(triple(S,P,O), Scope, Options) :-
+	% TODO: support other language terms too
+	%	- rather map to kb_call(retractall(Term)) or kb_call(unproject(Term))
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% append scope to options
+	merge_options([scope(Scope)], Options0, Options1),
+	% get the query document
+	mng_triple_doc(triple(S,P,O), Doc, Options1),
+	% run a remove query
+	mng_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, Doc).
+
 
 		 /*******************************
 		 *	    	PIPELINES	  	 	*
@@ -255,7 +253,7 @@ forget(Statement) :-
 % start processing all steps of a pipeline
 start_pipeline([FirstStep|Rest], Pattern, Options, FinalStep) :-
 	% create step message queues
-	create_step_queues(FirstStep),
+	create_step_queues(FirstStep, Options),
 	% send uninstantiated pattern as starting point
 	% for the first step.
 	forall(
@@ -267,7 +265,7 @@ start_pipeline([FirstStep|Rest], Pattern, Options, FinalStep) :-
 %
 start_pipeline1([Step|Rest], Pattern, Options, FinalStep) :-
 	% create step message queues
-	create_step_queues(Step),
+	create_step_queues(Step, Options),
 	% start processing the step.
 	% note that this will not instantiate the pattern
 	% as processing is done in a separate thread.
@@ -348,22 +346,21 @@ query_step(Goal, step(Goal, _, Channels)) :-
 
 
 % ensure message queues associated to a step are instantiated
-create_step_queues(step(_, OutQueue, Channels)) :-
-	create_queue_(OutQueue),
-	create_step_queues1(Channels).
+create_step_queues(step(_, OutQueue, Channels), Options) :-
+	option(max_queue_size(MaxSize), Options, 50),
+	create_queue_(OutQueue,MaxSize),
+	create_step_queues1(Channels,MaxSize).
 
-create_step_queues1([]) :- !.
-create_step_queues1([[_,InQueue]|Rest]) :-
-	create_queue_(InQueue),
-	create_step_queues1(Rest).
+create_step_queues1([],_) :- !.
+create_step_queues1([[_,InQueue]|Rest],MaxSize) :-
+	create_queue_(InQueue,MaxSize),
+	create_step_queues1(Rest,MaxSize).
 
 %
-create_queue_(Queue) :- nonvar(Queue),!.
-create_queue_(Queue) :-
+create_queue_(Queue,_) :- nonvar(Queue),!.
+create_queue_(Queue,MaxSize) :-
 	% TODO: use alias option. make sure message_queue_destroy is called then.
-	% TODO: use max_size option. what would be a good maximum number of messages in the queue?
-	%message_queue_create(Queue, [max_size(100)]),
-	message_queue_create(Queue).
+	message_queue_create(Queue, [max_size(MaxSize)]).
 
 %
 step_input(step(_,_,Channels),InQueue) :- member([_,InQueue],Channels).
@@ -467,6 +464,12 @@ call_with1(Backend, Goal, OutQueue, Options) :-
 % @param Options list of options
 %
 call_with(mongolog, Goal, Options) :-
+	% TODO: investigate what is the best way to do this
+	%	- chunking (below)
+	%	- stream into collection
+	%   - threading of mongolog_call
+	%		- would be nice to just create a worker for each instantiation
+	%         as it can be done outside. computable does the same.
 	option(input_queue(InQueue), Options),
 	option(goal_variables(Pattern), Options),
 	message_queue_materialize(InQueue, Pattern),
@@ -475,8 +478,6 @@ call_with(mongolog, Goal, Options) :-
 %call_with(mongolog, Goal, Options) :-
 %	option(input_queue(InQueue), Options),
 %	option(goal_variables(Pattern), Options),
-%	% TODO: think about chunking strategies
-%	%	- query has a limited size
 %	option(chunk_size(ChunkSize), Options, 10),
 %	% retrieve next chunk
 %	findnsols(ChunkSize,
@@ -484,11 +485,7 @@ call_with(mongolog, Goal, Options) :-
 %		message_queue_materialize(InQueue, InstantiatedPattern),
 %		NSolutions
 %	),
-%	% bake chunk into next goal to avoid outer choicepoints
-%	% (only one per chunk)
-%	% TODO: better stream into a collection, then draw instantiations
-%	%       from that colection with a stream query?
-%	%       then there would be no need to bake chunks into the query.
+%	% bake chunk into next goal to avoid outer choicepoints (only one per chunk)
 %	% FIXME: member call below does not work for some reason
 %	Goal0=','(member(Pattern, NSolutions), Goal),
 %	mongolog_call(Goal0, Options).
@@ -497,6 +494,19 @@ call_with(mongolog, Goal, Options) :-
 		 /*******************************
 		 *	    	OPTIONS		  	 	*
 		 *******************************/
+
+% name of default fact graph
+:- dynamic default_graph/1.
+
+default_graph(user).
+
+%%
+% Set the name of the graph where facts are asserted and retrieved
+% if no other graph was specified.
+%
+set_default_graph(Graph) :-
+	retractall(default_graph(_)),
+	assertz(default_graph(Graph)).
 
 %%
 set_graph_option(Options, Options) :-
@@ -547,6 +557,10 @@ user:term_expansion(
 	Term0 =.. [Functor0|Args],
 	% add the rule to the DB backend
 	mongolog_add_rule(Term0, project(BodyGlobal)).
+
+%%
+strip_module_(:(Module,Term),Module,Term) :- !.
+strip_module_(Term,_,Term).
 
 %%
 % Term expansion for *tell-ask* rules using the (?+>) operator.
