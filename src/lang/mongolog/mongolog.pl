@@ -3,7 +3,8 @@
 	  mongolog_drop_rule(t),
 	  mongolog_expand(t,-),
 	  mongolog_call(t),
-	  mongolog_call(t,+)
+	  mongolog_call(t,+),
+	  is_mongolog_predicate(+)
 	]).
 /** <module> Compiling goals into aggregation pipelines.
 
@@ -40,6 +41,14 @@
 %
 add_command(Command) :-
 	assertz(step_command(Command)).
+
+
+%%
+%
+is_mongolog_predicate(Goal) :-
+	Goal =.. [Functor|_Args],
+	% TODO: also check arity
+	step_command(Functor).
 
 
 %% mongolog_add_rule(+Head, +Body) is semidet.

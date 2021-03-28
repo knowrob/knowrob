@@ -1,6 +1,6 @@
 :- module(computable,
-    [ computable_call/5,
-      computable_split/4
+    [ add_computable_predicate/2,
+      drop_computable_predicate/1
       %computables(t)
     ]).
 /** <module> Loading of computable predicates used to compute relations and data values.
@@ -9,34 +9,66 @@
 @license BSD
 */
 
-%%
-computation_pool('computable').
+:- dynamic computable_predicate/3.
 
-:- computation_pool(WorkerPool),
-   worker_pool_create(WorkerPool).
-
-%%
+%% add_computable_predicate(+Indicator, +Goal) is det.
 %
-computable_call(ComputationGoal, GeneratorGoal, Pattern, NSolutions, Options) :-
-	option(chunk_size(ChunkSize), Options, 100),
-	computation_pool(WorkerPool),
-	% run the computation and find different instantiations
-	% for variables in pattern.
-	% the instantiations may be returned in chunks, in which
-	% case computation_run creates choicepoints for different
-	% chunks.
-	% TODO: maybe some computables can also run more efficient
-	%       with chunks of input
-	findnsols(ChunkSize,
-		Pattern,
-		worker_pool_call(WorkerPool, ComputationGoal, GeneratorGoal),
-		NSolutions
+add_computable_predicate(Indicator, Goal) :-
+	strip_module(Goal, Module, Goal0),
+	assertz(computable_predicate(Indicator, Module, Goal0)),
+	% TODO: do not use mongolog interface here,
+	%       but it is at the moment needed for expansion purpose
+	Indicator=(/(Functor,_Arity)),
+	mongolog:add_command(Functor).
+
+%% drop_computable_predicate(+Indicator) is det.
+%
+drop_computable_predicate(Indicator) :-
+	retractall(computable_predicate(Indicator, _, _)).
+
+
+		 /*******************************
+		 *	 	   lang_query     		*
+		 *******************************/
+
+%
+lang_query:is_callable_with(computable, Goal) :-
+	Goal =.. [Functor|Args],
+	length(Args,Arity),
+	once(computable_predicate(/(Functor,Arity),_,_)).
+
+%
+lang_query:call_with(computable, Goal, Options) :-
+	option(input_queue(In), Options),
+	option(pattern(Pattern), Options),
+	% get callable computable goal
+	Goal =.. [Functor0|Args],
+	length(Args,Arity),
+	computable_predicate(/(Functor0,Arity), Module, Functor1),
+	Goal1 =.. [Functor1|Args],
+	ComputationGoal = (:(Module,Goal1)),
+	% run computation in worker threads
+	% TODO: rather use another worker_pool?
+	% TODO: does this create a thread pool each time it is called?
+	concurrent_forall(
+		message_queue_materialize(In, Pattern),
+		call(ComputationGoal)
 	).
 
-%%
-%
-computable_split(Goal, ComputationGoal, LeftGoal, RightGoal) :-
-	fail.
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+:- begin_tests('computable').
+
+comp_add(A,B,C) :-
+	C is A + B.
+
+test('add_computable_predicate') :-
+	assert_true(add_computable_predicate(add/3, computable:comp_add)).
+
+:- end_tests('computable').
 
 
 %:- op(1150, fx, user:computables).
