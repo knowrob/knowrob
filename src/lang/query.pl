@@ -269,9 +269,7 @@ start_pipeline([FirstStep|Rest], Pattern, Options, FinalStep) :-
 	% for the first step.
 	forall(
 		step_input(FirstStep,InQueue),
-		(	thread_send_message(InQueue,Pattern),
-			thread_send_message(InQueue,end_of_stream)
-		)
+		thread_send_message(InQueue,end_of_stream(Pattern))
 	),
 	start_pipeline1([FirstStep|Rest], Pattern, Options, FinalStep).
 

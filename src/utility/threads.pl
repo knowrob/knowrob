@@ -36,6 +36,7 @@ message_queue_materialize(Queue, Term) :-
 
 %
 message_queue_materialize(_, end_of_stream, _) :- !, fail.
+message_queue_materialize(_, end_of_stream(Term), Term) :- !.
 message_queue_materialize(_, error(Error), _) :- !, throw(Error).
 message_queue_materialize(Queue, This, Term) :-
 	(	thread_get_message(Queue, Next, [timeout(0)])
