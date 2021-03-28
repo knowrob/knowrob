@@ -41,9 +41,14 @@ message_queue_materialize(_, error(Error), _) :- !, throw(Error).
 message_queue_materialize(Queue, This, Term) :-
 	(	thread_get_message(Queue, Next, [timeout(0)])
 	% there are multiple messages queued
-	->	(Term=This ; message_queue_materialize(Queue, Next, Term))
+	->	(	Next==end_of_stream
+		->	Term=This
+		;	Term=This
+		;	message_queue_materialize(Queue, Next, Term)
+		)
 	% there was only one message queued
-	;	(Term=This ; message_queue_materialize(Queue, Term))
+	;	Term=This
+	;	message_queue_materialize(Queue, Term)
 	).
 
 % message queue for work goals

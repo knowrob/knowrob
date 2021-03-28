@@ -465,28 +465,33 @@ call_with1(Backend, Goal, OutQueue, Options) :-
 % @param Backend the backend name
 % @param Goal a goal term
 % @param Options list of options
-% 
+%
 call_with(mongolog, Goal, Options) :-
 	option(input_queue(InQueue), Options),
 	option(goal_variables(Pattern), Options),
-	% TODO: think about chunking strategies
-	%	- query has a limited size
-%	option(chunk_size(ChunkSize), Options, 100),
-	% retrieve next chunk
+	message_queue_materialize(InQueue, Pattern),
+	mongolog_call(Goal, Options).
+
+%call_with(mongolog, Goal, Options) :-
+%	option(input_queue(InQueue), Options),
+%	option(goal_variables(Pattern), Options),
+%	% TODO: think about chunking strategies
+%	%	- query has a limited size
+%	option(chunk_size(ChunkSize), Options, 10),
+%	% retrieve next chunk
 %	findnsols(ChunkSize,
 %		InstantiatedPattern,
 %		message_queue_materialize(InQueue, InstantiatedPattern),
 %		NSolutions
 %	),
-	% bake chunk into next goal to avoid outer choicepoints
-	% (only one per chunk)
-	% TODO: better stream into a collection, then draw instantiations
-	%       from that colection with a stream query?
-	%       then there would be no need to bake chunks into the query.
+%	% bake chunk into next goal to avoid outer choicepoints
+%	% (only one per chunk)
+%	% TODO: better stream into a collection, then draw instantiations
+%	%       from that colection with a stream query?
+%	%       then there would be no need to bake chunks into the query.
+%	% FIXME: member call below does not work for some reason
 %	Goal0=','(member(Pattern, NSolutions), Goal),
-%	mongolog_call(Goal0, Options),
-	message_queue_materialize(InQueue, Pattern),
-	mongolog_call(Goal, Options).
+%	mongolog_call(Goal0, Options).
 
 
 		 /*******************************
