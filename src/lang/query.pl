@@ -54,6 +54,26 @@ set_default_graph(Graph) :-
 strip_module_(:(Module,Term),Module,Term) :- !.
 strip_module_(Term,_,Term).
 
+%% ask(+Statement) is nondet.
+%
+% Same as ask/2 with default scope to include
+% only facts that hold now.
+%
+% @param Statement a statement term.
+%
+ask(Statement) :-
+	current_scope(QScope),
+	ask(Statement, QScope, _, []).
+
+%% ask(+Statement, +QScope, -FScope) is nondet.
+%
+% Same as ask/4 with empty options list.
+%
+% @param Statement a statement term.
+%
+ask(Statement, QScope, FScope) :-
+	ask(Statement, QScope, FScope, []).
+
 %% ask(+Statement, +QScope, -FScope, +Options) is nondet.
 %
 % True if Statement term holds within the requested scope (QScope).
@@ -78,34 +98,14 @@ ask(Statement, QScope, FScope, Options) :-
 	% in this case we can limit to one solution here
 	ground(Statement),
 	!,
-	once(call_query(Statement, QScope, FScope, Options)).
+	once(ask1(Statement, QScope, FScope, Options)).
 
 ask(Statement, QScope, FScope, Options) :-
 	%\+ ground(Statement),
-	call_query(Statement, QScope, FScope, Options).
-
-%% ask(+Statement, +QScope, -FScope) is nondet.
-%
-% Same as ask/4 with empty options list.
-%
-% @param Statement a statement term.
-%
-ask(Statement, QScope, FScope) :-
-	ask(Statement, QScope, FScope, []).
-
-%% ask(+Statement) is nondet.
-%
-% Same as ask/2 with default scope to include
-% only facts that hold now.
-%
-% @param Statement a statement term.
-%
-ask(Statement) :-
-	current_scope(QScope),
-	ask(Statement, QScope, _, []).
+	ask1(Statement, QScope, FScope, Options).
 
 %%
-call_query(Goal, QScope, FScope, Options) :-
+ask1(Goal, QScope, FScope, Options) :-
 	option(fields(Fields), Options, []),
 	merge_options(
 		[ scope(QScope),
@@ -117,15 +117,16 @@ call_query(Goal, QScope, FScope, Options) :-
 	mongolog_expand(Goal, Expanded),
 	% FIXME: not so nice that flattening is needed here
 	flatten(Expanded, Flattened),
-	call_query(Flattened, Options1).
+	ask1(Flattened, Options1).
 
 %%
-call_query(SubGoals, Options) :-
+ask1(SubGoals, Options) :-
 	% create a list of step(SubGoal, OutQueue, Backends) terms
 	maplist([SubGoal,Step]>>
 		query_step(SubGoal,Step),
 		SubGoals, Steps),
 	% combine steps if possible
+	% TODO: use partial results of backends to reduce number of operations
 	combine_steps(Steps, Combined),
 	% need to remember pattern of variables for later unification
 	% TODO: improve the way how instantiations are communicated between steps.
@@ -247,19 +248,9 @@ forget(Statement) :-
 	forget(Statement, Scope, []).
 
 
-%%
-set_graph_option(Options, Options) :-
-	option(graph(_), Options),
-	!.
-set_graph_option(Options, Merged) :-
-	default_graph(DG),
-	merge_options([graph(DG)], Options, Merged).
-
-
 		 /*******************************
-		 *	    query pipelines		   	*
+		 *	    	PIPELINES	  	 	*
 		 *******************************/
-
 
 % start processing all steps of a pipeline
 start_pipeline([FirstStep|Rest], Pattern, Options, FinalStep) :-
@@ -351,8 +342,7 @@ stop_pipeline_step(step(_, OutQueue, Channels)) :-
 query_step(Goal, step(Goal, _, Channels)) :-
 	% note message queues are created later after steps are merged
 	% because creating them creates some overhead.
-	% TODO: use pool of message queues to avoid creating them
-	%       each time a goal is called?
+	% TODO: use pool of message queues to avoid creating them each time a goal is called?
 	findall([X,_], is_callable_with(X,Goal), Channels),
 	Channels \== [].
 
@@ -370,8 +360,8 @@ create_step_queues1([[_,InQueue]|Rest]) :-
 %
 create_queue_(Queue) :- nonvar(Queue),!.
 create_queue_(Queue) :-
-	% TODO: what would be a good maximum number of
-	%       messages in the queue? 
+	% TODO: use alias option. make sure message_queue_destroy is called then.
+	% TODO: use max_size option. what would be a good maximum number of messages in the queue?
 	%message_queue_create(Queue, [max_size(100)]),
 	message_queue_create(Queue).
 
@@ -398,14 +388,15 @@ connect_steps(LastStep, ThisStep, ThisStep) :-
 	worker_pool_start_work(Pool, OutQueue,
 		lang_query:connect_steps(LastStep, ThisStep)).
 
-%
+% send all outeput messages of LastStep to all input queues of ThisStep
 connect_steps(LastStep, ThisStep) :-
 	step_output(LastStep, OutQueue),
 	catch(
 		message_queue_materialize(OutQueue, Msg),
 		Error,
-		Msg=error(Error) % pass exception to next step
+		Msg=error(Error) % pass any error to next step
 	),
+	% send msg to every input queue
 	forall(
 		step_input(ThisStep, InQueue),
 		thread_send_message(InQueue, Msg)
@@ -428,9 +419,8 @@ combine_steps(
 
 
 		 /*******************************
-		 *	    querying backends   	*
+		 *	  		  BACKENDS 		  	*
 		 *******************************/
-
 
 %% is_callable_with(?Backend, :Goal) is nondet.
 %
@@ -443,17 +433,12 @@ is_callable_with(mongolog, Goal) :-
 	is_mongolog_predicate(Goal).
 
 
-% stream results of call_with/3 into OutQueue
+% call Goal in Backend and send result on OutQueue
 call_with(Backend, Goal, OutQueue, Options) :-
-	option(goal_variables(Pattern), Options),
+	% pass any error to output queue consumer
 	catch(
-		(	% call goal in backend
-			call_with(Backend, Goal, Options),
-			% publish result via OutQueue
-			thread_send_message(OutQueue, Pattern)
-		),
+		call_with1(Backend, Goal, OutQueue, Options),
 		Error,
-		% pass error to output queue consumer
 		thread_send_message(OutQueue, error(Error))
 	).
 
@@ -461,6 +446,14 @@ call_with(_Backend, _Goal, OutQueue, _Options) :-
 	% send end_of_stream message needed
 	% to terminate worker waiting for next result.
 	thread_send_message(OutQueue, end_of_stream).
+
+%
+call_with1(Backend, Goal, OutQueue, Options) :-
+	option(goal_variables(Pattern), Options),
+	% call goal in backend
+	call_with(Backend, Goal, Options),
+	% publish result via OutQueue
+	thread_send_message(OutQueue, Pattern).
 
 
 %% call_with(+Backend, :Goal, +Options) is nondet.
@@ -497,6 +490,19 @@ call_with(mongolog, Goal, Options) :-
 
 
 		 /*******************************
+		 *	    	OPTIONS		  	 	*
+		 *******************************/
+
+%%
+set_graph_option(Options, Options) :-
+	option(graph(_), Options),
+	!.
+set_graph_option(Options, Merged) :-
+	default_graph(DG),
+	merge_options([graph(DG)], Options, Merged).
+
+
+		 /*******************************
 		 *	    TERM EXPANSION     		*
 		 *******************************/
 
@@ -507,7 +513,7 @@ call_with(mongolog, Goal, Options) :-
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, lang_query:call_query(BodyGlobal, QScope, _FScope, [])))) :-
+		(:-(HeadGlobal, lang_query:ask1(BodyGlobal, QScope, _FScope, [])))) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
