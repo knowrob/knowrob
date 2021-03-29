@@ -3,7 +3,8 @@
       worker_pool_create/1,         % +PoolID
       worker_pool_create/2,         % +PoolID, +Options
       worker_pool_start_work/3,     % +PoolID, +WorkID, +Goal
-      worker_pool_stop_work/2       % +PoolID, +WorkID
+      worker_pool_stop_work/2,      % +PoolID, +WorkID
+      worker_pool_join/2            % +PoolID, +WorkID
     ]).
 /** <module> Threading utilities.
 
@@ -13,6 +14,7 @@
 
 :- dynamic worker_pool/4.
 :- dynamic num_workers/2.
+:- dynamic pending_join/3.
 
 %% message_queue_materialize(+Queue, -Term) is nondet.
 %
@@ -144,8 +146,6 @@ pool_grow(WorkerPool) :-
 worker_pool_start_work(WorkerPool, WorkID, WorkerGoal) :-
 	pool_active_queue(WorkerPool, ActiveQueue),
 	pool_work_queue(WorkerPool, WorkQueue),
-	% acquire mutex lock on WorkID
-	pool_lock_work_if_first(WorkerPool, WorkID),
 	% add work ID to active queue
 	thread_send_message(ActiveQueue, work(WorkID)),
 	% add a new work goal to the queue
@@ -153,34 +153,35 @@ worker_pool_start_work(WorkerPool, WorkID, WorkerGoal) :-
 	% increase number of threads if needed
 	pool_grow(WorkerPool).
 
-%% worker_pool_wait(+PoolID, +WorkID) is det.
+%% worker_pool_join(+PoolID, +WorkID) is det.
 %
 % Block the current thread until work is done.
 %
-worker_pool_wait(PoolID, WorkID) :-
+worker_pool_join(PoolID, WorkID) :-
+	pool_active_queue(PoolID, ActiveQueue),
+	\+ thread_peek_message(ActiveQueue, work(WorkID)),
+	!.
+
+worker_pool_join(PoolID, WorkID) :-
+	thread_self(ThisThread),
 	% mutex is locked as long as work is active, so entering mutex
 	% is only possible when no work is active.
-	pool_lock_work(PoolID, WorkID),
-	pool_unlock_work(PoolID, WorkID).
-
-%
-pool_lock_work_if_first(PoolID, WorkID) :-
-	pool_active_queue(PoolID, ActiveQueue),
 	with_mutex(PoolID, (
-		(	thread_peek_message(ActiveQueue, work(WorkID)) -> true
-		;	pool_lock_work(PoolID, WorkID)
-		)
+		assertz(pending_join(PoolID, WorkID, ThisThread))
+	)),
+	thread_get_message(wake_up),
+	with_mutex(PoolID, (
+		retract(pending_join(PoolID, WorkID, ThisThread))
 	)).
 
 %
-pool_lock_work(WorkerPool, WorkID) :-
-	term_to_atom([WorkerPool,WorkID],MutexID),
-	mutex_lock(MutexID).
-
-%
-pool_unlock_work(WorkerPool, WorkID) :-
-	term_to_atom([WorkerPool,WorkID],MutexID),
-	mutex_unlock(MutexID).
+pool_wake_up(PoolID, WorkID) :-
+	with_mutex(PoolID, (
+		forall(
+			pending_join(PoolID, WorkID, WaitingThread),
+			thread_send_message(WaitingThread, wake_up)
+		)
+	)).
 
 
 %% worker_pool_stop_work(+WorkerPool, -WorkID) is det.
@@ -226,7 +227,7 @@ worker_thread(WorkerPool) :-
 	),
 	% send notification that work is over if queue is now empty
 	(	thread_peek_message(ActiveQueue, work(WorkID)) -> true
-	;	pool_unlock_work(WorkerPool, WorkID)
+	;	pool_wake_up(WorkerPool, WorkID)
 	),
 	% jump back to repeat/0
 	fail.

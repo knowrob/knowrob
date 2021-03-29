@@ -37,6 +37,8 @@
 % interface implemented by query backends
 :- multifile is_callable_with/2.
 :- multifile call_with/3.
+:- dynamic is_callable_with/2.
+:- dynamic call_with/3.
 
 % create a thread pool for query processing
 :- worker_pool_create('lang_query:queries').
@@ -315,10 +317,8 @@ materialize_pipeline(
 		Pattern, Options) :-
 	!,
 	% call the last step in this thread in case it has a single backend
-	call_with(Backend, Goal,
-		[ input_queue(InQueue),
-		  goal_variables(Pattern)
-		| Options ]).
+	message_queue_materialize(InQueue, Pattern),
+	call_with(Backend, Goal, Options).
 
 materialize_pipeline(FinalStep, Pattern, Options) :-
 	% else start worker thread and poll results from output queue
@@ -378,8 +378,8 @@ step_output(step(_,OutQueue,_),OutQueue).
 
 % connect the output of LastStep to the input of ThisStep
 connect_steps(
-		step(_,OutQueue0,_),              % LastStep
-		step(G,OutQueue1,[[Backend,_]]),  % ThisStep
+		step(_,OutQueue0,_),                      % LastStep
+		step(G,OutQueue1,[[Backend,OutQueue0]]),  % ThisStep
 		step(G,OutQueue1,[[Backend,OutQueue0]])) :-
 	% if ThisStep has only a single channel,
 	% use the output queue of LastStep directly as input
@@ -428,13 +428,6 @@ combine_steps(
 		 *	  		  BACKENDS 		  	*
 		 *******************************/
 
-%% is_callable_with(?Backend, :Goal) is nondet.
-%
-% True if Backend is a querying backend that can handle Goal.
-%
-is_callable_with(mongolog, Goal) :-
-	is_mongolog_predicate(Goal).
-
 % call Goal in Backend and send result on OutQueue
 call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
 	% TODO: in some cases it could be beneficial to do chunking
@@ -445,29 +438,23 @@ call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
 	forall(
 		message_queue_materialize(InQueue, Pattern),
 		worker_pool_start_work(BackendPool, OutQueue,
-			lang_query:call_with0(Backend, Goal, Pattern, OutQueue, Options)
-		)
+			lang_query:call_with(Backend, Goal, Pattern, OutQueue, Options))
 	),
 	% need to wait until all backend workers have completed
-	worker_pool_wait(BackendPool, OutQueue),
+	worker_pool_join(BackendPool, OutQueue),
 	% then we send eos message
 	thread_send_message(OutQueue, end_of_stream).
 
 %
-call_with0(Backend, Goal, Pattern, OutQueue, Options) :-
+call_with(Backend, Goal, Pattern, OutQueue, Options) :-
 	% pass any error to output queue consumer
 	catch(
-		call_with1(Backend, Goal, Pattern, OutQueue, Options),
+		(	call_with(Backend, Goal, Options),      % call goal in backend
+			thread_send_message(OutQueue, Pattern)  % publish result via OutQueue
+		),
 		Error,
 		thread_send_message(OutQueue, error(Error))
 	).
-
-%
-call_with1(Backend, Goal, Pattern, OutQueue, Options) :-
-	% call goal in backend
-	call_with(Backend, Goal, Options),
-	% publish result via OutQueue
-	thread_send_message(OutQueue, Pattern).
 
 
 %% call_with(+Backend, :Goal, +Options) is nondet.
@@ -481,6 +468,12 @@ call_with1(Backend, Goal, Pattern, OutQueue, Options) :-
 % @param Options list of options
 %
 call_with(mongolog, Goal, Options) :- mongolog_call(Goal, Options).
+
+%% is_callable_with(?Backend, :Goal) is nondet.
+%
+% True if Backend is a querying backend that can handle Goal.
+%
+is_callable_with(mongolog, Goal) :- is_mongolog_predicate(Goal).
 
 
 		 /*******************************
@@ -622,8 +615,6 @@ expand_term_1(Goal, Expanded) :-
 
 expand_term_1(Goal, Expanded) :-
 	once(is_callable_with(_,Goal)),
-	%Goal =.. [Functor|_Args],
-	%step_command(Functor),
 	% allow the goal to recursively expand
 	(	step_expand(Goal, Expanded) -> true
 	;	Expanded = Goal
@@ -762,4 +753,41 @@ set_graph_option(Options, Options) :-
 set_graph_option(Options, Merged) :-
 	default_graph(DG),
 	merge_options([graph(DG)], Options, Merged).
+
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+test_setup :-
+	assertz(is_callable_with(test_a, test_gen(_))),
+	assertz(is_callable_with(test_b, test_map(_,_))),
+	assertz(':-'(
+		call_with(test_a, test_gen(X), _),
+		member(X,[1,2,3,4,5,6,7,8,9])
+	)),
+	assertz(':-'(
+		call_with(test_b, test_map(X,Y), _),
+		Y is X*X
+	)).
+
+test_cleanup :-
+	retractall(is_callable_with(test_a,_)),
+	retractall(is_callable_with(test_b,_)),
+	retractall(':-'(call_with(test_a, _, _), _)),
+	retractall(':-'(call_with(test_b, _, _), _)).
+
+:- begin_tests('lang_query',
+		[ setup(lang_query:test_setup),
+		  cleanup(lang_query:test_cleanup) ]).
+
+test('test_gen(-)') :-
+	findall(X, ask(test_gen(X)), Xs),
+	Xs == [1,2,3,4,5,6,7,8,9].
+
+test('(test_gen(-),test_map(+,-))') :-
+	findall(Y, ask((test_gen(X), test_map(X,Y))), Xs),
+	Xs == [1,4,9,16,25,36,49,64,81].
+
+:- end_tests('lang_query').
 
