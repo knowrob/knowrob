@@ -13,4 +13,4 @@
 :- use_directory(mongolog).
 :- use_directory(terms).
 :- use_module(designator).
-%:- use_module(computable).
+:- use_module(computable).

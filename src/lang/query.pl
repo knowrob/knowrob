@@ -39,10 +39,13 @@
 :- multifile call_with/3.
 
 % create a thread pool for query processing
-:- worker_pool_create('lang_query').
+:- worker_pool_create('lang_query:queries').
+:- current_prolog_flag(cpu_count, NumCPUs),
+   worker_pool_create('lang_query:backends', [max_size(NumCPUs)]).
 
 % the named thread pool used for query processing
-thread_pool('lang_query').
+query_thread_pool('lang_query:queries').
+backend_thread_pool('lang_query:backends').
 
 %% ask(+Statement) is nondet.
 %
@@ -292,17 +295,15 @@ start_pipeline2([Step|Rest], Pattern, Options, LastStep, FinalStep) :-
 start_pipeline_step(
 		step(Goal,OutQueue,Channels),
 		Pattern, Options) :-
-	thread_pool(Pool),
+	query_thread_pool(Pool),
 	forall(
 		% iterate over different backends
 		member([Backend,InQueue], Channels),
 		% run call_with/3 in a thread for each backend
 		worker_pool_start_work(Pool, InQueue,
 			lang_query:call_with(
-				Backend, Goal, OutQueue,
-				[ input_queue(InQueue),
-				  goal_variables(Pattern)
-				| Options ]
+				Backend, Goal, Pattern,
+				OutQueue, InQueue, Options
 			)
 		)
 	).
@@ -334,11 +335,13 @@ stop_pipeline([First|Rest]) :-
 	stop_pipeline(Rest).
 
 stop_pipeline_step(step(_, OutQueue, Channels)) :-
-	thread_pool(Pool),
-	worker_pool_stop_work(Pool,OutQueue),
+	query_thread_pool(QueryPool),
+	backend_thread_pool(BackendPool),
+	worker_pool_stop_work(QueryPool,OutQueue),
+	worker_pool_stop_work(BackendPool,OutQueue),
 	forall(
 		member([_,InQueue], Channels),
-		worker_pool_stop_work(Pool,InQueue)
+		worker_pool_stop_work(QueryPool,InQueue)
 	).
 
 
@@ -386,7 +389,7 @@ connect_steps(
 connect_steps(LastStep, ThisStep, ThisStep) :-
 	% else feed messages from the output queue of LastStep
 	% into the input queues of different channels in a worker thread.
-	thread_pool(Pool),
+	query_thread_pool(Pool),
 	step_output(LastStep, OutQueue),
 	worker_pool_start_work(Pool, OutQueue,
 		lang_query:connect_steps(LastStep, ThisStep)).
@@ -432,24 +435,35 @@ combine_steps(
 is_callable_with(mongolog, Goal) :-
 	is_mongolog_predicate(Goal).
 
-
 % call Goal in Backend and send result on OutQueue
-call_with(Backend, Goal, OutQueue, Options) :-
+call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
+	% TODO: in some cases it could be beneficial to do chunking
+	%       then run worker threads for each chunk
+	%
+	backend_thread_pool(BackendPool),
+	% pass each instantiation to a worker thread
+	forall(
+		message_queue_materialize(InQueue, Pattern),
+		worker_pool_start_work(BackendPool, OutQueue,
+			lang_query:call_with0(Backend, Goal, Pattern, OutQueue, Options)
+		)
+	),
+	% need to wait until all backend workers have completed
+	worker_pool_wait(BackendPool, OutQueue),
+	% then we send eos message
+	thread_send_message(OutQueue, end_of_stream).
+
+%
+call_with0(Backend, Goal, Pattern, OutQueue, Options) :-
 	% pass any error to output queue consumer
 	catch(
-		call_with1(Backend, Goal, OutQueue, Options),
+		call_with1(Backend, Goal, Pattern, OutQueue, Options),
 		Error,
 		thread_send_message(OutQueue, error(Error))
 	).
 
-call_with(_Backend, _Goal, OutQueue, _Options) :-
-	% send end_of_stream message needed
-	% to terminate worker waiting for next result.
-	thread_send_message(OutQueue, end_of_stream).
-
 %
-call_with1(Backend, Goal, OutQueue, Options) :-
-	option(goal_variables(Pattern), Options),
+call_with1(Backend, Goal, Pattern, OutQueue, Options) :-
 	% call goal in backend
 	call_with(Backend, Goal, Options),
 	% publish result via OutQueue
@@ -466,32 +480,7 @@ call_with1(Backend, Goal, OutQueue, Options) :-
 % @param Goal a goal term
 % @param Options list of options
 %
-call_with(mongolog, Goal, Options) :-
-	% TODO: investigate what is the best way to do this
-	%	- chunking (below)
-	%	- stream into collection
-	%   - threading of mongolog_call
-	%		- would be nice to just create a worker for each instantiation
-	%         as it can be done outside. computable does the same.
-	option(input_queue(InQueue), Options),
-	option(goal_variables(Pattern), Options),
-	message_queue_materialize(InQueue, Pattern),
-	mongolog_call(Goal, Options).
-
-%call_with(mongolog, Goal, Options) :-
-%	option(input_queue(InQueue), Options),
-%	option(goal_variables(Pattern), Options),
-%	option(chunk_size(ChunkSize), Options, 10),
-%	% retrieve next chunk
-%	findnsols(ChunkSize,
-%		InstantiatedPattern,
-%		message_queue_materialize(InQueue, InstantiatedPattern),
-%		NSolutions
-%	),
-%	% bake chunk into next goal to avoid outer choicepoints (only one per chunk)
-%	% FIXME: member call below does not work for some reason
-%	Goal0=','(member(Pattern, NSolutions), Goal),
-%	mongolog_call(Goal0, Options).
+call_with(mongolog, Goal, Options) :- mongolog_call(Goal, Options).
 
 
 		 /*******************************

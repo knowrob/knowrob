@@ -11,9 +11,8 @@
 @license BSD
 */
 
-:- dynamic worker_pool/3.
+:- dynamic worker_pool/4.
 :- dynamic num_workers/2.
-:- dynamic num_requests/2.
 
 %% message_queue_materialize(+Queue, -Term) is nondet.
 %
@@ -53,12 +52,21 @@ message_queue_materialize(Queue, This, Term) :-
 
 % message queue for work goals
 pool_work_queue(WorkerPool, WorkQueue) :-
-	worker_pool(WorkerPool, WorkQueue, _).
+	worker_pool(WorkerPool, WorkQueue, _, _).
 
 % message queue for currently active goals
 pool_active_queue(WorkerPool, ActiveQueue) :-
-	worker_pool(WorkerPool, _, ActiveQueue).
+	worker_pool(WorkerPool, _, ActiveQueue, _).
 
+% options stored for a pool
+pool_option(WorkerPool, Option) :-
+	worker_pool(WorkerPool, _, _, OptionList),
+	option(Option, OptionList).
+
+pool_option(WorkerPool, Option, Default) :-
+	worker_pool(WorkerPool, _, _, OptionList),
+	option(Option, OptionList, Default).
+	
 
 %% worker_pool_create(+WorkerPool) is det.
 %
@@ -87,8 +95,7 @@ worker_pool_create(WorkerPool, Options) :-
 	message_queue_create(ActiveQueue),
 	% assert some dynamic predicates
 	asserta(num_workers(WorkerPool, 0)),
-	asserta(num_requests(WorkerPool, 0)),
-	assertz(worker_pool(WorkerPool, WorkQueue, ActiveQueue)),
+	assertz(worker_pool(WorkerPool, WorkQueue, ActiveQueue, Options)),
 	% finall create worker threads
 	worker_create(WorkerPool, InitialSize).
 
@@ -107,34 +114,20 @@ worker_create(WorkerPool, Count) :-
 
 % resize worker pool if there is more work then workers
 pool_grow(WorkerPool) :-
+	pool_option(WorkerPool, max_size(MaxSize), -1),
+	pool_active_queue(WorkerPool, ActiveQueue),
 	with_mutex(WorkerPool, (
 		num_workers(WorkerPool, CurrentNumWorkers),
-		num_requests(WorkerPool, NeededWorkers),
-		Diff is NeededWorkers - CurrentNumWorkers,
+		message_queue_property(ActiveQueue, size(NeededWorkers)),
+		% bounded growing
+		(	MaxSize > 0
+		->	NeededWorkers0 is min(MaxSize,NeededWorkers)
+		;	NeededWorkers0 = NeededWorkers
+		),
+		Diff is NeededWorkers0 - CurrentNumWorkers,
 		(	Diff =< 0 -> true
 		;	worker_create(WorkerPool, Diff)
 		)
-	)).
-
-% increase work counter
-pool_grow(WorkerPool, Amount) :-
-	with_mutex(WorkerPool, (
-		num_requests(WorkerPool, CurrentActive),
-		NewActive is CurrentActive + Amount,
-		retractall(num_requests(WorkerPool,_)),
-		asserta(num_requests(WorkerPool,NewActive))
-	)),
-	pool_grow(WorkerPool).
-
-% decrease work counter
-pool_shrink(WorkerPool, Amount) :-
-	% TODO: stop threads under some circumstances?
-	%       i.e. when they are not used for a longer period of time.
-	with_mutex(WorkerPool, (
-		num_requests(WorkerPool, CurrentActive),
-		NewActive is CurrentActive - Amount,
-		retractall(num_requests(WorkerPool,_)),
-		asserta(num_requests(WorkerPool,NewActive))
 	)).
 
 
@@ -151,12 +144,43 @@ pool_shrink(WorkerPool, Amount) :-
 worker_pool_start_work(WorkerPool, WorkID, WorkerGoal) :-
 	pool_active_queue(WorkerPool, ActiveQueue),
 	pool_work_queue(WorkerPool, WorkQueue),
-	% increase number of requests
-	pool_grow(WorkerPool, 1),
+	% acquire mutex lock on WorkID
+	pool_lock_work_if_first(WorkerPool, WorkID),
 	% add work ID to active queue
 	thread_send_message(ActiveQueue, work(WorkID)),
 	% add a new work goal to the queue
-	thread_send_message(WorkQueue, work(WorkID, WorkerGoal)).
+	thread_send_message(WorkQueue, work(WorkID, WorkerGoal)),
+	% increase number of threads if needed
+	pool_grow(WorkerPool).
+
+%% worker_pool_wait(+PoolID, +WorkID) is det.
+%
+% Block the current thread until work is done.
+%
+worker_pool_wait(PoolID, WorkID) :-
+	% mutex is locked as long as work is active, so entering mutex
+	% is only possible when no work is active.
+	pool_lock_work(PoolID, WorkID),
+	pool_unlock_work(PoolID, WorkID).
+
+%
+pool_lock_work_if_first(PoolID, WorkID) :-
+	pool_active_queue(PoolID, ActiveQueue),
+	with_mutex(PoolID, (
+		(	thread_peek_message(ActiveQueue, work(WorkID)) -> true
+		;	pool_lock_work(PoolID, WorkID)
+		)
+	)).
+
+%
+pool_lock_work(WorkerPool, WorkID) :-
+	term_to_atom([WorkerPool,WorkID],MutexID),
+	mutex_lock(MutexID).
+
+%
+pool_unlock_work(WorkerPool, WorkID) :-
+	term_to_atom([WorkerPool,WorkID],MutexID),
+	mutex_unlock(MutexID).
 
 
 %% worker_pool_stop_work(+WorkerPool, -WorkID) is det.
@@ -170,27 +194,39 @@ worker_pool_start_work(WorkerPool, WorkID, WorkerGoal) :-
 % @param WorkID the work ID.
 %
 worker_pool_stop_work(WorkerPool, WorkID) :-
+	% TODO: force threads to exit
+	worker_pool_stop_work1(WorkerPool, WorkID, _Count).
+
+%
+worker_pool_stop_work1(WorkerPool, WorkID, Count) :-
 	pool_active_queue(WorkerPool, ActiveQueue),
-	% remove work ID from active queue
-	(	thread_get_message(ActiveQueue, work(WorkID), [timeout(0)])
-	% decrease number of requests
-	->	pool_shrink(WorkerPool, 1)
-	;	true
-	).
+	thread_get_message(ActiveQueue, work(WorkID), [timeout(0)]),
+	!,
+	worker_pool_stop_work1(WorkerPool, WorkID, Count0),
+	Count is Count0 + 1.
+worker_pool_stop_work1(_, _, 0) :- !.
 
 % a goal executed for each worker thread.
 % each worker listens to the same WorkQueue
 % with messages encoding a callable worker goal
 worker_thread(WorkerPool) :-
 	pool_work_queue(WorkerPool, WorkQueue),
+	pool_active_queue(WorkerPool, ActiveQueue),
 	repeat,
-	% NOTE: argument _must_ be an unbound variable to make it
-	%       work to share the same input queue in different worker threads
-	thread_get_message(WorkQueue, WorkMsg),
+	thread_get_message(WorkQueue, Msg),
+	Msg=work(WorkID, WorkerGoal),
+	% TODO: use catch_with_backtrace
 	catch(
-		forall(worker_thread(WorkMsg, WorkerPool), true),
+		forall(worker_thread(work(WorkID, WorkerGoal), WorkerPool), true),
 		Error,
 		log_warning(worker_pool(Error))
+	),
+	ignore(
+		thread_get_message(ActiveQueue, work(WorkID), [timeout(0)])
+	),
+	% send notification that work is over if queue is now empty
+	(	thread_peek_message(ActiveQueue, work(WorkID)) -> true
+	;	pool_unlock_work(WorkerPool, WorkID)
 	),
 	% jump back to repeat/0
 	fail.

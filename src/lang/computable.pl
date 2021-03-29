@@ -34,22 +34,14 @@ lang_query:is_callable_with(computable, Goal) :-
 	once(computable_predicate(/(Functor,Arity),_,_)).
 
 %
-lang_query:call_with(computable, Goal, Options) :-
-	option(input_queue(In), Options),
-	option(pattern(Pattern), Options),
+lang_query:call_with(computable, Goal, _Options) :-
 	% get callable computable goal
 	Goal =.. [Functor0|Args],
 	length(Args,Arity),
 	computable_predicate(/(Functor0,Arity), Module, Functor1),
 	Goal1 =.. [Functor1|Args],
 	ComputationGoal = (:(Module,Goal1)),
-	% run computation in worker threads
-	% TODO: rather use another worker_pool?
-	% TODO: does this create a thread pool each time it is called?
-	concurrent_forall(
-		message_queue_materialize(In, Pattern),
-		call(ComputationGoal)
-	).
+	call(ComputationGoal).
 
 
 		 /*******************************
