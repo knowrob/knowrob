@@ -781,14 +781,15 @@ set_graph_option(Options, Merged) :-
 
 test_setup :-
 	assertz(is_callable_with(test_a, test_gen(_))),
+	assertz(is_callable_with(test_a, test_gen_inf(_))),
 	assertz(is_callable_with(test_b, test_single(_,_))),
 	assertz(is_callable_with(test_a, test_dual(_,_))),
 	assertz(is_callable_with(test_b, test_dual(_,_))),
-	assertz(call_with(test_a, test_gen(X), _) :-
-		member(X,[1,2,3,4,5,6,7,8,9])),
+	assertz(call_with(test_a, test_gen(X), _)       :- between(1,9,X)),
+	assertz(call_with(test_a, test_gen_inf(X), _)   :- between(1,inf,X)),
 	assertz(call_with(test_b, test_single(X,Y), _)  :- Y is X*X),
-	assertz(call_with(test_a, test_dual(X,Y), _) :- Y is X*X),
-	assertz(call_with(test_b, test_dual(X,Y), _) :- Y is X+X).
+	assertz(call_with(test_a, test_dual(X,Y), _)    :- Y is X*X),
+	assertz(call_with(test_b, test_dual(X,Y), _)    :- Y is X+X).
 
 test_cleanup :-
 	retractall(is_callable_with(test_a,_)),
@@ -811,6 +812,18 @@ test('(test_gen(-),test_single(+,-))') :-
 test('(test_gen(-),test_dual(+,-))') :-
 	findall(Y, ask((test_gen(X), test_dual(X,Y))), Xs),
 	assert_true(length(Xs,18)).
+
+test('limit(+,test_gen_inf(-))') :-
+	findall(X, limit(4,ask(test_gen_inf(X))), Xs),
+	assert_true(length(Xs,4)).
+
+test('limit(+,(test_gen_inf(-),test_single(+,-)))') :-
+	findall(Y, limit(4,ask((
+		test_gen_inf(X),
+		test_single(X,Y)
+	))), Ys),
+	% TODO: also test that threads have exited
+	assert_true(length(Ys,4)).
 
 :- end_tests('lang_query').
 
