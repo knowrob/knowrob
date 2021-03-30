@@ -830,7 +830,13 @@ test('(test_gen(-),test_single(+,-))') :-
 		test_gen(X),
 		test_single(X,Y)
 	)), Xs),
-	Xs == [1,4,9,16,25,36,49,64,81].
+	% NOTE: ordering in Xs is not certain!
+	AllSolutions = [1,4,9,16,25,36,49,64,81],
+	(	member(X, AllSolutions)
+	->*	assert_true(member(X,Xs))
+	;	true
+	),
+	assert_true(length(Xs,9)).
 
 test('(test_gen(-),test_dual(+,-))') :-
 	findall(Y, ask((
