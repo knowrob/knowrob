@@ -220,7 +220,7 @@ worker_thread(WorkerPool) :-
 	catch(
 		forall(worker_thread(work(WorkID, WorkerGoal), WorkerPool), true),
 		Error,
-		log_warning(worker_pool(Error))
+		worker_thread_error(Error)
 	),
 	ignore(
 		thread_get_message(ActiveQueue, work(WorkID), [timeout(0)])
@@ -236,8 +236,13 @@ worker_thread(work(WorkID, WorkerGoal), WorkerPool) :-
 	work_is_ongoing(WorkerPool, WorkID),
 	call(WorkerGoal),
 	(	work_is_ongoing(WorkerPool, WorkID) -> true
-	;	(!,fail)
+	;	(!, fail)
 	).
+
+%
+worker_thread_error('$aborted') :- !.
+worker_thread_error(error(existence_error(message_queue,_),_)) :- !.
+worker_thread_error(Error) :- log_warning(worker_thread(Error)).
 
 % true if there is a reference to WorkID in ActiveQueue
 work_is_ongoing(WorkerPool, WorkID) :-

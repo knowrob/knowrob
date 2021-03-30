@@ -323,19 +323,36 @@ materialize_pipeline(FinalStep, Pattern, Options) :-
 
 
 % stop processing all steps of a pipeline
-stop_pipeline([First|Rest]) :-
+stop_pipeline(Pipeline) :-
+	stop_pipeline1(Pipeline),
+	findall(Q, (
+		member(X,Pipeline),
+		step_queue(X,Q)
+	), Queues),
+	forall(
+		member(Q,Queues),
+		catch(message_queue_destroy(Q),
+			error(existence_error(message_queue,Q),_),
+			true)
+	).
+
+
+stop_pipeline1([]) :- !.
+stop_pipeline1([First|Rest]) :-
 	stop_pipeline_step(First),
-	stop_pipeline(Rest).
+	stop_pipeline1(Rest).
 
 stop_pipeline_step(step(_, OutQueue, Channels)) :-
 	query_thread_pool(QueryPool),
 	backend_thread_pool(BackendPool),
-	worker_pool_stop_work(QueryPool,OutQueue),
-	worker_pool_stop_work(BackendPool,OutQueue),
 	forall(
 		member([_,InQueue], Channels),
-		worker_pool_stop_work(QueryPool,InQueue)
-	).
+		(	worker_pool_stop_work(QueryPool,InQueue),
+			worker_pool_stop_work(BackendPool,InQueue)
+		)
+	),
+	worker_pool_stop_work(QueryPool,OutQueue),
+	worker_pool_stop_work(BackendPool,OutQueue).
 
 
 % map a goal to a step term
@@ -367,6 +384,7 @@ create_queue_(Queue,MaxSize) :-
 %
 step_input(step(_,_,Channels),InQueue) :- member([_,InQueue],Channels).
 step_output(step(_,OutQueue,_),OutQueue).
+step_queue(Step, Queue) :- step_input(Step,Queue) ; step_output(Step,Queue).
 
 
 % connect the output of LastStep to the input of ThisStep
@@ -473,7 +491,9 @@ call_with(Backend, Goal, Pattern, OutQueue, Options) :-
 			thread_send_message(OutQueue, Pattern)  % publish result via OutQueue
 		),
 		Error,
-		thread_send_message(OutQueue, error(Error))
+		(	Error=error(existence_error(message_queue,OutQueue),_) -> true
+		;	thread_send_message(OutQueue, error(Error))
+		)
 	).
 
 
@@ -806,11 +826,17 @@ test('test_gen(-)') :-
 	Xs == [1,2,3,4,5,6,7,8,9].
 
 test('(test_gen(-),test_single(+,-))') :-
-	findall(Y, ask((test_gen(X), test_single(X,Y))), Xs),
+	findall(Y, ask((
+		test_gen(X),
+		test_single(X,Y)
+	)), Xs),
 	Xs == [1,4,9,16,25,36,49,64,81].
 
 test('(test_gen(-),test_dual(+,-))') :-
-	findall(Y, ask((test_gen(X), test_dual(X,Y))), Xs),
+	findall(Y, ask((
+		test_gen(X),
+		test_dual(X,Y)
+	)), Xs),
 	assert_true(length(Xs,18)).
 
 test('limit(+,test_gen_inf(-))') :-
