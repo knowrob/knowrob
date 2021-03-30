@@ -290,7 +290,7 @@ start_pipeline1([Step|Rest], Pattern, Options, FinalStep) :-
 start_pipeline2([], _Pattern, _Options, FinalStep, FinalStep) :- !.
 start_pipeline2([Step|Rest], Pattern, Options, LastStep, FinalStep) :-
 	% use output queue of LastStep to provide input for Step.
-	connect_steps(LastStep, Step, Linked),
+	connect_steps(LastStep, Step, Linked, Options),
 	start_pipeline1([Linked|Rest], Pattern, Options, FinalStep).
 
 % call pipeline step in multiple backends
@@ -298,16 +298,9 @@ start_pipeline_step(
 		step(Goal,OutQueue,Channels),
 		Pattern, Options) :-
 	query_thread_pool(Pool),
-	forall(
-		% iterate over different backends
-		member([Backend,InQueue], Channels),
-		% run call_with/3 in a thread for each backend
-		worker_pool_start_work(Pool, InQueue,
-			lang_query:call_with(
-				Backend, Goal, Pattern,
-				OutQueue, InQueue, Options
-			)
-		)
+	worker_pool_start_work(Pool, OutQueue,
+		lang_query:call_with_channels(
+			Channels, Goal, Pattern, OutQueue, Options)
 	).
 
 
@@ -380,17 +373,19 @@ step_output(step(_,OutQueue,_),OutQueue).
 connect_steps(
 		step(_,OutQueue0,_),                      % LastStep
 		step(G,OutQueue1,[[Backend,OutQueue0]]),  % ThisStep
-		step(G,OutQueue1,[[Backend,OutQueue0]])) :-
+		step(G,OutQueue1,[[Backend,OutQueue0]]), _) :-
 	% if ThisStep has only a single channel,
 	% use the output queue of LastStep directly as input
 	% queue in ThisStep
 	!.
 
-connect_steps(LastStep, ThisStep, ThisStep) :-
+connect_steps(LastStep, ThisStep, ThisStep, Options) :-
 	% else feed messages from the output queue of LastStep
 	% into the input queues of different channels in a worker thread.
 	query_thread_pool(Pool),
 	step_output(LastStep, OutQueue),
+	% create step message queues
+	create_step_queues(ThisStep, Options),
 	worker_pool_start_work(Pool, OutQueue,
 		lang_query:connect_steps(LastStep, ThisStep)).
 
@@ -406,6 +401,12 @@ connect_steps(LastStep, ThisStep) :-
 	forall(
 		step_input(ThisStep, InQueue),
 		thread_send_message(InQueue, Msg)
+	).
+connect_steps(_LastStep, ThisStep) :-
+	% send eos msg to every input queue
+	forall(
+		step_input(ThisStep, InQueue),
+		thread_send_message(InQueue, end_of_stream)
 	).
 
 
@@ -429,6 +430,29 @@ combine_steps(
 		 *******************************/
 
 % call Goal in Backend and send result on OutQueue
+call_with_channels(Channels, Goal, Pattern, OutQueue, Options) :-
+	% TODO: in some cases it could be beneficial to do chunking
+	%       then run worker threads for each chunk
+	%
+	backend_thread_pool(BackendPool),
+	%
+	forall(
+		% iterate over different backends
+		member([Backend,InQueue], Channels),
+		% run call_with/3 in a thread for each backend
+		worker_pool_start_work(BackendPool, OutQueue,
+			lang_query:call_with(
+				Backend, Goal, Pattern,
+				OutQueue, InQueue, Options
+			)
+		)
+	),
+	% need to wait until all backend workers have completed
+	worker_pool_join(BackendPool, OutQueue),
+	% then we send eos message
+	thread_send_message(OutQueue, end_of_stream).
+
+% call Goal in Backend and send result on OutQueue
 call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
 	% TODO: in some cases it could be beneficial to do chunking
 	%       then run worker threads for each chunk
@@ -439,11 +463,7 @@ call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
 		message_queue_materialize(InQueue, Pattern),
 		worker_pool_start_work(BackendPool, OutQueue,
 			lang_query:call_with(Backend, Goal, Pattern, OutQueue, Options))
-	),
-	% need to wait until all backend workers have completed
-	worker_pool_join(BackendPool, OutQueue),
-	% then we send eos message
-	thread_send_message(OutQueue, end_of_stream).
+	).
 
 %
 call_with(Backend, Goal, Pattern, OutQueue, Options) :-
@@ -761,15 +781,14 @@ set_graph_option(Options, Merged) :-
 
 test_setup :-
 	assertz(is_callable_with(test_a, test_gen(_))),
-	assertz(is_callable_with(test_b, test_map(_,_))),
-	assertz(':-'(
-		call_with(test_a, test_gen(X), _),
-		member(X,[1,2,3,4,5,6,7,8,9])
-	)),
-	assertz(':-'(
-		call_with(test_b, test_map(X,Y), _),
-		Y is X*X
-	)).
+	assertz(is_callable_with(test_b, test_single(_,_))),
+	assertz(is_callable_with(test_a, test_dual(_,_))),
+	assertz(is_callable_with(test_b, test_dual(_,_))),
+	assertz(call_with(test_a, test_gen(X), _) :-
+		member(X,[1,2,3,4,5,6,7,8,9])),
+	assertz(call_with(test_b, test_single(X,Y), _)  :- Y is X*X),
+	assertz(call_with(test_a, test_dual(X,Y), _) :- Y is X*X),
+	assertz(call_with(test_b, test_dual(X,Y), _) :- Y is X+X).
 
 test_cleanup :-
 	retractall(is_callable_with(test_a,_)),
@@ -785,9 +804,13 @@ test('test_gen(-)') :-
 	findall(X, ask(test_gen(X)), Xs),
 	Xs == [1,2,3,4,5,6,7,8,9].
 
-test('(test_gen(-),test_map(+,-))') :-
-	findall(Y, ask((test_gen(X), test_map(X,Y))), Xs),
+test('(test_gen(-),test_single(+,-))') :-
+	findall(Y, ask((test_gen(X), test_single(X,Y))), Xs),
 	Xs == [1,4,9,16,25,36,49,64,81].
+
+test('(test_gen(-),test_dual(+,-))') :-
+	findall(Y, ask((test_gen(X), test_dual(X,Y))), Xs),
+	assert_true(length(Xs,18)).
 
 :- end_tests('lang_query').
 
