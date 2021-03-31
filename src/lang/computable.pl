@@ -1,10 +1,11 @@
 :- module(computable,
     [ computables(t),
-      add_computable_predicate/2,
-      add_computable_property/2,
-      drop_computable_predicate/1,
-      drop_computable_property/1,
-      drop_computable_property/2
+      add_computable_predicate/2,  % +Indicator, +Goal
+      add_computable_property/2,   % +Property, +Goal
+      drop_computable_predicate/1, % +Module
+      drop_computable_predicate/2, % +Module, +Indicator
+      drop_computable_property/1,  % +Module
+      drop_computable_property/2   % +Module, +Property
     ]).
 /** <module> Loading of computable predicates used to compute relations and data values.
 
@@ -22,28 +23,43 @@
 %% add_computable_predicate(+Indicator, +Goal) is det.
 %
 add_computable_predicate(Indicator, Goal) :-
+	ground(Indicator),
+	ground(Goal),
 	strip_module(Goal, Module, Goal0),
 	assertz(computable_predicate(Indicator, Module, Goal0)).
 
-%% drop_computable_predicate(+Indicator) is det.
+%% drop_computable_predicate(+Module) is det.
 %
-drop_computable_predicate(Indicator) :-
-	retractall(computable_predicate(Indicator, _, _)).
+drop_computable_predicate(Module) :-
+	ground(Module),
+	retractall(computable_property(_, Module, _)).
+
+%% drop_computable_predicate(+Module,+Indicator) is det.
+%
+drop_computable_predicate(Module, Indicator) :-
+	ground(Module),
+	ground(Indicator),
+	retractall(computable_predicate(Indicator, Module, _)).
 
 %% add_computable_property(+Property, +Goal) is det.
 %
 add_computable_property(Property, Goal) :-
+	ground(Property),
+	ground(Goal),
 	strip_module(Goal, Module, Goal0),
 	assertz(computable_property(Property, Module, Goal0)).
 
 %% drop_computable_property(+Module) is det.
 %
 drop_computable_property(Module) :-
+	ground(Module),
 	retractall(computable_property(_, Module, _)).
 
 %% drop_computable_property(+Indicator) is det.
 %
 drop_computable_property(Module, Property) :-
+	ground(Module),
+	ground(Property),
 	retractall(computable_property(Property, Module, _)).
 
 %% computables(+Computables) is det.
@@ -142,8 +158,8 @@ test_setup :-
 	add_computable_predicate(comp_map/2, computable:test_comp_map).
 
 test_cleanup :-
-	drop_computable_predicate(comp_gen/1),
-	drop_computable_predicate(comp_map/2).
+	drop_computable_predicate(computable, comp_gen/1),
+	drop_computable_predicate(computable, comp_map/2).
 
 :- begin_tests('computable',
 		[ setup(computable:test_setup),
