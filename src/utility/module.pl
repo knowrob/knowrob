@@ -106,6 +106,7 @@ user:term_expansion((:-module(Name,Exports)), Expansions) :-
 	findall(Expansion,
 		(	expand_to_module_(Name,Xs,Expansion)
 		;	expand_to_rdf_meta_(Name,Xs,Expansion)
+		;	expand_to_rdfs_computable_(Name,Xs,Expansion)
 		),
 		Expansions
 	).
@@ -135,6 +136,21 @@ expand_to_rdf_meta_(Name,Exports,Expansion) :-
 	),
 	argument_list_(RDF_List,RDF_Predicates),
 	Expansion=(:-rdf_meta(RDF_Predicates)).
+
+%%
+expand_to_rdfs_computable_(Name,Exports,Expansion) :-
+	findall(
+		(:(Name,Compute_Predicate)),
+		(	member([Functor,_,_,Property|_],Exports),
+			ground(Property),
+			Compute_Predicate=..[Functor,Property]
+		),
+		Compute_List
+	),
+	argument_list_(Compute_List,Compute_Predicates),
+	(	Expansion=(:-use_module(library('lang/computable'), [computables/1]));
+		Expansion=(:-computables(Compute_Predicates))
+	).
 
 %%
 read_exports_([],[],_) :- !.
