@@ -211,8 +211,27 @@ swrl_builtin_pl(endsWith(A,X), atom_concat(_, X_atom, A_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 %% extensions
-swrl_builtin_pl(makeOWLClass(A), swrl:swrlx_make_individual(A_atom), Vars) :-
-  swrl_atoms([A], [A_atom], Vars).
+% Note: built-in arguments are passed individually. I have not found a way to 
+% pass them as a list. As a workaround I am adding support for up to 5 arguments.
+swrl_builtin_pl(makeOWLIndividual(A, B),
+                swrl:swrlx_make_individual(A_atom, [B_atom]),
+                Vars) :-
+  swrl_atoms([A, B], [A_atom, B_atom], Vars).
+
+swrl_builtin_pl(makeOWLIndividual(A, B, C),
+                swrl:swrlx_make_individual(A_atom, [B_atom, C_atom]),
+                Vars) :-
+  swrl_atoms([A, B, C], [A_atom, B_atom, C_atom], Vars).
+
+swrl_builtin_pl(makeOWLIndividual(A, B, C, D),
+                swrl:swrlx_make_individual(A_atom, [B_atom, C_atom, D_atom]),
+                Vars) :-
+  swrl_atoms([A, B, C, D], [A_atom, B_atom, C_atom, D_atom], Vars).
+
+swrl_builtin_pl(makeOWLIndividual(A, B, C, D, E),
+                swrl:swrlx_make_individual(A_atom, [B_atom, C_atom, D_atom, E_atom]),
+                Vars) :-
+  swrl_atoms([A, B, C, D, E], [A_atom, B_atom, C_atom, D_atom, E_atom], Vars).
 
 %%
 swrl_leq(A,B)        :- number_list([A,B],[X,Y]),     X =< Y.
@@ -316,10 +335,39 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
   swrl_atom_number(X,Y,Vars),
   swrl_nums(Xs,Ys,Vars).
 
-%% swrlx
-swrlx_make_individual(A) :-
+%% swrlx storage
+:- dynamic swrlx_individual_map/2.
+
+swrlx_add_individual(Pattern,Individual) :-
+    (   swrlx_individual_map(Pattern, Individual)
+    ->  true
+    ;   assertz(swrlx_individual_map(Pattern, Individual))
+    ).
+
+swrlx_get_individual(Pattern, Individual) :-
+   swrlx_individual_map(Pattern, Individual).
+
+%% swrlx commands
+swrlx_make_individual(A, _) :-
   ground(A).
 
-swrlx_make_individual(A) :-
+swrlx_make_individual(A, PatternArgs) :-
   \+ ground(A),
-  tell(instance_of(A, owl:'Thing')).
+  maplist(ground, PatternArgs),
+  atomic_list_concat(PatternArgs, Pattern),
+  (
+    swrlx_get_individual(Pattern, A)
+    -> true
+  ; swrlx_insert_new_individual(A),
+    swrlx_add_individual(Pattern, A)
+  ).
+
+% Note: creating a new individual using
+% the predicate instance_of/2 would
+% run the notify predicate that checks if it is
+% an event. Since those predicates are tabled, any subsequent
+% updates that may happen in the rule head will not trigger
+% a notification. I am calling triple/3 directly as a workaround.
+swrlx_insert_new_individual(A) :-
+  lang_is_a:unique_name(swlrx, A),
+  tell(triple(A, rdf:'Type', owl:'Thing')).
