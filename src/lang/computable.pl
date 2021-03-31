@@ -1,7 +1,7 @@
 :- module(computable,
-    [ add_computable_predicate/2,
+    [ computables(t),
+      add_computable_predicate/2,
       drop_computable_predicate/1
-      %computables(t)
     ]).
 /** <module> Loading of computable predicates used to compute relations and data values.
 
@@ -9,7 +9,50 @@
 @license BSD
 */
 
+% operator used for defining computables
+:- op(1150, fx, user:computables).
+
+% computables predicates that were added
 :- dynamic computable_predicate/3.
+
+%% computables(+Computables) is det.
+%
+% Register a list of comutables.
+%
+% @param Computables list of computables
+%
+computables(Computables) :-
+	comma_list(Computables,List),
+	List=[(:(Module,_))|_],
+	computables(Module, List).
+
+%
+computables(_, []) :- !.
+computables(Module, [Computable|Rest]) :-
+	Computable =.. [CompFunctor, Arity | RestArgs],
+	(	RestArgs==[] -> Options=[]
+	;	RestArgs=[Options]
+	),
+	computables(Module, CompFunctor, Arity, Options),
+	computables(Module, Rest).
+
+% computable properties
+computables(Module, CompFunctor, Arity, Options) :-
+	option(propery(Property), Options),
+	!,
+	Arity == 2,
+	add_computable_property(Property, (:(Module,CompFunctor))).
+
+% computable predicates
+computables(Module, CompFunctor, Arity, Options) :-
+	option(functor(LangFunctor), Options, CompFunctor),
+	Indicator=(/(LangFunctor,Arity)),
+	add_computable_predicate(Indicator, (:(Module,CompFunctor))).
+
+
+		 /*******************************
+		 *	   COMPUTABLE PREDICATES  	*
+		 *******************************/
 
 %% add_computable_predicate(+Indicator, +Goal) is det.
 %
@@ -22,12 +65,6 @@ add_computable_predicate(Indicator, Goal) :-
 drop_computable_predicate(Indicator) :-
 	retractall(computable_predicate(Indicator, _, _)).
 
-
-		 /*******************************
-		 *	 	   lang_query     		*
-		 *******************************/
-
-%
 lang_query:is_callable_with(computable, Goal) :-
 	Goal =.. [Functor|Args],
 	length(Args,Arity),
@@ -51,93 +88,23 @@ computable_goal(Goal,CompGoal) :-
 	CompGoal = (:(Module,Goal1)).
 
 		 /*******************************
-		 *    	  UNIT TESTING     		*
+		 *	   COMPUTABLE PROPERTIES  	*
 		 *******************************/
 
-test_comp_map(X,Y) :- Y is X * X.
-test_comp_gen(X) :- between(1,9,X).
-
-test_setup :-
-	add_computable_predicate(comp_gen/1, computable:test_comp_gen),
-	add_computable_predicate(comp_map/2, computable:test_comp_map).
-
-test_cleanup :-
-	drop_computable_predicate(comp_gen/1),
-	drop_computable_predicate(comp_map/2).
-
-:- begin_tests('computable',
-		[ setup(computable:test_setup),
-		  cleanup(computable:test_cleanup) ]).
-
-test('comp_gen(-)') :-
-	findall(X, ask(comp_gen(X)), Xs),
-	Xs == [1,2,3,4,5,6,7,8,9].
-
-test('(comp_gen(-),comp_map(+,-))') :-
-	findall(Y, ask((
-		comp_gen(X),
-		comp_map(X,Y)
-	)), AllSolutions),
-	AllSolutions == [1,4,9,16,25,36,49,64,81].
-
-:- end_tests('computable').
-
-
-%:- op(1150, fx, user:computables).
+%% add_computable_property(+Property, +Goal) is det.
 %
-%:- use_module(library('model/OWL'),
-%    [ is_object_property/1,
-%      is_data_property/1
-%    ]).
+add_computable_property(Property, Goal) :-
+	fail.
 
-%% computables(+Computables) is det.
+%% drop_computable_property(+Indicator) is det.
 %
-% Register a list of comutable predicates.
-% Each computable is represented as list
-% `[Predicate,Property]` where Predicate is a Prolog
-% predicate, and Property is a RDF property.
-%
-% @param Computables list of computables
-%
-%computables(Computables) :-
-%  % peak module M
-%  computable_list_(Computables,List),
-%  List=[(:(M,_))|_],
-%  %
-%  findall(OC, (
-%    member(OC,List),
-%    is_object_computable(OC)
-%  ), ObjectComputables),
-%  computable_reasoner_(M,ObjectComputables),
-%  %
-%  findall(DC, (
-%    member(DC,List),
-%    is_datatype_computable(DC)
-%  ), DatatypeComputables),
-%  computable_obda_(M,DatatypeComputables).
-%
-%%%
-%computable_list_(Computables,[C|Xs]) :-
-%  Computables=','(C,Cs),!,
-%  computable_list_(Cs,Xs).
-%
-%computable_list_(C,[C]).
+%drop_computable_property(Property) :-
+%	fail.
+
 %
 %%%
 %assert_scoped(M,Head,Body) :-
 %  assertz((:-((:(M,Head)),Body))).
-%
-%		 /*******************************
-%		 *	   RELATIONS	*
-%		 *******************************/
-%
-%%%
-%is_object_computable((:(_,C))) :-
-%  C=..[_,Property|_],
-%  is_object_property(Property).
-%
-%%%
-%computable_reasoner_(_,[]) :- !.
 %
 %computable_reasoner_(M,ObjectComputables) :-
 %  % assert various can_answer and infer clauses
@@ -190,58 +157,37 @@ test('(comp_gen(-),comp_map(+,-))') :-
 %  Goal=..[Predicate,S,O],
 %  assert_scoped(M,Head,ask(Goal,Scope)).
 %
-%		 /*******************************
-%		 *	   OBDA	*
-%		 *******************************/
-%
-%%%
-%is_datatype_computable((:(_,C))) :-
-%  C=..[_,Property|_],
-%  is_data_property(Property).
-%
-%%%
-%computable_obda_(_,[]) :- !.
-%
-%computable_obda_(M,DatatypeProperties) :-
-%  % assert various can_access and access clauses
-%  forall(
-%    member(C,DatatypeProperties),
-%    computable_obda2_(M,C)
-%  ),
-%  % queries can be answered in case of property is a variable
-%  assert_scoped(M,
-%        can_access(holds(_,P,_)),
-%        var(P)),
-%  % register obda client
-%  obda_add(M).
-%
-%computable_obda2_(Module,ComputableTerm) :-
-%  ComputableTerm=..[Predicate,Property],
-%  % validate
-%  callable(Predicate),
-%  atom(Property),
-%  %
-%  forall(
-%    % FIXME: we assume here that property hierarchy never changes.
-%    %         better would be to re-initialize in case the hierarchy changes.
-%    transitive(subproperty_of(Property,X)),
-%    ( % assert *can_answer* clause
-%      assert_can_access_(Module,X),
-%      % assert *infer* clause
-%      assert_access_(Module,X,Property,Predicate)
-%    )
-%  ).
-%
-%%%
-%assert_can_access_(M,P) :-
-%  Predicate=(:(M,can_access(P))),
-%  ( clause(Predicate,true) ;
-%    assertz(Predicate)
-%  ).
-%
-%%%
-%assert_access_(M,P_parent,_P_specific,Predicate) :-
-%  Head=access(S,P_parent,O,QScope,FScope),
-%  Body=..[Predicate,S,O,QScope->FScope],
-%  assert_scoped(M,Head,Body).
+
+
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
+
+test_comp_map(X,Y) :- Y is X * X.
+test_comp_gen(X) :- between(1,9,X).
+
+test_setup :-
+	add_computable_predicate(comp_gen/1, computable:test_comp_gen),
+	add_computable_predicate(comp_map/2, computable:test_comp_map).
+
+test_cleanup :-
+	drop_computable_predicate(comp_gen/1),
+	drop_computable_predicate(comp_map/2).
+
+:- begin_tests('computable',
+		[ setup(computable:test_setup),
+		  cleanup(computable:test_cleanup) ]).
+
+test('comp_gen(-)') :-
+	findall(X, ask(comp_gen(X)), Xs),
+	Xs == [1,2,3,4,5,6,7,8,9].
+
+test('(comp_gen(-),comp_map(+,-))') :-
+	findall(Y, ask((
+		comp_gen(X),
+		comp_map(X,Y)
+	)), AllSolutions),
+	AllSolutions == [1,4,9,16,25,36,49,64,81].
+
+:- end_tests('computable').
 
