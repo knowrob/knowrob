@@ -35,26 +35,50 @@ lang_query:is_callable_with(computable, Goal) :-
 
 %
 lang_query:call_with(computable, Goal, _Options) :-
+	comma_list(Goal, SubGoals),
+	maplist([SubGoal,CompGoal]>>
+		computable_goal(SubGoal,CompGoal),
+		SubGoals, CompSubGoals),
+	comma_list(CompGoal, CompSubGoals),
+	call(CompGoal).
+
+computable_goal(Goal,CompGoal) :-
 	% get callable computable goal
 	Goal =.. [Functor0|Args],
 	length(Args,Arity),
 	computable_predicate(/(Functor0,Arity), Module, Functor1),
 	Goal1 =.. [Functor1|Args],
-	ComputationGoal = (:(Module,Goal1)),
-	call(ComputationGoal).
-
+	CompGoal = (:(Module,Goal1)).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
 		 *******************************/
 
-:- begin_tests('computable').
+test_comp_map(X,Y) :- Y is X * X.
+test_comp_gen(X) :- between(1,9,X).
 
-comp_add(A,B,C) :-
-	C is A + B.
+test_setup :-
+	add_computable_predicate(comp_gen/1, computable:test_comp_gen),
+	add_computable_predicate(comp_map/2, computable:test_comp_map).
 
-test('add_computable_predicate') :-
-	assert_true(add_computable_predicate(add/3, computable:comp_add)).
+test_cleanup :-
+	drop_computable_predicate(comp_gen/1),
+	drop_computable_predicate(comp_map/2).
+
+:- begin_tests('computable',
+		[ setup(computable:test_setup),
+		  cleanup(computable:test_cleanup) ]).
+
+test('comp_gen(-)') :-
+	findall(X, ask(comp_gen(X)), Xs),
+	Xs == [1,2,3,4,5,6,7,8,9].
+
+test('(comp_gen(-),comp_map(+,-))') :-
+	findall(Y, ask((
+		comp_gen(X),
+		comp_map(X,Y)
+	)), AllSolutions),
+	AllSolutions == [1,4,9,16,25,36,49,64,81].
 
 :- end_tests('computable').
 

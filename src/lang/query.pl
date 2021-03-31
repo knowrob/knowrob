@@ -9,8 +9,8 @@
       forget(t,t),   % +Statement, +Scope
       forget(t,t,t), % +Statement, +Scope, +Options
       kb_add_rule(t,t),
-	  kb_drop_rule(t),
-	  kb_expand(t,-),
+      kb_drop_rule(t),
+      kb_expand(t,-),
       is_callable_with(?,t),  % ?Backend, :Goal
       call_with(?,t,+)        % +Backend, :Goal, +Options
     ]).
@@ -832,9 +832,9 @@ test('(test_gen(-),test_single(+,-))') :-
 	)), Xs),
 	% NOTE: ordering in Xs is not certain!
 	AllSolutions = [1,4,9,16,25,36,49,64,81],
-	(	member(X, AllSolutions)
-	->*	assert_true(member(X,Xs))
-	;	true
+	forall(
+		member(X, AllSolutions),
+		assert_true(member(X,Xs))
 	),
 	assert_true(length(Xs,9)).
 

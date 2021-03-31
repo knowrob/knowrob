@@ -242,7 +242,7 @@ worker_thread(work(WorkID, WorkerGoal), WorkerPool) :-
 %
 worker_thread_error('$aborted') :- !.
 worker_thread_error(error(existence_error(message_queue,_),_)) :- !.
-worker_thread_error(Error) :- log_warning(worker_thread(Error)).
+worker_thread_error(Error) :- print_message(error, worker_thread(Error)).
 
 % true if there is a reference to WorkID in ActiveQueue
 work_is_ongoing(WorkerPool, WorkID) :-
