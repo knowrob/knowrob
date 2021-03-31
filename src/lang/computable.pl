@@ -1,7 +1,10 @@
 :- module(computable,
     [ computables(t),
       add_computable_predicate/2,
-      drop_computable_predicate/1
+      add_computable_property/2,
+      drop_computable_predicate/1,
+      drop_computable_property/1,
+      drop_computable_property/2
     ]).
 /** <module> Loading of computable predicates used to compute relations and data values.
 
@@ -12,8 +15,36 @@
 % operator used for defining computables
 :- op(1150, fx, user:computables).
 
-% computables predicates that were added
+% computables that were added
 :- dynamic computable_predicate/3.
+:- dynamic computable_property/3.
+
+%% add_computable_predicate(+Indicator, +Goal) is det.
+%
+add_computable_predicate(Indicator, Goal) :-
+	strip_module(Goal, Module, Goal0),
+	assertz(computable_predicate(Indicator, Module, Goal0)).
+
+%% drop_computable_predicate(+Indicator) is det.
+%
+drop_computable_predicate(Indicator) :-
+	retractall(computable_predicate(Indicator, _, _)).
+
+%% add_computable_property(+Property, +Goal) is det.
+%
+add_computable_property(Property, Goal) :-
+	strip_module(Goal, Module, Goal0),
+	assertz(computable_property(Property, Module, Goal0)).
+
+%% drop_computable_property(+Module) is det.
+%
+drop_computable_property(Module) :-
+	retractall(computable_property(_, Module, _)).
+
+%% drop_computable_property(+Indicator) is det.
+%
+drop_computable_property(Module, Property) :-
+	retractall(computable_property(Property, Module, _)).
 
 %% computables(+Computables) is det.
 %
@@ -50,36 +81,24 @@ computables(Module, CompFunctor, Arity, Options) :-
 	add_computable_predicate(Indicator, (:(Module,CompFunctor))).
 
 
-		 /*******************************
-		 *	   COMPUTABLE PREDICATES  	*
-		 *******************************/
-
-%% add_computable_predicate(+Indicator, +Goal) is det.
-%
-add_computable_predicate(Indicator, Goal) :-
-	strip_module(Goal, Module, Goal0),
-	assertz(computable_predicate(Indicator, Module, Goal0)).
-
-%% drop_computable_predicate(+Indicator) is det.
-%
-drop_computable_predicate(Indicator) :-
-	retractall(computable_predicate(Indicator, _, _)).
-
-lang_query:is_callable_with(computable, Goal) :-
-	Goal =.. [Functor|Args],
-	length(Args,Arity),
-	once(computable_predicate(/(Functor,Arity),_,_)).
-
-%
+% this clause integrated computables with the querying interface
 lang_query:call_with(computable, Goal, _Options) :-
 	comma_list(Goal, SubGoals),
-	maplist([SubGoal,CompGoal]>>
-		computable_goal(SubGoal,CompGoal),
-		SubGoals, CompSubGoals),
+	maplist([SubGoal,CompGoals]>>
+		bagof(X, computable_goal(SubGoal,X), CompGoals),
+		SubGoals, CompSubGoals0),
+	flatten(CompSubGoals0, CompSubGoals),
 	comma_list(CompGoal, CompSubGoals),
 	call(CompGoal).
 
+%
 computable_goal(Goal,CompGoal) :-
+	(	computable_property_goal(Goal,CompGoal)
+	;	computable_predicate_goal(Goal,CompGoal)
+	).
+
+%
+computable_predicate_goal(Goal, CompGoal) :-
 	% get callable computable goal
 	Goal =.. [Functor0|Args],
 	length(Args,Arity),
@@ -87,76 +106,28 @@ computable_goal(Goal,CompGoal) :-
 	Goal1 =.. [Functor1|Args],
 	CompGoal = (:(Module,Goal1)).
 
-		 /*******************************
-		 *	   COMPUTABLE PROPERTIES  	*
-		 *******************************/
+%
+computable_property_goal(holds(S,P,O), CompGoal) :-
+	ground(P),
+	% TODO: also include super properties of computable properties
+	computable_property(P, Module, Functor1),
+	Goal1 =.. [Functor1,S,O],
+	CompGoal = (:(Module,Goal1)).
 
-%% add_computable_property(+Property, +Goal) is det.
-%
-add_computable_property(Property, Goal) :-
-	fail.
 
-%% drop_computable_property(+Indicator) is det.
-%
-%drop_computable_property(Property) :-
-%	fail.
+% this clause integrated computables with the querying interface
+lang_query:is_callable_with(computable, Goal) :-
+	once(is_callable_as_computable(Goal)).
 
-%
-%%%
-%assert_scoped(M,Head,Body) :-
-%  assertz((:-((:(M,Head)),Body))).
-%
-%computable_reasoner_(M,ObjectComputables) :-
-%  % assert various can_answer and infer clauses
-%  forall(
-%    member(C,ObjectComputables),
-%    computable_reasoner2_(C)
-%  ),
-%  % queries can be answered in case of property is a variable
-%  assert_scoped(M,
-%        can_answer(holds(_,P,_)),
-%        var(P)),
-%  % create one more *infer* clause that calls *infer2*
-%  % only if property is grounded (i.e. only yield specific
-%  % properties in case property is a var)
-%  assert_scoped(M,
-%        infer(holds(S,P0,O),Fact,Scope),
-%        ( \+ var(P0),
-%          infer2(holds(S,P0,O),Fact,Scope)
-%        )),
-%  % register reasoner
-%  register_reasoner(M).
-%
-%computable_reasoner2_(:(Module,ComputableTerm)) :-
-%  ComputableTerm=..[Predicate,Property],
-%  % TODO validate
-%  atom(Property),
-%  %
-%  forall(
-%    % FIXME: we assume here that property hierarchy never changes.
-%    %         better would be to re-initialize in case the hierarchy changes.
-%    transitive(subproperty_of(Property,SupProperty)),
-%    ( % assert *can_answer* clause
-%      assert_can_answer_(Module,SupProperty),
-%      % assert *infer* clause
-%      assert_infer_(Module,SupProperty,Property,Predicate)
-%    )
-%  ).
-%
-%%%
-%assert_can_answer_(M,P) :-
-%  Predicate=(:(M,can_answer(holds(_,P,_)))),
-%  ( clause(Predicate,true) ;
-%    assertz(Predicate)
-%  ).
-%
-%%%
-%assert_infer_(M,P_sup,P_specific,Predicate) :-
-%  ( P_sup=P_specific -> X=infer ; X=infer2 ),
-%  Head=..[X,holds(S,P_sup,O),holds(S,P_specific,O),Scope],
-%  Goal=..[Predicate,S,O],
-%  assert_scoped(M,Head,ask(Goal,Scope)).
-%
+is_callable_as_computable(Goal) :-
+	Goal =.. [Functor|Args],
+	length(Args,Arity),
+	computable_predicate(/(Functor,Arity),_,_).
+
+is_callable_as_computable(holds(_,P,_)) :-
+	ground(P),
+	% TODO: also include super properties of computable properties
+	computable_property(P,_,_).
 
 
 		 /*******************************
@@ -180,7 +151,7 @@ test_cleanup :-
 
 test('comp_gen(-)') :-
 	findall(X, ask(comp_gen(X)), Xs),
-	Xs == [1,2,3,4,5,6,7,8,9].
+	assert_true(Xs == [1,2,3,4,5,6,7,8,9]).
 
 test('(comp_gen(-),comp_map(+,-))') :-
 	findall(Y, ask((
