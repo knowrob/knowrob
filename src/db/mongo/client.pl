@@ -234,8 +234,9 @@ mng_doc_value(PlValue,PlValue).
 % Dump mongo DB.
 %
 mng_dump(DB,Dir) :-
+  mng_uri(URI),
   process_create(path(mongodump),
-    [ '--db', DB, '--out', Dir ],
+    [ '--uri', URI, '--db', DB, '--out', Dir ],
     [ process(PID) ]
   ),
   wait(PID,exited(0)).
@@ -255,27 +256,25 @@ mng_dump_collection(DB,Collection,Dir) :-
 %
 % Restore mongo DB.
 %
-mng_restore(_DB,Dir) :-
-( getenv('KNOWROB_MONGO_HOST', Host)
-  -> getenv('KNOWROB_MONGO_USER', User),
-  getenv('KNOWROB_MONGO_PASS', Pass),
-  getenv('KNOWROB_MONGO_DB', Db),
-  getenv('KNOWROB_MONGO_PORT', Port),
-
-  atomic_list_concat(['--uri=mongodb://', User, ':', Pass,
-    '@', Host, ':', Port], URI),
-  atomic_list_concat(['--db=', Db], DB),
-
+mng_restore(DB,Dir) :-
+  mng_uri(URI),
   process_create(path(mongorestore),
-    [ URI, DB, Dir ],
+    [ '--uri', URI, '--db', DB, '--dir', Dir ],
     [ process(PID) ]
-  );  process_create(path(mongorestore),
-  [ '--uri=mongodb://localhost:27017', Dir ],
-  [ process(PID) ]
-  )
-),
-wait(PID,exited(0)).
+  ),
+  wait(PID,exited(0)).
 
+
+mng_uri(URI) :-
+  getenv('KNOWROB_MONGO_HOST', Host),
+  getenv('KNOWROB_MONGO_USER', User),
+  getenv('KNOWROB_MONGO_PASS', Pass),
+  getenv('KNOWROB_MONGO_PORT', Port),
+  atomic_list_concat([ 'mongodb://', User, ':', Pass,
+    '@', Host, ':', Port ], URI),
+  !.
+
+mng_uri('mongodb://localhost:27017').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
