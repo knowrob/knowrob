@@ -23,7 +23,8 @@
       mng_cursor_limit/2,
       mng_cursor_next/2,
       mng_cursor_materialize/2,
-      mng_get_dict/3
+      mng_get_dict/3,
+      mng_uri/1
     ]).
 /** <module> A mongo DB client for Prolog.
 
@@ -264,7 +265,10 @@ mng_restore(DB,Dir) :-
   ),
   wait(PID,exited(0)).
 
-
+%% mng_uri(-URI) is det.
+%
+% Get the URI connection string
+%
 mng_uri(URI) :-
   getenv('KNOWROB_MONGO_HOST', Host),
   getenv('KNOWROB_MONGO_USER', User),
