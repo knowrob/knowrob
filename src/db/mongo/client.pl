@@ -257,10 +257,10 @@ mng_dump_collection(DB,Collection,Dir) :-
 %
 % Restore mongo DB.
 %
-mng_restore(DB,Dir) :-
+mng_restore(_DB,Dir) :-
   mng_uri(URI),
   process_create(path(mongorestore),
-    [ '--uri', URI, '--db', DB, '--dir', Dir ],
+    [ '--uri', URI, '--dir', Dir ],
     [ process(PID) ]
   ),
   wait(PID,exited(0)).
