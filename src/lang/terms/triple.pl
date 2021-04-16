@@ -1,5 +1,16 @@
 :- module(lang_triple,
 		[ mng_triple_doc(t,-,t) ]).
+/** <module> Handling of triples in query expressions.
+
+The following predicates are supported:
+
+| Predicate            | Arguments |
+| ---                  | ---       |
+| triple/3         | ?Subject, ?Property, ?Value |
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1 ]).
@@ -494,6 +505,8 @@ must_propagate_tell(rdfs:subPropertyOf).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
+%
+% Translate a triple term into a mongo query document.
 %
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options

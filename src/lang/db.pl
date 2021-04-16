@@ -13,7 +13,7 @@
       is_unique_name(r),
       setup_collection/2
     ]).
-/** <module> Interface for dumping knowledge and restoring it.
+/** <module> Knowledge base persistence.
 
 @author Daniel Beßler
 @license BSD
@@ -101,7 +101,7 @@ drop_graph(Name) :-
 
 %% is_unique_name(+Name) is semidet.
 %
-% True is Name is not the subject of any known fact.
+% True if Name is not the subject of any known fact.
 %
 is_unique_name(Name) :-
 	mng_get_db(DB, Coll, 'triples'),
@@ -281,7 +281,9 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 		lang_query:tell(Term, Scope, [graph(Graph)])
 	).
 
-%% reads json data and asserts into mongodb
+%% load_json_rdf(FilePath) is semidet.
+%
+% Assert JSON data into mongo DB.
 %
 % @param FilePath - Path to the json file
 %

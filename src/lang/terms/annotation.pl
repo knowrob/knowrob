@@ -1,4 +1,15 @@
 :- module(lang_annotation, []).
+/** <module> Handling of annotations in query expressions.
+
+The following predicates are supported:
+
+| Predicate            | Arguments |
+| ---                  | ---       |
+| annotation/3         | ?Subject, ?Property, ?Value |
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1 ]).

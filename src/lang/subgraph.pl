@@ -17,10 +17,9 @@
 
 :- dynamic subgraph_of/2.
 
-%%
-% This is used to avoid that there are any orphan graphs in case
-% of there are some ontologies loaded already into the triple DB
-% when KnowRob is started.
+%% load_graph_structure is det.
+%
+% Avoid that there are any orphan graphs.
 %
 load_graph_structure :-
 	mng_get_db(DB, Coll, 'triples'),

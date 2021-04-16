@@ -7,7 +7,7 @@
       drop_computable_property/1,  % +Module
       drop_computable_property/2   % +Module, +Property
     ]).
-/** <module> Loading of computable predicates used to compute relations and data values.
+/** <module> Integration of computable predicates into query processing.
 
 @author Daniel Beßler
 @license BSD
@@ -22,6 +22,12 @@
 
 %% add_computable_predicate(+Indicator, +Goal) is det.
 %
+% Register a computable predicate.
+% Indicator is a term indicator `\(Functor,Arity)`.
+% Goal is called whenever a subgoal in a query matches
+% the indicator.
+% Goal must be thread-safe.
+%
 add_computable_predicate(Indicator, Goal) :-
 	ground(Indicator),
 	ground(Goal),
@@ -30,11 +36,15 @@ add_computable_predicate(Indicator, Goal) :-
 
 %% drop_computable_predicate(+Module) is det.
 %
+% Unregister all computable predicates in a module.
+%
 drop_computable_predicate(Module) :-
 	ground(Module),
 	retractall(computable_property(_, Module, _)).
 
 %% drop_computable_predicate(+Module,+Indicator) is det.
+%
+% Unregister a computable predicate.
 %
 drop_computable_predicate(Module, Indicator) :-
 	ground(Module),
@@ -42,6 +52,12 @@ drop_computable_predicate(Module, Indicator) :-
 	retractall(computable_predicate(Indicator, Module, _)).
 
 %% add_computable_property(+Property, +Goal) is det.
+%
+% Register a computable property.
+% Property is a property IRI.
+% Goal is called for triples in a query that
+% have a matching property argument.
+% Goal must be thread-safe.
 %
 add_computable_property(Property, Goal) :-
 	ground(Property),
@@ -51,11 +67,15 @@ add_computable_property(Property, Goal) :-
 
 %% drop_computable_property(+Module) is det.
 %
+% Unregister all computable properties in a module.
+%
 drop_computable_property(Module) :-
 	ground(Module),
 	retractall(computable_property(_, Module, _)).
 
-%% drop_computable_property(+Indicator) is det.
+%% drop_computable_property(+Module, +Indicator) is det.
+%
+% Unregister a computable predicate.
 %
 drop_computable_property(Module, Property) :-
 	ground(Module),
