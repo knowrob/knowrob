@@ -407,7 +407,7 @@ connect_steps(LastStep, ThisStep, ThisStep, Options) :-
 	worker_pool_start_work(Pool, OutQueue,
 		lang_query:connect_steps(LastStep, ThisStep)).
 
-% send all outeput messages of LastStep to all input queues of ThisStep
+% send all output messages of LastStep to all input queues of ThisStep
 connect_steps(LastStep, ThisStep) :-
 	step_output(LastStep, OutQueue),
 	catch(
@@ -524,9 +524,9 @@ is_callable_with(mongolog, Goal) :- is_mongolog_predicate(Goal).
 %
 % Register a rule that translates into an aggregation pipeline.
 % Any non-terminal predicate in Body must have a previously asserted
-% mongolog rule it can expand into.
+% rule it can expand into.
 % After being asserted, the Head predicate can be referred to in
-% calls of mongolog_call/1.
+% calls of ask/1.
 %
 % @param Head The head of a rule.
 % @param Body The body of a rule.
