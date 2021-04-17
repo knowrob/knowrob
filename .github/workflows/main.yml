@@ -22,7 +22,7 @@ jobs:
         path: 'ros_ws/src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
     - name: Setup KnowRob workspace
-      uses: janbernloehr/github-setup-catkin@patch-1
+      uses: betwo/github-setup-catkin@master
       env:
             ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       with:
