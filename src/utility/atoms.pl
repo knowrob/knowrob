@@ -6,7 +6,7 @@
       atom_ensure_suffix/3,
       atom_remove_prefix/3
     ]).
-/** <module> Prolog/OWL utility predicates
+/** <module> Analysing and constructing atoms.
 
 @author Daniel Beßler
 @license BSD
@@ -16,23 +16,27 @@
 :- use_module(library(delay)).
 
 %% atom_ensure_prefix(?Atom:atom, ?Prefix:atom, -AtomResolved:atom) is semidet.
+% Add a prefix to an atom.
 atom_ensure_prefix(Atom, Prefix, Atom) :-
   sub_atom(Atom, 0, _, _, Prefix), !.
 atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
   atom_concat(Prefix, Atom, AtomResolved).
 
 %% atom_ensure_suffix(?Atom:atom, ?Suffix:atom, -AtomResolved:atom) is semidet.
+% Add a suffix to an atom.
 atom_ensure_suffix(Atom, Suffix, Atom) :-
   atom_concat(_, Suffix, Atom), !.
 atom_ensure_suffix(Atom, Suffix, AtomResolved) :-
   atom_concat(Atom, Suffix, AtomResolved).
 
 %% atom_remove_prefix(?Atom:atom, ?Prefix:atom, -AtomResolved:atom) is semidet.
+% Removes prefix from atom.
 atom_remove_prefix(Atom, Prefix, AtomOut) :-
   atom_concat(Prefix, AtomOut, Atom), !.
 atom_remove_prefix(Atom, _, Atom).
 
 %% lowercase(?Upper:atom, ?Lower:atom) is semidet.
+% Convert uppercase and lowercase.
 lowercase(Upper,Lower) :-
     (ground(Upper);ground(Lower)),
     delay(atom_codes(Upper,UpperCodes)),
@@ -46,8 +50,10 @@ lowercase_([C|Lowers], [C|Uppers]) :- lowercase_(Lowers, Uppers).
 
 %% camelcase(?Underscore:atom, ?CamelCase:atom) is det.
 %
-%  For example, `camelcase(hello_world, 'HelloWorld')`. Works in both
-%  directions.
+% Convert lowercase with underscore and camelcase.
+% For example, `camelcase(hello_world, 'HelloWorld')`.
+% Works in both directions.
+%
 camelcase(Underscore,CamelCase) :-
     compound(Underscore),
     term_to_atom(Underscore, Underscore_),
@@ -75,8 +81,11 @@ camelcase_([Lower|Lowers], [Lower|Uppers]) :-
 
 %% lower_camelcase(?Underscore:atom, ?LowerCamelCase:atom) is det.
 %
-%  For example, `lower_camelcase(hello_world, helloWorld)`. Works in both
-%  directions.
+% Convert lowercase with underscore and camelcase with
+% leading lowercase character.
+% For example, `lower_camelcase(hello_world, helloWorld)`.
+% Works in both directions.
+%
 lower_camelcase(Underscore,CamelCase) :-
     compound(Underscore),
     term_to_atom(Underscore, Underscore_),

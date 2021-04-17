@@ -2,7 +2,27 @@
         [ use_directory/1,
           interface/2
         ]).
-/** <module> TODO
+/** <module> Extended Prolog modules.
+
+One of the extensions is that rdf_meta/1 information can be
+specified through exported predicates, as in:
+
+```
+:- module(my_module, [ my_predicate(r,t) ]).
+```
+
+Which expands to a call of `rdf_meta(my_predicate(r,t))`.
+
+Predicates may further be marked as goals for computable properties, as in:
+
+```
+:- module(my_module, [ my_predicate(r,r) -> onto:my_property ]).
+```
+
+Where `my_predicate` is called to compute the relation `onto:my_property`
+between the entities that are bound to the arguments of the predicate.
+
+Finally, a notion of interface is added which is documented below.
 
 @author Daniel Beßler
 @license BSD
@@ -12,7 +32,10 @@
 
 :- dynamic interface_cache_/3.
 
-%%
+%% use_directory(+Dir) is semidet.
+%
+% Load initialization file in directory.
+% The file must be named `__init__.pl`.
 %
 use_directory(Dir) :-
 	path_concat(Dir,'__init__.pl',Path),
@@ -24,16 +47,17 @@ use_directory(Dir) :-
 % modules. Modules implementing the interface include a term
 % *implements(InterfaceFile)* in the list of exported terms.
 %
+% ```
 % file a:
 %     :- interface(iface,
-%             [ test(r,r) -> rdf:type
-%             ]).
+%             [ test(r,r) ]).
 % file b:
 %     :- module(iface_impl,
 %             [ implements(iface),
 %               test2(t),
 %               test3/2
 %             ]).
+% ```
 %
 interface(Name,Exports) :-
 	interface_cache_(Name,_,Exports),

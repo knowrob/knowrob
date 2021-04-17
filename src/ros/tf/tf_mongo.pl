@@ -47,14 +47,12 @@
 % used in mongolog queries.
 :- mongolog:add_command(tf).
 
-%% tf/4
-%
+% tf/4
 lang_query:step_expand(
 		tf(ChildFrame, ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 
-%% tf/2
-%
+% tf/2
 lang_query:step_expand(
 		tf(ChildFrame, [ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).

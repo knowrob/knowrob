@@ -2,7 +2,7 @@
         [ url_resolve/2,
           ros_package_iri/2
         ]).
-/** <module> TODO
+/** <module> Resolving URLs to local filesystem.
 
 @author Daniel Beßler
 @license BSD
@@ -13,16 +13,14 @@
 :- dynamic resolve/2.
 :- dynamic ros_package_iri_/2.
 
-%%
+%% url_resolve(+URL, -Resolved) is semidet.
 %
+% Resolve a URL to local filesystem.
 %
 url_resolve(URL,Resolved) :-
   resolve(URL,Resolved),!.
 
-%%
-%
 % TODO: move into ROS-specific comm package
-%
 resolve(A,B) :- ros_resolve(A,B).
 
 %%
