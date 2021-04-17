@@ -191,6 +191,7 @@ expand_list(This, [Child|Rest],
 
 %% rdf_list(+RDF_list, -Pl_List) is semidet.
 %
+% Read a RDF list into a Prolog list.
 %
 rdf_list(RDF_list, Pl_List) ?>
 	var(Pl_List),

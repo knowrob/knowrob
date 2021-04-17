@@ -94,12 +94,19 @@ tf_mng_lookup(ObjFrame, PoseData) :-
 	get_time(Now),
 	tf_mng_lookup(ObjFrame, Now, Now, PoseData, _, _).
 
+%% tf_mng_store(+ObjFrame, +PoseData, +Stamp) is det.
+%
+% Store a transform in mongo DB.
+%
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % trajectories
 
-%%
+%% tf_mng_trajectory(+Obj, +Begin, +End, -Trajectory) is det.
+%
+% Read all transforms associated to a frame in given time interval. 
 %
 tf_mng_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
 	rdf_split_url(_,ObjFrame,Obj),

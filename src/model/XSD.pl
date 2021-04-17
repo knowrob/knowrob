@@ -26,7 +26,7 @@ xsd_data_type(DataType) :-
 
 %% xsd_data_basetype(?DataType,?PrologType) is nondet.
 %
-% FIXME: shouldn't basetype be float/double/int?
+% Convert between XSD and Prolog type identifier.
 %
 % @param DataType a XSD data type
 %
@@ -108,6 +108,8 @@ xsd_numeric_type(xsd:'unsignedShort').
 xsd_numeric_type(xsd:'unsignedByte').
 
 %% xsd_misc_type(?DataType) is nondet.
+%
+% Mis data types.
 %
 % @param DataType a XSD data type
 %
