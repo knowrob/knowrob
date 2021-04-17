@@ -34,8 +34,10 @@ jobs:
       run: cd ros_ws && catkin_make_isolated
     - name: Start Mongo DB
       run: sudo systemctl start mongod
+    - name: xxxx
+      run: ifconfig
     - name: Start ROS
-      run: roscore
+      run: roscore &
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
