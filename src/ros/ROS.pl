@@ -19,7 +19,6 @@
 %:- use_module(library('http/json')).
 %
 %:- use_module(library('knowrob/lang/ask')).
-%:- use_module(library('knowrob/lang/tell')).
 %:- use_module(library('knowrob/comp/rdf_data'), [kb_rdf_pl/3]).
 %
 %:- rdf_meta ros_type_path(r,?),

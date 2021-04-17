@@ -134,17 +134,17 @@ test_cleanup :-
 :- begin_tests('lang_annotation',
 		[ cleanup(lang_annotation:test_cleanup) ]).
 
-test('tell(assign(C,c), annotation(+,+,+))') :-
-	assert_true(lang_query:tell((
+test('project(assign(C,c), annotation(+,+,+))') :-
+	assert_true(kb_project((
 		ask(assign(C,g)),
 		annotation(e,f,C)
 	))).
 
-test('tell(annotation(+,+,+))') :-
-	assert_true(lang_query:tell(annotation(a,b,c))).
+test('project(annotation(+,+,+))') :-
+	assert_true(kb_project(annotation(a,b,c))).
 
-test('tell(annotation(+,+,-))', [throws(error(instantiation_error,project(annotation(a,b,_))))]) :-
-	lang_query:tell(annotation(a,b,_)).
+test('project(annotation(+,+,-))', [throws(error(instantiation_error,project(annotation(a,b,_))))]) :-
+	kb_project(annotation(a,b,_)).
 
 test('annotation(+,+,-)') :-
 	lang_query:ask(annotation(a,b,C)),

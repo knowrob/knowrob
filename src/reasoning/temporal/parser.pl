@@ -21,7 +21,7 @@ can be casted as grammar for the parser.
 
 @author Daniel Beßler
 */
-% TODO: activitiy composer should use tell interface!
+% TODO: activitiy composer should use projection interface!
 
 :- use_module(library('debug')).
 :- use_module(library('http/json')).

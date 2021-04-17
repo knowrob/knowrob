@@ -148,7 +148,7 @@ has_comment(Resource,Comment) ?>
 % The type of an entity (rdf:type).
 % For example: `Nibbler instance_of Cat`.
 %
-% Note: that the *tell* clause of this rule allows
+% Note: that the *projection* clause of this rule allows
 % Entity to be a variable, in which case a new entity
 % symbol is generated.
 %
@@ -249,16 +249,16 @@ test('is_property(+Property)') :-
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
 
-test("ask and tell instances of Rex") :-
+test("ask and assert instances of Rex") :-
 	assert_true(instance_of(test:'Rex', test:'Man')),
 	assert_false(instance_of(test:'Rex', test:'Adult')),
-	assert_true(tell(instance_of(test:'Rex', test:'Adult'))),
+	assert_true(kb_project(instance_of(test:'Rex', test:'Adult'))),
 	assert_true(instance_of(test:'Rex', test:'Adult')).
 
 test("subproperty_of(+Sub,+Sup)") :-
 	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
 	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
-	assert_true(tell(subproperty_of(test:'hasBrother', test:'hasSibling'))),
+	assert_true(kb_project(subproperty_of(test:'hasBrother', test:'hasSibling'))),
 	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 :- end_rdf_tests('model_RDFS').

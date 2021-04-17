@@ -7,7 +7,7 @@
       drop_computable_property/1,  % +Module
       drop_computable_property/2   % +Module, +Property
     ]).
-/** <module> Integration of computable predicates into query processing.
+/** <module> Computable predicates.
 
 @author Daniel Beßler
 @license BSD

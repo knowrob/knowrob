@@ -2,9 +2,9 @@
     [ ask(t),        % +Statement
       ask(t,t,t),    % +Statement, +QScope, -FScope
       ask(t,t,t,t),  % +Statement, +QScope, -FScope, +Options
-      tell(t),       % +Statement
-      tell(t,t),     % +Statement, +Scope
-      tell(t,t,t),   % +Statement, +Scope, +Options
+      kb_project(t),       % +Statement
+      kb_project(t,t),     % +Statement, +Scope
+      kb_project(t,t,t),   % +Statement, +Scope, +Options
       forget(t),     % +Statement
       forget(t,t),   % +Statement, +Scope
       forget(t,t,t), % +Statement, +Scope, +Options
@@ -144,29 +144,29 @@ ask1(SubGoals, Options) :-
 	).
 
 
-%% tell(+Statement) is nondet.
+%% kb_project(+Statement) is nondet.
 %
-% Same as tell/2 with universal scope.
+% Same as kb_project/2 with universal scope.
 %
 % @param Statement a statement term.
 %
-tell(Statement) :-
+kb_project(Statement) :-
 	universal_scope(Scope),
-	tell(Statement, Scope, []).
+	kb_project(Statement, Scope, []).
 
-%% tell(+Statement, +Scope) is nondet.
+%% kb_project(+Statement, +Scope) is nondet.
 %
-% Same as tell/3 with empty options list.
+% Same as kb_project/3 with empty options list.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-tell(Statement, Scope) :-
-	tell(Statement, Scope, []).
+kb_project(Statement, Scope) :-
+	kb_project(Statement, Scope, []).
 
-%% tell(+Statement, +Scope, +Options) is semidet.
+%% kb_project(+Statement, +Scope, +Options) is semidet.
 %
-% Tell the knowledge base that some statement is true.
+% Assert that some statement is true.
 % Scope is the scope of the statement being true.
 % Statement can also be a list of statements. Options include:
 %
@@ -179,18 +179,18 @@ tell(Statement, Scope) :-
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
-tell(Statements, Scope, Options) :-
+kb_project(Statements, Scope, Options) :-
 	is_list(Statements),
 	!,
 	comma_list(Statement, Statements),
-	tell(Statement, Scope, Options).
+	kb_project(Statement, Scope, Options).
 
-tell(Statement, Scope, Options) :-
+kb_project(Statement, Scope, Options) :-
 	% ensure there is a graph option
 	set_graph_option(Options, Options0),
 	% compile and call statement
 	(	setting(mng_client:read_only, true)
-	->	log_warning(db(read_only(tell)))
+	->	log_warning(db(read_only(projection)))
 	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
 	).
 
@@ -728,7 +728,7 @@ user:term_expansion(
 	kb_add_rule(Term, BodyGlobal).
 
 %%
-% Term expansion for *tell* rules using the (+>) operator.
+% Term expansion for *project* rules using the (+>) operator.
 % The rules are only asserted into mongo DB and expanded into
 % empty list.
 %
@@ -749,7 +749,7 @@ user:term_expansion(
 	kb_add_rule(Term0, project(BodyGlobal)).
 
 %%
-% Term expansion for *tell-ask* rules using the (?+>) operator.
+% Term expansion for *query+project* rules using the (?+>) operator.
 % These are basically clauses that can be used in both contexts.
 %
 % Consider for example following rule:
@@ -758,7 +758,7 @@ user:term_expansion(
 %       has_type(Entity, dul:'Event').
 %
 % This is valid because, in this case, has_type/2 has
-% clauses for ask and tell.
+% clauses for querying and projection.
 %
 user:term_expansion((?+>(Head,Goal)), X1) :-
 	user:term_expansion((?>(Head,Goal)),X1),

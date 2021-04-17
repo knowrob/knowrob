@@ -146,17 +146,17 @@ urdf_load(Object,URL,Options) :-
 	% create IO and IR objects in triple store
 	file_base_name(Resolved,FileName),
 	file_name_extension(Identifier,_,FileName),
-	tell(has_kinematics_file(Object,Identifier,'URDF')),
+	kb_project(has_kinematics_file(Object,Identifier,'URDF')),
 	% assign urdf name to object
 	% TODO: only do this on first load
 	urdf_root_link(Object,RootLinkName),
-	tell(has_base_link_name(Object,RootLinkName)),
+	kb_project(has_base_link_name(Object,RootLinkName)),
 	% assign prefix to object
 	% TODO: only do this on first load
 	option(prefix(OptPrefix),Options,''),
 	(	OptPrefix=''
 	->	true
-	;	tell(has_urdf_prefix(Object,OptPrefix))
+	;	kb_project(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
 	findall(X, ask(triple(Object,transitive(dul:hasComponent),X)), Parts),
@@ -167,7 +167,7 @@ urdf_load(Object,URL,Options) :-
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
 			% TODO: only do this on first load
-			tell(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
+			kb_project(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
 			assertz(has_urdf(Y,Object))
 		)
 	),
@@ -206,7 +206,7 @@ urdf_set_pose(Object,Pose) :-
 	% set root link pose
 	urdf_root_link(Object,RootLinkName),
 	urdf_iri(Object,Prefix,RootLinkName,RootLink),
-	tell(is_at(RootLink,Pose)),
+	kb_project(is_at(RootLink,Pose)),
 	% set pose of other links
 	urdf_link_names(Object,Links),
 	forall(
@@ -222,7 +222,7 @@ set_link_pose_(Object,Prefix,LinkName) :-
 	urdf_joint_parent_link(Object,JointName,ParentName),
 	urdf_iri(Object,Prefix,LinkName,Link),
 	atom_concat(Prefix,ParentName,ParentFrame),
-	tell(is_at(Link,[ParentFrame,Pos,Rot])).
+	kb_project(is_at(Link,[ParentFrame,Pos,Rot])).
 
 %%
 %
@@ -285,7 +285,7 @@ load_rdf_(Object,Parts,Prefix) :-
 %%
 create_link_(Object,Prefix,Name,Link) :-
 	urdf_iri(Object,Prefix,Name,Link),
-	tell(has_type(Link,urdf:'Link')).
+	kb_project(has_type(Link,urdf:'Link')).
 
 %%
 create_joint_(Object,Prefix,Name,Joint) :-
@@ -299,7 +299,7 @@ create_joint_(Object,Prefix,Name,Joint) :-
 	urdf_iri(Object,Prefix,ChildName,Child),
 	urdf_iri(Object,Prefix,ParentName,Parent),
 	%%
-	tell([
+	kb_project([
 		has_type(Joint,JointType),
 		has_child_link(Joint,Child),
 		has_parent_link(Joint,Parent)
@@ -309,14 +309,14 @@ create_joint_(Object,Prefix,Name,Joint) :-
 set_links_(Part,Prefix) :-
 	(	has_base_link_name(Part,BaseLinkName)
 	->	(	urdf_iri(Part,Prefix,BaseLinkName,BaseLink),
-			tell(has_base_link(Part,BaseLink))
+			kb_project(has_base_link(Part,BaseLink))
 		)
 	;	true
 	),!,
 	forall(
 		has_end_link_name(Part,EndLinkName),
 		(	urdf_iri(Part,Prefix,EndLinkName,EndLink),
-			tell(has_end_link(Part,EndLink))
+			kb_project(has_end_link(Part,EndLink))
 		)
 	).
 

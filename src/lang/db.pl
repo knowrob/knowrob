@@ -13,7 +13,7 @@
       is_unique_name(r),
       setup_collection/2
     ]).
-/** <module> Knowledge base persistence.
+/** <module> Database predicates.
 
 @author Daniel Beßler
 @license BSD
@@ -272,13 +272,13 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%             when loading a list of triples at once.
 	%             this does not seem to occur when loading each triple
 	%             individually.
-	%lang_query:tell(TripleTerms, Scope, [graph(Graph)]),
-	%lang_query:tell(AnnotationTerms, Scope, [graph(Graph)]),
+	%kb_project(TripleTerms, Scope, [graph(Graph)]),
+	%kb_project(AnnotationTerms, Scope, [graph(Graph)]),
 	forall(
 		(	member(Term, TripleTerms)
 		;	member(Term, AnnotationTerms)
 		),
-		lang_query:tell(Term, Scope, [graph(Graph)])
+		kb_project(Term, Scope, [graph(Graph)])
 	).
 
 %% load_json_rdf(FilePath) is semidet.
@@ -310,7 +310,7 @@ assert_triple_data(Triples) :-
 	atom_string(S_atom, S),
 	atom_string(P_atom, P),
 	% TODO: also support to import scope information
-	% TODO: it would be faster to call tell only once with
+	% TODO: it would be faster to call assert only once with
 	% array of triples
 	lang_query:ask(assert(triple(S_atom, P_atom, O_value)), Scope, _).
 

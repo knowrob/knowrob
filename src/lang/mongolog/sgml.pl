@@ -28,7 +28,7 @@ for the new IRI.
 :- mongolog:add_command(new_iri).
 
 %%
-% tell queries can use new_iri/1 and new_iri/2 to generate
+% projection queries can use new_iri/1 and new_iri/2 to generate
 % IRI's that have not been used so far.
 %
 % FIXME: it could happen that if in one compilation multiple new_iri's

@@ -7,6 +7,15 @@
 A RDF file can be loaded in the set-up step, and all assertions
 written into a special named graph that is deleted again in cleanup step.
 
+Example:
+```
+:- begin_rdf_tests('my_module', 'package://my_pkg/rdf/foo.rdf').
+
+test('some test') :- fail.
+
+:- end_tests('my_module').
+```
+
 @author Daniel Beßler
 @license BSD
 */
@@ -19,7 +28,14 @@ written into a special named graph that is deleted again in cleanup step.
 	[ get_subgraphs/2
 	]).
 
-%%
+%% begin_rdf_tests(+Name, +RDFFile, +Options) is det.
+%
+% Begin unit testing code section with RDF data.
+% Load the RDF data during setup, and unload all asserted facts
+% and RDF file on cleanup.
+% Calls internally begin_tests/2.
+%
+%
 begin_rdf_tests(Name,RDFFile,Options0) :-
 	(	select_option(namespace(URI_Prefix),Options0,Options1)
 	->	true
@@ -36,10 +52,17 @@ begin_rdf_tests(Name,RDFFile,Options0) :-
 	begin_tests(Name,Options3),
 	rdf_db:rdf_register_prefix(test,URI_Prefix,[force(true)]).
 
+%% begin_rdf_tests(+Name, +RDFFile) is det.
+%
+% Same as begin_rdf_tests/3 with empty options list.
+%
 begin_rdf_tests(Name,RDFFile) :-
 	begin_rdf_tests(Name,RDFFile,[]).
 
-%%
+%% end_rdf_tests(+Name) is det.
+%
+% End unit testing code section with RDF data.
+%
 end_rdf_tests(Name) :-
 	end_tests(Name).
 

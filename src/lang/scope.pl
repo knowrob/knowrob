@@ -7,7 +7,7 @@
 	  time_scope/3,
 	  time_scope_data/2
     ]).
-/** <module> The scope of statements being true.
+/** <module> Scoping predicates.
 
 @author Daniel Beßler
 @license BSD

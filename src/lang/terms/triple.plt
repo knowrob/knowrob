@@ -22,17 +22,17 @@
 		'http://knowrob.org/kb/datatype_test#',
 		[keep(true)]).
 
-test('tell(assign(C,c), triple(a,b,C))') :-
-	assert_true(lang_query:tell((
+test('project(assign(C,c), triple(a,b,C))') :-
+	assert_true(kb_project((
 		ask(assign(C,g)),
 		triple(e,f,C)
 	))).
 
-test('tell triple(a,b,c)') :-
-	assert_true(lang_query:tell(triple(a,b,c))).
+test('assert triple(a,b,c)') :-
+	assert_true(kb_project(triple(a,b,c))).
 
-test('tell triple(a,b,_)', [throws(error(instantiation_error,project(triple(a,b,_))))]) :-
-	lang_query:tell(triple(a,b,_)).
+test('assert triple(a,b,_)', [throws(error(instantiation_error,project(triple(a,b,_))))]) :-
+	kb_project(triple(a,b,_)).
 
 test('ask triple(a,b,c)') :-
 	assert_true(lang_query:ask(triple(a,b,c))),
@@ -88,8 +88,8 @@ test('forget triple') :-
 	))).
 
 % add triple and check if it exists in db
-test('tell to triplestore and check if triple exists') :-
-	assert_true( tell( triple(
+test('assert to triplestore and check if triple exists') :-
+	assert_true( kb_project( triple(
 		swrl_tests:'Adult',
 		rdfs:'subClassOf',
 		swrl_tests:'TestThing'
@@ -106,12 +106,12 @@ test('tell to triplestore and check if triple exists') :-
 	))).
 
 % test for xsd:integer, Str, float
-test('tell XSD') :-
+test('assert XSD') :-
 	rdf_global_term(test_datatype:'Lecturer3',S),
-	assert_true(tell(triple(S, test_datatype:'first_name', 'Johana$'))),
-	assert_true(tell(triple(S, test_datatype:'last_name',  'Muller'))),
-	assert_true(tell(triple(S, test_datatype:'studentId',  212123))),
-	assert_true(tell(triple(S, test_datatype:'height',     5.10))).
+	assert_true(kb_project(triple(S, test_datatype:'first_name', 'Johana$'))),
+	assert_true(kb_project(triple(S, test_datatype:'last_name',  'Muller'))),
+	assert_true(kb_project(triple(S, test_datatype:'studentId',  212123))),
+	assert_true(kb_project(triple(S, test_datatype:'height',     5.10))).
 
 % test for xsd:integer, Str, float
 test('ask XSD') :-
@@ -121,11 +121,11 @@ test('ask XSD') :-
 	assert_true(forall(ask(triple(_, test_datatype:'height',     H)), float(H))).
 
 % test for list as an argument
-test('tell list', fixme('terms cannot be used as values')) :-
+test('assert list', fixme('terms cannot be used as values')) :-
 	rdf_global_term(test_datatype:'Lecturer3',S),
 	DataTerm=[255,99,71],
 	% test asserting list value
-	assert_true(tell(triple(S, test_datatype:'hasHairColor', term(DataTerm)))),
+	assert_true(kb_project(triple(S, test_datatype:'hasHairColor', term(DataTerm)))),
 	% test ask with ground value
 	assert_true( ask(triple(S, test_datatype:'hasHairColor', term(DataTerm)))),
 	% test ask with var value
@@ -135,13 +135,13 @@ test('tell list', fixme('terms cannot be used as values')) :-
 	).
 
 % test for time scope
-test('tell with scope'):-
+test('assert with scope'):-
 	rdf_global_term(test_datatype:'Lecturer4',S),
 	rdf_global_term(test_datatype:'last_name',P),
 	time_scope(=(double(5)), =(double(10)), T_S1),
 	time_scope(=(double(5)), =(double(20)), T_S2),
 	%%
-	tell(triple(S, P, 'Spiendler'), T_S1),
+	kb_project(triple(S, P, 'Spiendler'), T_S1),
 	assert_true( ask(triple(S, P, 'Spiendler'), T_S1, _)),
 	assert_false(ask(triple(S, P, 'Spiendler'), T_S2, _)).
 
@@ -152,7 +152,7 @@ test('extend time scope'):-
 	time_scope(=(double(10)), =(double(20)), T_S1),
 	time_scope(=(double(5)),  =(double(20)), T_S2),
 	%%
-	tell(triple(S, P, 'Spiendler'), T_S1),
+	kb_project(triple(S, P, 'Spiendler'), T_S1),
 	assert_true(ask(triple(S, P, 'Spiendler'), T_S2, _)).
 
 test('query value operators') :-
@@ -192,7 +192,7 @@ test('query operator in + ->'):-
 
 % test for special characters in iri: @*~!#?
 test('non alphabetic character'):-
-	assert_true(tell(triple(
+	assert_true(kb_project(triple(
 		test_datatype:'normal_user_test_new',
 		test_datatype:'last@*~!#?_name',
 		'umlaut'
@@ -204,7 +204,7 @@ test('non alphabetic character'):-
 	))).
 
 test('non utf8 character', fixme('bson_pl has issues reading non-utf8')):-
-	tell(triple(
+	kb_project(triple(
 		test_datatype:'Lecturer3',
 		test_datatype:'last_name',
 		'Müller'

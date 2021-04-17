@@ -9,7 +9,7 @@
         ]).
 :- set_prolog_flag(float_format, '%.12g').
 
-% tell/ask queries generate discontiguous clauses.
+% rules may generate discontiguous clauses.
 % TODO: find a better solution then disabling this globally.
 :- style_check(-discontiguous).
 
@@ -30,8 +30,6 @@
 :- use_module('utility/functional').
 :- use_module('utility/threads').
 :- use_module('utility/url').
-
-% tell the user what is going on
 :- log_info(kb(initialization(started))).
 
 % register ROS packages to resolve IRI prefixes to local paths
@@ -58,5 +56,5 @@
 % load additional modules
 :- knowrob_load_plugins.
 
-% tell the user that we are done with the initialization
+% done with the initialization
 :- log_info(kb(initialization(finished))).

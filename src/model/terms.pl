@@ -45,7 +45,7 @@ occurs(Evt) +>
 	})),
 	pragma(mng_strip_operator(Since0,_,Since1)),
 	pragma(mng_strip_operator(Until0,_,Until1)),
-	% call tell with universal scope
+	% call with universal scope
 	call_with_context(
 		[ is_event(Evt),
 		  event_interval(Evt, Since1, Until1)
@@ -127,9 +127,9 @@ test('during(occurs(+),+Interval)') :-
 	assert_false(occurs(test:'Short4') during [1377777012, 1377777019]),
 	assert_false(occurs(test:'Short4') during [1377777001, 1377777004]).
 
-test('tell(during(occurs(+),+Interval))') :-
+test('assert(during(occurs(+),+Interval))') :-
 	assert_false(occurs(a) during [8,12]),
-	assert_true(tell(occurs(a) during [8,12])),
+	assert_true(kb_project(occurs(a) during [8,12])),
 	assert_true(occurs(a) during [8,12]),
 	assert_true(occurs(a) during [10,20]),
 	assert_false(occurs(a) during [5,7]).
@@ -142,8 +142,8 @@ test('during(occurs(+),+Event)') :-
 	assert_false(occurs(test:'Short1') during test:'Short3'),
 	assert_false(occurs(test:'Short1') during test:'Short4').
 
-test('tell(during(occurs(+),+Event))') :-
-	assert_true(tell(occurs(test:'Event6') during test:'Short1')),
+test('assert(during(occurs(+),+Event))') :-
+	assert_true(kb_project(occurs(test:'Event6') during test:'Short1')),
 	assert_true(occurs(test:'Event6') during test:'Short1').
 
 :- end_rdf_tests(model_terms).

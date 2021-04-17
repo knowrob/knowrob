@@ -35,7 +35,7 @@ swrl_fire1(HeadAtom :- Body) :-
 			swrl_fact(Impl_pl, Fact)
 		),
 		Facts),
-	lang_query:tell(Facts).
+	kb_project(Facts).
 
 %%
 swrl_fact(model_RDFS:instance_of(X,Y), has_type(X,Y)) :- !.
