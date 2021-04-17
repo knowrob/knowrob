@@ -5,9 +5,9 @@
       kb_project(t),       % +Statement
       kb_project(t,t),     % +Statement, +Scope
       kb_project(t,t,t),   % +Statement, +Scope, +Options
-      forget(t),     % +Statement
-      forget(t,t),   % +Statement, +Scope
-      forget(t,t,t), % +Statement, +Scope, +Options
+      kb_unproject(t),     % +Statement
+      kb_unproject(t,t),   % +Statement, +Scope
+      kb_unproject(t,t,t), % +Statement, +Scope, +Options
       kb_add_rule(t,t),
       kb_drop_rule(t),
       kb_expand(t,-),
@@ -195,32 +195,32 @@ kb_project(Statement, Scope, Options) :-
 	).
 
 
-%% forget(+Statement) is nondet.
+%% kb_unproject(+Statement) is nondet.
 %
-% Same as forget/2 with universal scope.
+% Same as kb_unproject/2 with universal scope.
 %
 % @param Statement a statement term.
 %
-forget(Statement) :-
+kb_unproject(Statement) :-
 	wildcard_scope(Scope),
-	forget(Statement, Scope, []).
+	kb_unproject(Statement, Scope, []).
 
-%% forget(+Statement, +Scope) is nondet.
+%% kb_unproject(+Statement, +Scope) is nondet.
 %
-% Same as forget/3 with empty options list.
+% Same as kb_unproject/3 with empty options list.
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-forget(Statement, Scope) :-
-	forget(Statement, Scope, []).
+kb_unproject(Statement, Scope) :-
+	kb_unproject(Statement, Scope, []).
 
-%% forget(+Statement, +Scope, +Options) is semidet.
+%% kb_unproject(+Statement, +Scope, +Options) is semidet.
 %
-% Forget that some statement is true.
+% Unproject that some statement is true.
 % Statement must be a term triple/3. 
 % It can also be a list of such terms.
-% Scope is the scope of the statement to forget. Options include:
+% Scope is the scope of the statement to unproject. Options include:
 %
 %     - graph(GraphName)
 %     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
@@ -231,19 +231,19 @@ forget(Statement, Scope) :-
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
-forget(_, _, _) :-
+kb_unproject(_, _, _) :-
 	setting(mng_client:read_only, true),
 	!.
 
-forget(Statements, Scope, Options) :-
+kb_unproject(Statements, Scope, Options) :-
 	is_list(Statements),
 	!,
 	forall(
 		member(Statement, Statements),
-		forget(Statement, Scope, Options)
+		kb_unproject(Statement, Scope, Options)
 	).
 
-forget(triple(S,P,O), Scope, Options) :-
+kb_unproject(triple(S,P,O), Scope, Options) :-
 	% TODO: support other language terms too
 	%	- rather map to kb_call(retractall(Term)) or kb_call(unproject(Term))
 	% ensure there is a graph option

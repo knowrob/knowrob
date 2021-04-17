@@ -75,8 +75,8 @@ test('ask triple') :-
 	))).
 
 % delete individual triple
-test('forget triple') :-
-	assert_true( forget( triple(
+test('retract triple') :-
+	assert_true( kb_unproject( triple(
 		swrl_tests:'Adult',
 		rdfs:'subClassOf',
 		swrl_tests:'TestThing'
