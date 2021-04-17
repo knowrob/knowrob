@@ -35,7 +35,7 @@ jobs:
     - name: Start Mongo DB
       run: sudo systemctl start mongod
     - name: Start ROS
-      run: roscore &
+      run: roscore
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
