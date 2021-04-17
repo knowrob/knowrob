@@ -208,7 +208,7 @@ is_restriction1(R, exactly(P,M)) ?+>
 
 %is_restriction(R,Descr) +>
 %  % try to find existing restriction first.
-%  ask(is_restriction1(R,Descr)),
+%  kb_call(is_restriction1(R,Descr)),
 %  !.
 
 is_restriction(R,Descr) +>

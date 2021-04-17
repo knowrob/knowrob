@@ -320,11 +320,11 @@ swrl_match_instance(Iri,Name,NS) :-
 	var(Iri), atom(Name), atom(NS),
 	% try to use user-specified namespace to find the entity
 	atom_concat(NS,Name,Iri),
-	once(ask(triple(Iri,rdf:type,_))),!,
+	once(kb_call(triple(Iri,rdf:type,_))),!,
 	assertz(swrl_iri(Name,Iri)).
 
 swrl_match_instance(Iri,Name,_NS) :-
 	var(Iri), atom(Name),
 	atomic_list_concat(['^.*#',Name,'$'],Pattern),
-	ask(once(triple(regex(Pattern)->Iri,rdf:type,_))),!,
+	kb_call(once(triple(regex(Pattern)->Iri,rdf:type,_))),!,
 	assertz(swrl_iri(Name,Iri)).

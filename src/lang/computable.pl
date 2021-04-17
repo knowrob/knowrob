@@ -186,11 +186,11 @@ test_cleanup :-
 		  cleanup(computable:test_cleanup) ]).
 
 test('comp_gen(-)') :-
-	findall(X, ask(comp_gen(X)), Xs),
+	findall(X, kb_call(comp_gen(X)), Xs),
 	assert_true(Xs == [1,2,3,4,5,6,7,8,9]).
 
 test('(comp_gen(-),comp_map(+,-))') :-
-	findall(Y, ask((
+	findall(Y, kb_call((
 		comp_gen(X),
 		comp_map(X,Y)
 	)), AllSolutions),

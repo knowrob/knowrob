@@ -31,7 +31,7 @@ has_designator(Entity, Designator) :-
 	% get conjunction of statements
 	get_designator_statements(Entity,Designator,Statements),
 	% issue a query
-	lang_query:ask(Statements).
+	kb_call(Statements).
 
 %%
 get_designator_statements(Entity,Designator,Statements) :-

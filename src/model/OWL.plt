@@ -17,13 +17,13 @@
 
 check_is_restriction_true(Entity, OWLRestriction, TestProperty, TestRange) :-
   assert_true(is_restriction(Entity)), 
-  assert_true(lang_query:ask(triple(Entity,owl:'onProperty',TestProperty))),
-  assert_true(lang_query:ask(triple(Entity,OWLRestriction,TestRange))).
+  assert_true(kb_call(triple(Entity,owl:'onProperty',TestProperty))),
+  assert_true(kb_call(triple(Entity,OWLRestriction,TestRange))).
 
 check_is_restriction_false(Entity, OWLRestriction, TestProperty, TestRange) :-
   assert_true(is_restriction(Entity)), 
-  assert_true(lang_query:ask(triple(Entity,owl:'onProperty',TestProperty))),
-  assert_false(lang_query:ask(triple(Entity,OWLRestriction,TestRange))).
+  assert_true(kb_call(triple(Entity,owl:'onProperty',TestProperty))),
+  assert_false(kb_call(triple(Entity,OWLRestriction,TestRange))).
 
 test('is_class(?)') :-
   assert_true(is_class(test:'E')),
@@ -181,8 +181,8 @@ test('is_restriction(?)') :-
 
 test('is_restriction(+,+)') :-
   assert_true((
-    lang_query:ask(subclass_of(test:'A',R)),
-    lang_query:ask(is_restriction(R,only(test:'s', test:'Range2')))
+    kb_call(subclass_of(test:'A',R)),
+    kb_call(is_restriction(R,only(test:'s', test:'Range2')))
   )),
   assert_true((
     subclass_of(test:'A2',R2),
@@ -454,7 +454,7 @@ test('subclass_of(+,+Descr)') :-
     assert_true(subclass_of(
     	test:'D',
     	min(test:'s',2))),
-    assert_true(lang_query:ask(subclass_of(
+    assert_true(kb_call(subclass_of(
     	test:'D',
     	min(test:'s',2)))),
     assert_true(subclass_of(

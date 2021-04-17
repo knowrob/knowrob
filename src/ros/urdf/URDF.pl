@@ -106,7 +106,7 @@ urdf_init(Object,Identifier) :-
 	% create has_urdf facts
 	forall(
 		(	Y=Object
-		;	ask(triple(Object,transitive(dul:hasComponent),Y))
+		;	kb_call(triple(Object,transitive(dul:hasComponent),Y))
 		),
 		(	has_urdf(Y,Object) -> true
 		;	assertz(has_urdf(Y,Object))
@@ -159,7 +159,7 @@ urdf_load(Object,URL,Options) :-
 	;	kb_project(has_urdf_prefix(Object,OptPrefix))
 	),
 	% get all the object parts
-	findall(X, ask(triple(Object,transitive(dul:hasComponent),X)), Parts),
+	findall(X, kb_call(triple(Object,transitive(dul:hasComponent),X)), Parts),
 	% set component poses relative to links
 	forall(
 		(	member(Y,[Object|Parts]),

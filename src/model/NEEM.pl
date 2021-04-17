@@ -14,7 +14,7 @@
            test_action/1.
 
 test('is_episode') :-
-	ask(new_iri(Episode,dul:'Situation')),
+	kb_call(new_iri(Episode,dul:'Situation')),
 	kb_project(is_episode(Episode)),
 	assert_true(ground(Episode)),
 	assert_true(is_episode(Episode)),
@@ -23,7 +23,7 @@ test('is_episode') :-
 test('is_setting_for') :-
 	test_episode(Episode),
 	%% create an action
-	ask(new_iri(Action,dul:'Action')),
+	kb_call(new_iri(Action,dul:'Action')),
 	kb_project(is_action(Action)),
 	assert_true(ground(Action)),
 	assert_true(is_action(Action)),
@@ -43,7 +43,7 @@ test('occurs') :-
 test('executes_task') :-
 	test_action(Action),
 	%% state what task the action executes
-	ask(new_iri(Task,test:'TestTask')),
+	kb_call(new_iri(Task,test:'TestTask')),
 	kb_project(has_type(Task,test:'TestTask')),
 	assert_true(ground(Task)),
 	assert_true(is_task(Task)),
@@ -64,7 +64,7 @@ test('has_role') :-
 	test_action(Action),
 	rdf_equal(test:'Substance_0',Obj),
 	%%
-	ask(new_iri(Role,test:'ARole')),
+	kb_call(new_iri(Role,test:'ARole')),
 	kb_project(has_type(Role,test:'ARole')),
 	assert_false(has_role(Obj,Role) during Action),
 	assert_true(kb_project(has_role(Obj,Role) during Action)),
@@ -89,7 +89,7 @@ test('action_succeeded') :-
 test('is_masterful') :-
 	test_episode(Episode),
 	%%
-	ask(new_iri(Masterful)),
+	kb_call(new_iri(Masterful)),
 	kb_project(has_type(Masterful,test:'Masterful')),
 	assert_true(ground(Masterful)),
 	assert_true(is_diagnosis(Masterful)),

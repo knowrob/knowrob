@@ -10,7 +10,7 @@ where different steps are linked with each other by feeding groundings of
 one step into the input queue of the next step.
 
 The main interface predicates for using the KnowRob query language
-are `ask/2` and `kb_project/2`.
+are `kb_call/2` and `kb_project/2`.
 Their first argument is a language term (such as `holds/3`),
 and their second argument is a contextual parameter used
 to handle scoped statements and questions.
@@ -33,7 +33,7 @@ Each call within the body of such a rule is expanded to a call of
 the querying or projection predicate instead where the language term argument
 is instantiated to the term called in the original body of the rule.
 So if we write, for example, `is_object(OBJ)` on the right-hand side
-of an querying rule, it is internally expanded to `ask(is_object(OBJ),Context)`.
+of an querying rule, it is internally expanded to `kb_call(is_object(OBJ),Context)`.
 In the case of a projection rule, above expression would expand to
 `kb_project(is_object(OBJ),Context)`, which is also meaningful.
 In such a case, where querying and projection rules can be declared identical
@@ -57,12 +57,12 @@ in which the statement is true, for example,
 that some statement is true after some event has happened.
 The scope must be instantiated before calling the projection predicate.
 Statements in projection rules expand into scoped assertions.
-Within ask rules, on the other hand, context has an additional 
+Within querying rules, on the other hand, context has an additional 
 query scope (also called question scope).
 Question scopes are used to restrict the scope
 of considered statements to statements with overlapping
 scopes to the one provided.
-The ask rule instantiates the statement scope to some scope
+The querying rule instantiates the statement scope to some scope
 within which the given statement is true, if any.
 In case of the term expands into a conjunctive query,
 the statament scope is instantiated to the intersection
@@ -75,7 +75,7 @@ in `since(holds(S,P,O),Time)`. As these terms are usually defined as operators,
 one can also write, for example, `holds(S,P,O) since Time`.
 Generally, scoping terms are nested terms where another language term is
 called with an updated scope.
-In the case of ask-rules, scoping predicates will modify the question scope,
+In the case of querying-rules, scoping predicates will modify the question scope,
 while, in the case of projection-rules, the statement scope is modified.
 
 The following time-scoping terms are pre-defined:

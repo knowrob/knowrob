@@ -312,7 +312,7 @@ assert_triple_data(Triples) :-
 	% TODO: also support to import scope information
 	% TODO: it would be faster to call assert only once with
 	% array of triples
-	lang_query:ask(assert(triple(S_atom, P_atom, O_value)), Scope, _).
+	kb_call(assert(triple(S_atom, P_atom, O_value)), Scope, _).
 
 assert_triple_data(TriplesList) :-
 	%handle case when given triples are list

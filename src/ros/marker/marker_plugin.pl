@@ -101,7 +101,7 @@ show_marker(_MarkerID, _MarkerTerm, _Options) :-
 show_markers(Timepoint) :-
 	%time_scope(=<(Timepoint), >=(Timepoint), Scope),
 	%forall(
-	%	ask(is_physical_object(PO)),
+	%	kb_call(is_physical_object(PO)),
 	%	show_marker(PO, PO, [scope(Scope)])
 	%).
 	findall(Msg,

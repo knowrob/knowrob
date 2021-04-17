@@ -173,17 +173,17 @@ until(Statement, Instant) +>
 test('during(+Triple,+Interval)') :-
 	assert_true(kb_project(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [14,24])),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+999999999') during [5,20])),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [12,20])),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [5,20])),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [34,44])).
 
 test('during(+Triple,+Overlapping)') :-
@@ -193,53 +193,53 @@ test('during(+Triple,+Overlapping)') :-
 		triple(test:'Lea', test:hasNumber, '+493455249') during [44,84])),
 	assert_true(kb_project(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [24,54])),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [34,44])),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [38,80])),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [140,240])).
 
 test('during(+Triple,[-Since,-Until])') :-
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [_,_])),
-	(	lang_query:ask(
+	(	kb_call(
 			triple(test:'Lea', test:hasNumber, '+493455247') during [Since,Until])
 	->	assert_equals([Since,Until], [10.0,34.0])
 	;	true
 	).
 
 test('during(+Triple,-Interval)') :-
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during _)),
-	(	lang_query:ask(
+	(	kb_call(
 			triple(test:'Lea', test:hasNumber, '+493455247') during X)
 	->	assert_equals(X,[10.0,34.0])
 	;	true
 	).
 
 test('since(+Triple,+Instant)') :-
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
 	assert_true(kb_project(
 		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') since 1000)),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') since 600)).
 
 test('until(+Triple,+Instant)') :-
 	% before project until=inf
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)),
 	assert_true(kb_project(
 		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
 	% after project until=900
-	assert_true(lang_query:ask(
+	assert_true(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
-	assert_false(lang_query:ask(
+	assert_false(kb_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)).
 
 :- end_rdf_tests('lang_temporal').
