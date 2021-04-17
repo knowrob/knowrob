@@ -1,6 +1,6 @@
 #include <knowrob/ros/tf/memory.h>
 
-static double get_stamp(const geometry_msgs::TransformStamped &ts)
+static inline double get_stamp(const geometry_msgs::TransformStamped &ts)
 {
 	unsigned long long time = (unsigned long long)(
 			ts.header.stamp.sec * 1000.0 + ts.header.stamp.nsec / 1000000.0);
@@ -9,9 +9,24 @@ static double get_stamp(const geometry_msgs::TransformStamped &ts)
 
 static geometry_msgs::TransformStamped dummy;
 
+//#define SEND_UNKNOWN_FAR_AWAY
+#ifdef SEND_UNKNOWN_FAR_AWAY
+static geometry_msgs::TransformStamped far_away;
+#endif
+
 TFMemory::TFMemory() :
 		buffer_index_(0)
 {
+#ifdef SEND_UNKNOWN_FAR_AWAY
+	far_away.transform.translation.x = 99999.9;
+	far_away.transform.translation.y = 99999.9;
+	far_away.transform.translation.z = 99999.9;
+	far_away.transform.rotation.x = 0.0;
+	far_away.transform.rotation.y = 0.0;
+	far_away.transform.rotation.z = 0.0;
+	far_away.transform.rotation.w = 1.0;
+	far_away.header.frame_id = "map";
+#endif
 }
 
 bool TFMemory::has_transform(const std::string &frame) const
@@ -30,6 +45,13 @@ bool TFMemory::clear()
 	std::lock_guard<std::mutex> guard2(names_lock_);
 	transforms_[buffer_index_].clear();
 	managed_frames_[buffer_index_].clear();
+	return true;
+}
+
+bool TFMemory::clear_transforms_only()
+{
+	std::lock_guard<std::mutex> guard1(transforms_lock_);
+	transforms_[buffer_index_].clear();
 	return true;
 }
 
@@ -94,9 +116,21 @@ void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
 			it=managed_frames_[buffer_index].begin();
 			it!=managed_frames_[buffer_index].end(); ++it)
 	{
-		geometry_msgs::TransformStamped tf_transform = get_transform(*it,buffer_index);
-		tf_transform.header.stamp = time;
-		tf_msg.transforms.push_back(tf_transform);
+		const std::string &name = *it;
+		std::map<std::string, geometry_msgs::TransformStamped>::iterator
+			needle = transforms_[buffer_index].find(name);
+		if(needle != transforms_[buffer_index].end()) {
+			geometry_msgs::TransformStamped &tf_transform = needle->second;
+			tf_transform.header.stamp = time;
+			tf_msg.transforms.push_back(tf_transform);
+		}
+#ifdef SEND_UNKNOWN_FAR_AWAY
+		else {
+			far_away.header.stamp = time;
+			far_away.child_frame_id = name;
+			tf_msg.transforms.push_back(far_away);
+		}
+#endif
 	}
 }
 

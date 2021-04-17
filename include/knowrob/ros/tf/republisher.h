@@ -83,6 +83,7 @@ protected:
 	void reset_cursor();
 	void advance_cursor();
 	void read_transform(const bson_t *doc);
+	void set_initial_poses(double unix_time);
 };
 
 #endif //__KNOWROB_TF_REPUBLISHER__
