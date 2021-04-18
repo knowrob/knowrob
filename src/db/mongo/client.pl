@@ -29,6 +29,7 @@
       mng_get_dict/3,
       mng_query_value/2,
       mng_typed_value/2,
+      mng_unflatten/2,
       mng_strip/4,
       mng_strip_type/3,
       mng_strip_operator/3,
@@ -427,6 +428,40 @@ term_document(Term, [
 	maplist([Arg,Doc]>>
 		mng_query_value(Arg, ['$eq', Doc]),
 		Args, ArgDocs).
+
+%% mng_unflatten(+Flat, -Nested) is det.
+%
+% Translates a flattened document into a nested one.
+% Flattened documents may contain nested keys that contain
+% a '.'. These are translated into a nested structure instead.
+% For example: `mng_unflatten(['a.b',1], [a,[b,1]])`.
+%
+%
+mng_unflatten(Flat, Nested) :-
+	mng_unflatten(Flat, [], Nested).
+
+mng_unflatten([], Nested, Nested) :- !.
+mng_unflatten([X|Xs], NestedIn, NestedOut) :-
+	unflatten_entry(X, NestedX),
+	mng_unflatten1(NestedX, NestedIn, Nested0),
+	mng_unflatten(Xs, Nested0, NestedOut).
+
+mng_unflatten1([[Key,Rest]], NestedIn,
+		[[Key,NestedKey]|NestedRest]) :-
+	is_list(Rest),
+	select([Key,Ys0], NestedIn, NestedRest),
+	mng_unflatten1(Rest, Ys0, NestedKey),
+	!.
+mng_unflatten1(X, NestedIn, NestedOut) :-
+	append(X, NestedIn, NestedOut).
+
+%%
+unflatten_entry([Path,Value], Nested) :-
+	atomic_list_concat(Keys, '.', Path),
+	unflatten_entry(Keys, Value, Nested).
+unflatten_entry([], Value, Value) :- !.
+unflatten_entry([X|Xs], Value, [[X,Rest]]) :-
+	unflatten_entry(Xs, Value, Rest).
 
 %% mng_typed_value(+Term, -TypedValue) is det.
 %

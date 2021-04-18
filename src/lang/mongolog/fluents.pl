@@ -222,9 +222,11 @@ mongolog_fluent_assert(Term, Ctx, Pipeline, StepVars) :-
 			mongolog:var_key_or_val(Arg, Ctx, Val)
 		),
 		PredicateDoc),
+	% make sure we have a nested doc since keys with a '.' are not allowed here!
+	mng_unflatten(PredicateDoc, NestedDoc),
 	% and add it to the list of asserted documents
 	findall(Step,
-		mongolog:add_assertion(PredicateDoc, Collection, Step),
+		mongolog:add_assertion(NestedDoc, Collection, Step),
 		Pipeline).
 
 %%
