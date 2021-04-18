@@ -63,7 +63,8 @@ To this end, Prolog datastructures are translated from and into BSON format.
 	'Flag if the tripledb is read only').
 
 :- setting(mng_client:db_name, DBName),
-   assertz(mng_db_name(DBName)).
+   assertz(mng_db_name(DBName)),
+   log_info(mng_db_name(DBName)).
 
 %% mng_db_name(-DB) is det
 %
