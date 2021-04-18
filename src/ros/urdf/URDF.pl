@@ -43,6 +43,7 @@
 :- use_module(library('utility/url'), [ url_resolve/2 ]).
 :- use_module(library('utility/filesystem'), [ path_concat/3 ]).
 :- use_module(library(http/http_client)).
+:- use_module(library('ros/tf/tf_plugin'), [ tf_mem_set_pose/3 ]).
 
 :- use_foreign_library('liburdf_parser.so').
 
@@ -166,8 +167,10 @@ urdf_load(Object,URL,Options) :-
 			has_base_link_name(Y,YName)
 		),
 		(	atom_concat(OptPrefix,YName,YFrame),
-			% TODO: only do this on first load
-			kb_project(is_at(Y,[YFrame,[0,0,0],[0,0,0,1]])),
+			% update tf memory
+			rdf_split_url(_,OName,Y),
+			tf_mem_set_pose(OName, [YFrame,[0,0,0],[0,0,0,1]], 0),
+			%
 			assertz(has_urdf(Y,Object))
 		)
 	),
@@ -206,7 +209,9 @@ urdf_set_pose(Object,Pose) :-
 	% set root link pose
 	urdf_root_link(Object,RootLinkName),
 	urdf_iri(Object,Prefix,RootLinkName,RootLink),
-	kb_project(is_at(RootLink,Pose)),
+	% update tf memory
+	rdf_split_url(_,RootFrame,RootLink),
+	tf_mem_set_pose(RootFrame,Pose,0),
 	% set pose of other links
 	urdf_link_names(Object,Links),
 	forall(
@@ -222,7 +227,9 @@ set_link_pose_(Object,Prefix,LinkName) :-
 	urdf_joint_parent_link(Object,JointName,ParentName),
 	urdf_iri(Object,Prefix,LinkName,Link),
 	atom_concat(Prefix,ParentName,ParentFrame),
-	kb_project(is_at(Link,[ParentFrame,Pos,Rot])).
+	% update tf memory
+	rdf_split_url(_,LinkFrame,Link),
+	tf_mem_set_pose(LinkFrame, [ParentFrame,Pos,Rot], 0).
 
 %%
 %
