@@ -52,10 +52,18 @@ lang_query:step_expand(
 		tf(ChildFrame, ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
 
+lang_query:step_expand(
+		assert(tf(ChildFrame, ParentFrame, [X,Y,Z], [QX,QY,QZ,QW])),
+		assert(tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW))).
+
 % tf/2
 lang_query:step_expand(
 		tf(ChildFrame, [ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]]),
 		tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW)).
+
+lang_query:step_expand(
+		assert(tf(ChildFrame, [ParentFrame, [X,Y,Z], [QX,QY,QZ,QW]])),
+		assert(tf_raw(ChildFrame, ParentFrame, X, Y, Z, QX, QY, QZ, QW))).
 
 %%
 tf_db(DB, Name) :-
