@@ -326,6 +326,8 @@ is_kino_dynamic_data(IO) ?+>
 % @param Format File format identifier string (i.e. the file extension).
 %
 has_kinematics_file(Obj,Identifier,Format) +>
+	new_iri(IO,soma:'KinoDynamicData'),
+	new_iri(IR,io:'DigitalResource'),
 	has_type(IO,soma:'KinoDynamicData'),
 	has_type(IR,io:'DigitalResource'),
 	triple(IO, dul:isAbout, Obj),
