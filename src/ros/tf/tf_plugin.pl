@@ -29,6 +29,8 @@
 	  time_scope_data/2,
 	  current_scope/1
 	]).
+:- use_module(library('lang/computable'),
+	[ add_computable_predicate/2 ]).
 :- use_module('tf_mongo',
 	[ tf_mng_lookup/6,
 	  tf_mng_lookup_all/2
@@ -51,7 +53,7 @@
 
 %%
 tf_republish_set_goal(Time_min, Time_max) :-
-	tf_db(DBName, CollectionName),
+	tf_mongo:tf_db(DBName, CollectionName),
 	( number(Time_min)
 	->	Min is Time_min
 	;	atom_number(Time_min,Min)
@@ -84,16 +86,8 @@ tf_republish_load_transforms(Time) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % is_at
 
-%% is_at(?Object,-PoseData) is nondet.
-%
-%is_at(Obj,[RefFrame,Pos,Rot]) +>
-%	fact_scope(FS),
-%	{ tf_set_pose(Obj,[RefFrame,Pos,Rot],FS) },
-%	notify(object_changed(Obj)).
-
-is_at(Obj,[RefFrame,Pos,Rot]) :-
-	current_scope(QS),
-	tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,_FS).
+% add is_at/2 as computable predicate
+:- add_computable_predicate(is_at/2, tf_plugin:tf_get_pose).
 
 %%
 tf_set_pose(Obj,PoseData,FS) :-
@@ -101,6 +95,11 @@ tf_set_pose(Obj,PoseData,FS) :-
 	time_scope_data(FS,[Since,_Until]),
 	tf_mem_set_pose(ObjFrame,PoseData,Since),
 	tf_mng_store(ObjFrame,PoseData,Since).
+
+%%
+tf_get_pose(Obj,[RefFrame,Pos,Rot]) :-
+	current_scope(QS),
+	tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,_FS).
 
 %%
 tf_get_pose(Obj,PoseQuery,QS,FS) :-
