@@ -57,7 +57,7 @@ In many cases, a pose needs to be transformed into some specific reference frame
 it was not persisted in the database.
 A computable predicate is_at/2 is defined to support exactly this: to compute the pose of
 a frame wrt. some reference frame.
-Within this module, is_at/2 is implemented by the predicate tf_get_pose/2.
+Within this module, is_at/2 is implemented by the predicate tf_get_pose/4.
 For example:
 
     kb_call(is_at(ns:'MyObject', [target_frame, Position, Rotation]))).
