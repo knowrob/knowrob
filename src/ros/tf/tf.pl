@@ -51,7 +51,12 @@
 %%%%%%%%% TF REPUBLISHER
 %%%%%%%%%%%%%%%%%%%%%%%
 
-%%
+%% tf_republish_set_goal(+TimeStart, +TimeEnd) is det.
+%
+% Set a new goal for the TF republisher.
+% The republisher then iterates over database records
+% within the time interval provided.
+%
 tf_republish_set_goal(Time_min, Time_max) :-
 	tf_mongo:tf_db(DBName, CollectionName),
 	( number(Time_min)
@@ -81,6 +86,68 @@ tf_republish_load_transforms(Time) :-
 		tf_republish_set_pose(Frame,[Ref,Pos,Rot])
 	).
 
+%% tf_republish_set_progress(+Progress) is det.
+%
+% Advance republisher to some point in time.
+% Progress is a number between zero and one used
+% as interpolation factor between start and end time.
+%
+
+%% tf_republish_clear is det.
+%
+% Reset the TF republisher.
+%
+
+%% tf_republish_set_loop(+Loop) is det.
+%
+% Toggle looping from end time to start time.
+%
+
+%% tf_republish_set_time(+Time) is det.
+%
+% Set the current time of the TF republisher.
+%
+
+%% tf_republish_set_pose(+ObjFrame, +PoseData) is det.
+%
+% Update the transform of a frame in the TF republisher.
+% This is useful to initialize transforms from data not within
+% the range of the republisher.
+%
+
+%% tf_republish_set_realtime_factor(+Factor) is det.
+%
+% Change the realtime factor.
+% Default is 1.0, i.e. realtime republishing.
+%
+
+%% tf_logger_enable is det.
+%
+% Activate the TF logger.
+% That is start listening to TF messages and storing
+% them in a mongo database.
+%
+
+%% tf_logger_disable is det.
+%
+% Deactivate the TF logger.
+%
+
+%% tf_mem_clear is det.
+%
+% Reset the TF memory.
+% That is remove every transform stored in the local memory.
+%
+
+%% tf_mem_set_pose(+ObjFrame,+PoseData,+Since) is det.
+%
+% Update the transform of a frame in local memory.
+%
+
+%% tf_mem_get_pose(+ObjFrame,?PoseData,?Since) is det.
+%
+% Read the transform of a frame from local memory.
+%
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -89,7 +156,12 @@ tf_republish_load_transforms(Time) :-
 % add is_at/2 as computable predicate
 :- add_computable_predicate(is_at/2, tf:tf_get_pose).
 
-%%
+%% tf_set_pose(+Obj, +Data, +Scope) is det.
+%
+% Update the position of an object.
+% The position is updated in local memory, but also
+% written into mongo database.
+%
 tf_set_pose(Obj,PoseData,FS) :-
 	rdf_split_url(_,ObjFrame,Obj),
 	time_scope_data(FS,[Since,_Until]),
@@ -101,7 +173,11 @@ tf_get_pose(Obj,[RefFrame,Pos,Rot]) :-
 	current_scope(QS),
 	tf_get_pose(Obj,[RefFrame,Pos,Rot],QS,_FS).
 
-%%
+%% tf_get_pose(+Obj, ?PoseQuery, +QueryScope, +FactScope) is semidet.
+%
+% Retrieve the pose of an object.
+% The pose can be requested in a specific reference frame. 
+%
 tf_get_pose(Obj,PoseQuery,QS,FS) :-
 	rdf_split_url(_,ObjFrame,Obj),
 	% lookup direct position data without doing transformations
