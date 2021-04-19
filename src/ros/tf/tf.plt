@@ -4,15 +4,15 @@
 :- use_module(library('db/mongo/client')).
 :- use_module(library('semweb/rdf_db')).
 
-:- use_module('tf_plugin').
+:- use_module('tf').
 :- use_module('tf_mongo').
 
 :- begin_rdf_tests(
-		'tf_plugin',
+		'tf',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#'),
-		  setup(tf_plugin_setup),
-		  cleanup(tf_plugin_cleanup)
+		  setup(tf_setup),
+		  cleanup(tf_cleanup)
 		]).
 
 :- rdf_meta(test_set_pose(r,+,+)).
@@ -21,11 +21,11 @@
 :- rdf_meta(test_transform_pose(r,+,+)).
 :- rdf_meta(test_is_unlocalized(r,+)).
 
-tf_plugin_setup :-
+tf_setup :-
 	tf_mng_drop,
 	tf_logger_enable.
 
-tf_plugin_cleanup :-
+tf_cleanup :-
 	tf_logger_disable,
 	tf_mng_drop.
 
@@ -39,12 +39,12 @@ test_pose_alex3(['Fred',[0.0,1.0,0.0],[0.0,0.0,0.0,1.0]], 1593178682.123).
 
 test_set_pose(Object,Pose,Stamp) :-
 	time_scope(=(Stamp), =<('Infinity'), FScope),
-	assert_true(tf_plugin:tf_set_pose(Object,Pose,FScope)).
+	assert_true(tf:tf_set_pose(Object,Pose,FScope)).
 
 test_get_pose(Object,Stamp,Expected) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_true(tf_plugin:tf_get_pose(Object,_,QScope,_)),
-	( tf_plugin:tf_get_pose(Object,Actual,QScope,_)
+	assert_true(tf:tf_get_pose(Object,_,QScope,_)),
+	( tf:tf_get_pose(Object,Actual,QScope,_)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).
@@ -58,21 +58,21 @@ test_trajectory(Obj,Begin,End,Expected) :-
 
 test_transform_pose(Object,Stamp,Query) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_true(tf_plugin:tf_get_pose(Object,Query,QScope,_)).
+	assert_true(tf:tf_get_pose(Object,Query,QScope,_)).
 
 test_lookup(Frame,Stamp,Expected) :-
-	assert_true(tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)),
-	( tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,Actual,_,_)
+	assert_true(tf:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)),
+	( tf:tf_mng_lookup(Frame,Stamp,Stamp,Actual,_,_)
 	-> assert_unifies(Actual,Expected)
 	;  true
 	).
 
 test_lookup_fails(Frame,Stamp) :-
-	assert_false(tf_plugin:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)).
+	assert_false(tf:tf_mng_lookup(Frame,Stamp,Stamp,_,_,_)).
 
 test_is_unlocalized(Object,Stamp) :-
 	time_scope(=<(Stamp), >=(Stamp), QScope),
-	assert_false(tf_plugin:tf_get_pose(Object,_,QScope,_)).
+	assert_false(tf:tf_get_pose(Object,_,QScope,_)).
 
 test('tf_pose') :-
 	test_pose_fred0(Pose0,Stamp0),
@@ -129,4 +129,4 @@ test('tf_transform_pose') :-
 %		during(is_at(test:'Fred',Pose0), [Stamp0,Stamp0])
 %	)).
 
-:- end_tests('tf_plugin').
+:- end_tests('tf').

@@ -17,7 +17,7 @@
 :- use_module(library('lang/scope')).
 :- use_module(library('model/DUL')).
 :- use_module(library('model/SOMA')).
-:- use_module(library('ros/tf/tf_plugin')).
+:- use_module(library('ros/tf/tf')).
 :- use_module(library('ros/urdf/URDF')).
 
 

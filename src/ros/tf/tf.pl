@@ -1,4 +1,4 @@
-:- module(tf_plugin,
+:- module(tf,
 	[ tf_set_pose/3,
 	  tf_get_pose/4,
 	  tf_mem_set_pose/3,
@@ -15,7 +15,7 @@
 	  tf_logger_disable/0
 	]).
 
-:- use_foreign_library('libtf_plugin.so').
+:- use_foreign_library('libtf_knowrob.so').
 
 :- use_module(library(settings)).
 :- use_module(library('semweb/rdf_db'),
@@ -42,7 +42,7 @@
 
 %%
 :-	mng_db_name(DB),
-	(	setting(tf_plugin:use_logger,false)
+	(	setting(tf:use_logger,false)
 	->	true
 	;	tf_logger_set_db_name(DB)
 	).
@@ -87,7 +87,7 @@ tf_republish_load_transforms(Time) :-
 % % % % % is_at
 
 % add is_at/2 as computable predicate
-:- add_computable_predicate(is_at/2, tf_plugin:tf_get_pose).
+:- add_computable_predicate(is_at/2, tf:tf_get_pose).
 
 %%
 tf_set_pose(Obj,PoseData,FS) :-

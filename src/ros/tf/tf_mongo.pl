@@ -9,7 +9,7 @@
 	  tf_mng_tree_lookup/3
 	]).
 
-:- use_foreign_library('libtf_plugin.so').
+:- use_foreign_library('libtf_knowrob.so').
 
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_split_url/3 ]).

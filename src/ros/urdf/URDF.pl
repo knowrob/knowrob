@@ -43,7 +43,7 @@
 :- use_module(library('utility/url'), [ url_resolve/2 ]).
 :- use_module(library('utility/filesystem'), [ path_concat/3 ]).
 :- use_module(library(http/http_client)).
-:- use_module(library('ros/tf/tf_plugin'), [ tf_mem_set_pose/3 ]).
+:- use_module(library('ros/tf/tf'), [ tf_mem_set_pose/3 ]).
 
 :- use_foreign_library('liburdf_parser.so').
 

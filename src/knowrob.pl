@@ -35,7 +35,7 @@ knowrob_load_neem(NEEM_id) :-
 	% load URDF files referred to in triple store
 	urdf_init,
 	% initialize position of each frame for tf publishing
-	tf_plugin:tf_republish_clear,
+	tf:tf_republish_clear,
 	tf_mongo:tf_mng_lookup_all(InitialTransforms),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],InitialTransforms),
@@ -44,10 +44,10 @@ knowrob_load_neem(NEEM_id) :-
 	        \+ atom_concat('/',Ref,Frame),
 	        \+ atom_concat('/',Frame,Ref)
 	    ),
-		tf_plugin:tf_republish_set_pose(Frame,[Ref,Pos,Rot])
+		tf:tf_republish_set_pose(Frame,[Ref,Pos,Rot])
 	),
 	% publish object marker messages
-	marker_plugin:republish.
+	marker:republish.
 
 %% restore_settings is det.
 %

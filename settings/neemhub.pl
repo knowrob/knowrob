@@ -3,10 +3,10 @@
 setting(knowrob:plugins, []).
 
 %	
-setting(marker_plugin:auto, false).
+setting(marker:auto, false).
 
 %	Disable logging of TF messages
-setting(tf_plugin:use_logger, false).
+setting(tf:use_logger, false).
 
 %	Do not drop any triple graphs on startup
 setting(lang_db:drop_graphs, []).

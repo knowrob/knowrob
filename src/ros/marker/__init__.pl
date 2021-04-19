@@ -1,2 +1,2 @@
 
-:- use_module('marker_plugin').
+:- use_module('marker').
