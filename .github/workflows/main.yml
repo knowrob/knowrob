@@ -36,6 +36,7 @@ jobs:
       shell: bash
       run: |
         sudo systemctl start mongod
+        export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
