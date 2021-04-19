@@ -1,25 +1,19 @@
 
 %	Plugins
-setting(knowrob:plugins,
-	[ 'ros/tf/tf_plugin',
-	  'ros/marker/marker_plugin'
-	]).
+setting(knowrob:plugins, []).
 
+%	
 setting(marker_plugin:auto, false).
-%setting(marker_plugin:reference_frame, 'map').
 
+%	Disable logging of TF messages
 setting(tf_plugin:use_logger, false).
 
-%	Triple DB
+%	Do not drop any triple graphs on startup
 setting(lang_db:drop_graphs, []).
 
-% Flag for read only mongo databases
-setting(mng_client:read_only, true).
-
-%	Remote Mongo Setting
+%	Mongo DB name
 setting(mng_client:db_name, 'neems').
+%	Flag for read only mongo databases
+setting(mng_client:read_only, true).
+%	A prefix used for all collection names.
 setting(mng_client:collection_prefix, '5fc8ff968f880006aa208e19').
-
-%	Reasoner configuration
-setting(reasoning_pool:disabled, true).
-

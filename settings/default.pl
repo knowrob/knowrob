@@ -1,20 +1,13 @@
 
 %	Plugins
-setting(knowrob:plugins,
-	[ 'ros/tf/tf_plugin',
-	  'ros/marker/marker_plugin'
-	]).
+setting(knowrob:plugins, []).
 
 %	Triple DB
 setting(lang_db:drop_graphs, [user]). % erase "user" graph on start-up
 
-%	Mongo DB
+%	Mongo DB name
 setting(mng_client:db_name, roslog).
-
-% Flag for read only mongo databases
+%	Flag for read only mongo databases
 setting(mng_client:read_only, false).
-
-%	Remote Mongo Setting
+%	A prefix used for all collection names.
 setting(mng_client:collection_prefix, '').
-
-
