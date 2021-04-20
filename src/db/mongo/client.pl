@@ -337,7 +337,7 @@ mng_doc_value(PlValue,PlValue).
 % @param DB the database name
 % @param Directory absolute path to output directory
 %
-mng_dump(DB,Directory) :-
+mng_dump(DB,Dir) :-
 	mng_uri(URI),
 	process_create(path(mongodump),
 		[ '--uri', URI, '--db', DB, '--out', Dir ],
@@ -369,7 +369,7 @@ mng_dump_collection(DB,Collection,Directory) :-
 % @param DB the database name
 % @param Directory absolute path to output directory
 %
-mng_restore(_DB,Directory) :-
+mng_restore(_DB,Dir) :-
 	mng_uri(URI),
 	process_create(path(mongorestore),
 		[ '--uri', URI, '--dir', Dir ],
