@@ -34,7 +34,7 @@
       mng_strip_type/3,
       mng_strip_operator/3,
       mng_strip_variable/2,
-      mng_operator/2
+      mng_operator/2,
       mng_uri/1
     ]).
 /** <module> A mongo DB client for Prolog.
