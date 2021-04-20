@@ -32,6 +32,7 @@ one step into the input queue of the next step.
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
+:- use_module(library(settings)).
 :- use_module(library('semweb/rdf_db'),
 	[ rdf_global_term/2 ]).
 :- use_module('scope',
