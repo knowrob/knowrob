@@ -35,6 +35,8 @@ jobs:
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
+        sudo apt-get update -y -qq
+        sudo apt-get install swipl
         sudo systemctl start mongod
         export ROS_HOSTNAME=localhost
         roscore &
