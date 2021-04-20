@@ -35,8 +35,9 @@ jobs:
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
+        sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update -y -qq
-        sudo apt-get install swipl
+        sudo apt-get install swi-prolog
         sudo systemctl start mongod
         export ROS_HOSTNAME=localhost
         roscore &
