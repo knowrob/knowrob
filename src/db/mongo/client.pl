@@ -35,6 +35,7 @@
       mng_strip_operator/3,
       mng_strip_variable/2,
       mng_operator/2
+      mng_uri/1
     ]).
 /** <module> A mongo DB client for Prolog.
 
@@ -337,8 +338,9 @@ mng_doc_value(PlValue,PlValue).
 % @param Directory absolute path to output directory
 %
 mng_dump(DB,Directory) :-
+	mng_uri(URI),
 	process_create(path(mongodump),
-		[ '--db', DB, '--out', Directory ],
+		[ '--uri', URI, '--db', DB, '--out', Dir ],
 		[ process(PID) ]
 	),
 	wait(PID,exited(0)).
@@ -368,8 +370,9 @@ mng_dump_collection(DB,Collection,Directory) :-
 % @param Directory absolute path to output directory
 %
 mng_restore(_DB,Directory) :-
+	mng_uri(URI),
 	process_create(path(mongorestore),
-		[ Directory ],
+		[ '--uri', URI, '--dir', Dir ],
 		[ process(PID) ]
 	),
 	wait(PID,exited(0)).
@@ -610,6 +613,21 @@ mng_strip_operator(    X,    =, X) :- !.
 %
 mng_strip_variable(X->_,X) :- nonvar(X), !.
 mng_strip_variable(X,X) :- !.
+
+%% mng_uri(-URI) is det.
+%
+% Get the URI connection string
+%
+mng_uri(URI) :-
+  getenv('KNOWROB_MONGO_HOST', Host),
+  getenv('KNOWROB_MONGO_USER', User),
+  getenv('KNOWROB_MONGO_PASS', Pass),
+  getenv('KNOWROB_MONGO_PORT', Port),
+  atomic_list_concat([ 'mongodb://', User, ':', Pass,
+    '@', Host, ':', Port ], URI),
+  !.
+
+mng_uri('mongodb://localhost:27017').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
