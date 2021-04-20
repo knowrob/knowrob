@@ -32,13 +32,12 @@ jobs:
         workspace: $GITHUB_WORKSPACE/ros_ws
     - name: Build KnowRob workspace
       run: cd ros_ws && catkin_make_isolated
-    - name: Start Mongo DB
-      run: sudo systemctl start mongod
-    - name: Start ROS
-      run: roscore &
     - name: Run KnowRob plunit tests
       shell: bash
       run: |
+        sudo systemctl start mongod
+        export ROS_HOSTNAME=localhost
+        roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         rosrun rosprolog rosprolog-test -o junit-knowrob.xml knowrob
     - name: Report plunit results as Github Actions Annotations
