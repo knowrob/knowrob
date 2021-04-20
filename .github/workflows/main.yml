@@ -59,6 +59,7 @@ jobs:
       run: |
         export ROS_HOSTNAME=localhost
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
+        export ROS_PACKAGE_PATH=$GITHUB_WORKSPACE/ros_ws/src:$ROS_PACKAGE_PATH
         cp $GITHUB_WORKSPACE/ros_ws/src/knowrob/README.md $GITHUB_WORKSPACE/ros_ws/src/knowrob/src/
         rosrun rosprolog rosprolog-doc knowrob
     - name: Move checkout
