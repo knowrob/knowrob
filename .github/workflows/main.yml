@@ -31,13 +31,16 @@ jobs:
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE/ros_ws
     - name: Build KnowRob workspace
-      run: cd ros_ws && catkin_make_isolated
-    - name: Run KnowRob plunit tests
       shell: bash
       run: |
         sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update -y -qq
         sudo apt-get install swi-prolog
+        cd ros_ws
+        catkin_make_isolated
+    - name: Run KnowRob plunit tests
+      shell: bash
+      run: |
         sudo systemctl start mongod
         export ROS_HOSTNAME=localhost
         roscore &
