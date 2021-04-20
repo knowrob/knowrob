@@ -131,7 +131,8 @@ PREDICATE(tf_mem_clear, 0) {
 PREDICATE(tf_mem_set_pose, 3) {
 	std::string frame((char*)PL_A1);
 	double stamp = (double)PL_A3;
-	return memory.set_pose_term(frame,PL_A2,stamp);
+	memory.set_pose_term(frame,PL_A2,stamp);
+	return true;
 }
 
 // tf_republish_set_pose(ObjFrame,PoseData)
