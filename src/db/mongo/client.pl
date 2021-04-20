@@ -23,7 +23,8 @@
       mng_cursor_limit/2,
       mng_cursor_next/2,
       mng_cursor_materialize/2,
-      mng_get_dict/3
+      mng_get_dict/3,
+      mng_uri/1
     ]).
 /** <module> A mongo DB client for Prolog.
 
@@ -234,8 +235,9 @@ mng_doc_value(PlValue,PlValue).
 % Dump mongo DB.
 %
 mng_dump(DB,Dir) :-
+  mng_uri(URI),
   process_create(path(mongodump),
-    [ '--db', DB, '--out', Dir ],
+    [ '--uri', URI, '--db', DB, '--out', Dir ],
     [ process(PID) ]
   ),
   wait(PID,exited(0)).
@@ -256,12 +258,27 @@ mng_dump_collection(DB,Collection,Dir) :-
 % Restore mongo DB.
 %
 mng_restore(_DB,Dir) :-
+  mng_uri(URI),
   process_create(path(mongorestore),
-    [ Dir ],
+    [ '--uri', URI, '--dir', Dir ],
     [ process(PID) ]
   ),
   wait(PID,exited(0)).
 
+%% mng_uri(-URI) is det.
+%
+% Get the URI connection string
+%
+mng_uri(URI) :-
+  getenv('KNOWROB_MONGO_HOST', Host),
+  getenv('KNOWROB_MONGO_USER', User),
+  getenv('KNOWROB_MONGO_PASS', Pass),
+  getenv('KNOWROB_MONGO_PORT', Port),
+  atomic_list_concat([ 'mongodb://', User, ':', Pass,
+    '@', Host, ':', Port ], URI),
+  !.
+
+mng_uri('mongodb://localhost:27017').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
