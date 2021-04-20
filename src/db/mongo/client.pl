@@ -59,9 +59,9 @@ To this end, Prolog datastructures are translated from and into BSON format.
 % define some settings
 :- setting(db_name, atom, roslog,
 	'Name of the Mongo DB used by KnowRob.').
-:- setting(mng_client:collection_prefix, atom, '',
+:- setting(collection_prefix, atom, '',
 	'ID of the current neem. Empty if neemhub is not used').
-:- setting(mng_client:read_only, atom, false,
+:- setting(read_only, atom, false,
 	'Flag if the tripledb is read only').
 
 :- setting(mng_client:db_name, DBName),
