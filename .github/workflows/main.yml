@@ -28,7 +28,7 @@ jobs:
     - name: Setup ros action
       uses: ros-tooling/action-ros-ci@v0.2
       with:
-        package-name: $GITHUB_WORKSPACE/ros_ws
+        package-name: $GITHUB_WORKSPACE/ros_ws/src/knowrob
         target-ros1-distro: melodic
     - name: Build KnowRob workspace
       run: cd ros_ws && catkin_make_isolated
