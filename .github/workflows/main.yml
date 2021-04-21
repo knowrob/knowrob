@@ -23,13 +23,13 @@ jobs:
         repository: code-iai/iai_common_msgs
     - name: Setup KnowRob workspace  
       uses: ros-tooling/setup-ros@v0.1
-        with:
-          required-ros-distributions: melodic
+      with:
+        required-ros-distributions: melodic
     - name: Setup ros action
       uses: ros-tooling/action-ros-ci@v0.2
-        with:
-          package-name: $GITHUB_WORKSPACE/ros_ws
-          target-ros1-distro: melodic
+      with:
+        package-name: $GITHUB_WORKSPACE/ros_ws
+        target-ros1-distro: melodic
     - name: Build KnowRob workspace
       run: cd ros_ws && catkin_make_isolated
     - name: Run KnowRob plunit tests
