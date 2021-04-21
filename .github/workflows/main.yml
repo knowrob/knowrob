@@ -21,15 +21,15 @@ jobs:
       with:
         path: 'ros_ws/src/iai_common_msgs'
         repository: code-iai/iai_common_msgs
-    - name: Setup KnowRob workspace
-      uses: janbernloehr/github-setup-catkin@patch-1
-      env:
-            ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      with:
-        # Version range or exact version of ROS version to use, using SemVer's version range syntax. 
-        ros-version: melodic
-        # Root directory of the catkin workspace
-        workspace: $GITHUB_WORKSPACE/ros_ws
+    - name: Setup KnowRob workspace  
+      - uses: ros-tooling/setup-ros@v0.1
+        with:
+          required-ros-distributions: melodic
+    - name: Setup ros action
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          package-name: $GITHUB_WORKSPACE/ros_ws
+          target-ros1-distro: melodic
     - name: Build KnowRob workspace
       run: cd ros_ws && catkin_make_isolated
     - name: Run KnowRob plunit tests
