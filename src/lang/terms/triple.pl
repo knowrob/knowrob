@@ -52,6 +52,21 @@ lang_query:step_expand(
 	!.
 
 %%
+mongolog:step_compile(assert(triple(S,P,term(O))), Ctx, Pipeline, StepVars) :-
+	% HACK: convert term(A) argument to string.
+	%       it would be better to store lists/terms directly without conversion.
+	ground(O),!,
+	( atom(O) -> Atom=O ; term_to_atom(O, Atom) ),
+	mongolog:step_compile(assert(triple(S,P,string(Atom))), Ctx, Pipeline, StepVars).
+
+mongolog:step_compile(triple(S,P,term(O)), Ctx, Pipeline, StepVars) :-
+	% HACK: convert term(A) argument to string.
+	%       it would be better to store lists/terms directly without conversion.
+	ground(O),!,
+	( atom(O) -> Atom=O ; term_to_atom(O, Atom) ),
+	mongolog:step_compile(triple(S,P,string(Atom)), Ctx, Pipeline, StepVars).
+
+%%
 mongolog:step_compile(assert(triple(S,P,O)), Ctx, Pipeline, StepVars) :-
 	% add step variables to compile context
 	triple_step_vars(triple(S,P,O), Ctx, StepVars0),
@@ -60,6 +75,7 @@ mongolog:step_compile(assert(triple(S,P,O)), Ctx, Pipeline, StepVars) :-
 	% create pipeline
 	compile_assert(triple(S,P,O), Ctx0, Pipeline).
 
+%%
 mongolog:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 	% add step variables to compile context
 	triple_step_vars(triple(S,P,O), Ctx, StepVars),
@@ -69,10 +85,11 @@ mongolog:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
 
 %%
 triple_step_vars(triple(S,P,O), Ctx, StepVars) :-
-	% FIXME: redundant with above
 	(	bagof(Var,
 			(	mongolog:goal_var([S,P,O], Ctx, Var)
 			;	mongolog:context_var(Ctx, Var)
+			% HACK: remember that variable is wrapped in term/1
+			;	(O=term(O1), var(O1), mongolog:var_key(O1, Ctx, Key), Var=[Key,term(O1)])
 			),
 			StepVars)
 	;	StepVars=[]

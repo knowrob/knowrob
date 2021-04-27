@@ -192,6 +192,13 @@ unify_1(Doc, Vars, [VarKey, Val]) :-
 	unify_2(TypedValue, Vars, Val).
 
 %%
+unify_2(string(In), _Vars, X) :-
+	% handle case that variable is wrapped in term/1.
+	% if this is the case then convert input string to term.
+	nonvar(X),
+	X=term(Out),!,
+	term_to_atom(Out, In).
+
 unify_2(array(In), Vars, Out) :-
 	% a variable was instantiated to a list
 	!,
