@@ -89,7 +89,12 @@ triple_step_vars(triple(S,P,O), Ctx, StepVars) :-
 			(	mongolog:goal_var([S,P,O], Ctx, Var)
 			;	mongolog:context_var(Ctx, Var)
 			% HACK: remember that variable is wrapped in term/1
-			;	(O=term(O1), var(O1), mongolog:var_key(O1, Ctx, Key), Var=[Key,term(O1)])
+			;	(	nonvar(O),
+					O=term(O1),
+					var(O1),
+					mongolog:var_key(O1, Ctx, Key),
+					Var=[Key,term(O1)]
+				)
 			),
 			StepVars)
 	;	StepVars=[]
