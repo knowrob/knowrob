@@ -548,14 +548,10 @@ kb_add_rule(Head, Body) :-
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	%% handle instantiated arguments
-	% FIXME: BUG: this might create problems in cases expanded arg is nongrounded term.
-	%             then to instantiate the args implicit instantiation might be needed.
-	%             A solution could be adding a =/2 call _at the end_ to avoid the need
-	%             for implicit instantiation.
-	(	expand_arguments(Args, ExpandedArgs, ArgsGoal)
+	(	expand_arguments(Args, ExpandedArgs, Pragma, Unification)
 	->	(	(	is_list(Expanded)
-			->	Expanded0=[ArgsGoal|Expanded]
-			;	Expanded0=[ArgsGoal,Expanded]
+			->	append([Pragma|Expanded],Unification,Expanded0)
+			;	Expanded0=[Pragma,Expanded|Unification]
 			),
 			Args0=ExpandedArgs
 		)
@@ -581,10 +577,11 @@ kb_drop_rule(Head) :-
 	retractall(kb_rule(Functor, _, _)).
 
 %%
-expand_arguments(Args, Expanded, pragma(=(Values,Vars))) :-
+expand_arguments(Args, Expanded, pragma(=(Values,Vars)), Unification) :-
 	expand_arguments1(Args, Expanded, Pairs),
 	Pairs \= [],
-	pairs_keys_values(Pairs, Values, Vars).
+	pairs_keys_values(Pairs, Values, Vars),
+	maplist([-(A,B),=(A,B)]>>true, Pairs, Unification).
 
 
 expand_arguments1([], [], []) :- !.
