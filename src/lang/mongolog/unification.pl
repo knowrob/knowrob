@@ -53,9 +53,9 @@ mongolog:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
 		;	Step=['$set', ['t_term1', Term1_val]]
 		;	Step=['$set', ['t_term2', Term2_val]]
 		% assign vars in term1 to values of arguments in term2
-		;	set_term_arguments('t_term1', 't_term2', Step)
+		;	set_term_arguments(Term1, Term2, 't_term1', 't_term2', Step)
 		% assign vars in term2 to values of arguments in term1
-		;	set_term_arguments('t_term2', 't_term1', Step)
+		;	set_term_arguments(Term2, Term1, 't_term2', 't_term1', Step)
 		% perform equality test
 		;	mongolog:match_equals(string('$t_term1'), string('$t_term2'), Step)
 		% project new variable groundings
@@ -72,6 +72,17 @@ mongolog:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
 % NOTE: variables are also replaced if the argument in Term2 is also a variable.
 %       this is important for later equality test! 
 %
+set_term_arguments(List1, List2, List1Key, List2Key,
+		['$set', [List1Key, MapList]]) :-
+	(is_list(List1);is_list(List2)),!,
+	atom_concat('$',List1Key,List1Val),
+	atom_concat('$',List2Key,List2Val),
+	unify_list(List1Val, List2Val, MapList).
+
+set_term_arguments(_Term1, _Term2, Term1Key, Term2Key, Set) :-
+	set_term_arguments(Term1Key, Term2Key, Set).
+
+%%
 set_term_arguments(Term1Key, Term2Key,
 		['$set', [Term1Key, ['$cond', [
 			['if', ['$not', array([string(Term1Args0)])]],
@@ -80,31 +91,34 @@ set_term_arguments(Term1Key, Term2Key,
 				['type', string('compound')],
 				['value', [
 					['functor', string(FunctorValue)],
-					['args', ['$map', [
-						['input', string(Term1Args0)],
-						['in', ['$cond', [
-							% if not a variable
-							['if', ['$ne', array([string('$$this.type'), string('var')])]],
-							% then use $$this
-							['then', string('$$this')],
-							% else use argument of other term
-							% FIXME: $indexOfArray only return first occurence, we need to call $range to
-							%        iterate over every index!!
-							['else', ['$arrayElemAt', array([
-								string(Term2Args0),
-								['$indexOfArray', array([string(Term1Args0),string('$$this')])]
-							])]]
-						]]]
-					]]]
+					['args', MapList]
 				]]
 			]]
 		]]]]) :-
 	atom_concat('$',Term1Key,Term1Value),
 	atom_concat(Term1Value,'.value.functor',FunctorValue),
-	atom_concat(Term1Key,'.value.args',Term1Args),
-	atom_concat(Term2Key,'.value.args',Term2Args),
-	atom_concat('$',Term1Args,Term1Args0),
-	atom_concat('$',Term2Args,Term2Args0).
+	atomic_list_concat(['$',Term1Key,'.value.args'],Term1Args0),
+	atomic_list_concat(['$',Term2Key,'.value.args'],Term2Args0),
+	unify_list(Term1Args0, Term2Args0, MapList).
+
+%%
+unify_list(List1Val, List2Val, MapList) :-
+	MapList=['$map', [
+		['input', string(List1Val)],
+		['in', ['$cond', [
+			% if not a variable
+			['if', ['$ne', array([string('$$this.type'), string('var')])]],
+			% then use $$this
+			['then', string('$$this')],
+			% else use argument of other term
+			% FIXME: $indexOfArray only return first occurence, we need to call $range to
+			%        iterate over every index!!
+			['else', ['$arrayElemAt', array([
+				string(List2Val),
+				['$indexOfArray', array([string(List1Val),string('$$this')])]
+			])]]
+		]]]
+	]].
 
 %%
 % =/2 builds up two fields 't_term1' and 't_term2'.
@@ -124,13 +138,20 @@ set_term_vars(Term, Field, Ctx, ['$set', [TermField, string(FieldValue)]]) :-
 	mongolog:var_key(Term, Ctx, TermField),
 	atom_concat('$', Field, FieldValue).
 
-set_term_vars(Term, Field, Ctx, ['$set', [ArgField,
-		['$arrayElemAt', array([string(ArrayField),integer(Index)])]]]) :-
+set_term_vars(Args, Field, Ctx, SetVars) :-
+	is_list(Args),!,
+	atomic_list_concat(['$',Field], ArrayField),
+	set_term_vars1(Args, ArrayField, Ctx, SetVars).
+
+set_term_vars(Term, Field, Ctx, SetVars) :-
 	% nonvar(Term),
-	% get arguments of the term
 	Term =.. [_Functor|Args],
-	% the value query to obtain the argument array in mongo
 	atomic_list_concat(['$',Field,'.value.args'], ArrayField),
+	set_term_vars1(Args, ArrayField, Ctx, SetVars).
+
+%%
+set_term_vars1(Args, ArrayField, Ctx, ['$set', [ArgField,
+		['$arrayElemAt', array([string(ArrayField),integer(Index)])]]]) :-
 	% iterate over arguments
 	length(Args, NumArgs),
 	NumArgs0 is NumArgs - 1,
@@ -165,6 +186,15 @@ test('compound unification'):-
 	assert_true(mongolog:test_call(=(foo(a,_),X), X, foo(a,b))),
 	assert_true(mongolog:test_call(=(_,X), X, foo(a,b))),
 	assert_false(mongolog:test_call(=(foo(a,c),X), X, foo(a,b))).
+
+test('list unification'):-
+	assert_true(mongolog:test_call(=(X,[a]), X, [a])),
+	assert_true(mongolog:test_call(=(X,[a,b]), X, [a,b])),
+	assert_true(mongolog:test_call(=(X,[_,_]), X, [a,b])),
+	(	mongolog:test_call(=(X,[A,B]), X, [a,b])
+	->	assert_equals([A,B],[a,b])
+	;	true
+	).
 
 test('unification 1-ary term with var'):-
 	mongolog:test_call(=(foo(Y),X), X, foo(a)),
