@@ -1,6 +1,5 @@
 :- module(knowrob,
-	[ knowrob_load_settings/0,
-	  knowrob_load_plugins/0,
+	[ knowrob_load_plugins/0,
 	  knowrob_load_neem/1
 	]).
 
@@ -31,7 +30,7 @@ knowrob_load_neem(NEEM_id) :-
 	% re-initialize the triple DB
 	% this is important e.g. to establish triple graph hierarchy.
 	% else we may get orphaned graphs.
-	knowrob_init,
+	load_graph_structure,
 	% load URDF files referred to in triple store
 	urdf_init,
 	% initialize position of each frame for tf publishing
@@ -48,16 +47,6 @@ knowrob_load_neem(NEEM_id) :-
 	),
 	% publish object marker messages
 	marker:republish.
-
-%% restore_settings is det.
-%
-% Load settings from file.
-%
-knowrob_load_settings :-
-	( getenv('KNOWROB_SETTINGS', File)
-	-> load_settings(File,[undefined(load)])
-	;  true
-	).
 
 %% load_plugins is det.
 %

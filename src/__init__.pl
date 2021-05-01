@@ -18,6 +18,12 @@
 %:- use_module(library('semweb/rdf_portray')).
 %:- use_module(library('semweb/rdfs')).
 
+% Load settings from file.
+:- ( getenv('KNOWROB_SETTINGS', File)
+	-> load_settings(File,[undefined(load)])
+	;  true
+	).
+
 % make sure library path is expanded
 :- register_ros_package(knowrob).
 
@@ -40,7 +46,6 @@
 
 % load knowrob.pl
 :- use_module('knowrob').
-:- knowrob_load_settings.
 
 % initialize databases
 :- use_directory('db').
