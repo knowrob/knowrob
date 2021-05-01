@@ -194,6 +194,10 @@ test('list unification'):-
 	(	mongolog:test_call(=(X,[A,B]), X, [a,b])
 	->	assert_equals([A,B],[a,b])
 	;	true
+	),
+	(	mongolog:test_call(=(X,Y), X, [a,b])
+	->	assert_equals(Y,[a,b])
+	;	true
 	).
 
 test('unification 1-ary term with var'):-
