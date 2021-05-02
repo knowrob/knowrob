@@ -113,6 +113,7 @@ unify_list(List1Val, List2Val, MapList) :-
 			% else use argument of other term
 			% FIXME: $indexOfArray only return first occurence, we need to call $range to
 			%        iterate over every index!!
+			%        TODO: Is there a way to get index from $map context?
 			['else', ['$arrayElemAt', array([
 				string(List2Val),
 				['$indexOfArray', array([string(List1Val),string('$$this')])]
@@ -191,12 +192,24 @@ test('list unification'):-
 	assert_true(mongolog:test_call(=(X,[a]), X, [a])),
 	assert_true(mongolog:test_call(=(X,[a,b]), X, [a,b])),
 	assert_true(mongolog:test_call(=(X,[_,_]), X, [a,b])),
+	assert_true(mongolog:test_call(=(X,[a,_]), X, [a,b])),
 	(	mongolog:test_call(=(X,[A,B]), X, [a,b])
 	->	assert_equals([A,B],[a,b])
 	;	true
 	),
 	(	mongolog:test_call(=(X,Y), X, [a,b])
 	->	assert_equals(Y,[a,b])
+	;	true
+	).
+
+test('compound+list unification'):-
+	assert_true(mongolog:test_call(=(X,foo([a1,b1])), X, foo([a1,b1]))),
+	assert_true(mongolog:test_call(=(foo([a2,b2]),X), X, foo([a2,b2]))),
+	assert_true(mongolog:test_call(=(foo([a3,_]),X), X, foo([a3,b3]))),
+	assert_true(mongolog:test_call(=(_,X), X, foo([a4,b4]))),
+	assert_false(mongolog:test_call(=(foo([a5,c5]),X), X, foo([a5,b5]))),
+	(	mongolog:test_call(=(X,foo([A,B])), X, foo([a6,b6]))
+	->	assert_equals([A,B],[a6,b6])
 	;	true
 	).
 
