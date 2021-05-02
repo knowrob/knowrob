@@ -179,7 +179,8 @@ tf_mng_lookup_all(Transforms, Stamp) :-
 		;	Step=['$unwind',string('$tf')]
 		;	Step=['$replaceRoot',['newRoot',string('$tf')]]
 		),
-		Pipeline),
+		Pipeline
+	),
 	%%
 	setup_call_cleanup(
 		mng_cursor_create(DB,Coll,Cursor),
@@ -191,7 +192,8 @@ tf_mng_lookup_all(Transforms, Stamp) :-
 				Transforms
 			)
 		),
-		mng_cursor_destroy(Cursor)).
+		mng_cursor_destroy(Cursor)
+	).
 
 
 %%
@@ -200,7 +202,7 @@ tf_mng_lookup_all(Transforms, Stamp) :-
 tf_mng_doc_pose(Doc,ObjFrame,Time,[ParentFrame,[TX,TY,TZ],[QX,QY,QZ,QW]]) :-
 	get_dict(child_frame_id, Doc, string(ObjFrame)),
 	get_dict(header,Doc,
-		[ _, stamp-double(Time), frame_id-string(ParentFrame) ]
+		[ _, stamp-time(Time), frame_id-string(ParentFrame) ]
 	),
 	get_dict(transform,Doc,[
 		translation-[ x-double(TX), y-double(TY), z-double(TZ) ],
