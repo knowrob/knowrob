@@ -41,6 +41,7 @@ one step into the input queue of the next step.
 
 % Stores list of terminal terms for each clause. 
 :- dynamic kb_rule/3.
+:- dynamic kb_predicate/1.
 % optionally implemented by query commands.
 :- multifile step_expand/2.
 % interface implemented by query backends
@@ -672,7 +673,7 @@ expand_term_1(Goal, Expanded) :-
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
 	% NOTE: Args in query only contain vars, for instantiated vars in rule
-	%       heads, pragma/1 calls are generated in Terminals (i.e. the body of the rule).
+	%       heads are handled in the rule body
 	(	bagof(Terminals,
 			kb_rule(Functor, Args, Terminals),
 			TerminalsList)
@@ -724,14 +725,26 @@ has_list_head([_|_]).
 %
 user:term_expansion(
 		(?>(Head,Body)),
-		(:-(HeadGlobal, lang_query:kb_call1(BodyGlobal, QScope, _FScope, [])))) :-
+		Export) :-
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
-	strip_module_(HeadGlobal,_Module,Term),
-	current_scope(QScope),
+	strip_module_(HeadGlobal,Module,Term),
+	once((ground(Module);prolog_load_context(module, Module))),
 	% add the rule to the DB backend
-	kb_add_rule(Term, BodyGlobal).
+	kb_add_rule(Term, BodyGlobal),
+	% expand into regular Prolog rule only once for all clauses
+	Term =.. [Functor|Args],
+	length(Args,NumArgs),
+	length(Args1,NumArgs),
+	Term1 =.. [Functor|Args1],
+	(	kb_predicate(Term1)
+	->	Export=[]
+	;	(
+		assertz(kb_predicate(Term1)),
+		current_scope(QScope),
+		Export=[(:-(Term1, lang_query:kb_call(Term1, QScope, _FScope, [])))]
+	)).
 
 %%
 % Term expansion for *project* rules using the (+>) operator.
