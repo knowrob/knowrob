@@ -231,5 +231,17 @@ test('unified vars can be implicitly instantiated',
 	assert_equals(X,4),
 	assert_equals(Y,4).
 
+% ask-rule with partially instantiated arg and multiple clauses
+test_shape(mesh(X))   ?> assign(X,foo).
+test_shape(sphere(X)) ?> assign(X,5.0).
+
+test('partially instantiated ask-rule arguments') :-
+	findall(X, kb_call(test_shape(X)), Xs),
+	assert_true(is_list(Xs)),
+	assert_true(length(Xs,2)),
+	assert_true(ground(Xs)),
+	assert_true(memberchk(mesh(foo), Xs)),
+	assert_true(memberchk(sphere(5.0), Xs)).
+
 :- end_tests('mongolog_unification').
 
