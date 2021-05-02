@@ -197,7 +197,7 @@ unify_2(string(In), _Vars, X) :-
 	% if this is the case then convert input string to term.
 	nonvar(X),
 	X=term(Out),!,
-	term_to_atom(Out, In).
+	atom_to_term_(In, Out).
 
 unify_2(array(In), Vars, Out) :-
 	% a variable was instantiated to a list
@@ -243,6 +243,22 @@ unify_array([], _, []) :- !.
 unify_array([X|Xs], Vars, [Y|Ys]) :-
 	unify_2(X, Vars, Y),
 	unify_array(Xs, Vars, Ys).
+
+%%
+atom_to_term_(Atom, Term) :-
+	% try converting atom stored in DB to a Prolog term
+	catch(term_to_atom(Term,Atom), _, fail),
+	!.
+
+atom_to_term_(Atom, Term) :-
+	% vectors maybe stored space-separated.
+	% @deprecated
+	atomic_list_concat(Elems, ' ', Atom),
+	maplist(atom_number, Elems, Term),
+	!.
+
+atom_to_term_(Atom, _) :-
+	throw(error(conversion_error(atom_to_term(Atom)))).
 
 
 %% mongolog_compile(+Term, -Pipeline, +Context) is semidet.
