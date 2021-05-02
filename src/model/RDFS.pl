@@ -202,6 +202,9 @@ rdf_list(RDF_list, Pl_List) ?>
 		Pl_List).
 
 rdf_list(RDF_list, Pl_List) ?>
+	% TODO: support lists grounded by mongo.
+	%       this would require to generate an aggregation pipeline
+	%       within another, I think.
 	pragma((
 		ground(Pl_List),
 		model_RDFS:expand_list(RDF_list, Pl_List, Expanded)
