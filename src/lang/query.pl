@@ -40,7 +40,7 @@ one step into the input queue of the next step.
 :- use_module('mongolog/mongolog').
 
 % Stores list of terminal terms for each clause. 
-:- dynamic kb_rule/3.
+:- dynamic kb_rule/4.
 :- dynamic kb_predicate/1.
 % optionally implemented by query commands.
 :- multifile step_expand/2.
@@ -549,19 +549,17 @@ kb_add_rule(Head, Body) :-
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
 	%% handle instantiated arguments
-	(	expand_arguments(Args, ExpandedArgs, Pragma, Unification)
+	(	expand_arguments(Args, ArgsIn, ArgsOut, Pragma, AssignArgs)
+	%
 	->	(	(	is_list(Expanded)
-			->	append([Pragma|Expanded],Unification,Expanded0)
-			;	Expanded0=[Pragma,Expanded|Unification]
+			->	append([Pragma|Expanded],AssignArgs,Expanded0)
+			;	Expanded0=[Pragma,Expanded|AssignArgs]
 			),
-			Args0=ExpandedArgs
+			assertz(kb_rule(Functor, ArgsIn, ArgsOut, Expanded0))
 		)
-	;	(	Expanded0=Expanded,
-			Args0=Args
-		)
-	),
-	%% store expanded query
-	assertz(kb_rule(Functor, Args0, Expanded0)).
+	%
+	;	assertz(kb_rule(Functor, Args, Args, Expanded))
+	).
 
 
 %% kb_drop_rule(+Head) is semidet.
@@ -575,21 +573,27 @@ kb_add_rule(Head, Body) :-
 kb_drop_rule(Head) :-
 	compound(Head),
 	Head =.. [Functor|_],
-	retractall(kb_rule(Functor, _, _)).
+	retractall(kb_rule(Functor, _, _, _)).
 
 %%
-expand_arguments(Args, Expanded, pragma(=(Values,Vars)), Unification) :-
-	expand_arguments1(Args, Expanded, Pairs),
+expand_arguments(Args, ArgsIn, ArgsOut, pragma(=(Vars,Values)), AssignArgs) :-
+	expand_arguments1(Args, ArgsIn, Pairs),
 	Pairs \= [],
-	pairs_keys_values(Pairs, Values, Vars),
-	maplist([-(A,B),=(A,B)]>>true, Pairs, Unification).
+	length(ArgsIn,NumNonvarArgs),
+	length(ArgsOut,NumNonvarArgs),
+	pairs_keys_values(Pairs, Vars, Values),
+	pairs_keys_values(ArgsOutIn,ArgsOut,ArgsIn),
+	% NOTE: this is a HACK needed because mongolog does not support
+	%       implicit assignment of variables yet.
+	%       so at least we make sure that after the call variables receive their values.
+	maplist([ArgOut-ArgIn,=(ArgOut,ArgIn)]>>true, ArgsOutIn, AssignArgs).
 
 
 expand_arguments1([], [], []) :- !.
 expand_arguments1([X|Xs], [X|Ys], Zs) :-
 	var(X),!,
 	expand_arguments1(Xs, Ys, Zs).
-expand_arguments1([X|Xs], [Y|Ys], [X-Y|Zs]) :-
+expand_arguments1([X|Xs], [Y|Ys], [Y-X|Zs]) :-
 	expand_arguments1(Xs, Ys, Zs).
 
 
@@ -668,14 +672,16 @@ expand_term_1(Goal, Expanded) :-
 	).
 
 expand_term_1(Goal, Expanded) :-
-	% find all asserted rules matching the functor and args
-	Goal =.. [Functor|Args],
+	% find all asserted rules matching the functor and args.
+	% Note that the "input arguments" of the rule need to be matched
+	% against a _copy_ of given arguments in Goal to avoid a situation where
+	% the the query compiler looses the associaton to variables in given Goal.
+	Goal =.. [Functor|ArgsOut],
+	copy_term(ArgsOut,ArgsIn),
 	% NOTE: do not use findall here because findall would not preserve
 	%       variables in Terminals
-	% NOTE: Args in query only contain vars, for instantiated vars in rule
-	%       heads are handled in the rule body
 	(	bagof(Terminals,
-			kb_rule(Functor, Args, Terminals),
+			ArgsIn^kb_rule(Functor, ArgsIn, ArgsOut, Terminals),
 			TerminalsList)
 	->	true
 	% handle the case that a predicate is referred to that wasn't
