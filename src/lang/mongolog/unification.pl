@@ -238,18 +238,18 @@ test_shape(sphere(X)) ?> =(X,5.0).
 test('test_shape(mesh(foo))') :-
 	assert_true(kb_call(test_shape(mesh(foo)))).
 
+test('test_shape(mesh(X))') :-
+	findall(X, kb_call(test_shape(mesh(X))), Xs),
+	assert_true(length(Xs,1)),
+	assert_true(ground(Xs)),
+	assert_true(memberchk(foo, Xs)).
+
 test('test_shape(X)') :-
 	findall(X, kb_call(test_shape(X)), Xs),
 	assert_true(length(Xs,2)),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(mesh(foo), Xs)),
 	assert_true(memberchk(sphere(5.0), Xs)).
-
-test('test_shape(mesh(X))') :-
-	findall(X, kb_call(test_shape(mesh(X))), Xs),
-	assert_true(length(Xs,1)),
-	assert_true(ground(Xs)),
-	assert_true(memberchk(foo, Xs)).
 
 :- end_tests('mongolog_unification').
 
