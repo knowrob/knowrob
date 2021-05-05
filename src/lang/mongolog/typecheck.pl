@@ -7,6 +7,7 @@ The following predicates are supported:
 | ---          | ---       |
 | ground/1     | @Term |
 | var/1        | @Term |
+| nonvar/1     | @Term |
 | number/1     | @Term |
 | atom/1       | @Term |
 | is_list/1    | @Term |
@@ -22,6 +23,7 @@ The following predicates are supported:
 %% register query commands
 :- mongolog:add_command(ground).
 :- mongolog:add_command(var).
+:- mongolog:add_command(nonvar).
 :- mongolog:add_command(number).
 :- mongolog:add_command(atom).
 :- mongolog:add_command(is_list).
@@ -83,6 +85,21 @@ mongolog:step_compile(
 		var(Arg), Ctx,
 		[['$match', [
 			[Key0, ['$eq', string('var')]]
+		]]]) :-
+	mongolog:var_key(Arg, Ctx, Key),
+	atom_concat(Key, '.type', Key0).
+
+%% nonvar(@Term)
+% True if Term currently is not a free variable.
+%
+mongolog:step_compile(nonvar(Arg), _Ctx, []) :-
+	% argument is nonvar already compile-time
+	nonvar(Arg), !.
+
+mongolog:step_compile(
+		nonvar(Arg), Ctx,
+		[['$match', [
+			[Key0, ['$ne', string('var')]]
 		]]]) :-
 	mongolog:var_key(Arg, Ctx, Key),
 	atom_concat(Key, '.type', Key0).
