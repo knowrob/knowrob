@@ -147,20 +147,23 @@ test('project(annotation(+,+,-))', [throws(error(instantiation_error,project(ann
 	kb_project(annotation(a,b,_)).
 
 test('annotation(+,+,-)') :-
-	kb_call(annotation(a,b,C)),
-	assert_equals(C,c).
+	assert_true(kb_call(annotation(a,b,C))),
+	(	kb_call(annotation(a,b,C))
+	->	assert_equals(C,c)
+	;	true
+	).
 
 test('annotation(+,+,+)') :-
 	assert_true(kb_call(annotation(a,b,c))),
 	assert_false(kb_call(annotation(a,b,d))).
 
-test('annotation(-,+,+)', [throws(error(instantiation_error,annotation(_,b,c)))]) :-
+test('annotation(-,+,+)', [throws(error(instantiation_error,_))]) :-
 	kb_call(annotation(_,b,c)).
 
-test('annotation(+,-,+)', [throws(error(instantiation_error,annotation(a,_,c)))]) :-
+test('annotation(+,-,+)', [throws(error(instantiation_error,_))]) :-
 	kb_call(annotation(a,_,c)).
 
-test('annotation(-,+,-)', [throws(error(instantiation_error,annotation(_,b,_)))]) :-
+test('annotation(-,+,-)', [throws(error(instantiation_error,_))]) :-
 	kb_call(annotation(_,b,_)).
 
 :- end_tests('lang_annotation').
