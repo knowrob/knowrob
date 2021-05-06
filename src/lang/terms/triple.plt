@@ -275,13 +275,13 @@ test('call_with_context(+Triple,+Context)') :-
 	assert_true(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Ernest'),
-			[ scope(_{ time: _{ since: =<(Time), until: >=(Time) } }) ]
+			[ scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
 		), Time, 999)),
 	%
 	assert_false(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Rex'),
-			[ scope(_{ time: _{ since: =<(Time), until: >=(Time) } }) ]
+			[ scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
 		), Time, 999)).
 
 :- end_tests('lang_triple').
