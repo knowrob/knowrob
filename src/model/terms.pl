@@ -23,13 +23,13 @@ occurs(Evt) ?>
 	% query event interval
 	call_with_context(
 		event_interval(Evt, EventBegin, EventEnd),
-		[scope(_{ time: _{
+		[scope(dict{ time: dict{
 			since: =(double(0)),
 			until: =(double('Infinity'))
 		}})]),
 	% read time interval from compile context
-	context(scope(_{
-		time: _{ since: Since0, until: Until0 }
+	context(scope(dict{
+		time: dict{ since: Since0, until: Until0 }
 	})),
 	pragma(mng_strip_operator(Since0,_,Since1)),
 	pragma(mng_strip_operator(Until0,_,Until1)),
@@ -40,8 +40,8 @@ occurs(Evt) +>
 	% read time scope provided by e.g. during/2 as in `occurs(Evt) during [Since,Until]`
 	% from compile context.
 	% TODO: this will be [0,inf] if not provided? is this a problem?
-	context(scope(_{
-		time: _{ since: Since0, until: Until0 }
+	context(scope(dict{
+		time: dict{ since: Since0, until: Until0 }
 	})),
 	pragma(mng_strip_operator(Since0,_,Since1)),
 	pragma(mng_strip_operator(Until0,_,Until1)),
@@ -50,7 +50,7 @@ occurs(Evt) +>
 		[ is_event(Evt),
 		  event_interval(Evt, Since1, Until1)
 		],
-		[scope(_{ time: _{
+		[scope(dict{ time: dict{
 			since: =(double(0)),
 			until: =(double('Infinity'))
 		}})]
@@ -66,15 +66,15 @@ lang_temporal:during(Query, Event) ?+>
 lang_temporal:since(Query, Event) ?+>
 	atom(Event),
 	ask(event_interval(Event, Time, _)),
-	call_with_context(Query, [scope(_{
-		time: _{ since: =<(Time) }
+	call_with_context(Query, [scope(dict{
+		time: dict{ since: =<(Time) }
 	})]).
 
 lang_temporal:until(Query, Event) ?+>
 	atom(Event),
 	ask(event_interval(Event, Time, _)),
-	call_with_context(Query, [scope(_{
-		time: _{ until: >=(Time) }
+	call_with_context(Query, [scope(dict{
+		time: dict{ until: >=(Time) }
 	})]).
 
 %% is_a(+Resource,?Type) is nondet.
