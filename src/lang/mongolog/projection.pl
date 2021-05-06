@@ -44,6 +44,8 @@ lang_query:step_expand(project(once(Goal)), once(Expanded)) :-
 lang_query:step_expand(project(limit(N,Goal)), limit(N,Expanded)) :-
 	lang_query:step_expand(project(Goal),Expanded).
 
+lang_query:step_expand(project(pragma(Goal)), pragma(Goal)) :- !.
+
 lang_query:step_expand(project(ask(Goal)), Expanded) :-
 	lang_query:kb_expand(Goal, Expanded).
 
