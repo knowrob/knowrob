@@ -118,9 +118,13 @@ kb_call(Statement, QScope, FScope, Options) :-
 %%
 kb_call1(Goal, QScope, FScope, Options) :-
 	option(fields(Fields), Options, []),
+	% add all toplevel variables to context
+	term_keys_variables_(Goal, GlobalVars),
+	%
 	merge_options(
 		[ scope(QScope),
-		  user_vars([['v_scope',FScope]|Fields])
+		  user_vars([['v_scope',FScope]|Fields]),
+		  global_vars(GlobalVars)
 		],
 		Options, Options1),
 	% expand query, e.g. replace rule heads with bodies etc.
@@ -152,6 +156,16 @@ kb_call1(SubGoals, Options) :-
 		materialize_pipeline(FinalStep, Pattern, Options),
 		stop_pipeline(Combined)
 	).
+
+%
+term_keys_variables_(Goal, GoalVars) :-
+	term_variables(Goal, Vars),
+	term_keys_variables_1(Vars, GoalVars).
+term_keys_variables_1([], []) :- !.
+term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
+	term_to_atom(X,Atom),
+	atom_concat('v',Atom,Key),
+	term_keys_variables_1(Xs, Ys).
 
 %% kb_project(+Statement) is nondet.
 %

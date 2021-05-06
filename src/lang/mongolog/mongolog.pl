@@ -75,9 +75,12 @@ mongolog_call(Goal, Context) :-
 	mongolog_compile(Goal, pipeline(Doc,Vars), Context),
 	%
 	option(user_vars(UserVars), Context, []),
+	option(global_vars(GlobalVars), Context, []),
 	append(Vars, UserVars, Vars1),
+	append(Vars1, GlobalVars, Vars2),
+	list_to_set(Vars2,Vars3),
 	% run the pipeline
-	query_1(Doc, Vars1).
+	query_1(Doc, Vars3).
 
 query_1(Pipeline, Vars) :-
 	% get DB for cursor creation. use collection with just a
@@ -177,6 +180,7 @@ unify_grounded(Doc, [VarKey, Term]) :-
 	% variable was unified in pragma command
 	% make sure it did not get another grounding in the query
 	mng_get_dict(VarKey, Doc, TypedValue),
+	!,
 	mng_strip_type(TypedValue, _, Value),
 	% ignore if value in the document is a variable
 	(	Value=_{ type: string(var), value: _ }
@@ -188,6 +192,7 @@ unify_grounded(Doc, [VarKey, Term]) :-
 			Term=:=Value
 		)
 	).
+unify_grounded(_, [_, _]) :- !.
 
 unify_1(_, _, ['_id', _]).
 
@@ -369,6 +374,9 @@ step_compile(ask(Goal), Ctx, Doc, StepVars) :-
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
+%step_compile(pragma(Goal), _, []) :-
+%	call(Goal).
+
 step_compile(pragma(Goal), _, [], StepVars) :-
 	% ignore vars referred to in pragma as these are handled compile-time.
 	% only the ones also referred to in parts of the query are added to the document.
@@ -439,7 +447,8 @@ lookup_array(ArrayKey, Terminals,
 	option(outer_vars(OuterVars), Context),
 	% within a disjunction VV provides mapping between
 	% original and copied variables (see control.pl)
-	option(copied_vars(VV), Context, []),
+	option(orig_vars(VOs), Context, []),
+	option(copy_vars(VCs), Context, []),
 	% join collection with single document
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline
@@ -451,7 +460,7 @@ lookup_array(ArrayKey, Terminals,
 	% to avoid that the original remains ungrounded.
 	% GroundVars0: key-original variable mapping
 	% GroundVars1: key-grounding mapping
-	grounded_vars(VV, Context, GroundVars0, GroundVars1),
+	grounded_vars(Context, [VOs,VCs], GroundVars0, GroundVars1),
 	% add variables that have received a grounding in compile_terms
 	% to StepVars
 	append(GroundVars0, StepVars0, StepVars1),
@@ -484,16 +493,32 @@ lookup_array(ArrayKey, Terminals,
 % yield list of variables whose copies have received a grounding
 % VO: original variable
 % VC: copied variable
-grounded_vars([],_,[],[]) :- !.
-grounded_vars([VO-VC|VV],Ctx,[[Key,VO]|Xs],[[Key,Val]|Ys]) :-
+grounded_vars(Ctx,[VOs,VCs],Xs,Ys) :-
+	grounded_vars(Ctx,VOs,VCs,Xs,Ys).
+grounded_vars(_,[],[],[],[]) :- !.
+grounded_vars(Ctx,
+		[[Key,VO]|VOs],
+		[[Key,VC]|VCs],
+		[[Key,VO]|Xs],
+		[[Key,Val]|Ys]) :-
 	nonvar(VC),
 	\+ is_dict(VC),
 	!,
-	var_key(VO, Ctx, Key),
 	var_key_or_val(VC, Ctx, Val),
-	grounded_vars(VV,Ctx,Xs,Ys).
-grounded_vars([_|VV],Ctx,Xs,Ys) :-
-	grounded_vars(VV,Ctx,Xs,Ys).
+	grounded_vars(Ctx,VOs,VCs,Xs,Ys).
+grounded_vars(Ctx,[_|VOs],[_|VCs],Xs,Ys) :-
+	grounded_vars(Ctx,VOs,VCs,Xs,Ys).
+
+%grounded_vars([],_,[],[]) :- !.
+%grounded_vars([VO-VC|VV],Ctx,[[Key,VO]|Xs],[[Key,Val]|Ys]) :-
+%	nonvar(VC),
+%	\+ is_dict(VC),
+%	!,
+%	var_key(VO, Ctx, Key),
+%	var_key_or_val(VC, Ctx, Val),
+%	grounded_vars(VV,Ctx,Xs,Ys).
+%grounded_vars([_|VV],Ctx,Xs,Ys) :-
+%	grounded_vars(VV,Ctx,Xs,Ys).
 
 %%
 % Move ground variables in "next" document to the
@@ -608,7 +633,8 @@ var_key(Var, Ctx, Key) :-
 	% TODO: can this be done better then iterating over all variables?
 	%		- i.e. by testing if some variable is element of a list
 	%		- member/2 cannot be used as it would unify each array element
-	(	option(outer_vars(Vars), Ctx)
+	(	option(global_vars(Vars), Ctx)
+	;	option(outer_vars(Vars), Ctx)
 	;	option(step_vars(Vars), Ctx)
 	;	option(disj_vars(Vars), Ctx)
 	),

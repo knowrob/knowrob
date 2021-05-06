@@ -138,8 +138,6 @@ mongolog:step_compile(fail,  _, [['$match', ['$expr', bool(false)]]], []).
 mongolog:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
 	% get disjunction as list
 	semicolon_list(';'(A,B), Goals),
-	% read options from context
-	option(outer_vars(OuterVars), Context),
 	% generate one variable for each goal
 	length(Goals,NumGoals),
 	length(FindallVars,NumGoals),
@@ -148,15 +146,16 @@ mongolog:step_compile(';'(A,B), Context, Pipeline, StepVars) :-
 	% and resulting lists are concatenated later to
 	% achieve disjunction.
 	compile_disjunction(Goals, FindallVars, [], Context, FindallStages, StepVars0),
-	FindallStages \= [],
-	% special handling in case the disjunction compiles into a single goal
-	% no disjunction needed then.
-	(	FindallStages=[[_,_,SingleGoal]]
-	->	mongolog:compile_term(SingleGoal, Pipeline, OuterVars->_InnerVars, StepVars, Context)
-	;	aggregate_disjunction(FindallStages, StepVars0, Pipeline, StepVars)
-	).
+	FindallStages \== [],
+	aggregate_disjunction(FindallStages, StepVars0, Pipeline, StepVars).
 
 %%
+%aggregate_disjunction([[_,_,SingleGoal]], StepVars, Pipeline, StepVars) :-
+%	% special handling in case the disjunction compiles into a single goal
+%	% no disjunction needed then.
+%	!,
+%	mongolog:compile_term(SingleGoal, Pipeline, OuterVars->_InnerVars, StepVars, Context).
+
 aggregate_disjunction(FindallStages, StepVars, Pipeline, StepVars) :-
 	% get a list of list variable keys
 	findall(string(X),
@@ -196,6 +195,9 @@ compile_disjunction(
 		[[Stage,Key,Goal]|Ys],
 		StepVars) :-
 	option(outer_vars(OuterVarsOrig), Ctx),
+	option(global_vars(GlobalVarsOrig), Ctx, []),
+	option(orig_vars(_CopiedVars0), Ctx, []),
+	option(copy_vars(CopiedVars1), Ctx, []),
 	option(disj_vars(DisjVars), Ctx, []),
 	% ensure goal is a list
 	(	is_list(Goal) -> Goal0=Goal
@@ -209,12 +211,17 @@ compile_disjunction(
 	copy_term(Goal0, GoalCopy),
 	term_variables(Goal0,    VarsOrig),
 	term_variables(GoalCopy, VarsCopy),
+	%
+	copy_vars(OuterVarsOrig,  VarsOrig, VarsCopy, OuterVarsCopy),
+	copy_vars(GlobalVarsOrig, VarsOrig, VarsCopy, GlobalVarsCopy),
+	copy_vars(DisjVars,       VarsOrig, VarsCopy, DisjVarsCopy),
 	% remember the mapping between original and copy of the variables,
 	% This is important as the copies may receive groundings in the compilation
 	% process (when lookup_array is called)
 	pairs_keys_values(VV, VarsOrig, VarsCopy),
-	copy_vars(OuterVarsOrig, VarsOrig, VarsCopy, OuterVarsCopy),
-	copy_vars(DisjVars,      VarsOrig, VarsCopy, DisjVarsCopy),
+	copy_vars(CopiedVars1, VarsOrig, VarsCopy, CopiedVars2),
+	%
+	get_varkeys(Ctx, CopiedVars2, VV, VOs, VCs),
 	% add match command checking for all previous goals with cut having
 	% no solutions (size=0)
 	findall([CutVarKey, ['$size', int(0)]],
@@ -228,8 +235,10 @@ compile_disjunction(
 	append(OuterVarsCopy, CutVars, OuterVarsCopy0),
 	merge_options([
 		outer_vars(OuterVarsCopy0),
+		global_vars(GlobalVarsCopy),
 		disj_vars(DisjVarsCopy),
-		copied_vars(VV),
+		orig_vars(VOs),
+		copy_vars(VCs),
 		additional_vars(CutVars)
 	], Ctx, InnerCtx),
 	% compile the step
@@ -285,7 +294,18 @@ copy_vars2([[Key,X]|Xs], Vars1, [[Key,Z]|Ys]) :-
 	;	Z=X
 	),
 	copy_vars2(Xs,Vars1,Ys).
-	
+
+%
+get_varkeys(_, _, [], [], []) :- !.
+get_varkeys(Ctx, ParentVars,
+		[VO-VC|VV],
+		[[Key,VO]|VOs],
+		[[Key,VC]|VCs]) :-
+	once((
+		( member([Key,X],ParentVars), X == VO )
+	;	( mongolog:var_key(VO, Ctx, Key) )
+	)),
+	get_varkeys(Ctx,ParentVars,VV,VOs,VCs).
 
 %%
 has_cut('!') :- !.
