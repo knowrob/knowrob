@@ -178,8 +178,12 @@ unify_grounded(Doc, [VarKey, Term]) :-
 	% make sure it did not get another grounding in the query
 	mng_get_dict(VarKey, Doc, TypedValue),
 	mng_strip_type(TypedValue, _, Value),
-	(	Term=Value;
-		(	number(Term),
+	% ignore if value in the document is a variable
+	(	Value=_{ type: string(var), value: _ }
+	% try to unify
+	;	Term=Value
+	% special case for number comparison, e.g. `5.0 =:= 5`
+	;	(	number(Term),
 			number(Value),
 			Term=:=Value
 		)
@@ -340,7 +344,11 @@ compile_expanded_term(Expanded, Pipeline, V0->V1, StepVars_unique, Context) :-
 		(	member([VarKey,_], StepVars_unique),
 			\+ member([VarKey,_], V0)
 		),
-		VarDocs),
+		VarDocs0
+	),
+	% make sure there are no duplicate entries as these would cause
+	% compilation failure in a single $set!
+	list_to_set(VarDocs0,VarDocs),
 	(	VarDocs=[] -> Pipeline=Doc
 	;	Pipeline=[['$set', VarDocs]|Doc]
 	).
@@ -409,7 +417,6 @@ lookup_set_vars(InnerVars, SetVars) :-
 	%
 	findall([Y,string(Y0)],
 		(	member([Y,_], InnerVars),
-			%member([Y,_], OuterVars),
 			atom_concat('$$',Y,Y0)
 		),
 		SetVars0),
@@ -430,22 +437,36 @@ lookup_array(ArrayKey, Terminals,
 		]]) :-
 	% get variables referred to in query
 	option(outer_vars(OuterVars), Context),
+	% within a disjunction VV provides mapping between
+	% original and copied variables (see control.pl)
+	option(copied_vars(VV), Context, []),
 	% join collection with single document
 	mng_one_db(_DB, Coll),
 	% generate inner pipeline
 	compile_terms(Terminals, Pipeline,
 		OuterVars->_InnerVars,
-		StepVars, Context),
+		StepVars0, Context),
+	% get list of variables whose copies have received a grounding
+	% in compile_terms, as these need some special handling
+	% to avoid that the original remains ungrounded.
+	% GroundVars0: key-original variable mapping
+	% GroundVars1: key-grounding mapping
+	grounded_vars(VV, Context, GroundVars0, GroundVars1),
+	% add variables that have received a grounding in compile_terms
+	% to StepVars
+	append(GroundVars0, StepVars0, StepVars1),
+	list_to_set(StepVars1, StepVars),
+	% finally also add user supplied variables to the list
 	(	option(additional_vars(AddVars), Context)
-	->	append(AddVars, StepVars, StepVars0)
-	;	StepVars0 = StepVars
+	->	append(AddVars, StepVars, StepVars2)
+	;	StepVars2 = StepVars
 	),
 	% pass variables from outer goal to inner if they are referred to
 	% in the inner goal.
-	lookup_let_doc(StepVars0, LetDoc),
+	lookup_let_doc(StepVars2, LetDoc),
 	% set all let variables so that they can be accessed
 	% without aggregate operators in Pipeline
-	lookup_set_vars(StepVars0, SetVars),
+	lookup_set_vars(StepVars2, SetVars),
 	% compose inner pipeline
 	(	SetVars=[] -> Prefix0=Prefix
 	;	Prefix0=[['$set', SetVars] | Prefix]
@@ -454,16 +475,25 @@ lookup_array(ArrayKey, Terminals,
 	% $set compile-time grounded vars for later unification.
 	% this is needed because different branches cannot ground the same
 	% variable to different values compile-time.
-	findall([Key,TypedValue],
-		(	member([Key,Val],StepVars0),
-			ground(Val),
-			mng_typed_value(Val,TypedValue)
-		),
-		GroundVars),
-	(	GroundVars=[] -> Suffix0=Suffix
-	;	Suffix0=[['$set', GroundVars] | Suffix]
+	% hence the values need to be assigned within the query.
+	(	GroundVars1=[] -> Suffix0=Suffix
+	;	Suffix0=[['$set', GroundVars1] | Suffix]
 	),
 	append(Pipeline0,Suffix0,Pipeline1).
+
+% yield list of variables whose copies have received a grounding
+% VO: original variable
+% VC: copied variable
+grounded_vars([],_,[],[]) :- !.
+grounded_vars([VO-VC|VV],Ctx,[[Key,VO]|Xs],[[Key,Val]|Ys]) :-
+	nonvar(VC),
+	\+ is_dict(VC),
+	!,
+	var_key(VO, Ctx, Key),
+	var_key_or_val(VC, Ctx, Val),
+	grounded_vars(VV,Ctx,Xs,Ys).
+grounded_vars([_|VV],Ctx,Xs,Ys) :-
+	grounded_vars(VV,Ctx,Xs,Ys).
 
 %%
 % Move ground variables in "next" document to the

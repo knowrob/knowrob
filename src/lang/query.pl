@@ -40,7 +40,7 @@ one step into the input queue of the next step.
 :- use_module('mongolog/mongolog').
 
 % Stores list of terminal terms for each clause. 
-:- dynamic kb_rule/4.
+:- dynamic kb_rule/3.
 :- dynamic kb_predicate/1.
 % optionally implemented by query commands.
 :- multifile step_expand/2.
@@ -152,7 +152,6 @@ kb_call1(SubGoals, Options) :-
 		materialize_pipeline(FinalStep, Pattern, Options),
 		stop_pipeline(Combined)
 	).
-
 
 %% kb_project(+Statement) is nondet.
 %
@@ -548,18 +547,7 @@ kb_add_rule(Head, Body) :-
 	(	kb_expand(Body, Expanded) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
-	%% handle instantiated arguments
-	(	expand_arguments(Args, ArgsIn, ArgsOut, Pragma, AssignArgs)
-	%
-	->	(	(	is_list(Expanded)
-			->	append([Pragma|Expanded],AssignArgs,Expanded0)
-			;	Expanded0=[Pragma,Expanded|AssignArgs]
-			),
-			assertz(kb_rule(Functor, ArgsIn, ArgsOut, Expanded0))
-		)
-	%
-	;	assertz(kb_rule(Functor, Args, Args, Expanded))
-	).
+	assertz(kb_rule(Functor, Args, Expanded)).
 
 
 %% kb_drop_rule(+Head) is semidet.
@@ -573,29 +561,7 @@ kb_add_rule(Head, Body) :-
 kb_drop_rule(Head) :-
 	compound(Head),
 	Head =.. [Functor|_],
-	retractall(kb_rule(Functor, _, _, _)).
-
-%%
-expand_arguments(Args, ArgsIn, ArgsOut, pragma(=(Vars,Values)), AssignArgs) :-
-	expand_arguments1(Args, ArgsIn, Pairs),
-	Pairs \= [],
-	length(ArgsIn,NumNonvarArgs),
-	length(ArgsOut,NumNonvarArgs),
-	pairs_keys_values(Pairs, Vars, Values),
-	pairs_keys_values(ArgsOutIn,ArgsOut,ArgsIn),
-	% NOTE: this is a HACK needed because mongolog does not support
-	%       implicit assignment of variables yet.
-	%       so at least we make sure that after the call variables receive their values.
-	maplist([ArgOut-ArgIn,=(ArgOut,ArgIn)]>>true, ArgsOutIn, AssignArgs).
-
-
-expand_arguments1([], [], []) :- !.
-expand_arguments1([X|Xs], [X|Ys], Zs) :-
-	var(X),!,
-	expand_arguments1(Xs, Ys, Zs).
-expand_arguments1([X|Xs], [Y|Ys], [Y-X|Zs]) :-
-	expand_arguments1(Xs, Ys, Zs).
-
+	retractall(kb_rule(Functor, _, _)).
 
 		 /*******************************
 		 *	    TERM EXPANSION     		*
@@ -672,25 +638,54 @@ expand_term_1(Goal, Expanded) :-
 	).
 
 expand_term_1(Goal, Expanded) :-
-	% find all asserted rules matching the functor and args.
-	% Note that the "input arguments" of the rule need to be matched
-	% against a _copy_ of given arguments in Goal to avoid a situation where
-	% the the query compiler looses the associaton to variables in given Goal.
-	Goal =.. [Functor|ArgsOut],
-	copy_term(ArgsOut,ArgsIn),
-	% NOTE: do not use findall here because findall would not preserve
-	%       variables in Terminals
-	(	bagof(Terminals,
-			ArgsIn^kb_rule(Functor, ArgsIn, ArgsOut, Terminals),
-			TerminalsList)
-	->	true
-	% handle the case that a predicate is referred to that wasn't
-	% asserted before
+	% expand the rule head (Goal) into terminal symbols (the rule body)
+	(	expand_rule(Goal, Clauses) -> true
+	% handle the case that a predicate is referred to that wasn't asserted before
 	;	throw(expansion_failed(Goal))
 	),
 	% wrap different clauses into ';'
-	semicolon_list(Goal0, TerminalsList),
-	kb_expand(Goal0, Expanded).
+	semicolon_list(Disjunction, Clauses),
+	kb_expand(Disjunction, Expanded).
+
+%%
+expand_rule(Goal, Terminals) :-
+	% ground goals do not require special handling for variables
+	% as done in the clause below. So this clause here is simpler.
+	ground(Goal),!,
+	% unwrap goal term into functor and arguments.
+	Goal =.. [Functor|Args],
+	% findall rules with matching functor and arguments
+	findall(X, kb_rule(Functor, Args, X), TerminalClauses),
+	(	TerminalClauses \== []
+	->	Terminals = TerminalClauses
+	% if TerminalClauses==[] it means that either there is no such rule
+	% in which case expand_rule fails, or there is a matching rule, but
+	% the arguments cannot be unified with the ones provided in which
+	% case expand_rule succeeds with a pipeline [fail] that allways fails.
+	;	(	once(kb_rule(Functor,_,_)),
+			Terminals=[fail]
+		)
+	).
+
+expand_rule(Goal, Terminals) :-
+	% unwrap goal term into functor and arguments.
+	Goal =.. [Functor|Args],
+	% find all asserted rules matching the functor
+	findall([Args0,Terminals0],
+			(	kb_rule(Functor, Args0, Terminals0),
+				unifiable(Args0, Args, _)
+			),
+			Clauses),
+	Clauses \= [],
+	expand_rule(Args, Clauses, Terminals).
+
+% prepend pragma call that unifies "child" and "parent" arguments
+expand_rule(_, [], []) :- !.
+expand_rule(ParentArgs,
+		[[ChildArgs,Terminals]|Xs],
+		[[pragma(=(ChildArgs,ParentArgs)),Terminals]|Ys]) :-
+	expand_rule(ParentArgs, Xs, Ys),
+	!.
 
 %%
 % Each conjunction with cut operator [X0,...,Xn,!|_]
@@ -848,7 +843,7 @@ test_cleanup :-
 
 test('test_gen(-)') :-
 	findall(X, kb_call(test_gen(X)), Xs),
-	Xs == [1,2,3,4,5,6,7,8,9].
+	assert_equals(Xs, [1,2,3,4,5,6,7,8,9]).
 
 test('(test_gen(-),test_single(+,-))') :-
 	findall(Y, kb_call((
