@@ -42,6 +42,10 @@ mongolog:step_compile(
 %% ?Term1 = ?Term2
 % Unify Term1 with Term2. True if the unification succeeds.
 %
+mongolog:step_compile(=(Term1, Term2), _, _) :-
+	\+ unifiable(Term1, Term2, _), !,
+	fail.
+
 mongolog:step_compile(=(Term1, Term2), Ctx, Pipeline) :-
 	mongolog:var_key_or_val(Term1,Ctx,Term1_val),
 	mongolog:var_key_or_val(Term2,Ctx,Term2_val),
@@ -238,7 +242,7 @@ test('unified vars can be implicitly instantiated',
 test_shape1(mesh(X))   ?> =(X,foo).
 test_shape1(sphere(X)) ?> =(X,5.0).
 test_shape2(X)         ?> ( =(X,mesh(foo)) ; =(X,sphere(5.0)) ).
-test_shape3(X)         ?> ( test_shape1(X) ; X=cube(1.0) ).
+test_shape3(X)         ?> ( test_shape1(X) ; =(X,mesh(bar)) ).
 
 test('test_shape1(mesh(foo))') :-
 	assert_true(kb_call(test_shape1(mesh(foo)))).
@@ -277,15 +281,16 @@ test('test_shape3(mesh(foo))') :-
 
 test('test_shape3(mesh(X))') :-
 	findall(X, kb_call(test_shape3(mesh(X))), Xs),
-	assert_true(length(Xs,1)),
+	assert_true(length(Xs,2)),
 	assert_true(ground(Xs)),
-	assert_true(memberchk(foo, Xs)).
+	assert_true(memberchk(foo, Xs)),
+	assert_true(memberchk(bar, Xs)).
 
 test('test_shape3(X)') :-
 	findall(X, kb_call(test_shape3(X)), Xs),
 	assert_true(length(Xs,3)),
 	assert_true(ground(Xs)),
-	assert_true(memberchk(cube(1.0), Xs)),
+	assert_true(memberchk(mesh(bar), Xs)),
 	assert_true(memberchk(mesh(foo), Xs)),
 	assert_true(memberchk(sphere(5.0), Xs)).
 
