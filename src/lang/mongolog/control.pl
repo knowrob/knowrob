@@ -209,6 +209,10 @@ compile_disjunction(
 	copy_term(Goal0, GoalCopy),
 	term_variables(Goal0,    VarsOrig),
 	term_variables(GoalCopy, VarsCopy),
+	% remember the mapping between original and copy of the variables,
+	% This is important as the copies may receive groundings in the compilation
+	% process (when lookup_array is called)
+	pairs_keys_values(VV, VarsOrig, VarsCopy),
 	copy_vars(OuterVarsOrig, VarsOrig, VarsCopy, OuterVarsCopy),
 	copy_vars(DisjVars,      VarsOrig, VarsCopy, DisjVarsCopy),
 	% add match command checking for all previous goals with cut having
@@ -225,6 +229,7 @@ compile_disjunction(
 	merge_options([
 		outer_vars(OuterVarsCopy0),
 		disj_vars(DisjVarsCopy),
+		copied_vars(VV),
 		additional_vars(CutVars)
 	], Ctx, InnerCtx),
 	% compile the step
