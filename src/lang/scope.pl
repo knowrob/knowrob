@@ -23,8 +23,8 @@
 %
 % @param Scope A scope dictionary.
 %
-universal_scope(_{
-	time: _{
+universal_scope(dict{
+	time: dict{
 		since: =(double(0)),
 		until: =(double('Infinity'))
 	}
@@ -36,8 +36,8 @@ universal_scope(_{
 %
 % @param Scope A scope dictionary.
 %
-current_scope(_{
-	time: _{
+current_scope(dict{
+	time: dict{
 		since: =<(double(Now)),
 		until: >=(double(Now))
 	}
@@ -49,7 +49,7 @@ current_scope(_{
 %
 % @param Scope A scope dictionary.
 %
-wildcard_scope(_{}).
+wildcard_scope(dict{}).
 
 %% subscope_of(+Sub,+Sup) is det.
 %
@@ -60,8 +60,8 @@ wildcard_scope(_{}).
 % @param Sup a scope dict.
 %
 subscope_of(
-		_{ time: TimeSub },
-		_{ time: TimeSup }) :-
+		dict{ time: TimeSub },
+		dict{ time: TimeSup }) :-
 	time_subscope_of(TimeSub, TimeSup).
 
 %%
@@ -79,16 +79,16 @@ time_subscope_of(Sub,Sup) :-
 % @param A a scope dict.
 % @param B a scope dict.
 %
-scope_intersect(_{}, Scope, Scope) :-
+scope_intersect(dict{}, Scope, Scope) :-
 	!.
-scope_intersect(Scope, _{}, Scope) :-
+scope_intersect(Scope, dict{}, Scope) :-
 	!.
 scope_intersect(Scope, Scope, Scope) :-
 	!.
 scope_intersect(
-		_{ time: TimeA },
-		_{ time: TimeB },
-		_{ time: Time }) :-
+		dict{ time: TimeA },
+		dict{ time: TimeB },
+		dict{ time: Time }) :-
 	time_scope_intersect(TimeA, TimeB, Time).
 
 %%
@@ -102,8 +102,8 @@ time_scope_intersect(A, B, Intersection) :-
 	),
 	!,
 	(	ground(Until)
-	->	Intersection=_{ since: double(Since), until: double(Until) }
-	;	Intersection=_{ since: double(Since) }
+	->	Intersection=dict{ since: double(Since), until: double(Until) }
+	;	Intersection=dict{ since: double(Since) }
 	).
 
 %% time_scope(?Since,?Until,?Scope) is semidet.
@@ -111,10 +111,10 @@ time_scope_intersect(A, B, Intersection) :-
 % @param Scope A scope dict.
 %
 time_scope(Since,Until,Scope) :-
-	(	Scope=_{ time: X }
+	(	Scope=dict{ time: X }
 	;	X=Scope
 	),
-	X=_{ since: Since, until: Until },
+	X=dict{ since: Since, until: Until },
 	!.
 
 %% time_scope_data(+Scope,?IntervalData) is det.
