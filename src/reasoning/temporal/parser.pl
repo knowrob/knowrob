@@ -117,6 +117,7 @@ parser_create_grammar_(Parser,WF) :-
   -> instance_of(Tsk,TskType)
   ;  TskType = Tsk
   ),
+  \+ rdf_equal(TskType, owl:'NamedIndividual'),
   % find constituents and their relation to each other
   findall(S, workflow_constituent(WF,S), Steps),
   list_to_set(Steps,Steps0),
