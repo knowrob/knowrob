@@ -533,7 +533,7 @@ must_propagate_assert(rdfs:subPropertyOf).
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
 	option(graph(Graph), Context, user),
-	option(scope(Scope), Context, _{}),
+	option(scope(Scope), Context, dict{}),
 	% special handling for some properties
 	(	taxonomical_property(P)
 	->	( Key_p='p',  Key_o='o*' )
