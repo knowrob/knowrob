@@ -3,6 +3,7 @@
     [ subclass_of/2,
       subproperty_of/2
     ]).
+:- use_module(library('lang/query'), [ kb_call/1 ]).
 :- use_module(library('rostest')).
 :- use_module(library('semweb/rdf_db')).
 
