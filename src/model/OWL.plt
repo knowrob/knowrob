@@ -451,21 +451,11 @@ test('disjoint_with(-,-)::OWL1') :-
   assert_true(once(disjoint_with(_,_))).
 
 test('subclass_of(+,+Descr)') :-
-    assert_true(subclass_of(
-    	test:'D',
-    	min(test:'s',2))),
-    assert_true(kb_call(subclass_of(
-    	test:'D',
-    	min(test:'s',2)))),
-    assert_true(subclass_of(
-    	test:'CInter',
-    	intersection_of([test:'C1',test:'C2']))),
-    assert_true(subclass_of(
-    	test:'A2',
-    	some(test:'p', test:'B'))),
+    assert_true(kb_call(subclass_of_description(test:'D', min(test:'s',2)))),
+    assert_true(subclass_of(test:'D', min(test:'s',2))),
+    assert_true(subclass_of(test:'CInter', intersection_of([test:'C1',test:'C2']))),
+    assert_true(subclass_of(test:'A2',     some(test:'p', test:'B'))),
     % Negative Case
-    assert_false(subclass_of(
-    	test:'A',
-    	only(test:'s', test:'Range1'))).
+    assert_false(subclass_of(test:'A', only(test:'s', test:'Range1'))).
 
 :- end_tests(model_OWL).
