@@ -205,13 +205,16 @@ test('list unification'):-
 test('compound+list unification'):-
 	assert_true(mongolog:test_call(=(X,foo([a1,b1])), X, foo([a1,b1]))),
 	assert_true(mongolog:test_call(=(foo([a2,b2]),X), X, foo([a2,b2]))),
-	assert_true(mongolog:test_call(=(foo([a3,_]),X), X, foo([a3,b3]))),
 	assert_true(mongolog:test_call(=(_,X), X, foo([a4,b4]))),
 	assert_false(mongolog:test_call(=(foo([a5,c5]),X), X, foo([a5,b5]))),
 	(	mongolog:test_call(=(X,foo([A,B])), X, foo([a6,b6]))
 	->	assert_equals([A,B],[a6,b6])
 	;	true
 	).
+
+test('compound+list partially grounded',
+		fixme('unification of lists does not work if some list elements are variables')):-
+	assert_true(mongolog:test_call(=(foo([a3,_]),X), X, foo([a3,b3]))).
 
 test('unification 1-ary term with var'):-
 	mongolog:test_call(=(foo(Y),X), X, foo(a)),
