@@ -539,13 +539,11 @@ workflow_first_step(WF,Step) ?+>
 % @param WF A workflow.
 %
 workflow_constituent(WF,X) ?>
-	holds(WF,dul:describes,X).
-
-workflow_constituent(WF,X) ?>
-	holds(WF,dul:definesTask,X).
-
-workflow_constituent(WF,X) ?>
-	holds(WF,soma:definesProcess,X).
+	triple(WF,in([
+		string(dul:describes),
+		string(dul:definesTask),
+		string(soma:definesProcess)
+	]), X).
 
 %% workflow_role_range(?WF,?Role,?ObjectType) is semidet.
 %
