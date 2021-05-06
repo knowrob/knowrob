@@ -107,18 +107,48 @@ mongolog:step_compile(
 %% number(@Term)
 % True if Term is bound to a rational number (including integers) or a floating point number.
 %
+mongolog:step_compile(number(Arg), _Ctx, []) :-
+	% argument is nonvar already compile-time
+	nonvar(Arg), !,
+	number(Arg).
+
+mongolog:step_compile(number(Arg), Ctx, []) :-
+	% argument is var and was not referred to before in query, thus cannot be number
+	\+ mongolog:is_referenced(Arg,Ctx), !,
+	fail.
+
 mongolog:step_compile(number(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, number, number, Ctx, Pipeline).
 
 %% atom(@Term)
 % True if Term is bound to an atom.
 %
+mongolog:step_compile(atom(Arg), _Ctx, []) :-
+	% argument is nonvar already compile-time
+	nonvar(Arg), !,
+	atom(Arg).
+
+mongolog:step_compile(atom(Arg), Ctx, []) :-
+	% argument is var and was not referred to before in query, thus cannot be atom
+	\+ mongolog:is_referenced(Arg,Ctx), !,
+	fail.
+
 mongolog:step_compile(atom(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, atom, string, Ctx, Pipeline).
 
 %% is_list(+Term)
 %
 %
+mongolog:step_compile(is_list(Arg), _Ctx, []) :-
+	% argument is nonvar already compile-time
+	nonvar(Arg), !,
+	is_list(Arg).
+
+mongolog:step_compile(is_list(Arg), Ctx, []) :-
+	% argument is var and was not referred to before in query, thus cannot be list
+	\+ mongolog:is_referenced(Arg,Ctx), !,
+	fail.
+
 mongolog:step_compile(is_list(Arg), Ctx, Pipeline) :-
 	match_type_(Arg, is_list, array, Ctx, Pipeline).
 
