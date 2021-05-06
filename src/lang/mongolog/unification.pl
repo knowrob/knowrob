@@ -232,20 +232,38 @@ test('unified vars can be implicitly instantiated',
 	assert_equals(Y,4).
 
 % ask-rule with partially instantiated arg and multiple clauses
-test_shape(mesh(X))   ?> =(X,foo).
-test_shape(sphere(X)) ?> =(X,5.0).
+test_shape1(mesh(X))   ?> =(X,foo).
+test_shape1(sphere(X)) ?> =(X,5.0).
 
-test('test_shape(mesh(foo))') :-
-	assert_true(kb_call(test_shape(mesh(foo)))).
+test_shape2(X) ?> (=(X,mesh(foo)) ; =(X,sphere(5.0))).
 
-test('test_shape(mesh(X))') :-
-	findall(X, kb_call(test_shape(mesh(X))), Xs),
+test('test_shape1(mesh(foo))') :-
+	assert_true(kb_call(test_shape1(mesh(foo)))).
+
+test('test_shape1(mesh(X))') :-
+	findall(X, kb_call(test_shape1(mesh(X))), Xs),
 	assert_true(length(Xs,1)),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(foo, Xs)).
 
-test('test_shape(X)') :-
-	findall(X, kb_call(test_shape(X)), Xs),
+test('test_shape1(X)') :-
+	findall(X, kb_call(test_shape1(X)), Xs),
+	assert_true(length(Xs,2)),
+	assert_true(ground(Xs)),
+	assert_true(memberchk(mesh(foo), Xs)),
+	assert_true(memberchk(sphere(5.0), Xs)).
+
+test('test_shape2(mesh(foo))') :-
+	assert_true(kb_call(test_shape2(mesh(foo)))).
+
+test('test_shape2(mesh(X))') :-
+	findall(X, kb_call(test_shape2(mesh(X))), Xs),
+	assert_true(length(Xs,1)),
+	assert_true(ground(Xs)),
+	assert_true(memberchk(foo, Xs)).
+
+test('test_shape2(X)') :-
+	findall(X, kb_call(test_shape2(X)), Xs),
 	assert_true(length(Xs,2)),
 	assert_true(ground(Xs)),
 	assert_true(memberchk(mesh(foo), Xs)),
