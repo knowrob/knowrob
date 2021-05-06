@@ -195,21 +195,22 @@ expand_list(This, [Child|Rest],
 %
 rdf_list(RDF_list, Pl_List) ?>
 	var(Pl_List),
+	!,
+	ground(RDF_list),
 	findall(X,
 		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
 			triple(Ys, rdf:first, X)
 		),
 		Pl_List).
 
-rdf_list(RDF_list, Pl_List) ?>
-	% TODO: support lists grounded by mongo.
-	%       this would require to generate an aggregation pipeline
-	%       within another, I think.
-	pragma((
-		ground(Pl_List),
-		model_RDFS:expand_list(RDF_list, Pl_List, Expanded)
-	)),
-	call(Expanded).
+rdf_list(RDF_list, [First|Rest]) ?>
+	ground(First),
+	triple(RDF_list, rdf:first, First),
+	findall(X,
+		(	triple(RDF_list, transitive(rdf:rest), Ys),
+			triple(Ys, rdf:first, X)
+		),
+		Rest).
 
 rdf_list(RDF_list, Pl_List) +>
 	pragma((
