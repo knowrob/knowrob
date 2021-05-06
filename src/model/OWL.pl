@@ -352,7 +352,7 @@ has_property_chain(P, Chain) +>
 	triple(P, owl:propertyChainAxiom, RDFList).
 
 has_property_chain(P, Chain) ?>
-	var(Chain),
+	var(Chain),!,
 	triple(P, owl:propertyChainAxiom, RDFList),
 	rdf_list(RDFList, Chain).
 
