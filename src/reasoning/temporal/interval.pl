@@ -21,9 +21,12 @@
 @license BSD
 */
 
+:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_meta/1 ]).
 :- use_module('esg').
 :- use_module(library('model/DUL')).
 :- use_module(library('model/SOMA')).
+
+:- rdf_meta(interval_constraint(+,-,+,r)).
 
 %%
 %
@@ -45,18 +48,36 @@ allen_symbol(d).
 interval_constraint(Resource,Constraint) :-
 	interval_constraint(Resource,Constraint,_).
 
-interval_constraint(A,  =(A,B), B) :- holds(A,soma:simultaneous,B).
-interval_constraint(A,  <(A,B), B) :- holds(A,soma:before,B).
-interval_constraint(A,  >(A,B), B) :- holds(A,soma:after,B).
-interval_constraint(A,  m(A,B), B) :- holds(A,soma:meets,B).
-interval_constraint(A, mi(A,B), B) :- holds(A,soma:metBy,B).
-interval_constraint(A,  o(A,B), B) :- holds(A,soma:overlappedOn,B).
-interval_constraint(A, oi(A,B), B) :- holds(A,soma:overlappedBy,B).
-interval_constraint(A,  s(A,B), B) :- holds(A,soma:starts,B).
-interval_constraint(A, si(A,B), B) :- holds(A,soma:startedBy,B).
-interval_constraint(A,  f(A,B), B) :- holds(A,soma:finishes,B).
-interval_constraint(A, fi(A,B), B) :- holds(A,soma:finishedBy,B).
-interval_constraint(A,  d(A,B), B) :- holds(A,soma:during,B).
+interval_constraint(A, Constraint, B) :-
+	% TODO: isn't there a super-property?
+	kb_call(triple(A,in([
+		string(soma:simultaneous),
+		string(soma:before),
+		string(soma:after),
+		string(soma:meets),
+		string(soma:metBy),
+		string(soma:overlappedOn),
+		string(soma:overlappedBy),
+		string(soma:starts),
+		string(soma:startedBy),
+		string(soma:finishes),
+		string(soma:finishedBy),
+		string(soma:during)
+	])->P,B)),
+	interval_constraint(A, Constraint, B, P).
+
+interval_constraint(A,  =(A,B), B, soma:simultaneous).
+interval_constraint(A,  <(A,B), B, soma:before).
+interval_constraint(A,  >(A,B), B, soma:after).
+interval_constraint(A,  m(A,B), B, soma:meets).
+interval_constraint(A, mi(A,B), B, soma:metBy).
+interval_constraint(A,  o(A,B), B, soma:overlappedOn).
+interval_constraint(A, oi(A,B), B, soma:overlappedBy).
+interval_constraint(A,  s(A,B), B, soma:starts).
+interval_constraint(A, si(A,B), B, soma:startedBy).
+interval_constraint(A,  f(A,B), B, soma:finishes).
+interval_constraint(A, fi(A,B), B, soma:finishedBy).
+interval_constraint(A,  d(A,B), B, soma:during).
 
 %%
 %
@@ -109,8 +130,10 @@ interval_equals(I0, I1) :-
 % 
 interval_before(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0,  _, E0),
-	time_interval_data(I1, B1, _),
+	kb_call((
+		time_interval_data(I0,  _, E0),
+		time_interval_data(I1, B1, _)
+	)),
 	ground([E0,B1]),
 	E0 < B1.
 
@@ -139,8 +162,10 @@ interval_after(I0,I1) :-
 % 
 interval_meets(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0,  _, E0),
-	time_interval_data(I1, B1, _),
+	kb_call((
+		time_interval_data(I0,  _, E0),
+		time_interval_data(I1, B1, _)
+	)),
 	ground([E0,B1]),
 	E0 is B1.
 
@@ -169,8 +194,10 @@ interval_met_by(I1,I2) :-
 % 
 interval_starts(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0, B0, E0),
-	time_interval_data(I1, B1, E1),
+	kb_call((
+		time_interval_data(I0, B0, E0),
+		time_interval_data(I1, B1, E1)
+	)),
 	ground([B0,B1,E0,E1]),
 	B0 is B1, E0 < E1.
 
@@ -200,8 +227,10 @@ interval_started_by(I1,I2) :-
 % 
 interval_finishes(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0, B0, E0),
-	time_interval_data(I1, B1, E1),
+	kb_call((
+		time_interval_data(I0, B0, E0),
+		time_interval_data(I1, B1, E1)
+	)),
 	ground([B0,B1,E0,E1]),
 	B0 > B1, E0 is E1.
 
@@ -231,8 +260,10 @@ interval_finished_by(I1,I2) :-
 % 
 interval_overlaps(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0, B0, E0),
-	time_interval_data(I1, B1, E1),
+	kb_call((
+		time_interval_data(I0, B0, E0),
+		time_interval_data(I1, B1, E1)
+	)),
 	ground([B0,B1,E0,E1]),
 	B0 < B1, B1 < E0, E0 < E1.
 
@@ -263,8 +294,10 @@ interval_overlapped_by(I1,I2) :-
 %
 interval_during(I0, I1) :-
 	ground([I0,I1]),
-	time_interval_data(I0, B0, E0),
-	time_interval_data(I1, B1, E1),
+	kb_call((
+		time_interval_data(I0, B0, E0),
+		time_interval_data(I1, B1, E1)
+	)),
 	ground([B0,B1,E0,E1]),
 	B1 =< B0,
 	E0 =< E1.
