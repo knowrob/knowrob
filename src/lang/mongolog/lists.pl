@@ -350,4 +350,27 @@ test('findall+member'):-
 		Results),
 	assert_equals(Results,[9.5,9.0]).
 
+test('findall+length'):-
+	mongolog:test_call(
+		(	findall(X,
+				((Num < 4.0, X is Num + 5);(Num > 4.0, X is Num * 2)),
+				List),
+			length(List, Length)
+		),
+		Num, double(4.5)),
+	assert_equals(Length,1).
+
+test('(fail;findall)+length'):-
+	mongolog:test_call(
+		(	( (	( Num < 4.0 )
+			;	( Num > 4.0, findall(X,
+					((X is Num + 5);(X is Num * 2)),
+					InnerList) )
+			)),
+			assign(List, InnerList)
+		),
+		Num, double(4.5)),
+	assert_equals(InnerList,[9.5,9.0]),
+	assert_equals(List,[9.5,9.0]).
+
 :- end_tests('mongolog_lists').
