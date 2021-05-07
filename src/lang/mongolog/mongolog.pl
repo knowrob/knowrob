@@ -383,9 +383,11 @@ step_compile(pragma(Goal), _, [], StepVars) :-
 	StepVars=[],
 	call(Goal).
 
+step_compile(stepvars(_), _, []) :- true.
 
 step_command(ask).
 step_command(pragma).
+step_command(stepvars).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% QUERY DOCUMENTS
