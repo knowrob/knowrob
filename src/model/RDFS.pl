@@ -195,7 +195,6 @@ expand_list(This, [Child|Rest],
 %
 rdf_list(RDF_list, Pl_List) ?>
 	var(Pl_List),
-	!,
 	ground(RDF_list),
 	findall(X,
 		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
@@ -203,14 +202,15 @@ rdf_list(RDF_list, Pl_List) ?>
 		),
 		Pl_List).
 
-rdf_list(RDF_list, [First|Rest]) ?>
+rdf_list(RDF_list, Pl_list) ?>
+	pragma(Pl_list = [First|_]),
 	ground(First),
 	triple(RDF_list, rdf:first, First),
 	findall(X,
-		(	triple(RDF_list, transitive(rdf:rest), Ys),
+		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
 			triple(Ys, rdf:first, X)
 		),
-		Rest).
+		Pl_list).
 
 rdf_list(RDF_list, Pl_List) +>
 	pragma((
@@ -254,7 +254,7 @@ test('is_property(+Property)') :-
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
 
-test("ask and assert instances of Rex") :-
+test("instance_of(+,+)") :-
 	assert_true(instance_of(test:'Rex', test:'Man')),
 	assert_false(instance_of(test:'Rex', test:'Adult')),
 	assert_true(kb_project(instance_of(test:'Rex', test:'Adult'))),
@@ -265,5 +265,47 @@ test("subproperty_of(+Sub,+Sup)") :-
 	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
 	assert_true(kb_project(subproperty_of(test:'hasBrother', test:'hasSibling'))),
 	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
+
+test_list(RDF_list) :-
+	kb_call(triple(test:testchain, owl:propertyChainAxiom, RDF_list)).
+
+test('rdf_list(+,+)') :-
+	test_list(RDF_list),
+	assert_true(rdf_list(RDF_list, [test:hasParent,test:hasAncestor])),
+	assert_false(rdf_list(RDF_list, [test:hasAncestor,test:hasParent])),
+	assert_false(rdf_list(RDF_list, [test:hasParent])).
+
+test('rdf_list(+,-)') :-
+	test_list(RDF_list),
+	assert_true(rdf_list(RDF_list, _)),
+	(	rdf_list(RDF_list, Pl_List)
+	->	assert_equals(Pl_List, [test:hasParent,test:hasAncestor])
+	;	true
+	).
+
+test('rdf_list(-,+)') :-
+	test_list(RDF_list1),
+	assert_true(rdf_list(_, [test:hasParent,test:hasAncestor])),
+	(	rdf_list(RDF_list2, [test:hasParent,test:hasAncestor])
+	->	assert_equals(RDF_list1, RDF_list2)
+	;	true
+	).
+
+test('rdf_list(+,-),length(+,-)') :-
+	kb_call((
+		triple(test:testchain, owl:propertyChainAxiom, RDF_list),
+		rdf_list(RDF_list, List),
+		length(List, NumElems)
+	)),
+	assert_equals(NumElems, 2).
+
+test('rdf_list_head(+,-)') :-
+	test_list(RDF_list1),
+	kb_call(triple(SubList, rdf:first, test:hasAncestor)),
+	assert_true(kb_call(rdf_list_head(SubList, _))),
+	(	kb_call(rdf_list_head(SubList, RDF_list2))
+	->	assert_equals(RDF_list2, RDF_list1)
+	;	true
+	).
 
 :- end_rdf_tests('model_RDFS').

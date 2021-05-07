@@ -65,6 +65,17 @@
     
 
 
+    <!-- http://knowrob.org/kb/swrl_test#testchain -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#testchain">
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#hasParent"/>
+            <rdf:Description rdf:about="http://knowrob.org/kb/swrl_test#hasAncestor"/>
+        </owl:propertyChainAxiom>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
