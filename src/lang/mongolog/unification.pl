@@ -36,7 +36,7 @@ lang_query:step_expand(\=(A,B), Expanded) :-
 mongolog:step_compile(
 		assign(Var,Value), Ctx,
 		[['$set', [[Key,Value0]]]]) :-
-	mongolog:var_key_or_val(Value, [], Value0),
+	mongolog:var_key_or_val(Value,Ctx,Value0),
 	mongolog:var_key(Var,Ctx,Key).
 
 %% ?Term1 = ?Term2
