@@ -372,6 +372,12 @@ has_property_chain(P, Chain) ?>
 % @param Class2 an equivalent OWL class
 %
 has_equivalent_class(X,Y) ?>
+	once(( ground(X); ground(Y) )),
+	(	triple(X, owl:equivalentClass, Y)
+	;	triple(Y, owl:equivalentClass, X)
+	).
+
+has_equivalent_class(X,Y) ?>
 	triple(X, transitive(owl:equivalentClass), Y).
 
 has_equivalent_class(X,Y) ?>
