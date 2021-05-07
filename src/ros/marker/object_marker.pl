@@ -73,6 +73,11 @@ material_rgba(material(Material),[R,G,B,A]) :-
 	ground([R,G,B,A]),
 	!.
 
+material_rgba(material(Material),[R,G,B,A]) :-
+	member(rgba([R,G,B],A),Material),
+	ground([R,G,B,A]),
+	!.
+
 material_rgba(material(Material),[R,G,B,1]) :-
 	member(rgb([R,G,B]),Material),
 	ground([R,G,B]),
