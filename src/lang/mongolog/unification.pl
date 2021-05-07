@@ -294,5 +294,14 @@ test('test_shape3(X)') :-
 	assert_true(memberchk(mesh(foo), Xs)),
 	assert_true(memberchk(sphere(5.0), Xs)).
 
+test_nested_rule1(A) ?> assign(A,2).
+test_nested_rule1(A) ?> assign(A,3).
+test_nested_rule(B)  ?> test_nested_rule1(A), B is A + 2.
+
+test('test_nested_rule(-)') :-
+	assert_true(kb_call(test_nested_rule(_))),
+	findall(X, kb_call(test_nested_rule(X)), Xs),
+	assert_equals(Xs, [4.0,5.0]).
+
 :- end_tests('mongolog_unification').
 
