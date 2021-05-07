@@ -697,7 +697,14 @@ expand_rule(Goal, Terminals) :-
 expand_rule(_, [], []) :- !.
 expand_rule(ParentArgs,
 		[[ChildArgs,Terminals]|Xs],
-		[[pragma(=(ChildArgs,ParentArgs)),Terminals]|Ys]) :-
+		[Expanded|Ys]) :-
+	Expanded=[
+		% HACK: force that ParentArgs are added to variable map as
+		%       following pragma call may make the variables disappear.
+		stepvars(ParentArgs),
+		pragma(=(ChildArgs,ParentArgs)),
+		Terminals
+	],
 	expand_rule(ParentArgs, Xs, Ys),
 	!.
 
