@@ -288,6 +288,10 @@ copy_vars1(ReferredVars, [_|Xs], [_|Ys], Zs) :-
 
 %%
 copy_vars2([], _, []) :- !.
+copy_vars2([[Key,X]|Xs], Vars1, [[Key,term(Z)]|Ys]) :-
+	compound(X),
+	X=term(X1),!,
+	copy_vars2([[Key,X1]|Xs], Vars1, [[Key,Z]|Ys]).
 copy_vars2([[Key,X]|Xs], Vars1, [[Key,Z]|Ys]) :-
 	(	memberchk([Key,Y],Vars1)
 	->	Z=Y
