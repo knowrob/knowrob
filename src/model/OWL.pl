@@ -386,18 +386,21 @@ has_equivalent_class(X,Y) +>
 % relation. Considers owl:sameAs transitive and symmetric.
 %
 same_as(X,Y) ?>
-	(ground(X);ground(Y)),
-	X = Y.
+	(	X = Y
+	;	triple(X, owl:sameAs, Y)
+	;	triple(Y, owl:sameAs, X)
+	).
 
-same_as(X,Y) ?>
-	ground(X),!,
-	triple(X, transitive(owl:sameAs), Y).
+% TODO: support transitivity of same_as
+%same_as(X,Y) ?>
+%	ground(X),!,
+%	triple(X, transitive(owl:sameAs), Y).
+%
+%same_as(X,Y) ?>
+%	ground(Y),!,
+%	triple(Y, transitive(owl:sameAs), X).
 
-same_as(X,Y) ?>
-	ground(Y),!,
-	triple(Y, transitive(owl:sameAs), X).
-
-same_as(X,Y) ?+>
+same_as(X,Y) +>
 	triple(X, owl:sameAs, Y).
 
 %% disjoint_with_direct(?Cls, ?Disjoint) is semidet.
