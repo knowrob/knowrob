@@ -61,6 +61,7 @@
 %
 :- dynamic has_urdf/2.
 :- dynamic urdf_server/1.
+:- dynamic urdf_prefix/2.
 
 %%
 % Initialize prefix for downloading URDF via HTTP
@@ -79,6 +80,7 @@ urdf_server_init :-
 %
 urdf_init :-
 	retractall(has_urdf(_,_)),
+	retractall(urdf_prefix(_,_)),
 	forall(
 		has_kinematics_file(Object,Identifier,'URDF'),
 		urdf_init(Object,Identifier)
@@ -389,24 +391,36 @@ model_SOMA:object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 
 %%
 object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
+	var(Obj),!,
+	kb_call((
+		has_base_link_name(Obj,BaseName),
+		has_end_link_name(Obj,EndName)
+	)),
 	has_urdf(Obj,Root),
-	has_base_link_name(Obj,BaseName),
-	get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,Origin,MaterialTerm).
+	get_object_shape_(
+		Root, BaseName, EndName,
+		ShapeID, ShapeTerm, Origin, MaterialTerm).
+
+object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
+	%nonvar(Obj),
+	has_urdf(Obj,Root),
+	kb_call((
+		has_base_link_name(Obj,BaseName),
+		has_end_link_name(Obj,EndName)
+	)),
+	get_object_shape_(
+		Root, BaseName, EndName,
+		ShapeID, ShapeTerm, Origin, MaterialTerm).
 
 %%
-get_object_shape_(Obj,Root,BaseName,ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
-	% TODO avoid triple lookup for every urdf obj
-	(	has_urdf_prefix(Root,Prefix)
-	;	Prefix=''
-	),!,
-	findall(L,
-		(	has_end_link_name(Obj,EndName),
-			urdf_catch(urdf_chain(Root,BaseName,EndName,L))
-		),
-		LinkNames
-	),
-	list_to_set(LinkNames,LinkSet),
-	member(LinkName,LinkSet),
+get_object_shape_(Root,BaseName,EndName,
+		ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+	% read prefix from root entity of URDF
+	once((urdf_prefix(Root,Prefix);(
+		(has_urdf_prefix(Root,Prefix);Prefix=''),
+		assertz(urdf_prefix(Root,Prefix))
+	))),
+	urdf_catch(urdf_chain(Root,BaseName,EndName,LinkName)),
 	urdf_catch(urdf_link_visual_shape(Root,LinkName,
 		ShapeTerm,[Name,Pos,Rot],MaterialTerm,ShapeID)),
 	atom_concat(Prefix,Name,Frame).
