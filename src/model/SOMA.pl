@@ -916,12 +916,8 @@ shape_term(SR, sphere(Radius)) ?>
 shape_origin(SR, Pos, Rot) ?>
 	% FIXME: knowrob namespace should not be used here
 	triple(SR,'http://knowrob.org/kb/urdf.owl#hasOrigin',Origin),
-	triple(Origin, soma:hasPositionVector, term(Pos)),
-	triple(Origin, soma:hasOrientationVector, term(Rot)),
-	!.
-
-shape_origin(_SR, [0,0,0], [0,0,0,1]) ?>
-	true.
+	triple(Origin, soma:hasPositionVector, Pos),
+	triple(Origin, soma:hasOrientationVector, Rot).
 
 %% object_shape(?Obj, ?Frame, ?ShapeTerm, ?ShapeOrigin, ?MaterialTerm) is nondet.
 %
@@ -948,7 +944,7 @@ object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
 	% SHAPE
 	once(triple(Shape,dul:hasRegion,SR)),
 	shape_term(SR, ShapeTerm),
-	shape_origin(SR, Pos, Rot),
+	ignore(shape_origin(SR, Pos, Rot)),
 	% COLOR
 	% TODO: use object_color_rgb when ignore supports this
 	% ignore(object_color_rgba(Obj,R,G,B,A)),

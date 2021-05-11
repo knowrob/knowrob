@@ -28,7 +28,8 @@ object_marker(Obj,MarkerID,MarkerData) :-
 
 object_marker0(Obj,MarkerID,
 		[ pose(Origin) | MarkerData ]) :-
-	object_shape(Obj,MarkerID,Shape,Origin,Material),
+	object_shape(Obj,MarkerID,Shape,Origin0,Material),
+	object_origin(Origin0,Origin),
 	object_marker1(Shape,Material,MarkerData).
 
 object_marker1(
@@ -66,6 +67,26 @@ object_marker1(
 	  color(RGBA)
 	]) :-
 	material_rgba(Material,RGBA).
+
+%%
+object_origin([Frame,Pos0,Rot0],[Frame,Pos1,Rot1]) :-
+	(	is_list(Pos0) -> Pos1=Pos0
+	;   atom(Pos0)    -> parse_number_list(Pos0,Pos1)
+	;	var(Pos0)     -> Pos1 = [0,0,0]
+	;	Pos1=Pos0
+	),
+	(	is_list(Rot0) -> Rot1=Rot0
+	;	atom(Rot0)    -> parse_number_list(Rot0,Rot1)
+	;	var(Rot0)     -> Rot1 = [0,0,0,1]
+	;	Rot1=Rot0
+	).
+
+%
+parse_number_list(Atom,NumberList) :-
+	catch(term_to_atom(NumberList,Atom), _, fail),!.
+parse_number_list(Atom,NumberList) :-
+	atomic_list_concat(Elems, ' ', Atom),
+	maplist(atom_number, Elems, NumberList).
 
 %%
 material_rgba(material(Material),[R,G,B,A]) :-
