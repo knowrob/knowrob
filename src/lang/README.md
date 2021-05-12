@@ -47,7 +47,7 @@ argument from the declaration (above: the `Context` argument of predicates).
 This is handy for declaring context-invariant rules.
 However, rules may be written that retrieve or update the context hidden
 in the operator.
-This is possible through a DSL that is designed to interact
+This is possible through a DSL that allows to interact
 with the hidden context argument.
 
 Within projection rules, context is a tuple of

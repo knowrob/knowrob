@@ -138,7 +138,10 @@ auto_drop_graphs :-
 
 :- ignore(auto_drop_graphs).
 
-%%
+%% setup_collection(+Name, +Indices) is det.
+%
+% Configure the indices of a named collection.
+%
 setup_collection(Name, Indices) :-
 	assertz(collection_data_(Name, Indices)),
 	create_indices(Name, Indices).
@@ -283,7 +286,11 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 
 %% load_json_rdf(FilePath) is semidet.
 %
-% Assert JSON data into mongo DB.
+% Load JSON-encoded triple data into the knowledge base.
+% Each triple document in the JSON file must have the keys
+% "s","p","o" for the subject, property, and value of the triple.
+% In addition a scope document can be provided optionally.
+% If this is not the case, it is assumed that the facts universally hold.
 %
 % @param FilePath - Path to the json file
 %
@@ -309,7 +316,6 @@ assert_triple_data(Triples) :-
 	triple_json_object(O,O_value),
 	atom_string(S_atom, S),
 	atom_string(P_atom, P),
-	% TODO: also support to import scope information
 	% TODO: it would be faster to call assert only once with
 	% array of triples
 	kb_call(assert(triple(S_atom, P_atom, O_value)), Scope, _).
@@ -321,8 +327,9 @@ assert_triple_data(TriplesList) :-
 
 %% triple_json_object(+Dict,-O) is semidet.
 triple_json_object(Dict,O) :-
-	% if Dict is dictionary
+	% if the argument is a dictionary
 	is_dict(Dict),!,
+	% FIXME: below does not look right
 	get_dict('$numberDecimal', Dict, Json_Object),
 	(	atom(Json_Object)   -> atom_number(Json_Object,O)
 	;	string(Json_Object) -> number_string(O,Json_Object)
