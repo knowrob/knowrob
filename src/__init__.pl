@@ -9,7 +9,7 @@
         ]).
 :- set_prolog_flag(float_format, '%.12g').
 
-% tell/ask queries generate discontiguous clauses.
+% rules may generate discontiguous clauses.
 % TODO: find a better solution then disabling this globally.
 :- style_check(-discontiguous).
 
@@ -17,6 +17,12 @@
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2]).
 %:- use_module(library('semweb/rdf_portray')).
 %:- use_module(library('semweb/rdfs')).
+
+% Load settings from file.
+:- ( getenv('KNOWROB_SETTINGS', File)
+	-> load_settings(File,[undefined(load)])
+	;  true
+	).
 
 % make sure library path is expanded
 :- register_ros_package(knowrob).
@@ -28,10 +34,8 @@
 :- use_module('utility/atoms').
 :- use_module('utility/filesystem').
 :- use_module('utility/functional').
+:- use_module('utility/threads').
 :- use_module('utility/url').
-:- use_module('utility/notify').
-
-% tell the user what is going on
 :- log_info(kb(initialization(started))).
 
 % register ROS packages to resolve IRI prefixes to local paths
@@ -42,13 +46,10 @@
 
 % load knowrob.pl
 :- use_module('knowrob').
-:- knowrob_load_settings.
 
 % initialize databases
 :- use_directory('db').
-:- tripledb_init.
-:- tripledb_add_subgraph(user,common).
-:- tripledb_add_subgraph(test,user).
+:- knowrob:initialize_db.
 
 % load init files in sub-directories
 :- use_directory('lang').
@@ -60,5 +61,5 @@
 % load additional modules
 :- knowrob_load_plugins.
 
-% tell the user that we are done with the initialization
+% done with the initialization
 :- log_info(kb(initialization(finished))).

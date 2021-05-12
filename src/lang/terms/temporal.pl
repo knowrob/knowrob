@@ -9,166 +9,237 @@
 @license BSD
 */
 
-:- use_module(library('lang/scopes/temporal'),
-    [ time_scope/3,
-      time_scope_data/2 ]).
+:- use_module(library('lang/scope'),
+		[ time_scope/3, universal_scope/1 ]).
+
+:- multifile during/2.
+:- multifile since/2.
+:- multifile until/2.
 
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
 :- op(800, yfx, user:until).
 
-%% during(+Statement,?Time) is nondet.
+%% during(+Statement,?Interval) is nondet.
 %
-% True for statements that hold during the whole
-% duration of some time interval.
+% True iff Statement holds during the whole
+% duration of a time interval.
+% during/2 is defined as an operator such that
+% queries can be written as `Statement during Interval`.
+% The Interval is represented as 2-element list `[Since,Until]`
+% where Since and Until are the interval boundaries (unix timestamp, double).
+% Note that it is currently not allowed to call this predicate
+% with one of the boundaries grounded and the other not.
+% Either both boundaries must be ground or both variables.
+% If used in *project* expressions, during/2 will scope all
+% assertions in Statement with the interval provided.
 %
 % @param Statement A language term.
-% @param Interval A time interval, instant, or event.
+% @param Interval A 2-element list.
 %
-during(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,TimeTerm) }.
+during(Statement, [Since,Until]) ?>
+	number(Since),
+	number(Until),
+	pragma(time_scope(=<(Since), >=(Until), Scope)),
+	call_with_context(Statement, [scope(Scope)]).
 
-during(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,ground(Since),ground(Until)),
-	  time_scope(=<(Since),>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+during(Statement, [Since,Until]) ?>
+	var(Since),
+	var(Until),
+	% Note: goal must be called with "wildcard" scope to include all records.
+	%       the default mode is to only include records that are still true.
+	pragma(time_scope(
+		>=(0),
+		=<(double('Infinity')),
+		Scope
+	)),
+	call_with_context(Statement, [scope(Scope)]),
+	% read computed fact scope
+	% FIXME: this is not really accurate as get('v_scope')
+	% yields the accumulated scope so far.
+	% but we only want the accumulated scope for Goal here.
+	% SOLUTION: do the get within the *call*
+	% same for since and until.
+	assign(Since, string('$v_scope.time.since')),
+	assign(Until, string('$v_scope.time.until')).
 
-during(Query,TimeTerm) +>
-	option(update(union)),
-	{ interval_data_(TimeTerm,ground(Since),ground(Until)),
-	  time_scope(=(Since),=(Until),Scope)
-	  %time_scope(=<(Since),>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+during(Statement, [Since, Until]) +>
+	pragma(time_scope(=(Since), =(Until), Scope)),
+	call_with_context(Statement, [scope(Scope)]).
 
-%% since(+Statement,?Interval) is nondet.
+%% since(+Statement, ?Instant) is nondet.
 %
 % True for statements that hold (at least) since some time
-% instant.
+% instant, _and_ until at least the current time.
+% since/2 is defined as an operator such that
+% queries can be written as `Statement since Instant`.
+% Instant is a unix timestamp represented as floating point number.
+% If used in *project* expressions, since/2 will scope all
+% assertions in Statement with an interval that begins
+% at given time instant, and whose end is not known.
 %
 % @param Statement A language term.
-% @param Interval A time interval, instant, or event.
+% @param Instant A time instant.
 %
-since(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,[TimeTerm,_]) }.
+since(Statement, Instant) ?>
+	% TODO: better handling of unknown until of interval
+	number(Instant),
+	% get current time
+	pragma(get_time(Now)),
+	% only include records that hold at least since
+	% instant and at least until now
+	pragma(time_scope(=<(Instant), >=(Now), Scope)),
+	call_with_context(Statement, [scope(Scope)]).
 
-since(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,ground(Since),_),
-	  time_scope(=<(Since),_,Scope)
-	},
-	call(Query,[scope(Scope)]).
+since(Statement, Instant) ?>
+	var(Instant),
+	% get current time
+	pragma(get_time(Now)),
+	% only include records that still are thought to be true
+	pragma(time_scope(>=(0), >=(Now), Scope)),
+	call_with_context(Statement, [scope(Scope)]),
+	% read computed fact scope
+	% FIXME: see above during/2
+	assign(Instant, string('$v_scope.time.since')).
 
-since(Query,TimeTerm) +>
-	option(update(intersect)),
-	{ interval_data_(TimeTerm,ground(Since),_),
-	  % TODO: it is not true that this implies it holds until end of time.
-	  %       better would be to represent that it holds at least until some instant.
-	  %       However, to properly handle this a notion of uncertainty might be needed.
-	  time_scope(=(Since),=('Infinity'),Scope)
-	  %get_time(Now), time_scope(=(Since),=(Now),Scope)
-	  %time_scope(=(Since),>=(Since),Scope)
-	},
-	call(Query,[scope(Scope)]).
+since(Statement, Instant) +>
+	number(Instant),
+	% FIXME: until time is set to infinity here, however, the interpretation
+	%        is that we don't know yet when it ends.
+	%        the problem is we cannot distinguish this from records that are known
+	%        to hold forever!
+	pragma(time_scope(
+		=(Instant),
+		=(double('Infinity')),
+		Scope
+	)),
+	call_with_context(Statement, [scope(Scope)]).
 
-%% until(+Statement,?Interval) is nondet.
+%% until(+Statement, ?Instant) is nondet.
 %
 % True for statements that hold (at least) until some time
 % instant.
+% until/2 is defined as an operator such that
+% queries can be written as `Statement until Instant`.
+% Instant is a unix timestamp represented as floating point number.
+% If used in *project* expressions, until/2 updates the existing record of
+% Statement known to hold at time instant if any, else it
+% will create a record whose begin time is not known.
 %
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
 %
-until(Query,TimeTerm) ?>
-	{ var(TimeTerm),
-	  !,
-	  time_scope(>=(0), =<('Infinity'), QScope)
-	},
-	call(Query,[scope(QScope)]),
-	fact_scope(FScope),
-	{ time_scope_data(FScope,[_,TimeTerm]) }.
+until(Statement, Instant) ?>
+	% TODO project until has unclear semantic
+	% TODO better handling of unknown since of interval
+	number(Instant),
+	% only include records that hold at instant
+	pragma(time_scope(=<(Instant), >=(Instant), Scope)),
+	call_with_context(Statement, [scope(Scope)]).
 
-until(Query,TimeTerm) ?>
-	{ interval_data_(TimeTerm,_,ground(Until)),
-	  time_scope(_,>=(Until),Scope)
-	},
-	call(Query,[scope(Scope)]).
+until(Statement, Instant) ?>
+	var(Instant),
+	% include all records
+	pragma(time_scope(
+		>=(double(0)),
+		=<(double('Infinity')),
+		Scope
+	)),
+	call_with_context(Statement, [scope(Scope)]),
+	% FIXME: see above during/2
+	assign(Instant, string('$v_scope.time.until')).
 
-until(Query,TimeTerm) +>
-	option(update(intersect)),
-	{ interval_data_(TimeTerm,_,ground(Until)),
-	  % TODO: it is not true that this implies it holds since begin of time.
-	  %       better would be to represent that it holds at least since some instant.
-	  %       However, to properly handle this a notion of uncertainty might be needed.
-	  time_scope(=(0),=(Until),Scope)
-	  %time_scope(=(Until),=(Until),Scope)
-	  %time_scope(=<(Until),=(Until),UntilScope)
-	},
-	call(Query,[scope(Scope)]).
-
-%%
-interval_data_(Term,Since,Until) :-
-	ask(has_interval_data(Term,X,Y))
-	-> ( interval_data__(Term,Since,X),
-	     interval_data__(Term,Until,Y) )
-	;  ( throw(temporal_scope(interval_data(nodata(Term)))) ).
-
-interval_data__(Term,ground(Y),Y) :-
-	!,
-	( ground(Y) -> true
-	; throw(temporal_scope(interval_data(not_ground(Term))))
-	).
-interval_data__(_,X,X).
+until(Statement, Instant) +>
+	number(Instant),
+	% FIXME: since time is set to 0 here, however, the interpretation
+	%        is that we don't know yet when it starts.
+	%        the problem is we cannot distinguish this from records that are known
+	%        to hold since begin of time!
+	% TODO: better disable project cases for until and since?
+	pragma(time_scope(=(0), =(Instant), Scope)),
+	call_with_context(Statement,
+		[intersect_scope, scope(Scope)]).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'lang_temporal',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-test('tell Lea hasNumber during') :-
-	tell( holds(test:'Lea', test:hasNumber, '+493455247') during [10,34] ),
-	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [34,64] ).
+test('during(+Triple,+Interval)') :-
+	assert_true(kb_project(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [10,34])),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [14,24])),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+999999999') during [5,20])),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [12,20])),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [5,20])),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [34,44])).
 
-test('tell Lea hasNumber overlapping') :-
+test('during(+Triple,+Overlapping)') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
-	tell( holds(test:'Lea', test:hasNumber, '+493455249') during [54,84] ).
+	assert_true(kb_project(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [44,84])),
+	assert_true(kb_project(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [24,54])),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [34,44])),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455249') during [38,80])),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [140,240])).
 
-test('Lea hasNumber during') :-
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [10,34]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455247') during [14,24]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [34,44]),
-	assert_true(holds(test:'Lea', test:hasNumber, '+493455249') during [38,80]).
+test('during(+Triple,[-Since,-Until])') :-
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during [_,_])),
+	(	kb_call(
+			triple(test:'Lea', test:hasNumber, '+493455247') during [Since,Until])
+	->	assert_equals([Since,Until], [10.0,34.0])
+	;	true
+	).
 
-test('Lea hasNumber during X') :-
-	findall(X,
-		holds(test:'Lea', test:hasNumber, '+493455247') during X,
-		Xs
-	),
-	assert_true(length(Xs,1)),
-	assert_equals(Xs,[[10.0,34.0]]).
+test('during(+Triple,-Interval)') :-
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+493455247') during _)),
+	(	kb_call(
+			triple(test:'Lea', test:hasNumber, '+493455247') during X)
+	->	assert_equals(X,[10.0,34.0])
+	;	true
+	).
 
-test('Lea not hasNumber during') :-
-	assert_false(holds(test:'Lea', test:hasNumber, '+999999999') during [5,20]),
-	assert_false(holds(test:'Lea', test:hasNumber, '+493455249') during [12,20]),
-	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [5,20]),
-	assert_false(holds(test:'Lea', test:hasNumber, '+493455247') during [34,44]).
+test('since(+Triple,+Instant)') :-
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
+	assert_true(kb_project(
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') since 800)),
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') since 1000)),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') since 600)).
 
-:- end_tripledb_tests('lang_temporal').
+test('until(+Triple,+Instant)') :-
+	% before project until=inf
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)),
+	assert_true(kb_project(
+		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
+	% after project until=900
+	assert_true(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
+	assert_false(kb_call(
+		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)).
+
+:- end_rdf_tests('lang_temporal').

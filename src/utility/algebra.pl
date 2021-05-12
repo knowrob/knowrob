@@ -10,7 +10,7 @@
       quaternion_inverse/2,         % +Quaternion, -Inverse
       quaternion_transform/3        % +Quaternion, +Vector, -Transformed
     ]).
-/** <module> Utilities for handling transforms in KnowRob.
+/** <module> Performing algebraic operations.
 
 @author Daniel Beßler
 @license BSD

@@ -83,7 +83,7 @@ void MongoCursor::aggregate(const PlTerm &query_term)
 //	}
 }
 
-bool MongoCursor::next(const bson_t **doc)
+bool MongoCursor::next(const bson_t **doc, bool ignore_empty)
 {
 	if(cursor_==NULL) {
 		if(is_aggregate_query_) {
@@ -107,7 +107,7 @@ bool MongoCursor::next(const bson_t **doc)
 		if(mongoc_cursor_error(cursor_, &err2)) {
 			throw MongoException("cursor_error",err2);
 		}
-		return false;
+		return ignore_empty;
 	}
 	else {
 		return true;

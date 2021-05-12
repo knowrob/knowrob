@@ -21,7 +21,7 @@ can be casted as grammar for the parser.
 
 @author Daniel Beßler
 */
-% TODO: activitiy composer should use tell interface!
+% TODO: activitiy composer should use projection interface!
 
 :- use_module(library('debug')).
 :- use_module(library('http/json')).
@@ -31,19 +31,15 @@ can be casted as grammar for the parser.
 %	[ ros_subscribe/4, ros_unsubscribe/2 ]).
 
 :- use_module(library('model/RDFS'),
-    [ has_type/2 ]).
-:- use_module(library('model/SOMA/WF'),
+    [ has_type/2, instance_of/2, subclass_of/2 ]).
+:- use_module(library('model/SOMA'),
     [ workflow_step/2, plan_defines_task/2 ]).
-:- use_module(library('lang/terms/is_a'),
-    [ instance_of/2, subclass_of/2 ]).
-:- use_module(library('lang/terms/triple'),
-    [ triple/3 ]).
 :- use_module(library('lang/terms/holds'),
     [ holds/3 ]).
 
-:- use_module('./interval.pl',
+:- use_module('interval',
 	[ interval_constraint/3 ]).
-:- use_module('./esg.pl').
+:- use_module('esg').
 
 :- rdf_meta endpoint_type_(t,r),
             parser_grammar_(?,r,r,t),
@@ -121,6 +117,7 @@ parser_create_grammar_(Parser,WF) :-
   -> instance_of(Tsk,TskType)
   ;  TskType = Tsk
   ),
+  \+ rdf_equal(TskType, owl:'NamedIndividual'),
   % find constituents and their relation to each other
   findall(S, workflow_constituent(WF,S), Steps),
   list_to_set(Steps,Steps0),
@@ -458,7 +455,7 @@ action_([G0,S0,A0]->[G3,S2,A2],
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
-    once(triple(WF,soma:isPlanFor,Tsk_1)),
+    once(holds(WF,soma:isPlanFor,Tsk_1)),
     esg_join(G0,[Tsk_1,G1],G2)
   },
   % assign roles of WF/ACT given bindings from the parent workflow
@@ -835,10 +832,10 @@ apply_role_binding_(Plan, _Tsk,
     Bindings, [Obj,Roles0]->[Obj,Roles1]) :-
   findall(Role, (
     member(Role,Roles0) ;
-    ( triple(Plan, soma:hasBinding, Binding),
+    ( holds(Plan, soma:hasBinding, Binding),
       once((
-        triple(Binding, soma:hasBindingRole, X0),
-        triple(Binding, soma:hasBindingFiller, X1)
+        holds(Binding, soma:hasBindingRole, X0),
+        holds(Binding, soma:hasBindingFiller, X1)
       )),
       ( member(X0,Roles0) -> Role = X1 ;
       ( member(X1,Roles0) -> Role = X0 ; fail )),
@@ -918,7 +915,7 @@ action_preceded_by__(Endpoints,S,A0->A1) :-
 %%
 concept_roles_(Concept,C_Roles_Set) :-
   findall(CR, (
-    triple(Concept,dul:isRelatedToConcept,CR),
+    holds(Concept,dul:isRelatedToConcept,CR),
     once(instance_of(CR,dul:'Role'))
   ),C_Roles),
   list_to_set(C_Roles,C_Roles_Set).

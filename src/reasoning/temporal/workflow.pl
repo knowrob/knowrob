@@ -6,16 +6,12 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('model/SOMA/WF'),
-	[ workflow_step/2
-	]).
-:- use_module('./interval.pl',
-	[ interval_constraint/3
-	]).
-:- use_module('./esg.pl',
-	[ esg_truncated/4,
-	  esg_event_sequence/2
-	]).
+:- use_module(library('model/SOMA'),
+	[ workflow_step/2 ]).
+:- use_module('interval',
+	[ interval_constraint/3 ]).
+:- use_module('esg',
+	[ esg_truncated/4, esg_event_sequence/2 ]).
 
 %% workflow_sequence(+WF, ?StepSequence) is semidet.
 %
@@ -46,7 +42,7 @@ workflow_sequence(Steps, StepSequence) :-
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(temporal_workflow,
+:- begin_rdf_tests(temporal_workflow,
 		'package://knowrob/owl/test/pancake.owl',
 		[ namespace('http://knowrob.org/kb/pancake.owl#')
 		]).
@@ -70,4 +66,4 @@ test('WF_Baking_0 sequence', [nondet]) :-
 		  test:'FlippingAPancake_0'
 		]).
 
-:- end_tripledb_tests(temporal_workflow).
+:- end_rdf_tests(temporal_workflow).

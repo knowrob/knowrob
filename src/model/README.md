@@ -41,7 +41,7 @@ An example of an OWL language term is shown below:
     has_inverse_property(Property,Inverse) ?+>
         triple(Property,owl:inverseOf,Inverse).
 
-This *tell-ask* rule declares that the term `has_inverse_property/2` is mapped
+This *querying+projection* rule declares that the term `has_inverse_property/2` is mapped
 to RDF by using *owl:inverseOf* as predicate in the triple.
 KnowRob's language further supports OWL class expressions in arguments of
 language terms. Such class descriptions can used with the core terms

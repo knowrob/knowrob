@@ -14,12 +14,17 @@
 #include "knowrob/db/mongo/MongoInterface.h"
 #include "knowrob/db/mongo/bson_pl.h"
 
-static mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
+static const mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
 		(mongoc_insert_flags_t)MONGOC_INSERT_NO_VALIDATE;
-static mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
+static const mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
+static const mongoc_update_flags_t UPDATE_FLAGS =
+		(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 
-static PlAtom ATOM_minus("-");
+static const PlAtom ATOM_minus("-");
+static const PlAtom ATOM_insert("insert");
+static const PlAtom ATOM_remove("remove");
+static const PlAtom ATOM_update("update");
 
 /*********************************/
 /********** static functions *****/
@@ -73,6 +78,11 @@ MongoCollection* MongoInterface::get_collection(const char *db_name, const char 
 	return new MongoCollection(MongoInterface::get().pool_,db_name,coll_name);
 }
 
+MongoWatch* MongoInterface::get_watch()
+{
+	return MongoInterface::get().watch_;
+}
+
 /*********************************/
 /********** MongoInterface *******/
 /*********************************/
@@ -107,10 +117,15 @@ MongoInterface::MongoInterface()
 	}
 	pool_ = mongoc_client_pool_new(uri_);
 	mongoc_client_pool_set_error_api(pool_, 2);
+	watch_ = new MongoWatch(pool_);
 }
 
 MongoInterface::~MongoInterface()
 {
+	if(watch_ != NULL) {
+		delete watch_;
+		watch_ = NULL;
+	}
 	mongoc_client_pool_destroy(pool_);
 	mongoc_uri_destroy(uri_);
 	mongoc_cleanup();
@@ -161,7 +176,81 @@ void MongoInterface::remove(
 	bool success = mongoc_collection_remove(coll(),MONGOC_REMOVE_NONE,doc,NULL,&err);
 	bson_destroy(doc);
 	if(!success) {
-		throw MongoException("remove_failed",err);
+		throw MongoException("collection_remove",err);
+	}
+}
+
+void MongoInterface::bulk_write(
+		const char *db_name,
+		const char *coll_name,
+		const PlTerm &doc_term)
+{
+	MongoCollection coll(pool_,db_name,coll_name);
+	bson_t reply;
+	// bulk options: set ordered to false to allow server performing
+	//               the steps in parallel
+	bson_t opts = BSON_INITIALIZER;
+	BSON_APPEND_BOOL(&opts, "ordered", false);
+	// create the bulk operation
+	mongoc_bulk_operation_t *bulk =
+			mongoc_collection_create_bulk_operation_with_opts(coll(), NULL);
+	// iterate over input list and insert steps
+	PlTail pl_list(doc_term);
+	PlTerm pl_member;
+	while(pl_list.next(pl_member)) {
+		const PlAtom operation_name(pl_member.name());
+		const PlTerm &pl_value1 = pl_member[1];
+		bool is_operation_queued = false;
+		bson_error_t err;
+		// parse the document
+		bson_t *doc1 = bson_new();
+		if(!bsonpl_concat(doc1,pl_value1,&err)) {
+			bson_destroy(doc1);
+			mongoc_bulk_operation_destroy(bulk);
+			throw MongoException("invalid_term",err);
+		}
+		if(operation_name == ATOM_insert) {
+			is_operation_queued = mongoc_bulk_operation_insert_with_opts(
+					bulk, doc1, NULL, &err);
+		}
+		else if(operation_name == ATOM_remove) {
+			is_operation_queued = mongoc_bulk_operation_remove_many_with_opts(
+					bulk, doc1, NULL, &err);
+		}
+		else if(operation_name == ATOM_update) {
+			const PlTerm &pl_value2 = pl_member[2];
+			bson_t *doc2 = bson_new();
+			if(!bsonpl_concat(doc2,pl_value2,&err)) {
+				bson_destroy(doc1);
+				bson_destroy(doc2);
+				mongoc_bulk_operation_destroy(bulk);
+				throw MongoException("invalid_term",err);
+			}
+			is_operation_queued = mongoc_bulk_operation_update_many_with_opts(
+					bulk, doc1, doc2, NULL, &err);
+			bson_destroy(doc2);
+		}
+		else {
+			bson_set_error(&err,
+					MONGOC_ERROR_COMMAND,
+					MONGOC_ERROR_COMMAND_INVALID_ARG,
+					"unknown bulk operation '%s'", pl_member.name());
+		}
+		bson_destroy(doc1);
+		if(!is_operation_queued) {
+			mongoc_bulk_operation_destroy(bulk);
+			throw MongoException("bulk_operation",err);
+		}
+	}
+	bson_error_t bulk_err;
+	// perform the bulk write
+	bool success = mongoc_bulk_operation_execute(bulk, &reply, &bulk_err);
+	// cleanup
+	bson_destroy(&reply);
+	mongoc_bulk_operation_destroy(bulk);
+	// throw exception on error
+	if(!success) {
+		throw MongoException("bulk_operation",bulk_err);
 	}
 }
 
@@ -171,8 +260,6 @@ void MongoInterface::update(
 		const PlTerm &query_term,
 		const PlTerm &update_term)
 {
-	static mongoc_update_flags_t UPDATE_FLAGS =
-			(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 	MongoCollection coll(pool_,db_name,coll_name);
 	bson_error_t err;
 	//

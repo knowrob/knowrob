@@ -3,8 +3,14 @@
       log_error(t),
       log_warning(t),
       log_info(t),
-      log_debug(t)
+      log_debug(t),
+      log_error_and_fail(t)
     ]).
+/** <module> Logging messages.
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- multifile prolog:message//1.
 
@@ -28,14 +34,23 @@ prolog:message(kb(initialization(started))) -->
 prolog:message(kb(initialization(finished))) -->
 	[ 'The knowledge base has finished starting up!' ].
 
-%%
+%% log_message(+Level,+Term) is det.
+%% log_error(+Term) is det.
+%% log_warning(+Term) is det.
+%% log_info(+Term) is det.
+%% log_debug(+Term) is det.
+%
+% Append given term to the logging output.
 %
 log_message(Level,Term) :-
 	print_message(Level,log(Term)).
-
-%%
-%
 log_error(Term)   :- log_message(error,Term).
 log_warning(Term) :- log_message(warning,Term).
 log_info(Term)    :- log_message(informational,Term).
 log_debug(Term)   :- log_message(debug(kb),Term).
+
+%% log_error_and_fail(+Term)
+%
+% Call log_message/2 and fail afterwards.
+%
+log_error_and_fail(Term) :- log_message(error,Term), fail.

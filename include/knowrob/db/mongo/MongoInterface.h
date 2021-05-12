@@ -22,6 +22,7 @@
 #include <knowrob/db/mongo/MongoDatabase.h>
 #include <knowrob/db/mongo/MongoCollection.h>
 #include <knowrob/db/mongo/MongoCursor.h>
+#include <knowrob/db/mongo/MongoWatch.h>
 
 class MongoInterface {
 public:
@@ -38,6 +39,8 @@ public:
 	
 	void remove(const char *db_name, const char *coll_name, const PlTerm &doc_term);
 	
+	void bulk_write(const char *db_name, const char *coll_name, const PlTerm &doc_term);
+
 	void create_index(const char *db_name, const char *coll_name, const PlTerm &keys_term);
 	
 	
@@ -49,6 +52,8 @@ public:
 	
 	static MongoCursor* cursor(const char *curser_id);
 	
+	static MongoWatch* get_watch();
+
 private:
 	MongoInterface();
 	~MongoInterface();
@@ -60,6 +65,7 @@ private:
 	mongoc_client_pool_t *pool_;
 	
 	std::map<std::string, MongoCursor*> cursors_;
+	MongoWatch *watch_;
 
 	std::mutex mongo_mutex_;
 };

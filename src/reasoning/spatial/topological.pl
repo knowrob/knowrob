@@ -1,5 +1,5 @@
 :- module(spatial_topogical,
-    [ shape_contains(r,r) -> knowrob:isInsideOf
+    [ shape_contains(r,r) %-> knowrob:isInsideOf
     ]).
 /** <module> Inferring relations of the Dimensionally Extended nine-Intersection Model (DE-9IM).
 
@@ -25,24 +25,24 @@
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
 %
-shape_contains(InnerObj, OuterObj) ?>
-  { ground([InnerObj,OuterObj]) },
+shape_contains(InnerObj, OuterObj) :-
+  ground(InnerObj),
+  ground(OuterObj),
   % FIXME: hardcoded map
   is_at(InnerObj, [map, [IX,IY,IZ], _]),
   is_at(OuterObj, [map, [OX,OY,OZ], _]),
-  { InnerObj \= OuterObj },
+  InnerObj \== OuterObj,
   %
   object_dimensions(InnerObj, ID, IW, IH),
   object_dimensions(OuterObj, OD, OW, OH),
   % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
   % for all dimensions (x, y, z)
-  { >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05 ),
-    =<( (IX + 0.5*ID), (OX + 0.5*OD)+0.05 ),
-    >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ),
-    =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
-    >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ),
-    =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 )
-  }.
+  >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05 ),
+  =<( (IX + 0.5*ID), (OX + 0.5*OD)+0.05 ),
+  >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ),
+  =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
+  >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ),
+  =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
 
 %% shape_within(+A,?B) is nondet
 % TODO

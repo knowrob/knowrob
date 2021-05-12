@@ -9,14 +9,12 @@
 
 :- use_module(library('model/RDFS'),
     [ has_range/2,
-      has_domain/2
+      has_domain/2,
+      subclass_of/2
     ]).
 :- use_module(library('model/OWL'),
     [ is_class/1,
       has_description/2
-    ]).
-:- use_module(library('lang/terms/is_a'),
-    [ subclass_of/2
     ]).
 :- use_module('./property.pl',
     [ owl_cardinality/5
@@ -29,7 +27,7 @@
 %
 owl_individual_of(Subject,Class,QScope->FScope) :-
   var(Class),!,
-  ask(has_type(Subject,Type),QScope->FScope0),
+  kb_call(has_type(Subject,Type),QScope->FScope0),
   subclass_of(Class,Type),
   owl_individual_of(Subject,Class,QScope->FScope1),
   scope_intersect(FScope0,FScope1,FScope).
@@ -51,22 +49,22 @@ owl_individual_of(Subject,Class,Scope) :-
 %owl_individual_of_range(Subject,Class,Scope) :-
   %var(Subject),!,
   %has_range(P,Class),
-  %ask(triple(_,P,Subject),Scope).
+  %kb_call(triple(_,P,Subject),Scope).
 
 %owl_individual_of_range(Subject,Class,Scope) :-
   %ground(Subject),!,
-  %ask(triple(_,P,Subject),Scope),
+  %kb_call(triple(_,P,Subject),Scope),
   %has_range(P,Class).
 
 %%
 %owl_individual_of_domain(Subject,Class,Scope) :-
   %var(Subject),!,
   %has_domain(P,Class),
-  %ask(triple(Subject,P,_),Scope).
+  %kb_call(triple(Subject,P,_),Scope).
 
 %owl_individual_of_domain(Subject,Class,Scope) :-
   %ground(Subject),!,
-  %ask(triple(Subject,P,_),Scope),
+  %kb_call(triple(Subject,P,_),Scope),
   %has_domain(P,Class).
 
 %% owl_satisfied_by(?Class,?Subject,+Scope) is nondet.
@@ -89,7 +87,7 @@ owl_satisfied_by1(class(Class),_,_,Visited) :-
   fail.
 
 owl_satisfied_by1(class(Class),Subject,Scope,_) :-
-  ask( has_type(Subject,Class), Scope ).
+  kb_call( has_type(Subject,Class), Scope ).
   
 owl_satisfied_by1(class(Class),Subject,Scope,Visited) :-
   has_equivalent_class(Class,EQ),
@@ -103,14 +101,14 @@ owl_satisfied_by1(intersection_of(Set),Subject,Scope,_) :-
   findall(instance_of(Subject,X),
           member(X,Set),
           Statements),
-  ask(Statements,Scope).
+  kb_call(Statements,Scope).
 
 owl_satisfied_by1(union_of(Set),Subject,Scope,_) :-
   member(X,Set),
-  ask(instance_of(Subject,X),Scope).
+  kb_call(instance_of(Subject,X),Scope).
 
 owl_satisfied_by1(some(P,Cls),Subject,Scope,_) :-
-  ask([ holds(Subject,P,O),
+  kb_call([ holds(Subject,P,O),
         instance_of(O,Cls) ], Scope).
 
 owl_satisfied_by1(min(P,Min,Cls),Subject,Scope,_) :-
@@ -128,7 +126,7 @@ owl_satisfied_by1(only(P,R),S,QS->FS,_) :-
   ( var(S) -> S0=_ ; S0=S ),
   ( var(P) -> P0=_ ; P0=P ),
   findall([S0,P0,V0,FS0],
-    ask(holds(S0,P0,V0),QS->FS0),
+    kb_call(holds(S0,P0,V0),QS->FS0),
     Facts),
   owl_only_satisfied_by_(S,P,R,Facts,QS->FS).
 
@@ -163,7 +161,7 @@ owl_only_satisfied_by_(_S,_P,R,Facts,QS->FS) :-
     instance_of(V1,R),
     member(V1,Values),
     Statements),
-  ask(Statements,QS->FS0),
+  kb_call(Statements,QS->FS0),
   % intersect all fact scopes to obtain the scope
   % of the inferred fact.
   findall(FS1_list, (

@@ -1,21 +1,15 @@
-:- use_module(library('db/tripledb_tests')).
-:- begin_tripledb_tests(
+:- use_module(library('lang/rdf_tests')).
+:- begin_rdf_tests(
 		'swrl',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
 :- use_module(library('semweb/rdf_db'),    [ rdf_equal/2 ]).
-:- use_module(library('db/tripledb'),      [ tripledb_load/2 ]).
-:- use_module(library('model/RDFS'),       [ has_type/2 ]).
-:- use_module(library('lang/terms/is_a'),  [ instance_of/2 ]).
+:- use_module(library('model/RDFS'),       [ has_type/2, instance_of/2 ]).
 :- use_module(library('lang/terms/holds'), [ holds/3 ]).
-:- use_module(library('reasoning/pool'),   [ register_reasoner/1 ]).
-
-:- use_module('./swrl.pl').
-:- use_module('./parser.pl').
-
-:- register_reasoner(swrl).
+:- use_module('swrl').
+:- use_module('parser').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing
@@ -99,7 +93,7 @@ test(swrl_parse_NonHuman, [nondet]) :-
   test_swrl_parse(
     ['(not Person)(?x)', '->', 'NonHuman(?x)'],
     [ class(test:'NonHuman', var(x)) ] :-
-      [ class(not(dul:'Person'), var(x)) ]
+      [ class(complement_of(dul:'Person'), var(x)) ]
   ).
 
 test(swrl_parse_Adult1, [nondet]) :-
@@ -132,7 +126,7 @@ test(swrl_parse_nested, [nondet]) :-
   test_swrl_parse(
     ['(Driver or (not (Car and NonHuman)))(?x)', '->', 'Person(?x)'],
     [ class(dul:'Person', var(x)) ] :-
-      [ class(union_of([test:'Driver', not(intersection_of(
+      [ class(union_of([test:'Driver', complement_of(intersection_of(
           [test:'Car',test:'NonHuman'])) ]), var(x)) ]
   ).
 
@@ -153,109 +147,83 @@ test(swrl_parse_area, [nondet]) :-
 % % % % % % % % % % % % % % % % % % % % % % % %
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Driver_load) :-
-  \+ instance_of(test:'Fred', test:'Driver'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'Driver').
-
 test(swrl_Driver) :-
-  instance_of(test:'Fred', test:'Driver').
+	assert_false(has_type(test:'Fred', test:'Driver')),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'Driver'),
+	assert_true(has_type(test:'Fred', test:'Driver')).
 
 test(swrl_Driver_class_unbound, [nondet]) :-
-  instance_of(test:'Fred', X),
-  rdf_equal(X, test:'Driver').
+	has_type(test:'Fred', X),
+	rdf_equal(X, test:'Driver').
 
 test(swrl_Driver_subject_unbound, [nondet]) :-
-  instance_of(X, test:'Driver'),
-  rdf_equal(X, test:'Fred').
+	has_type(X, test:'Driver'),
+	rdf_equal(X, test:'Fred').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Person1) :-
-  \+ instance_of(test:'Alex', dul:'Person'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'Person'),
-  instance_of(test:'Alex', dul:'Person').
+test(swrl_Person) :-
+	assert_false(has_type(test:'Alex', dul:'Person')),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'Person'),
+	assert_true(has_type(test:'Alex', dul:'Person')).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_Person2) :-
-  \+ instance_of(test:'Lea', test:'Hermaphrodite'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'Hermaphrodite'),
-  instance_of(test:'Lea', test:'Hermaphrodite').
+test(swrl_Hermaphrodite) :-
+	assert_false(has_type(test:'Lea', test:'Hermaphrodite')),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'Hermaphrodite'),
+	assert_true(has_type(test:'Lea', test:'Hermaphrodite')),
+	assert_false(has_type(test:'Fred', test:'Hermaphrodite')).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_NonHuman) :-
-  \+ instance_of(test:'RedCar', test:'NonHuman'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'NonHuman').
-
-test(swrl_NonHuman_RedCar) :-
-  instance_of(test:'RedCar', test:'NonHuman').
-
-test(swrl_NonHuman_Fred) :-
-  \+ instance_of(test:'Fred', test:'NonHuman').
-
-test(swrl_NonHuman_class_unbound, [nondet]) :-
-  instance_of(test:'RedCar', X),
-  rdf_equal(X, test:'NonHuman').
-
-test(swrl_NonHuman_subject_unbound, [nondet]) :-
-  instance_of(X, test:'NonHuman'),
-  rdf_equal(X, test:'RedCar').
+test(swrl_area) :-
+	assert_false(holds(test:'RectangleBig', test:'hasAreaInSquareMeters', _)),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'area'),
+	assert_true(holds(test:'RectangleBig', test:'hasAreaInSquareMeters', _)).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_area, [nondet]) :-
-  \+ holds(test:'RectangleBig', test:'hasAreaInSquareMeters', _),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'area'),
-  holds(test:'RectangleBig', test:'hasAreaInSquareMeters', _).
+test(swrl_startsWith) :-
+	assert_true(has_type(test:'Fred', dul:'Person')),
+	assert_true(holds(test:'Fred', test:'hasNumber', _)),
+	assert_false(holds(test:'Fred', test:'hasInternationalNumber', _)),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'startsWith'),
+	assert_true(holds(test:'Fred', test:'hasInternationalNumber', _)).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_startsWith_load) :-
-  \+ holds(test:'Fred', test:'hasInternationalNumber', _),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'startsWith').
-
-test(swrl_startsWith_holds1, [nondet]) :-
-  holds(test:'Fred', test:'hasInternationalNumber', _).
+test(swrl_hasBrother) :-
+	assert_false(holds(test:'Fred', test:'hasBrother', _)),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'brother'),
+	assert_true(holds(test:'Fred', test:'hasBrother', test:'Ernest')).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_hasBrother_load) :-
-  \+ holds(test:'Fred', test:'hasBrother', _),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'brother').
-
-test(swrl_hasBrother_holds) :-
-  holds(test:'Fred', test:'hasBrother', test:'Ernest').
-
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_BigRectangle1, [nondet]) :-
-  \+ instance_of(test:'RectangleBig', test:'BigRectangle'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'BigRectangle'),
-  instance_of(test:'RectangleBig', test:'BigRectangle').
+test(swrl_BigRectangle1) :-
+	assert_false(has_type(test:'RectangleBig', test:'BigRectangle')),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'BigRectangle'),
+	assert_true(has_type(test:'RectangleBig', test:'BigRectangle')).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_greaterThen) :-
-  \+ instance_of(test:'Ernest', test:'Adult'),
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_load(Filepath,'greaterThen'),
-  instance_of(test:'Ernest', test:'Adult').
+	assert_false(has_type(test:'Ernest', test:'Adult')),
+	swrl_file_path(knowrob,'test.swrl',Filepath),
+	swrl_file_fire(Filepath,'greaterThen'),
+	assert_true(has_type(test:'Ernest', test:'Adult')).
 
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(test_rdf_swrl_unload) :-
-  swrl_file_path(knowrob,'test.swrl',Filepath),
-  swrl_file_unload(Filepath).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % SWRL rules asserted from human readable expressions
 % % % % % % % % % % % % % % % % % % % % % % % %
 
-test(swrl_phrase_hasUncle, [nondet]) :-
-  \+ holds(test:'Lea', test:'hasUncle', test:'Ernest'),
-  swrl_phrase_assert('hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)',
-                     'http://knowrob.org/kb/swrl_test#'),
-  holds(test:'Lea', test:'hasUncle', test:'Ernest').
+test(swrl_phrase_hasUncle) :-
+	assert_false(holds(test:'Lea', test:'hasUncle', test:'Ernest')),
+	assert_true(swrl_parser:swrl_phrase_fire(
+		'hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)',
+		'http://knowrob.org/kb/swrl_test#')),
+	assert_true(holds(test:'Lea', test:'hasUncle', test:'Ernest')).
 
-:- end_tripledb_tests('swrl').
+:- end_rdf_tests('swrl').
 

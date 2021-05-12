@@ -12,13 +12,13 @@
 % @param B         Instance of SpatialThing
 % @param Distance  The current distance between A and B
 %
-object_distance(A,B,Distance) ?>
-  { ground([A,B]) },
-  % FIXME: hardcoded map
-  is_at(A, [map,[AX,AY,AZ],_]),
-  is_at(B, [map,[BX,BY,BZ],_]),
-  { DX is AX - BX,
-    DY is AY - BY,
-    DZ is AZ - BZ,
-    Distance is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ))
-  }.
+object_distance(A,B,Distance) :-
+	ground(A),
+	ground(B),
+	% FIXME: hardcoded map
+	is_at(A, [map,[AX,AY,AZ],_]),
+	is_at(B, [map,[BX,BY,BZ],_]),
+	DX is AX - BX,
+	DY is AY - BY,
+	DZ is AZ - BZ,
+	Distance is sqrt(((DX*DX) + (DY*DY)) + (DZ*DZ)).

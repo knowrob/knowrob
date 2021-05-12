@@ -18,10 +18,8 @@
     ]).
 :- use_module(library('model/RDFS'),
     [ has_domain/2,
-      has_range/2
-    ]).
-:- use_module(library('lang/terms/is_a'),
-    [ subclass_of/2,
+      has_range/2,
+      subclass_of/2,
       subproperty_of/2
     ]).
 

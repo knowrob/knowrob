@@ -8,7 +8,10 @@
       has_domain(r,r),
       has_label(r,?),
       has_comment(r,?),
-      is_rdf_list(r,t)
+      rdf_list(r,t),
+      instance_of(r,r),   % ?Individual, ?Class
+      subclass_of(r,r),   % ?Class, ?SuperClass
+      subproperty_of(r,r) % ?Property, ?SuperProperty
     ]).
 /** <module> The Resource Description Framework Schema model.
 
@@ -16,18 +19,35 @@
 */
 
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_register_ns/3,
-      rdf_current_ns/2,
-      rdf_split_url/3
-    ]).
-:- rdf_register_ns(rdfs,
-    'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+	[ rdf_register_ns/3, rdf_meta/1 ]).
 
-% setup tabled ask calls (the "g_" is prepended in expand_term)
-:- table(g_is_resource/1).
-:- table(g_is_property/1).
-:- table(g_is_literal/1).
-:- table(g_is_datatype/1).
+:- multifile instance_of/2, subclass_of/2, subproperty_of/2.
+:- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
+
+:- rdf_register_ns(rdfs,
+	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+
+:- rdf_meta(expand_list(r,t,t)).
+
+%:- multifile instance_of/2.
+%:- multifile subclass_of/2.
+%:- multifile subproperty_of/2.
+
+%% has_type(+Resource,?Type) is semidet.
+%
+% rdf:type is an instance of rdf:Property that is used to
+% state that a resource is an instance of a class.
+%
+% @param Resource a RDF resource
+% @param Type a rdf:type of the resource
+%
+has_type(Resource,Type) ?>
+	% TODO: this seems not a good idea, e.g. Type could be a regex/1 term.
+	pragma(\+ compound(Type)),
+	triple(Resource, rdf:type, Type).
+
+has_type(Resource,Type) +>
+	triple(Resource, rdf:type, Type).
 
 %% is_resource(+Entity) is semidet.
 %
@@ -39,8 +59,8 @@
 %
 % @param Entity An entity IRI.
 %
-is_resource(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Resource').
+is_resource(Entity) ?+>
+	has_type(Entity, rdfs:'Resource').
 
 %% is_property(+Entity) is semidet.
 %
@@ -49,8 +69,8 @@ is_resource(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_property(Entity), [table(?)] ?+>
-  has_type(Entity, rdf:'Property').
+is_property(Entity) ?+>
+	has_type(Entity, rdf:'Property').
 
 %% is_literal(+Entity) is semidet.
 %
@@ -63,8 +83,8 @@ is_property(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_literal(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Literal').
+is_literal(Entity) ?+>
+	has_type(Entity, rdfs:'Literal').
 
 %% is_datatype(+Entity) is semidet.
 %
@@ -76,23 +96,8 @@ is_literal(Entity), [table(?)] ?+>
 %
 % @param Entity An entity IRI.
 %
-is_datatype(Entity), [table(?)] ?+>
-  has_type(Entity, rdfs:'Datatype').
-
-%% has_type(+Resource,?Type) is semidet.
-%
-% rdf:type is an instance of rdf:Property that is used to
-% state that a resource is an instance of a class.
-%
-% @param Resource a RDF resource
-% @param Type a rdf:type of the resource
-%
-has_type(Resource,Type) ?>
-  { \+ compound(Type) },
-  triple(Resource, rdf:type, Type).
-
-has_type(Resource,Type) +>
-  instance_of(Resource,Type).
+is_datatype(Entity) ?+>
+	has_type(Entity, rdfs:'Datatype').
 
 %% has_range(?Property,?Range) is nondet.
 %
@@ -103,7 +108,7 @@ has_type(Resource,Type) +>
 % @param Range the range of the property
 %
 has_range(Property,Range) ?+>
-  triple(Property, rdfs:range, Range).
+	triple(Property, rdfs:range, Range).
 
 %% has_domain(?Property,?Domain) is nondet.
 %
@@ -114,7 +119,7 @@ has_range(Property,Range) ?+>
 % @param Domain the range of the property
 %
 has_domain(Property,Domain) ?+>
-  triple(Property, rdfs:domain, Domain).
+	triple(Property, rdfs:domain, Domain).
 
 %% has_label(+Resource,?Comment) is semidet.
 %
@@ -125,7 +130,7 @@ has_domain(Property,Domain) ?+>
 % @param Label a label atom
 %
 has_label(Resource,Label) ?+>
-  triple(Resource, rdfs:label, Label).
+	annotation(Resource, rdfs:label, Label).
 
 %% has_comment(+Resource,?Comment) is semidet.
 %
@@ -135,44 +140,172 @@ has_label(Resource,Label) ?+>
 % @param Resource a RDF resource
 % @param Comment a comment atom
 %
-has_comment(Resource,Comment) ?+>
-  triple(Resource, rdfs:comment, Comment).
+has_comment(Resource,Comment) ?>
+	annotation(Resource, rdfs:comment, Comment).
 
-%% is_rdf_list(+RDFList,-PrologList) is semidet.
+%% instance_of(?Entity,?Type) is nondet.
 %
+% The type of an entity (rdf:type).
+% For example: `Nibbler instance_of Cat`.
 %
-is_rdf_list('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',[]) ?+> { ! }.
+% Note: that the *projection* clause of this rule allows
+% Entity to be a variable, in which case a new entity
+% symbol is generated.
+%
+% @param Entity a named individual
+% @param Type the type of the entity
+%
+instance_of(A,B) ?+>
+	triple(A,rdf:type,B).
 
-is_rdf_list(RDFList,[X|Xs]) ?>
-  triple(RDFList, rdf:first, X),
-  triple(RDFList, rdf:rest, Ys),
-  is_rdf_list(Ys,Xs).
+%% subclass_of(?Class,?SuperClass) is nondet.
+%
+% The subclass-of relation (rdfs:subClassOf).
+% For example: `Cat subclass_of Animal`.
+%
+% @param Class a class IRI
+% @param SuperClass a class IRI
+%
+subclass_of(A,B) ?+>
+	triple(A, rdfs:subClassOf, B).
 
-is_rdf_list(RDFList,[X|Xs]) +>
-  is_rdf_list(Ys,Xs),
-  has_type(RDFList, rdf:'List'),
-  triple(RDFList, rdf:first, X),
-  triple(RDFList, rdf:rest, Ys).
+%% subproperty_of(?Property,?SuperProperty) is nondet.
+%
+% The subproperty-of relation (rdfs:subPropertyOf).
+%
+% @param Property a property IRI
+% @param SuperProperty a property IRI
+%
+subproperty_of(A,B) ?+>
+	triple(A, rdfs:subPropertyOf, B).
+
+%%
+expand_list(rdf:nil, [], []) :- !.
+
+expand_list(This, [Child|Rest],
+		[	triple(This, rdf:first, Child),
+			triple(This, rdf:rest, Next)
+		|	Xs
+		]) :-
+	expand_list(Next, Rest, Xs).
+
+%% rdf_list(+RDF_list, -Pl_List) is semidet.
+%
+% Read a RDF list into a Prolog list.
+%
+rdf_list(RDF_list, Pl_List) ?>
+	var(Pl_List),
+	ground(RDF_list),
+	findall(X,
+		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
+			triple(Ys, rdf:first, X)
+		),
+		Pl_List).
+
+rdf_list(RDF_list, Pl_list) ?>
+	pragma(Pl_list = [First|_]),
+	ground(First),
+	triple(RDF_list, rdf:first, First),
+	findall(X,
+		(	triple(RDF_list, reflexive(transitive(rdf:rest)), Ys),
+			triple(Ys, rdf:first, X)
+		),
+		Pl_list).
+
+rdf_list(RDF_list, Pl_List) +>
+	pragma((
+		ground(Pl_List),
+		model_RDFS:expand_list(RDF_list, Pl_List, Expanded)
+	)),
+	call([
+		has_type(RDF_list, rdf:'List')
+	|	Expanded
+	]).
+
+%%
+rdf_list_head(SubList, ListHead) ?>
+	findall(X,
+		(	X = SubList
+		;	triple(X, transitive(rdf:rest), SubList)
+		),
+		ListHeads),
+	length(ListHeads,NumHeads),
+	Index is NumHeads-1,
+	nth0(Index, ListHeads, ListHead).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_tripledb_tests(
+:- begin_rdf_tests(
 		'model_RDFS',
 		'package://knowrob/owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-test('is_resource') :-
-	assert_true(is_resource(test:'Lea')),
+test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'Adult')),
+	assert_false(is_resource(test:'Lea')),
 	assert_false(is_resource(test:'hasNumber')),
 	assert_false(is_resource(test:'NotExisting')).
 
-test('is_property') :-
+test('is_property(+Property)') :-
 	assert_true(is_property(test:'hasNumber')),
 	assert_false(is_property(test:'Lea')),
 	assert_false(is_property(test:'NotExisting')).
 
-:- end_tripledb_tests('model_RDFS').
+test("instance_of(+,+)") :-
+	assert_true(instance_of(test:'Rex', test:'Man')),
+	assert_false(instance_of(test:'Rex', test:'Adult')),
+	assert_true(kb_project(instance_of(test:'Rex', test:'Adult'))),
+	assert_true(instance_of(test:'Rex', test:'Adult')).
+
+test("subproperty_of(+Sub,+Sup)") :-
+	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
+	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
+	assert_true(kb_project(subproperty_of(test:'hasBrother', test:'hasSibling'))),
+	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
+
+test_list(RDF_list) :-
+	kb_call(triple(test:testchain, owl:propertyChainAxiom, RDF_list)).
+
+test('rdf_list(+,+)') :-
+	test_list(RDF_list),
+	assert_true(rdf_list(RDF_list, [test:hasParent,test:hasAncestor])),
+	assert_false(rdf_list(RDF_list, [test:hasAncestor,test:hasParent])),
+	assert_false(rdf_list(RDF_list, [test:hasParent])).
+
+test('rdf_list(+,-)') :-
+	test_list(RDF_list),
+	assert_true(rdf_list(RDF_list, _)),
+	(	rdf_list(RDF_list, Pl_List)
+	->	assert_equals(Pl_List, [test:hasParent,test:hasAncestor])
+	;	true
+	).
+
+test('rdf_list(-,+)') :-
+	test_list(RDF_list1),
+	assert_true(rdf_list(_, [test:hasParent,test:hasAncestor])),
+	(	rdf_list(RDF_list2, [test:hasParent,test:hasAncestor])
+	->	assert_equals(RDF_list1, RDF_list2)
+	;	true
+	).
+
+test('rdf_list(+,-),length(+,-)') :-
+	kb_call((
+		triple(test:testchain, owl:propertyChainAxiom, RDF_list),
+		rdf_list(RDF_list, List),
+		length(List, NumElems)
+	)),
+	assert_equals(NumElems, 2).
+
+test('rdf_list_head(+,-)') :-
+	test_list(RDF_list1),
+	kb_call(triple(SubList, rdf:first, test:hasAncestor)),
+	assert_true(kb_call(rdf_list_head(SubList, _))),
+	(	kb_call(rdf_list_head(SubList, RDF_list2))
+	->	assert_equals(RDF_list2, RDF_list1)
+	;	true
+	).
+
+:- end_rdf_tests('model_RDFS').

@@ -7,6 +7,7 @@
  */
 
 #include "knowrob/db/mongo/bson_pl.h"
+#include "knowrob/db/mongo/MongoException.h"
 #include <sstream>
 #include <iostream>
 
@@ -14,9 +15,12 @@
 #define APPEND_BSON_PL_PAIR(list,key,value,type) ((PlTail*)list)->append(PlCompound("-", \
 		PlTermv(PlTerm(key), PlCompound(type, PlTerm(value))))) && false
 
+// TODO: better use 'inf' on the Prolog side!
+// TODO: support 'nan' as well
 static PlAtom ATOM_Pos_Infinity("Infinity");
 static PlAtom ATOM_Neg_Infinity("-Infinity");
 static PlAtom ATOM_int("int");
+static PlAtom ATOM_integer("integer");
 static PlAtom ATOM_bool("bool");
 static PlAtom ATOM_double("double");
 static PlAtom ATOM_id("id");
@@ -52,7 +56,12 @@ static bool bson_visit_oid(const bson_iter_t *iter, const char *key, const bson_
 
 static bool bson_visit_bool(const bson_iter_t *iter, const char *key, bool v_bool, void *data)
 {
-	return APPEND_BSON_PL_PAIR(data,key,(long)v_bool,"bool");
+	if(v_bool) {
+		return APPEND_BSON_PL_PAIR(data,key,ATOM_true,"bool");
+	}
+	else {
+		return APPEND_BSON_PL_PAIR(data,key,ATOM_false,"bool");
+	}
 }
 
 static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_utf8_len, const char *v_utf8, void *data)
@@ -63,7 +72,28 @@ static bool bson_visit_utf8(const bson_iter_t *iter, const char *key, size_t v_u
 static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64_t msec_since_epoch, void *data)
 {
 	double sec_since_epoch = ((double)msec_since_epoch)/1000.0;
-	return APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"double");
+	return APPEND_BSON_PL_PAIR(data,key,sec_since_epoch,"time");
+}
+
+static bool bson_visit_decimal128(const bson_iter_t *iter, const bson_decimal128_t *v_decimal128, void *data)
+{
+	PlTail *v_pl = (PlTail*)data;
+	// positive infinity
+	if(v_decimal128->high == 0x7800000000000000) {
+		v_pl->append(PlCompound("double", PlTerm(ATOM_Pos_Infinity)));
+	}
+	// negative infinity
+	else if(v_decimal128->high == 0xf800000000000000) {
+		v_pl->append(PlCompound("double", PlTerm(ATOM_Neg_Infinity)));
+	}
+	else {
+		char buffer[BSON_DECIMAL128_STRING];
+		bson_decimal128_to_string(v_decimal128,buffer);
+		setlocale(LC_NUMERIC,"C");
+		v_pl->append(PlCompound("double", PlTerm(atof(buffer))));
+		setlocale(LC_NUMERIC,"");
+	}
+	return false; // NOTE: returning true stops further iteration of the document
 }
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
@@ -90,6 +120,72 @@ static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, cons
 	return false; // NOTE: returning true stops further iteration of the document
 }
 
+static bool bson_iter_append_array(bson_iter_t *iter, PlTail *pl_array)
+{
+	if(BSON_ITER_HOLDS_UTF8(iter)) {
+		pl_array->append(PlCompound("string",
+				PlTerm(bson_iter_utf8(iter,NULL))));
+	}
+	else if(BSON_ITER_HOLDS_DOCUMENT(iter)) {
+		const uint8_t *data = NULL;
+		uint32_t len = 0;
+		bson_iter_document(iter, &len, &data);
+		bson_t *doc = bson_new_from_data(data, len);
+		pl_array->append(bson_to_term(doc));
+	}
+	else if(BSON_ITER_HOLDS_ARRAY(iter)) {
+		const uint8_t *array = NULL;
+		uint32_t array_len = 0;
+		bson_iter_array(iter, &array_len, &array);
+		bson_t *inner_doc = bson_new_from_data(array, array_len);
+		bson_iter_t inner_iter;
+		PlTerm inner_term;
+		PlTail inner_array(inner_term);
+		if(bson_iter_init(&inner_iter, inner_doc)) {
+			while(bson_iter_next(&inner_iter)) {
+				bson_iter_append_array(&inner_iter,&inner_array);
+			}
+		}
+		inner_array.close();
+		pl_array->append(PlCompound("array",inner_term));
+	}
+	else if(BSON_ITER_HOLDS_DOUBLE(iter)) {
+		pl_array->append(PlCompound("double",
+				PlTerm(bson_iter_double(iter))));
+	}
+	else if(BSON_ITER_HOLDS_DECIMAL128(iter)) {
+		bson_decimal128_t v_decimal128;
+		bson_iter_decimal128(iter, &v_decimal128);
+		bson_visit_decimal128(iter, &v_decimal128, pl_array);
+	}
+	else if(BSON_ITER_HOLDS_INT32(iter)) {
+		pl_array->append(PlCompound("int",
+				PlTerm((long)bson_iter_int32(iter))));
+	}
+	else if(BSON_ITER_HOLDS_INT64(iter)) {
+		pl_array->append(PlCompound("int",
+				PlTerm((long)bson_iter_int32(iter))));
+	}
+	else if(BSON_ITER_HOLDS_BOOL(iter)) {
+		if(bson_iter_bool(iter)) {
+			pl_array->append(PlCompound("bool", PlTerm(ATOM_true)));
+		}
+		else {
+			pl_array->append(PlCompound("bool", PlTerm(ATOM_false)));
+		}
+	}
+	else if(BSON_ITER_HOLDS_DATE_TIME(iter)) {
+		double sec_since_epoch = ((double)bson_iter_date_time(iter))/1000.0;
+		pl_array->append(PlCompound("time", PlTerm(sec_since_epoch)));
+	}
+	else {
+		bson_type_t iter_t = bson_iter_type(iter);
+		std::cout << "WARN: unsupported array type '" << iter_t << "'" << std::endl;
+		return false;
+	}
+	return true;
+}
+
 static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bson_t *v_array, void *data)
 {
 	PlTermv av(1);
@@ -97,43 +193,7 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 	bson_iter_t array_iter;
 	if(bson_iter_init(&array_iter, v_array)) {
 		while(bson_iter_next(&array_iter)) {
-			if(BSON_ITER_HOLDS_UTF8(&array_iter)) {
-				pl_array.append(PlCompound("string",
-						PlTerm(bson_iter_utf8(&array_iter,NULL))));
-			}
-			else if(BSON_ITER_HOLDS_DOCUMENT(&array_iter)) {
-				const uint8_t *data = NULL;
-				uint32_t len = 0;
-				bson_iter_document(&array_iter, &len, &data);
-				bson_t *doc = bson_new_from_data(data, len);
-				pl_array.append(bson_to_term(doc));
-			}
-			else if(BSON_ITER_HOLDS_DOUBLE(&array_iter)) {
-				pl_array.append(PlCompound("double",
-						PlTerm(bson_iter_double(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_INT32(&array_iter)) {
-				pl_array.append(PlCompound("int",
-						PlTerm((long)bson_iter_int32(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_INT64(&array_iter)) {
-				pl_array.append(PlCompound("int",
-						PlTerm((long)bson_iter_int32(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_BOOL(&array_iter)) {
-				pl_array.append(PlCompound("bool",
-						PlTerm((long)bson_iter_bool(&array_iter))));
-			}
-			else if(BSON_ITER_HOLDS_DATE_TIME(&array_iter)) {
-				double sec_since_epoch = ((double)bson_iter_date_time(&array_iter))/1000.0;
-				pl_array.append(PlCompound("double", PlTerm(sec_since_epoch)));
-			}
-			else {
-				bson_type_t iter_t = bson_iter_type(&array_iter);
-				std::cout << "WARN: unsupported array type '" <<
-						iter_t <<
-						"' for key '" << key << "'" << std::endl;
-			}
+			bson_iter_append_array(&array_iter, &pl_array);
 		}
 	}
 	pl_array.close();
@@ -172,7 +232,14 @@ PlTerm bson_to_term(const bson_t *doc)
 	PlTerm term;
 	PlTail out_list(term);
 	if (bson_iter_init(&iter, doc)) {
-		bson_iter_visit_all(&iter, &visitor, &out_list);
+		if(bson_iter_visit_all(&iter, &visitor, &out_list)) {
+			bson_error_t err;
+			bson_set_error(&err,
+				MONGOC_ERROR_BSON,
+				MONGOC_ERROR_BSON_INVALID,
+				"BSON iteration prematurely stopped.");
+			throw MongoException("bson",err);
+		}
 	}
 	out_list.close();
 	return term;
@@ -199,7 +266,7 @@ static bool bsonpl_append_typed(bson_t *doc, const char *key, const PlTerm &term
 	else if(type_atom == ATOM_time) {
 		BSON_APPEND_DATE_TIME(doc,key,(unsigned long long)(1000.0*((double)pl_value)));
 	}
-	else if(type_atom == ATOM_int) {
+	else if(type_atom == ATOM_int || type_atom == ATOM_integer) {
 		BSON_APPEND_INT32(doc,key,(int)pl_value);
 	}
 	else if(type_atom == ATOM_bool) {

@@ -1,14 +1,30 @@
 :- module(lang_query,
-    [ ask(t),      % +Statement
-      ask(t,t),    % +Statement, +Scope
-      tell(t),     % +Statement
-      tell(t,t),   % +Statement, +Scope
-      update(t),   % +Statement
-      update(t,t), % +Statement, +Scope
-      is_synchronized(t),  % +Statement
-      synchronize(t)       % +Statement
+    [ kb_call(t),             % +Goal
+      kb_call(t,t,t),         % +Goal, +QScope, -FScope
+      kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
+      kb_project(t),          % +Goal
+      kb_project(t,t),        % +Goal, +Scope
+      kb_project(t,t,t),      % +Goal, +Scope, +Options
+      kb_unproject(t),        % +Goal
+      kb_unproject(t,t),      % +Goal, +Scope
+      kb_unproject(t,t,t),    % +Goal, +Scope, +Options
+      kb_add_rule(t,t),
+      kb_drop_rule(t),
+      kb_expand(t,-),
+      is_callable_with(?,t),  % ?Backend, :Goal
+      call_with(?,t,+) ,       % +Backend, :Goal, +Options
+      ask(t),      % +Statement, NOTE: deprecated
+      ask(t,t)    % +Statement, +Scope, NOTE: deprecated
     ]).
-/** <module> Main interface predicates for querying the knowledge base.
+/** <module> Query aggregation.
+
+The KnowRob query language supports logic programming syntax.
+However, language expressions are potentially compiled by KnowRob into other
+formats such as mongo DB queries in order to combine
+different backends for query answering.
+KnowRob orchestrates this process through a pipeline of query steps
+where different steps are linked with each other by feeding groundings of
+one step into the input queue of the next step.
 
 @author Daniel Beßler
 @license BSD
@@ -18,429 +34,788 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
-:- use_module(library('db/scope'),
-    [ scope_intersect/3,
-      scope_update/3,
-      scope_remove/4
-    ]).
-%:- use_module(library('reasoning/pool'),
-    %[ infer/3 ]).
+:- use_module(library(settings)).
+:- use_module(library('semweb/rdf_db'),
+	[ rdf_global_term/2 ]).
+:- use_module('scope',
+    [ current_scope/1, universal_scope/1 ]).
+:- use_module('mongolog/mongolog').
 
-:- multifile tell/2, ask2/2.
+% Stores list of terminal terms for each clause. 
+:- dynamic kb_rule/3.
+:- dynamic kb_predicate/1.
+% optionally implemented by query commands.
+:- multifile step_expand/2.
+% interface implemented by query backends
+:- multifile is_callable_with/2.
+:- multifile call_with/3.
+:- dynamic is_callable_with/2.
+:- dynamic call_with/3.
+
+% create a thread pool for query processing
+:- worker_pool_create('lang_query:queries').
+:- current_prolog_flag(cpu_count, NumCPUs),
+   worker_pool_create('lang_query:backends', [max_size(NumCPUs)]).
+
+% the named thread pool used for query processing
+query_thread_pool('lang_query:queries').
+backend_thread_pool('lang_query:backends').
+
+%% kb_call(+Statement) is nondet.
+%
+% Same as kb_call/3 with default scope to include
+% only facts that hold now.
+%
+% @param Statement a statement term.
+%
+kb_call(Statement) :-
+	current_scope(QScope),
+	kb_call(Statement, QScope, _, []).
+
+%% kb_call(+Statement, +QScope, -FScope) is nondet.
+%
+% Same as kb_call/4 with empty options list.
+%
+% @param Statement a statement term.
+%
+kb_call(Statement, QScope, FScope) :-
+	kb_call(Statement, QScope, FScope, []).
+
+%% kb_call(+Statement, +QScope, -FScope, +Options) is nondet.
+%
+% True if Statement holds within QScope.
+% Statement can also be a list of statements.
+% FactScope is the actual scope of the statement being true that overlaps
+% with QScope. Options include:
+%
+%     - max_queue_size(MaxSize)
+%     Determines the maximum number of messages queued in each stage.  Default is 50.
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
+%
+% @param Statement a statement term.
+% @param QScope the requested scope.
+% @param FScope the actual scope.
+% @param Options list of options.
+%
+kb_call(Statements, QScope, FScope, Options) :-
+	is_list(Statements),
+	!,
+	comma_list(Goal, Statements),
+	kb_call(Goal, QScope, FScope, Options).
+
+kb_call(Statement, QScope, FScope, Options) :-
+	% grounded statements have no variables
+	% in this case we can limit to one solution here
+	ground(Statement),
+	!,
+	once(kb_call1(Statement, QScope, FScope, Options)).
+
+kb_call(Statement, QScope, FScope, Options) :-
+	%\+ ground(Statement),
+	kb_call1(Statement, QScope, FScope, Options).
+
+%%
+kb_call1(Goal, QScope, FScope, Options) :-
+	option(fields(Fields), Options, []),
+	% add all toplevel variables to context
+	term_keys_variables_(Goal, GlobalVars),
+	%
+	merge_options(
+		[ scope(QScope),
+		  user_vars([['v_scope',FScope]|Fields]),
+		  global_vars(GlobalVars)
+		],
+		Options, Options1),
+	% expand query, e.g. replace rule heads with bodies etc.
+	kb_expand(Goal, Expanded),
+	% FIXME: not so nice that flattening is needed here
+	flatten(Expanded, Flattened),
+	kb_call1(Flattened, Options1).
+
+%%
+kb_call1(SubGoals, Options) :-
+	% create a list of step(SubGoal, OutQueue, Channels) terms
+	maplist([SubGoal,Step]>>
+		query_step(SubGoal,Step),
+		SubGoals, Steps),
+	% combine steps if possible
+	% TODO: use partial results of backends to reduce number of operations
+	%       for some cases
+	combine_steps(Steps, Combined),
+	% need to remember pattern of variables for later unification
+	% TODO: improve the way how instantiations are communicated between steps.
+	%       currently the same pattern of _all_ variables in the expanded goal
+	%       is used in each step. But this is not needed e.g. the input for the
+	%       first step could be empty list instead.
+	%       An easy optimization would be that each step has a pattern with
+	%       variables so far to reduce overall number of elements in comm pattern.
+	term_variables(SubGoals, Pattern),
+	setup_call_cleanup(
+		start_pipeline(Combined, Pattern, Options, FinalStep),
+		materialize_pipeline(FinalStep, Pattern, Options),
+		stop_pipeline(Combined)
+	).
+
+%
+term_keys_variables_(Goal, GoalVars) :-
+	term_variables(Goal, Vars),
+	term_keys_variables_1(Vars, GoalVars).
+term_keys_variables_1([], []) :- !.
+term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
+	term_to_atom(X,Atom),
+	atom_concat('v',Atom,Key),
+	term_keys_variables_1(Xs, Ys).
 
 %% ask(+Statement) is nondet.
 %
-% Same as ask/2 with wildcard scope.
+% Same as kb_call/1
+%
+% @deprecated
 %
 % @param Statement a statement term.
 %
 ask(Statement) :-
-  current_scope(QScope),
-  ask(Statement,[[],QScope]->_).
+  kb_call(Statement).
 
 %% ask(+Statement,+Scope) is nondet.
 %
-% True if Statement term holds within the requested scope.
-% Scope is a term `[Options,QueryScope]->FactScope` where QueryScope
-% is the scope requested, and FactScope the actual scope
-% of the statement being true.
-% Statement can also be a list of statements.
+% Same as kb_call/4 with empty options list and FScope as wildcard.
 %
-% ask/2 is a multifile predicate. Meaning that clauses may be
-% decalared in multiple files.
-% Specifically, declaring a rule using the ask operator `?>`,
-% or the ask-tell operator `?+>` will generate a clause of the ask rule.
+% @deprecated
 %
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-ask(Statement,[Options,QScope]) :-
-	select_option(callback(CB),Options,Options1),
-	!,
-	ask_asynch(Statement,[Options1,QScope],CB).
+ask(Statement,QScope) :-
+	kb_call(Statement, QScope, _, []).
 
-ask([X|Xs],QScope->FScope) :-
-	!,
-	ask_all_([X|Xs],QScope,_->FScope).
+%% kb_project(+Statement) is nondet.
+%
+% Same as kb_project/2 with universal scope.
+%
+% @param Statement a statement term.
+%
+kb_project(Statement) :-
+	universal_scope(Scope),
+	kb_project(Statement, Scope, []).
 
-ask(Statement,Scope) :-
-	( ground(Statement)
-	-> once(ask1(Statement,Scope))
-	;  ask1(Statement,Scope)
+%% kb_project(+Statement, +Scope) is nondet.
+%
+% Same as kb_project/3 with empty options list.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+kb_project(Statement, Scope) :-
+	kb_project(Statement, Scope, []).
+
+%% kb_project(+Statement, +Scope, +Options) is semidet.
+%
+% Assert that some statement is true.
+% Scope is the scope of the statement being true.
+% Statement can also be a list of statements. Options include:
+%
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+% @param Options list of options.
+%
+kb_project(Statements, Scope, Options) :-
+	is_list(Statements),
+	!,
+	comma_list(Statement, Statements),
+	kb_project(Statement, Scope, Options).
+
+kb_project(Statement, Scope, Options) :-
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% compile and call statement
+	(	setting(mng_client:read_only, true)
+	->	log_warning(db(read_only(projection)))
+	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
 	).
 
-%%
-ask1(Statement,Scope) :-
-	( ask2(Statement,Scope)
-	; reasoning_pool:infer(Statement,_,Scope)
-	).
 
-%%
-ask_all_([],_QS,FS->FS) :-
+%% kb_unproject(+Statement) is nondet.
+%
+% Same as kb_unproject/2 with universal scope.
+%
+% @param Statement a statement term.
+%
+kb_unproject(Statement) :-
+	wildcard_scope(Scope),
+	kb_unproject(Statement, Scope, []).
+
+%% kb_unproject(+Statement, +Scope) is nondet.
+%
+% Same as kb_unproject/3 with empty options list.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+kb_unproject(Statement, Scope) :-
+	kb_unproject(Statement, Scope, []).
+
+%% kb_unproject(+Statement, +Scope, +Options) is semidet.
+%
+% Unproject that some statement is true.
+% Statement must be a term triple/3. 
+% It can also be a list of such terms.
+% Scope is the scope of the statement to unproject. Options include:
+%
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+% @param Options list of options.
+%
+kb_unproject(_, _, _) :-
+	setting(mng_client:read_only, true),
 	!.
-ask_all_([{X}|Xs],QS,FS1->FSn) :-
+
+kb_unproject(Statements, Scope, Options) :-
+	is_list(Statements),
 	!,
-	call(X),
-	ask_all_(Xs,QS,FS1->FSn).
-ask_all_([X|Xs],QS,FS->FSn) :-
-	ask(X,QS->FS0),
-	% TODO: fact scope should restrict query scope for next query!
-	scope_intersect(FS,FS0,FS1),
-	ask_all_(Xs,QS,FS1->FSn).
+	forall(
+		member(Statement, Statements),
+		kb_unproject(Statement, Scope, Options)
+	).
 
-%% tell(+Statement) is nondet.
-%
-% Same as tell/2 with universal scope.
-%
-% @param Statement a statement term.
-%
-tell(Statement) :-
-	universal_scope(FScope),
-	tell(Statement,[[],FScope]).
+kb_unproject(triple(S,P,O), Scope, Options) :-
+	% TODO: support other language terms too
+	%	- rather map to kb_call(retractall(Term)) or kb_call(unproject(Term))
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% append scope to options
+	merge_options([scope(Scope)], Options0, Options1),
+	% get the query document
+	mng_triple_doc(triple(S,P,O), Doc, Options1),
+	% run a remove query
+	mng_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, Doc).
 
-%% tell(+Statement,+Scope) is det.
-%
-% Tell the knowledge base that some statement is true.
-% Scope is a term `[Options,FactScope]` where FactScope
-% the scope of the statement being true.
-% Statement can also be a list of statements.
-%
-% tell/2 is a multifile predicate. Meaning that clauses may be
-% decalared in multiple files.
-% Specifically, declaring a rule using the tell operator `+>`,
-% or the ask-tell operator `?+>` will generate a clause of the tell rule.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-tell([X|Xs],Scope) :-
-	!,
-	tell_all([X|Xs],Scope).
-
-%%
-tell_all([],_) :- !.
-tell_all([X|Xs],QScope) :-
-	tell(X,QScope),
-	tell_all(Xs,QScope).
-
-%% update(+Statement) is nondet.
-%
-% Same as tell/1 but replaces existing overlapping values.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-update(Statement) :-
-	universal_scope(FScope),
-	update(Statement,[[],FScope]).
-
-%% update(+Statement,+Scope) is nondet.
-%
-% Same as tell/2 but replaces existing overlapping values.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-update(Statement,Scope0) :-
-	context_update_(Scope0,[options([functional])],Scope1),
-	tell(Statement,Scope1).
 
 		 /*******************************
-		 *	    ASYNCH ASK	     		*
+		 *	    	PIPELINES	  	 	*
 		 *******************************/
 
-%% A message queue shared between multiple worker threads.
-:- message_queue_create(_,[alias(ask_requests)]).
-:- message_queue_create(_,[alias(ask_queries)]).
-
-%%
-% Maximum number of asynch ask operations running in parallel.
-% Threads are created once, then sleep until ask requests are made.
-%
-num_ask_threads(4).
-
-%%
-% Asynchronously call an ask query without blocking until results
-% are obtained.
-%
-ask_asynch(Query,[Options,QScope],Callback) :-
-	% priority has influence on which request is handled first in case
-	% there are more requests then threads available
-	option(priority(Priority),Options,low),
-	% extract subject from query (it must be first argument)
-	% FIXME: this won't work always, or?
-	Query=..[_,Subject|_],
-	Msg=request(
-		subject(Subject),
-		query(Query,[Options,QScope]),
-		callback(Callback),
-		priority(Priority)
-	),
-	% send the request message to ask_queries and ask_requests queue.
-	% it is removed from ask_requests as soon as a thread picks
-	% the query, and it is removed from ask_queries once the thread
-	% is done.
-	thread_send_message(ask_queries, Msg),
-	thread_send_message(ask_requests,Msg).
-
-%%
-% A worker thread answering queries.
-%
-ask_loop :-
-	repeat,
-	% pop query from queue, this is a blocking call
-	get_request(Msg),
-	% ask a query
-	ask_with_callback(Msg),
-	% pop out Msg from ask_queries queue to indicate that
-	% query processing has finished
-	thread_get_message(ask_queries,Msg),
-	% fallback to 'repeat' above
-	fail.
-
-%%
-ask_with_callback(request(_,query(Query,QScope),callback(Callback),_)) :-
-	catch(
-		ask_with_callback1(Callback,Query,QScope),
-		Exception,
-		log_error(exception(Exception))
-	).
-ask_with_callback1(all(Goal),Query,QScope) :-
-	% *all* callbacks are called once with the list of all answers.
-	!,
-	findall([Query,FScope],
-		ask(Query,QScope->FScope),
-		Solutions
-	),
-	list_to_set(Solutions,Set),
-	call(Goal,Set).
-ask_with_callback1(each(Goal),Query,QScope) :-
-	% *each* callbacks are called for each individual answer.
-	!,
+% start processing all steps of a pipeline
+start_pipeline([FirstStep|Rest], Pattern, Options, FinalStep) :-
+	% create step message queues
+	create_step_queues(FirstStep, Options),
+	% send uninstantiated pattern as starting point
+	% for the first step.
 	forall(
-		ask(Query,QScope->FScope),
-		call(Goal,[Query,FScope])
-	).
-ask_with_callback1(one(Goal),Query,QScope) :-
-	% *one* callbacks are called only once for the first answer obtained,
-	% or not at all in case no answer could be found.
-	!,
-	( ask(Query,QScope->FScope)
-	-> call(Goal,[Query,FScope])
-	;  true
-	).
-ask_with_calback1(UnknownTerm,_,_) :-
-	throw(error(syntax_error, ask(callback(UnknownTerm)))).
+		step_input(FirstStep,InQueue),
+		thread_send_message(InQueue,end_of_stream(Pattern))
+	),
+	start_pipeline1([FirstStep|Rest], Pattern, Options, FinalStep).
 
-%%
-get_request(request(S,Q,C,priority(high))) :-
-	% prefer requests with high priority
-	thread_get_message(ask_requests,
-		request(S,Q,C,priority(high)),
-		[timeout(0)]),
+%
+start_pipeline1([Step|Rest], Pattern, Options, FinalStep) :-
+	% create step message queues
+	create_step_queues(Step, Options),
+	% start processing the step.
+	% note that this will not instantiate the pattern
+	% as processing is done in a separate thread.
+	(	Rest==[] -> true % the last step is processed in materialize_pipeline
+	;	start_pipeline_step(Step, Pattern, Options)
+	),
+	% continue for remaining steps.
+	start_pipeline2(Rest, Pattern, Options, Step, FinalStep).
+
+%
+start_pipeline2([], _Pattern, _Options, FinalStep, FinalStep) :- !.
+start_pipeline2([Step|Rest], Pattern, Options, LastStep, FinalStep) :-
+	% use output queue of LastStep to provide input for Step.
+	connect_steps(LastStep, Step, Linked, Options),
+	start_pipeline1([Linked|Rest], Pattern, Options, FinalStep).
+
+% call pipeline step in multiple backends
+start_pipeline_step(
+		step(Goal,OutQueue,Channels),
+		Pattern, Options) :-
+	query_thread_pool(Pool),
+	worker_pool_start_work(Pool, OutQueue,
+		lang_query:call_with_channels(
+			Channels, Goal, Pattern, OutQueue, Options)
+	).
+
+
+% retrieve results of a pipeline
+materialize_pipeline(
+		step(Goal,_,[[Backend,InQueue]]),
+		Pattern, Options) :-
+	!,
+	% call the last step in this thread in case it has a single backend
+	message_queue_materialize(InQueue, Pattern),
+	call_with(Backend, Goal, Options).
+
+materialize_pipeline(FinalStep, Pattern, Options) :-
+	% else start worker thread and poll results from output queue
+	start_pipeline_step(FinalStep, Pattern, Options),
+	% materialize the output stream of last step in the pipeline.
+	% this effectively instantiates the variables in the input query.
+	step_output(FinalStep, LastOut),
+	message_queue_materialize(LastOut, Pattern).
+
+
+% stop processing all steps of a pipeline
+stop_pipeline(Pipeline) :-
+	stop_pipeline1(Pipeline),
+	findall(Q, (
+		member(X,Pipeline),
+		step_queue(X,Q)
+	), Queues),
+	forall(
+		member(Q,Queues),
+		catch(message_queue_destroy(Q),
+			error(existence_error(message_queue,Q),_),
+			true)
+	).
+
+
+stop_pipeline1([]) :- !.
+stop_pipeline1([First|Rest]) :-
+	stop_pipeline_step(First),
+	stop_pipeline1(Rest).
+
+stop_pipeline_step(step(_, OutQueue, Channels)) :-
+	query_thread_pool(QueryPool),
+	backend_thread_pool(BackendPool),
+	forall(
+		member([_,InQueue], Channels),
+		(	worker_pool_stop_work(QueryPool,InQueue),
+			worker_pool_stop_work(BackendPool,InQueue)
+		)
+	),
+	worker_pool_stop_work(QueryPool,OutQueue),
+	worker_pool_stop_work(BackendPool,OutQueue).
+
+
+% map a goal to a step term
+query_step(Goal, step(Goal, _, Channels)) :-
+	% note message queues are created later after steps are merged
+	% because creating them creates some overhead.
+	% TODO: use pool of message queues to avoid creating them each time a goal is called?
+	findall([X,_], is_callable_with(X,Goal), Channels),
+	Channels \== [].
+
+
+% ensure message queues associated to a step are instantiated
+create_step_queues(step(_, OutQueue, Channels), Options) :-
+	option(max_queue_size(MaxSize), Options, 50),
+	create_queue_(OutQueue,MaxSize),
+	create_step_queues1(Channels,MaxSize).
+
+create_step_queues1([],_) :- !.
+create_step_queues1([[_,InQueue]|Rest],MaxSize) :-
+	create_queue_(InQueue,MaxSize),
+	create_step_queues1(Rest,MaxSize).
+
+%
+create_queue_(Queue,_) :- nonvar(Queue),!.
+create_queue_(Queue,MaxSize) :-
+	% TODO: use alias option. make sure message_queue_destroy is called then.
+	message_queue_create(Queue, [max_size(MaxSize)]).
+
+%
+step_input(step(_,_,Channels),InQueue) :- member([_,InQueue],Channels).
+step_output(step(_,OutQueue,_),OutQueue).
+step_queue(Step, Queue) :- step_input(Step,Queue) ; step_output(Step,Queue).
+
+
+% connect the output of LastStep to the input of ThisStep
+connect_steps(
+		step(_,OutQueue0,_),                      % LastStep
+		step(G,OutQueue1,[[Backend,OutQueue0]]),  % ThisStep
+		step(G,OutQueue1,[[Backend,OutQueue0]]), _) :-
+	% if ThisStep has only a single channel,
+	% use the output queue of LastStep directly as input
+	% queue in ThisStep
 	!.
-get_request(Msg) :-
-	% pick any request
-	thread_get_message(ask_requests,Msg).
 
-%%
-ask_threads_create :-
-	num_ask_threads(Count),
+connect_steps(LastStep, ThisStep, ThisStep, Options) :-
+	% else feed messages from the output queue of LastStep
+	% into the input queues of different channels in a worker thread.
+	query_thread_pool(Pool),
+	step_output(LastStep, OutQueue),
+	% create step message queues
+	create_step_queues(ThisStep, Options),
+	worker_pool_start_work(Pool, OutQueue,
+		lang_query:connect_steps(LastStep, ThisStep)).
+
+% send all output messages of LastStep to all input queues of ThisStep
+connect_steps(LastStep, ThisStep) :-
+	step_output(LastStep, OutQueue),
+	catch(
+		message_queue_materialize(OutQueue, Msg),
+		Error,
+		Msg=error(Error) % pass any error to next step
+	),
+	% send msg to every input queue
 	forall(
-		between(1,Count,_),
-		thread_create(ask_loop,_)
+		step_input(ThisStep, InQueue),
+		thread_send_message(InQueue, Msg)
 	).
-% create threads when this module is consulted
-:- ask_threads_create.
-
-%%
-% True for queries that are not scheduled to be answered by
-% an asynch ask operation, nor are currently being processed.
-%
-is_synchronized(subject(S)) :-
-	!,
-	\+ thread_peek_message(ask_queries, request(subject(S),_,_,_)).
-
-is_synchronized(Q) :-
-	\+ thread_peek_message(ask_queries, request(_,query(Q,_),_,_)).
-
-%%
-% Block as long as a query is queued or being processed in an asynch ask operation.
-%
-synchronize(Term) :-
-	% TODO: get a notification instead of busy waiting
-	% TODO: prefer requests for which synchronize waits,
-	%        they could be added to some queue and handled in get_request
-	repeat,
-	( is_synchronized(Term)
-	-> ( ! )
-	;  ( sleep(0.02), fail )
+connect_steps(_LastStep, ThisStep) :-
+	% send eos msg to every input queue
+	forall(
+		step_input(ThisStep, InQueue),
+		thread_send_message(InQueue, end_of_stream)
 	).
+
+
+% reduce number of query steps by merging consecutive steps if possible
+combine_steps([],[]) :- !.
+combine_steps([X1,X2|Xs], Combined) :-
+	combine_steps(X1,X2,X), !,
+	combine_steps([X|Xs], Combined).
+combine_steps([X|Xs], [X|Ys]) :-
+	combine_steps(Xs, Ys).
+
+% generally allow combining steps that run on the same one backend
+combine_steps(
+	step(G1,         Out1, [[Backend,In1]]),
+	step(G2,         _,    [[Backend,_]]),
+	step(','(G1,G2), Out1, [[Backend,In1]])).
+
+
+		 /*******************************
+		 *	  		  BACKENDS 		  	*
+		 *******************************/
+
+% call Goal in Backend and send result on OutQueue
+call_with_channels(Channels, Goal, Pattern, OutQueue, Options) :-
+	% TODO: in some cases it could be beneficial to do chunking
+	%       then run worker threads for each chunk
+	%
+	backend_thread_pool(BackendPool),
+	%
+	forall(
+		% iterate over different backends
+		member([Backend,InQueue], Channels),
+		% run call_with/3 in a thread for each backend
+		worker_pool_start_work(BackendPool, OutQueue,
+			lang_query:call_with(
+				Backend, Goal, Pattern,
+				OutQueue, InQueue, Options
+			)
+		)
+	),
+	% need to wait until all backend workers have completed
+	worker_pool_join(BackendPool, OutQueue),
+	% then we send eos message
+	thread_send_message(OutQueue, end_of_stream).
+
+% call Goal in Backend and send result on OutQueue
+call_with(Backend, Goal, Pattern, OutQueue, InQueue, Options) :-
+	% TODO: in some cases it could be beneficial to do chunking
+	%       then run worker threads for each chunk
+	%
+	backend_thread_pool(BackendPool),
+	% pass each instantiation to a worker thread
+	forall(
+		message_queue_materialize(InQueue, Pattern),
+		worker_pool_start_work(BackendPool, OutQueue,
+			lang_query:call_with(Backend, Goal, Pattern, OutQueue, Options))
+	).
+
+%
+call_with(Backend, Goal, Pattern, OutQueue, Options) :-
+	% pass any error to output queue consumer
+	catch(
+		(	call_with(Backend, Goal, Options),      % call goal in backend
+			thread_send_message(OutQueue, Pattern)  % publish result via OutQueue
+		),
+		Error,
+		(	Error=error(existence_error(message_queue,OutQueue),_) -> true
+		;	thread_send_message(OutQueue, error(Error))
+		)
+	).
+
+
+%% call_with(+Backend, :Goal, +Options) is nondet.
+%
+% Calls a goal in given backend.
+% The options list may contain additional
+% backend specific options.
+%
+% @param Backend the backend name
+% @param Goal a goal term
+% @param Options list of options
+%
+call_with(mongolog, Goal, Options) :- mongolog_call(Goal, Options).
+
+%% is_callable_with(?Backend, :Goal) is nondet.
+%
+% True if Backend is a querying backend that can handle Goal.
+%
+is_callable_with(mongolog, Goal) :- is_mongolog_predicate(Goal).
+
 
 		 /*******************************
 		 *	    TERM EXPANSION     		*
 		 *******************************/
 
-%%
-% Term expansion for *ask* rules using the (?>) operator.
-% The head is rewritten as ask head, and the goal is
-% expanded such that the contextual parameter is taken into account.
+%% kb_add_rule(+Head, +Body) is semidet.
 %
-user:term_expansion((?>(LeftSide,Goal)),Expansions) :-
-	(	( LeftSide=(','(Head,Options)) )
-	;	( LeftSide=Head, Options=[] )
+% Register a rule that translates into an aggregation pipeline.
+% Any non-terminal predicate in Body must have a previously asserted
+% rule it can expand into.
+% After being asserted, the Head predicate can be referred to in
+% calls of kb_call/1.
+%
+% @param Head The head of a rule.
+% @param Body The body of a rule.
+%
+kb_add_rule(Head, Body) :-
+	%% get the functor of the predicate
+	Head =.. [Functor|Args],
+	%% expand goals into terminal symbols
+	(	kb_expand(Body, Expanded) -> true
+	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
-	strip_module_(Head,Module,Term),
-	once((ground(Module);prolog_load_context(module,Module))),
-	findall(Expansion,
-		expand_predicate(Module,Term,Goal,Expansion,Options),
-		Expansions
-	).
+	assertz(kb_rule(Functor, Args, Expanded)).
 
-%%
-expand_predicate(_Module,Head,Goal,Expansion,Options) :-
-	member(table(?),Options),
-	!,
-	(	expand_tabled_predicate(Head,Goal,Expansion)
-	;	expand_ask_query_(Head,Goal,Expansion)
-	).
 
-expand_predicate(Module,Head,Goal,Expansion,_Options) :-
-	(	expand_predicate_(Module,Head,Expansion)
-	;	expand_ask_query_(Head,Goal,Expansion)
-	).
-
-%%
-% Expand `f(Args) ?> goal` to `:- table g_f/arity`
+%% kb_drop_rule(+Head) is semidet.
 %
-%expand_table_directive(Head,(:- table G_Functor/Arity)) :-
-%	functor(Head,Functor,Arity),
-%	atom_concat('g_',Functor,G_Functor).
-
-%%
-% Expand `f(Args) ?> goal` to `f(Args) :- (ground(Args) -> g_f(Args) ; goal(Args)))`
+% Drop a previously added `mongolog` rule.
+% That is, erase its database record such that it can
+% not be referred to anymore in rules added after removal.
 %
-expand_tabled_predicate(Head,Goal,(:-(Head,X_Goal))) :-
-	functor(Head,Functor,_Arity),
-	atom_concat('g_',Functor,G_Functor),
-	Head=..[Functor|Args],
-	Term=..[G_Functor|Args],
-	X_Goal=(ground(Args) -> Term ; Goal).
-
-%%
-% Expand `f(Args) ?> goal` to `g_f(Args) :- goal(Args)`
+% @param Term A mongolog rule.
 %
-expand_tabled_predicate(Head,Goal,(:-(Term,Goal))) :-
-	functor(Head,Functor,_Arity),
-	atom_concat('g_',Functor,G_Functor),
-	Head=..[Functor|Args],
-	Term=..[G_Functor|Args].
+kb_drop_rule(Head) :-
+	compound(Head),
+	Head =.. [Functor|_],
+	retractall(kb_rule(Functor, _, _)).
 
-%%
-% Expand `f(..) ?> ...` to `f(..) :- lang_query:ask(f(..))`
+		 /*******************************
+		 *	    TERM EXPANSION     		*
+		 *******************************/
+
+%% kb_expand(+Term, -Expanded) is det.
 %
-expand_predicate_(Module,Head,(:-(HeadExpanded,lang_query:ask(Term)))) :-
-  functor(Head,Functor,Arity),
-  Indicator=(:(Module,(/(Functor,Arity)))),
-  \+ current_predicate(Indicator),
-  length(Args,Arity),
-  Term=..[Functor|Args],
-  HeadExpanded=(:(Module,Term)).
-
-%%
-expand_ask_query_(Head,Goal,(:-(HeadExpanded,GoalExpanded))) :-
-  expand_ask_term_(QScope->_,_->FScope,
-                   Goal,GoalExpanded),
-  HeadExpanded = lang_query:ask2(Head,QScope->FScope),
-  !.
-
-%%
-expand_ask_term_(QS0->QSn, FS0->FSn,
-        (','(First0,Rest0)),
-        (','(First1,Rest1))) :-
-  !,
-  expand_ask_term_(QS0->QS1,FS0->FS1,First0,First1),
-  expand_ask_term_(QS1->QSn,FS1->FSn,Rest0,Rest1).
-% call unscoped goal
-expand_ask_term_(QS->QS, FS->FS, { Goal }, Goal ).
-% options
-expand_ask_term_(QS->QS, FS->FS, options(X), (QS=[X,_])).
-expand_ask_term_([Opt0,QS]->[Opt1,QS], FS->FS, option(X),
-    ( merge_options([X],Opt0,Opt1)) ).
-% scope
-expand_ask_term_(QS->QS, FS->FS, query_scope(X), (QS=[_,X])).
-expand_ask_term_(QS->QS, FS->FS, fact_scope(X),  (FS=X)).
-expand_ask_term_([Cfg,QS]->[Cfg,Qx], FS->FS, scope(K,X),
-    ( scope_update(QS,K,X,Qx) )).
-expand_ask_term_([Cfg,QS]->[Cfg,Qx], FS->FS, unscope(K,X),
-    ( scope_update(QS,K,X,Qx) )).
-% call scoped predicate
-expand_ask_term_(QS->QS, FS->Fx, call(X,Q0),
-    ( lang_query:context_update_(QS,Q0,Q1),
-      lang_query:ask(X,Q1->F1),
-      scope_intersect(FS,F1,Fx) )).
-expand_ask_term_(QS->QS, FS->Fx, call(X),
-    ( lang_query:ask(X,QS->F1),
-      scope_intersect(FS,F1,Fx) )).
-expand_ask_term_(QS->QS, FS->Fx, Goal,
-    ( lang_query:ask(Goal,QS->F1),
-      scope_intersect(FS,F1,Fx) )).
-
-%%
-% Term expansion for *tell* rules using the (+>) operator.
-% The head is rewritten as tell/2 head, and the goal is
-% expanded such that the contextual parameter is taken into account.
+% Translate a goal into a sequence of terminal commands.
+% Terminal commands are the core predicates supported in queries
+% such as arithmetic and comparison predicates.
+% Rules, on the other hand, are "flattened" during term expansion,
+% and translated to a sequence of these terminal commands.
 %
-user:term_expansion((+>(LeftSide,Goal)),
-                    (:-(lang_query:tell(Term,Scope),
-                    (','(GoalExpanded,!))))) :-
-	(	( LeftSide=(','(Head,Options)) )
-	;	( LeftSide=Head, Options=[] )
+% @param Term A compound term, or a list of terms.
+% @param Expanded Sequence of terminal commands
+%
+kb_expand(Goal, Goal) :-
+	% goals maybe not known during expansion, i.e. in case of
+	% higher-level predicates receiving a goal as an argument.
+	% these var goals need to be expanded compile-time
+	% (call-time is not possible)
+	var(Goal), !.
+
+kb_expand(Goal, Expanded) :-
+	% NOTE: do not use is_list/1 here, it cannot handle list that have not
+	%       been completely resolved as in `[a|_]`.
+	%       Here we check just the head of the list.
+	\+ has_list_head(Goal), !,
+	comma_list(Goal, Terms),
+	kb_expand(Terms, Expanded).
+
+kb_expand(Terms, Expanded) :-
+	has_list_head(Terms), !,
+	catch(
+		expand_term_0(Terms, Expanded0),
+		Exc,
+		log_error_and_fail(lang(Exc, Terms))
 	),
+	comma_list(Buf,Expanded0),
+	comma_list(Buf,Expanded1),
+	% Handle cut after term expansion.
+	% It is important that this is done _after_ expansion because
+	% the cut within the call would yield an infinite recursion
+	% otherwhise.
+	% TODO: it is not so nice doing it here. would be better if it could be
+	%       done in control.pl where cut operator is implemented but current
+	%       interfaces don't allow to do the following operation in control.pl.
+	%		(without special handling of ',' it could be done, I think)
+	expand_cut(Expanded1, Expanded2),
 	%%
-	strip_module_(Head,_,Term),
-	expand_tell_term(Scope->_,Goal,GoalExpanded,Options).
+	(	Expanded2=[One] -> Expanded=One
+	;	Expanded=Expanded2
+	).
 
 %%
-expand_tell_term(Scope,Goal,Expanded,_Options) :-
-	expand_tell_term_(Scope,Goal,Expanded).
+expand_term_0([], []) :- !.
+expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
+	once(expand_term_1(X, X_expanded)),
+	% could be that expand-time the list is not fully resolved
+	(	var(Xs) -> Xs_expanded=Xs
+	;	expand_term_0(Xs, Xs_expanded)
+	).
+
+expand_term_1(Goal, Expanded) :-
+	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
+	is_list(Goal),!,
+	expand_term_0(Goal, Expanded).
+
+expand_term_1(Goal, Expanded) :-
+	once(is_callable_with(_,Goal)),
+	% allow the goal to recursively expand
+	(	step_expand(Goal, Expanded) -> true
+	;	Expanded = Goal
+	).
+
+expand_term_1(Goal, Expanded) :-
+	% expand the rule head (Goal) into terminal symbols (the rule body)
+	(	expand_rule(Goal, Clauses) -> true
+	% handle the case that a predicate is referred to that wasn't asserted before
+	;	throw(expansion_failed(Goal))
+	),
+	% wrap different clauses into ';'
+	semicolon_list(Disjunction, Clauses),
+	kb_expand(Disjunction, Expanded).
 
 %%
-expand_tell_term_(QS0->QSn,
-        (','(First0,Rest0)),
-        (','(First1,Rest1))) :-
-  !,
-  expand_tell_term_(QS0->QS1,First0,First1),
-  expand_tell_term_(QS1->QSn,Rest0,Rest1).
-% call unscoped goal
-expand_tell_term_(QS->QS, { Goal }, Goal ).
-% options
-expand_tell_term_(QS->QS, options(X), (QS=[X,_])).
-expand_tell_term_([Opt0,QS]->[Opt1,QS], option(X),
-    ( merge_options([X],Opt0,Opt1)) ).
-% scope
-expand_tell_term_(QS->QS, fact_scope(X), (QS=[_,X])).
-expand_tell_term_([Opt,QS]->[Opt,Qx], scope(K,X),
-    ( scope_update(QS,K,X,Qx) )).
-expand_tell_term_([Opt,QS]->[Opt,Qx], unscope(K,X),
-    ( scope_remove(QS,K,X,Qx) )).
-% notifications
-% TODO: would be nice to notify at the end
-%           of a query, not instantly
-expand_tell_term_(QS->QS, notify(X), notify(X)).
-% call scoped predicate
-expand_tell_term_(QS->QS, call(Statement,Q0),
-    ( lang_query:context_update_(QS,Q0,Q1),
-      lang_query:tell(Statement,Q1) )).
-expand_tell_term_(QS->QS, call(Statement),
-    ( lang_query:tell(Statement,QS) )).
-expand_tell_term_(QS->QS, update(Statement),
-    ( lang_query:update(Statement,QS) )).
-expand_tell_term_(QS->QS, Statement,
-    ( lang_query:tell(Statement,QS) )).
+expand_rule(Goal, Terminals) :-
+	% ground goals do not require special handling for variables
+	% as done in the clause below. So this clause here is simpler.
+	ground(Goal),!,
+	% unwrap goal term into functor and arguments.
+	Goal =.. [Functor|Args],
+	% findall rules with matching functor and arguments
+	findall(X, kb_rule(Functor, Args, X), TerminalClauses),
+	(	TerminalClauses \== []
+	->	Terminals = TerminalClauses
+	% if TerminalClauses==[] it means that either there is no such rule
+	% in which case expand_rule fails, or there is a matching rule, but
+	% the arguments cannot be unified with the ones provided in which
+	% case expand_rule succeeds with a pipeline [fail] that allways fails.
+	;	(	once(kb_rule(Functor,_,_)),
+			Terminals=[fail]
+		)
+	).
+
+expand_rule(Goal, Terminals) :-
+	% unwrap goal term into functor and arguments.
+	Goal =.. [Functor|Args],
+	% find all asserted rules matching the functor
+	findall([Args0,Terminals0],
+			(	kb_rule(Functor, Args0, Terminals0),
+				unifiable(Args0, Args, _)
+			),
+			Clauses),
+	Clauses \= [],
+	expand_rule(Args, Clauses, Terminals).
+
+% prepend pragma call that unifies "child" and "parent" arguments
+expand_rule(_, [], []) :- !.
+expand_rule(ParentArgs,
+		[[ChildArgs,Terminals]|Xs],
+		[Expanded|Ys]) :-
+	Expanded=[
+		% HACK: force that ParentArgs are added to variable map as
+		%       following pragma call may make the variables disappear.
+		stepvars(ParentArgs),
+		pragma(=(ChildArgs,ParentArgs)),
+		Terminals
+	],
+	expand_rule(ParentArgs, Xs, Ys),
+	!.
 
 %%
-% Term expansion for *tell-ask* rules using the (?+>) operator.
+% Each conjunction with cut operator [X0,...,Xn,!|_]
+% is rewritten as [limit(1,[X0,....,Xn])|_].
+%
+expand_cut([],[]) :- !.
+expand_cut(Terms,Expanded) :-
+	take_until_cut(Terms, Taken, Remaining),
+	% no cut if Remaining=[]
+	(	Remaining=[] -> Expanded=Terms
+	% else the first element in Remaining must be a cut
+	% that needs to be applied to goals in Taken
+	;	(	Remaining=[!|WithoutCut],
+			expand_cut(WithoutCut, Remaining_Expanded),
+			Expanded=[limit(1,Taken)|Remaining_Expanded]
+		)
+	).
+
+%
+step_expand(ask(Goal), ask(Expanded)) :-
+	kb_expand(Goal, Expanded).
+
+% split list at cut operator.
+take_until_cut([],[],[]) :- !.
+take_until_cut(['!'|Xs],[],['!'|Xs]) :- !.
+take_until_cut([X|Xs],[X|Ys],Remaining) :-
+	take_until_cut(Xs,Ys,Remaining).
+
+% 
+has_list_head([]) :- !.
+has_list_head([_|_]).
+
+
+%%
+% Term expansion for *querying* rules using the (?>) operator.
+% The body is rewritten such that mng_ask is called instead
+% with body as argument.
+%
+user:term_expansion(
+		(?>(Head,Body)),
+		Export) :-
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,Module,Term),
+	once((ground(Module);prolog_load_context(module, Module))),
+	% add the rule to the DB backend
+	kb_add_rule(Term, BodyGlobal),
+	% expand into regular Prolog rule only once for all clauses
+	Term =.. [Functor|Args],
+	length(Args,NumArgs),
+	length(Args1,NumArgs),
+	Term1 =.. [Functor|Args1],
+	(	kb_predicate(Term1)
+	->	Export=[]
+	;	(
+		assertz(kb_predicate(Term1)),
+		current_scope(QScope),
+		Export=[(:-(Term1, lang_query:kb_call(Term1, QScope, _FScope, [])))]
+	)).
+
+%%
+% Term expansion for *project* rules using the (+>) operator.
+% The rules are only asserted into mongo DB and expanded into
+% empty list.
+%
+user:term_expansion(
+		(+>(Head,Body)),
+		[]) :-
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	% rewrite functor
+	% TODO: it would be nicer to generate a lot
+	%        clauses for project/1.
+	Term =.. [Functor|Args],
+	atom_concat('project_',Functor,Functor0),
+	Term0 =.. [Functor0|Args],
+	% add the rule to the DB backend
+	kb_add_rule(Term0, project(BodyGlobal)).
+
+%%
+% Term expansion for *query+project* rules using the (?+>) operator.
 % These are basically clauses that can be used in both contexts.
 %
 % Consider for example following rule:
@@ -449,145 +824,104 @@ expand_tell_term_(QS->QS, Statement,
 %       has_type(Entity, dul:'Event').
 %
 % This is valid because, in this case, has_type/2 has
-% clauses for ask and tell.
+% clauses for querying and projection.
 %
-user:term_expansion((?+>(Head,Goal)), [X1,X2]) :-
-  user:term_expansion((?>(Head,Goal)),X1),
-  user:term_expansion((+>(Head,Goal)),X2).
+user:term_expansion((?+>(Head,Goal)), X1) :-
+	user:term_expansion((?>(Head,Goal)),X1),
+	user:term_expansion((+>(Head,Goal)),_X2).
 
 %%
-% NOTE: SWI strip_module acts strange
 strip_module_(:(Module,Term),Module,Term) :- !.
 strip_module_(Term,_,Term).
 
-%%
-context_update_([Options0,Scope0],New,[Options1,Scope1]) :-
-  ( option(scope(NewScope),New) ->
-    scope_update(Scope0,NewScope,Scope1) ;
-    Scope1=Scope0
-  ),
-  ( option(options(NewOptions),New) ->
-    merge_options(NewOptions,Options0,Options1) ;
-    Options1=Options0
-  ).
 
 		 /*******************************
-		 *	    UNIT TESTS	     		*
+		 *	    	OPTIONS		  	 	*
 		 *******************************/
 
-:- begin_tests('lang_query').
+% name of default fact graph
+:- dynamic default_graph/1.
 
-:- use_module(library('semweb/rdf_db'),
-		[ rdf_meta/1, rdf_global_term/2 ]).
+default_graph(user).
 
-:- rdf_meta(test_asynch_answer(t)).
-:- rdf_meta(test_asynch_answer0(+,t)).
+%%
+% Set the name of the graph where facts are asserted and retrieved
+% if no other graph was specified.
+%
+set_default_graph(Graph) :-
+	retractall(default_graph(_)),
+	assertz(default_graph(Graph)).
 
-:- rdf_db:rdf_register_ns(dul,
-		'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
-
-% used to get answers from asynch ask
-:- message_queue_create(_,[alias(ask_test_results)]).
-
-test_asynch_finish :-
-	% pop out all messages from ask_test_results queue
-	repeat,
-	\+ thread_get_message(ask_test_results,_,[timeout(0)]),
+%%
+set_graph_option(Options, Options) :-
+	option(graph(_), Options),
 	!.
+set_graph_option(Options, Merged) :-
+	default_graph(DG),
+	merge_options([graph(DG)], Options, Merged).
 
-test_asynch_has_finished(Query) :-
-	% an asynch ask test has finished when the query is processed completely,
-	% end all messages were popped out the queue
-	assert_true(is_synchronized(Query)),
-	assert_true(message_queue_property(ask_test_results,size(0))).
 
-test_asynch_ask(Mode,Query) :-
-	% asynch ask test sets the *callback* option and hooks it
-	% to *thread_send_message*
-	current_scope(QScope),
-	Callback=..[Mode,thread_send_message(ask_test_results)],
-	ask(Query, [[callback(Callback)],QScope]).
+		 /*******************************
+		 *    	  UNIT TESTING     		*
+		 *******************************/
 
-test_asynch_answer0(Actual,Expected) :-
-	assert_true(is_list(Actual)),
-	assert_unifies(Actual,[_,_]),
-	Actual=[Fact,FScope],
-	assert_true(ground(Fact)),
-	assert_unifies(Fact,Expected),
-	assert_true(is_dict(FScope)).
+test_setup :-
+	assertz(is_callable_with(test_a, test_gen(_))),
+	assertz(is_callable_with(test_a, test_gen_inf(_))),
+	assertz(is_callable_with(test_b, test_single(_,_))),
+	assertz(is_callable_with(test_a, test_dual(_,_))),
+	assertz(is_callable_with(test_b, test_dual(_,_))),
+	assertz(call_with(test_a, test_gen(X), _)       :- between(1,9,X)),
+	assertz(call_with(test_a, test_gen_inf(X), _)   :- between(1,inf,X)),
+	assertz(call_with(test_b, test_single(X,Y), _)  :- Y is X*X),
+	assertz(call_with(test_a, test_dual(X,Y), _)    :- Y is X*X),
+	assertz(call_with(test_b, test_dual(X,Y), _)    :- Y is X+X).
 
-test_asynch_answer(Expected) :-
-	thread_get_message(ask_test_results,Actual),
-	test_asynch_answer0(Actual,Expected).
+test_cleanup :-
+	retractall(is_callable_with(test_a,_)),
+	retractall(is_callable_with(test_b,_)),
+	retractall(':-'(call_with(test_a, _, _), _)),
+	retractall(':-'(call_with(test_b, _, _), _)).
 
-test('ask asynch all det') :-
-	rdf_global_term(triple(dul:'Object',rdf:type,_),Query),
-	%%
-	test_asynch_ask(all,Query),
-	thread_get_message(ask_test_results,Answers),
-	assert_true(is_list(Answers)),
-	assert_true(length(Answers,1)),
-	Answers=[Answer],
-	test_asynch_answer0(Answer,
-		triple(dul:'Object',rdf:type,owl:'Class')),
-	test_asynch_has_finished(Query).
+:- begin_tests('lang_query',
+		[ setup(lang_query:test_setup),
+		  cleanup(lang_query:test_cleanup) ]).
 
-test('ask asynch one det') :-
-	rdf_global_term(triple(dul:'Object',rdf:type,_),Query),
-	%%
-	test_asynch_ask(one,Query),
-	test_asynch_answer(triple(dul:'Object',rdf:type,owl:'Class')),
-	test_asynch_has_finished(Query).
+test('test_gen(-)') :-
+	findall(X, kb_call(test_gen(X)), Xs),
+	assert_equals(Xs, [1,2,3,4,5,6,7,8,9]).
 
-test('ask asynch each det') :-
-	rdf_global_term(triple(dul:'Object',rdf:type,_),Query),
-	%%
-	test_asynch_ask(each,Query),
-	test_asynch_answer(triple(dul:'Object',rdf:type,owl:'Class')),
-	test_asynch_has_finished(Query).
-
-test('ask asynch all nondet') :-
-	rdf_global_term(triple(_,rdfs:subClassOf,dul:'Object'),Query),
-	%%
-	test_asynch_ask(all,Query),
-	thread_get_message(ask_test_results,Answers),
-	assert_true(is_list(Answers)),
-	assert_unifies(Answers,[_|_]),
-	findall(X, member([triple(X,_,_),_],Answers), SubClasses),
-	assert_unifies(SubClasses,[_|_]),
-	assert_true(member(dul:'PhysicalObject',SubClasses)),
-	test_asynch_has_finished(Query).
-
-test('ask asynch one nondet') :-
-	rdf_global_term(triple(dul:'Object',rdfs:subClassOf,_),Query),
-	%%
-	test_asynch_ask(one,Query),
-	test_asynch_answer(Query),
-	test_asynch_has_finished(Query).
-
-test('ask asynch each nondet') :-
-	rdf_global_term(triple(dul:'Object',rdfs:subClassOf,_),Query),
-	%%
-	test_asynch_ask(each,Query),
-	test_asynch_answer(Query),
-	test_asynch_answer(Query),
-	assert_true(synchronize(Query)),
-	assert_true(is_synchronized(Query)),
-	test_asynch_finish.
-
-test('ask asynch multiple queries') :-
-	rdf_global_term(triple(dul:'Object',rdfs:subClassOf,_),Query),
-	QueryCount is 20,
-	% create QueryCount ask requests
+test('(test_gen(-),test_single(+,-))') :-
+	findall(Y, kb_call((
+		test_gen(X),
+		test_single(X,Y)
+	)), Xs),
+	% NOTE: ordering in Xs is not certain!
+	AllSolutions = [1,4,9,16,25,36,49,64,81],
 	forall(
-		between(1,QueryCount,_),
-		test_asynch_ask(all,Query)
+		member(X, AllSolutions),
+		assert_true(member(X,Xs))
 	),
-	% poll QueryCount results from message queue
-	forall(
-		between(1,QueryCount,_),
-		thread_get_message(ask_test_results,_)
-	),
-	test_asynch_has_finished(Query).
+	assert_true(length(Xs,9)).
+
+test('(test_gen(-),test_dual(+,-))') :-
+	findall(Y, kb_call((
+		test_gen(X),
+		test_dual(X,Y)
+	)), Xs),
+	assert_true(length(Xs,18)).
+
+test('limit(+,test_gen_inf(-))') :-
+	findall(X, limit(4,kb_call(test_gen_inf(X))), Xs),
+	assert_true(length(Xs,4)).
+
+test('limit(+,(test_gen_inf(-),test_single(+,-)))') :-
+	findall(Y, limit(4,kb_call((
+		test_gen_inf(X),
+		test_single(X,Y)
+	))), Ys),
+	% TODO: also test that threads have exited
+	assert_true(length(Ys,4)).
 
 :- end_tests('lang_query').
+

@@ -42,5 +42,6 @@
                   greaterThan(?area,100)
 -> BigRectangle(?r).
 %%
-:- { label: 'NonHuman' },
-   (not Person)(?x) -> NonHuman(?x). 
+:- { label: 'makeOWLIndividual' },
+   Person(?r), hasCar(?r,true), makeOWLIndividual(?car, ?r)
+-> Car(?car).

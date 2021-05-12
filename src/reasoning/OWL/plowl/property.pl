@@ -11,10 +11,6 @@
 :- use_module(library('semweb/rdf_db'),
     [ rdf_equal/2
     ]).
-:- use_module(library('db/tripledb'),
-    [ tripledb_ask/5,
-      tripledb_ask/3
-    ]).
 :- use_module(library('model/OWL'),
     [ is_individual/1,
       is_symmetric_property/1,
@@ -23,7 +19,7 @@
       has_property_chain/2,
       same_as/2
     ]).
-:- use_module(library('lang/terms/is_a'),
+:- use_module(library('model/RDFS'),
     [ instance_of/2
     ]).
 
@@ -35,18 +31,18 @@ owl_subproperty_of(Sub,Sup) :-
   ground([Sub,Sup]),!,
   has_inverse_property(Sub,Sub_inv),
   has_inverse_property(Sup,Sup_inv),
-  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv).
+  kb_call(triple(Sub_inv,rdfs:subPropertyOf,Sup_inv)).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sub),!,
   has_inverse_property(Sub,Sub_inv),
-  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv),
+  kb_call(triple(Sub_inv,rdfs:subPropertyOf,Sup_inv)),
   has_inverse_property(Sup,Sup_inv).
 
 owl_subproperty_of(Sub,Sup) :-
   ground(Sup),!,
   has_inverse_property(Sup,Sup_inv),
-  tripledb_ask(Sub_inv,rdfs:subPropertyOf,Sup_inv),
+  kb_call(triple(Sub_inv,rdfs:subPropertyOf,Sup_inv)),
   has_inverse_property(Sub,Sub_inv).
 
 %% owl_has(?S,?P,?O,+Scope) is nondet.
@@ -111,7 +107,7 @@ has_symmetric_(S,P,O,Scope) :-
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
 has_direct2_(S,P,O,[Options,QScope]->FScope) :-
   % TODO: do not yield this if S/P/O are the same as in the call of owl_has to avoid redundancy
-  tripledb_ask(S,P,O,QScope,FScope,Options),
+  kb_call(triple(S,P,O),QScope,FScope,Options),
   \+ rdf_equal(P,rdf:type).
 
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
@@ -123,7 +119,7 @@ has_direct2_(S,P,O,Scope) :-
 
 % use has value restrictions
 has_direct2_(S,P,O,Scope) :-
-  ask(instance_of(S,value(P,O)),Scope).
+  kb_call(instance_of(S,value(P,O)),Scope).
 
 %% 
 has_chain_(S, Chain, O, Scope) :-
@@ -155,7 +151,7 @@ owl_cardinality(S,P,R,Card,QScope->FScope) :-
   ( var(P) -> P0=_ ; P0=P ),
   ( var(R) -> R0=_ ; R0=R ),
   findall([S0,P0,R0,V0,FS0],
-    ask([ triple(S0,P0,V0), 
+    kb_call([ triple(S0,P0,V0), 
           instance_of(V0,class(R0))
         ], QScope->FS0),
     Facts),

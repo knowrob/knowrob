@@ -1,11 +1,14 @@
 :- module(swrl_parser,
     [ swrl_file_path/3,
       swrl_file_parse/3,
+      swrl_file_fire/1,
+      swrl_file_fire/2,
       swrl_file_load/1,
       swrl_file_load/2,
       swrl_file_unload/1,
       swrl_file_unload/2,
       swrl_phrase/3,
+      swrl_phrase_fire/2,
       swrl_phrase_assert/2
     ]).
 /** <module> Prolog-based SWRL representation.
@@ -15,16 +18,14 @@
 
 :- use_module(library('dcg/basics')).
 :- use_module(library('semweb/rdf_db'),
-    [ rdf_current_prefix/2,
-      rdf_split_url/3 ]).
+    [ rdf_current_prefix/2, rdf_split_url/3 ]).
 :- use_module(library('model/OWL'),
-    [ is_data_property/1,
-      is_object_property/1 ]).
-
-:- use_module('./swrl.pl').
+    [ is_data_property/1, is_object_property/1 ]).
+:- use_module('swrl').
 
 :- dynamic swrl_file_store/3,
-           swrl_assertion_store/3.
+           swrl_assertion_store/3,
+           swrl_iri/2.
 
 %%
 swrl_file_path(Pkg,Filename,Filepath) :-
@@ -34,6 +35,21 @@ swrl_file_path(Pkg,Filename,Filepath) :-
     '/',
     Filepath
   ).
+
+%%
+swrl_file_fire(Filepath,Label) :-
+	swrl_file_parse(Filepath,Rule,Args),
+	get_dict(label,Args,Label),!,
+	swrl_fire(Rule,Label).
+
+%%
+swrl_file_fire(Filepath) :-
+	forall(
+		swrl_file_parse(Filepath,Rule,Args),
+		(	get_dict(label,Args,Label),
+			swrl_fire(Rule,Label)
+		)
+	).
 
 %% swrl_file_unload(+Filepath) is det.
 %% swrl_file_unload(+Filepath,+Label) is det.
@@ -130,6 +146,14 @@ swrl_file_args_([Key-Value|Xs]) -->
   }.
 swrl_file_args_([]) --> "".
 
+%% swrl_phrase_fire(+Phrase,+NS).
+%
+% Fires SWRL rule given in human readable Syntax.
+%
+swrl_phrase_fire(Phrase,NS) :-
+  swrl_phrase(Term, Phrase, NS),
+  swrl_fire(Term).
+
 %% swrl_phrase_assert(+Phrase,+NS).
 %
 % Assert SWRL rule in human readable Syntax as native Prolog rule(s).
@@ -205,7 +229,7 @@ swrl_literal(BuiltinTerm,_NS) -->
   { BuiltinTerm =.. [Predicate|Args] }.
 
 %%
-swrl_class_atom(not(Cls),NS) -->
+swrl_class_atom(complement_of(Cls),NS) -->
   ['('], ['not'], swrl_class_atom(Cls,NS), [')'].
 
 swrl_class_atom(intersection_of([X|Xs]),NS) -->
@@ -275,8 +299,7 @@ swrl_var_expr(var(Var)) --> ['?'], [Var].
 
 swrl_is_builtin(Predicate) :-
   atom(Predicate), % check if predicate is a builtin predicate
-  clause(swrl:swrl_builtin_pl(Term,_,_),_),
-  Term =.. [Predicate|_].
+  clause(swrl:swrl_builtin(Predicate,_,_,_),_).
 
 swrl_match_instance(Iri,Name,_) :-
   atom(Iri),!,
@@ -290,14 +313,19 @@ swrl_match_instance(_,'true',_)  :- !, fail.
 swrl_match_instance(_,'false',_) :- !, fail.
 swrl_match_instance(_,Name,_)    :- swrl_is_builtin(Name), !, fail.
 
+swrl_match_instance(Iri,Name,_NS) :-
+	var(Iri), atom(Name),
+	swrl_iri(Name, Iri),!.
+
 swrl_match_instance(Iri,Name,NS) :-
-  var(Iri), atom(Name), atom(NS),
-  % try to use user-specified namespace to find the entity
-  atom_concat(NS,Name,Iri),
-  once(triple(Iri,rdf:type,_)),!.
+	var(Iri), atom(Name), atom(NS),
+	% try to use user-specified namespace to find the entity
+	atom_concat(NS,Name,Iri),
+	once(kb_call(triple(Iri,rdf:type,_))),!,
+	assertz(swrl_iri(Name,Iri)).
 
 swrl_match_instance(Iri,Name,_NS) :-
-  var(Iri), atom(Name),
-  rdf_current_prefix(_, Uri),
-  rdf_split_url(Uri, Name, Iri),
-  once(triple(Iri,rdf:type,_)).
+	var(Iri), atom(Name),
+	atomic_list_concat(['^.*#',Name,'$'],Pattern),
+	kb_call(once(triple(regex(Pattern)->Iri,rdf:type,_))),!,
+	assertz(swrl_iri(Name,Iri)).

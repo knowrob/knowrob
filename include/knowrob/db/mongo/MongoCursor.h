@@ -38,7 +38,7 @@ public:
 	
 	void aggregate(const PlTerm &query_term);
 
-	bool next(const bson_t **doc);
+	bool next(const bson_t **doc, bool ignore_empty=false);
 	
 	bool erase();
 	

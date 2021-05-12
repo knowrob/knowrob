@@ -145,6 +145,67 @@ void TFRepublisher::create_cursor(double start_time)
 	collection_->appendSession(opts);
 	cursor_ = mongoc_collection_find_with_opts(
 	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
+	// cleanup
+	if(filter) {
+		bson_destroy(filter);
+	}
+	if(opts) {
+		bson_destroy(opts);
+	}
+}
+
+void TFRepublisher::set_initial_poses(double unix_time)
+{
+	unsigned long long mng_time = (unsigned long long)(1000.0*unix_time);
+	bson_t *append_opts = bson_new();
+	// lookup latest transform of each frame before given time, if any
+	bson_t *pipeline = BCON_NEW ("pipeline", "[",
+		"{", "$group", "{", "_id", "{", "child_frame_id", BCON_UTF8("$child_frame_id"), "}", "}", "}",
+		"{", "$lookup", "{",
+			"from", BCON_UTF8(db_collection_.c_str()),
+			"as",   BCON_UTF8("tf"),
+			"let", "{", "frame", BCON_UTF8("$_id.child_frame_id"), "}",
+			"pipeline", "[",
+				"{", "$match", "{", "$expr", "{", "$and", "[",
+					"{", "$eq", "[", BCON_UTF8("$child_frame_id"), BCON_UTF8("$$frame"),     "]", "}",
+					"{", "$lt", "[", BCON_UTF8("$header.stamp"),   BCON_DATE_TIME(mng_time), "]", "}",
+				"]", "}", "}", "}",
+				"{", "$sort", "{",
+					"child_frame_id", BCON_INT32(1),
+					"header.stamp",   BCON_INT32(-1),
+				"}", "}",
+				"{", "$limit", BCON_INT32(1), "}",
+			"]",
+		"}", "}",
+		"{", "$unwind", BCON_UTF8("$tf"), "}",
+		"{", "$replaceRoot", "{", "newRoot", BCON_UTF8("$tf"), "}", "}",
+	"]");
+	// create the cursor
+	MongoCollection *collection = MongoInterface::get_collection(
+			db_name_.c_str(), db_collection_.c_str());
+	collection->appendSession(append_opts);
+	mongoc_cursor_t *cursor = mongoc_collection_aggregate(
+		(*collection)(), MONGOC_QUERY_NONE, pipeline, NULL, NULL);
+	memory_.clear_transforms_only();
+	if(cursor!=NULL) {
+		const bson_t *doc;
+		// iterate the cursor and assign poses in TF memory
+		while(mongoc_cursor_next(cursor,&doc)) {
+			read_transform(doc);
+			memory_.set_transform(ts_);
+		}
+		mongoc_cursor_destroy(cursor);
+	}
+	// cleanup
+	if(pipeline) {
+		bson_destroy(pipeline);
+	}
+	if(append_opts) {
+		bson_destroy(append_opts);
+	}
+	if(collection) {
+		delete collection;
+	}
 }
 
 void TFRepublisher::reset_cursor()
@@ -162,21 +223,25 @@ void TFRepublisher::advance_cursor()
 	if(has_new_goal_) {
 		has_new_goal_ = false;
 		has_next_ = false;
+		set_initial_poses(time_min_);
 		create_cursor(time_min_);
-		// TODO: load initial poses (currently done in Prolog code)
 	}
 	else if(has_been_skipped_) {
 		has_been_skipped_ = false;
 		has_next_ = false;
 		// special reset mode because cursor needs to be recreated with proper start time
 		skip_reset_ = true;
+		// load initial poses
+		set_initial_poses(this_time);
 		// create cursor with documents from this_time to time_max_
 		create_cursor(this_time);
-		// TODO: load initial poses
 	}
 	if(reset_) {
 		reset_ = false;
 		has_next_ = false;
+		// load initial poses to avoid problems with objects sticking at the position
+		// where they were at the end of the loop.
+		set_initial_poses(time_min_);
 		if(skip_reset_) {
 			skip_reset_ = false;
 			create_cursor(time_min_);
@@ -184,8 +249,6 @@ void TFRepublisher::advance_cursor()
 		else {
 			reset_cursor();
 		}
-		// TODO: load initial poses to avoid problems with objects sticking at the position
-		//       where they were at the end of the event.
 	}
 	//
 	while(1) {

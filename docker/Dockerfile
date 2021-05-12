@@ -27,14 +27,18 @@ RUN sh -c 'echo "deb ${ROS_SOURCES} bionic main" > /etc/apt/sources.list.d/ros-l
 #RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 RUN sh -c 'wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key && apt-key add ros.key' && \
     apt-get -qq -y update && \
-    apt-get -qq -y install ros-melodic-desktop swi-prolog \
+    apt-get -qq -y install ros-melodic-desktop \
                            libjson-glib-dev python-yaml python-catkin-pkg python-rospkg \
                            emacs ros-melodic-catkin git \
                            ros-melodic-rosbridge-suite \
                            ros-melodic-cv-bridge \
+                           software-properties-common \
                            mongodb-clients libmongoc-dev  python-pip\
                            ros-melodic-rosauth mencoder lame libavcodec-extra \
                            texlive-latex-base imagemagick python-rdflib  && \
+    apt-add-repository -y ppa:swi-prolog/stable && \
+    apt-get -qq -y update && \
+    apt-get -qq -y install  swi-prolog && \
     apt-get -qq -y autoremove  && \
     apt-get -qq -y clean  && \
     rm -rf /var/lib/apt/lists/*  && \

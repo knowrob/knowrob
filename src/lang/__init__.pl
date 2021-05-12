@@ -1,16 +1,16 @@
 
-:- use_module('./query.pl').
-:- use_module('./scopes/temporal.pl').
+:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
 
-:- use_module('./computable.pl').
-:- use_module('./designator.pl').
-:- use_module('./export.pl').
+:- rdf_meta(triple(t,t,t)).
 
-% query terms
-:- use_module('./terms/temporal.pl').
-:- use_module('./terms/transitive.pl').
-:- use_module('./terms/triple.pl').
-:- use_module('./terms/holds.pl').
-:- use_module('./terms/is_a.pl').
-:- use_module('./terms/is_at.pl').
-:- use_module('./terms/occurs.pl').
+:- use_module(messages).
+:- use_module(subgraph).
+:- use_module(scope).
+:- use_module(db).
+:- use_module(rdf_tests).
+
+:- use_module(query).
+:- use_directory(mongolog).
+:- use_directory(terms).
+:- use_module(designator).
+:- use_module(computable).

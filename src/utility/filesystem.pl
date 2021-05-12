@@ -4,7 +4,7 @@
       path_split/2,
       mkdir/1
     ]).
-/** <module> Filesystem utilities
+/** <module> Interacting with the filesystem.
 
 @author Daniel Beßler
 @license BSD

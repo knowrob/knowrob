@@ -1,27 +1,15 @@
 
-% load modules into user
-:- use_module('./RDFS.pl').
-:- use_module('./XSD.pl').
-:- use_module('./OWL.pl').
-:- use_module('./QUDT.pl').
-:- use_module('./portray.pl').
-:- use_module('./DUL/Object.pl').
-:- use_module('./DUL/Event.pl').
+:- use_module('portray').
+
+:- use_module('RDFS').
+:- use_module('XSD').
+:- use_module('OWL').
+:- use_module('QUDT').
+:- use_module('DUL').
+:- use_module('SOMA').
+
+:- use_module('terms').
 
 % load additional ontologies
-:- tripledb_load(
-        'http://www.ontologydesignpatterns.org/ont/dul/IOLite.owl',
-        [ namespace(io)
-        ]).
-:- tripledb_load(
-        'http://knowrob.org/kb/knowrob.owl',
-        [ namespace(knowrob)
-        ]).
-
-% load init files in sub-directories
-:- use_directory('DUL').
-:- use_directory('SOMA').
-
-%
-:- use_module('./notify.pl').
-:- use_module('./neem_validation.pl').
+:- load_owl('http://knowrob.org/kb/knowrob.owl',
+	[ namespace(knowrob) ]).

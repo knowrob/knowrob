@@ -30,9 +30,14 @@ public:
 	bool has_transform(const std::string &frame) const;
 
 	/**
-	 * Clears cached transforms
+	 * Clears cached transforms and the list of managed frames.
 	 */
 	bool clear();
+
+	/**
+	 * Clears cached transforms.
+	 */
+	bool clear_transforms_only();
 
 	/**
 	 * Get the transform associated to a frame.

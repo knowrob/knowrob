@@ -4,7 +4,7 @@
       zip/3,
       zipm/3
     ]).
-/** <module> Prolog/OWL utility predicates
+/** <module> Functional programming.
 
 @author Bernhard Kirchlechner, Moritz Tenorth
 @license BSD
