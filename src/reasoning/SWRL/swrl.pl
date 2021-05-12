@@ -75,6 +75,7 @@ swrl_assert1(HeadAtom :- Body) :-
 	swrl_rule_pl(
 		HeadAtom :- Body,
 		Rule_pl, [var('swrl:scope',_)|Vars]),
+	% FIXME: handle scope here
 	% TODO need to support facts??
 	Rule_pl=(?>(Impl_pl,Cond_pl)),
 	comma_list(Cond_pl0,Cond_pl),
@@ -273,27 +274,27 @@ swrl_builtin_pl(
 % pass them as a list. As a workaround I am adding support for up to 5 arguments.
 swrl_builtin_pl(
 		makeOWLIndividual(A, B),
-		swrl:swrlx_make_individual(A_atom, [B_atom]),
+		make_owl_individual(A_atom, Pattern),
 		Vars) :-
-  swrl_atoms([A, B], [A_atom, B_atom], Vars).
+  swrl_atoms([A, B], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C),
-		swrl:swrlx_make_individual(A_atom, [B_atom, C_atom]),
+		make_owl_individual(A_atom, Pattern),
 		Vars) :-
-  swrl_atoms([A, B, C], [A_atom, B_atom, C_atom], Vars).
+  swrl_atoms([A, B, C], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C, D),
-		swrl:swrlx_make_individual(A_atom, [B_atom, C_atom, D_atom]),
+		make_owl_individual(A_atom, Pattern),
 		Vars) :-
-  swrl_atoms([A, B, C, D], [A_atom, B_atom, C_atom, D_atom], Vars).
+  swrl_atoms([A, B, C, D], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C, D, E),
-		swrl:swrlx_make_individual(A_atom, [B_atom, C_atom, D_atom, E_atom]),
+		make_owl_individual(A_atom, Pattern),
 		Vars) :-
-  swrl_atoms([A, B, C, D, E], [A_atom, B_atom, C_atom, D_atom, E_atom], Vars).
+  swrl_atoms([A, B, C, D, E], [A_atom|Pattern], Vars).
 
 
 %% Find all the variables in a SWRL rule and map those to anonymous
@@ -361,39 +362,40 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 	swrl_atom_number(X,Y,Vars),
 	swrl_nums(Xs,Ys,Vars).
 
-%% swrlx storage
-:- dynamic swrlx_individual_map/2.
+% add a database predicate that stores a mapping between
+% individual IRI and a SWRL pattern of the rule that has
+% generated the individual.
+:- mongolog_add_predicate(has_individual_pattern,
+		[individual,pattern], [[pattern]]).
 
-swrlx_add_individual(Pattern,Individual) :-
-    (   swrlx_individual_map(Pattern, Individual)
-    ->  true
-    ;   assertz(swrlx_individual_map(Pattern, Individual))
-    ).
+%
+make_owl_individual1(Individual, Type, Pattern) ?>
+	% generate a unique IRI, use Type as prefix
+	new_iri(Individual,Type),
+	% assert facts about the new individual
+	project(is_individual(Individual)),
+	project(has_type(Individual,Type)),
+	% assert mapping between pattern and individual
+	assert(has_individual_pattern(Individual, Pattern)).
 
-swrlx_get_individual(Pattern, Individual) :-
-   swrlx_individual_map(Pattern, Individual).
+%%
+%
+% If the first argument is already bound when make_individual/3 is called,
+% this method returns true and no individual is created
+%
+make_owl_individual(Individual, Pattern, Type) ?>
+	ground(Pattern),
+	atomic_list_concat(Pattern, PatternAtom),
+	once((
+		% succeed if individual is an atom already
+		atom(Individual)
+		% find existing individual given the pattern
+	;	(var(Individual), has_individual_pattern(Individual, PatternAtom))
+		% else create a new individual
+	;	(var(Individual), make_owl_individual1(Individual, Type, PatternAtom))
+	)).
 
-%% swrlx commands
-swrlx_make_individual(A, _) :-
-  ground(A).
-
-swrlx_make_individual(A, PatternArgs) :-
-  \+ ground(A),
-  maplist(ground, PatternArgs),
-  atomic_list_concat(PatternArgs, Pattern),
-  (
-    swrlx_get_individual(Pattern, A)
-    -> true
-  ; swrlx_insert_new_individual(A),
-    swrlx_add_individual(Pattern, A)
-  ).
-
-% Note: creating a new individual using
-% the predicate instance_of/2 would
-% run the notify predicate that checks if it is
-% an event. Since those predicates are tabled, any subsequent
-% updates that may happen in the rule head will not longer trigger
-% a notification. I am calling triple/3 directly as a workaround.
-swrlx_insert_new_individual(A) :-
-  lang_is_a:unique_name(swlrx, A),
-  tell(triple(A, rdf:'Type', owl:'Thing')).
+%%
+%
+make_owl_individual(Individual, Pattern) ?>
+	make_owl_individual(Individual, Pattern, owl:'Thing').
