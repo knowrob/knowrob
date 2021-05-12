@@ -166,136 +166,138 @@ swrl_condition_pl(
 	swrl_var(Vars, O, O_var).
 
 swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
-	swrl_builtin_pl(Builtin, Builtin_pl, Vars).
+	compound(Builtin),
+	Builtin =.. [Functor|Args],
+	swrl_builtin_pl(Functor, Args, Builtin_pl, Vars).
 
 %% swrl_builtin_pl
 % TODO (DB): support more builtins: matches, listConcat, member, length, ...
 %
 swrl_builtin_pl(
-		equal(S,O),
+		equal, [S,O],
 		(S_var == O_var),
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
 swrl_builtin_pl(
-		notEqual(S,O),
+		notEqual, [S,O],
 		(S_var \== O_var),
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
 swrl_builtin_pl(
-		lessThan(A,B),
+		lessThan, [A,B],
 		(A_num < B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin_pl(
-		lessThanOrEqual(A,B),
+		lessThanOrEqual, [A,B],
 		(A_num =< B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin_pl(
-		greaterThan(A,B),
+		greaterThan, [A,B],
 		(A_num > B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin_pl(
-		greaterThanOrEqual(A,B),
+		greaterThanOrEqual, [A,B],
 		(A_num >= B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% math builtins
 swrl_builtin_pl(
-		add(A,B,C),
+		add, [A,B,C],
 		(A_num is B_num + C_num),
 		Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		subtract(A,B,C),
+		subtract, [A,B,C],
 		(A_num is B_num - C_num),
 		Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		multiply(A,B,C),
+		multiply, [A,B,C],
 		(A_num is B_num * C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		divide(A,B,C),
+		divide, [A,B,C],
 		(A_num is B_num / C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		mod(A,B,C),
+		mod, [A,B,C],
 		(A_num is B_num mod C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		pow(A,B,C),
+		pow, [A,B,C],
 		(A_num is B_num ** C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin_pl(
-		abs(A,B),
+		abs, [A,B],
 		(A_num is abs(B_num)),
 		Vars) :-
   swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% boolean builtins
-swrl_builtin_pl(booleanNot(S), not(S_var), Vars) :-
+swrl_builtin_pl(booleanNot, [S], not(S_var), Vars) :-
   swrl_var(Vars, S, S_var).
 
 %% string builtins
 swrl_builtin_pl(
-		stringConcat(A,B,C),
+		stringConcat, [A,B,C],
 		atom_concat(C_atom,A_atom,B_atom),
 		Vars) :-
   swrl_atoms([A,B,C], [A_atom,B_atom,C_atom], Vars).
 
 swrl_builtin_pl(
-		stringLength(A,L),
+		stringLength, [A,L],
 		atom_length(A_atom, L_num),
 		Vars) :-
   swrl_atom(A,A_atom,Vars),
   swrl_atom_number(L,L_num,Vars).
 
 swrl_builtin_pl(
-		upperCase(A,Upper),
+		upperCase, [A,Upper],
 		upcase_atom(A_atom, Upper_atom),
 		Vars) :-
   swrl_atoms([A,Upper], [A_atom,Upper_atom], Vars).
 
 swrl_builtin_pl(
-		lowerCase(A,Lower),
+		lowerCase, [A,Lower],
 		downcase_atom(A_atom, Lower_atom),
 		Vars) :-
   swrl_atoms([A,Lower], [A_atom,Lower_atom], Vars).
 
 swrl_builtin_pl(
-		contains(A,X),
+		contains, [A,X],
 		sub_atom(A_atom, _, _, _, X_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 swrl_builtin_pl(
-		startsWith(A,X),
+		startsWith, [A,X],
 		atom_prefix(A_atom, X_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 swrl_builtin_pl(
-		endsWith(A,X),
+		endsWith, [A,X],
 		atom_concat(_, X_atom, A_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
@@ -305,32 +307,10 @@ swrl_builtin_pl(
 % the parser does not support argument lists.
 %
 swrl_builtin_pl(
-		makeOWLIndividual(A, B),
-		make_owl_individual(A_atom, [Label|Pattern]),
-		Vars) :-
-  memberchk(var('swrl:label',Label), Vars),
-  swrl_atoms([A, B], [A_atom|Pattern], Vars).
-
-swrl_builtin_pl(
-		makeOWLIndividual(A, B, C),
-		make_owl_individual(A_atom, [Label|Pattern]),
-		Vars) :-
-  memberchk(var('swrl:label',Label), Vars),
-  swrl_atoms([A, B, C], [A_atom|Pattern], Vars).
-
-swrl_builtin_pl(
-		makeOWLIndividual(A, B, C, D),
-		make_owl_individual(A_atom, [Label|Pattern]),
-		Vars) :-
-  memberchk(var('swrl:label',Label), Vars),
-  swrl_atoms([A, B, C, D], [A_atom|Pattern], Vars).
-
-swrl_builtin_pl(
-		makeOWLIndividual(A, B, C, D, E),
-		make_owl_individual(A_atom, [Label|Pattern]),
-		Vars) :-
-  memberchk(var('swrl:label',Label), Vars),
-  swrl_atoms([A, B, C, D, E], [A_atom|Pattern], Vars).
+		makeOWLIndividual, [A|Args],
+		make_owl_individual(A_atom, [Label|Pattern]), Vars) :-
+	memberchk(var('swrl:label',Label), Vars),
+	swrl_atoms([A|Args], [A_atom|Pattern], Vars).
 
 
 %% Find all the variables in a SWRL rule and map those to anonymous
