@@ -12,7 +12,9 @@
       kb_drop_rule(t),
       kb_expand(t,-),
       is_callable_with(?,t),  % ?Backend, :Goal
-      call_with(?,t,+)        % +Backend, :Goal, +Options
+      call_with(?,t,+) ,       % +Backend, :Goal, +Options
+      ask(t),      % +Statement, NOTE: deprecated
+      ask(t,t)    % +Statement, +Scope, NOTE: deprecated
     ]).
 /** <module> Query aggregation.
 
@@ -166,6 +168,29 @@ term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
 	term_to_atom(X,Atom),
 	atom_concat('v',Atom,Key),
 	term_keys_variables_1(Xs, Ys).
+
+%% ask(+Statement) is nondet.
+%
+% Same as kb_call/1
+%
+% @deprecated
+%
+% @param Statement a statement term.
+%
+ask(Statement) :-
+  kb_call(Statement).
+
+%% ask(+Statement,+Scope) is nondet.
+%
+% Same as kb_call/4 with empty options list and FScope as wildcard.
+%
+% @deprecated
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+ask(Statement,QScope) :-
+	kb_call(Statement, QScope, _, []).
 
 %% kb_project(+Statement) is nondet.
 %

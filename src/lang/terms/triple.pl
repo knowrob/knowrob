@@ -1,5 +1,8 @@
 :- module(lang_triple,
-		[ mng_triple_doc(t,-,t) ]).
+		[ 
+			mng_triple_doc(t,-,t),
+			triple(t,t,t) 
+		]).
 /** <module> Handling of triples in query expressions.
 
 The following predicates are supported:
@@ -525,6 +528,33 @@ must_propagate_assert(rdfs:subPropertyOf).
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% triple/3 query pattern
 %%%%%%%%%%%%%%%%%%%%%%%
+
+%% triple(?Subject, ?Property, ?Value) is nondet.
+%
+% Query values of a property (and their sub-properties) on some subject in the triple DB.
+% If the property is rdfs:subPropertyOf or rdf:type the query returns the values for the 
+% subject and their super-class
+% 
+% The property can be wrapped in one of several options:
+% 
+%     - transitive(Property) 
+%       indicates that the property is transitive
+%     - reflexive(Property)
+%       indicates that the property is reflexive
+%     - pstar(Property)
+%       binds the property to one of the values in the p* field in the mongodb
+%
+% The value can be wrapped in one of several options:
+%
+%     - ostar(Value)
+%       binds the value to one of the values in the o* field in the mongodb
+%
+% @param Subject The subject of a triple.
+% @param Property The predicate of a triple.
+% @param Value The object of a triple.
+%
+triple(S,P,O) :-
+	kb_call(triple(S,P,O)).
 
 %% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
 %
