@@ -1,5 +1,6 @@
 :- module(swrl,
 		[ swrl_fire/1
+		, swrl_fire/2
 		  %,swrl_assert/1
 		]).
 /** <module> Prolog-based SWRL representation.
@@ -11,24 +12,42 @@
 		[ holds/3 ]).
 :- use_module(library('model/OWL')).
 
-%% swrl_fire(+Rule,+Args).
+%%
+swrl_rule_hash(Rule, Hash) :-
+	term_hash(Rule,X),
+	atom_number(Hash,X).
+
+%% swrl_fire(+Rule).
 %
 % "Fires" a rule, that is running it over the whole knowledge base
 % and asserting inferred facts.
 %
 % @param Rule Prolog-based representation of SWRL rule.
 %
-swrl_fire([] :- _) :- !.
+swrl_fire(Rule) :-
+	% generate a label for the rule from its signature
+	swrl_rule_hash(Rule,Label),
+	swrl_fire(Rule,Label).
 
-swrl_fire([HeadAtom|Xs] :- Body) :-
-	swrl_fire1(HeadAtom :- Body),
-	swrl_fire(Xs :- Body).
+%% swrl_fire(+Rule, +Label).
+%
+swrl_fire(Head :- Body, Label) :-
+	atom_concat('swrl:', Label, Label0),
+	forall(
+		member(HeadAtom,Head),
+		swrl_fire1(HeadAtom :- Body, Label0)
+	).
 
-swrl_fire1(HeadAtom :- Body) :-
+%
+swrl_fire1(HeadAtom :- Body, Label) :-
 	swrl_vars([HeadAtom] :- Body, Vars),
 	swrl_rule_pl(
 		HeadAtom :- Body,
-		Rule_pl, [var('swrl:scope',_)|Vars]),
+		Rule_pl, [
+			var('swrl:scope',_),
+			var('swrl:label',Label)|
+			Vars
+		]),
 	Rule_pl=(?>(Impl_pl,Cond_pl)),
 	findall(Fact,
 		(	kb_call(Cond_pl),
@@ -64,17 +83,29 @@ swrl_fact(lang_holds:holds(X,Y,Z),     holds(X,Y,Z)) :- !.
 %
 % @param Rule Prolog-based representation of SWRL rule.
 %
-swrl_assert([] :- _) :- !.
+swrl_assert(Rule) :-
+	% generate a label for the rule from its signature
+	swrl_rule_hash(Rule,Label),
+	swrl_assert(Rule,Label).
 
-swrl_assert([HeadAtom|Xs] :- Body) :-
-	swrl_assert1(HeadAtom :- Body),
-	swrl_assert(Xs :- Body).
+%%
+swrl_assert(Head :- Body, Label) :-
+	atom_concat('swrl:', Label, Label0),
+	forall(
+		member(HeadAtom,Head),
+		swrl_assert1(HeadAtom :- Body, Label0)
+	).
 
-swrl_assert1(HeadAtom :- Body) :-
+%
+swrl_assert1(HeadAtom :- Body, Label) :-
 	swrl_vars([HeadAtom] :- Body, Vars),
 	swrl_rule_pl(
 		HeadAtom :- Body,
-		Rule_pl, [var('swrl:scope',_)|Vars]),
+		Rule_pl, [
+			var('swrl:scope',_),
+			var('swrl:label',Label)|
+			Vars
+		]),
 	% FIXME: handle scope here
 	% TODO need to support facts??
 	Rule_pl=(?>(Impl_pl,Cond_pl)),
@@ -270,30 +301,35 @@ swrl_builtin_pl(
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 %% extensions
-% Note: built-in arguments are passed individually. I have not found a way to 
-% pass them as a list. As a workaround I am adding support for up to 5 arguments.
+% Note: built-in arguments are passed individually as at the moment
+% the parser does not support argument lists.
+%
 swrl_builtin_pl(
 		makeOWLIndividual(A, B),
-		make_owl_individual(A_atom, Pattern),
+		make_owl_individual(A_atom, [Label|Pattern]),
 		Vars) :-
+  memberchk(var('swrl:label',Label), Vars),
   swrl_atoms([A, B], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C),
-		make_owl_individual(A_atom, Pattern),
+		make_owl_individual(A_atom, [Label|Pattern]),
 		Vars) :-
+  memberchk(var('swrl:label',Label), Vars),
   swrl_atoms([A, B, C], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C, D),
-		make_owl_individual(A_atom, Pattern),
+		make_owl_individual(A_atom, [Label|Pattern]),
 		Vars) :-
+  memberchk(var('swrl:label',Label), Vars),
   swrl_atoms([A, B, C, D], [A_atom|Pattern], Vars).
 
 swrl_builtin_pl(
 		makeOWLIndividual(A, B, C, D, E),
-		make_owl_individual(A_atom, Pattern),
+		make_owl_individual(A_atom, [Label|Pattern]),
 		Vars) :-
+  memberchk(var('swrl:label',Label), Vars),
   swrl_atoms([A, B, C, D, E], [A_atom|Pattern], Vars).
 
 
@@ -369,7 +405,7 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 		[individual,pattern], [[pattern]]).
 
 %
-make_owl_individual1(Individual, Type, Pattern) ?>
+make_owl_individual1(Individual, Pattern, Type) ?>
 	% generate a unique IRI, use Type as prefix
 	new_iri(Individual,Type),
 	% assert facts about the new individual
@@ -385,14 +421,14 @@ make_owl_individual1(Individual, Type, Pattern) ?>
 %
 make_owl_individual(Individual, Pattern, Type) ?>
 	ground(Pattern),
-	atomic_list_concat(Pattern, PatternAtom),
+	atomic_list_concat(Pattern, '::', PatternAtom),
 	once((
 		% succeed if individual is an atom already
 		atom(Individual)
 		% find existing individual given the pattern
 	;	(var(Individual), has_individual_pattern(Individual, PatternAtom))
 		% else create a new individual
-	;	(var(Individual), make_owl_individual1(Individual, Type, PatternAtom))
+	;	(var(Individual), make_owl_individual1(Individual, PatternAtom, Type))
 	)).
 
 %%

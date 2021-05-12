@@ -40,13 +40,15 @@ swrl_file_path(Pkg,Filename,Filepath) :-
 swrl_file_fire(Filepath,Label) :-
 	swrl_file_parse(Filepath,Rule,Args),
 	get_dict(label,Args,Label),!,
-	swrl_fire(Rule).
+	swrl_fire(Rule,Label).
 
 %%
 swrl_file_fire(Filepath) :-
 	forall(
-		swrl_file_parse(Filepath,Rule,_Args),
-		swrl_fire(Rule)
+		swrl_file_parse(Filepath,Rule,Args),
+		(	get_dict(label,Args,Label),
+			swrl_fire(Rule,Label)
+		)
 	).
 
 %% swrl_file_unload(+Filepath) is det.
