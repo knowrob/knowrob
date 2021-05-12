@@ -1,8 +1,9 @@
 :- module(swrlx,
 		[ swrlx_make_individual/2
 		]).
-/** <module> Prolog-based SWRL representation.
+/** <module> Support for the SWRL Extensions built-in library.
 
+@see https://github.com/protegeproject/swrlapi/wiki/ExtensionsBuiltInLibrary
 */
 
 :- use_module(library('lang/mongolog/database'),
@@ -12,17 +13,22 @@
 % add a database predicate that stores a mapping between
 % individual IRI and a SWRL pattern of the rule that has
 % generated the individual.
+%
 :- mongolog_add_predicate(swrlx_individual, [individual,pattern], [[pattern]]).
 
-% declare some more clauses of the multifile predicate swrl_builtin/3
+% SWRL Extensions are implemented through additional clauses
+% of the multifile predicate swrl_builtin/4.
+%
 swrl:swrl_builtin(
 		makeOWLIndividual, [A|Args],
-		swrlx_make_individual(A_atom, [Label|Pattern]), Vars) :-
+		swrlx_make_individual(A_atom, [Label|Pattern]),
+		Vars) :-
+	% read the label of the rule the builtin is embedded in
 	memberchk(var('swrl:label',Label), Vars),
 	swrl:swrl_atoms([A|Args], [A_atom|Pattern], Vars).
 
 %
-swrlx_make_individual1(Individual, Pattern) ?>
+swrlx_make_new_individual(Individual, Pattern) ?>
 	% generate a unique IRI, use Type as prefix
 	new_iri(Individual, owl:'Thing'),
 	% assert facts about the new individual
@@ -31,10 +37,16 @@ swrlx_make_individual1(Individual, Pattern) ?>
 	% assert mapping between pattern and individual
 	assert(swrlx_individual(Individual, Pattern)).
 
-%%
+%% swrlx_make_individual(?Individual, +Pattern) is det.
 %
-% If the first argument is already bound when make_individual/3 is called,
-% this method returns true and no individual is created
+% This predicate provides a controlled way of creating OWL individuals in a rule.
+% It succeeds in any case if Individual is instantiated before the call.
+% Pattern is a signature of instantiations in a rule, and if the pattern was used
+% before to create an individual, then Individual will be instantiated to
+% the previously created individual.
+%
+% @param Individual IRI atom
+% @param Pattern List of atoms
 %
 swrlx_make_individual(Individual, Pattern) ?>
 	ground(Pattern),
@@ -42,10 +54,10 @@ swrlx_make_individual(Individual, Pattern) ?>
 	once((
 		% succeed if individual is an atom already
 		atom(Individual)
-		% find existing individual given the pattern
+		% read indiviudal from cache
 	;	(var(Individual), swrlx_individual(Individual, PatternAtom))
-		% else create a new individual
-	;	(var(Individual), swrlx_make_individual1(Individual, PatternAtom))
+		% cache miss: create a new individual
+	;	(var(Individual), swrlx_make_new_individual(Individual, PatternAtom))
 	)).
 
 :- begin_rdf_tests(
@@ -54,7 +66,6 @@ swrlx_make_individual(Individual, Pattern) ?>
 		[ namespace('http://knowrob.org/kb/swrl_test#')
 		]).
 
-% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_makeOWLIndividual) :-
 	findall(X, has_type(X, test:'Car'), Cars0),
 	swrl_file_path(knowrob,'test.swrl',Filepath),
@@ -69,7 +80,7 @@ test(swrl_makeOWLIndividual) :-
 	% firing the rule a second time does not change number of individuals
 	assert_equals(Cars1, Cars2),
 	% delete the fact again
-	% FIXME: has_individual_pattern/2 facts are not deleted in cleanup step!
+	% FIXME: swrlx_individual/2 facts are not deleted in cleanup step!
 	%        there should be a mechanism to do this under the hood.
 	forall(
 		( member(X,Cars1), \+ member(X,Cars0) ),
