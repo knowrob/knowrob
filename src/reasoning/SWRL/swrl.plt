@@ -213,28 +213,6 @@ test(swrl_greaterThen) :-
 	swrl_file_fire(Filepath,'greaterThen'),
 	assert_true(has_type(test:'Ernest', test:'Adult')).
 
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_makeOWLIndividual) :-
-	findall(X, has_type(X, test:'Car'), Cars0),
-	swrl_file_path(knowrob,'test.swrl',Filepath),
-	swrl_file_fire(Filepath,'makeOWLIndividual'),
-	findall(X, has_type(X, test:'Car'), Cars1),
-	swrl_file_fire(Filepath,'makeOWLIndividual'),
-	findall(X, has_type(X, test:'Car'), Cars2),
-	% firing the rule for the first time creates one new individual
-	length(Cars0, NumCars0),
-	length(Cars1, NumCars1),
-	assert_true(NumCars1 is NumCars0+1),
-	% firing the rule a second time does not change number of individuals
-	assert_equals(Cars1, Cars2),
-	% delete the fact again
-	% FIXME: has_individual_pattern/2 facts are not deleted in cleanup step!
-	%        there should be a mechanism to do this under the hood.
-	forall(
-		( member(X,Cars1), \+ member(X,Cars0) ),
-		kb_call(retractall(has_individual_pattern(X,_)))
-	).
-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % SWRL rules asserted from human readable expressions

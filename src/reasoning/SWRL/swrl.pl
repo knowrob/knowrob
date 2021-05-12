@@ -12,6 +12,8 @@
 		[ holds/3 ]).
 :- use_module(library('model/OWL')).
 
+:- multifile swrl_builtin/4.
+
 %%
 swrl_rule_hash(Rule, Hash) :-
 	term_hash(Rule,X),
@@ -168,149 +170,139 @@ swrl_condition_pl(
 swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
 	compound(Builtin),
 	Builtin =.. [Functor|Args],
-	swrl_builtin_pl(Functor, Args, Builtin_pl, Vars).
+	swrl_builtin(Functor, Args, Builtin_pl, Vars).
 
-%% swrl_builtin_pl
+%% swrl_builtin
 % TODO (DB): support more builtins: matches, listConcat, member, length, ...
 %
-swrl_builtin_pl(
+swrl_builtin(
 		equal, [S,O],
 		(S_var == O_var),
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
-swrl_builtin_pl(
+swrl_builtin(
 		notEqual, [S,O],
 		(S_var \== O_var),
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
-swrl_builtin_pl(
+swrl_builtin(
 		lessThan, [A,B],
 		(A_num < B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		lessThanOrEqual, [A,B],
 		(A_num =< B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		greaterThan, [A,B],
 		(A_num > B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		greaterThanOrEqual, [A,B],
 		(A_num >= B_num),
 		Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% math builtins
-swrl_builtin_pl(
+swrl_builtin(
 		add, [A,B,C],
 		(A_num is B_num + C_num),
 		Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		subtract, [A,B,C],
 		(A_num is B_num - C_num),
 		Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		multiply, [A,B,C],
 		(A_num is B_num * C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		divide, [A,B,C],
 		(A_num is B_num / C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		mod, [A,B,C],
 		(A_num is B_num mod C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		pow, [A,B,C],
 		(A_num is B_num ** C_num),
 		Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		abs, [A,B],
 		(A_num is abs(B_num)),
 		Vars) :-
   swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% boolean builtins
-swrl_builtin_pl(booleanNot, [S], not(S_var), Vars) :-
+swrl_builtin(booleanNot, [S], not(S_var), Vars) :-
   swrl_var(Vars, S, S_var).
 
 %% string builtins
-swrl_builtin_pl(
+swrl_builtin(
 		stringConcat, [A,B,C],
 		atom_concat(C_atom,A_atom,B_atom),
 		Vars) :-
   swrl_atoms([A,B,C], [A_atom,B_atom,C_atom], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		stringLength, [A,L],
 		atom_length(A_atom, L_num),
 		Vars) :-
   swrl_atom(A,A_atom,Vars),
   swrl_atom_number(L,L_num,Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		upperCase, [A,Upper],
 		upcase_atom(A_atom, Upper_atom),
 		Vars) :-
   swrl_atoms([A,Upper], [A_atom,Upper_atom], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		lowerCase, [A,Lower],
 		downcase_atom(A_atom, Lower_atom),
 		Vars) :-
   swrl_atoms([A,Lower], [A_atom,Lower_atom], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		contains, [A,X],
 		sub_atom(A_atom, _, _, _, X_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		startsWith, [A,X],
 		atom_prefix(A_atom, X_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
-swrl_builtin_pl(
+swrl_builtin(
 		endsWith, [A,X],
 		atom_concat(_, X_atom, A_atom),
 		Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
-
-%% extensions
-% Note: built-in arguments are passed individually as at the moment
-% the parser does not support argument lists.
-%
-swrl_builtin_pl(
-		makeOWLIndividual, [A|Args],
-		make_owl_individual(A_atom, [Label|Pattern]), Vars) :-
-	memberchk(var('swrl:label',Label), Vars),
-	swrl_atoms([A|Args], [A_atom|Pattern], Vars).
 
 
 %% Find all the variables in a SWRL rule and map those to anonymous
@@ -377,41 +369,3 @@ swrl_nums([],[],_).
 swrl_nums([X|Xs],[Y|Ys],Vars) :-
 	swrl_atom_number(X,Y,Vars),
 	swrl_nums(Xs,Ys,Vars).
-
-% add a database predicate that stores a mapping between
-% individual IRI and a SWRL pattern of the rule that has
-% generated the individual.
-:- mongolog_add_predicate(has_individual_pattern,
-		[individual,pattern], [[pattern]]).
-
-%
-make_owl_individual1(Individual, Pattern, Type) ?>
-	% generate a unique IRI, use Type as prefix
-	new_iri(Individual,Type),
-	% assert facts about the new individual
-	project(is_individual(Individual)),
-	project(has_type(Individual,Type)),
-	% assert mapping between pattern and individual
-	assert(has_individual_pattern(Individual, Pattern)).
-
-%%
-%
-% If the first argument is already bound when make_individual/3 is called,
-% this method returns true and no individual is created
-%
-make_owl_individual(Individual, Pattern, Type) ?>
-	ground(Pattern),
-	atomic_list_concat(Pattern, '::', PatternAtom),
-	once((
-		% succeed if individual is an atom already
-		atom(Individual)
-		% find existing individual given the pattern
-	;	(var(Individual), has_individual_pattern(Individual, PatternAtom))
-		% else create a new individual
-	;	(var(Individual), make_owl_individual1(Individual, PatternAtom, Type))
-	)).
-
-%%
-%
-make_owl_individual(Individual, Pattern) ?>
-	make_owl_individual(Individual, Pattern, owl:'Thing').

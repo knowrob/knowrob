@@ -299,7 +299,7 @@ swrl_var_expr(var(Var)) --> ['?'], [Var].
 
 swrl_is_builtin(Predicate) :-
   atom(Predicate), % check if predicate is a builtin predicate
-  clause(swrl:swrl_builtin_pl(Predicate,_,_,_),_).
+  clause(swrl:swrl_builtin(Predicate,_,_,_),_).
 
 swrl_match_instance(Iri,Name,_) :-
   atom(Iri),!,
