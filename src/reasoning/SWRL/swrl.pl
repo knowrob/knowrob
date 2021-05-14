@@ -1,7 +1,8 @@
 :- module(swrl,
-		[ swrl_fire/1
-		, swrl_fire/2
+		[ swrl_fire/1         % +Rule
+		, swrl_fire/2         % +Rule, +Label
 		  %,swrl_assert/1
+		, swrl_rule_hash/2    % +Rule, -Hash
 		]).
 /** <module> Prolog-based SWRL representation.
 
@@ -14,7 +15,11 @@
 
 :- multifile swrl_builtin/4.
 
-%%
+%% swrl_rule_hash(+Rule, -Hash) is det.
+%
+% Compute the hash a SWRL rule.
+% Internally call term_hash/2.
+%
 swrl_rule_hash(Rule, Hash) :-
 	term_hash(Rule,X),
 	atom_number(Hash,X).
