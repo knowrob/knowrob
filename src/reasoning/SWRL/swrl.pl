@@ -1,7 +1,8 @@
 :- module(swrl,
 		[ swrl_fire/1         % +Rule
 		, swrl_fire/2         % +Rule, +Label
-		  %,swrl_assert/1
+		, swrl_assert/1       % +Rule
+		, swrl_assert/2       % +Rule, +Label
 		, swrl_rule_hash/2    % +Rule, -Hash
 		]).
 /** <module> Prolog-based SWRL representation.
@@ -26,8 +27,7 @@ swrl_rule_hash(Rule, Hash) :-
 
 %% swrl_fire(+Rule).
 %
-% "Fires" a rule, that is running it over the whole knowledge base
-% and asserting inferred facts.
+% Same as swrl_fire/2 but uses the hash of the rule as label.
 %
 % @param Rule Prolog-based representation of SWRL rule.
 %
@@ -37,6 +37,10 @@ swrl_fire(Rule) :-
 	swrl_fire(Rule,Label).
 
 %% swrl_fire(+Rule, +Label).
+%
+% Fires a rule. That is running it over the whole knowledge base
+% and asserting inferred facts.
+% Label is a unique identifier of the rule used to avoid redundancy.
 %
 swrl_fire(Head :- Body, Label) :-
 	atom_concat('swrl:', Label, Label0),
@@ -77,7 +81,7 @@ swrl_fact(lang_holds:holds(X,Y,Z),     holds(X,Y,Z)) :- !.
 
 %% swrl_assert(+Rule).
 %
-% Assert SWRL rule in the Prolog KB.
+% Same as swrl_assert/2 but uses the hash of the rule as label.
 %
 % @param Rule Prolog-based representation of SWRL rule.
 %
@@ -86,7 +90,11 @@ swrl_assert(Rule) :-
 	swrl_rule_hash(Rule,Label),
 	swrl_assert(Rule,Label).
 
-%%
+%% swrl_assert(+Rule, +Label).
+%
+% Assert SWRL rule in the knowledge base.
+% Label is a unique identifier of the rule used to avoid redundancy.
+%
 swrl_assert(Head :- Body, Label) :-
 	atom_concat('swrl:', Label, Label0),
 	forall(
@@ -96,7 +104,9 @@ swrl_assert(Head :- Body, Label) :-
 
 %
 swrl_assert1(HeadAtom :- Body, Label) :-
+	% parse rule variables into a map
 	swrl_vars([HeadAtom] :- Body, Vars),
+	% translate into ask-rule
 	swrl_rule_pl(
 		HeadAtom :- Body,
 		Rule_pl, [
@@ -104,14 +114,12 @@ swrl_assert1(HeadAtom :- Body, Label) :-
 			var('swrl:label',Label)|
 			Vars
 		]),
-	% FIXME: handle scope here
-	% TODO need to support facts??
 	Rule_pl=(?>(Impl_pl,Cond_pl)),
 	comma_list(Cond_pl0,Cond_pl),
-	% expand into regular Prolog rule
+	% term expansion
 	% NOTE: this also calls query_assert/1
 	expand_term(?>(Impl_pl,Cond_pl0), Expanded),
-	% finally assert another clause of instance_of or holds
+	% finally assert expanded rule
 	assertz(Expanded).
   
 swrl_rule_pl_implication(Implication :- _, Implication) :- !.
