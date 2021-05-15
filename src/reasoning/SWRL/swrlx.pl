@@ -3,6 +3,8 @@
 		]).
 /** <module> Support for the SWRL Extensions built-in library.
 
+@author Álvaro Páez
+@author Daniel Beßler
 @see https://github.com/protegeproject/swrlapi/wiki/ExtensionsBuiltInLibrary
 */
 
