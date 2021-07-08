@@ -35,8 +35,8 @@ sudo apt install swi-prolog
 # Check the mongodb version
 mongod --version
 # If below 4.2, an update is needed.
-# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them (latter is not covered here).
-# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start.
+# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
+# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
 # Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
 # The following procedure reinstalls mongodb completely with the desired version. 
 # All previous deps, settings, DBs of mongodb will be lost!
@@ -56,7 +56,7 @@ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongod
 sudo apt update
 sudo apt install mongodb-org
 
-# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the latest version.
+# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
 # Replace the <version> with your own new version. To this day it is '4.2.14'. 
 sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.2.<version>_amd64.deb
 
@@ -68,8 +68,8 @@ sudo systemctl status mongod.service
 # https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
 # Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
 # To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
-# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect or non existent.
-# Either set owner and group of these two paths to mongodb, or reinstall mongodb again, which recreates the files needed.
+# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect.
+# Either set owner and group of these two paths to mongodb, or reinstall mongodb.
 ```
 
 - [rosprolog](https://github.com/knowrob/rosprolog)
