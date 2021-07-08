@@ -131,6 +131,8 @@ Language phrases are terms whose semantics is defined
 in form of Prolog rules using special operators such as *?>* (the ask operator),
 or *+>* (the tell operator).
 
+One useful CLI for queries is launched with `rosrun rosprolog rosprolog_commandline.py`
+
 ### Model
 
 KnowRob structures knowledge according to models represented using RDF.
