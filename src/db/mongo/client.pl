@@ -15,8 +15,10 @@
       mng_index_create/2,
       mng_index_create/3,
       mng_dump/2,
+      mng_dump/3,
       mng_dump_collection/3,
       mng_restore/2,
+      mng_restore/3,
       mng_regex_prefix/2,
       mng_cursor_create/3,
       mng_cursor_destroy/1,
@@ -338,11 +340,15 @@ mng_doc_value(PlValue,PlValue).
 % @param Directory absolute path to output directory
 %
 mng_dump(DB,Dir) :-
+	mng_dump(DB,Dir,_).
+
+mng_dump(DB,Dir,Output) :-
 	mng_uri(URI),
 	process_create(path(mongodump),
 		[ '--uri', URI, '--db', DB, '--out', Dir ],
-		[ process(PID) ]
+		[ process(PID), stderr(pipe(StdErrStream)) ]
 	),
+	read_lines(StdErrStream, Output)
 	wait(PID,exited(0)).
 
 %% mng_dump_collection(+DB, +Collection, +Directory) is det.
@@ -370,12 +376,16 @@ mng_dump_collection(DB,Collection,Directory) :-
 % @param Directory absolute path to output directory
 %
 mng_restore(_DB,Dir) :-
+	mng_restore(_,Dir,_).
+
+mng_restore(_DB,Dir,Output) :-
 	mng_uri(URI),
 	process_create(path(mongorestore),
 		[ '--uri', URI, '--dir', Dir ],
-		[ process(PID) ]
+		[ process(PID), stderr(pipe(StdErrStream)) ]
 	),
-	wait(PID,exited(0)).
+	read_lines(StdErrStream, Output)
+	wait(PID,exited(0)).	
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
