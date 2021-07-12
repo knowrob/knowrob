@@ -387,6 +387,25 @@ mng_restore(_DB,Dir,Output) :-
 	read_lines(StdErrStream, Output),
 	wait(PID,exited(0)).	
 
+
+% copied from https://www.swi-prolog.org/pldoc/man?predicate=process_create/3
+%
+% Read lines of Out-Stream, usually for reading stdout and stderr as
+% list of lines
+%
+% @param Out the stream, created by pipe(Out)
+% @param Lines list of lines that were read
+%
+read_lines(Out, Lines) :-
+        read_line_to_codes(Out, Line1),
+        read_lines(Line1, Out, Lines).
+
+read_lines(end_of_file, _, []) :- !.
+read_lines(Codes, Out, [Line|Lines]) :-
+        atom_codes(Line, Codes),
+        read_line_to_codes(Out, Line2),
+        read_lines(Line2, Out, Lines).
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % typed terms
