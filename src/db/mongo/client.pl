@@ -348,7 +348,7 @@ mng_dump(DB,Dir,Output) :-
 		[ '--uri', URI, '--db', DB, '--out', Dir ],
 		[ process(PID), stderr(pipe(StdErrStream)) ]
 	),
-	read_lines(StdErrStream, Output)
+	read_lines(StdErrStream, Output),
 	wait(PID,exited(0)).
 
 %% mng_dump_collection(+DB, +Collection, +Directory) is det.
@@ -384,7 +384,7 @@ mng_restore(_DB,Dir,Output) :-
 		[ '--uri', URI, '--dir', Dir ],
 		[ process(PID), stderr(pipe(StdErrStream)) ]
 	),
-	read_lines(StdErrStream, Output)
+	read_lines(StdErrStream, Output),
 	wait(PID,exited(0)).	
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
