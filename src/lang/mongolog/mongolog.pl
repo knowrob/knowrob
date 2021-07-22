@@ -135,7 +135,13 @@ assert_documents1(array(Docs), Key) :-
 	% TODO: make the client return docs in a format that it accepts as input.
 	maplist(format_doc, Docs, Docs0),
 	maplist(bulk_operation, Docs0, BulkOperations),
-	mng_get_db(DB, Coll, Key),
+
+	%% check for prefix in the Key
+	once(((setting(mng_client:collection_prefix, Prefix),
+	    atomic_list_concat([Prefix,Key0], '_', Key))
+	    ; Key0 = Key
+	)),
+	mng_get_db(DB, Coll, Key0),
 	mng_bulk_write(DB, Coll, BulkOperations).
 
 %%

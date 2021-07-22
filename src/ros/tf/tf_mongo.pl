@@ -40,7 +40,7 @@
    		% time field
    		'header.stamp',
 		% options
-		[	collection(CollectionName)
+		[	collection(tf)
 		]).
 
 % add *tf* as a mongolog command such that it can be
