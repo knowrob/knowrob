@@ -15,8 +15,8 @@ These instructions will get you a copy of KnowRob up and running on your local m
 ### Prerequisites
 
 - ROS (*ROS melodic* for the master branch)
-- SWI Prolog >= 8.2.4 (see Further Information for installation details)
-- mongo DB server >= 4.2 and libmongoc (see Further Information)
+- SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- mongo DB server >= 4.2 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
 - [rosprolog](https://github.com/knowrob/rosprolog)
 
 ### Installation
