@@ -1,0 +1,17 @@
+version: '3'
+services:  
+  mongo:
+    image: mongo:4.4.3-bionic
+    container_name: mongo_container
+
+  # the KnowRob container
+  knowrob:
+    image: "openease/knowrob"
+    container_name: knowrob_container
+    depends_on:
+      - 'mongo'
+    environment:
+      - KNOWROB_MONGODB_URI=mongodb://mongo_container:27017/?appname=knowrob
+    ports:
+      - "62226:62226"
+    entrypoint: ["/run_knowrob_local.sh"]
