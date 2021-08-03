@@ -3,6 +3,8 @@ services:
   mongo:
     image: mongo:4.4.3-bionic
     container_name: mongo_container
+    ports:
+      - 127.0.0.1:27018:27017
 
   # the KnowRob container
   knowrob:
@@ -11,7 +13,6 @@ services:
     depends_on:
       - 'mongo'
     environment:
-      - KNOWROB_MONGODB_URI=mongodb://mongo_container:27017/?appname=knowrob
-    ports:
-      - "62226:62226"
+      - KNOWROB_MONGODB_URI=mongodb://127.0.0.1:27018/?appname=knowrob
+    network_mode: host
     entrypoint: ["/run_knowrob_local.sh"]
