@@ -15,8 +15,8 @@ These instructions will get you a copy of KnowRob up and running on your local m
 ### Prerequisites
 
 - ROS (*ROS melodic* for the master branch)
-- SWI Prolog >= 7.6
-- mongo DB server >= 4.2 and libmongoc
+- SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- mongo DB server >= 4.2 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
 - [rosprolog](https://github.com/knowrob/rosprolog)
 
 ### Installation
@@ -77,6 +77,8 @@ Language phrases are terms whose semantics is defined
 in form of Prolog rules using special operators such as *?>* (the ask operator),
 or *+>* (the tell operator).
 
+One useful CLI for queries is launched with `rosrun rosprolog rosprolog_commandline.py`
+
 ### Model
 
 KnowRob structures knowledge according to models represented using RDF.
@@ -131,3 +133,61 @@ More complete information about reasoning in KnowRob can be found
 
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
 - A blog and more wiki pages are avaiabale at [knowrob.org](http://www.knowrob.org)
+
+### Installation of SWI-Prolog and MongoDB
+
+- SWI Prolog latest stable version
+
+```bash
+# If swi-prolog is already installed, check the version
+swipl --version
+# If it's under 8.2.4, add the ppa of the latest stable version
+sudo apt-add-repository -y ppa:swi-prolog/stable
+# And update it
+sudo apt update
+sudo apt upgrade
+# or install it, if not present before.
+sudo apt install swi-prolog
+```
+
+- MongoDB
+
+```bash
+# Check the mongodb version
+mongod --version
+# If below 4.2, an update is needed.
+# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
+# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
+# Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
+# The following procedure reinstalls mongodb completely with the desired version. 
+# All previous deps, settings, DBs of mongodb will be lost!
+
+# Stop the service
+sudo systemctl stop mongod.service
+# Remove all DBs
+sudo rm -r /var/log/mongodb
+sudo rm -r /var/lib/mongodb
+# Uninstall mongo and all its deps
+sudo apt purge mongo*
+# Fetch the latest packages of mongodb-org
+wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+# Update references and install mongodb
+sudo apt update
+sudo apt install mongodb-org
+
+# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
+# Replace the <version> with your own new version. To this day it is '4.2.14'. 
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.2.<version>_amd64.deb
+
+# Try to run the mongodb service
+sudo systemctl start mongod.service
+# Check if the service is running properly
+sudo systemctl status mongod.service
+# Refer to the mongodb error code explaination for further insight: 
+# https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
+# Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
+# To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
+# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect.
+# Either set owner and group of these two paths to mongodb, or reinstall mongodb.
+```
