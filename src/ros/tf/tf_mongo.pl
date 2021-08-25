@@ -114,7 +114,7 @@ tf_mng_lookup(ObjFrame, PoseData) :-
 
 %% tf_mng_trajectory(+Obj, +Begin, +End, -Trajectory) is det.
 %
-% Read all transforms associated to a frame in given time interval. 
+% Read all transforms associated to a frame in given time interval.
 %
 tf_mng_trajectory(Obj,Stamp0,Stamp1,Trajectory) :-
 	rdf_split_url(_,ObjFrame,Obj),
@@ -226,11 +226,11 @@ tf_mng_tree(Stamp, Tree) :-
 
 tf_mng_tree(Stamp, Tree) :-
 	% read all required transforms
-	lookup_transforms(Stamp, Transforms),
+	tf_mng_lookup_all(Transforms, Stamp),
 	% create a tree structure for traversal operation
 	tree_create(Transforms, Tree0),
 	% compute world poses
-	tree_taverse(Tree0, Tree1),
+	tree_traverse(Tree0, Tree1),
 	% create dictionary for faster lookup
 	tree_dict(Tree1, Tree),
 	% cache tree
@@ -283,7 +283,7 @@ tree_create_branch(Frame,Dict,(Pose,Children)) :-
 	Pose=[Parent,Frame,Pos,Rot],
 	findall(X,
 		(	member(ChildFrame,Children0),
-			tree_create_branch_(ChildFrame,Dict,X)
+			tree_create_branch(ChildFrame,Dict,X)
 		),
 		Children).
 
