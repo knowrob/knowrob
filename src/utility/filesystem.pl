@@ -2,7 +2,8 @@
     [ path_delimiter/1,
       path_concat/3,
       path_split/2,
-      mkdir/1
+      mkdir/1,
+      listdir/2
     ]).
 /** <module> Interacting with the filesystem.
 
@@ -63,3 +64,11 @@ mkdir(Path, [Head|Tail]) :-
   path_concat(Path, Head, ChildPath),
   mkdir(ChildPath, Tail).
 mkdir(_, []).
+
+%% listdir(+Dir, ?Entries)
+%
+% Get the contents of Dir without '.' and '..'
+listdir(Dir, Entries) :-
+  directory_files(Dir, Entries0),
+  delete(Entries0, '.', Entries1),
+  delete(Entries1, '..', Entries).

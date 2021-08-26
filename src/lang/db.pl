@@ -54,9 +54,26 @@ annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
 % @param Directory filesystem path
 %
 remember(Directory) :-
-	mng_import(Directory).
+	mng_import_all(Directory).
 
-%%
+%% Import all collections from a directory into MongoDB.
+% Also imports collections which do not exist yet in the database.
+%
+mng_import_all(Dir) :-
+	listdir(Dir, Collections),
+	mng_import_all(Dir, Collections).
+mng_import_all(_, []).
+mng_import_all(Dir, [Coll1|Collections]) :-
+	path_concat(Dir, Coll1, Dir0),
+	% Get the name of the database
+	listdir(Dir0, Entries),
+	member(DB, Entries),
+	mng_restore(DB, Dir0),
+	mng_import_all(Dir, Collections),!.
+
+%% Import the contents of a directory into MongoDB.
+% Only collections which already exist in the database are restored.
+%
 mng_import(Dir) :-
 	forall(
 		(	collection_name(Name),
