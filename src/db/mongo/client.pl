@@ -619,7 +619,6 @@ mng_strip_variable(X,X) :- !.
 % Get the URI connection string
 %
 mng_uri(URI) :-
-  write("found user and pass"),
   getenv('KNOWROB_MONGO_HOST', Host),
   getenv('KNOWROB_MONGO_USER', User),
   getenv('KNOWROB_MONGO_PASS', Pass),
@@ -629,7 +628,6 @@ mng_uri(URI) :-
   !.
 
 mng_uri(URI) :-
-  write("trying remote access"),
   getenv('KNOWROB_MONGO_HOST', Host),
   getenv('KNOWROB_MONGO_PORT', Port),
   atomic_list_concat([ 'mongodb://', Host, ':', Port ], URI),
