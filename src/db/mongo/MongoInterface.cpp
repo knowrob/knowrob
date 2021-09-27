@@ -107,7 +107,7 @@ MongoInterface::MongoInterface()
 				;
 			mongo_uri = ss.str();
 		}
-		else if(!mongo_host != NULL) {
+		else if(mongo_host != NULL) {
 			std::stringstream ss;
 			ss << "mongodb://" << mongo_host << ":" << mongo_port << "/" << mongo_database
 				// FIXME: this should be a parameter
