@@ -8,7 +8,6 @@
 
 #include <mongoc.h>
 #include <sstream>
-#include <iostream>
 
 #include <rosprolog/rosprolog_kb/rosprolog_kb.h>
 
@@ -94,14 +93,12 @@ MongoInterface::MongoInterface()
 	bson_error_t err;
 	std::string mongo_uri;
 	if(!rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri)) {
-		std::cout << "p1" << std::endl;
 		char *mongo_host = std::getenv("KNOWROB_MONGO_HOST");
 		char *mongo_user_name = std::getenv("KNOWROB_MONGO_USER");
 		char *mongo_user_pw = std::getenv("KNOWROB_MONGO_PASS");
 		char *mongo_database = std::getenv("KNOWROB_MONGO_DB");
 		char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
 		if(mongo_host != NULL && mongo_user_name != NULL) {
-			std::cout << "p1.1" << std::endl;
 			std::stringstream ss;
 			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw
 				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database
@@ -111,7 +108,6 @@ MongoInterface::MongoInterface()
 			mongo_uri = ss.str();
 		}
 		else if(mongo_host != NULL) {
-			std::cout << "p1.2" << std::endl;
 			std::stringstream ss;
 			ss << "mongodb://" << mongo_host << ":" << mongo_port << "/" << mongo_database
 				// FIXME: this should be a parameter
@@ -120,11 +116,9 @@ MongoInterface::MongoInterface()
 			mongo_uri = ss.str();
 		}
 		else {
-			std::cout << "p1.3" << std::endl;
 			mongo_uri = std::string("mongodb://localhost:27017/?appname=knowrob");
 		}
 	}
-	std::cout << mongo_uri << std::endl;
 	uri_ = mongoc_uri_new_with_error(mongo_uri.c_str(),&err);
 	if(!uri_) {
 		throw MongoException("invalid_uri",err);
