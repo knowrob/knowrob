@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (c) 2020, Daniel Beßler
  * All rights reserved.
- * 
+ *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -94,14 +94,22 @@ MongoInterface::MongoInterface()
 	std::string mongo_uri;
 	if(!rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri)) {
 		char *mongo_host = std::getenv("KNOWROB_MONGO_HOST");
-		if(mongo_host != NULL) {
-			char *mongo_user_name = std::getenv("KNOWROB_MONGO_USER");
-			char *mongo_user_pw = std::getenv("KNOWROB_MONGO_PASS");
-			char *mongo_database = std::getenv("KNOWROB_MONGO_DB");
-			char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
+		char *mongo_user_name = std::getenv("KNOWROB_MONGO_USER");
+		char *mongo_user_pw = std::getenv("KNOWROB_MONGO_PASS");
+		char *mongo_database = std::getenv("KNOWROB_MONGO_DB");
+		char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
+		if(mongo_host != NULL && mongo_user_name != NULL) {
 			std::stringstream ss;
-			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw 
+			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw
 				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database
+				// FIXME: this should be a parameter
+				//<< "?authSource=admin"
+				;
+			mongo_uri = ss.str();
+		}
+		else if(!mongo_host != NULL) {
+			std::stringstream ss;
+			ss << "mongodb://" << mongo_host << ":" << mongo_port << "/" << mongo_database
 				// FIXME: this should be a parameter
 				//<< "?authSource=admin"
 				;
