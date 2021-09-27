@@ -86,7 +86,7 @@ To this end, Prolog datastructures are translated from and into BSON format.
 %
 mng_get_db(DB, Collection, DBType) :-
 	mng_db_name(DB),
-	(	(setting(mng_client:collection_prefix, Id), Id \= '') 
+	(	(setting(mng_client:collection_prefix, Id), Id \= '')
 	->	atomic_list_concat([Id,'_',DBType], Collection)
 	;	Collection = DBType
 	).
@@ -186,8 +186,8 @@ mng_find(DB, Collection, Filter, Result) :-
 		% cleanup: destroy cursor again
 		mng_cursor_destroy(Cursor)
 	).
-  
-  
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % regex
@@ -395,7 +395,7 @@ mng_restore(_DB,Dir) :-
 % @param Document the query document
 %
 mng_query_value(Value0, [Operator, Value1]) :-
-	% remove _->_ expression for vars 
+	% remove _->_ expression for vars
 	mng_strip_variable(Value0, X0),
 	% rest term must be grounded
 	ground(X0),
@@ -625,6 +625,12 @@ mng_uri(URI) :-
   getenv('KNOWROB_MONGO_PORT', Port),
   atomic_list_concat([ 'mongodb://', User, ':', Pass,
     '@', Host, ':', Port ], URI),
+  !.
+
+mng_uri(URI) :-
+  getenv('KNOWROB_MONGO_HOST', Host),
+  getenv('KNOWROB_MONGO_PORT', Port),
+  atomic_list_concat([ 'mongodb://', Host, ':', Port ], URI),
   !.
 
 mng_uri('mongodb://localhost:27017').
