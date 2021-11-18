@@ -1,0 +1,18 @@
+<launch>
+    <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl"/>
+    <arg name="owl_file_map" default="package://putting_down_neem/owl/SpoonMap.owl"/>
+    <arg name="urdf_file_map" default="package://knowrob/urdf/iai_kitchen.urdf"/>
+    <arg name="object_iri_agent" default="http://knowrob.org/kb/putting_down_neem.owl#iai_kitchen_vr_kitchen_root"/>
+    <arg name="object_iri_map" default="http://knowrob.org/kb/IAI-kitchen.owl#iai_kitchen_room_link"/>
+
+    <!-- Configure settings file. -->
+    <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)"/>
+
+    <include file="$(find rosprolog)/launch/rosprolog.launch">
+        <arg name="initial_package" default="knowrob"/>
+        <arg name="initial_goal"
+             default="tripledb_load('$(arg owl_file_map)'), sleep(1.0), marker_plugin:republish"/>
+    </include>
+
+
+</launch>
