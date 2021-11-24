@@ -5,6 +5,6 @@
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="true" />
+    <arg name="initial_goal" default="urdf_init" />
   </include>
 </launch>
