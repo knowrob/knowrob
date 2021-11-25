@@ -167,7 +167,8 @@ sudo systemctl stop mongod.service
 # Remove all DBs
 sudo rm -r /var/log/mongodb
 sudo rm -r /var/lib/mongodb
-# Uninstall mongo and all its deps
+# Uninstall all mongo packages
+# Be aware that this also removes unrelated packages starting with 'mongo*'
 sudo apt purge mongo*
 # Fetch the latest packages of mongodb-org
 wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
