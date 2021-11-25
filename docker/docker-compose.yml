@@ -22,3 +22,4 @@ services:
       - KNOWROB_MONGO_PASS=
     network_mode: host
     entrypoint: ["/run_knowrob_local.sh"]
+
