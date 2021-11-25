@@ -100,4 +100,6 @@ WORKDIR /home/ros
 RUN /opt/ros/melodic/bin/catkin_make
 
 COPY run_knowrob.sh /run_knowrob.sh
+COPY run_knowrob_local.sh /run_knowrob_local.sh
+
 ENTRYPOINT ["/run_knowrob.sh"]
