@@ -74,19 +74,6 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#vec3 -->
-
-    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#vec3"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#vec4 -->
-
-    <rdfs:Datatype rdf:about="http://knowrob.org/kb/knowrob.owl#vec4"/>
     
 
 
@@ -1267,7 +1254,6 @@ See also the more general predicate eventPartiallyOccursAt, which relates an eve
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#scale">
         <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasShapeParameter"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#vec3"/>
     </owl:DatatypeProperty>
     
 
