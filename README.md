@@ -16,7 +16,7 @@ These instructions will get you a copy of KnowRob up and running on your local m
 
 - ROS (*ROS melodic* for the master branch)
 - SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
-- mongo DB server >= 4.2 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- mongo DB server >= 4.4 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
 - [rosprolog](https://github.com/knowrob/rosprolog)
 
 ### Installation
@@ -155,7 +155,7 @@ sudo apt install swi-prolog
 ```bash
 # Check the mongodb version
 mongod --version
-# If below 4.2, an update is needed.
+# If below 4.4, an update is needed.
 # Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
 # Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
 # Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
@@ -171,15 +171,15 @@ sudo rm -r /var/lib/mongodb
 # Be aware that this also removes unrelated packages starting with 'mongo*'
 sudo apt purge mongo*
 # Fetch the latest packages of mongodb-org
-wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 # Update references and install mongodb
 sudo apt update
 sudo apt install mongodb-org
 
 # Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
-# Replace the <version> with your own new version. To this day it is '4.2.14'. 
-sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.2.<version>_amd64.deb
+# Replace the <version> with your own new version. To this day it is '4.4.10'. 
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.4.<version>_amd64.deb
 
 # Try to run the mongodb service
 sudo systemctl start mongod.service
