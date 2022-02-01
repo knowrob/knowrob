@@ -39,13 +39,23 @@
 		'List of named graphs that should initially by erased.').
 
 %%
-:- multifile collection_name/1.
+:- setting(mng_client:collection_names, list, [triples, tf, annotations, inferred],
+		'List of collections that will be imported/exported with remember/memorize.').
 
 %%
 annotation_property('http://www.w3.org/2000/01/rdf-schema#comment').
 annotation_property('http://www.w3.org/2000/01/rdf-schema#seeAlso').
 annotation_property('http://www.w3.org/2000/01/rdf-schema#label').
 annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
+
+%%
+% Assert the collection names to be used by remember/memorize
+%
+auto_collection_names :-
+	setting(mng_client:collection_names, L),
+	forall(member(X,L), assertz(collection_name(X))).
+
+:- ignore(auto_collection_names).
 
 %% remember(+Directory) is det.
 %
