@@ -28,7 +28,7 @@ We have prepared different *.rosinstall* setup files that you can add to your RO
 rosdep update
 cd ~/catkin_ws/src
 wstool init
-wstool merge https://raw.github.com/knowrob/knowrob/master/rosinstall/knowrob-base.rosinstall
+wstool merge https://raw.github.com/hawkina/knowrob/noetic/rosinstall/knowrob-base.rosinstall
 wstool update
 rosdep install --ignore-src --from-paths .
 cd ~/catkin_ws
