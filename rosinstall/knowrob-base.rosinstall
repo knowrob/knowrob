@@ -1,3 +1,3 @@
-- git: {local-name: knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: noetic }
+- git: {local-name: knowrob, uri: 'https://github.com/hawkina/knowrob.git', version: noetic }
 - git: {local-name: rosprolog, uri: 'https://github.com/knowrob/rosprolog.git', version: noetic }
 - git: {local-name: iai_common_msgs, uri: 'https://github.com/code-iai/iai_common_msgs.git', version: master }
