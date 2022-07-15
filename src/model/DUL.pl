@@ -73,7 +73,7 @@ for modeling physical and social contexts.
 
 % load RDF data
 :- load_owl('http://www.ease-crc.org/ont/DUL.owl',
-	[ namespace(dul) ]).
+	[ namespace(dul,'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#') ]).
 
 %% is_object(?Entity) is nondet.
 %
