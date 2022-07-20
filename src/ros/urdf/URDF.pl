@@ -69,7 +69,7 @@
 urdf_server_init :-
 	once((
 		getenv('KNOWROB_URDF_SERVER', URL)
-	;	URL='http://neem-1.informatik.uni-bremen.de/data/kinematics/'
+	;	URL='http://neem-data.informatik.uni-bremen.de/data/kinematics/'
 	)),
 	retractall(urdf_server(_)),
 	assertz(urdf_server(URL)).
