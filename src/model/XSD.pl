@@ -33,6 +33,7 @@ xsd_data_type(DataType) :-
 xsd_data_basetype(DataType,integer) :-
 	xsd_numeric_type(DataType).
 
+xsd_data_basetype(xsd:decimal,double).
 xsd_data_basetype(xsd:double,double).
 xsd_data_basetype(xsd:float,double).
 
@@ -93,7 +94,6 @@ xsd_date_type(xsd:'time').
 % @param DataType a XSD data type
 %
 xsd_numeric_type(xsd:'byte').
-xsd_numeric_type(xsd:'decimal').
 xsd_numeric_type(xsd:'int').
 xsd_numeric_type(xsd:'integer').
 xsd_numeric_type(xsd:'long').
@@ -116,6 +116,7 @@ xsd_numeric_type(xsd:'unsignedByte').
 xsd_misc_type(xsd:'anyURI').
 xsd_misc_type(xsd:'base64Binary').
 xsd_misc_type(xsd:'boolean').
+xsd_misc_type(xsd:'decimal').
 xsd_misc_type(xsd:'double').
 xsd_misc_type(xsd:'float').
 xsd_misc_type(xsd:'hexBinary').
