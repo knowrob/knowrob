@@ -1,14 +1,15 @@
 <launch>
   <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl" />
   <arg name="owl_file" default="package://knowrob/owl/robots/PR2.owl" />
-  <arg name="urdf_file" default="package://knowrob/urdf/pr2_for_unit_tests.urdf" />
+  <arg name="urdf_file" default="package://knowrob/urdf/pr2.urdf" />
   <arg name="object_iri" default="http://knowrob.org/kb/PR2.owl#PR2_0" />
+  <param name="mongodb_uri" value="$(optenv KNOWROB_MONGODB_URI mongodb://localhost:27017/?appname=knowrob)" />
   
   <!-- Configure settings file. -->
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
   
   <include file="$(find rosprolog)/launch/rosprolog.launch">
     <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="load_owl('$(arg owl_file)'), urdf_load('$(arg object_iri)', '$(arg urdf_file)', [load_rdf]), urdf_set_pose_to_origin('$(arg object_iri)',map), sleep(1.0), marker:republish" />
+    <arg name="initial_goal" default="urdf_init, load_owl('$(arg owl_file)'), urdf_load('$(arg object_iri)', '$(arg urdf_file)', [load_rdf]), urdf_set_pose_to_origin('$(arg object_iri)',map), sleep(1.0), marker:republish" />
   </include>
 </launch>
