@@ -327,9 +327,9 @@ is_kino_dynamic_data(IO) ?+>
 %
 has_kinematics_file(Obj,Identifier,Format) +>
 	new_iri(IO,soma:'KinoDynamicData'),
-	new_iri(IR,io:'DigitalResource'),
+	new_iri(IR,soma:'DigitalResource'),
 	has_type(IO,soma:'KinoDynamicData'),
-	has_type(IR,io:'DigitalResource'),
+	has_type(IR,soma:'DigitalResource'),
 	triple(IO, dul:isAbout, Obj),
 	triple(IR, dul:realizes, IO),
 	triple(IR, soma:hasPersistentIdentifier, Identifier),
