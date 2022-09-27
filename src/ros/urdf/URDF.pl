@@ -171,7 +171,9 @@ urdf_load(Object,URL,Options) :-
 		(	atom_concat(OptPrefix,YName,YFrame),
 			% update tf memory
 			rdf_split_url(_,OName,Y),
-			tf_mem_set_pose(OName, [YFrame,[0,0,0],[0,0,0,1]], 0),
+			% do not create a frame for the entity if its name is equal to frame name.
+			(OName == YFrame -> true ;
+			tf_mem_set_pose(OName, [YFrame,[0,0,0],[0,0,0,1]], 0)),
 			%
 			assertz(has_urdf(Y,Object))
 		)
