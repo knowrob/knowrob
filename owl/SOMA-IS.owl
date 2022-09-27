@@ -1,0 +1,587 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.ease-crc.org/ont/SOMA-IS.owl#"
+     xml:base="http://www.ease-crc.org/ont/SOMA-IS.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl">
+        <owl:imports rdf:resource="http://www.ease-crc.org/ont/SOMA.owl"/>
+        <owl:imports rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#BlockageTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#BlockageTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ImageSchemaTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A schematic theory describing a situation in which an agent is blocked by an object while along a certain path.
+
+Let xA, xP be objects filling the blocker, blockedBy roles of this schema. Then one can infer that xA blocks xP.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#FunctionalSpatialSchemaTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An image schematic theory that describes the functional relation holding between two spatial objects x and y, such that x is in contact with y; Contact can also be abstract. 
+
+Let xL, xR be objects filling the locatum, relatum roles of this schema. Then one can infer that xL is in contact with xR.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#Down -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#Down">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#VerticalityTheory"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#LinkTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#LinkTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An image schematic theory that describes an enforced connection between objects where transitivity ensure that the linked object reacts to the stimuli of the other object (Hedblom 2020)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#MoveAwayFrom -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveAwayFrom">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Self movement of agent or object away from another object or just away from current location</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#MoveTowards -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveTowards">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The agent moves towards a goal or an object along a path.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#GoalRole"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#PathRole"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#PureCausedMotionTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#PureCausedMotionTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A schema theory to describe the situation in which the agent or object that caused the movement stays still and the other object moves forward. E.g : A robot pushing the door. In this case, the door moves away from the robot.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ImageSchemaTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A schematic theory describing a situation in which an agent moves without external stimuli and the schema is associated with the notion of agency (Hedblom 2020)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#SourcePathTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#SourcePathTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Origin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#PathRole"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#Up -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#Up">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#VerticalityTheory"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#VerticalityTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#VerticalityTheory">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A schema theory to describe the situation in which an agent or part of an agent moves up or down the path. 
+
+This can also mean up or down in an abstract way.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Closing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Closing">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ContainmentTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ContainmentTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#FunctionalSpatialSchemaTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#FunctionalSpatialSchemaTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#GoalRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#GoalRole"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Grasping -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Grasping">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#LinkTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ContainmentTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ImageSchemaTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ImageSchemaTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Lifting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Lifting">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SourcePathTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#Up"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#LookingAt -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#LookingAt">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#LinkTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Lowering -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Lowering">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#Down"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#MovingTo -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#MovingTo">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SelfMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Navigating -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Navigating">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">How do we relate it to self motion theory?</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Opening -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Opening">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#SourcePathTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Origin -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Origin"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PathRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PathRole"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PickingUp -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PickingUp"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Placing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Placing"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Pulling -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Pulling">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveTowards"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PushingAway -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PushingAway">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveAwayFrom"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CausedMotionTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PuttingDown -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PuttingDown">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDescribedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#Down"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#PathGoalTheory"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+                                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Reaching -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Reaching">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDefinedIn"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveTowards"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Releasing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Releasing">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDefinedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Retracting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Retracting">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDefinedIn"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#MoveAwayFrom"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SettingGripper -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SettingGripper">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isDefinedIn"/>
+                <owl:someValuesFrom rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SourcePathGoalTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SupportTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Transporting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Transporting"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.12.2019-05-06T20:49:08Z) https://github.com/owlcs/owlapi -->
+
