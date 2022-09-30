@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://knowrob.org/kb/PR2.owl#"
      xml:base="http://knowrob.org/kb/PR2.owl"
+     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:pr2="http://knowrob.org/kb/PR2.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:urdf="http://knowrob.org/kb/urdf.owl#"
      xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
-     xmlns:dul="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:qudt-unit="http://qudt.org/vocab/unit#"
-     xmlns:urdf="http://knowrob.org/kb/urdf.owl#"
      xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
      xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/PR2.owl">
@@ -29,6 +30,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#hasCapability -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#hasCapability"/>
     
 
 
@@ -74,9 +81,39 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#definesBearer -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#definesBearer"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#definesTrigger -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#definesTrigger"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent -->
 
     <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasPhysicalComponent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
     
 
 
@@ -118,6 +155,18 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hasPayloadValue -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hasPayloadValue"/>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasBaseLinkName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasBaseLinkName"/>
+    
+
+
+    <!-- http://knowrob.org/kb/urdf.owl#hasEndLinkName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasEndLinkName"/>
     
 
 
@@ -302,6 +351,13 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
@@ -348,6 +404,18 @@
     
 
 
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Accelerometer -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
@@ -390,9 +458,23 @@
     
 
 
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCamera -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent"/>
     
 
 
@@ -420,15 +502,45 @@
     
 
 
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#DetectedObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#DetectedObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ExperiencerRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ExperiencerRole"/>
+    
+
+
     <!-- http://www.ease-crc.org/ont/SOMA.owl#Gripper -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
     
 
 
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Perceiving"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    
+
+
     <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact -->
 
     <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
     
 
 
@@ -440,6 +552,14 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#DetectedObject_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#DetectedObject_1">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#DetectedObject"/>
+    </owl:NamedIndividual>
     
 
 
@@ -475,10 +595,28 @@
     
 
 
+    <!-- http://knowrob.org/kb/PR2.owl#PR2BackPlate_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasBaseLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasEndLinkName>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/PR2.owl#PR2Base_0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Base_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Base"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_bll"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_blr"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_brl"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_brr"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_fll"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_flr"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_frl"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_frr"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_link</urdf:hasBaseLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bl_caster_l_wheel_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bl_caster_r_wheel_link</urdf:hasEndLinkName>
@@ -488,14 +626,6 @@
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fl_caster_r_wheel_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fr_caster_l_wheel_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fr_caster_r_wheel_link</urdf:hasEndLinkName>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_bll"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_blr"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_brl"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_brr"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_fll"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_flr"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_frl"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Wheel_frr"/>
     </owl:NamedIndividual>
     
 
@@ -544,16 +674,16 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_L">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LL"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LR"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_palm_link</urdf:hasBaseLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_l_finger_tip_link</urdf:hasEndLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_led_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_accelerometer_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_screw_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_tool_frame</urdf:hasEndLinkName>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LR"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_LL"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l"/>
     </owl:NamedIndividual>
     
 
@@ -562,16 +692,16 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_R">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RL"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RR"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_palm_link</urdf:hasBaseLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_l_finger_tip_link</urdf:hasEndLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_led_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_accelerometer_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_screw_link</urdf:hasEndLinkName>
+        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_r_finger_tip_link</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_tool_frame</urdf:hasEndLinkName>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RR"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Finger_0_RL"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r"/>
     </owl:NamedIndividual>
     
 
@@ -580,6 +710,9 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2Head_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Head"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Kinect"/>
+        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_pan_link</urdf:hasBaseLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_ir_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_kinect_rgb_optical_frame</urdf:hasEndLinkName>
@@ -592,19 +725,6 @@
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_l_stereo_camera_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</urdf:hasEndLinkName>
         <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_r_stereo_camera_optical_frame</urdf:hasEndLinkName>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_Kinect"/>
-        <dul:hasPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/PR2.owl#PR2BackPlate_0 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalArtifact"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasBaseLinkName>
-        <urdf:hasEndLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base_bellow_link</urdf:hasEndLinkName>
     </owl:NamedIndividual>
     
 
@@ -623,14 +743,62 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#PR2"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_L"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_R"/>
+        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Base_0"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_L"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Gripper_0_R"/>
-        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0"/>
-        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Neck_0"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Head_0"/>
+        <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Neck_0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_accelerometer_link</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_accelerometer_link</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_Kinect -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_Kinect">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Kinect"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_link</urdf:hasBaseLinkName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera">
+        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
+        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</urdf:hasBaseLinkName>
     </owl:NamedIndividual>
     
 
@@ -707,57 +875,47 @@
     
 
 
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_Kinect -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_Kinect">
-        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Kinect"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">head_mount_link</urdf:hasBaseLinkName>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_l">
-        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l_gripper_motor_accelerometer_link</urdf:hasBaseLinkName>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera">
-        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</urdf:hasBaseLinkName>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_GripperAccelerometer_r">
-        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2GripperAccelerometer"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">r_gripper_motor_accelerometer_link</urdf:hasBaseLinkName>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera">
-        <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera"/>
-        <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</urdf:hasBaseLinkName>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PayloadAttribute_PR2">
         <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PayloadAttribute"/>
         <srdl2-comp:hasPayloadValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.8</srdl2-comp:hasPayloadValue>
         <rdfs:comment>in kilogram</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#VisualExperiencer_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualExperiencer_1">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ExperiencerRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#VisualPerceptionAffordance_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionAffordance_1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance"/>
+        <SOMA:definesBearer rdf:resource="http://knowrob.org/kb/PR2.owl#VisualExperiencer_1"/>
+        <SOMA:definesTrigger rdf:resource="http://knowrob.org/kb/PR2.owl#DetectedObject_1"/>
+        <dul:definesTask rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Perceiving"/>
     </owl:NamedIndividual>
     
 
@@ -773,5 +931,5 @@
 
 
 
-<!-- Generated by the OWL API (version 4.5.12.2019-05-06T20:49:08Z) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
 
