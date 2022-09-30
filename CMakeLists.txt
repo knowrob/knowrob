@@ -42,6 +42,9 @@ install_ontology(
 install_ontology(
 	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl"
 	VERSION   "${SOMA_VERSION}")
+install_ontology(
+	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA-HOME.owl"
+	VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
