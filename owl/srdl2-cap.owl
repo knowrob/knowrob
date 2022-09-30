@@ -15,7 +15,6 @@
      xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-cap.owl">
         <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="package://knowrob/owl/srdl2-comp.owl"/>
     </owl:Ontology>
     
 
@@ -219,12 +218,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ArmCollisionCheckCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#CollisionCheckCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#CollisionMap"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -233,30 +226,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ArmMotionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#BodyMotionCapability"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#AuditorySensoryComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#AuditorySensoryComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PerceptionComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isComponentOf"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#hasCapability"/>
-                                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability"/>
-                            </owl:Restriction>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -294,14 +263,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#BodyMotionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#Camera -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#Camera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualSensoryComponent"/>
     </owl:Class>
     
 
@@ -381,26 +342,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#Ear -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#Ear">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#AuditorySensoryComponent"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/srdl2-cap.owl#EnvironmentExplorationCapability -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#EnvironmentExplorationCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#NavigationCapability"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#Eye -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#Eye">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualSensoryComponent"/>
     </owl:Class>
     
 
@@ -487,14 +432,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#Microphone -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#Microphone">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#AuditorySensoryComponent"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/srdl2-cap.owl#NavigationCapability -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#NavigationCapability">
@@ -547,47 +484,6 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PerceptionComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PerceptionComponent">
-        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#FunctionalPart"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PerceptualAgent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PerceptualAgent">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
-                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualSensoryComponent"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#hasCapability"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#StereoCamera -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#StereoCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Camera"/>
     </owl:Class>
     
 
@@ -645,36 +541,6 @@
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
     </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualSensoryComponent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualSensoryComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PerceptionComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#isComponentOf"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent"/>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#hasCapability"/>
-                                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-                            </owl:Restriction>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#CollisionMap -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CollisionMap"/>
     
 
 
@@ -773,16 +639,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera">
-        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#StereoCamera"/>
-        <hasCapability rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1"/>
-        <DUL:isComponentOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PR2_1"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability_1 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability_1">
@@ -791,63 +647,10 @@
     
 
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#DetectedObject_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#DetectedObject_1">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#DetectedObject"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#HeadMountedStereoCamera -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#HeadMountedStereoCamera">
-        <hasCapability rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1"/>
-        <DUL:isComponentOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PR2_1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PR2_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PR2_1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#PR2"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualExperiencer_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualExperiencer_1">
-        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ExperiencerRole"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance_1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance"/>
-        <SOMA:definesBearer rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualExperiencer_1"/>
-        <SOMA:definesTrigger rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#DetectedObject_1"/>
-        <DUL:definesTask rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionTask_1"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1">
         <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-        <DUL:isDescribedBy rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance_1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionTask_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionTask_1">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
