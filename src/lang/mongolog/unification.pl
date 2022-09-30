@@ -238,6 +238,11 @@ test('unified vars can be implicitly instantiated',
 	assert_equals(X,4),
 	assert_equals(Y,4).
 
+test('variables may appear multiple times in terms'):-
+	mongolog:test_call(=(f(g(X),X),f(Y,Z)), Z, a),
+	assert_equals(X,a),
+	assert_equals(Y,g(a)).
+
 % ask-rule with partially instantiated arg and multiple clauses
 test_shape1(mesh(X))   ?> =(X,foo).
 test_shape1(sphere(X)) ?> =(X,5.0).
