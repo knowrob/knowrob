@@ -453,7 +453,7 @@ set_ontology_version(URL, Version, OntoGraph) :-
 %% get modification time of local file.
 %% this is to cause re-loading the file in case of it has changed locally.
 file_version(URL, Version) :-
-	catch(exists_file(URL), _, fail).
+	catch(exists_file(URL), _, fail),
 	!,
 	set_time_file(URL, [modified(ModStamp)],[]),
 	atom_number(Version, ModStamp).
