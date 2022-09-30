@@ -1,0 +1,1388 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.ease-crc.org/ont/task_modeling.owl#"
+     xml:base="http://www.ease-crc.org/ont/task_modeling.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.ease-crc.org/ont/task_modeling.owl">
+        <owl:imports rdf:resource="package://knowrob/owl/SOMA-IS.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#finishedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#finishedBy"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#hasGoal -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#hasGoal"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#startedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.ease-crc.org/ont/SOMA.owl#startedBy"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#defines"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#definesTask"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasConstituent"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasPart"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#precedes -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#precedes"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#usesConcept -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#usesConcept"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#AgentRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#AlteredObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#AlteredObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Closing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Closing"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#CoveredObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#CoveredObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Grasping -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Grasping"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Lifting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Lifting"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#LocatumRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#LookingAt -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#LookingAt"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Lowering -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Lowering"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#MovingTo -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#MovingTo"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Opening -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Opening"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ParkingArms -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ParkingArms"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PickingUp -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PickingUp"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Placing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Placing"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Pulling -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Pulling"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#PushingAway -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#PushingAway"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Reaching -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Reaching"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#RelatumRole -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Releasing -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Releasing"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Retracting -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Retracting"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#StateTransition -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#StateTransition"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SupportTheory -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#SupportedObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#SupportedObject"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Supporter -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Supporter"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenedObject -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenedObject">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AlteredObject"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object whose cover is removed or pulled open.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Opened Object</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan -->
+
+    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#AgentRetracting_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#AgentRetracting_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToClose -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToClose">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToOpen -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToOpen">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ClosedObjectAfterPushing -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ClosedObjectAfterPushing">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#CoveredObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ClosingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ClosingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ClosingTask_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToClosePlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PushingToClosePlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToClosePlan_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ClosingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ClosingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Closing"/>
+        <SOMA:finishedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseTask_01"/>
+        <SOMA:startedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGrasping"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGrasping"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToClose -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToClose">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToClose"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToClose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToOpen -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToOpen">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToOpen"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToOpen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA-IS.owl#ContactTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterLoweringToPlace"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterLoweringToPlace"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#DemoPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#DemoPlan_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Plan"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ClosingPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpeningPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PickingUpPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PlacingPlan_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToClose -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToClose">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToOpen -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToOpen">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#EnclosedObject"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGrasping"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspInit_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspInit_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingTask_01"/>
+        <DUL:hasComponent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspInit_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Grasping"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToClose"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToClose"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToClose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspingToClosePlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToClosePlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#GraspingToCloseTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Grasping"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LiftGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LiftGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLifting"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLifting"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLifting"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LiftInit_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LiftInit_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGrasping"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LiftingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LiftingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftingTask_01"/>
+        <DUL:hasComponent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftInit_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LiftingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LiftingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Lifting"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReachToClose_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReachToClose_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReach_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReach_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximity_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximity_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAt_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlaceGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlaceGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAtPlace_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlanToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlanToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlaceGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTaskToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTaskToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LookingAt"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LookingAt"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LoweringPlanToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LoweringPlanToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LoweringToPlaceGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LoweringTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LoweringTaskToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LoweringTaskToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Lowering"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#LoweringToPlaceGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#LoweringToPlaceGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryLoweringToPlace"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLoweringToPlace"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectAfterParking -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectAfterParking">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAtPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAtPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAt_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectLookingAt_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingTo_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingTo_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReaching -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReaching">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToClose -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToClose">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToOpen -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToOpen">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#AgentRole"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingTo_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingTo_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingToPlace_01"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingToPlace_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceInit_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceInit_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Description"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlacePlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlacePlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceTask_01"/>
+        <DUL:hasComponent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceInit_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#MovingTo"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#MovingToTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#MovingToTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#MovingTo"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToOpen"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReaching_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToOpen"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToOpen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Grasping"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToOpen"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToOpen"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToOpen"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenedObjectAfterPulling_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Pulling"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReaching_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToOpen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Reaching"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpenedObjectAfterPulling_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpenedObjectAfterPulling_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenedObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpeningPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpeningPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpeningTask_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenGraspingPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingPlan_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#OpeningTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#OpeningTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Opening"/>
+        <SOMA:finishedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenPullingTask_01"/>
+        <SOMA:startedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#OpenReachingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLifting"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectAfterParking"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLifting"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLifting"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ParkingArms"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PickingUpPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PickingUpPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PickingUpTask_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LiftingPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsPlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlan_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PickingUpTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PickingUpTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#PickingUp"/>
+        <SOMA:finishedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ParkingArmsTask_01"/>
+        <SOMA:startedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PlacingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PlacingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PlacingTask_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LookingAtPlanToPlace_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LoweringPlanToPlace_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlacePlan_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlanToPlace_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingPlanToPlace_01"/>
+        <DUL:hasConstituent rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#RetractingPlanToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PlacingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PlacingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Placing"/>
+        <SOMA:finishedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#RetractingTaskToPlace_01"/>
+        <SOMA:startedBy rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovingToPlaceTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityPlace_01"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingTo_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ProximityTheoryMovingTo_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximity_01"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectMovingTo_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReachingClose_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReachingClose_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReachToClose_01"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToClose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReaching_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReaching_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ProximalTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LocatumProximityReach_01"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReaching"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ContactTheoryGraspingToClose"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRoleAfterGraspingToClose"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ClosedObjectAfterPushing"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#EnclosedObjectRoleAfterGraspingToClose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PushingToClosePlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PushingToClosePlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#PushingToCloseTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#PushingAway"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReaching"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlanToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlanToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToPlaceGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingPlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingTaskToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTaskToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Reaching"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#LoweringTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Reaching"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#GraspingTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ProximitytheoryReachingClose_01"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToClose"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingToClosePlan_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToClosePlan_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseTask_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseTask_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToCloseTask_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Reaching"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReachingToPlaceGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReachingToPlaceGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#MovedObjectReachingToPlace"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReleasingPlanToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingPlanToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingToPlaceGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReleasingTaskToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingTaskToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Releasing"/>
+        <DUL:precedes rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#RetractingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#ReleasingToPlaceGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#ReleasingToPlaceGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:hasPart rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLoweringToPlace"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLoweringToPlace"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#RetractGoal_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#RetractGoal_01">
+        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Goal"/>
+        <DUL:usesConcept rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#AgentRetracting_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#RetractingPlanToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#RetractingPlanToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#ActionExecutionPlan"/>
+        <SOMA:hasGoal rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#RetractGoal_01"/>
+        <DUL:definesTask rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#RetractingTaskToPlace_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#RetractingTaskToPlace_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#RetractingTaskToPlace_01">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Retracting"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A rule should be defined to infer the supported object plays the locatum role and the supporting object plays the relatum role.</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLifting -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLifting">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLifting"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLifting"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLoweringToPlace"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLoweringToPlace"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryMovingTo -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportTheoryMovingTo">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportTheory"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo"/>
+        <DUL:defines rdf:resource="http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLifting -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLifting">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportedObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleAfterLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportedObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportedObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportedRoleBeforeMovingTo">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#LocatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#SupportedObject"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportingObjectBeforeMovingTo">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Supporter"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLifting -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLifting">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Supporter"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLoweringToPlace -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleAfterLoweringToPlace">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Supporter"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping -->
+
+    <owl:NamedIndividual rdf:about="http://www.ease-crc.org/ont/task_modeling.owl#SupportingRoleBeforeGrasping">
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#RelatumRole"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Supporter"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.12.2019-05-06T20:49:08Z) https://github.com/owlcs/owlapi -->
+
