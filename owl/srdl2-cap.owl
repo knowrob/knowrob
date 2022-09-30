@@ -625,33 +625,6 @@
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability_1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#AcousticPerceptionCapability"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
-    </owl:NamedIndividual>
 </rdf:RDF>
 
 

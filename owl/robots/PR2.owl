@@ -423,6 +423,12 @@
     
 
 
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Accelerometer -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
@@ -736,7 +742,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#PR2"/>
-        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_L"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_R"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0"/>
@@ -753,6 +758,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_EnvironmentCamera">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2EnvironmentCamera"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">wide_stereo_optical_frame</urdf:hasBaseLinkName>
     </owl:NamedIndividual>
     
@@ -789,7 +795,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0_ManipulationCamera">
         <rdf:type rdf:resource="http://knowrob.org/kb/PR2.owl#PR2ManipulationCamera"/>
-        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
         <urdf:hasBaseLinkName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">narrow_stereo_optical_frame</urdf:hasBaseLinkName>
     </owl:NamedIndividual>
     
@@ -889,6 +895,17 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionAffordance_1">
         <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance"/>
+        <SOMA:definesBearer rdf:resource="http://knowrob.org/kb/PR2.owl#VisualExperiencer_1"/>
+        <SOMA:definesTrigger rdf:resource="http://knowrob.org/kb/PR2.owl#DetectedObject_1"/>
+        <dul:definesTask rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
     </owl:NamedIndividual>
     
 
@@ -897,16 +914,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1">
         <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability_1">
-        <SOMA:definesBearer rdf:resource="http://knowrob.org/kb/PR2.owl#VisualExperiencer_1"/>
-        <SOMA:definesTrigger rdf:resource="http://knowrob.org/kb/PR2.owl#DetectedObject_1"/>
-        <dul:definesTask rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1"/>
     </owl:NamedIndividual>
     
 
