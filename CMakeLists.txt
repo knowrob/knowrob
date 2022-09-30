@@ -40,7 +40,7 @@ install_ontology(
 	URL		  "http://www.ease-crc.org/ont/DUL.owl"
 	VERSION   "3.34")
 install_ontology(
-	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA-HOME.owl"
+	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl"
 	VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
