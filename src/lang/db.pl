@@ -206,7 +206,8 @@ load_owl(URL, Options) :-
 % @param ParentGraph The parent graph name.
 %
 load_owl(URL, Scope, ParentGraph) :-
-	(	url_resolve(URL,Resolved) -> true
+	(	url_resolve(URL,Resolved)
+	->	log_info(db(url_resolved(URL,Resolved)))
 	;	Resolved=URL 
 	),
 	ontology_graph(Resolved,OntoGraph),
