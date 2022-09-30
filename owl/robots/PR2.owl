@@ -336,25 +336,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/PR2.owl#PerceptualAgent -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/PR2.owl#PerceptualAgent">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
-                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Finger -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Finger"/>
@@ -370,7 +351,13 @@
     <!-- http://knowrob.org/kb/knowrob.owl#PR2 -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PR2">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/PR2.owl#PerceptualAgent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#hasBodyPart"/>
@@ -471,6 +458,25 @@
     
 
 
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasComponent"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensoryComponent"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCamera -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
@@ -522,6 +528,12 @@
     <!-- http://www.ease-crc.org/ont/SOMA.owl#Gripper -->
 
     <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Gripper"/>
+    
+
+
+    <!-- http://www.ease-crc.org/ont/SOMA.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://www.ease-crc.org/ont/SOMA.owl#Perceiving"/>
     
 
 
@@ -742,6 +754,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#PR2_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#PR2"/>
+        <srdl2-cap:hasCapability rdf:resource="http://knowrob.org/kb/PR2.owl#VisualPerceptionCapability_1"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_L"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2Arm_0_R"/>
         <srdl2-comp:hasBodyPart rdf:resource="http://knowrob.org/kb/PR2.owl#PR2BackPlate_0"/>
@@ -913,7 +926,7 @@
     <!-- http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/PR2.owl#VisualPerceptionTask_1">
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Task"/>
+        <rdf:type rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Perceiving"/>
     </owl:NamedIndividual>
     
 

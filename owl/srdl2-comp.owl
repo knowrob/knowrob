@@ -730,6 +730,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptualAgent">
+        <rdfs:subClassOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalAgent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PlanExecutive">
