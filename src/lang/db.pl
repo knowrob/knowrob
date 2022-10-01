@@ -279,8 +279,8 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 	%       the reason is that we create a search index over the value
 	%       of a triple, and that mongo cannot generate such an index
 	%       over values with special characters.
-	exclude(is_annotation_triple, Terms, TripleTerms),
-	include(is_annotation_triple, Terms, AnnotationTriples),
+	partition(is_annotation_triple(Terms), Terms,
+		AnnotationTriples, TripleTerms),
 	maplist([triple(S,P,O),annotation(S,P,O)]>>true,
 		AnnotationTriples, AnnotationTerms),
 	% FIXME: BUG: o* for subClassOf only includes direct super class
@@ -295,6 +295,14 @@ load_owl1(IRI, Triples, Scope, Graph) :-
 		),
 		kb_project(Term, Scope, [graph(Graph)])
 	).
+
+%%
+is_annotation_triple(_, triple(_,P,_)) :-
+	annotation_property(P),!.
+is_annotation_triple(Terms, triple(_,P,_)) :-
+	rdf_equal(rdf:'type',RDF_Type),
+	rdf_equal(owl:'AnnotationProperty', AnnotationProperty),
+	memberchk(triple(P, RDF_Type, string(AnnotationProperty)), Terms),!.
 
 %% load_json_rdf(FilePath) is semidet.
 %
@@ -415,10 +423,6 @@ convert_rdf_value_(literal(type(Type,V_atom)), O_typed) :-
 
 convert_rdf_value_(literal(O), string(O)) :- !.
 convert_rdf_value_(        O,  string(O)) :- !.
-
-%%
-is_annotation_triple(triple(_,P,_)) :-
-	once(annotation_property(P)).
 
 % each ontology is stored in a separate graph named
 % according to the ontology
