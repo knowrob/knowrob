@@ -275,7 +275,6 @@ load_owl0(Resolved, Scope, OntoGraph, ParentGraph) :-
 %%
 load_owl1(IRI, Triples, Scope, Graph) :-
 	maplist(convert_rdf_(IRI), Triples, Terms),
-	writeln(Terms),
 	% NOTE: annotations are stored in a separate collection.
 	%       the reason is that we create a search index over the value
 	%       of a triple, and that mongo cannot generate such an index
