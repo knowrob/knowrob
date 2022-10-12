@@ -98,13 +98,13 @@ urdf_init(Object,Identifier) :-
 	path_concat(DATA_URL,Filename,URL),
 	% get XML data
 	(	http_get(URL,XML_data,[]) -> true
-	;	(	log_warn(urdf(download_failed(Object,URL))),
+	;	(	log_warning(urdf(download_failed(Object,URL))),
 			fail
 		)
 	),
 	% parse data
 	(	urdf_load_xml(Object,XML_data) -> true
-	;	(	log_warn(urdf(parsing_failed(Object,URL))),
+	;	(	log_warning(urdf(parsing_failed(Object,URL))),
 			fail
 		)
 	),
@@ -333,7 +333,7 @@ urdf_chain(Object,FromLink,ToLink,X) :-
 	(	urdf_chain1(Object,FromLink,ToLink,Chain)
 	->	member(X,Chain)
 	;	(
-		log_warn(urdf(not_connnected(FromLink,ToLink))),
+		log_warning(urdf(not_connnected(FromLink,ToLink))),
 		X=FromLink
 	)).
 
