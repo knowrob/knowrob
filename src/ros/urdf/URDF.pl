@@ -329,12 +329,19 @@ urdf_link_collision_shape(Object,Link,ShapeTerm,Origin) :-
 	urdf_link_nth_collision_shape(Object,Link,Index,ShapeTerm,Origin).
 
 %%
-urdf_chain(_,X,X,X) :- !.
-urdf_chain(_,_,X,X).
-urdf_chain(Object,FromLink,ToLink,Node) :-
+urdf_chain(Object,FromLink,ToLink,X) :-
+	(	urdf_chain1(Object,FromLink,ToLink,Chain)
+	->	member(X,Chain)
+	;	(
+		log_warn(urdf(not_connnected(FromLink,ToLink))),
+		X=FromLink
+	)).
+
+urdf_chain1(_,X,X,[X]) :- !.
+urdf_chain1(Object,FromLink,ToLink,[ToLink|Rest]) :-
 	urdf_link_parent_joint(Object,ToLink,Joint),
 	urdf_joint_parent_link(Object,Joint,ParentLink),
-	urdf_chain(Object,FromLink,ParentLink,Node).
+	urdf_chain1(Object,FromLink,ParentLink,Rest).
 
 /**************************************/
 /********* RDF REPRESENTATION *********/
@@ -473,7 +480,7 @@ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 	var(Obj),!,
 	kb_call((
 		has_base_link_name(Obj,BaseName),
-		has_end_link_name(Obj,EndName)
+		ignore(has_end_link_name(Obj,EndName))
 	)),
 	has_urdf(Obj,Root),
 	get_object_shape_(
@@ -485,7 +492,7 @@ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 	has_urdf(Obj,Root),
 	kb_call((
 		has_base_link_name(Obj,BaseName),
-		has_end_link_name(Obj,EndName)
+		ignore(has_end_link_name(Obj,EndName))
 	)),
 	get_object_shape_(
 		Root, BaseName, EndName,
@@ -494,6 +501,7 @@ object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 %%
 get_object_shape_(Root,BaseName,EndName,
 		ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
+	( nonvar(EndName) -> true ; EndName = BaseName ),
 	% read prefix from root entity of URDF
 	once((urdf_prefix(Root,Prefix);(
 		(has_urdf_prefix(Root,Prefix);Prefix=''),
