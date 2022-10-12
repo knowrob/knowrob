@@ -208,12 +208,13 @@ urdf_set_pose_to_origin(Object,Frame) :-
 % @param Pose A pose list of frame-position-quaternion
 %
 urdf_pose(Object, ObjectFrame, Pose) :-
+	has_urdf(Object, URDFObject),
 	has_base_link_name(Object, LinkName),
-	(	has_urdf_prefix(Object, Prefix)
+	(	has_urdf_prefix(URDFObject, Prefix)
 	->	true
 	;	Prefix=''
 	),
-	urdf_pose1(Object, Prefix, LinkName, _, Pose),
+	urdf_pose1(URDFObject, Prefix, LinkName, _, Pose),
 	atom_concat(Prefix, LinkName, ObjectFrame).
 
 %% urdf_pose_abs(+Object, -ObjFrame, -AbsPose) is semidet.
@@ -226,25 +227,26 @@ urdf_pose(Object, ObjectFrame, Pose) :-
 % @param Pose A pose list of frame-position-quaternion
 %
 urdf_pose_abs(Object, ObjectFrame, AbsPose) :-
+	has_urdf(Object, URDFObject),
 	has_base_link_name(Object, LinkName),
-	(	has_urdf_prefix(Object, Prefix)
+	(	has_urdf_prefix(URDFObject, Prefix)
 	->	true
 	;	Prefix=''
 	),
-	urdf_pose1(Object, Prefix, LinkName, ParentName, RelPose),
-	urdf_pose_abs1(Object, Prefix, ParentName, RelPose, AbsPose),
+	urdf_pose1(URDFObject, Prefix, LinkName, ParentName, RelPose),
+	urdf_pose_abs1(URDFObject, Prefix, ParentName, RelPose, AbsPose),
 	atom_concat(Prefix, LinkName, ObjectFrame).
 
-urdf_pose1(Object, Prefix, LinkName, ParentName, [ParentFrame,Pos,Rot]) :-
-	%urdf_iri(Object, Prefix, LinkName, Link),
-	urdf_link_parent_joint(Object, LinkName, JointName),
-	urdf_joint_origin(Object, JointName, [_,Pos,Rot]),
-	urdf_joint_parent_link(Object, JointName, ParentName),
+urdf_pose1(URDFObject, Prefix, LinkName, ParentName, [ParentFrame,Pos,Rot]) :-
+	%urdf_iri(URDFObject, Prefix, LinkName, Link),
+	urdf_link_parent_joint(URDFObject, LinkName, JointName),
+	urdf_joint_origin(URDFObject, JointName, [_,Pos,Rot]),
+	urdf_joint_parent_link(URDFObject, JointName, ParentName),
 	atom_concat(Prefix, ParentName, ParentFrame).
 
-urdf_pose_abs1(Object, Prefix, ChildName,
+urdf_pose_abs1(URDFObject, Prefix, ChildName,
 		[ChildFrame,PosOX,RotOX], AbsPose) :-
-	urdf_pose1(Object, Prefix, ChildName,
+	urdf_pose1(URDFObject, Prefix, ChildName,
 		ParentName, [ParentFrame,PosXP,RotXP]),
 	!,
 	transform_multiply(
@@ -255,7 +257,7 @@ urdf_pose_abs1(Object, Prefix, ChildName,
 		% out: object pose relative to direct parent of x
 		[obj_frame, ParentFrame, PosOP, RotOP]
 	),
-	urdf_pose_abs1(Object, Prefix,
+	urdf_pose_abs1(URDFObject, Prefix,
 		ParentName, [ParentFrame, PosOP, RotOP],
 		AbsPose).
 
