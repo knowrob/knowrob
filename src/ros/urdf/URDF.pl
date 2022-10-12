@@ -8,6 +8,8 @@
 	  has_end_link(r,r),
 	  has_child_link(r,r),
 	  has_parent_link(r,r),
+	  urdf_pose(r,-,-),
+	  urdf_pose_abs(r,-,-),
 	  urdf_set_pose(r,+),
 	  urdf_set_pose_to_origin(r,+),
 	  urdf_robot_name/2,
@@ -195,6 +197,70 @@ urdf_load(Object,URL,Options) :-
 urdf_set_pose_to_origin(Object,Frame) :-
 	urdf_set_pose(Object,[Frame,[0,0,0],[0,0,0,1]]).
 
+
+%% urdf_pose(+Object, ?LinkFrame, ?Pose) is semidet.
+%
+% True if Pose is the pose of the link of Object
+% relative to its parent link.
+%
+% @param Object IRI atom
+% @param ObjectFrame The frame associated to the base link of Object
+% @param Pose A pose list of frame-position-quaternion
+%
+urdf_pose(Object, ObjectFrame, Pose) :-
+	has_base_link_name(Object, LinkName),
+	(	has_urdf_prefix(Object, Prefix)
+	->	true
+	;	Prefix=''
+	),
+	urdf_pose1(Object, Prefix, LinkName, _, Pose),
+	atom_concat(Prefix, LinkName, ObjectFrame).
+
+%% urdf_pose_abs(+Object, -ObjFrame, -AbsPose) is semidet.
+%
+% True if AbsPose is the pose of the link of Object
+% relative to the root link of the associated URDF.
+%
+% @param Object IRI atom
+% @param ObjectFrame The frame associated to the base link of Object
+% @param Pose A pose list of frame-position-quaternion
+%
+urdf_pose_abs(Object, ObjectFrame, AbsPose) :-
+	has_base_link_name(Object, LinkName),
+	(	has_urdf_prefix(Object, Prefix)
+	->	true
+	;	Prefix=''
+	),
+	urdf_pose1(Object, Prefix, LinkName, ParentName, RelPose),
+	urdf_pose_abs1(Object, Prefix, ParentName, RelPose, AbsPose),
+	atom_concat(Prefix, LinkName, ObjectFrame).
+
+urdf_pose1(Object, Prefix, LinkName, ParentName, [ParentFrame,Pos,Rot]) :-
+	%urdf_iri(Object, Prefix, LinkName, Link),
+	urdf_link_parent_joint(Object, LinkName, JointName),
+	urdf_joint_origin(Object, JointName, [_,Pos,Rot]),
+	urdf_joint_parent_link(Object, JointName, ParentName),
+	atom_concat(Prefix, ParentName, ParentFrame).
+
+urdf_pose_abs1(Object, Prefix, ChildName,
+		[ChildFrame,PosOX,RotOX], AbsPose) :-
+	urdf_pose1(Object, Prefix, ChildName,
+		ParentName, [ParentFrame,PosXP,RotXP]),
+	!,
+	transform_multiply(
+		% in: object pose relative to some link x
+		[obj_frame, ChildFrame, PosOX, RotOX],
+		% in: link x pose relative to direct parent
+		[ChildFrame, ParentFrame, PosXP, RotXP],
+		% out: object pose relative to direct parent of x
+		[obj_frame, ParentFrame, PosOP, RotOP]
+	),
+	urdf_pose_abs1(Object, Prefix,
+		ParentName, [ParentFrame, PosOP, RotOP],
+		AbsPose).
+
+urdf_pose_abs1(_, _, _, AbsPose, AbsPose).
+
 %% urdf_set_pose(+Object,+Pose) is semidet.
 %
 % Assign the initial pose of links described
@@ -204,7 +270,7 @@ urdf_set_pose_to_origin(Object,Frame) :-
 % in the second argument.
 %
 % @param Object IRI atom
-% @param Frame A pose list of frame-position-quaternion
+% @param Pose A pose list of frame-position-quaternion
 %
 urdf_set_pose(Object,Pose) :-
 	(	has_urdf_prefix(Object,Prefix)
@@ -225,15 +291,11 @@ urdf_set_pose(Object,Pose) :-
 		)
 	).
 
-set_link_pose_(Object,Prefix,LinkName) :-
-	urdf_link_parent_joint(Object,LinkName,JointName),
-	urdf_joint_origin(Object,JointName,[_,Pos,Rot]),
-	urdf_joint_parent_link(Object,JointName,ParentName),
-	urdf_iri(Object,Prefix,LinkName,Link),
-	atom_concat(Prefix,ParentName,ParentFrame),
+set_link_pose_(Object, Prefix, LinkName) :-
+	urdf_pose1(Object, Prefix, LinkName, _, Pose),
 	% update tf memory
-	rdf_split_url(_,LinkFrame,Link),
-	tf_mem_set_pose(LinkFrame, [ParentFrame,Pos,Rot], 0).
+	atom_concat(Prefix, LinkName, LinkFrame),
+	tf_mem_set_pose(LinkFrame, Pose, 0).
 
 %%
 %
