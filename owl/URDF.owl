@@ -274,29 +274,6 @@
         <rdfs:range rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#array_double"/>
         <rdfs:label>has axis vector</rdfs:label>
     </owl:DatatypeProperty>
-
-    
-
-
-    <!-- http://knowrob.org/kb/urdf.owl#hasBaseLinkName -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasBaseLinkName">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
-        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:label>has base link name</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/urdf.owl#hasEndLinkName -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/urdf.owl#hasEndLinkName">
-        <rdfs:subPropertyOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#hasNameString"/>
-        <rdfs:domain rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#PhysicalObject"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:label>has end link name</rdfs:label>
-    </owl:DatatypeProperty>
     
 
 
