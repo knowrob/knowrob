@@ -2,8 +2,7 @@
 	[ urdf_load(r,+),
 	  urdf_load(r,+,+),
 	  has_urdf(r,r),
-	  has_base_link_name(r,?),
-	  has_end_link_name(r,?),
+	  has_urdf_name(r,?),
 	  has_base_link(r,r),
 	  has_end_link(r,r),
 	  has_child_link(r,r),
@@ -77,6 +76,13 @@ urdf_server_init :-
 	assertz(urdf_server(URL)).
 :- urdf_server_init.
 
+
+%%
+assert_has_urdf(Object, URDFRoot) :-
+	transaction((
+		retractall(has_urdf(Object,_)),
+		asserta(has_urdf(Object, URDFRoot)))).
+
 %%
 %
 %
@@ -108,15 +114,24 @@ urdf_init(Object,Identifier) :-
 			fail
 		)
 	),
+	% lookup urdf prefix from triple store
+	(	has_urdf_prefix(Object,Prefix)
+	->	true
+	;	Prefix=''
+	),
+	assertz(urdf_prefix(Object,Prefix)),
 	% create has_urdf facts
 	forall(
 		(	Y=Object
 		;	kb_call(triple(Object,transitive(dul:hasComponent),Y))
 		),
-		(	has_urdf(Y,Object) -> true
-		;	assertz(has_urdf(Y,Object))
-		)
+		assert_has_urdf(Y, Object)
 	),
+	urdf_link_names(Object, Links),
+	forall(member(LinkName, Links), (
+		urdf_iri(Object, LinkName, Link),
+		assert_has_urdf(Link, Object)
+	)),
 	log_info(urdf(initialized(Object,Identifier))),
 	!.
 
@@ -148,43 +163,66 @@ urdf_load(Object,URL,Options) :-
 	;	Resolved=URL 
 	),
 	urdf_load_file(Object,Resolved),
-	% create IO and IR objects in triple store
+	%urdf_root_link(Object,RootLinkName),
+	% remember prefix
+	option(prefix(OptPrefix),Options,''),
+	assertz(urdf_prefix(Object, OptPrefix)),
+	% create some facts in the triple store
 	file_base_name(Resolved,FileName),
 	file_name_extension(Identifier,_,FileName),
-	kb_project(has_kinematics_file(Object,Identifier,'URDF')),
-	% assign urdf name to object
-	% TODO: only do this on first load
-	urdf_root_link(Object,RootLinkName),
-	kb_project(has_base_link_name(Object,RootLinkName)),
-	% assign prefix to object
-	% TODO: only do this on first load
-	option(prefix(OptPrefix),Options,''),
-	(	OptPrefix=''
-	->	true
-	;	kb_project(has_urdf_prefix(Object,OptPrefix))
-	),
-	% get all the object parts
-	findall(X, kb_call(triple(Object,transitive(dul:hasComponent),X)), Parts),
-	% set component poses relative to links
-	forall(
-		(	member(Y,[Object|Parts]),
-			has_base_link_name(Y,YName)
-		),
-		(	atom_concat(OptPrefix,YName,YFrame),
-			% update tf memory
+	kb_project([
+		has_kinematics_file(Object, Identifier, 'URDF'),
+		has_urdf_prefix(Object, OptPrefix)
+	]),
+	% get all the object components
+	findall(string(X), (
+		(Object=X ; triple(Object,transitive(dul:hasComponent),X)),
+		assertz(has_urdf(X,Object))
+	), Parts),
+	% NOTE: some composite components may not have their own frame in the URDF file.
+	%       in this case, hasBaseLink can be used instead of hasComponent such that the
+	%       base link frame is also used for the composite object (using identity transform between them).
+	% 
+	forall((	has_base_link(in(array(Parts)) -> Y, YBase),
+			rdf_split_url(_,YName,YBase),
 			rdf_split_url(_,OName,Y),
-			% do not create a frame for the entity if its name is equal to frame name.
-			(OName == YFrame -> true ;
-			tf_mem_set_pose(OName, [YFrame,[0,0,0],[0,0,0,1]], 0)),
-			%
-			assertz(has_urdf(Y,Object))
-		)
+			OName \== YName,
+			atom_concat(OptPrefix,YName,YFrame)
+		),
+		% update tf memory
+		tf_mem_set_pose(OName, [YFrame,[0,0,0],[0,0,0,1]], 0)
 	),
 	% optional: load links and joints as rdf objects
 	(	option(load_rdf,Options)
-	->	load_rdf_(Object,Parts,OptPrefix)
+	->	load_rdf_(Object, Parts)
 	;	true
 	).
+
+load_rdf_(Object, Parts) :-
+	% compute list of URDF link IRIs
+	urdf_link_names(Object,LinkNames),
+	findall(Y,(member(X,LinkNames),urdf_iri(Object,X,Y)),Links),
+	% assert has_urdf fact for each link
+	forall(member(Link,Links), assert_has_urdf(Link,Object)),
+	findall(Fact,
+		(	load_rdf_(Object,Links,Fact)
+		% add hasLink assertions if the enttity has
+		% hasBaseLink and hasEndLink assertions.
+		;	(kb_call((
+				has_base_link(in(array(Parts)) -> Y, YBase),
+				has_end_link(Y, YEnd)
+			)),
+			rdf_split_url(_,BaseName,YBase),
+			rdf_split_url(_,EndName,YEnd),
+			urdf_chain(Object,BaseName,EndName,X),
+			X \== BaseName,
+			X \== EndName,
+			urdf_iri(Object, X, XLink),
+			Fact = triple(Y, 'http://knowrob.org/kb/urdf.owl#hasLink', XLink))
+		),
+		Facts),
+	list_to_set(Facts,Facts_unique),
+	kb_project(Facts_unique).
 
 %% urdf_set_pose_to_origin(+Object,+Frame) is semidet.
 %
@@ -209,11 +247,8 @@ urdf_set_pose_to_origin(Object,Frame) :-
 %
 urdf_pose(Object, ObjectFrame, Pose) :-
 	has_urdf(Object, URDFObject),
-	has_base_link_name(Object, LinkName),
-	(	has_urdf_prefix(URDFObject, Prefix)
-	->	true
-	;	Prefix=''
-	),
+	rdf_split_url(_, LinkName, Object),
+	urdf_prefix(URDFObject, Prefix),
 	urdf_pose1(URDFObject, Prefix, LinkName, _, Pose),
 	atom_concat(Prefix, LinkName, ObjectFrame).
 
@@ -229,24 +264,18 @@ urdf_pose(Object, ObjectFrame, Pose) :-
 urdf_pose_rel(Object, LinkName, LinkName, LinkFrame, [LinkFrame,[0,0,0],[0,0,0,1]]) :-
 	!,
 	has_urdf(Object, URDFRoot),
-	(	has_urdf_prefix(URDFRoot, Prefix)
-	->	true
-	;	Prefix=''
-	),
+	urdf_prefix(URDFRoot, Prefix),
 	atom_concat(Prefix, LinkName, LinkFrame).
 	
 urdf_pose_rel(Object, LinkName, RootName, LinkFrame, LinkPose) :-
 	has_urdf(Object, URDFRoot),
-	(	has_urdf_prefix(URDFRoot, Prefix)
-	->	true
-	;	Prefix=''
-	),
+	urdf_prefix(URDFRoot, Prefix),
 	urdf_pose1(URDFRoot, Prefix, LinkName, ParentName, DirectPose),
 	urdf_pose_rel1(URDFRoot, Prefix, RootName, ParentName, DirectPose, LinkPose),
 	atom_concat(Prefix, LinkName, LinkFrame).
 
 urdf_pose1(URDFObject, Prefix, LinkName, ParentName, [ParentFrame,Pos,Rot]) :-
-	%urdf_iri(URDFObject, Prefix, LinkName, Link),
+	%urdf_iri(URDFObject, LinkName, Link),
 	urdf_link_parent_joint(URDFObject, LinkName, JointName),
 	urdf_joint_origin(URDFObject, JointName, [_,Pos,Rot]),
 	urdf_joint_parent_link(URDFObject, JointName, ParentName),
@@ -287,12 +316,10 @@ urdf_pose_rel1(_, _, _, _, RelPose, RelPose).
 % @param Pose A pose list of frame-position-quaternion
 %
 urdf_set_pose(Object,Pose) :-
-	(	has_urdf_prefix(Object,Prefix)
-	;	Prefix=''
-	),!,
+	urdf_prefix(Object,Prefix),!,
 	% set root link pose
 	urdf_root_link(Object,RootLinkName),
-	urdf_iri(Object,Prefix,RootLinkName,RootLink),
+	urdf_iri(Object,RootLinkName,RootLink),
 	% update tf memory
 	rdf_split_url(_,RootFrame,RootLink),
 	tf_mem_set_pose(RootFrame,Pose,0),
@@ -301,6 +328,7 @@ urdf_set_pose(Object,Pose) :-
 	forall(
 		member(LinkName,Links), 
 		(	LinkName=RootLinkName
+		->	true
 		;	set_link_pose_(Object,Prefix,LinkName)
 		)
 	).
@@ -348,13 +376,8 @@ urdf_chain1(Object,FromLink,ToLink,[ToLink|Rest]) :-
 /**************************************/
 
 %%
-urdf_iri(Object,URDFPrefix,Name,IRI) :-
-	%%
-	% FIXME: BUG: providing a prefix with '/' breaks rdf_split_url
-	%             for link individuals!!
-	%%
+urdf_iri(Object,Name,IRI) :-
 	rdf_split_url(IRIPrefix,_,Object),
-	%atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI),
 	atomic_list_concat([IRIPrefix,Name],'',IRI).
 
 %%
@@ -367,52 +390,30 @@ joint_type_iri(floating,   urdf:'FloatingJoint').
 joint_type_iri(planar,     urdf:'PlanarJoint').
 
 %%
-load_rdf_(Object,Parts,Prefix) :-
-	% create link entities
-	urdf_link_names(Object,Links),
-	forall(member(LinkName,Links), create_link_(Object,Prefix,LinkName,_)),
+load_rdf_(_, Links, has_type(Link,'http://knowrob.org/kb/urdf.owl#Link')) :-
+	kb_call((member(Link,Links),\+ has_type(Link,urdf:'Link'))).
+
+load_rdf_(Object, _, Fact) :-
 	% create joint entities
 	urdf_joint_names(Object,Joints),
-	forall(member(JointName,Joints), create_joint_(Object,Prefix,JointName,_)),
-	% associate links to components
-	forall(member(Part,Parts), set_links_(Part,Prefix)).
+	member(JointName,Joints),
+	create_joint_(Object,JointName,_,Fact).
 
 %%
-create_link_(Object,Prefix,Name,Link) :-
-	urdf_iri(Object,Prefix,Name,Link),
-	kb_project(has_type(Link,urdf:'Link')).
-
-%%
-create_joint_(Object,Prefix,Name,Joint) :-
-	urdf_iri(Object,Prefix,Name,Joint),
+create_joint_(Object,Name,Joint,Fact) :-
+	urdf_iri(Object,Name,Joint),
 	%%
 	urdf_joint_type(Object,Name,Type),
 	joint_type_iri(Type,JointType),
 	%%
 	urdf_joint_child_link(Object,Name,ChildName),
 	urdf_joint_parent_link(Object,Name,ParentName),
-	urdf_iri(Object,Prefix,ChildName,Child),
-	urdf_iri(Object,Prefix,ParentName,Parent),
+	urdf_iri(Object,ChildName,Child),
+	urdf_iri(Object,ParentName,Parent),
 	%%
-	kb_project([
-		has_type(Joint,JointType),
-		has_child_link(Joint,Child),
-		has_parent_link(Joint,Parent)
-	]).
-
-%%
-set_links_(Part,Prefix) :-
-	(	has_base_link_name(Part,BaseLinkName)
-	->	(	urdf_iri(Part,Prefix,BaseLinkName,BaseLink),
-			(Part==BaseLink -> true ; kb_project(has_base_link(Part,BaseLink)))
-		)
-	;	true
-	),!,
-	forall(
-		has_end_link_name(Part,EndLinkName),
-		(	urdf_iri(Part,Prefix,EndLinkName,EndLink),
-			(Part==EndLink -> true ; kb_project(has_end_link(Part,EndLink)))
-		)
+	(	Fact=has_type(Joint,JointType)
+	;	Fact=has_child_link(Joint,Child)
+	;	Fact=has_parent_link(Joint,Parent)
 	).
 
 /**************************************/
@@ -436,18 +437,8 @@ has_urdf_prefix(Obj,Prefix) ?+>
 
 %% has_urdf_name(?Obj,?Name) is semidet.
 %
-%has_urdf_name(Obj,Name) ?+>
-%	triple(Obj,urdf:hasURDFName,Name).
-
-%% has_base_link_name(?Obj,?Name) is semidet.
-%
-has_base_link_name(Obj,Name) ?+>
-	triple(Obj,urdf:hasBaseLinkName,Name).
-
-%% has_end_link_name(?Obj,?Name) is semidet.
-%
-has_end_link_name(Obj,Name) ?+>
-	triple(Obj,urdf:hasEndLinkName,Name).
+has_urdf_name(Obj,Name) ?+>
+	triple(Obj,urdf:hasURDFName,Name).
 
 %% has_base_link(?Obj,?Link) is semidet.
 %
@@ -476,40 +467,27 @@ model_SOMA:object_shape(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 	object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm).
 
 %%
-object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
-	var(Obj),!,
-	kb_call((
-		has_base_link_name(Obj,BaseName),
-		ignore(has_end_link_name(Obj,EndName))
-	)),
-	has_urdf(Obj,Root),
-	get_object_shape_(
-		Root, BaseName, EndName,
-		ShapeID, ShapeTerm, Origin, MaterialTerm).
+object_shape_urdf(Link,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
+	var(Link),!,
+	is_urdf_link(Link),
+	has_urdf(Link, Root),
+	link_shape_(Root, Link, ShapeID, ShapeTerm, Origin, MaterialTerm).
 
 object_shape_urdf(Obj,ShapeID,ShapeTerm,Origin,MaterialTerm) :-
 	%nonvar(Obj),
-	has_urdf(Obj,Root),
+	has_urdf(Obj, Root),
 	kb_call((
-		has_base_link_name(Obj,BaseName),
-		ignore(has_end_link_name(Obj,EndName))
+		triple(Obj, transitive(reflexive(dul:hasComponent)), Link),
+		is_urdf_link(Link)
 	)),
-	get_object_shape_(
-		Root, BaseName, EndName,
-		ShapeID, ShapeTerm, Origin, MaterialTerm).
+	link_shape_(Root, Link, ShapeID, ShapeTerm, Origin, MaterialTerm).
 
 %%
-get_object_shape_(Root,BaseName,EndName,
-		ShapeID,ShapeTerm,[Frame,Pos,Rot],MaterialTerm) :-
-	( nonvar(EndName) -> true ; EndName = BaseName ),
-	% read prefix from root entity of URDF
-	once((urdf_prefix(Root,Prefix);(
-		(has_urdf_prefix(Root,Prefix);Prefix=''),
-		assertz(urdf_prefix(Root,Prefix))
-	))),
-	urdf_catch(urdf_chain(Root,BaseName,EndName,LinkName)),
-	urdf_catch(urdf_link_visual_shape(Root,LinkName,
+link_shape_(Root, Link, ShapeID, ShapeTerm, [Frame,Pos,Rot], MaterialTerm) :-
+	rdf_split_url(_, LinkName, Link),
+	urdf_catch(urdf_link_visual_shape(Root, LinkName,
 		ShapeTerm,[Name,Pos,Rot],MaterialTerm,ShapeID)),
+	urdf_prefix(Root, Prefix),
 	atom_concat(Prefix,Name,Frame).
 
 %%
