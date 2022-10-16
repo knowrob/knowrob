@@ -1,7 +1,7 @@
 <launch>
   <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl" />
   <arg name="owl_file" default="package://iai_apartment/owl/iai-apartment.owl" />
-  <arg name="urdf_file" default="package://iai_apartment/urdf/iai-apartment.urdf" />
+  <arg name="urdf_file" default="package://iai_apartment/urdf/apartment.urdf" />
   <arg name="object_iri" default="http://knowrob.org/kb/iai-apartment.owl#apartment_root" />
   <param name="mongodb_uri" value="$(optenv KNOWROB_MONGODB_URI mongodb://localhost:27017/?appname=knowrob)" />
   
