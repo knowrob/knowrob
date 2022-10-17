@@ -390,7 +390,14 @@ load_rdf_(URL, Triples) :-
 load_rdf_1(URL, Triples) :-
 	% load rdf data. *Triples* is a ist of
 	% `rdf(Subject, Predicate, Object)` terms.
-	load_rdf(URL, Triples, [blank_nodes(noshare)]).
+	load_rdf(URL, Triples, [blank_nodes(noshare), namespaces(NSList)]),
+	% TODO load namespaces
+	forall((member(NS=Prefix, NSList),atom(NS)), (
+		rdf_register_ns(NS, Prefix, [keep(true)]),
+		% TODO namespaces should be stored in the DB too.
+		% else they are lost after the first run of knowrob.
+		true
+	)).
 
 %%
 convert_rdf_(IRI, rdf(S,P,O), triple(S1,P,O2)) :-
