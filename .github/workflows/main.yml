@@ -16,7 +16,6 @@ jobs:
       with:
         path: 'ros_ws/src/rosprolog'
         repository: knowrob/rosprolog
-        ref: 'noetic'
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
