@@ -271,7 +271,8 @@ urdf_iri(Object,URDFPrefix,Name,IRI) :-
 	%             for link individuals!!
 	%%
 	rdf_split_url(IRIPrefix,_,Object),
-	atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI).
+	%atomic_list_concat([IRIPrefix,URDFPrefix,Name],'',IRI),
+	atomic_list_concat([IRIPrefix,Name],'',IRI).
 
 %%
 :- rdf_meta(joint_type_iri(?,r)).
@@ -320,14 +321,14 @@ create_joint_(Object,Prefix,Name,Joint) :-
 set_links_(Part,Prefix) :-
 	(	has_base_link_name(Part,BaseLinkName)
 	->	(	urdf_iri(Part,Prefix,BaseLinkName,BaseLink),
-			kb_project(has_base_link(Part,BaseLink))
+			(Part==BaseLink -> true ; kb_project(has_base_link(Part,BaseLink)))
 		)
 	;	true
 	),!,
 	forall(
 		has_end_link_name(Part,EndLinkName),
 		(	urdf_iri(Part,Prefix,EndLinkName,EndLink),
-			kb_project(has_end_link(Part,EndLink))
+			(Part==EndLink -> true ; kb_project(has_end_link(Part,EndLink)))
 		)
 	).
 
