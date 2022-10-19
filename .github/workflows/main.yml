@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: 'ros_ws/src/rosprolog'
-        repository: daniel86/rosprolog
+        repository: knowrob/rosprolog
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
@@ -27,7 +27,7 @@ jobs:
             ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       with:
         # Version range or exact version of ROS version to use, using SemVer's version range syntax. 
-        ros-version: melodic
+        ros-version: noetic
         # Root directory of the catkin workspace
         workspace: $GITHUB_WORKSPACE/ros_ws
     - name: Build KnowRob workspace
@@ -45,7 +45,7 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        rosrun rosprolog rosprolog-test -o junit-knowrob.xml $GITHUB_WORKSPACE/ros_ws/src/knowrob
+        rosrun rosprolog rosprolog-test -o junit-knowrob.xml $GITHUB_WORKSPACE/ros_ws/src/knowrob/src
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
