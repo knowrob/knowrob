@@ -82,7 +82,7 @@ mng_import(Dir) :-
 	not(length(DirCollection, 0)),
 	forall(
 		member((DB1, Dir1), DirCollection),
-		mng_restore(DB1, Dir1, Output)
+		mng_restore(DB1, Dir1)
 	).
 
 %% memorize(+Directory) is det.
