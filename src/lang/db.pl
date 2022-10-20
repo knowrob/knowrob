@@ -69,13 +69,20 @@ remember(Directory) :-
 
 %%
 mng_import(Dir) :-
-	forall(
-		(	collection_name(Name),
-			mng_get_db(DB, Collection, Name)
+	findall((DB, Dir0),
+		(	
+			collection_name(Name),
+			mng_get_db(DB, Collection, Name),
+			path_concat(Dir, Collection, Dir0),
+			exists_directory(Dir0)
 		),
-		(	path_concat(Dir, Collection, Dir0),
-			ignore(mng_restore(DB, Dir0))
-		)
+		DirCollection
+	),
+	% Fails if there is no directory to import
+	not(length(DirCollection, 0)),
+	forall(
+		member((DB1, Dir1), DirCollection),
+		mng_restore(DB1, Dir1)
 	).
 
 %% memorize(+Directory) is det.
