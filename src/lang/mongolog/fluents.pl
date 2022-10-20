@@ -1,6 +1,7 @@
 :- module(mongolog_fluents,
 		[ mongolog_add_fluent(+,+,+,+),
 		  mongolog_add_fluent(+,+,+),
+		  mongolog_update_fluent_options(+,+),
 		  mongolog_drop_fluent(+)
 		]).
 /** <module> Fluents in mongolog programs.
@@ -62,6 +63,13 @@ mongolog_add_fluent(Functor, ArgFields, TimeField, Options) :-
 	assertz(mongolog_fluent(Functor, ArgFields, TimeField, Options)),
 	mongolog:add_command(Functor).
 
+
+mongolog_update_fluent_options(Functor, NewOptions) :-
+	mongolog_fluent(Functor, ArgFields, TimeField, Options),
+	retract(mongolog_fluent(Functor, ArgFields, TimeField, Options)),
+	assertz(mongolog_fluent(Functor, ArgFields, TimeField, NewOptions)).
+
+	
 %%
 setup_fluent_collection(Functor, ArgFields, TimeField, Options) :-
 	option(indices(Indices), Options, auto),

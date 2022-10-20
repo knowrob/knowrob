@@ -27,6 +27,8 @@ initialize_db :-
 knowrob_load_neem(NEEM_id) :-
 	% assign DB collection prefix
 	set_setting(mng_client:collection_prefix, NEEM_id),
+	mng_get_db(_DB, CollectionName, 'tf'),
+	mongolog_update_fluent_options('tf_raw',[collection(CollectionName)]),
 	% re-initialize the triple DB
 	% this is important e.g. to establish triple graph hierarchy.
 	% else we may get orphaned graphs.
