@@ -40,7 +40,7 @@
 		'List of named graphs that should initially by erased.').
 
 %%
-:- setting(mng_client:collection_names, list, [triples, tf, annotations, inferred],
+:- setting(mng_client:collection_names, list, [triples, tf, annotations],
 		'List of collections that will be imported/exported with remember/memorize.').
 
 %%
@@ -78,11 +78,12 @@ mng_import(Dir) :-
 		),
 		DirCollection
 	),
+	writeln(DirCollection),
 	% Fails if there is no directory to import
 	not(length(DirCollection, 0)),
 	forall(
 		member((DB1, Dir1), DirCollection),
-		mng_restore(DB1, Dir1)
+		mng_restore(DB1, Dir1, Output)
 	).
 
 %% memorize(+Directory) is det.
