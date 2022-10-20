@@ -78,7 +78,6 @@ mng_import(Dir) :-
 		),
 		DirCollection
 	),
-	writeln(DirCollection),
 	% Fails if there is no directory to import
 	not(length(DirCollection, 0)),
 	forall(
