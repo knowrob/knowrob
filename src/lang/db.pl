@@ -74,7 +74,7 @@ mng_import(Dir) :-
 			mng_get_db(DB, Collection, Name)
 		),
 		(	path_concat(Dir, Collection, Dir0),
-			mng_restore(DB, Dir0)
+			ignore(mng_restore(DB, Dir0))
 		)
 	).
 
