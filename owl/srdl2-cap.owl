@@ -146,12 +146,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Affordance -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Affordance"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector"/>
@@ -263,6 +257,14 @@
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#BodyMotionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#CanPerceive -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#CanPerceive">
+        <rdfs:subClassOf rdf:resource="http://www.ease-crc.org/ont/SOMA.owl#Disposition"/>
     </owl:Class>
     
 
@@ -520,18 +522,18 @@
     
 
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionAffordance">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Affordance"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionDisposition -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionDisposition">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#CanPerceive"/>
     </owl:Class>
     
 
