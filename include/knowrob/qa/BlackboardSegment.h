@@ -10,7 +10,8 @@
 #define __KNOWROB_BLACKBOARD_SEGMENT_H__
 
 #include <list>
-#include <memory>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/lang/IQuery.h"
 #include "knowrob/lang/Answer.h"
@@ -25,14 +26,14 @@ namespace knowrob {
     class BlackboardSegment : public AnswerPublisher {
     public:
         BlackboardSegment(
-            const std::shared_ptr<ReasonerManager> &reasonerManager,
-            const list<std::shared_ptr<IReasoner>> &experts,
-            const std::shared_ptr<IQuery> &query);
+            const boost::shared_ptr<ReasonerManager> &reasonerManager,
+            const list<boost::shared_ptr<IReasoner>> &experts,
+            const boost::shared_ptr<IQuery> &query);
         ~BlackboardSegment();
 
     private:
-        std::shared_ptr<ReasonerManager> reasonerManager_;
-        std::list<std::shared_ptr<ReasoningProcess>> processes_;
+        boost::shared_ptr<ReasonerManager> reasonerManager_;
+        std::list<boost::shared_ptr<ReasoningProcess>> processes_;
 
         /** Start all reasoning processes attached to this segment. */
         void startReasoningProcesses();

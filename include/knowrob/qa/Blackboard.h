@@ -10,7 +10,8 @@
 #define __KNOWROB_BLACKBOARD_H__
 
 #include <list>
-#include <memory>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/lang/IQuery.h"
 #include "knowrob/lang/Answer.h"
@@ -25,8 +26,8 @@ namespace knowrob {
     class Blackboard : public AnswerPublisher {
     public:
         Blackboard(
-            const std::shared_ptr<ReasonerManager> &reasonerManager,
-            const std::shared_ptr<IQuery> &goal);
+            const boost::shared_ptr<ReasonerManager> &reasonerManager,
+            const boost::shared_ptr<IQuery> &goal);
         ~Blackboard();
 
         /** Get list of blackboard segments.
@@ -39,7 +40,7 @@ namespace knowrob {
         const std::list<BlackboardSegment>& segments() const { return segments_; }
 
     private:
-        std::shared_ptr<ReasonerManager> reasonerManager_;
+        boost::shared_ptr<ReasonerManager> reasonerManager_;
         std::list<BlackboardSegment> segments_;
 
         /** Decompose the blackboard into different segments. */

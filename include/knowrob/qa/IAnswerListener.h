@@ -9,7 +9,8 @@
 #ifndef __KNOWROB_IANSWER_LISTENER_H__
 #define __KNOWROB_IANSWER_LISTENER_H__
 
-#include <memory>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/lang/Answer.h"
 
@@ -25,7 +26,7 @@ namespace knowrob {
          *
          * @param answer the new answer
          */
-        virtual void receiveAnswer(const std::shared_ptr<Answer> &answer) = 0;
+        virtual void receiveAnswer(const boost::shared_ptr<Answer> &answer) = 0;
     };
 }
 

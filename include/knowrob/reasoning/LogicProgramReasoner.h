@@ -9,19 +9,20 @@
 #ifndef __KNOWROB_LOGIC_PROGRAM_REASONER_H__
 #define __KNOWROB_LOGIC_PROGRAM_REASONER_H__
 
-#include <memory>
-
-#include "knowrob/reasoning/IReasoner.h"
-#include "knowrob/db/IFactBase.h"
-#include "knowrob/db/IRuleBase.h"
+// boost
+#include <boost/shared_ptr.hpp>
+// KnowRob
+#include <knowrob/reasoning/IReasoner.h>
+#include <knowrob/db/IFactBase.h>
+#include <knowrob/db/IRuleBase.h>
 
 namespace knowrob {
     template <class EDBType, class IDBType>
     class LogicProgramReasoner : public IReasoner {
     public:
-        LogicProgramReasoner(std::shared_ptr<EDBType> &edb, std::shared_ptr<IDBType> &idb)
-            : edb_(edb), idb_(idb) {};
-        ~LogicProgramReasoner() {};
+        LogicProgramReasoner(boost::shared_ptr<EDBType> &edb, boost::shared_ptr<IDBType> &idb)
+            : edb_(edb), idb_(idb) {}
+        ~LogicProgramReasoner() {}
 
         /** Get the fact base of the logic program.
          *
@@ -36,8 +37,8 @@ namespace knowrob {
         const IDBType& idb() const { return *idb_; }
 
     protected:
-        std::shared_ptr<EDBType> edb_;
-        std::shared_ptr<IDBType> idb_;
+        boost::shared_ptr<EDBType> edb_;
+        boost::shared_ptr<IDBType> idb_;
     };
 }
 

@@ -9,7 +9,8 @@
 #ifndef __KNOWROB_REASONING_TASK_H__
 #define __KNOWROB_REASONING_TASK_H__
 
-#include <memory>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/reasoning/IReasoner.h"
 #include "knowrob/lang/IQuery.h"

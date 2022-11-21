@@ -10,7 +10,8 @@
 #define __KNOWROB_REASONER_MANAGER_H__
 
 #include <list>
-#include <memory>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/lang/PredicateIndicator.h"
 #include "knowrob/reasoning/IReasoner.h"
@@ -26,15 +27,15 @@ namespace knowrob {
         ReasonerManager();
         ~ReasonerManager();
 
-        void addReasoner(std::shared_ptr<IReasoner> &reasoner);
-        void removeReasoner(std::shared_ptr<IReasoner> &reasoner);
+        void addReasoner(boost::shared_ptr<IReasoner> &reasoner);
+        void removeReasoner(boost::shared_ptr<IReasoner> &reasoner);
 
         /** Get list of reasoner that can handle given predicate.
          *
          * @param predicate the predicate in question
          * @return an essemble of reasoner that can handle the predicate
          */
-        list<std::shared_ptr<IReasoner>> getExpertsForPredicate(const PredicateIndicator &predicate);
+        std::list<boost::shared_ptr<IReasoner>> getExpertsForPredicate(const PredicateIndicator &predicate);
 
         /** Start a reasoning process for given reasoning task.
          *
@@ -47,10 +48,10 @@ namespace knowrob {
          * @param task a reasoning task
          * @return the reasoning process started
          */
-         std::shared_ptr<ReasoningProcess> submitTask(const ReasoningTask &task);
+         boost::shared_ptr<ReasoningProcess> submitTask(const ReasoningTask &task);
 
     private:
-        list<std::shared_ptr<IReasoner>> pool_;
+        std::list<boost::shared_ptr<IReasoner>> pool_;
     };
 }
 

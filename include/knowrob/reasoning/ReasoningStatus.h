@@ -15,6 +15,9 @@ namespace knowrob {
         ReasoningStatus();
         ~ReasoningStatus();
 
+        bool isCancelled();
+        void cancel();
+
     private:
     };
 }

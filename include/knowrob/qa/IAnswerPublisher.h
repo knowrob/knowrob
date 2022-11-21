@@ -9,8 +9,9 @@
 #ifndef __KNOWROB_IANSWER_PUBLISHER_H__
 #define __KNOWROB_IANSWER_PUBLISHER_H__
 
-#include <memory>
 #include <list>
+// boost
+#include <boost/shared_ptr.hpp>
 
 #include "knowrob/lang/IQuery.h"
 #include "knowrob/lang/Answer.h"
@@ -22,7 +23,7 @@ namespace knowrob {
      */
     class IAnswerPublisher {
     public:
-        IAnswerPublisher(const std::shared_ptr<IQuery> &query);
+        IAnswerPublisher(const boost::shared_ptr<IQuery> &query);
         ~IAnswerPublisher();
 
         /** Add a listener for generated answers.
@@ -32,37 +33,37 @@ namespace knowrob {
          *
          * @param answer the answer to publish
          */
-        void addListener(const std::shared_ptr<IAnswerListener> &listener);
+        void addListener(const boost::shared_ptr<IAnswerListener> &listener);
 
         /** Removes a previously added listener.
          *
          * @param answer the answer to publish
          */
-        void removeListener(const std::shared_ptr<IAnswerListener> &listener);
+        void removeListener(const boost::shared_ptr<IAnswerListener> &listener);
 
         /** Publish an answer.
          *
          * @param answer the answer to publish
          */
-        void pushAnswer(const std::shared_ptr<Answer> &answer);
+        void pushAnswer(const boost::shared_ptr<Answer> &answer);
 
         /** Get list of answer listener.
          *
          * @return list of answer listener
          */
-        const std::list<std::shared_ptr<IAnswerListener>>& listener() const { return listener_; }
+        const std::list<boost::shared_ptr<IAnswerListener>>& listener() const { return listener_; }
 
         /** Get list of answera.
          *
          * @return list of answers
          */
-        const std::list<std::shared_ptr<Answer>>& answers() const { return answers_; }
+        const std::list<boost::shared_ptr<Answer>>& answers() const { return answers_; }
 
     private:
-        std::shared_ptr<IQuery> goal_;
-        std::list<std::shared_ptr<Answer>> answers_;
+        boost::shared_ptr<IQuery> goal_;
+        std::list<boost::shared_ptr<Answer>> answers_;
 
-        std::list<std::shared_ptr<IAnswerListener>> listener_;
+        std::list<boost::shared_ptr<IAnswerListener>> listener_;
     };
 }
 
