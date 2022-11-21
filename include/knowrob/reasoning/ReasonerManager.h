@@ -34,7 +34,7 @@ namespace knowrob {
          * @param predicate the predicate in question
          * @return an essemble of reasoner that can handle the predicate
          */
-        list<std::shared_ptr<IReasoner>> getExpertsForPredicate(const Predicate &predicate);
+        list<std::shared_ptr<IReasoner>> getExpertsForPredicate(const PredicateIndicator &predicate);
 
         /** Start a reasoning process for given reasoning task.
          *

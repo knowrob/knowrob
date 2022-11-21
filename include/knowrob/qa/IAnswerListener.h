@@ -17,7 +17,7 @@ namespace knowrob {
     public:
         virtual ~IAnswerListener() {}
 
-        /** Receives a new answer.
+        /** Receive an answer.
          *
          * @param answer the new answer
          */

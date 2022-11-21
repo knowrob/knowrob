@@ -6,17 +6,17 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_QUERY_H__
-#define __KNOWROB_QUERY_H__
+#ifndef __KNOWROB_REASONING_STATUS_H__
+#define __KNOWROB_REASONING_STATUS_H__
 
 namespace knowrob {
-    class Query {
+    class ReasoningStatus {
     public:
-        Query();
-        ~Query();
+        ReasoningStatus();
+        ~ReasoningStatus();
 
     private:
     };
 }
 
-#endif //__KNOWROB_QUERY_H__
+#endif //__KNOWROB_REASONING_STATUS_H__

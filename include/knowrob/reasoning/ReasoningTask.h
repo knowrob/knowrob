@@ -21,7 +21,7 @@ namespace knowrob {
     public:
         ReasoningTask(
             std::shared_ptr<IReasoner> &reasoner,
-            std::shared_ptr<Query> &goal,
+            std::shared_ptr<IQuery> &goal,
             std::shared_ptr<IAnswerPublisher> &publisher)
             : reasoner_(reasoner), goal_(goal), publisher_(publisher) {};
 
@@ -35,7 +35,7 @@ namespace knowrob {
          *
          * @return the goal associated to this task
          */
-        const Query& goal() const { return *goal_; }
+        const IQuery& goal() const { return *goal_; }
 
         /** Get the output stream associated to this task.
          *
@@ -45,7 +45,7 @@ namespace knowrob {
 
     protected:
         std::shared_ptr<IReasoner> reasoner_;
-        std::shared_ptr<Query> goal_;
+        std::shared_ptr<IQuery> goal_;
         std::shared_ptr<IAnswerPublisher> publisher_;
     };
 }

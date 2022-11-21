@@ -10,10 +10,10 @@
 #define __KNOWROB_COMPUTATION_METHOD_H__
 
 namespace knowrob {
-    class ComputationMethod {
+    class IComputationMethod : public IReasoner{
     public:
-        ComputationMethod();
-        ~ComputationMethod();
+        IComputationMethod();
+        ~IComputationMethod();
 
     private:
     };

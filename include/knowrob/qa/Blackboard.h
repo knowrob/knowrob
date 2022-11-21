@@ -23,7 +23,7 @@ namespace knowrob {
     public:
         Blackboard(
             const std::shared_ptr<ReasonerManager> &reasonerManager,
-            const std::shared_ptr<Query> &goal);
+            const std::shared_ptr<IQuery> &goal);
         ~Blackboard();
 
         /** Get list of blackboard segments.

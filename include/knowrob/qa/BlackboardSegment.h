@@ -24,7 +24,7 @@ namespace knowrob {
         BlackboardSegment(
             const std::shared_ptr<ReasonerManager> &reasonerManager,
             const list<std::shared_ptr<IReasoner>> &experts,
-            const std::shared_ptr<Query> &query);
+            const std::shared_ptr<IQuery> &query);
         ~BlackboardSegment();
 
     private:

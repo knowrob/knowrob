@@ -19,7 +19,7 @@ namespace knowrob {
      */
     class IAnswerPublisher {
     public:
-        IAnswerPublisher(const std::shared_ptr<Query> &query);
+        IAnswerPublisher(const std::shared_ptr<IQuery> &query);
         ~IAnswerPublisher();
 
         /** Add a listener for generated answers.
@@ -56,7 +56,7 @@ namespace knowrob {
         const std::list<std::shared_ptr<Answer>>& answers() const { return answers_; }
 
     private:
-        std::shared_ptr<Query> goal_;
+        std::shared_ptr<IQuery> goal_;
         std::list<std::shared_ptr<Answer>> answers_;
 
         std::list<std::shared_ptr<IAnswerListener>> listener_;
