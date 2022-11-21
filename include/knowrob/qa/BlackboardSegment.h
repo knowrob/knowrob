@@ -9,10 +9,13 @@
 #ifndef __KNOWROB_BLACKBOARD_SEGMENT_H__
 #define __KNOWROB_BLACKBOARD_SEGMENT_H__
 
-#include "knowrob/qa/Query.h"
-#include "knowrob/qa/Answer.h"
+#include <list>
+#include <memory>
+
+#include "knowrob/lang/IQuery.h"
+#include "knowrob/lang/Answer.h"
 #include "knowrob/qa/AnswerPublisher.h"
-#include "knowrob/reasoning/ReasonerEssemble.h"
+#include "knowrob/reasoning/ReasonerManager.h"
 
 namespace knowrob {
     /**

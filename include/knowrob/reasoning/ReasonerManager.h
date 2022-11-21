@@ -12,7 +12,7 @@
 #include <list>
 #include <memory>
 
-#include "knowrob/lang/Predicate.h"
+#include "knowrob/lang/PredicateIndicator.h"
 #include "knowrob/reasoning/IReasoner.h"
 #include "knowrob/reasoning/ReasoningProcess.h"
 #include "knowrob/reasoning/ReasoningTask.h"

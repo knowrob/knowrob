@@ -9,8 +9,11 @@
 #ifndef __KNOWROB_IANSWER_PUBLISHER_H__
 #define __KNOWROB_IANSWER_PUBLISHER_H__
 
-#include "knowrob/qa/Query.h"
-#include "knowrob/qa/Answer.h"
+#include <memory>
+#include <list>
+
+#include "knowrob/lang/IQuery.h"
+#include "knowrob/lang/Answer.h"
 #include "knowrob/qa/IAnswerListener.h"
 
 namespace knowrob {

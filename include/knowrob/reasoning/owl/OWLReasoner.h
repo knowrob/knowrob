@@ -14,7 +14,10 @@
 namespace knowrob {
     class OWLReasoner : public IReasoner {
     public:
-        OWLReasoner();
+        OWLReasoner(
+            std::shared_ptr<RDFTripleStore> &tripleStore,
+            std::shared_ptr<OWLAxiomStore> &axiomStore)
+            : tripleStore_(tripleStore), axiomStore_(axiomStore) {};
         ~OWLReasoner();
 
     private:
