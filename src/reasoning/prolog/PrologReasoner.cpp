@@ -21,8 +21,8 @@ using namespace knowrob;
 //      - support writing facts asserted from PrologEngine into EDB?
 //           i.e. when assert is called in the PrologEngine.
 
-PrologReasoner::PrologReasoner(boost::shared_ptr<IFactBase> &edb, boost::shared_ptr<IRuleBase> &idb)
-: LogicProgramReasoner(edb,idb)
+PrologReasoner::PrologReasoner(const std::string &initFile)
+: initFile_(initFile)
 {
 }
 
@@ -35,36 +35,62 @@ void PrologReasoner::initialize()
 {
     // claim a prolog engine where facts and rules can be asseted
     boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
-    // load facts from EDB
-    Iterator<Predicate> factIt = edb_.getFacts();
-    while(factIt.hasNext()) {
-        engine->assert(factIt.next());
+    // consult the init file, i.e. load facts and rules declared
+    // in the file, and execute directives it contains
+    engine->consult(initFile_);
+    // TODO: load any additional rules stored in IDBs
+    //for(auto it=idbs_.begin(); it!=idbs_.end(); it++) {
+    //}
+    if(!idbs_.empty()) {
+        // TODO: print warning "PrologEngine does not support the use of additional IDBs as of now."
     }
-    // load rules from IDB
-    Iterator<Rule> ruleIt = idb_.getRules();
-    while(ruleIt.hasNext()) {
-        engine->assert(ruleIt.next());
+    // load any additional facts stored in EDBs
+    for(auto it=edbs_.begin(); it!=ebds_.end(); it++) {
+        boost::shared_ptr<IFactBase> edb = *it;
+        Iterator<boost::shared_ptr<Predicate>> pit = edb.getFacts();
+        while(pit.hasNext()) {
+            boost::shared_ptr<Predicate> p = *pit;
+            engine->assert(*p);
+        }
     }
+    // release the engine again
+    prologEnginePool_.release(engine);
+}
+
+void PrologReasoner::consult(const std:string &prologFile)
+{
+    boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
+    engine->consult(prologFile);
+    prologEnginePool_.release(engine);
+}
+
+void PrologReasoner::assert(const Predicate &fact)
+{
+    boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
+    engine->assert(fact);
+    prologEnginePool_.release(engine);
+}
+
+void PrologReasoner::runQuery(const IQuery &goal, ReasoningStatus &status, MessageQueue<Answer> &answerQueue)
+{
+    // claim a prolog engine
+    boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
+    // run the query
+    // TODO: might be prolog supports a better way to terminate a running
+    //       inference. Here it can only be terminated in between two answers
+    //       that are generated.
+	engine->startQuery(goal, true);
+	while(!status.isCancelled() && engine->hasMoreSolutions()) {
+        answerQueue.push(engine->popSolution());
+	}
+	// TODO: need to block here? (flag=true means to block)
+	engine->stopQuery(true);
     // release the engine again
     prologEnginePool_.release(engine);
 }
 
 bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
-    // TODO: better check if PrologEngine knows the predicate?
+    // TODO: better check if PrologEngine knows the predicate!
     return edb_.containsPredicate() || idb_.containsPredicate();
-}
-
-void PrologReasoner::run(const IQuery &goal, ReasoningStatus &status, MessageQueue<Answer> &answerQueue)
-{
-    // claim a prolog engine
-    boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
-    // run the query
-	engine->startQuery(goal, true);
-	while(!status.isCancelled() && engine->hasMoreSolutions()) {
-        answerQueue.push(engine->popSolution());
-	}
-	engine->stopQuery(true);
-    // release the engine again
-    prologEnginePool_.release(engine);
 }

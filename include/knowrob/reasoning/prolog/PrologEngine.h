@@ -23,7 +23,6 @@
 #include <knowrob/lang/Answer.h>
 #include <knowrob/lang/IQuery.h>
 #include <knowrob/lang/Predicate.h>
-#include <knowrob/lang/Rule.h>
 
 namespace knowrob {
     /**
@@ -50,11 +49,6 @@ namespace knowrob {
          * Asserts a fact into the Prolog knowledge base.
          */
         void assert(const Predicate &fact);
-
-        /**
-         * Asserts a rule into the Prolog knowledge base.
-         */
-        void assert(const Rule &rule);
 
         /**
          * Convinience method that claims the engine, then computes

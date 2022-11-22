@@ -9,32 +9,48 @@
 #ifndef __KNOWROB_PROLOG_REASONER_H__
 #define __KNOWROB_PROLOG_REASONER_H__
 
+// STD
+#include <string>
 // boost
 #include <boost/shared_ptr.hpp>
 // KnowRob
 #include <knowrob/reasoning/LogicProgramReasoner.h>
+#include <knowrob/reasoning/ReasoningStatus.h>
 #include <knowrob/reasoning/prolog/PrologFactBase.h>
 #include <knowrob/reasoning/prolog/PrologRuleBase.h>
+#include <knowrob/lang/Predicate.h>
+#include <knowrob/lang/IQuery.h>
 
 namespace knowrob {
     /**
      * A Prolog reasoner that performs reasoning using SWI Prolog.
      */
-    class PrologReasoner : public LogicProgramReasoner<PrologFactBase,PrologRuleBase> {
+    class PrologReasoner : public LogicProgramReasoner {
     public:
-        PrologReasoner(boost::shared_ptr<IFactBase> &edb, boost::shared_ptr<IRuleBase> &idb);
+        PrologReasoner(const std::string &initFile);
         ~PrologReasoner();
+
+        /**
+         * Consults a Prolog file, i.e. loads facts and rules and executed
+         * directives in the file.
+         * May throw an exception if there is no valid Prolog file at the given path.
+         */
+        void consult(const std:string &prologFile);
 
         // Override IReasoner::initialize
         virtual void initialize();
 
+        // Override LogicProgramReasoner::initialize
+        virtual void assert(const Predicate &predicate);
+
+        // Override IReasoner::run
+        virtual void runQuery(const IQuery &goal, ReasoningStatus &status, MessageQueue<Answer> &answerQueue);
+
         // Override IReasoner::canReasonAbout
         virtual bool canReasonAbout(const PredicateIndicator &predicate) const;
 
-        // Override IReasoner::run
-        virtual void run(const IQuery &goal, ReasoningStatus &status, MessageQueue<Answer> &answerQueue);
-
-    private:
+    protected:
+        std::string initFile_;
     };
 }
 

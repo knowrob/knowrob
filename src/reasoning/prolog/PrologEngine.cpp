@@ -149,10 +149,14 @@ void PrologEngine::run()
 
 void PrologEngine::consult(const std::string &filePath)
 {
+    // TODO: implement
+    // atom_concat(PackagePath, '__init__.pl', InitFile)
+    // user:consult(InitFile)
 }
 
 void PrologEngine::assert(const Predicate &predicate)
 {
+    // TODO: implement
     //int PL_assert(term_t t, module_t m, int flags)
 }
 

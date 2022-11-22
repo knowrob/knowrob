@@ -17,28 +17,35 @@
 #include <knowrob/db/IRuleBase.h>
 
 namespace knowrob {
-    template <class EDBType, class IDBType>
     class LogicProgramReasoner : public IReasoner {
     public:
-        LogicProgramReasoner(boost::shared_ptr<EDBType> &edb, boost::shared_ptr<IDBType> &idb)
-            : edb_(edb), idb_(idb) {}
+        LogicProgramReasoner() {}
         ~LogicProgramReasoner() {}
 
-        /** Get the fact base of the logic program.
+        /** Assert a fact into the reasoning system.
          *
-         * @return the fact base
+         * @param predicate a fact
          */
-        const EDBType& edb() const { return *edb_; }
+        virtual void assert(const Predicate &predicate) = 0;
 
-        /** Get the fact base of the logic program.
+        /** Get the fact bases of the logic program.
          *
-         * @return the fact base
+         * @return the fact bases
          */
-        const IDBType& idb() const { return *idb_; }
+        const std::list<boost::shared_ptr<IFactBase>>& edbs() const { return edbs_; }
+
+        /** Get the fact bases of the logic program.
+         *
+         * @return the fact bases
+         */
+        const std::list<boost::shared_ptr<IRuleBase>>& idbs() const { return idbs_; }
+
+        void addEDB(boost::shared_ptr<IFactBase> &edb) { edbs_.push_back(edb); }
+        void addIDB(boost::shared_ptr<IRuleBase> &idb) { idbs_.push_back(idb); }
 
     protected:
-        boost::shared_ptr<EDBType> edb_;
-        boost::shared_ptr<IDBType> idb_;
+        std::list<boost::shared_ptr<IFactBase>> edbs_;
+        std::list<boost::shared_ptr<IRuleBase>> idbs_;
     };
 }
 
