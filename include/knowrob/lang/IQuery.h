@@ -19,6 +19,7 @@ namespace knowrob {
     class IQuery {
     public:
         IQuery(const std::string &queryString);
+        IQuery(const Predicate &queryPredicate);
         ~IQuery();
 
         /** Parse a query string into a sequence of predicates.

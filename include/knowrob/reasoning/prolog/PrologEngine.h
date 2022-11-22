@@ -43,12 +43,12 @@ namespace knowrob {
         /**
          * Consult a local Prolog file.
          */
-        void consult(const std::string &prologFile);
+        bool consult(const std::string &prologFile);
 
         /**
          * Asserts a fact into the Prolog knowledge base.
          */
-        void assert(const Predicate &fact);
+        bool assert(const Predicate &fact);
 
         /**
          * Convinience method that claims the engine, then computes

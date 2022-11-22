@@ -147,21 +147,24 @@ void PrologEngine::run()
 	PL_thread_destroy_engine();
 }
 
-void PrologEngine::consult(const std::string &filePath)
+bool PrologEngine::consult(const std::string &prologFilePath)
 {
-    // TODO: implement
-    // atom_concat(PackagePath, '__init__.pl', InitFile)
-    // user:consult(InitFile)
+    // create "user:consult(prologFilePath)" predicate
+    PrologPredicate consult("consult",1);
+    consult.setModule("user");
+    consult.setArgument(0, prologFilePath.c_str());
+    // run a query
+    return oneSolution(boost::shared_ptr<IQuery>(new IQuery(consult)))->isTrue();
 }
 
 void PrologEngine::assert(const Predicate &predicate)
 {
-    // TODO: implement
-    //int PL_assert(term_t t, module_t m, int flags)
-}
-
-void PrologEngine::assert(const Rule &rule)
-{
+    std:string predicateString = predicate.toString();
+    // create "user:consult(prologFilePath)" predicate
+    PrologPredicate assertz("assertz",1);
+    assertz.setArgument(0, predicate);
+    // run a query
+    return oneSolution(boost::shared_ptr<IQuery>(new IQuery(assertz)))->isTrue();
 }
 
 boost::shared_ptr<Answer> PrologEngine::oneSolution(boost::shared_ptr<IQuery> &goal)
