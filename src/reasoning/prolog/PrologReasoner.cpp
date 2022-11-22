@@ -91,6 +91,13 @@ void PrologReasoner::runQuery(const IQuery &goal, ReasoningStatus &status, Messa
 
 bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
-    // TODO: better check if PrologEngine knows the predicate!
-    return edb_.containsPredicate() || idb_.containsPredicate();
+    // create "current_functor(Functor,Arity)" predicate
+    PrologPredicate current_functor("consult",1);
+    current_functor.setArgument(0, predicate.functor().c_str());
+    current_functor.setArgument(1, predicate.arity());
+    // run a query
+    boost::shared_ptr<PrologEngine> engine = prologEnginePool_.claim();
+    bool isCurrent = engine->oneSolution(boost::shared_ptr<IQuery>(new IQuery(current_functor)))->isTrue();
+    prologEnginePool_.release(engine);
+    return isCurrent;
 }
