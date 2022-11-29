@@ -53,7 +53,7 @@ namespace knowrob {
 		 */
 		FormulaType type() const { return type_; }
 		
-		/** Is this formular atomic?
+		/** Is this formula atomic?
 		 *
 		 * @return true if this formula is atomic.
 		 */
@@ -153,7 +153,8 @@ namespace knowrob {
 		Query(const Predicate &predicate)
 		: formula_(PredicateFormula(predicate)) {}
 
-		/**
+		/** Get the formula associated to this query.
+		 * @return the formula.
 		 */
 		const Formula& formula() const { return formula_; }
 
@@ -162,8 +163,6 @@ namespace knowrob {
 	};
 	
 	/** An interface for constructing query objects from strings.
-	 * Also provides an interface to generate string representations
-	 * of queries.
 	 */
 	class IQueryParser {
 	public:
@@ -176,9 +175,20 @@ namespace knowrob {
 		/** Parse a Query object from a query string encoded in the language supported by the parser.
 		 *
 		 * @queryString an expression in the language supported by the parser.
-		 * @return the newly constructed
+		 * @return the newly constructed query object.
 		 */
-		virtual boost::shared_ptr<Query> fromString(const std::string &queryString) = 0;
+		virtual Query fromString(const std::string &queryString) = 0;
+	};
+	
+	/** An interface for constructing strings from query objects.
+	 */
+	class IQueryFormatter {
+	public:
+		/** Get the identifier of the language supported by the parser.
+		 *
+		 * @return the language identifier, e.g. "prolog" for the PrologQueryParser.
+		 */
+		virtual const std::string& getLanguageIdentifier() const = 0;
 		
 		/** Convert a Query object into an expression of the language supported by the parser.
 		 *
@@ -196,10 +206,7 @@ namespace knowrob {
 		const std::string& getLanguageIdentifier() const;
 		
 		// Override
-		std::string toString(const Query &query);
-		
-		// Override
-		boost::shared_ptr<Query> fromString(const std::string &queryString);
+		Query fromString(const std::string &queryString);
 	};
 	
 	/**

@@ -38,17 +38,19 @@ void ConnectiveFormula::readVariables(std::set<Variable> &out)
 	}
 }
 
+
 /******************************************/
-/********* Prolog query parser ************/
+/********** PrologQueryParser *************/
 /******************************************/
 
 static atom_t ATOM_semicolon = PL_new_atom(";");
 static atom_t ATOM_comma = PL_new_atom(",");
+
+static std::string PROLOG_LANG_ID = "prolog";
 		
 const std::string& PrologQueryParser::getLanguageIdentifier() const
 {
-	static std::string langID = "prolog";
-	return langID;
+	return PROLOG_LANG_ID;
 }
 
 static Formula plToFormula(const term_t &t)
@@ -117,7 +119,6 @@ static Term plToTerm(const term_t &t)
 		//PL_get_long(t, long *i);
 		//PL_get_int64(t, int64_t *i);
 		//PL_get_uint64(t, uint64_t *i);
-		
 		int val=0;
 		PL_get_integer(t, &val);
 		return AtomicTerm<int>(val);
@@ -146,7 +147,7 @@ static Term plToTerm(const term_t &t)
 	}
 }
 
-boost::shared_ptr<Query> PrologQueryParser::fromString(const std::string &queryString)
+Query PrologQueryParser::fromString(const std::string &queryString)
 {
 	term_t t = PL_new_term_ref();
 	// construct term_t from query string
@@ -154,9 +155,7 @@ boost::shared_ptr<Query> PrologQueryParser::fromString(const std::string &queryS
 	// translate term_t into Formula, and construct a query object
 	return Query(plToFormula(t));
 }
-		
-// TODO
-//std::string toString(const Query &query);
+
 
 /******************************************/
 /************* query results **************/
