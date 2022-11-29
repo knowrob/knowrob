@@ -42,11 +42,11 @@ void Blackboard::decompose(const Formula &phi,
 	switch(phi.type()) {
 	case FormulaType::PREDICATE:
 		PredicateFormula *x = (PredicateFormula*)(&phi);
-		decomposePredicate(*x);
+		decomposePredicate(*x, in, out);
 		break;
 	case FormulaType::CONJUNCTION:
 		ConjunctionFormula *x = (ConjunctionFormula*)(&phi);
-		decomposeConjunction(*x);
+		decomposeConjunction(*x, in, out);
 		break;
 	case FormulaType::DISJUNCTION:
 		DisjunctionFormula *x = (DisjunctionFormula*)(&phi);
