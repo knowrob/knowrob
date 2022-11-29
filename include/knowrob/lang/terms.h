@@ -73,7 +73,7 @@ namespace knowrob {
 	
 	class Predicate : public Term {
 	public:
-		Predicate(const std::string &functor, const std::list<boost::shared_ptr<Term>> &arguments)
+		Predicate(const std::string &functor, const std::vector<Term> &arguments)
 		: inidcator_(functor, arguments.size()), arguments_(arguments)
 		{}
 		
@@ -83,7 +83,7 @@ namespace knowrob {
 	
 	protected:
 		PredicateIndicator inidcator_;
-		std::list<boost::shared_ptr<Term>> arguments_;
+		std::vector<Term> arguments_;
 	};
 	
 	/*

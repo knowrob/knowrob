@@ -161,22 +161,45 @@ namespace knowrob {
 		Formula formula_;
 	};
 	
-	/**
+	/** An interface for constructing query objects from strings.
+	 * Also provides an interface to generate string representations
+	 * of queries.
 	 */
 	class IQueryParser {
 	public:
-		// TODO: idea, allow to specify language name via a string
-		//       to select proper query parser
+		/** Get the identifier of the language supported by the parser.
+		 *
+		 * @return the language identifier, e.g. "prolog" for the PrologQueryParser.
+		 */
+		virtual const std::string& getLanguageIdentifier() const = 0;
 		
-		virtual std::string toString(const Query &query) = 0;
-		
+		/** Parse a Query object from a query string encoded in the language supported by the parser.
+		 *
+		 * @queryString an expression in the language supported by the parser.
+		 * @return the newly constructed
+		 */
 		virtual boost::shared_ptr<Query> fromString(const std::string &queryString) = 0;
+		
+		/** Convert a Query object into an expression of the language supported by the parser.
+		 *
+		 * @query a query object
+		 * @return the query encoded as an expression in the language of the parser.
+		 */
+		virtual std::string toString(const Query &query) = 0;
 	};
 
-	/**
+	/** A query parser supporting the Prolog language for encoding the query.
 	 */
 	class PrologQueryParser : public IQueryParser {
 	public:
+		// Override
+		const std::string& getLanguageIdentifier() const;
+		
+		// Override
+		std::string toString(const Query &query);
+		
+		// Override
+		boost::shared_ptr<Query> fromString(const std::string &queryString);
 	};
 	
 	/**
