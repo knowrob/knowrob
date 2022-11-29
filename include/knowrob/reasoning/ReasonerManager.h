@@ -9,14 +9,15 @@
 #ifndef __KNOWROB_REASONER_MANAGER_H__
 #define __KNOWROB_REASONER_MANAGER_H__
 
+// STD
 #include <list>
 // boost
 #include <boost/shared_ptr.hpp>
-
-#include "knowrob/lang/PredicateIndicator.h"
-#include "knowrob/reasoning/IReasoner.h"
-#include "knowrob/reasoning/ReasoningProcess.h"
-#include "knowrob/reasoning/ReasoningTask.h"
+// KnowRob
+#include <knowrob/lang/terms.h>
+#include <knowrob/reasoning/IReasoner.h>
+#include <knowrob/reasoning/ReasoningProcess.h>
+#include <knowrob/reasoning/ReasoningTask.h>
 
 namespace knowrob {
     /**
@@ -49,6 +50,8 @@ namespace knowrob {
          * @return the reasoning process started
          */
          boost::shared_ptr<ReasoningProcess> submitTask(const ReasoningTask &task);
+         
+         void cancelTask(const boost::shared_ptr<ReasoningProcess> &process);
 
     private:
         std::list<boost::shared_ptr<IReasoner>> pool_;

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_IQUERY_H__
-#define __KNOWROB_IQUERY_H__
+#ifndef __KNOWROB_QUERY_H__
+#define __KNOWROB_QUERY_H__
 
 namespace knowrob {
     /**
@@ -16,11 +16,11 @@ namespace knowrob {
      * In case variables appear in arguments of the predicate, the answer
      * to the query contains possible instantiations of these variables.
      */
-    class IQuery {
+    class Query {
     public:
-        IQuery(const std::string &queryString);
-        IQuery(const Predicate &queryPredicate);
-        ~IQuery();
+        Query(const std::string &queryString);
+        Query(const Predicate &queryPredicate);
+        ~Query();
 
         /** Parse a query string into a sequence of predicates.
          *
@@ -28,16 +28,10 @@ namespace knowrob {
          */
         virtual void parseQueryString(const std::string &queryString) = 0;
 
-        /** Get the toplevel predicates that make this query.
-         *
-         * Predicates may be nested in which case they contain references
-         * to other predicates. For instance, for control structures such
-         * as collecting different solutions.
-         *
-         * @param predicate the predicate in question
-         * @return true if the reasoner can determine the truth of given predicate.
+        /** 
          */
-        const std::array<Predicate>& predicates() const { return predicates_; }
+        const std::array<Predicate>& conjuncts() const { return predicates_; }
+        const std::array<Predicate>& disjuncts() const { return predicates_; }
 
         /** Converts this query to a Prolog query string.
          *
@@ -54,4 +48,4 @@ namespace knowrob {
     };
 }
 
-#endif //__KNOWROB_IQUERY_H__
+#endif //__KNOWROB_QUERY_H__

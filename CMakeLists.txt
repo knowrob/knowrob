@@ -49,6 +49,26 @@ install_ontology(
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 
+##############
+#### QUERY ANSWERING
+##############
+
+add_library(query_answering SHARED
+	src/Publisher.cpp
+	src/lang/Substitution.cpp
+	src/lang/QueryResult.cpp
+	src/qa/Blackboard.cpp
+	src/qa/BlackboardSegment.cpp)
+target_link_libraries(query_answering
+	${SWIPL_LIBRARIES}
+	${catkin_LIBRARIES})
+add_dependencies(query_answering
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS})
+
+##############
+##############
+
 add_library(kb_algebra SHARED src/utility/algebra.cpp)
 target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(kb_algebra
