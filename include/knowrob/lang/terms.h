@@ -9,49 +9,75 @@
 #ifndef __KNOWROB_TERMS_H__
 #define __KNOWROB_TERMS_H__
 
+// STD
+#include <list>
+#include <vector>
+#include <string>
+#include <memory>
+
 namespace knowrob {
+	// forward declaration
+	class Variable;
+	
+	/** An expression in the querying language.
+	 */
 	class Term {
 	public:
-		static boost::shared_ptr<Term> read(const std::string &termString);
-		
-		Term(){}
-		
-		/*std::list<Variable*> getVariables() {
-			std::list<Variable*> l;
-			getVariables(l);
-			return l;
-		}*/
+		std::list<Variable*> getVariables();
 	
-	protected:
-		//virtual void getVariables(std::list<Variable*> &list) = 0;
+		virtual void getVariables(std::list<Variable*> &list) = 0;
 	};
 	
+	/** A variable term.
+	 * Variables may appear free or bound in formulae.
+	 * A variable are identified by a name string in the scope of a formula,
+	 * i.e. within a formula two variables with the same name are considered to be equal.
+	 */
 	class Variable : public Term {
 	public:
+		/** Default constructor.
+		 */
 		Variable(const std::string &name) : name_(name) {}
 		
+		// Override '<' needed for using a Variable as a key in std::map
+		bool operator< (const Variable& other) const
+		{ return (other.name_ < this->name_); }
+		
+		/** Get the name of this variable.
+		 */
 		const std::string& name() { return name_; }
+		
+		void getVariables(std::list<Variable*> &list);
+
 	protected:
 		std::string name_;
-		
-		//virtual void getVariables(std::list<Variable*> &list) { list.add(this); }
 	};
-	
-	template <typename T>
-	class AtomicTerm : public Term {
+
+	/** A typed data value.
+	 */
+	template <typename T> class Constant : public Term {
 	public:
-		AtomicTerm(const T &value) : value_(value) {}
+		/** Default constructor.
+		 */
+		Constant(const T &value) : value_(value) {}
 		
+		/** Get the typed data value.
+		 * @return the value.
+		 */
 		const T& value() { return value_; }
+		
+		void getVariables(std::list<Variable*> &list){}
+	
 	protected:
 		T value_;
 	};
 
-	/**
-	 * A predicate in the knowledge base defined by its functor and arity.
+	/** The indicator of a predicate defined by its functor and arity.
 	 */
 	class PredicateIndicator {
 	public:
+		/** Default constructor.
+		 */
 		PredicateIndicator(const std::string &functor, unsigned int arity)
 		: functor_(functor), arity_(arity) {};
 		
@@ -70,20 +96,33 @@ namespace knowrob {
 		std::string functor_;
 		unsigned int arity_;
 	};
-	
+
+	/** A predicate with a functor and a number of term arguments.
+	 */
 	class Predicate : public Term {
 	public:
-		Predicate(const std::string &functor, const std::vector<Term> &arguments)
-		: inidcator_(functor, arguments.size()), arguments_(arguments)
+		/** Default constructor.
+		 */
+		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments)
+		: indicator_(functor, arguments.size()),
+		  arguments_(arguments)
 		{}
+
+		/** Get the indicator of this predicate.
+		 * @return the indicator of this predicate.
+		 */
+		const PredicateIndicator& indicator() const { return indicator_; }
+
+		/** Get the arguments of this predicate.
+		 * @return a vector of predicate arguments.
+		 */
+		const std::vector<std::shared_ptr<Term>>& arguments() const { return arguments_; }
 		
-		const PredicateIndicator& inidcator() { return inidcator_; }
-		
-		const std::list<boost::shared_ptr<Term>>& arguments() { return arguments_; }
+		void getVariables(std::list<Variable*> &list);
 	
 	protected:
-		PredicateIndicator inidcator_;
-		std::vector<Term> arguments_;
+		PredicateIndicator indicator_;
+		std::vector<std::shared_ptr<Term>> arguments_;
 	};
 	
 	/*

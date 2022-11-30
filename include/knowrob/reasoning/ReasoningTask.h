@@ -9,11 +9,11 @@
 #ifndef __KNOWROB_REASONING_TASK_H__
 #define __KNOWROB_REASONING_TASK_H__
 
-// boost
-#include <boost/shared_ptr.hpp>
+// STD
+#include <memory>
 // KnowRob
 #include <knowrob/reasoning/IReasoner.h>
-#include <knowrob/lang/Query.h>
+#include <knowrob/qa/queries.h>
 
 namespace knowrob {
 	/**
@@ -22,10 +22,10 @@ namespace knowrob {
 	class ReasoningTask {
 	public:
 		ReasoningTask(
-			boost::shared_ptr<IReasoner> &reasoner,
-			boost::shared_ptr<QueryResultQueue> &inputQueue,
-			boost::shared_ptr<QueryResultQueue> &outputQueue,
-			boost::shared_ptr<Query> &goal)
+			const std::shared_ptr<IReasoner> &reasoner,
+			const std::shared_ptr<QueryResultQueue> &inputQueue,
+			const std::shared_ptr<QueryResultQueue> &outputQueue,
+			const std::shared_ptr<Query> &goal)
 		: reasoner_(reasoner),
 		  inputQueue_(inputQueue),
 		  outputQueue_(outputQueue),
@@ -35,27 +35,27 @@ namespace knowrob {
 		 *
 		 * @return the reasoner associated to this task
 		 */
-		const boost::shared_ptr<IReasoner>& reasoner() const { return reasoner_; }
+		const std::shared_ptr<IReasoner>& reasoner() const { return reasoner_; }
 
 		/** Get the goal associated to this task.
  		 *
 		 * @return the goal associated to this task
 		 */
-		const boost::shared_ptr<Query>& goal() const { return goal_; }
+		const std::shared_ptr<Query>& goal() const { return goal_; }
         
 		/**
 		 */
-		const boost::shared_ptr<QueryResultQueue>& inputQueue() const { return inputQueue_; }
+		const std::shared_ptr<QueryResultQueue>& inputQueue() const { return inputQueue_; }
 		
 		/**
 		 */
- 		const boost::shared_ptr<QueryResultQueue>& outputQueue() const { return outputQueue_; }
+ 		const std::shared_ptr<QueryResultQueue>& outputQueue() const { return outputQueue_; }
 
 	protected:
-		boost::shared_ptr<IReasoner> reasoner_;
-		boost::shared_ptr<QueryResultQueue> inputQueue_;
-		boost::shared_ptr<QueryResultQueue> outputQueue_;
-		boost::shared_ptr<Query> goal_;
+		std::shared_ptr<IReasoner> reasoner_;
+		std::shared_ptr<QueryResultQueue> inputQueue_;
+		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<Query> goal_;
 	};
 }
 

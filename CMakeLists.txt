@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
+set (CMAKE_CXX_STANDARD 11)
+
 project(knowrob)
 
 set(SOMA_VERSION "current")
@@ -54,9 +56,8 @@ include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin
 ##############
 
 add_library(query_answering SHARED
-	src/Publisher.cpp
-	src/lang/Substitution.cpp
-	src/lang/QueryResult.cpp
+	src/lang/terms.cpp
+	src/qa/queries.cpp
 	src/qa/Blackboard.cpp
 	src/qa/BlackboardSegment.cpp)
 target_link_libraries(query_answering

@@ -11,10 +11,10 @@
 using namespace knowrob;
 
 BlackboardSegment::BlackboardSegment(
-	const boost::shared_ptr<ReasonerManager> &reasonerManager,
-	const boost::shared_ptr<QueryResultQueue> &inputQueue,
-	const boost::shared_ptr<QueryResultQueue> &outputQueue,
-	const boost::shared_ptr<Query> &goal);
+	const std::shared_ptr<ReasonerManager> &reasonerManager,
+	const std::shared_ptr<QueryResultQueue> &inputQueue,
+	const std::shared_ptr<QueryResultQueue> &outputQueue,
+	const std::shared_ptr<Query> &goal)
 : reasonerManager_(reasonerManager),
   inputQueue_(inputQueue),
   outputQueue_(outputQueue),
@@ -27,7 +27,7 @@ BlackboardSegment::~BlackboardSegment()
 	stopReasoningProcesses();
 }
 
-void BlackboardSegment::addReasoner(boost::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
 	{
 		std::lock_guard<std::mutex> lk(mutex_);
@@ -38,7 +38,7 @@ void BlackboardSegment::addReasoner(boost::shared_ptr<IReasoner> &reasoner)
 	}
 }
 
-void BlackboardSegment::removeReasoner(boost::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::removeReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
 	if(isRunning_) {
 		stopReasoner(reasoner);
@@ -49,17 +49,17 @@ void BlackboardSegment::removeReasoner(boost::shared_ptr<IReasoner> &reasoner)
 	}
 }
 
-void BlackboardSegment::startReasoner(const boost::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::startReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
-	processes_[reasoner] = reasonerManager_.submitTask(
-		ReasoningTask(reasoner, inputQueue_, outputQueue_, goal_)));
+	processes_[reasoner] = reasonerManager_->submitTask(
+		ReasoningTask(reasoner, inputQueue_, outputQueue_, goal_));
 }
 
-void BlackboardSegment::stopReasoner(const boost::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::stopReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
 	auto it = processes_.find(reasoner);
 	if(it != processes_.end()) {
-		reasonerManager_.cancelTask(it->second);
+		reasonerManager_->cancelTask(it->second);
 		processes_.erase(it);
 	}
 }
@@ -68,7 +68,7 @@ void BlackboardSegment::startReasoningProcesses()
 {
 	std::lock_guard<std::mutex> lk(mutex_);
 	if(!isRunning_) {
-		for(auto const& x : reasoner_) {
+		for(const std::shared_ptr<IReasoner>& x : reasoner_) {
 			startReasoner(x);
 		}
 		isRunning_ = true;
@@ -79,7 +79,7 @@ void BlackboardSegment::stopReasoningProcesses()
 {
 	std::lock_guard<std::mutex> lk(mutex_);
 	if(isRunning_) {
-		for(auto const& x : reasoner_) {
+		for(const std::shared_ptr<IReasoner>& x : reasoner_) {
 			stopReasoner(x);
 		}
 		isRunning_ = false;

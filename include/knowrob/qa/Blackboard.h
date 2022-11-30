@@ -12,10 +12,10 @@
 // STD
 #include <list>
 #include <map>
-// boost
-#include <boost/shared_ptr.hpp>
+#include <memory>
 // KnowRob
 #include <knowrob/qa/queries.h>
+#include <knowrob/qa/BlackboardSegment.h>
 #include <knowrob/reasoning/ReasonerManager.h>
 
 namespace knowrob {
@@ -25,36 +25,40 @@ namespace knowrob {
 	class Blackboard {
 	public:
 		Blackboard(
-			const boost::shared_ptr<ReasonerManager> &reasonerManager,
-			const boost::shared_ptr<QueryResultQueue> &outputQueue,
-			const boost::shared_ptr<Query> &goal);
+			const std::shared_ptr<ReasonerManager> &reasonerManager,
+			const std::shared_ptr<QueryResultQueue> &outputQueue,
+			const std::shared_ptr<Query> &goal);
 		// copy constructor is not supported for blackboards
 		Blackboard(const Blackboard&) = delete;
 		~Blackboard();
 
 	protected:
-		boost::shared_ptr<ReasonerManager> reasonerManager_;,
-		boost::shared_ptr<QueryResultQueue> outputQueue_;
-		boost::shared_ptr<Query> goal_;
+		std::shared_ptr<ReasonerManager> reasonerManager_;
+		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<Query> goal_;
 		
-		std::list<boost::shared_ptr<BlackboardSegment>> segments_;
+		std::list<std::shared_ptr<BlackboardSegment>> segments_;
 
 		/** Decompose the blackboard into different segments. */
-		void decompose(const Formula &phi,
-			boost::shared_ptr<QueryResultQueue> &in,
-			boost::shared_ptr<QueryResultQueue> &out);
+		void decompose(
+			const std::shared_ptr<Formula> &phi,
+			std::shared_ptr<QueryResultQueue> &in,
+			std::shared_ptr<QueryResultQueue> &out);
 		
-		void decomposePredicate(const PredicateFormula &phi,
-			boost::shared_ptr<QueryResultQueue> &in,
-			boost::shared_ptr<QueryResultQueue> &out);
+		void decomposePredicate(
+			const std::shared_ptr<PredicateFormula> &phi,
+			std::shared_ptr<QueryResultQueue> &in,
+			std::shared_ptr<QueryResultQueue> &out);
 		
-		void decomposeConjunction(const ConjunctionFormula &phi,
-			boost::shared_ptr<QueryResultQueue> &in,
-			boost::shared_ptr<QueryResultQueue> &out);
+		void decomposeConjunction(
+			const std::shared_ptr<ConjunctionFormula> &phi,
+			std::shared_ptr<QueryResultQueue> &in,
+			std::shared_ptr<QueryResultQueue> &out);
 		
-		void decomposeDisjunction(const DisjunctionFormula &phi,
-			boost::shared_ptr<QueryResultQueue> &in,
-			boost::shared_ptr<QueryResultQueue> &out);
+		void decomposeDisjunction(
+			const std::shared_ptr<DisjunctionFormula> &phi,
+			std::shared_ptr<QueryResultQueue> &in,
+			std::shared_ptr<QueryResultQueue> &out);
 
 		/** Stop all reasoning processes attached to segments. */
 		void stopReasoningProcesses();

@@ -12,11 +12,10 @@
 // STD
 #include <list>
 #include <map>
-// boost
-#include <boost/shared_ptr.hpp>
+#include <mutex>
+#include <memory>
 // KnowRob
-#include <knowrob/lang/Query.h>
-#include <knowrob/lang/QueryResult.h>
+#include <knowrob/qa/queries.h>
 #include <knowrob/reasoning/ReasonerManager.h>
 
 namespace knowrob {
@@ -27,17 +26,17 @@ namespace knowrob {
 	class BlackboardSegment {
 	public:
 		BlackboardSegment(
-			const boost::shared_ptr<ReasonerManager> &reasonerManager,
-			const boost::shared_ptr<QueryResultQueue> &inputQueue,
-			const boost::shared_ptr<QueryResultQueue> &outputQueue,
-			const boost::shared_ptr<Query> &query);
+			const std::shared_ptr<ReasonerManager> &reasonerManager,
+			const std::shared_ptr<QueryResultQueue> &inputQueue,
+			const std::shared_ptr<QueryResultQueue> &outputQueue,
+			const std::shared_ptr<Query> &query);
 		// copy constructor is not supported for blackboards
 		BlackboardSegment(const BlackboardSegment&) = delete;
 		~BlackboardSegment();
 		
-		void addReasoner(boost::shared_ptr<IReasoner> &reasoner);
+		void addReasoner(const std::shared_ptr<IReasoner> &reasoner);
 		
-		void removeReasoner(boost::shared_ptr<IReasoner> &reasoner);
+		void removeReasoner(const std::shared_ptr<IReasoner> &reasoner);
 
 		/** Start all reasoning processes attached to this segment. */
 		void startReasoningProcesses();
@@ -46,17 +45,18 @@ namespace knowrob {
 		void stopReasoningProcesses();
 
 	protected:
-		boost::shared_ptr<ReasonerManager> reasonerManager_;
-		boost::shared_ptr<QueryResultQueue> inputQueue_;
-		boost::shared_ptr<QueryResultQueue> outputQueue_;
-		boost::shared_ptr<Query> goal_;
+		std::shared_ptr<ReasonerManager> reasonerManager_;
+		std::shared_ptr<QueryResultQueue> inputQueue_;
+		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<Query> goal_;
         	std::mutex mutex_;
+        	bool isRunning_;
 		
-		std::list<boost::shared_ptr<IReasoner>> reasoner_;
-		std::map<boost::shared_ptr<IReasoner>, boost::shared_ptr<ReasoningProcess>> processes_;
+		std::list<std::shared_ptr<IReasoner>> reasoner_;
+		std::map<std::shared_ptr<IReasoner>, std::shared_ptr<ReasoningProcess>> processes_;
 		
-		void startReasoner(boost::shared_ptr<IReasoner> &reasoner);
-		void stopReasoner(boost::shared_ptr<IReasoner> &reasoner);
+		void startReasoner(const std::shared_ptr<IReasoner> &reasoner);
+		void stopReasoner(const std::shared_ptr<IReasoner> &reasoner);
 	};
 }
 
