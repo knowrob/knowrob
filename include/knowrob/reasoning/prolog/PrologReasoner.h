@@ -11,47 +11,49 @@
 
 // STD
 #include <string>
-// boost
-#include <boost/shared_ptr.hpp>
+#include <memory>
 // KnowRob
+#include <knowrob/lang/terms.h>
+#include <knowrob/qa/queries.h>
 #include <knowrob/reasoning/LogicProgramReasoner.h>
-#include <knowrob/reasoning/ReasoningStatus.h>
-#include <knowrob/reasoning/prolog/PrologFactBase.h>
-#include <knowrob/reasoning/prolog/PrologRuleBase.h>
-#include <knowrob/lang/Predicate.h>
-#include <knowrob/lang/IQuery.h>
+#include <knowrob/reasoning/prolog/PrologPool.h>
 
 namespace knowrob {
-    /**
-     * A Prolog reasoner that performs reasoning using SWI Prolog.
-     */
-    class PrologReasoner : public LogicProgramReasoner {
-    public:
-        PrologReasoner(const std::string &initFile);
-        ~PrologReasoner();
+	/**
+	 * A Prolog reasoner that performs reasoning using SWI Prolog.
+	 */
+	class PrologReasoner : public LogicProgramReasoner {
+	public:
+		PrologReasoner(
+			std::shared_ptr<PrologPool> &prologEnginePool,
+			const std::string &initFile);
+		~PrologReasoner();
 
-        /**
-         * Consults a Prolog file, i.e. loads facts and rules and executed
-         * directives in the file.
-         * May throw an exception if there is no valid Prolog file at the given path.
-         */
-        void consult(const std:string &prologFile);
+		/**
+		 * Consults a Prolog file, i.e. loads facts and rules and executed
+		 * directives in the file.
+		 * May throw an exception if there is no valid Prolog file at the given path.
+		 */
+		void consult(const std::string &prologFile);
 
-        // Override IReasoner::initialize
-        virtual void initialize();
+		void assert(const std::shared_ptr<Predicate> &predicate);
 
-        // Override LogicProgramReasoner::initialize
-        virtual void assert(const Predicate &predicate);
+		// Override IReasoner::initialize
+ 		void initialize();
 
-        // Override IReasoner::run
-        virtual void runQuery(const IQuery &goal, ReasoningStatus &status, MessageQueue<Answer> &answerQueue);
+		// Override IReasoner::runQuery
+		void runQuery(
+			std::shared_ptr<Query> &goal,
+			ReasoningStatus &status,
+			std::shared_ptr<QueryResultQueue> &answerQueue);
 
-        // Override IReasoner::canReasonAbout
-        virtual bool canReasonAbout(const PredicateIndicator &predicate) const;
+		// Override IReasoner::canReasonAbout
+		bool canReasonAbout(const PredicateIndicator &predicate);
 
-    protected:
-        std::string initFile_;
-    };
+	protected:
+		std::shared_ptr<PrologPool> prologEnginePool_;
+		std::string initFile_;
+	};
 }
 
 #endif //__KNOWROB_PROLOG_REASONER_H__

@@ -11,9 +11,8 @@
 
 #include <set>
 
-#include "knowrob/db/IDataSource.h"
-#include "knowrob/lang/PredicateIndicator.h"
-#include "knowrob/MessageQueue.h"
+#include <knowrob/db/IDataSource.h>
+#include <knowrob/lang/terms.h>
 
 namespace knowrob {
     /**
@@ -22,7 +21,6 @@ namespace knowrob {
      * But particular implementations may support more sophisticated querying, e.g.
      * the aggregation framework in case of data managed by MongoDB.
      */
-    template <class FactType>
     class IFactBase : public IDataSource {
     public:
         virtual ~IFactBase(){}
@@ -48,7 +46,7 @@ namespace knowrob {
          *
          * @param msgQueue a queue of facts
          */
-        virtual void readFacts(MessageQueue<FactType> &msgQueue) const = 0;
+        virtual void readFacts(QueryResultQueue &msgQueue) const = 0;
 
         /** Read all facts of one predicate currently stored in this data source and publish them via a message queue.
          * The function is supposed to return _after_ the queue has been filled, a EOS message is
@@ -57,7 +55,7 @@ namespace knowrob {
          * @param msgQueue a queue of facts
          * @param indicator a predicate indicator
          */
-        virtual void readFacts(MessageQueue<FactType> &msgQueue, const PredicateIndicator &indicator) const = 0;
+        virtual void readFacts(QueryResultQueue &msgQueue, const PredicateIndicator &indicator) const = 0;
 
         // todo: add an interface for watching the DB, e.g. would be needed to keep PrologReasoner in synch with
         //        external database. But some databases may not support this, or are by definition read-only etc.

@@ -81,6 +81,11 @@ namespace knowrob {
 		PredicateIndicator(const std::string &functor, unsigned int arity)
 		: functor_(functor), arity_(arity) {};
 		
+		// Override '<' needed for using a PredicateIndicator as a key in std::map
+		bool operator< (const PredicateIndicator& other) const
+		{ return (other.functor_ < this->functor_) ||
+		         (other.arity_   < this->arity_); }
+		
 		/** Get the functor of this predicate.
 		 *
 		 * @return functor name

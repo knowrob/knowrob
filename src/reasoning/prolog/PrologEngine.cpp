@@ -6,10 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// TODO: get rid of imports
-#include <ros/ros.h>
-#include <ros/console.h>
-
+// STD
+#include <sstream>
+// KnowRob
 #include <knowrob/reasoning/prolog/PrologEngine.h>
 
 using namespace knowrob;
@@ -61,10 +60,11 @@ void PrologEngine::run()
 		ss << thread_.get_id();
 		thread_id = ss.str();
 	}
-	ROS_DEBUG("[%s] PrologEngine thread started.", thread_id.c_str());
+	// TODO: debugging in this file
+	//ROS_DEBUG("[%s] PrologEngine thread started.", thread_id.c_str());
 
 	if(!PL_thread_attach_engine(NULL)) {
-		ROS_ERROR("PrologEngine failed to attach engine!");
+		//ROS_ERROR("PrologEngine failed to attach engine!");
 		is_terminated_ = true;
 		return;
 	}
@@ -77,7 +77,7 @@ void PrologEngine::run()
 			                                  (is_claimed_ && !is_finished_);});
 			if(has_terminate_request_) break;
 		}
-		ROS_DEBUG("[%s] PrologEngine thread claimed.", thread_id.c_str());
+		//ROS_DEBUG("[%s] PrologEngine thread claimed.", thread_id.c_str());
 		// create a query
 		term_t a1 = PL_new_term_refs(2);
 		term_t a2 = a1+1;
@@ -94,7 +94,7 @@ void PrologEngine::run()
 		while(ros::ok()) {
 			// here is where the main work is done
 			if(!PL_next_solution(qid)) {
-				has_error_ = PrologEngine::pl_exception(qid,error_);
+				has_error_ = PrologEngine::plException(qid,error_);
 				break;
 			}
 			// read the JSON encoded solution into std:string
@@ -104,8 +104,7 @@ void PrologEngine::run()
 				error_ = "failed to read result atom.";
 				break;
 			}
-			boost::shared_ptr<Answer> solution =
-			    boost::shared_ptr<Answer>(new std::string(PL_atom_chars(atom)));
+			std::shared_ptr<QueryResult> solution; // TODO
 
 			// notify that a new solution has been found
 			{
@@ -137,10 +136,10 @@ void PrologEngine::run()
 		solutions_cv_.notify_all();
 		PL_close_query(qid);
 		PL_reset_term_refs(a1);
-		ROS_DEBUG("[%s] PrologEngine thread released.", thread_id.c_str());
+		//ROS_DEBUG("[%s] PrologEngine thread released.", thread_id.c_str());
 	}
 
-	ROS_DEBUG("[%s] PrologEngine thread terminated.", thread_id.c_str());
+	//ROS_DEBUG("[%s] PrologEngine thread terminated.", thread_id.c_str());
 	finished_cv_.notify_all();
 	solutions_cv_.notify_all();
 	is_terminated_ = true;
@@ -149,46 +148,49 @@ void PrologEngine::run()
 
 bool PrologEngine::consult(const std::string &prologFilePath)
 {
-    // create "user:consult(prologFilePath)" predicate
-    PrologPredicate consult("consult",1);
-    consult.setModule("user");
-    consult.setArgument(0, prologFilePath.c_str());
-    // run a query
-    return oneSolution(boost::shared_ptr<IQuery>(new IQuery(consult)))->isTrue();
+	// run query user:consult(prologFilePath)"
+	return oneSolution(std::shared_ptr<Query>(new Query(
+		std::shared_ptr<Predicate>(new Predicate(
+			"user:consult", std::vector<std::shared_ptr<Term>>{
+				std::shared_ptr<Term>(new Constant<std::string>(prologFilePath))
+			}
+		))
+	)))->hasSolution();
 }
 
-void PrologEngine::assert(const Predicate &predicate)
+bool PrologEngine::assert(const std::shared_ptr<Predicate> &predicate)
 {
-    std:string predicateString = predicate.toString();
-    // create "user:consult(prologFilePath)" predicate
-    PrologPredicate assertz("assertz",1);
-    assertz.setArgument(0, predicate);
-    // run a query
-    return oneSolution(boost::shared_ptr<IQuery>(new IQuery(assertz)))->isTrue();
+	// run query "user:assertz(p(...))"
+	return oneSolution(std::shared_ptr<Query>(new Query(
+		std::shared_ptr<Predicate>(new Predicate(
+			"user:assertz",
+			std::vector<std::shared_ptr<Term>>{ predicate }
+		))
+	)))->hasSolution();
 }
 
-boost::shared_ptr<Answer> PrologEngine::oneSolution(boost::shared_ptr<IQuery> &goal)
+std::shared_ptr<QueryResult> PrologEngine::oneSolution(const std::shared_ptr<Query> &goal)
 {
-	boost::shared_ptr<Answer> solution;
-	claim(goal,true);
+	std::shared_ptr<QueryResult> solution;
+	startQuery(goal,true);
 	if(hasMoreSolutions()) {
 		solution = popSolution();
 	}
-	release(true);
+	stopQuery(true);
 	return solution;
 }
 
-void PrologEngine::claim(boost::shared_ptr<IQuery> &goal, bool isIncremental)
+void PrologEngine::startQuery(const std::shared_ptr<Query> &goal, bool isIncremental)
 {
 	{
 		std::lock_guard<std::mutex> lk(thread_m_);
 		if(is_claimed_) {
-			throw JSONPrologException("the engine is claimed by someone else.");
+			throw PrologException("the engine is claimed by someone else.");
 		}
 		if(is_terminated_) {
-			throw JSONPrologException("the engine is terminated.");
+			throw PrologException("the engine is terminated.");
 		}
-		is_incremental_ = is_incremental;
+		is_incremental_ = isIncremental;
 		goal_ = goal;
 		// init flags for new claim
 		is_claimed_ = true;
@@ -201,7 +203,7 @@ void PrologEngine::claim(boost::shared_ptr<IQuery> &goal, bool isIncremental)
 	thread_cv_.notify_one();
 }
 
-void PrologEngine::release(bool wait)
+void PrologEngine::stopQuery(bool wait)
 {
 	{
 		std::lock_guard<std::mutex> lk(thread_m_);
@@ -244,12 +246,12 @@ bool PrologEngine::hasMoreSolutions()
 	return !solutions_.empty();
 }
 
-boost::shared_ptr<Answer> PrologEngine::nextSolution()
+std::shared_ptr<QueryResult> PrologEngine::nextSolution()
 {
 	if(!hasMoreSolutions()) {
-		throw JSONPrologException("no next solution.");
+		throw PrologException("no next solution.");
 	}
-	boost::shared_ptr<Answer> solution = popSolution();
+	std::shared_ptr<QueryResult> solution = popSolution();
 
 	// pre-compute next solution
 	{
@@ -261,10 +263,11 @@ boost::shared_ptr<Answer> PrologEngine::nextSolution()
 	return solution;
 }
 
-boost::shared_ptr<Answer> PrologEngine::popSolution()
+std::shared_ptr<QueryResult> PrologEngine::popSolution()
 {
 	std::lock_guard<std::mutex> lk(thread_m_);
-	boost::shared_ptr<Answer> head = solutions_.front();
+	std::shared_ptr<QueryResult> head = solutions_.front();
 	solutions_.pop_front();
 	return head;
 }
+

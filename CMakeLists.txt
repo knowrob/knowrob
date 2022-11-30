@@ -59,7 +59,12 @@ add_library(query_answering SHARED
 	src/lang/terms.cpp
 	src/qa/queries.cpp
 	src/qa/Blackboard.cpp
-	src/qa/BlackboardSegment.cpp)
+	src/qa/BlackboardSegment.cpp
+	src/reasoning/ReasonerManager.cpp
+	src/reasoning/prolog/PrologEngine.cpp
+	src/reasoning/prolog/PrologPool.cpp
+	src/reasoning/prolog/PrologReasoner.cpp
+)
 target_link_libraries(query_answering
 	${SWIPL_LIBRARIES}
 	${catkin_LIBRARIES})

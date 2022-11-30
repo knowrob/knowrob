@@ -11,14 +11,14 @@
 
 #include <set>
 
-#include "knowrob/db/IDataSource.h"
-#include "knowrob/lang/PredicateIndicator.h"
+#include <knowrob/db/IDataSource.h>
+#include <knowrob/lang/terms.h>
 
 namespace knowrob {
     /**
      * A collection of rules used to perform deductive reasoning.
      */
-    class IRuleBase<RuleType> : public IDataSource {
+    class IRuleBase : public IDataSource {
     public:
         virtual ~IRuleBase(){}
 
