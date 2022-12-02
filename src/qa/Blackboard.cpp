@@ -42,19 +42,19 @@ void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		decomposePredicate(
-			std::dynamic_pointer_cast<PredicateFormula>(phi),
+			std::static_pointer_cast<PredicateFormula>(phi),
 			in, out);
 		break;
 	}
 	case FormulaType::CONJUNCTION: {
 		decomposeConjunction(
-			std::dynamic_pointer_cast<ConjunctionFormula>(phi),
+			std::static_pointer_cast<ConjunctionFormula>(phi),
 			in, out);
 		break;
 	}
 	case FormulaType::DISJUNCTION: {
 		decomposeDisjunction(
-			std::dynamic_pointer_cast<DisjunctionFormula>(phi),
+			std::static_pointer_cast<DisjunctionFormula>(phi),
 			in, out);
 		break;
 	}

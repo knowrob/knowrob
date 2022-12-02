@@ -28,7 +28,7 @@ namespace knowrob {
 		 *
 		 * @param predicate a fact
 		 */
-		virtual void assert(const Predicate &predicate) = 0;
+		virtual void assertFact(const std::shared_ptr<Predicate> &predicate) = 0;
 
 		/** Get the fact bases of the logic program.
 		 *

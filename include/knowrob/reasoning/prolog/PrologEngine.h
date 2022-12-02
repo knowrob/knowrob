@@ -46,7 +46,7 @@ namespace knowrob {
 		/**
 		 * Asserts a fact into the Prolog knowledge base.
 		 */
-		bool assert(const std::shared_ptr<Predicate> &fact);
+		bool assertFact(const std::shared_ptr<Predicate> &fact);
 
 		/**
 		 * Convinience method that claims the engine, then computes

@@ -36,7 +36,7 @@ namespace knowrob {
 		 */
 		void consult(const std::string &prologFile);
 
-		void assert(const std::shared_ptr<Predicate> &predicate);
+		void assertFact(const std::shared_ptr<Predicate> &predicate);
 
 		// Override IReasoner::initialize
  		void initialize();

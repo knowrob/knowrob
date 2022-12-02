@@ -49,10 +49,8 @@ void PrologReasoner::initialize()
 	// load any additional facts stored in EDBs
 	for(auto it=edbs_.begin(); it!=edbs_.end(); it++) {
 		std::shared_ptr<IFactBase> edb = *it;
-		Iterator<std::shared_ptr<Predicate>> pit = edb->getFacts();
-		while(pit.hasNext()) {
-			std::shared_ptr<Predicate> p = *pit;
-			engine->assert(p);
+		for(const std::shared_ptr<Predicate> &p : *edb) {
+			engine->assertFact(p);
 		}
 	}
 	// release the engine again
@@ -66,10 +64,10 @@ void PrologReasoner::consult(const std::string &prologFile)
 	prologEnginePool_->release(engine);
 }
 
-void PrologReasoner::assert(const std::shared_ptr<Predicate> &fact)
+void PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 {
 	std::shared_ptr<PrologEngine> engine = prologEnginePool_->claim();
-	engine->assert(fact);
+	engine->assertFact(fact);
 	prologEnginePool_->release(engine);
 }
 
@@ -86,7 +84,7 @@ void PrologReasoner::runQuery(
 	//       that are generated.
 	engine->startQuery(goal, true);
 	while(!status.isCancelled() && engine->hasMoreSolutions()) {
-		answerQueue->pushQueryResult(engine->nextSolution());
+		answerQueue->push(engine->nextSolution());
 	}
 	// TODO: need to block here? (flag=true means to block)
 	engine->stopQuery(true);
@@ -96,14 +94,17 @@ void PrologReasoner::runQuery(
 
 bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
-	// create "current_functor(Functor,Arity)" predicate
-	PrologPredicate current_functor("current_functor",1);
-	current_functor.setArgument(0, predicate.functor().c_str());
-	current_functor.setArgument(1, predicate.arity());
-	// run a query
 	std::shared_ptr<PrologEngine> engine = prologEnginePool_->claim();
-	bool isCurrent = engine->oneSolution(std::shared_ptr<Query>(new Query(current_functor)))->isTrue();
+	// run query "current_functor(p,n)"
+	bool hasSolution = engine->oneSolution(std::shared_ptr<Query>(new Query(
+		std::shared_ptr<Predicate>(new Predicate("current_functor",
+			std::vector<std::shared_ptr<Term>>{
+				std::shared_ptr<Term>(new StringAtom(predicate.functor())),
+				std::shared_ptr<Term>(new Integer32Atom(predicate.arity()))
+			}
+		))
+	)))->hasSolution();
 	prologEnginePool_->release(engine);
-	return isCurrent;
+	return hasSolution;
 }
 

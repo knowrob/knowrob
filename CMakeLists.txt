@@ -19,7 +19,8 @@ add_message_files(FILES
 generate_messages(DEPENDENCIES geometry_msgs)
 
 find_package(Eigen3 REQUIRED)
-find_package(PkgConfig)
+find_package(PkgConfig REQUIRED)
+find_package(spdlog REQUIRED)
 
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
@@ -63,10 +64,12 @@ add_library(query_answering SHARED
 	src/reasoning/ReasonerManager.cpp
 	src/reasoning/prolog/PrologEngine.cpp
 	src/reasoning/prolog/PrologPool.cpp
+	src/reasoning/prolog/PrologQuery.cpp
 	src/reasoning/prolog/PrologReasoner.cpp
 )
 target_link_libraries(query_answering
 	${SWIPL_LIBRARIES}
+	${spdlog_LIBRARIES}
 	${catkin_LIBRARIES})
 add_dependencies(query_answering
 	${${PROJECT_NAME}_EXPORTED_TARGETS}

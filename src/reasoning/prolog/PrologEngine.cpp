@@ -8,8 +8,12 @@
 
 // STD
 #include <sstream>
+// SPDLOG
+#include <spdlog/spdlog.h>
 // KnowRob
+#include <knowrob/knowrob.h>
 #include <knowrob/reasoning/prolog/PrologEngine.h>
+#include <knowrob/reasoning/prolog/PrologQuery.h>
 
 using namespace knowrob;
 
@@ -55,21 +59,23 @@ int PrologEngine::plException(qid_t qid, std::string &x)
 
 void PrologEngine::run()
 {
+	static const int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
+	
+	std::shared_ptr<QueryResult> solution;
 	std::string thread_id; {
 		std::stringstream ss;
 		ss << thread_.get_id();
 		thread_id = ss.str();
 	}
-	// TODO: debugging in this file
-	//ROS_DEBUG("[%s] PrologEngine thread started.", thread_id.c_str());
+	spdlog::debug("PrologEngine {} thread started.", thread_id.c_str());
 
 	if(!PL_thread_attach_engine(NULL)) {
-		//ROS_ERROR("PrologEngine failed to attach engine!");
+		spdlog::error("PrologEngine {} failed to attach engine!", thread_id.c_str());
 		is_terminated_ = true;
 		return;
 	}
 	//
-	while(ros::ok()) {
+	while(knowrob::isRunning()) {
 		// wait for a claim
 		{
 			std::unique_lock<std::mutex> lk(thread_m_);
@@ -77,35 +83,50 @@ void PrologEngine::run()
 			                                  (is_claimed_ && !is_finished_);});
 			if(has_terminate_request_) break;
 		}
-		//ROS_DEBUG("[%s] PrologEngine thread claimed.", thread_id.c_str());
-		// create a query
-		term_t a1 = PL_new_term_refs(2);
-		term_t a2 = a1+1;
-		PL_put_atom_chars(a1, goal_.c_str());
+		spdlog::debug("PrologEngine {} thread claimed.", thread_id.c_str());
+		
+		// TODO: INPUT QUEUE
+		//	- pull out results until end-of-queue message
+		//	- implement goal_->applySubstitution replacing variables
+		//           create a new goal each time for now
+		// TODO: more efficient way with less than n calls of PL_open_query for n inputs?
+		//	- one could bind an engine to each input to make it multithreaded.
+		//        but would create massive amounts of threads if number is not capped.
+		//      - else processing is strictly sequential, but maybe it's possible to combine
+		//        all queued input in each step.
+		//	  Prolog has lazy lists that could be used with some effort, but is it worth it?
+		//        processing would still be sequential but only one PL_open_query call
 		//
-		int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
-		// TODO: need to re-think how answers are generated here.
-		//        maybe it would be ok to stick to json encoding, and just
-		//        parse it into Answer objects
+		
+		// create a query
+		PrologQuery pl_query(goal_);
+		//
+		// TODO: is it really needed to wrap into call?
 		qid_t qid = PL_open_query(NULL,flags,
-		    PL_pred(PL_new_functor(PL_new_atom("rosprolog_query"),2),NULL),
-		    a1);
+		    PL_pred(PL_new_functor(PL_new_atom("call"),1),NULL),
+		    pl_query.getPrologTerm());
 		// do the query processing
-		while(ros::ok()) {
+		while(true) {
 			// here is where the main work is done
 			if(!PL_next_solution(qid)) {
 				has_error_ = PrologEngine::plException(qid,error_);
 				break;
 			}
-			// read the JSON encoded solution into std:string
-			atom_t atom;
-			if(!PL_get_atom(a2,&atom)) {
-				has_error_ = true;
-				error_ = "failed to read result atom.";
-				break;
+			
+			// TODO: use input mapping
+			// construct a query result
+			solution = std::shared_ptr<QueryResult>(new QueryResult);
+			for(const auto& kv: pl_query.vars()) {
+				PrologQuery x(kv.second);
+				const auto &phi = x.getQuery()->formula();
+				if(phi->type() == FormulaType::PREDICATE) {
+					solution->set(kv.first, ((PredicateFormula*)phi.get())->predicate());
+				}
+				else {
+					// TODO: how to handle comma and semicolon here?
+				}
 			}
-			std::shared_ptr<QueryResult> solution; // TODO
-
+			
 			// notify that a new solution has been found
 			{
 				std::lock_guard<std::mutex> lk(thread_m_);
@@ -135,11 +156,10 @@ void PrologEngine::run()
 		finished_cv_.notify_all();
 		solutions_cv_.notify_all();
 		PL_close_query(qid);
-		PL_reset_term_refs(a1);
-		//ROS_DEBUG("[%s] PrologEngine thread released.", thread_id.c_str());
+		spdlog::debug("PrologEngine {} thread released.", thread_id.c_str());
 	}
 
-	//ROS_DEBUG("[%s] PrologEngine thread terminated.", thread_id.c_str());
+	spdlog::debug("PrologEngine {} thread terminated.", thread_id.c_str());
 	finished_cv_.notify_all();
 	solutions_cv_.notify_all();
 	is_terminated_ = true;
@@ -152,13 +172,13 @@ bool PrologEngine::consult(const std::string &prologFilePath)
 	return oneSolution(std::shared_ptr<Query>(new Query(
 		std::shared_ptr<Predicate>(new Predicate(
 			"user:consult", std::vector<std::shared_ptr<Term>>{
-				std::shared_ptr<Term>(new Constant<std::string>(prologFilePath))
+				std::shared_ptr<Term>(new StringAtom(prologFilePath))
 			}
 		))
 	)))->hasSolution();
 }
 
-bool PrologEngine::assert(const std::shared_ptr<Predicate> &predicate)
+bool PrologEngine::assertFact(const std::shared_ptr<Predicate> &predicate)
 {
 	// run query "user:assertz(p(...))"
 	return oneSolution(std::shared_ptr<Query>(new Query(

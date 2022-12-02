@@ -16,16 +16,27 @@
 #include <memory>
 
 namespace knowrob {
-	// forward declaration
-	class Variable;
+	/** The type of a formula.
+	 */
+	enum class TermType {
+		PREDICATE,
+		VARIABLE,
+		STRING,
+		DOUBLE,
+		INT32,
+		LONG
+	};
 	
 	/** An expression in the querying language.
 	 */
 	class Term {
 	public:
-		std::list<Variable*> getVariables();
-	
-		virtual void getVariables(std::list<Variable*> &list) = 0;
+		Term(TermType type)
+		: type_(type) {}
+		
+		const TermType& type() const { return type_; }
+	private:
+		TermType type_;
 	};
 	
 	/** A variable term.
@@ -37,7 +48,8 @@ namespace knowrob {
 	public:
 		/** Default constructor.
 		 */
-		Variable(const std::string &name) : name_(name) {}
+		Variable(const std::string &name)
+		: Term(TermType::VARIABLE), name_(name) {}
 		
 		// Override '<' needed for using a Variable as a key in std::map
 		bool operator< (const Variable& other) const
@@ -46,8 +58,6 @@ namespace knowrob {
 		/** Get the name of this variable.
 		 */
 		const std::string& name() { return name_; }
-		
-		void getVariables(std::list<Variable*> &list);
 
 	protected:
 		std::string name_;
@@ -59,17 +69,48 @@ namespace knowrob {
 	public:
 		/** Default constructor.
 		 */
-		Constant(const T &value) : value_(value) {}
+		Constant(TermType type, const T &value)
+		: Term(type), value_(value) {}
 		
 		/** Get the typed data value.
 		 * @return the value.
 		 */
 		const T& value() { return value_; }
-		
-		void getVariables(std::list<Variable*> &list){}
 	
 	protected:
 		T value_;
+	};
+	
+	/**
+	 */
+	class StringAtom : public Constant<std::string> {
+	public:
+		StringAtom(const std::string &v)
+		: Constant(TermType::STRING, v) {}
+	};
+	
+	/**
+	 */
+	class DoubleAtom : public Constant<double> {
+	public:
+		DoubleAtom(const double &v)
+		: Constant(TermType::DOUBLE, v) {}
+	};
+	
+	/**
+	 */
+	class LongAtom : public Constant<long> {
+	public:
+		LongAtom(const long &v)
+		: Constant(TermType::LONG, v) {}
+	};
+	
+	/**
+	 */
+	class Integer32Atom : public Constant<int32_t> {
+	public:
+		Integer32Atom(const int32_t &v)
+		: Constant(TermType::INT32, v) {}
 	};
 
 	/** The indicator of a predicate defined by its functor and arity.
@@ -109,7 +150,8 @@ namespace knowrob {
 		/** Default constructor.
 		 */
 		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments)
-		: indicator_(functor, arguments.size()),
+		: Term(TermType::PREDICATE),
+		  indicator_(functor, arguments.size()),
 		  arguments_(arguments)
 		{}
 
@@ -122,8 +164,6 @@ namespace knowrob {
 		 * @return a vector of predicate arguments.
 		 */
 		const std::vector<std::shared_ptr<Term>>& arguments() const { return arguments_; }
-		
-		void getVariables(std::list<Variable*> &list);
 	
 	protected:
 		PredicateIndicator indicator_;

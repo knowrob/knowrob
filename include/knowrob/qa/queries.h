@@ -16,6 +16,7 @@
 #include <memory>
 #include <stdexcept>
 // KnowRob
+#include <knowrob/knowrob.h>
 #include <knowrob/lang/terms.h>
 
 namespace knowrob {
@@ -57,16 +58,6 @@ namespace knowrob {
 		 * @return true if this formula is atomic.
 		 */
 		bool isAtomic() const;
-		
-		/** Get the set of variables in this formula.
-		 *
-		 * Free as well as bounded variables are included in the set.
-		 *
-		 * @return the set of variables that appear in this formula.
-		 */
-		std::set<Variable> getVariables();
-	
-		virtual void readVariables(std::set<Variable> &output) = 0;
 	
 	protected:
 		FormulaType type_;
@@ -88,8 +79,6 @@ namespace knowrob {
 		 * @return the predicate.
 		 */
 		const std::shared_ptr<Predicate>& predicate() const { return predicate_; }
-		
-		void readVariables(std::set<Variable> &output);
 		
 	protected:
 		std::shared_ptr<Predicate> predicate_;
@@ -113,8 +102,6 @@ namespace knowrob {
 		 * @return the sub-formulae.
 		 */
 		const std::vector<std::shared_ptr<Formula>>& formulae() const { return formulae_; }
-	
-		void readVariables(std::set<Variable> &output);
 	
 	protected:
 		std::vector<std::shared_ptr<Formula>> formulae_;
@@ -193,39 +180,29 @@ namespace knowrob {
 		virtual Query fromString(const std::string &queryString) = 0;
 	};
 	
-	/** An interface for constructing strings from query objects.
-	 */
-	class IQueryFormatter {
-	public:
-		/** Get the identifier of the language supported by the parser.
-		 *
-		 * @return the language identifier, e.g. "prolog" for the PrologQueryParser.
-		 */
-		virtual const std::string& getLanguageIdentifier() const = 0;
-		
-		/** Convert a Query object into an expression of the language supported by the parser.
-		 *
-		 * @query a query object
-		 * @return the query encoded as an expression in the language of the parser.
-		 */
-		virtual std::string toString(const Query &query) = 0;
-	};
-
-	/** A query parser supporting the Prolog language for encoding the query.
-	 */
-	class PrologQueryParser : public IQueryParser {
-	public:
-		// Override
-		const std::string& getLanguageIdentifier() const;
-		
-		// Override
-		Query fromString(const std::string &queryString);
-	};
-	
 	/** A mapping from variables to terms.
 	 */
+	 /*
 	class Substitution {
 	public:
+		
+	private:
+		std::map<Variable, std::shared_ptr<Term>> mapping_;
+	};
+	*/
+
+	/**
+	 */
+	class QueryResult {
+	public:
+		static const QueryResult *NO_SOLUTION;
+		
+		QueryResult();
+		
+		/**
+		 */
+		bool hasSolution();
+		
 		/** Add a substitution of a variable with a term.
 		 *
 		 * @var a variable.
@@ -241,36 +218,15 @@ namespace knowrob {
 		 * @term a term.
 		 */
 		std::shared_ptr<Term> get(const Variable &var) const;
-		
+
 	private:
 		std::map<Variable, std::shared_ptr<Term>> mapping_;
-	};
-
-	/**
-	 */
-	class QueryResult {
-	public:
-		static const QueryResult& noSolution();
-		
-		QueryResult(const std::shared_ptr<Substitution> &substitution);
-		
-		bool hasSolution()
-		{ return hasSolution_; }
-		
-		const std::shared_ptr<Substitution>& substitution()
-		{ return substitution_; }
-
-	private:
-		std::shared_ptr<Substitution> substitution_;
 		bool hasSolution_;
-		
-		// private constructor for "noSolution" QueryResult
-		QueryResult();
 	};
 	
 	/**
 	 */
-	using QueryResultQueue = std::vector<QueryResult>;
+	using QueryResultQueue = ThreadSafeQueue<std::shared_ptr<QueryResult>>;
 }
 
 #endif //__KNOWROB_QUERIES_H__
