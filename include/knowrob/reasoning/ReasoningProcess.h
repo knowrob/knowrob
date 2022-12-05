@@ -13,11 +13,11 @@
 
 namespace knowrob {
 	/**
-	 * A process bound to a thread where a particular reasoning task is executed.
+	 * A process that executes a reasoning task.
 	 */
-	class ReasoningProcess {
+	class ReasoningProcess : public IRunner {
 	public:
-		ReasoningProcess(const ReasoningTask &task) : task_(task) {};
+		ReasoningProcess(const ReasoningTask &task);
 
 		/** Get the task of this process.
 		 *
@@ -30,20 +30,22 @@ namespace knowrob {
 		 * @return the status
 		 */
 		const ReasoningStatus& status() const { return status_; }
-
-		// TODO: how to realize pause/stop/continue?
-		//          - is there some cpp lib for threads that could do it?
-		//             but what if reasoner has started sub-threads?
-		//          - else need to toggle a flag that IReasoner implementations can
-		//             read in "answer" function
-		void startReasoning();
-		void pauseReasoning();
-		void stopReasoning();
-		void continueReasoning();
+		
+		/** Stop this reasoning process.
+		 * @wait if true the call will block until stopped.
+		 */
+		void stop(bool wait=false);
+		
+		// Override IRunner:run
+		void run();
 
 	private:
 		ReasoningTask task_;
-		ReasoningStatus status_;
+		bool isRunning_;
+		bool hasStopRequest_;
+		std::mutex mutex_;
+		std::condition_variable finishedCV_;
+		
 	};
 }
 

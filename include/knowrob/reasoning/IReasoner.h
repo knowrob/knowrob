@@ -46,6 +46,16 @@ namespace knowrob {
 		 * @return true if the reasoner can determine the truth of given predicate.
 		 */
 		virtual bool canReasonAbout(const PredicateIndicator &predicate) = 0;
+		
+		virtual void startQuery(uint32_t queryID,
+			const std::shared_ptr<QueryResultStream> &outputStream,
+			const std::shared_ptr<Query> &goal) = 0;
+		
+		virtual void pushQueryBindings(uint32_t queryID,
+			const QueryResultPtr &bindings) = 0;
+		
+		virtual void finishQuery(uint32_t queryID,
+			bool isImmediateStopRequested) = 0;
 
 		/** Run the reasoner to answer a given query.
 		 *

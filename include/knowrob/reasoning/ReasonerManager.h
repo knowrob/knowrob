@@ -19,42 +19,40 @@
 #include <knowrob/reasoning/ReasoningTask.h>
 
 namespace knowrob {
-    /**
-     * Manages the set of available reasoning subsystems.
-     */
-    class ReasonerManager {
-    public:
-        ReasonerManager();
-        ~ReasonerManager();
+	/**
+	 * Manages a set of available reasoning subsystems.
+	 */
+	class ReasonerManager {
+	public:
+		ReasonerManager(uint32_t numInitialThreads, uint32_t maxNumThreads=0);
 
-        void addReasoner(std::shared_ptr<IReasoner> &reasoner);
-        void removeReasoner(std::shared_ptr<IReasoner> &reasoner);
+		/** Add a reasoner to this manager.
+		 * @reasoner a reasoner.
+		 */
+		void addReasoner(const std::shared_ptr<IReasoner> &reasoner);
 
-        /** Get list of reasoner that can handle given predicate.
-         *
-         * @param predicate the predicate in question
-         * @return an essemble of reasoner that can handle the predicate
-         */
-        std::list<std::shared_ptr<IReasoner>> getEssembleForPredicate(const PredicateIndicator &predicate);
+		/** Remove a reasoner from this manager.
+		 * @reasoner a reasoner.
+		 */
+		void removeReasoner(const std::shared_ptr<IReasoner> &reasoner);
 
-        /** Start a reasoning process for given reasoning task.
-         *
-         * Each process is executed in a separate thread managed by this thread pool.
-         * The thread is released automatically when the reasoner finishes evaluation.
-         * Until then, the pool keeps a reference on the shared pointer.
-         * Depending on the particular IReasoner implementation the process may can be
-         * stopped, paused and continued.
-         *
-         * @param task a reasoning task
-         * @return the reasoning process started
-         */
-         std::shared_ptr<ReasoningProcess> submitTask(const ReasoningTask &task);
-         
-         void cancelTask(const std::shared_ptr<ReasoningProcess> &process);
+		/** Get list of reasoner that can handle given predicate.
+		 *
+		 * @param predicate the predicate in question
+		 * @return an essemble of reasoner that can handle the predicate
+		 */
+		std::list<std::shared_ptr<IReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
+		
+		/** Start execution of a reasoning task.
+		 * @tsk the reasoning task.
+		 * @return the reasoning process created.
+		 */
+		std::shared_ptr<ReasoningProcess> submit(const ReasoningTask &tsk);
 
-    private:
-        std::list<std::shared_ptr<IReasoner>> pool_;
-    };
+	private:
+		ThreadPool threadPool_;
+		std::list<std::shared_ptr<IReasoner>> reasonerPool_;
+	};
 }
 
 #endif //__KNOWROB_REASONER_MANAGER_H__

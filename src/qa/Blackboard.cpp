@@ -19,14 +19,18 @@ Blackboard::Blackboard(
   goal_(goal)
 {
 	// decompose the reasoning task
-	std::shared_ptr<QueryResultQueue> inputQueue =
-		std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
-	decompose(goal->formula(), inputQueue, outputQueue_);
-	// TODO: need to push one message to inputQueue to trigger the reasoning processes!
+	std::shared_ptr<QueryResultBroadcast> in =
+		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
+	std::shared_ptr<QueryResultBroadcast> out =
+		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
+	out->addSubscriber(outputQueue_);
+	decompose(goal->formula(), in, out);
+	
+	// TODO: push empty and EOS message to input stream
 	
 	// start the reasoning
 	for(std::shared_ptr<BlackboardSegment> &segment : segments_) {
-		segment->startReasoningProcesses();
+		segment->startReasoningProcess();
 	}
 }
 
@@ -36,8 +40,8 @@ Blackboard::~Blackboard()
 }
 
 void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
-		std::shared_ptr<QueryResultQueue> &in,
-		std::shared_ptr<QueryResultQueue> &out)
+		std::shared_ptr<QueryResultBroadcast> &in,
+		std::shared_ptr<QueryResultBroadcast> &out)
 {
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
@@ -59,36 +63,43 @@ void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
 		break;
 	}
 	default:
-		// TODO write warning about unknown formula type
+		spdlog::warn("Ignoring unknown formula type '{}' in query.", phi->type());
 		break;
 	}
 }
 
 void Blackboard::decomposePredicate(
 		const std::shared_ptr<PredicateFormula> &phi,
-		std::shared_ptr<QueryResultQueue> &in,
-		std::shared_ptr<QueryResultQueue> &out)
+		std::shared_ptr<QueryResultBroadcast> &in,
+		std::shared_ptr<QueryResultBroadcast> &out)
 {
-	std::list<std::shared_ptr<IReasoner>> essemble =
-		reasonerManager_->getEssembleForPredicate(phi->predicate()->indicator());
+	std::shared_ptr<QueryResultQueue> reasonerIn;
+	std::shared_ptr<QueryResultBroadcast> reasonerOut;
+	// get ensemble of reasoner
+	std::list<std::shared_ptr<IReasoner>> ensemble =
+		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
 	// create a subquery for the predicate p
 	std::shared_ptr<Query> subq = std::shared_ptr<Query>(new Query(phi));
 
-	for(std::shared_ptr<IReasoner> &r : essemble) {
-		std::shared_ptr<BlackboardSegment> segment =
-			std::shared_ptr<BlackboardSegment>(new BlackboardSegment(reasonerManager_,in,out,subq));
-		segment->addReasoner(r);
-		segments_.push_back(segment);
+	for(std::shared_ptr<IReasoner> &r : ensemble) {
+		// create IO streams
+		reasonerIn = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+		reasonerOut = std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
+		in->addSubscriber(reasonerIn.get());
+		reasonerOut->addSubscriber(out.get());
+		// create the blackboard segment
+		segments_.push_back(std::shared_ptr<BlackboardSegment>(
+			new BlackboardSegment(r,reasonerIn,reasonerOut,subq)));
 	}
 }
 
 void Blackboard::decomposeConjunction(
 		const std::shared_ptr<ConjunctionFormula> &phi,
-		std::shared_ptr<QueryResultQueue> &firstQueue,
-		std::shared_ptr<QueryResultQueue> &lastQueue)
+		std::shared_ptr<QueryResultBroadcast> &firstQueue,
+		std::shared_ptr<QueryResultBroadcast> &lastQueue)
 {
-	std::shared_ptr<QueryResultQueue> in = firstQueue;
-	std::shared_ptr<QueryResultQueue> out;
+	std::shared_ptr<QueryResultBroadcast> in = firstQueue;
+	std::shared_ptr<QueryResultBroadcast> out;
 	// add blackboard segments for each predicate in the conjunction
 	int counter = 1;
 	int numFormulae = phi->formulae().size();
@@ -97,33 +108,31 @@ void Blackboard::decomposeConjunction(
 			out = lastQueue;
 		}
 		else {
-			out = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+			out = std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
 		}
 		decompose(psi, in, out);
 		// output queue of this predicate is used as input for the next one
 		in = out;
 		counter += 1;
 	}
-	// TODO: merge segments if possible, i.e. if a reasoner supports evaluation of conjunctive goals
 }
 
 void Blackboard::decomposeDisjunction(
 		const std::shared_ptr<DisjunctionFormula> &phi,
-		std::shared_ptr<QueryResultQueue> &in,
-		std::shared_ptr<QueryResultQueue> &out)
+		std::shared_ptr<QueryResultBroadcast> &in,
+		std::shared_ptr<QueryResultBroadcast> &out)
 {
 	// add blackboard segments for each formula in the disjunction.
 	// all having the same input and out queue.
 	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
 		decompose(psi, in, out);
 	}
-	// TODO: merge segments if possible, i.e. if a reasoner supports evaluation of disjunctive goals
 }
 
 void Blackboard::stopReasoningProcesses()
 {
 	for(std::shared_ptr<BlackboardSegment>& segment : segments_) {
-		segment->stopReasoningProcesses();
+		segment->stopReasoningProcess();
 	}
 }
 

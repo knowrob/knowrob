@@ -42,23 +42,23 @@ namespace knowrob {
 		/** Decompose the blackboard into different segments. */
 		void decompose(
 			const std::shared_ptr<Formula> &phi,
-			std::shared_ptr<QueryResultQueue> &in,
-			std::shared_ptr<QueryResultQueue> &out);
+			std::shared_ptr<QueryResultBroadcast> &in,
+			std::shared_ptr<QueryResultBroadcast> &out);
 		
 		void decomposePredicate(
 			const std::shared_ptr<PredicateFormula> &phi,
-			std::shared_ptr<QueryResultQueue> &in,
-			std::shared_ptr<QueryResultQueue> &out);
+			std::shared_ptr<QueryResultBroadcast> &in,
+			std::shared_ptr<QueryResultBroadcast> &out);
 		
 		void decomposeConjunction(
 			const std::shared_ptr<ConjunctionFormula> &phi,
-			std::shared_ptr<QueryResultQueue> &in,
-			std::shared_ptr<QueryResultQueue> &out);
+			std::shared_ptr<QueryResultBroadcast> &in,
+			std::shared_ptr<QueryResultBroadcast> &out);
 		
 		void decomposeDisjunction(
 			const std::shared_ptr<DisjunctionFormula> &phi,
-			std::shared_ptr<QueryResultQueue> &in,
-			std::shared_ptr<QueryResultQueue> &out);
+			std::shared_ptr<QueryResultBroadcast> &in,
+			std::shared_ptr<QueryResultBroadcast> &out);
 
 		/** Stop all reasoning processes attached to segments. */
 		void stopReasoningProcesses();

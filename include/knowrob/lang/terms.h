@@ -31,9 +31,16 @@ namespace knowrob {
 	 */
 	class Term {
 	public:
+		/**
+		 * @type the type of this term.
+		 */
 		Term(TermType type)
 		: type_(type) {}
 		
+		/** Get the term type.
+		 *
+		 * @return the type of this term.
+		 */
 		const TermType& type() const { return type_; }
 	private:
 		TermType type_;
@@ -41,12 +48,13 @@ namespace knowrob {
 	
 	/** A variable term.
 	 * Variables may appear free or bound in formulae.
-	 * A variable are identified by a name string in the scope of a formula,
+	 * A variable is identified by a name string in the scope of a formula,
 	 * i.e. within a formula two variables with the same name are considered to be equal.
 	 */
 	class Variable : public Term {
 	public:
-		/** Default constructor.
+		/**
+		 * @name the name of the variable.
 		 */
 		Variable(const std::string &name)
 		: Term(TermType::VARIABLE), name_(name) {}
@@ -67,7 +75,9 @@ namespace knowrob {
 	 */
 	template <typename T> class Constant : public Term {
 	public:
-		/** Default constructor.
+		/**
+		 * @type the type of this term.
+		 * @value the value.
 		 */
 		Constant(TermType type, const T &value)
 		: Term(type), value_(value) {}
@@ -78,36 +88,36 @@ namespace knowrob {
 		const T& value() { return value_; }
 	
 	protected:
-		T value_;
+		const T value_;
 	};
 	
-	/**
+	/** A string value.
 	 */
-	class StringAtom : public Constant<std::string> {
+	class StringTerm : public Constant<std::string> {
 	public:
-		StringAtom(const std::string &v)
+		StringTerm(const std::string &v)
 		: Constant(TermType::STRING, v) {}
 	};
 	
-	/**
+	/** A floating point value.
 	 */
-	class DoubleAtom : public Constant<double> {
+	class DoubleTerm : public Constant<double> {
 	public:
 		DoubleAtom(const double &v)
 		: Constant(TermType::DOUBLE, v) {}
 	};
 	
-	/**
+	/** A long value.
 	 */
-	class LongAtom : public Constant<long> {
+	class LongTerm : public Constant<long> {
 	public:
 		LongAtom(const long &v)
 		: Constant(TermType::LONG, v) {}
 	};
 	
-	/**
+	/** An integer with 32 bit encoding.
 	 */
-	class Integer32Atom : public Constant<int32_t> {
+	class Integer32Term : public Constant<int32_t> {
 	public:
 		Integer32Atom(const int32_t &v)
 		: Constant(TermType::INT32, v) {}
@@ -117,7 +127,9 @@ namespace knowrob {
 	 */
 	class PredicateIndicator {
 	public:
-		/** Default constructor.
+		/**
+		 * @functor the functor name.
+		 * @arity thr arity of this predicate.
 		 */
 		PredicateIndicator(const std::string &functor, unsigned int arity)
 		: functor_(functor), arity_(arity) {};
@@ -129,7 +141,7 @@ namespace knowrob {
 		
 		/** Get the functor of this predicate.
 		 *
-		 * @return functor name
+		 * @return the functor name.
 		 */
 		const std::string& functor() const { return functor_; }
 		
@@ -147,7 +159,9 @@ namespace knowrob {
 	 */
 	class Predicate : public Term {
 	public:
-		/** Default constructor.
+		/**
+		 * @functor the functor name.
+		 * @arguments list of predicate arguments.
 		 */
 		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments)
 		: Term(TermType::PREDICATE),

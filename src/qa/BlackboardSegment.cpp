@@ -12,77 +12,33 @@ using namespace knowrob;
 
 BlackboardSegment::BlackboardSegment(
 	const std::shared_ptr<ReasonerManager> &reasonerManager,
+	const std::shared_ptr<IReasoner> &reasoner,
 	const std::shared_ptr<QueryResultQueue> &inputQueue,
-	const std::shared_ptr<QueryResultQueue> &outputQueue,
+	const std::shared_ptr<QueryResultStream> &outputQueue,
 	const std::shared_ptr<Query> &goal)
 : reasonerManager_(reasonerManager),
+  reasoner_(reasoner),
   inputQueue_(inputQueue),
   outputQueue_(outputQueue),
-  goal_(goal),
-  isRunning_(false)
+  goal_(goal)
 {}
 
 BlackboardSegment::~BlackboardSegment()
 {
-	stopReasoningProcesses();
+	stopReasoningProcess(true);
 }
 
-void BlackboardSegment::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::startReasoningProcess()
 {
-	{
-		std::lock_guard<std::mutex> lk(mutex_);
-		reasoner_.push_back(reasoner);
-	}
-	if(isRunning_) {
-		startReasoner(reasoner);
-	}
+	process_ = reasonerManager_->submit(
+		ReasoningTask(reasoner_, inputQueue_, outputQueue_, goal_));
 }
 
-void BlackboardSegment::removeReasoner(const std::shared_ptr<IReasoner> &reasoner)
+void BlackboardSegment::stopReasoningProcesses(bool wait)
 {
-	if(isRunning_) {
-		stopReasoner(reasoner);
-	}
-	{
-		std::lock_guard<std::mutex> lk(mutex_);
-		reasoner_.remove(reasoner);
-	}
-}
-
-void BlackboardSegment::startReasoner(const std::shared_ptr<IReasoner> &reasoner)
-{
-	processes_[reasoner] = reasonerManager_->submitTask(
-		ReasoningTask(reasoner, inputQueue_, outputQueue_, goal_));
-}
-
-void BlackboardSegment::stopReasoner(const std::shared_ptr<IReasoner> &reasoner)
-{
-	auto it = processes_.find(reasoner);
-	if(it != processes_.end()) {
-		reasonerManager_->cancelTask(it->second);
-		processes_.erase(it);
-	}
-}
-
-void BlackboardSegment::startReasoningProcesses()
-{
-	std::lock_guard<std::mutex> lk(mutex_);
-	if(!isRunning_) {
-		for(const std::shared_ptr<IReasoner>& x : reasoner_) {
-			startReasoner(x);
-		}
-		isRunning_ = true;
-	}
-}
-
-void BlackboardSegment::stopReasoningProcesses()
-{
-	std::lock_guard<std::mutex> lk(mutex_);
-	if(isRunning_) {
-		for(const std::shared_ptr<IReasoner>& x : reasoner_) {
-			stopReasoner(x);
-		}
-		isRunning_ = false;
+	if(process_.get() != NULL) {
+		process_->stop(wait);
+		process_ = std::shared_ptr<ReasoningProcess>();
 	}
 }
 

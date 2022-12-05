@@ -23,12 +23,12 @@ namespace knowrob {
 	public:
 		ReasoningTask(
 			const std::shared_ptr<IReasoner> &reasoner,
-			const std::shared_ptr<QueryResultQueue> &inputQueue,
-			const std::shared_ptr<QueryResultQueue> &outputQueue,
+			const std::shared_ptr<QueryResultQueue> &inputStream,
+			const std::shared_ptr<QueryResultStream> &outputStream,
 			const std::shared_ptr<Query> &goal)
 		: reasoner_(reasoner),
-		  inputQueue_(inputQueue),
-		  outputQueue_(outputQueue),
+		  inputStream_(inputStream),
+		  outputStream_(outputStream),
 		  goal_(goal) {};
 
 		/** Get the reasoner associated to this task.
@@ -43,18 +43,44 @@ namespace knowrob {
 		 */
 		const std::shared_ptr<Query>& goal() const { return goal_; }
         
-		/**
+		/** Get the input queue associated to this task.
+ 		 *
+		 * @return the input queue associated to this task
 		 */
-		const std::shared_ptr<QueryResultQueue>& inputQueue() const { return inputQueue_; }
+		const std::shared_ptr<QueryResultQueue>& inputStream() const { return inputStream_; }
 		
-		/**
+		/** Get the output queue associated to this task.
+ 		 *
+		 * @return the output queue associated to this task
 		 */
- 		const std::shared_ptr<QueryResultQueue>& outputQueue() const { return outputQueue_; }
+ 		const std::shared_ptr<QueryResultQueue>& outputStream() const { return outputStream_; }
 
 	protected:
 		std::shared_ptr<IReasoner> reasoner_;
 		std::shared_ptr<QueryResultQueue> inputQueue_;
-		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<QueryResultStream> outputQueue_;
+		std::shared_ptr<Query> goal_;
+	};
+	
+	/**
+	 */
+	class GroundedQuery {
+	public:
+
+		/** Get the goal associated to this task.
+ 		 *
+		 * @return the goal associated to this task
+		 */
+		const std::shared_ptr<Query>& goal() const { return goal_; }
+        
+		/** Get the input queue associated to this task.
+ 		 *
+		 * @return the input queue associated to this task
+		 */
+		const std::shared_ptr<QueryResultQueue>& bindings() const { return inputQueue_; }
+	
+	protected:
+		std::shared_ptr<QueryResult> bindings_;
 		std::shared_ptr<Query> goal_;
 	};
 }

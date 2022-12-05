@@ -152,44 +152,6 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<Formula> formula_;
 	};
-	
-	/**
-	 */
-	class ParserError : public std::runtime_error {
-	public:
-		/**
-		 */
-		ParserError(const std::string& what = "") : std::runtime_error(what) {}
-	};
-	
-	/** An interface for constructing query objects from strings.
-	 */
-	class IQueryParser {
-	public:
-		/** Get the identifier of the language supported by the parser.
-		 *
-		 * @return the language identifier, e.g. "prolog" for the PrologQueryParser.
-		 */
-		virtual const std::string& getLanguageIdentifier() const = 0;
-		
-		/** Parse a Query object from a query string encoded in the language supported by the parser.
-		 *
-		 * @queryString an expression in the language supported by the parser.
-		 * @return the newly constructed query object.
-		 */
-		virtual Query fromString(const std::string &queryString) = 0;
-	};
-	
-	/** A mapping from variables to terms.
-	 */
-	 /*
-	class Substitution {
-	public:
-		
-	private:
-		std::map<Variable, std::shared_ptr<Term>> mapping_;
-	};
-	*/
 
 	/**
 	 */
@@ -224,9 +186,86 @@ namespace knowrob {
 		bool hasSolution_;
 	};
 	
+	using QueryResultPtr = std::shared_ptr<QueryResult>;
+	
+	// forward declaration
+	class QueryResultBroadcast;
+	
 	/**
+	 * A stream of QueryResult objects that provides an interface
+	 * to push additional objects into the stream.
 	 */
-	using QueryResultQueue = ThreadSafeQueue<std::shared_ptr<QueryResult>>;
+	class QueryResultStream {
+	public:
+		QueryResultStream();
+		~QueryResultStream();
+		
+		// copy constructor is not supported for QueryResultStream
+		QueryResultStream(const QueryResultStream&) = delete;
+		
+		/** Find out if a message indicates the end-of-stream (EOS).
+		 * @msg a QueryResult pointer.
+		 * @return true if the result indicates EOS.
+		 */
+		static bool isEOS(QueryResultPtr &msg);
+		
+		/** Push an additional QueryResult into this stream.
+		 * @msg a QueryResult pointer.
+		 */
+		virtual void push(QueryResultPtr &msg) = 0;
+
+	protected:
+		std::list<QueryResultBroadcast*> subscriptions_;
+	};
+	
+	/** A broadcaster of QueryResult objects to a list of subscribers.
+	 */
+	class QueryResultBroadcast : public QueryResultStream {
+		QueryResultBroadcast();
+		~QueryResultBroadcast();
+		
+		/** Add a subscriber to this broadcast.
+		 * The subscriber will receive input from the broadcast after this call.
+		 * @subscriber a query result stream.
+		 */
+		void addSubscriber(QueryResultStream *subscriber);
+		
+		/** Remove a previously added subscriber.
+		 * @subscriber a query result stream.
+		 */
+		void removeSubscriber(QueryResultStream *subscriber);
+		
+		// Override QueryResultStream::push
+		void push(QueryResultPtr &item);
+
+	protected:
+		std::list<QueryResultStream*> subscribers_;
+	};
+	
+	/** A queue of QueryResult objects.
+	 */
+	class QueryResultQueue : public QueryResultStream {
+	public:
+		QueryResultQueue();
+		
+		/** Get the front element of this queue without removing it.
+		 * This will block until the queue is non empty.
+		 * @return the front element of the queue.
+		 */
+		QueryResultPtr& front();
+		
+		/** Remove the front element of this queue.
+		 */
+		void pop();
+		
+		// Override QueryResultStream::push
+		void push(QueryResultPtr &item);
+
+	protected:
+		std::mutex mutex_;
+		std::condition_variable cond_var_;
+		std::queue<QueryResultPtr> queue_;
+	};
 }
 
 #endif //__KNOWROB_QUERIES_H__
