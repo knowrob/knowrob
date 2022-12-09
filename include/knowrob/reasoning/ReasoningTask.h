@@ -53,34 +53,12 @@ namespace knowrob {
  		 *
 		 * @return the output queue associated to this task
 		 */
- 		const std::shared_ptr<QueryResultQueue>& outputStream() const { return outputStream_; }
+ 		const std::shared_ptr<QueryResultStream>& outputStream() const { return outputStream_; }
 
 	protected:
 		std::shared_ptr<IReasoner> reasoner_;
-		std::shared_ptr<QueryResultQueue> inputQueue_;
-		std::shared_ptr<QueryResultStream> outputQueue_;
-		std::shared_ptr<Query> goal_;
-	};
-	
-	/**
-	 */
-	class GroundedQuery {
-	public:
-
-		/** Get the goal associated to this task.
- 		 *
-		 * @return the goal associated to this task
-		 */
-		const std::shared_ptr<Query>& goal() const { return goal_; }
-        
-		/** Get the input queue associated to this task.
- 		 *
-		 * @return the input queue associated to this task
-		 */
-		const std::shared_ptr<QueryResultQueue>& bindings() const { return inputQueue_; }
-	
-	protected:
-		std::shared_ptr<QueryResult> bindings_;
+		std::shared_ptr<QueryResultQueue> inputStream_;
+		std::shared_ptr<QueryResultStream> outputStream_;
 		std::shared_ptr<Query> goal_;
 	};
 }

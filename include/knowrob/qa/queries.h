@@ -14,7 +14,7 @@
 #include <set>
 #include <map>
 #include <memory>
-#include <stdexcept>
+#include <string>
 // KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/lang/terms.h>
@@ -58,6 +58,15 @@ namespace knowrob {
 		 * @return true if this formula is atomic.
 		 */
 		bool isAtomic() const;
+		
+		/**
+		 * @return true if this formula contains free variables.
+		 */
+		virtual bool hasFreeVariable() const = 0;
+		
+		/**
+		 */
+		virtual void applySubstitution(const Substitution &sub) = 0;
 	
 	protected:
 		FormulaType type_;
@@ -70,15 +79,19 @@ namespace knowrob {
 		/** Default constructor.
 		 * @predicate a predicate.
 		 */
-		PredicateFormula(const std::shared_ptr<Predicate> &predicate)
-		: Formula(FormulaType::PREDICATE),
-		  predicate_(predicate) {}
+		PredicateFormula(const std::shared_ptr<Predicate> &predicate);
 		
 		/** Get the predicate associated to this formula.
 		 *
 		 * @return the predicate.
 		 */
 		const std::shared_ptr<Predicate>& predicate() const { return predicate_; }
+		
+		// Override Term
+		bool hasFreeVariable() const;
+		
+		// Override Term
+		void applySubstitution(const Substitution &sub);
 		
 	protected:
 		std::shared_ptr<Predicate> predicate_;
@@ -93,15 +106,19 @@ namespace knowrob {
 		 * @formulae list of connected formulae.
 		 */
 		ConnectiveFormula(const FormulaType &type,
-			const std::vector<std::shared_ptr<Formula>> &formulae)
-		: Formula(type),
-		  formulae_(formulae){}
+			const std::vector<std::shared_ptr<Formula>> &formulae);
 		
 		/** Get the sub-formulae associated to this formula.
 		 *
 		 * @return the sub-formulae.
 		 */
 		const std::vector<std::shared_ptr<Formula>>& formulae() const { return formulae_; }
+		
+		// Override Term
+		bool hasFreeVariable() const;
+		
+		// Override Term
+		void applySubstitution(const Substitution &sub);
 	
 	protected:
 		std::vector<std::shared_ptr<Formula>> formulae_;
@@ -114,8 +131,7 @@ namespace knowrob {
 		/** Default constructor.
 		 * @formulae list of connected formulae.
 		 */
-		ConjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae)
-		: ConnectiveFormula(FormulaType::CONJUNCTION, formulae){}
+		ConjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
 	};
 	
 	/** A disjunctive expression.
@@ -125,69 +141,55 @@ namespace knowrob {
 		/** Default constructor.
 		 * @formulae list of connected formulae.
 		 */
-		DisjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae)
-		: ConnectiveFormula(FormulaType::DISJUNCTION, formulae){}
+		DisjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
 	};
 	
 	/**
 	 * A query that is represented by a Formula.
+	 * The only modification of a query that can be done
+	 * is instantiating a variable to a term.
 	 */
 	class Query {
 	public:
 		/** Default constructor.
 		 */
-		Query(const std::shared_ptr<Formula> &formula)
-		: formula_(formula){}
+		Query(const std::shared_ptr<Formula> &formula);
 		
 		/** Create a simple query about a single predicate.
 		 */
-		Query(const std::shared_ptr<Predicate> &predicate)
-		: formula_(new PredicateFormula(predicate)) {}
+		Query(const std::shared_ptr<Predicate> &predicate);
+		
+		/** Copy constructor.
+		 */
+		Query(const Query &other);
 
 		/** Get the formula associated to this query.
 		 * @return the formula.
 		 */
 		const std::shared_ptr<Formula>& formula() const { return formula_; }
+		
+		/** Replaces variables in the query with terms based on a mapping provided in the argument.
+		 * @todo what happens if a variable cannot be found?
+		 * @todo what is the behavior if this is called more then once? can the previous variable change value again?
+		 * @sub a mapping from variables to terms.
+		 */
+		void applySubstitution(const Substitution &sub);
+		
+		/** Convert the query into a human-readable string.
+		 * @return a string representation of the query.
+		 */
+		std::string toString() const;
 
 	protected:
 		std::shared_ptr<Formula> formula_;
-	};
-
-	/**
-	 */
-	class QueryResult {
-	public:
-		static const QueryResult *NO_SOLUTION;
 		
-		QueryResult();
-		
-		/**
-		 */
-		bool hasSolution();
-		
-		/** Add a substitution of a variable with a term.
-		 *
-		 * @var a variable.
-		 * @term a term.
-		 */
-		void set(const Variable &var, const std::shared_ptr<Term> &term);
-		
-		/** Get the substitution of a variable.
-		 *
-		 * Note: default is to map a variable to itself.
-		 *
-		 * @var a variable.
-		 * @term a term.
-		 */
-		std::shared_ptr<Term> get(const Variable &var) const;
-
-	private:
-		std::map<Variable, std::shared_ptr<Term>> mapping_;
-		bool hasSolution_;
+		std::shared_ptr<Formula> copyFormula(const std::shared_ptr<Formula> &phi);
+		std::shared_ptr<Term> copyTerm(const std::shared_ptr<Term> &t);
 	};
 	
-	using QueryResultPtr = std::shared_ptr<QueryResult>;
-	
+	// aliases
+	using QueryResult = Substitution;
+	using QueryResultPtr = SubstitutionPtr;
 	// forward declaration
 	class QueryResultBroadcast;
 	
@@ -207,7 +209,18 @@ namespace knowrob {
 		 * @msg a QueryResult pointer.
 		 * @return true if the result indicates EOS.
 		 */
-		static bool isEOS(QueryResultPtr &msg);
+		static bool isEOS(const QueryResultPtr &msg);
+		
+		/** Get the "end-of-stream" (eos) message. 
+		 * @return the eos message.
+		 */
+		static QueryResultPtr& eos();
+		
+		/** Get the "begin-of-stream" (bos) message.
+		 * This is basically an empty substitution mapping.
+		 * @return the bos message.
+		 */
+		static QueryResultPtr& bos();
 		
 		/** Push an additional QueryResult into this stream.
 		 * @msg a QueryResult pointer.
@@ -216,11 +229,14 @@ namespace knowrob {
 
 	protected:
 		std::list<QueryResultBroadcast*> subscriptions_;
+		
+		friend class QueryResultBroadcast;
 	};
 	
 	/** A broadcaster of QueryResult objects to a list of subscribers.
 	 */
 	class QueryResultBroadcast : public QueryResultStream {
+	public:
 		QueryResultBroadcast();
 		~QueryResultBroadcast();
 		
@@ -240,6 +256,7 @@ namespace knowrob {
 
 	protected:
 		std::list<QueryResultStream*> subscribers_;
+		uint32_t numEOSPushed_;
 	};
 	
 	/** A queue of QueryResult objects.
@@ -258,7 +275,12 @@ namespace knowrob {
 		 */
 		void pop();
 		
-		// Override QueryResultStream::push
+		/** Get front element and remove it from the queue.
+		 * @return the front element of the queue.
+		 */
+		QueryResultPtr pop_front();
+		
+		// Override QueryResultStream
 		void push(QueryResultPtr &item);
 
 	protected:

@@ -6,9 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/reasoning/prolog/PrologQuery.h>
-
 #include <spdlog/spdlog.h>
+
+#include <knowrob/reasoning/prolog/PrologQuery.h>
 
 static atom_t ATOM_semicolon = PL_new_atom(";");
 static atom_t ATOM_comma = PL_new_atom(",");
@@ -20,6 +20,7 @@ PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
   pl_query_(PL_new_term_ref())
 {
 	constructPrologTerm(qa_query->formula(), pl_query_);
+	createPrologPredicate();
 }
 
 PrologQuery::PrologQuery(const std::string &queryString)
@@ -31,7 +32,9 @@ PrologQuery::PrologQuery(const std::string &queryString)
 		throw ParserError("Parsing of t_term failed.");
 	}
 	// translate term_t into Formula, and construct a query object
-	qa_query_ = std::shared_ptr<Query>(new Query(constructFormula(pl_query_)));
+	qa_query_ = std::shared_ptr<Query>(
+		new Query(PrologQuery::constructFormula(pl_query_)));
+	createPrologPredicate();
 }
 
 PrologQuery::PrologQuery(const term_t &pl_query)
@@ -41,7 +44,9 @@ PrologQuery::PrologQuery(const term_t &pl_query)
 		spdlog::error("PL_put_term failed.");
 		throw ParserError("Parsing of t_term failed.");
 	}
-	qa_query_ = std::shared_ptr<Query>(new Query(constructFormula(pl_query_)));
+	qa_query_ = std::shared_ptr<Query>(
+		new Query(PrologQuery::constructFormula(pl_query_)));
+	createPrologPredicate();
 }
 
 PrologQuery::~PrologQuery()
@@ -49,12 +54,47 @@ PrologQuery::~PrologQuery()
 	PL_reset_term_refs(pl_query_);
 }
 
+void PrologQuery::createPrologPredicate()
+{
+	static predicate_t comma_predicate     = PL_pred(PL_new_functor(ATOM_comma, 2), NULL);
+	static predicate_t semicolon_predicate = PL_pred(PL_new_functor(ATOM_semicolon, 2), NULL);
+	
+	// get the predicate indicator.
+	// pl_query_ is a term, but open query only accepts predicates.
+	// so the goal here is to create a predicate using the functor of pl_query_.
+	switch(qa_query_->formula()->type()) {
+	case FormulaType::PREDICATE: {
+		const std::shared_ptr<Predicate> &qa_pred =
+			((PredicateFormula*) qa_query_->formula().get())->predicate();
+		// TODO: should the predicate_t be stored in a static variable?
+		pl_predicate_ = PL_predicate(
+			qa_pred->indicator().functor().c_str(),
+			qa_pred->arguments().size(),
+			NULL);
+		break;
+	}
+	case FormulaType::CONJUNCTION:
+		pl_predicate_ = comma_predicate;
+		break;
+	case FormulaType::DISJUNCTION:
+		pl_predicate_ = semicolon_predicate;
+		break;
+	default:
+		spdlog::warn("Ignoring unknown formula type '{}'.", qa_query_->formula()->type());
+		break;
+	}
+	// make pl_arguments_ point to first argument of pl_query_
+	if(!PL_get_arg(0, pl_query_, pl_arguments_)) {
+		spdlog::warn("failed to get query argument term");
+	}
+}
+
 void PrologQuery::constructPrologTerm(
 	const std::shared_ptr<Formula>& phi,
 	term_t &pl_term)
 {
-	static functor_t comma_functor = PL_new_functor(PL_new_atom(","), 2);
-	static functor_t semicolon_functor = PL_new_functor(PL_new_atom(";"), 2);
+	static functor_t comma_functor = PL_new_functor(ATOM_comma, 2);
+	static functor_t semicolon_functor = PL_new_functor(ATOM_semicolon, 2);
 	
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
@@ -128,23 +168,23 @@ void PrologQuery::constructPrologTerm(
 		break;
 	}
 	case TermType::STRING:
-		if(!PL_put_atom_chars(pl_term, ((StringAtom*)qa_term.get())->value().c_str())) {
-			spdlog::warn("PL_put_atom_chars failed for string {}.", ((StringAtom*)qa_term.get())->value());
+		if(!PL_put_atom_chars(pl_term, ((StringTerm*)qa_term.get())->value().c_str())) {
+			spdlog::warn("PL_put_atom_chars failed for string {}.", ((StringTerm*)qa_term.get())->value());
 		}
 		break;
 	case TermType::DOUBLE:
-		if(!PL_put_float(pl_term, ((DoubleAtom*)qa_term.get())->value())) {
-			spdlog::warn("PL_put_float failed for value {}.", ((DoubleAtom*)qa_term.get())->value());
+		if(!PL_put_float(pl_term, ((DoubleTerm*)qa_term.get())->value())) {
+			spdlog::warn("PL_put_float failed for value {}.", ((DoubleTerm*)qa_term.get())->value());
 		}
 		break;
 	case TermType::INT32:
-		if(!PL_put_integer(pl_term, ((Integer32Atom*)qa_term.get())->value())) {
-			spdlog::warn("PL_put_integer failed for value {}.", ((Integer32Atom*)qa_term.get())->value());
+		if(!PL_put_integer(pl_term, ((Integer32Term*)qa_term.get())->value())) {
+			spdlog::warn("PL_put_integer failed for value {}.", ((Integer32Term*)qa_term.get())->value());
 		}
 		break;
 	case TermType::LONG:
-		if(!PL_put_integer(pl_term, ((LongAtom*)qa_term.get())->value())) {
-			spdlog::warn("PL_put_integer failed for value {}.", ((LongAtom*)qa_term.get())->value());
+		if(!PL_put_integer(pl_term, ((LongTerm*)qa_term.get())->value())) {
+			spdlog::warn("PL_put_integer failed for value {}.", ((LongTerm*)qa_term.get())->value());
 		}
 		break;
 	default:
@@ -221,7 +261,7 @@ std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
 			spdlog::error("Failed to read long value from term_t {}.", t);
 			throw ParserError("Parsing of t_term failed.");
 		}
-		tt = new LongAtom(val);
+		tt = new LongTerm(val);
 	}
 	case PL_FLOAT: {
 		double val=0.0;
@@ -229,13 +269,13 @@ std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
 			spdlog::error("Failed to read double value from term_t {}.", t);
 			throw ParserError("Parsing of t_term failed.");
 		}
-		tt = new DoubleAtom(val);
+		tt = new DoubleTerm(val);
 	}
 	case PL_STRING: // TODO: do we need to distinguish betwen atom and string here?
 	case PL_ATOM: {
 		char *s;
 		if(PL_get_chars(t, &s, CVT_ALL)) {
-			tt = new StringAtom(std::string(s));
+			tt = new StringTerm(std::string(s));
 			PL_free(s);
 		}
 		else {
@@ -256,7 +296,7 @@ std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
 		}
 	}
 	case PL_TERM:
-		return constructPredicate(t);
+		return PrologQuery::constructPredicate(t);
 	default:
 		spdlog::error("Unknown term_t type {} in query.", PL_term_type(t));
 		throw ParserError("Unknown term_t type.");
@@ -285,7 +325,7 @@ std::shared_ptr<Formula> PrologQuery::constructFormula(const term_t &t)
 		term_t arg = PL_new_term_ref();
 		for(int n=1; n<=arity; n++) {
 			if(PL_get_arg(n, t, arg)) {
-				formulae[n-1] = constructFormula(arg);
+				formulae[n-1] = PrologQuery::constructFormula(arg);
 			} else {
 				spdlog::error("Failed to parse argument {} of input term {}.", n, t);
 				throw ParserError("Parsing of t_term failed.");
@@ -301,7 +341,7 @@ std::shared_ptr<Formula> PrologQuery::constructFormula(const term_t &t)
 		term_t arg = PL_new_term_ref();
 		for(int n=1; n<=arity; n++) {
 			if(PL_get_arg(n, t, arg)) {
-				formulae[n-1] = constructFormula(arg);
+				formulae[n-1] = PrologQuery::constructFormula(arg);
 			} else {
 				spdlog::error("Failed to parse argument {} of input term {}.", n, t);
 				throw ParserError("Parsing of t_term failed.");
@@ -314,7 +354,7 @@ std::shared_ptr<Formula> PrologQuery::constructFormula(const term_t &t)
 	// default: a single predicate
 	else {
 		return std::shared_ptr<Formula>(
-			new PredicateFormula(constructPredicate(t)));
+			new PredicateFormula(PrologQuery::constructPredicate(t)));
 	}
 }
 

@@ -6,6 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+// logging
+#include <spdlog/spdlog.h>
+// KnowRob
 #include <knowrob/qa/Blackboard.h>
 
 using namespace knowrob;
@@ -23,20 +26,22 @@ Blackboard::Blackboard(
 		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
 	std::shared_ptr<QueryResultBroadcast> out =
 		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
-	out->addSubscriber(outputQueue_);
+	out->addSubscriber(outputQueue_.get());
 	decompose(goal->formula(), in, out);
 	
-	// TODO: push empty and EOS message to input stream
+	// push BOS (empty substitution) followed by EOS message to input stream
+	in->push(QueryResultStream::bos());
+	in->push(QueryResultStream::eos());
 	
 	// start the reasoning
 	for(std::shared_ptr<BlackboardSegment> &segment : segments_) {
-		segment->startReasoningProcess();
+		segment->start();
 	}
 }
 
 Blackboard::~Blackboard()
 {
-	stopReasoningProcesses();
+	stop();
 }
 
 void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
@@ -83,13 +88,21 @@ void Blackboard::decomposePredicate(
 
 	for(std::shared_ptr<IReasoner> &r : ensemble) {
 		// create IO streams
+		// TODO: reasonerIn could be limited to substitutions of variables that actually
+		// appear in subq! this would relax data load into the reasoner, and
+		// it would allow to avoid redundant calls, by keeping a cache of
+		// already evaluated instantiations. It would also require an additional step
+		// to combine output of reasoner with input that was not passed to it via the input stream.
 		reasonerIn = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
 		reasonerOut = std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
+		// manage subscriptions needed for the message broadcasting
 		in->addSubscriber(reasonerIn.get());
 		reasonerOut->addSubscriber(out.get());
 		// create the blackboard segment
-		segments_.push_back(std::shared_ptr<BlackboardSegment>(
-			new BlackboardSegment(r,reasonerIn,reasonerOut,subq)));
+		segments_.push_back(std::shared_ptr<BlackboardSegment>(new BlackboardSegment(
+			reasonerManager_,
+			ReasoningTask(r,reasonerIn,reasonerOut,subq)
+		)));
 	}
 }
 
@@ -100,6 +113,10 @@ void Blackboard::decomposeConjunction(
 {
 	std::shared_ptr<QueryResultBroadcast> in = firstQueue;
 	std::shared_ptr<QueryResultBroadcast> out;
+	
+	// TODO: compute a dependency relation between atomic formulae of a query.
+	// atomic formulae that are independent can be evaluated in concurrently.
+	
 	// add blackboard segments for each predicate in the conjunction
 	int counter = 1;
 	int numFormulae = phi->formulae().size();
@@ -129,10 +146,10 @@ void Blackboard::decomposeDisjunction(
 	}
 }
 
-void Blackboard::stopReasoningProcesses()
+void Blackboard::stop()
 {
 	for(std::shared_ptr<BlackboardSegment>& segment : segments_) {
-		segment->stopReasoningProcess();
+		segment->stop();
 	}
 }
 

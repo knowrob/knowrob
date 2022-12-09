@@ -24,11 +24,10 @@ namespace knowrob {
 	public:
 		LogicProgramReasoner() {}
 
-		/** Assert a fact into the reasoning system.
-		 *
-		 * @param predicate a fact
+		/** Asserts a fact in the knowledge base.
+		 * @predicate a grounded predicate.
 		 */
-		virtual void assertFact(const std::shared_ptr<Predicate> &predicate) = 0;
+		virtual bool assertFact(const std::shared_ptr<Predicate> &predicate) = 0;
 
 		/** Get the fact bases of the logic program.
 		 *

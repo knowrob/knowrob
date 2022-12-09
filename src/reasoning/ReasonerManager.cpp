@@ -14,6 +14,11 @@ ReasonerManager::ReasonerManager(uint32_t numInitialThreads, uint32_t maxNumThre
 : threadPool_(numInitialThreads, maxNumThreads)
 {}
 
+void ReasonerManager::pushGoal(const std::shared_ptr<IRunner> &goal)
+{
+	threadPool_.pushGoal(goal);
+}
+
 void ReasonerManager::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
 	reasonerPool_.push_back(reasoner);
@@ -33,14 +38,5 @@ std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(c
 		}
 	}
 	return out;
-}
-
-std::shared_ptr<ReasoningProcess> ReasonerManager::submit(const ReasoningTask &tsk)
-{
-	std::shared_ptr<ReasoningProcess> proc =
-		std::shared_ptr<ReasoningProcess>(new ReasoningProcess(tsk));
-	// claim a thread, and set the goal for this thread
-	threadPool_.claim()->setGoal(proc);
-	return proc;
 }
 

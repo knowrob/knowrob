@@ -13,10 +13,9 @@
 #include <list>
 #include <memory>
 // KnowRob
+#include <knowrob/knowrob.h>
 #include <knowrob/lang/terms.h>
 #include <knowrob/reasoning/IReasoner.h>
-#include <knowrob/reasoning/ReasoningProcess.h>
-#include <knowrob/reasoning/ReasoningTask.h>
 
 namespace knowrob {
 	/**
@@ -43,11 +42,11 @@ namespace knowrob {
 		 */
 		std::list<std::shared_ptr<IReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
 		
-		/** Start execution of a reasoning task.
-		 * @tsk the reasoning task.
-		 * @return the reasoning process created.
+		/** Pushes a goal for a worker.
+		 * The goal is assigned to a worker thread when one is available.
+		 * @goal the work goal
 		 */
-		std::shared_ptr<ReasoningProcess> submit(const ReasoningTask &tsk);
+		void pushGoal(const std::shared_ptr<IRunner> &goal);
 
 	private:
 		ThreadPool threadPool_;

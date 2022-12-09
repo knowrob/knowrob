@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <map>
 #include <memory>
 
 namespace knowrob {
@@ -42,6 +43,11 @@ namespace knowrob {
 		 * @return the type of this term.
 		 */
 		const TermType& type() const { return type_; }
+		
+		/**
+		 * @return true if this term contains free variables.
+		 */
+		virtual bool hasFreeVariable() = 0;
 	private:
 		TermType type_;
 	};
@@ -66,10 +72,51 @@ namespace knowrob {
 		/** Get the name of this variable.
 		 */
 		const std::string& name() { return name_; }
+		
+		// Override Term
+		bool hasFreeVariable() { return true; }
 
 	protected:
 		std::string name_;
 	};
+	
+	/** A substitution is a mapping from variables to terms.
+	 * e.g. {x1 -> t1, ..., xn -> tn} represents a substitution of
+	 * each variable xi with the corresponding term ti.
+	 * Applying a substitution to a term t means to replace occurrences
+	 * of each xi with ti. The resulting term is referred to as an *instance* of t.
+	 */
+	class Substitution {
+	public:
+		/** In FOL, a substitution is seen as a mapping from variables to terms.
+		 * It is often denoted as \sigma
+		 *
+		 * @var a variable.
+		 * @term a term.
+		 */
+		void set(const Variable &var, const std::shared_ptr<Term> &term);
+		
+		/** Get the substitution of a variable.
+		 *
+		 * Note: default is to map a variable to itself.
+		 *
+		 * @var a variable.
+		 * @term a term.
+		 */
+		std::shared_ptr<Term> get(const Variable &var) const;
+		
+		/** Returns true if the given var is mapped to a term by this substitution.
+		 * @var a variable.
+		 * @return true if this substitution contains the variable.
+		 */
+		bool contains(const Variable &var) const;
+
+	private:
+		std::map<Variable, std::shared_ptr<Term>> mapping_;
+	};
+	
+	// alias declaration
+	using SubstitutionPtr = std::shared_ptr<Substitution>;
 
 	/** A typed data value.
 	 */
@@ -86,6 +133,9 @@ namespace knowrob {
 		 * @return the value.
 		 */
 		const T& value() { return value_; }
+		
+		// Override Term
+		bool hasFreeVariable() { return false; }
 	
 	protected:
 		const T value_;
@@ -95,32 +145,28 @@ namespace knowrob {
 	 */
 	class StringTerm : public Constant<std::string> {
 	public:
-		StringTerm(const std::string &v)
-		: Constant(TermType::STRING, v) {}
+		StringTerm(const std::string &v);
 	};
 	
 	/** A floating point value.
 	 */
 	class DoubleTerm : public Constant<double> {
 	public:
-		DoubleAtom(const double &v)
-		: Constant(TermType::DOUBLE, v) {}
+		DoubleTerm(const double &v);
 	};
 	
 	/** A long value.
 	 */
 	class LongTerm : public Constant<long> {
 	public:
-		LongAtom(const long &v)
-		: Constant(TermType::LONG, v) {}
+		LongTerm(const long &v);
 	};
 	
 	/** An integer with 32 bit encoding.
 	 */
 	class Integer32Term : public Constant<int32_t> {
 	public:
-		Integer32Atom(const int32_t &v)
-		: Constant(TermType::INT32, v) {}
+		Integer32Term(const int32_t &v);
 	};
 
 	/** The indicator of a predicate defined by its functor and arity.
@@ -163,11 +209,7 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arguments list of predicate arguments.
 		 */
-		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments)
-		: Term(TermType::PREDICATE),
-		  indicator_(functor, arguments.size()),
-		  arguments_(arguments)
-		{}
+		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments);
 
 		/** Get the indicator of this predicate.
 		 * @return the indicator of this predicate.
@@ -178,10 +220,18 @@ namespace knowrob {
 		 * @return a vector of predicate arguments.
 		 */
 		const std::vector<std::shared_ptr<Term>>& arguments() const { return arguments_; }
+		
+		/**
+		 */
+		void applySubstitution(const Substitution &sub);
+		
+		// Override Term
+		bool hasFreeVariable() { return hasFreeVariable_; }
 	
 	protected:
 		PredicateIndicator indicator_;
 		std::vector<std::shared_ptr<Term>> arguments_;
+		bool hasFreeVariable_;
 	};
 	
 	/*

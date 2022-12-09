@@ -11,7 +11,6 @@
 
 // STD
 #include <list>
-#include <map>
 #include <memory>
 // KnowRob
 #include <knowrob/qa/queries.h>
@@ -61,7 +60,7 @@ namespace knowrob {
 			std::shared_ptr<QueryResultBroadcast> &out);
 
 		/** Stop all reasoning processes attached to segments. */
-		void stopReasoningProcesses();
+		void stop();
 	};
 }
 

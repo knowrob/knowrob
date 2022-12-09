@@ -11,48 +11,123 @@
 
 // STD
 #include <string>
+#include <list>
+#include <map>
 #include <memory>
 // KnowRob
+#include <knowrob/knowrob.h>
 #include <knowrob/lang/terms.h>
 #include <knowrob/qa/queries.h>
 #include <knowrob/reasoning/LogicProgramReasoner.h>
-#include <knowrob/reasoning/prolog/PrologPool.h>
+#include <knowrob/reasoning/prolog/PrologQuery.h>
 
 namespace knowrob {
+	/** A pool of threads with attached Prolog engines.
+	 */
+	class PrologThreadPool : public ThreadPool {
+	public:
+		/**
+		 * A thread pool of worker threads that grows up
+		 * to a maximum number of threads if many parallel requests are incoming.
+		 * @numInitialThreads number of worker threads initially created.
+		 * @maxNumThreads maximum number of worker threads.
+		 */
+		PrologThreadPool(uint32_t numInitialThreads, uint32_t maxNumThreads=0);
+
+		// Override ThreadPool::initializeWorker
+		bool initializeWorker(WorkerThread *worker);
+		
+		// Override ThreadPool::finalizeWorker
+		void finalizeWorker(WorkerThread *worker);
+	};
+
 	/**
-	 * A Prolog reasoner that performs reasoning using SWI Prolog.
+	 * A Prolog reasoner that answers queries using SWI Prolog.
 	 */
 	class PrologReasoner : public LogicProgramReasoner {
 	public:
-		PrologReasoner(
-			std::shared_ptr<PrologPool> &prologEnginePool,
-			const std::string &initFile);
+		/**
+		 * @initFile the path to a Prolog-encoded file that is initially consulted.
+		 */
+		PrologReasoner(const std::string &initFile);
+		
 		~PrologReasoner();
 
 		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
 		 * directives in the file.
 		 * May throw an exception if there is no valid Prolog file at the given path.
+		 * @prologFile the local path to the file.
 		 */
-		void consult(const std::string &prologFile);
+		bool consult(const std::string &prologFile);
+		
+		/** Evaluates a query and returns one solution if any.
+		 * @return the first solution found, or QueryResultStream::eos().
+		 */
+		std::shared_ptr<QueryResult> oneSolution(const std::shared_ptr<Query> &goal);
+		
+		/** Evaluates a query and returns all solutions.
+		 * @return list of solutions.
+		 */
+		std::list<std::shared_ptr<QueryResult>> allSolutions(const std::shared_ptr<Query> &goal);
 
-		void assertFact(const std::shared_ptr<Predicate> &predicate);
+		// Override LogicProgramReasoner
+		bool assertFact(const std::shared_ptr<Predicate> &predicate);
 
-		// Override IReasoner::initialize
+		// Override IReasoner
  		void initialize();
 
-		// Override IReasoner::runQuery
-		void runQuery(
-			std::shared_ptr<Query> &goal,
-			ReasoningStatus &status,
-			std::shared_ptr<QueryResultQueue> &answerQueue);
-
-		// Override IReasoner::canReasonAbout
+		// Override IReasoner
 		bool canReasonAbout(const PredicateIndicator &predicate);
 
+		// Override IReasoner
+		void startQuery(uint32_t queryID,
+			const std::shared_ptr<QueryResultStream> &outputStream,
+			const std::shared_ptr<Query> &goal);
+		
+		// Override IReasoner
+		void finishQuery(uint32_t queryID,
+			bool isImmediateStopRequested);
+		
+		// Override IReasoner
+		void pushQueryBindings(uint32_t queryID,
+			const SubstitutionPtr &bindings);
+		
+		/** A runner that evaluates a Prolog query.
+		 */
+		class Runner : public IRunner {
+		public:
+			Runner(const std::shared_ptr<QueryResultStream> &outputStream,
+				const std::shared_ptr<Query> &qa_goal,
+				const SubstitutionPtr &bindings);
+			
+			Runner(const std::shared_ptr<QueryResultStream> &outputStream,
+				const std::shared_ptr<Query> &qa_goal);
+			
+			// Override IRunner
+			void stop(bool wait);
+			// Override IRunner
+			void run();
+		
+		protected:
+			std::shared_ptr<QueryResultStream> outputStream_;
+			std::shared_ptr<Query> qa_goal_;
+			PrologQuery pl_goal_;
+			SubstitutionPtr bindings_;
+			
+		};
+		
+		struct Request {
+			std::shared_ptr<QueryResultStream> outputStream;
+			std::shared_ptr<Query> goal;
+			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
+		};
+
 	protected:
-		std::shared_ptr<PrologPool> prologEnginePool_;
+		PrologThreadPool threadPool_;
 		std::string initFile_;
+		
+		std::map<uint32_t, PrologReasoner::Request> activeQueries_;
 	};
 }
 

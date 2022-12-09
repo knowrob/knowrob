@@ -10,15 +10,14 @@
 #define __KNOWROB_BLACKBOARD_SEGMENT_H__
 
 // STD
-#include <list>
-#include <map>
-#include <mutex>
 #include <memory>
 // KnowRob
 #include <knowrob/qa/queries.h>
 #include <knowrob/reasoning/ReasonerManager.h>
+#include <knowrob/reasoning/ReasoningTask.h>
 
 namespace knowrob {
+	
 	/**
 	 * The segment of a blackboard where an essemble of experts is working
 	 * on solving a common task.
@@ -27,28 +26,41 @@ namespace knowrob {
 	public:
 		BlackboardSegment(
 			const std::shared_ptr<ReasonerManager> &reasonerManager,
-			const std::shared_ptr<IReasoner> &reasoner,
-			const std::shared_ptr<QueryResultQueue> &inputQueue,
-			const std::shared_ptr<QueryResultStream> &outputQueue,
-			const std::shared_ptr<Query> &query);
+			const ReasoningTask &tsk);
+		
+		~BlackboardSegment();
+		
 		// copy constructor is not supported for blackboards
 		BlackboardSegment(const BlackboardSegment&) = delete;
-		~BlackboardSegment();
 
-		/** Start all reasoning processes attached to this segment. */
-		void startReasoningProcess();
+		/** Start all reasoning processes attached to this segment.
+		 */
+		void start();
 		
-		/** Stop all reasoning processes attached to this segment. */
-		void stopReasoningProcess(bool wait=false);
+		/** Stop all reasoning processes attached to this segment.
+		 */
+		void stop(bool wait=false);
+		
+		/**
+		 * A process that executes a reasoning task.
+		 */
+		class Runner : public IRunner {
+		public:
+			Runner(const ReasoningTask &task);
+			
+			// Override IRunner
+			void stop(bool wait);
+			// Override IRunner
+			void run();
+
+		private:
+			ReasoningTask task_;
+		};
 
 	protected:
-		std::shared_ptr<QueryResultQueue> inputQueue_;
-		std::shared_ptr<QueryResultStream> outputQueue_;
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-		std::shared_ptr<IReasoner> reasoner_;
-		std::shared_ptr<ReasoningProcess> process_;
-		std::shared_ptr<Query> goal_;
-        	std::mutex mutex_;
+		std::shared_ptr<BlackboardSegment::Runner> process_;
+		ReasoningTask task_;
 	};
 }
 
