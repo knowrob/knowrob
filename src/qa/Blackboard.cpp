@@ -170,7 +170,7 @@ Blackboard::Stream::~Stream()
 	stop();
 }
 
-void Blackboard::Stream::push(QueryResultPtr &msg)
+void Blackboard::Stream::push(const QueryResultPtr &msg)
 {
 	if(QueryResultStream::isEOS(msg)) {
 		// tell the reasoner to finish up.

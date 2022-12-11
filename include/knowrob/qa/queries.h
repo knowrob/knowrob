@@ -281,7 +281,7 @@ namespace knowrob {
 			/** Push a QueryResult into this channel.
 			 * @msg a QueryResult pointer.
 			 */
-			void push(QueryResultPtr &msg);
+			void push(const QueryResultPtr &msg);
 			
 			/** Close the channel.
 			 */
@@ -314,9 +314,9 @@ namespace knowrob {
 		std::list<std::shared_ptr<Channel>> channels_;
 		std::atomic<bool> isOpened_;
 		
-		virtual void push(const Channel &channel, QueryResultPtr &msg);
+		virtual void push(const Channel &channel, const QueryResultPtr &msg);
 		
-		virtual void push(QueryResultPtr &msg) = 0;
+		virtual void push(const QueryResultPtr &msg) = 0;
 	};
 	
 	/** A queue of QueryResult objects.
@@ -346,7 +346,7 @@ namespace knowrob {
 		std::mutex queue_mutex_;
 		
 		// Override QueryResultStream
-		void push(QueryResultPtr &item);
+		void push(const QueryResultPtr &item);
 	};
 	
 	/** A broadcaster of query results.
@@ -370,7 +370,7 @@ namespace knowrob {
 		std::list<std::shared_ptr<Channel>> subscribers_;
 		
 		// Override QueryResultStream
-		void push(QueryResultPtr &msg);
+		void push(const QueryResultPtr &msg);
 	};
 	
 	// alias
@@ -388,11 +388,11 @@ namespace knowrob {
 		QueryResultBuffer buffer_;
 		
 		// Override QueryResultStream
-		void push(const Channel &channel, QueryResultPtr &msg);
+		void push(const Channel &channel, const QueryResultPtr &msg);
 		
 		void genCombinations(uint32_t pushedChannelID,
 			QueryResultBuffer::iterator it,
-			std::list<SubstitutionPtr> &combination);
+			SubstitutionPtr &combination);
 	};
 	
 	/**

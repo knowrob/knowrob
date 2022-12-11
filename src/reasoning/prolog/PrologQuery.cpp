@@ -11,7 +11,10 @@
 #include <knowrob/reasoning/prolog/PrologQuery.h>
 
 static atom_t ATOM_semicolon = PL_new_atom(";");
-static atom_t ATOM_comma = PL_new_atom(",");
+static atom_t ATOM_comma     = PL_new_atom(",");
+static atom_t ATOM_fail      = PL_new_atom("fail");
+static atom_t ATOM_false     = PL_new_atom("false");
+static atom_t ATOM_true      = PL_new_atom("true");
 
 using namespace knowrob;
 
@@ -187,6 +190,16 @@ void PrologQuery::constructPrologTerm(
 			spdlog::warn("PL_put_integer failed for value {}.", ((LongTerm*)qa_term.get())->value());
 		}
 		break;
+	case TermType::BOTTOM:
+		if(!PL_put_atom_chars(pl_term, PL_atom_chars(ATOM_fail))) {
+			spdlog::warn("PL_put_atom_chars failed for 'fail' atom.");
+		}
+		break;
+	case TermType::TOP:
+		if(!PL_put_atom_chars(pl_term, PL_atom_chars(ATOM_true))) {
+			spdlog::warn("PL_put_atom_chars failed for 'true' atom.");
+		}
+		break;
 	default:
 		spdlog::warn("Ignoring unknown term type '{}' in query.", qa_term->type());
 		break;
@@ -222,14 +235,14 @@ void PrologQuery::constructPrologTerm(
 	}
 }
 
-std::shared_ptr<Predicate> PrologQuery::constructPredicate(const term_t &t)
+std::shared_ptr<Term> PrologQuery::constructPredicate(const term_t &t)
 {
 	// get the functor + arity
 	size_t arity;
 	atom_t name;
 	if(!PL_get_name_arity(t, &name, &arity)) {
 		spdlog::error("Failed to read term_t name and arity.");
-		throw ParserError("Parsing of t_term failed.");
+		return BottomTerm::get();
 	}
 	std::string functorName = PL_atom_chars(name);
 	// construct arguments
@@ -241,13 +254,12 @@ std::shared_ptr<Predicate> PrologQuery::constructPredicate(const term_t &t)
 		}
 		else {
 			spdlog::error("Failed to construct argument {} of predicate {}.", n, functorName);
-			throw ParserError("Parsing of t_term failed.");
+			return BottomTerm::get();
 		}
 	}
 	// construct Predicate object
 	return std::shared_ptr<Predicate>(
-		new Predicate(functorName, arguments)
-	);
+		new Predicate(functorName, arguments));
 }
 
 std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
@@ -258,48 +270,61 @@ std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
 	case PL_INTEGER: {
 		long val=0;
 		if(!PL_get_long(t, &val)) {
-			spdlog::error("Failed to read long value from term_t {}.", t);
-			throw ParserError("Parsing of t_term failed.");
+			spdlog::error("Failed to read long from term {}.", t);
+			return BottomTerm::get();
 		}
 		tt = new LongTerm(val);
 	}
 	case PL_FLOAT: {
 		double val=0.0;
 		if(!PL_get_float(t, &val)) {
-			spdlog::error("Failed to read double value from term_t {}.", t);
-			throw ParserError("Parsing of t_term failed.");
+			spdlog::error("Failed to read double from term {}.", t);
+			return BottomTerm::get();
 		}
 		tt = new DoubleTerm(val);
 	}
-	case PL_STRING: // TODO: do we need to distinguish betwen atom and string here?
-	case PL_ATOM: {
+	case PL_STRING: {
 		char *s;
-		if(PL_get_chars(t, &s, CVT_ALL)) {
-			tt = new StringTerm(std::string(s));
-			PL_free(s);
+		if(!PL_get_chars(t, &s, CVT_ALL)) {
+			spdlog::error("Failed to read string from term {}.", t);
+			return BottomTerm::get();
 		}
-		else {
-			spdlog::error("Failed to read string value from term_t {}.", t);
-			throw ParserError("Parsing of t_term failed.");
+		tt = new StringTerm(std::string(s));
+		PL_free(s);
+	}
+	case PL_ATOM: {
+		atom_t atom;
+		if(!PL_get_atom(t, &atom)) {
+			spdlog::error("failed to read atom from term {}.", t);
+			return BottomTerm::get();
 		}
+		
+		// map `fail/0` and `false/0` to BottomTerm
+		if(atom == ATOM_fail || atom == ATOM_false) {
+			return BottomTerm::get();
+		}
+		// map `true/0` to TopTerm
+		else if(atom == ATOM_true) {
+			return TopTerm::get();
+		}
+		
+		tt = new StringTerm(std::string(PL_atom_chars(atom)));
 	}
 	case PL_VARIABLE: {
 		// variables are converted to print-name
 		char *s;
-		if(PL_get_chars(t, &s, CVT_ALL)) {
-			tt = new Variable(std::string(s));
-			PL_free(s);
+		if(!PL_get_chars(t, &s, CVT_ALL)) {
+			spdlog::error("Failed to read variable name from term {}.", t);
+			return BottomTerm::get();
 		}
-		else {
-			spdlog::error("Failed to read variable name from term_t {}.", t);
-			throw ParserError("Parsing of t_term failed.");
-		}
+		tt = new Variable(std::string(s));
+		PL_free(s);
 	}
 	case PL_TERM:
 		return PrologQuery::constructPredicate(t);
 	default:
-		spdlog::error("Unknown term_t type {} in query.", PL_term_type(t));
-		throw ParserError("Unknown term_t type.");
+		spdlog::error("unknown term type {}.", PL_term_type(t));
+		return BottomTerm::get();
 	}
 	
 	return std::shared_ptr<Term>(tt);
@@ -353,8 +378,14 @@ std::shared_ptr<Formula> PrologQuery::constructFormula(const term_t &t)
 	}
 	// default: a single predicate
 	else {
-		return std::shared_ptr<Formula>(
-			new PredicateFormula(PrologQuery::constructPredicate(t)));
+		std::shared_ptr<Term> p = PrologQuery::constructPredicate(t);
+		if(p->isBottom()) {
+			throw ParserError("Parsing of t_term failed.");
+		}
+		else {
+			return std::shared_ptr<Formula>(new PredicateFormula(
+				std::static_pointer_cast<Predicate>(p)));
+		}
 	}
 }
 

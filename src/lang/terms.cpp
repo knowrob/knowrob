@@ -6,6 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+// logging
+#include <spdlog/spdlog.h>
+// KnowRob
 #include <knowrob/lang/terms.h>
 
 using namespace knowrob;
@@ -14,10 +17,44 @@ Term::Term(TermType type)
 : type_(type)
 {}
 
+bool Term::isBottom() const
+{
+	return type_ == TermType::BOTTOM;
+}
+
+bool Term::isTop() const
+{
+	return type_ == TermType::TOP;
+}
+
 std::ostream& operator<<(std::ostream& os, const Term& t)
 {
 	t.write(os);
 	return os;
+}
+
+
+const std::shared_ptr<TopTerm>& TopTerm::get()
+{
+	static auto singleton = std::shared_ptr<TopTerm>(new TopTerm);
+	return singleton;
+}
+
+void TopTerm::write(std::ostream& os) const
+{
+	os << "\u22A4";
+}
+
+
+const std::shared_ptr<BottomTerm>& BottomTerm::get()
+{
+	static auto singleton = std::shared_ptr<BottomTerm>(new BottomTerm);
+	return singleton;
+}
+
+void BottomTerm::write(std::ostream& os) const
+{
+	os << "\u22A5";
 }
 
 
@@ -174,6 +211,11 @@ bool Substitution::contains(const Variable &var) const
 	return mapping_.find(var) != mapping_.end();
 }
 
+void Substitution::erase(const Variable &var)
+{
+	mapping_.erase(var);
+}
+
 std::shared_ptr<Term> Substitution::get(const Variable &var) const
 {
 	static const std::shared_ptr<Term> null_term;
@@ -187,41 +229,174 @@ std::shared_ptr<Term> Substitution::get(const Variable &var) const
 	}
 }
 
-std::shared_ptr<Substitution> Substitution::combine(
-	const std::vector<std::shared_ptr<Substitution>> &subs)
+bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitution::Diff &changes)
 {
-	static const std::shared_ptr<Substitution> null_sub;
-	auto combined = std::shared_ptr<Substitution>(new Substitution);
-	
-	// get all instantiations of each variable
-	std::map<Variable, std::set<std::shared_ptr<Term>>> instantiations;
-	for(const auto &sub : subs) {
-		for(const auto &pair : sub->mapping_) {
-			instantiations[pair.first].insert(pair.second);
-		}
-	}
-	
-	// for each variable with multiple instances, unify the instances.
-	// if unification fails, return null_sub.
-	std::shared_ptr<Term> unifiedInstance;
-	for(const auto &pair : instantiations) {
-		if(pair.second.size()==1) {
-			// variable has only one instantiation
-			combined->set(pair.first, *(pair.second.begin()));
+	for(const auto &pair : other->mapping_) {
+		auto it = mapping_.find(pair.first);
+		if(it == mapping_.end()) {
+			// new variable instantiation
+			changes.push(std::shared_ptr<Operation>(
+				new Added(mapping_.insert(pair).first)));
 		}
 		else {
-			// TODO multiple instantiations need to be unified
-			// unifiedInstance = Term::unify(pair.second);
-			if(unifiedInstance.get()==NULL) {
-				// unification not possible
-				return null_sub;
+			// variable has already an instantation, need to unify
+			std::shared_ptr<Term> t0 = it->second;
+			std::shared_ptr<Term> t1 = pair.second;
+			
+			// t0 and t1 are not syntactically equal -> compute a unifier
+			Unifier sigma(t0,t1);
+			if(sigma.exists()) {
+				// unifier exists
+				it->second = sigma.apply();
+				changes.push(std::shared_ptr<Operation>(new Replaced(it, t0)));
 			}
 			else {
-				combined->set(pair.first, unifiedInstance);
+				// no unifier exists
+				return false;
 			}
 		}
 	}
 	
-	return combined;
+	return true;
+}
+
+void Substitution::rollBack(Substitution::Diff &changes)
+{
+	while(!changes.empty()) {
+		auto &change = changes.front();
+		change->rollBack(*this);
+		changes.pop();
+	}
+}
+
+
+Substitution::Replaced::Replaced(const Substitution::Iterator &it,
+	const std::shared_ptr<Term> &replacedInstance)
+: Substitution::Operation(),
+  it_(it),
+  replacedInstance_(replacedInstance)
+{}
+
+void Substitution::Replaced::rollBack(Substitution &sub)
+{
+	// set old value
+	it_->second = replacedInstance_;
+}
+
+
+Substitution::Added::Added(const Substitution::Iterator &it)
+: Substitution::Operation(),
+  it_(it)
+{}
+
+void Substitution::Added::rollBack(Substitution &sub)
+{
+	// remove the added variable instantiation
+	sub.mapping_.erase(it_);
+}
+
+
+Unifier::Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1)
+: Substitution(),
+  t0_(t0),
+  t1_(t1),
+  exists_(unify(t0,t1))
+{
+}
+
+bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1)
+{
+	// TODO: use fast equals test before computing the unifier?
+	/*
+	if(t0->equals(t1)) {
+		// terms are already equal
+		return true;
+	}
+	*/
+	
+	if(t1->type() == TermType::VARIABLE) {
+		set(*((Variable*)t1.get()), t0);
+	}
+	else {
+		switch(t0->type()) {
+		case TermType::VARIABLE:
+			set(*((Variable*)t0.get()), t1);
+			break;
+		case TermType::PREDICATE: {
+			// predicates only unify with other predicates
+			if(t1->type()!=TermType::PREDICATE) {
+				return false;
+			}
+			Predicate *p0 = (Predicate*)t0.get();
+			Predicate *p1 = (Predicate*)t1.get();
+			// test for functor equality, and matching arity
+			if(p0->indicator().functor() != p0->indicator().functor() ||
+			   p0->indicator().arity()   != p0->indicator().arity()) {
+				return false;
+			}
+			// unify all arguments
+			for(uint32_t i=0; i<p0->indicator().arity(); ++i) {
+				if(!unify(p0->arguments()[i], p1->arguments()[i])) {
+					return false;
+				}
+			}
+			break;
+		}
+		case TermType::STRING:
+			return t1->type()==TermType::STRING &&
+				((StringTerm*)t0.get())->value()==((StringTerm*)t1.get())->value();
+		case TermType::DOUBLE:
+			return t1->type()==TermType::DOUBLE &&
+				((DoubleTerm*)t0.get())->value()==((DoubleTerm*)t1.get())->value();
+		case TermType::INT32:
+			return t1->type()==TermType::INT32 &&
+				((Integer32Term*)t0.get())->value()==((Integer32Term*)t1.get())->value();
+		case TermType::LONG:
+			return t1->type()==TermType::LONG &&
+				((LongTerm*)t0.get())->value()==((LongTerm*)t1.get())->value();
+		case TermType::TOP:
+			return t1->isTop();
+		case TermType::BOTTOM:
+			return t1->isBottom();
+		default:
+			spdlog::warn("Ignoring unknown term type '{}'.", t0->type());
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+std::shared_ptr<Term> Unifier::apply()
+{
+	if(!exists_) {
+		// no unifier exists
+		return BottomTerm::get();
+	}
+	else if(mapping_.empty() ||
+		t0_->isGround() ||
+		t1_->type()==TermType::VARIABLE)
+	{
+		// empty unifier, or only substitutions in t1
+		return t0_;
+	}
+	else if(t1_->isGround() ||
+		t0_->type()==TermType::VARIABLE)
+	{
+		// only substitutions in t0
+		return t1_;
+	}
+	else if(t0_->type()==TermType::PREDICATE) {
+		// both t0_ and t1_ contain variables, so they are either Variables
+		// or Predicates where an argument contains a variable.
+		// the variable case if covered above so both must be predicates.
+		// TODO: choose the one with less variables?
+		Predicate *p = (Predicate*)t0_.get();
+		return p->applySubstitution(*this);
+	}
+	else {
+		spdlog::warn("something went wrong.");
+		return BottomTerm::get();
+	}
 }
 

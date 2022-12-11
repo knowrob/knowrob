@@ -69,7 +69,7 @@ namespace knowrob {
 			bool hasStopRequest_;
 			mutable std::mutex mutex_;
 			
-			void push(QueryResultPtr &msg);
+			void push(const QueryResultPtr &msg);
 			
 			friend class Blackboard;
 		};

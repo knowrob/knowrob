@@ -87,7 +87,7 @@ namespace knowrob {
 		void constructPrologTerm(const std::shared_ptr<Formula>& phi, term_t &pl_term);
 		void constructPrologTerm(ConnectiveFormula *phi, functor_t &pl_functor, term_t &pl_term);
 		
-		static std::shared_ptr<Predicate> constructPredicate(const term_t &t);
+		static std::shared_ptr<Term> constructPredicate(const term_t &t);
 		static std::shared_ptr<Formula> constructFormula(const term_t &t);
 		
 		void createPrologPredicate();

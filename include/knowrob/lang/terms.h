@@ -15,6 +15,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <queue>
 #include <memory>
 #include <iostream>
 
@@ -27,7 +28,9 @@ namespace knowrob {
 		STRING,
 		DOUBLE,
 		INT32,
-		LONG
+		LONG,
+		TOP,
+		BOTTOM
 	};
 	
 	/** An expression in the querying language.
@@ -49,6 +52,14 @@ namespace knowrob {
 		const TermType& type() const { return type_; }
 		
 		/**
+		 */
+		bool isTop() const;
+		
+		/**
+		 */
+		bool isBottom() const;
+		
+		/**
 		 * @return true if this term contains no variables.
 		 */
 		virtual bool isGround() const = 0;
@@ -64,6 +75,44 @@ namespace knowrob {
 	
 	private:
 		const TermType type_;
+	};
+	
+	/**
+	 */
+	class TopTerm : public Term {
+	public:
+		static const std::shared_ptr<TopTerm>& get();
+		
+		// Override Term
+		bool isGround() const { return true; }
+		
+		// Override Term
+		bool isAtomic() const { return true; }
+		
+		// Overload Term
+		void write(std::ostream& os) const;
+	
+	private:
+		TopTerm() : Term(TermType::TOP) {};
+	};
+	
+	/**
+	 */
+	class BottomTerm : public Term {
+	public:
+		static const std::shared_ptr<BottomTerm>& get();
+		
+		// Override Term
+		bool isGround() const { return true; }
+		
+		// Override Term
+		bool isAtomic() const { return true; }
+		
+		// Overload Term
+		void write(std::ostream& os) const;
+	
+	private:
+		BottomTerm() : Term(TermType::BOTTOM) {};
 	};
 	
 	/** A variable term.
@@ -97,47 +146,6 @@ namespace knowrob {
 	protected:
 		const std::string name_;
 	};
-	
-	/** A substitution is a mapping from variables to terms.
-	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
-	 * each variable xi with the corresponding term ti.
-	 * Applying a substitution to a term t means to replace occurrences
-	 * of each xi with ti. The resulting term is referred to as an *instance* of t.
-	 */
-	class Substitution {
-	public:
-		/**
-		 * @var a variable.
-		 * @term a term.
-		 */
-		void set(const Variable &var, const std::shared_ptr<Term> &term);
-		
-		/** Map a variable to a term.
-		 * A null pointer reference is returned if the given variable
-		 * is not included in the mapping.
-		 *
-		 * @var a variable.
-		 * @return a term reference.
-		 */
-		std::shared_ptr<Term> get(const Variable &var) const;
-		
-		/** Returns true if the given var is mapped to a term by this substitution.
-		 * @var a variable.
-		 * @return true if this substitution contains the variable.
-		 */
-		bool contains(const Variable &var) const;
-		
-		/**
-		 */
-		static std::shared_ptr<Substitution> combine(
-			const std::vector<std::shared_ptr<Substitution>> &subs);
-
-	protected:
-		std::map<Variable, std::shared_ptr<Term>> mapping_;
-	};
-	
-	// alias declaration
-	using SubstitutionPtr = std::shared_ptr<Substitution>;
 
 	/** A typed constant.
 	 */
@@ -231,6 +239,9 @@ namespace knowrob {
 		const std::string functor_;
 		const unsigned int arity_;
 	};
+	
+	// forward declaration
+	class Substitution;
 
 	/** A predicate with a functor and a number of term arguments.
 	 */
@@ -305,6 +316,106 @@ namespace knowrob {
 	class TemporalizedPredicate : public Predicate {
 	};
 	*/
+	
+	/** A substitution is a mapping from variables to terms.
+	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
+	 * each variable xi with the corresponding term ti.
+	 * Applying a substitution to a term t means to replace occurrences
+	 * of each xi with ti. The resulting term is referred to as an *instance* of t.
+	 */
+	class Substitution {
+	public:
+		// forward declaration
+		class Operation;
+		// alias
+		using Diff = std::queue<std::shared_ptr<Substitution::Operation>>;
+		using Iterator = std::map<Variable, std::shared_ptr<Term>>::iterator;
+		
+		/**
+		 * @var a variable.
+		 * @term a term.
+		 */
+		void set(const Variable &var, const std::shared_ptr<Term> &term);
+		
+		/** Map a variable to a term.
+		 * A null pointer reference is returned if the given variable
+		 * is not included in the mapping.
+		 *
+		 * @var a variable.
+		 * @return a term reference.
+		 */
+		std::shared_ptr<Term> get(const Variable &var) const;
+		
+		/** Returns true if the given var is mapped to a term by this substitution.
+		 * @var a variable.
+		 * @return true if this substitution contains the variable.
+		 */
+		bool contains(const Variable &var) const;
+		
+		/**
+		 */
+		void erase(const Variable &var);
+		
+		/**
+		 */
+		bool combine(const std::shared_ptr<Substitution> &subs, Substitution::Diff &changes);
+		
+		/**
+		 */
+		void rollBack(Substitution::Diff &changes);
+		
+		/**
+		 */
+		class Operation {
+		public:
+			virtual void rollBack(Substitution &sub) = 0;
+		};
+		
+		/**
+		 */
+		class Added : public Operation {
+		public:
+			Added(const Substitution::Iterator &it);
+			// Overwrite Operation
+			void rollBack(Substitution &sub);
+		protected:
+			Substitution::Iterator it_;
+		};
+		
+		/**
+		 */
+		class Replaced : public Operation {
+		public:
+			Replaced(const Substitution::Iterator &it, const std::shared_ptr<Term> &replacedInstance);
+			// Overwrite Operation
+			void rollBack(Substitution &sub);
+		protected:
+			Substitution::Iterator it_;
+			const std::shared_ptr<Term> replacedInstance_;
+		};
+
+	protected:
+		std::map<Variable, std::shared_ptr<Term>> mapping_;
+	};
+	
+	// alias declaration
+	using SubstitutionPtr = std::shared_ptr<Substitution>;
+	
+	class Unifier : public Substitution {
+	public:
+		Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
+		
+		bool exists() const { return exists_; }
+		
+		std::shared_ptr<Term> apply();
+	
+	protected:
+		std::shared_ptr<Term> t0_;
+		std::shared_ptr<Term> t1_;
+		bool exists_;
+		
+		bool unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
+	};
 }
 
 #endif //__KNOWROB_TERMS_H__

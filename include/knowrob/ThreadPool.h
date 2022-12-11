@@ -111,12 +111,10 @@ namespace knowrob {
 		
 		std::shared_ptr<ThreadPool::Runner> popWork();
 		
-		/**
-		 */
+		// is called initially in each worker thread
 		virtual bool initializeWorker() { return true; }
 		
-		/**
-		 */
+		// is called to finalize each worker thread
 		virtual void finalizeWorker() {}
 	};
 };

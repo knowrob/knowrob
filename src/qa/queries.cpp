@@ -240,7 +240,7 @@ void QueryResultStream::close()
 	}
 }
 
-void QueryResultStream::push(const Channel &channel, SubstitutionPtr &item)
+void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item)
 {
 	if(QueryResultStream::isEOS(item)) {
 		// remove channel once EOS is reached
@@ -278,7 +278,7 @@ uint32_t QueryResultStream::Channel::id() const
 	return reinterpret_cast<std::uintptr_t>(this);
 }
 
-void QueryResultStream::Channel::push(QueryResultPtr &msg)
+void QueryResultStream::Channel::push(const QueryResultPtr &msg)
 {
 	stream_->push(*this, msg);
 	if(QueryResultStream::isEOS(msg)) {
@@ -304,7 +304,7 @@ QueryResultQueue::QueryResultQueue()
 : QueryResultStream()
 {}
 
-void QueryResultQueue::push(SubstitutionPtr &item)
+void QueryResultQueue::push(const SubstitutionPtr &item)
 {
 	{
 		std::lock_guard<std::mutex> lock(queue_mutex_);
@@ -348,7 +348,7 @@ void QueryResultBroadcaster::removeSubscriber(const std::shared_ptr<Channel> &su
 	subscribers_.remove(subscriber);
 }
 
-void QueryResultBroadcaster::push(SubstitutionPtr &item)
+void QueryResultBroadcaster::push(const SubstitutionPtr &item)
 {
 	// broadcast the query result to all subscribers
 	for(auto &x : subscribers_) {
@@ -361,7 +361,7 @@ QueryResultCombiner::QueryResultCombiner()
 : QueryResultBroadcaster()
 {}
 
-void QueryResultCombiner::push(const Channel &channel, SubstitutionPtr &msg)
+void QueryResultCombiner::push(const Channel &channel, const SubstitutionPtr &msg)
 {
 	const uint32_t channelID = channel.id();
 	
@@ -371,11 +371,8 @@ void QueryResultCombiner::push(const Channel &channel, SubstitutionPtr &msg)
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		// TODO could use std::stack instead, is it faster?
-		std::list<SubstitutionPtr> combination;
-		// add msg for channelID
-		combination.push_back(msg);
-		// generate all combinations and push combined msg
+		SubstitutionPtr combination(new Substitution(*(msg.get())));
+		// generate all combinations and push combined messages
 		genCombinations(channelID, buffer_.begin(), combination);
 	}
 }
@@ -383,47 +380,52 @@ void QueryResultCombiner::push(const Channel &channel, SubstitutionPtr &msg)
 void QueryResultCombiner::genCombinations(
 		uint32_t pushedChannelID,
 		QueryResultBuffer::iterator it,
-		std::list<SubstitutionPtr> &combination)
+		SubstitutionPtr &combinedSubstitution)
 {
 	if(it == buffer_.end()) {
-		// end reached push combination if possible
-		// TODO: ugly interface!
-		SubstitutionPtr combined;
-		//SubstitutionPtr combined = Substitution::combine(combination);
-		if(combined.get()!=NULL) {
-			QueryResultBroadcaster::push(combined);
-		}
+		// end reached, push combination
+		// note: need to create a new SubstitutionPtr due to the rollBack below.
+		// TODO: it could be that the same combination is generated
+		// multiple time, avoid redundant push here?
+		Substitution *s = combinedSubstitution.get();
+		QueryResultBroadcaster::push(SubstitutionPtr(new Substitution(*s)));
 	}
 	else if(it->first == pushedChannelID) {
 		// ignore pushed channel
 	}
 	else if(it->second.size()==1) {
 		// only a single message buffered from this channel
-		combination.push_back(it->second.front());
+		QueryResultBuffer::iterator it1 = it; ++it1;
+		// keep track of changes for rolling them back
+		Substitution::Diff changes;
+		// combine and continue with next channel.
+		// this is done to avoid creating many copies of the substitution map.
+		if(combinedSubstitution->combine(it->second.front(), changes)) {
+			genCombinations(pushedChannelID, it1, combinedSubstitution);
+		}
+		// roll back changes
+		combinedSubstitution->rollBack(changes);
 	}
 	else {
 		// generate a combination for each buffered message
-		std::list<SubstitutionPtr>::iterator jt;
-		QueryResultBuffer::iterator it1 = it;
-		++it1;
-		
-		// TODO: the number of possible combinations grows
-		// exponentially with number of messages in channels so
-		// it might be good to think about ways of discarding options quicker.
+		// note: the number of possible combinations grows
+		// exponentially with number of messages in channels
+		// TODO: it might be good to think about ways of discarding options quicker.
 		// - one way would be to cache all possible combinations, but could be many of them.
 		//   then only these would need to be iterated here, but additionally pre-computing
 		//   must happen here
-		// - maybe it would be better to pairwise unification in the loop for early breaking
-		//   out of it and avoiding redundancies.
+		QueryResultBuffer::iterator it1 = it; ++it1;
+		// keep track of changes for rolling them back
+		Substitution::Diff changes;
+		// combine each buffered message
 		for(auto &msg : it->second) {
-			// push msg and remember position
-			combination.push_back(msg);
-			jt = combination.end();
-			--jt;
-			// process other channels with `msg`
-			genCombinations(pushedChannelID, it1, combination);
-			// remove again
-			combination.erase(jt);
+			// combine and continue with next channel
+			if(combinedSubstitution->combine(msg, changes)) {
+				genCombinations(pushedChannelID, it1, combinedSubstitution);
+			}
+			// roll back changes, note this also clears the `changes` object
+			// so it can be re-used in the next iteration
+			combinedSubstitution->rollBack(changes);
 		}
 	}
 }
