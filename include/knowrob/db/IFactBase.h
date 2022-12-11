@@ -11,7 +11,6 @@
 
 #include <set>
 
-#include <knowrob/knowrob.h>
 #include <knowrob/db/IDataSource.h>
 #include <knowrob/lang/terms.h>
 

@@ -57,11 +57,10 @@ include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin
 ##############
 
 add_library(query_answering SHARED
-	src/knowrob.cpp
+	src/ThreadPool.cpp
 	src/lang/terms.cpp
 	src/qa/queries.cpp
 	src/qa/Blackboard.cpp
-	src/qa/BlackboardSegment.cpp
 	src/reasoning/ReasonerManager.cpp
 	src/reasoning/prolog/PrologQuery.cpp
 	src/reasoning/prolog/PrologReasoner.cpp

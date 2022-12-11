@@ -15,7 +15,7 @@
 #include <map>
 #include <memory>
 // KnowRob
-#include <knowrob/knowrob.h>
+#include <knowrob/ThreadPool.h>
 #include <knowrob/lang/terms.h>
 #include <knowrob/qa/queries.h>
 #include <knowrob/reasoning/LogicProgramReasoner.h>
@@ -27,18 +27,16 @@ namespace knowrob {
 	class PrologThreadPool : public ThreadPool {
 	public:
 		/**
-		 * A thread pool of worker threads that grows up
-		 * to a maximum number of threads if many parallel requests are incoming.
-		 * @numInitialThreads number of worker threads initially created.
 		 * @maxNumThreads maximum number of worker threads.
 		 */
-		PrologThreadPool(uint32_t numInitialThreads, uint32_t maxNumThreads=0);
+		PrologThreadPool(uint32_t maxNumThreads=0);
 
-		// Override ThreadPool::initializeWorker
-		bool initializeWorker(WorkerThread *worker);
+	protected:
+		// Override ThreadPool
+		bool initializeWorker();
 		
-		// Override ThreadPool::finalizeWorker
-		void finalizeWorker(WorkerThread *worker);
+		// Override ThreadPool
+		void finalizeWorker();
 	};
 
 	/**
@@ -82,7 +80,7 @@ namespace knowrob {
 
 		// Override IReasoner
 		void startQuery(uint32_t queryID,
-			const std::shared_ptr<QueryResultStream> &outputStream,
+			const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 			const std::shared_ptr<Query> &goal);
 		
 		// Override IReasoner
@@ -90,27 +88,31 @@ namespace knowrob {
 			bool isImmediateStopRequested);
 		
 		// Override IReasoner
-		void pushQueryBindings(uint32_t queryID,
+		void pushSubstitution(uint32_t queryID,
 			const SubstitutionPtr &bindings);
+
+	protected:
+		PrologThreadPool threadPool_;
+		std::string initFile_;
 		
 		/** A runner that evaluates a Prolog query.
 		 */
-		class Runner : public IRunner {
+		class Runner : public ThreadPool::Runner {
 		public:
-			Runner(const std::shared_ptr<QueryResultStream> &outputStream,
+			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				const std::shared_ptr<Query> &qa_goal,
 				const SubstitutionPtr &bindings);
 			
-			Runner(const std::shared_ptr<QueryResultStream> &outputStream,
+			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				const std::shared_ptr<Query> &qa_goal);
 			
-			// Override IRunner
+			// Override Runner
 			void stop(bool wait);
-			// Override IRunner
+			// Override Runner
 			void run();
 		
 		protected:
-			std::shared_ptr<QueryResultStream> outputStream_;
+			std::shared_ptr<QueryResultStream::Channel> outputStream_;
 			std::shared_ptr<Query> qa_goal_;
 			PrologQuery pl_goal_;
 			SubstitutionPtr bindings_;
@@ -118,15 +120,10 @@ namespace knowrob {
 		};
 		
 		struct Request {
-			std::shared_ptr<QueryResultStream> outputStream;
+			std::shared_ptr<QueryResultStream::Channel> outputStream;
 			std::shared_ptr<Query> goal;
 			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
 		};
-
-	protected:
-		PrologThreadPool threadPool_;
-		std::string initFile_;
-		
 		std::map<uint32_t, PrologReasoner::Request> activeQueries_;
 	};
 }

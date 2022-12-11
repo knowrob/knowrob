@@ -14,12 +14,11 @@
 #include <memory>
 // KnowRob
 #include <knowrob/qa/queries.h>
-#include <knowrob/qa/BlackboardSegment.h>
 #include <knowrob/reasoning/ReasonerManager.h>
 
 namespace knowrob {
 	/**
-	 * A board where multiple experts can contribute in answering a query.
+	 * A board that manages the evaluation of a query.
 	 */
 	class Blackboard {
 	public:
@@ -27,37 +26,97 @@ namespace knowrob {
 			const std::shared_ptr<ReasonerManager> &reasonerManager,
 			const std::shared_ptr<QueryResultQueue> &outputQueue,
 			const std::shared_ptr<Query> &goal);
+		
 		// copy constructor is not supported for blackboards
 		Blackboard(const Blackboard&) = delete;
+		
 		~Blackboard();
+		
+		/** Starts the query evaluation.
+		 * Can only be called once as streams are invalidated after
+		 * one evaluation.
+		 */
+		void start();
+		
+		/** The input stream of a sub-query.
+		 */
+		class Stream : public QueryResultStream {
+		public:
+			Stream(
+				const std::shared_ptr<IReasoner> &reasoner,
+				const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+				const std::shared_ptr<Query> &goal);
+			~Stream();
+			
+			/** Stop the stream by sending EOS message.
+			 */
+			void stop();
+			
+			/**
+			 * @return true if the stream is opened.
+			 */
+			bool isQueryOpened() const;
+			
+			/**
+			 * @return true if stop has been requested.
+			 */
+			bool hasStopRequest() const;
+		
+		protected:
+			std::shared_ptr<IReasoner> reasoner_;
+			uint32_t queryID_;
+			bool isQueryOpened_;
+			bool hasStopRequest_;
+			mutable std::mutex mutex_;
+			
+			void push(QueryResultPtr &msg);
+			
+			friend class Blackboard;
+		};
+		
+		/** A segment on the blackboard dedicated to a sub-query.
+		 */
+		class Segment {
+		public:
+			Segment(const std::shared_ptr<Blackboard::Stream> &in);
+		
+		protected:
+			std::shared_ptr<Blackboard::Stream> in_;
+			
+			void stop();
+			
+			friend class Blackboard;
+		};
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<QueryResultBroadcaster> inputStream_;
+		std::shared_ptr<QueryResultStream::Channel> inputChannel_;
 		std::shared_ptr<Query> goal_;
 		
-		std::list<std::shared_ptr<BlackboardSegment>> segments_;
+		std::list<std::shared_ptr<Segment>> segments_;
 
 		/** Decompose the blackboard into different segments. */
 		void decompose(
 			const std::shared_ptr<Formula> &phi,
-			std::shared_ptr<QueryResultBroadcast> &in,
-			std::shared_ptr<QueryResultBroadcast> &out);
+			std::shared_ptr<QueryResultBroadcaster> &in,
+			std::shared_ptr<QueryResultBroadcaster> &out);
 		
 		void decomposePredicate(
 			const std::shared_ptr<PredicateFormula> &phi,
-			std::shared_ptr<QueryResultBroadcast> &in,
-			std::shared_ptr<QueryResultBroadcast> &out);
+			std::shared_ptr<QueryResultBroadcaster> &in,
+			std::shared_ptr<QueryResultBroadcaster> &out);
 		
 		void decomposeConjunction(
 			const std::shared_ptr<ConjunctionFormula> &phi,
-			std::shared_ptr<QueryResultBroadcast> &in,
-			std::shared_ptr<QueryResultBroadcast> &out);
+			std::shared_ptr<QueryResultBroadcaster> &in,
+			std::shared_ptr<QueryResultBroadcaster> &out);
 		
 		void decomposeDisjunction(
 			const std::shared_ptr<DisjunctionFormula> &phi,
-			std::shared_ptr<QueryResultBroadcast> &in,
-			std::shared_ptr<QueryResultBroadcast> &out);
+			std::shared_ptr<QueryResultBroadcaster> &in,
+			std::shared_ptr<QueryResultBroadcaster> &out);
 
 		/** Stop all reasoning processes attached to segments. */
 		void stop();

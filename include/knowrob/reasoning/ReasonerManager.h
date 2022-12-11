@@ -13,7 +13,7 @@
 #include <list>
 #include <memory>
 // KnowRob
-#include <knowrob/knowrob.h>
+#include <knowrob/ThreadPool.h>
 #include <knowrob/lang/terms.h>
 #include <knowrob/reasoning/IReasoner.h>
 
@@ -23,7 +23,7 @@ namespace knowrob {
 	 */
 	class ReasonerManager {
 	public:
-		ReasonerManager(uint32_t numInitialThreads, uint32_t maxNumThreads=0);
+		ReasonerManager();
 
 		/** Add a reasoner to this manager.
 		 * @reasoner a reasoner.
@@ -41,15 +41,8 @@ namespace knowrob {
 		 * @return an essemble of reasoner that can handle the predicate
 		 */
 		std::list<std::shared_ptr<IReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
-		
-		/** Pushes a goal for a worker.
-		 * The goal is assigned to a worker thread when one is available.
-		 * @goal the work goal
-		 */
-		void pushGoal(const std::shared_ptr<IRunner> &goal);
 
 	private:
-		ThreadPool threadPool_;
 		std::list<std::shared_ptr<IReasoner>> reasonerPool_;
 	};
 }

@@ -24,12 +24,8 @@ using namespace knowrob;
 //      - support writing facts asserted from PrologEngine into EDB?
 //           i.e. when assert is called in the PrologEngine.
 
-// TODO: make configurable
-#define NUM_INITIAL_THREADS 4
-#define NUM_MAX_THREADS 20
-
 PrologReasoner::PrologReasoner(const std::string &initFile)
-: threadPool_(NUM_INITIAL_THREADS, NUM_MAX_THREADS),
+: threadPool_(std::thread::hardware_concurrency()),
   initFile_(initFile)
 {
 }
@@ -106,21 +102,14 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Q
 	std::shared_ptr<QueryResult> result;
 	
 	// create an output queue for the query
-	std::shared_ptr<QueryResultQueue> outputStream =
-		std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+	auto outputStream = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+	auto outputChannel = outputStream->createChannel();
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
-		new PrologReasoner::Runner(outputStream, goal));
+		new PrologReasoner::Runner(outputChannel, goal));
 	
-	// assign the goal to a worker thread
-	WorkerThread *thread = threadPool_.claim();
-	thread->setGoal(workerGoal);
-	// get first result
-	result = outputStream->pop_front();
-	// worker can stop finding solutions after first has been returned
-	thread->cancelGoal();
-	
-	return result;
+	threadPool_.pushWork(workerGoal);
+	return outputStream->pop_front();
 }
 
 std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::shared_ptr<Query> &goal)
@@ -129,16 +118,16 @@ std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::
 	std::shared_ptr<QueryResult> nextResult;
 	
 	// create an output queue for the query
-	std::shared_ptr<QueryResultQueue> outputStream =
-		std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+	auto outputStream = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
+	auto outputChannel = outputStream->createChannel();
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
-		new PrologReasoner::Runner(outputStream, goal));
+		new PrologReasoner::Runner(outputChannel, goal));
 	
 	// assign the goal to a worker thread
-	threadPool_.pushGoal(workerGoal);
+	threadPool_.pushWork(workerGoal);
 	// get all results
-	while(knowrob::isRunning()) {
+	while(true) {
 		nextResult = outputStream->pop_front();
 		
 		if(QueryResultStream::isEOS(nextResult)) {
@@ -154,7 +143,7 @@ std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::
 
 
 void PrologReasoner::startQuery(uint32_t queryID,
-	const std::shared_ptr<QueryResultStream> &outputStream,
+	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 {
 	// create a request object and store it in a map
@@ -164,7 +153,7 @@ void PrologReasoner::startQuery(uint32_t queryID,
 		std::list<std::shared_ptr<PrologReasoner::Runner>>()
 	};
 	spdlog::debug("query {} started.", queryID);
-	spdlog::debug("query {} readable string is {}.", queryID, goal->toString());
+	spdlog::debug("query {} readable string is {}.", queryID, goal->getHumanReadableString());
 }
 
 void PrologReasoner::finishQuery(uint32_t queryID,
@@ -209,7 +198,7 @@ void PrologReasoner::finishQuery(uint32_t queryID,
 	activeQueries_.erase(it);
 }
 
-void PrologReasoner::pushQueryBindings(uint32_t queryID,
+void PrologReasoner::pushSubstitution(uint32_t queryID,
 	const SubstitutionPtr &bindings)
 {
 	// TODO: what would be the best way to handle different instantiations of
@@ -235,19 +224,16 @@ void PrologReasoner::pushQueryBindings(uint32_t queryID,
 	}
 	PrologReasoner::Request &req = it->second;
 	
-	// create a copy of input query, and apply variable bindings
-	// a copy is needed for parallel processing of different instantiations
-	// of the query.
-	std::shared_ptr<Query> query = std::shared_ptr<Query>(new Query(*req.goal.get()));
-	query->applySubstitution(*bindings.get());
+	// create an instance of the input query by applying the substitution.
+	std::shared_ptr<Query> query = req.goal->applySubstitution(*bindings.get());
 	
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
 		new PrologReasoner::Runner(req.outputStream, query, bindings));
 	req.runner.push_back(workerGoal);
 	
-	// assign the goal to a worker thread.
-	threadPool_.pushGoal(workerGoal);
+	// enqueue work
+	threadPool_.pushWork(workerGoal);
 }
 
 
@@ -255,11 +241,11 @@ void PrologReasoner::pushQueryBindings(uint32_t queryID,
 /********* PrologThreadPool *********/
 /************************************/
 
-PrologThreadPool::PrologThreadPool(uint32_t numInitialThreads, uint32_t maxNumThreads)
-: ThreadPool(numInitialThreads, maxNumThreads)
+PrologThreadPool::PrologThreadPool(uint32_t maxNumThreads)
+: ThreadPool(maxNumThreads)
 {}
 
-bool PrologThreadPool::initializeWorker(WorkerThread *worker)
+bool PrologThreadPool::initializeWorker()
 {
 	// call PL_thread_attach_engine once initially for each worker thread
 	if(!PL_thread_attach_engine(NULL)) {
@@ -269,7 +255,7 @@ bool PrologThreadPool::initializeWorker(WorkerThread *worker)
 	return true;
 }
 
-void PrologThreadPool::finalizeWorker(WorkerThread *worker)
+void PrologThreadPool::finalizeWorker()
 {
 	// destroy the engine previously bound to this thread
 	PL_thread_destroy_engine();
@@ -281,10 +267,10 @@ void PrologThreadPool::finalizeWorker(WorkerThread *worker)
 /************************************/
 
 PrologReasoner::Runner::Runner(
-	const std::shared_ptr<QueryResultStream> &outputStream,
+	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &qa_goal,
 	const SubstitutionPtr &bindings)
-: IRunner(),
+: ThreadPool::Runner(),
   outputStream_(outputStream),
   qa_goal_(qa_goal),
   pl_goal_(qa_goal),
@@ -293,7 +279,7 @@ PrologReasoner::Runner::Runner(
 }
 
 PrologReasoner::Runner::Runner(
-	const std::shared_ptr<QueryResultStream> &outputStream,
+	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &qa_goal)
 : Runner(outputStream, qa_goal, QueryResultStream::bos())
 {
@@ -317,7 +303,7 @@ void PrologReasoner::Runner::run()
 		pl_goal_.pl_arguments());
 	
 	// do the query processing
-	while(knowrob::isRunning()) {
+	while(!hasStopRequest()) {
 		// here is where the main work is done
 		if(!PL_next_solution(qid)) {
 			// read exception, if any
@@ -370,6 +356,6 @@ void PrologReasoner::Runner::stop(bool wait)
 	//       runner received a stop request here?
 	//     - maybe PL_close_query can be called from here? but not sure about it.
 	// wait if requested
-	IRunner::stop(wait);
+	ThreadPool::Runner::stop(wait);
 }
 

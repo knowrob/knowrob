@@ -15,8 +15,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <atomic>
 // KnowRob
-#include <knowrob/knowrob.h>
+#include <knowrob/ThreadPool.h>
 #include <knowrob/lang/terms.h>
 
 namespace knowrob {
@@ -38,153 +39,186 @@ namespace knowrob {
 		// FORALL
 	};
 	
-	/** An expression in the querying language.
+	/** A propositional formula.
+	 * Note that all formulas are immutable.
 	 */
 	class Formula {
 	public:
-		/** Default constructor.
+		/**
 		 * @type the type of the formula.
 		 */
 		Formula(const FormulaType &type);
 		
-		/** Get the formula type.
-		 *
+		/**
 		 * @return the type of this formula.
 		 */
 		FormulaType type() const { return type_; }
 		
-		/** Is this formula atomic?
+		/** Is this formula free of subformulas?
 		 *
 		 * @return true if this formula is atomic.
 		 */
 		bool isAtomic() const;
 		
 		/**
-		 * @return true if this formula contains free variables.
+		 * @return true if this formula contains no free variables.
 		 */
-		virtual bool hasFreeVariable() const = 0;
+		virtual bool isGround() const = 0;
 		
-		/**
+		/** Replaces variables in the formula with terms.
+		 * @sub a substitution mapping.
+		 * @return the created formula.
 		 */
-		virtual void applySubstitution(const Substitution &sub) = 0;
+		virtual std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const = 0;
+		
+		/** Write the formula into an ostream.
+		 */
+		virtual void write(std::ostream& os) const = 0;
 	
 	protected:
-		FormulaType type_;
+		const FormulaType type_;
 	};
 	
-	/** A predicate expression in the querying language.
+	/** A predicate formula.
 	 */
 	class PredicateFormula : public Formula {
 	public:
-		/** Default constructor.
-		 * @predicate a predicate.
+		/**
+		 * @predicate a predicate reference.
 		 */
 		PredicateFormula(const std::shared_ptr<Predicate> &predicate);
 		
-		/** Get the predicate associated to this formula.
-		 *
-		 * @return the predicate.
+		/**
+		 * @return the predicate associated to this formula.
 		 */
 		const std::shared_ptr<Predicate>& predicate() const { return predicate_; }
 		
-		// Override Term
-		bool hasFreeVariable() const;
+		// Override Formula
+		bool isGround() const;
 		
-		// Override Term
-		void applySubstitution(const Substitution &sub);
+		// Override Formula
+		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		
+		// Override Formula
+		void write(std::ostream& os) const;
 		
 	protected:
-		std::shared_ptr<Predicate> predicate_;
+		const std::shared_ptr<Predicate> predicate_;
 	};
 	
-	/** An expression using logical connectives.
+	/** A formula with sub-formulas linked via logical connectives.
 	 */
 	class ConnectiveFormula : public Formula {
 	public:
-		/** Default constructor.
+		/**
 		 * @type the type of the formula.
 		 * @formulae list of connected formulae.
 		 */
-		ConnectiveFormula(const FormulaType &type,
+		ConnectiveFormula(FormulaType type,
 			const std::vector<std::shared_ptr<Formula>> &formulae);
 		
-		/** Get the sub-formulae associated to this formula.
-		 *
-		 * @return the sub-formulae.
+		/**
+		 * @return the sub-formulas associated to this formula.
 		 */
 		const std::vector<std::shared_ptr<Formula>>& formulae() const { return formulae_; }
 		
-		// Override Term
-		bool hasFreeVariable() const;
+		/**
+		 */
+		virtual const char* operator_symbol() const = 0;
 		
-		// Override Term
-		void applySubstitution(const Substitution &sub);
+		// Override Formula
+		bool isGround() const;
+		
+		// Override Formula
+		void write(std::ostream& os) const;
 	
 	protected:
-		std::vector<std::shared_ptr<Formula>> formulae_;
+		const std::vector<std::shared_ptr<Formula>> formulae_;
+		const bool isGround_;
+		
+		ConnectiveFormula(const ConnectiveFormula &other, const Substitution &sub);
+		
+		bool isGround1() const;
+		
+		std::vector<std::shared_ptr<Formula>> applySubstitution1(
+			const std::vector<std::shared_ptr<Formula>> &otherFormulas,
+			const Substitution &sub) const;
 	};
 	
 	/** A conjunctive expression.
 	 */
 	class ConjunctionFormula : public ConnectiveFormula {
 	public:
-		/** Default constructor.
-		 * @formulae list of connected formulae.
+		/**
+		 * @formulae list of sub-formulas.
 		 */
 		ConjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
+		
+		// Override Formula
+		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		
+		// Override ConnectiveFormula
+		const char* operator_symbol() const { return "\u2228"; }
+		
+	protected:
+		ConjunctionFormula(const ConjunctionFormula &other, const Substitution &sub);
 	};
 	
 	/** A disjunctive expression.
 	 */
 	class DisjunctionFormula : public ConnectiveFormula {
 	public:
-		/** Default constructor.
-		 * @formulae list of connected formulae.
+		/**
+		 * @formulae list of sub-formulas.
 		 */
 		DisjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
+		
+		// Override Formula
+		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		
+		// Override ConnectiveFormula
+		const char* operator_symbol() const { return "\u2227"; }
+	
+	protected:
+		DisjunctionFormula(const DisjunctionFormula &other, const Substitution &sub);
 	};
 	
 	/**
-	 * A query that is represented by a Formula.
-	 * The only modification of a query that can be done
-	 * is instantiating a variable to a term.
+	 * A query represented by a propositional formula.
 	 */
 	class Query {
 	public:
-		/** Default constructor.
+		/**
+		 * @formula the formula associated to this query.
 		 */
 		Query(const std::shared_ptr<Formula> &formula);
 		
-		/** Create a simple query about a single predicate.
+		/**
+		 * @predicate the predicate that is queried.
 		 */
 		Query(const std::shared_ptr<Predicate> &predicate);
-		
-		/** Copy constructor.
-		 */
-		Query(const Query &other);
 
-		/** Get the formula associated to this query.
-		 * @return the formula.
+		/**
+		 * @return the formula associated to this query.
 		 */
 		const std::shared_ptr<Formula>& formula() const { return formula_; }
 		
 		/** Replaces variables in the query with terms based on a mapping provided in the argument.
-		 * @todo what happens if a variable cannot be found?
-		 * @todo what is the behavior if this is called more then once? can the previous variable change value again?
 		 * @sub a mapping from variables to terms.
+		 * @return the new query created.
 		 */
-		void applySubstitution(const Substitution &sub);
+		std::shared_ptr<Query> applySubstitution(const Substitution &sub) const;
 		
-		/** Convert the query into a human-readable string.
-		 * @return a string representation of the query.
+		/**
+		 * @return this query as a human readable string.
 		 */
-		std::string toString() const;
+		std::string getHumanReadableString() const;
 
 	protected:
-		std::shared_ptr<Formula> formula_;
+		const std::shared_ptr<Formula> formula_;
 		
 		std::shared_ptr<Formula> copyFormula(const std::shared_ptr<Formula> &phi);
-		std::shared_ptr<Term> copyTerm(const std::shared_ptr<Term> &t);
+		std::shared_ptr<Term>    copyTerm(const std::shared_ptr<Term> &t);
 	};
 	
 	// aliases
@@ -194,15 +228,15 @@ namespace knowrob {
 	class QueryResultBroadcast;
 	
 	/**
-	 * A stream of QueryResult objects that provides an interface
-	 * to push additional objects into the stream.
+	 * A stream of query results.
+	 * The only way to write to a stream is by creating a channel.
 	 */
 	class QueryResultStream {
 	public:
 		QueryResultStream();
 		~QueryResultStream();
 		
-		// copy constructor is not supported for QueryResultStream
+		// copying streams is not allowed
 		QueryResultStream(const QueryResultStream&) = delete;
 		
 		/** Find out if a message indicates the end-of-stream (EOS).
@@ -222,41 +256,67 @@ namespace knowrob {
 		 */
 		static QueryResultPtr& bos();
 		
-		/** Push an additional QueryResult into this stream.
-		 * @msg a QueryResult pointer.
+		/** Close the stream.
+		 * This will push an EOS message, and all future
+		 * attempts to push a non EOS message will cause an error.
+		 * Once closed, a stream cannot be opened again.
+		 * Note that a stream auto-closes once it has received EOS
+		 * messages from all of its input channels.
 		 */
+		void close();
+		
+		/**
+		 * @return true if opened.
+		 **/
+		bool isOpened() const;
+		
+		/** An input channel of a stream.
+		 */
+		class Channel {
+		public:
+			Channel(QueryResultStream *stream);
+			
+			~Channel();
+			
+			/** Push a QueryResult into this channel.
+			 * @msg a QueryResult pointer.
+			 */
+			void push(QueryResultPtr &msg);
+			
+			/** Close the channel.
+			 */
+			void close();
+		
+			/**
+			 * @return true if opened.
+			 **/
+			bool isOpened() const;
+			
+			/**
+			 */
+			uint32_t id() const;
+			
+		protected:
+			QueryResultStream *stream_;
+			std::list<std::shared_ptr<Channel>>::iterator iterator_;
+			std::atomic<bool> isOpened_;
+			
+			friend class QueryResultStream;
+		};
+		
+		/** Create a new stream channel.
+		 * Note that this will generate an error in case the stream
+		 * is closed already.
+		 */
+		std::shared_ptr<QueryResultStream::Channel> createChannel();
+
+	protected:
+		std::list<std::shared_ptr<Channel>> channels_;
+		std::atomic<bool> isOpened_;
+		
+		virtual void push(const Channel &channel, QueryResultPtr &msg);
+		
 		virtual void push(QueryResultPtr &msg) = 0;
-
-	protected:
-		std::list<QueryResultBroadcast*> subscriptions_;
-		
-		friend class QueryResultBroadcast;
-	};
-	
-	/** A broadcaster of QueryResult objects to a list of subscribers.
-	 */
-	class QueryResultBroadcast : public QueryResultStream {
-	public:
-		QueryResultBroadcast();
-		~QueryResultBroadcast();
-		
-		/** Add a subscriber to this broadcast.
-		 * The subscriber will receive input from the broadcast after this call.
-		 * @subscriber a query result stream.
-		 */
-		void addSubscriber(QueryResultStream *subscriber);
-		
-		/** Remove a previously added subscriber.
-		 * @subscriber a query result stream.
-		 */
-		void removeSubscriber(QueryResultStream *subscriber);
-		
-		// Override QueryResultStream::push
-		void push(QueryResultPtr &item);
-
-	protected:
-		std::list<QueryResultStream*> subscribers_;
-		uint32_t numEOSPushed_;
 	};
 	
 	/** A queue of QueryResult objects.
@@ -279,14 +339,69 @@ namespace knowrob {
 		 * @return the front element of the queue.
 		 */
 		QueryResultPtr pop_front();
+
+	protected:
+		std::queue<QueryResultPtr> queue_;
+		std::condition_variable queue_CV_;
+		std::mutex queue_mutex_;
 		
 		// Override QueryResultStream
 		void push(QueryResultPtr &item);
+	};
+	
+	/** A broadcaster of query results.
+	 */
+	class QueryResultBroadcaster : public QueryResultStream {
+	public:
+		QueryResultBroadcaster();
+		
+		/** Add a subscriber to this broadcast.
+		 * The subscriber will receive input from the broadcast after this call.
+		 * @subscriber a query result stream.
+		 */
+		void addSubscriber(const std::shared_ptr<Channel> &subscriber);
+		
+		/** Remove a previously added subscriber.
+		 * @subscriber a query result stream.
+		 */
+		void removeSubscriber(const std::shared_ptr<Channel> &subscriber);
 
 	protected:
-		std::mutex mutex_;
-		std::condition_variable cond_var_;
-		std::queue<QueryResultPtr> queue_;
+		std::list<std::shared_ptr<Channel>> subscribers_;
+		
+		// Override QueryResultStream
+		void push(QueryResultPtr &msg);
+	};
+	
+	// alias
+	using QueryResultBuffer = std::map<uint32_t, std::list<QueryResultPtr>>;
+	
+	/** Combines multiple query result streams.
+	 * This is intended to be used for parallel evaluation of
+	 * subgoals within a query.
+	 */
+	class QueryResultCombiner : public QueryResultBroadcaster {
+	public:
+		QueryResultCombiner();
+	
+	protected:
+		QueryResultBuffer buffer_;
+		
+		// Override QueryResultStream
+		void push(const Channel &channel, QueryResultPtr &msg);
+		
+		void genCombinations(uint32_t pushedChannelID,
+			QueryResultBuffer::iterator it,
+			std::list<SubstitutionPtr> &combination);
+	};
+	
+	/**
+	 */
+	class ParserError : public std::runtime_error {
+	public:
+		/**
+		 */
+		ParserError(const std::string& what = "") : std::runtime_error(what) {}
 	};
 }
 

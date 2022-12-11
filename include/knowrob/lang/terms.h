@@ -14,10 +14,12 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <memory>
+#include <iostream>
 
 namespace knowrob {
-	/** The type of a formula.
+	/** The type of a term.
 	 */
 	enum class TermType {
 		PREDICATE,
@@ -29,32 +31,43 @@ namespace knowrob {
 	};
 	
 	/** An expression in the querying language.
+	 * Terms are used as components of formulas and are recursively
+	 * constructed over the set of constants, variables, function symbols,
+	 * and predicate symbols.
+	 * Note that all terms are immutable.
 	 */
 	class Term {
 	public:
 		/**
 		 * @type the type of this term.
 		 */
-		Term(TermType type)
-		: type_(type) {}
+		Term(TermType type);
 		
-		/** Get the term type.
-		 *
+		/**
 		 * @return the type of this term.
 		 */
 		const TermType& type() const { return type_; }
 		
 		/**
-		 * @return true if this term contains free variables.
+		 * @return true if this term contains no variables.
 		 */
-		virtual bool hasFreeVariable() = 0;
+		virtual bool isGround() const = 0;
+		
+		/**
+		 * @return true if this term is bound and not compound.
+		 */
+		virtual bool isAtomic() const = 0;
+		
+		/** Write the term into an ostream.
+		 */
+		virtual void write(std::ostream& os) const = 0;
+	
 	private:
-		TermType type_;
+		const TermType type_;
 	};
 	
 	/** A variable term.
-	 * Variables may appear free or bound in formulae.
-	 * A variable is identified by a name string in the scope of a formula,
+	 * It is identified by a name string in the scope of a formula,
 	 * i.e. within a formula two variables with the same name are considered to be equal.
 	 */
 	class Variable : public Term {
@@ -62,46 +75,49 @@ namespace knowrob {
 		/**
 		 * @name the name of the variable.
 		 */
-		Variable(const std::string &name)
-		: Term(TermType::VARIABLE), name_(name) {}
+		Variable(const std::string &name);
 		
-		// Override '<' needed for using a Variable as a key in std::map
-		bool operator< (const Variable& other) const
-		{ return (other.name_ < this->name_); }
-		
-		/** Get the name of this variable.
+		/**
+		 * @return the name of this variable.
 		 */
-		const std::string& name() { return name_; }
+		const std::string& name() const { return name_; }
+		
+		// Override '<' operator needed for using a Variable as a key in std::map
+		bool operator< (const Variable& other) const;
 		
 		// Override Term
-		bool hasFreeVariable() { return true; }
+		bool isGround() const { return false; }
+		
+		// Override Term
+		bool isAtomic() const { return false; }
+		
+		// Overload Term
+		void write(std::ostream& os) const;
 
 	protected:
-		std::string name_;
+		const std::string name_;
 	};
 	
 	/** A substitution is a mapping from variables to terms.
-	 * e.g. {x1 -> t1, ..., xn -> tn} represents a substitution of
+	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
 	 * each variable xi with the corresponding term ti.
 	 * Applying a substitution to a term t means to replace occurrences
 	 * of each xi with ti. The resulting term is referred to as an *instance* of t.
 	 */
 	class Substitution {
 	public:
-		/** In FOL, a substitution is seen as a mapping from variables to terms.
-		 * It is often denoted as \sigma
-		 *
+		/**
 		 * @var a variable.
 		 * @term a term.
 		 */
 		void set(const Variable &var, const std::shared_ptr<Term> &term);
 		
-		/** Get the substitution of a variable.
-		 *
-		 * Note: default is to map a variable to itself.
+		/** Map a variable to a term.
+		 * A null pointer reference is returned if the given variable
+		 * is not included in the mapping.
 		 *
 		 * @var a variable.
-		 * @term a term.
+		 * @return a term reference.
 		 */
 		std::shared_ptr<Term> get(const Variable &var) const;
 		
@@ -110,15 +126,20 @@ namespace knowrob {
 		 * @return true if this substitution contains the variable.
 		 */
 		bool contains(const Variable &var) const;
+		
+		/**
+		 */
+		static std::shared_ptr<Substitution> combine(
+			const std::vector<std::shared_ptr<Substitution>> &subs);
 
-	private:
+	protected:
 		std::map<Variable, std::shared_ptr<Term>> mapping_;
 	};
 	
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
 
-	/** A typed data value.
+	/** A typed constant.
 	 */
 	template <typename T> class Constant : public Term {
 	public:
@@ -129,13 +150,22 @@ namespace knowrob {
 		Constant(TermType type, const T &value)
 		: Term(type), value_(value) {}
 		
-		/** Get the typed data value.
-		 * @return the value.
+		// Override '<' operator
+		bool operator< (const Constant<T>& other) const { return value_ < other.value_; }
+		
+		/**
+		 * @return the typed data value.
 		 */
 		const T& value() { return value_; }
 		
 		// Override Term
-		bool hasFreeVariable() { return false; }
+		bool isGround() const { return true; }
+		
+		// Override Term
+		bool isAtomic() const { return true; }
+		
+		// Override Term
+		void write(std::ostream& os) const { os << value_; }
 	
 	protected:
 		const T value_;
@@ -177,13 +207,10 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arity thr arity of this predicate.
 		 */
-		PredicateIndicator(const std::string &functor, unsigned int arity)
-		: functor_(functor), arity_(arity) {};
+		PredicateIndicator(const std::string &functor, unsigned int arity);
 		
-		// Override '<' needed for using a PredicateIndicator as a key in std::map
-		bool operator< (const PredicateIndicator& other) const
-		{ return (other.functor_ < this->functor_) ||
-		         (other.arity_   < this->arity_); }
+		// Override '<' operator
+		bool operator< (const PredicateIndicator& other) const;
 		
 		/** Get the functor of this predicate.
 		 *
@@ -196,9 +223,13 @@ namespace knowrob {
 		 * @return arity of predicate
 		 */
 		unsigned int arity() const { return arity_; }
+		
+		// Override Term
+		void write(std::ostream& os) const;
+	
 	private:
-		std::string functor_;
-		unsigned int arity_;
+		const std::string functor_;
+		const unsigned int arity_;
 	};
 
 	/** A predicate with a functor and a number of term arguments.
@@ -207,31 +238,61 @@ namespace knowrob {
 	public:
 		/**
 		 * @functor the functor name.
-		 * @arguments list of predicate arguments.
+		 * @arguments vector of predicate arguments.
 		 */
-		Predicate(const std::string &functor, const std::vector<std::shared_ptr<Term>> &arguments);
+		Predicate(
+			const std::string &functor,
+			const std::vector<std::shared_ptr<Term>> &arguments);
+		
+		/**
+		 * @indicator a predicate indicator reference.
+		 * @arguments vector of predicate arguments.
+		 */
+		Predicate(
+			const std::shared_ptr<PredicateIndicator> &indicator,
+			const std::vector<std::shared_ptr<Term>> &arguments);
+		
+		/** Substitution constructor.
+		 *
+		 * @other a predicate.
+		 * @sub a mapping from terms to variables.
+		 */
+		Predicate(const Predicate &other, const Substitution &sub);
 
 		/** Get the indicator of this predicate.
 		 * @return the indicator of this predicate.
 		 */
-		const PredicateIndicator& indicator() const { return indicator_; }
+		const PredicateIndicator& indicator() const { return *indicator_.get(); }
 
 		/** Get the arguments of this predicate.
 		 * @return a vector of predicate arguments.
 		 */
 		const std::vector<std::shared_ptr<Term>>& arguments() const { return arguments_; }
 		
-		/**
+		/** Create a copy of this predicate where variables are replaced by terms.
+		 * @sub a mapping from variables to terms.
 		 */
-		void applySubstitution(const Substitution &sub);
+		std::shared_ptr<Predicate> applySubstitution(const Substitution &sub) const;
 		
 		// Override Term
-		bool hasFreeVariable() { return hasFreeVariable_; }
+		bool isGround() const { return isGround_; }
+		
+		// Override Term
+		bool isAtomic() const { return false; }
+		
+		// Override Term
+		void write(std::ostream& os) const;
 	
 	protected:
-		PredicateIndicator indicator_;
-		std::vector<std::shared_ptr<Term>> arguments_;
-		bool hasFreeVariable_;
+		const std::shared_ptr<PredicateIndicator> indicator_;
+		const std::vector<std::shared_ptr<Term>> arguments_;
+		const bool isGround_;
+		
+		bool isGround1() const;
+		
+		std::vector<std::shared_ptr<Term>> applySubstitution(
+			const std::vector<std::shared_ptr<Term>> &in,
+			const Substitution &sub) const;
 	};
 	
 	/*

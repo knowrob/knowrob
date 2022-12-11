@@ -43,13 +43,13 @@ namespace knowrob {
 		/**
 		 */
 		virtual void startQuery(uint32_t queryID,
-			const std::shared_ptr<QueryResultStream> &outputStream,
+			const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 			const std::shared_ptr<Query> &goal) = 0;
 
 		/**
 		 */
-		virtual void pushQueryBindings(uint32_t queryID,
-			const QueryResultPtr &bindings) = 0;
+		virtual void pushSubstitution(uint32_t queryID,
+			const SubstitutionPtr &bindings) = 0;
 		
 		/**
 		 */

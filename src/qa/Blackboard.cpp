@@ -22,21 +22,17 @@ Blackboard::Blackboard(
   goal_(goal)
 {
 	// decompose the reasoning task
-	std::shared_ptr<QueryResultBroadcast> in =
-		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
-	std::shared_ptr<QueryResultBroadcast> out =
-		std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
-	out->addSubscriber(outputQueue_.get());
-	decompose(goal->formula(), in, out);
+	inputStream_ = std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
+	inputChannel_ = inputStream_->createChannel();
+	std::shared_ptr<QueryResultBroadcaster> out =
+		std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
 	
-	// push BOS (empty substitution) followed by EOS message to input stream
-	in->push(QueryResultStream::bos());
-	in->push(QueryResultStream::eos());
+	// create a channel of outputQueue_, and add it as subscriber
+	auto queueChannel = outputQueue_->createChannel();
+	out->addSubscriber(queueChannel);
 	
-	// start the reasoning
-	for(std::shared_ptr<BlackboardSegment> &segment : segments_) {
-		segment->start();
-	}
+	// decompose into atomic formulas
+	decompose(goal->formula(), inputStream_, out);
 }
 
 Blackboard::~Blackboard()
@@ -44,9 +40,23 @@ Blackboard::~Blackboard()
 	stop();
 }
 
+void Blackboard::start()
+{
+	// push empty message into in stream
+	inputChannel_->push(QueryResultStream::bos());
+	inputChannel_->close();
+}
+
+void Blackboard::stop()
+{
+	for(auto &segment : segments_) {
+		segment->stop();
+	}
+}
+
 void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
-		std::shared_ptr<QueryResultBroadcast> &in,
-		std::shared_ptr<QueryResultBroadcast> &out)
+		std::shared_ptr<QueryResultBroadcaster> &in,
+		std::shared_ptr<QueryResultBroadcaster> &out)
 {
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
@@ -68,18 +78,20 @@ void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
 		break;
 	}
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}' in query.", phi->type());
+		spdlog::warn("Ignoring unknown formula type '{}'.", phi->type());
 		break;
 	}
 }
 
 void Blackboard::decomposePredicate(
 		const std::shared_ptr<PredicateFormula> &phi,
-		std::shared_ptr<QueryResultBroadcast> &in,
-		std::shared_ptr<QueryResultBroadcast> &out)
+		std::shared_ptr<QueryResultBroadcaster> &in,
+		std::shared_ptr<QueryResultBroadcaster> &out)
 {
-	std::shared_ptr<QueryResultQueue> reasonerIn;
-	std::shared_ptr<QueryResultBroadcast> reasonerOut;
+	std::shared_ptr<Blackboard::Stream> reasonerIn;
+	std::shared_ptr<Blackboard::Segment> segment;
+	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
+	
 	// get ensemble of reasoner
 	std::list<std::shared_ptr<IReasoner>> ensemble =
 		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
@@ -87,35 +99,27 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<Query> subq = std::shared_ptr<Query>(new Query(phi));
 
 	for(std::shared_ptr<IReasoner> &r : ensemble) {
-		// create IO streams
-		// TODO: reasonerIn could be limited to substitutions of variables that actually
-		// appear in subq! this would relax data load into the reasoner, and
-		// it would allow to avoid redundant calls, by keeping a cache of
-		// already evaluated instantiations. It would also require an additional step
-		// to combine output of reasoner with input that was not passed to it via the input stream.
-		reasonerIn = std::shared_ptr<QueryResultQueue>(new QueryResultQueue);
-		reasonerOut = std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
-		// manage subscriptions needed for the message broadcasting
-		in->addSubscriber(reasonerIn.get());
-		reasonerOut->addSubscriber(out.get());
-		// create the blackboard segment
-		segments_.push_back(std::shared_ptr<BlackboardSegment>(new BlackboardSegment(
-			reasonerManager_,
-			ReasoningTask(r,reasonerIn,reasonerOut,subq)
-		)));
+		// create IO channels
+		reasonerOutChan = out->createChannel();
+		reasonerIn = std::shared_ptr<Blackboard::Stream>(
+			new Blackboard::Stream(r,reasonerOutChan,subq));
+		reasonerInChan = reasonerIn->createChannel();
+		in->addSubscriber(reasonerInChan);
+		// create a new segment
+		segments_.push_back(std::shared_ptr<Segment>(new Segment(reasonerIn)));
 	}
 }
 
 void Blackboard::decomposeConjunction(
 		const std::shared_ptr<ConjunctionFormula> &phi,
-		std::shared_ptr<QueryResultBroadcast> &firstQueue,
-		std::shared_ptr<QueryResultBroadcast> &lastQueue)
+		std::shared_ptr<QueryResultBroadcaster> &firstQueue,
+		std::shared_ptr<QueryResultBroadcaster> &lastQueue)
 {
-	std::shared_ptr<QueryResultBroadcast> in = firstQueue;
-	std::shared_ptr<QueryResultBroadcast> out;
+	std::shared_ptr<QueryResultBroadcaster> in = firstQueue;
+	std::shared_ptr<QueryResultBroadcaster> out;
 	
 	// TODO: compute a dependency relation between atomic formulae of a query.
-	// atomic formulae that are independent can be evaluated in concurrently.
+	// atomic formulae that are independent can be evaluated concurrently.
 	
 	// add blackboard segments for each predicate in the conjunction
 	int counter = 1;
@@ -125,7 +129,7 @@ void Blackboard::decomposeConjunction(
 			out = lastQueue;
 		}
 		else {
-			out = std::shared_ptr<QueryResultBroadcast>(new QueryResultBroadcast);
+			out = std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
 		}
 		decompose(psi, in, out);
 		// output queue of this predicate is used as input for the next one
@@ -136,20 +140,88 @@ void Blackboard::decomposeConjunction(
 
 void Blackboard::decomposeDisjunction(
 		const std::shared_ptr<DisjunctionFormula> &phi,
-		std::shared_ptr<QueryResultBroadcast> &in,
-		std::shared_ptr<QueryResultBroadcast> &out)
+		std::shared_ptr<QueryResultBroadcaster> &in,
+		std::shared_ptr<QueryResultBroadcaster> &out)
 {
 	// add blackboard segments for each formula in the disjunction.
-	// all having the same input and out queue.
+	// all having the same input and out stream.
 	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
 		decompose(psi, in, out);
 	}
 }
 
-void Blackboard::stop()
+
+Blackboard::Stream::Stream(
+	const std::shared_ptr<IReasoner> &reasoner,
+	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+	const std::shared_ptr<Query> &goal)
+: QueryResultStream(),
+  queryID_(reinterpret_cast<std::uintptr_t>(this)),
+  reasoner_(reasoner),
+  isQueryOpened_(true),
+  hasStopRequest_(false)
 {
-	for(std::shared_ptr<BlackboardSegment>& segment : segments_) {
-		segment->stop();
+	// tell the reasoner that a new request has been made
+	reasoner_->startQuery(queryID_, outputStream, goal);
+}
+
+Blackboard::Stream::~Stream()
+{
+	stop();
+}
+
+void Blackboard::Stream::push(QueryResultPtr &msg)
+{
+	if(QueryResultStream::isEOS(msg)) {
+		// tell the reasoner to finish up.
+		// if hasStopRequest_=true it means that the reasoner is requested
+		// to immediately shutdown. however, note that not all reasoner
+		// implementations may support this and may take longer to stop anyways.
+		if(isQueryOpened()) {
+			reasoner_->finishQuery(queryID_, hasStopRequest());
+			{
+				std::lock_guard<std::mutex> lock(mutex_);
+				isQueryOpened_ = false;
+			}
+		}
 	}
+	else if(!isQueryOpened()) {
+		spdlog::warn("ignoring attempt to write to a closed stream.");
+	}
+	else {
+		// push substitution to reasoner
+		reasoner_->pushSubstitution(queryID_, msg);
+	}
+}
+
+bool Blackboard::Stream::isQueryOpened() const
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	return isQueryOpened_;
+}
+
+bool Blackboard::Stream::hasStopRequest() const
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	return hasStopRequest_;
+}
+
+void Blackboard::Stream::stop()
+{
+	{
+		std::lock_guard<std::mutex> lock(mutex_);
+		hasStopRequest_ = true;
+	}
+	close();
+}
+
+
+Blackboard::Segment::Segment(const std::shared_ptr<Blackboard::Stream> &in)
+: in_(in)
+{}
+
+void Blackboard::Segment::stop()
+{
+	in_->stop();
 }
 

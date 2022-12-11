@@ -10,14 +10,8 @@
 
 using namespace knowrob;
 
-ReasonerManager::ReasonerManager(uint32_t numInitialThreads, uint32_t maxNumThreads)
-: threadPool_(numInitialThreads, maxNumThreads)
+ReasonerManager::ReasonerManager()
 {}
-
-void ReasonerManager::pushGoal(const std::shared_ptr<IRunner> &goal)
-{
-	threadPool_.pushGoal(goal);
-}
 
 void ReasonerManager::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
 {
