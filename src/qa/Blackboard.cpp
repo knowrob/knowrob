@@ -78,7 +78,7 @@ void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
 		break;
 	}
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}'.", phi->type());
+		spdlog::warn("Ignoring unknown formula type '{}'.", (int)phi->type());
 		break;
 	}
 }

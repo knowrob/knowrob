@@ -346,7 +346,7 @@ bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term>
 		case TermType::BOTTOM:
 			return t1->isBottom();
 		default:
-			spdlog::warn("Ignoring unknown term type '{}'.", t0->type());
+			spdlog::warn("Ignoring unknown term type '{}'.", (int)t0->type());
 			return false;
 		}
 	}
