@@ -83,7 +83,7 @@ void PrologQuery::createPrologPredicate()
 		pl_predicate_ = semicolon_predicate;
 		break;
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}'.", qa_query_->formula()->type());
+		spdlog::warn("Ignoring unknown formula type '{}'.", (int)qa_query_->formula()->type());
 		break;
 	}
 	// make pl_arguments_ point to first argument of pl_query_
@@ -117,7 +117,7 @@ void PrologQuery::constructPrologTerm(
 			semicolon_functor, pl_term);
 		break;
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}' in query.", phi->type());
+		spdlog::warn("Ignoring unknown formula type '{}' in query.", (int)phi->type());
 		break;
 	}
 }
@@ -201,7 +201,7 @@ void PrologQuery::constructPrologTerm(
 		}
 		break;
 	default:
-		spdlog::warn("Ignoring unknown term type '{}' in query.", qa_term->type());
+		spdlog::warn("Ignoring unknown term type '{}' in query.", (int)qa_term->type());
 		break;
 	}
 }
