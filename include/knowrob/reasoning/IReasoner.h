@@ -49,7 +49,7 @@ namespace knowrob {
 		/**
 		 */
 		virtual void pushSubstitution(uint32_t queryID,
-			const SubstitutionPtr &bindings) = 0;
+			const SubstitutionPtr &substitution) = 0;
 		
 		/**
 		 */

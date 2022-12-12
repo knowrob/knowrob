@@ -23,6 +23,8 @@
 
 namespace knowrob {
 	/** A pool of threads with attached Prolog engines.
+	 * Prolog threads have their own stacks and only share the Prolog heap:
+	 * predicates, records, flags and other global non-backtrackable data.
 	 */
 	class PrologThreadPool : public ThreadPool {
 	public:

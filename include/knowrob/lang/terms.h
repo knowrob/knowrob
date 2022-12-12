@@ -52,10 +52,12 @@ namespace knowrob {
 		const TermType& type() const { return type_; }
 		
 		/**
+		 * @return true if this is the top concept.
 		 */
 		bool isTop() const;
 		
 		/**
+		 * @return true if this is the bottom concept.
 		 */
 		bool isBottom() const;
 		
@@ -77,7 +79,7 @@ namespace knowrob {
 		const TermType type_;
 	};
 	
-	/**
+	/** A term with a fixed truth value being `true`.
 	 */
 	class TopTerm : public Term {
 	public:
@@ -96,7 +98,7 @@ namespace knowrob {
 		TopTerm() : Term(TermType::TOP) {};
 	};
 	
-	/**
+	/** A term with a fixed truth value being `false`.
 	 */
 	class BottomTerm : public Term {
 	public:
@@ -352,27 +354,34 @@ namespace knowrob {
 		 */
 		bool contains(const Variable &var) const;
 		
-		/**
+		/** Combine with another substitution.
+		 * If both substitute the same variable to some term, then
+		 * the combination maps to the unification of these terms,
+		 * if one exists.
+		 * @other another substitution
+		 * @changes the diff of the substitute operation
+		 * @return true if the operation succeeded.
 		 */
-		void erase(const Variable &var);
+		bool combine(const std::shared_ptr<Substitution> &other, Substitution::Diff &changes);
 		
-		/**
-		 */
-		bool combine(const std::shared_ptr<Substitution> &subs, Substitution::Diff &changes);
-		
-		/**
+		/** Reverts changes made to a substitution.
+		 * @changes the diff of a substitute operation
 		 */
 		void rollBack(Substitution::Diff &changes);
 		
-		/**
+		/** An atomic operation performed on a substitution.
 		 */
 		class Operation {
 		public:
+			/** Roll back this operation.
+			 * @sub a substitution.
+			 */
 			virtual void rollBack(Substitution &sub) = 0;
 		};
+
+	protected:
+		std::map<Variable, std::shared_ptr<Term>> mapping_;
 		
-		/**
-		 */
 		class Added : public Operation {
 		public:
 			Added(const Substitution::Iterator &it);
@@ -382,8 +391,6 @@ namespace knowrob {
 			Substitution::Iterator it_;
 		};
 		
-		/**
-		 */
 		class Replaced : public Operation {
 		public:
 			Replaced(const Substitution::Iterator &it, const std::shared_ptr<Term> &replacedInstance);
@@ -393,20 +400,29 @@ namespace knowrob {
 			Substitution::Iterator it_;
 			const std::shared_ptr<Term> replacedInstance_;
 		};
-
-	protected:
-		std::map<Variable, std::shared_ptr<Term>> mapping_;
 	};
 	
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
 	
+	/** A substitution that unifies some terms.
+	 */
 	class Unifier : public Substitution {
 	public:
+		/** Compute a unifier of two terms.
+		 * @t0 a term.
+		 * @t1 a term.
+		 */
 		Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
 		
+		/**
+		 * @return true is a unifier exists.
+		 */
 		bool exists() const { return exists_; }
 		
+		/** Applies the unifier to one of the unified terms.
+		 * @return an instance of the unified terms.
+		 */
 		std::shared_ptr<Term> apply();
 	
 	protected:
@@ -415,6 +431,7 @@ namespace knowrob {
 		bool exists_;
 		
 		bool unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
+		bool unify(const Variable &var, const std::shared_ptr<Term> &t);
 	};
 }
 

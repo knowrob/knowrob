@@ -123,6 +123,7 @@ namespace knowrob {
 		const std::vector<std::shared_ptr<Formula>>& formulae() const { return formulae_; }
 		
 		/**
+		 * @return symbol string of the operator
 		 */
 		virtual const char* operator_symbol() const = 0;
 		
@@ -245,12 +246,12 @@ namespace knowrob {
 		 */
 		static bool isEOS(const QueryResultPtr &msg);
 		
-		/** Get the "end-of-stream" (eos) message. 
+		/** Get the end-of-stream (eos) message. 
 		 * @return the eos message.
 		 */
 		static QueryResultPtr& eos();
 		
-		/** Get the "begin-of-stream" (bos) message.
+		/** Get the begin-of-stream (bos) message.
 		 * This is basically an empty substitution mapping.
 		 * @return the bos message.
 		 */
@@ -267,7 +268,7 @@ namespace knowrob {
 		
 		/**
 		 * @return true if opened.
-		 **/
+		 */
 		bool isOpened() const;
 		
 		/** An input channel of a stream.
@@ -289,10 +290,11 @@ namespace knowrob {
 		
 			/**
 			 * @return true if opened.
-			 **/
+			 */
 			bool isOpened() const;
 			
 			/**
+			 * @return the id of this channel
 			 */
 			uint32_t id() const;
 			
@@ -307,6 +309,7 @@ namespace knowrob {
 		/** Create a new stream channel.
 		 * Note that this will generate an error in case the stream
 		 * is closed already.
+		 * @return a new stream channel
 		 */
 		std::shared_ptr<QueryResultStream::Channel> createChannel();
 

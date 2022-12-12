@@ -211,11 +211,6 @@ bool Substitution::contains(const Variable &var) const
 	return mapping_.find(var) != mapping_.end();
 }
 
-void Substitution::erase(const Variable &var)
-{
-	mapping_.erase(var);
-}
-
 std::shared_ptr<Term> Substitution::get(const Variable &var) const
 {
 	static const std::shared_ptr<Term> null_term;
@@ -246,7 +241,7 @@ bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitut
 			// t0 and t1 are not syntactically equal -> compute a unifier
 			Unifier sigma(t0,t1);
 			if(sigma.exists()) {
-				// unifier exists
+				// a unifier exists
 				it->second = sigma.apply();
 				changes.push(std::shared_ptr<Operation>(new Replaced(it, t0)));
 			}
@@ -306,21 +301,13 @@ Unifier::Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t
 
 bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1)
 {
-	// TODO: use fast equals test before computing the unifier?
-	/*
-	if(t0->equals(t1)) {
-		// terms are already equal
-		return true;
-	}
-	*/
-	
 	if(t1->type() == TermType::VARIABLE) {
-		set(*((Variable*)t1.get()), t0);
+		unify(*((Variable*)t1.get()), t0);
 	}
 	else {
 		switch(t0->type()) {
 		case TermType::VARIABLE:
-			set(*((Variable*)t0.get()), t1);
+			unify(*((Variable*)t0.get()), t1);
 			break;
 		case TermType::PREDICATE: {
 			// predicates only unify with other predicates
@@ -364,6 +351,15 @@ bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term>
 		}
 	}
 	
+	return true;
+}
+
+bool Unifier::unify(const Variable &var, const std::shared_ptr<Term> &t)
+{
+	// TODO: fail if var *occurs* in t (occurs check)
+	//    - requirement: store set of variables with each term
+	//      to avoid redundant computation, and to enable quick occurs test.
+	set(var, t);
 	return true;
 }
 
