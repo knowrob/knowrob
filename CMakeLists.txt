@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
+set (CMAKE_CXX_STANDARD 11)
+
 project(knowrob)
 
 set(SOMA_VERSION "current")
@@ -17,7 +19,8 @@ add_message_files(FILES
 generate_messages(DEPENDENCIES geometry_msgs)
 
 find_package(Eigen3 REQUIRED)
-find_package(PkgConfig)
+find_package(PkgConfig REQUIRED)
+find_package(spdlog REQUIRED)
 
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
@@ -48,6 +51,30 @@ install_ontology(
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+
+##############
+#### QUERY ANSWERING
+##############
+
+add_library(query_answering SHARED
+	src/ThreadPool.cpp
+	src/lang/terms.cpp
+	src/qa/queries.cpp
+	src/qa/Blackboard.cpp
+	src/reasoning/ReasonerManager.cpp
+	src/reasoning/prolog/PrologQuery.cpp
+	src/reasoning/prolog/PrologReasoner.cpp
+)
+target_link_libraries(query_answering
+	${SWIPL_LIBRARIES}
+	${spdlog_LIBRARIES}
+	${catkin_LIBRARIES})
+add_dependencies(query_answering
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS})
+
+##############
+##############
 
 add_library(kb_algebra SHARED src/utility/algebra.cpp)
 target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
