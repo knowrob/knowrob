@@ -19,42 +19,18 @@ Term::Term(TermType type)
 
 bool Term::isBottom() const
 {
-	return type_ == TermType::BOTTOM;
+	return (this == BottomTerm::get().get());
 }
 
 bool Term::isTop() const
 {
-	return type_ == TermType::TOP;
+	return (this == TopTerm::get().get());
 }
 
 std::ostream& operator<<(std::ostream& os, const Term& t)
 {
 	t.write(os);
 	return os;
-}
-
-
-const std::shared_ptr<TopTerm>& TopTerm::get()
-{
-	static auto singleton = std::shared_ptr<TopTerm>(new TopTerm);
-	return singleton;
-}
-
-void TopTerm::write(std::ostream& os) const
-{
-	os << "\u22A4";
-}
-
-
-const std::shared_ptr<BottomTerm>& BottomTerm::get()
-{
-	static auto singleton = std::shared_ptr<BottomTerm>(new BottomTerm);
-	return singleton;
-}
-
-void BottomTerm::write(std::ostream& os) const
-{
-	os << "\u22A5";
 }
 
 
@@ -70,13 +46,18 @@ bool Variable::operator< (const Variable& other) const
 
 void Variable::write(std::ostream& os) const
 {
-	os << "var" << '(' << name_ << ')';
+	os << name_;
 }
 
 
 StringTerm::StringTerm(const std::string &v)
 : Constant(TermType::STRING, v)
 {}
+
+void StringTerm::write(std::ostream& os) const
+{
+	os << '\'' << value_ << '\'';
+}
 
 DoubleTerm::DoubleTerm(const double &v)
 : Constant(TermType::DOUBLE, v)
@@ -89,6 +70,47 @@ LongTerm::LongTerm(const long &v)
 Integer32Term::Integer32Term(const int32_t &v)
 : Constant(TermType::INT32, v)
 {}
+
+
+ListTerm::ListTerm(const std::vector<std::shared_ptr<Term>> &elements)
+: Term(TermType::LIST),
+  elements_(elements),
+  isGround_(isGround1())
+{
+}
+
+bool ListTerm::isGround1() const
+{
+	for(const auto &x : elements_) {
+		if(!x->isGround()) return false;
+	}
+	return true;
+}
+		
+std::shared_ptr<ListTerm> ListTerm::nil()
+{
+	static std::shared_ptr<ListTerm> x(new ListTerm(
+		std::vector<std::shared_ptr<Term>>(0)));
+	return x;
+}
+
+bool ListTerm::isNIL() const
+{
+	return elements_.empty();
+}
+
+void ListTerm::write(std::ostream& os) const
+{
+	os << '[';
+	for(uint32_t i=0; i<elements_.size(); i++) {
+		Term *t = elements_[i].get();
+		os << (*t);
+		if(i+1 < elements_.size()) {
+			os << ',' << ' ';
+		}
+	}
+	os << ']';
+}
 
 
 PredicateIndicator::PredicateIndicator(const std::string &functor, unsigned int arity)
@@ -129,11 +151,7 @@ Predicate::Predicate(const Predicate &other, const Substitution &sub)
 Predicate::Predicate(
 	const std::string &functor,
 	const std::vector<std::shared_ptr<Term>> &arguments)
-: Predicate(
-	std::shared_ptr<PredicateIndicator>(
-		new PredicateIndicator(functor, arguments.size())
-	),
-	arguments)
+: Predicate(std::make_shared<PredicateIndicator>(functor, arguments.size()), arguments)
 {
 }
 
@@ -184,26 +202,80 @@ std::vector<std::shared_ptr<Term>> Predicate::applySubstitution(
 
 std::shared_ptr<Predicate> Predicate::applySubstitution(const Substitution &sub) const
 {
-	return std::shared_ptr<Predicate>(new Predicate(*this, sub));
+	return std::make_shared<Predicate>(*this, sub);
 }
 
 void Predicate::write(std::ostream& os) const
 {
-	os << indicator_->functor() << '(';
-	for(uint32_t i=0; i<arguments_.size(); i++) {
-		Term *t = arguments_[i].get();
-		os << (*t);
-		if(i+1 < arguments_.size()) {
-			os << ',' << ' ';
+	os << indicator_->functor();
+	if(arguments_.size()>0) {
+		os << '(';
+		for(uint32_t i=0; i<arguments_.size(); i++) {
+			Term *t = arguments_[i].get();
+			os << (*t);
+			if(i+1 < arguments_.size()) {
+				os << ',' << ' ';
+			}
 		}
+		os << ')';
 	}
-	os << ')';
 }
 
 
+const std::shared_ptr<TopTerm>& TopTerm::get()
+{
+	static std::shared_ptr<TopTerm> singleton(new TopTerm);
+	return singleton;
+}
+
+TopTerm::TopTerm()
+: Predicate("true", std::vector<std::shared_ptr<Term>>())
+{
+}
+
+void TopTerm::write(std::ostream& os) const
+{
+	os << "\u22A4";
+}
+
+
+const std::shared_ptr<BottomTerm>& BottomTerm::get()
+{
+	static std::shared_ptr<BottomTerm> singleton(new BottomTerm);
+	return singleton;
+}
+
+BottomTerm::BottomTerm()
+: Predicate("false", std::vector<std::shared_ptr<Term>>())
+{
+}
+
+void BottomTerm::write(std::ostream& os) const
+{
+	os << "\u22A5";
+}
+
+
+std::string Substitution::toString() const
+{
+	std::ostringstream ss;
+	ss << '{';
+	
+	uint32_t i=0;
+	for(const auto &pair : mapping_) {
+		ss << pair.first.name() << ':' << ' ' << pair.second->toString();
+		if(++i < mapping_.size()) {
+			ss << ',';
+		}
+	}
+	
+	ss << '}';
+	return ss.str();
+}
+
 void Substitution::set(const Variable &var, const std::shared_ptr<Term> &term)
 {
-	mapping_[var] = term;
+	mapping_.insert(std::pair<Variable, std::shared_ptr<Term>>(var, term));
 }
 
 bool Substitution::contains(const Variable &var) const
@@ -211,7 +283,7 @@ bool Substitution::contains(const Variable &var) const
 	return mapping_.find(var) != mapping_.end();
 }
 
-std::shared_ptr<Term> Substitution::get(const Variable &var) const
+const std::shared_ptr<Term>& Substitution::get(const Variable &var) const
 {
 	static const std::shared_ptr<Term> null_term;
 	
@@ -341,10 +413,6 @@ bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term>
 		case TermType::LONG:
 			return t1->type()==TermType::LONG &&
 				((LongTerm*)t0.get())->value()==((LongTerm*)t1.get())->value();
-		case TermType::TOP:
-			return t1->isTop();
-		case TermType::BOTTOM:
-			return t1->isBottom();
 		default:
 			spdlog::warn("Ignoring unknown term type '{}'.", (int)t0->type());
 			return false;

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
+set (CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 set (CMAKE_CXX_STANDARD 11)
 
 project(knowrob)
@@ -58,6 +59,15 @@ target_link_libraries(query_answering
 #add_dependencies(query_answering
 #	${${PROJECT_NAME}_EXPORTED_TARGETS}
 #)
+
+add_executable(test_qa
+	test/test_qa.cpp
+)
+target_link_libraries(test_qa
+	spdlog::spdlog
+	${SWIPL_LIBRARIES}
+	query_answering
+)
 
 ##############
 #### DB

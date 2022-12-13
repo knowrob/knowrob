@@ -26,6 +26,10 @@ ThreadPool::ThreadPool(uint32_t maxNumThreads)
 ThreadPool::~ThreadPool()
 {
 	for(Worker *t : workerThreads_) {
+		t->hasTerminateRequest_ = true;
+	}
+	workCV_.notify_all();
+	for(Worker *t : workerThreads_) {
 		delete t;
 	}
 	workerThreads_.clear();
@@ -58,7 +62,7 @@ std::shared_ptr<ThreadPool::Runner> ThreadPool::popWork()
 bool ThreadPool::hasWork() const
 {
 	std::lock_guard<std::mutex> scoped_lock(workMutex_);
-	return workQueue_.empty();
+	return !workQueue_.empty();
 }
 
 
@@ -86,20 +90,28 @@ void ThreadPool::Worker::run()
 	spdlog::debug("WorkerThread {} started.", threadID.c_str());
 	
 	// let the pool do some thread specific initialization
-	if(threadPool_->initializeWorker()) {
-		spdlog::debug("WorkerThread {} initialization failed.", threadID.c_str());
+	if(!threadPool_->initializeWorker()) {
+		spdlog::error("WorkerThread {} initialization failed.", threadID.c_str());
+		isTerminated_ = true;
+		// FIXME: remove from worker pool
 		return;
 	}
+	spdlog::debug("WorkerThread {} initialized.", threadID.c_str());
 	
 	// loop until the application exits
 	while(!hasTerminateRequest_) {
 		// wait for a claim
 		if(!threadPool_->hasWork()) {
+			spdlog::debug("WorkerThread {} going to sleep.", threadID.c_str());
 			std::unique_lock<std::mutex> lk(threadM_);
 			threadPool_->workCV_.wait(lk, [this]{
 				return hasTerminateRequest_ || threadPool_->hasWork();
 			});
-			if(hasTerminateRequest_) break;
+			spdlog::debug("WorkerThread {} woke up.", threadID.c_str());
+			if(hasTerminateRequest_) {
+				spdlog::debug("WorkerThread {} has terminate request.", threadID.c_str());
+				break;
+			}
 		}
 		
 		// pop work from queue
@@ -129,7 +141,7 @@ void ThreadPool::Worker::run()
 
 
 ThreadPool::Runner::Runner()
-: isRunning_(false),
+: isTerminated_(false),
   hasStopRequest_(false)
 {}
 
@@ -138,27 +150,20 @@ ThreadPool::Runner::~Runner()
 	stop(true);
 }
 
-
-bool ThreadPool::Runner::hasStopRequest()
-{
-	return hasStopRequest_;
-}
-
 void ThreadPool::Runner::join()
 {
-	if(!isRunning_) return;
-	std::unique_lock<std::mutex> lk(mutex_);
-	finishedCV_.wait(lk, [this]{ return !isRunning_; });
+	if(!isTerminated()) {
+		std::unique_lock<std::mutex> lk(mutex_);
+		finishedCV_.wait(lk, [this]{ return isTerminated(); });
+	}
 }
 
 void ThreadPool::Runner::runInternal()
 {
-	// toggle isRunning flag on
-	isRunning_ = true;
 	// do the work
 	run();
-	// toggle isRunning flag off, and notify everybody waiting in Runner::stop()
-	isRunning_ = false;
+	// toggle flag
+	isTerminated_ = true;
 	finishedCV_.notify_all();
 }
 
@@ -166,7 +171,7 @@ void ThreadPool::Runner::stop(bool wait)
 {
 	// toggle stop request flag on
 	hasStopRequest_ = true;
-	if(!isRunning_) return;
+	if(isTerminated()) return;
 	// wait for the runner to be finished if requested
 	if(wait) {
 		join();

@@ -29,17 +29,6 @@ namespace knowrob {
 		 * @query a Query object.
 		 */
 		PrologQuery(const std::shared_ptr<Query> &query);
-		/**
-		 * @queryString a string encoded in Prolog syntax.
-		 */
-		PrologQuery(const std::string &queryString);
-		/**
-		 * @plQuery a Prolog term.
-		 */
-		PrologQuery(const term_t &plQuery);
-		
-		// copy not supported
-		PrologQuery(const PrologQuery&) = delete;
 		
 		~PrologQuery();
 
@@ -75,6 +64,9 @@ namespace knowrob {
 		 */
 		static std::shared_ptr<Term> constructTerm(const term_t &t);
 		
+		static std::shared_ptr<Query> toQuery(const std::shared_ptr<Term> &t);
+		static std::shared_ptr<Formula> toFormula(const std::shared_ptr<Term> &t);
+		
 	protected:
 		std::shared_ptr<Query> qa_query_;
 		
@@ -83,14 +75,18 @@ namespace knowrob {
 		term_t pl_arguments_;
 		std::map<std::string, term_t> vars_;
 
-		void constructPrologTerm(const std::shared_ptr<Term>& qa_term, term_t &pl_term);
-		void constructPrologTerm(const std::shared_ptr<Formula>& phi, term_t &pl_term);
-		void constructPrologTerm(ConnectiveFormula *phi, functor_t &pl_functor, term_t &pl_term);
+		bool constructPrologTerm(const std::shared_ptr<Term>& qa_term, term_t &pl_term);
+		bool constructPrologTerm(const std::shared_ptr<Formula>& phi, term_t &pl_term);
+		bool constructPrologTerm(ConnectiveFormula *phi, functor_t &pl_functor, term_t &pl_term);
 		
 		static std::shared_ptr<Term> constructPredicate(const term_t &t);
-		static std::shared_ptr<Formula> constructFormula(const term_t &t);
+		
+		static std::shared_ptr<Formula> toFormula1(const std::shared_ptr<Predicate> &p);
 		
 		void createPrologPredicate();
+		
+		// copy not supported
+		PrologQuery(const PrologQuery&) = delete;
 	};
 }
 

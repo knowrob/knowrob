@@ -237,9 +237,6 @@ namespace knowrob {
 		QueryResultStream();
 		~QueryResultStream();
 		
-		// copying streams is not allowed
-		QueryResultStream(const QueryResultStream&) = delete;
-		
 		/** Find out if a message indicates the end-of-stream (EOS).
 		 * @msg a QueryResult pointer.
 		 * @return true if the result indicates EOS.
@@ -304,6 +301,8 @@ namespace knowrob {
 			std::atomic<bool> isOpened_;
 			
 			friend class QueryResultStream;
+			
+			Channel(const Channel&) = delete;
 		};
 		
 		/** Create a new stream channel.
@@ -320,6 +319,9 @@ namespace knowrob {
 		virtual void push(const Channel &channel, const QueryResultPtr &msg);
 		
 		virtual void push(const QueryResultPtr &msg) = 0;
+		
+		// copying streams is not allowed
+		QueryResultStream(const QueryResultStream&) = delete;
 	};
 	
 	/** A queue of QueryResult objects.
@@ -327,6 +329,7 @@ namespace knowrob {
 	class QueryResultQueue : public QueryResultStream {
 	public:
 		QueryResultQueue();
+		~QueryResultQueue();
 		
 		/** Get the front element of this queue without removing it.
 		 * This will block until the queue is non empty.
@@ -357,6 +360,7 @@ namespace knowrob {
 	class QueryResultBroadcaster : public QueryResultStream {
 	public:
 		QueryResultBroadcaster();
+		~QueryResultBroadcaster();
 		
 		/** Add a subscriber to this broadcast.
 		 * The subscriber will receive input from the broadcast after this call.

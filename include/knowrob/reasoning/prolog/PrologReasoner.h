@@ -52,6 +52,12 @@ namespace knowrob {
 		PrologReasoner(const std::string &initFile);
 		
 		~PrologReasoner();
+		
+		PrologReasoner(const PrologReasoner&) = delete;
+		
+		static void initialize(int argc, char** argv);
+		
+		std::shared_ptr<Term> readTerm(const std::string &queryString);
 
 		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
@@ -102,11 +108,11 @@ namespace knowrob {
 		class Runner : public ThreadPool::Runner {
 		public:
 			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-				const std::shared_ptr<Query> &qa_goal,
+				const std::shared_ptr<Query> &goal,
 				const SubstitutionPtr &bindings);
 			
 			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-				const std::shared_ptr<Query> &qa_goal);
+				const std::shared_ptr<Query> &goal);
 			
 			// Override Runner
 			void stop(bool wait);
@@ -115,8 +121,7 @@ namespace knowrob {
 		
 		protected:
 			std::shared_ptr<QueryResultStream::Channel> outputStream_;
-			std::shared_ptr<Query> qa_goal_;
-			PrologQuery pl_goal_;
+			std::shared_ptr<Query> goal_;
 			SubstitutionPtr bindings_;
 			
 		};

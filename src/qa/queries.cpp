@@ -197,6 +197,17 @@ QueryResultStream::~QueryResultStream()
 	close();
 }
 
+void QueryResultStream::close()
+{
+	if(isOpened()) {
+		for(auto &c : channels_) {
+			c->isOpened_ = false;
+		}
+		channels_.clear();
+		isOpened_ = false;
+	}
+}
+
 bool QueryResultStream::isEOS(const SubstitutionPtr &item)
 {
 	return (item.get() == eos().get());
@@ -229,15 +240,6 @@ std::shared_ptr<QueryResultStream::Channel> QueryResultStream::createChannel()
 bool QueryResultStream::isOpened() const
 {
 	return isOpened_;
-}
-
-void QueryResultStream::close()
-{
-	if(isOpened()) {
-		push(QueryResultStream::eos());
-		channels_.clear();
-		isOpened_ = false;
-	}
 }
 
 void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item)
@@ -273,24 +275,6 @@ QueryResultStream::Channel::~Channel()
 	close();
 }
 
-uint32_t QueryResultStream::Channel::id() const
-{
-	return reinterpret_cast<std::uintptr_t>(this);
-}
-
-void QueryResultStream::Channel::push(const QueryResultPtr &msg)
-{
-	stream_->push(*this, msg);
-	if(QueryResultStream::isEOS(msg)) {
-		isOpened_ = false;
-	}
-}
-
-bool QueryResultStream::Channel::isOpened() const
-{
-	return isOpened_;
-}
-
 void QueryResultStream::Channel::close()
 {
 	if(isOpened()) {
@@ -299,10 +283,40 @@ void QueryResultStream::Channel::close()
 	}
 }
 
+uint32_t QueryResultStream::Channel::id() const
+{
+	return reinterpret_cast<std::uintptr_t>(this);
+}
+
+void QueryResultStream::Channel::push(const QueryResultPtr &msg)
+{
+	if(isOpened()) {
+		stream_->push(*this, msg);
+		if(QueryResultStream::isEOS(msg)) {
+			isOpened_ = false;
+		}
+	}
+	else {
+		spdlog::warn("message pushed to closed stream");
+	}
+}
+
+bool QueryResultStream::Channel::isOpened() const
+{
+	return isOpened_;
+}
+
 
 QueryResultQueue::QueryResultQueue()
 : QueryResultStream()
 {}
+
+QueryResultQueue::~QueryResultQueue()
+{
+	if(isOpened()) {
+		push(QueryResultStream::eos());
+	}
+}
 
 void QueryResultQueue::push(const SubstitutionPtr &item)
 {
@@ -328,7 +342,7 @@ void QueryResultQueue::pop()
 
 SubstitutionPtr QueryResultQueue::pop_front()
 {
-	SubstitutionPtr & x = front();
+	SubstitutionPtr x = front();
 	pop();
 	return x;
 }
@@ -337,6 +351,13 @@ SubstitutionPtr QueryResultQueue::pop_front()
 QueryResultBroadcaster::QueryResultBroadcaster()
 : QueryResultStream()
 {}
+
+QueryResultBroadcaster::~QueryResultBroadcaster()
+{
+	if(isOpened()) {
+		push(QueryResultStream::eos());
+	}
+}
 
 void QueryResultBroadcaster::addSubscriber(const std::shared_ptr<Channel> &subscriber)
 {

@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <map>
 #include <set>
 #include <queue>
@@ -23,14 +24,13 @@ namespace knowrob {
 	/** The type of a term.
 	 */
 	enum class TermType {
-		PREDICATE,
+		PREDICATE = 0,
 		VARIABLE,
 		STRING,
 		DOUBLE,
 		INT32,
 		LONG,
-		TOP,
-		BOTTOM
+		LIST
 	};
 	
 	/** An expression in the querying language.
@@ -74,47 +74,16 @@ namespace knowrob {
 		/** Write the term into an ostream.
 		 */
 		virtual void write(std::ostream& os) const = 0;
+		
+		// TODO
+		std::string toString() const {
+			std::ostringstream ss;
+			write(ss);
+			return ss.str();
+		}
 	
 	private:
 		const TermType type_;
-	};
-	
-	/** A term with a fixed truth value being `true`.
-	 */
-	class TopTerm : public Term {
-	public:
-		static const std::shared_ptr<TopTerm>& get();
-		
-		// Override Term
-		bool isGround() const { return true; }
-		
-		// Override Term
-		bool isAtomic() const { return true; }
-		
-		// Overload Term
-		void write(std::ostream& os) const;
-	
-	private:
-		TopTerm() : Term(TermType::TOP) {};
-	};
-	
-	/** A term with a fixed truth value being `false`.
-	 */
-	class BottomTerm : public Term {
-	public:
-		static const std::shared_ptr<BottomTerm>& get();
-		
-		// Override Term
-		bool isGround() const { return true; }
-		
-		// Override Term
-		bool isAtomic() const { return true; }
-		
-		// Overload Term
-		void write(std::ostream& os) const;
-	
-	private:
-		BottomTerm() : Term(TermType::BOTTOM) {};
 	};
 	
 	/** A variable term.
@@ -146,6 +115,7 @@ namespace knowrob {
 		void write(std::ostream& os) const;
 
 	protected:
+		// TODO: better use reference to string
 		const std::string name_;
 	};
 
@@ -186,6 +156,9 @@ namespace knowrob {
 	class StringTerm : public Constant<std::string> {
 	public:
 		StringTerm(const std::string &v);
+		
+		// Overload Term
+		void write(std::ostream& os) const;
 	};
 	
 	/** A floating point value.
@@ -308,6 +281,70 @@ namespace knowrob {
 			const Substitution &sub) const;
 	};
 	
+	/** A predicate with a fixed truth value being `true`.
+	 */
+	class TopTerm : public Predicate {
+	public:
+		static const std::shared_ptr<TopTerm>& get();
+		
+		// Overload Term
+		void write(std::ostream& os) const;
+	
+	private:
+		TopTerm();
+	};
+	
+	/** A predicate with a fixed truth value being `false`.
+	 */
+	class BottomTerm : public Predicate {
+	public:
+		static const std::shared_ptr<BottomTerm>& get();
+		
+		// Overload Term
+		void write(std::ostream& os) const;
+	
+	private:
+		BottomTerm();
+	};
+	
+	/** A composite term that contains a list of terms.
+	 * The empty list is a special constant NIL.
+	 */
+	class ListTerm : public Term {
+	public:
+		ListTerm(const std::vector<std::shared_ptr<Term>> &elements);
+		
+		/**
+		 * @return the NIL constant.
+		 */
+		static std::shared_ptr<ListTerm> nil();
+		
+		/**
+		 * @return true if this list term is the NIL constant.
+		 */
+		bool isNIL() const;
+
+		/** Get the elements of this list.
+		 * @return a vector of list elements.
+		 */
+		const std::vector<std::shared_ptr<Term>>& elements() const { return elements_; }
+		
+		// Override Term
+		bool isGround() const { return isGround_; }
+		
+		// Override Term
+		bool isAtomic() const { return isNIL(); }
+		
+		// Override Term
+		void write(std::ostream& os) const;
+	
+	protected:
+		const std::vector<std::shared_ptr<Term>> elements_;
+		bool isGround_;
+		
+		bool isGround1() const;
+	};
+	
 	/*
 	class Triple : public Predicate {
 	};
@@ -346,7 +383,7 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		std::shared_ptr<Term> get(const Variable &var) const;
+		const std::shared_ptr<Term>& get(const Variable &var) const;
 		
 		/** Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
@@ -368,6 +405,10 @@ namespace knowrob {
 		 * @changes the diff of a substitute operation
 		 */
 		void rollBack(Substitution::Diff &changes);
+		
+		const std::map<Variable, std::shared_ptr<Term>>& mapping() const { return mapping_; }
+		
+		std::string toString() const;
 		
 		/** An atomic operation performed on a substitution.
 		 */

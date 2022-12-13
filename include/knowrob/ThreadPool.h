@@ -68,10 +68,15 @@ namespace knowrob {
 			/**
 			 * @return true if the runner was requested to stop.
 			 */
-			bool hasStopRequest();
+			bool hasStopRequest() const { return hasStopRequest_; }
+			
+			/**
+			 * @return true if the runner is still active.
+			 */
+			bool isTerminated() const { return isTerminated_; }
 		
 		protected:
-			std::atomic<bool> isRunning_;
+			std::atomic<bool> isTerminated_;
 			std::atomic<bool> hasStopRequest_;
 			std::mutex mutex_;
 			std::condition_variable finishedCV_;
@@ -79,6 +84,8 @@ namespace knowrob {
 			void runInternal();
 			
 			friend class ThreadPool::Worker;
+			
+			Runner(const Runner&) = delete;
 		};
 		
 		/** A worker thread that pulls work goals from the work queue of a thread pool.
@@ -98,17 +105,24 @@ namespace knowrob {
 			std::atomic<bool> hasTerminateRequest_;
 
 			void run();
+			
+			friend class ThreadPool;
+			
+			Worker(const Worker&) = delete;
 		};
 
 	private:
+		// list of threads doing work
 		std::list<Worker*> workerThreads_;
+		// currently queued work that has not been associated to a worker yet
 		std::queue<std::shared_ptr<ThreadPool::Runner>> workQueue_;
-		
+		// condition variable used to wake up worker after new work was queued
 		std::condition_variable workCV_;
 		mutable std::mutex workMutex_;
-		
+		// limit to this number of worker threads
 		uint32_t maxNumThreads_;
 		
+		// get work from queue
 		std::shared_ptr<ThreadPool::Runner> popWork();
 		
 		// is called initially in each worker thread
@@ -116,6 +130,8 @@ namespace knowrob {
 		
 		// is called to finalize each worker thread
 		virtual void finalizeWorker() {}
+		
+		ThreadPool(const ThreadPool&) = delete;
 	};
 };
 
