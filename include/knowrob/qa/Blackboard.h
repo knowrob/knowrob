@@ -55,19 +55,18 @@ namespace knowrob {
 			/**
 			 * @return true if the stream is opened.
 			 */
-			bool isQueryOpened() const;
+			bool isQueryOpened() const { return isQueryOpened_; }
 			
 			/**
 			 * @return true if stop has been requested.
 			 */
-			bool hasStopRequest() const;
+			bool hasStopRequest() const { return hasStopRequest_; }
 		
 		protected:
 			std::shared_ptr<IReasoner> reasoner_;
 			uint32_t queryID_;
-			bool isQueryOpened_;
-			bool hasStopRequest_;
-			mutable std::mutex mutex_;
+			std::atomic<bool> isQueryOpened_;
+			std::atomic<bool> hasStopRequest_;
 			
 			void push(const QueryResultPtr &msg);
 			
@@ -78,10 +77,12 @@ namespace knowrob {
 		 */
 		class Segment {
 		public:
-			Segment(const std::shared_ptr<Blackboard::Stream> &in);
+			Segment(const std::shared_ptr<Blackboard::Stream> &in,
+				const std::shared_ptr<QueryResultBroadcaster> &out);
 		
 		protected:
 			std::shared_ptr<Blackboard::Stream> in_;
+			std::shared_ptr<QueryResultBroadcaster> out_;
 			
 			void stop();
 			
@@ -91,6 +92,7 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<QueryResultQueue> outputQueue_;
+		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
 		std::shared_ptr<QueryResultBroadcaster> inputStream_;
 		std::shared_ptr<QueryResultStream::Channel> inputChannel_;
 		std::shared_ptr<Query> goal_;

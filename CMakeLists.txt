@@ -37,7 +37,7 @@ install_ontology(
 	VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
-include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
 ##############
 #### QUERY ANSWERING
@@ -45,6 +45,7 @@ include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 add_library(query_answering SHARED
 	src/ThreadPool.cpp
+	src/logging.cpp
 	src/lang/terms.cpp
 	src/qa/queries.cpp
 	src/qa/Blackboard.cpp

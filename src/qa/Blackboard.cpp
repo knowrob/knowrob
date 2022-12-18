@@ -6,9 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// logging
-#include <spdlog/spdlog.h>
-// KnowRob
+#include <knowrob/logging.h>
 #include <knowrob/qa/Blackboard.h>
 
 using namespace knowrob;
@@ -24,15 +22,14 @@ Blackboard::Blackboard(
 	// decompose the reasoning task
 	inputStream_ = std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
 	inputChannel_ = inputStream_->createChannel();
-	std::shared_ptr<QueryResultBroadcaster> out =
-		std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
+	outBroadcaster_ = std::shared_ptr<QueryResultBroadcaster>(new QueryResultBroadcaster);
 	
 	// create a channel of outputQueue_, and add it as subscriber
 	auto queueChannel = outputQueue_->createChannel();
-	out->addSubscriber(queueChannel);
+	outBroadcaster_->addSubscriber(queueChannel);
 	
 	// decompose into atomic formulas
-	decompose(goal->formula(), inputStream_, out);
+	decompose(goal->formula(), inputStream_, outBroadcaster_);
 }
 
 Blackboard::~Blackboard()
@@ -42,7 +39,7 @@ Blackboard::~Blackboard()
 
 void Blackboard::start()
 {
-	// push empty message into in stream
+	// push empty message into in stream, and close the channel
 	inputChannel_->push(QueryResultStream::bos());
 	inputChannel_->close();
 }
@@ -78,7 +75,7 @@ void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
 		break;
 	}
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}'.", (int)phi->type());
+		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
 		break;
 	}
 }
@@ -106,7 +103,7 @@ void Blackboard::decomposePredicate(
 		reasonerInChan = reasonerIn->createChannel();
 		in->addSubscriber(reasonerInChan);
 		// create a new segment
-		segments_.push_back(std::shared_ptr<Segment>(new Segment(reasonerIn)));
+		segments_.push_back(std::shared_ptr<Segment>(new Segment(reasonerIn,out)));
 	}
 }
 
@@ -178,15 +175,12 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 		// to immediately shutdown. however, note that not all reasoner
 		// implementations may support this and may take longer to stop anyways.
 		if(isQueryOpened()) {
+			isQueryOpened_ = false;
 			reasoner_->finishQuery(queryID_, hasStopRequest());
-			{
-				std::lock_guard<std::mutex> lock(mutex_);
-				isQueryOpened_ = false;
-			}
 		}
 	}
 	else if(!isQueryOpened()) {
-		spdlog::warn("ignoring attempt to write to a closed stream.");
+		KB_WARN("ignoring attempt to write to a closed stream.");
 	}
 	else {
 		// push substitution to reasoner
@@ -194,30 +188,16 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 	}
 }
 
-bool Blackboard::Stream::isQueryOpened() const
-{
-	std::lock_guard<std::mutex> lock(mutex_);
-	return isQueryOpened_;
-}
-
-bool Blackboard::Stream::hasStopRequest() const
-{
-	std::lock_guard<std::mutex> lock(mutex_);
-	return hasStopRequest_;
-}
-
 void Blackboard::Stream::stop()
 {
-	{
-		std::lock_guard<std::mutex> lock(mutex_);
-		hasStopRequest_ = true;
-	}
+	hasStopRequest_ = true;
 	close();
 }
 
 
-Blackboard::Segment::Segment(const std::shared_ptr<Blackboard::Stream> &in)
-: in_(in)
+Blackboard::Segment::Segment(const std::shared_ptr<Blackboard::Stream> &in,
+	const std::shared_ptr<QueryResultBroadcaster> &out)
+: in_(in), out_(out)
 {}
 
 void Blackboard::Segment::stop()

@@ -6,39 +6,22 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <spdlog/spdlog.h>
-
+#include <knowrob/logging.h>
 #include <knowrob/reasoning/prolog/PrologQuery.h>
 
 using namespace knowrob;
 
+	
 PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
 : qa_query_(qa_query),
   pl_query_(PL_new_term_ref())
 {
-	if(constructPrologTerm(qa_query->formula(), pl_query_)) {
-		createPrologPredicate();
+	// translate into term_t
+	if(!constructPrologTerm(qa_query->formula(), pl_query_)) {
+		throw QueryError("Failed to create term_t from Query.");
 	}
-	else {
-		throw ParserError("constructPrologTerm failed.");
-	}
-}
-
-PrologQuery::~PrologQuery()
-{
-	PL_reset_term_refs(pl_arguments_);
-	PL_reset_term_refs(pl_query_);
-}
-
-void PrologQuery::createPrologPredicate()
-{
-	static atom_t ATOM_semicolon = PL_new_atom(";");
-	static atom_t ATOM_comma     = PL_new_atom(",");
-	static predicate_t comma_predicate     = PL_pred(PL_new_functor(ATOM_comma, 2), NULL);
-	static predicate_t semicolon_predicate = PL_pred(PL_new_functor(ATOM_semicolon, 2), NULL);
 	
 	uint32_t arity=0;
-	
 	// get the predicate indicator.
 	// pl_query_ is a term, but open query only accepts predicates.
 	// so the goal here is to create a predicate using the functor of pl_query_.
@@ -53,35 +36,35 @@ void PrologQuery::createPrologPredicate()
 		break;
 	}
 	case FormulaType::CONJUNCTION:
-		pl_predicate_ = comma_predicate;
+		pl_predicate_ = PrologQuery::PREDICATE_comma();
 		arity = 2;
 		break;
 	case FormulaType::DISJUNCTION:
-		pl_predicate_ = semicolon_predicate;
+		pl_predicate_ = PrologQuery::PREDICATE_semicolon();
 		arity = 2;
 		break;
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}'.", (int)qa_query_->formula()->type());
+		KB_WARN("Ignoring unknown formula type '{}'.", (int)qa_query_->formula()->type());
 		break;
 	}
-	
+
 	// create pl_arguments_
   	pl_arguments_ = PL_new_term_refs(arity);
   	for(uint32_t i=0; i<arity; ++i) {
   		term_t arg = pl_arguments_ + i;
 		if(!PL_get_arg(i+1, pl_query_, arg)) {
-			spdlog::warn("failed to get query argument term");
+			KB_WARN("failed to get query argument term");
 		}
   	}
 }
 
-bool PrologQuery::constructPrologTerm(const std::shared_ptr<Formula>& phi, term_t &pl_term)
+PrologQuery::~PrologQuery()
 {
-	static atom_t ATOM_semicolon = PL_new_atom(";");
-	static atom_t ATOM_comma     = PL_new_atom(",");
-	static functor_t comma_functor     = PL_new_functor(ATOM_comma, 2);
-	static functor_t semicolon_functor = PL_new_functor(ATOM_semicolon, 2);
-	
+	PL_reset_term_refs(pl_query_);
+}
+
+bool PrologQuery::constructPrologTerm(const FormulaPtr& phi, term_t &pl_term)
+{
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		const std::shared_ptr<Predicate> &qa_pred =
@@ -90,35 +73,19 @@ bool PrologQuery::constructPrologTerm(const std::shared_ptr<Formula>& phi, term_
 	}
 	case FormulaType::CONJUNCTION:
 		return constructPrologTerm(
-			(ConnectiveFormula*)phi.get(), comma_functor, pl_term);
+			(ConnectiveFormula*)phi.get(), PrologQuery::FUNCTOR_comma(), pl_term);
 	case FormulaType::DISJUNCTION:
 		return constructPrologTerm(
-			(ConnectiveFormula*)phi.get(), semicolon_functor, pl_term);
+			(ConnectiveFormula*)phi.get(), PrologQuery::FUNCTOR_semicolon(), pl_term);
 	default:
-		spdlog::warn("Ignoring unknown formula type '{}'.", (int)phi->type());
+		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
 		return false;
 	}
 }
 
-bool PrologQuery::constructPrologTerm(const std::shared_ptr<Term>& qa_term, term_t &pl_term)
+bool PrologQuery::constructPrologTerm(const TermPtr& qa_term, term_t &pl_term)
 {
 	switch(qa_term->type()) {
-	case TermType::VARIABLE: {
-		Variable *qa_var = (Variable*)qa_term.get();
-		// try to use previously created term_t
-		auto it = vars_.find(qa_var->name());
-		if(it != vars_.end()) {
-			return PL_put_term(pl_term, it->second);
-		}
-		// create a new variable
-		else if(PL_put_variable(pl_term)) {
-			vars_[qa_var->name()] = pl_term;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
 	case TermType::PREDICATE: {
 		Predicate *qa_pred = (Predicate*)qa_term.get();
 		if(qa_pred->indicator().arity()>0) {
@@ -133,6 +100,7 @@ bool PrologQuery::constructPrologTerm(const std::shared_ptr<Term>& qa_term, term
 				pl_arg += 1;
 			}
 			// construct output term
+			// TODO: caching result of PL_new_functor() could be a good idea
 			return PL_cons_functor_v(pl_term,
 				PL_new_functor(
 					PL_new_atom(qa_pred->indicator().functor().c_str()),
@@ -145,6 +113,23 @@ bool PrologQuery::constructPrologTerm(const std::shared_ptr<Term>& qa_term, term
 				qa_pred->indicator().functor().c_str());
 		}
 		break;
+	}
+	case TermType::VARIABLE: {
+		Variable *qa_var = (Variable*)qa_term.get();
+		// try to use previously created term_t
+		auto it = vars_.find(qa_var->name());
+		if(it != vars_.end()) {
+			return PL_put_term(pl_term, it->second);
+		}
+		// create a new variable
+		// TODO: any way to assign the name here?
+		else if(PL_put_variable(pl_term)) {
+			vars_[qa_var->name()] = pl_term;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	case TermType::STRING:
 		return PL_put_atom_chars(pl_term,
@@ -159,10 +144,7 @@ bool PrologQuery::constructPrologTerm(const std::shared_ptr<Term>& qa_term, term
 		return PL_put_integer(pl_term,
 			((LongTerm*)qa_term.get())->value());
 	case TermType::LIST: {
-		if(!PL_put_nil(pl_term)) {
-			return false;
-		}
-	
+		if(!PL_put_nil(pl_term)) return false;
 		ListTerm *list = (ListTerm*)qa_term.get();
 		term_t pl_elem = PL_new_term_ref();
 		for(auto &elem : list->elements()) {
@@ -175,191 +157,205 @@ bool PrologQuery::constructPrologTerm(const std::shared_ptr<Term>& qa_term, term
 		return true;
 	}
 	default:
-		spdlog::warn("Ignoring unknown term type '{}'.", (int)qa_term->type());
+		KB_WARN("Ignoring unknown term type '{}'.", (int)qa_term->type());
 		return false;
 	}
 }
 
-bool PrologQuery::constructPrologTerm(ConnectiveFormula *phi, functor_t &pl_functor, term_t &pl_term)
+bool PrologQuery::constructPrologTerm(ConnectiveFormula *phi, const functor_t &pl_functor, term_t &pl_term)
 {
-	term_t pl_pred = pl_term;
-	int counter = 1;
-	
-	for(const auto &psi : phi->formulae()) {
-		if(counter < phi->formulae().size()) {
-			// create a fresh term for each argument of the operator
-			term_t pl_arg = PL_new_term_refs(2);
-			// construct the first argument
-			if(!constructPrologTerm(psi, pl_arg)) return false;
-			// construct the operator predicate (leave second argument unspecified)
-			if(!PL_cons_functor_v(pl_pred, pl_functor, pl_arg)) {
-				spdlog::warn("Failed to construct Prolog term for a formula.");
-			}
-			// second argument is the list constructed in the next step 
-			pl_pred = (pl_arg+1);
-		}
-		else {
-			// last formula
-			if(!constructPrologTerm(psi, pl_pred)) return false;
-		}
-		counter += 1;
+	if(phi->formulae().size()==1) {
+		return constructPrologTerm(phi->formulae()[0], pl_term);
 	}
-	return true;
+	else {
+		int counter = 1;
+		term_t last_head = PL_new_term_ref();
+		
+		for(int i=phi->formulae().size()-1; i>=0; --i) {
+			if(counter==1) {
+				// create term for last formula, remember in last_head term
+				if(!constructPrologTerm(phi->formulae()[i], last_head)) return false;
+			}
+			else {
+				// create a 2-ary predicate using last_head as second argument
+				term_t pl_arg = PL_new_term_refs(2);
+				if(!constructPrologTerm(phi->formulae()[i], pl_arg) ||
+				   !PL_put_term(pl_arg+1, last_head) ||
+				   !PL_cons_functor_v((i==0 ? pl_term : last_head), pl_functor, pl_arg))
+				{
+					return false;
+				}
+				
+			}
+			counter += 1;
+		}
+		
+		return true;
+	}
 }
 
-std::shared_ptr<Term> PrologQuery::constructPredicate(const term_t &t)
+TermPtr PrologQuery::constructTerm(const term_t &t)
 {
-	// get the functor + arity
-	size_t arity;
-	atom_t name;
-	if(!PL_get_name_arity(t, &name, &arity)) {
-		spdlog::error("Failed to read term_t name and arity.");
-		return BottomTerm::get();
-	}
-	std::string functorName = PL_atom_chars(name);
-	// construct arguments
-	std::vector<std::shared_ptr<Term>> arguments(arity);
-	term_t arg = PL_new_term_ref();
-	for(int n=1; n<=arity; n++) {
-		if(PL_get_arg(n, t, arg)) {
-			arguments[n-1] = constructTerm(arg);
+	switch(PL_term_type(t)) {
+	case PL_TERM: {
+		size_t arity;
+		atom_t name;
+		if(!PL_get_name_arity(t, &name, &arity)) break;
+		
+		std::string functorName(PL_atom_chars(name));
+		// construct arguments
+		std::vector<TermPtr> arguments(arity);
+		term_t arg = PL_new_term_ref();
+		for(int n=1; n<=arity; n++) {
+			if(PL_get_arg(n, t, arg)) {
+				arguments[n-1] = constructTerm(arg);
+			}
+			else {
+				KB_WARN("Failed to construct argument {} of predicate {}.", n, functorName);
+			}
 		}
-		else {
-			spdlog::error("Failed to construct argument {} of predicate {}.", n, functorName);
+		// construct Predicate object
+		return std::make_shared<Predicate>(functorName, arguments);
+	}
+	case PL_VARIABLE: {
+		// TODO: could reuse existing variables here.
+		// TODO: could support a mapping to internal names here
+		char *s;
+		if(!PL_get_chars(t, &s, CVT_VARIABLE)) break;
+		return std::make_shared<Variable>(std::string(s));
+	}
+	case PL_ATOM: {
+		atom_t atom;
+		if(!PL_get_atom(t, &atom)) break;
+		// TODO: maybe below rather needs to be handled in the predicate case?
+		//   not sure if predicates with arity 0 generally appear here as atoms...
+		// map `fail/0` and `false/0` to BottomTerm
+		if(atom == PrologQuery::ATOM_fail() || atom == PrologQuery::ATOM_false()) {
 			return BottomTerm::get();
 		}
+		// map `true/0` to TopTerm
+		else if(atom == PrologQuery::ATOM_true()) {
+			return TopTerm::get();
+		}
+		else {
+			return std::make_shared<StringTerm>(std::string(PL_atom_chars(atom)));
+		}
 	}
-	// construct Predicate object
-	return std::make_shared<Predicate>(functorName, arguments);
-}
-
-std::shared_ptr<Term> PrologQuery::constructTerm(const term_t &t)
-{
-	static atom_t ATOM_fail  = PL_new_atom("fail");
-	static atom_t ATOM_false = PL_new_atom("false");
-	static atom_t ATOM_true  = PL_new_atom("true");
-	
-	switch(PL_term_type(t)) {
 	case PL_INTEGER: {
 		long val=0;
-		if(!PL_get_long(t, &val)) {
-			spdlog::error("Failed to read long from term {}.", t);
-			return BottomTerm::get();
-		}
+		if(!PL_get_long(t, &val)) break;
 		return std::make_shared<LongTerm>(val);
 	}
 	case PL_FLOAT: {
 		double val=0.0;
-		if(!PL_get_float(t, &val)) {
-			spdlog::error("Failed to read double from term {}.", t);
-			return BottomTerm::get();
-		}
+		if(!PL_get_float(t, &val)) break;
 		return std::make_shared<DoubleTerm>(val);
 	}
 	case PL_STRING: {
 		char *s;
-		if(!PL_get_chars(t, &s, CVT_ALL)) {
-			spdlog::error("Failed to read string from term {}.", t);
-			return BottomTerm::get();
-		}
+		if(!PL_get_chars(t, &s, CVT_ALL)) break;
 		return std::make_shared<StringTerm>(std::string(s));
-	}
-	case PL_ATOM: {
-		atom_t atom;
-		if(!PL_get_atom(t, &atom)) {
-			spdlog::error("failed to read atom from term {}.", t);
-			return BottomTerm::get();
-		}
-		
-		// TODO: maybe below rather needs to be handled in the predicate case?
-		//   not sure if predicates with arity 0 generally appear here as atoms...
-		// map `fail/0` and `false/0` to BottomTerm
-		if(atom == ATOM_fail || atom == ATOM_false) {
-			return BottomTerm::get();
-		}
-		// map `true/0` to TopTerm
-		else if(atom == ATOM_true) {
-			return TopTerm::get();
-		}
-		
-		return std::make_shared<StringTerm>(std::string(PL_atom_chars(atom)));
-	}
-	case PL_VARIABLE: {
-		// variables are converted to print-name
-		char *s;
-		if(!PL_get_chars(t, &s, CVT_VARIABLE)) {
-			spdlog::error("Failed to read variable name from term {}.", t);
-			return BottomTerm::get();
-		}
-		return std::make_shared<Variable>(std::string(s));
 	}
 	case PL_NIL:
 		return ListTerm::nil();
 	case PL_LIST_PAIR: {
 		term_t head = PL_new_term_ref();
-		std::list<std::shared_ptr<Term>> elements;
+		std::list<TermPtr> elements;
 		while(PL_get_list(t, head, t)) {
 			elements.push_back(PrologQuery::constructTerm(head));
 		}
 		return std::make_shared<ListTerm>(
-			std::vector<std::shared_ptr<Term>>(elements.begin(), elements.end()));
+			std::vector<TermPtr>(elements.begin(), elements.end()));
 	}
-	case PL_TERM:
-		return PrologQuery::constructPredicate(t);
 	default:
-		spdlog::error("unknown term type {}.", PL_term_type(t));
-		return BottomTerm::get();
+		KB_WARN("Unknown Prolog term type {}.", PL_term_type(t));
+		break;
 	}
+	
+	KB_WARN("Failed to read Prolog term of type {}.", PL_term_type(t));
+	return BottomTerm::get();
 }
 
-std::shared_ptr<Formula> PrologQuery::toFormula1(const std::shared_ptr<Predicate> &p)
+FormulaPtr PrologQuery::toFormula(const TermPtr &t)
 {
-	static std::string comma_functor = ",";
+	static std::string comma_functor     = ",";
 	static std::string semicolon_functor = ";";
 	
-	// special handling for "," and ";" functors
+	std::shared_ptr<Predicate> p = (
+		t->type()==TermType::PREDICATE ?
+		std::static_pointer_cast<Predicate>(t) :
+		BottomTerm::get());
+	
 	if(p->indicator().functor() == comma_functor) {
-		std::vector<std::shared_ptr<Formula>> formulae(p->indicator().arity());
-		for(int i=0; i<formulae.size(); i++) {
-			formulae[i] = toFormula(p->arguments()[i]);
+		std::vector<FormulaPtr> formulas(p->indicator().arity());
+		for(int i=0; i<formulas.size(); i++) {
+			formulas[i] = toFormula(p->arguments()[i]);
 		}
-		return std::shared_ptr<Formula>(new ConjunctionFormula(formulae));
+		return std::make_shared<ConjunctionFormula>(formulas);
 	}
 	else if(p->indicator().functor() == semicolon_functor) {
-		std::vector<std::shared_ptr<Formula>> formulae(p->indicator().arity());
-		for(int i=0; i<formulae.size(); i++) {
-			formulae[i] = toFormula(p->arguments()[i]);
+		std::vector<FormulaPtr> formulas(p->indicator().arity());
+		for(int i=0; i<formulas.size(); i++) {
+			formulas[i] = toFormula(p->arguments()[i]);
 		}
-		return std::shared_ptr<Formula>(new DisjunctionFormula(formulae));
+		return std::make_shared<DisjunctionFormula>(formulas);
 	}
-	// use predicate as formula
 	else {
-		return std::shared_ptr<Formula>(new PredicateFormula(p));
-	}
-}
-
-std::shared_ptr<Formula> PrologQuery::toFormula(const std::shared_ptr<Term> &t)
-{
-	switch(t->type()) {
-	case TermType::PREDICATE: {
-		return toFormula1(std::static_pointer_cast<Predicate>(t));
-	}
-	case TermType::VARIABLE:
-	case TermType::LONG:
-	case TermType::INT32:
-	case TermType::DOUBLE:
-	case TermType::STRING:
-	case TermType::LIST:
-		spdlog::warn("toFormula called with wrong term type");
-		return toFormula1(BottomTerm::get());
-	default:
-		spdlog::warn("Ignoring unknown term type '{}'.", (int)t->type());
-		return toFormula1(BottomTerm::get());
+		return std::make_shared<PredicateFormula>(p);
 	}
 }
 
 std::shared_ptr<Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
-	return std::shared_ptr<Query>(new Query(toFormula(t)));
+	return std::make_shared<Query>(toFormula(t));
+}
+
+/******************************************/
+/*********** static constants *************/
+/******************************************/
+
+const atom_t& PrologQuery::ATOM_fail() {
+	static atom_t a = PL_new_atom("fail");
+	return a;
+}
+
+const atom_t& PrologQuery::ATOM_false() {
+	static atom_t a = PL_new_atom("false");
+	return a;
+}
+
+const atom_t& PrologQuery::ATOM_true() {
+	static atom_t a = PL_new_atom("true");
+	return a;
+}
+
+const atom_t& PrologQuery::ATOM_comma() {
+	static atom_t a = PL_new_atom(",");
+	return a;
+}
+
+const atom_t& PrologQuery::ATOM_semicolon() {
+	static atom_t a = PL_new_atom(";");
+	return a;
+}
+
+const functor_t& PrologQuery::FUNCTOR_comma() {
+	static atom_t a = PL_new_functor(PrologQuery::ATOM_comma(), 2);
+	return a;
+}
+
+const functor_t& PrologQuery::FUNCTOR_semicolon() {
+	static atom_t a = PL_new_functor(PrologQuery::ATOM_semicolon(), 2);
+	return a;
+}
+
+const predicate_t& PrologQuery::PREDICATE_comma() {
+	static predicate_t a = PL_pred(PrologQuery::FUNCTOR_comma(), NULL);
+	return a;
+}
+
+const predicate_t& PrologQuery::PREDICATE_semicolon() {
+	static predicate_t a = PL_pred(PrologQuery::FUNCTOR_semicolon(), NULL);
+	return a;
 }
 

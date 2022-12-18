@@ -8,11 +8,10 @@
 
 // STD
 #include <sstream>
-// logging
-#include <spdlog/spdlog.h>
 // SWI Prolog
 #include <SWI-Prolog.h>
 // KnowRob
+#include <knowrob/logging.h>
 #include <knowrob/qa/queries.h>
 
 using namespace knowrob;
@@ -28,12 +27,6 @@ Formula::Formula(const FormulaType &type)
 bool Formula::isAtomic() const
 {
 	return type() == FormulaType::PREDICATE;
-}
-
-std::ostream& operator<<(std::ostream& os, const Formula& phi)
-{
-	phi.write(os);
-	return os;
 }
 
 
@@ -170,19 +163,6 @@ std::shared_ptr<Query> Query::applySubstitution(const Substitution &sub) const
 	));
 }
 
-std::ostream& operator<<(std::ostream& os, const Query& q)
-{
-	os << *(q.formula().get());
-	return os;
-}
-
-std::string Query::getHumanReadableString() const
-{
-	std::ostringstream ss;
-	ss << *this;
-	return ss.str();
-}
-
 
 /******************************************/
 /************* Query results **************/
@@ -200,6 +180,7 @@ QueryResultStream::~QueryResultStream()
 void QueryResultStream::close()
 {
 	if(isOpened()) {
+		std::lock_guard<std::mutex> lock(channel_mutex_);
 		for(auto &c : channels_) {
 			c->isOpened_ = false;
 		}
@@ -229,12 +210,18 @@ SubstitutionPtr& QueryResultStream::eos()
 
 std::shared_ptr<QueryResultStream::Channel> QueryResultStream::createChannel()
 {
-	auto channel = std::shared_ptr<QueryResultStream::Channel>(
-		new QueryResultStream::Channel(this));
-	channels_.push_back(channel);
-	channel->iterator_ = channels_.end();
-	--channel->iterator_;
-	return channel;
+	std::lock_guard<std::mutex> lock(channel_mutex_);
+	if(isOpened()) {
+		auto channel = std::shared_ptr<QueryResultStream::Channel>(
+			new QueryResultStream::Channel(this));
+		channels_.push_back(channel);
+		channel->iterator_ = channels_.end();
+		--channel->iterator_;
+		return channel;
+	}
+	else {
+		throw QueryError("cannot create a channel of a closed stream");
+	}
 }
 
 bool QueryResultStream::isOpened() const
@@ -245,6 +232,8 @@ bool QueryResultStream::isOpened() const
 void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item)
 {
 	if(QueryResultStream::isEOS(item)) {
+		// prevent channels from being created while processing EOS message
+		std::lock_guard<std::mutex> lock(channel_mutex_);
 		// remove channel once EOS is reached
 		channels_.erase(channel.iterator_);
 		
@@ -256,7 +245,7 @@ void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item
 		}
 	}
 	else if(!isOpened()) {
-		spdlog::warn("ignoring attempt to write to a closed stream.");
+		KB_WARN("ignoring attempt to write to a closed stream.");
 	}
 	else {
 		push(item);
@@ -297,7 +286,7 @@ void QueryResultStream::Channel::push(const QueryResultPtr &msg)
 		}
 	}
 	else {
-		spdlog::warn("message pushed to closed stream");
+		KB_WARN("message pushed to closed stream {}", reinterpret_cast<std::uintptr_t>(this));
 	}
 }
 
@@ -385,6 +374,9 @@ QueryResultCombiner::QueryResultCombiner()
 void QueryResultCombiner::push(const Channel &channel, const SubstitutionPtr &msg)
 {
 	const uint32_t channelID = channel.id();
+	// need to lock the whole push as genCombinations uses an iterator over the buffer.
+	// TODO: support concurrent genCombinations call below
+	std::lock_guard<std::mutex> lock(buffer_mutex_);
 	
 	// add to the buffer for later combinations
 	buffer_[channelID].push_back(msg);
@@ -450,4 +442,41 @@ void QueryResultCombiner::genCombinations(
 		}
 	}
 }
+
+
+QueryError::QueryError(const std::string& what)
+: std::runtime_error(what)
+{}
+
+QueryError::QueryError(
+	const Query &erroneousQuery,
+	const Term &errorTerm)
+: std::runtime_error(formatErrorString(erroneousQuery, errorTerm))
+{
+}
+
+std::string QueryError::formatErrorString(
+	const Query &erroneousQuery,
+	const Term &errorTerm)
+{
+	std::stringstream buffer;
+	buffer << errorTerm;
+	return buffer.str();
+}
+
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi)
+	{
+		phi.write(os);
+		return os;
+	}
+	
+	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q)
+	{
+		os << *(q.formula().get());
+		return os;
+	}
+}
+
 

@@ -6,10 +6,10 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// logging
-#include <spdlog/spdlog.h>
-// KnowRob
+#include <knowrob/logging.h>
 #include <knowrob/lang/terms.h>
+
+// TODO: support for fuzzy and temporalized predicates.
 
 using namespace knowrob;
 
@@ -25,12 +25,6 @@ bool Term::isBottom() const
 bool Term::isTop() const
 {
 	return (this == TopTerm::get().get());
-}
-
-std::ostream& operator<<(std::ostream& os, const Term& t)
-{
-	t.write(os);
-	return os;
 }
 
 
@@ -72,7 +66,7 @@ Integer32Term::Integer32Term(const int32_t &v)
 {}
 
 
-ListTerm::ListTerm(const std::vector<std::shared_ptr<Term>> &elements)
+ListTerm::ListTerm(const std::vector<TermPtr> &elements)
 : Term(TermType::LIST),
   elements_(elements),
   isGround_(isGround1())
@@ -132,7 +126,7 @@ void PredicateIndicator::write(std::ostream& os) const
 
 Predicate::Predicate(
 	const std::shared_ptr<PredicateIndicator> &indicator,
-	const std::vector<std::shared_ptr<Term>> &arguments)
+	const std::vector<TermPtr> &arguments)
 : Term(TermType::PREDICATE),
   indicator_(indicator),
   arguments_(arguments),
@@ -150,7 +144,7 @@ Predicate::Predicate(const Predicate &other, const Substitution &sub)
 
 Predicate::Predicate(
 	const std::string &functor,
-	const std::vector<std::shared_ptr<Term>> &arguments)
+	const std::vector<TermPtr> &arguments)
 : Predicate(std::make_shared<PredicateIndicator>(functor, arguments.size()), arguments)
 {
 }
@@ -163,17 +157,17 @@ bool Predicate::isGround1() const
 	return true;
 }
 
-std::vector<std::shared_ptr<Term>> Predicate::applySubstitution(
-	const std::vector<std::shared_ptr<Term>> &in,
+std::vector<TermPtr> Predicate::applySubstitution(
+	const std::vector<TermPtr> &in,
 	const Substitution &sub) const
 {
-	std::vector<std::shared_ptr<Term>> out(in.size());
+	std::vector<TermPtr> out(in.size());
 	
 	for(uint32_t i=0; i<in.size(); i++) {
 		switch(in[i]->type()) {
 		case TermType::VARIABLE: {
 			// replace variable argument if included in the substitution mapping
-			std::shared_ptr<Term> t = sub.get(*((Variable*) in[i].get()));
+			TermPtr t = sub.get(*((Variable*) in[i].get()));
 			if(t.get() == NULL) {
 				// variable is not included in the substitution, keep it
 				out[i] = in[i];
@@ -207,6 +201,7 @@ std::shared_ptr<Predicate> Predicate::applySubstitution(const Substitution &sub)
 
 void Predicate::write(std::ostream& os) const
 {
+	// TODO: some predicates can be written in infix notation
 	os << indicator_->functor();
 	if(arguments_.size()>0) {
 		os << '(';
@@ -229,7 +224,7 @@ const std::shared_ptr<TopTerm>& TopTerm::get()
 }
 
 TopTerm::TopTerm()
-: Predicate("true", std::vector<std::shared_ptr<Term>>())
+: Predicate("true", std::vector<TermPtr>())
 {
 }
 
@@ -246,7 +241,7 @@ const std::shared_ptr<BottomTerm>& BottomTerm::get()
 }
 
 BottomTerm::BottomTerm()
-: Predicate("false", std::vector<std::shared_ptr<Term>>())
+: Predicate("false", std::vector<TermPtr>())
 {
 }
 
@@ -256,26 +251,9 @@ void BottomTerm::write(std::ostream& os) const
 }
 
 
-std::string Substitution::toString() const
+void Substitution::set(const Variable &var, const TermPtr &term)
 {
-	std::ostringstream ss;
-	ss << '{';
-	
-	uint32_t i=0;
-	for(const auto &pair : mapping_) {
-		ss << pair.first.name() << ':' << ' ' << pair.second->toString();
-		if(++i < mapping_.size()) {
-			ss << ',';
-		}
-	}
-	
-	ss << '}';
-	return ss.str();
-}
-
-void Substitution::set(const Variable &var, const std::shared_ptr<Term> &term)
-{
-	mapping_.insert(std::pair<Variable, std::shared_ptr<Term>>(var, term));
+	mapping_.insert(std::pair<Variable,TermPtr>(var, term));
 }
 
 bool Substitution::contains(const Variable &var) const
@@ -283,9 +261,9 @@ bool Substitution::contains(const Variable &var) const
 	return mapping_.find(var) != mapping_.end();
 }
 
-const std::shared_ptr<Term>& Substitution::get(const Variable &var) const
+const TermPtr& Substitution::get(const Variable &var) const
 {
-	static const std::shared_ptr<Term> null_term;
+	static const TermPtr null_term;
 	
 	auto it = mapping_.find(var);
 	if(it != mapping_.end()) {
@@ -307,8 +285,8 @@ bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitut
 		}
 		else {
 			// variable has already an instantation, need to unify
-			std::shared_ptr<Term> t0 = it->second;
-			std::shared_ptr<Term> t1 = pair.second;
+			TermPtr t0 = it->second;
+			TermPtr t1 = pair.second;
 			
 			// t0 and t1 are not syntactically equal -> compute a unifier
 			Unifier sigma(t0,t1);
@@ -337,8 +315,7 @@ void Substitution::rollBack(Substitution::Diff &changes)
 }
 
 
-Substitution::Replaced::Replaced(const Substitution::Iterator &it,
-	const std::shared_ptr<Term> &replacedInstance)
+Substitution::Replaced::Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance)
 : Substitution::Operation(),
   it_(it),
   replacedInstance_(replacedInstance)
@@ -363,7 +340,7 @@ void Substitution::Added::rollBack(Substitution &sub)
 }
 
 
-Unifier::Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1)
+Unifier::Unifier(const TermPtr &t0, const TermPtr &t1)
 : Substitution(),
   t0_(t0),
   t1_(t1),
@@ -371,7 +348,7 @@ Unifier::Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t
 {
 }
 
-bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1)
+bool Unifier::unify(const TermPtr &t0, const TermPtr &t1)
 {
 	if(t1->type() == TermType::VARIABLE) {
 		unify(*((Variable*)t1.get()), t0);
@@ -414,7 +391,7 @@ bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term>
 			return t1->type()==TermType::LONG &&
 				((LongTerm*)t0.get())->value()==((LongTerm*)t1.get())->value();
 		default:
-			spdlog::warn("Ignoring unknown term type '{}'.", (int)t0->type());
+			KB_WARN("Ignoring unknown term type '{}'.", (int)t0->type());
 			return false;
 		}
 	}
@@ -422,7 +399,7 @@ bool Unifier::unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term>
 	return true;
 }
 
-bool Unifier::unify(const Variable &var, const std::shared_ptr<Term> &t)
+bool Unifier::unify(const Variable &var, const TermPtr &t)
 {
 	// TODO: fail if var *occurs* in t (occurs check)
 	//    - requirement: store set of variables with each term
@@ -431,7 +408,7 @@ bool Unifier::unify(const Variable &var, const std::shared_ptr<Term> &t)
 	return true;
 }
 
-std::shared_ptr<Term> Unifier::apply()
+TermPtr Unifier::apply()
 {
 	if(!exists_) {
 		// no unifier exists
@@ -459,8 +436,31 @@ std::shared_ptr<Term> Unifier::apply()
 		return p->applySubstitution(*this);
 	}
 	else {
-		spdlog::warn("something went wrong.");
+		KB_WARN("something went wrong.");
 		return BottomTerm::get();
+	}
+}
+
+
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const Term& t)
+	{
+		t.write(os);
+		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Substitution& omega)
+	{
+		uint32_t i=0;
+		os << '{';
+		for(const auto &pair : omega.mapping()) {
+			os << pair.first.name() << ':' << ' ' << (*pair.second.get());
+			if(++i < omega.mapping().size()) {
+				os << ',';
+			}
+		}
+		return os << '}';
 	}
 }
 

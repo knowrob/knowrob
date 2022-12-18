@@ -7,49 +7,12 @@
  */
 
 #include <sstream>
-// logging
-#include <spdlog/spdlog.h>
-// KnowRob
+#include <knowrob/logging.h>
 #include <knowrob/reasoning/prolog/PrologReasoner.h>
 
 using namespace knowrob;
 
-// TODO: support synchronization with data sources.
-//      - when facts are asserted into EDB, also assert into PrologEngine
-//      - support writing facts asserted from PrologEngine into EDB?
-//           i.e. when assert is called in the PrologEngine.
-//      - use Prolog modules to encapsulate reasoner configuriations
-/*
 
----------------------------------
-
-GOAL
-- establish interface for loading facts and rules into Prolog
-- allow configuration of Prolog micro theories, i.e. limit
-  query evaluation to a restricted set of rules and facts
-
---------------------------------
-
-- Prolog stores facts and rules in the global stack (heap)
-
-- there is only one global stack shared by all engines in a multithreaded application. seems heap is somehow bound to parent process or so? also seems there is no way to manually manage multiple global stacks, and to select one with an engine.
-
-- so it seems it would be better try dealing with only one global stack.
-
-- Prolog supports modules. predicates can be imported into modules. files can also be loaded. if they are a module, then the exported files become part of the importing module, else all predicates.
-
---> so to configure a microtheory, one could automatically create a module that imports EDB and IDB predicates from different sources. then use the module name as parameter for queries. advantage is that reasoner can be configured on microtheory level which makes sense. "baking of microtheory"
-
---> EDBs are linked to a module.
-
---------------------------------
-
-TODO
-- can EDB have predicates of different modules?
-
-*/
-
-	
 void PrologReasoner::initialize(int argc, char** argv) {
 	static bool isInitialized = false;
 	static int pl_ac = 0;
@@ -78,67 +41,89 @@ void PrologReasoner::initialize(int argc, char** argv) {
 }
 
 
-PrologReasoner::PrologReasoner(const std::string &initFile)
-: threadPool_(std::thread::hardware_concurrency()),
-  initFile_(initFile)
+PrologThreadPool& PrologReasoner::threadPool()
 {
+	// a thread pool shared among all PrologReasoner instances
+	static PrologThreadPool threadPool_(std::thread::hardware_concurrency());
+	return threadPool_;
 }
+
+
+PrologReasoner::PrologReasoner()
+{}
 
 PrologReasoner::~PrologReasoner()
 {
 	for(auto &pair : activeQueries_) {
-		for(auto &x : pair.second.runner) {
+		for(auto &x : pair.second->runner) {
+			// TODO: not sure if this is safe. is pair removed from map by calling stop()?
+			//       and does this interact badly with the outer loop here?
 			x->stop(true);
 		}
 	}
 	activeQueries_.clear();
 }
 
-void PrologReasoner::initialize()
+
+bool PrologReasoner::initialize(const ReasonerConfiguration &cfg)
 {
-	// consult the init file, i.e. load facts and rules declared
-	// in the file, and execute directives it contains
-	consult(initFile_);
-	
-	// TODO: load any additional rules stored in IDBs
-	//for(auto it=idbs_.begin(); it!=idbs_.end(); it++) {
-	//}
-	
-	// load any additional facts stored in EDBs
-	/*
-	for(auto it=edbs_.begin(); it!=edbs_.end(); it++) {
-		std::shared_ptr<IFactBase> edb = *it;
-		for(const std::shared_ptr<Predicate> &p : *edb) {
-			assertFact(p);
-		}
+	// load rules and facts
+	for(auto &dataFile : cfg.dataFiles) {
+		consult(dataFile);
 	}
-	*/
+	// TODO: support synchronization with data sources.
+	//      - when facts are asserted into EDB, also assert into PrologEngine
+	//      - support writing facts asserted from PrologEngine into EDB?
+	//           i.e. when assert is called in the PrologEngine.
+	for(auto &factBase : cfg.factBases) {
+		consult(factBase);
+	}
+	for(auto &ruleBase : cfg.ruleBases) {
+		consult(ruleBase);
+	}
+	return true;
 }
 
-/*
-void PrologReasoner::initializeConfiguration(const ReasonerConfiguration &cfg)
+
+bool PrologReasoner::consult(const std::shared_ptr<DataFile> &dataFile)
 {
+	// TODO: ensure file has the right format?
+	//	- could also have importer for certain formats that cannot be loaded natively
+	return consult(dataFile->path());
 }
-*/
+
+bool PrologReasoner::consult(const std::string &prologFile)
+{
+	// TODO: use Prolog modules to encapsulate reasoner configurations
+	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
+		std::shared_ptr<Predicate>(new Predicate(
+			"consult", { std::make_shared<StringTerm>(prologFile) }
+		))
+	)));
+}
+
+bool PrologReasoner::consult(const std::shared_ptr<FactBase> &factBase)
+{
+	KB_WARN("consult(FactBase) not implemented");
+	return false;
+}
+
+bool PrologReasoner::consult(const std::shared_ptr<RuleBase> &ruleBase)
+{
+	KB_WARN("consult(RuleBase) not implemented");
+	return false;
+}
 
 
 bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
+	// TODO: could be cached, or initially loaded into a set
 	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
 		std::shared_ptr<Predicate>(new Predicate(
 			"current_functor", {
 				std::make_shared<StringTerm>(predicate.functor()),
 				std::make_shared<Integer32Term>(predicate.arity())
 			}
-		))
-	)));
-}
-
-bool PrologReasoner::consult(const std::string &prologFile)
-{
-	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"consult", { std::make_shared<StringTerm>(prologFile) }
 		))
 	)));
 }
@@ -154,8 +139,6 @@ bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 
 std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 {
-	// TODO: don't do this in C++ but rather wrap every query string in some term like was done
-	//       in rosprolog.
 	static std::shared_ptr<Variable> termVar(new Variable("TermFromAtom"));
 	static std::shared_ptr<Variable> listVar(new Variable("Vars"));
 	static std::shared_ptr<ListTerm> opts(new ListTerm({
@@ -198,7 +181,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 			return p0->applySubstitution(s);
 		}
 		else {
-			spdlog::info("something went wrong");
+			KB_WARN("something went wrong");
 			return term;
 		}
 	}
@@ -214,8 +197,10 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Q
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
 		new PrologReasoner::Runner(outputChannel, goal));
+	workerGoal->reasoner = this;
 	
-	threadPool_.pushWork(workerGoal);
+	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
+	PrologReasoner::threadPool().pushWork(workerGoal);
 	return outputStream->pop_front();
 }
 
@@ -230,9 +215,10 @@ std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
 		new PrologReasoner::Runner(outputChannel, goal));
+	workerGoal->reasoner = this;
 	
 	// assign the goal to a worker thread
-	threadPool_.pushWork(workerGoal);
+	PrologReasoner::threadPool().pushWork(workerGoal);
 	// wait until work is done, and push EOS
 	workerGoal->join();
 	outputChannel->push(QueryResultStream::eos());
@@ -256,27 +242,32 @@ void PrologReasoner::startQuery(uint32_t queryID,
 	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 {
-	spdlog::info("PrologReasoner::startQuery");
 	// create a request object and store it in a map
-	activeQueries_[queryID] = {
-		outputStream,
-		goal,
-		std::list<std::shared_ptr<PrologReasoner::Runner>>()
-	};
-	spdlog::debug("query {} started.", queryID);
-	spdlog::debug("query {} readable string is {}.", queryID, goal->getHumanReadableString());
+	auto *req = new Request;
+	req->outputStream = outputStream;
+	req->goal = goal;
+	req->hasReceivedAllInput = false;
+	{
+		// protect activeQueries_ with request_mutex_
+		std::lock_guard<std::mutex> lock(request_mutex_);
+		activeQueries_[queryID] = req;
+	}
 }
 
-void PrologReasoner::finishQuery(uint32_t queryID,
-	bool isImmediateStopRequested)
+void PrologReasoner::finishQuery(uint32_t queryID, bool isImmediateStopRequested)
 {
-	spdlog::info("PrologReasoner::finishQuery");
 	// Get query request from query ID
-	auto it = activeQueries_.find(queryID);
-	if(it == activeQueries_.end()) {
-		spdlog::warn("query {} is not active.", queryID);
-		return;
+	RequestMap::iterator it; {
+		// protect activeQueries_ with request_mutex_
+		std::lock_guard<std::mutex> lock(request_mutex_);
+		it = activeQueries_.find(queryID);
+		if(it == activeQueries_.end()) {
+			KB_WARN("query {} is not active.", queryID);
+			return;
+		}
 	}
+	PrologReasoner::Request *req = it->second;
+	req->hasReceivedAllInput = true;
 	
 	if(isImmediateStopRequested) {
 		// instruct all active query runners to stop.
@@ -285,41 +276,68 @@ void PrologReasoner::finishQuery(uint32_t queryID,
 		// or right away if the thread is sleeping.
 		// note: no need to wait for the runner to be stopped here. it could be the runner
 		// needs more time to terminate, or even never terminates.
-		for(auto &x : it->second.runner) {
-			x->stop(false);
+		{
+			std::lock_guard<std::mutex> scoped_lock(req->mutex);
+			for(auto &x : req->runner) {
+				x->stop(false);
+			}
 		}
+		req->outputStream->push(QueryResultStream::eos());
 	}
 	else {
-		// wait until every query runner completed to avoid their solutions
-		// being published after the EOS message below.
-		// note: this may block for a long time if the query evaluation does not terminate,
-		// or takes very long time.
-		// TODO: It would be good to use a timeout and a max
-		// computation time for each runner to avoid deadlocks here.
-		// also a mechanism for ungracefully stopping a runner would be good.
-		// FIXME: probably not good to block the main thread here!
-		for(auto &x : it->second.runner) {
-			x->join();
-		}
-	}
-	
-	// FIXME:ok so basically remember we are finished, this means no additional
-	//        runner is created. but don't join above. each runner notifies this
-	//        when stopped. once every runner has switched to closed, send eof.
-	//        but his must be triggered by runner.
-	
-	//if(ALL_RUNNERS_OF_QUERY_DONE) {
 		// push EOS message to indicate to subscribers that no more
 		// messages will be published on this channel.
-		it->second.outputStream->push(QueryResultStream::eos());
-	//}
-	
-	// remove this request from the map of active query requests
-	activeQueries_.erase(it);
+		bool isEmpty; {
+			std::lock_guard<std::mutex> scoped_lock(req->mutex);
+			isEmpty = req->runner.empty();
+		}
+		if(isEmpty) {
+			req->outputStream->push(QueryResultStream::eos());
+			delete req;
+			{
+				// protect activeQueries_ with request_mutex_
+				std::lock_guard<std::mutex> lock(request_mutex_);
+				activeQueries_.erase(it);
+			}
+		}
+	}
 }
 
-void PrologReasoner::pushSubstitution(uint32_t queryID,
-	const SubstitutionPtr &bindings)
+void PrologReasoner::finishRunner(uint32_t queryID, PrologReasoner::Runner *runner)
+{
+	// Get query request from query ID
+	RequestMap::iterator it; {
+		// protect activeQueries_ with request_mutex_
+		std::lock_guard<std::mutex> lock(request_mutex_);
+		
+		it = activeQueries_.find(queryID);
+		if(it == activeQueries_.end()) {
+			// query is not active
+			return;
+		}
+	}
+	PrologReasoner::Request *req = it->second;
+	
+	bool isRequestFinished; {
+		std::lock_guard<std::mutex> lock(req->mutex);
+		// remove runner from list in the request
+		req->runner.erase(runner->requestIterator);
+		// request is finished when no more runner is active, and no more input to process
+		isRequestFinished = (req->runner.empty() && req->hasReceivedAllInput);
+	}
+	if(isRequestFinished) {
+		// send EOF and delete request if this was the last runner
+		req->outputStream->push(QueryResultStream::eos());
+		delete req;
+		{
+			// protect activeQueries_ with request_mutex_
+			std::lock_guard<std::mutex> lock(request_mutex_);
+			activeQueries_.erase(it);
+		}
+	}
+}
+
+void PrologReasoner::pushSubstitution(uint32_t queryID, const SubstitutionPtr &bindings)
 {
 	// TODO: decide how to handle different instantiations of the same query
 	//   1. Only do one query + foreign predicate that connects to the stream
@@ -334,28 +352,46 @@ void PrologReasoner::pushSubstitution(uint32_t queryID,
 	// anyways. for 1. maybe a larger then core-size thread pool would be good as many
 	// queries could be active at once such that a scheduler needs to switch between them.
 	//
-	spdlog::info("PrologReasoner::pushSubstitution");
 	
 	// Get query request from query ID
-	auto it = activeQueries_.find(queryID);
-	if(it == activeQueries_.end()) {
-		spdlog::warn("query {} is not active.", queryID);
-		return;
+	PrologReasoner::Request *req; {
+		// protect activeQueries_ with request_mutex_
+		std::lock_guard<std::mutex> lock(request_mutex_);
+		auto it = activeQueries_.find(queryID);
+		if(it == activeQueries_.end()) {
+			KB_WARN("cannot push substitution for inactive query {}.", queryID);
+			return;
+		}
+		req = it->second;
 	}
-	PrologReasoner::Request &req = it->second;
 	
 	// create an instance of the input query by applying the substitution.
-	std::shared_ptr<Query> query = req.goal->applySubstitution(*bindings.get());
+	std::shared_ptr<Query> query = req->goal->applySubstitution(*bindings.get());
 	
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
-		new PrologReasoner::Runner(req.outputStream, query, bindings));
-	req.runner.push_back(workerGoal);
+		new PrologReasoner::Runner(req->outputStream, query, bindings));
+	workerGoal->reasoner = this;
+	workerGoal->queryID = queryID;
+	// add runner to list of runners associated to this request
+	{
+		std::lock_guard<std::mutex> lock(req->mutex);
+		req->runner.push_back(workerGoal);
+		workerGoal->requestIterator = req->runner.end();
+		--workerGoal->requestIterator;
+	}
 	
-	// enqueue work
-	threadPool_.pushWork(workerGoal);
+	// add work to queue
+	PrologReasoner::threadPool().pushWork(workerGoal);
 }
 
+/************************************/
+/********* PrologDataFile *********/
+/************************************/
+
+PrologDataFile::PrologDataFile(const std::string &path)
+: DataFile(path)
+{}
 
 /************************************/
 /********* PrologThreadPool *********/
@@ -369,7 +405,7 @@ bool PrologThreadPool::initializeWorker()
 {
 	// call PL_thread_attach_engine once initially for each worker thread
 	if(!PL_thread_attach_engine(NULL)) {
-		spdlog::error("failed to attach Prolog engine!");
+		KB_ERROR("failed to attach Prolog engine!");
 		return false;
 	}
 	return true;
@@ -408,10 +444,13 @@ void PrologReasoner::Runner::run()
 {
 	static const int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
 	
-	spdlog::debug("Prolog has new query.");
+	TermPtr exceptionTerm;
+	bool hasException = false;
+	
+	KB_DEBUG("Prolog has new query.");
 	PrologQuery pl_goal(goal_);
 	// the exception risen by the Prolog engine, if any
-	term_t exceptionTerm = (term_t)0;
+	term_t pl_exception = (term_t)0;
 	// open a Prolog query.
 	qid_t qid = PL_open_query(
 		// the context module of the goal.
@@ -428,13 +467,13 @@ void PrologReasoner::Runner::run()
 		// here is where the main work is done
 		if(!PL_next_solution(qid)) {
 			// read exception, if any
-			exceptionTerm = PL_exception(qid);
+			pl_exception = PL_exception(qid);
 			break;
 		}
 		// handle stop request
 		if(hasStopRequest()) break;
 		
-		spdlog::debug("Prolog has a next solution for query.");
+		KB_DEBUG("Prolog has a next solution for query.");
 		// create substitution mapping from variables to terms.
 		// first copy the input bindings, i.e. the variable substitutions that
 		// were applied to the input query for this particular runner.
@@ -454,35 +493,32 @@ void PrologReasoner::Runner::run()
 		outputStream_->push(solution);
 	}
 	
-	// TODO: notify PrologReasoner about runner being done
-	//xxx();
-	
-	// handle exception
-	if(exceptionTerm == (term_t)0) {
-		// normal termination
-	}
-	else {
-		// TODO
-		auto exceptionTerm0 = PrologQuery::constructTerm(exceptionTerm);
-		
-		std::ostringstream ss;
-		exceptionTerm0->write(ss);
-		spdlog::error("query evaluation failed: {}", ss.str());
-		
-		// note that this also free's exception term
+	// construct exception term
+	if(pl_exception != (term_t)0) {
+		hasException = true;
+		exceptionTerm = PrologQuery::constructTerm(pl_exception);
 		PL_clear_exception();
 	}
 	
-	spdlog::debug("Prolog query completed.");
+	KB_DEBUG("Prolog query completed.");
 	// free up resources
 	PL_close_query(qid);
+	// notify PrologReasoner about runner being done
+	// FIXME: this would cause segfault if reasoner destructor was called before
+	reasoner->finishRunner(queryID, this);
+	
+	// throw error if Prolog evaluation has caused an exception.
+	if(hasException) {
+		throw QueryError(*goal_.get(), *exceptionTerm.get());
+	}
 }
 
 void PrologReasoner::Runner::stop(bool wait)
 {
 	// TODO: is there a way to terminate above PL_next_solution call in case
 	//       runner received a stop request here?
-	//     - maybe PL_close_query can be called from here? but not sure about it.
+	//     - maybe PL_close_query can be called from here? seems unlikely
+	//     - *yielding* might be a way to avoid blocking in PL_next_solution
 	// wait if requested
 	ThreadPool::Runner::stop(wait);
 }

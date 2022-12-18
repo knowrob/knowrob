@@ -40,6 +40,11 @@ namespace knowrob {
 		// Override ThreadPool
 		void finalizeWorker();
 	};
+	
+	class PrologDataFile : public DataFile {
+	public:
+		PrologDataFile(const std::string &path);
+	};
 
 	/**
 	 * A Prolog reasoner that answers queries using SWI Prolog.
@@ -49,11 +54,9 @@ namespace knowrob {
 		/**
 		 * @initFile the path to a Prolog-encoded file that is initially consulted.
 		 */
-		PrologReasoner(const std::string &initFile);
+		PrologReasoner();
 		
 		~PrologReasoner();
-		
-		PrologReasoner(const PrologReasoner&) = delete;
 		
 		static void initialize(int argc, char** argv);
 		
@@ -81,7 +84,7 @@ namespace knowrob {
 		bool assertFact(const std::shared_ptr<Predicate> &predicate);
 
 		// Override IReasoner
- 		void initialize();
+ 		bool initialize(const ReasonerConfiguration &cfg);
 
 		// Override IReasoner
 		bool canReasonAbout(const PredicateIndicator &predicate);
@@ -100,13 +103,14 @@ namespace knowrob {
 			const SubstitutionPtr &bindings);
 
 	protected:
-		PrologThreadPool threadPool_;
-		std::string initFile_;
-		
 		/** A runner that evaluates a Prolog query.
 		 */
 		class Runner : public ThreadPool::Runner {
 		public:
+			uint32_t queryID;
+			PrologReasoner *reasoner;
+			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
+			
 			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				const std::shared_ptr<Query> &goal,
 				const SubstitutionPtr &bindings);
@@ -129,9 +133,26 @@ namespace knowrob {
 		struct Request {
 			std::shared_ptr<QueryResultStream::Channel> outputStream;
 			std::shared_ptr<Query> goal;
+			std::atomic<bool> hasReceivedAllInput;
 			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
+			std::mutex mutex;
 		};
-		std::map<uint32_t, PrologReasoner::Request> activeQueries_;
+		using RequestMap = std::map<uint32_t, PrologReasoner::Request*>;
+		
+		RequestMap activeQueries_;
+		std::mutex request_mutex_;
+		
+		void finishRunner(uint32_t queryID, PrologReasoner::Runner *runner);
+		
+		bool consult(const std::shared_ptr<DataFile> &dataFile);
+		bool consult(const std::shared_ptr<FactBase> &factBase);
+		bool consult(const std::shared_ptr<RuleBase> &ruleBase);
+		
+		static PrologThreadPool& threadPool();
+		
+		PrologReasoner(const PrologReasoner&) = delete;
+		
+		friend class PrologReasoner::Runner;
 	};
 }
 

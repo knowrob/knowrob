@@ -14,8 +14,16 @@
 // KnowRob
 #include <knowrob/lang/terms.h>
 #include <knowrob/qa/queries.h>
+#include <knowrob/db/data_sources.h>
 
 namespace knowrob {
+	class ReasonerConfiguration {
+	public:
+		std::list<std::shared_ptr<DataFile>> dataFiles;
+		std::list<std::shared_ptr<FactBase>> factBases;
+		std::list<std::shared_ptr<RuleBase>> ruleBases;
+	};
+	
 	/**
 	 * The interface for reasoning subsystems.
 	 */
@@ -25,9 +33,8 @@ namespace knowrob {
 
 		/** Initialize this reasoner.
 		 * This will only be called once when the reasoner is loaded.
-		 * @todo is it certain run is not called while initialization is still ongoing?
 		 */
-		virtual void initialize() = 0;
+		virtual bool initialize(const ReasonerConfiguration &cfg) = 0;
 
 		/** Find out whether this reasoner can handle a given predicate.
 		 *

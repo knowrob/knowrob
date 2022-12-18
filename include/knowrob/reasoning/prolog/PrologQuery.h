@@ -21,7 +21,6 @@
 
 namespace knowrob {
 	/** Maps a Query object into term_t type of Prolog.
-	 * Works in both directions.
 	 */
 	class PrologQuery {
 	public:
@@ -62,28 +61,65 @@ namespace knowrob {
 		 * @t a term_t reference.
 		 * @return the Term object created.
 		 */
-		static std::shared_ptr<Term> constructTerm(const term_t &t);
+		static TermPtr constructTerm(const term_t &t);
 		
-		static std::shared_ptr<Query> toQuery(const std::shared_ptr<Term> &t);
-		static std::shared_ptr<Formula> toFormula(const std::shared_ptr<Term> &t);
+		/** Creates a query from a term pointer by translation into a formula.
+		 * @t a Term pointer.
+		 * @return the Query object created.
+		 */
+		static std::shared_ptr<Query> toQuery(const TermPtr &t);
+		
+		/**
+		 * @return the 'fail' atom.
+		 */
+		static const atom_t& ATOM_fail();
+		/**
+		 * @return the 'false' atom.
+		 */
+		static const atom_t& ATOM_false();
+		/**
+		 * @return the 'true' atom.
+		 */
+		static const atom_t& ATOM_true();
+		/**
+		 * @return the ',' atom.
+		 */
+		static const atom_t& ATOM_comma();
+		/**
+		 * @return the ';' atom.
+		 */
+		static const atom_t& ATOM_semicolon();
+		
+		/**
+		 * @return the functor ','/2.
+		 */
+		static const functor_t& FUNCTOR_comma();
+		/**
+		 * @return the functor ';'/2.
+		 */
+		static const functor_t& FUNCTOR_semicolon();
+		
+		/**
+		 * @return the comma predicate.
+		 */
+		static const predicate_t& PREDICATE_comma();
+		/**
+		 * @return the semicolon predicate.
+		 */
+		static const predicate_t& PREDICATE_semicolon();
 		
 	protected:
 		std::shared_ptr<Query> qa_query_;
-		
-		term_t pl_query_;
 		predicate_t pl_predicate_;
+		term_t pl_query_;
 		term_t pl_arguments_;
 		std::map<std::string, term_t> vars_;
 
-		bool constructPrologTerm(const std::shared_ptr<Term>& qa_term, term_t &pl_term);
-		bool constructPrologTerm(const std::shared_ptr<Formula>& phi, term_t &pl_term);
-		bool constructPrologTerm(ConnectiveFormula *phi, functor_t &pl_functor, term_t &pl_term);
+		bool constructPrologTerm(const TermPtr& qa_term, term_t &pl_term);
+		bool constructPrologTerm(const FormulaPtr& phi, term_t &pl_term);
+		bool constructPrologTerm(ConnectiveFormula *phi, const functor_t &pl_functor, term_t &pl_term);
 		
-		static std::shared_ptr<Term> constructPredicate(const term_t &t);
-		
-		static std::shared_ptr<Formula> toFormula1(const std::shared_ptr<Predicate> &p);
-		
-		void createPrologPredicate();
+		static FormulaPtr toFormula(const TermPtr &t);
 		
 		// copy not supported
 		PrologQuery(const PrologQuery&) = delete;

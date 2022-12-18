@@ -6,12 +6,11 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// logging
-#include <spdlog/spdlog.h>
 // STD
 #include <stdexcept>
 #include <sstream>
 // KnowRob
+#include <knowrob/logging.h>
 #include <knowrob/ThreadPool.h>
 
 using namespace knowrob;
@@ -82,60 +81,49 @@ ThreadPool::Worker::~Worker()
 
 void ThreadPool::Worker::run()
 {
-	std::string threadID; {
-		std::stringstream ss;
-		ss << thread_.get_id();
-		threadID = ss.str();
-	}
-	spdlog::debug("WorkerThread {} started.", threadID.c_str());
-	
+	KB_DEBUG("Worker started.");
 	// let the pool do some thread specific initialization
 	if(!threadPool_->initializeWorker()) {
-		spdlog::error("WorkerThread {} initialization failed.", threadID.c_str());
+		KB_ERROR("Worker initialization failed.");
 		isTerminated_ = true;
 		// FIXME: remove from worker pool
 		return;
 	}
-	spdlog::debug("WorkerThread {} initialized.", threadID.c_str());
+	KB_DEBUG("Worker initialized.");
 	
 	// loop until the application exits
 	while(!hasTerminateRequest_) {
 		// wait for a claim
 		if(!threadPool_->hasWork()) {
-			spdlog::debug("WorkerThread {} going to sleep.", threadID.c_str());
+			KB_DEBUG("Worker going to sleep.");
 			std::unique_lock<std::mutex> lk(threadM_);
 			threadPool_->workCV_.wait(lk, [this]{
 				return hasTerminateRequest_ || threadPool_->hasWork();
 			});
-			spdlog::debug("WorkerThread {} woke up.", threadID.c_str());
+			KB_DEBUG("Worker woke up.");
 			if(hasTerminateRequest_) {
-				spdlog::debug("WorkerThread {} has terminate request.", threadID.c_str());
+				KB_DEBUG("Worker has terminate request.");
 				break;
 			}
 		}
 		
 		// pop work from queue
 		goal_ = threadPool_->popWork();
-		spdlog::debug("WorkerThread {} has a new goal.", threadID.c_str());
+		KB_DEBUG("Worker has a new goal.");
 		
 		// do the work
-		try {
-			if(goal_.get()!=NULL) {
-				goal_->runInternal();
-			}
-		}
-		catch(const std::exception& e) {
-			spdlog::warn("WorkerThread {} runner error: {}.", threadID.c_str(), e.what());
+		if(goal_.get()!=NULL) {
+			goal_->runInternal();
 		}
 		
 		// add the worker thread to the thread pool again
-		spdlog::debug("WorkerThread {} finished a goal.", threadID.c_str());
+		KB_DEBUG("Work finished.");
 	}
 	
 	// tell the thread pool that a worker thread exited
 	threadPool_->finalizeWorker();
 
-	spdlog::debug("WorkerThread {} terminated.", threadID.c_str());
+	KB_DEBUG("Worker terminated.");
 	isTerminated_ = true;
 }
 
@@ -161,7 +149,12 @@ void ThreadPool::Runner::join()
 void ThreadPool::Runner::runInternal()
 {
 	// do the work
-	run();
+	try {
+		run();
+	}
+	catch(const std::exception& e) {
+		KB_WARN("Worker error: {}.", e.what());
+	}
 	// toggle flag
 	isTerminated_ = true;
 	finishedCV_.notify_all();

@@ -79,6 +79,9 @@ namespace knowrob {
 		const FormulaType type_;
 	};
 	
+	// alias declaration
+	using FormulaPtr = std::shared_ptr<Formula>;
+	
 	/** A predicate formula.
 	 */
 	class PredicateFormula : public Formula {
@@ -97,7 +100,7 @@ namespace knowrob {
 		bool isGround() const;
 		
 		// Override Formula
-		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const;
 		
 		// Override Formula
 		void write(std::ostream& os) const;
@@ -114,13 +117,12 @@ namespace knowrob {
 		 * @type the type of the formula.
 		 * @formulae list of connected formulae.
 		 */
-		ConnectiveFormula(FormulaType type,
-			const std::vector<std::shared_ptr<Formula>> &formulae);
+		ConnectiveFormula(FormulaType type, const std::vector<FormulaPtr> &formulae);
 		
 		/**
 		 * @return the sub-formulas associated to this formula.
 		 */
-		const std::vector<std::shared_ptr<Formula>>& formulae() const { return formulae_; }
+		const std::vector<FormulaPtr>& formulae() const { return formulae_; }
 		
 		/**
 		 * @return symbol string of the operator
@@ -134,15 +136,15 @@ namespace knowrob {
 		void write(std::ostream& os) const;
 	
 	protected:
-		const std::vector<std::shared_ptr<Formula>> formulae_;
+		const std::vector<FormulaPtr> formulae_;
 		const bool isGround_;
 		
 		ConnectiveFormula(const ConnectiveFormula &other, const Substitution &sub);
 		
 		bool isGround1() const;
 		
-		std::vector<std::shared_ptr<Formula>> applySubstitution1(
-			const std::vector<std::shared_ptr<Formula>> &otherFormulas,
+		std::vector<FormulaPtr> applySubstitution1(
+			const std::vector<FormulaPtr> &otherFormulas,
 			const Substitution &sub) const;
 	};
 	
@@ -153,13 +155,13 @@ namespace knowrob {
 		/**
 		 * @formulae list of sub-formulas.
 		 */
-		ConjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
+		ConjunctionFormula(const std::vector<FormulaPtr> &formulae);
 		
 		// Override Formula
-		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const;
 		
 		// Override ConnectiveFormula
-		const char* operator_symbol() const { return "\u2228"; }
+		const char* operator_symbol() const { return "\u2227"; }
 		
 	protected:
 		ConjunctionFormula(const ConjunctionFormula &other, const Substitution &sub);
@@ -172,13 +174,13 @@ namespace knowrob {
 		/**
 		 * @formulae list of sub-formulas.
 		 */
-		DisjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae);
+		DisjunctionFormula(const std::vector<FormulaPtr> &formulae);
 		
 		// Override Formula
-		std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const;
 		
 		// Override ConnectiveFormula
-		const char* operator_symbol() const { return "\u2227"; }
+		const char* operator_symbol() const { return "\u2228"; }
 	
 	protected:
 		DisjunctionFormula(const DisjunctionFormula &other, const Substitution &sub);
@@ -192,7 +194,7 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-		Query(const std::shared_ptr<Formula> &formula);
+		Query(const FormulaPtr &formula);
 		
 		/**
 		 * @predicate the predicate that is queried.
@@ -202,24 +204,19 @@ namespace knowrob {
 		/**
 		 * @return the formula associated to this query.
 		 */
-		const std::shared_ptr<Formula>& formula() const { return formula_; }
+		const FormulaPtr& formula() const { return formula_; }
 		
 		/** Replaces variables in the query with terms based on a mapping provided in the argument.
 		 * @sub a mapping from variables to terms.
 		 * @return the new query created.
 		 */
 		std::shared_ptr<Query> applySubstitution(const Substitution &sub) const;
-		
-		/**
-		 * @return this query as a human readable string.
-		 */
-		std::string getHumanReadableString() const;
 
 	protected:
 		const std::shared_ptr<Formula> formula_;
 		
-		std::shared_ptr<Formula> copyFormula(const std::shared_ptr<Formula> &phi);
-		std::shared_ptr<Term>    copyTerm(const std::shared_ptr<Term> &t);
+		FormulaPtr copyFormula(const FormulaPtr &phi);
+		TermPtr copyTerm(const TermPtr &t);
 	};
 	
 	// aliases
@@ -315,6 +312,7 @@ namespace knowrob {
 	protected:
 		std::list<std::shared_ptr<Channel>> channels_;
 		std::atomic<bool> isOpened_;
+		std::mutex channel_mutex_;
 		
 		virtual void push(const Channel &channel, const QueryResultPtr &msg);
 		
@@ -393,6 +391,7 @@ namespace knowrob {
 	
 	protected:
 		QueryResultBuffer buffer_;
+		std::mutex buffer_mutex_;
 		
 		// Override QueryResultStream
 		void push(const Channel &channel, const QueryResultPtr &msg);
@@ -402,14 +401,23 @@ namespace knowrob {
 			SubstitutionPtr &combination);
 	};
 	
-	/**
+	/** An error during query processing.
 	 */
-	class ParserError : public std::runtime_error {
+	class QueryError : public std::runtime_error {
 	public:
-		/**
-		 */
-		ParserError(const std::string& what = "") : std::runtime_error(what) {}
+		QueryError(const Query &erroneousQuery, const Term &errorTerm);
+		
+		QueryError(const std::string& what = "");
+	
+	protected:
+		
+		std::string formatErrorString(const Query &erroneousQuery, const Term &errorTerm);
 	};
+}
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi);
+	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q);
 }
 
 #endif //__KNOWROB_QUERIES_H__

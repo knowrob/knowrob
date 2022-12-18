@@ -74,17 +74,13 @@ namespace knowrob {
 		/** Write the term into an ostream.
 		 */
 		virtual void write(std::ostream& os) const = 0;
-		
-		// TODO
-		std::string toString() const {
-			std::ostringstream ss;
-			write(ss);
-			return ss.str();
-		}
 	
 	private:
 		const TermType type_;
 	};
+	
+	// alias declaration
+	using TermPtr = std::shared_ptr<Term>;
 	
 	/** A variable term.
 	 * It is identified by a name string in the scope of a formula,
@@ -228,7 +224,7 @@ namespace knowrob {
 		 */
 		Predicate(
 			const std::string &functor,
-			const std::vector<std::shared_ptr<Term>> &arguments);
+			const std::vector<TermPtr> &arguments);
 		
 		/**
 		 * @indicator a predicate indicator reference.
@@ -236,7 +232,7 @@ namespace knowrob {
 		 */
 		Predicate(
 			const std::shared_ptr<PredicateIndicator> &indicator,
-			const std::vector<std::shared_ptr<Term>> &arguments);
+			const std::vector<TermPtr> &arguments);
 		
 		/** Substitution constructor.
 		 *
@@ -253,7 +249,7 @@ namespace knowrob {
 		/** Get the arguments of this predicate.
 		 * @return a vector of predicate arguments.
 		 */
-		const std::vector<std::shared_ptr<Term>>& arguments() const { return arguments_; }
+		const std::vector<TermPtr>& arguments() const { return arguments_; }
 		
 		/** Create a copy of this predicate where variables are replaced by terms.
 		 * @sub a mapping from variables to terms.
@@ -271,13 +267,13 @@ namespace knowrob {
 	
 	protected:
 		const std::shared_ptr<PredicateIndicator> indicator_;
-		const std::vector<std::shared_ptr<Term>> arguments_;
+		const std::vector<TermPtr> arguments_;
 		const bool isGround_;
 		
 		bool isGround1() const;
 		
-		std::vector<std::shared_ptr<Term>> applySubstitution(
-			const std::vector<std::shared_ptr<Term>> &in,
+		std::vector<TermPtr> applySubstitution(
+			const std::vector<TermPtr> &in,
 			const Substitution &sub) const;
 	};
 	
@@ -312,7 +308,7 @@ namespace knowrob {
 	 */
 	class ListTerm : public Term {
 	public:
-		ListTerm(const std::vector<std::shared_ptr<Term>> &elements);
+		ListTerm(const std::vector<TermPtr> &elements);
 		
 		/**
 		 * @return the NIL constant.
@@ -327,7 +323,7 @@ namespace knowrob {
 		/** Get the elements of this list.
 		 * @return a vector of list elements.
 		 */
-		const std::vector<std::shared_ptr<Term>>& elements() const { return elements_; }
+		const std::vector<TermPtr>& elements() const { return elements_; }
 		
 		// Override Term
 		bool isGround() const { return isGround_; }
@@ -339,22 +335,11 @@ namespace knowrob {
 		void write(std::ostream& os) const;
 	
 	protected:
-		const std::vector<std::shared_ptr<Term>> elements_;
+		const std::vector<TermPtr> elements_;
 		bool isGround_;
 		
 		bool isGround1() const;
 	};
-	
-	/*
-	class Triple : public Predicate {
-	};
-	
-	class FuzzyPredicate : public Predicate {
-	};
-	
-	class TemporalizedPredicate : public Predicate {
-	};
-	*/
 	
 	/** A substitution is a mapping from variables to terms.
 	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
@@ -368,13 +353,18 @@ namespace knowrob {
 		class Operation;
 		// alias
 		using Diff = std::queue<std::shared_ptr<Substitution::Operation>>;
-		using Iterator = std::map<Variable, std::shared_ptr<Term>>::iterator;
+		using Iterator = std::map<Variable,TermPtr>::iterator;
+		
+		/**
+		 * @return the substitution mapping.
+		 */
+		const std::map<Variable,TermPtr>& mapping() const { return mapping_; }
 		
 		/**
 		 * @var a variable.
 		 * @term a term.
 		 */
-		void set(const Variable &var, const std::shared_ptr<Term> &term);
+		void set(const Variable &var, const TermPtr &term);
 		
 		/** Map a variable to a term.
 		 * A null pointer reference is returned if the given variable
@@ -383,7 +373,7 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		const std::shared_ptr<Term>& get(const Variable &var) const;
+		const TermPtr& get(const Variable &var) const;
 		
 		/** Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
@@ -406,10 +396,6 @@ namespace knowrob {
 		 */
 		void rollBack(Substitution::Diff &changes);
 		
-		const std::map<Variable, std::shared_ptr<Term>>& mapping() const { return mapping_; }
-		
-		std::string toString() const;
-		
 		/** An atomic operation performed on a substitution.
 		 */
 		class Operation {
@@ -421,7 +407,7 @@ namespace knowrob {
 		};
 
 	protected:
-		std::map<Variable, std::shared_ptr<Term>> mapping_;
+		std::map<Variable,TermPtr> mapping_;
 		
 		class Added : public Operation {
 		public:
@@ -434,12 +420,12 @@ namespace knowrob {
 		
 		class Replaced : public Operation {
 		public:
-			Replaced(const Substitution::Iterator &it, const std::shared_ptr<Term> &replacedInstance);
+			Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance);
 			// Overwrite Operation
 			void rollBack(Substitution &sub);
 		protected:
 			Substitution::Iterator it_;
-			const std::shared_ptr<Term> replacedInstance_;
+			const TermPtr replacedInstance_;
 		};
 	};
 	
@@ -454,7 +440,7 @@ namespace knowrob {
 		 * @t0 a term.
 		 * @t1 a term.
 		 */
-		Unifier(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
+		Unifier(const TermPtr &t0, const TermPtr &t1);
 		
 		/**
 		 * @return true is a unifier exists.
@@ -464,16 +450,21 @@ namespace knowrob {
 		/** Applies the unifier to one of the unified terms.
 		 * @return an instance of the unified terms.
 		 */
-		std::shared_ptr<Term> apply();
+		TermPtr apply();
 	
 	protected:
-		std::shared_ptr<Term> t0_;
-		std::shared_ptr<Term> t1_;
+		TermPtr t0_;
+		TermPtr t1_;
 		bool exists_;
 		
-		bool unify(const std::shared_ptr<Term> &t0, const std::shared_ptr<Term> &t1);
-		bool unify(const Variable &var, const std::shared_ptr<Term> &t);
+		bool unify(const TermPtr &t0, const TermPtr &t1);
+		bool unify(const Variable &var, const TermPtr &t);
 	};
+}
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::Term& t);
+	std::ostream& operator<<(std::ostream& os, const knowrob::Substitution& omega);
 }
 
 #endif //__KNOWROB_TERMS_H__
