@@ -7,7 +7,6 @@
  */
 
 #include "knowrob/db/mongo/MongoCollection.h"
-#include <ros/ros.h>
 
 MongoCollection::MongoCollection(
 	    mongoc_client_pool_t *pool,
@@ -38,7 +37,8 @@ void MongoCollection::appendSession(bson_t *opts)
 	if(session_!=NULL) {
 		bson_error_t error;
 		if(!mongoc_client_session_append(session_, opts, &error)) {
-			ROS_WARN("[MongoCollection] unable to append session to opts: %s.", error.message);
+			// TODO make use of KB_LOG macro
+			//ROS_WARN("[MongoCollection] unable to append session to opts: %s.", error.message);
 		}
 	}
 }

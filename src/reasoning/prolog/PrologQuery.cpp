@@ -310,6 +310,12 @@ std::shared_ptr<Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 	return std::make_shared<Query>(toFormula(t));
 }
 
+TermPtr PrologQuery::toTerm(const FormulaPtr &phi)
+{
+	// TODO:
+	return BottomTerm::get();
+}
+
 /******************************************/
 /*********** static constants *************/
 /******************************************/

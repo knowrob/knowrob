@@ -39,11 +39,37 @@ install_ontology(
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
+message(STATUS "SWIPL ${SWIPL_INCLUDE_DIRS}")
+
+##############
+#### MONGO DB
+##############
+
+pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
+# find_package(libmongoc-1.0 1.7 REQUIRED)
+include_directories(${MONGOC_INCLUDE_DIRS})
+link_directories(${MONGOC_LIBRARY_DIRS})
+
+add_library(mongo_kb
+	SHARED
+	src/db/mongo/mongo_kb.cpp
+	src/db/mongo/bson_pl.cpp
+	src/db/mongo/MongoException.cpp
+	src/db/mongo/MongoInterface.cpp
+	src/db/mongo/MongoDatabase.cpp
+	src/db/mongo/MongoCollection.cpp
+	src/db/mongo/MongoCursor.cpp
+	src/db/mongo/MongoWatch.cpp
+)
+target_link_libraries(mongo_kb
+	${SWIPL_LIBRARIES}
+	${MONGOC_LIBRARIES})
+
 ##############
 #### QUERY ANSWERING
 ##############
 
-add_library(query_answering SHARED
+add_library(hyres SHARED
 	src/ThreadPool.cpp
 	src/logging.cpp
 	src/lang/terms.cpp
@@ -52,8 +78,9 @@ add_library(query_answering SHARED
 	src/reasoning/ReasonerManager.cpp
 	src/reasoning/prolog/PrologQuery.cpp
 	src/reasoning/prolog/PrologReasoner.cpp
+	src/reasoning/mongolog/MongologReasoner.cpp
 )
-target_link_libraries(query_answering
+target_link_libraries(hyres
 	${SWIPL_LIBRARIES}
 	${spdlog_LIBRARIES}
 )
@@ -67,17 +94,8 @@ add_executable(test_qa
 target_link_libraries(test_qa
 	spdlog::spdlog
 	${SWIPL_LIBRARIES}
-	query_answering
+	hyres
 )
-
-##############
-#### DB
-##############
-
-pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
-# find_package(libmongoc-1.0 1.7 REQUIRED)
-include_directories(${MONGOC_INCLUDE_DIRS})
-link_directories(${MONGOC_LIBRARY_DIRS})
 
 ##############
 ########## ROS1 block
@@ -101,22 +119,6 @@ if (catkin_FOUND)
 		CATKIN_DEPENDS rosprolog roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
-	
-	# TODO: get rid of rosprolog dependency in this lib
-	add_library(mongo_kb
-		SHARED
-		src/db/mongo/mongo_kb.cpp
-		src/db/mongo/bson_pl.cpp
-		src/db/mongo/MongoException.cpp
-		src/db/mongo/MongoInterface.cpp
-		src/db/mongo/MongoDatabase.cpp
-		src/db/mongo/MongoCollection.cpp
-		src/db/mongo/MongoCursor.cpp
-		src/db/mongo/MongoWatch.cpp)
-	target_link_libraries(mongo_kb
-		${SWIPL_LIBRARIES}
-		${MONGOC_LIBRARIES}
-		${catkin_LIBRARIES})
 
 	add_library(kb_algebra SHARED src/utility/algebra.cpp)
 	target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})

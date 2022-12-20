@@ -69,6 +69,8 @@ namespace knowrob {
 		 */
 		static std::shared_ptr<Query> toQuery(const TermPtr &t);
 		
+		static TermPtr toTerm(const FormulaPtr &phi);
+		
 		/**
 		 * @return the 'fail' atom.
 		 */

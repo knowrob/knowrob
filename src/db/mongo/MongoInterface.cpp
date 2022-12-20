@@ -9,8 +9,6 @@
 #include <mongoc.h>
 #include <sstream>
 
-#include <rosprolog/rosprolog_kb/rosprolog_kb.h>
-
 #include "knowrob/db/mongo/MongoInterface.h"
 #include "knowrob/db/mongo/bson_pl.h"
 
@@ -87,30 +85,39 @@ MongoWatch* MongoInterface::get_watch()
 /********** MongoInterface *******/
 /*********************************/
 
+static std::string readURI() {
+	char *mongo_host = std::getenv("KNOWROB_MONGO_HOST");
+	// TODO: support node parameters for mongo interface
+	//rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri))
+	
+	std::string mongo_uri;
+	if(mongo_host != NULL) {
+		char *mongo_user_name = std::getenv("KNOWROB_MONGO_USER");
+		char *mongo_user_pw = std::getenv("KNOWROB_MONGO_PASS");
+		char *mongo_database = std::getenv("KNOWROB_MONGO_DB");
+		char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
+		std::stringstream ss;
+		ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw 
+			<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database
+			// FIXME: this should be a parameter
+			//<< "?authSource=admin"
+			;
+		return ss.str();
+	}
+	else {
+		return "mongodb://localhost:27017/?appname=knowrob";
+	}
+}
+
 MongoInterface::MongoInterface()
+: MongoInterface(readURI())
+{
+}
+
+MongoInterface::MongoInterface(const std::string &mongo_uri)
 {
 	mongoc_init();
 	bson_error_t err;
-	std::string mongo_uri;
-	if(!rosprolog_kb::node().getParam(std::string("mongodb_uri"),mongo_uri)) {
-		char *mongo_host = std::getenv("KNOWROB_MONGO_HOST");
-		if(mongo_host != NULL) {
-			char *mongo_user_name = std::getenv("KNOWROB_MONGO_USER");
-			char *mongo_user_pw = std::getenv("KNOWROB_MONGO_PASS");
-			char *mongo_database = std::getenv("KNOWROB_MONGO_DB");
-			char *mongo_port = std::getenv("KNOWROB_MONGO_PORT");
-			std::stringstream ss;
-			ss << "mongodb://" << mongo_user_name << ":" << mongo_user_pw 
-				<< "@" << mongo_host << ":" << mongo_port << "/" << mongo_database
-				// FIXME: this should be a parameter
-				//<< "?authSource=admin"
-				;
-			mongo_uri = ss.str();
-		}
-		else {
-			mongo_uri = std::string("mongodb://localhost:27017/?appname=knowrob");
-		}
-	}
 	uri_ = mongoc_uri_new_with_error(mongo_uri.c_str(),&err);
 	if(!uri_) {
 		throw MongoException("invalid_uri",err);

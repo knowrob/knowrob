@@ -9,20 +9,28 @@
 #ifndef __KNOWROB_MONGOLOG_REASONER_H__
 #define __KNOWROB_MONGOLOG_REASONER_H__
 
-#include "knowrob/reasoning/LogicProgramReasoner.h"
-#include "knowrob/reasoning/mongolog/MongologFactBase.h"
-#include "knowrob/reasoning/mongolog/MongologRuleBase.h"
+// STD
+#include <memory>
+// KnowRob
+#include <knowrob/lang/terms.h>
+#include <knowrob/reasoning/IReasoner.h>
+#include <knowrob/reasoning/prolog/PrologReasoner.h>
 
 namespace knowrob {
-    class MongologReasoner : public LogicProgramReasoner<MongologFactBase,MongologRuleBase> {
-    public:
-        MongologReasoner(
-            std::shared_ptr<MongologFactBase> &edb,
-            std::shared_ptr<MongologRuleBase> &idb)
-            : LogicProgramReasoner(edb, idb) {};
-        ~MongologReasoner() {};
-
-    protected:
+	class MongologReasoner : public PrologReasoner {
+	public:
+		MongologReasoner();
+		~MongologReasoner();
+		
+		// Override IReasoner
+		bool initialize(const ReasonerConfiguration &cfg);
+		
+		// Override IReasoner
+		bool canReasonAbout(const PredicateIndicator &predicate);
+	protected:
+		
+		// Override PrologReasoner
+		std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q);
     };
 }
 

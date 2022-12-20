@@ -56,6 +56,7 @@ public:
 
 private:
 	MongoInterface();
+	MongoInterface(const std::string &mongoURI);
 	~MongoInterface();
 	
 	MongoInterface(MongoInterface const&); // Don't Implement

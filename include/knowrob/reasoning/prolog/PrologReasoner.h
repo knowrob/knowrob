@@ -61,6 +61,8 @@ namespace knowrob {
 		static void initialize(int argc, char** argv);
 		
 		std::shared_ptr<Term> readTerm(const std::string &queryString);
+		
+		virtual std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) { return q; }
 
 		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
@@ -68,7 +70,7 @@ namespace knowrob {
 		 * May throw an exception if there is no valid Prolog file at the given path.
 		 * @prologFile the local path to the file.
 		 */
-		bool consult(const std::string &prologFile);
+		virtual bool consult(const std::string &prologFile);
 		
 		/** Evaluates a query and returns one solution if any.
 		 * @return the first solution found, or QueryResultStream::eos().
@@ -81,13 +83,13 @@ namespace knowrob {
 		std::list<std::shared_ptr<QueryResult>> allSolutions(const std::shared_ptr<Query> &goal);
 
 		// Override LogicProgramReasoner
-		bool assertFact(const std::shared_ptr<Predicate> &predicate);
+		virtual bool assertFact(const std::shared_ptr<Predicate> &predicate);
 
 		// Override IReasoner
- 		bool initialize(const ReasonerConfiguration &cfg);
+ 		virtual bool initialize(const ReasonerConfiguration &cfg);
 
 		// Override IReasoner
-		bool canReasonAbout(const PredicateIndicator &predicate);
+		virtual bool canReasonAbout(const PredicateIndicator &predicate);
 
 		// Override IReasoner
 		void startQuery(uint32_t queryID,
@@ -147,6 +149,9 @@ namespace knowrob {
 		bool consult(const std::shared_ptr<DataFile> &dataFile);
 		bool consult(const std::shared_ptr<FactBase> &factBase);
 		bool consult(const std::shared_ptr<RuleBase> &ruleBase);
+		
+		std::shared_ptr<QueryResult> oneSolution1(const std::shared_ptr<Query> &goal);
+		std::list<std::shared_ptr<QueryResult>> allSolutions1(const std::shared_ptr<Query> &goal);
 		
 		static PrologThreadPool& threadPool();
 		

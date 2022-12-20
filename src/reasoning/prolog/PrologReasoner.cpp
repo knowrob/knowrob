@@ -114,6 +114,15 @@ bool PrologReasoner::consult(const std::shared_ptr<RuleBase> &ruleBase)
 	return false;
 }
 
+bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
+{
+	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
+		std::shared_ptr<Predicate>(new Predicate(
+			"user:assertz", { fact }
+		))
+	)));
+}
+
 
 bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
@@ -128,15 +137,6 @@ bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 	)));
 }
 
-bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
-{
-	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"user:assertz", { fact }
-		))
-	)));
-}
-
 std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 {
 	static std::shared_ptr<Variable> termVar(new Variable("TermFromAtom"));
@@ -147,7 +147,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 	
 	auto termAtom = std::shared_ptr<StringTerm>(new StringTerm(queryString));
 	// run a query
-	auto result = oneSolution(std::shared_ptr<Query>(new Query(
+	auto result = oneSolution1(std::shared_ptr<Query>(new Query(
 		std::shared_ptr<Predicate>(new Predicate(
 			"read_term_from_atom", { termAtom, termVar, opts }
 		))
@@ -189,6 +189,11 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 
 std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Query> &goal)
 {
+	return oneSolution1(transformQuery(goal));
+}
+
+std::shared_ptr<QueryResult> PrologReasoner::oneSolution1(const std::shared_ptr<Query> &goal)
+{
 	std::shared_ptr<QueryResult> result;
 	
 	// create an output queue for the query
@@ -196,7 +201,7 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Q
 	auto outputChannel = outputStream->createChannel();
 	// create a runner for a worker thread
 	auto workerGoal = std::shared_ptr<PrologReasoner::Runner>(
-		new PrologReasoner::Runner(outputChannel, goal));
+		new PrologReasoner::Runner(outputChannel, transformQuery(goal)));
 	workerGoal->reasoner = this;
 	
 	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
@@ -205,6 +210,11 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Q
 }
 
 std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::shared_ptr<Query> &goal)
+{
+	return allSolutions1(transformQuery(goal));
+}
+
+std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions1(const std::shared_ptr<Query> &goal)
 {
 	std::list<std::shared_ptr<QueryResult>> results;
 	std::shared_ptr<QueryResult> nextResult;
@@ -245,7 +255,7 @@ void PrologReasoner::startQuery(uint32_t queryID,
 	// create a request object and store it in a map
 	auto *req = new Request;
 	req->outputStream = outputStream;
-	req->goal = goal;
+	req->goal = transformQuery(goal);
 	req->hasReceivedAllInput = false;
 	{
 		// protect activeQueries_ with request_mutex_
