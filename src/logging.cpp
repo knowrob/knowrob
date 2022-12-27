@@ -13,7 +13,7 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/dist_sink.h>
 
-#define LOGFILE_MAX_SIZE 1024*1024
+#define LOGFILE_MAX_SIZE (1024*1024)
 #define LOGFILE_MAX_FILES 4
 #define LOGFILE_ROTATE_ON_OPEN true
 

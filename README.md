@@ -72,7 +72,7 @@ Here we provide an overview about functionality of KnowRob.
 
 The core of KnowRob is an extendible querying interface that
 provides basic operations *ask*, *tell*, *forget*, and *remember*.
-Their argument is some statement written in the [KnowRob Querying Language](src/lang/README.md).
+Their argument is some statement written in the [KnowRob Querying Language](src/README.md).
 Language phrases are terms whose semantics is defined
 in form of Prolog rules using special operators such as *?>* (the ask operator),
 or *+>* (the tell operator).

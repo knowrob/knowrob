@@ -13,6 +13,9 @@ find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
 
+enable_testing()
+find_package(GTest REQUIRED)
+
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
 
@@ -26,6 +29,8 @@ link_directories(${SWIPL_LIBRARY_DIRS})
 # install ontologies hosted on http servers.
 # copy them into the workspace such the we can load them
 # from a local source at runtime.
+# TODO: there is a similar macros called FetchContent_* shipped with CMake.
+#       Have a look if install_ontology can use it or be replaced with it.
 install_ontology(
 	URL		  "http://www.ease-crc.org/ont/DUL.owl"
 	VERSION   "3.34")
@@ -39,8 +44,6 @@ install_ontology(
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
-message(STATUS "SWIPL ${SWIPL_INCLUDE_DIRS}")
-
 ##############
 #### MONGO DB
 ##############
@@ -50,60 +53,55 @@ pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
 include_directories(${MONGOC_INCLUDE_DIRS})
 link_directories(${MONGOC_LIBRARY_DIRS})
 
-add_library(mongo_kb
-	SHARED
-	src/db/mongo/mongo_kb.cpp
-	src/db/mongo/bson_pl.cpp
-	src/db/mongo/MongoException.cpp
-	src/db/mongo/MongoInterface.cpp
-	src/db/mongo/MongoDatabase.cpp
-	src/db/mongo/MongoCollection.cpp
-	src/db/mongo/MongoCursor.cpp
-	src/db/mongo/MongoWatch.cpp
-)
+add_library(mongo_kb SHARED
+		src/mongodb/mongo_kb.cpp
+		src/mongodb/bson_pl.cpp
+		src/mongodb/MongoException.cpp
+		src/mongodb/MongoInterface.cpp
+		src/mongodb/MongoDatabase.cpp
+		src/mongodb/MongoCollection.cpp
+		src/mongodb/MongoCursor.cpp
+		src/mongodb/MongoWatch.cpp)
 target_link_libraries(mongo_kb
-	${SWIPL_LIBRARIES}
-	${MONGOC_LIBRARIES})
+		${SWIPL_LIBRARIES}
+		${MONGOC_LIBRARIES})
+
+##############
+##############
+
+add_library(kb_algebra SHARED src/prolog/utility/algebra.cpp)
+target_link_libraries(kb_algebra ${SWIPL_LIBRARIES})
 
 ##############
 #### QUERY ANSWERING
 ##############
 
 add_library(hyres SHARED
-	src/ThreadPool.cpp
-	src/logging.cpp
-	src/lang/terms.cpp
-	src/qa/queries.cpp
-	src/qa/Blackboard.cpp
-	src/reasoning/ReasonerManager.cpp
-	src/reasoning/prolog/PrologQuery.cpp
-	src/reasoning/prolog/PrologReasoner.cpp
-	src/reasoning/mongolog/MongologReasoner.cpp
-)
+		src/ThreadPool.cpp
+		src/logging.cpp
+		src/terms.cpp
+		src/queries.cpp
+		src/Blackboard.cpp
+		src/ReasonerManager.cpp
+		src/prolog/PrologQuery.cpp
+		src/prolog/PrologReasoner.cpp
+		src/mongolog/MongologReasoner.cpp
+        src/mongolog/MongologTests.cpp)
 target_link_libraries(hyres
-	${SWIPL_LIBRARIES}
-	${spdlog_LIBRARIES}
-)
-#add_dependencies(query_answering
-#	${${PROJECT_NAME}_EXPORTED_TARGETS}
-#)
+		${SWIPL_LIBRARIES}
+		spdlog::spdlog
+		GTest::gtest)
 
-add_executable(test_qa
-	test/test_qa.cpp
-)
-target_link_libraries(test_qa
-	spdlog::spdlog
-	${SWIPL_LIBRARIES}
-	hyres
-)
+add_executable(test_qa tests/test_qa.cpp)
+target_link_libraries(test_qa hyres)
 
 ##############
 ########## ROS1 block
 ##############
 
 find_package(catkin QUIET COMPONENTS
-    rosprolog roscpp roslib urdf
-    geometry_msgs message_generation)
+		rosprolog roscpp roslib tests/urdf
+		geometry_msgs message_generation)
 
 if (catkin_FOUND)
 	message(STATUS "Building with ROS1 support.")
@@ -119,12 +117,6 @@ if (catkin_FOUND)
 		CATKIN_DEPENDS rosprolog roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
-
-	add_library(kb_algebra SHARED src/utility/algebra.cpp)
-	target_link_libraries(kb_algebra ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-	add_dependencies(kb_algebra
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
 	
 	### TF messages ###
 	add_library(tf_knowrob SHARED
@@ -161,10 +153,25 @@ else()
 endif()
 
 ##############
+########## Unit Testing
 ##############
 
-install(DIRECTORY owl/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
+# add an executable target for GTest.
+# but the testing code is actually in the *hyres* library
+# where gtest won't find them without using the "--no-as-needed"
+# flag for the linker.
+add_executable(all_gtests tests/gtests.cpp)
+target_link_libraries(all_gtests
+		-Wl,--whole-archive,--no-as-needed
+		hyres
+		-Wl,--no-whole-archive
+		GTest::gtest_main)
 
-install(DIRECTORY prolog/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
+##############
+##############
+
+# TODO: look into installation
+#install(DIRECTORY owl/
+#		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
+#install(DIRECTORY prolog/
+#		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)

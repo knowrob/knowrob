@@ -84,7 +84,7 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 	if(parent0.compare(parent1)!=0) {
 		return false;
 	}
-	// test whether temporal distance exceeds threshold
+	// tests whether temporal distance exceeds threshold
 	if(timeThreshold_>0.0) {
 		double timeDistance = (
 				(ts0.header.stamp.sec * 1000.0 + ts0.header.stamp.nsec / 1000000.0) -
@@ -93,7 +93,7 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 			return false;
 		}
 	}
-	// test whether vectorial distance exceeds threshold
+	// tests whether vectorial distance exceeds threshold
 	const geometry_msgs::Vector3 &pos0 = ts0.transform.translation;
 	const geometry_msgs::Vector3 &pos1 = ts1.transform.translation;
 	double vectorialDistance = sqrt(
@@ -103,7 +103,7 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 	if(vectorialDistance > vectorialThreshold_) {
 		return false;
 	}
-	// test whether angular distance exceeds threshold
+	// tests whether angular distance exceeds threshold
 	const geometry_msgs::Quaternion &rot0 = ts0.transform.rotation;
 	const geometry_msgs::Quaternion &rot1 = ts1.transform.rotation;
     tf::Quaternion q1(rot0.x, rot0.y, rot0.z, rot0.w);

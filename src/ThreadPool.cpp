@@ -112,7 +112,7 @@ void ThreadPool::Worker::run()
 		KB_DEBUG("Worker has a new goal.");
 		
 		// do the work
-		if(goal_.get()!=NULL) {
+		if(goal_!=nullptr) {
 			goal_->runInternal();
 		}
 		

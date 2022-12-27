@@ -15,7 +15,7 @@
 %
 
 :- use_module(library(settings)).
-:- use_module(library('lang/scope'),
+:- use_module(library('scope'),
     [ current_scope/1 ]).
 :- use_module('object_marker').
 
