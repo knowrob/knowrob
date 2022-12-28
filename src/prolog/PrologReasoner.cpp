@@ -40,7 +40,13 @@ void PrologReasoner::initialize(int argc, char** argv) {
 	//pl_av[pl_ac++] = (char *) "-G256M";
 	pl_av[pl_ac] = nullptr;
 
-	PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message, 0);
+	// register some foreign predicates, i.e. cpp functions that are used
+	// to evaluate predicates.
+	// note: the predicates are loaded into module "user"
+	// note: PL_register_foreign can be called at any time before or after
+	//       PL_initialise has been called.
+	PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
+	PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
 
 	PL_initialise(pl_ac, pl_av);
 }
@@ -645,5 +651,5 @@ void PrologTests::runPrologTests(
 		}
 	}
 	EXPECT_TRUE(hasResult);
-	KB_INFO("[{}:1] {}/{} tests succeeded.", target, (numTests-numFailedTests), numTests);
+	KB_INFO1(target.c_str(), 1, "{}/{} tests succeeded.", (numTests-numFailedTests), numTests);
 }

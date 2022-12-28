@@ -11,6 +11,20 @@
 
 #include <SWI-Prolog.h>
 
-foreign_t pl_log_message(term_t arg0, term_t arg1);
+/**
+ * Implements the predicate `log_message/2`.
+ * @param level_term an atom encoding the log level
+ * @param msg_term the logged term
+ */
+foreign_t pl_log_message2(term_t level_term, term_t msg_term);
+
+/**
+ * Implements the predicate `log_message/4`.
+ * @param level_term an atom encoding the log level
+ * @param msg_term the logged term
+ * @param file_term an atom encoding the file source
+ * @param line_term a number indicating the line number
+ */
+foreign_t pl_log_message4(term_t level_term, term_t msg_term, term_t file_term, term_t line_term);
 
 #endif // __KNOWROB_PROLOG_LOGGING_H__

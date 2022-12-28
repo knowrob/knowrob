@@ -22,7 +22,7 @@
 :- use_module(library('scope')).
 :- use_module(library('mongolog/subgraph'), [ set_graph_option/2 ]).
 :- use_module(library('mongodb/client')).
-:- use_module(library('utility/logging')).
+:- use_module(library('logging')).
 
 
 %% set of registered query commands.

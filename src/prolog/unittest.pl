@@ -93,13 +93,15 @@ plunit_message_hook(failed_assertions(_)) :- !.
 plunit_message_hook(failed(_)) :- !.
 plunit_message_hook(passed(_)) :- !.
 
-plunit_message_hook(blocked(_FileIndicator, Name, Msg)) :-
-    log_warning(test_blocked(Name, Msg)).
+plunit_message_hook(blocked(FileIndicator, Name, Msg)) :-
+    log_warning(test_blocked(Name, Msg), FileIndicator).
 plunit_message_hook(fixme(0, 0, 0)) :- !.
 plunit_message_hook(fixme(Failed, Passed, Nondet)) :-
     Total is Failed + Passed + Nondet,
+    % TODO: add file indicator to log. Unfortunately the msg does not carry context.
     log_warning(test_fixme(num_tests(Total))).
 plunit_message_hook(no_tests) :-
+    % TODO: add file indicator to log. Unfortunately the msg does not carry context.
     log_warning(no_tests).
 
 plunit_message_hook(begin(Unit)) :-

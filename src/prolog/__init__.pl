@@ -36,7 +36,7 @@
 
 % message formatting and logging
 :- use_module(library('messages')).
-:- use_module(library('utility/logging')).
+:- use_module(library('logging')).
 
 % tooling around plunit
 :- use_module(library('unittest')).
