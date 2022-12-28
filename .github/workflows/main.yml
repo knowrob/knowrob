@@ -45,19 +45,11 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        echo "github_ws"
-        ls $GITHUB_WORKSPACE
-        echo "ros_ws"
-        ls $GITHUB_WORKSPACE/ros_ws
         echo "build_isolated"
-        ls $GITHUB_WORKSPACE/ros_ws/build_isolated
+        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated
         echo "\nbuild_isolated/knowrob"
-        ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob
-        echo "\nbuild_isolated/knowrob/bin"
-        ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/bin
-        echo "build_isolated/gtest"
-        ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/gtest
-        $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/gtest/all_gtests --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
+        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob
+        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/all_gtests --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
