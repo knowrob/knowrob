@@ -37,7 +37,6 @@
 :- rdf_meta(step_compile(t,t,t)).
 :- rdf_meta(step_compile(t,t,t,-)).
 
-
 %% add_command(+Command) is det.
 %
 % register a command that can be used in KnowRob

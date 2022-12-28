@@ -73,6 +73,14 @@ prolog:message(test_nondet(Name)) -->
 prolog:message(test_report(name=N,tests=C0,failures=C1,errors=C2,time=Time)) -->
 	[ '[plunit] ~p pass:~p/~p time:~p'-[N,Count,C0,Time] ],
 	{ Count is C0 - (C1 + C2) }.
+prolog:message(test_blocked(Name,Msg)) -->
+    [ '[plunit] test "~p" is blocked: ~p'-[Name,Msg] ].
+prolog:message(test_fixme(num_tests(1)))   --> [ '[plunit] 1 test is labeled as `fixme`' ].
+prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled as `fixme`'-[Num] ].
+
+% formatting of messages
+prolog:message(mng_db_name(Name)) -->
+	[ 'Using MongoDB database `~w`.'-[Name] ].
 
 %% Intercept plunit messages, and
 %% create facts using the dynamic "test_*" predicates.

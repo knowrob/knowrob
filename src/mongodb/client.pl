@@ -58,6 +58,10 @@ To this end, Prolog datastructures are translated from and into BSON format.
 
 :- dynamic mng_db_name/1.
 
+% formatting of messages
+prolog:message(mng_db_name(Name)) -->
+	[ 'Using MongoDB database `~w`.'-[Name] ].
+
 % define some settings
 :- setting(db_name, atom, roslog,
 	'Name of the Mongo DB used by KnowRob.').

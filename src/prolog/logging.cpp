@@ -34,17 +34,30 @@ static inline foreign_t pl_log_message_internal(term_t level_term, term_t msg_te
 	// second argument holds the logged term
 	TermPtr msg = PrologQuery::constructTerm(msg_term);
 
+	// remove single quotes from logged message which are added
+	// by the string conversion of Term objects.
+	std::stringstream ss; {
+		ss << *msg;
+	}
+	std::string msg_str = ss.str();
+	if(msg_str.front() == '\'') {
+		msg_str.erase(0, 1);
+		msg_str.erase(msg_str.size() - 1);
+	}
+
+	// finally call the logging macro according to the level
+	// of the log message
 	if(level_atom == ATOM_debug) {
-		KB_DEBUG1(file, line, "{}", *msg);
+		KB_DEBUG1(file, line, "{}", msg_str);
 	}
 	else if(level_atom == ATOM_informational) {
-		KB_INFO1(file, line, "{}", *msg);
+		KB_INFO1(file, line, "{}", msg_str);
 	}
 	else if(level_atom == ATOM_warning) {
-		KB_WARN1(file, line, "{}", *msg);
+		KB_WARN1(file, line, "{}", msg_str);
 	}
 	else if(level_atom == ATOM_error) {
-		KB_ERROR1(file, line, "{}", *msg);
+		KB_ERROR1(file, line, "{}", msg_str);
 	}
 	else {
 		KB_WARN("unknown logging level '{}'.", PL_atom_chars(level_atom));
