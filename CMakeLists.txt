@@ -85,6 +85,7 @@ add_library(hyres SHARED
 		src/ReasonerManager.cpp
 		src/prolog/PrologQuery.cpp
 		src/prolog/PrologReasoner.cpp
+		src/prolog/logging.cpp
 		src/mongolog/MongologReasoner.cpp
         src/mongolog/MongologTests.cpp)
 target_link_libraries(hyres
