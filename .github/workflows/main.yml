@@ -45,7 +45,11 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        echo "\nbuild_isolated"
+        echo "github_ws"
+        ls $GITHUB_WORKSPACE
+        echo "ros_ws"
+        ls $GITHUB_WORKSPACE/ros_ws
+        echo "build_isolated"
         ls $GITHUB_WORKSPACE/ros_ws/build_isolated
         echo "\nbuild_isolated/knowrob"
         ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob
