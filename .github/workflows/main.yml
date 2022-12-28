@@ -45,6 +45,8 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
+        ls $GITHUB_WORKSPACE/
+        ls $GITHUB_WORKSPACE/ros_ws/
         ls $GITHUB_WORKSPACE/ros_ws/build/knowrob
         ls $GITHUB_WORKSPACE/ros_ws/build/bin
         $GITHUB_WORKSPACE/ros_ws/build/knowrob/all_gtests --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
