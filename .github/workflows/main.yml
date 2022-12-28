@@ -51,7 +51,7 @@ jobs:
         ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob
         echo "\nbuild_isolated/bin"
         ls $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/bin
-        $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/bin/gtest --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
+        $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/gtest --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
