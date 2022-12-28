@@ -18,6 +18,7 @@ protected:
 	static std::shared_ptr<knowrob::MongologReasoner> reasoner() {
 		static std::shared_ptr<knowrob::MongologReasoner> r;
 		if(r.get()==nullptr) {
+			KB_INFO("Running Mongolog tests");
 			knowrob::ReasonerConfiguration reasonerConfig;
 			r = std::make_shared<knowrob::MongologReasoner>();
 			r->initialize(reasonerConfig);

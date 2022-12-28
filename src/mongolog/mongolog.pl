@@ -167,7 +167,18 @@ mongolog_call(consult(File), _Ctx) :-
 	!,
 	mongolog_consult(File).
 
-mongolog_call(Goal, Context) :-
+mongolog_call(Goal, ContextIn) :-
+	% TODO: what is the fields option used for?
+	% TODO: reconsider handling of fact scope
+	% TODO: where is handling of fields/fact scope done?
+	% option(fields(Fields), Options, []),
+	% merge_options([user_vars([['v_scope',FScope]|Fields]),], Context0, Context1),
+	% add all toplevel variables to context.
+	% NOTE: this is important to avoid that Prolog garbage collects the variables!
+	% In case the garbage collection happens during query compilation, one query document
+	% may use different keys for the same variable.
+	term_keys_variables_(Goal, GlobalVars),
+	merge_options([global_vars(GlobalVars)], ContextIn, Context),
 	% get the pipeline document
 	mongolog_compile(Goal, pipeline(Doc,Vars), Context),
 	%
@@ -178,6 +189,17 @@ mongolog_call(Goal, Context) :-
 	list_to_set(Vars2,Vars3),
 	% run the pipeline
 	query_1(Doc, Vars3).
+
+%
+term_keys_variables_(Goal, GoalVars) :-
+    term_variables(Goal, Vars),
+    term_keys_variables_1(Vars, GoalVars).
+term_keys_variables_1([], []) :- !.
+term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
+    term_to_atom(X,Atom),
+    atom_concat('v',Atom,Key),
+    term_keys_variables_1(Xs, Ys).
+
 
 %%
 mongolog_assert(Fact) :-
@@ -807,6 +829,10 @@ var_key(Var, Ctx, Key) :-
 	!.
 var_key(Var, _Ctx, Key) :-
 	var(Var),
+	% FIXME: it might be this is not safe. in local unittests one fails because
+	%        a wrong var key is used in the query. So it appears term_to_atom returns
+	%        different values while the query is compiled. this only happens non deterministically
+	%        so maybe related to Prolog resource management.
 	term_to_atom(Var,Atom),
 	atom_concat('v',Atom,Key).
 
