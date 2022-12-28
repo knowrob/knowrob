@@ -35,7 +35,7 @@ jobs:
       run: |
         sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update -y -qq
-        sudo apt-get install swi-prolog
+        sudo apt-get install swi-prolog libspdlog-dev
         cd ros_ws
         catkin_make_isolated
     - name: Run KnowRob plunit tests
