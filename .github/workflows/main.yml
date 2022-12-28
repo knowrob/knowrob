@@ -46,7 +46,7 @@ jobs:
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
-        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/ros_ws/src/knowrob/junit-knowrob.xml" --gtest_color=no || true
+        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/ros_ws/junit-knowrob.xml" --gtest_color=no || true
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
