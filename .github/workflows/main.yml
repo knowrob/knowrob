@@ -45,7 +45,9 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        rosrun rosprolog rosprolog-test -o junit-knowrob.xml $GITHUB_WORKSPACE/ros_ws/src/knowrob/src
+        ls $GITHUB_WORKSPACE/ros_ws/build/knowrob
+        ls $GITHUB_WORKSPACE/ros_ws/build/bin
+        $GITHUB_WORKSPACE/ros_ws/build/knowrob/all_gtests --gtest_filter=* --gtest_output=xml:junit-knowrob.xml --gtest_color=no
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
