@@ -1,7 +1,7 @@
 #include <tf/LinearMath/Quaternion.h>
 
 #include <knowrob/ros/tf/logger.h>
-#include <knowrob/db/mongo/MongoInterface.h>
+#include <knowrob/mongodb/MongoInterface.h>
 
 TFLogger::TFLogger(
 		ros::NodeHandle &node,
