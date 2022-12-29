@@ -1,4 +1,4 @@
-:- module(utils_algebra,
+:- module(algebra,
     [ transform_multiply/3,         % +Transform1, +Transform2, -Product
       transform_between/3,          % +Transform1, +Transform2, -Relative
       transform_interpolate/4,      % +Transform1, +Transform2, +Factor, -Interpolated
@@ -15,8 +15,6 @@
 @author Daniel Beßler
 @license BSD
 */
-
-:- use_foreign_library('libkb_algebra.so').
 
 %% transform_multiply(+Transform1:term, +Transform2:term, ?Product:term) is semidet.
 %

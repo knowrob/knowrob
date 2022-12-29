@@ -67,12 +67,6 @@ target_link_libraries(mongo_kb
 		${MONGOC_LIBRARIES})
 
 ##############
-##############
-
-add_library(kb_algebra SHARED src/prolog/utility/algebra.cpp)
-target_link_libraries(kb_algebra ${SWIPL_LIBRARIES})
-
-##############
 #### QUERY ANSWERING
 ##############
 
@@ -86,6 +80,7 @@ add_library(hyres SHARED
 		src/prolog/PrologQuery.cpp
 		src/prolog/PrologReasoner.cpp
 		src/prolog/logging.cpp
+		src/prolog/algebra.cpp
 		src/mongolog/MongologReasoner.cpp
         src/mongolog/MongologTests.cpp)
 target_link_libraries(hyres

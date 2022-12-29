@@ -49,7 +49,7 @@
 
 :- use_module(library('utility/functional')).
 :- use_module(library('utility/filesystem')).
-:- use_module(library('utility/algebra')).
+:- use_module(library('algebra')).
 %:- use_module(library('utility/atoms')).
 %:- use_module(library('utility/threads')).
 %:- use_module(library('utility/url')).

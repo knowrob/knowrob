@@ -13,6 +13,7 @@
 #include <knowrob/logging.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/prolog/logging.h>
+#include <knowrob/prolog/algebra.h>
 
 using namespace knowrob;
 
@@ -47,6 +48,7 @@ void PrologReasoner::initialize(int argc, char** argv) {
 	//       PL_initialise has been called.
 	PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
 	PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
+	PL_register_extensions_in_module("algebra", algebra_predicates);
 
 	PL_initialise(pl_ac, pl_av);
 }
