@@ -50,7 +50,7 @@ jobs:
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
-        path: junit-*.xml
+        path: $GITHUB_WORKSPACE/junit-*.xml
         stripFromPath: $GITHUB_WORKSPACE/ros_ws/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
     #####
