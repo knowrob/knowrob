@@ -60,6 +60,11 @@ jobs:
         name: "unit tests"
         path: "$GITHUB_WORKSPACE/junit-*.xml"
         access-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      if: always()
+      with:
+        xunit_files: "$GITHUB_WORKSPACE/junit-*.xml"
     #####
     - name: Run pldoc
       if: ${{ github.event_name == 'push' }}
