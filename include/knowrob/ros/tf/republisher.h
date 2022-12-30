@@ -15,7 +15,7 @@
 
 #include <knowrob/ros/tf/memory.h>
 #include <knowrob/ros/tf/publisher.h>
-#include <knowrob/db/mongo/MongoInterface.h>
+#include <knowrob/mongodb/MongoInterface.h>
 
 /**
  * A TF publisher that publishes data stored in mongo DB.

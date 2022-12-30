@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: 'ros_ws/src/knowrob' 
     - name: Checkout rosprolog
@@ -35,23 +35,23 @@ jobs:
       run: |
         sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update -y -qq
-        sudo apt-get install swi-prolog
+        sudo apt-get install swi-prolog libspdlog-dev
         cd ros_ws
         catkin_make_isolated
-    - name: Run KnowRob plunit tests
+    - name: Run unit tests
       shell: bash
       run: |
         sudo systemctl start mongod
         export ROS_HOSTNAME=localhost
         roscore &
+        cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        rosrun rosprolog rosprolog-test -o junit-knowrob.xml $GITHUB_WORKSPACE/ros_ws/src/knowrob/src
-    - name: Report plunit results as Github Actions Annotations
-      uses: daniel86/junit-report-annotations-action@master
+        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/gtest-knowrob.xml" --gtest_color=no || true
+    - name: Report test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
       with:
-        path: junit-*.xml
-        stripFromPath: /home/runner/work/knowrob/knowrob/ros_ws/src/knowrob/
-        accessToken: ${{ secrets.GITHUB_TOKEN }}
+        junit_files: "gtest-knowrob.xml"
     #####
     - name: Run pldoc
       if: ${{ github.event_name == 'push' }}

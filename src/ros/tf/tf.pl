@@ -22,7 +22,7 @@
 	[ rdf_split_url/3 ]).
 :- use_module(library('utility/algebra'),
 	[ transform_between/3, transform_multiply/3 ]).
-:- use_module(library('lang/scope'),
+:- use_module(library('scope'),
 	[ scope_intersect/3,
 	  subscope_of/2,
 	  time_scope/3,

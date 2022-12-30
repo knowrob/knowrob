@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# A simple script to test sending Event tokens
+# A simple script to tests sending Event tokens
 # for the activity parser and its GUI.
 
 import sys

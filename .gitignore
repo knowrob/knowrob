@@ -40,3 +40,5 @@ owl/external/
 
 # ignore vscode-generated folder
 .vscode/
+/CMakeCache.txt
+/cmake_install.cmake

@@ -17,7 +17,7 @@
 	[ transform_between/3,
 	  transform_multiply/3
 	]).
-:- use_module(library('db/mongo/client')).
+:- use_module(library('mongodb/client')).
 
 % stores the last TF tree constructed from mongo
 :- dynamic tree_cache/2.

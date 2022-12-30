@@ -1,2 +1,0 @@
-
-:- use_directory('mongo').

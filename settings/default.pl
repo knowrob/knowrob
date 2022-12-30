@@ -1,9 +1,6 @@
 
-%	Plugins
-setting(knowrob:plugins, []).
-
 %	Triple DB
-setting(lang_db:drop_graphs, [user]). % erase "user" graph on start-up
+setting(mongolog_triple:drop_graphs, [user]). % erase "user" graph on start-up
 
 %	Mongo DB name
 setting(mng_client:db_name, roslog).

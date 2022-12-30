@@ -1,7 +1,7 @@
 :- use_module(library('rostest')).
 :- use_module(library('lang/query')).
-:- use_module(library('lang/scope')).
-:- use_module(library('db/mongo/client')).
+:- use_module(library('scope')).
+:- use_module(library('mongodb/client')).
 :- use_module(library('semweb/rdf_db')).
 
 :- use_module('tf').
@@ -29,7 +29,7 @@ tf_cleanup :-
 	tf_logger_disable,
 	tf_mng_drop.
 
-% some test facts
+% some tests facts
 test_pose_fred0([world,[1.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178679.123).
 test_pose_fred1([world,[2.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178680.123).
 test_pose_fred2([world,[3.0,0.4,2.32],[0.0,0.0,0.0,1.0]], 1593178681.123).
@@ -123,10 +123,10 @@ test('tf_transform_pose') :-
 	test_transform_pose(test:'Alex',Stamp1,[world,[2.0,1.4,2.32],_]),
 	test_transform_pose(test:'Fred',Stamp1,['Alex',_,_]).
 
-%test('tf_is_at') :-
+%tests('tf_is_at') :-
 %	test_pose_fred0(Pose0,Stamp0),
 %	assert_true(kb_call(
-%		during(is_at(test:'Fred',Pose0), [Stamp0,Stamp0])
+%		during(is_at(tests:'Fred',Pose0), [Stamp0,Stamp0])
 %	)).
 
 :- end_tests('tf').

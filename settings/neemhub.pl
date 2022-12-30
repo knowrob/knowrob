@@ -1,7 +1,4 @@
 
-%	Plugins
-setting(knowrob:plugins, []).
-
 %	
 setting(marker:auto, false).
 
@@ -9,7 +6,7 @@ setting(marker:auto, false).
 setting(tf:use_logger, false).
 
 %	Do not drop any triple graphs on startup
-setting(lang_db:drop_graphs, []).
+setting(mongolog_triple:drop_graphs, []).
 
 %	Mongo DB name
 setting(mng_client:db_name, 'neems').
