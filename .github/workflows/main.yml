@@ -38,7 +38,7 @@ jobs:
         sudo apt-get install swi-prolog libspdlog-dev
         cd ros_ws
         catkin_make_isolated
-    - name: Run KnowRob plunit tests
+    - name: Run unit tests
       shell: bash
       run: |
         sudo systemctl start mongod
@@ -47,7 +47,8 @@ jobs:
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/xunit-knowrob.xml" --gtest_color=no || true
-    - name: Report gtest results
+        cat $GITHUB_WORKSPACE/xunit-knowrob.xml
+    - name: Report test results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
