@@ -41,7 +41,6 @@ protected:
 };
 
 #define MONGOLOG_TEST_F(NAME, MONGOLOG_FILE) TEST_F(MongologTests, NAME) { \
-	SCOPED_TRACE(MONGOLOG_FILE); \
 	runMongologTests(mongologPath(MONGOLOG_FILE));}
 
 MONGOLOG_TEST_F(arithmetic,		"arithmetic.pl")

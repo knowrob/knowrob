@@ -629,11 +629,9 @@ void PrologTests::runPrologTests(
 		ASSERT_TRUE(trace.contains("file"));
 		ASSERT_TRUE(trace.contains("line"));
 		ASSERT_TRUE(trace.contains("name"));
-		// append the trace to gtest such that it appears in the report...
-		testing::ScopedTrace scoped_trace(
-				trace.getString("file","").c_str(),
-				trace.getLong("line",0),
-				trace.getString("name",""));
+		const auto &name = trace.getString("name","");
+		const char *file = trace.getString("file","").c_str();
+		const long line = trace.getLong("line",0);
 
 		// the third argument is a list of failures.
 		auto *failureList = (ListTerm*) pElem->arguments()[2].get();
@@ -647,9 +645,17 @@ void PrologTests::runPrologTests(
 			ASSERT_EQ(errElem->indicator().functor(), "element");
 			ASSERT_EQ(errElem->indicator().arity(), 3);
 			ASSERT_EQ(*(errElem->arguments()[0]), StringTerm("failure"));
+
+			OptionList errOpts(errElem->arguments()[1]);
+			ASSERT_TRUE(errOpts.contains("type"));
+			ASSERT_TRUE(errOpts.contains("message"));
+			auto message = errOpts.getString("type","") + ": " + errOpts.getString("message","");
+
 			// the second argument has the form: [ type=error|failure, message='...' ]
 			// the third argument is the exact same message, which is a bit strange.
-			EXPECT_TRUE(generateFailure(errElem->arguments()[2]));
+			//ADD_FAILURE_AT(file,line) << message;
+			GTEST_MESSAGE_AT_(file, line, ("test: " + name).c_str(), \
+							  testing::TestPartResult::kNonFatalFailure) << message;
 		}
 	}
 	EXPECT_TRUE(hasResult);
