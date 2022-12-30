@@ -48,7 +48,7 @@ jobs:
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/xunit-knowrob.xml" --gtest_color=no || true
     - name: Report gtest results
-      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         xunit_files: "xunit-knowrob.xml"
