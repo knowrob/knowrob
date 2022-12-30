@@ -45,6 +45,31 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
 ##############
+########## ROS1 block
+##############
+# NOTE: seems catkin_package must be called *before* any library is build.
+
+find_package(catkin QUIET COMPONENTS
+		rosprolog roscpp roslib tests/urdf
+		geometry_msgs message_generation)
+
+if (catkin_FOUND)
+	message(STATUS "Building with ROS1 support.")
+	
+	include_directories(${catkin_INCLUDE_DIRS})
+	
+	catkin_python_setup()
+
+	add_message_files(FILES EventToken.msg)
+	generate_messages(DEPENDENCIES geometry_msgs)
+	
+	catkin_package(
+		CATKIN_DEPENDS rosprolog roscpp roslib
+		CFG_EXTRAS ontologies.cmake
+	)
+endif()
+
+##############
 #### MONGO DB
 ##############
 
@@ -95,25 +120,7 @@ target_link_libraries(test_qa hyres)
 ########## ROS1 block
 ##############
 
-find_package(catkin QUIET COMPONENTS
-		rosprolog roscpp roslib tests/urdf
-		geometry_msgs message_generation)
-
 if (catkin_FOUND)
-	message(STATUS "Building with ROS1 support.")
-	
-	include_directories(${catkin_INCLUDE_DIRS})
-	
-	catkin_python_setup()
-
-	add_message_files(FILES EventToken.msg)
-	generate_messages(DEPENDENCIES geometry_msgs)
-	
-	catkin_package(
-		CATKIN_DEPENDS rosprolog roscpp roslib
-		CFG_EXTRAS ontologies.cmake
-	)
-	
 	# install into ROS workspace
 	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
