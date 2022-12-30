@@ -44,13 +44,13 @@ jobs:
         sudo systemctl start mongod
         export ROS_HOSTNAME=localhost
         roscore &
-        cd $GITHUB_WORKSPACE/ros_ws/devel_isolated/
-        source ./setup.bash
-        ./knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/ros_ws/junit-knowrob.xml" --gtest_color=no || true
+        cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
+        source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         echo "DEV"
-        ls ./knowrob/
+        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/
         echo "LIB"
-        ls ./knowrob/lib
+        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib
+        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/ros_ws/junit-knowrob.xml" --gtest_color=no || true
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
