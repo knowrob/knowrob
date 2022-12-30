@@ -52,7 +52,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        xunit_files: "xunit-knowrob.xml"
+        junit_files: "xunit-knowrob.xml"
     #####
     - name: Run pldoc
       if: ${{ github.event_name == 'push' }}
