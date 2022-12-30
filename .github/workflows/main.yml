@@ -47,12 +47,19 @@ jobs:
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
         $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/junit-knowrob.xml" --gtest_color=no || true
-    - name: Report plunit results as Github Actions Annotations
+    - name: Report gtest results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
         path: $GITHUB_WORKSPACE/junit-*.xml
         stripFromPath: $GITHUB_WORKSPACE/ros_ws/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
+    - name: Report gtest results as Github Actions Annotations (2)
+      uses: KyleAure/junit-report-annotations-action@1.5
+      if: always()
+      with:
+        name: "unit tests"
+        path: "$GITHUB_WORKSPACE/junit-*.xml"
+        access-token: ${{ secrets.GITHUB_TOKEN }}
     #####
     - name: Run pldoc
       if: ${{ github.event_name == 'push' }}
