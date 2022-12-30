@@ -50,8 +50,8 @@ jobs:
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
-        path: junit-*.xml
-        stripFromPath: /home/runner/work/knowrob/knowrob/ros_ws/src/knowrob/
+        path: $GITHUB_WORKSPACE/ros_ws/src/knowrob/junit-*.xml
+        stripFromPath: $GITHUB_WORKSPACE/ros_ws/src/knowrob/
         accessToken: ${{ secrets.GITHUB_TOKEN }}
     #####
     - name: Run pldoc
