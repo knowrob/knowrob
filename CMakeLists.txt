@@ -67,6 +67,8 @@ if (catkin_FOUND)
 		CATKIN_DEPENDS rosprolog roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
+else()
+	message(STATUS "Building without ROS1 support.")
 endif()
 
 ##############
@@ -155,8 +157,6 @@ if (catkin_FOUND)
 	add_dependencies(urdf_parser
 		${${PROJECT_NAME}_EXPORTED_TARGETS}
 		${catkin_EXPORTED_TARGETS})
-else()
-	message(STATUS "Building without ROS1 support.")
 endif()
 
 ##############

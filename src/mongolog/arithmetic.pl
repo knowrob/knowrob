@@ -168,7 +168,7 @@ expression_function(*,        '$multiply').
 
 test('is(-Y,+X)'):-
 	mongolog:test_call(
-		(Y is X), X, -3.25),
+		(Y is X), X, -4.25),
 	assert_equals(Y, -3.25).
 
 test('is(-Y,+Exp)'):-
