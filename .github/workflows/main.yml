@@ -45,11 +45,11 @@ jobs:
         export ROS_HOSTNAME=localhost
         roscore &
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib:$LD_LIBRARY_PATH"
+        export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob:$LD_LIBRARY_PATH"
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/ros_ws/junit-knowrob.xml" --gtest_color=no || true
         echo "LIB"
-        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib
+        ls $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob
     - name: Report plunit results as Github Actions Annotations
       uses: daniel86/junit-report-annotations-action@master
       with:
