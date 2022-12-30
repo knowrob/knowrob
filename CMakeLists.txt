@@ -114,6 +114,10 @@ if (catkin_FOUND)
 		CFG_EXTRAS ontologies.cmake
 	)
 	
+	# install into ROS workspace
+	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	
 	### TF messages ###
 	add_library(tf_knowrob SHARED
 		src/ros/tf/tf.cpp
