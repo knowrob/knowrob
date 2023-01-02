@@ -32,3 +32,9 @@
 :- use_module(temporal).
 
 :- rdf_meta(triple(t,t,t)).
+
+% load RDFS and OWL model
+:- load_owl('owl/rdf-schema.xml').
+:- load_owl('owl/owl.rdf',
+	[ namespace(owl,'http://www.w3.org/2002/07/owl#')
+	]).
