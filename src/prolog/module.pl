@@ -1,4 +1,4 @@
-:- module(utils_module,
+:- module(module_extensions,
         [ use_directory/1,
           interface/2
         ]).

@@ -1,4 +1,4 @@
-:- module(lang_messages, []).
+:- module(kb_messages, []).
 
 % a failure during term expansion. Usually caused
 % by referring to a predicate that is not known (yet).

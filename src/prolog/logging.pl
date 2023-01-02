@@ -1,4 +1,4 @@
-:- module(logging_messages,
+:- module(logging,
     [ log_error(t),
       log_warning(t),
       log_info(t),
@@ -76,4 +76,4 @@ log_message1(Level, Term, File:Line) :-
 %
 % Call log_message/2 and fail afterwards.
 %
-log_error_and_fail(Term) :- log_message1(error,Term), fail.
+log_error_and_fail(Term) :- log_message0(error,Term), fail.

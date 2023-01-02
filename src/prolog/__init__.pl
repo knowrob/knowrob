@@ -32,7 +32,7 @@
 %:- use_module(library('semweb/rdfs')).
 
 % more fancy module declarations
-:- use_module(library('utility/module')).
+:- use_module(library('module')).
 
 % message formatting and logging
 :- use_module(library('messages')).
@@ -47,12 +47,11 @@
 %	;  true
 %	).
 
-:- use_module(library('utility/functional')).
-:- use_module(library('utility/filesystem')).
+:- use_module(library('filesystem')).
+:- use_module(library('functional')).
 :- use_module(library('algebra')).
-%:- use_module(library('utility/atoms')).
-%:- use_module(library('utility/threads')).
-%:- use_module(library('utility/url')).
+:- use_module(library('url')).
+%:- use_module(library('atom')).
 
 % auto-loaded models
 :- use_module(library('xsd')).

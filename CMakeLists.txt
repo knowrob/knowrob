@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5.0)
 set (CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 set (CMAKE_CXX_STANDARD 17)
 
@@ -12,6 +12,11 @@ include("cmake/ontologies.cmake")
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
+
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -104,6 +109,7 @@ add_library(hyres SHARED
 		src/queries.cpp
 		src/Blackboard.cpp
 		src/ReasonerManager.cpp
+		src/HybridQA.cpp
 		src/prolog/PrologQuery.cpp
 		src/prolog/PrologReasoner.cpp
 		src/prolog/logging.cpp
@@ -114,6 +120,11 @@ target_link_libraries(hyres
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
 		GTest::gtest)
+
+add_executable(knowrob-terminal src/terminal.cpp)
+target_link_libraries(knowrob-terminal
+		Boost::program_options
+		hyres)
 
 add_executable(test_qa tests/test_qa.cpp)
 target_link_libraries(test_qa hyres)
@@ -126,6 +137,7 @@ if (catkin_FOUND)
 	# install into ROS workspace
 	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(hyres-commandline ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	
 	### TF messages ###
 	add_library(tf_knowrob SHARED

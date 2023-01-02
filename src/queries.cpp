@@ -480,5 +480,3 @@ namespace std {
 		return os;
 	}
 }
-
-

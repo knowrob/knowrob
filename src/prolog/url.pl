@@ -1,4 +1,4 @@
-:- module(utils_url,
+:- module(url,
         [ url_resolve/2
         ]).
 /** <module> Resolving URLs to local filesystem.

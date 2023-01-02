@@ -18,7 +18,7 @@
 		[ rdf_equal/2, rdf_register_ns/3 ]).
 :- use_module(library('http/http_open'),
 		[ http_open/3 ]).
-:- use_module(library('utility/url'),
+:- use_module(library('url'),
 		[ url_resolve/2 ]).
 :- use_module(library('xsd'),
 		[ xsd_data_basetype/2 ]).
