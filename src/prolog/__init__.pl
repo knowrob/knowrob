@@ -22,14 +22,8 @@
    asserta(user:library_directory(PrologDir)),
    asserta(user:library_directory(SrcDir)).
 
-% rules may generate discontiguous clauses.
-% TODO: find a better solution then disabling this globally.
-%:- style_check(-discontiguous).
-
 % load some standard Prolog libraries into user
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2]).
-%:- use_module(library('semweb/rdf_portray')).
-%:- use_module(library('semweb/rdfs')).
 
 % more fancy module declarations
 :- use_module(library('module')).

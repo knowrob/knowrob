@@ -26,6 +26,7 @@
 	]).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('rdftest')).
+:- use_module(library('scope')).
 
 :- multifile instance_of/2, subclass_of/2, subproperty_of/2.
 :- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
@@ -308,15 +309,17 @@ test('is_property(+Property)') :-
 	assert_false(is_property(test:'NotExisting')).
 
 test("instance_of(+,+)") :-
+	universal_scope(QScope),
 	assert_true(instance_of(test:'Rex', test:'Man')),
 	assert_false(instance_of(test:'Rex', test:'Adult')),
-	assert_true(mongolog_call(project(instance_of(test:'Rex', test:'Adult')))),
+	assert_true(mongolog_call(project(instance_of(test:'Rex', test:'Adult')), [scope(QScope)])),
 	assert_true(instance_of(test:'Rex', test:'Adult')).
 
 test("subproperty_of(+Sub,+Sup)") :-
 	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
 	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
-	assert_true(mongolog_call(project(subproperty_of(test:'hasBrother', test:'hasSibling')))),
+	universal_scope(QScope),
+	assert_true(mongolog_call(project(subproperty_of(test:'hasBrother', test:'hasSibling')), [scope(QScope)])),
 	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 test_list(RDF_list) :-

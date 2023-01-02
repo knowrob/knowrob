@@ -31,6 +31,7 @@ The following predicates are supported:
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('rdftest')).
 :- use_module(library('ontology')).
+:- use_module('subgraph').
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_assert(r)).
