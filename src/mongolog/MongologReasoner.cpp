@@ -11,34 +11,25 @@
 
 using namespace knowrob;
 
-MongologReasoner::MongologReasoner()
-: PrologReasoner()
+MongologReasoner::MongologReasoner(const std::string &reasonerID)
+: PrologReasoner(reasonerID)
 {}
 
 MongologReasoner::~MongologReasoner()
 {
 }
 
-bool MongologReasoner::initialize(const ReasonerConfiguration &cfg)
+bool MongologReasoner::initializeDefaultPackages()
 {
-	// TODO: initialize database connection
-	
-	if(!initializeDefaultPackages(cfg)) {
-		return false;
-	}
-
+	// TODO: allow that different instances connect to different DBs
 	// load mongolog code into Prolog
-	// TODO: properly handle path here
-	if(!consult1("src/mongolog/__init__.pl")) {
-		return false;
-	}
-
-	return initializeConfiguration(cfg);
+	return PrologReasoner::initializeDefaultPackages() &&
+			consultIntoUser(std::filesystem::path("mongolog") / "__init__.pl");
 }
 
-bool MongologReasoner::canReasonAbout(const PredicateIndicator &predicate)
+bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
 {
-	// TODO: could be cached, or initially loaded into a set
+	// TODO: better map to current_predicate as regular mongolog query?
 	return !QueryResultStream::isEOS(oneSolution1(std::make_shared<Query>(
 		std::shared_ptr<Predicate>(new Predicate(
 			"is_mongolog_predicate", {

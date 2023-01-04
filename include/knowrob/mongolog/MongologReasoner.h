@@ -19,19 +19,19 @@
 namespace knowrob {
 	class MongologReasoner : public PrologReasoner {
 	public:
-		MongologReasoner();
+		MongologReasoner(const std::string &reasonerID);
 		~MongologReasoner();
 		
 		// Override IReasoner
-		bool initialize(const ReasonerConfiguration &cfg) override;
-		
-		// Override IReasoner
-		bool canReasonAbout(const PredicateIndicator &predicate) override;
+		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
 		
 	protected:
 		
 		// Override PrologReasoner
 		std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) override;
+
+		// Override PrologReasoner
+		bool initializeDefaultPackages() override;
     };
 }
 
