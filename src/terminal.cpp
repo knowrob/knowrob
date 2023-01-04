@@ -17,17 +17,18 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
+#include <knowrob/knowrob.h>
 #include <knowrob/logging.h>
 #include <knowrob/HybridQA.h>
 #include <knowrob/queries.h>
-#include <knowrob/Blackboard.h>
-#include <knowrob/prolog/PrologQuery.h>
-#include <knowrob/prolog/PrologReasoner.h>
 
 using namespace knowrob;
 namespace po = boost::program_options;
 
 static const char* PROMPT = "?- ";
+
+// TODO support queries like: mongolog:(woman(X), ...) or (mongolog | prolog):(woman(X), ...)
+//    but there could be different instances of the same reasoner type. So might need a reasoner id instead.
 
 class HybridQATerminal : public QueryResultHandler {
 public:
@@ -261,11 +262,7 @@ int run(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-	knowrob::logging::initialize();
-	// TODO: would be nice if this would be done "under the hood"
-	//  in the constructor. but I got a segfault when I tried, not sure why.
-	knowrob::PrologReasoner::initialize(argc, argv);
-
+	InitKnowledgeBase(argc, argv);
 	try {
 		return run(argc,argv);
 	}

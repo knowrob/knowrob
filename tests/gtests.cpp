@@ -1,12 +1,9 @@
-
 #include <gtest/gtest.h>
-#include <knowrob/prolog/PrologReasoner.h>
-#include <knowrob/logging.h>
+#include <knowrob/knowrob.h>
 
 int main(int argc, char **argv)
 {
-	knowrob::logging::initialize();
+	knowrob::InitKnowledgeBase(argc, argv);
 	testing::InitGoogleTest(&argc, argv);
-	knowrob::PrologReasoner::initialize(argc, argv);
 	return RUN_ALL_TESTS();
 }
