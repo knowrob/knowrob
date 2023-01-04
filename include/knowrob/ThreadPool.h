@@ -63,7 +63,7 @@ namespace knowrob {
 			/** Stop the runner.
 			 * @wait call blocks until runner exited if true.
 			 */
-			virtual void stop(bool wait);
+			void stop(bool wait);
 			
 			/**
 			 * @return true if the runner was requested to stop.

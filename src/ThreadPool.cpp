@@ -66,9 +66,9 @@ bool ThreadPool::hasWork() const
 
 
 ThreadPool::Worker::Worker(ThreadPool *threadPool)
-: threadPool_(threadPool),
+: hasTerminateRequest_(false),
   isTerminated_(false),
-  hasTerminateRequest_(false),
+  threadPool_(threadPool),
   thread_(&Worker::run, this)
 {
 }
@@ -90,6 +90,7 @@ void ThreadPool::Worker::run()
 		return;
 	}
 	KB_DEBUG("Worker initialized.");
+	hasTerminateRequest_ = false;
 	
 	// loop until the application exits
 	while(!hasTerminateRequest_) {
@@ -170,5 +171,3 @@ void ThreadPool::Runner::stop(bool wait)
 		join();
 	}
 }
-
-
