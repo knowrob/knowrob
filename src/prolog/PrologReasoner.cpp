@@ -30,8 +30,6 @@ void PrologReasoner::initialize(int argc, char** argv) {
 	pl_av[pl_ac++] = (char *) "-g";
 	pl_av[pl_ac++] = (char *) "true";
 	// Inhibit any signal handling by Prolog
-	// TODO use version macro -nosignals needed for old version
-	// pl_av[pl_ac++] = (char *) "-nosignals";
 	pl_av[pl_ac++] = (char *) "--signals=false";
 	// Limit the combined size of the Prolog stacks to the indicated size.
 	//pl_av[pl_ac++] = (char *) "--stack_limit=32g";
@@ -271,6 +269,7 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution1(const std::shared_ptr<
 	workerGoal->reasoner = this;
 	
 	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
+	// FIXME: seems a deadlock occurs here if exception is thrown
 	PrologReasoner::threadPool().pushWork(workerGoal);
 	return outputStream->pop_front();
 }
@@ -389,6 +388,8 @@ void PrologReasoner::finishRunner(uint32_t queryID, PrologReasoner::Runner *runn
 		it = activeQueries_.find(queryID);
 		if(it == activeQueries_.end()) {
 			// query is not active
+			// make sure EOS is published on output stream
+			runner->outputStream_->push(QueryResultStream::eos());
 			return;
 		}
 	}
@@ -401,6 +402,7 @@ void PrologReasoner::finishRunner(uint32_t queryID, PrologReasoner::Runner *runn
 		// request is finished when no more runner is active, and no more input to process
 		isRequestFinished = (req->runner.empty() && req->hasReceivedAllInput);
 	}
+
 	if(isRequestFinished) {
 		// send EOF and delete request if this was the last runner
 		req->outputStream->push(QueryResultStream::eos());
@@ -445,10 +447,12 @@ void PrologReasoner::pushSubstitution(uint32_t queryID, const SubstitutionPtr &b
 	std::shared_ptr<Query> query = req->goal->applySubstitution(*bindings.get());
 	
 	// create a runner for a worker thread
+	// TODO: either constructor or not
 	auto workerGoal = std::make_shared<PrologReasoner::Runner>(
 		req->outputStream, query, bindings);
 	workerGoal->reasoner = this;
 	workerGoal->queryID = queryID;
+
 	// add runner to list of runners associated to this request
 	{
 		std::lock_guard<std::mutex> lock(req->mutex);
@@ -523,7 +527,7 @@ void PrologReasoner::Runner::run()
 	TermPtr exceptionTerm;
 	bool hasException = false;
 	
-	KB_DEBUG("Prolog has new query.");
+	KB_DEBUG("Prolog has new query `{}`.", *goal_);
 	PrologQuery pl_goal(goal_);
 	// the exception risen by the Prolog engine, if any
 	auto pl_exception = (term_t)0;
@@ -555,7 +559,7 @@ void PrologReasoner::Runner::run()
 		// were applied to the input query for this particular runner.
 		// TODO: it would be more clean to do this copying of the input bindings
 		// centrally such that it does not need to be duplicated for each reasoner.
-		auto solution = std::make_shared<QueryResult>(*bindings_.get());
+		auto solution = std::make_shared<QueryResult>(*bindings_);
 		
 		// second add any additional substitutions to the solution that the
 		// Prolog engine could find during query evaluation.
@@ -574,18 +578,20 @@ void PrologReasoner::Runner::run()
 		hasException = true;
 		exceptionTerm = PrologQuery::constructTerm(pl_exception);
 		PL_clear_exception();
+		KB_DEBUG("Prolog query failed.");
 	}
-	
-	KB_DEBUG("Prolog query completed.");
+	else {
+		KB_DEBUG("Prolog query completed.");
+	}
+
 	// free up resources
 	PL_close_query(qid);
 	// notify PrologReasoner about runner being done
-	// FIXME: this would cause segfault if reasoner destructor was called before
 	reasoner->finishRunner(queryID, this);
 	
 	// throw error if Prolog evaluation has caused an exception.
 	if(hasException) {
-		throw QueryError(*goal_.get(), *exceptionTerm.get());
+		throw QueryError(*goal_, *exceptionTerm);
 	}
 }
 

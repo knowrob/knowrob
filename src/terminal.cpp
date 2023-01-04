@@ -14,6 +14,8 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/logging.h>
 #include <knowrob/HybridQA.h>
@@ -29,15 +31,15 @@ static const char* PROMPT = "?- ";
 
 class HybridQATerminal : public QueryResultHandler {
 public:
-	HybridQATerminal(const po::variables_map &opts)
+	HybridQATerminal(const boost::property_tree::ptree &config)
 	: has_stop_request_(false),
 	  currentQuery_(""),
-	  cursor_(0)
+	  cursor_(0),
+	  hybridQA_(config)
 	{
 	}
 
-	static char getch()
-	{
+	static char getch() {
 		static struct termios old, current;
 		static char buf = 0;
 		// read termios settings
@@ -223,39 +225,52 @@ protected:
 	std::string currentQuery_;
 };
 
-int main(int argc, char **argv)
-{
+
+int run(int argc, char **argv) {
+	po::options_description general("General options");
+	general.add_options()
+			("help", "produce a help message")
+			("config-file", po::value<std::string>(), "a configuration file in JSON format")
+			("version", "output the version number");
+
+	// Declare an options description instance which will be shown
+	// to the user
+	po::options_description visible("Allowed options");
+	visible.add(general);
+
+	// parse command line arguments
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, visible), vm);
+
+	if(vm.count("help")) {
+		std::cout << visible;
+		return EXIT_SUCCESS;
+	}
+
+	// read settings
+	// TODO: fallback to default settings
+	boost::property_tree::ptree config;
+	if(vm.count("config-file")) {
+		boost::property_tree::read_json(
+				vm["config-file"].as<std::string>(),
+				config);
+	}
+
+	return HybridQATerminal(config).run();
+}
+
+
+int main(int argc, char **argv) {
 	knowrob::logging::initialize();
 	// TODO: would be nice if this would be done "under the hood"
 	//  in the constructor. but I got a segfault when I tried, not sure why.
 	knowrob::PrologReasoner::initialize(argc, argv);
 
 	try {
-		po::options_description general("General options");
-		general.add_options()
-			("help", "produce a help message")
-			//("help-module", po::value<std::string>(), "produce a help for a given module")
-			("version", "output the version number");
-
-		// Declare an options description instance which will be shown
-		// to the user
-		po::options_description visible("Allowed options");
-		visible.add(general);
-
-		// parse command line arguments
-		po::variables_map vm;
-		po::store(po::parse_command_line(argc, argv, visible), vm);
-
-		if (vm.count("help"))
-		{
-			std::cout << visible;
-			return EXIT_SUCCESS;
-		}
-
-		return HybridQATerminal(vm).run();
+		return run(argc,argv);
 	}
 	catch(std::exception& e) {
-		KB_ERROR("an exception occurred when running hyres-commandline: {}.", e.what());
+		KB_ERROR("an exception occurred: {}.", e.what());
 		return EXIT_FAILURE;
 	}
 }

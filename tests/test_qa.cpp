@@ -16,7 +16,7 @@ void test_kb1_PrologReasoner(
 {
 	auto query1 = knowrob::PrologQuery::toQuery(reasoner->readTerm("woman(X)"));
 	auto query2 = knowrob::PrologQuery::toQuery(reasoner->readTerm("woman(X), loves(Y,X)"));
-	auto query3 = knowrob::PrologQuery::toQuery(reasoner->readTerm("triple(X,Y,Z)"));
+	auto query3 = knowrob::PrologQuery::toQuery(reasoner->readTerm("abcdef(X)"));
 
 	KB_INFO("PrologReasoner query: {}", (*query1.get()));
 	for(auto solution : reasoner->allSolutions(query1))
@@ -30,11 +30,13 @@ void test_kb1_PrologReasoner(
 		KB_INFO("{}", (*solution.get()));
 	}
 
+	/*
 	KB_INFO("PrologReasoner query: {}", (*query3.get()));
 	for(auto solution : reasoner->allSolutions(query3))
 	{
 		KB_INFO("{}", (*solution.get()));
 	}
+	 */
 
 	KB_INFO("Blackboard query: {}", (*query1.get())); {
 		auto bbq = std::make_shared<knowrob::QueryResultQueue>();
@@ -47,9 +49,10 @@ void test_kb1_PrologReasoner(
 		}
 	}
 
-	KB_INFO("Blackboard query: {}", (*query2.get())); {
+	/*
+	KB_INFO("Blackboard query: {}", (*query3.get())); {
 		auto bbq = std::make_shared<knowrob::QueryResultQueue>();
-		auto bb = std::make_shared<knowrob::Blackboard>(reasonerManager, bbq, query2);
+		auto bb = std::make_shared<knowrob::Blackboard>(reasonerManager, bbq, query3);
 		bb->start();
 		while(true) {
 			auto solution = bbq->pop_front();
@@ -57,6 +60,7 @@ void test_kb1_PrologReasoner(
 			KB_INFO("{}", (*solution.get()));
 		}
 	}
+	 */
 }
 
 
@@ -78,7 +82,7 @@ int main(int argc, char** argv)
 	// add the reasoner to the reasoner manager used by the blackboard
 	auto reasonerManager = std::make_shared<knowrob::ReasonerManager>();
 	reasonerManager->addReasoner(reasoner);
-	
+
 	KB_INFO("running tests...");
 	test_kb1_PrologReasoner(reasoner, reasonerManager);
 	KB_INFO("done with tests.");

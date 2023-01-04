@@ -287,7 +287,7 @@ void QueryResultStream::Channel::push(const QueryResultPtr &msg)
 			isOpened_ = false;
 		}
 	}
-	else {
+	else if(!QueryResultStream::isEOS(msg)) {
 		KB_WARN("message pushed to closed stream {}", reinterpret_cast<std::uintptr_t>(this));
 	}
 }

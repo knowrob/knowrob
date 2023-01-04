@@ -1,0 +1,15 @@
+{
+  "reasoner": [
+    {
+      "type": "Mongolog",
+      "mng_client": {
+        "db_name": "knowrob",
+        "read_only": false,
+        "collection_prefix": ""
+      }
+    },
+    {
+      "type": "Prolog"
+    }
+  ]
+}

@@ -11,6 +11,8 @@
 
 // STD
 #include <memory>
+// BOOST
+#include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/terms.h>
 #include <knowrob/queries.h>
@@ -19,9 +21,17 @@
 namespace knowrob {
 	class ReasonerConfiguration {
 	public:
+		ReasonerConfiguration(const boost::property_tree::ptree &ptree);
+		ReasonerConfiguration() = default;
+
 		std::list<std::shared_ptr<DataFile>> dataFiles;
 		std::list<std::shared_ptr<FactBase>> factBases;
 		std::list<std::shared_ptr<RuleBase>> ruleBases;
+	};
+
+	class ReasonerError : public std::runtime_error {
+	public:
+		ReasonerError(const std::string& what = "") : std::runtime_error(what) {}
 	};
 	
 	/**
@@ -64,5 +74,9 @@ namespace knowrob {
 			bool isImmediateStopRequested) = 0;
 	};
 }
+
+#define REASONER_PLUGIN(classType, pluginName) extern "C" { \
+		std::shared_ptr<IReasoner> knowrob_createReasoner() { return std::make_shared<classType>(); } \
+		const char* knowrob_getPluginName() { return pluginName; } }
 
 #endif //__KNOWROB_IREASONER_H__

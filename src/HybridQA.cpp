@@ -6,23 +6,31 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <knowrob/logging.h>
 #include <knowrob/HybridQA.h>
 #include <knowrob/Blackboard.h>
 
 using namespace knowrob;
 
-HybridQA::HybridQA()
+HybridQA::HybridQA(const boost::property_tree::ptree &config)
 {
-	// create a PrologReasoner
-	knowrob::ReasonerConfiguration reasonerConfig;
-	reasonerConfig.dataFiles.push_back(
-			std::make_shared<knowrob::PrologDataFile>("tests/prolog/kb1.pl"));
-	prologReasoner_ = std::make_shared<knowrob::PrologReasoner>();
-	//auto reasoner = std::make_shared<knowrob::MongologReasoner>();
-	prologReasoner_->initialize(reasonerConfig);
-
 	reasonerManager_ = std::make_shared<ReasonerManager>();
-	reasonerManager_->addReasoner(prologReasoner_);
+	loadConfiguration(config);
+	// create a PrologReasoner used only for parsing queries
+	prologReasoner_ = std::make_shared<knowrob::PrologReasoner>();
+	prologReasoner_->initialize(ReasonerConfiguration());
+}
+
+void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
+{
+	for(const auto &pair : config.get_child("reasoner")) {
+		try {
+			reasonerManager_->loadReasoner(pair.second);
+		}
+		catch(std::exception& e) {
+			KB_ERROR("failed to load a reasoner: {}", e.what());
+		}
+	}
 }
 
 std::shared_ptr<Query> HybridQA::parseQuery(const std::string &queryString)

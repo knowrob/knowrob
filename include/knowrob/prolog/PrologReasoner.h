@@ -130,6 +130,9 @@ namespace knowrob {
 			uint32_t queryID;
 			PrologReasoner *reasoner;
 			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
+			std::shared_ptr<QueryResultStream::Channel> outputStream_;
+			std::shared_ptr<Query> goal_;
+			SubstitutionPtr bindings_;
 			
 			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				const std::shared_ptr<Query> &goal,
@@ -142,11 +145,6 @@ namespace knowrob {
 			void stop(bool wait) override;
 			// Override Runner
 			void run() override;
-		
-		protected:
-			std::shared_ptr<QueryResultStream::Channel> outputStream_;
-			std::shared_ptr<Query> goal_;
-			SubstitutionPtr bindings_;
 			
 		};
 		

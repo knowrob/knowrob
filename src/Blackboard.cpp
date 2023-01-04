@@ -29,7 +29,7 @@ Blackboard::Blackboard(
 	// create a channel of outputQueue_, and add it as subscriber
 	auto queueChannel = outputQueue_->createChannel();
 	outBroadcaster_->addSubscriber(queueChannel);
-	
+
 	// decompose into atomic formulas
 	decompose(goal->formula(), inputStream_, outBroadcaster_);
 }
@@ -90,15 +90,19 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<Blackboard::Stream> reasonerIn;
 	std::shared_ptr<Blackboard::Segment> segment;
 	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
-	
+
 	// get ensemble of reasoner
 	std::list<std::shared_ptr<IReasoner>> ensemble =
 		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
 	// create a subquery for the predicate p
 	std::shared_ptr<Query> subq = std::make_shared<Query>(phi);
 
-    if (ensemble.empty())
-        throw QueryError("no reasoner available for a predicate");
+    if (ensemble.empty()) {
+		// TODO: avoid redundant string formatting by supporting same syntax for QueryErrors
+		//throw QueryError("no reasoner registered for query `{}`", *phi);
+		KB_WARN("no reasoner registered for query `{}`", *phi);
+		throw QueryError("no reasoner available for a predicate");
+	}
 
     for(std::shared_ptr<IReasoner> &r : ensemble) {
 		// create IO channels
@@ -121,7 +125,7 @@ void Blackboard::decomposeConjunction(
 	std::shared_ptr<QueryResultBroadcaster> out;
 	
 	// TODO: compute a dependency relation between atomic formulae of a query.
-	// atomic formulae that are independent can be evaluated concurrently.
+	//   atomic formulae that are independent can be evaluated concurrently.
 	
 	// add blackboard segments for each predicate in the conjunction
 	int counter = 1;

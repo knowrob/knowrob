@@ -9,8 +9,9 @@
 #ifndef KNOWROB_HYBRIDQA_H
 #define KNOWROB_HYBRIDQA_H
 
-// STD
 #include <memory>
+// BOOST
+#include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/queries.h>
 #include <knowrob/ReasonerManager.h>
@@ -24,7 +25,7 @@ namespace knowrob {
 
 	class HybridQA {
 	public:
-		HybridQA();
+		HybridQA(const boost::property_tree::ptree &config);
 
 		std::shared_ptr<Query> parseQuery(const std::string &queryString);
 
@@ -33,6 +34,8 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<PrologReasoner> prologReasoner_;
+
+		void loadConfiguration(const boost::property_tree::ptree &config);
 	};
 };
 

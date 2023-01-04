@@ -1,0 +1,21 @@
+{
+  "reasoner": [
+    {
+      "type": "Mongolog",
+      "database": {
+        "name": "neems",
+        "read_only": true,
+        "collection_prefix": "5fc8ff968f880006aa208e19"
+      },
+      "drop_graphs": []
+    }
+  ],
+  "ros": {
+    "marker": {
+      "auto": false
+    },
+    "tf": {
+      "use_logger": false
+    }
+  }
+}

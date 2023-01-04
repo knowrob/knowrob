@@ -39,7 +39,7 @@ bool MongologReasoner::initialize(const ReasonerConfiguration &cfg)
 bool MongologReasoner::canReasonAbout(const PredicateIndicator &predicate)
 {
 	// TODO: could be cached, or initially loaded into a set
-	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
+	return !QueryResultStream::isEOS(oneSolution1(std::make_shared<Query>(
 		std::shared_ptr<Predicate>(new Predicate(
 			"is_mongolog_predicate", {
 				std::make_shared<StringTerm>(predicate.functor()) //,
