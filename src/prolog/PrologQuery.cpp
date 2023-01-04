@@ -12,7 +12,7 @@
 using namespace knowrob;
 
 	
-PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
+PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query, const char* module)
 : qa_query_(qa_query),
   pl_query_(PL_new_term_ref())
 {
@@ -32,7 +32,7 @@ PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
 		arity = qa_pred->arguments().size();
 		// TODO: should the predicate_t be stored in a static variable?
 		pl_predicate_ = PL_predicate(
-			qa_pred->indicator().functor().c_str(), arity, NULL);
+			qa_pred->indicator().functor().c_str(), arity, module);
 		break;
 	}
 	case FormulaType::CONJUNCTION:

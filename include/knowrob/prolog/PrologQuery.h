@@ -27,7 +27,7 @@ namespace knowrob {
 		/**
 		 * @query a Query object.
 		 */
-		PrologQuery(const std::shared_ptr<Query> &query);
+		PrologQuery(const std::shared_ptr<Query> &query, const char* module);
 		
 		~PrologQuery();
 
