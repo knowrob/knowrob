@@ -46,16 +46,12 @@ namespace knowrob {
 		 */
 		virtual bool initialize(const ReasonerConfiguration &cfg) = 0;
 
-		/** Find out whether this reasoner can handle a given predicate.
+		/** Find out whether a given predicate is defined by this reasoner.
 		 *
-		 * Note that, following the Syntax of the querying language,
-		 * for a reasoner to be able to answer the `,\2` predicate entails that the
-		 * reasoner can handle conjunctive queries, `;\2` disjunctive queries etc.
-		 *
-		 * @param predicate the predicate in question
-		 * @return true if the reasoner can determine the truth of given predicate.
+		 * @param indicator a predicate indicator
+		 * @return true if the indicated predicate is currently defined.
 		 */
-		virtual bool canReasonAbout(const PredicateIndicator &predicate) = 0;
+		virtual bool isCurrentPredicate(const PredicateIndicator &indicator) = 0;
 
 		/**
 		 */
@@ -76,7 +72,8 @@ namespace knowrob {
 }
 
 #define REASONER_PLUGIN(classType, pluginName) extern "C" { \
-		std::shared_ptr<IReasoner> knowrob_createReasoner() { return std::make_shared<classType>(); } \
+		std::shared_ptr<IReasoner> knowrob_createReasoner(const std::string &reasonerID) \
+			{ return std::make_shared<classType>(reasonerID); } \
 		const char* knowrob_getPluginName() { return pluginName; } }
 
 #endif //__KNOWROB_IREASONER_H__
