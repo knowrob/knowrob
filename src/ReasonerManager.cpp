@@ -17,6 +17,7 @@ using namespace knowrob;
 
 
 ReasonerManager::ReasonerManager()
+: reasonerIndex_(0)
 {
 	// add some default factory functions to create reasoner instances
 	addReasonerFactory("Mongolog", std::make_shared<TypedReasonerFactory<MongologReasoner>>("Mongolog"));
@@ -50,11 +51,25 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	if(!factory) {
 		throw ReasonerError("failed to load a reasoner.");
 	}
-	KB_INFO("Using '{}' reasoner.", factory->name());
+	// create a reasoner id, or use name property
+	std::string reasonerID;
+	if(config.count("name")) {
+		reasonerID = config.get<std::string>("name");
+	}
+	else {
+		reasonerID = factory->name() + std::to_string(reasonerIndex_);
+	}
+	KB_INFO("Using reasoner `{}` with type `{}`.", reasonerID, factory->name());
 	// create a new reasoner instance
-	auto reasoner = factory->createReasoner();
-	reasoner->initialize(ReasonerConfiguration(config));
-	addReasoner(reasoner);
+	auto reasoner = factory->createReasoner(reasonerID);
+	if(!reasoner->initialize(ReasonerConfiguration(config))) {
+		KB_WARN("Reasoner `{}` failed to initialize.", reasonerID);
+	}
+	else {
+		addReasoner(reasoner);
+	}
+	// increase reasonerIndex_
+	reasonerIndex_ += 1;
 }
 
 std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::string &path)
@@ -94,7 +109,7 @@ std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(c
 {
 	std::list<std::shared_ptr<IReasoner>> out;
 	for(auto &x : reasonerPool_) {
-		if(x->canReasonAbout(predicate)) {
+		if(x->isCurrentPredicate(predicate)) {
 			out.push_back(x);
 		}
 	}
@@ -108,6 +123,7 @@ std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(c
 ReasonerPlugin::ReasonerPlugin(const std::string &dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
+		  get_name_(nullptr),
 		  dllPath_(dllPath)
 {
 }
@@ -129,8 +145,10 @@ bool ReasonerPlugin::loadDLL()
 {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
 	if(handle_ != nullptr) {
-		create_ = (std::shared_ptr<IReasoner> (*)())dlsym(handle_, "knowrob_createReasoner");
-		get_name_ = (char* (*)())dlsym(handle_, "knowrob_getPluginName");
+		create_ = (std::shared_ptr<IReasoner> (*)(const std::string&))
+				dlsym(handle_, "knowrob_createReasoner");
+		get_name_ = (char* (*)())
+				dlsym(handle_, "knowrob_getPluginName");
 		return isLoaded();
 	}
 	else {
@@ -138,16 +156,26 @@ bool ReasonerPlugin::loadDLL()
 	}
 }
 
-std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner()
+std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner(const std::string &reasonerID)
 {
-	return create_();
+	return create_(reasonerID);
 }
 
 /******************************************/
 /********* ReasonerConfiguration **********/
 /******************************************/
 
-ReasonerConfiguration::ReasonerConfiguration(const boost::property_tree::ptree &ptree)
+ReasonerConfiguration::ReasonerConfiguration(const boost::property_tree::ptree &config)
 {
+	for(const auto &pair : config.get_child("data-sources")) {
+		auto &subtree = pair.second;
 
+		if(subtree.count("file")) {
+			const auto &fileName = subtree.get<std::string>("file");
+			dataFiles.push_back(std::make_shared<DataFile>(fileName));
+		}
+		else {
+			KB_WARN("cannot load data source");
+		}
+	}
 }

@@ -26,7 +26,7 @@ namespace knowrob {
 	public:
 		virtual ~ReasonerFactory()= default;
 
-		virtual std::shared_ptr<IReasoner> createReasoner() = 0;
+		virtual std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID) = 0;
 
 		virtual const std::string& name() const = 0;
 	};
@@ -35,7 +35,8 @@ namespace knowrob {
 	public:
 		TypedReasonerFactory(const std::string &name) : name_(name) {}
 
-		std::shared_ptr<IReasoner> createReasoner() override { return std::make_shared<T>(); }
+		std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID) override
+		{ return std::make_shared<T>(reasonerID); }
 
 		const std::string& name() const override {  return name_; };
 	protected:
@@ -54,7 +55,7 @@ namespace knowrob {
 
 		bool loadDLL();
 
-		std::shared_ptr<IReasoner> createReasoner();
+		std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID);
 
 		const std::string& name() const override {  return name_; };
 
@@ -63,7 +64,7 @@ namespace knowrob {
 		std::string name_;
 		void *handle_;
 		// a factory function used to create new instances of a reasoner.
-		std::shared_ptr<IReasoner> (*create_)();
+		std::shared_ptr<IReasoner> (*create_)(const std::string &reasonerID);
 		char* (*get_name_)();
 	};
 
@@ -99,6 +100,7 @@ namespace knowrob {
 		std::list<std::shared_ptr<IReasoner>> reasonerPool_;
 		std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
+		uint32_t reasonerIndex_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
 	};
