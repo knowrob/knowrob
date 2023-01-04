@@ -12,6 +12,7 @@
 // STD
 #include <string>
 #include <list>
+#include <filesystem>
 #include <map>
 #include <memory>
 // gtest
@@ -56,11 +57,9 @@ namespace knowrob {
 		/**
 		 * @initFile the path to a Prolog-encoded file that is initially consulted.
 		 */
-		PrologReasoner();
+		PrologReasoner(const std::string &reasonerID);
 		
 		~PrologReasoner();
-		
-		static void initialize(int argc, char** argv);
 
 		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
@@ -69,7 +68,7 @@ namespace knowrob {
 		 * @prologFile the local path to the file.
          * @return true on success
 		 */
-		virtual bool consult(const std::string &prologFile);
+		virtual bool consult(const std::filesystem::path &prologFile);
 
         /** Run unittests associated to the given target name.
          * The target name can be the name of a loaded testcase,
@@ -100,6 +99,8 @@ namespace knowrob {
 		 */
 		virtual std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) { return q; }
 
+		std::filesystem::path getPrologPath(const std::filesystem::path &filename);
+
 		// Override LogicProgramReasoner
 		bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
 
@@ -107,7 +108,7 @@ namespace knowrob {
 		bool initialize(const ReasonerConfiguration &cfg) override;
 
 		// Override IReasoner
-		bool canReasonAbout(const PredicateIndicator &predicate) override;
+		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
 
 		// Override IReasoner
 		void startQuery(uint32_t queryID,
@@ -123,41 +124,51 @@ namespace knowrob {
 			const SubstitutionPtr &bindings) override;
 
 	protected:
+		const std::string reasonerID_;
+
+		// a query request for a runner
+		struct Request {
+			uint32_t queryID;
+			const char *queryModule;
+			std::shared_ptr<Query> goal;
+			Request(const std::shared_ptr<Query> &goal, const char *queryModule=nullptr, uint32_t queryID=0)
+			: queryID(queryID), queryModule(queryModule), goal(goal) {};
+		};
+
 		/** A runner that evaluates a Prolog query.
 		 */
 		class Runner : public ThreadPool::Runner {
 		public:
-			uint32_t queryID;
-			PrologReasoner *reasoner;
-			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
-			std::shared_ptr<QueryResultStream::Channel> outputStream_;
-			std::shared_ptr<Query> goal_;
-			SubstitutionPtr bindings_;
-			
-			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-				const std::shared_ptr<Query> &goal,
-				const SubstitutionPtr &bindings);
-			
-			Runner(const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-				const std::shared_ptr<Query> &goal);
-			
-			// Override Runner
-			void stop(bool wait) override;
+			Runner(PrologReasoner *reasoner,
+				   const Request &request,
+				   const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+				   bool sendEOS=false,
+				   const SubstitutionPtr &bindings=QueryResultStream::eos());
+
 			// Override Runner
 			void run() override;
-			
+
+		protected:
+			PrologReasoner *reasoner_;
+			Request request_;
+			SubstitutionPtr bindings_;
+			std::shared_ptr<QueryResultStream::Channel> outputStream_;
+			bool sendEOS_;
+
+			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
+			friend class PrologReasoner;
 		};
 		
-		struct Request {
+		struct ActiveQuery {
 			std::shared_ptr<QueryResultStream::Channel> outputStream;
 			std::shared_ptr<Query> goal;
 			std::atomic<bool> hasReceivedAllInput;
 			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
 			std::mutex mutex;
 		};
-		using RequestMap = std::map<uint32_t, PrologReasoner::Request*>;
+		using ActiveQueryMap = std::map<uint32_t, PrologReasoner::ActiveQuery*>;
 		
-		RequestMap activeQueries_;
+		ActiveQueryMap activeQueries_;
 		std::mutex request_mutex_;
 		
 		void finishRunner(uint32_t queryID, PrologReasoner::Runner *runner);
@@ -165,20 +176,21 @@ namespace knowrob {
 		bool consult(const std::shared_ptr<DataFile> &dataFile);
 		bool consult(const std::shared_ptr<FactBase> &factBase);
 		bool consult(const std::shared_ptr<RuleBase> &ruleBase);
-		bool consult1(const std::string &prologFile);
+		bool consultIntoUser(const std::filesystem::path &prologFile);
 		
 		std::shared_ptr<QueryResult> oneSolution1(const std::shared_ptr<Query> &goal);
+		std::shared_ptr<QueryResult> oneSolution1(const std::shared_ptr<Query> &goal, const char *moduleName);
 		std::list<std::shared_ptr<QueryResult>> allSolutions1(const std::shared_ptr<Query> &goal);
+
+		void initializeProlog();
+		virtual bool initializeDefaultPackages();
 		
-		bool initializeConfiguration(const ReasonerConfiguration &cfg);
-		bool initializeDefaultPackages(const ReasonerConfiguration &cfg);
-		
-		static PrologThreadPool& threadPool();
+		PrologThreadPool& threadPool();
 		
 		PrologReasoner(const PrologReasoner&) = delete;
 		
 		friend class PrologReasoner::Runner;
-    };
+	};
 
 	/**
 	 * A baseclass for prolog test fixtures.
@@ -188,7 +200,7 @@ namespace knowrob {
 		static testing::AssertionResult generateFailure(const std::shared_ptr<Term> &t);
 
 		static void runPrologTests(const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
-								   const std::string target);
+								   const std::string &target);
 	};
 }
 

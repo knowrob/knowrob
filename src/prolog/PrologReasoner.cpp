@@ -7,9 +7,11 @@
  */
 
 #include <memory>
+#include <filesystem>
 #include <sstream>
 #include <gtest/gtest.h>
 
+#include <knowrob/knowrob.h>
 #include <knowrob/logging.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/prolog/logging.h>
@@ -17,15 +19,68 @@
 
 using namespace knowrob;
 
-void PrologReasoner::initialize(int argc, char** argv) {
-	static bool isInitialized = false;
+PrologReasoner::PrologReasoner(const std::string &reasonerID)
+: reasonerID_(reasonerID)
+{
+}
+
+PrologReasoner::~PrologReasoner()
+{
+	for(auto &pair : activeQueries_) {
+		for(auto &x : pair.second->runner) {
+			// TODO: not sure if this is safe. is pair removed from map by calling stop()?
+			//       and does this interact badly with the outer loop here?
+			x->stop(true);
+		}
+	}
+	activeQueries_.clear();
+}
+
+std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path &filePath)
+{
+	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
+	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
+
+	if(exists(filePath)) {
+		return filePath;
+	}
+	else if(exists(projectPath)) {
+		// prefer to load from source directory, as these files might be more up-to-date.
+		return projectPath / "src" / filePath;
+	}
+	else if(exists(installPath)) {
+		// load Prolog files from $PREFIX/share/knowrob
+		return installPath / "share" / "knowrob" / filePath;
+	}
+	else {
+		return filePath;
+	}
+}
+
+PrologThreadPool& PrologReasoner::threadPool()
+{
+	initializeProlog();
+	// a thread pool shared among all PrologReasoner instances
+	static PrologThreadPool threadPool_(std::thread::hardware_concurrency());
+	return threadPool_;
+}
+
+bool PrologReasoner::initializeDefaultPackages()
+{
+	// load some default code into user module.
+	//   e.g. the extended module syntax etc
+	return consultIntoUser(std::filesystem::path("prolog") / "__init__.pl");
+}
+
+void PrologReasoner::initializeProlog() {
 	static int pl_ac = 0;
 	static char *pl_av[5];
-	
+	static bool isInitialized = false;
+
 	if(isInitialized) return;
 	isInitialized = true;
-	
-	pl_av[pl_ac++] = argv[0];
+
+	pl_av[pl_ac++] = getNameOfExecutable();
 	// '-g true' is used to suppress the welcome message
 	pl_av[pl_ac++] = (char *) "-g";
 	pl_av[pl_ac++] = (char *) "true";
@@ -49,47 +104,24 @@ void PrologReasoner::initialize(int argc, char** argv) {
 	PL_register_extensions_in_module("algebra", algebra_predicates);
 
 	PL_initialise(pl_ac, pl_av);
+	KB_DEBUG("Prolog has been initialized.");
+
+	// auto-load some files into "user" module
+	initializeDefaultPackages();
 }
 
-
-PrologThreadPool& PrologReasoner::threadPool()
+bool PrologReasoner::initialize(const ReasonerConfiguration &cfg)
 {
-	// a thread pool shared among all PrologReasoner instances
-	static PrologThreadPool threadPool_(std::thread::hardware_concurrency());
-	return threadPool_;
-}
-
-
-PrologReasoner::PrologReasoner()
-{}
-
-PrologReasoner::~PrologReasoner()
-{
-	for(auto &pair : activeQueries_) {
-		for(auto &x : pair.second->runner) {
-			// TODO: not sure if this is safe. is pair removed from map by calling stop()?
-			//       and does this interact badly with the outer loop here?
-			x->stop(true);
-		}
+	static bool isInitialized = false;
+	if(!isInitialized) {
+		isInitialized = true;
+		// call PL_initialize
+		initializeProlog();
 	}
-	activeQueries_.clear();
-}
 
-
-bool PrologReasoner::initializeDefaultPackages(const ReasonerConfiguration &cfg)
-{
-	// TODO: load some default code into user module.
-	//   e.g. the extended module syntax etc
-	if(!consult1("src/prolog/__init__.pl")) {
-		return false;
-	}
-	return true;
-}
-
-bool PrologReasoner::initializeConfiguration(const ReasonerConfiguration &cfg)
-{
 	// load rules and facts
 	for(auto &dataFile : cfg.dataFiles) {
+		KB_INFO("Using data file `{}`.", dataFile->path());
 		consult(dataFile);
 	}
 	// TODO: support synchronization with data sources.
@@ -105,98 +137,61 @@ bool PrologReasoner::initializeConfiguration(const ReasonerConfiguration &cfg)
 	return true;
 }
 
-bool PrologReasoner::initialize(const ReasonerConfiguration &cfg)
-{
-	return initializeDefaultPackages(cfg) && initializeConfiguration(cfg);
-}
-
-
-std::list<TermPtr> PrologReasoner::runTests(const std::string &target)
-{
-	static const auto xunit_indicator =
-			std::make_shared<PredicateIndicator>("xunit_term",1);
-	static const auto xunit_var = std::make_shared<Variable>("Term");
-	static const auto silent_flag = std::make_shared<StringTerm>("silent");
-
-	auto solutions = allSolutions1(std::make_shared<Query>(
-			std::shared_ptr<Predicate>(new Predicate(
-					"test_and_report", {
-							// unittest target
-							std::make_shared<StringTerm>(target),
-							// options
-							std::make_shared<ListTerm>(std::vector<TermPtr>{
-									std::make_shared<Predicate>(xunit_indicator,std::vector<TermPtr>{xunit_var}),
-									silent_flag
-							})
-					}
-			))
-	));
-
-	std::list<TermPtr> output;
-	for(auto solution : solutions) {
-		output.push_back(solution->get(*xunit_var));
-	}
-	return output;
-}
-
-
 bool PrologReasoner::consult(const std::shared_ptr<DataFile> &dataFile)
 {
 	// TODO: ensure file has the right format?
 	//	- could also have importer for certain formats that cannot be loaded natively
-	return consult(dataFile->path());
+	return consult(std::filesystem::path(dataFile->path()));
 }
 
-bool PrologReasoner::consult(const std::string &prologFile)
+bool PrologReasoner::consult(const std::filesystem::path &prologFile)
 {
-	// TODO: use Prolog modules to encapsulate reasoner configurations
+	auto path = getPrologPath(prologFile);
 	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"consult", { std::make_shared<StringTerm>(prologFile) }
+		std::make_shared<Predicate>(Predicate(
+			"consult", { std::make_shared<StringTerm>(path.native()) }
 		))
 	)));
 }
 
-bool PrologReasoner::consult1(const std::string &prologFile)
+bool PrologReasoner::consultIntoUser(const std::filesystem::path &prologFile)
 {
+	auto path = getPrologPath(prologFile);
 	return !QueryResultStream::isEOS(oneSolution1(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"consult", { std::make_shared<StringTerm>(prologFile) }
+		std::make_shared<Predicate>(Predicate(
+			"consult", { std::make_shared<StringTerm>(path.native()) }
 		))
-	)));
+	), "user"));
 }
 
 bool PrologReasoner::consult(const std::shared_ptr<FactBase> &factBase)
 {
-	KB_WARN("consult(FactBase) not implemented");
+	KB_WARN("Prolog.consult(FactBase) not implemented");
 	return false;
 }
 
 bool PrologReasoner::consult(const std::shared_ptr<RuleBase> &ruleBase)
 {
-	KB_WARN("consult(RuleBase) not implemented");
+	KB_WARN("Prolog.consult(RuleBase) not implemented");
 	return false;
 }
 
 bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 {
 	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"user:assertz", { fact }
-		))
+		std::make_shared<Predicate>(Predicate("assertz", { fact }))
 	)));
 }
 
-
-bool PrologReasoner::canReasonAbout(const PredicateIndicator &predicate)
+bool PrologReasoner::isCurrentPredicate(const PredicateIndicator &indicator)
 {
 	// TODO: could be cached, or initially loaded into a set
+	// NOTE: current_predicate includes all predicates loaded into the reasoner module,
+	//       not only the ones defined in it. e.g. builtins like `is/2` are included
+	//       for each PrologReasoner instance.
 	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"current_functor", {
-				std::make_shared<StringTerm>(predicate.functor()),
-				std::make_shared<Integer32Term>(predicate.arity())
-			}
+		std::make_shared<Predicate>(Predicate(
+			"current_predicate", { indicator.toTerm() }
 		))
 	)));
 }
@@ -206,14 +201,14 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 	static std::shared_ptr<Variable> termVar(new Variable("TermFromAtom"));
 	static std::shared_ptr<Variable> listVar(new Variable("Vars"));
 	static std::shared_ptr<ListTerm> opts(new ListTerm({
-		std::shared_ptr<Predicate>(new Predicate("variable_names", {listVar}))
+		std::make_shared<Predicate>(Predicate("variable_names", {listVar}))
 	}));
 	
 	auto termAtom = std::make_shared<StringTerm>(queryString);
 	// run a query
 	auto result = oneSolution1(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
-			"read_term_from_atom", { termAtom, termVar, opts }
+		std::make_shared<Predicate>(Predicate(
+				"read_term_from_atom", { termAtom, termVar, opts }
 		))
 	));
 	
@@ -258,18 +253,24 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Q
 
 std::shared_ptr<QueryResult> PrologReasoner::oneSolution1(const std::shared_ptr<Query> &goal)
 {
+	return oneSolution1(goal, reasonerID_.c_str());
+}
+
+std::shared_ptr<QueryResult> PrologReasoner::oneSolution1(const std::shared_ptr<Query> &goal, const char *moduleName)
+{
 	std::shared_ptr<QueryResult> result;
-	
+
 	// create an output queue for the query
 	auto outputStream = std::make_shared<QueryResultQueue>();
-	auto outputChannel = outputStream->createChannel();
+	auto outputChannel = QueryResultStream::Channel::create(outputStream);
 	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologReasoner::Runner>(
-		outputChannel, goal);
-	workerGoal->reasoner = this;
-	
+	auto workerGoal = std::make_shared<PrologReasoner::Runner>(this,
+			PrologReasoner::Request(goal, moduleName),
+			outputChannel,
+			true // sendEOS=true
+	);
+
 	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
-	// FIXME: seems a deadlock occurs here if exception is thrown
 	PrologReasoner::threadPool().pushWork(workerGoal);
 	return outputStream->pop_front();
 }
@@ -286,11 +287,13 @@ std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions1(const std:
 	
 	// create an output queue for the query
 	auto outputStream = std::make_shared<QueryResultQueue>();
-	auto outputChannel = outputStream->createChannel();
+	auto outputChannel = QueryResultStream::Channel::create(outputStream);
 	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologReasoner::Runner>(
-		outputChannel, goal);
-	workerGoal->reasoner = this;
+	auto workerGoal = std::make_shared<PrologReasoner::Runner>(this,
+			PrologReasoner::Request(goal, reasonerID_.c_str()),
+			outputChannel,
+			true // sendEOS=true
+	);
 	
 	// assign the goal to a worker thread
 	PrologReasoner::threadPool().pushWork(workerGoal);
@@ -312,13 +315,12 @@ std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions1(const std:
 	return results;
 }
 
-
 void PrologReasoner::startQuery(uint32_t queryID,
 	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 {
 	// create a request object and store it in a map
-	auto *req = new Request;
+	auto *req = new ActiveQuery;
 	req->outputStream = outputStream;
 	req->goal = transformQuery(goal);
 	req->hasReceivedAllInput = false;
@@ -332,7 +334,7 @@ void PrologReasoner::startQuery(uint32_t queryID,
 void PrologReasoner::finishQuery(uint32_t queryID, bool isImmediateStopRequested)
 {
 	// Get query request from query ID
-	RequestMap::iterator it; {
+	ActiveQueryMap::iterator it; {
 		// protect activeQueries_ with request_mutex_
 		std::lock_guard<std::mutex> lock(request_mutex_);
 		it = activeQueries_.find(queryID);
@@ -341,7 +343,7 @@ void PrologReasoner::finishQuery(uint32_t queryID, bool isImmediateStopRequested
 			return;
 		}
 	}
-	PrologReasoner::Request *req = it->second;
+	PrologReasoner::ActiveQuery *req = it->second;
 	req->hasReceivedAllInput = true;
 	
 	if(isImmediateStopRequested) {
@@ -381,19 +383,17 @@ void PrologReasoner::finishQuery(uint32_t queryID, bool isImmediateStopRequested
 void PrologReasoner::finishRunner(uint32_t queryID, PrologReasoner::Runner *runner)
 {
 	// Get query request from query ID
-	RequestMap::iterator it; {
+	ActiveQueryMap::iterator it; {
 		// protect activeQueries_ with request_mutex_
 		std::lock_guard<std::mutex> lock(request_mutex_);
 		
 		it = activeQueries_.find(queryID);
 		if(it == activeQueries_.end()) {
 			// query is not active
-			// make sure EOS is published on output stream
-			runner->outputStream_->push(QueryResultStream::eos());
 			return;
 		}
 	}
-	PrologReasoner::Request *req = it->second;
+	PrologReasoner::ActiveQuery *req = it->second;
 	
 	bool isRequestFinished; {
 		std::lock_guard<std::mutex> lock(req->mutex);
@@ -432,7 +432,7 @@ void PrologReasoner::pushSubstitution(uint32_t queryID, const SubstitutionPtr &b
 	//
 	
 	// Get query request from query ID
-	PrologReasoner::Request *req; {
+	PrologReasoner::ActiveQuery *req; {
 		// protect activeQueries_ with request_mutex_
 		std::lock_guard<std::mutex> lock(request_mutex_);
 		auto it = activeQueries_.find(queryID);
@@ -447,11 +447,12 @@ void PrologReasoner::pushSubstitution(uint32_t queryID, const SubstitutionPtr &b
 	std::shared_ptr<Query> query = req->goal->applySubstitution(*bindings.get());
 	
 	// create a runner for a worker thread
-	// TODO: either constructor or not
-	auto workerGoal = std::make_shared<PrologReasoner::Runner>(
-		req->outputStream, query, bindings);
-	workerGoal->reasoner = this;
-	workerGoal->queryID = queryID;
+	auto workerGoal = std::make_shared<PrologReasoner::Runner>(this,
+		PrologReasoner::Request(query, reasonerID_.c_str(), queryID),
+		req->outputStream,
+		false, // sendEOS
+		bindings
+	);
 
 	// add runner to list of runners associated to this request
 	{
@@ -463,6 +464,34 @@ void PrologReasoner::pushSubstitution(uint32_t queryID, const SubstitutionPtr &b
 	
 	// add work to queue
 	PrologReasoner::threadPool().pushWork(workerGoal);
+}
+
+std::list<TermPtr> PrologReasoner::runTests(const std::string &target)
+{
+	static const auto xunit_indicator =
+			std::make_shared<PredicateIndicator>("xunit_term",1);
+	static const auto xunit_var = std::make_shared<Variable>("Term");
+	static const auto silent_flag = std::make_shared<StringTerm>("silent");
+
+	auto solutions = allSolutions1(std::make_shared<Query>(
+			std::make_shared<Predicate>(Predicate(
+					"test_and_report", {
+							// unittest target
+							std::make_shared<StringTerm>(target),
+							// options
+							std::make_shared<ListTerm>(std::vector<TermPtr>{
+									std::make_shared<Predicate>(xunit_indicator,std::vector<TermPtr>{xunit_var}),
+									silent_flag
+							})
+					}
+			))
+	));
+
+	std::list<TermPtr> output;
+	for(auto &solution : solutions) {
+		output.push_back(solution->get(*xunit_var));
+	}
+	return output;
 }
 
 /************************************/
@@ -503,20 +532,17 @@ void PrologThreadPool::finalizeWorker()
 /************************************/
 
 PrologReasoner::Runner::Runner(
-	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-	const std::shared_ptr<Query> &goal,
-	const SubstitutionPtr &bindings)
+		PrologReasoner *reasoner,
+		const PrologReasoner::Request &request,
+		const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+		bool sendEOS,
+		const SubstitutionPtr &bindings)
 : ThreadPool::Runner(),
+  reasoner_(reasoner),
+  request_(request),
   outputStream_(outputStream),
-  goal_(goal),
+  sendEOS_(sendEOS),
   bindings_(bindings)
-{
-}
-
-PrologReasoner::Runner::Runner(
-	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-	const std::shared_ptr<Query> &goal)
-: Runner(outputStream, goal, QueryResultStream::bos())
 {
 }
 
@@ -526,16 +552,19 @@ void PrologReasoner::Runner::run()
 	
 	TermPtr exceptionTerm;
 	bool hasException = false;
-	
-	KB_DEBUG("Prolog has new query `{}`.", *goal_);
-	PrologQuery pl_goal(goal_);
+
+	KB_DEBUG("Prolog has new query `{}`.", *request_.goal);
+	// use the reasoner module as context module for query evaluation
+	module_t ctx_module = (request_.queryModule==nullptr ? nullptr : PL_new_module(PL_new_atom(request_.queryModule)));
+	// create a query object
+	PrologQuery pl_goal(request_.goal, request_.queryModule);
 	// the exception risen by the Prolog engine, if any
 	auto pl_exception = (term_t)0;
 	// open a Prolog query.
 	qid_t qid = PL_open_query(
 		// the context module of the goal.
 		// @see https://www.swi-prolog.org/pldoc/man?section=foreign-modules
-		nullptr,
+		ctx_module,
 		flags,
 		// specifies the predicate
 		pl_goal.pl_predicate(),
@@ -552,15 +581,15 @@ void PrologReasoner::Runner::run()
 		}
 		// handle stop request
 		if(hasStopRequest()) break;
-		
-		KB_DEBUG("Prolog has a next solution for query.");
+
+		KB_DEBUG("Prolog has a next solution for query `{}`.", request_.queryID);
 		// create substitution mapping from variables to terms.
 		// first copy the input bindings, i.e. the variable substitutions that
 		// were applied to the input query for this particular runner.
 		// TODO: it would be more clean to do this copying of the input bindings
 		// centrally such that it does not need to be duplicated for each reasoner.
 		auto solution = std::make_shared<QueryResult>(*bindings_);
-		
+
 		// second add any additional substitutions to the solution that the
 		// Prolog engine could find during query evaluation.
 		// NOTE: pl_goal_.vars() maps variable names to term_t references
@@ -572,7 +601,7 @@ void PrologReasoner::Runner::run()
 		// push the solution into the output stream
 		outputStream_->push(solution);
 	}
-	
+
 	// construct exception term
 	if(pl_exception != (term_t)0) {
 		hasException = true;
@@ -587,22 +616,18 @@ void PrologReasoner::Runner::run()
 	// free up resources
 	PL_close_query(qid);
 	// notify PrologReasoner about runner being done
-	reasoner->finishRunner(queryID, this);
-	
+	// TODO: it is a bit unsafe to use reasoner_ pointer here. better use a smart pointer.
+	//    else make sure all runner finish before PrologReasoner is destructed.
+	reasoner_->finishRunner(request_.queryID, this);
+	// make sure EOS is published on output stream
+	if(sendEOS_) {
+		outputStream_->push(QueryResultStream::eos());
+	}
+
 	// throw error if Prolog evaluation has caused an exception.
 	if(hasException) {
-		throw QueryError(*goal_, *exceptionTerm);
+		throw QueryError(*request_.goal, *exceptionTerm);
 	}
-}
-
-void PrologReasoner::Runner::stop(bool wait)
-{
-	// TODO: is there a way to terminate above PL_next_solution call in case
-	//       runner received a stop request here?
-	//     - maybe PL_close_query can be called from here? seems unlikely
-	//     - *yielding* might be a way to avoid blocking in PL_next_solution
-	// wait if requested
-	ThreadPool::Runner::stop(wait);
 }
 
 
@@ -613,12 +638,12 @@ testing::AssertionResult PrologTests::generateFailure(const std::shared_ptr<Term
 
 void PrologTests::runPrologTests(
 		const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
-		const std::string target) {
+		const std::string &target) {
 	bool hasResult = false;
 	int numTests = 0;
 	int numFailedTests = 0;
 
-	for(auto t : reasoner->runTests(target)) {
+	for(const auto &t : reasoner->runTests(target)) {
 		hasResult = true;
 		numTests += 1;
 
