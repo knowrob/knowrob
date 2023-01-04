@@ -20,7 +20,7 @@ protected:
 		if(r.get()==nullptr) {
 			KB_INFO("Running Mongolog tests");
 			knowrob::ReasonerConfiguration reasonerConfig;
-			r = std::make_shared<knowrob::MongologReasoner>();
+			r = std::make_shared<knowrob::MongologReasoner>("mongolog0");
 			r->initialize(reasonerConfig);
 		}
 		return r;
