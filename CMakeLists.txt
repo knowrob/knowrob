@@ -49,6 +49,12 @@ install_ontology(
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
+# define some constants for the compilation of source files that
+# are used to load project-relative files.
+# TODO: needs to be defined differently when catkin is used?
+add_definitions(-DKNOWROB_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
+
 ##############
 ########## ROS1 block
 ##############
@@ -103,6 +109,7 @@ target_link_libraries(mongo_kb
 ##############
 
 add_library(hyres SHARED
+		src/knowrob.cpp
 		src/ThreadPool.cpp
 		src/logging.cpp
 		src/terms.cpp
@@ -125,6 +132,7 @@ add_executable(knowrob-terminal src/terminal.cpp)
 target_link_libraries(knowrob-terminal
 		Boost::program_options
 		hyres)
+install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
 add_executable(test_qa tests/test_qa.cpp)
 target_link_libraries(test_qa hyres)
@@ -137,7 +145,7 @@ if (catkin_FOUND)
 	# install into ROS workspace
 	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(hyres-commandline ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	
 	### TF messages ###
 	add_library(tf_knowrob SHARED
@@ -194,3 +202,6 @@ target_link_libraries(all_gtests
 #		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
 #install(DIRECTORY prolog/
 #		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
+
+install(DIRECTORY src/prolog DESTINATION share
+		PATTERN ".cpp" EXCLUDE)
