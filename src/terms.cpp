@@ -157,7 +157,7 @@ OptionList::OptionList(const TermPtr &t)
 
 void OptionList::readOption(const TermPtr &option) {
 	if(option->type() != TermType::PREDICATE) return;
-	Predicate *p = (Predicate*)option.get();
+	auto *p = (Predicate*)option.get();
 
 	if(p->indicator().arity()==2) {
 		// an option of the form `Key = Value`
@@ -205,9 +205,7 @@ const std::string& OptionList::getString(const std::string &key, const std::stri
 			return defaultValue;
 		}
 	}
-	else {
-		return defaultValue;
-	}
+	return defaultValue;
 }
 
 long OptionList::getLong(const std::string &key, long defaultValue) {
@@ -221,16 +219,15 @@ long OptionList::getLong(const std::string &key, long defaultValue) {
 	else if(it->second->type() == TermType::LONG) {
 		return ((LongTerm*)it->second.get())->value();
 	}
-	else {
-		return defaultValue;
-	}
+	return defaultValue;
 }
 
 
 PredicateIndicator::PredicateIndicator(const std::string &functor, unsigned int arity)
 : functor_(functor),
   arity_(arity)
-{}
+{
+}
 
 bool PredicateIndicator::operator==(const PredicateIndicator& other) const
 {
@@ -246,6 +243,15 @@ bool PredicateIndicator::operator< (const PredicateIndicator& other) const
 void PredicateIndicator::write(std::ostream& os) const
 {
 	os << functor_ << '/' << arity_;
+}
+
+std::shared_ptr<Term> PredicateIndicator::toTerm() const
+{
+	static const auto indicatorIndicator = std::make_shared<PredicateIndicator>("/",2);
+	return std::make_shared<Predicate>(Predicate(indicatorIndicator, {
+		std::make_shared<StringTerm>(functor()),
+		std::make_shared<LongTerm>(arity())
+	}));
 }
 
 

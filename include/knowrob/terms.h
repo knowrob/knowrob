@@ -211,6 +211,12 @@ namespace knowrob {
 		 * @return arity of predicate
 		 */
 		unsigned int arity() const { return arity_; }
+
+		/**
+		 * Convert the predicate indicator to a term of the form `'/'(Functor,Arity)`.
+		 * @return the indicator as a term.
+		 */
+		std::shared_ptr<Term> toTerm() const;
 		
 		// Override Term
 		void write(std::ostream& os) const;
