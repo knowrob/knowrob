@@ -17,7 +17,7 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 	reasonerManager_ = std::make_shared<ReasonerManager>();
 	loadConfiguration(config);
 	// create a PrologReasoner used only for parsing queries
-	prologReasoner_ = std::make_shared<knowrob::PrologReasoner>();
+	prologReasoner_ = std::make_shared<knowrob::PrologReasoner>("prolog_user");
 	prologReasoner_->initialize(ReasonerConfiguration());
 }
 
