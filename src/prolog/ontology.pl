@@ -12,6 +12,7 @@
 @license BSD
 */
 
+:- use_module(library('logging')).
 :- use_module(library(rdf),
 		[ load_rdf/3 ]).
 :- use_module(library('semweb/rdf_db'), 
