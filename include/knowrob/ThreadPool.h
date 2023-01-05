@@ -120,6 +120,7 @@ namespace knowrob {
 		mutable std::mutex workMutex_;
 		// limit to this number of worker threads
 		uint32_t maxNumThreads_;
+		std::atomic_uint32_t numFinishedThreads_;
 		
 		// get work from queue
 		std::shared_ptr<ThreadPool::Runner> popWork();
