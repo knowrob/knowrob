@@ -81,6 +81,9 @@ namespace knowrob {
 
 		~ReasonerPlugin() override;
 
+		/**
+		 * Cannot be copy-assigned.
+		 */
 		ReasonerPlugin(const ReasonerPlugin&) = delete;
 
 		/**

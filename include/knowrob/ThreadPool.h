@@ -31,6 +31,9 @@ namespace knowrob {
 		explicit ThreadPool(uint32_t maxNumThreads);
 		~ThreadPool();
 
+		/**
+		 * Cannot be copy-assigned.
+		 */
 		ThreadPool(const ThreadPool&) = delete;
 
 		/**
@@ -48,6 +51,9 @@ namespace knowrob {
 			explicit Worker(ThreadPool *thread_pool);
 			~Worker();
 
+			/**
+			 * Cannot be copy-assigned.
+			 */
 			Worker(const Worker&) = delete;
 
 		protected:
@@ -72,6 +78,9 @@ namespace knowrob {
 			Runner();
 			~Runner();
 
+			/**
+			 * Cannot be copy-assigned.
+			 */
 			Runner(const Runner&) = delete;
 
 			/**

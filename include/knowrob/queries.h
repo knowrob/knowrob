@@ -287,6 +287,9 @@ namespace knowrob {
 
 			~Channel();
 
+			/**
+			 * Cannot be copy-assigned.
+			 */
 			Channel(const Channel&) = delete;
 
 			/**

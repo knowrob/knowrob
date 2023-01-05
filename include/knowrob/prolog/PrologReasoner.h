@@ -62,6 +62,9 @@ namespace knowrob {
 		
 		~PrologReasoner() override;
 
+		/**
+		 * Cannot be copy-assigned.
+		 */
 		PrologReasoner(const PrologReasoner&) = delete;
 
 		/**

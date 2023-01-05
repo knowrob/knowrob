@@ -27,10 +27,12 @@ namespace knowrob {
 			const std::shared_ptr<QueryResultQueue> &outputQueue,
 			const std::shared_ptr<Query> &goal);
 		
-		// copy constructor is not supported for blackboards
-		Blackboard(const Blackboard&) = delete;
-		
 		~Blackboard();
+
+		/**
+		 * Cannot be copy-assigned.
+		 */
+		Blackboard(const Blackboard&) = delete;
 		
 		/**
 		 * Starts the query evaluation.
