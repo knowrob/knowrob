@@ -98,10 +98,7 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<Query> subq = std::make_shared<Query>(phi);
 
     if (ensemble.empty()) {
-		// TODO: avoid redundant string formatting by supporting same syntax for QueryErrors
-		//throw QueryError("no reasoner registered for query `{}`", *phi);
-		KB_WARN("no reasoner registered for query `{}`", *phi);
-		throw QueryError("no reasoner available for a predicate");
+		throw QueryError("no reasoner registered for query `{}`", *phi);
 	}
 
     for(std::shared_ptr<IReasoner> &r : ensemble) {

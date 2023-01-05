@@ -452,11 +452,6 @@ void QueryResultCombiner::genCombinations(
 	}
 }
 
-
-QueryError::QueryError(const std::string& what)
-: std::runtime_error(what)
-{}
-
 QueryError::QueryError(
 	const Query &erroneousQuery,
 	const Term &errorTerm)

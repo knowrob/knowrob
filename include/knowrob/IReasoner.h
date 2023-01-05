@@ -100,11 +100,19 @@ namespace knowrob {
 		virtual void finishQuery(uint32_t queryID, bool isImmediateStopRequested) = 0;
 	};
 
+	/**
+	 * A reasoner-related runtime error.
+	 */
 	class ReasonerError : public std::runtime_error {
 	public:
-		// TODO: support spdlog syntax
-		// TODO: why not use QueryError?
-		explicit ReasonerError(const std::string& what = "") : std::runtime_error(what) {}
+		/**
+		 * @tparam Args fmt-printable arguments.
+		 * @param fmt A fmt string pattern.
+		 * @param args list of arguments used to instantiate the pattern.
+		 */
+		template<typename ... Args>
+		ReasonerError(const char *fmt, Args&& ... args)
+		: std::runtime_error(fmt::format(fmt, args...)) {}
 	};
 }
 

@@ -432,17 +432,25 @@ namespace knowrob {
 			SubstitutionPtr &combination);
 	};
 	
-	/** An error during query processing.
+	/**
+	 * A querying-related runtime error.
 	 */
 	class QueryError : public std::runtime_error {
 	public:
+		/**
+		 * @tparam Args fmt-printable arguments.
+		 * @param fmt A fmt string pattern.
+		 * @param args list of arguments used to instantiate the pattern.
+		 */
+		template<typename ... Args> QueryError(const char *fmt, Args&& ... args)
+		: std::runtime_error(fmt::format(fmt, args...))
+		{}
+
 		/**
 		 * @param erroneousQuery the query that caused an error
 		 * @param errorTerm a term denoting the error
 		 */
 		QueryError(const Query &erroneousQuery, const Term &errorTerm);
-		
-		explicit QueryError(const std::string& what = "");
 	
 	protected:
 		
