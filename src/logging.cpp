@@ -11,7 +11,6 @@
 // logging
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/dist_sink.h>
 
 #define LOGFILE_MAX_SIZE (1024*1024)
 #define LOGFILE_MAX_FILES 4
@@ -36,4 +35,3 @@ void knowrob::logging::initialize() {
 		spdlog::sinks_init_list({console_sink, file_sink})));
 	spdlog::set_level(spdlog::level::trace);
 }
-
