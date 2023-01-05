@@ -20,26 +20,8 @@ Term::Term(TermType type)
 
 bool Term::operator==(const Term& other) const
 {
-    if(type_ != other.type_) return false;
-    switch(type_) {
-        case TermType::PREDICATE:
-            return *((Predicate*)this) == *((Predicate*)&other);
-        case TermType::VARIABLE:
-            return *((Variable*)this) == *((Variable*)&other);
-        case TermType::LIST:
-            return *((ListTerm*)this) == *((ListTerm*)&other);
-        case TermType::STRING:
-            return *((StringTerm*)this) == *((StringTerm*)&other);
-        case TermType::DOUBLE:
-            return *((DoubleTerm*)this) == *((DoubleTerm*)&other);
-        case TermType::INT32:
-            return *((Integer32Term*)this) == *((Integer32Term*)&other);
-        case TermType::LONG:
-            return *((LongTerm*)this) == *((LongTerm*)&other);
-        default:
-            KB_WARN("ignoring unknown term type {}.", (int)type_);
-            return false;
-    }
+	// note: isEqual can safely perform static cast as type id's do match
+	return typeid(*this) == typeid(other) && isEqual(other);
 }
 
 bool Term::isBottom() const
@@ -58,9 +40,9 @@ Variable::Variable(std::string name)
   name_(std::move(name))
 {}
 
-bool Variable::operator==(const Variable& other) const
+bool Variable::isEqual(const Term& other) const
 {
-    return name_ == other.name_;
+    return name_ == static_cast<const Variable&>(other).name_; // NOLINT
 }
 
 bool Variable::operator< (const Variable& other) const
@@ -103,7 +85,8 @@ ListTerm::ListTerm(const std::vector<TermPtr> &elements)
 {
 }
 
-bool ListTerm::operator==(const ListTerm& x) const {
+bool ListTerm::isEqual(const Term& other) const {
+	const auto &x = static_cast<const ListTerm&>(other); // NOLINT
     for(int i=0; i<elements_.size(); ++i) {
         if(!(*(elements_[i]) == *(x.elements_[i]))) return false;
     }
@@ -280,10 +263,11 @@ Predicate::Predicate(
 {
 }
 
-bool Predicate::operator==(const Predicate& other) const {
-    if(indicator() == other.indicator()) {
+bool Predicate::isEqual(const Term& other) const {
+	const auto &x = static_cast<const Predicate&>(other); // NOLINT
+    if(indicator() == x.indicator()) {
         for(int i=0; i<arguments_.size(); ++i) {
-            if(!(*(arguments_[i]) == *(other.arguments_[i]))) return false;
+            if(!(*(arguments_[i]) == *(x.arguments_[i]))) return false;
         }
         return true;
     }
