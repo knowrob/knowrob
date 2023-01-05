@@ -23,11 +23,11 @@ Blackboard::Blackboard(
 {
 	// decompose the reasoning task
 	inputStream_ = std::make_shared<QueryResultBroadcaster>();
-	inputChannel_ = inputStream_->createChannel();
+	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
 	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
 	
 	// create a channel of outputQueue_, and add it as subscriber
-	auto queueChannel = outputQueue_->createChannel();
+	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
 	outBroadcaster_->addSubscriber(queueChannel);
 
 	// decompose into atomic formulas
@@ -106,10 +106,10 @@ void Blackboard::decomposePredicate(
 
     for(std::shared_ptr<IReasoner> &r : ensemble) {
 		// create IO channels
-		reasonerOutChan = out->createChannel();
+		reasonerOutChan = QueryResultStream::Channel::create(out);
 		reasonerIn = std::make_shared<Blackboard::Stream>(
 			r,reasonerOutChan,subq);
-		reasonerInChan = reasonerIn->createChannel();
+		reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
 		in->addSubscriber(reasonerInChan);
 		// create a new segment
 		segments_.push_back(std::make_shared<Segment>(reasonerIn,out));
