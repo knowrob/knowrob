@@ -210,22 +210,6 @@ SubstitutionPtr& QueryResultStream::eos()
 	return x;
 }
 
-std::shared_ptr<QueryResultStream::Channel> QueryResultStream::createChannel()
-{
-	std::lock_guard<std::mutex> lock(channel_mutex_);
-	if(isOpened()) {
-		auto channel = std::make_shared<QueryResultStream::Channel>(
-			this);
-		channels_.push_back(channel);
-		channel->iterator_ = channels_.end();
-		--channel->iterator_;
-		return channel;
-	}
-	else {
-		throw QueryError("cannot create a channel of a closed stream");
-	}
-}
-
 bool QueryResultStream::isOpened() const
 {
 	return isOpened_;
@@ -240,7 +224,7 @@ void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item
 		channels_.erase(channel.iterator_);
 		
 		// auto-close this stream if no channels are left,
-		// also send EOF in this case.
+		// also send EOS in this case.
 		if(channels_.empty() && isOpened()) {
 			isOpened_ = false;
 			push(item);
@@ -255,7 +239,7 @@ void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item
 }
 
 
-QueryResultStream::Channel::Channel(QueryResultStream *stream)
+QueryResultStream::Channel::Channel(const std::shared_ptr<QueryResultStream> &stream)
 : stream_(stream),
   isOpened_(true)
 {
@@ -264,6 +248,21 @@ QueryResultStream::Channel::Channel(QueryResultStream *stream)
 QueryResultStream::Channel::~Channel()
 {
 	close();
+}
+
+std::shared_ptr<QueryResultStream::Channel> QueryResultStream::Channel::create(const std::shared_ptr<QueryResultStream> &stream)
+{
+	std::lock_guard<std::mutex> lock(stream->channel_mutex_);
+	if(stream->isOpened()) {
+		auto channel = std::make_shared<QueryResultStream::Channel>(stream);
+		stream->channels_.push_back(channel);
+		channel->iterator_ = stream->channels_.end();
+		--channel->iterator_;
+		return channel;
+	}
+	else {
+		throw QueryError("cannot create a channel of a closed stream");
+	}
 }
 
 void QueryResultStream::Channel::close()
@@ -305,17 +304,22 @@ QueryResultQueue::QueryResultQueue()
 QueryResultQueue::~QueryResultQueue()
 {
 	if(isOpened()) {
-		push(QueryResultStream::eos());
+		pushToQueue(QueryResultStream::eos());
 	}
 }
 
-void QueryResultQueue::push(const SubstitutionPtr &item)
+void QueryResultQueue::pushToQueue(const SubstitutionPtr &item)
 {
 	{
 		std::lock_guard<std::mutex> lock(queue_mutex_);
 		queue_.push(item);
 	}
 	queue_CV_.notify_one();
+}
+
+void QueryResultQueue::push(const SubstitutionPtr &item)
+{
+	pushToQueue(item);
 }
 		
 SubstitutionPtr& QueryResultQueue::front()
@@ -346,7 +350,7 @@ QueryResultBroadcaster::QueryResultBroadcaster()
 QueryResultBroadcaster::~QueryResultBroadcaster()
 {
 	if(isOpened()) {
-		push(QueryResultStream::eos());
+		pushToBroadcast(QueryResultStream::eos());
 	}
 }
 
@@ -361,6 +365,11 @@ void QueryResultBroadcaster::removeSubscriber(const std::shared_ptr<Channel> &su
 }
 
 void QueryResultBroadcaster::push(const SubstitutionPtr &item)
+{
+	pushToBroadcast(item);
+}
+
+void QueryResultBroadcaster::pushToBroadcast(const SubstitutionPtr &item)
 {
 	// broadcast the query result to all subscribers
 	for(auto &x : subscribers_) {

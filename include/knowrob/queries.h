@@ -269,9 +269,16 @@ namespace knowrob {
 		 */
 		class Channel {
 		public:
-			Channel(QueryResultStream *stream);
+			Channel(const std::shared_ptr<QueryResultStream> &stream);
 			
 			~Channel();
+
+			/** Create a new stream channel.
+			 * Note that this will generate an error in case the stream
+			 * is closed already.
+			 * @return a new stream channel
+			 */
+			static std::shared_ptr<Channel> create(const std::shared_ptr<QueryResultStream> &stream);
 			
 			/** Push a QueryResult into this channel.
 			 * @msg a QueryResult pointer.
@@ -293,7 +300,7 @@ namespace knowrob {
 			uint32_t id() const;
 			
 		protected:
-			QueryResultStream *stream_;
+			const std::shared_ptr<QueryResultStream> stream_;
 			std::list<std::shared_ptr<Channel>>::iterator iterator_;
 			std::atomic<bool> isOpened_;
 			
@@ -301,19 +308,12 @@ namespace knowrob {
 			
 			Channel(const Channel&) = delete;
 		};
-		
-		/** Create a new stream channel.
-		 * Note that this will generate an error in case the stream
-		 * is closed already.
-		 * @return a new stream channel
-		 */
-		std::shared_ptr<QueryResultStream::Channel> createChannel();
 
 	protected:
 		std::list<std::shared_ptr<Channel>> channels_;
 		std::atomic<bool> isOpened_;
 		std::mutex channel_mutex_;
-		
+
 		virtual void push(const Channel &channel, const QueryResultPtr &msg);
 		
 		virtual void push(const QueryResultPtr &msg) = 0;
@@ -351,6 +351,7 @@ namespace knowrob {
 		
 		// Override QueryResultStream
 		void push(const QueryResultPtr &item) override;
+		void pushToQueue(const QueryResultPtr &item);
 	};
 	
 	/** A broadcaster of query results.
@@ -376,6 +377,7 @@ namespace knowrob {
 		
 		// Override QueryResultStream
 		void push(const QueryResultPtr &msg) override;
+		void pushToBroadcast(const QueryResultPtr &msg);
 	};
 	
 	// alias
