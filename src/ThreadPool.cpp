@@ -60,12 +60,6 @@ std::shared_ptr<ThreadPool::Runner> ThreadPool::popWork()
 	return x;
 }
 
-bool ThreadPool::hasWork() const
-{
-	std::lock_guard<std::mutex> scoped_lock(workMutex_);
-	return !workQueue_.empty();
-}
-
 
 ThreadPool::Worker::Worker(ThreadPool *threadPool)
 : hasTerminateRequest_(false),

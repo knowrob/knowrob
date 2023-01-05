@@ -128,8 +128,8 @@ void Blackboard::decomposeConjunction(
 	//   atomic formulae that are independent can be evaluated concurrently.
 	
 	// add blackboard segments for each predicate in the conjunction
-	int counter = 1;
-	int numFormulae = phi->formulae().size();
+	unsigned long counter = 1;
+	auto numFormulae = phi->formulae().size();
 	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
 		if(numFormulae == counter) {
 			out = lastQueue;
