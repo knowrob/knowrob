@@ -9,6 +9,7 @@
 #include <memory>
 #include <filesystem>
 #include <sstream>
+#include <utility>
 #include <gtest/gtest.h>
 
 #include <knowrob/knowrob.h>
@@ -19,8 +20,8 @@
 
 using namespace knowrob;
 
-PrologReasoner::PrologReasoner(const std::string &reasonerID)
-: reasonerID_(reasonerID)
+PrologReasoner::PrologReasoner(std::string reasonerID)
+: reasonerID_(std::move(reasonerID))
 {
 }
 
@@ -41,20 +42,17 @@ std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path 
 	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
 	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
 
-	if(exists(filePath)) {
-		return filePath;
+	if(!exists(filePath)) {
+		if(exists(projectPath)) {
+			// prefer to load from source directory, as these files might be more up-to-date.
+			return projectPath / "src" / filePath;
+		}
+		else if(exists(installPath)) {
+			// load Prolog files from $PREFIX/share/knowrob
+			return installPath / "share" / "knowrob" / filePath;
+		}
 	}
-	else if(exists(projectPath)) {
-		// prefer to load from source directory, as these files might be more up-to-date.
-		return projectPath / "src" / filePath;
-	}
-	else if(exists(installPath)) {
-		// load Prolog files from $PREFIX/share/knowrob
-		return installPath / "share" / "knowrob" / filePath;
-	}
-	else {
-		return filePath;
-	}
+	return filePath;
 }
 
 PrologThreadPool& PrologReasoner::threadPool()
@@ -110,7 +108,7 @@ void PrologReasoner::initializeProlog() {
 	initializeDefaultPackages();
 }
 
-bool PrologReasoner::initialize(const ReasonerConfiguration &cfg)
+bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 {
 	static bool isInitialized = false;
 	if(!isInitialized) {
@@ -539,13 +537,13 @@ void PrologThreadPool::finalizeWorker()
 
 PrologReasoner::Runner::Runner(
 		PrologReasoner *reasoner,
-		const PrologReasoner::Request &request,
+		PrologReasoner::Request request,
 		const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 		bool sendEOS,
 		const SubstitutionPtr &bindings)
 : ThreadPool::Runner(),
   reasoner_(reasoner),
-  request_(request),
+  request_(std::move(request)),
   outputStream_(outputStream),
   sendEOS_(sendEOS),
   bindings_(bindings)
@@ -636,11 +634,6 @@ void PrologReasoner::Runner::run()
 	}
 }
 
-
-testing::AssertionResult PrologTests::generateFailure(const std::shared_ptr<Term> &t) {
-	// print message generated in Prolog
-	return testing::AssertionFailure() << (*t);
-}
 
 void PrologTests::runPrologTests(
 		const std::shared_ptr<knowrob::PrologReasoner> &reasoner,

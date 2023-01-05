@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_QUERIES_H__
-#define __KNOWROB_QUERIES_H__
+#ifndef KNOWROB_QUERIES_H_
+#define KNOWROB_QUERIES_H_
 
 // STD
 #include <vector>
@@ -21,7 +21,8 @@
 #include <knowrob/terms.h>
 
 namespace knowrob {
-	/** The type of a formula.
+	/**
+	 * The type of a formula.
 	 */
 	enum class FormulaType {
 		// A formula of the form `P(t_1,..,t_n)` where each ti is a term
@@ -39,7 +40,8 @@ namespace knowrob {
 		// FORALL
 	};
 	
-	/** A propositional formula.
+	/**
+	 * A propositional formula.
 	 * Note that all formulas are immutable.
 	 */
 	class Formula {
@@ -47,14 +49,15 @@ namespace knowrob {
 		/**
 		 * @type the type of the formula.
 		 */
-		Formula(const FormulaType &type);
+		explicit Formula(const FormulaType &type);
 		
 		/**
 		 * @return the type of this formula.
 		 */
 		FormulaType type() const { return type_; }
 		
-		/** Is this formula free of subformulas?
+		/**
+		 * Is this formula free of subformulas?
 		 *
 		 * @return true if this formula is atomic.
 		 */
@@ -65,13 +68,15 @@ namespace knowrob {
 		 */
 		virtual bool isGround() const = 0;
 		
-		/** Replaces variables in the formula with terms.
+		/**
+		 * Replaces variables in the formula with terms.
 		 * @sub a substitution mapping.
 		 * @return the created formula.
 		 */
 		virtual std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const = 0;
 		
-		/** Write the formula into an ostream.
+		/**
+		 * Write the formula into an ostream.
 		 */
 		virtual void write(std::ostream& os) const = 0;
 	
@@ -82,14 +87,15 @@ namespace knowrob {
 	// alias declaration
 	using FormulaPtr = std::shared_ptr<Formula>;
 	
-	/** A predicate formula.
+	/**
+	 * A predicate formula.
 	 */
 	class PredicateFormula : public Formula {
 	public:
 		/**
 		 * @predicate a predicate reference.
 		 */
-		PredicateFormula(const std::shared_ptr<Predicate> &predicate);
+		explicit PredicateFormula(const std::shared_ptr<Predicate> &predicate);
 		
 		/**
 		 * @return the predicate associated to this formula.
@@ -100,7 +106,7 @@ namespace knowrob {
 		bool isGround() const override;
 		
 		// Override Formula
-		FormulaPtr applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const override;
 		
 		// Override Formula
 		void write(std::ostream& os) const override;
@@ -109,7 +115,8 @@ namespace knowrob {
 		const std::shared_ptr<Predicate> predicate_;
 	};
 	
-	/** A formula with sub-formulas linked via logical connectives.
+	/**
+	 * A formula with sub-formulas linked via logical connectives.
 	 */
 	class ConnectiveFormula : public Formula {
 	public:
@@ -145,20 +152,21 @@ namespace knowrob {
 		
 		static std::vector<FormulaPtr> applySubstitution1(
 			const std::vector<FormulaPtr> &otherFormulas,
-			const Substitution &sub) ;
+			const Substitution &sub);
 	};
 	
-	/** A conjunctive expression.
+	/**
+	 * A conjunctive expression.
 	 */
 	class ConjunctionFormula : public ConnectiveFormula {
 	public:
 		/**
 		 * @formulae list of sub-formulas.
 		 */
-		ConjunctionFormula(const std::vector<FormulaPtr> &formulae);
+		explicit ConjunctionFormula(const std::vector<FormulaPtr> &formulae);
 		
 		// Override Formula
-		FormulaPtr applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const override;
 		
 		// Override ConnectiveFormula
 		const char* operator_symbol() const override { return "\u2227"; }
@@ -167,17 +175,18 @@ namespace knowrob {
 		ConjunctionFormula(const ConjunctionFormula &other, const Substitution &sub);
 	};
 	
-	/** A disjunctive expression.
+	/**
+	 * A disjunctive expression.
 	 */
 	class DisjunctionFormula : public ConnectiveFormula {
 	public:
 		/**
 		 * @formulae list of sub-formulas.
 		 */
-		DisjunctionFormula(const std::vector<FormulaPtr> &formulae);
+		explicit DisjunctionFormula(const std::vector<FormulaPtr> &formulae);
 		
 		// Override Formula
-		FormulaPtr applySubstitution(const Substitution &sub) const;
+		FormulaPtr applySubstitution(const Substitution &sub) const override;
 		
 		// Override ConnectiveFormula
 		const char* operator_symbol() const override { return "\u2228"; }
@@ -194,19 +203,20 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-		Query(const FormulaPtr &formula);
+		explicit Query(const FormulaPtr &formula);
 		
 		/**
 		 * @predicate the predicate that is queried.
 		 */
-		Query(const std::shared_ptr<Predicate> &predicate);
+		explicit Query(const std::shared_ptr<Predicate> &predicate);
 
 		/**
 		 * @return the formula associated to this query.
 		 */
 		const FormulaPtr& formula() const { return formula_; }
 		
-		/** Replaces variables in the query with terms based on a mapping provided in the argument.
+		/**
+		 * Replaces variables in the query with terms based on a mapping provided in the argument.
 		 * @sub a mapping from variables to terms.
 		 * @return the new query created.
 		 */
@@ -214,16 +224,11 @@ namespace knowrob {
 
 	protected:
 		const std::shared_ptr<Formula> formula_;
-		
-		FormulaPtr copyFormula(const FormulaPtr &phi);
-		TermPtr copyTerm(const TermPtr &t);
 	};
 	
 	// aliases
 	using QueryResult = Substitution;
 	using QueryResultPtr = SubstitutionPtr;
-	// forward declaration
-	class QueryResultBroadcast;
 	
 	/**
 	 * A stream of query results.
@@ -233,25 +238,30 @@ namespace knowrob {
 	public:
 		QueryResultStream();
 		~QueryResultStream();
+		QueryResultStream(const QueryResultStream&) = delete;
 		
-		/** Find out if a message indicates the end-of-stream (EOS).
+		/**
+		 * Find out if a message indicates the end-of-stream (EOS).
 		 * @msg a QueryResult pointer.
 		 * @return true if the result indicates EOS.
 		 */
 		static bool isEOS(const QueryResultPtr &msg);
 		
-		/** Get the end-of-stream (eos) message. 
+		/**
+		 * Get the end-of-stream (eos) message.
 		 * @return the eos message.
 		 */
 		static QueryResultPtr& eos();
 		
-		/** Get the begin-of-stream (bos) message.
+		/**
+		 * Get the begin-of-stream (bos) message.
 		 * This is basically an empty substitution mapping.
 		 * @return the bos message.
 		 */
 		static QueryResultPtr& bos();
 		
-		/** Close the stream.
+		/**
+		 * Close the stream.
 		 * This will push an EOS message, and all future
 		 * attempts to push a non EOS message will cause an error.
 		 * Once closed, a stream cannot be opened again.
@@ -265,27 +275,36 @@ namespace knowrob {
 		 */
 		bool isOpened() const;
 		
-		/** An input channel of a stream.
+		/**
+		 * An input channel of a stream.
 		 */
 		class Channel {
 		public:
-			Channel(const std::shared_ptr<QueryResultStream> &stream);
-			
+			/**
+			 * @param stream the query result stream associated to this channel.
+			 */
+			explicit Channel(const std::shared_ptr<QueryResultStream> &stream);
+
 			~Channel();
 
-			/** Create a new stream channel.
+			Channel(const Channel&) = delete;
+
+			/**
+			 * Create a new stream channel.
 			 * Note that this will generate an error in case the stream
 			 * is closed already.
 			 * @return a new stream channel
 			 */
 			static std::shared_ptr<Channel> create(const std::shared_ptr<QueryResultStream> &stream);
 			
-			/** Push a QueryResult into this channel.
+			/**
+			 * Push a QueryResult into this channel.
 			 * @msg a QueryResult pointer.
 			 */
 			void push(const QueryResultPtr &msg);
 			
-			/** Close the channel.
+			/**
+			 * Close the channel.
 			 */
 			void close();
 		
@@ -300,13 +319,14 @@ namespace knowrob {
 			uint32_t id() const;
 			
 		protected:
+			// the stream of this channel
 			const std::shared_ptr<QueryResultStream> stream_;
+			// iterator of this channel withing the stream
 			std::list<std::shared_ptr<Channel>>::iterator iterator_;
+			// flag indicating whether channel is open (i.e., no EOS received so far)
 			std::atomic<bool> isOpened_;
 			
 			friend class QueryResultStream;
-			
-			Channel(const Channel&) = delete;
 		};
 
 	protected:
@@ -317,29 +337,30 @@ namespace knowrob {
 		virtual void push(const Channel &channel, const QueryResultPtr &msg);
 		
 		virtual void push(const QueryResultPtr &msg) = 0;
-		
-		// copying streams is not allowed
-		QueryResultStream(const QueryResultStream&) = delete;
 	};
 	
-	/** A queue of QueryResult objects.
+	/**
+	 * A queue of QueryResult objects.
 	 */
 	class QueryResultQueue : public QueryResultStream {
 	public:
 		QueryResultQueue();
 		~QueryResultQueue();
 		
-		/** Get the front element of this queue without removing it.
+		/**
+		 * Get the front element of this queue without removing it.
 		 * This will block until the queue is non empty.
 		 * @return the front element of the queue.
 		 */
 		QueryResultPtr& front();
 		
-		/** Remove the front element of this queue.
+		/**
+		 * Remove the front element of this queue.
 		 */
 		void pop();
 		
-		/** Get front element and remove it from the queue.
+		/**
+		 * Get front element and remove it from the queue.
 		 * @return the front element of the queue.
 		 */
 		QueryResultPtr pop_front();
@@ -354,20 +375,23 @@ namespace knowrob {
 		void pushToQueue(const QueryResultPtr &item);
 	};
 	
-	/** A broadcaster of query results.
+	/**
+	 * A broadcaster of query results.
 	 */
 	class QueryResultBroadcaster : public QueryResultStream {
 	public:
 		QueryResultBroadcaster();
 		~QueryResultBroadcaster();
 		
-		/** Add a subscriber to this broadcast.
+		/**
+		 * Add a subscriber to this broadcast.
 		 * The subscriber will receive input from the broadcast after this call.
 		 * @subscriber a query result stream.
 		 */
 		void addSubscriber(const std::shared_ptr<Channel> &subscriber);
 		
-		/** Remove a previously added subscriber.
+		/**
+		 * Remove a previously added subscriber.
 		 * @subscriber a query result stream.
 		 */
 		void removeSubscriber(const std::shared_ptr<Channel> &subscriber);
@@ -383,9 +407,11 @@ namespace knowrob {
 	// alias
 	using QueryResultBuffer = std::map<uint32_t, std::list<QueryResultPtr>>;
 	
-	/** Combines multiple query result streams.
+	/**
+	 * Combines multiple query result streams, and broadcasts each
+	 * combination computed.
 	 * This is intended to be used for parallel evaluation of
-	 * subgoals within a query.
+	 * sub-goals within a query.
 	 */
 	class QueryResultCombiner : public QueryResultBroadcaster {
 	public:
@@ -407,9 +433,13 @@ namespace knowrob {
 	 */
 	class QueryError : public std::runtime_error {
 	public:
+		/**
+		 * @param erroneousQuery the query that caused an error
+		 * @param errorTerm a term denoting the error
+		 */
 		QueryError(const Query &erroneousQuery, const Term &errorTerm);
 		
-		QueryError(const std::string& what = "");
+		explicit QueryError(const std::string& what = "");
 	
 	protected:
 		
@@ -422,4 +452,4 @@ namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q);
 }
 
-#endif //__KNOWROB_QUERIES_H__
+#endif //KNOWROB_QUERIES_H_

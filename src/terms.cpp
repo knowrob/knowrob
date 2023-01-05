@@ -10,6 +10,8 @@
 #include <knowrob/terms.h>
 #include <gtest/gtest.h>
 
+#include <utility>
+
 using namespace knowrob;
 
 Term::Term(TermType type)
@@ -51,9 +53,9 @@ bool Term::isTop() const
 }
 
 
-Variable::Variable(const std::string &name)
+Variable::Variable(std::string name)
 : Term(TermType::VARIABLE),
-  name_(name)
+  name_(std::move(name))
 {}
 
 bool Variable::operator==(const Variable& other) const
@@ -110,10 +112,8 @@ bool ListTerm::operator==(const ListTerm& x) const {
 
 bool ListTerm::isGround1() const
 {
-	for(const auto &x : elements_) {
-		if(!x->isGround()) return false;
-	}
-	return true;
+	return std::all_of(elements_.begin(), elements_.end(),
+					   [](const TermPtr &x){ return x->isGround(); });
 }
 		
 std::shared_ptr<ListTerm> ListTerm::nil()
@@ -223,8 +223,8 @@ long OptionList::getLong(const std::string &key, long defaultValue) {
 }
 
 
-PredicateIndicator::PredicateIndicator(const std::string &functor, unsigned int arity)
-: functor_(functor),
+PredicateIndicator::PredicateIndicator(std::string functor, unsigned int arity)
+: functor_(std::move(functor)),
   arity_(arity)
 {
 }
@@ -294,10 +294,8 @@ bool Predicate::operator==(const Predicate& other) const {
 
 bool Predicate::isGround1() const
 {
-	for(const auto &x : arguments_) {
-		if(!x->isGround()) return false;
-	}
-	return true;
+	return std::all_of(arguments_.begin(), arguments_.end(),
+					   [](const TermPtr &x){ return x->isGround(); });
 }
 
 std::vector<TermPtr> Predicate::applySubstitution(
@@ -344,7 +342,7 @@ std::shared_ptr<Predicate> Predicate::applySubstitution(const Substitution &sub)
 
 void Predicate::write(std::ostream& os) const
 {
-	// TODO: some predicates should be written in infix notation
+	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
 	os << indicator_->functor();
 	if(!arguments_.empty()) {
 		os << '(';

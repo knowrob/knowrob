@@ -13,6 +13,8 @@
 // shared libraries
 #include <dlfcn.h>
 
+#include <utility>
+
 using namespace knowrob;
 
 
@@ -62,8 +64,10 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	KB_INFO("Using reasoner `{}` with type `{}`.", reasonerID, factory->name());
 	// create a new reasoner instance
 	auto reasoner = factory->createReasoner(reasonerID);
-	if(!reasoner->initialize(ReasonerConfiguration(config))) {
-		KB_WARN("Reasoner `{}` failed to initialize.", reasonerID);
+	ReasonerConfiguration reasonerConfig;
+	reasonerConfig.loadPropertyTree(config);
+	if(!reasoner->loadConfiguration(reasonerConfig)) {
+		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
 	}
 	else {
 		addReasoner(reasoner);
@@ -120,11 +124,11 @@ std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(c
 /************ ReasonerPlugin **************/
 /******************************************/
 
-ReasonerPlugin::ReasonerPlugin(const std::string &dllPath)
+ReasonerPlugin::ReasonerPlugin(std::string dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
-		  dllPath_(dllPath)
+		  dllPath_(std::move(dllPath))
 {
 }
 
@@ -165,7 +169,7 @@ std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner(const std::string &rea
 /********* ReasonerConfiguration **********/
 /******************************************/
 
-ReasonerConfiguration::ReasonerConfiguration(const boost::property_tree::ptree &config)
+void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &config)
 {
 	for(const auto &pair : config.get_child("data-sources")) {
 		auto &subtree = pair.second;

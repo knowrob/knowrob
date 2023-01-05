@@ -21,7 +21,7 @@ protected:
 			KB_INFO("Running Mongolog tests");
 			knowrob::ReasonerConfiguration reasonerConfig;
 			r = std::make_shared<knowrob::MongologReasoner>("mongolog0");
-			r->initialize(reasonerConfig);
+			r->loadConfiguration(reasonerConfig);
 		}
 		return r;
 	}

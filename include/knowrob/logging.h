@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_LOGGING_H__
-#define __KNOWROB_LOGGING_H__
+#ifndef KNOWROB_LOGGING_H_
+#define KNOWROB_LOGGING_H_
 
 // note: must be defined before including spdlog.h
 //#ifdef _DEBUG
@@ -66,8 +66,13 @@
 #endif
 
 namespace knowrob::logging {
+	/**
+	 * Initialize the logging subsystem, i.e., configure it with default parameters.
+	 * The configuration may be changed at a later point, e.g. when reading a settings file.
+	 */
 	void initialize();
+
+	// TODO: add interfaces that allow configuration of the logging system.
 }
 
-#endif //__KNOWROB_LOGGING_H__
-
+#endif //KNOWROB_LOGGING_H_

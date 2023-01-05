@@ -182,7 +182,7 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 		// tell the reasoner to finish up.
 		// if hasStopRequest_=true it means that the reasoner is requested
 		// to immediately shutdown. however, note that not all reasoner
-		// implementations may support this and may take longer to stop anyways.
+		// implementations may support this and may take longer to stop anyway.
 		if(isQueryOpened()) {
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_PROLOG_REASONER_H__
-#define __KNOWROB_PROLOG_REASONER_H__
+#ifndef KNOWROB_PROLOG_REASONER_H_
+#define KNOWROB_PROLOG_REASONER_H_
 
 // STD
 #include <string>
@@ -25,7 +25,8 @@
 #include <knowrob/prolog/PrologQuery.h>
 
 namespace knowrob {
-	/** A pool of threads with attached Prolog engines.
+	/**
+	 * A pool of threads with attached Prolog engines.
 	 * Prolog threads have their own stacks and only share the Prolog heap:
 	 * predicates, records, flags and other global non-backtrackable data.
 	 */
@@ -34,7 +35,7 @@ namespace knowrob {
 		/**
 		 * @maxNumThreads maximum number of worker threads.
 		 */
-		PrologThreadPool(uint32_t maxNumThreads=0);
+		explicit PrologThreadPool(uint32_t maxNumThreads=0);
 
 	protected:
 		// Override ThreadPool
@@ -46,7 +47,7 @@ namespace knowrob {
 	
 	class PrologDataFile : public DataFile {
 	public:
-		PrologDataFile(const std::string &path);
+		explicit PrologDataFile(const std::string &path);
 	};
 
 	/**
@@ -55,11 +56,13 @@ namespace knowrob {
 	class PrologReasoner : public LogicProgramReasoner {
 	public:
 		/**
-		 * @initFile the path to a Prolog-encoded file that is initially consulted.
+		 * @param reasonerID a knowledge base identifier of this reasoner.
 		 */
-		PrologReasoner(const std::string &reasonerID);
+		explicit PrologReasoner(std::string reasonerID);
 		
-		~PrologReasoner();
+		~PrologReasoner() override;
+
+		PrologReasoner(const PrologReasoner&) = delete;
 
 		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
@@ -69,43 +72,54 @@ namespace knowrob {
          * @return true on success
 		 */
 		virtual bool consult(const std::filesystem::path &prologFile);
-
-        /** Run unittests associated to the given target name.
-         * The target name can be the name of a loaded testcase,
-         * or the path to a "*.pl", "*.plt" file, or the path to
-         * a directory containing such files.
-         * @param target a tests target name
-         * @return true on success
-         */
-		std::list<TermPtr> runTests(const std::string &target);
 		
-		/** Evaluates a query and returns one solution if any.
-		 * @return the first solution found, or QueryResultStream::eos().
+		/**
+		 * Evaluates a query and returns one solution if any.
+		 * @return the first solution found, or QueryResultStream::eos() if none.
 		 */
 		std::shared_ptr<QueryResult> oneSolution(const std::shared_ptr<Query> &goal);
 		
-		/** Evaluates a query and returns all solutions.
+		/**
+		 * Evaluates a query and returns all solutions.
 		 * @return list of solutions.
 		 */
 		std::list<std::shared_ptr<QueryResult>> allSolutions(const std::shared_ptr<Query> &goal);
 		
-		/** Parse a string into a term.
+		/**
+		 * Parse a string into a term.
 		 */
 		std::shared_ptr<Term> readTerm(const std::string &queryString);
+
+		/**
+		 * Run unittests associated to the given target name.
+		 * The target name can be the name of a loaded testcase,
+		 * or the path to a "*.pl", "*.plt" file, or the path to
+		 * a directory containing such files.
+		 * @param target a plunit target
+		 * @return true on success
+		 */
+		std::list<TermPtr> runTests(const std::string &target);
 		
-		/** Transforms each input query.
+		/**
+		 * Transforms each input query.
 		 * The intended purpose is that subclasses of this reasoner can wrap a goal in a
 		 * reasoner specific higher-order predicate, e.g. `my_reasoner_call/1`.
 		 */
 		virtual std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) { return q; }
 
-		std::filesystem::path getPrologPath(const std::filesystem::path &filename);
+		/**
+		 * Resolve the path to a Prolog file.
+		 * The function attempts to resolve project-relative paths.
+		 * @param filename a name or path.
+		 * @return a path where the file might be stored
+		 */
+		static std::filesystem::path getPrologPath(const std::filesystem::path &filename);
 
 		// Override LogicProgramReasoner
 		bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
 
 		// Override IReasoner
-		bool initialize(const ReasonerConfiguration &cfg) override;
+		bool loadConfiguration(const ReasonerConfiguration &cfg) override;
 
 		// Override IReasoner
 		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
@@ -116,31 +130,28 @@ namespace knowrob {
 			const std::shared_ptr<Query> &goal) override;
 		
 		// Override IReasoner
-		void finishQuery(uint32_t queryID,
-			bool isImmediateStopRequested) override;
+		void finishQuery(uint32_t queryID, bool isImmediateStopRequested) override;
 		
 		// Override IReasoner
-		void pushSubstitution(uint32_t queryID,
-			const SubstitutionPtr &bindings) override;
+		void pushSubstitution(uint32_t queryID, const SubstitutionPtr &bindings) override;
 
 	protected:
 		const std::string reasonerID_;
 
-		// a query request for a runner
+		/** a query request for a runner */
 		struct Request {
 			uint32_t queryID;
 			const char *queryModule;
 			std::shared_ptr<Query> goal;
-			Request(const std::shared_ptr<Query> &goal, const char *queryModule=nullptr, uint32_t queryID=0)
+			explicit Request(const std::shared_ptr<Query> &goal, const char *queryModule=nullptr, uint32_t queryID=0)
 			: queryID(queryID), queryModule(queryModule), goal(goal) {};
 		};
 
-		/** A runner that evaluates a Prolog query.
-		 */
+		/** A runner that evaluates a Prolog query.  */
 		class Runner : public ThreadPool::Runner {
 		public:
 			Runner(PrologReasoner *reasoner,
-				   const Request &request,
+				   Request request,
 				   const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				   bool sendEOS=false,
 				   const SubstitutionPtr &bindings=QueryResultStream::eos());
@@ -187,8 +198,6 @@ namespace knowrob {
 		
 		PrologThreadPool& threadPool();
 		
-		PrologReasoner(const PrologReasoner&) = delete;
-		
 		friend class PrologReasoner::Runner;
 	};
 
@@ -197,11 +206,9 @@ namespace knowrob {
 	 */
 	class PrologTests: public testing::Test {
 	protected:
-		static testing::AssertionResult generateFailure(const std::shared_ptr<Term> &t);
-
 		static void runPrologTests(const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
 								   const std::string &target);
 	};
 }
 
-#endif //__KNOWROB_PROLOG_REASONER_H__
+#endif //KNOWROB_PROLOG_REASONER_H_

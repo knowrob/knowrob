@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_MONGOLOG_REASONER_H__
-#define __KNOWROB_MONGOLOG_REASONER_H__
+#ifndef KNOWROB_MONGOLOG_REASONER_H_
+#define KNOWROB_MONGOLOG_REASONER_H_
 
 // STD
 #include <memory>
@@ -19,8 +19,9 @@
 namespace knowrob {
 	class MongologReasoner : public PrologReasoner {
 	public:
-		MongologReasoner(const std::string &reasonerID);
-		~MongologReasoner();
+		explicit MongologReasoner(const std::string &reasonerID);
+
+		~MongologReasoner() override;
 		
 		// Override IReasoner
 		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
@@ -35,4 +36,4 @@ namespace knowrob {
     };
 }
 
-#endif //__KNOWROB_MONGOLOG_REASONER_H__
+#endif //KNOWROB_MONGOLOG_REASONER_H_

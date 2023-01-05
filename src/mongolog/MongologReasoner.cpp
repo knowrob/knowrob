@@ -16,8 +16,7 @@ MongologReasoner::MongologReasoner(const std::string &reasonerID)
 {}
 
 MongologReasoner::~MongologReasoner()
-{
-}
+= default;
 
 bool MongologReasoner::initializeDefaultPackages()
 {
@@ -31,7 +30,7 @@ bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
 {
 	// TODO: better map to current_predicate as regular mongolog query?
 	return !QueryResultStream::isEOS(oneSolution1(std::make_shared<Query>(
-		std::shared_ptr<Predicate>(new Predicate(
+		std::make_shared<Predicate>(Predicate(
 			"is_mongolog_predicate", {
 				std::make_shared<StringTerm>(predicate.functor()) //,
 				//std::make_shared<Integer32Term>(predicate.arity())

@@ -136,4 +136,3 @@ namespace knowrob {
 }
 
 #endif //KNOWROB_THREAD_POOL_H_
-

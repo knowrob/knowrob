@@ -94,7 +94,7 @@ namespace knowrob {
 		/**
 		 * @name the name of the variable.
 		 */
-		explicit Variable(const std::string &name);
+		explicit Variable(std::string name);
 
         // Override '==' operator
         bool operator==(const Variable& other) const;
@@ -193,7 +193,7 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arity thr arity of this predicate.
 		 */
-		PredicateIndicator(const std::string &functor, unsigned int arity);
+		PredicateIndicator(std::string functor, unsigned int arity);
 
         // Override '==' operator
         bool operator==(const PredicateIndicator& other) const;
