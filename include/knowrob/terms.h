@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_TERMS_H__
-#define __KNOWROB_TERMS_H__
+#ifndef KNOWROB_TERMS_H_
+#define KNOWROB_TERMS_H_
 
 // STD
 #include <list>
@@ -44,7 +44,7 @@ namespace knowrob {
 		/**
 		 * @type the type of this term.
 		 */
-		Term(TermType type);
+		explicit Term(TermType type);
 
         // Override equality operator
         bool operator==(const Term& other) const;
@@ -94,7 +94,7 @@ namespace knowrob {
 		/**
 		 * @name the name of the variable.
 		 */
-		Variable(const std::string &name);
+		explicit Variable(const std::string &name);
 
         // Override '==' operator
         bool operator==(const Variable& other) const;
@@ -158,7 +158,7 @@ namespace knowrob {
 	 */
 	class StringTerm : public Constant<std::string> {
 	public:
-		StringTerm(const std::string &v);
+		explicit StringTerm(const std::string &v);
 		
 		// Override Term
 		void write(std::ostream& os) const override;
@@ -168,21 +168,21 @@ namespace knowrob {
 	 */
 	class DoubleTerm : public Constant<double> {
 	public:
-		DoubleTerm(const double &v);
+		explicit DoubleTerm(const double &v);
 	};
 	
 	/** A long value.
 	 */
 	class LongTerm : public Constant<long> {
 	public:
-		LongTerm(const long &v);
+		explicit LongTerm(const long &v);
 	};
 	
 	/** An integer with 32 bit encoding.
 	 */
 	class Integer32Term : public Constant<int32_t> {
 	public:
-		Integer32Term(const int32_t &v);
+		explicit Integer32Term(const int32_t &v);
 	};
 
 	/** The indicator of a predicate defined by its functor and arity.
@@ -326,7 +326,7 @@ namespace knowrob {
 	 */
 	class ListTerm : public Term {
 	public:
-		ListTerm(const std::vector<TermPtr> &elements);
+		explicit ListTerm(const std::vector<TermPtr> &elements);
 
         // Override equality operator
         bool operator==(const ListTerm& other) const;
@@ -382,7 +382,7 @@ namespace knowrob {
 		 * Option terms have either the form `Key = Value` or `Key(Value)`.
 		 * @param t a term from which options are read.
 		 */
-		OptionList(const TermPtr &t);
+		explicit OptionList(const TermPtr &t);
 
 		/**
 		 * @return the option map.
@@ -492,9 +492,9 @@ namespace knowrob {
 		
 		class Added : public Operation {
 		public:
-			Added(const Substitution::Iterator &it);
-			// Overwrite Operation
-			void rollBack(Substitution &sub);
+			explicit Added(const Substitution::Iterator &it);
+			// Override Operation
+			void rollBack(Substitution &sub) override;
 		protected:
 			Substitution::Iterator it_;
 		};
@@ -502,8 +502,8 @@ namespace knowrob {
 		class Replaced : public Operation {
 		public:
 			Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance);
-			// Overwrite Operation
-			void rollBack(Substitution &sub);
+			// Override Operation
+			void rollBack(Substitution &sub) override;
 		protected:
 			Substitution::Iterator it_;
 			const TermPtr replacedInstance_;
@@ -548,4 +548,4 @@ namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Substitution& omega);
 }
 
-#endif //__KNOWROB_TERMS_H__
+#endif //KNOWROB_TERMS_H_
