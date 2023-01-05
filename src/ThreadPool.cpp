@@ -29,6 +29,7 @@ ThreadPool::~ThreadPool()
 	}
 	workCV_.notify_all();
 	for(Worker *t : workerThreads_) {
+		// note: worker destructor joins the thread
 		delete t;
 	}
 	workerThreads_.clear();
@@ -86,7 +87,7 @@ void ThreadPool::Worker::run()
 	if(!threadPool_->initializeWorker()) {
 		KB_ERROR("Worker initialization failed.");
 		isTerminated_ = true;
-		// FIXME: remove from worker pool
+		// FIXME: remove from workerThreads_
 		return;
 	}
 	KB_DEBUG("Worker initialized.");
@@ -95,33 +96,31 @@ void ThreadPool::Worker::run()
 	// loop until the application exits
 	while(!hasTerminateRequest_) {
 		// wait for a claim
-		if(!threadPool_->hasWork()) {
+		{
 			KB_DEBUG("Worker going to sleep.");
-			std::unique_lock<std::mutex> lk(threadM_);
+			std::unique_lock<std::mutex> lk(threadPool_->workMutex_);
 			threadPool_->workCV_.wait(lk, [this]{
-				return hasTerminateRequest_ || threadPool_->hasWork();
+				return hasTerminateRequest_ || !threadPool_->workQueue_.empty();
 			});
 			KB_DEBUG("Worker woke up.");
-			if(hasTerminateRequest_) {
-				KB_DEBUG("Worker has terminate request.");
-				break;
-			}
+		}
+		if(hasTerminateRequest_) {
+			KB_DEBUG("Worker has terminate request.");
+			break;
 		}
 		
 		// pop work from queue
 		goal_ = threadPool_->popWork();
-		KB_DEBUG("Worker has a new goal.");
-		
 		// do the work
-		if(goal_!=nullptr) {
+		if(goal_) {
+			KB_DEBUG("Worker has a new goal.");
 			goal_->runInternal();
+			KB_DEBUG("Work finished.");
 		}
-		
-		// add the worker thread to the thread pool again
-		KB_DEBUG("Work finished.");
 	}
 	
 	// tell the thread pool that a worker thread exited
+	// FIXME: remove from workerThreads_
 	threadPool_->finalizeWorker();
 
 	KB_DEBUG("Worker terminated.");

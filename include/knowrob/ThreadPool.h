@@ -98,7 +98,6 @@ namespace knowrob {
 		protected:
 			ThreadPool *threadPool_;
 			std::thread thread_;
-			std::mutex threadM_;
 			std::shared_ptr<ThreadPool::Runner> goal_;
 
 			std::atomic<bool> isTerminated_;
