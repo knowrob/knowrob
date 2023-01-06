@@ -14,8 +14,6 @@
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/pancake.owl">
-        <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="http://www.ease-crc.org/ont/SOMA.owl"/>
     </owl:Ontology>
     
 
