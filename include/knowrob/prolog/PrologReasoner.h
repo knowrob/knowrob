@@ -75,6 +75,11 @@ namespace knowrob {
          * @return true on success
 		 */
 		virtual bool consult(const std::filesystem::path &prologFile);
+
+		/**
+		 * @param rdfFile a rdf-xml encoded file.
+		 */
+		virtual bool consult_rdf_xml(const std::filesystem::path &rdfFile);
 		
 		/**
 		 * Evaluates a query and returns one solution if any.
@@ -117,6 +122,14 @@ namespace knowrob {
 		 * @return a path where the file might be stored
 		 */
 		static std::filesystem::path getPrologPath(const std::filesystem::path &filename);
+
+		/**
+		 * Resolve the path to a resource file.
+		 * The function attempts to resolve project-relative paths.
+		 * @param filename a name or path.
+		 * @return a path where the file might be stored
+		 */
+		static std::filesystem::path getResourcePath(const std::filesystem::path &filename);
 
 		// Override LogicProgramReasoner
 		bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
@@ -197,7 +210,9 @@ namespace knowrob {
 		std::list<std::shared_ptr<QueryResult>> allSolutions1(const std::shared_ptr<Query> &goal);
 
 		void initializeProlog();
-		virtual bool initializeDefaultPackages();
+		bool initializeGlobalPackages();
+
+		virtual bool initializeDefaultPackages() { return true; }
 		
 		PrologThreadPool& threadPool();
 		
