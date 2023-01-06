@@ -47,6 +47,8 @@ namespace knowrob {
 	
 	class PrologDataFile : public DataFile {
 	public:
+		static const std::string PROLOG_FORMAT;
+
 		explicit PrologDataFile(const std::string &path);
 	};
 
