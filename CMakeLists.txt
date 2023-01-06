@@ -122,7 +122,8 @@ add_library(hyres SHARED
 		src/prolog/logging.cpp
 		src/prolog/algebra.cpp
 		src/mongolog/MongologReasoner.cpp
-        src/mongolog/MongologTests.cpp)
+        src/mongolog/MongologTests.cpp
+		src/esg/ESGReasoner.cpp)
 target_link_libraries(hyres
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
