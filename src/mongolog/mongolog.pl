@@ -20,7 +20,7 @@
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1, rdf_global_term/2 ]).
 :- use_module(library('scope')).
-:- use_module(library('mongolog/subgraph'), [ set_graph_option/2 ]).
+:- use_module(library('semweb_ext'), [ set_graph_option/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('logging')).
 

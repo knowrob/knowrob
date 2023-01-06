@@ -1,15 +1,15 @@
 
 :- use_module(library('unittest')).
-:- use_module(library('rdftest')).
 :- use_module(library('mongodb/client')).
 :- use_module('mongolog').
+:- use_module('mongolog_test').
 :- use_module('triple').
-:- use_module(library('ontology')).
+:- use_module(library('semweb_ext')).
 
 :- begin_tests(
 		'mongolog_triple',
 		[   setup(subgraph:set_default_graph(test)),
-		    cleanup(rdftest:cleanup)
+		    cleanup(mongolog_test:cleanup)
 		]).
 
 :- use_module(library('semweb/rdf_db'),

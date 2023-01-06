@@ -23,14 +23,14 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('mongolog/subgraph'),
+:- use_module(library('semweb_ext'),
 		[ get_supgraphs/2 ]).
 :- use_module(library('scope'),
 		[ universal_scope/1, time_scope/3, time_scope_data/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
-:- use_module(library('rdftest')).
-:- use_module(library('ontology')).
+:- use_module(library('mongolog/mongolog_test')).
+:- use_module(library('semweb_ext')).
 :- use_module('subgraph').
 
 :- rdf_meta(taxonomical_property(r)).
@@ -868,7 +868,7 @@ auto_drop_graphs :-
 
 %%
 triple_graph(Ctx, Graph) :-
-	once((subgraph:default_graph(DefaultGraph) ; DefaultGraph=user)),
+	once((semweb_ext:default_graph(DefaultGraph) ; DefaultGraph=user)),
 	option(graph(Graph), Ctx, DefaultGraph).
 
 %%
