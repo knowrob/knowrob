@@ -11,7 +11,7 @@
 
 :- use_module(library('scope'),
 		[ time_scope/3, universal_scope/1 ]).
-:- use_module(library('rdftest')).
+:- use_module(library('mongolog/mongolog_test')).
 
 :- multifile during/2.
 :- multifile since/2.
@@ -165,7 +165,7 @@ until(Statement, Instant) +>
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_rdf_tests(
+:- begin_mongolog_tests(
 		'mongolog_temporal',
 		'owl/test/swrl.owl',
 		[ namespace('http://knowrob.org/kb/swrl_test#')
@@ -243,4 +243,4 @@ test('until(+Triple,+Instant)') :-
 	assert_false(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)).
 
-:- end_rdf_tests('mongolog_temporal').
+:- end_mongolog_tests('mongolog_temporal').

@@ -12,7 +12,7 @@
 	[ mng_strip_operator/3, mng_strip_type/3 ]).
 :- use_module(library('qudt'),
 	[ qudt_unit/4 ]).
-:- use_module(library('rdftest')).
+:- use_module('mongolog_test').
 :- use_module(library('scope')).
 :- use_module('temporal').
 
@@ -102,7 +102,7 @@ holds(Query) ?+>
      *	    UNIT TESTS	     		    *
      *******************************/
 
-:- begin_rdf_tests(
+:- begin_mongolog_tests(
 	'mongolog_holds',
 	'owl/test/swrl.owl',
 	[ namespace('http://knowrob.org/kb/swrl_test#')
@@ -131,4 +131,4 @@ test('holds(+S,+P,+Unit(+O))') :-
 	assert_true(holds(test:'Lea',test:'hasHeightInMeters', cm(_))),
 	holds(test:'Lea',test:'hasHeightInMeters', cm(X)) -> assert_equals(X,650.0); fail.
 
-:- end_rdf_tests('mongolog_holds').
+:- end_mongolog_tests('mongolog_holds').
