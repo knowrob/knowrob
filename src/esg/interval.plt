@@ -1,9 +1,10 @@
-:- use_module('interval.pl').
-:- use_module(library('rostest')).
+
+:- user:use_module('interval.pl').
+:- use_module(library('rdf_test')).
 
 :- begin_rdf_tests(
 		'time_interval',
-		'package://knowrob/owl/test/events.owl',
+		'owl/test/events.owl',
 		[ namespace('http://knowrob.org/kb/test_events.owl#')
 		]).
 
