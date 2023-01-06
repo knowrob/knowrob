@@ -10,6 +10,7 @@
 #include <knowrob/ReasonerManager.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>
+#include <knowrob/esg/ESGReasoner.h>
 // shared libraries
 #include <dlfcn.h>
 
@@ -24,6 +25,7 @@ ReasonerManager::ReasonerManager()
 	// add some default factory functions to create reasoner instances
 	addReasonerFactory("Mongolog", std::make_shared<TypedReasonerFactory<MongologReasoner>>("Mongolog"));
 	addReasonerFactory("Prolog",   std::make_shared<TypedReasonerFactory<PrologReasoner>>("Prolog"));
+	addReasonerFactory("ESG",      std::make_shared<TypedReasonerFactory<ESGReasoner>>("ESG"));
 }
 
 void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
@@ -171,15 +173,18 @@ std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner(const std::string &rea
 
 void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &config)
 {
+	static const std::string formatDefault = {};
+
 	for(const auto &pair : config.get_child("data-sources")) {
 		auto &subtree = pair.second;
 
-		if(subtree.count("file")) {
-			const auto &fileName = subtree.get<std::string>("file");
-			dataFiles.push_back(std::make_shared<DataFile>(fileName));
+		auto fileValue = subtree.get_optional<std::string>("file");
+		if(fileValue.has_value()) {
+			auto fileFormat = subtree.get("format",formatDefault);
+			dataFiles.push_back(std::make_shared<DataFile>(fileValue.value(), fileFormat));
 		}
 		else {
-			KB_WARN("cannot load data source");
+			KB_WARN("Ignoring data source without \"file\" key.");
 		}
 	}
 }
