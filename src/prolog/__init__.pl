@@ -23,7 +23,11 @@
    asserta(user:library_directory(SrcDir)).
 
 % load some standard Prolog libraries into user
-:- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2]).
+:- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2, rdf_register_prefix/3]).
+
+% register some custom RDF namespaces
+:- rdf_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+:- rdf_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
 
 % more fancy module declarations
 :- use_module(library('module')).
@@ -50,4 +54,4 @@
 % auto-loaded models
 :- use_module(library('xsd')).
 :- use_module(library('qudt')).
-:- use_module(library('ontology')).
+:- use_module(library('semweb_ext')).
