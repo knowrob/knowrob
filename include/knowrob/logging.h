@@ -18,6 +18,8 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+// BOOST
+#include <boost/property_tree/ptree.hpp>
 
 #define KB_TRACE    SPDLOG_TRACE
 #define KB_DEBUG    SPDLOG_DEBUG
@@ -65,14 +67,64 @@
 #    define KB_CRITICAL(file, line, ...) (void)0
 #endif
 
-namespace knowrob::logging {
+namespace knowrob {
 	/**
-	 * Initialize the logging subsystem, i.e., configure it with default parameters.
-	 * The configuration may be changed at a later point, e.g. when reading a settings file.
+	 * Interface to initialize and configure the default logger of the system.
+	 * The default logger is used within the logging macros KB_INFO, KB_ERROR, ...
 	 */
-	void initialize();
+	class Logger {
+	public:
+		/**
+		 * The type of a logging sink.
+		 */
+		enum SinkType { File, Console };
 
-	// TODO: add interfaces that allow configuration of the logging system.
+		/**
+		 * Initialize the logging subsystem, i.e., configure it with default parameters.
+		 * The configuration may be changed at a later point, e.g. when reading a settings file.
+		 */
+		static void initialize();
+
+		/**
+		 * Configure logging using a property tree.
+		 * @param config a property tree.
+		 */
+		static void loadConfiguration(boost::property_tree::ptree &config);
+
+		/**
+		 * Create a new fie sink. Any existing file sink will be replaced
+		 * by the new one.
+		 * @param basename the base name of log files
+		 * @param rotate true if files should be rotated on opening
+		 * @param max_size max size of log files before rotation
+		 * @param max_files max number of stored files
+		 */
+		static void setupFileSink(const std::string &basename="knowrob.log",
+								  bool rotate=true,
+								  uint32_t max_size=1048576,
+								  uint32_t max_files=4);
+
+		/**
+		 * @param log_level the logging level for the console sink.
+		 */
+		static void setSinkLevel(SinkType sinkType, spdlog::level::level_enum log_level);
+
+		/**
+		 * @param pattern the logging pattern for the console sink.
+		 */
+		static void setSinkPattern(SinkType sinkType, const std::string &pattern);
+
+	protected:
+		// hide implementation details
+		struct impl;
+		std::unique_ptr<impl> pimpl_;
+
+		Logger();
+
+		void updateLogger();
+
+		static Logger& get();
+	};
 }
 
 #endif //KNOWROB_LOGGING_H_
