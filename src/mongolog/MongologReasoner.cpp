@@ -20,10 +20,15 @@ MongologReasoner::~MongologReasoner()
 
 bool MongologReasoner::initializeDefaultPackages()
 {
-	// TODO: allow that different instances connect to different DBs
-	// load mongolog code into Prolog
-	return PrologReasoner::initializeDefaultPackages() &&
-			consultIntoUser(std::filesystem::path("mongolog") / "__init__.pl");
+	static bool initialized = false;
+
+	if(initialized) {
+		return true;
+	} else {
+		initialized = true;
+		// load mongolog code once globally into the Prolog engine
+		return consultIntoUser(std::filesystem::path("mongolog") / "__init__.pl");
+	}
 }
 
 bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
