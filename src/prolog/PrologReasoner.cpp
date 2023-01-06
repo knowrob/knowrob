@@ -55,6 +55,24 @@ std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path 
 	return filePath;
 }
 
+std::filesystem::path PrologReasoner::getResourcePath(const std::filesystem::path &filePath)
+{
+	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
+	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
+
+	if(!exists(filePath)) {
+		if(exists(projectPath)) {
+			// prefer to load from source directory, as these files might be more up-to-date.
+			return projectPath / filePath;
+		}
+		else if(exists(installPath)) {
+			// load Prolog files from $PREFIX/share/knowrob
+			return installPath / "share" / "knowrob" / filePath;
+		}
+	}
+	return filePath;
+}
+
 PrologThreadPool& PrologReasoner::threadPool()
 {
 	initializeProlog();
@@ -63,7 +81,7 @@ PrologThreadPool& PrologReasoner::threadPool()
 	return threadPool_;
 }
 
-bool PrologReasoner::initializeDefaultPackages()
+bool PrologReasoner::initializeGlobalPackages()
 {
 	// load some default code into user module.
 	//   e.g. the extended module syntax etc
@@ -105,7 +123,7 @@ void PrologReasoner::initializeProlog() {
 	KB_DEBUG("Prolog has been initialized.");
 
 	// auto-load some files into "user" module
-	initializeDefaultPackages();
+	initializeGlobalPackages();
 }
 
 bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
@@ -116,12 +134,23 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 		// call PL_initialize
 		initializeProlog();
 	}
+	initializeDefaultPackages();
 
 	// load rules and facts
 	for(auto &dataFile : cfg.dataFiles) {
-		KB_INFO("Using data file `{}`.", dataFile->path());
-		consult(dataFile);
+		KB_INFO("Using data file {} with format \"{}\".", dataFile->path(), dataFile->format());
+
+		if(dataFile->format() == "rdf-xml") { // TODO: add a format constant to DataFile
+			consult_rdf_xml(dataFile->path());
+		}
+		else if(dataFile->hasUnknownFormat() || dataFile->format() == PrologDataFile::PROLOG_FORMAT) {
+			consult(dataFile);
+		}
+		else {
+			KB_WARN("Ignoring data file with unknown format \"{}\"", dataFile->format());
+		}
 	}
+
 	// TODO: support synchronization with data sources.
 	//      - when facts are asserted into EDB, also assert into PrologEngine
 	//      - support writing facts asserted from PrologEngine into EDB?
@@ -160,6 +189,19 @@ bool PrologReasoner::consultIntoUser(const std::filesystem::path &prologFile)
 			"consult", { std::make_shared<StringTerm>(path.native()) }
 		))
 	), "user"));
+}
+
+bool PrologReasoner::consult_rdf_xml(const std::filesystem::path &rdfFile)
+{
+	auto path = getResourcePath(rdfFile);
+	auto &graphName = reasonerID_;
+	return !QueryResultStream::isEOS(oneSolution(std::make_shared<Query>(
+			std::make_shared<Predicate>(Predicate("load_rdf_xml", {
+				std::make_shared<StringTerm>(path.native()),
+				std::make_shared<StringTerm>(graphName)
+			}))
+	)));
+	return true;
 }
 
 bool PrologReasoner::consult(const std::shared_ptr<FactBase> &factBase)
@@ -496,8 +538,10 @@ std::list<TermPtr> PrologReasoner::runTests(const std::string &target)
 /********* PrologDataFile *********/
 /************************************/
 
+const std::string PrologDataFile::PROLOG_FORMAT="prolog";
+
 PrologDataFile::PrologDataFile(const std::string &path)
-: DataFile(path)
+: DataFile(path,PROLOG_FORMAT)
 {}
 
 /************************************/
