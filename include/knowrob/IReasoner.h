@@ -31,10 +31,15 @@ namespace knowrob {
 		 */
 		void loadPropertyTree(const boost::property_tree::ptree &ptree);
 
+		std::list<std::pair<TermPtr,TermPtr>> settings;
 		std::list<std::shared_ptr<DataFile>> dataFiles;
 		std::list<std::shared_ptr<FactBase>> factBases;
 		std::list<std::shared_ptr<RuleBase>> ruleBases;
+	private:
+		void loadSettings(const TermPtr &key_t, const boost::property_tree::ptree &ptree);
 	};
+
+	using DataFileLoader = std::function<bool(const std::shared_ptr<DataFile>&)>;
 	
 	/**
 	 * An interface for reasoning subsystems.
@@ -42,6 +47,19 @@ namespace knowrob {
 	class IReasoner {
 	public:
 		virtual ~IReasoner()= default;
+
+		/**
+		 * @param format
+		 * @param fn
+		 */
+		void addDataFileHandler(const std::string &format, const DataFileLoader& fn);
+
+		/**
+		 *
+		 * @param dataFile
+		 * @return
+		 */
+		bool loadDataFile(const DataFilePtr &dataFile);
 
 		/**
 		 * Load a reasoner configuration.
@@ -98,6 +116,11 @@ namespace knowrob {
 		 * @param isImmediateStopRequested a flag indicating whether a reasoner may stop query evaluation immediately
 		 */
 		virtual void finishQuery(uint32_t queryID, bool isImmediateStopRequested) = 0;
+
+	protected:
+		std::map<std::string, DataFileLoader> dataFileHandler_;
+
+		virtual bool loadDataFileWithUnknownFormat(const DataFilePtr&) { return false; }
 	};
 
 	/**
