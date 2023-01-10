@@ -21,21 +21,13 @@ can be casted as grammar for the parser.
 
 @author Daniel Beßler
 */
-% TODO: activitiy composer should use projection interface!
 
 :- use_module(library('debug')).
+:- use_module(library('logging')).
 :- use_module(library('http/json')).
 :- use_module(library('semweb/rdf_db')).
-
-%:- use_module(library('rospl'),
-%	[ ros_subscribe/4, ros_unsubscribe/2 ]).
-
-:- use_module(library('model/RDFS'),
-    [ has_type/2, instance_of/2, subclass_of/2 ]).
-:- use_module(library('model/SOMA'),
-    [ workflow_step/2, plan_defines_task/2 ]).
-:- use_module(library('lang/terms/holds'),
-    [ holds/3 ]).
+:- use_module(library('semweb/rdfs'),
+    [ rdfs_individual_of/2, rdfs_subclass_of/2 ]).
 
 :- use_module('interval',
 	[ interval_constraint/3 ]).
@@ -62,10 +54,7 @@ can be casted as grammar for the parser.
            composer_thread_/2.
 
 %%
-parser_message_(Level,Msg) :-
-  print_message(Level,log(activity_parser(Msg))).
-parser_info_(Msg) :-
-  parser_message_(informational,Msg).
+parser_info_(Msg) :- log_info(Msg).
 
 %% parser_create(-Parser) is det.
 %
@@ -77,7 +66,7 @@ parser_info_(Msg) :-
 %
 parser_create(Parser) :-
   findall(WF,
-    has_type(WF,dul:'Workflow'),
+    rdfs_individual_of(WF,dul:'Workflow'),
     Workflows),
   parser_create(Parser,Workflows).
 
@@ -94,7 +83,7 @@ parser_create(Parser,Workflows) :-
   parser_unique_id_(Parser),
   forall(member(WF,Workflows),(
     parser_create_grammar_(Parser,WF);
-    parser_message_(warning, invalid_grammar(WF))
+    log_warn(invalid_grammar(WF))
   )),
   assertz(composer_result_(Parser,[])),
   assertz(composer_finalized_(Parser,[])),
@@ -111,15 +100,24 @@ parser_unique_id_(Parser) :-
     Parser = P ).
 
 %%
+parser_task_type_(Tsk,TskType) :-
+  rdfs_individual_of(Tsk,TskType),
+  \+ rdf_equal(TskType, owl:'NamedIndividual').
+parser_task_type_(Tsk,Tsk).
+
+%%
 parser_create_grammar_(Parser,WF) :-
-  plan_defines_task(WF,Tsk),
-  ( is_individual(Tsk)
-  -> instance_of(Tsk,TskType)
-  ;  TskType = Tsk
-  ),
-  \+ rdf_equal(TskType, owl:'NamedIndividual'),
+  rdf_has(WF,soma:isPlanFor,Tsk),
+  once(parser_task_type_(Tsk,TskType)),
   % find constituents and their relation to each other
-  findall(S, workflow_constituent(WF,S), Steps),
+  % TODO: put all of these underneath a shared super property
+  findall(S, (
+    rdf_has(WF, dul:describes, S) ;
+    rdf_has(WF, dul:definesTask, S) ;
+    rdf_has(WF, soma:hasStep, S) ;
+    rdf_has(WF, soma:hasFirstStep, S) ;
+    rdf_has(WF, soma:definesProcess, S)
+  ), Steps),
   list_to_set(Steps,Steps0),
   findall(C, (
     member(X,Steps0),
@@ -141,14 +139,14 @@ parser_get_grammar_(Parser,WF,Tsk,GraphChild) :-
     true ; no_grammar_(Parser) ).
 parser_get_grammar_(Parser,WF,Tsk,GraphChild) :-
   (( parser_grammar_(Parser,WF,X,GraphChild),
-     once(subclass_of(Tsk,X)) ) *->
+     once(rdfs_subclass_of(Tsk,X)) ) *->
      true ; no_grammar_(Parser,Tsk) ).
 
 no_grammar_(Parser) :-
-    parser_message_(warning, no_grammar_(Parser)),
+    log_warn(no_grammar_(Parser)),
     fail.
 no_grammar_(Parser,Tsk) :-
-    parser_message_(warning, no_grammar_(Parser,Tsk)),
+    log_warn(no_grammar_(Parser,Tsk)),
     fail.
 
 %% parser_run(+Parser,+Tokens,-ActTerm) is nondet.
@@ -289,7 +287,7 @@ parser_queues_destroy_(Parser) :-
 %
 parser_push_token(Parser,Token) :-
   ( is_token_(Token) ; (
-    parser_message_(warning, invalid_token(Token)),
+    log_warn(invalid_token(Token)),
     fail
   )),!,
   parser_thread_(Parser,Thread),
@@ -455,7 +453,7 @@ action_([G0,S0,A0]->[G3,S2,A2],
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
-    once(holds(WF,soma:isPlanFor,Tsk_1)),
+    once(rdf_has(WF,soma:isPlanFor,Tsk_1)),
     esg_join(G0,[Tsk_1,G1],G2)
   },
   % assign roles of WF/ACT given bindings from the parent workflow
@@ -792,9 +790,9 @@ binding_create_(Objects,Roles,Bindings) :-
   ), Bindings).
 binding_create__(_,[],[]) :- !.
 binding_create__(Objects,[R|Rs],[[O,R]|Rest]) :-
-  once(holds(R, dul:classifies, only(O_Type))),
+  once(rdf_has(R, dul:classifies, only(O_Type))),
   member(O,Objects),
-  once(instance_of(O, O_Type)),
+  once(rdfs_individual_of(O, O_Type)),
   binding_create__(Objects,Rs,Rest).
 
 binding_update_([O,OR],[]->[[O,OR]]) :- !.
@@ -832,10 +830,10 @@ apply_role_binding_(Plan, _Tsk,
     Bindings, [Obj,Roles0]->[Obj,Roles1]) :-
   findall(Role, (
     member(Role,Roles0) ;
-    ( holds(Plan, soma:hasBinding, Binding),
+    ( rdf_has(Plan, soma:hasBinding, Binding),
       once((
-        holds(Binding, soma:hasBindingRole, X0),
-        holds(Binding, soma:hasBindingFiller, X1)
+        rdf_has(Binding, soma:hasBindingRole, X0),
+        rdf_has(Binding, soma:hasBindingFiller, X1)
       )),
       ( member(X0,Roles0) -> Role = X1 ;
       ( member(X1,Roles0) -> Role = X0 ; fail )),
@@ -900,7 +898,7 @@ action_preceded_by__(Endpoints,S,A0->A1) :-
     member(Endpoint,ActiveEndpoints),
     endpoint_type(Endpoint,Concept),
     %%
-    instance_of(Concept,ConceptType),
+    rdfs_individual_of(Concept,ConceptType),
     get_event_state_(S,_,ConceptType,Participants),
     %%
     concept_roles_(Concept,C_Roles)
@@ -915,19 +913,19 @@ action_preceded_by__(Endpoints,S,A0->A1) :-
 %%
 concept_roles_(Concept,C_Roles_Set) :-
   findall(CR, (
-    holds(Concept,dul:isRelatedToConcept,CR),
-    once(instance_of(CR,dul:'Role'))
+    rdf_has(Concept,dul:isRelatedToConcept,CR),
+    once(rdfs_individual_of(CR,dul:'Role'))
   ),C_Roles),
   list_to_set(C_Roles,C_Roles_Set).
 
 %%
-concept_endpoint_(-(X),-(Y)) :- !, instance_of(X,Y).
-concept_endpoint_(+(X),+(Y)) :- !, instance_of(X,Y).
+concept_endpoint_(-(X),-(Y)) :- !, rdfs_individual_of(X,Y).
+concept_endpoint_(+(X),+(Y)) :- !, rdfs_individual_of(X,Y).
 
 %%
 endpoint_type_(E,Type) :-
   endpoint_type(E,Iri),
-  subclass_of(Iri,Type),!.
+  rdfs_subclass_of(Iri,Type),!.
 
 %%
 term_endpoint(phase(_,E,_),E) :- !.

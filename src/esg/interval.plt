@@ -1,12 +1,11 @@
-
-:- user:use_module('interval.pl').
 :- use_module(library('rdf_test')).
-
 :- begin_rdf_tests(
 		'time_interval',
 		'owl/test/events.owl',
 		[ namespace('http://knowrob.org/kb/test_events.owl#')
 		]).
+
+:- use_module('interval.pl').
 
 /********************************
  *	    QUANTITATIVE INPUT     	*
