@@ -90,17 +90,17 @@ swrl_file_load(Filepath) :-
 %
 % Parses a SWRL file.
 % 
-swrl_file_parse(Filepath,Rule,Args) :-
-  swrl_file_store(Filepath,Rule,Args) *-> true ;
-  (
-    phrase_from_file(swrl_file_rules(_,Xs), Filepath),
-    findall([R,A], (
-      member([Pairs,R],Xs),
-      dict_pairs(A,_,Pairs),
-      assertz(swrl_file_store(Filepath,R,A))
-    ), Rules),
-    member([Rule,Args],Rules)
-  ).
+swrl_file_parse(FileSpec,Rule,Args) :-
+    swrl_file_store(FileSpec,Rule,Args) *-> true ; (
+        absolute_file_name(FileSpec, FilePath, []),
+        phrase_from_file(swrl_file_rules(_,Xs), FilePath),
+        findall([R,A],
+            (   member([Pairs,R],Xs),
+                dict_pairs(A,_,Pairs),
+                assertz(swrl_file_store(FileSpec,R,A))
+            ), Rules),
+        member([Rule,Args],Rules)
+    ).
   
 %%
 swrl_file_rules(_,[])            --> call(eos), !.

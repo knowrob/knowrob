@@ -10,7 +10,7 @@
 :- use_module('swrl').
 :- use_module('parser').
 
-swrl_test_file('tests/swrl/test.swrl').
+swrl_test_file(test('swrl/test.swrl')).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing
