@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @query a Query object.
 		 */
-		PrologQuery(const std::shared_ptr<Query> &query, const char* module);
+		PrologQuery(const std::shared_ptr<Query> &query);
 		
 		~PrologQuery();
 
@@ -40,19 +40,6 @@ namespace knowrob {
 		 * @return the term_t reference.
 		 */
 		term_t& pl_query() { return pl_query_; }
-		
-		/**
-		 * Returns the functor of the outermost term of the query as a predicate_t.
-		 * @return the predicate_t reference.
-		 */
-		predicate_t& pl_predicate() { return pl_predicate_; }
-		
-		/**
-		 * Returns the first argument of the outermost term of the query as a term_t.
-		 * The term_t is a reference to an array of all arguments.
-		 * @return the term_t reference.
-		 */
-		term_t& pl_arguments() { return pl_arguments_; }
 		
 		/**
 		 * Returns the query object.
@@ -129,9 +116,7 @@ namespace knowrob {
 		
 	protected:
 		std::shared_ptr<Query> qa_query_;
-		predicate_t pl_predicate_;
 		term_t pl_query_;
-		term_t pl_arguments_;
 		std::map<std::string, term_t> vars_;
 
 		bool constructPrologTerm(const TermPtr& qa_term, term_t &pl_term);
