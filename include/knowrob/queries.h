@@ -19,6 +19,7 @@
 // KnowRob
 #include <knowrob/ThreadPool.h>
 #include <knowrob/terms.h>
+#include <knowrob/logging.h>
 
 namespace knowrob {
 	/**
