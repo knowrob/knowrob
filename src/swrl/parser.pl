@@ -1,6 +1,5 @@
 :- module(swrl_parser,
-    [ swrl_file_path/3,
-      swrl_file_parse/3,
+    [ swrl_file_parse/3,
       swrl_file_fire/1,
       swrl_file_fire/2,
       swrl_file_load/1,
@@ -17,24 +16,16 @@
 */
 
 :- use_module(library('dcg/basics')).
-:- use_module(library('semweb/rdf_db'),
-    [ rdf_current_prefix/2, rdf_split_url/3 ]).
-:- use_module(library('model/OWL'),
-    [ is_data_property/1, is_object_property/1 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_split_url/3 ]).
+:- use_module(library('logging')).
 :- use_module('swrl').
 
 :- dynamic swrl_file_store/3,
            swrl_assertion_store/3,
            swrl_iri/2.
 
-%%
-swrl_file_path(Pkg,Filename,Filepath) :-
-  ros_package_path(Pkg,PkgPath),
-  atomic_list_concat(
-    [PkgPath,'swrl',Filename],
-    '/',
-    Filepath
-  ).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%
 swrl_file_fire(Filepath,Label) :-
@@ -84,14 +75,14 @@ swrl_file_load(Filepath,Label) :-
 swrl_file_load(Filepath,Label) :-
   swrl_file_parse(Filepath,Rule,Args),
   get_dict(label,Args,Label),!,
-  swrl_assert(Rule),
+  swrl_assert_rule(Rule),
   assertz(swrl_assertion_store(Filepath, _Rule, Args)).
 
 swrl_file_load(Filepath) :-
   forall(
   ( swrl_file_parse(Filepath,Rule,Args),
     \+ swrl_assertion_store(Filepath,Rule,Args) ),
-  ( swrl_assert(Rule),
+  ( swrl_assert_rule(Rule),
     assertz(swrl_assertion_store(Filepath,Rule,Args))
   )).
 
@@ -160,7 +151,7 @@ swrl_phrase_fire(Phrase,NS) :-
 %
 swrl_phrase_assert(Phrase,NS) :-
   swrl_phrase(Term, Phrase, NS),
-  swrl_assert(Term).
+  swrl_assert_rule(Term).
 
 %% swrl_phrase(?Term, ?Expr).
 %
@@ -217,11 +208,13 @@ swrl_literal(class(A,B),NS) -->
 
 swrl_literal(property(S,P,O),NS) -->
   swrl_property(P,NS), ['('], swrl_subject(S,NS), [','], swrl_data_object(O), [')'],
-  { is_data_property(P) }.
+  % TODO remove swrl:
+  { swrl:swrl_data_property(P) }.
 
 swrl_literal(property(S,P,O),NS) -->
   swrl_property(P,NS), ['('], swrl_subject(S,NS), [','], swrl_object(O,NS), [')'],
-  { is_object_property(P) }.
+  % TODO remove swrl:
+  { swrl:swrl_object_property(P) }.
 
 swrl_literal(BuiltinTerm,_NS) -->
   { (ground(BuiltinTerm), BuiltinTerm =.. [Predicate|Args]) ; true },
@@ -256,9 +249,9 @@ swrl_class_atom(max(P,Num,Cls),NS) -->
 swrl_class_atom(min(P,Num,Cls),NS) -->
   ['('], swrl_property(P,NS), ['min'], swrl_number(Num), swrl_class_atom_terminal(Cls,NS), [')'].
 
-swrl_class_atom(Cls,NS) --> swrl_class_atom_terminal(Cls,NS).
+swrl_class_atom(Cls,NS) --> swrl_class_atom_terminal(Cls, NS).
 
-swrl_class_atom_terminal(Cls,NS) --> [Cls_name], { swrl_match_instance(Cls,Cls_name,NS) }.
+swrl_class_atom_terminal(class(Cls),NS) --> [Cls_name], { swrl_match_instance(Cls,Cls_name,NS) }.
 
 swrl_class_intersection([Cls],NS)      --> swrl_class_atom(Cls,NS).
 swrl_class_intersection([Cls|Rest],NS) --> swrl_class_atom(Cls,NS), ['and'], swrl_class_intersection(Rest,NS).
@@ -275,6 +268,10 @@ swrl_object(Var,_NS)  --> swrl_var_expr(Var).
 swrl_object(Obj,NS)   --> swrl_individual(Obj,NS).
 swrl_object(Cls,NS)   --> swrl_class_atom_terminal(Cls,NS).
 
+swrl_data_object(Var) --> swrl_var_expr(Var).
+swrl_data_object(Val) --> ['"'], [Val], ['"'].
+swrl_data_object(Val) --> [Val].
+
 swrl_individual(I,NS) --> [I_name], { swrl_match_instance(I,I_name,NS) }.
 
 swrl_number(Num) --> [Num], { number(Num) }.
@@ -282,10 +279,6 @@ swrl_number(Num) --> [Num], { number(Num) }.
 swrl_value(Val,NS)   --> swrl_individual(Val,NS).
 swrl_value(Val,NS)   --> swrl_class_atom_terminal(Val,NS).
 swrl_value(Val,_NS)   --> swrl_data_object(Val).
-
-swrl_data_object(Var) --> swrl_var_expr(Var).
-swrl_data_object(Val) --> ['"'], [Val], ['"'].
-swrl_data_object(Val) --> [Val].
 
 swrl_builtin_args([Arg|Rest]) --> swrl_builtin_arg(Arg), [','], swrl_builtin_args(Rest).
 swrl_builtin_args([Arg])      --> swrl_builtin_arg(Arg).
@@ -301,9 +294,9 @@ swrl_is_builtin(Predicate) :-
   atom(Predicate), % check if predicate is a builtin predicate
   clause(swrl:swrl_builtin(Predicate,_,_,_),_).
 
-swrl_match_instance(Iri,Name,_) :-
-  atom(Iri),!,
-  rdf_split_url(_, Name, Iri).
+swrl_match_instance(IRI,Name,_) :-
+  atom(IRI),!,
+  rdf_split_url(_, Name, IRI).
 
 % FIXME: swrl_match_instance called with invalid input a lot, can be avoided?
 swrl_match_instance(_,'?',_)     :- !, fail.
@@ -313,19 +306,30 @@ swrl_match_instance(_,'true',_)  :- !, fail.
 swrl_match_instance(_,'false',_) :- !, fail.
 swrl_match_instance(_,Name,_)    :- swrl_is_builtin(Name), !, fail.
 
-swrl_match_instance(Iri,Name,_NS) :-
-	var(Iri), atom(Name),
-	swrl_iri(Name, Iri),!.
+swrl_match_instance(IRI,Name,_NS) :-
+	var(IRI), atom(Name),
+	% get cached IRI
+	swrl_iri(Name, IRI),
+	!.
 
-swrl_match_instance(Iri,Name,NS) :-
-	var(Iri), atom(Name), atom(NS),
+swrl_match_instance(IRI,Name,NS) :-
+	var(IRI), atom(Name), atom(NS),
 	% try to use user-specified namespace to find the entity
-	atom_concat(NS,Name,Iri),
-	once(kb_call(triple(Iri,rdf:type,_))),!,
-	assertz(swrl_iri(Name,Iri)).
+	atom_concat(NS,Name,IRI),
+	% check if IRI is a currently defined IRI
+	% TODO remove swrl:
+	swrl:swrl_subject(IRI),!,
+	assertz(swrl_iri(Name,IRI)).
 
-swrl_match_instance(Iri,Name,_NS) :-
-	var(Iri), atom(Name),
-	atomic_list_concat(['^.*#',Name,'$'],Pattern),
-	kb_call(once(triple(regex(Pattern)->Iri,rdf:type,_))),!,
-	assertz(swrl_iri(Name,Iri)).
+swrl_match_instance(IRI,Name,NS) :-
+	var(IRI), atom(Name),
+	% TODO: find IRI with Name as suffix
+	log_warn(need_match_instance(Name,NS)),
+	fail,
+	%atomic_list_concat(['^.*#',Name,'$'],Pattern),
+	%kb_call(once(triple(regex(Pattern)->IRI,rdf:type,_))),!,
+	assertz(swrl_iri(Name,IRI)).
+
+swrl_match_instance(IRI,Name,NS) :-
+	throw(error(existence_error(instance,Name),
+	            swrl_match_instance(IRI,Name,NS))).
