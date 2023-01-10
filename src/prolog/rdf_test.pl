@@ -20,14 +20,12 @@ test('some test') :- fail.
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'),
-	[ rdf_unload_graph/1
-	]).
-:- use_module(library('semweb_ext'),
-	[ ontology_url_graph/2,
+:- use_module(library('semweb'),
+	[ sw_url_graph/2,
 	  load_rdf_xml/2,
-	  set_default_graph/1,
-	  get_subgraphs/2
+	  sw_set_default_graph/1,
+	  sw_get_subgraphs/2,
+	  sw_unload_graph/1
 	]).
 
 %% begin_rdf_tests(+Name, +RDFFile, +Options) is det.
@@ -70,23 +68,27 @@ end_rdf_tests(Name) :-
 
 %%
 setup(RDFFile) :-
-	set_default_graph(test),
+    % any rdf asserts in test cases go into "test" graph
+	sw_set_default_graph(test),
+	% load OWL file with "test" as parent graph
 	load_rdf_xml(RDFFile,test).
 
 %%
 cleanup(RDFFile) :-
 	cleanup,
-	ontology_url_graph(RDFFile, OntoGraph),
-	rdf_unload_graph(OntoGraph).
+	sw_url_graph(RDFFile, OntoGraph),
+	sw_unload_graph(OntoGraph).
 
 %%
 cleanup :-
-	get_subgraphs(test,Subs),
+	sw_get_subgraphs(test,Subs),
 	forall(
 		member(string(Sub),Subs),
-		rdf_unload_graph(Sub)
+		sw_unload_graph(Sub)
 	),
-	set_default_graph(user).
+	sw_set_default_graph(user),
+	% "test" graph was dropped. need to re-add it as child of user
+	sw_add_subgraph(test,user).
 
 %%
 add_option_goal(OptionsIn,NewOpt,[MergedOpt|Rest]) :-
