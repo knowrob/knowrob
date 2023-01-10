@@ -1,10 +1,12 @@
 :- module(logging,
     [ log_error(t),
       log_warning(t),
+      log_warn(t),
       log_info(t),
       log_debug(t),
       log_error(t,+),
       log_warning(t,+),
+      log_warn(t,+),
       log_info(t,+),
       log_debug(t,+),
       log_error_and_fail(t),
@@ -48,6 +50,7 @@ prolog:message(kb(initialization(finished))) -->
 %
 log_error(Term)   :- log_message0(error, Term).
 log_warning(Term) :- log_message0(warning, Term).
+log_warn(Term)    :- log_warning(Term).
 log_info(Term)    :- log_message0(informational, Term).
 log_debug(Term)   :- log_message0(debug, Term).
 
@@ -58,6 +61,7 @@ log_debug(Term)   :- log_message0(debug, Term).
 %
 log_error(Term, FileIndicator)   :- log_message1(error,Term,FileIndicator).
 log_warning(Term, FileIndicator) :- log_message1(warning,Term,FileIndicator).
+log_warn(Term, FileIndicator)    :- log_warning(Term,FileIndicator).
 log_info(Term, FileIndicator)    :- log_message1(informational,Term,FileIndicator).
 log_debug(Term, FileIndicator)   :- log_message1(debug,Term,FileIndicator).
 
