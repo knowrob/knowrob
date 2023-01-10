@@ -19,8 +19,14 @@
 % add the toplevel src directory as Prolog library_directory
 :- prolog_load_context(directory, PrologDir),
    atom_concat(SrcDir, '/prolog', PrologDir),
+   atom_concat(KnowRobDir, '/src', SrcDir),
+   atom_concat(KnowRobDir, '/tests', TestDir),
+   % expand library search path, e.g. used by use_module/2 to locate Prolog source files
    asserta(user:library_directory(PrologDir)),
-   asserta(user:library_directory(SrcDir)).
+   asserta(user:library_directory(SrcDir)),
+   % expand file search path, e.g. used by absolute_file_name/3 predicate
+   assertz(file_search_path(knowrob,KnowRobDir)),
+   assertz(file_search_path(test, TestDir)).
 
 % load common Prolog libraries
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2, rdf_register_prefix/3]).
