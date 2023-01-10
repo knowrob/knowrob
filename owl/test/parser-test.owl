@@ -11,7 +11,6 @@
      xmlns:DUL="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#"
      xmlns:SOMA="http://www.ease-crc.org/ont/SOMA.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/parser-test.owl">
-        <owl:imports rdf:resource="package://knowrob/owl/knowrob.owl"/>
     </owl:Ontology>
     
 
