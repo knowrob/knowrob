@@ -291,11 +291,9 @@ convert_(A,A).
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_mongolog_tests(
-		'mongolog_rdfs',
+:- begin_mongolog_tests('mongolog_rdfs',
 		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
 
 test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'Adult')),

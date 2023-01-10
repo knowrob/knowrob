@@ -24,12 +24,10 @@ test('some test') :- fail.
 	[ load_owl/1,
 	  drop_graph/1
 	]).
-:- use_module(library('semweb_ext'),
-	[ get_subgraphs/2,
-	  set_default_graph/1
-	]).
-:- use_module(library('semweb_ext'),
-	[ ontology_url_graph/2
+:- use_module(library('semweb'),
+	[ sw_get_subgraphs/2,
+	  sw_set_default_graph/1,
+	  sw_url_graph/2
 	]).
 
 %% begin_mongolog_tests(+Name, +RDFFile, +Options) is det.
@@ -72,23 +70,23 @@ end_mongolog_tests(Name) :-
 
 %%
 setup(RDFFile) :-
-	set_default_graph(test),
+	sw_set_default_graph(test),
 	load_owl(RDFFile,[graph(test)]).
 
 %%
 cleanup(RDFFile) :-
 	cleanup,
-	ontology_url_graph(RDFFile, OntoGraph),
+	sw_url_graph(RDFFile, OntoGraph),
 	mongolog_triple:drop_graph(OntoGraph).
 
 %%
 cleanup :-
-	get_subgraphs(test,Subs),
+	sw_get_subgraphs(test,Subs),
 	forall(
 		member(string(Sub),Subs),
 		drop_graph(Sub)
 	),
-	set_default_graph(user).
+	sw_set_default_graph(user).
 
 %%
 add_option_goal(OptionsIn,NewOpt,[MergedOpt|Rest]) :-

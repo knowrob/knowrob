@@ -27,6 +27,6 @@ load_graph_structure :-
 load_graph_structure1(NameString) :-
 	string_to_atom(NameString,Name),
 	(	Name=user -> true ;
-	(	add_subgraph(Name,common),
-		add_subgraph(user,Name)
+	(	sw_add_subgraph(Name,common),
+		sw_add_subgraph(user,Name)
 	)).

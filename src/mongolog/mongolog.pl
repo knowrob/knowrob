@@ -20,7 +20,7 @@
 :- use_module(library('semweb/rdf_db'),
 	    [ rdf_meta/1, rdf_global_term/2 ]).
 :- use_module(library('scope')).
-:- use_module(library('semweb_ext'), [ set_graph_option/2 ]).
+:- use_module(library('semweb'), [ set_graph_option/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('logging')).
 
@@ -73,7 +73,7 @@ is_mongolog_predicate(Functor) :-
 %
 mongolog_consult(URL) :-
 	absolute_file_name(URL, AbsolutePath),
-	ontology_url_version(AbsolutePath, FileVersion),
+	sw_url_version(AbsolutePath, FileVersion),
 	mongolog_consult1(AbsolutePath, FileVersion).
 
 mongolog_consult1(URL, URLVersion) :-
