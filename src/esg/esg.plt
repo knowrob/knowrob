@@ -1,6 +1,6 @@
 :- begin_tests('esg').
 
-:- use_module('./esg.pl').
+:- use_module('esg.pl').
 
 test('merge_sequences(equal0)') :-
   esg:merge_sequences(

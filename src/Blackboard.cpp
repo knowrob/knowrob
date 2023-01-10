@@ -23,13 +23,13 @@ Blackboard::Blackboard(
 {
 	// decompose the reasoning task
 	inputStream_ = std::make_shared<QueryResultBroadcaster>();
-	inputChannel_ = inputStream_->createChannel();
+	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
 	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
 	
 	// create a channel of outputQueue_, and add it as subscriber
-	auto queueChannel = outputQueue_->createChannel();
+	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
 	outBroadcaster_->addSubscriber(queueChannel);
-	
+
 	// decompose into atomic formulas
 	decompose(goal->formula(), inputStream_, outBroadcaster_);
 }
@@ -90,22 +90,23 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<Blackboard::Stream> reasonerIn;
 	std::shared_ptr<Blackboard::Segment> segment;
 	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
-	
+
 	// get ensemble of reasoner
 	std::list<std::shared_ptr<IReasoner>> ensemble =
 		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
 	// create a subquery for the predicate p
 	std::shared_ptr<Query> subq = std::make_shared<Query>(phi);
 
-    if (ensemble.empty())
-        throw QueryError("no reasoner available for a predicate");
+    if (ensemble.empty()) {
+		throw QueryError("no reasoner registered for query `{}`", *phi);
+	}
 
     for(std::shared_ptr<IReasoner> &r : ensemble) {
 		// create IO channels
-		reasonerOutChan = out->createChannel();
+		reasonerOutChan = QueryResultStream::Channel::create(out);
 		reasonerIn = std::make_shared<Blackboard::Stream>(
 			r,reasonerOutChan,subq);
-		reasonerInChan = reasonerIn->createChannel();
+		reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
 		in->addSubscriber(reasonerInChan);
 		// create a new segment
 		segments_.push_back(std::make_shared<Segment>(reasonerIn,out));
@@ -121,11 +122,11 @@ void Blackboard::decomposeConjunction(
 	std::shared_ptr<QueryResultBroadcaster> out;
 	
 	// TODO: compute a dependency relation between atomic formulae of a query.
-	// atomic formulae that are independent can be evaluated concurrently.
+	//   atomic formulae that are independent can be evaluated concurrently.
 	
 	// add blackboard segments for each predicate in the conjunction
-	int counter = 1;
-	int numFormulae = phi->formulae().size();
+	unsigned long counter = 1;
+	auto numFormulae = phi->formulae().size();
 	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
 		if(numFormulae == counter) {
 			out = lastQueue;
@@ -178,7 +179,7 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 		// tell the reasoner to finish up.
 		// if hasStopRequest_=true it means that the reasoner is requested
 		// to immediately shutdown. however, note that not all reasoner
-		// implementations may support this and may take longer to stop anyways.
+		// implementations may support this and may take longer to stop anyway.
 		if(isQueryOpened()) {
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!

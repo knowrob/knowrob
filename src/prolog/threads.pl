@@ -1,4 +1,4 @@
-:- module(thread_utils,
+:- module(worker_pool,
     [ message_queue_materialize/2,  % +Queue, -Term
       worker_pool_create/1,         % +PoolID
       worker_pool_create/2,         % +PoolID, +Options

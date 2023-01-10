@@ -1,4 +1,4 @@
-:- module(utils_functional,
+:- module(functional,
     [ reduce/4,
       range/3,
       zip/3,

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_TERMS_H__
-#define __KNOWROB_TERMS_H__
+#ifndef KNOWROB_TERMS_H_
+#define KNOWROB_TERMS_H_
 
 // STD
 #include <list>
@@ -44,9 +44,12 @@ namespace knowrob {
 		/**
 		 * @type the type of this term.
 		 */
-		Term(TermType type);
+		explicit Term(TermType type);
 
-        // Override equality operator
+		/**
+		 * @param other another term
+		 * @return true if both terms are equal
+		 */
         bool operator==(const Term& other) const;
 		
 		/**
@@ -74,18 +77,22 @@ namespace knowrob {
 		 */
 		virtual bool isAtomic() const = 0;
 		
-		/** Write the term into an ostream.
+		/**
+		 * Write the term into an ostream.
 		 */
 		virtual void write(std::ostream& os) const = 0;
 	
 	protected:
 		const TermType type_;
+
+		virtual bool isEqual(const Term &other) const = 0;
 	};
 	
 	// alias declaration
 	using TermPtr = std::shared_ptr<Term>;
 	
-	/** A variable term.
+	/**
+	 * A variable term.
 	 * It is identified by a name string in the scope of a formula,
 	 * i.e. within a formula two variables with the same name are considered to be equal.
 	 */
@@ -94,11 +101,12 @@ namespace knowrob {
 		/**
 		 * @name the name of the variable.
 		 */
-		Variable(const std::string &name);
+		explicit Variable(std::string name);
 
-        // Override '==' operator
-        bool operator==(const Variable& other) const;
-		// Override '<' operator
+		/**
+		 * @param other another variable.
+		 * @return true if this name is alphabetically before other
+		 */
 		bool operator< (const Variable& other) const;
 		
 		/**
@@ -116,8 +124,10 @@ namespace knowrob {
 		void write(std::ostream& os) const override;
 
 	protected:
-		// TODO: better use reference to string
 		const std::string name_;
+
+		// Override Term
+		bool isEqual(const Term &other) const override;
 	};
 
 	/** A typed constant.
@@ -131,8 +141,6 @@ namespace knowrob {
 		Constant(TermType type, const T &value)
 		: Term(type), value_(value) {}
 
-        // Override '==' operator
-        bool operator==(const Constant<T>& other) const { return value_ == other.value_; }
 		// Override '<' operator
 		bool operator<(const Constant<T> &other) const { return value_ < other.value_; }
 		
@@ -152,13 +160,17 @@ namespace knowrob {
 	
 	protected:
 		const T value_;
+
+		// Override Term
+		bool isEqual(const Term &other) const override
+		{ return value_ == static_cast<const Constant<T>&>(other).value_; }
 	};
 	
 	/** A string value.
 	 */
 	class StringTerm : public Constant<std::string> {
 	public:
-		StringTerm(const std::string &v);
+		explicit StringTerm(const std::string &v);
 		
 		// Override Term
 		void write(std::ostream& os) const override;
@@ -168,21 +180,21 @@ namespace knowrob {
 	 */
 	class DoubleTerm : public Constant<double> {
 	public:
-		DoubleTerm(const double &v);
+		explicit DoubleTerm(const double &v);
 	};
 	
 	/** A long value.
 	 */
 	class LongTerm : public Constant<long> {
 	public:
-		LongTerm(const long &v);
+		explicit LongTerm(const long &v);
 	};
 	
 	/** An integer with 32 bit encoding.
 	 */
 	class Integer32Term : public Constant<int32_t> {
 	public:
-		Integer32Term(const int32_t &v);
+		explicit Integer32Term(const int32_t &v);
 	};
 
 	/** The indicator of a predicate defined by its functor and arity.
@@ -193,7 +205,7 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arity thr arity of this predicate.
 		 */
-		PredicateIndicator(const std::string &functor, unsigned int arity);
+		PredicateIndicator(std::string functor, unsigned int arity);
 
         // Override '==' operator
         bool operator==(const PredicateIndicator& other) const;
@@ -211,6 +223,12 @@ namespace knowrob {
 		 * @return arity of predicate
 		 */
 		unsigned int arity() const { return arity_; }
+
+		/**
+		 * Convert the predicate indicator to a term of the form `'/'(Functor,Arity)`.
+		 * @return the indicator as a term.
+		 */
+		std::shared_ptr<Term> toTerm() const;
 		
 		// Override Term
 		void write(std::ostream& os) const;
@@ -250,9 +268,6 @@ namespace knowrob {
 		 */
 		Predicate(const Predicate &other, const Substitution &sub);
 
-        // Override '==' operator
-        bool operator==(const Predicate& other) const;
-
 		/** Get the indicator of this predicate.
 		 * @return the indicator of this predicate.
 		 */
@@ -283,13 +298,16 @@ namespace knowrob {
 		const bool isGround_;
 		
 		bool isGround1() const;
+		// Override Term
+		bool isEqual(const Term &other) const override;
 		
 		static std::vector<TermPtr> applySubstitution(
 			const std::vector<TermPtr> &in,
 			const Substitution &sub) ;
 	};
 	
-	/** A predicate with a fixed truth value being `true`.
+	/**
+	 * A predicate with a fixed truth value being `true`.
 	 */
 	class TopTerm : public Predicate {
 	public:
@@ -302,7 +320,8 @@ namespace knowrob {
 		TopTerm();
 	};
 	
-	/** A predicate with a fixed truth value being `false`.
+	/**
+	 * A predicate with a fixed truth value being `false`.
 	 */
 	class BottomTerm : public Predicate {
 	public:
@@ -315,15 +334,13 @@ namespace knowrob {
 		BottomTerm();
 	};
 	
-	/** A composite term that contains a list of terms.
+	/**
+	 * A composite term that contains a list of terms.
 	 * The empty list is a special constant NIL.
 	 */
 	class ListTerm : public Term {
 	public:
-		ListTerm(const std::vector<TermPtr> &elements);
-
-        // Override equality operator
-        bool operator==(const ListTerm& other) const;
+		explicit ListTerm(const std::vector<TermPtr> &elements);
 		
 		/**
 		 * @return the NIL constant.
@@ -364,6 +381,8 @@ namespace knowrob {
 		bool isGround_;
 		
 		bool isGround1() const;
+		// Override Term
+		bool isEqual(const Term &other) const override;
 	};
 
 	/**
@@ -371,12 +390,13 @@ namespace knowrob {
 	 */
 	class OptionList {
 	public:
-		/** Constructs an option list from a term.
+		/**
+		 * Constructs an option list from a term.
 		 * The term may be a list of options, or a single option value.
 		 * Option terms have either the form `Key = Value` or `Key(Value)`.
 		 * @param t a term from which options are read.
 		 */
-		OptionList(const TermPtr &t);
+		explicit OptionList(const TermPtr &t);
 
 		/**
 		 * @return the option map.
@@ -396,14 +416,16 @@ namespace knowrob {
 		 */
 		const TermPtr& get(const std::string &key, const TermPtr &defaultValue);
 
-		/** Read option value as a string.
+		/**
+		 * Read option value as a string.
 		 * @param key an option key
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
 		const std::string& getString(const std::string &key, const std::string &defaultValue);
 
-		/** Read option value as a long.
+		/**
+		 * Read option value as a long.
 		 * @param key an option key
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
@@ -416,7 +438,8 @@ namespace knowrob {
 		void readOption(const TermPtr &option);
 	};
 	
-	/** A substitution is a mapping from variables to terms.
+	/**
+	 * A substitution is a mapping from variables to terms.
 	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
 	 * each variable xi with the corresponding term ti.
 	 * Applying a substitution to a term t means to replace occurrences
@@ -441,7 +464,8 @@ namespace knowrob {
 		 */
 		void set(const Variable &var, const TermPtr &term);
 		
-		/** Map a variable to a term.
+		/**
+		 * Map a variable to a term.
 		 * A null pointer reference is returned if the given variable
 		 * is not included in the mapping.
 		 *
@@ -450,13 +474,15 @@ namespace knowrob {
 		 */
 		const TermPtr& get(const Variable &var) const;
 		
-		/** Returns true if the given var is mapped to a term by this substitution.
+		/**
+		 * Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
 		 * @return true if this substitution contains the variable.
 		 */
 		bool contains(const Variable &var) const;
 		
-		/** Combine with another substitution.
+		/**
+		 * Combine with another substitution.
 		 * If both substitute the same variable to some term, then
 		 * the combination maps to the unification of these terms,
 		 * if one exists.
@@ -466,16 +492,19 @@ namespace knowrob {
 		 */
 		bool combine(const std::shared_ptr<Substitution> &other, Substitution::Diff &changes);
 		
-		/** Reverts changes made to a substitution.
+		/**
+		 * Reverts changes made to a substitution.
 		 * @changes the diff of a substitute operation
 		 */
 		void rollBack(Substitution::Diff &changes);
 		
-		/** An atomic operation performed on a substitution.
+		/**
+		 * An atomic operation performed on a substitution.
 		 */
 		class Operation {
 		public:
-			/** Roll back this operation.
+			/**
+			 * Roll back this operation.
 			 * @sub a substitution.
 			 */
 			virtual void rollBack(Substitution &sub) = 0;
@@ -486,9 +515,9 @@ namespace knowrob {
 		
 		class Added : public Operation {
 		public:
-			Added(const Substitution::Iterator &it);
-			// Overwrite Operation
-			void rollBack(Substitution &sub);
+			explicit Added(const Substitution::Iterator &it);
+			// Override Operation
+			void rollBack(Substitution &sub) override;
 		protected:
 			Substitution::Iterator it_;
 		};
@@ -496,8 +525,8 @@ namespace knowrob {
 		class Replaced : public Operation {
 		public:
 			Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance);
-			// Overwrite Operation
-			void rollBack(Substitution &sub);
+			// Override Operation
+			void rollBack(Substitution &sub) override;
 		protected:
 			Substitution::Iterator it_;
 			const TermPtr replacedInstance_;
@@ -507,11 +536,13 @@ namespace knowrob {
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
 	
-	/** A substitution that unifies some terms.
+	/**
+	 * A substitution that unifies some terms.
 	 */
 	class Unifier : public Substitution {
 	public:
-		/** Compute a unifier of two terms.
+		/**
+		 * Compute a unifier of two terms.
 		 * @t0 a term.
 		 * @t1 a term.
 		 */
@@ -522,7 +553,8 @@ namespace knowrob {
 		 */
 		bool exists() const { return exists_; }
 		
-		/** Applies the unifier to one of the unified terms.
+		/**
+		 * Applies the unifier to one of the unified terms.
 		 * @return an instance of the unified terms.
 		 */
 		TermPtr apply();
@@ -542,4 +574,4 @@ namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Substitution& omega);
 }
 
-#endif //__KNOWROB_TERMS_H__
+#endif //KNOWROB_TERMS_H_

@@ -1,4 +1,4 @@
-:- module(utils_atoms,
+:- module(atom_extenstions,
     [ lowercase/2,
       camelcase/2,
       lower_camelcase/2,

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_PROLOG_QUERY_H__
-#define __KNOWROB_PROLOG_QUERY_H__
+#ifndef KNOWROB_PROLOG_QUERY_H_
+#define KNOWROB_PROLOG_QUERY_H_
 
 // STD
 #include <string>
@@ -20,7 +20,8 @@
 #include <knowrob/queries.h>
 
 namespace knowrob {
-	/** Maps a Query object into term_t type of Prolog.
+	/**
+	 * Maps a Query object into term_t type of Prolog.
 	 */
 	class PrologQuery {
 	public:
@@ -31,39 +32,36 @@ namespace knowrob {
 		
 		~PrologQuery();
 
-		/** Returns the query as a term_t.
+		// copy not supported
+		PrologQuery(const PrologQuery&) = delete;
+
+		/**
+		 * Returns the query as a term_t.
 		 * @return the term_t reference.
 		 */
 		term_t& pl_query() { return pl_query_; }
 		
-		/** Returns the functor of the outermost term of the query as a predicate_t.
-		 * @return the predicate_t reference.
-		 */
-		predicate_t& pl_predicate() { return pl_predicate_; }
-		
-		/** Returns the first argument of the outermost term of the query as a term_t.
-		 * The term_t is a reference to an array of all arguments.
-		 * @return the term_t reference.
-		 */
-		term_t& pl_arguments() { return pl_arguments_; }
-		
-		/** Returns the query object.
+		/**
+		 * Returns the query object.
 		 * @return the Query object
 		 */
 		const std::shared_ptr<Query>& qa_query() const { return qa_query_; }
 
-		/** Get map of all variables in this query.
+		/**
+		 * Get map of all variables in this query.
 		 * @return the map.
 		 */
 		const std::map<std::string, term_t>& vars() const{ return vars_; }
 
-		/** Translates a term_t reference to a Term object.
+		/**
+		 * Translates a term_t reference to a Term object.
 		 * @t a term_t reference.
 		 * @return the Term object created.
 		 */
 		static TermPtr constructTerm(const term_t &t);
 		
-		/** Creates a query from a term pointer by translation into a formula.
+		/**
+		 * Creates a query from a term pointer by translation into a formula.
 		 * @t a Term pointer.
 		 * @return the Query object created.
 		 */
@@ -76,7 +74,7 @@ namespace knowrob {
 		 * @return the term created
 		 */
 		static TermPtr toTerm(const FormulaPtr &phi);
-		
+
 		/**
 		 * @return the 'fail' atom.
 		 */
@@ -97,7 +95,7 @@ namespace knowrob {
 		 * @return the ';' atom.
 		 */
 		static const atom_t& ATOM_semicolon();
-		
+
 		/**
 		 * @return the functor ','/2.
 		 */
@@ -106,7 +104,7 @@ namespace knowrob {
 		 * @return the functor ';'/2.
 		 */
 		static const functor_t& FUNCTOR_semicolon();
-		
+
 		/**
 		 * @return the comma predicate.
 		 */
@@ -118,9 +116,7 @@ namespace knowrob {
 		
 	protected:
 		std::shared_ptr<Query> qa_query_;
-		predicate_t pl_predicate_;
 		term_t pl_query_;
-		term_t pl_arguments_;
 		std::map<std::string, term_t> vars_;
 
 		bool constructPrologTerm(const TermPtr& qa_term, term_t &pl_term);
@@ -129,11 +125,7 @@ namespace knowrob {
 		
 		static FormulaPtr toFormula(const TermPtr &t);
 		static TermPtr    toTerm(ConnectiveFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
-		
-		// copy not supported
-		PrologQuery(const PrologQuery&) = delete;
 	};
 }
 
-#endif //__KNOWROB_PROLOG_QUERY_H__
-
+#endif //KNOWROB_PROLOG_QUERY_H_

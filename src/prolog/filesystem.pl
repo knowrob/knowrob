@@ -1,4 +1,4 @@
-:- module(utils_filesystem,
+:- module(filesystem,
     [ path_delimiter/1,
       path_concat/3,
       path_split/2,

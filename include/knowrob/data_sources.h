@@ -15,13 +15,17 @@ namespace knowrob {
 	
 	class DataFile : public DataSource {
 	public:
-		DataFile(const std::string& path)
-		: DataSource(), path_(path) {}
+		explicit DataFile(const std::string& path, const std::string& format={})
+		: DataSource(), path_(path), format_(format) {}
 		
 		const std::string& path() const { return path_; }
+		const std::string& format() const { return format_; }
+		bool hasUnknownFormat() const { return format_.empty(); }
 	protected:
 		std::string path_;
+		std::string format_;
 	};
+	using DataFilePtr = std::shared_ptr<DataFile>;
 	
 	class FactBase : public DataSource {
 	public:

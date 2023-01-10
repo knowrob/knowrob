@@ -1,4 +1,4 @@
-:- module(model_rdfs,
+:- module(mongolog_rdfs,
     [ is_resource(r),
       is_property(r),
       is_literal(r),
@@ -24,6 +24,9 @@
 	  rdf_current_ns/2,
 	  rdf_split_url/3
 	]).
+:- use_module(library('mongolog/mongolog')).
+:- use_module(library('mongolog/mongolog_test')).
+:- use_module(library('scope')).
 
 :- multifile instance_of/2, subclass_of/2, subproperty_of/2.
 :- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
@@ -266,7 +269,7 @@ convert_(A,B) :-
 	% this is the case e.g. for OWL restriction classes
 	(atom(A);string(A)),
 	atom_concat('_',_,A),
-	kb_call(has_description(A,B0)),
+	mongolog_call(has_description(A,B0)),
 	B0 \= class(_),!,
 	convert_(B0,B).
 
@@ -288,11 +291,9 @@ convert_(A,A).
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_rdf_tests(
-		'model_RDFS',
-		'package://knowrob/owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+:- begin_mongolog_tests('mongolog_rdfs',
+		'owl/test/swrl.owl',
+		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
 
 test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'Adult')),
@@ -306,19 +307,21 @@ test('is_property(+Property)') :-
 	assert_false(is_property(test:'NotExisting')).
 
 test("instance_of(+,+)") :-
+	universal_scope(QScope),
 	assert_true(instance_of(test:'Rex', test:'Man')),
 	assert_false(instance_of(test:'Rex', test:'Adult')),
-	assert_true(kb_project(instance_of(test:'Rex', test:'Adult'))),
+	assert_true(mongolog_call(project(instance_of(test:'Rex', test:'Adult')), [scope(QScope)])),
 	assert_true(instance_of(test:'Rex', test:'Adult')).
 
 test("subproperty_of(+Sub,+Sup)") :-
 	assert_true(subproperty_of(test:'hasParent', test:'hasAncestor')),
 	assert_false(subproperty_of(test:'hasBrother', test:'hasSibling')),
-	assert_true(kb_project(subproperty_of(test:'hasBrother', test:'hasSibling'))),
+	universal_scope(QScope),
+	assert_true(mongolog_call(project(subproperty_of(test:'hasBrother', test:'hasSibling')), [scope(QScope)])),
 	assert_true(subproperty_of(test:'hasBrother', test:'hasSibling')).
 
 test_list(RDF_list) :-
-	kb_call(triple(test:testchain, owl:propertyChainAxiom, RDF_list)).
+	mongolog_call(triple(test:testchain, owl:propertyChainAxiom, RDF_list)).
 
 test('rdf_list(+,+)') :-
 	test_list(RDF_list),
@@ -343,7 +346,7 @@ test('rdf_list(-,+)') :-
 	).
 
 test('rdf_list(+,-),length(+,-)') :-
-	kb_call((
+	mongolog_call((
 		triple(test:testchain, owl:propertyChainAxiom, RDF_list),
 		rdf_list(RDF_list, List),
 		length(List, NumElems)
@@ -352,11 +355,11 @@ test('rdf_list(+,-),length(+,-)') :-
 
 test('rdf_list_head(+,-)') :-
 	test_list(RDF_list1),
-	kb_call(triple(SubList, rdf:first, test:hasAncestor)),
-	assert_true(kb_call(rdf_list_head(SubList, _))),
-	(	kb_call(rdf_list_head(SubList, RDF_list2))
+	mongolog_call(triple(SubList, rdf:first, test:hasAncestor)),
+	assert_true(mongolog_call(rdf_list_head(SubList, _))),
+	(	mongolog_call(rdf_list_head(SubList, RDF_list2))
 	->	assert_equals(RDF_list2, RDF_list1)
 	;	true
 	).
 
-:- end_rdf_tests('model_RDFS').
+:- end_mongolog_tests('mongolog_rdfs').

@@ -1,20 +1,71 @@
 :- module(swrl,
-		[ swrl_fire/1         % +Rule
-		, swrl_fire/2         % +Rule, +Label
-		, swrl_assert/1       % +Rule
-		, swrl_assert/2       % +Rule, +Label
-		, swrl_rule_hash/2    % +Rule, -Hash
+		[ swrl_fire/1          % +Rule
+		, swrl_fire/2          % +Rule, +Label
+		, swrl_assert_rule/1   % +Rule
+		, swrl_assert_rule/2   % +Rule, +Label
+		, swrl_rule_hash/2     % +Rule, -Hash
 		]).
 /** <module> Prolog-based SWRL representation.
 
 @author Daniel Beßler
 */
 
-:- use_module(library('lang/terms/holds'),
-		[ holds/3 ]).
-:- use_module(library('model/OWL')).
+:- use_module(library('scope')).
+:- use_module(library('semweb')).
+:- use_module(library('blackboard')).
+:- use_module(library('semweb/rdf_db'), [ rdf_subject/1 ]).
+:- use_module(library('semweb/rdfs'), [ rdfs_individual_of/2 ]).
 
 :- multifile swrl_builtin/4.
+% define reasoner settings.
+:- reasoner_setting(swrl:backend, atom, prolog, 'Must be one of `prolog` or `mongolog`').
+
+%% swrl_call(+Goals, +Ctx) is nondet.
+%
+% The call is restricted to the current reasoner context.
+% Thus results of other reasoners are only incorparated as long
+% as they are stored in the data backend that is used by the SWRL reasoner.
+%
+swrl_call(Goals, Ctx) :-
+    reasoner_setting(swrl:backend, mongolog),!,
+    log_info(swrl(moongolog)), % TODO: decide about mongolog support
+    % TODO: check if correct, call comma_list?
+    mongolog:mongolog_call(Goals, Ctx).
+
+swrl_call(Goals, _Ctx) :-
+    is_list(Goals),!,
+    comma_list(Goal,Goals),
+    current_reasoner_module(Reasoner),
+    % TODO: support scoped query.
+    Reasoner:call(Goal).
+
+swrl_call(Goal, _Ctx) :-
+    throw(error(type_error(goal, Goal), swrl_call(Goal))).
+
+%%
+% True when S is a currently known subject.
+%
+swrl_subject(Resource) :-
+    % TODO mongo ongo, could map to swrl_call
+    %kb_call(triple(Iri,rdf:type,_)),
+    rdf_subject(Resource),
+    !.
+
+%%
+%
+swrl_data_property(P) :-
+    % TODO mongo ongo, could map to swrl_call
+	%has_type(P, owl:'DatatypeProperty').
+    rdfs_individual_of(P, owl:'DatatypeProperty'),
+    !.
+
+%%
+%
+swrl_object_property(P) :-
+    % TODO mongo ongo, could map to swrl_call
+	%has_type(P, owl:'ObjectProperty').
+    rdfs_individual_of(P, owl:'ObjectProperty'),
+    !.
 
 %% swrl_rule_hash(+Rule, -Hash) is det.
 %
@@ -61,49 +112,64 @@ swrl_fire1(HeadAtom :- Body, Label) :-
 			var('swrl:label',Label)|
 			Vars
 		]),
-	Rule_pl=(?>(Impl_pl,Cond_pl)),
+	Rule_pl=(:-(Impl_pl,Cond_pl)),
 	% include all scopes
 	wildcard_scope(QScope),
-	forall(
-		% get bag of facts for differente FScope's
-		bagof(Fact,
-			(	kb_call(Cond_pl, QScope, FScope),
-				swrl_fact(Impl_pl, Fact)
-			),
-			Facts),
-		% finally assert inferred facts in the knowledge base
-		kb_project(Facts, FScope)
-	).
+	% TODO: fscope is not usd by mongolog
+	% TODO: add graph to call
+	forall(swrl_call(Cond_pl, [scope(QScope),
+	                           fscope(FScope)]),
+	       swrl_assert_fact(Impl_pl, FScope)).
 
-%%
-swrl_fact(model_RDFS:instance_of(X,Y), has_type(X,Y)) :- !.
-swrl_fact(lang_holds:holds(X,Y,Z),     holds(X,Y,Z)) :- !.
+%% swrl_assert_fact(+Term, +Scope) is semidet.
+%
+swrl_assert_fact(Term, Scope) :-
+    reasoner_setting(swrl:backend, mongolog),!,
+    log_info(swrl(moongolog)), % TODO: decide about mongolog support
+    % TODO: check if correct
+    mongolog:mongolog_project(Term, Scope).
 
-%% swrl_assert(+Rule).
+swrl_assert_fact(instance_of(S,class(Cls)), Scope) :-
+    !,
+    swrl_assert_fact(instance_of(S,Cls), Scope).
+swrl_assert_fact(instance_of(S,Cls), _Scope) :-
+    (atom(Cls);compound(Cls)),!,
+    % TODO: support scoped assertion
+    sw_assert_type(S,Cls).
+
+swrl_assert_fact(triple(S,P,O), _Scope) :-
+    atom(S), atom(P), ground(O),!,
+    % TODO: support scoped assertion
+    sw_assert_triple(S,P,O).
+
+swrl_assert_fact(Predicate, _Scope) :-
+    throw(error(type_error(predicate, Predicate), swrl_assert_fact(Predicate))).
+
+%% swrl_assert_rule(+Rule).
 %
 % Same as swrl_assert/2 but uses the hash of the rule as label.
 %
 % @param Rule Prolog-based representation of SWRL rule.
 %
-swrl_assert(Rule) :-
+swrl_assert_rule(Rule) :-
 	% generate a label for the rule from its signature
 	swrl_rule_hash(Rule,Label),
-	swrl_assert(Rule,Label).
+	swrl_assert_rule(Rule,Label).
 
-%% swrl_assert(+Rule, +Label).
+%% swrl_assert_rule(+Rule, +Label).
 %
 % Assert SWRL rule in the knowledge base.
 % Label is a unique identifier of the rule used to avoid redundancy.
 %
-swrl_assert(Head :- Body, Label) :-
+swrl_assert_rule(Head :- Body, Label) :-
 	atom_concat('swrl:', Label, Label0),
 	forall(
 		member(HeadAtom,Head),
-		swrl_assert1(HeadAtom :- Body, Label0)
+		swrl_assert_rule1(HeadAtom :- Body, Label0)
 	).
 
 %
-swrl_assert1(HeadAtom :- Body, Label) :-
+swrl_assert_rule1(HeadAtom :- Body, Label) :-
 	% parse rule variables into a map
 	swrl_vars([HeadAtom] :- Body, Vars),
 	% translate into ask-rule
@@ -114,13 +180,24 @@ swrl_assert1(HeadAtom :- Body, Label) :-
 			var('swrl:label',Label)|
 			Vars
 		]),
-	Rule_pl=(?>(Impl_pl,Cond_pl)),
+	% condition part is a list in Rule_pl, transform it to use ',' functor
+	Rule_pl=(:-(Impl_pl,Cond_pl)),
 	comma_list(Cond_pl0,Cond_pl),
 	% term expansion
-	% NOTE: this also calls query_assert/1
-	expand_term(?>(Impl_pl,Cond_pl0), Expanded),
+	expand_term(:-(Impl_pl,Cond_pl0), Expanded),
 	% finally assert expanded rule
-	assertz(Expanded).
+	swrl_assert_rule2(Expanded).
+
+%%
+swrl_assert_rule2(Rule) :-
+    reasoner_setting(swrl:backend, mongolog),!,
+    log_info(swrl(moongolog)), % TODO: decide about mongolog support
+    % TODO: check if correct
+    mongolog:mongolog_assert_rule(Rule).
+
+swrl_assert_rule2(Rule) :-
+    reasoner_module(ReasonerModule),
+	ReasonerModule:assertz(Rule).
   
 swrl_rule_pl_implication(Implication :- _, Implication) :- !.
 swrl_rule_pl_implication(Implication, Implication).
@@ -130,15 +207,15 @@ swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
 	!, swrl_implication_pl(Fact, Fact_pl, Vars).
 
 swrl_rule_pl(
-		class(Cls,S)                      :- Cond,
-		model_RDFS:instance_of(S_var,Cls) ?> Cond_pl,
+		class(Cls,S)           :- Cond,
+		instance_of(S_var,Cls) :- Cond_pl,
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_condition_pl(Cond, Cond_pl, Vars),!.
 
 swrl_rule_pl(
-		property(S,P,O)                 :- Cond,
-		lang_holds:holds(S_var,P,O_var) ?> Cond_pl,
+		property(S,P,O)       :- Cond,
+		triple(S_var,P,O_var) :- Cond_pl,
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var),
@@ -153,7 +230,7 @@ swrl_condition_pl([X|Xs], [Y|Ys], Vars) :-
   
 swrl_condition_pl(
 		class(Cls,S),
-		instance_of_description(S_var,Cls),
+		instance_of_expr(S_var,Cls),
 		Vars) :-
 	compound(Cls),!,
 	swrl_var(Vars, S, S_var).
@@ -166,7 +243,7 @@ swrl_condition_pl(
 
 swrl_condition_pl(
 		property(S,P,O),
-		holds(S_var,P,O_var),
+		triple(S_var,P,O_var),
 		Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
@@ -181,83 +258,70 @@ swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
 %
 swrl_builtin(
 		equal, [S,O],
-		(S_var == O_var),
-		Vars) :-
+		(S_var == O_var), Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
 swrl_builtin(
 		notEqual, [S,O],
-		(S_var \== O_var),
-		Vars) :-
+		(S_var \== O_var), Vars) :-
 	swrl_var(Vars, S, S_var),
 	swrl_var(Vars, O, O_var).
 
 swrl_builtin(
 		lessThan, [A,B],
-		(A_num < B_num),
-		Vars) :-
+		(A_num < B_num), Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin(
 		lessThanOrEqual, [A,B],
-		(A_num =< B_num),
-		Vars) :-
+		(A_num =< B_num), Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin(
 		greaterThan, [A,B],
-		(A_num > B_num),
-		Vars) :-
+		(A_num > B_num), Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 swrl_builtin(
 		greaterThanOrEqual, [A,B],
-		(A_num >= B_num),
-		Vars) :-
+		(A_num >= B_num), Vars) :-
 	swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% math builtins
 swrl_builtin(
 		add, [A,B,C],
-		(A_num is B_num + C_num),
-		Vars) :-
+		(A_num is B_num + C_num), Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		subtract, [A,B,C],
-		(A_num is B_num - C_num),
-		Vars) :-
+		(A_num is B_num - C_num), Vars) :-
 	swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		multiply, [A,B,C],
-		(A_num is B_num * C_num),
-		Vars) :-
+		(A_num is B_num * C_num), Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		divide, [A,B,C],
-		(A_num is B_num / C_num),
-		Vars) :-
+		(A_num is B_num / C_num), Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		mod, [A,B,C],
-		(A_num is B_num mod C_num),
-		Vars) :-
+		(A_num is B_num mod C_num), Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		pow, [A,B,C],
-		(A_num is B_num ** C_num),
-		Vars) :-
+		(A_num is B_num ** C_num), Vars) :-
   swrl_nums([A,B,C], [A_num,B_num,C_num], Vars).
 
 swrl_builtin(
 		abs, [A,B],
-		(A_num is abs(B_num)),
-		Vars) :-
+		(A_num is abs(B_num)), Vars) :-
   swrl_nums([A,B], [A_num,B_num], Vars).
 
 %% boolean builtins
@@ -267,45 +331,38 @@ swrl_builtin(booleanNot, [S], not(S_var), Vars) :-
 %% string builtins
 swrl_builtin(
 		stringConcat, [A,B,C],
-		atom_concat(C_atom,A_atom,B_atom),
-		Vars) :-
+		atom_concat(C_atom,A_atom,B_atom), Vars) :-
   swrl_atoms([A,B,C], [A_atom,B_atom,C_atom], Vars).
 
 swrl_builtin(
 		stringLength, [A,L],
-		atom_length(A_atom, L_num),
-		Vars) :-
+		atom_length(A_atom, L_num), Vars) :-
   swrl_atom(A,A_atom,Vars),
   swrl_atom_number(L,L_num,Vars).
 
 swrl_builtin(
 		upperCase, [A,Upper],
-		upcase_atom(A_atom, Upper_atom),
-		Vars) :-
+		upcase_atom(A_atom, Upper_atom), Vars) :-
   swrl_atoms([A,Upper], [A_atom,Upper_atom], Vars).
 
 swrl_builtin(
 		lowerCase, [A,Lower],
-		downcase_atom(A_atom, Lower_atom),
-		Vars) :-
+		downcase_atom(A_atom, Lower_atom), Vars) :-
   swrl_atoms([A,Lower], [A_atom,Lower_atom], Vars).
 
 swrl_builtin(
 		contains, [A,X],
-		sub_atom(A_atom, _, _, _, X_atom),
-		Vars) :-
+		sub_atom(A_atom, _, _, _, X_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 swrl_builtin(
 		startsWith, [A,X],
-		atom_prefix(A_atom, X_atom),
-		Vars) :-
+		atom_prefix(A_atom, X_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 swrl_builtin(
 		endsWith, [A,X],
-		atom_concat(_, X_atom, A_atom),
-		Vars) :-
+		atom_concat(_, X_atom, A_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
 
 

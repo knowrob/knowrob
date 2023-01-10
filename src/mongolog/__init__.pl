@@ -21,13 +21,18 @@
 
 % initialize hierachical organization of triple graphs
 :- use_module(subgraph).
-:- add_subgraph(user,common),
-   add_subgraph(test,user),
-   load_graph_structure.
+:- load_graph_structure.
 
 :- use_module(annotation).
 :- use_module(triple).
+:- use_module(rdfs).
 :- use_module(holds).
 :- use_module(temporal).
 
 :- rdf_meta(triple(t,t,t)).
+
+% load RDFS and OWL model
+:- load_owl('owl/rdf-schema.xml').
+:- load_owl('owl/owl.rdf',
+	[ namespace(owl,'http://www.w3.org/2002/07/owl#')
+	]).

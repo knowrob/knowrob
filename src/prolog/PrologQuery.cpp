@@ -20,42 +20,6 @@ PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
 	if(!constructPrologTerm(qa_query->formula(), pl_query_)) {
 		throw QueryError("Failed to create term_t from Query.");
 	}
-	
-	uint32_t arity=0;
-	// get the predicate indicator.
-	// pl_query_ is a term, but open query only accepts predicates.
-	// so the goal here is to create a predicate using the functor of pl_query_.
-	switch(qa_query_->formula()->type()) {
-	case FormulaType::PREDICATE: {
-		const std::shared_ptr<Predicate> &qa_pred =
-			((PredicateFormula*) qa_query_->formula().get())->predicate();
-		arity = qa_pred->arguments().size();
-		// TODO: should the predicate_t be stored in a static variable?
-		pl_predicate_ = PL_predicate(
-			qa_pred->indicator().functor().c_str(), arity, NULL);
-		break;
-	}
-	case FormulaType::CONJUNCTION:
-		pl_predicate_ = PrologQuery::PREDICATE_comma();
-		arity = 2;
-		break;
-	case FormulaType::DISJUNCTION:
-		pl_predicate_ = PrologQuery::PREDICATE_semicolon();
-		arity = 2;
-		break;
-	default:
-		KB_WARN("Ignoring unknown formula type '{}'.", (int)qa_query_->formula()->type());
-		break;
-	}
-
-	// create pl_arguments_
-  	pl_arguments_ = PL_new_term_refs(arity);
-  	for(uint32_t i=0; i<arity; ++i) {
-  		term_t arg = pl_arguments_ + i;
-		if(!PL_get_arg(i+1, pl_query_, arg)) {
-			KB_WARN("failed to get query argument term");
-		}
-  	}
 }
 
 PrologQuery::~PrologQuery()

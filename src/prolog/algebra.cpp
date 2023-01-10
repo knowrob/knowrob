@@ -155,5 +155,5 @@ PL_extension algebra_predicates[] = {
 		{ "quaternion_matrix", 4, (pl_function_t)pl_quaternion_matrix, 0 },
 		{ "matrix_quaternion", 4, (pl_function_t)pl_matrix_quaternion, 0 },
 		{ "matrix_translation", 2, (pl_function_t)pl_matrix_translation, 0 },
-		{ NULL, 0, NULL, 0 }
+		{nullptr, 0, nullptr, 0 }
 };

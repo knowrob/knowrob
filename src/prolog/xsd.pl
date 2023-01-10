@@ -1,10 +1,13 @@
 :- module(model_xsd,
 	[ xsd_data_type(r),
 	  xsd_numeric_type(r),
+	  xsd_number_type(r),
 	  xsd_string_type(r),
 	  xsd_misc_type(r),
 	  xsd_data_basetype(r,?),
-	  xsd_data_type_name(r,?)
+	  xsd_data_type_name(r,?),
+	  xsd_value_atom(?,r,?),
+	  xsd_guess_type(+,r)
 	]).
 /** <module> XML Schema Data Types.
 
@@ -120,3 +123,34 @@ xsd_misc_type(xsd:'decimal').
 xsd_misc_type(xsd:'double').
 xsd_misc_type(xsd:'float').
 xsd_misc_type(xsd:'hexBinary').
+
+%%
+xsd_number_type(T) :- xsd_numeric_type(T).
+xsd_number_type(xsd:'double').
+xsd_number_type(xsd:'float').
+
+%% xsd_guess_type(+Value, ?XSDType) is det.
+%
+% Maps numbers to xsd:double, `true` and `false` to xsd:boolean,
+% and everything else to xsd:string.
+%
+xsd_guess_type(true, xsd:'boolean') :- !.
+xsd_guess_type(false, xsd:'boolean') :- !.
+xsd_guess_type(Atomic, xsd:'double') :- number(Atomic), !.
+xsd_guess_type(_Atomic, xsd:'string').
+
+
+%% xsd_value_atom(?Value, ?XSDType, ?ValueAtom) is det.
+%
+% Conversion between XSD atoms and native types.
+%
+xsd_value_atom(ValueNative, XSDType, ValueAtom) :-
+    atom(ValueAtom),!,
+    atom(XSDType),
+    ( xsd_number_type(XSDType) -> atom_number(ValueAtom, ValueNative)
+    ; term_to_atom(ValueNative, ValueAtom)
+    ).
+
+xsd_value_atom(ValueNative, _XSDType, ValueAtom) :-
+    ground(ValueNative),
+    term_to_atom(ValueNative, ValueAtom).

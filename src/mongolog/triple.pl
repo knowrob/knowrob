@@ -23,14 +23,13 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('mongolog/subgraph'),
-		[ get_supgraphs/2 ]).
 :- use_module(library('scope'),
 		[ universal_scope/1, time_scope/3, time_scope_data/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
-:- use_module(library('rdftest')).
-:- use_module(library('ontology')).
+:- use_module(library('mongolog/mongolog_test')).
+:- use_module(library('semweb')).
+:- use_module('subgraph').
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_assert(r)).
@@ -633,7 +632,7 @@ graph_doc('*', _)    :- !, fail.
 graph_doc('user', _) :- !, fail.
 graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
 graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
-	get_supgraphs(GraphName,Graphs).
+	sw_get_supgraphs(GraphName,Graphs).
 
 %%
 graph_match(Ctx, ['$expr', [Operator,
@@ -731,8 +730,8 @@ load_owl(URL) :-
     load_owl(URL,[]).
 
 load_owl(URL, Options) :-
-    register_ontology_namespace(URL, Options),
-    % FIXME: it is hard to follow here how the subgraph-of relation is build, i.e. using add_subgraph/2.
+    sw_url_register_ns(URL, Options),
+    % FIXME: it is hard to follow here how the subgraph-of relation is build, i.e. using sw_add_subgraph/2.
     %        it is also a question whether this relation should be maintained centrally
     %        for all reasoner that use RDF data.
 	% get parent graph name, fall back to "common"
@@ -749,15 +748,15 @@ load_owl(_URL, _Scope, _ParentGraph) :-
 
 load_owl(URL, Scope, ParentGraph) :-
     % read graph and ontology version from URL
-    ontology_url(URL, Resolved, OntologyGraph, OntologyVersion),
+    sw_url(URL, Resolved, OntologyGraph, OntologyVersion),
 	% setup graph structure:
 	% the parent graph is a super graph of the ontology graph, meaning the
 	% ontology graph is included in the parent graph.
 	% if the parent graph is dropped, the ontology graph will also be dropped.
-	(	add_subgraph(OntologyGraph,ParentGraph),
+	(	sw_add_subgraph(OntologyGraph,ParentGraph),
 	    % TODO: doesn't this create a cricle in the relation, e.g. when 'test' is used as
 	    %        a parent in unittests to auto-drop the ontology graph after the test.
-		add_subgraph(user,OntologyGraph)
+		sw_add_subgraph(user,OntologyGraph)
 	),
 	% tests whether the ontology is already loaded. no triples mustbe loaded if versions unify,
 	% but the ontology graph must be a sub-graph of all imported ontologies.
@@ -768,7 +767,7 @@ load_owl(URL, Scope, ParentGraph) :-
 
 load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
     % read ontology data from URL
-	ontology_url_read(URL, [
+	sw_url_read(URL, [
 	    asserted_url(AssertedURL),
 	    triples(TripleTerms),
 	    annotations(AnnotationTerms)
@@ -779,11 +778,8 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
 	forall(
 		member(triple(AssertedURL, OWL_Imports, string(ImportedURL)), TripleTerms),
-		(	ontology_url_graph(ImportedURL, ImportedGraph),
-		    % TODO this seems odd, shouldn't it be the other direction?
-		    %      Is this needed at all? It also seems risky that it cause an ontology
-		    %      being accidentally dropped. Try to remove this....
-			add_subgraph(OntologyGraph, ImportedGraph),
+		(	sw_url_graph(ImportedURL, ImportedGraph),
+			sw_add_subgraph(ImportedGraph, OntologyGraph),
 			load_owl(ImportedURL, Scope, ParentGraph)
 		)
 	),
@@ -812,9 +808,8 @@ load_ontology_graph(OntologyGraph) :-
 			['graph', string(OntologyGraph)]
 		], Doc),
 		(	mng_get_dict('o', Doc, string(Imported)),
-			ontology_url_graph(Imported,ImportedGraph),
-			% TODO: same note as above, this seems odd
-			add_subgraph(OntologyGraph,ImportedGraph)
+			sw_url_graph(Imported,ImportedGraph),
+			sw_add_subgraph(ImportedGraph,OntologyGraph)
 		)
 	).
 
@@ -867,7 +862,7 @@ auto_drop_graphs :-
 
 %%
 triple_graph(Ctx, Graph) :-
-	once((subgraph:default_graph(DefaultGraph) ; DefaultGraph=user)),
+	once((sw_default_graph(DefaultGraph) ; DefaultGraph=user)),
 	option(graph(Graph), Ctx, DefaultGraph).
 
 %%

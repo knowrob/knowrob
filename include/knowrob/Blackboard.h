@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_BLACKBOARD_H__
-#define __KNOWROB_BLACKBOARD_H__
+#ifndef KNOWROB_BLACKBOARD_H_
+#define KNOWROB_BLACKBOARD_H_
 
 // STD
 #include <list>
@@ -27,18 +27,22 @@ namespace knowrob {
 			const std::shared_ptr<QueryResultQueue> &outputQueue,
 			const std::shared_ptr<Query> &goal);
 		
-		// copy constructor is not supported for blackboards
+		~Blackboard();
+
+		/**
+		 * Cannot be copy-assigned.
+		 */
 		Blackboard(const Blackboard&) = delete;
 		
-		~Blackboard();
-		
-		/** Starts the query evaluation.
+		/**
+		 * Starts the query evaluation.
 		 * Can only be called once as streams are invalidated after
 		 * one evaluation.
 		 */
 		void start();
 		
-		/** The input stream of a sub-query.
+		/**
+		 * The input stream of a sub-query.
 		 */
 		class Stream : public QueryResultStream {
 		public:
@@ -48,7 +52,8 @@ namespace knowrob {
 				const std::shared_ptr<Query> &goal);
 			~Stream();
 			
-			/** Stop the stream by sending EOS message.
+			/**
+			 * Stop the stream by sending EOS message.
 			 */
 			void stop();
 			
@@ -73,7 +78,8 @@ namespace knowrob {
 			friend class Blackboard;
 		};
 		
-		/** A segment on the blackboard dedicated to a sub-query.
+		/**
+		 * A segment on the blackboard dedicated to a sub-query.
 		 */
 		class Segment {
 		public:
@@ -125,4 +131,4 @@ namespace knowrob {
 	};
 }
 
-#endif //__KNOWROB_BLACKBOARD_H__
+#endif //KNOWROB_BLACKBOARD_H_

@@ -1,3 +1,2 @@
 
-% load modules into user
-:- use_module('roles').
+:- use_module('qpt').

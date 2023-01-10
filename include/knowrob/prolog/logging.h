@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_PROLOG_LOGGING_H__
-#define __KNOWROB_PROLOG_LOGGING_H__
+#ifndef KNOWROB_PROLOG_LOGGING_H_
+#define KNOWROB_PROLOG_LOGGING_H_
 
 #include <SWI-Prolog.h>
 
@@ -27,4 +27,4 @@ foreign_t pl_log_message2(term_t level_term, term_t msg_term);
  */
 foreign_t pl_log_message4(term_t level_term, term_t msg_term, term_t file_term, term_t line_term);
 
-#endif // __KNOWROB_PROLOG_LOGGING_H__
+#endif // KNOWROB_PROLOG_LOGGING_H_

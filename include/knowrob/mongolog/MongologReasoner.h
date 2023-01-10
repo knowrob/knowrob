@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_MONGOLOG_REASONER_H__
-#define __KNOWROB_MONGOLOG_REASONER_H__
+#ifndef KNOWROB_MONGOLOG_REASONER_H_
+#define KNOWROB_MONGOLOG_REASONER_H_
 
 // STD
 #include <memory>
@@ -19,20 +19,21 @@
 namespace knowrob {
 	class MongologReasoner : public PrologReasoner {
 	public:
-		MongologReasoner();
-		~MongologReasoner();
+		explicit MongologReasoner(const std::string &reasonerID);
+
+		~MongologReasoner() override;
 		
 		// Override IReasoner
-		bool initialize(const ReasonerConfiguration &cfg) override;
-		
-		// Override IReasoner
-		bool canReasonAbout(const PredicateIndicator &predicate) override;
+		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
 		
 	protected:
 		
 		// Override PrologReasoner
 		std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) override;
+
+		// Override PrologReasoner
+		bool initializeDefaultPackages() override;
     };
 }
 
-#endif //__KNOWROB_MONGOLOG_REASONER_H__
+#endif //KNOWROB_MONGOLOG_REASONER_H_
