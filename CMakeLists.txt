@@ -115,14 +115,14 @@ add_library(hyres SHARED
 		src/terms.cpp
 		src/queries.cpp
 		src/Blackboard.cpp
-		src/ReasonerManager.cpp
+        src/reasoner.cpp
 		src/HybridQA.cpp
 		src/prolog/PrologQuery.cpp
 		src/prolog/PrologReasoner.cpp
 		src/prolog/logging.cpp
 		src/prolog/algebra.cpp
 		src/mongolog/MongologReasoner.cpp
-        src/mongolog/MongologTests.cpp
+		src/swrl/SWRLReasoner.cpp
 		src/esg/ESGReasoner.cpp)
 target_link_libraries(hyres
 		${SWIPL_LIBRARIES}
