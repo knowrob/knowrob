@@ -25,6 +25,7 @@ namespace knowrob {
 		std::string path_;
 		std::string format_;
 	};
+	using DataFilePtr = std::shared_ptr<DataFile>;
 	
 	class FactBase : public DataSource {
 	public:
