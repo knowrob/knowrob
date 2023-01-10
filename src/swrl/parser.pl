@@ -208,12 +208,10 @@ swrl_literal(class(A,B),NS) -->
 
 swrl_literal(property(S,P,O),NS) -->
   swrl_property(P,NS), ['('], swrl_subject(S,NS), [','], swrl_data_object(O), [')'],
-  % TODO remove swrl:
   { swrl:swrl_data_property(P) }.
 
 swrl_literal(property(S,P,O),NS) -->
   swrl_property(P,NS), ['('], swrl_subject(S,NS), [','], swrl_object(O,NS), [')'],
-  % TODO remove swrl:
   { swrl:swrl_object_property(P) }.
 
 swrl_literal(BuiltinTerm,_NS) -->
@@ -317,14 +315,13 @@ swrl_match_instance(IRI,Name,NS) :-
 	% try to use user-specified namespace to find the entity
 	atom_concat(NS,Name,IRI),
 	% check if IRI is a currently defined IRI
-	% TODO remove swrl:
-	swrl:swrl_subject(IRI),!,
+	swrl_subject(IRI),!,
 	assertz(swrl_iri(Name,IRI)).
 
 swrl_match_instance(IRI,Name,NS) :-
 	var(IRI), atom(Name),
 	% TODO: find IRI with Name as suffix
-	log_warn(need_match_instance(Name,NS)),
+	log_warn(swrl(match_instance(Name,NS))),
 	fail,
 	%atomic_list_concat(['^.*#',Name,'$'],Pattern),
 	%kb_call(once(triple(regex(Pattern)->IRI,rdf:type,_))),!,
