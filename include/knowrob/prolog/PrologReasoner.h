@@ -70,35 +70,86 @@ namespace knowrob {
 		PrologReasoner(const PrologReasoner&) = delete;
 
 		/**
+		 *
+		 * @param key
+		 * @param valueString
+		 * @return
+		 */
+		bool setReasonerSetting(const TermPtr &key, const TermPtr &valueString);
+
+		/**
 		 * Consults a Prolog file, i.e. loads facts and rules and executed
 		 * directives in the file.
 		 * May throw an exception if there is no valid Prolog file at the given path.
 		 * @prologFile the local path to the file.
          * @return true on success
 		 */
-		virtual bool consult(const std::filesystem::path &prologFile);
+		bool consult(const std::filesystem::path &prologFile, const char *contextModule={}, bool doTransformQuery=true);
 
 		/**
 		 * @param rdfFile a rdf-xml encoded file.
 		 */
-		virtual bool consult_rdf_xml(const std::filesystem::path &rdfFile);
+		bool load_rdf_xml(const std::filesystem::path &rdfFile);
 		
 		/**
 		 * Evaluates a query and returns one solution if any.
+		 * @param goal
+		 * @param contextModule
+		 * @param doTransformQuery
 		 * @return the first solution found, or QueryResultStream::eos() if none.
 		 */
-		std::shared_ptr<QueryResult> oneSolution(const std::shared_ptr<Query> &goal);
+		QueryResultPtr oneSolution(const std::shared_ptr<Query> &goal,
+								   const char *contextModule={},
+								   bool doTransformQuery=true);
+
+		/**
+		 *
+		 * @param goal
+		 * @param contextModule
+		 * @param doTransformQuery
+		 * @return
+		 */
+		QueryResultPtr oneSolution(const std::shared_ptr<Predicate> &goal,
+								   const char *contextModule={},
+								   bool doTransformQuery=true);
 		
 		/**
 		 * Evaluates a query and returns all solutions.
+		 * @param goal
+		 * @param contextModule
+		 * @param doTransformQuery
 		 * @return list of solutions.
 		 */
-		std::list<std::shared_ptr<QueryResult>> allSolutions(const std::shared_ptr<Query> &goal);
+		std::list<QueryResultPtr> allSolutions(const std::shared_ptr<Query> &goal,
+											   const char *contextModule={},
+											   bool doTransformQuery=true);
+
+		/**
+		 *
+		 * @param goal
+		 * @param contextModule
+		 * @param doTransformQuery
+		 * @return
+		 */
+		std::list<QueryResultPtr> allSolutions(const std::shared_ptr<Predicate> &goal,
+											   const char *contextModule={},
+											   bool doTransformQuery=true);
+
+		/**
+		 *
+		 * @param goal
+		 * @param contextModule
+		 * @param doTransformQuery
+		 * @return
+		 */
+		bool eval(const std::shared_ptr<Predicate> &goal,
+				  const char *contextModule={},
+				  bool doTransformQuery=true);
 		
 		/**
 		 * Parse a string into a term.
 		 */
-		std::shared_ptr<Term> readTerm(const std::string &queryString);
+		TermPtr readTerm(const std::string &queryString);
 
 		/**
 		 * Run unittests associated to the given target name.
@@ -154,14 +205,17 @@ namespace knowrob {
 		void pushSubstitution(uint32_t queryID, const SubstitutionPtr &bindings) override;
 
 	protected:
+		static bool isInitialized_;
 		const std::string reasonerID_;
+		std::shared_ptr<StringTerm> reasonerIDTerm_;
+		bool hasRDFData_;
 
 		/** a query request for a runner */
 		struct Request {
 			uint32_t queryID;
 			const char *queryModule;
 			std::shared_ptr<Query> goal;
-			explicit Request(const std::shared_ptr<Query> &goal, const char *queryModule=nullptr, uint32_t queryID=0)
+			explicit Request(const std::shared_ptr<Query> &goal, const char *queryModule, uint32_t queryID=0)
 			: queryID(queryID), queryModule(queryModule), goal(goal) {};
 		};
 
@@ -201,20 +255,17 @@ namespace knowrob {
 		std::mutex request_mutex_;
 		
 		void finishRunner(uint32_t queryID, PrologReasoner::Runner *runner);
-		
-		bool consult(const std::shared_ptr<DataFile> &dataFile);
+
 		bool consult(const std::shared_ptr<FactBase> &factBase);
 		bool consult(const std::shared_ptr<RuleBase> &ruleBase);
-		bool consultIntoUser(const std::filesystem::path &prologFile);
-		
-		std::shared_ptr<QueryResult> oneSolution1(const std::shared_ptr<Query> &goal);
-		std::shared_ptr<QueryResult> oneSolution1(const std::shared_ptr<Query> &goal, const char *moduleName);
-		std::list<std::shared_ptr<QueryResult>> allSolutions1(const std::shared_ptr<Query> &goal);
 
 		void initializeProlog();
 		bool initializeGlobalPackages();
 
 		virtual bool initializeDefaultPackages() { return true; }
+
+		bool loadDataFileWithUnknownFormat(const DataFilePtr &dataFile) override
+		{ return consult(dataFile->path()); };
 		
 		PrologThreadPool& threadPool();
 		
@@ -224,10 +275,30 @@ namespace knowrob {
 	/**
 	 * A baseclass for prolog test fixtures.
 	 */
-	class PrologTests: public testing::Test {
+	class PrologTestsBase: public testing::Test {
 	protected:
 		static void runPrologTests(const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
 								   const std::string &target);
+	};
+
+	template <class T> class PrologTests: public PrologTestsBase {
+	protected:
+		// Per-test-suite set-up.
+		static void SetUpTestSuite() { reasoner();  }
+
+		static void runTests(const std::string &t) { runPrologTests(reasoner(), t); }
+
+		static std::shared_ptr<T> reasoner() {
+			static std::shared_ptr<T> r;
+			static int reasonerIndex_=0;
+			if(!r) {
+				std::stringstream ss;
+				ss << "prolog" << reasonerIndex_++;
+				r = std::make_shared<T>(ss.str());
+				r->loadConfiguration(knowrob::ReasonerConfiguration());
+			}
+			return r;
+		}
 	};
 }
 
