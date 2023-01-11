@@ -6,8 +6,9 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('model/SOMA'),
-	[ workflow_step/2 ]).
+:- use_module(library('semweb/rdf_db'),
+    [ rdf_has/3 ]).
+:- use_module(library('rdf_test')).
 :- use_module('interval',
 	[ interval_constraint/3 ]).
 :- use_module('esg',
@@ -25,7 +26,7 @@
 %
 workflow_sequence(WF, StepSequence) :-
 	\+ is_list(WF),!,
-	findall(S, workflow_step(WF,S), Steps),
+	findall(S, rdf_has(WF,soma:hasStep,S), Steps),
 	workflow_sequence(Steps, StepSequence).
   
 workflow_sequence(Steps, StepSequence) :-
@@ -43,7 +44,7 @@ workflow_sequence(Steps, StepSequence) :-
 		 *******************************/
 
 :- begin_rdf_tests(temporal_workflow,
-		'package://knowrob/owl/test/pancake.owl',
+		'owl/test/pancake.owl',
 		[ namespace('http://knowrob.org/kb/pancake.owl#')
 		]).
 

@@ -98,10 +98,7 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<Query> subq = std::make_shared<Query>(phi);
 
     if (ensemble.empty()) {
-		// TODO: avoid redundant string formatting by supporting same syntax for QueryErrors
-		//throw QueryError("no reasoner registered for query `{}`", *phi);
-		KB_WARN("no reasoner registered for query `{}`", *phi);
-		throw QueryError("no reasoner available for a predicate");
+		throw QueryError("no reasoner registered for query `{}`", *phi);
 	}
 
     for(std::shared_ptr<IReasoner> &r : ensemble) {
@@ -128,8 +125,8 @@ void Blackboard::decomposeConjunction(
 	//   atomic formulae that are independent can be evaluated concurrently.
 	
 	// add blackboard segments for each predicate in the conjunction
-	int counter = 1;
-	int numFormulae = phi->formulae().size();
+	unsigned long counter = 1;
+	auto numFormulae = phi->formulae().size();
 	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
 		if(numFormulae == counter) {
 			out = lastQueue;
@@ -182,7 +179,7 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 		// tell the reasoner to finish up.
 		// if hasStopRequest_=true it means that the reasoner is requested
 		// to immediately shutdown. however, note that not all reasoner
-		// implementations may support this and may take longer to stop anyways.
+		// implementations may support this and may take longer to stop anyway.
 		if(isQueryOpened()) {
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!

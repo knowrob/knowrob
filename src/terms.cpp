@@ -10,6 +10,8 @@
 #include <knowrob/terms.h>
 #include <gtest/gtest.h>
 
+#include <utility>
+
 using namespace knowrob;
 
 Term::Term(TermType type)
@@ -18,26 +20,8 @@ Term::Term(TermType type)
 
 bool Term::operator==(const Term& other) const
 {
-    if(type_ != other.type_) return false;
-    switch(type_) {
-        case TermType::PREDICATE:
-            return *((Predicate*)this) == *((Predicate*)&other);
-        case TermType::VARIABLE:
-            return *((Variable*)this) == *((Variable*)&other);
-        case TermType::LIST:
-            return *((ListTerm*)this) == *((ListTerm*)&other);
-        case TermType::STRING:
-            return *((StringTerm*)this) == *((StringTerm*)&other);
-        case TermType::DOUBLE:
-            return *((DoubleTerm*)this) == *((DoubleTerm*)&other);
-        case TermType::INT32:
-            return *((Integer32Term*)this) == *((Integer32Term*)&other);
-        case TermType::LONG:
-            return *((LongTerm*)this) == *((LongTerm*)&other);
-        default:
-            KB_WARN("ignoring unknown term type {}.", (int)type_);
-            return false;
-    }
+	// note: isEqual can safely perform static cast as type id's do match
+	return typeid(*this) == typeid(other) && isEqual(other);
 }
 
 bool Term::isBottom() const
@@ -51,14 +35,14 @@ bool Term::isTop() const
 }
 
 
-Variable::Variable(const std::string &name)
+Variable::Variable(std::string name)
 : Term(TermType::VARIABLE),
-  name_(name)
+  name_(std::move(name))
 {}
 
-bool Variable::operator==(const Variable& other) const
+bool Variable::isEqual(const Term& other) const
 {
-    return name_ == other.name_;
+    return name_ == static_cast<const Variable&>(other).name_; // NOLINT
 }
 
 bool Variable::operator< (const Variable& other) const
@@ -101,7 +85,8 @@ ListTerm::ListTerm(const std::vector<TermPtr> &elements)
 {
 }
 
-bool ListTerm::operator==(const ListTerm& x) const {
+bool ListTerm::isEqual(const Term& other) const {
+	const auto &x = static_cast<const ListTerm&>(other); // NOLINT
     for(int i=0; i<elements_.size(); ++i) {
         if(!(*(elements_[i]) == *(x.elements_[i]))) return false;
     }
@@ -110,10 +95,8 @@ bool ListTerm::operator==(const ListTerm& x) const {
 
 bool ListTerm::isGround1() const
 {
-	for(const auto &x : elements_) {
-		if(!x->isGround()) return false;
-	}
-	return true;
+	return std::all_of(elements_.begin(), elements_.end(),
+					   [](const TermPtr &x){ return x->isGround(); });
 }
 		
 std::shared_ptr<ListTerm> ListTerm::nil()
@@ -223,8 +206,8 @@ long OptionList::getLong(const std::string &key, long defaultValue) {
 }
 
 
-PredicateIndicator::PredicateIndicator(const std::string &functor, unsigned int arity)
-: functor_(functor),
+PredicateIndicator::PredicateIndicator(std::string functor, unsigned int arity)
+: functor_(std::move(functor)),
   arity_(arity)
 {
 }
@@ -280,10 +263,11 @@ Predicate::Predicate(
 {
 }
 
-bool Predicate::operator==(const Predicate& other) const {
-    if(indicator() == other.indicator()) {
+bool Predicate::isEqual(const Term& other) const {
+	const auto &x = static_cast<const Predicate&>(other); // NOLINT
+    if(indicator() == x.indicator()) {
         for(int i=0; i<arguments_.size(); ++i) {
-            if(!(*(arguments_[i]) == *(other.arguments_[i]))) return false;
+            if(!(*(arguments_[i]) == *(x.arguments_[i]))) return false;
         }
         return true;
     }
@@ -294,10 +278,8 @@ bool Predicate::operator==(const Predicate& other) const {
 
 bool Predicate::isGround1() const
 {
-	for(const auto &x : arguments_) {
-		if(!x->isGround()) return false;
-	}
-	return true;
+	return std::all_of(arguments_.begin(), arguments_.end(),
+					   [](const TermPtr &x){ return x->isGround(); });
 }
 
 std::vector<TermPtr> Predicate::applySubstitution(
@@ -344,7 +326,7 @@ std::shared_ptr<Predicate> Predicate::applySubstitution(const Substitution &sub)
 
 void Predicate::write(std::ostream& os) const
 {
-	// TODO: some predicates should be written in infix notation
+	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
 	os << indicator_->functor();
 	if(!arguments_.empty()) {
 		os << '(';

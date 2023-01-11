@@ -1,22 +1,23 @@
 
 :- use_module(library('unittest')).
-:- use_module(library('rdftest')).
-:- use_module(library('mongodb/client')).
-:- use_module('mongolog').
-:- use_module('triple').
-:- use_module(library('ontology')).
+:- use_module('mongolog_test').
 
 :- begin_tests(
 		'mongolog_triple',
-		[   setup(subgraph:set_default_graph(test)),
-		    cleanup(rdftest:cleanup)
+		[   setup(sw_set_default_graph(test)),
+		    cleanup(mongolog_test:cleanup)
 		]).
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_global_term/2 ]).
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_register_ns/3 ]).
+
+:- use_module(library('mongodb/client')).
 :- use_module(library('scope')).
+:- use_module(library('semweb')).
+:- use_module('mongolog').
+:- use_module('triple').
 
 % register namespaces for following tests
 :- rdf_register_ns(swrl_tests,

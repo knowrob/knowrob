@@ -16,10 +16,14 @@
 using namespace knowrob;
 
 ThreadPool::ThreadPool(uint32_t maxNumThreads)
-: maxNumThreads_(maxNumThreads)
+: maxNumThreads_(maxNumThreads),
+  numFinishedThreads_(0)
 {
-	// create one worker thread
-	workerThreads_.push_back(new Worker(this));
+	// NOTE: do not add worker threads in the constructor.
+	//  The problem is the virtual initializeWorker function that could be called
+	//  in this case before a subclass of ThreadPool overrides it.
+	//  i.e. if the thread starts before construction is complete.
+	KB_DEBUG("Maximum number of threads: {}.", maxNumThreads);
 }
 
 ThreadPool::~ThreadPool()
@@ -40,9 +44,9 @@ void ThreadPool::pushWork(const std::shared_ptr<ThreadPool::Runner> &goal)
 	{
 		std::lock_guard<std::mutex> scoped_lock(workMutex_);
 		workQueue_.push(goal);
-		if(workQueue_.size()>1) {
+		if(workQueue_.size()>1 || workerThreads_.empty()) {
 			// add another thread if max num not reached yet
-			if(workerThreads_.size() < maxNumThreads_) {
+			if(workerThreads_.size() < (maxNumThreads_ + numFinishedThreads_)) {
 				workerThreads_.push_back(new Worker(this));
 			}
 		}
@@ -54,15 +58,14 @@ void ThreadPool::pushWork(const std::shared_ptr<ThreadPool::Runner> &goal)
 std::shared_ptr<ThreadPool::Runner> ThreadPool::popWork()
 {
 	std::lock_guard<std::mutex> scoped_lock(workMutex_);
-	std::shared_ptr<ThreadPool::Runner> x = workQueue_.front();
-	workQueue_.pop();
-	return x;
-}
-
-bool ThreadPool::hasWork() const
-{
-	std::lock_guard<std::mutex> scoped_lock(workMutex_);
-	return !workQueue_.empty();
+	if(workQueue_.empty()) {
+		return {};
+	}
+	else {
+		std::shared_ptr<ThreadPool::Runner> x = workQueue_.front();
+		workQueue_.pop();
+		return x;
+	}
 }
 
 
@@ -87,7 +90,7 @@ void ThreadPool::Worker::run()
 	if(!threadPool_->initializeWorker()) {
 		KB_ERROR("Worker initialization failed.");
 		isTerminated_ = true;
-		// FIXME: remove from workerThreads_
+		threadPool_->numFinishedThreads_ += 1;
 		return;
 	}
 	KB_DEBUG("Worker initialized.");
@@ -118,13 +121,16 @@ void ThreadPool::Worker::run()
 			KB_DEBUG("Work finished.");
 		}
 	}
-	
-	// tell the thread pool that a worker thread exited
-	// FIXME: remove from workerThreads_
-	threadPool_->finalizeWorker();
 
-	KB_DEBUG("Worker terminated.");
 	isTerminated_ = true;
+	// tell the thread pool that a worker thread exited
+	// FIXME: seems that during pool destruction, any override of finalizeWorker
+	//   is not called! it's not really critical because it only concerns system shutdown
+	//   as pools are usually used for the whole duration of program execution.
+	threadPool_->finalizeWorker();
+	// note: counter indicates that there are finished threads in workerThreads_ list.
+	threadPool_->numFinishedThreads_ += 1;
+	KB_DEBUG("Worker terminated.");
 }
 
 
@@ -163,8 +169,9 @@ void ThreadPool::Runner::runInternal()
 void ThreadPool::Runner::stop(bool wait)
 {
 	// toggle stop request flag on
+	// TODO: provide an interface to notify runner implementation about stop request.
+	//    but it wouldn't be of use for PrologReasoner at the moment.
 	hasStopRequest_ = true;
-	if(isTerminated()) return;
 	// wait for the runner to be finished if requested
 	if(wait) {
 		join();

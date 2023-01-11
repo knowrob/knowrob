@@ -29,6 +29,12 @@
 		assert_equals(t,t),
 		assert_unifies(t,t))).
 
+:- module_transparent
+        assert_true/1,
+        assert_false/1,
+        assert_equals/2,
+        assert_unifies/2.
+
 %% assert_true(+Goal) is det.
 %
 % Assert that Goal holds.

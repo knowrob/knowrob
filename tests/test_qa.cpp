@@ -82,14 +82,14 @@ int main(int argc, char** argv)
 		std::make_shared<knowrob::PrologDataFile>("tests/prolog/kb1.pl"));
 	auto reasoner1 = std::make_shared<knowrob::PrologReasoner>("prolog1");
 	//auto reasoner = std::make_shared<knowrob::MongologReasoner>("mongolog0");
-	reasoner1->initialize(reasonerConfig1);
+	reasoner1->loadConfiguration(reasonerConfig1);
 	reasonerManager->addReasoner(reasoner1);
 
 	knowrob::ReasonerConfiguration reasonerConfig2;
 	reasonerConfig2.dataFiles.push_back(
 			std::make_shared<knowrob::PrologDataFile>("tests/prolog/kb2.pl"));
 	auto reasoner2 = std::make_shared<knowrob::PrologReasoner>("prolog2");
-	reasoner2->initialize(reasonerConfig2);
+	reasoner2->loadConfiguration(reasonerConfig2);
 	reasonerManager->addReasoner(reasoner2);
 
 	KB_INFO("running tests...");

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KNOWROB_LOGIC_PROGRAM_REASONER_H__
-#define __KNOWROB_LOGIC_PROGRAM_REASONER_H__
+#ifndef KNOWROB_LOGIC_PROGRAM_REASONER_H_
+#define KNOWROB_LOGIC_PROGRAM_REASONER_H_
 
 // STD
 #include <list>
@@ -20,7 +20,7 @@ namespace knowrob {
 	 */
 	class LogicProgramReasoner : public IReasoner {
 	public:
-		LogicProgramReasoner() {}
+		LogicProgramReasoner() = default;
 
 		/** Asserts a fact in the knowledge base.
 		 * @predicate a grounded predicate.
@@ -48,4 +48,4 @@ namespace knowrob {
 	};
 }
 
-#endif //__KNOWROB_LOGIC_PROGRAM_REASONER_H__
+#endif //KNOWROB_LOGIC_PROGRAM_REASONER_H_

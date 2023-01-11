@@ -16,7 +16,7 @@ The following predicates are supported:
 :- use_module(library('mongodb/client'),
 		[ mng_get_db/3, mng_strip_type/3 ]).
 :- use_module(library('mongolog/mongolog')).
-:- use_module(library('rdftest')).
+:- use_module(library('mongolog/mongolog_test')).
 
 :- rdf_meta(query_annotation(+,r,+,+,-)).
 

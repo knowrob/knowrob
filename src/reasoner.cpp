@@ -10,18 +10,55 @@
 #include <knowrob/ReasonerManager.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>
+#include <knowrob/swrl/SWRLReasoner.h>
+#include <knowrob/esg/ESGReasoner.h>
 // shared libraries
 #include <dlfcn.h>
 
+#include <utility>
+
 using namespace knowrob;
 
+/******************************************/
+/*************** IReasoner ****************/
+/******************************************/
+
+void IReasoner::addDataFileHandler(const std::string &format, const DataFileLoader &fn)
+{
+	dataFileHandler_[format] = fn;
+}
+
+bool IReasoner::loadDataFile(const DataFilePtr &dataFile)
+{
+	if(dataFile->hasUnknownFormat()) {
+		return loadDataFileWithUnknownFormat(dataFile);
+	}
+	else {
+		auto it = dataFileHandler_.find(dataFile->format());
+		if(it == dataFileHandler_.end()) {
+			KB_WARN("Ignoring data file with unknown format \"{}\"", dataFile->format());
+			return false;
+		}
+		else {
+			KB_INFO("Using data file {} with format \"{}\".", dataFile->path(), dataFile->format());
+			return it->second(dataFile);
+		}
+	}
+}
+
+/******************************************/
+/************ ReasonerManager *************/
+/******************************************/
 
 ReasonerManager::ReasonerManager()
 : reasonerIndex_(0)
 {
 	// add some default factory functions to create reasoner instances
+	// TODO: can be done automatically in InitKnowledgeBase?
 	addReasonerFactory("Mongolog", std::make_shared<TypedReasonerFactory<MongologReasoner>>("Mongolog"));
 	addReasonerFactory("Prolog",   std::make_shared<TypedReasonerFactory<PrologReasoner>>("Prolog"));
+	addReasonerFactory("ESG",      std::make_shared<TypedReasonerFactory<ESGReasoner>>("ESG"));
+	addReasonerFactory("SWRL",     std::make_shared<TypedReasonerFactory<SWRLReasoner>>("SWRL"));
 }
 
 void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
@@ -62,8 +99,10 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	KB_INFO("Using reasoner `{}` with type `{}`.", reasonerID, factory->name());
 	// create a new reasoner instance
 	auto reasoner = factory->createReasoner(reasonerID);
-	if(!reasoner->initialize(ReasonerConfiguration(config))) {
-		KB_WARN("Reasoner `{}` failed to initialize.", reasonerID);
+	ReasonerConfiguration reasonerConfig;
+	reasonerConfig.loadPropertyTree(config);
+	if(!reasoner->loadConfiguration(reasonerConfig)) {
+		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
 	}
 	else {
 		addReasoner(reasoner);
@@ -120,11 +159,11 @@ std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(c
 /************ ReasonerPlugin **************/
 /******************************************/
 
-ReasonerPlugin::ReasonerPlugin(const std::string &dllPath)
+ReasonerPlugin::ReasonerPlugin(std::string dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
-		  dllPath_(dllPath)
+		  dllPath_(std::move(dllPath))
 {
 }
 
@@ -165,17 +204,55 @@ std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner(const std::string &rea
 /********* ReasonerConfiguration **********/
 /******************************************/
 
-ReasonerConfiguration::ReasonerConfiguration(const boost::property_tree::ptree &config)
+void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &config)
 {
+	static const std::string formatDefault = {};
+
+	// load all key-value pairs into settings list
+	for(const auto& key_val : config) {
+		auto key_t = std::make_shared<StringTerm>(key_val.first);
+		if(key_val.second.empty()) {
+			settings.emplace_back(key_t, std::make_shared<StringTerm>(key_val.second.get_value<std::string>()));
+		}
+		else {
+			loadSettings(key_t, key_val.second);
+		}
+	}
+
 	for(const auto &pair : config.get_child("data-sources")) {
 		auto &subtree = pair.second;
 
-		if(subtree.count("file")) {
-			const auto &fileName = subtree.get<std::string>("file");
-			dataFiles.push_back(std::make_shared<DataFile>(fileName));
+		auto fileValue = subtree.get_optional<std::string>("file");
+		if(fileValue.has_value()) {
+			auto fileFormat = subtree.get("format",formatDefault);
+			dataFiles.push_back(std::make_shared<DataFile>(fileValue.value(), fileFormat));
 		}
 		else {
-			KB_WARN("cannot load data source");
+			KB_WARN("Ignoring data source without \"file\" key.");
+		}
+	}
+}
+
+void ReasonerConfiguration::loadSettings(const TermPtr &key1, const boost::property_tree::ptree &ptree)
+{
+	static auto colon_f = std::make_shared<PredicateIndicator>(":", 2);
+
+	for(const auto& key_val : ptree) {
+		if(key_val.first.empty()) {
+			// this indicates a list
+			// TODO: handle list values here
+			continue;
+		}
+		else {
+			auto key2 = std::make_shared<StringTerm>(key_val.first);
+			auto key_t = std::make_shared<Predicate>(Predicate(colon_f, { key1, key2 }));
+
+			if(key_val.second.empty()) {
+				settings.emplace_back(key_t, std::make_shared<StringTerm>(key_val.second.get_value<std::string>()));
+			}
+			else {
+				loadSettings(key_t, key_val.second);
+			}
 		}
 	}
 }

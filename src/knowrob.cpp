@@ -29,6 +29,6 @@ namespace knowrob {
 		// it is assumed here that argv stays valid during program execution.
 		knowrob::NAME_OF_EXECUTABLE = argv[0];
 		// configure the logger
-		logging::initialize();
+		Logger::initialize();
 	}
 }

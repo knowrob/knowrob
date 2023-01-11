@@ -25,7 +25,7 @@
 	  rdf_split_url/3
 	]).
 :- use_module(library('mongolog/mongolog')).
-:- use_module(library('rdftest')).
+:- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('scope')).
 
 :- multifile instance_of/2, subclass_of/2, subproperty_of/2.
@@ -291,11 +291,9 @@ convert_(A,A).
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_rdf_tests(
-		'mongolog_rdfs',
+:- begin_mongolog_tests('mongolog_rdfs',
 		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
 
 test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'Adult')),
@@ -364,4 +362,4 @@ test('rdf_list_head(+,-)') :-
 	;	true
 	).
 
-:- end_rdf_tests('mongolog_rdfs').
+:- end_mongolog_tests('mongolog_rdfs').

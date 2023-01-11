@@ -231,14 +231,13 @@ int run(int argc, char **argv) {
 	po::options_description general("General options");
 	general.add_options()
 			("help", "produce a help message")
+			("verbose", "print informational messages")
 			("config-file", po::value<std::string>(), "a configuration file in JSON format")
 			("version", "output the version number");
-
 	// Declare an options description instance which will be shown
 	// to the user
 	po::options_description visible("Allowed options");
 	visible.add(general);
-
 	// parse command line arguments
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, visible), vm);
@@ -255,7 +254,19 @@ int run(int argc, char **argv) {
 		boost::property_tree::read_json(
 				vm["config-file"].as<std::string>(),
 				config);
+	} else {
+		std::cout << "config-file is missing" << std::endl;
+		return EXIT_FAILURE;
 	}
+
+	// configure logging
+	auto &log_config = config.get_child("logging");
+	if(!log_config.empty()) {
+		Logger::loadConfiguration(log_config);
+	}
+	// overwrite console logger level (default: prevent messages being printed, only print errors)
+	Logger::setSinkLevel(Logger::Console,
+						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::err);
 
 	return HybridQATerminal(config).run();
 }

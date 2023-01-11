@@ -180,7 +180,7 @@
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
         <rdfs:subClassOf>
             <owl:Class>
-                <owl:complementOf rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person"/>
+                <owl:complementOf rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
@@ -278,9 +278,9 @@
     
 
 
-    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person -->
+    <!-- http://knowrob.org/kb/swrl_test#Person -->
 
-    <owl:Class rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person">
+    <owl:Class rdf:about="http://knowrob.org/kb/swrl_test#Person">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/swrl_test#TestThing"/>
     </owl:Class>
     
@@ -312,7 +312,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Ernest">
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
         <hasSibling rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
         <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18</hasAge>
         <hasCar rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</hasCar>
@@ -326,7 +326,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Fred">
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
         <hasAncestor rdf:resource="http://knowrob.org/kb/swrl_test#Rex"/>
         <hasSibling rdf:resource="http://knowrob.org/kb/swrl_test#Ernest"/>
         <isParentOf rdf:resource="http://knowrob.org/kb/swrl_test#Lea"/>
@@ -343,7 +343,7 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/swrl_test#Lea">
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Woman"/>
-        <rdf:type rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Person"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
         <hasAncestor rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
         <hasParent rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
         <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</hasAge>

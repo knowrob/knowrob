@@ -48,11 +48,8 @@ ConnectiveFormula::ConnectiveFormula(const ConnectiveFormula &other, const Subst
 
 bool ConnectiveFormula::isGround1() const
 {
-    for (const auto &x: formulae_) {
-        if (!x->isGround()) return false;
-    }
-
-    return true;
+	return std::all_of(formulae_.begin(), formulae_.end(),
+				[](const std::shared_ptr<Formula> &x){ return x->isGround(); });
 }
 
 bool ConnectiveFormula::isGround() const
@@ -227,6 +224,7 @@ void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item
 		// also send EOS in this case.
 		if(channels_.empty() && isOpened()) {
 			isOpened_ = false;
+			// TODO: lift lock before pushing
 			push(item);
 		}
 	}
@@ -453,11 +451,6 @@ void QueryResultCombiner::genCombinations(
 		}
 	}
 }
-
-
-QueryError::QueryError(const std::string& what)
-: std::runtime_error(what)
-{}
 
 QueryError::QueryError(
 	const Query &erroneousQuery,

@@ -1,6 +1,7 @@
 
-% this init file is intended to be loaded by the
-% PrologReasoner as soon as it starts.
+% this is a global initialization for Prolog-based
+% reasoning in KnowRob. Several reasoner instances
+% are able to access what is imported here.
 
 % configure how Prolog prints terms
 :- set_prolog_flag(toplevel_print_anon, false).
@@ -13,33 +14,35 @@
 :- set_prolog_flag(float_format, '%.12g').
 
 % rules may generate discontiguous clauses.
-% TODO: find a better solution then disabling this globally.
 %:- style_check(-discontiguous).
 
 % add the toplevel src directory as Prolog library_directory
 :- prolog_load_context(directory, PrologDir),
    atom_concat(SrcDir, '/prolog', PrologDir),
+   atom_concat(KnowRobDir, '/src', SrcDir),
+   atom_concat(KnowRobDir, '/tests', TestDir),
+   % expand library search path, e.g. used by use_module/2 to locate Prolog source files
    asserta(user:library_directory(PrologDir)),
-   asserta(user:library_directory(SrcDir)).
+   asserta(user:library_directory(SrcDir)),
+   % expand file search path, e.g. used by absolute_file_name/3 predicate
+   assertz(file_search_path(knowrob,KnowRobDir)),
+   assertz(file_search_path(test, TestDir)).
 
-% load some standard Prolog libraries into user
-:- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2]).
+% load common Prolog libraries
+:- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2, rdf_register_prefix/3]).
+% register some common RDF namespaces
+:- rdf_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
+:- rdf_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
 
 % more fancy module declarations
 :- use_module(library('module')).
-
 % message formatting and logging
 :- use_module(library('messages')).
 :- use_module(library('logging')).
-
 % tooling around plunit
 :- use_module(library('unittest')).
 
-% TODO Load settings from file.
-%:- ( getenv('KNOWROB_SETTINGS', File)
-%	-> load_settings(File,[undefined(load)])
-%	;  true
-%	).
+:- dynamic user:defined_reasoner_setting/4.
 
 :- use_module(library('filesystem')).
 :- use_module(library('functional')).
@@ -47,7 +50,14 @@
 :- use_module(library('url')).
 %:- use_module(library('atom')).
 
-% auto-loaded models
+% extensions for semantic web
+:- use_module(library('semweb')).
+:- sw_add_subgraph(user,common),
+   sw_add_subgraph(test,user).
+
+% auto-load common models
 :- use_module(library('xsd')).
 :- use_module(library('qudt')).
-:- use_module(library('ontology')).
+
+% predicates that interact with the QA system in some way
+:- use_module(library('blackboard')).

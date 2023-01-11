@@ -21,10 +21,15 @@
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_meta/1 ]).
+:- use_module(library('semweb/rdf_db'),
+        [ rdf_subject/1,
+          rdf_equal/2,
+          rdf_meta/1,
+          rdf_has/3,
+          rdf_has/4,
+          rdf_assert/3,
+          rdf_literal_value/2 ]).
 :- use_module('esg').
-:- use_module(library('model/DUL')).
-:- use_module(library('model/SOMA')).
 
 :- rdf_meta(interval_constraint(+,-,+,r)).
 
@@ -43,27 +48,32 @@ allen_symbol(f).
 allen_symbol(fi).
 allen_symbol(d).
 
+%% time_interval_data(?Event::iri, -Begin::double, -End::double) is semidet.
+%
+% Read time interval data from RDF store.
+% TODO: move somewhere else?
+%
+time_interval_data(Event, Begin, End) :-
+    % TODO: restrict below calls to the RDF graph of the reasoner instance
+    rdf_subject(Event),
+	(   rdf_has(Event, dul:hasTimeInterval, TI)
+	->  true
+	;   TI=Event
+	),
+	rdf_has(TI, soma:hasIntervalBegin, BeginLiteral),
+	rdf_has(TI, soma:hasIntervalEnd, EndLiteral),
+	rdf_literal_value(BeginLiteral, Begin),
+	rdf_literal_value(EndLiteral, End),
+	% events may only have one time interval
+	!.
+
 %%
 %
 interval_constraint(Resource,Constraint) :-
 	interval_constraint(Resource,Constraint,_).
 
 interval_constraint(A, Constraint, B) :-
-	% TODO: isn't there a super-property?
-	kb_call(triple(A,in([
-		string(soma:simultaneous),
-		string(soma:before),
-		string(soma:after),
-		string(soma:meets),
-		string(soma:metBy),
-		string(soma:overlappedOn),
-		string(soma:overlappedBy),
-		string(soma:starts),
-		string(soma:startedBy),
-		string(soma:finishes),
-		string(soma:finishedBy),
-		string(soma:during)
-	])->P,B)),
+	rdf_has(A, soma:intervalProperty, B, P),
 	interval_constraint(A, Constraint, B, P).
 
 interval_constraint(A,  =(A,B), B, soma:simultaneous).
@@ -78,6 +88,10 @@ interval_constraint(A, si(A,B), B, soma:startedBy).
 interval_constraint(A,  f(A,B), B, soma:finishes).
 interval_constraint(A, fi(A,B), B, soma:finishedBy).
 interval_constraint(A,  d(A,B), B, soma:during).
+
+% add an adhooc super property for all interval relations
+:- forall(interval_constraint(_,_,_,SOMA_Property),
+        rdf_assert(SOMA_Property, rdfs:subPropertyOf, soma:intervalProperty)).
 
 %%
 %
@@ -94,16 +108,20 @@ interval_query(  f(A,B) ) :- interval_finishes(A,B).
 interval_query( fi(A,B) ) :- interval_finishes(B,A).
 interval_query(  d(A,B) ) :- interval_during(A,B).
 
-%% FIXME: move somewhere else?
-time_interval_data(Event, Begin, End) ?>
-%	is_event(Event),!,
-	has_time_interval(Event, TI),
-	has_interval_begin(TI, Begin),
-	has_interval_end(TI, End).
+%%
+bind_esg_(Evt1, Evt2, ESG) :-
+    ground(Evt1),!,
+	get_esg_(Evt1,ESG),
+	get_esg_(Evt2,ESG).
 
-%time_interval_data(TI, Begin, End) ?>
-%	has_interval_begin(TI, Begin),
-%	has_interval_end(TI, End).
+bind_esg_(Evt1, Evt2, ESG) :-
+    ground(Evt2),!,
+    bind_esg_(Evt2, Evt1, ESG).
+
+bind_esg_(Evt1, Evt2, ESG) :-
+    % nonground(Evt1), nonground(Evt2)
+	esg_cache_(Evt1,ESG),
+	esg_cache_(Evt2,ESG).
 
 %% interval_equals(I0,I1) is semidet.
 %
@@ -115,9 +133,7 @@ interval_equals(I0, I1) :-
 	time_interval_data(I1, B, E).
 
 interval_equals(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, =(-(I0),-(I1))),
 	esg_query_(ESG, =(+(I0),+(I1))).
 
@@ -130,17 +146,13 @@ interval_equals(I0, I1) :-
 % 
 interval_before(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0,  _, E0),
-		time_interval_data(I1, B1, _)
-	)),
+	time_interval_data(I0,  _, E0),
+	time_interval_data(I1, B1, _),
 	ground([E0,B1]),
 	E0 < B1.
 
 interval_before(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, <(+(I0),-(I1))).
 
 %% interval_after(I0,I1) is semidet.
@@ -162,17 +174,13 @@ interval_after(I0,I1) :-
 % 
 interval_meets(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0,  _, E0),
-		time_interval_data(I1, B1, _)
-	)),
+	time_interval_data(I0,  _, E0),
+	time_interval_data(I1, B1, _),
 	ground([E0,B1]),
 	E0 is B1.
 
 interval_meets(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, =(+(I0),-(I1))).
 
 %% interval_met_by(I1,I2) is semidet.
@@ -194,17 +202,13 @@ interval_met_by(I1,I2) :-
 % 
 interval_starts(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0, B0, E0),
-		time_interval_data(I1, B1, E1)
-	)),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
 	ground([B0,B1,E0,E1]),
 	B0 is B1, E0 < E1.
 
 interval_starts(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, =(-(I0),-(I1))),
 	esg_query_(ESG, <(+(I0),+(I1))).
 
@@ -227,17 +231,13 @@ interval_started_by(I1,I2) :-
 % 
 interval_finishes(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0, B0, E0),
-		time_interval_data(I1, B1, E1)
-	)),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
 	ground([B0,B1,E0,E1]),
 	B0 > B1, E0 is E1.
 
 interval_finishes(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, =(+(I0),+(I1))),
 	esg_query_(ESG, <(-(I1),-(I0))).
 
@@ -260,17 +260,13 @@ interval_finished_by(I1,I2) :-
 % 
 interval_overlaps(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0, B0, E0),
-		time_interval_data(I1, B1, E1)
-	)),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
 	ground([B0,B1,E0,E1]),
 	B0 < B1, B1 < E0, E0 < E1.
 
 interval_overlaps(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, <(-(I0),-(I1))),
 	esg_query_(ESG, <(-(I1),+(I0))),
 	esg_query_(ESG, <(+(I0),+(I1))).
@@ -294,18 +290,14 @@ interval_overlapped_by(I1,I2) :-
 %
 interval_during(I0, I1) :-
 	ground([I0,I1]),
-	kb_call((
-		time_interval_data(I0, B0, E0),
-		time_interval_data(I1, B1, E1)
-	)),
+	time_interval_data(I0, B0, E0),
+	time_interval_data(I1, B1, E1),
 	ground([B0,B1,E0,E1]),
 	B1 =< B0,
 	E0 =< E1.
 
 interval_during(I0, I1) :-
-	ground([I0,I1]),
-	get_esg_(I0,ESG),
-	get_esg_(I1,ESG),
+	bind_esg_(I0,I1,ESG),
 	esg_query_(ESG, <(-(I1),-(I0))),
 	esg_query_(ESG, <(+(I0),+(I1))).
 
@@ -334,9 +326,11 @@ get_esg_(Evt,ESG) :-
 	%           each new allen axiom inferred/asserted should notify us to update ESGs
 	%           - use notify to trigger update?
 	%           - need to merge ESGs when new axioms are added
-	esg_cache_(Evt,ESG)
+	ground(Evt),!,
+	(  esg_cache_(Evt,ESG)
 	-> true
-	;  esg_gen_(Evt,ESG).
+	;  esg_gen_(Evt,ESG)
+	).
 
 esg_gen_(Entity,ESG) :-
 	esg:esg_unique_id(ESG),
