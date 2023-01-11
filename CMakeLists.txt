@@ -127,7 +127,7 @@ add_library(hyres SHARED
 target_link_libraries(hyres
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
-		GTest::gtest)
+		${GTEST_LIBRARIES})
 
 add_executable(knowrob-terminal src/terminal.cpp)
 target_link_libraries(knowrob-terminal
@@ -193,7 +193,7 @@ target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		hyres
 		-Wl,--no-whole-archive
-		GTest::gtest_main)
+		${GTEST_MAIN_LIBRARIES})
 
 ##############
 ##############
