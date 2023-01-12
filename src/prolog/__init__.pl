@@ -19,6 +19,7 @@
 % add the toplevel src directory as Prolog library_directory
 :- prolog_load_context(directory, PrologDir),
    atom_concat(SrcDir, '/prolog', PrologDir),
+   % FIXME: no "src" or "tests" directory if no source avaialbale (i.e., when installed)
    atom_concat(KnowRobDir, '/src', SrcDir),
    atom_concat(KnowRobDir, '/tests', TestDir),
    % expand library search path, e.g. used by use_module/2 to locate Prolog source files
@@ -33,6 +34,7 @@
 % register some common RDF namespaces
 :- rdf_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
 :- rdf_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
+:- rdf_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 % more fancy module declarations
 :- use_module(library('module')).
