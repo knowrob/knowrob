@@ -36,9 +36,8 @@ knowrob_load_neem(NEEM_id) :-
 :- use_module('terms').
  
 :- begin_rdf_tests(model_NEEM,
-		'package://knowrob/owl/test/memory.owl',
-		[ namespace('http://knowrob.org/kb/mem-test.owl#')
-		]).
+		'owl/test/memory.owl',
+		[ namespace('http://knowrob.org/kb/mem-test.owl#') ]).
 
 :- dynamic test_episode/1,
            test_action/1.
