@@ -16,7 +16,7 @@ find_package(spdlog REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -132,6 +132,7 @@ target_link_libraries(hyres
 add_executable(knowrob-terminal src/terminal.cpp)
 target_link_libraries(knowrob-terminal
 		Boost::program_options
+		Boost::serialization
 		hyres)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
