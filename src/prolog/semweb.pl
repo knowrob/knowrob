@@ -59,8 +59,7 @@
 		  rdf/3,
 		  rdf/4 ]).
 :- use_module(library('semweb/rdf11'),
-		[ rdf_list/2
-		]).
+		[ rdf_list/2 ]).
 :- use_module(library('semweb/rdfs'),
 		[ rdfs_individual_of/2,
 		  rdfs_subclass_of/2,
@@ -309,6 +308,7 @@ sw_instance_of_expr1(Resource, class(Cls)) :-
 
 sw_instance_of_expr1(Resource, one_of(ExprList)) :-
     !,
+    % TODO: take into account sameAs
     member(individual(Resource), ExprList).
 
 sw_instance_of_expr1(Resource, union_of(ExprList)) :-
@@ -401,6 +401,7 @@ subclass_expr2(value(P1, individual(Value)), min(1, P2, Expr2)) :-
 % handle complement_of/1 as first argument
 subclass_expr2(complement_of(Expr1), complement_of(Expr2)) :-
     !, % e.g. `not(Food) subclassOf not(Rice)` follows from `Rice subclassOf Food`
+    % TODO check again
     subclass_expr2(Expr1, Expr2).
 %subclass_expr2(Expr1, complement_of(Expr2)) :-
 %    \+ sw_satisfiable_expr(intersection_of(Expr1, Expr2)).
