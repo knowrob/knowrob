@@ -52,13 +52,14 @@ std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path 
 	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
 
 	if(!exists(filePath)) {
-		if(exists(projectPath)) {
-			// prefer to load from source directory, as these files might be more up-to-date.
-			return projectPath / "src" / filePath;
-		}
-		else if(exists(installPath)) {
-			// load Prolog files from $PREFIX/share/knowrob
-			return installPath / "share" / "knowrob" / filePath;
+		auto possiblePaths = {
+				projectPath / filePath,
+				projectPath / "src" / filePath,
+				projectPath / "src" / "prolog" / filePath,
+				installPath / "share" / "knowrob" / filePath
+		};
+		for(const auto &p : possiblePaths) {
+			if(exists(p)) return p;
 		}
 	}
 	return filePath;
@@ -72,13 +73,12 @@ std::filesystem::path PrologReasoner::getResourcePath(const std::filesystem::pat
 	// TODO: redundant with above
 
 	if(!exists(filePath)) {
-		if(exists(projectPath)) {
-			// prefer to load from source directory, as these files might be more up-to-date.
-			return projectPath / filePath;
-		}
-		else if(exists(installPath)) {
-			// load Prolog files from $PREFIX/share/knowrob
-			return installPath / "share" / "knowrob" / filePath;
+		auto possiblePaths = {
+				projectPath / filePath,
+				installPath / "share" / "knowrob" / filePath
+		};
+		for(const auto &p : possiblePaths) {
+			if(exists(p)) return p;
 		}
 	}
 	return filePath;
