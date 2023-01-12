@@ -69,22 +69,24 @@ swrl_file_unload(Filepath,Label) :-
 % Loads all or one rule(s) from a SWRL file.
 %
 swrl_file_load(Filepath,Label) :-
-  swrl_assertion_store(Filepath, _Rule, Args),
-  get_dict(label,Args,Label),!.
+    swrl_assertion_store(Filepath, _Rule, Args),
+    get_dict(label,Args,Label),
+    !.
 
 swrl_file_load(Filepath,Label) :-
-  swrl_file_parse(Filepath,Rule,Args),
-  get_dict(label,Args,Label),!,
-  swrl_assert_rule(Rule),
-  assertz(swrl_assertion_store(Filepath, _Rule, Args)).
+    swrl_file_parse(Filepath,Rule,Args),
+    get_dict(label,Args,Label),!,
+    swrl_assert_rule(Rule),
+    assertz(swrl_assertion_store(Filepath, _Rule, Args)).
 
 swrl_file_load(Filepath) :-
-  forall(
-  ( swrl_file_parse(Filepath,Rule,Args),
-    \+ swrl_assertion_store(Filepath,Rule,Args) ),
-  ( swrl_assert_rule(Rule),
-    assertz(swrl_assertion_store(Filepath,Rule,Args))
-  )).
+    forall(
+        (   swrl_file_parse(Filepath,Rule,Args),
+            \+ swrl_assertion_store(Filepath,Rule,Args)
+        ),
+        (   swrl_assert_rule(Rule),
+            assertz(swrl_assertion_store(Filepath,Rule,Args))
+        )).
 
 %% swrl_file_parse(+Filepath,-Rule,-Args) is det.
 %

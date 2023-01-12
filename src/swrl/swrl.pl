@@ -29,10 +29,12 @@
 % Thus results of other reasoners are only incorparated as long
 % as they are stored in the data backend that is used by the SWRL reasoner.
 %
+/*
 swrl_call(Goals, Ctx) :-
     reasoner_setting(swrl:backend, mongolog),!,
     % TODO: check if correct, call comma_list?
     mongolog:mongolog_call(Goals, Ctx).
+*/
 
 swrl_call(Goals, _Ctx) :-
     is_list(Goals),!,
@@ -134,7 +136,7 @@ swrl_assert_rule(Head :- Body, Label) :-
 
 %
 swrl_assert_rule1(SWRLRule, Label) :-
-	swrl_rule_pl(SWRLRule, Label, (Impl_pl :- Cond_pl)),
+	swrl_rule_pl_(SWRLRule, Label, (:-(Impl_pl,Cond_pl))),
 	comma_list(Cond_pl0,Cond_pl),
 	% term expansion
 	expand_term(:-(Impl_pl,Cond_pl0), Expanded),
@@ -142,21 +144,25 @@ swrl_assert_rule1(SWRLRule, Label) :-
 	swrl_assert_rule2(Expanded).
 
 %%
+/*
 swrl_assert_rule2(Rule) :-
     reasoner_setting(swrl:backend, mongolog),!,
     % TODO: mongolog
     mongolog:mongolog_assert_rule(Rule).
+*/
 
 swrl_assert_rule2(Rule) :-
-    reasoner_module(ReasonerModule),
+	current_reasoner_module(ReasonerModule),
 	ReasonerModule:assertz(Rule).
 
 %% swrl_assert_fact(+Term, +Scope) is semidet.
 %
+/*
 swrl_assert_fact(Term, Scope) :-
     reasoner_setting(swrl:backend, mongolog),!,
     % TODO: mongolog
     mongolog:mongolog_project(Term, Scope).
+*/
 
 swrl_assert_fact(instance_of(S,class(Cls)), Scope) :-
     !,
@@ -178,6 +184,11 @@ swrl_assert_fact(Predicate, _Scope) :-
 swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
 	!,
 	swrl_implication_pl(Fact, Fact_pl, Vars).
+
+swrl_rule_pl(class(class(Cls),S)     :- Cond,
+		     instance_of(S_var,Cls)  :- Cond_pl, Vars) :-
+	swrl_var(Vars, S, S_var),
+	swrl_condition_pl(Cond, Cond_pl, Vars),!.
 
 swrl_rule_pl(class(Cls,S)           :- Cond,
 		     instance_of(S_var,Cls) :- Cond_pl, Vars) :-
