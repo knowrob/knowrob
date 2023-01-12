@@ -266,7 +266,7 @@ int run(int argc, char **argv) {
 	}
 	// overwrite console logger level (default: prevent messages being printed, only print errors)
 	Logger::setSinkLevel(Logger::Console,
-						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::err);
+						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::warn);
 
 	return HybridQATerminal(config).run();
 }
