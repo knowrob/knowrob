@@ -72,16 +72,25 @@ is_mongolog_predicate(Functor) :-
 % Load facts and rules from a file into mongolog.
 %
 mongolog_consult(URL) :-
-	absolute_file_name(URL, AbsolutePath),
+	mongolog_consult(URL, []).
+
+mongolog_consult(URL, Options) :-
+    log_debug(mongolog(consult(URL,Options))),
+    DefaultOpts = [file_type(prolog)],
+    (   option(relative_to(CurrentDirectory), Options)
+    ->  absolute_file_name(URL, AbsolutePath, [relative_to(CurrentDirectory)|DefaultOpts])
+    ;   absolute_file_name(URL, AbsolutePath, DefaultOpts)
+    ),
 	sw_url_version(AbsolutePath, FileVersion),
 	mongolog_consult1(AbsolutePath, FileVersion).
 
 mongolog_consult1(URL, URLVersion) :-
 	once((get_current_file_version(URL, CurrentVersion) ; CurrentVersion=none)),
+	file_directory_name(URL, FileDirectory), Opts=[relative_to(FileDirectory)],
 	open(URL, read, Stream),
 	(	URLVersion==CurrentVersion
-	->	mongolog_consult2(Stream, reload)
-	;	mongolog_consult2(Stream, load)
+	->	mongolog_consult2(Stream, [reload|Opts])
+	;	mongolog_consult2(Stream, [load|Opts])
 	),
 	close(Stream),
 	% remember that the file was loaded
@@ -94,28 +103,70 @@ mongolog_consult1(URL, URLVersion) :-
 	;	mng_update(DB, Coll, [['url',string(URL)]], [['version',string(URLVersion)]])
 	).
 
-mongolog_consult2(Stream, Mode) :-
+mongolog_consult2(Stream, Options) :-
 	read(Stream, Term),
 	(	Term==end_of_file -> true
-	;	(	mongolog_consult3(Term, Mode),
-			mongolog_consult2(Stream, Mode)
+	;	(	mongolog_consult3(Term, Options),
+			mongolog_consult2(Stream, Options)
 		)
 	).
 
-mongolog_consult3(':-'(Head, Body), _) :-
+% consult a rule
+mongolog_consult3((Head :- Body), Options) :-
+	!, mongolog_consult3((Head :- Body), Options).
+mongolog_consult3('?>'(Head,Body), _Options) :-
 	!,
-	mongolog_add_rule(Head, Body).
+	% expand rdf terms Prefix:Local to IRI atom
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	%once((ground(Module);prolog_load_context(module, Module))),
+	% add the rule to the DB backend
+	mongolog_add_rule(Term, BodyGlobal).
+mongolog_consult3('+>'(Head,Body), _Options) :-
+    !,
+	rdf_global_term(Head, HeadGlobal),
+	rdf_global_term(Body, BodyGlobal),
+	strip_module_(HeadGlobal,_Module,Term),
+	% rewrite functor
+	Term =.. [Functor|Args],
+	atom_concat('project_',Functor,Functor0),
+	Head0 =.. [Functor0|Args],
+	% add the rule to the DB backend
+	mongolog_add_rule(Head0, project(BodyGlobal)).
+mongolog_consult3('?+>'(Head,Body), Options) :-
+    mongolog_consult3('?>'(Head,Body), Options),
+    mongolog_consult3('+>'(Head,Body), Options).
 
-mongolog_consult3(':-'(_Goal), _) :-
-	% TODO: support directives
-	log_warning('mongolog does not support consulting directives'),!.
+% consult a directive
+mongolog_consult3((:- use_module(FileSpec)), Options) :-
+    !,
+    option(relative_to(FileDirectory), Options),
+    mongolog_consult(FileSpec, [relative_to(FileDirectory)]).
+mongolog_consult3((:- use_module(FileSpec, _ImportList)), Options) :-
+    !,
+    % TODO: take into account ImportList
+    option(relative_to(FileDirectory), Options),
+    mongolog_consult(FileSpec, [relative_to(FileDirectory)]).
+mongolog_consult3((:- module(_Module, _PublicList)), _) :-
+    % NOTE: mongolog currently does not support a notion of modules
+    % TODO: only expose predicates in PublicList
+    !.
 
-mongolog_consult3(Fact, load) :-
+mongolog_consult3((:- load_owl(FileSpec)), _)                  :- !, load_owl(FileSpec).
+mongolog_consult3((:- load_owl(FileSpec, LoadOpts)), _)        :- !, load_owl(FileSpec, LoadOpts).
+mongolog_consult3((:- load_owl(FileSpec, LoadOpts, Graph)), _) :- !, load_owl(FileSpec, LoadOpts, Graph).
+mongolog_consult3((:- Goal), _) :-
+	% TODO: support other directives
+	log_warning(mongolog(unsupported_directive(Goal))),!.
+
+% consult a fact
+mongolog_consult3(Fact, Options) :-
+    option(load, Options),!,
 	mongolog_add_predicate(Fact),
-	% TODO: bulk assert facts from consulted files
 	mongolog_call(assert(Fact)).
-
-mongolog_consult3(Fact, reload) :-
+mongolog_consult3(Fact, _) :-
+    % option(reload, Options),
 	mongolog_add_predicate(Fact).
 
 %%
@@ -140,7 +191,10 @@ get_current_file_version(URL, Version) :-
 		['url', string(URL)]
 	], Doc)),
 	mng_get_dict(version, Doc, string(Version)).
-	
+
+%%
+strip_module_(:(Module,Term),Module,Term) :- !.
+strip_module_(Term,_,Term).
 
 %% mongolog_call(+Goal) is nondet.
 %
@@ -162,6 +216,11 @@ mongolog_call(Goal) :-
 mongolog_call(is_mongolog_predicate(P), _Ctx) :-
 	!,
 	is_mongolog_predicate(P).
+
+mongolog_call(consult(File), _Ctx) :-
+    var(File),!,
+    % TODO throw
+    fail.
 
 mongolog_call(consult(File), _Ctx) :-
 	!,

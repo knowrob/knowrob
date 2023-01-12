@@ -45,6 +45,8 @@ user:term_expansion((?>(Head,Body)), Export) :-
 % empty list.
 %
 user:term_expansion((+>(Head,Body)), []) :-
+    mongolog:mongolog_consult3((+>(Head,Body)), [load]).
+/*
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
@@ -57,6 +59,7 @@ user:term_expansion((+>(Head,Body)), []) :-
 	Term0 =.. [Functor0|Args],
 	% add the rule to the DB backend
 	mongolog_add_rule(Term0, project(BodyGlobal)).
+*/
 
 %%
 % Term expansion for *query+project* rules using the (?+>) operator.
