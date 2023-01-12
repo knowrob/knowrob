@@ -39,6 +39,7 @@ void Logger::updateLogger()
 				"multi_sink", spdlog::sinks_init_list({ pimpl_->console_sink }));
 	spdlog::set_default_logger(pimpl_->logger);
 	spdlog::set_level(spdlog::level::trace);
+	spdlog::flush_every(std::chrono::seconds(1));
 }
 
 Logger& Logger::get()
