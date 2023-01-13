@@ -48,6 +48,8 @@
 % @param Command a command term.
 %
 add_command(Command) :-
+    step_command(Command),!.
+add_command(Command) :-
 	assertz(step_command(Command)).
 
 
@@ -85,22 +87,52 @@ mongolog_consult(URL, Options) :-
 	mongolog_consult1(AbsolutePath, FileVersion).
 
 mongolog_consult1(URL, URLVersion) :-
-	once((get_current_file_version(URL, CurrentVersion) ; CurrentVersion=none)),
-	file_directory_name(URL, FileDirectory), Opts=[relative_to(FileDirectory)],
-	open(URL, read, Stream),
-	(	URLVersion==CurrentVersion
-	->	mongolog_consult2(Stream, [reload|Opts])
-	;	mongolog_consult2(Stream, [load|Opts])
+	once((current_source(URL, CurrentVersion, DocumentID, CurrentPredicates) ; CurrentVersion=none)),
+	file_directory_name(URL, FileDirectory),
+	mng_get_db(DB, SourcesCollection, 'mongolog_sources'),
+	% create entry in SourcesCollection if none exists
+	(	CurrentVersion \== none -> true
+	;	(   mng_store(DB, SourcesCollection,  [
+	            ['url',string(URL)],
+	            ['version',string(URLVersion)],
+	            ['predicates',array([])]
+	        ]),
+	        current_source(URL, _, DocumentID, _)
+	    )
 	),
-	close(Stream),
-	% remember that the file was loaded
-	% TODO: it seems more elegant if data and file kept in same collection
-	mng_get_db(DB, Coll, 'mongolog_files'),
-	(	CurrentVersion==none
-	->	mng_store(DB, Coll,  [['url',string(URL)], ['version',string(URLVersion)]])
-	;	URLVersion==CurrentVersion
-	->	true
-	;	mng_update(DB, Coll, [['url',string(URL)]], [['version',string(URLVersion)]])
+	% delete facts of older file versions
+	(	CurrentVersion == none -> true
+	;   CurrentVersion == URLVersion -> true
+	;   forall(member(CurrentPred, CurrentPredicates),
+	        (   memberchk('-'(functor, string(CurrentFunctor)), CurrentPred),
+	            mng_get_db(DB, CurrentFunctorCollection, CurrentFunctor),
+	            mng_remove(DB, CurrentFunctorCollection, [['source', string(DocumentID)]])
+	        ))
+	),
+	% read file, assert facts and rules
+	Opts=[source_id(DocumentID), relative_to(FileDirectory)],
+	setup_call_cleanup(
+        open(URL, read, Stream),
+        (	URLVersion==CurrentVersion
+        ->	mongolog_consult2(Stream, [reload|Opts])
+        ;	mongolog_consult2(Stream, [load|Opts])
+        ),
+        close(Stream)
+    ),
+    % lookup asserted predicate indicators
+    findall([[functor,string(XFunctor)], [arity,int(XArity)]],
+        (   mongolog_database:mongolog_predicate(XFunctor, XFields, XOptions),
+            option(source_id(DocumentID), XOptions),
+            length(XFields, XArity)
+        ),
+        SourcePredicates),
+	% update version, and array of loaded predicates
+	(	URLVersion==CurrentVersion -> true
+	;	mng_update(DB, SourcesCollection, [['_id',id(DocumentID)]], [
+	        ['url',string(URL)],
+	        ['version',string(URLVersion)],
+	        ['predicates', array(SourcePredicates)]
+	    ])
 	).
 
 mongolog_consult2(Stream, Options) :-
@@ -113,7 +145,7 @@ mongolog_consult2(Stream, Options) :-
 
 % consult a rule
 mongolog_consult3((Head :- Body), Options) :-
-	!, mongolog_consult3((Head :- Body), Options).
+	!, mongolog_consult3('?>'(Head,Body), Options).
 mongolog_consult3('?>'(Head,Body), _Options) :-
 	!,
 	% expand rdf terms Prefix:Local to IRI atom
@@ -135,6 +167,7 @@ mongolog_consult3('+>'(Head,Body), _Options) :-
 	% add the rule to the DB backend
 	mongolog_add_rule(Head0, project(BodyGlobal)).
 mongolog_consult3('?+>'(Head,Body), Options) :-
+    !,
     mongolog_consult3('?>'(Head,Body), Options),
     mongolog_consult3('+>'(Head,Body), Options).
 
@@ -162,15 +195,33 @@ mongolog_consult3((:- Goal), _) :-
 
 % consult a fact
 mongolog_consult3(Fact, Options) :-
-    option(load, Options),!,
-	mongolog_add_predicate(Fact),
-	mongolog_call(assert(Fact)).
-mongolog_consult3(Fact, _) :-
-    % option(reload, Options),
-	mongolog_add_predicate(Fact).
+	option(load, Options),!,
+	option(source_id(DocumentID), Options, user),
+	strip_module_(Fact, _Module, Stripped),
+	% TODO: move code into database.pl
+	% assert that the asserted predicate is a currently defined predicate
+	mongolog_add_predicate(Stripped, DocumentID),
+	% create fact document
+	mongolog_database:mongolog_predicate_zip(Stripped,
+		[], Zipped, Ctx_pred, write),
+	findall([Field,Val],
+		(	member([Field,Arg],Zipped),
+			var_key_or_val(Arg, Ctx_pred, Val)
+		),
+		PredicateDoc),
+	% assert into predicate collection
+	Stripped =.. [Functor|_Args],
+	mng_get_db(DB, PredicateCollection, Functor),
+	mng_store(DB, PredicateCollection,
+	    [['source',string(DocumentID)] | PredicateDoc]).
+mongolog_consult3(Fact, Options) :-
+	% option(reload, Options),
+	option(source_id(DocumentID), Options, user),
+	strip_module_(Fact, _Module, Stripped),
+	mongolog_add_predicate(Stripped, DocumentID).
 
 %%
-mongolog_add_predicate(Fact) :-
+mongolog_add_predicate(Fact, DocumentID) :-
 	Fact =.. [Functor|Args],
 	% make sure mongolog_add_predicate was called for the predicate
 	(	mongolog_predicate(Functor,_,_) -> true
@@ -180,16 +231,16 @@ mongolog_add_predicate(Fact) :-
 				% just use argument number as name
 				atom_number(FieldName,X)
 			),Fields),
-			mongolog_add_predicate(Functor, Fields, [])
+			mongolog_add_predicate(Functor, Fields, [source_id(DocumentID)])
 		)
 	).
 
 %% The version/last modification time of a loaded file
-get_current_file_version(URL, Version) :-
-	mng_get_db(DB, Coll, 'mongolog_files'),
-	once(mng_find(DB, Coll, [
-		['url', string(URL)]
-	], Doc)),
+current_source(URL, Version, DocumentID, Predicates) :-
+	mng_get_db(DB, Coll, 'mongolog_sources'),
+	once(mng_find(DB, Coll, [[url, string(URL)]], Doc)),
+	mng_get_dict('_id', Doc, id(DocumentID)),
+	mng_get_dict(predicates, Doc, array(Predicates)),
 	mng_get_dict(version, Doc, string(Version)).
 
 %%
@@ -213,14 +264,19 @@ mongolog_call(Goal) :-
 % @param Goal A compound term expanding into an aggregation pipeline
 % @param Options Additional options
 %
-mongolog_call(is_mongolog_predicate(P), _Ctx) :-
+mongolog_call(current_predicate(Predicate), _Ctx) :-
 	!,
-	is_mongolog_predicate(P).
+	% TODO: take arity and module into account
+	% TODO: check if predicate defined for current reasoner
+	strip_module_(Predicate, _Module, Stripped),
+	(   Stripped=(Functor/_Arity) -> true
+	;   atom(Predicate) -> Functor=Predicate
+	),
+	once((step_command(Functor) ; mongolog_rule(Functor, _, _))).
 
 mongolog_call(consult(File), _Ctx) :-
     var(File),!,
-    % TODO throw
-    fail.
+    throw(error(instantiation_error(File), mongolog_call(consult(File)))).
 
 mongolog_call(consult(File), _Ctx) :-
 	!,
