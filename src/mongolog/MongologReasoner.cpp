@@ -34,13 +34,12 @@ bool MongologReasoner::initializeDefaultPackages()
 
 bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
 {
-	// TODO: better map to current_predicate as regular mongolog query?
 	return eval(std::make_shared<Predicate>(Predicate(
-			"is_mongolog_predicate", {
+			"current_predicate", {
 				std::make_shared<StringTerm>(predicate.functor()) //,
 				//std::make_shared<Integer32Term>(predicate.arity())
 			}
-	)), nullptr, false);
+	)));
 }
 
 std::shared_ptr<Query> MongologReasoner::transformQuery(const std::shared_ptr<Query> &q)
