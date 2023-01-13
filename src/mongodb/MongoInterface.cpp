@@ -16,8 +16,6 @@ static const mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
 		(mongoc_insert_flags_t)MONGOC_INSERT_NO_VALIDATE;
 static const mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
-static const mongoc_update_flags_t UPDATE_FLAGS =
-		(mongoc_update_flags_t)(MONGOC_UPDATE_MULTI_UPDATE | UPDATE_NO_VALIDATE_FLAG);
 
 static const PlAtom ATOM_minus("-");
 static const PlAtom ATOM_insert("insert");
@@ -282,7 +280,7 @@ void MongoInterface::update(
 		throw MongoException("invalid_update",err);
 	}
 	bool success = mongoc_collection_update(coll(),
-		UPDATE_FLAGS,
+		UPDATE_NO_VALIDATE_FLAG,
 		query,
 		update,
 		NULL,
