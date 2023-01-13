@@ -39,7 +39,7 @@ void Logger::updateLogger()
 				"multi_sink", spdlog::sinks_init_list({ pimpl_->console_sink }));
 	spdlog::set_default_logger(pimpl_->logger);
 	spdlog::set_level(spdlog::level::trace);
-	spdlog::flush_every(std::chrono::seconds(1));
+	spdlog::flush_every(std::chrono::seconds(2));
 }
 
 Logger& Logger::get()
@@ -82,6 +82,11 @@ void Logger::loadConfiguration(boost::property_tree::ptree &config)
 			setSinkPattern(File,
 						   fileConfig.get<std::string>("pattern"));
 		}
+	}
+
+	if(config.count("flush-interval")) {
+		spdlog::flush_every(std::chrono::seconds(
+				config.get<int64_t>("flush-interval")));
 	}
 }
 
