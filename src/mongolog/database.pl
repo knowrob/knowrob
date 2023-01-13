@@ -69,7 +69,7 @@ mongolog_add_predicate(Functor, Fields, Options) :-
 %%
 setup_predicate_collection(Functor, [FirstField|_], Options) :-
 	% TODO support fields marked with -/+ here
-	option(indices(Indices), Options, [[FirstField]]),
+	option(indices(Indices), Options, [[FirstField], [source]]),
 	setup_collection(Functor, Indices).
 
 
@@ -149,12 +149,15 @@ mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars) :-
 	mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_pred, write),
 	option(collection(Collection), Ctx_pred),
 	option(step_vars(StepVars), Ctx_pred),
+	option(source_id(SourceID), Ctx_pred, user),
 	% create a document
 	findall([Field,Val],
 		(	member([Field,Arg],Zipped),
 			mongolog:var_key_or_val(Arg, Ctx_pred, Val)
 		),
-		PredicateDoc),
+		PredicateDoc0),
+	% add source id to document
+	PredicateDoc = [['source', string(SourceID)] | PredicateDoc0],
 	% and add it to the list of asserted documents
 	findall(Step,
 		mongolog:add_assertion(PredicateDoc, Collection, Step),
