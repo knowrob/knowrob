@@ -10,9 +10,7 @@
 
 :- use_module(library('mongodb/client'),
 	[ mng_strip_operator/3, mng_strip_type/3 ]).
-:- use_module(library('qudt'),
-	[ qudt_unit/4 ]).
-:- use_module('mongolog_test').
+:- use_module(library('qudt'), [ qudt_unit/4 ]).
 :- use_module(library('scope')).
 :- use_module('temporal').
 
@@ -102,11 +100,11 @@ holds(Query) ?+>
      *	    UNIT TESTS	     		    *
      *******************************/
 
+:- use_module('mongolog_test').
 :- begin_mongolog_tests(
 	'mongolog_holds',
 	'owl/test/swrl.owl',
-	[ namespace('http://knowrob.org/kb/swrl_test#')
-	]).
+	[ namespace('http://knowrob.org/kb/swrl_test#') ]).
 
 test('holds/1 with ns', [ blocked('holds/1 cannot handle namespaces') ]) :-
 	assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).
