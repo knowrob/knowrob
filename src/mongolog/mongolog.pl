@@ -148,6 +148,11 @@ mongolog_consult3((Head :- Body), Options) :-
 	!, mongolog_consult3('?>'(Head,Body), Options).
 mongolog_consult3('?>'(Head,Body), _Options) :-
 	!,
+	% FIXME: there is a bug that when a file is consulted through mongolog_call(consult)
+	%         and another time through rule expansion that the rule is added twice,
+	%         i.e. mongolog_add_rule is called twice for the same declaration.
+	%         best revise term expansion and integrate it here such that
+	%         the redundant call can be avoided.
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
