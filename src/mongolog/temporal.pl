@@ -11,7 +11,6 @@
 
 :- use_module(library('scope'),
 		[ time_scope/3, universal_scope/1 ]).
-:- use_module(library('mongolog/mongolog_test')).
 
 :- multifile during/2.
 :- multifile since/2.
@@ -165,11 +164,11 @@ until(Statement, Instant) +>
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
+:- use_module(library('mongolog/mongolog_test')).
 :- begin_mongolog_tests(
 		'mongolog_temporal',
 		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
 
 test('during(+Triple,+Interval)') :-
 	assert_true(mongolog_call(project(
