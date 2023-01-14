@@ -27,10 +27,12 @@
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('scope')).
+:- use_module('triple', [ load_owl/2 ]).
 
 :- multifile instance_of/2, subclass_of/2, subproperty_of/2.
 :- dynamic instance_of/2, subclass_of/2, subproperty_of/2.
 
+:- load_owl('owl/rdf-schema.xml').
 :- rdf_register_ns(rdfs,
 	'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 
