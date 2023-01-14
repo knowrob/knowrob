@@ -344,7 +344,7 @@ int run(int argc, char **argv) {
 	general.add_options()
 			("help", "produce a help message")
 			("verbose", "print informational messages")
-			("config-file", po::value<std::string>(), "a configuration file in JSON format")
+			("config-file", po::value<std::string>()->required(), "a configuration file in JSON format")
 			("version", "output the version number");
 	// Declare an options description instance which will be shown
 	// to the user
