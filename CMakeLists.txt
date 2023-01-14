@@ -189,7 +189,9 @@ endif()
 # but the testing code is actually in the *hyres* library
 # where gtest won't find them without using the "--no-as-needed"
 # flag for the linker.
-add_executable(all_gtests tests/gtests.cpp)
+add_executable(all_gtests
+		tests/gtests.cpp
+		src/neems/test.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		hyres
