@@ -8,7 +8,6 @@
 @license BSD
 */
 
-:- use_module('OWL').
 :- use_module('SOMA').
 
 :- op(1000, xf, occurs).
@@ -113,11 +112,10 @@ is_a(A,B) ?>
      *        UNIT TESTS            *
      *******************************/
 
-:- begin_rdf_tests(
-    model_terms,
-    'package://knowrob/owl/test/events.owl',
-    [ namespace('http://knowrob.org/kb/test_events.owl#')
-    ]).
+:- use_module(library('mongolog/mongolog_test')).
+:- begin_mongolog_tests(model_terms, 'owl/test/events.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#', [force(true)]).
 
 test('during(occurs(+),+Interval)') :-
 	assert_true(occurs(test:'Short4') during [1377777009, 1377777011]),
@@ -146,4 +144,4 @@ test('assert(during(occurs(+),+Event))') :-
 	assert_true(kb_project(occurs(test:'Event6') during test:'Short1')),
 	assert_true(occurs(test:'Event6') during test:'Short1').
 
-:- end_rdf_tests(model_terms).
+:- end_mongolog_tests(model_terms).

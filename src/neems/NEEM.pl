@@ -33,11 +33,9 @@ knowrob_load_neem(NEEM_id) :-
 	marker:republish.
 
 :- use_module(library('mongolog/mongolog_test')).
-:- begin_mongolog_tests(mongolog_neems,
-		'owl/test/memory.owl',
-		[ namespace('http://knowrob.org/kb/mem-test.owl#') ]).
+:- begin_mongolog_tests(mongolog_neems, 'owl/test/memory.owl').
 
-:- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_register_prefix/3 ]).
 :- use_module(library('mongolog/mongolog'), [ mongolog_call/1 ]).
 :- use_module(library('scope')).
 :- use_module('terms').
@@ -46,6 +44,8 @@ knowrob_load_neem(NEEM_id) :-
 
 :- dynamic test_episode/1,
            test_action/1.
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/mem-test.owl#', [force(true)]).
 
 test('is_episode') :-
 	universal_scope(Scope),
@@ -83,10 +83,6 @@ test('executes_task') :-
 	mongolog_call(new_iri(Task,test:'TestTask')),
 	mongolog_call(project(has_type(Task,test:'TestTask')), [scope(Scope)]),
 	assert_true(ground(Task)),
-
-	semweb:sw_get_subgraphs(test,Subs),
-	writeln(executes_task_SUBS_XXXXXXXX(Subs)),
-
 	assert_true(is_task(Task)),
 	%%
 	assert_false(executes_task(Action,Task)),
