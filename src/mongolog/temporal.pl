@@ -165,10 +165,9 @@ until(Statement, Instant) +>
 		 *******************************/
 
 :- use_module(library('mongolog/mongolog_test')).
-:- begin_mongolog_tests(
-		'mongolog_temporal',
-		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
+:- begin_mongolog_tests('mongolog_temporal','owl/test/swrl.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test('during(+Triple,+Interval)') :-
 	assert_true(mongolog_call(project(
