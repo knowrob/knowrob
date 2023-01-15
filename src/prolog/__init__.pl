@@ -54,8 +54,8 @@
 
 % extensions for semantic web
 :- use_module(library('semweb')).
-:- sw_add_subgraph(user,common),
-   sw_add_subgraph(test,user).
+:- sw_graph_include(user,common),
+   sw_graph_include(test,user).
 
 % auto-load common models
 :- use_module(library('xsd')).

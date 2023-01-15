@@ -3,12 +3,12 @@
       sw_triple(r,t,t,t),          % ?Subject, +Predicate, ?Object, +Context
       sw_instance_of(r,t),         % ?Resource, ?Class
       sw_instance_of(r,t,t),       % ?Resource, ?Class, +Context
-      sw_instance_of_expr(r,t),    % ?Resource, ?Expr
       sw_subclass_of(t,t),         % ?SubClass, ?Class
-      sw_subclass_of_expr(t,t),    % ?SubClass, ?Expr
       sw_subproperty_of(r,r),      % ?SubProperty, ?Property
 
       sw_class_expr(r,t),          % +Class, ?Expr
+      sw_instance_of_expr(r,t),    % ?Resource, ?Expr
+      sw_subclass_of_expr(t,t),    % ?SubClass, ?Expr
 
       sw_assert_triple(r,t,t),     % +Subject, +Predicate, +Object
       sw_assert_triple(r,t,t,r),   % +Subject, +Predicate, +Object, +Graph
@@ -23,10 +23,8 @@
       sw_url_read/2,
       sw_url_register_ns/2,
 
-      sw_add_subgraph/2,           % +SubGraph, +Graph
-      sw_subgraph_of/2,            % ?SubGraph, ?Graph
-      sw_get_supgraphs/2,          % +Graph, +SuperGraphs
-      sw_get_subgraphs/2,          % +Graph, +SubGraphs
+      sw_graph_include/2,          % +Graph, +IncludedGraph
+      sw_graph_includes/2,         % ?Graph, ?IncludedGraph
       sw_unload_graph/1,           % +Graph
       sw_set_default_graph/1,      % +Graph
       sw_default_graph/1,          % ?Graph
@@ -142,7 +140,7 @@ post_graph(Subject, RealPredicate, Object, Context) :-
 	rdf(Subject, RealPredicate, Object, RealGraph),
 	% unify graphs, if not possible check subgraph relation
 	(   RealGraph=Graph -> true
-	;   sw_subgraph_of(RealGraph, Graph)
+	;   sw_graph_includes(Graph, RealGraph)
 	).
 post_graph(_, _, _, _).
 */
@@ -401,8 +399,7 @@ subclass_expr2(value(P1, individual(Value)), min(1, P2, Expr2)) :-
 % handle complement_of/1 as first argument
 subclass_expr2(complement_of(Expr1), complement_of(Expr2)) :-
     !, % e.g. `not(Food) subclassOf not(Rice)` follows from `Rice subclassOf Food`
-    % TODO check again
-    subclass_expr2(Expr1, Expr2).
+    subclass_expr2(Expr2, Expr1).
 %subclass_expr2(Expr1, complement_of(Expr2)) :-
 %    \+ sw_satisfiable_expr(intersection_of(Expr1, Expr2)).
 
@@ -688,76 +685,40 @@ convert_rdf_value_(        O,  string(O)) :- !.
       *       GRAPH HIERARCHY       *
       *******************************/
 
-%% sw_subgraph_of(?SubGraph, ?Graph) is nondet.
+%% sw_graph_includes(?Graph, ?IncludedGraph) is nondet.
 %
-:- dynamic sw_subgraph_of/2.
+:- dynamic sw_graph_includes/2.
 
-%% sw_add_subgraph(+Sub,+Sup) is det.
+%% sw_graph_include(+Graph,+IncludedGraph) is det.
 %
 % Adds the subgraph-of relation between two named graphs.
 %
 % @param Sub Name of the subgraph.
 % @param Sup Name of the super-graph.
 %
-sw_add_subgraph(Sub,Sup) :-
-	sw_get_supgraphs(Sup,SupGraphs),
-	sw_get_subgraphs(Sub,SubGraphs),
+sw_graph_include(Graph, IncludedGraph) :-
 	forall(
-		(	member(string(Sup_x),SupGraphs),
-			member(string(Sub_x),SubGraphs)
+		(	(X=Graph         ; sw_graph_includes(X,Graph))
+		,   (Y=IncludedGraph ; sw_graph_includes(IncludedGraph,Y))
 		),
-		assert_subgraph_of(Sub_x,Sup_x)
-	).
+		assert_graph_includes(X,Y)).
 
 %%
-assert_subgraph_of(Sub,Sup) :- sw_subgraph_of(Sub,Sup),!.
-assert_subgraph_of(Sub,Sup) :- assertz(sw_subgraph_of(Sub,Sup)).
-
-%% sw_get_supgraphs(+GraphName,-SupGraphs) is det.
-%
-% Get all super-graphs of a named graph. This minds transitivity of the relation.
-%
-% @param GraphName Name of a graph.
-% @param SupGraphs List of super-graphs.
-%
-sw_get_supgraphs(G,_) :-
-	var(G),
-	!.
-
-sw_get_supgraphs(G,Graphs) :-
-	findall(string(X),
-		(	X=G
-		;	sw_subgraph_of(G,X)
-		),
-		Graphs
-	).
-
-%% sw_get_subgraphs(+GraphName,-SubGraphs) is det.
-%
-% Get all subgraphs of a named graph. This minds transitivity of the relation.
-%
-% @param GraphName Name of a graph.
-% @param SubGraphs List of subgraphs.
-%
-sw_get_subgraphs(G,Graphs) :-
-	findall(string(X),
-		(	X=G
-		;	sw_subgraph_of(X,G)
-		),
-		Graphs
-	).
+assert_graph_includes(Graph,Graph)         :- !.
+assert_graph_includes(Graph,IncludedGraph) :- sw_graph_includes(Graph,IncludedGraph),!.
+assert_graph_includes(Graph,IncludedGraph) :- assertz(sw_graph_includes(Graph,IncludedGraph)).
 
 %%
 %
 sw_unload_graph(Graph) :-
     forall(
-        (   sw_subgraph_of(Sub,Graph),
-            sw_subgraph_of(Graph,Sup)
+        (   sw_graph_includes(ParentOfGraph, Graph),
+            sw_graph_includes(Graph, ChildOfGraph)
         ),
-        assert_subgraph_of(Sub,Sup)
+        assert_graph_includes(ParentOfGraph, ChildOfGraph)
     ),
-    retractall(sw_subgraph_of(_,Graph)),
-    retractall(sw_subgraph_of(Graph,_)),
+    retractall(sw_graph_includes(_,Graph)),
+    retractall(sw_graph_includes(Graph,_)),
     rdf_unload_graph(Graph).
 
 
@@ -806,9 +767,7 @@ load_rdf_xml1(URL, ParentGraph) :-
 	% resolve URL, and read ontology graph name and version
 	sw_url(URL, Resolved, OntologyGraph, OntologyVersion),
 	% include ontology when parent graph is queried
-	sw_add_subgraph(OntologyGraph,ParentGraph),
-	% include ontology when user graph is queried
-	sw_add_subgraph(OntologyGraph,user),
+	sw_graph_include(ParentGraph, OntologyGraph),
 	% load RDF data
 	setup_call_cleanup(
 	    sw_url_stream(Resolved, Stream),
@@ -907,9 +866,9 @@ triple_json_scope(_Triples,Scope) :-
      *******************************/
 
 :- use_module(library('rdf_test')).
-:- begin_rdf_tests('semweb',
-		'owl/test/pancake.owl',
-		[ namespace('http://knowrob.org/kb/pancake.owl#') ]).
+:- begin_rdf_tests('semweb', 'owl/test/pancake.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/pancake.owl#', [force(true)]).
 
 test('sw_class_expr(+,-)') :-
     assert_true(sw_class_expr(test:'FlippingAPancake',_)),

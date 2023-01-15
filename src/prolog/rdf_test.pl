@@ -23,8 +23,8 @@ test('some test') :- fail.
 :- use_module(library('semweb'),
 	[ sw_url_graph/2,
 	  load_rdf_xml/2,
+	  sw_graph_includes/2,
 	  sw_set_default_graph/1,
-	  sw_get_subgraphs/2,
 	  sw_unload_graph/1
 	]).
 
@@ -37,20 +37,11 @@ test('some test') :- fail.
 %
 %
 begin_rdf_tests(Name,RDFFile,Options0) :-
-	(	select_option(namespace(URI_Prefix),Options0,Options1)
-	->	true
-	;	(	atom_concat(RDFFile,'#',URI_Prefix),
-			Options1=Options0
-		)
-	),
-	%%
 	Setup   = rdf_test:setup(RDFFile),
 	Cleanup = rdf_test:cleanup(RDFFile),
-	add_option_goal(Options1, setup(Setup), Options2),
+	add_option_goal(Options0, setup(Setup), Options2),
 	add_option_goal(Options2, cleanup(Cleanup), Options3),
-	%%
-	begin_tests(Name,Options3),
-	rdf_db:rdf_register_prefix(test,URI_Prefix,[force(true)]).
+	begin_tests(Name,Options3).
 
 %% begin_rdf_tests(+Name, +RDFFile) is det.
 %
@@ -81,14 +72,14 @@ cleanup(RDFFile) :-
 
 %%
 cleanup :-
-	sw_get_subgraphs(test,Subs),
 	forall(
-		member(string(Sub),Subs),
-		sw_unload_graph(Sub)
+		(   sw_graph_includes(test, TestSubGraph),
+		\+  sw_graph_includes(user, TestSubGraph),
+		\+  TestSubGraph==user
+		),
+		sw_unload_graph(TestSubGraph)
 	),
-	sw_set_default_graph(user),
-	% "test" graph was dropped. need to re-add it as child of user
-	sw_add_subgraph(test,user).
+	sw_set_default_graph(user).
 
 %%
 add_option_goal(OptionsIn,NewOpt,[MergedOpt|Rest]) :-
