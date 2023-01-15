@@ -116,15 +116,12 @@ get_iri(Name, regex(Pattern), Formatter) :-
      *	    UNIT TESTS	     		    *
      *******************************/
 
-:- begin_rdf_tests(
-    'lang_designator',
-    'package://knowrob/owl/test/swrl.owl',
-    [ namespace('http://knowrob.org/kb/swrl_test#')
-    ]).
+:- begin_rdf_tests('lang_designator', 'package://knowrob/owl/test/swrl.owl').
 
 :- use_module(library('semweb/rdf_db'),
     [ rdf_meta/1 ]).
 
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 :- rdf_meta(test_designator(r,t,t)).
 
 test_designator(Entity,Designator,Expected) :-
