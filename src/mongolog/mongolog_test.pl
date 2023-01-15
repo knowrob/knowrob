@@ -25,7 +25,7 @@ test('some test') :- fail.
 	  drop_graph/1
 	]).
 :- use_module(library('semweb'),
-	[ sw_get_subgraphs/2,
+	[ sw_graph_includes/2,
 	  sw_set_default_graph/1,
 	  sw_url_graph/2
 	]).
@@ -39,20 +39,11 @@ test('some test') :- fail.
 %
 %
 begin_mongolog_tests(Name,RDFFile,Options0) :-
-	(	select_option(namespace(URI_Prefix),Options0,Options1)
-	->	true
-	;	(	atom_concat(RDFFile,'#',URI_Prefix),
-			Options1=Options0
-		)
-	),
-	%%
 	Setup   = mongolog_test:setup(RDFFile),
 	Cleanup = mongolog_test:cleanup(RDFFile),
-	add_option_goal(Options1, setup(Setup), Options2),
+	add_option_goal(Options0, setup(Setup), Options2),
 	add_option_goal(Options2, cleanup(Cleanup), Options3),
-	%%
-	begin_tests(Name,Options3),
-	rdf_db:rdf_register_prefix(test,URI_Prefix,[force(true)]).
+	begin_tests(Name,Options3).
 
 %% begin_mongolog_tests(+Name, +RDFFile) is det.
 %
@@ -71,7 +62,7 @@ end_mongolog_tests(Name) :-
 %%
 setup(RDFFile) :-
 	sw_set_default_graph(test),
-	load_owl(RDFFile,[graph(test)]).
+	load_owl(RDFFile,[parent_graph(test)]).
 
 %%
 cleanup(RDFFile) :-
@@ -81,11 +72,16 @@ cleanup(RDFFile) :-
 
 %%
 cleanup :-
-	sw_get_subgraphs(test,Subs),
 	forall(
-		member(string(Sub),Subs),
-		drop_graph(Sub)
+		(   sw_graph_includes(test, TestSubGraph),
+		\+  sw_graph_includes(user, TestSubGraph),
+		\+  TestSubGraph==user
+		),
+		(   sw_unload_graph(TestSubGraph),
+		    drop_graph(TestSubGraph)
+		)
 	),
+	drop_graph(test),
 	sw_set_default_graph(user).
 
 %%
