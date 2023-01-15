@@ -96,15 +96,78 @@ holds(Query) ?+>
 	pragma(Query =.. [P,S,O]),
 	holds(S,P,O).
 
+
+/*
+%%
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=only(O)),
+	instance_of_expr(S,only(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=some(O)),
+	instance_of_expr(S,some(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=value(O)),
+	instance_of_expr(S,value(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=min(M,O)),
+	instance_of_expr(S,min(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=max(M,O)),
+	instance_of_expr(S,max(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=exactly(M,O)),
+	instance_of_expr(S,exactly(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=value(O)),
+	instance_of_expr(S,value(P,O)).
+
+%%
+% Allow OWL descriptions in instance_of expressions.
+%
+model_RDFS:instance_of(S,Descr) ?>
+	pragma(is_owl_term(Descr)),
+	instance_of_expr(S,Descr).
+
+%%
+% Allow OWL descriptions in subclass_of expressions.
+%
+model_RDFS:subclass_of(Class, Descr) ?>
+	pragma(is_owl_term(Descr)),
+	subclass_of_expr(Class, Descr).
+
+%%
+% Allow OWL descriptions in holds expressions.
+%
+%lang_holds:holds(S,P,O) ?>
+%	pragma(\+ is_owl_term(O)),
+%	instance_of_expr(S, value(P,O)).
+
+lang_holds:holds(S,P,Descr) ?>
+	pragma(is_owl_term(Descr)),
+	holds_description(S,P,Descr).
+*/
+
      /*******************************
      *	    UNIT TESTS	     		    *
      *******************************/
 
 :- use_module('mongolog_test').
-:- begin_mongolog_tests(
-	'mongolog_holds',
-	'owl/test/swrl.owl',
-	[ namespace('http://knowrob.org/kb/swrl_test#') ]).
+:- begin_mongolog_tests('mongolog_holds','owl/test/swrl.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test('holds/1 with ns', [ blocked('holds/1 cannot handle namespaces') ]) :-
 	assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).
