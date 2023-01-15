@@ -29,7 +29,6 @@ The following predicates are supported:
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('semweb')).
-:- use_module('subgraph').
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_assert(r)).
@@ -54,10 +53,8 @@ The following predicates are supported:
 :- mongolog:add_command(triple).
 
 %%
-mongolog:step_expand(
-	project(triple(S,P,O)),
-	assert(triple(S,P,O))) :-
-	!.
+mongolog:step_expand(project(triple(S,P,O)),
+                     assert(triple(S,P,O))) :- !.
 
 %%
 mongolog:step_compile(assert(triple(S,P,term(O))), Ctx, Pipeline, StepVars) :-
@@ -632,7 +629,10 @@ graph_doc('*', _)    :- !, fail.
 graph_doc('user', _) :- !, fail.
 graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
 graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
-	sw_get_supgraphs(GraphName,Graphs).
+	ground(GraphName),!,
+	findall(string(X),
+		(X=GraphName ; sw_graph_includes(GraphName,X)),
+		Graphs).
 
 %%
 graph_match(Ctx, ['$expr', [Operator,
@@ -731,9 +731,6 @@ load_owl(URL) :-
 
 load_owl(URL, Options) :-
     sw_url_register_ns(URL, Options),
-    % FIXME: it is hard to follow here how the subgraph-of relation is build, i.e. using sw_add_subgraph/2.
-    %        it is also a question whether this relation should be maintained centrally
-    %        for all reasoner that use RDF data.
 	% get parent graph name, fall back to "common"
 	option(parent_graph(ParentGraph), Options, common),
 	% get fact scope
@@ -749,15 +746,8 @@ load_owl(_URL, _Scope, _ParentGraph) :-
 load_owl(URL, Scope, ParentGraph) :-
     % read graph and ontology version from URL
     sw_url(URL, Resolved, OntologyGraph, OntologyVersion),
-	% setup graph structure:
-	% the parent graph is a super graph of the ontology graph, meaning the
-	% ontology graph is included in the parent graph.
-	% if the parent graph is dropped, the ontology graph will also be dropped.
-	(	sw_add_subgraph(OntologyGraph,ParentGraph),
-	    % TODO: doesn't this create a cricle in the relation, e.g. when 'test' is used as
-	    %        a parent in unittests to auto-drop the ontology graph after the test.
-		sw_add_subgraph(user,OntologyGraph)
-	),
+	% include ontology when parent graph is queried
+	sw_graph_include(ParentGraph, OntologyGraph),
 	% tests whether the ontology is already loaded. no triples mustbe loaded if versions unify,
 	% but the ontology graph must be a sub-graph of all imported ontologies.
 	(  mongo_ontology_version(OntologyGraph, OntologyVersion)
@@ -779,7 +769,7 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 	forall(
 		member(triple(AssertedURL, OWL_Imports, string(ImportedURL)), TripleTerms),
 		(	sw_url_graph(ImportedURL, ImportedGraph),
-			sw_add_subgraph(ImportedGraph, OntologyGraph),
+			sw_graph_include(OntologyGraph, ImportedGraph),
 			load_owl(ImportedURL, Scope, ParentGraph)
 		)
 	),
@@ -795,7 +785,7 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 	% assert ontology version
 	set_mongo_ontology_version(AssertedURL, OntologyVersion, OntologyGraph),
 	!,
-	log_debug(mongolog(ontology_loaded(OntologyGraph,OntologyVersion))).
+	log_debug(mongolog(ontology_loaded(OntologyGraph,ParentGraph,OntologyVersion))).
 
 
 %%
@@ -809,7 +799,7 @@ load_ontology_graph(OntologyGraph) :-
 		], Doc),
 		(	mng_get_dict('o', Doc, string(Imported)),
 			sw_url_graph(Imported,ImportedGraph),
-			sw_add_subgraph(ImportedGraph,OntologyGraph)
+			sw_graph_include(OntologyGraph,ImportedGraph)
 		)
 	).
 
@@ -840,9 +830,7 @@ set_mongo_ontology_version(URL, Version, OntoGraph) :-
 %
 drop_graph(Name) :-
 	mng_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, [
-		[graph, string(Name)]
-	]).
+	mng_remove(DB, Coll, [[graph, string(Name)]]).
 
 %%
 % Drop graphs on startup if requested through settings.
