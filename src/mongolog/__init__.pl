@@ -19,15 +19,14 @@
 :- use_module(unification).
 :- use_module(rules).
 
-% initialize hierachical organization of triple graphs
-:- use_module(subgraph).
-:- load_graph_structure.
-
 :- use_module(annotation).
 :- use_module(triple).
-:- use_module(rdfs).
-:- use_module(owl).
+:- use_module(semweb).
 :- use_module(holds).
 :- use_module(temporal).
 
 :- rdf_meta(triple(t,t,t)).
+% initialize hierachical organization of triple graphs
+:- load_graph_structure.
+% load common ontology
+:- load_owl('http://www.ease-crc.org/ont/SOMA.owl', [ namespace(soma) ]).

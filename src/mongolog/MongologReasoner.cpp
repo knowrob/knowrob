@@ -71,9 +71,8 @@ TEST_F(MongologTests, sgml)			{ runTests(getPath("sgml.pl")); }
 TEST_F(MongologTests, terms)		{ runTests(getPath("terms.pl")); }
 TEST_F(MongologTests, typecheck)	{ runTests(getPath("typecheck.pl")); }
 TEST_F(MongologTests, unification)	{ runTests(getPath("unification.pl")); }
-TEST_F(MongologTests, rdfs)			{ runTests(getPath("rdfs.pl")); }
 TEST_F(MongologTests, annotation)	{ runTests(getPath("annotation.pl")); }
 TEST_F(MongologTests, triple)		{ runTests(getPath("triple.plt")); }
-TEST_F(MongologTests, owl)			{ runTests(getPath("owl.plt")); }
+TEST_F(MongologTests, semweb)		{ runTests(getPath("semweb.plt")); }
 TEST_F(MongologTests, holds)		{ runTests(getPath("holds.pl")); }
 TEST_F(MongologTests, temporal)		{ runTests(getPath("temporal.pl")); }
