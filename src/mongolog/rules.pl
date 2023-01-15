@@ -5,11 +5,9 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
-:- use_module(library('semweb/rdf_db'),
-        [ rdf_global_term/2 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_global_term/2 ]).
 :- use_module(library('scope')).
-:- use_module('mongolog',
-        [ mongolog_add_rule/2 ]).
+:- use_module('mongolog', [ mongolog_add_rule/2 ]).
 
 :- dynamic kb_predicate/1.
 
@@ -46,20 +44,6 @@ user:term_expansion((?>(Head,Body)), Export) :-
 %
 user:term_expansion((+>(Head,Body)), []) :-
     mongolog:mongolog_consult3((+>(Head,Body)), [load]).
-/*
-	% expand rdf terms Prefix:Local to IRI atom
-	rdf_global_term(Head, HeadGlobal),
-	rdf_global_term(Body, BodyGlobal),
-	strip_module_(HeadGlobal,_Module,Term),
-	% rewrite functor
-	% TODO: it would be nicer to generate a lot
-	%        clauses for project/1.
-	Term =.. [Functor|Args],
-	atom_concat('project_',Functor,Functor0),
-	Term0 =.. [Functor0|Args],
-	% add the rule to the DB backend
-	mongolog_add_rule(Term0, project(BodyGlobal)).
-*/
 
 %%
 % Term expansion for *query+project* rules using the (?+>) operator.
