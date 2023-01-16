@@ -35,6 +35,7 @@
 	  instance_of_expr(r,t),
 	  subclass_of_expr(r,t),
 
+	  setup_triple_collection/0,
 	  load_graph_structure/0
 	]).
 /** <module> Monglog predicates related to semantic web.
@@ -42,12 +43,7 @@
 @author Daniel Beßler
 */
 
-:- use_module(library('mongodb/client'),
-	[ mng_get_db/3, mng_distinct_values/4 ]).
-:- use_module('triple', [ load_owl/2 ]).
-
-:- load_owl('owl/rdf-schema.xml', [ namespace(rdfs,'http://www.w3.org/2000/01/rdf-schema#') ]).
-:- load_owl('owl/owl.rdf',        [ namespace(owl, 'http://www.w3.org/2002/07/owl#') ]).
+:- use_module(library('mongodb/client'), [ mng_distinct_values/4 ]).
 
 		 /*******************************
 		  *            RDFS             *
@@ -532,7 +528,7 @@ instance_of_expr(S, Descr) ?>
 % Avoid that there are any orphan graphs.
 %
 load_graph_structure :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	mng_distinct_values(DB, Coll, 'graph', Names),
 	forall(member(NameString,Names),
 		   load_graph_structure1(NameString)).
@@ -542,3 +538,31 @@ load_graph_structure1(NameString) :-
 	(	Name=user -> true
 	;   sw_graph_include(common,Name)
 	).
+
+		 /*******************************
+		  *       SEARCH INDICES        *
+		  *******************************/
+
+setup_triple_collection :-
+    setup_collection(annotations, [
+        ['s'],
+        ['p'],
+        ['s','p']
+    ]),
+    setup_collection(triples, [
+        ['s'],
+        ['p'],
+        ['o'],
+        ['p*'],
+        ['o*'],
+        ['s','p'],
+        ['s','o'],
+        ['o','p'],
+        ['s','p*'],
+        ['s','o*'],
+        ['o','p*'],
+        ['p','o*'],
+        ['s','o','p'],
+        ['s','o','p*'],
+        ['s','o*','p']
+    ]).
