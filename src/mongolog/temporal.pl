@@ -12,10 +12,6 @@
 :- use_module(library('scope'),
 		[ time_scope/3, universal_scope/1 ]).
 
-:- multifile during/2.
-:- multifile since/2.
-:- multifile until/2.
-
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
 :- op(800, yfx, user:until).
