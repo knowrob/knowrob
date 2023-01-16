@@ -11,21 +11,12 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1 ]).
-:- use_module(library('mongodb/client'),
-		[ mng_get_db/3, mng_strip_type/3 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
+:- use_module(library('mongodb/client'), [ mng_strip_type/3 ]).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 
 :- rdf_meta(query_annotation(+,r,+,+,-)).
-
-%%
-% register the "annotations" collection.
-% This is needed for import/export and search indices.
-%
-:- setup_collection(annotations,
-		[['s'], ['p'], ['s','p']]).
 
 %% query commands
 :- mongolog:add_command(annotation).
@@ -53,7 +44,7 @@ query_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	mongolog:all_ground([Entity, Property], Ctx),
 	mongolog:step_vars([Entity,Property,Annotation], Ctx, StepVars),
 	% get the DB collection
-	mng_get_db(_DB, Coll, 'annotations'),
+	mongolog_get_db(_DB, Coll, 'annotations'),
 	mongolog:var_key_or_val(Annotation,  Ctx, Annotation0),
 	mongolog:var_key_or_val1(Entity,     Ctx, Entity0),
 	mongolog:var_key_or_val1(Property,   Ctx, Property0),
@@ -92,7 +83,7 @@ assert_annotation(Entity, Property, Annotation, Ctx, Pipeline, StepVars) :-
 	).
 
 assert_annotation(Entity, Property, Annotation, Stripped, Ctx, [Step], StepVars) :-
-	mng_get_db(_DB, Collection, 'annotations'),
+	mongolog_get_db(_DB, Collection, 'annotations'),
 	% enforce UTF8 encoding
 	utf8_value(Stripped, Annotation_en),
 	% throw instantiation_error if one of the arguments was not referred to before
@@ -127,7 +118,7 @@ strip_lang(Val, en, Val).
 		 *******************************/
 
 test_cleanup :-
-	mng_get_db(DB, Coll, 'annotations'),
+	mongolog_get_db(DB, Coll, 'annotations'),
 	mng_remove(DB, Coll, [[s,string(e)]]),
 	mng_remove(DB, Coll, [[s,string(a)]]).
 
