@@ -1,5 +1,8 @@
 :- module(mongolog_database,
-		[ mongolog_add_predicate(+,+,+),
+		[ mongolog_get_db/3,
+		  mongolog_one_db/2,
+		  mongolog_uri/1,
+		  mongolog_add_predicate(+,+,+),
 		  mongolog_drop_predicate(+),
 		  mongolog_predicate(-,-,-)
 		]).
@@ -28,6 +31,83 @@ The following predicates are supported:
 :- mongolog:add_command(assert).
 :- mongolog:add_command(retractall).
 
+%% mongolog_get_db(?DB, -Collection, +DBType) is det.
+%
+% Get database and collection name for type
+% of data denoted by DBType identifier.
+% The type identifier can be choosen freely but should
+% not conflict with another collection in the database.
+%
+% @param DB The database name
+% @param Collection The collection name
+% @param DBType type identifier
+%
+mongolog_get_db(db(URI,DB), Collection, DBType) :-
+    mongolog_uri(URI),
+    mongolog_db_name(DB),
+    % construct collection name
+	(	(reasoner_setting(mongodb:collection_prefix, Id), Id \= '')
+	->	atomic_list_concat([Id,'_',DBType], Collection)
+	;	Collection = DBType
+	).
+
+%% mongolog_one_db(?DB, -Collection) is det.
+%
+% Get a special database collection with just one empty document.
+% This is used for feeding just this one document into aggregate
+% pipelines.
+%
+% @param DB The database name
+% @param Collection The collection name
+%
+mongolog_one_db(db(URI,DB), one) :-
+    mongolog_uri(URI),
+    mongolog_db_name(DB).
+
+%%
+mongolog_db_name(DB) :- reasoner_setting(mongodb:db, DB), !.
+mongolog_db_name(knowrob).
+
+
+%% mongolog_uri(-URI) is det.
+%
+% Get the URI connection string
+%
+mongolog_uri(URI) :-
+    reasoner_setting(mongodb:uri, URI),
+    !.
+
+mongolog_uri(URI) :-
+    mongolog_uri1(URI),
+    % remember constructed URI as reasoner setting
+    current_reasoner_module(ReasonerModule),
+    log_info(mongolog(ReasonerModule, mongo_uri(URI))),
+    reasoner_set_setting(ReasonerModule, mongodb:uri, URI).
+
+%%
+mongolog_uri1(URI) :-
+    reasoner_setting(mongodb:host, Host),
+    reasoner_setting(mongodb:port, Port),
+    reasoner_setting(mongodb:user, User),
+    reasoner_setting(mongodb:password, PW), !,
+    mongolog_uri_(Host,Port,User,PW,URI).
+
+mongolog_uri1(URI) :-
+    getenv('KNOWROB_MONGO_HOST', Host),
+    getenv('KNOWROB_MONGO_USER', User),
+    getenv('KNOWROB_MONGO_PASS', PW),
+    getenv('KNOWROB_MONGO_PORT', Port), !,
+    mongolog_uri_(Host,Port,User,PW,URI).
+
+mongolog_uri1('mongodb://localhost:27017').
+
+%%
+mongolog_uri_(Host, Port, '', '', URI) :-
+    !, atomic_list_concat([ 'mongodb://', Host, ':', Port ], URI).
+mongolog_uri_(Host, Port, User, '', URI) :-
+    !, atomic_list_concat([ 'mongodb://', User, '@', Host, ':', Port ], URI).
+mongolog_uri_(Host, Port, User, PW, URI) :-
+    !, atomic_list_concat([ 'mongodb://', User, ':', PW, '@', Host, ':', Port ], URI).
 
 %% mongolog_predicate(+Term, -Fields, -Options) is semidet.
 %
@@ -81,7 +161,7 @@ setup_predicate_collection(Functor, [FirstField|_], Options) :-
 % @param Functor functor of the predicate
 %
 mongolog_drop_predicate(Functor) :-
-	mng_get_db(DB, Collection, Functor),
+	mongolog_get_db(DB, Collection, Functor),
 	mng_drop(DB, Collection).
 
 %%
@@ -172,7 +252,7 @@ mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_zipped, ReadOrWrite) :-
 	Term =.. [Functor|Args],
 	% get the database collection of the predicate
 	(	option(collection(Collection), Options)
-	;	mng_get_db(_DB, Collection, Functor)
+	;	mongolog_get_db(_DB, Collection, Functor)
 	),
 	!,
 	% read variable in Term
