@@ -105,7 +105,7 @@ watch_event(WatcherID, Event) :-
 watch_filter(triple(S,P,V), DB, Coll, WatchFilter) :-
 	% TODO: howto handle scope of facts here?
 	% TODO: support other terms here
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	mongolog_triple:mng_triple_doc(triple(S,P,V), Doc, []),
 	% the event holds the updated document in a field "fullDocument"
 	% NOTE: not for remove events!
