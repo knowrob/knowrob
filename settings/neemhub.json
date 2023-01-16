@@ -2,12 +2,12 @@
   "reasoner": [
     {
       "type": "Mongolog",
-      "database": {
-        "name": "neems",
+      "mongodb": {
+        "host": "localhost",
+        "db": "neems",
         "read_only": true,
-        "collection_prefix": "5fc8ff968f880006aa208e19"
-      },
-      "drop_graphs": []
+        "prefix": "5fc8ff968f880006aa208e19"
+      }
     }
   ],
   "ros": {
