@@ -3,9 +3,6 @@
           triple(t,t,t),
           get_unique_name(r,-),
           is_unique_name(r),
-          load_owl/1,
-          load_owl/2,
-          load_owl/3,
           drop_graph(+),
           auto_drop_graphs/0
         ]).
@@ -706,107 +703,6 @@ scope_intersect(VarKey, Since1, Until1, Options, Step) :-
 			['$lt', array([string(Since0), string(Until0)])]
 		]]
 	).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% ontology loading
-%%%%%%%%%%%%%%%%%%%%%%%
-
-load_owl(URL) :-
-    load_owl(URL,[]).
-
-load_owl(URL, Options) :-
-    sw_url_register_ns(URL, Options),
-	% get parent graph name, fall back to "common"
-	option(parent_graph(ParentGraph), Options, common),
-	% get fact scope
-	universal_scope(UScope),
-	option(scope(Scope), Options, UScope),
-    %
-	load_owl(URL, Scope, ParentGraph) .
-
-load_owl(_URL, _Scope, _ParentGraph) :-
-    reasoner_setting(mongodb:read_only, true),
-    !.
-
-load_owl(URL, Scope, ParentGraph) :-
-    % read graph and ontology version from URL
-    sw_url(URL, Resolved, OntologyGraph, OntologyVersion),
-	% include ontology when parent graph is queried
-	sw_graph_include(ParentGraph, OntologyGraph),
-	% tests whether the ontology is already loaded. no triples mustbe loaded if versions unify,
-	% but the ontology graph must be a sub-graph of all imported ontologies.
-	(  mongo_ontology_version(OntologyGraph, OntologyVersion)
-	-> load_ontology_graph(OntologyGraph)
-	;  load_owl1(Resolved, OntologyGraph, OntologyVersion, Scope, ParentGraph)
-	).
-
-load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
-    % read ontology data from URL
-	sw_url_read(URL, [
-	    asserted_url(AssertedURL),
-	    triples(TripleTerms),
-	    annotations(AnnotationTerms)
-	]),
-	% erase old triples
-	drop_graph(OntologyGraph),
-	% load RDF data of imported ontologies
-	rdf_equal(owl:'imports',OWL_Imports),
-	forall(
-		member(triple(AssertedURL, OWL_Imports, string(ImportedURL)), TripleTerms),
-		(	sw_url_graph(ImportedURL, ImportedGraph),
-			sw_graph_include(OntologyGraph, ImportedGraph),
-			load_owl(ImportedURL, Scope, ParentGraph)
-		)
-	),
-	% FIXME: o* for subClassOf only includes direct super class when loading a list of triples at once.
-	%mongolog_assert(TripleTerms, Scope, [graph(Graph)]),
-	%mongolog_assert(AnnotationTerms, Scope, [graph(Graph)]),
-	forall(
-		(	member(Term, TripleTerms)
-		;	member(Term, AnnotationTerms)
-		),
-		mongolog_call(assert(Term), [ scope(Scope), graph(OntologyGraph) ])
-	),
-	% assert ontology version
-	set_mongo_ontology_version(AssertedURL, OntologyVersion, OntologyGraph),
-	!,
-	log_debug(mongolog(ontology_loaded(OntologyGraph,ParentGraph,OntologyVersion))).
-
-
-%%
-load_ontology_graph(OntologyGraph) :-
-	rdf_equal(owl:'imports',OWL_Imports),
-	mongolog_get_db(DB, Coll, 'triples'),
-	forall(
-		mng_find(DB, Coll, [
-			['p',     string(OWL_Imports)],
-			['graph', string(OntologyGraph)]
-		], Doc),
-		(	mng_get_dict('o', Doc, string(Imported)),
-			sw_url_graph(Imported,ImportedGraph),
-			sw_graph_include(OntologyGraph,ImportedGraph)
-		)
-	).
-
-%% The version/last modification time of a loaded ontology
-mongo_ontology_version(OntologyGraph, Version) :-
-	mongolog_get_db(DB, Coll, 'triples'),
-	once(mng_find(DB, Coll, [
-		['p',     string(tripledbVersionString)],
-		['graph', string(OntologyGraph)]
-	], Doc)),
-	mng_get_dict(o, Doc, string(Version)).
-
-%% Write version string into DB
-set_mongo_ontology_version(URL, Version, OntoGraph) :-
-	mongolog_get_db(DB, Coll, 'triples'),
-	mng_store(DB, Coll, [
-		['s',     string(URL)],
-		['p',     string(tripledbVersionString)],
-		['o',     string(Version)],
-		['graph', string(OntoGraph)]
-	]).
 
 %% drop_graph(+Name) is det.
 %

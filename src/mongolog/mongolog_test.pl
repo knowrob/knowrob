@@ -20,10 +20,6 @@ test('some test') :- fail.
 @license BSD
 */
 
-:- use_module('triple',
-	[ load_owl/1,
-	  drop_graph/1
-	]).
 :- use_module(library('semweb'),
 	[ sw_graph_includes/2,
 	  sw_set_default_graph/1,
@@ -62,7 +58,7 @@ end_mongolog_tests(Name) :-
 %%
 setup(RDFFile) :-
 	sw_set_default_graph(test),
-	load_owl(RDFFile,[parent_graph(test)]).
+	mongolog_semweb:load_owl(RDFFile,[parent_graph(test)]).
 
 %%
 cleanup(RDFFile) :-
@@ -78,10 +74,10 @@ cleanup :-
 		\+  TestSubGraph==user
 		),
 		(   sw_unload_graph(TestSubGraph),
-		    drop_graph(TestSubGraph)
+		    mongolog_triple:drop_graph(TestSubGraph)
 		)
 	),
-	drop_graph(test),
+	mongolog_triple:drop_graph(test),
 	sw_set_default_graph(user).
 
 %%
