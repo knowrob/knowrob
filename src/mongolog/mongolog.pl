@@ -9,7 +9,8 @@
 	  mongolog_drop_rule(t),
 	  mongolog_expand(t,-),
 	  is_mongolog_predicate(+),
-	  setup_collection/2
+	  setup_collection/2,
+	  initialize_one_db/0
 	]).
 /** <module> Compiling goals into aggregation pipelines.
 
@@ -23,7 +24,7 @@
 :- use_module(library('semweb'), [ set_graph_option/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('logging')).
-
+:- use_module(library('blackboard'), [ reasoner_setting/4, reasoner_setting/2 ]).
 
 %% set of registered query commands.
 :- dynamic step_command/1.
@@ -33,6 +34,25 @@
 :- multifile step_compile/3, step_compile/4.
 %%
 :- dynamic mongolog_rule/3.
+
+:- reasoner_setting(mongodb:host, atom, localhost,
+	'The host name of the MongoDB server.').
+:- reasoner_setting(mongodb:port, int, 27017,
+	'The port of the MongoDB server.').
+:- reasoner_setting(mongodb:user, atom, '',
+	'The user name to use for MongoDB connections.').
+:- reasoner_setting(mongodb:password, atom, '',
+	'The user password to use for MongoDB connections.').
+:- reasoner_setting(mongodb:db, atom, knowrob,
+	'The name of the database for MongoDB connections.').
+:- reasoner_setting(mongodb:prefix, atom, '',
+	'A prefix that is used for all collection.').
+:- reasoner_setting(mongodb:read_only, atom, false,
+	'Indicates if the database is read-only.').
+:- reasoner_setting(mongodb:drop_graphs, list, [user],
+    'List of named graphs that should initially by erased.').
+%:- reasoner_setting(mongodb:collection_names, list, [triples, tf, annotations, inferred],
+%		'List of collections that will be imported/exported with remember/memorize.').
 
 :- rdf_meta(step_compile(t,t,t)).
 :- rdf_meta(step_compile(t,t,t,-)).
@@ -89,7 +109,7 @@ mongolog_consult(URL, Options) :-
 mongolog_consult1(URL, URLVersion) :-
 	once((current_source(URL, CurrentVersion, DocumentID, CurrentPredicates) ; CurrentVersion=none)),
 	file_directory_name(URL, FileDirectory),
-	mng_get_db(DB, SourcesCollection, 'mongolog_sources'),
+	mongolog_get_db(DB, SourcesCollection, 'mongolog_sources'),
 	% create entry in SourcesCollection if none exists
 	(	CurrentVersion \== none -> true
 	;	(   mng_store(DB, SourcesCollection,  [
@@ -105,7 +125,7 @@ mongolog_consult1(URL, URLVersion) :-
 	;   CurrentVersion == URLVersion -> true
 	;   forall(member(CurrentPred, CurrentPredicates),
 	        (   memberchk('-'(functor, string(CurrentFunctor)), CurrentPred),
-	            mng_get_db(DB, CurrentFunctorCollection, CurrentFunctor),
+	            mongolog_get_db(DB, CurrentFunctorCollection, CurrentFunctor),
 	            mng_remove(DB, CurrentFunctorCollection, [['source', string(DocumentID)]])
 	        ))
 	),
@@ -216,7 +236,7 @@ mongolog_consult3(Fact, Options) :-
 		PredicateDoc),
 	% assert into predicate collection
 	Stripped =.. [Functor|_Args],
-	mng_get_db(DB, PredicateCollection, Functor),
+	mongolog_get_db(DB, PredicateCollection, Functor),
 	mng_store(DB, PredicateCollection,
 	    [['source',string(DocumentID)] | PredicateDoc]).
 mongolog_consult3(Fact, Options) :-
@@ -242,7 +262,7 @@ mongolog_add_predicate(Fact, DocumentID) :-
 
 %% The version/last modification time of a loaded file
 current_source(URL, Version, DocumentID, Predicates) :-
-	mng_get_db(DB, Coll, 'mongolog_sources'),
+	mongolog_get_db(DB, Coll, 'mongolog_sources'),
 	once(mng_find(DB, Coll, [[url, string(URL)]], Doc)),
 	mng_get_dict('_id', Doc, id(DocumentID)),
 	mng_get_dict(predicates, Doc, array(Predicates)),
@@ -286,6 +306,10 @@ mongolog_call(consult(File), _Ctx) :-
 mongolog_call(consult(File), _Ctx) :-
 	!,
 	mongolog_consult(File).
+
+mongolog_call(load_rdf_xml(File,_ReasonerModule), _Ctx) :-
+    !,
+    load_owl(File).
 
 mongolog_call(Goal, ContextIn) :-
 	% TODO: what is the fields option used for?
@@ -363,7 +387,7 @@ mongolog_retract(Statement, Scope) :-
 % @param Options list of options.
 %
 mongolog_retract(_, _, _) :-
-	setting(mng_client:read_only, true),
+	reasoner_setting(mongodb:read_only, true),
 	!.
 
 mongolog_retract(Statements, Scope, Options) :-
@@ -384,13 +408,13 @@ mongolog_retract(triple(S,P,O), Scope, Options) :-
 	% get the query document
 	mng_triple_doc(triple(S,P,O), Doc, Options1),
 	% run a remove query
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, Doc).
 
 query_1(Pipeline, Vars) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
-	mng_one_db(DB, Coll),
+	mongolog_one_db(DB, Coll),
 	% run the query
 	setup_call_cleanup(
 		% setup: create a query cursor
@@ -440,7 +464,7 @@ assert_documents1(array(Docs), Key) :-
 	% TODO: make the client return docs in a format that it accepts as input.
 	maplist(format_doc, Docs, Docs0),
 	maplist(bulk_operation, Docs0, BulkOperations),
-	mng_get_db(DB, Coll, Key),
+	mongolog_get_db(DB, Coll, Key),
 	mng_bulk_write(DB, Coll, BulkOperations).
 
 %%
@@ -756,7 +780,7 @@ lookup_array(ArrayKey, Terminals,
 	option(orig_vars(VOs), Context, []),
 	option(copy_vars(VCs), Context, []),
 	% join collection with single document
-	mng_one_db(_DB, Coll),
+	mongolog_one_db(_DB, Coll),
 	% generate inner pipeline
 	compile_terms(Terminals, Pipeline,
 		OuterVars->_InnerVars,
@@ -1266,21 +1290,17 @@ setup_collection(Name, Indices) :-
 
 %%
 create_indices :-
-	forall(
-		collection_data_(Name, Indices),
-		create_indices(Name, Indices)
-	).
+	forall(collection_data_(Name, Indices),
+		   create_indices(Name, Indices)).
 
 %% Create indices for fast annotation retrieval.
 create_indices(_Name, _Indices) :-
-	setting(mng_client:read_only, true),
+	reasoner_setting(mongodb:read_only, true),
 	!.
 create_indices(Name, Indices) :-
-	mng_get_db(DB, Coll, Name),
-	forall(
-		member(Index, Indices),
-		mng_index_create(DB, Coll, Index)
-	).
+	mongolog_get_db(DB, Coll, Name),
+	forall(member(Index, Indices),
+		   mng_index_create(DB, Coll, Index)).
 
 
      /*******************************
@@ -1291,7 +1311,7 @@ create_indices(Name, Indices) :-
 % True if "one" collection has a document.
 %
 has_one_db :-
-	mng_one_db(DB, Collection),
+	mongolog_one_db(DB, Collection),
 	mng_find(DB, Collection, [], _),
 	!.
 
@@ -1302,7 +1322,10 @@ initialize_one_db :-
 	has_one_db, !.
 
 initialize_one_db :-
-	mng_one_db(DB, Collection),
+	reasoner_setting(mongodb:read_only, true),!.
+
+initialize_one_db :-
+	mongolog_one_db(DB, Collection),
 	mng_store(DB, Collection, [
 		['v_scope', [
 			['time', [
@@ -1311,10 +1334,6 @@ initialize_one_db :-
 			]]
 		]]
 	]).
-
-% make sure collection "one" has a document
-:- once((setting(mng_client:read_only, true) ; initialize_one_db)).
-
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
