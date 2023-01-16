@@ -1,14 +1,14 @@
 :- module(mongolog_triple,
-		[ 
-			mng_triple_doc(t,-,t),
-			triple(t,t,t),
-			get_unique_name(r,-),
-			is_unique_name(r),
-			load_owl/1,
-			load_owl/2,
-			load_owl/3,
-            drop_graph(+)
-		]).
+        [ mng_triple_doc(t,-,t),
+          triple(t,t,t),
+          get_unique_name(r,-),
+          is_unique_name(r),
+          load_owl/1,
+          load_owl/2,
+          load_owl/3,
+          drop_graph(+),
+          auto_drop_graphs/0
+        ]).
 /** <module> Handling of triples in query expressions.
 
 The following predicates are supported:
@@ -33,21 +33,7 @@ The following predicates are supported:
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_assert(r)).
 :- rdf_meta(lookup_parents_property(t,t)).
-
-% define some settings
-:- setting(drop_graphs, list, [user],
-		'List of named graphs that should initially by erased.').
-
-%%
-% register the "triples" collection.
-% This is needed for import/export.
-% It also creates search indices.
-%
-:- setup_collection(triples, [
-		['s'], ['p'], ['o'], ['p*'], ['o*'],
-		['s','p'], ['s','o'], ['o','p'],
-		['s','p*'], ['s','o*'], ['o','p*'], ['p','o*'],
-		['s','o','p'], ['s','o','p*'], ['s','o*','p'] ]).
+:- rdf_meta(triple(t,t,t)).
 
 %% register query commands
 :- mongolog:add_command(triple).
@@ -300,7 +286,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% read options
 	option(transitive, Ctx),
 	option(collection(Coll), Ctx),
-	mng_one_db(_DB, OneColl),
+	mongolog_one_db(_DB, OneColl),
 	% infer lookup parameters
 	query_value(P,Query_p),
 	% TODO: can query operators be supported?
@@ -740,7 +726,7 @@ load_owl(URL, Options) :-
 	load_owl(URL, Scope, ParentGraph) .
 
 load_owl(_URL, _Scope, _ParentGraph) :-
-    setting(mng_client:read_only, true),
+    reasoner_setting(mongodb:read_only, true),
     !.
 
 load_owl(URL, Scope, ParentGraph) :-
@@ -791,7 +777,7 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 %%
 load_ontology_graph(OntologyGraph) :-
 	rdf_equal(owl:'imports',OWL_Imports),
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	forall(
 		mng_find(DB, Coll, [
 			['p',     string(OWL_Imports)],
@@ -805,7 +791,7 @@ load_ontology_graph(OntologyGraph) :-
 
 %% The version/last modification time of a loaded ontology
 mongo_ontology_version(OntologyGraph, Version) :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	once(mng_find(DB, Coll, [
 		['p',     string(tripledbVersionString)],
 		['graph', string(OntologyGraph)]
@@ -814,7 +800,7 @@ mongo_ontology_version(OntologyGraph, Version) :-
 
 %% Write version string into DB
 set_mongo_ontology_version(URL, Version, OntoGraph) :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	mng_store(DB, Coll, [
 		['s',     string(URL)],
 		['p',     string(tripledbVersionString)],
@@ -829,7 +815,7 @@ set_mongo_ontology_version(URL, Version, OntoGraph) :-
 % @param Name the graph name.
 %
 drop_graph(Name) :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, [[graph, string(Name)]]).
 
 %%
@@ -838,11 +824,9 @@ drop_graph(Name) :-
 % when KnowRob is started.
 %
 auto_drop_graphs :-
-	\+ setting(mng_client:read_only, true),
-	setting(mongolog_triple:drop_graphs, L),
+	\+ reasoner_setting(mongodb:read_only, true),
+	reasoner_setting(mongodb:drop_graphs, L),
 	forall(member(X,L), drop_graph(X)).
-
-:- ignore(auto_drop_graphs).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
@@ -857,7 +841,7 @@ triple_graph(Ctx, Graph) :-
 extend_context(triple(_,P,_), P1, Context, Context0) :-
 	% get the collection name
 	(	option(collection(Coll), Context)
-	;	mng_get_db(_DB, Coll, 'triples')
+	;	mongolog_get_db(_DB, Coll, 'triples')
 	),
 	% read options from argument terms
 	% e.g. properties can be wrapped in transitive/1 term to
@@ -929,7 +913,7 @@ reduce_num_array(ArrayKey, Operator, Path, ValKey, Step) :-
 % True if Name is not the subject of any known fact.
 %
 is_unique_name(Name) :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
 
 %% get_unique_name(+Prefix, -Name) is semidet.
