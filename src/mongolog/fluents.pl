@@ -114,7 +114,7 @@ mongolog_add_fluent(Functor, ArgFields, TimeField) :-
 % @param Functor functor of the predicate
 %
 mongolog_drop_fluent(Functor) :-
-	mng_get_db(DB, Collection, Functor),
+	mongolog_get_db(DB, Collection, Functor),
 	mng_drop(DB, Collection).
 
 %%
@@ -375,7 +375,7 @@ fluent_fact_scope(TimeKey, Step) :-
 %%
 fluent_collection(Functor, Options, Collection) :-
 	(	option(collection(Collection), Options)
-	;	mng_get_db(_DB, Collection, Functor)
+	;	mongolog_get_db(_DB, Collection, Functor)
 	).
 
 		 /*******************************
