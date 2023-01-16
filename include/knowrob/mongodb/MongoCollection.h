@@ -10,20 +10,27 @@
 #define __KB_MONGO_COLLECTION_H__
 
 #include <mongoc.h>
+#include <SWI-cpp.h>
+#include <string>
 
 class MongoCollection {
 public:
 	MongoCollection(
 		mongoc_client_pool_t *pool,
-		const char *db_name,
-		const char *coll_name);
+		const std::string &db_name,
+		const std::string &coll_name);
 	~MongoCollection();
 	
 	void appendSession(bson_t *opts);
 
 	mongoc_client_session_t* session() { return session_; }
+	mongoc_collection_t* coll() { return coll_; }
 
-	mongoc_collection_t* operator()();
+	bool drop();
+	bool store(const PlTerm &doc);
+	bool remove(const PlTerm &doc);
+	bool bulk_write(const PlTerm &doc);
+	bool update(const PlTerm &query, const PlTerm &update);
 	
 private:
 	mongoc_client_pool_t *pool_;

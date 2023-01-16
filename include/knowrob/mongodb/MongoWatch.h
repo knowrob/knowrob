@@ -14,6 +14,7 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include <map>
 
 // SWI Prolog
@@ -45,11 +46,10 @@ public:
 	MongoWatch(mongoc_client_pool_t *client_pool);
 	~MongoWatch();
 
-	long watch(
-			const char *db_name,
-			const char *coll_name,
-			const std::string &callback_goal,
-			const PlTerm &query_term);
+	long watch(const char *db_name,
+			   const char *coll_name,
+			   const std::string &callback_goal,
+			   const PlTerm &query_term);
 
 	void unwatch(long watcher_id);
 
@@ -60,7 +60,7 @@ protected:
 	std::thread *thread_;
 	bool isRunning_;
 	std::mutex lock_;
-	long id_counter_;
+	static std::atomic<long> id_counter_;
 
 	void startWatchThread();
 	void stopWatchThread();
