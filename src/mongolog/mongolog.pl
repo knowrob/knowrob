@@ -8,7 +8,7 @@
 	  mongolog_add_rule(t,t),
 	  mongolog_drop_rule(t),
 	  mongolog_expand(t,-),
-	  is_mongolog_predicate(+),
+	  mongolog_current_predicate/1,
 	  setup_collection/2,
 	  initialize_one_db/0
 	]).
@@ -18,22 +18,27 @@
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'),
-	    [ rdf_meta/1, rdf_global_term/2 ]).
-:- use_module(library('scope')).
-:- use_module(library('semweb'), [ set_graph_option/2 ]).
-:- use_module(library('mongodb/client')).
 :- use_module(library('logging')).
-:- use_module(library('blackboard'), [ reasoner_setting/4, reasoner_setting/2 ]).
+:- use_module(library('semweb/rdf_db'),
+	    [ rdf_meta/1,
+	      rdf_global_term/2 ]).
+:- use_module(library('mongodb/client')).
+:- use_module(library('scope')).
+:- use_module(library('semweb'),
+        [ set_graph_option/2 ]).
+:- use_module(library('blackboard'),
+        [ reasoner_setting/4,
+          reasoner_setting/2,
+          current_reasoner_module/1 ]).
 
 %% set of registered query commands.
-:- dynamic step_command/1.
+:- dynamic step_command/2.
 % optionally implemented by query commands.
 :- multifile step_expand/2.
 %% implemented by query commands to compile query documents
 :- multifile step_compile/3, step_compile/4.
 %%
-:- dynamic mongolog_rule/3.
+:- dynamic mongolog_rule/4.
 
 :- reasoner_setting(mongodb:host, atom, localhost,
 	'The host name of the MongoDB server.').
@@ -67,27 +72,53 @@
 %
 % @param Command a command term.
 %
-add_command(Command) :-
-    step_command(Command),!.
-add_command(Command) :-
-	assertz(step_command(Command)).
+add_command(Command) :- add_command(Command, user).
 
+%%
+%
+add_command(Command, _CommandModule) :- step_command(user,Command), !.
+add_command(Command, CommandModule)  :- step_command(CommandModule,Command), !.
+add_command(Command, CommandModule)  :- assertz(step_command(CommandModule,Command)).
 
-%% is_mongolog_predicate(+PredicateIndicator) is semidet.
+%% mongolog_current_predicate(+PredicateIndicator) is semidet.
 %
-% True if PredicateIndicator corresponds to a known mongolog predicate.
+% True if Predicate is a currently defined predicated.
 %
-is_mongolog_predicate((/(Functor,_Arity))) :-
-	!, step_command(Functor).
+mongolog_current_predicate(PredicateIndicator) :-
+    ground(PredicateIndicator),
+	strip_module_(PredicateIndicator, Module, Stripped),
+	(   Stripped=(Functor/_Arity) -> true
+	;   atom(PredicateIndicator) -> Functor=PredicateIndicator
+	),
+	(   ground(Module) -> CommandModule = Module
+	;   current_reasoner_module(CommandModule)
+	),
+	% TODO: take arity into account
+	once((step_command1(CommandModule, Functor) ;
+	      mongolog_rule1(CommandModule, Functor, _, _))).
+
+%%
+is_step_command(CommandModule, (/(Functor,_Arity))) :-
+	!, step_command1(CommandModule,Functor).
 	
-is_mongolog_predicate(Goal) :-
+is_step_command(CommandModule, Goal) :-
 	compound(Goal),!,
 	Goal =.. [Functor|_Args],
-	step_command(Functor).
+	step_command1(CommandModule,Functor).
 	
-is_mongolog_predicate(Functor) :-
+is_step_command(CommandModule, Functor) :-
 	atom(Functor),!,
-	step_command(Functor).
+	step_command1(CommandModule,Functor).
+
+%%
+step_command1(ReasonerModule, Functor) :-
+    step_command(RealReasonerModule, Functor),
+    once((RealReasonerModule==user ; RealReasonerModule==ReasonerModule)).
+
+%%
+mongolog_rule1(ReasonerModule, Functor, Args, Expanded) :-
+    mongolog_rule(RealReasonerModule, Functor, Args, Expanded),
+    once((RealReasonerModule==user ; RealReasonerModule==ReasonerModule)).
 
 %% mongolog_consult(+URL) is semidet.
 %
@@ -130,6 +161,9 @@ mongolog_consult1(URL, URLVersion) :-
 	        ))
 	),
 	% read file, assert facts and rules
+	% NOTE: rules are not stored in the database, so the file must
+	%  be opened again even though it was loaded before.
+	% TODO: consider storing rules in the database as well
 	Opts=[source_id(DocumentID), relative_to(FileDirectory)],
 	setup_call_cleanup(
         open(URL, read, Stream),
@@ -291,13 +325,7 @@ mongolog_call(Goal) :-
 %
 mongolog_call(current_predicate(Predicate), _Ctx) :-
 	!,
-	% TODO: take arity and module into account
-	% TODO: check if predicate defined for current reasoner
-	strip_module_(Predicate, _Module, Stripped),
-	(   Stripped=(Functor/_Arity) -> true
-	;   atom(Predicate) -> Functor=Predicate
-	),
-	once((step_command(Functor) ; mongolog_rule(Functor, _, _))).
+	mongolog_current_predicate(Predicate).
 
 mongolog_call(consult(File), _Ctx) :-
     var(File),!,
@@ -344,73 +372,7 @@ term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
     atom_concat('v',Atom,Key),
     term_keys_variables_1(Xs, Ys).
 
-
 %%
-mongolog_assert(Fact) :-
-	universal_scope(QScope),
-	mongolog_call(assert(Fact),[scope(QScope)]).
-
-%% mongolog_retract(+Statement) is nondet.
-%
-% Same as mongolog_retract/2 with universal scope.
-%
-% @param Statement a statement term.
-%
-mongolog_retract(Statement) :-
-	wildcard_scope(Scope),
-	mongolog_retract(Statement, Scope, []).
-
-%% mongolog_retract(+Statement, +Scope) is nondet.
-%
-% Same as mongolog_retract/3 with empty options list.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-mongolog_retract(Statement, Scope) :-
-	mongolog_retract(Statement, Scope, []).
-
-%% kb_unproject(+Statement, +Scope, +Options) is semidet.
-%
-% Unproject that some statement is true.
-% Statement must be a term triple/3.
-% It can also be a list of such terms.
-% Scope is the scope of the statement to unproject. Options include:
-%
-%     - graph(GraphName)
-%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
-%
-% Any remaining options are passed to the querying backends that are invoked.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-% @param Options list of options.
-%
-mongolog_retract(_, _, _) :-
-	reasoner_setting(mongodb:read_only, true),
-	!.
-
-mongolog_retract(Statements, Scope, Options) :-
-	is_list(Statements),
-	!,
-	forall(
-		member(Statement, Statements),
-		mongolog_retract(Statement, Scope, Options)
-	).
-
-mongolog_retract(triple(S,P,O), Scope, Options) :-
-	% TODO: support other language terms too
-	%	- rather map to kb_call(retractall(Term)) or kb_call(unproject(Term))
-	% ensure there is a graph option
-	set_graph_option(Options, Options0),
-	% append scope to options
-	merge_options([scope(Scope)], Options0, Options1),
-	% get the query document
-	mng_triple_doc(triple(S,P,O), Doc, Options1),
-	% run a remove query
-	mongolog_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, Doc).
-
 query_1(Pipeline, Vars) :-
 	% get DB for cursor creation. use collection with just a
 	% single document as starting point.
@@ -599,6 +561,70 @@ atom_to_term_(Atom, _) :-
 	throw(error(conversion_error(atom_to_term(Atom)))).
 
 
+
+%%
+mongolog_assert(Fact) :-
+	universal_scope(QScope),
+	mongolog_call(assert(Fact),[scope(QScope)]).
+
+%% mongolog_retract(+Statement) is nondet.
+%
+% Same as mongolog_retract/2 with universal scope.
+%
+% @param Statement a statement term.
+%
+mongolog_retract(Statement) :-
+	wildcard_scope(Scope),
+	mongolog_retract(Statement, Scope, []).
+
+%% mongolog_retract(+Statement, +Scope) is nondet.
+%
+% Same as mongolog_retract/3 with empty options list.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+%
+mongolog_retract(Statement, Scope) :-
+	mongolog_retract(Statement, Scope, []).
+
+%% kb_unproject(+Statement, +Scope, +Options) is semidet.
+%
+% Unproject that some statement is true.
+% Statement must be a term triple/3.
+% It can also be a list of such terms.
+% Scope is the scope of the statement to unproject. Options include:
+%
+%     - graph(GraphName)
+%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
+%
+% Any remaining options are passed to the querying backends that are invoked.
+%
+% @param Statement a statement term.
+% @param Scope the scope of the statement.
+% @param Options list of options.
+%
+mongolog_retract(_, _, _) :-
+	reasoner_setting(mongodb:read_only, true),
+	!.
+
+mongolog_retract(Statements, Scope, Options) :-
+	is_list(Statements),
+	!,
+	forall(member(Statement, Statements),
+	       mongolog_retract(Statement, Scope, Options)).
+
+mongolog_retract(triple(S,P,O), Scope, Options) :-
+	% TODO: support retraction of other predicates
+	% ensure there is a graph option
+	set_graph_option(Options, Options0),
+	% append scope to options
+	merge_options([scope(Scope)], Options0, Options1),
+	% get the query document
+	mng_triple_doc(triple(S,P,O), Doc, Options1),
+	% run a remove query
+	mongolog_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, Doc).
+
 %% mongolog_compile(+Term, -Pipeline, +Context) is semidet.
 %
 % Translate a goal into an aggregation pipeline.
@@ -713,9 +739,9 @@ step_compile(pragma(Goal), _, [], StepVars) :-
 
 step_compile(stepvars(_), _, []) :- true.
 
-step_command(ask).
-step_command(pragma).
-step_command(stepvars).
+step_command(user,ask).
+step_command(user,pragma).
+step_command(user,stepvars).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% QUERY DOCUMENTS
@@ -1058,20 +1084,15 @@ is_referenced(Arg, Ctx) :-
 
 %%
 all_ground(Args, Ctx) :-
-	forall(
-		member(Arg,Args),
+	forall(member(Arg,Args),
 		(	is_instantiated(Arg, Ctx) -> true
 		;	throw(error(instantiation_error))
-		)
-	).
+		)).
 
 is_instantiated(Arg, Ctx) :-
 	mng_strip_variable(Arg, Arg0),
 	term_variables(Arg0, Vars),
-	forall(
-		member(Var, Vars),
-		is_referenced(Var, Ctx)
-	).
+	forall(member(Var, Vars), is_referenced(Var, Ctx)).
 
 
 		 /*******************************
@@ -1096,7 +1117,8 @@ mongolog_add_rule(Head, Body) :-
 	(	mongolog_expand(Body, Expanded) -> true
 	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
 	),
-	assertz(mongolog_rule(Functor, Args, Expanded)).
+	current_reasoner_module(ReasonerModule),
+	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)).
 
 
 %% mongolog_drop_rule(+Head) is semidet.
@@ -1110,7 +1132,8 @@ mongolog_add_rule(Head, Body) :-
 mongolog_drop_rule(Head) :-
 	compound(Head),
 	Head =.. [Functor|_],
-	retractall(mongolog_rule(Functor, _, _)).
+	current_reasoner_module(ReasonerModule),
+	retractall(mongolog_rule(ReasonerModule, Functor, _, _)).
 
 		 /*******************************
 		 *	    TERM EXPANSION     		*
@@ -1180,7 +1203,8 @@ expand_term_1(Goal, Expanded) :-
 	expand_term_0(Goal, Expanded).
 
 expand_term_1(Goal, Expanded) :-
-	once(is_mongolog_predicate(Goal)),
+	current_reasoner_module(ReasonerModule),
+	once(is_step_command(ReasonerModule, Goal)),
 	% allow the goal to recursively expand
 	(	mongolog:step_expand(Goal, Expanded) -> true
 	;	Expanded = Goal
@@ -1202,27 +1226,29 @@ expand_rule(Goal, Terminals) :-
 	% ground goals do not require special handling for variables
 	% as done in the clause below. So this clause here is simpler.
 	ground(Goal),!,
+	current_reasoner_module(ReasonerModule),
 	% unwrap goal term into functor and arguments.
 	Goal =.. [Functor|Args],
 	% findall rules with matching functor and arguments
-	findall(X, mongolog_rule(Functor, Args, X), TerminalClauses),
+	findall(X, mongolog_rule1(ReasonerModule, Functor, Args, X), TerminalClauses),
 	(	TerminalClauses \== []
 	->	Terminals = TerminalClauses
 	% if TerminalClauses==[] it means that either there is no such rule
 	% in which case expand_rule fails, or there is a matching rule, but
 	% the arguments cannot be unified with the ones provided in which
 	% case expand_rule succeeds with a pipeline [fail] that allways fails.
-	;	(	once(mongolog_rule(Functor,_,_)),
+	;	(	once(mongolog_rule1(ReasonerModule, Functor,_,_)),
 			Terminals=[fail]
 		)
 	).
 
 expand_rule(Goal, Terminals) :-
+	current_reasoner_module(ReasonerModule),
 	% unwrap goal term into functor and arguments.
 	Goal =.. [Functor|Args],
 	% find all asserted rules matching the functor
 	findall([Args0,Terminals0],
-			(	mongolog_rule(Functor, Args0, Terminals0),
+			(	mongolog_rule1(ReasonerModule, Functor, Args0, Terminals0),
 				unifiable(Args0, Args, _)
 			),
 			Clauses),

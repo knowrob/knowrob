@@ -144,7 +144,8 @@ mongolog_add_predicate(Functor, _, _) :-
 mongolog_add_predicate(Functor, Fields, Options) :-
 	setup_predicate_collection(Functor, Fields, Options),
 	assertz(mongolog_predicate(Functor, Fields, Options)),
-	mongolog:add_command(Functor).
+	current_reasoner_module(ReasonerModule),
+	mongolog:add_command(Functor,ReasonerModule).
 
 %%
 setup_predicate_collection(Functor, [FirstField|_], Options) :-

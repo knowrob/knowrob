@@ -64,7 +64,8 @@ mongolog_add_fluent(Functor, _, _, _) :-
 mongolog_add_fluent(Functor, ArgFields, TimeField, Options) :-
 	setup_fluent_collection(Functor, ArgFields, TimeField, Options),
 	assertz(mongolog_fluent(Functor, ArgFields, TimeField, Options)),
-	mongolog:add_command(Functor).
+	current_reasoner_module(ReasonerModule),
+	mongolog:add_command(Functor, ReasonerModule).
 
 %%
 setup_fluent_collection(Functor, ArgFields, TimeField, Options) :-
