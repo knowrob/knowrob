@@ -23,13 +23,19 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 
 void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 {
-	for(const auto &pair : config.get_child("reasoner")) {
-		try {
-			reasonerManager_->loadReasoner(pair.second);
+	auto reasonerList = config.get_child_optional("reasoner");
+	if(reasonerList) {
+		for(const auto &pair : reasonerList.value()) {
+			try {
+				reasonerManager_->loadReasoner(pair.second);
+			}
+			catch(std::exception& e) {
+				KB_ERROR("failed to load a reasoner: {}", e.what());
+			}
 		}
-		catch(std::exception& e) {
-			KB_ERROR("failed to load a reasoner: {}", e.what());
-		}
+	}
+	else {
+		KB_ERROR("configuration has no 'reasoner' key.");
 	}
 }
 

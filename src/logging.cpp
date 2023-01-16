@@ -56,37 +56,39 @@ void Logger::initialize()
 
 void Logger::loadConfiguration(boost::property_tree::ptree &config)
 {
-	auto &consoleConfig = config.get_child("console-sink");
-	if(!consoleConfig.empty()) {
-		if(consoleConfig.count("level")) {
-			setSinkLevel(Console,
-						 spdlog::level::from_str(consoleConfig.get<std::string>("level")));
+	auto consoleConfig = config.get_child_optional("console-sink");
+	if(consoleConfig) {
+		auto level = consoleConfig.value().get_optional<std::string>("level");
+		auto pattern = consoleConfig.value().get_optional<std::string>("pattern");
+		if(level.has_value()) {
+			setSinkLevel(Console, spdlog::level::from_str(level.value()));
 		}
-		if(consoleConfig.count("pattern")) {
-			setSinkPattern(Console,
-						   consoleConfig.get<std::string>("pattern"));
-		}
-	}
-
-	auto &fileConfig = config.get_child("file-sink");
-	if(!fileConfig.empty()) {
-		setupFileSink(fileConfig.get<std::string>("basename", "knowrob.log"),
-					  fileConfig.get<bool>("rotate", true),
-					  fileConfig.get<uint32_t>("max_size", 1048576),
-					  fileConfig.get<uint32_t>("max_files", 4));
-		if(fileConfig.count("level")) {
-			setSinkLevel(File,
-						 spdlog::level::from_str(fileConfig.get<std::string>("level")));
-		}
-		if(fileConfig.count("pattern")) {
-			setSinkPattern(File,
-						   fileConfig.get<std::string>("pattern"));
+		if(pattern.has_value()) {
+			setSinkPattern(Console, pattern.value());
 		}
 	}
 
-	if(config.count("flush-interval")) {
-		spdlog::flush_every(std::chrono::seconds(
-				config.get<int64_t>("flush-interval")));
+	auto fileConfig = config.get_child_optional("file-sink");
+	if(fileConfig) {
+		auto &fileConfig0 = fileConfig.value();
+		setupFileSink(fileConfig0.get<std::string>("basename", "knowrob.log"),
+					  fileConfig0.get<bool>("rotate", true),
+					  fileConfig0.get<uint32_t>("max_size", 1048576),
+					  fileConfig0.get<uint32_t>("max_files", 4));
+
+		auto level = fileConfig0.get_optional<std::string>("level");
+		auto pattern = fileConfig0.get_optional<std::string>("pattern");
+		if(level.has_value()) {
+			setSinkLevel(File, spdlog::level::from_str(level.value()));
+		}
+		if(pattern.has_value()) {
+			setSinkPattern(File, pattern.value());
+		}
+	}
+
+	auto flushInterval = config.get_optional<int64_t>("flush-interval");
+	if(flushInterval.has_value()) {
+		spdlog::flush_every(std::chrono::seconds(flushInterval.value()));
 	}
 }
 

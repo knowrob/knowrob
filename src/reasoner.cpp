@@ -63,19 +63,21 @@ ReasonerManager::ReasonerManager()
 
 void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 {
+	auto lib = config.get_optional<std::string>("lib");
+	auto type = config.get_optional<std::string>("type");
+	auto name = config.get_optional<std::string>("name");
+
 	// get a reasoner factory
 	std::shared_ptr<ReasonerFactory> factory;
-	if(config.count("lib")) {
+	if(lib.has_value()) {
 		// use factory in DLL
-		const auto &libPath = config.get<std::string>("lib");
-		factory = loadReasonerPlugin(libPath);
+		factory = loadReasonerPlugin(lib.value());
 	}
-	else if(config.count("type")) {
+	else if(type.has_value()) {
 		// map type name to a factory
-		const auto &typeName = config.get<std::string>("type");
-		const auto &it = reasonerFactories_.find(typeName);
+		const auto &it = reasonerFactories_.find(type.value());
 		if(it == reasonerFactories_.end()) {
-			KB_WARN("no factory registered for reasoner type '{}'.", typeName);
+			KB_WARN("no factory registered for reasoner type '{}'.", type.value());
 		}
 		else {
 			factory = it->second;
@@ -90,8 +92,8 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	}
 	// create a reasoner id, or use name property
 	std::string reasonerID;
-	if(config.count("name")) {
-		reasonerID = config.get<std::string>("name");
+	if(name.has_value()) {
+		reasonerID = name.value();
 	}
 	else {
 		reasonerID = factory->name() + std::to_string(reasonerIndex_);
@@ -219,16 +221,19 @@ void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &
 		}
 	}
 
-	for(const auto &pair : config.get_child("data-sources")) {
-		auto &subtree = pair.second;
+	auto data_sources = config.get_child_optional("data-sources");
+	if(data_sources) {
+		for(const auto &pair : data_sources.value()) {
+			auto &subtree = pair.second;
 
-		auto fileValue = subtree.get_optional<std::string>("file");
-		if(fileValue.has_value()) {
-			auto fileFormat = subtree.get("format",formatDefault);
-			dataFiles.push_back(std::make_shared<DataFile>(fileValue.value(), fileFormat));
-		}
-		else {
-			KB_WARN("Ignoring data source without \"file\" key.");
+			auto fileValue = subtree.get_optional<std::string>("file");
+			if(fileValue.has_value()) {
+				auto fileFormat = subtree.get("format",formatDefault);
+				dataFiles.push_back(std::make_shared<DataFile>(fileValue.value(), fileFormat));
+			}
+			else {
+				KB_WARN("Ignoring data source without \"file\" key.");
+			}
 		}
 	}
 }

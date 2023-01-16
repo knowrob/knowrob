@@ -372,9 +372,9 @@ int run(int argc, char **argv) {
 	}
 
 	// configure logging
-	auto &log_config = config.get_child("logging");
-	if(!log_config.empty()) {
-		Logger::loadConfiguration(log_config);
+	auto log_config = config.get_child_optional("logging");
+	if(log_config) {
+		Logger::loadConfiguration(log_config.value());
 	}
 	// overwrite console logger level (default: prevent messages being printed, only print warnings and errors)
 	Logger::setSinkLevel(Logger::Console,
