@@ -141,12 +141,6 @@ reasoner_rdf_init(Reasoner) :-
     Reasoner:assert(':-'(triple(S,P,O,Ctx),        semweb:sw_triple(S,P,O,Ctx))),
     Reasoner:assert(':-'(instance_of(S,Cls,Ctx),   semweb:sw_instance_of(S,Cls,Ctx))).
 
-%% TODO
-/*
-:- setting(mng_client:collection_names, list, [triples, tf, annotations, inferred],
-		'List of collections that will be imported/exported with remember/memorize.').
-*/
-
 %%
 % Assert the collection names to be used by remember/memorize
 %
@@ -348,7 +342,7 @@ kb_project(Statement, Scope, Options) :-
 	set_graph_option(Options, Options0),
 	/*
 	% compile and call statement
-	(	setting(mng_client:read_only, true)
+	(	reasoner_setting(mongodb:read_only, true)
 	->	log_warning(db(read_only(projection)))
 	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
 	).
