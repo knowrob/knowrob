@@ -12,8 +12,6 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('mongodb/client'),
-		[ mng_one_db/2 ]).
 :- use_module('mongolog').
 
 %% register query commands
