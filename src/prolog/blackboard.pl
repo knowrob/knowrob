@@ -41,7 +41,7 @@
 current_reasoner_module(Reasoner) :-
     nb_current(reasoner_module, Reasoner),
     !.
-current_reasoner_module(knowrob).
+current_reasoner_module(user).
 
 %% set_current_reasoner_module(+Reasoner) is det.
 %
