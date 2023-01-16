@@ -24,9 +24,3 @@
 :- use_module(semweb).
 :- use_module(holds).
 :- use_module(temporal).
-
-:- rdf_meta(triple(t,t,t)).
-% initialize hierachical organization of triple graphs
-:- load_graph_structure.
-% load common ontology
-:- load_owl('http://www.ease-crc.org/ont/SOMA.owl', [ namespace(soma) ]).

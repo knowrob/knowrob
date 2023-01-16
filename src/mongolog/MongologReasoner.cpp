@@ -23,13 +23,27 @@ bool MongologReasoner::initializeDefaultPackages()
 {
 	static bool initialized = false;
 
-	if(initialized) {
-		return true;
-	} else {
+	if(!initialized) {
 		initialized = true;
 		// load mongolog code once globally into the Prolog engine
-		return consult(std::filesystem::path("mongolog") / "__init__.pl", "user", false);
+		consult(std::filesystem::path("mongolog") / "__init__.pl", "user", false);
 	}
+
+	// mongolog uses a special collection "one" that contains one empty document.
+	// auto-create it if possible.
+	eval(std::make_shared<Predicate>(Predicate("initialize_one_db",{})), nullptr, false);
+	// initialize hierarchical organization of triple graphs
+	eval(std::make_shared<Predicate>(Predicate("load_graph_structure",{})), nullptr, false);
+	//
+	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})), nullptr, false);
+
+	// load RDFS and OWL model into DB, other RDF-XML files can be listed in settings.
+	// TODO: only do below if mongolog reasoner includes semweb predicates.
+	eval(std::make_shared<Predicate>(Predicate("setup_triple_collection",{})), nullptr, false);
+	loadDataFile(std::make_shared<DataFile>("owl/rdf-schema.xml", "rdf-xml"));
+	loadDataFile(std::make_shared<DataFile>("owl/owl.rdf", "rdf-xml"));
+
+	return true;
 }
 
 bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
