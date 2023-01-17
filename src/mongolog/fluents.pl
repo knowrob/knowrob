@@ -57,6 +57,8 @@ mongolog_fluent(Term, TimeField, ArgFields, Options) :-
 % @param Options option list
 %
 mongolog_add_fluent(Functor, _, _, _) :-
+    % TODO: allow that the same fluent is defined in different reasoner modules.
+    %   (look at database.pl handling of facts)
 	mongolog_fluent(Functor, _, _, _),
 	!,
 	throw(permission_error(modify,database_fluent,Functor)).

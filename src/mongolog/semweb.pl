@@ -54,7 +54,6 @@
         , mng_store/3
         ]).
 :- use_module(library('scope')).
-:- use_module('rules').
 
 		 /*******************************
 		  *            RDFS             *

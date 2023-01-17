@@ -2,9 +2,10 @@
 		[ mongolog_get_db/3,
 		  mongolog_one_db/2,
 		  mongolog_uri/1,
-		  mongolog_add_predicate(+,+,+),
-		  mongolog_drop_predicate(+),
-		  mongolog_predicate(-,-,-),
+		  mongolog_add_predicate/3,
+		  mongolog_add_predicate/4,
+		  mongolog_drop_predicate/1,
+		  mongolog_predicate/6,
 		  mongolog_predicate_document(t,-),
 		  mongolog_predicate_collection(t,-,-)
 		]).
@@ -26,8 +27,7 @@ The following predicates are supported:
 :- use_module(library('mongodb/client.pl')).
 
 %% Predicates that are stored in a mongo collection
-:- dynamic mongolog_predicate/3.
-
+:- dynamic mongolog_predicate/6.
 
 %% query commands
 :- mongolog:add_command(assert).
@@ -81,9 +81,9 @@ mongolog_uri(URI) :-
 
 mongolog_uri(URI) :-
     mongolog_uri1(URI),
-    % remember constructed URI as reasoner setting
     current_reasoner_module(ReasonerModule),
     log_info(mongolog(ReasonerModule, mongo_uri(URI))),
+    % remember constructed URI as reasoner setting
     reasoner_set_setting(ReasonerModule, mongodb:uri, URI).
 
 %%
@@ -111,13 +111,14 @@ mongolog_uri_(Host, Port, User, '', URI) :-
 mongolog_uri_(Host, Port, User, PW, URI) :-
     !, atomic_list_concat([ 'mongodb://', User, ':', PW, '@', Host, ':', Port ], URI).
 
-%% mongolog_predicate(+Term, -Fields, -Options) is semidet.
+%% mongolog_predicate(+Term, ?Arity, ?Fields, ?DstModule, ?SourceID, ?Options) is semidet.
 %
 %
-mongolog_predicate(Term, Fields, Options) :-
+mongolog_predicate(Term, Arity, Fields, DstModule, SourceID, Options) :-
 	compound(Term),!,
-	Term =.. [Functor|_],
-	mongolog_predicate(Functor, Fields, Options).
+	Term =.. [Functor|Args],
+	length(Args, Arity),
+	mongolog_predicate(Functor, Arity, Fields, DstModule, SourceID, Options).
 
 %% mongolog_predicate_document(+Predicate, -PredicateDoc) is det.
 %
@@ -128,7 +129,7 @@ mongolog_predicate_document(Predicate, PredicateDoc) :-
 		[], Zipped, Ctx_pred, write),
 	findall([Field,Val],
 		(	member([Field,Arg],Zipped),
-			var_key_or_val(Arg, Ctx_pred, Val)
+			mongolog:var_key_or_val(Arg, Ctx_pred, Val)
 		),  PredicateDoc).
 
 %% mongolog_predicate_collection(+Predicate, -DB, -Collection) is semidet.
@@ -139,7 +140,20 @@ mongolog_predicate_collection(Predicate, DB, PredicateCollection) :-
 	Predicate =.. [Functor|_Args],
 	mongolog_get_db(DB, PredicateCollection, Functor).
 
-%% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
+%%
+%
+% Same as mongolog_add_predicate/4 but automatically constructs
+% fields using the index as a key.
+%
+mongolog_add_predicate(Functor/Arity, SourceID, Options) :-
+    % use argument number as name
+    findall(FieldName,
+        (   between(1,Arity,X),
+    		atom_number(FieldName,X)
+        ),  Fields),
+    mongolog_add_predicate(Functor, Fields, SourceID, Options).
+
+%% mongolog_add_predicate(+Functor, +Fields, +SourceID, +Options) is semidet.
 %
 % Register a predicate that stores facts in the database.
 % Functor is the functor of a n-ary predicate, and Fields is
@@ -157,16 +171,20 @@ mongolog_predicate_collection(Predicate, DB, PredicateCollection) :-
 % @param Fields field names of predicate arguments
 % @param Options option list
 %
-mongolog_add_predicate(Functor, _, _) :-
-	mongolog_predicate(Functor, _, _),
+mongolog_add_predicate(Functor, Fields, _, _) :-
+	current_reasoner_module(DstModule),
+	length(Fields, Arity),
+	mongolog_predicate(Functor, Arity, _, RealModule, _, _),
+	(RealModule==user ; RealModule==DstModule),
 	!,
 	throw(permission_error(modify,database_predicate,Functor)).
 
-mongolog_add_predicate(Functor, Fields, Options) :-
+mongolog_add_predicate(Functor, Fields, SourceID, Options) :-
+	length(Fields, Arity),
+	current_reasoner_module(DstModule),
 	setup_predicate_collection(Functor, Fields, Options),
-	assertz(mongolog_predicate(Functor, Fields, Options)),
-	current_reasoner_module(ReasonerModule),
-	mongolog:add_command(Functor,ReasonerModule).
+	assertz(mongolog_predicate(Functor, Arity, Fields, DstModule, SourceID, Options)),
+	mongolog:add_command(Functor, DstModule).
 
 %%
 setup_predicate_collection(Functor, [FirstField|_], Options) :-
@@ -184,23 +202,24 @@ setup_predicate_collection(Functor, [FirstField|_], Options) :-
 %
 mongolog_drop_predicate(Functor) :-
 	mongolog_get_db(DB, Collection, Functor),
+	retractall(mongolog_predicate(Functor, _, _, _, _, _)),
 	mng_drop(DB, Collection).
 
 %%
 mongolog:step_expand(project(Term), assert(Term)) :-
-	mongolog_predicate(Term, _, _),!.
+	mongolog_predicate(Term, _, _, _, _, _),!.
 
 %%
 mongolog:step_compile(assert(Term), Ctx, Pipeline, StepVars) :-
-	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate(Term, _, _, _, _, _),!,
 	mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars).
 
 mongolog:step_compile(retractall(Term), Ctx, Pipeline, StepVars) :-
-	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate(Term, _, _, _, _, _),!,
 	mongolog_predicate_retractall(Term, Ctx, Pipeline, StepVars).
 
 mongolog:step_compile(Term, Ctx, Pipeline, StepVars) :-
-	mongolog_predicate(Term, _, _),!,
+	mongolog_predicate(Term, _, _, _, _, _),!,
 	mongolog_predicate_call(Term, Ctx, Pipeline, StepVars).
 
 %%
@@ -268,7 +287,7 @@ mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars) :-
 %
 mongolog_predicate_zip(Term, Ctx, Zipped, Ctx_zipped, ReadOrWrite) :-
 	% get predicate fields and options
-	mongolog_predicate(Term, ArgFields, Options),
+	mongolog_predicate(Term, _, ArgFields, _, _, Options),
 	% get predicate functor and arguments
 	Term =.. [Functor|Args],
 	% get the database collection of the predicate
@@ -437,8 +456,8 @@ match_conditional(FieldKey, Arg, Ctx, ['$expr', ['$or', array([
 :- begin_tests('mongolog_database').
 
 test('add_database_predicate') :-
-	assert_true(mongolog_add_predicate(test_woman, [name], [[name]])),
-	assert_true(mongolog_add_predicate(test_loves, [a,b], [[a],[b],[a,b]])).
+	assert_true(mongolog_add_predicate(test_woman, [name], test, [])),
+	assert_true(mongolog_add_predicate(test_loves, [a,b], test, [])).
 
 test('assert(woman)') :-
 	assert_true(mongolog_call(assert(test_woman(mia)))),
@@ -484,7 +503,7 @@ test('loves(-,+)') :-
 	assert_true(memberchk(vincent,Xs)).
 
 test('assert(shape)') :-
-	assert_true(mongolog_add_predicate(test_shape, [name,term], [[name]])),
+	assert_true(mongolog_add_predicate(test_shape, [name,term], test, [])),
 	assert_true(mongolog_call(assert(test_shape(obj1,sphere(1.0))))),
 	assert_true(mongolog_call(assert(test_shape(obj3,sphere(2.0))))),
 	assert_true(mongolog_call(assert(test_shape(obj2,box(1.0,2.0,3.0))))).

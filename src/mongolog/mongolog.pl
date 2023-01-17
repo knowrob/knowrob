@@ -2,6 +2,7 @@
 	[ mongolog_call(t),
 	  mongolog_call(t,+),
 	  mongolog_assert(t),
+	  mongolog_project(t),
 	  mongolog_retract(t),        % +Statement
 	  mongolog_retract(t,t),      % +Statement, +Scope
 	  mongolog_retract(t,t,t),    % +Statement, +Scope, +Options
@@ -39,6 +40,13 @@
 :- multifile step_compile/3, step_compile/4.
 %%
 :- dynamic mongolog_rule/4.
+%% maps source file URI to name of module in which it was loaded
+:- dynamic mongolog_source_file/2.
+
+%% operators for tell/ask rules
+:- op(1100, xfx, user:(?>)).
+:- op(1100, xfx, user:(+>)).
+:- op(1100, xfx, user:(?+>)).
 
 :- reasoner_setting(mongodb:host, atom, localhost,
 	'The host name of the MongoDB server.').
@@ -62,25 +70,6 @@
 :- rdf_meta(step_compile(t,t,t)).
 :- rdf_meta(step_compile(t,t,t,-)).
 
-%% add_command(+Command) is det.
-%
-% Same as add_command/2 but uses "user" as command module.
-%
-% @param Command a command term.
-%
-add_command(Command) :- add_command(Command, user).
-
-%% add_command(+Command, +CommandModule) is det.
-%
-% Defines a built-in command in mongolog.
-%
-% @param Command a command term.
-% @param CommandModule the module in which the command is registered.
-%
-add_command(Command, _CommandModule) :- step_command(user,Command), !.
-add_command(Command, CommandModule)  :- step_command(CommandModule,Command), !.
-add_command(Command, CommandModule)  :- assertz(step_command(CommandModule,Command)).
-
 %% mongolog_current_predicate(+PredicateIndicator) is semidet.
 %
 % True if Predicate is a currently defined predicated.
@@ -98,15 +87,37 @@ mongolog_current_predicate(PredicateIndicator) :-
 	once((step_command1(CommandModule, Functor) ;
 	      mongolog_rule1(CommandModule, Functor, _, _))).
 
+%% add_command(+Command) is det.
+%
+% Same as add_command/2 but uses "user" as command module.
+%
+% @param Command a command term.
+%
+add_command(Command) :- add_command(Command, user).
+
+%% add_command(+Command, +CommandModule) is det.
+%
+% Defines a built-in command in mongolog.
+%
+% @param Command a command term.
+% @param CommandModule the module in which the command is registered.
+%
+add_command(Command, _CommandModule) :-
+    step_command(user,Command), !.
+add_command(Command, CommandModule) :-
+    step_command(CommandModule,Command), !.
+add_command(Command, CommandModule) :-
+    assertz(step_command(CommandModule,Command)).
+
 %%
 is_step_command(CommandModule, (/(Functor,_Arity))) :-
 	!, step_command1(CommandModule,Functor).
-	
+
 is_step_command(CommandModule, Goal) :-
 	compound(Goal),!,
 	Goal =.. [Functor|_Args],
 	step_command1(CommandModule,Functor).
-	
+
 is_step_command(CommandModule, Functor) :-
 	atom(Functor),!,
 	step_command1(CommandModule,Functor).
@@ -116,10 +127,59 @@ step_command1(ReasonerModule, Functor) :-
     step_command(RealReasonerModule, Functor),
     once((RealReasonerModule==user ; RealReasonerModule==ReasonerModule)).
 
+%% mongolog_add_rule(+Head, +Body) is semidet.
+%
+% Register a rule that translates into an aggregation pipeline.
+% Any non-terminal predicate in Body must have a previously asserted
+% rule it can expand into.
+% After being asserted, the Head predicate can be referred to in
+% calls of kb_call/1.
+%
+% @param Head The head of a rule.
+% @param Body The body of a rule.
+%
+mongolog_add_rule(Head, Body) :-
+	current_reasoner_module(ReasonerModule),
+    mongolog_add_rule(Head, Body, ReasonerModule).
+
+mongolog_add_rule(Head, Body, ReasonerModule) :-
+	%% get the functor of the predicate
+	Head =.. [Functor|Args],
+	%% expand goals into terminal symbols
+	(	mongolog_expand(Body, Expanded) -> true
+	;	log_error_and_fail(mongolog(expansion_failed(Functor)))
+	),
+	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)).
+
+%% mongolog_drop_rule(+Head) is semidet.
+%
+% Drop a previously added `mongolog` rule.
+% That is, erase its database record such that it can
+% not be referred to anymore in rules added after removal.
+%
+% @param Term A mongolog rule.
+%
+mongolog_drop_rule(Head) :-
+	compound(Head),
+	Head =.. [Functor|_],
+	current_reasoner_module(ReasonerModule),
+	retractall(mongolog_rule(ReasonerModule, Functor, _, _)).
+
 %%
 mongolog_rule1(ReasonerModule, Functor, Args, Expanded) :-
     mongolog_rule(RealReasonerModule, Functor, Args, Expanded),
     once((RealReasonerModule==user ; RealReasonerModule==ReasonerModule)).
+
+%%
+define_fact_predicate_(Fact, DocumentID) :-
+	current_reasoner_module(Module),
+	Fact =.. [Functor|Args],
+	length(Args, Arity),
+	% make sure define_fact_predicate_ was called for the predicate
+	(	mongolog_predicate(Functor, Arity, _, user, _, _) -> true
+	;   mongolog_predicate(Functor, Arity, _, Module, _, _) -> true
+	;	mongolog_add_predicate(Functor/Arity, DocumentID, [])
+	).
 
 %% mongolog_consult(+URL) is semidet.
 %
@@ -127,6 +187,16 @@ mongolog_rule1(ReasonerModule, Functor, Args, Expanded) :-
 %
 mongolog_consult(URL) :-
 	mongolog_consult(URL, []).
+
+mongolog_consult(URL, _Options) :-
+    % skip consultation if the file was consulted already for the current reasoner.
+    % TODO: handle the case that only a subset of predicates was imported before,
+    %  i.e. via use_module(FileSpec, ImportList). Currently ImportList is ignored and
+    %  all predicates are loaded in any case.
+	current_reasoner_module(Module),
+	mongolog_source_file(URL, RealModule),
+	(RealModule==user ; RealModule==Module),
+	!.
 
 mongolog_consult(URL, Options) :-
     log_debug(mongolog(consult(URL,Options))),
@@ -136,57 +206,42 @@ mongolog_consult(URL, Options) :-
     ;   absolute_file_name(URL, AbsolutePath, DefaultOpts)
     ),
 	sw_url_version(AbsolutePath, FileVersion),
-	mongolog_consult1(AbsolutePath, FileVersion).
+	mongolog_consult1(AbsolutePath, FileVersion),
+	% remember that the file was consulted
+	current_reasoner_module(Module),
+	assertz(mongolog_source_file(URL,Module)).
 
 mongolog_consult1(URL, URLVersion) :-
-	once((current_source(URL, CurrentVersion, DocumentID, CurrentPredicates) ; CurrentVersion=none)),
 	file_directory_name(URL, FileDirectory),
-	mongolog_get_db(DB, SourcesCollection, 'mongolog_sources'),
-	% create entry in SourcesCollection if none exists
+    % lookup currently stored version of URL
+	once((mongolog_stored_source(URL, CurrentVersion, DocumentID, CurrentPredicates) ;
+	      CurrentVersion=none)),
+	% create entry in 'mongolog_sources' if none exists
 	(	CurrentVersion \== none -> true
-	;	(   mng_store(DB, SourcesCollection,  [
-	            ['url',string(URL)],
-	            ['version',string(URLVersion)],
-	            ['predicates',array([])]
-	        ]),
-	        current_source(URL, _, DocumentID, _)
-	    )
+	;	mongolog_stored_source_create(URL, URLVersion, [], DocumentID)
 	),
 	% delete facts of older file versions
 	(	CurrentVersion == none -> true
 	;   CurrentVersion == URLVersion -> true
-	;   forall(member(CurrentPred, CurrentPredicates),
-	        (   memberchk('-'(functor, string(CurrentFunctor)), CurrentPred),
-	            mongolog_get_db(DB, CurrentFunctorCollection, CurrentFunctor),
-	            mng_remove(DB, CurrentFunctorCollection, [['source', string(DocumentID)]])
-	        ))
+	;   mongolog_stored_source_drop(DocumentID, CurrentPredicates)
 	),
 	% read file, assert facts and rules
 	% NOTE: rules are not stored in the database, so the file must
 	%  be opened again even though it was loaded before.
-	Opts=[source_id(DocumentID), relative_to(FileDirectory)],
+	ConsultOpts=[source_id(DocumentID),
+	             source_url(URL),
+	             relative_to(FileDirectory)],
 	setup_call_cleanup(
         open(URL, read, Stream),
         (	URLVersion==CurrentVersion
-        ->	mongolog_consult2(Stream, [reload|Opts])
-        ;	mongolog_consult2(Stream, [load|Opts])
+        ->	mongolog_consult2(Stream, [reload|ConsultOpts])
+        ;	mongolog_consult2(Stream, [load|ConsultOpts])
         ),
         close(Stream)
     ),
-    % lookup asserted predicate indicators
-    findall([[functor,string(XFunctor)], [arity,int(XArity)]],
-        (   mongolog_database:mongolog_predicate(XFunctor, XFields, XOptions),
-            option(source_id(DocumentID), XOptions),
-            length(XFields, XArity)
-        ),
-        SourcePredicates),
 	% update version, and array of loaded predicates
 	(	URLVersion==CurrentVersion -> true
-	;	mng_update(DB, SourcesCollection, [['_id',id(DocumentID)]], [
-	        ['url',string(URL)],
-	        ['version',string(URLVersion)],
-	        ['predicates', array(SourcePredicates)]
-	    ])
+	;	mongolog_stored_source_update(DocumentID, URL, URLVersion)
 	).
 
 mongolog_consult2(Stream, Options) :-
@@ -230,24 +285,18 @@ mongolog_consult3('?+>'(Head,Body), Options) :-
     !, mongolog_consult3('?>'(Head,Body), Options),
        mongolog_consult3('+>'(Head,Body), Options).
 
-mongolog_consult3('?>'(Head,Body), Options) :-
-	!,
-	% FIXME: there is a bug that when a file is consulted through mongolog_call(consult)
-	%         and another time through rule expansion that the rule is added twice,
-	%         i.e. mongolog_add_rule is called twice for the same declaration.
-	%         best revise term expansion and integrate it here such that
-	%         the redundant call can be avoided.
+mongolog_consult3('?>'(Head,Body), _Options) :-
+    !, % "ask" rule
 	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
 	% add the rule to the DB backend
-	(   exclude_predicate_(Term, Options) -> true
-	;   mongolog_add_rule(Term, BodyGlobal)
-	).
+	mongolog_add_rule(Term, BodyGlobal).
 
-mongolog_consult3('+>'(Head,Body), Options) :-
-    !,
+mongolog_consult3('+>'(Head,Body), _Options) :-
+    !, % "tell" rule
+	% expand rdf terms Prefix:Local to IRI atom
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
@@ -256,23 +305,19 @@ mongolog_consult3('+>'(Head,Body), Options) :-
 	atom_concat('project_',Functor,Functor0),
 	Head0 =.. [Functor0|Args],
 	% add the rule to the DB backend
-	(   exclude_predicate_(Term, Options) -> true
-	;   mongolog_add_rule(Head0, project(BodyGlobal))
-	).
+	mongolog_add_rule(Head0, project(BodyGlobal)).
 
 % consult a fact
 mongolog_consult3(Fact, Options) :-
 	strip_module_(Fact, _Module, Stripped),
-	(   exclude_predicate_(Stripped, Options) -> true
-	;   mongolog_consult_fact(Stripped, Options)
-	).
+	mongolog_consult_fact(Stripped, Options).
 
 %%
 mongolog_consult_fact(Fact, Options) :-
 	option(load, Options),!,
 	option(source_id(DocumentID), Options, user),
 	% assert that the asserted predicate is a currently defined predicate
-	mongolog_add_predicate(Fact, DocumentID),
+	define_fact_predicate_(Fact, DocumentID),
 	% translate into json document
 	mongolog_predicate_document(Fact, PredicateDoc),
 	% store document
@@ -284,25 +329,46 @@ mongolog_consult_fact(Fact, Options) :-
 	% option(reload, Options),
 	option(source_id(DocumentID), Options, user),
 	% assert that the asserted predicate is a currently defined predicate
-	mongolog_add_predicate(Fact, DocumentID).
-
-%%
-exclude_predicate_(Term, Options) :-
-    option(imports(ImportList), Options, all),
-    (   ImportList==all -> fail
-    ;   (   Term =.. [Functor|Args],
-            length(Args,Arity),
-            \+ memberchk('/'(Functor,Arity),ImportList)
-        )
-    ).
+	define_fact_predicate_(Fact, DocumentID).
 
 %% The version/last modification time of a loaded file
-current_source(URL, Version, DocumentID, Predicates) :-
+mongolog_stored_source(URL, Version, DocumentID, Predicates) :-
 	mongolog_get_db(DB, Coll, 'mongolog_sources'),
 	once(mng_find(DB, Coll, [[url, string(URL)]], Doc)),
 	mng_get_dict('_id', Doc, id(DocumentID)),
 	mng_get_dict(predicates, Doc, array(Predicates)),
 	mng_get_dict(version, Doc, string(Version)).
+
+%%
+mongolog_stored_source_create(URL, URLVersion, Collections, DocumentID) :-
+	mongolog_get_db(DB, SourcesCollection, 'mongolog_sources'),
+    mng_store(DB, SourcesCollection,  [
+        ['url',string(URL)],
+        ['version',string(URLVersion)],
+        ['predicates',array(Collections)]
+    ]),
+    mongolog_stored_source(URL, _, DocumentID, _).
+
+%%
+mongolog_stored_source_update(DocumentID, URL, URLVersion) :-
+	mongolog_get_db(DB, SourcesCollection, 'mongolog_sources'),
+    % lookup asserted predicate indicators
+    findall([[functor,string(Functor)], [arity,int(Arity)]],
+        mongolog_predicate(Functor, Arity, _, _, DocumentID, _),
+        SourcePredicates),
+    mng_update(DB, SourcesCollection, [['_id',id(DocumentID)]], [
+        ['url',string(URL)],
+        ['version',string(URLVersion)],
+        ['predicates', array(SourcePredicates)]
+    ]).
+
+%%
+mongolog_stored_source_drop(DocumentID, CurrentPredicates) :-
+    forall(member(CurrentPred, CurrentPredicates),
+        (   memberchk('-'(functor, string(CurrentFunctor)), CurrentPred),
+            mongolog_get_db(DB, CurrentFunctorCollection, CurrentFunctor),
+            mng_remove(DB, CurrentFunctorCollection, [['source', string(DocumentID)]])
+        )).
 
 %%
 strip_module_(:(Module,Term),Module,Term) :- !.
@@ -326,17 +392,22 @@ mongolog_call(Goal) :-
 % @param Options Additional options
 %
 mongolog_call(current_predicate(Predicate), _Ctx) :-
-	!, mongolog_current_predicate(Predicate).
+	!,
+	mongolog_current_predicate(Predicate).
 
 mongolog_call(consult(File), _Ctx) :-
-    var(File),!,
-    throw(error(instantiation_error(File), mongolog_call(consult(File)))).
-
-mongolog_call(consult(File), _Ctx) :-
-	!, mongolog_consult(File).
+    !,
+    (   var(File)
+    ->  throw(error(instantiation_error(File), mongolog_call(consult(File))))
+    ;   mongolog_consult(File)
+    ).
 
 mongolog_call(load_rdf_xml(File,_Module), _Ctx) :-
-    !, load_owl(File).
+    !,
+    (   var(File)
+    ->  throw(error(instantiation_error(File), mongolog_call(load_rdf_xml(File))))
+    ;   load_owl(File)
+    ).
 
 mongolog_call(Goal, ContextIn) :-
 	% Add all toplevel variables to context.
@@ -420,7 +491,7 @@ assert_documents1([], _) :- !.
 assert_documents1(array(Docs), Key) :-
 	% NOTE: the mongo client currently returns documents as pairs A-B instead of
 	%       [A,B] which is required as input.
-	% TODO: make the client return docs in a format that it accepts as input.
+	% TODO: make mongo return docs in a format that it accepts as input.
 	maplist(format_doc, Docs, Docs0),
 	maplist(bulk_operation, Docs0, BulkOperations),
 	mongolog_get_db(DB, Coll, Key),
@@ -449,8 +520,7 @@ bulk_operation(Doc, insert(Doc)).
 %%
 % unify variables.
 %
-unify_(Result, Vars) :-
-	unify_0(Result, Vars, Vars).
+unify_(Result, Vars) :- unify_0(Result, Vars, Vars).
 
 unify_0(_, _, []) :- !.
 unify_0(Doc, Vars, [[VarKey, Term]|Xs]) :-
@@ -506,27 +576,18 @@ unify_2([K-V|Rest], Vars, Out) :-
 	dict_pairs(Dict,_,[K-V|Rest]),
 	unify_2(Dict, Vars, Out).
 
-unify_2(_{
-		type: string(var),
-		value: string(VarKey)
-	}, Vars, Out) :-
+unify_2(_{ type: string(var), value: string(VarKey) }, Vars, Out) :-
 	% a variable was not instantiated
 	!,
 	memberchk([VarKey, VarVal], Vars),
 	Out = VarVal. 
 
-unify_2(_{
-		type: string(compound),
-		value: Val
-	}, Vars, Out) :-
+unify_2(_{ type: string(compound), value: Val }, Vars, Out) :-
 	% a variable was instantiated to a compound term
 	!,
 	unify_2(Val, Vars, Out).
 
-unify_2(_{
-		functor: string(Functor),
-		args: Args
-	}, Vars, Out) :-
+unify_2(_{ functor: string(Functor), args: Args }, Vars, Out) :-
 	!,
 	unify_2(Args, Vars, Args0),
 	Out =.. [Functor|Args0].
@@ -553,6 +614,11 @@ atom_to_term_(Atom, _) :-
 mongolog_assert(Fact) :-
 	universal_scope(QScope),
 	mongolog_call(assert(Fact),[scope(QScope)]).
+
+%%
+mongolog_project(Fact) :-
+	universal_scope(QScope),
+	mongolog_call(project(Fact),[scope(QScope)]).
 
 %% mongolog_retract(+Statement) is nondet.
 %
@@ -1066,62 +1132,101 @@ is_instantiated(Arg, Ctx) :-
 	forall(member(Var, Vars), is_referenced(Var, Ctx)).
 
 		 /*******************************
-		  *       RULES & FACTS         *
-		  *******************************/
-
-%% mongolog_add_rule(+Head, +Body) is semidet.
-%
-% Register a rule that translates into an aggregation pipeline.
-% Any non-terminal predicate in Body must have a previously asserted
-% rule it can expand into.
-% After being asserted, the Head predicate can be referred to in
-% calls of kb_call/1.
-%
-% @param Head The head of a rule.
-% @param Body The body of a rule.
-%
-mongolog_add_rule(Head, Body) :-
-	%% get the functor of the predicate
-	Head =.. [Functor|Args],
-	%% expand goals into terminal symbols
-	(	mongolog_expand(Body, Expanded) -> true
-	;	log_error_and_fail(lang(assertion_failed(Body), Functor))
-	),
-	current_reasoner_module(ReasonerModule),
-	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)).
-
-%% mongolog_drop_rule(+Head) is semidet.
-%
-% Drop a previously added `mongolog` rule.
-% That is, erase its database record such that it can
-% not be referred to anymore in rules added after removal.
-%
-% @param Term A mongolog rule.
-%
-mongolog_drop_rule(Head) :-
-	compound(Head),
-	Head =.. [Functor|_],
-	current_reasoner_module(ReasonerModule),
-	retractall(mongolog_rule(ReasonerModule, Functor, _, _)).
-
-%%
-mongolog_add_predicate(Fact, DocumentID) :-
-	Fact =.. [Functor|Args],
-	% make sure mongolog_add_predicate was called for the predicate
-	(	mongolog_predicate(Functor,_,_) -> true
-	;	(	length(Args,NumArgs),
-			findall(FieldName,(
-				between(1,NumArgs,X),
-				% just use argument number as name
-				atom_number(FieldName,X)
-			),Fields),
-			mongolog_add_predicate(Functor, Fields, [source_id(DocumentID)])
-		)
-	).
-
-		 /*******************************
 		 *	    TERM EXPANSION     		*
 		 *******************************/
+
+%% stores files that were loaded via Prolog's consult
+:- dynamic expanded_source_file/2.
+
+%%
+% Term expansion for *querying* rules using the (?>) operator.
+% The body is rewritten such that mongolog_call is called instead
+% with body as argument.
+% This is mainly used for Prolog files consulted during initialization,
+% runtime-consult goes usually via mongolog_call. The difference
+% is that here also regular Prolog rules are generated, while
+% mongolog_call(consult(File)) only registers the rule with mongolog
+% without generating a Prolog rule.
+%
+user:term_expansion((?>(Head,Body)), Export) :-
+    prolog_load_context(source, SourceURL),
+	current_reasoner_module(ReasonerModule),
+    % note: expansion happens only the first time the file is loaded e.g. via use_module.
+    %   a consequitive loading does not trigger expansion again but only makes the predicates
+    %   created here available in the module that loads the file again.
+    % FIXME: behavior described above may cause problems in case file is loaded multiple
+    %    times with different reasoner contexts
+	expand_ask_rule_(SourceURL, ReasonerModule, Head, Body, Export).
+
+%%
+% Term expansion for *project* rules using the (+>) operator.
+% The rules are only asserted into mongo DB and expanded into
+% empty list.
+%
+user:term_expansion((+>(Head,Body)), Export) :-
+    prolog_load_context(source, SourceURL),
+	current_reasoner_module(ReasonerModule),
+	expand_tell_rule_(SourceURL, ReasonerModule, Head, Body, Export).
+
+%%
+% Term expansion for *query+project* rules using the (?+>) operator.
+% These are basically clauses that can be used in both contexts.
+%
+% Consider for example following rule:
+%
+%     is_event(Entity) ?+>
+%       has_type(Entity, dul:'Event').
+%
+% This is valid because, in this case, has_type/2 has
+% clauses for querying and projection.
+%
+user:term_expansion((?+>(Head,Goal)), X1) :-
+	user:term_expansion((?>(Head,Goal)),X1),
+	user:term_expansion((+>(Head,Goal)),_X2).
+
+%%
+expand_ask_rule_(SourceFile, ReasonerModule, _Head, _Body, []) :-
+    is_expanded_(SourceFile, ReasonerModule), !.
+expand_ask_rule_(SourceFile, ReasonerModule, Head, Body, Export) :-
+    % remember source file was loaded by a reasoner
+    expand_assert_source_(SourceFile, ReasonerModule),
+	% register the clause with mongolog
+    mongolog:mongolog_consult3((?>(Head,Body)), []),
+	% expand into regular Prolog rule only once for all clauses
+	strip_module_(Head, _RuleModule, Term),
+	Term =.. [Functor|Args],
+	length(Args, Arity),
+    prolog_load_context(module, DstModule),
+	(	DstModule:current_predicate(Functor/Arity) -> Export=[]
+	;	(   current_scope(QScope),
+	        length(Args1,Arity),
+	        Term1 =.. [Functor|Args1],
+		    Export=[(:-(Term1, mongolog:mongolog_call(Term1, [scope(QScope)])))]
+	    )
+	).
+
+%%
+expand_tell_rule_(SourceFile, ReasonerModule, _Head, _Body, []) :-
+    is_expanded_(SourceFile, ReasonerModule), !.
+expand_tell_rule_(SourceFile, ReasonerModule, Head, Body, []) :-
+    expand_assert_source_(SourceFile, ReasonerModule),
+    mongolog:mongolog_consult3((+>(Head,Body)), []).
+
+%%
+expand_assert_source_(SourceFile, ReasonerModule) :-
+    mongolog_source_file(SourceFile, ReasonerModule),!.
+expand_assert_source_(SourceFile, ReasonerModule) :-
+    assertz(mongolog_source_file(SourceFile, ReasonerModule)),
+    assertz(expanded_source_file(SourceFile, ReasonerModule)).
+
+%%
+is_expanded_(SourceFile, ReasonerModule) :-
+    % proceed if the source file is being expanded
+    \+ expanded_source_file(SourceFile, ReasonerModule),
+    % test if the file was loaded before
+	mongolog_source_file(SourceFile, RealModule),
+	(RealModule==user ; RealModule==ReasonerModule),
+	!.
 
 %% mongolog_expand(+Term, -Expanded) is det.
 %
@@ -1151,11 +1256,9 @@ mongolog_expand(Goal, Expanded) :-
 
 mongolog_expand(Terms, Expanded) :-
 	has_list_head(Terms), !,
-	catch(
-		expand_term_0(Terms, Expanded0),
-		Exc,
-		log_error_and_fail(lang(Exc, Terms))
-	),
+	catch(expand_term_0(Terms, Expanded0),
+		  Exc,
+		  log_error_and_fail(lang(Exc, Terms))),
 	comma_list(Buf,Expanded0),
 	comma_list(Buf,Expanded1),
 	% Handle cut after term expansion.
@@ -1234,8 +1337,7 @@ expand_rule(Goal, Terminals) :-
 	findall([Args0,Terminals0],
 			(	mongolog_rule1(ReasonerModule, Functor, Args0, Terminals0),
 				unifiable(Args0, Args, _)
-			),
-			Clauses),
+			),  Clauses),
 	Clauses \= [],
 	expand_rule(Args, Clauses, Terminals).
 

@@ -17,7 +17,6 @@
 :- use_module(terms).
 :- use_module(typecheck).
 :- use_module(unification).
-:- use_module(rules).
 
 :- use_module(annotation).
 :- use_module(triple).

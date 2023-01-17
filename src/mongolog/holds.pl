@@ -14,9 +14,6 @@
 :- use_module(library('scope')).
 :- use_module('temporal').
 
-:- dynamic holds/3.
-:- multifile holds/3.
-
 %%
 % Enforce arithmetic operator.
 %
