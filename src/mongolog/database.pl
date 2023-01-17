@@ -4,7 +4,9 @@
 		  mongolog_uri/1,
 		  mongolog_add_predicate(+,+,+),
 		  mongolog_drop_predicate(+),
-		  mongolog_predicate(-,-,-)
+		  mongolog_predicate(-,-,-),
+		  mongolog_predicate_document(t,-),
+		  mongolog_predicate_collection(t,-,-)
 		]).
 /** <module> Storage of predicates in mongolog programs.
 
@@ -117,6 +119,25 @@ mongolog_predicate(Term, Fields, Options) :-
 	Term =.. [Functor|_],
 	mongolog_predicate(Functor, Fields, Options).
 
+%% mongolog_predicate_document(+Predicate, -PredicateDoc) is det.
+%
+%
+mongolog_predicate_document(Predicate, PredicateDoc) :-
+    compound(Predicate),
+	mongolog_database:mongolog_predicate_zip(Predicate,
+		[], Zipped, Ctx_pred, write),
+	findall([Field,Val],
+		(	member([Field,Arg],Zipped),
+			var_key_or_val(Arg, Ctx_pred, Val)
+		),  PredicateDoc).
+
+%% mongolog_predicate_collection(+Predicate, -DB, -Collection) is semidet.
+%
+%
+mongolog_predicate_collection(Predicate, DB, PredicateCollection) :-
+    compound(Predicate),
+	Predicate =.. [Functor|_Args],
+	mongolog_get_db(DB, PredicateCollection, Functor).
 
 %% mongolog_add_predicate(+Functor, +Fields, +Options) is semidet.
 %
@@ -235,8 +256,7 @@ mongolog_predicate_assert(Term, Ctx, Pipeline, StepVars) :-
 	findall([Field,Val],
 		(	member([Field,Arg],Zipped),
 			mongolog:var_key_or_val(Arg, Ctx_pred, Val)
-		),
-		PredicateDoc0),
+		), PredicateDoc0),
 	% add source id to document
 	PredicateDoc = [['source', string(SourceID)] | PredicateDoc0],
 	% and add it to the list of asserted documents

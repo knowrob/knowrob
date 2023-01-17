@@ -64,17 +64,18 @@
 
 %% add_command(+Command) is det.
 %
-% register a command that can be used in KnowRob
-% language expressions and which is implemented
-% in a mongo query.
-% NOTE: to implement a command several multifile predicates in
-% mongolog must be implemented by a command. 
+% Same as add_command/2 but uses "user" as command module.
 %
 % @param Command a command term.
 %
 add_command(Command) :- add_command(Command, user).
 
-%%
+%% add_command(+Command, +CommandModule) is det.
+%
+% Defines a built-in command in mongolog.
+%
+% @param Command a command term.
+% @param CommandModule the module in which the command is registered.
 %
 add_command(Command, _CommandModule) :- step_command(user,Command), !.
 add_command(Command, CommandModule)  :- step_command(CommandModule,Command), !.
@@ -163,7 +164,6 @@ mongolog_consult1(URL, URLVersion) :-
 	% read file, assert facts and rules
 	% NOTE: rules are not stored in the database, so the file must
 	%  be opened again even though it was loaded before.
-	% TODO: consider storing rules in the database as well
 	Opts=[source_id(DocumentID), relative_to(FileDirectory)],
 	setup_call_cleanup(
         open(URL, read, Stream),
@@ -197,10 +197,40 @@ mongolog_consult2(Stream, Options) :-
 		)
 	).
 
+% consult a directive
+mongolog_consult3((:- use_module(FileSpec)), Options) :-
+    !,
+    option(relative_to(FileDirectory), Options),
+    mongolog_consult(FileSpec, [relative_to(FileDirectory)]).
+
+mongolog_consult3((:- use_module(FileSpec, ImportList)), Options) :-
+    !,
+    option(relative_to(FileDirectory), Options),
+    mongolog_consult(FileSpec, [relative_to(FileDirectory), imports(ImportList)]).
+
+mongolog_consult3((:- module(_Module, _PublicList)), _) :-
+    % NOTE: mongolog currently does not support a notion of modules
+    !.
+
+mongolog_consult3((:- load_owl(FileSpec)), _Options) :-
+    !, load_owl(FileSpec).
+mongolog_consult3((:- load_owl(FileSpec, LoadOpts)), _Options) :-
+    !, load_owl(FileSpec, LoadOpts).
+mongolog_consult3((:- load_owl(FileSpec, LoadOpts, Graph)), _Options) :-
+    !, load_owl(FileSpec, LoadOpts, Graph).
+
+mongolog_consult3((:- Goal), _) :-
+	!, log_warning(mongolog(unknown_directive(Goal))).
+
 % consult a rule
 mongolog_consult3((Head :- Body), Options) :-
 	!, mongolog_consult3('?>'(Head,Body), Options).
-mongolog_consult3('?>'(Head,Body), _Options) :-
+
+mongolog_consult3('?+>'(Head,Body), Options) :-
+    !, mongolog_consult3('?>'(Head,Body), Options),
+       mongolog_consult3('+>'(Head,Body), Options).
+
+mongolog_consult3('?>'(Head,Body), Options) :-
 	!,
 	% FIXME: there is a bug that when a file is consulted through mongolog_call(consult)
 	%         and another time through rule expansion that the rule is added twice,
@@ -211,10 +241,12 @@ mongolog_consult3('?>'(Head,Body), _Options) :-
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
 	strip_module_(HeadGlobal,_Module,Term),
-	%once((ground(Module);prolog_load_context(module, Module))),
 	% add the rule to the DB backend
-	mongolog_add_rule(Term, BodyGlobal).
-mongolog_consult3('+>'(Head,Body), _Options) :-
+	(   exclude_predicate_(Term, Options) -> true
+	;   mongolog_add_rule(Term, BodyGlobal)
+	).
+
+mongolog_consult3('+>'(Head,Body), Options) :-
     !,
 	rdf_global_term(Head, HeadGlobal),
 	rdf_global_term(Body, BodyGlobal),
@@ -224,75 +256,45 @@ mongolog_consult3('+>'(Head,Body), _Options) :-
 	atom_concat('project_',Functor,Functor0),
 	Head0 =.. [Functor0|Args],
 	% add the rule to the DB backend
-	mongolog_add_rule(Head0, project(BodyGlobal)).
-mongolog_consult3('?+>'(Head,Body), Options) :-
-    !,
-    mongolog_consult3('?>'(Head,Body), Options),
-    mongolog_consult3('+>'(Head,Body), Options).
-
-% consult a directive
-mongolog_consult3((:- use_module(FileSpec)), Options) :-
-    !,
-    option(relative_to(FileDirectory), Options),
-    mongolog_consult(FileSpec, [relative_to(FileDirectory)]).
-mongolog_consult3((:- use_module(FileSpec, _ImportList)), Options) :-
-    !,
-    % TODO: take into account ImportList
-    option(relative_to(FileDirectory), Options),
-    mongolog_consult(FileSpec, [relative_to(FileDirectory)]).
-mongolog_consult3((:- module(_Module, _PublicList)), _) :-
-    % NOTE: mongolog currently does not support a notion of modules
-    % TODO: only expose predicates in PublicList
-    !.
-
-mongolog_consult3((:- load_owl(FileSpec)), _)                  :- !, load_owl(FileSpec).
-mongolog_consult3((:- load_owl(FileSpec, LoadOpts)), _)        :- !, load_owl(FileSpec, LoadOpts).
-mongolog_consult3((:- load_owl(FileSpec, LoadOpts, Graph)), _) :- !, load_owl(FileSpec, LoadOpts, Graph).
-mongolog_consult3((:- Goal), _) :-
-	% TODO: support other directives
-	log_warning(mongolog(unsupported_directive(Goal))),!.
+	(   exclude_predicate_(Term, Options) -> true
+	;   mongolog_add_rule(Head0, project(BodyGlobal))
+	).
 
 % consult a fact
 mongolog_consult3(Fact, Options) :-
-	option(load, Options),!,
-	option(source_id(DocumentID), Options, user),
 	strip_module_(Fact, _Module, Stripped),
-	% TODO: move code into database.pl
-	% assert that the asserted predicate is a currently defined predicate
-	mongolog_add_predicate(Stripped, DocumentID),
-	% create fact document
-	mongolog_database:mongolog_predicate_zip(Stripped,
-		[], Zipped, Ctx_pred, write),
-	findall([Field,Val],
-		(	member([Field,Arg],Zipped),
-			var_key_or_val(Arg, Ctx_pred, Val)
-		),
-		PredicateDoc),
-	% assert into predicate collection
-	Stripped =.. [Functor|_Args],
-	mongolog_get_db(DB, PredicateCollection, Functor),
-	mng_store(DB, PredicateCollection,
-	    [['source',string(DocumentID)] | PredicateDoc]).
-mongolog_consult3(Fact, Options) :-
-	% option(reload, Options),
-	option(source_id(DocumentID), Options, user),
-	strip_module_(Fact, _Module, Stripped),
-	mongolog_add_predicate(Stripped, DocumentID).
+	(   exclude_predicate_(Stripped, Options) -> true
+	;   mongolog_consult_fact(Stripped, Options)
+	).
 
 %%
-mongolog_add_predicate(Fact, DocumentID) :-
-	Fact =.. [Functor|Args],
-	% make sure mongolog_add_predicate was called for the predicate
-	(	mongolog_predicate(Functor,_,_) -> true
-	;	(	length(Args,NumArgs),
-			findall(FieldName,(
-				between(1,NumArgs,X),
-				% just use argument number as name
-				atom_number(FieldName,X)
-			),Fields),
-			mongolog_add_predicate(Functor, Fields, [source_id(DocumentID)])
-		)
-	).
+mongolog_consult_fact(Fact, Options) :-
+	option(load, Options),!,
+	option(source_id(DocumentID), Options, user),
+	% assert that the asserted predicate is a currently defined predicate
+	mongolog_add_predicate(Fact, DocumentID),
+	% translate into json document
+	mongolog_predicate_document(Fact, PredicateDoc),
+	% store document
+	mongolog_predicate_collection(Fact, DB, PredicateCollection),
+	mng_store(DB, PredicateCollection,
+	    [['source',string(DocumentID)] | PredicateDoc]).
+
+mongolog_consult_fact(Fact, Options) :-
+	% option(reload, Options),
+	option(source_id(DocumentID), Options, user),
+	% assert that the asserted predicate is a currently defined predicate
+	mongolog_add_predicate(Fact, DocumentID).
+
+%%
+exclude_predicate_(Term, Options) :-
+    option(imports(ImportList), Options, all),
+    (   ImportList==all -> fail
+    ;   (   Term =.. [Functor|Args],
+            length(Args,Arity),
+            \+ memberchk('/'(Functor,Arity),ImportList)
+        )
+    ).
 
 %% The version/last modification time of a loaded file
 current_source(URL, Version, DocumentID, Predicates) :-
@@ -324,33 +326,28 @@ mongolog_call(Goal) :-
 % @param Options Additional options
 %
 mongolog_call(current_predicate(Predicate), _Ctx) :-
-	!,
-	mongolog_current_predicate(Predicate).
+	!, mongolog_current_predicate(Predicate).
 
 mongolog_call(consult(File), _Ctx) :-
     var(File),!,
     throw(error(instantiation_error(File), mongolog_call(consult(File)))).
 
 mongolog_call(consult(File), _Ctx) :-
-	!,
-	mongolog_consult(File).
+	!, mongolog_consult(File).
 
-mongolog_call(load_rdf_xml(File,_ReasonerModule), _Ctx) :-
-    !,
-    load_owl(File).
+mongolog_call(load_rdf_xml(File,_Module), _Ctx) :-
+    !, load_owl(File).
 
 mongolog_call(Goal, ContextIn) :-
-	% TODO: what is the fields option used for?
-	% TODO: reconsider handling of fact scope
-	% TODO: where is handling of fields/fact scope done?
-	% option(fields(Fields), Options, []),
-	% merge_options([user_vars([['v_scope',FScope]|Fields]),], Context0, Context1),
-	% add all toplevel variables to context.
-	% NOTE: this is important to avoid that Prolog garbage collects the variables!
-	% In case the garbage collection happens during query compilation, one query document
-	% may use different keys for the same variable.
+	% Add all toplevel variables to context.
+	% note that this is important to avoid that Prolog garbage collects the variables!
 	term_keys_variables_(Goal, GlobalVars),
-	merge_options([global_vars(GlobalVars)], ContextIn, Context),
+	merge_options([global_vars(GlobalVars)], ContextIn, Context0),
+	% retrieve scope of inferred facts if requested
+	(   option(fscope(FScope),ContextIn)
+	->  merge_options([user_vars([['v_scope',FScope]])], Context0, Context)
+	;   Context = Context0
+	),
 	% get the pipeline document
 	mongolog_compile(Goal, pipeline(Doc,Vars), Context),
 	%
@@ -549,18 +546,8 @@ atom_to_term_(Atom, Term) :-
 	% try converting atom stored in DB to a Prolog term
 	catch(term_to_atom(Term,Atom), _, fail),
 	!.
-
-atom_to_term_(Atom, Term) :-
-	% vectors maybe stored space-separated.
-	% @deprecated
-	atomic_list_concat(Elems, ' ', Atom),
-	maplist(atom_number, Elems, Term),
-	!.
-
 atom_to_term_(Atom, _) :-
 	throw(error(conversion_error(atom_to_term(Atom)))).
-
-
 
 %%
 mongolog_assert(Fact) :-
@@ -728,9 +715,6 @@ step_compile(ask(Goal), Ctx, Doc, StepVars) :-
 % the Goal. This is usually done to unify variables
 % used in the aggregation pipeline from the compile context.
 %
-%step_compile(pragma(Goal), _, []) :-
-%	call(Goal).
-
 step_compile(pragma(Goal), _, [], StepVars) :-
 	% ignore vars referred to in pragma as these are handled compile-time.
 	% only the ones also referred to in parts of the query are added to the document.
@@ -742,10 +726,6 @@ step_compile(stepvars(_), _, []) :- true.
 step_command(user,ask).
 step_command(user,pragma).
 step_command(user,stepvars).
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% QUERY DOCUMENTS
-%%%%%%%%%%%%%%%%%%%%%%%
 
 %%
 match_equals(X, Exp, ['$match', ['$expr', ['$eq', array([X,Exp])]]]).
@@ -907,10 +887,6 @@ add_assertions(Docs, Coll,
 add_assertion(Doc, Coll, Step) :-
 	add_assertions(array([Doc]), Coll, Step).
 
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% VARIABLES in queries
-%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
 add_assertion_var(StepVars, [['g_assertions',_]|StepVars]).
 
@@ -999,10 +975,6 @@ var_key(Var, Ctx, Key) :-
 	!.
 var_key(Var, _Ctx, Key) :-
 	var(Var),
-	% FIXME: it might be this is not safe. in local unittests one fails because
-	%        a wrong var key is used in the query. So it appears term_to_atom returns
-	%        different values while the query is compiled. this only happens non deterministically
-	%        so maybe related to Prolog resource management.
 	term_to_atom(Var,Atom),
 	atom_concat('v',Atom,Key).
 
@@ -1030,8 +1002,7 @@ var_key_or_val0(In, Ctx, array(L)) :-
 	findall(X,
 		(	member(Y,In),
 			var_key_or_val0(Y, Ctx, X)
-		),
-		L).
+		), L).
 
 var_key_or_val0(:(NS,Atom), _, _) :-
 	throw(unexpanded_namespace(NS,Atom)).
@@ -1094,10 +1065,9 @@ is_instantiated(Arg, Ctx) :-
 	term_variables(Arg0, Vars),
 	forall(member(Var, Vars), is_referenced(Var, Ctx)).
 
-
 		 /*******************************
-		 *	    TERM EXPANSION     		*
-		 *******************************/
+		  *       RULES & FACTS         *
+		  *******************************/
 
 %% mongolog_add_rule(+Head, +Body) is semidet.
 %
@@ -1120,7 +1090,6 @@ mongolog_add_rule(Head, Body) :-
 	current_reasoner_module(ReasonerModule),
 	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)).
 
-
 %% mongolog_drop_rule(+Head) is semidet.
 %
 % Drop a previously added `mongolog` rule.
@@ -1134,6 +1103,21 @@ mongolog_drop_rule(Head) :-
 	Head =.. [Functor|_],
 	current_reasoner_module(ReasonerModule),
 	retractall(mongolog_rule(ReasonerModule, Functor, _, _)).
+
+%%
+mongolog_add_predicate(Fact, DocumentID) :-
+	Fact =.. [Functor|Args],
+	% make sure mongolog_add_predicate was called for the predicate
+	(	mongolog_predicate(Functor,_,_) -> true
+	;	(	length(Args,NumArgs),
+			findall(FieldName,(
+				between(1,NumArgs,X),
+				% just use argument number as name
+				atom_number(FieldName,X)
+			),Fields),
+			mongolog_add_predicate(Functor, Fields, [source_id(DocumentID)])
+		)
+	).
 
 		 /*******************************
 		 *	    TERM EXPANSION     		*
@@ -1198,7 +1182,7 @@ expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
 	).
 
 expand_term_1(Goal, Expanded) :-
-	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
+	% FIXME: seems nested terms sometimes not properly flattened, how does it happen?
 	is_list(Goal),!,
 	expand_term_0(Goal, Expanded).
 
