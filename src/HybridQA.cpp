@@ -12,6 +12,8 @@
 
 using namespace knowrob;
 
+bool runQueryInitialized = false;
+
 HybridQA::HybridQA(const boost::property_tree::ptree &config)
 {
 	reasonerManager_ = std::make_shared<ReasonerManager>();
@@ -39,16 +41,26 @@ std::shared_ptr<Query> HybridQA::parseQuery(const std::string &queryString)
 	return PrologQuery::toQuery(term);
 }
 
-void HybridQA::runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler) {
-	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
-	auto bb = std::make_shared<Blackboard>(reasonerManager_, bbq, query);
-	QueryResultPtr solution;
+void HybridQA::runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler, bool incremental) {
+    QueryResultPtr solution;
+    if (!runQueryInitialized) {
+        bbq_ = std::make_shared<knowrob::QueryResultQueue>();
+        bb_ = std::make_shared<Blackboard>(reasonerManager_, bbq_, query);
 
-	bb->start();
-	do {
-		solution = bbq->pop_front();
-		if(QueryResultStream::isEOS(solution)) {
-			break;
-		}
-	} while(handler.pushQueryResult(solution));
+        bb_->start();
+
+        runQueryInitialized = true;
+    }
+
+    if (incremental) {
+        solution = bbq_->pop_front();
+        handler.pushQueryResult(solution);
+    } else {
+        do {
+            solution = bbq_->pop_front();
+            if (QueryResultStream::isEOS(solution)) {
+                break;
+            }
+        } while (handler.pushQueryResult(solution));
+    }
 }

@@ -62,10 +62,12 @@ add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 
 find_package(catkin QUIET COMPONENTS
 		rosprolog roscpp roslib tests/urdf
-		geometry_msgs message_generation)
+		geometry_msgs message_generation json_prolog_msgs)
 
 if (catkin_FOUND)
 	message(STATUS "Building with ROS1 support.")
+
+	add_definitions(-DKNOWROB_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 	
 	include_directories(${catkin_INCLUDE_DIRS})
 	
@@ -147,7 +149,7 @@ if (catkin_FOUND)
 	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	
+
 	### TF messages ###
 	add_library(tf_knowrob SHARED
 		src/ros/tf/tf.cpp
@@ -178,6 +180,14 @@ if (catkin_FOUND)
 	add_dependencies(urdf_parser
 		${${PROJECT_NAME}_EXPORTED_TARGETS}
 		${catkin_EXPORTED_TARGETS})
+
+	### ROS Interface ###
+	add_executable(knowrob-ros src/ROSInterface.cpp)
+	target_link_libraries(knowrob-ros
+			Boost::program_options
+			hyres
+			${catkin_LIBRARIES})
+	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
 endif()
 
 ##############
