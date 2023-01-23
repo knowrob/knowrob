@@ -138,6 +138,7 @@ protected:
 
 std::map< std::string, std::shared_ptr<HybridQAResultHandler> > resultHandlers_;
 boost::property_tree::ptree config;
+bool is_initialized_ = false;
 
 bool exists(const std::string &id)
 {
@@ -150,7 +151,7 @@ bool has_more_solutions(const std::string &id)
 }
 
 bool is_initialized() {
-    return true;
+    return is_initialized;
 }
 
 void finish(const std::string &id)
@@ -235,53 +236,44 @@ void sigint_handler(int sig)
     g_request_shutdown=1;
 }
 
-int call1(HybridQA hybridQA_, HybridQAResultHandler qaHanlder, std::string query) {
-    auto parsedQuery = hybridQA_.parseQuery(query);
-    hybridQA_.runQuery(parsedQuery, qaHanlder);
-}
-
-int ensure_loaded(HybridQA hybridQA_, HybridQAResultHandler qaHandler_, const char *ros_pkg)
+int ensure_loaded(HybridQA hybridQA_, const char *ros_pkg)
 {
     std::stringstream ss;
     ss << ros::package::getPath(ros_pkg) << "/src/__init__.pl";
-    /*
-    if(!call1(hybridQA_, qaHandler_, "ensure_loaded(" + ss.str() + ").")) {
+    if(!hybridQA_.callPrologDirect("ensure_loaded(" + ss.str() + ").")) {
         ROS_ERROR("Failed to load __init__.pl of %s.", ros_pkg);
         return FALSE;
-    }*/
+    }
     return TRUE;
 }
 
 int initializeRos(ros::NodeHandle node) {
-    //HybridQAResultHandler qaHandler_(config);
-    //HybridQA hybridQA_(config);
-/*    if(!ensure_loaded(hybridQA_, qaHandler_, "rosprolog")) {
-        return;
+    HybridQA hybridQA_(config);
+    if(!ensure_loaded(hybridQA_, "rosprolog")) {
+        return FALSE;
     }
     std::string param;
     // register initial packages
     if (node.getParam(PARAM_INITIAL_PACKAGE, param)) {
-        if(!call1(hybridQA_, qaHandler_, "register_ros_package(" + param + ")")) {
+        if(!hybridQA_.callPrologDirect("register_ros_package(" + param + ")")) {
             ROS_ERROR("Failed to load initial_package %s.", param.c_str());
-            return;
+            return FALSE;
         }
     }
-    else if(!call1("register_ros_package","knowrob")) {
+    else if(!hybridQA_.callPrologDirect("register_ros_package(knowrob).")) {
         ROS_ERROR("Failed to load knowrob.");
-        return;
+        return FALSE;
     }
     // execute initial goal
-    {
-        boost::shared_ptr<PrologEngine> engine = thread_pool_.claim();
-        if (node->getParam(PARAM_INITIAL_GOAL, param)) {
-            engine->one_solution(param);
-            if(engine->has_error()) {
-                ROS_WARN("initial goal failed: %s", engine->error().c_str());
-            }
+    if (node.getParam(PARAM_INITIAL_GOAL, param)) {
+        std::shared_ptr<HybridQAResultHandler> qaHandler_ = std::make_shared<HybridQAResultHandler>(config, param, false);
+        qaHandler_->runQuery(param);
+        if(qaHandler_->has_error()) {
+            ROS_WARN("initial goal failed: %s", qaHandler_->error().c_str());
         }
-        thread_pool_.release(engine);
+        qaHandler_->finish();
     }
-    is_initialized_ = true;*/
+    is_initialized_ = true;
 }
 
 int run(int argc, char **argv) {

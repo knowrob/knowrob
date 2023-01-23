@@ -35,11 +35,21 @@ void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 	}
 }
 
+int HybridQA::callPrologDirect(const std::string &queryString)
+{
+    auto result = prologReasoner_->allSolutions(parseQuery(queryString), "user", false);
+    if (result.empty()) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
 std::shared_ptr<Query> HybridQA::parseQuery(const std::string &queryString)
 {
-	auto term =prologReasoner_->readTerm(queryString);
+	auto term = prologReasoner_->readTerm(queryString);
 	return PrologQuery::toQuery(term);
 }
+
 
 void HybridQA::runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler, bool incremental) {
     QueryResultPtr solution;

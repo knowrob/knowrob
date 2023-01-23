@@ -30,6 +30,8 @@ namespace knowrob {
 
 		std::shared_ptr<Query> parseQuery(const std::string &queryString);
 
+        int callPrologDirect(const std::string &queryString);
+
 		void runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler, bool incremental = false);
 
 	protected:
