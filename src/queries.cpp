@@ -163,6 +163,11 @@ bool TimePoint::operator<(const TimePoint& other) const
 	return value_ < other.value_;
 }
 
+bool TimePoint::operator==(const TimePoint& other) const
+{
+	return fabs(value_ - other.value_) < 1e-9;
+}
+
 
 TimeInterval::TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange)
 : FuzzyInterval<TimePoint>(sinceRange, untilRange)
@@ -448,10 +453,17 @@ void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
 		}
 
 	// combine time intervals
+#if 0
+	auto otherTimeInterval = std::make_shared<TimeInterval>(
+			Range<TimePoint>(2.0,3.0),
+			Range<TimePoint>(std::nullopt,10.0)
+			);
+#else
 	std::shared_ptr<TimeInterval> otherTimeInterval = (
 			partialResult_->timeInterval().has_value() ?
 			partialResult_->timeInterval_ :
 			uninstantiatedQuery_->timeInterval_);
+#endif
 	solution->combineTimeInterval(otherTimeInterval);
 	// ignore solution if time interval is empty
 	if(solution->timeInterval_ && solution->timeInterval_->empty()) return;
@@ -792,6 +804,16 @@ std::string QueryError::formatErrorString(
 
 
 namespace std {
+	std::ostream& operator<<(std::ostream& os, const ConfidenceValue& confidence)
+	{
+		return os << confidence.value();
+	}
+
+	std::ostream& operator<<(std::ostream& os, const TimePoint& tp)
+	{
+		return os << tp.value();
+	}
+
 	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi)
 	{
 		phi.write(os);
@@ -800,7 +822,48 @@ namespace std {
 	
 	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q)
 	{
-		os << *(q.formula().get());
+		os << *q.formula();
 		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution)
+	{
+		if(solution.confidence().has_value()) {
+			os << *solution.confidence().value() << "::";
+		}
+		if(solution.timeInterval().has_value()) {
+			os << *solution.timeInterval().value() << "::";
+		}
+		if(solution.substitution()->empty())
+			os << "yes";
+		else
+			os << *solution.substitution();
+		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Range<TimePoint>& t)
+	{
+		if(t.min().has_value() && t.max().has_value()) {
+			if(t.min().value() == t.max().value()) {
+				return os << t.min().value();
+			}
+			else {
+				return os << '(' << t.min().value() << ',' << t.max().value() << ')';
+			}
+		}
+		else if(t.min().has_value()) {
+			return os << ">=" << t.max().value();
+		}
+		else if(t.max().has_value()) {
+			return os << "<=" << t.max().value();
+		}
+		else {
+			return os << '*';
+		}
+	}
+
+	std::ostream& operator<<(std::ostream& os, const TimeInterval& ti)
+	{
+		return os << '[' << ti.minRange() << ',' << ti.maxRange() << ']';
 	}
 }
