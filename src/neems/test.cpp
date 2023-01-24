@@ -9,10 +9,12 @@ class NEEMTests: public PrologTests<knowrob::MongologReasoner> {
 protected:
 	static void SetUpTestSuite() {
 		reasoner()->consult(std::filesystem::path("neems") / "__init__.pl", nullptr, false);
+		reasoner()->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 	}
 	static std::string getPath(const std::string &filename) {
 		return std::filesystem::path("neems") / filename;
 	}
 };
 
+TEST_F(NEEMTests, occurs) { runTests(getPath("occurs.pl")); }
 TEST_F(NEEMTests, neem_logging) { runTests(getPath("NEEM.pl")); }
