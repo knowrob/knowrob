@@ -3,7 +3,7 @@ KnowRob Language
 
 The KnowRob query language supports logic programming syntax.
 However, language expressions are potentially compiled by KnowRob into other
-formats such as mongo DB queries in order to combine
+formats such as mongo DB queries in order to unifyWith
 different backends for query answering.
 KnowRob orchestrates this process through a pipeline of query steps
 where different steps are linked with each other by feeding groundings of
