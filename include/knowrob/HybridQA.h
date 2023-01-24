@@ -14,7 +14,7 @@
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/queries.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
 
 namespace knowrob {

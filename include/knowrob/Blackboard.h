@@ -14,7 +14,7 @@
 #include <memory>
 // KnowRob
 #include <knowrob/queries.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 
 namespace knowrob {
 	/**

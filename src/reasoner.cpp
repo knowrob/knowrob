@@ -7,7 +7,7 @@
  */
 
 #include <knowrob/logging.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>
 #include <knowrob/swrl/SWRLReasoner.h>
@@ -246,6 +246,7 @@ void ReasonerConfiguration::loadSettings(const TermPtr &key1, const boost::prope
 		if(key_val.first.empty()) {
 			// this indicates a list
 			// TODO: handle list values here
+			KB_WARN("todo: handle list values in options");
 			continue;
 		}
 		else {

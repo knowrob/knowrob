@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_REASONER_MANAGER_H_
-#define KNOWROB_REASONER_MANAGER_H_
+#ifndef KNOWROB_REASONER_H_
+#define KNOWROB_REASONER_H_
 
 // STD
 #include <list>
@@ -176,4 +176,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_REASONER_MANAGER_H_
+#endif //KNOWROB_REASONER_H_

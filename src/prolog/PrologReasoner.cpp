@@ -706,8 +706,9 @@ void PrologReasoner::Runner::setSolutionScope(std::shared_ptr<QueryResult> &solu
 
 			if(PL_get_arg(1, scope_val, arg) &&
 			   PL_term_type(arg)==PL_FLOAT &&
-			   PL_get_float(arg, &val))
-			{ v_since = val < 0.01 ? v_since = std::nullopt : val; }
+			   PL_get_float(arg, &val) &&
+			   val > 0.001)
+			{ v_since = val; }
 
 			if(PL_get_arg(2, scope_val, arg) &&
 			   PL_term_type(arg)==PL_FLOAT &&

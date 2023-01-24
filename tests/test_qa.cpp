@@ -3,7 +3,7 @@
 #include <knowrob/logging.h>
 #include <knowrob/queries.h>
 #include <knowrob/Blackboard.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologQuery.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>

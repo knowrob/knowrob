@@ -307,7 +307,7 @@ void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &con
 bool QueryResult::combine(std::shared_ptr<QueryResult> &other, Reversible *changes)
 {
 	// unify substitutions
-	if(!substitution_->unifyWith(other->substitution_, changes)) {
+	if(!substitution_->unifyWith(*other->substitution_, changes)) {
 		// unification failed -> results cannot be combined
 		return false;
 	}

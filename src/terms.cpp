@@ -265,7 +265,7 @@ Predicate::Predicate(
 
 bool Predicate::isEqual(const Term& other) const {
 	const auto &x = static_cast<const Predicate&>(other); // NOLINT
-    if(indicator() == x.indicator()) {
+    if(indicator() == x.indicator() && arguments_.size() == x.arguments_.size()) {
         for(int i=0; i<arguments_.size(); ++i) {
             if(!(*(arguments_[i]) == *(x.arguments_[i]))) return false;
         }
@@ -293,12 +293,12 @@ std::vector<TermPtr> Predicate::applySubstitution(
 		case TermType::VARIABLE: {
 			// replace variable argument if included in the substitution mapping
 			const TermPtr& t = sub.get(*((Variable*) in[i].get()));
-			if(t.get() == nullptr) {
-				// variable is not included in the substitution, keep it
-				out[i] = in[i];
-			} else {
+			if(t) {
 				// replace variable with term
 				out[i] = t;
+			} else {
+				// variable is not included in the substitution, keep it
+				out[i] = in[i];
 			}
 			break;
 		}
@@ -408,9 +408,9 @@ const TermPtr& Substitution::get(const Variable &var) const
 	}
 }
 
-bool Substitution::unifyWith(const std::shared_ptr<Substitution> &other, Reversible *reversible)
+bool Substitution::unifyWith(const Substitution &other, Reversible *reversible)
 {
-	for(const auto &pair : other->mapping_) {
+	for(const auto &pair : other.mapping_) {
 		auto it = mapping_.find(pair.first);
 		if(it == mapping_.end()) {
 			// new variable instantiation
