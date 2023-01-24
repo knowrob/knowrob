@@ -145,11 +145,12 @@ public:
 
 	// Override QueryResultHandler
 	bool pushQueryResult(const QueryResultPtr &solution) override {
-		if(solution->mapping().empty()) {
+		if(solution->substitution()->empty()) {
+			// TODO: print scope if it is the not the universal scope.
 			std::cout << "yes." << std::endl;
 		}
 		else {
-			std::cout << *solution << std::endl;
+			std::cout << *solution->substitution() << std::endl;
 		}
 		numSolutions_ += 1;
 		return !has_stop_request_;
