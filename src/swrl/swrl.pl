@@ -107,10 +107,9 @@ swrl_fire1(SWRLRule, Label) :-
 	% translate into a Prolog rule
 	swrl_rule_pl_(SWRLRule, Label, (:-(Impl_pl,Cond_pl))),
 	% include all scopes
-	wildcard_scope(QScope),
-	% TODO: fscope is not used by mongolog
+	query_scope_now(QScope),
 	% TODO: add graph to call
-	forall(swrl_call(Cond_pl, [scope(QScope), fscope(FScope)]),
+	forall(swrl_call(Cond_pl, [query_scope(QScope), solution_scope(FScope)]),
 	       swrl_assert_fact(Impl_pl, FScope)).
 
 %% swrl_assert_rule(+Rule).
