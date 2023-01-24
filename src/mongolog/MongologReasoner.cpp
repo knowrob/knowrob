@@ -56,18 +56,17 @@ bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
 	)));
 }
 
-std::shared_ptr<Query> MongologReasoner::transformQuery(const std::shared_ptr<Query> &q)
+const functor_t& MongologReasoner::callFunctor()
 {
-	static const auto indicator = std::make_shared<PredicateIndicator>("mongolog_call",1);
-	
-	// wrap queries in `mongolog_call/1`
-	auto t = PrologQuery::toTerm(q->formula());
-	return std::make_shared<Query>(
-		std::make_shared<Predicate>(indicator, std::vector<TermPtr>{t}));
+	static const auto call_f = PL_new_functor(PL_new_atom("mongolog_call"), 2);
+	return call_f;
 }
 
 class MongologTests: public PrologTests<knowrob::MongologReasoner> {
 protected:
+	static void SetUpTestSuite() {
+		reasoner()->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
+	}
 	static std::string getPath(const std::string &filename)
 	{ return std::filesystem::path("mongolog") / filename; }
 };
