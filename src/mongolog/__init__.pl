@@ -18,6 +18,7 @@
 :- use_module(typecheck).
 :- use_module(unification).
 
+:- use_module(scope).
 :- use_module(annotation).
 :- use_module(triple).
 :- use_module(semweb).

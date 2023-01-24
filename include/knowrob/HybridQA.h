@@ -27,9 +27,9 @@ namespace knowrob {
 	public:
 		HybridQA(const boost::property_tree::ptree &config);
 
-		std::shared_ptr<Query> parseQuery(const std::string &queryString);
+		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
 
-		void runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler);
+		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;

@@ -1,4 +1,4 @@
-:- module(model_DUL,
+:- module(mongolog_dul,
 	[ is_object(r),
 	  is_quality(r),  % ?Quality
 	  is_concept(r),
@@ -62,10 +62,6 @@ for modeling physical and social contexts.
 @author Daniel Beßler
 @license BSD
 */
-
-% load RDF data
-:- load_owl('http://www.ease-crc.org/ont/DUL.owl',
-	[ namespace(dul,'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#') ]).
 
 %% is_object(?Entity) is nondet.
 %

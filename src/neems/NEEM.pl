@@ -1,4 +1,4 @@
-:- module(mongolog_neems,
+:- module(mongolog_neem,
     [ knowrob_load_neem/1
     ]).
 
@@ -33,12 +33,15 @@ knowrob_load_neem(NEEM_id) :-
 	marker:republish.
 
 :- use_module(library('mongolog/mongolog_test')).
-:- begin_mongolog_tests(mongolog_neems, 'owl/test/memory.owl').
+:- begin_mongolog_tests(mongolog_neem, 'owl/test/memory.owl').
 
-:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_register_prefix/3 ]).
-:- use_module(library('mongolog/mongolog'), [ mongolog_call/1 ]).
-:- use_module(library('scope')).
-:- use_module('terms').
+:- use_module(library('semweb/rdf_db'),
+        [ rdf_equal/2,
+          rdf_register_prefix/3 ]).
+:- use_module(library('mongolog/mongolog'),
+        [ mongolog_call/1,
+          mongolog_project/1 ]).
+:- use_module('occurs').
 :- use_module('DUL').
 :- use_module('SOMA').
 
@@ -48,24 +51,22 @@ knowrob_load_neem(NEEM_id) :-
 :- rdf_register_prefix(test, 'http://knowrob.org/kb/mem-test.owl#', [force(true)]).
 
 test('is_episode') :-
-	universal_scope(Scope),
 	mongolog_call(new_iri(Episode,dul:'Situation')),
-	mongolog_call(project(is_episode(Episode)), [scope(Scope)]),
+	mongolog_project(is_episode(Episode)),
 	assert_true(ground(Episode)),
 	assert_true(mongolog_call(is_episode(Episode))),
 	assertz(test_episode(Episode)).
 
 test('is_setting_for') :-
-	universal_scope(Scope),
 	test_episode(Episode),
 	%% create an action
 	mongolog_call(new_iri(Action,dul:'Action')),
-	mongolog_call(project(is_action(Action)), [scope(Scope)]),
+	mongolog_project(is_action(Action)),
 	assert_true(ground(Action)),
 	assert_true(is_action(Action)),
 	%% assert is_setting_for
 	assert_false(is_setting_for(Episode,Action)),
-	assert_true(mongolog_call(project(is_setting_for(Episode,Action)), [scope(Scope)])),
+	assert_true(mongolog_project(is_setting_for(Episode,Action))),
 	assert_true(is_setting_for(Episode,Action)),
 	%%
 	assertz(test_action(Action)).
@@ -77,34 +78,31 @@ test('occurs') :-
 	assert_true(occurs(Action) during [24,464]).
 
 test('executes_task') :-
-	universal_scope(Scope),
 	test_action(Action),
 	%% state what task the action executes
 	mongolog_call(new_iri(Task,test:'TestTask')),
-	mongolog_call(project(has_type(Task,test:'TestTask')), [scope(Scope)]),
+	mongolog_project(has_type(Task,test:'TestTask')),
 	assert_true(ground(Task)),
 	assert_true(is_task(Task)),
 	%%
 	assert_false(executes_task(Action,Task)),
-	assert_true(mongolog_call(project(executes_task(Action,Task)), [scope(Scope)])),
+	assert_true(mongolog_project(executes_task(Action,Task))),
 	assert_true(executes_task(Action,Task)).
 
 test('has_participant') :-
-	universal_scope(Scope),
 	test_action(Action),
 	rdf_equal(test:'Substance_0',Obj),
 	%%
 	assert_false(has_participant(Action,Obj)),
-	assert_true(mongolog_call(project(has_participant(Action,Obj)), [scope(Scope)])),
+	assert_true(mongolog_project(has_participant(Action,Obj))),
 	assert_true(has_participant(Action,Obj)).
 
 test('has_role') :-
-	universal_scope(Scope),
 	test_action(Action),
 	rdf_equal(test:'Substance_0',Obj),
 	%%
 	mongolog_call(new_iri(Role,test:'ARole')),
-	mongolog_call(project(has_type(Role,test:'ARole')), [scope(Scope)]),
+	mongolog_project(has_type(Role,test:'ARole')),
 	assert_false(has_role(Obj,Role) during Action),
 	assert_true(mongolog_call(project(has_role(Obj,Role) during Action))),
 	assert_true(has_role(Obj,Role) during Action).
@@ -120,23 +118,21 @@ test('has_transition') :-
 	assert_true(has_region(Q,test:'TEST_GREEN') during [200,250]).
 
 test('action_succeeded') :-
-	universal_scope(Scope),
 	test_action(Action),
 	assert_false(action_succeeded(Action)),
-	assert_true(mongolog_call(project(action_succeeded(Action)), [scope(Scope)])),
+	assert_true(mongolog_project(action_succeeded(Action))),
 	assert_true(action_succeeded(Action)).
 
 test('is_masterful') :-
-	universal_scope(Scope),
 	test_episode(Episode),
 	%%
 	mongolog_call(new_iri(Masterful)),
-	mongolog_call(project(has_type(Masterful,test:'Masterful')), [scope(Scope)]),
+	mongolog_project(has_type(Masterful,test:'Masterful')),
 	assert_true(ground(Masterful)),
 	assert_true(is_diagnosis(Masterful)),
 	%%
 	assert_false(satisfies(Episode,Masterful)),
-	assert_true(mongolog_call(project(satisfies(Episode,Masterful)), [scope(Scope)])),
+	assert_true(mongolog_project(satisfies(Episode,Masterful))),
 	assert_true(satisfies(Episode,Masterful)).
 
-:- end_mongolog_tests(mongolog_neems).
+:- end_mongolog_tests(mongolog_neem).

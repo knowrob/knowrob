@@ -20,8 +20,6 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('scope'),
-		[ universal_scope/1, time_scope/3, time_scope_data/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
@@ -105,7 +103,7 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		% this is done using $match or $lookup operators.
 		(	member(Step, LookupSteps)
 		% compute the intersection of scope so far with scope of next document
-		;	scope_intersect('v_scope',
+		;	mongolog_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
 				Ctx0, Step)
@@ -130,9 +128,9 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	option(collection(Collection), Ctx0),
-	option(scope(Scope), Ctx0),
+	option(query_scope(Scope), Ctx0),
 	triple_graph(Ctx0, Graph),
-	time_scope_values(Scope, SinceTyped, UntilTyped),
+	mongolog_time_scope(Scope, SinceTyped, UntilTyped),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
@@ -167,7 +165,7 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 			]]]]]
 		% lookup documents that overlap with triple into 'next' field,
 		% and toggle their delete flag to true
-		;	delete_overlapping(triple(S,P,O), Ctx0, Step)
+		;	delete_overlapping(triple(S,P,O), SinceTyped, UntilTyped, Ctx0, Step)
 		% lookup parent documents into the 'parents' field
 		;	lookup_parents(triple(S,P1,O), Ctx0, Step)
 		% update v_scope.time.since
@@ -187,20 +185,6 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 		Pipeline
 	).
 
-%%
-time_scope_values(Scope, SinceValue, UntilValue) :-
-	time_scope_data(Scope, [Since,Until]),
-	time_scope_value1(Since, SinceValue),
-	time_scope_value1(Until, UntilValue).
-
-time_scope_value1(V0, Value) :-
-	mng_strip_operator(V0, _, V1),
-	once(time_scope_value2(V1, Value)).
-
-time_scope_value2('Infinity', double('Infinity')).
-time_scope_value2(Num,  double(Num))  :- number(Num).
-time_scope_value2(Atom, string(Atom)) :- atom(Atom).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -210,7 +194,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
-	% FIXME: revise below
+	% TODO: revise below
 	mng_triple_doc(triple(S,P,V), QueryDoc, Ctx),
 	(	memberchk(['s',_],QueryDoc)
 	->	StartValue='$start.s'
@@ -237,7 +221,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 					ArgExpr % else perform a match
 				])]]
 			)
-		;	scope_match(Ctx, MatchQuery)
+		;	mongolog_scope_match(Ctx, MatchQuery)
 		;	graph_match(Ctx, MatchQuery)
 		),
 		MatchQueries
@@ -376,7 +360,7 @@ reflexivity(StartValue, Ctx, Step) :-
 	).
 
 %%
-delete_overlapping(triple(S,P,V), Ctx,
+delete_overlapping(triple(S,P,V), SinceTyped, UntilTyped, Ctx,
 		['$lookup', [
 			['from',string(Coll)],
 			['as',string('next')],
@@ -389,9 +373,6 @@ delete_overlapping(triple(S,P,V), Ctx,
 	mongolog:var_key_or_val1(P, Ctx, P0),
 	mongolog:var_key_or_val1(S, Ctx, S0),
 	mongolog:var_key_or_val1(V, Ctx, V0),
-	% read scope data
-	option(scope(Scope), Ctx),
-	time_scope_values(Scope, Since, Until),
 	% set Since=Until in case of scope intersection.
 	% this is to limit to results that do hold at Until timestamp.
 	% FIXME: when overlap yields no results, zero is used as since
@@ -400,8 +381,8 @@ delete_overlapping(triple(S,P,V), Ctx,
 	%		 so better remove special handling here?
 	%        but then the until time maybe is set to an unwanted value? 
 	(	option(intersect_scope, Ctx)
-	->	Since0=Until
-	;	Since0=Since
+	->	Since0=UntilTyped
+	;	Since0=SinceTyped
 	),
 	mongolog:lookup_let_doc(StepVars, LetDoc),
 	% build pipeline
@@ -409,7 +390,7 @@ delete_overlapping(triple(S,P,V), Ctx,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
 				['s',S0], ['p',P0], ['o',V0],
-				['scope.time.since',['$lte',Until]],
+				['scope.time.since',['$lte',UntilTyped]],
 				['scope.time.until',['$gte',Since0]]
 			]]
 		% only keep scope field
@@ -539,7 +520,7 @@ must_propagate_assert(rdfs:subPropertyOf).
 % @param Value The object of a triple.
 %
 triple(S,P,O) :-
-	kb_call(triple(S,P,O)).
+	mongolog_call(triple(S,P,O)).
 
 %% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
 %
@@ -548,7 +529,7 @@ triple(S,P,O) :-
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
 	triple_graph(Context, Graph),
-	option(scope(Scope), Context, dict{}),
+	option(query_scope(Scope), Context, dict{}),
 	% special handling for some properties
 	(	taxonomical_property(P)
 	->	( Key_p='p',  Key_o='o*' )
@@ -565,7 +546,7 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 		;	( query_value(P1,Query_p), X=[Key_p,Query_p] )
 		;	( query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
-		;	scope_doc(Scope,X)
+		;	mongolog_scope_doc(Scope,X)
 		),
 		Doc
 	),
@@ -626,82 +607,6 @@ graph_match(Ctx, ['$expr', [Operator,
 	atom_concat('$',GraphKey,GraphValue),
 	(	(   is_list(Arg), Arg=[Operator,ArgVal])
 	;	(\+ is_list(Arg), Arg=[ArgVal], Operator='$eq')
-	).
-
-%%
-scope_doc(QScope, [Key,Value]) :-
-	scope_doc1(QScope, [Key,Value]),
-	% do not proceed for variables in scope
-	% these are handled later
-	(Value=[_,string(_)] -> fail ; true).
-
-scope_doc1(QScope, [Key,Value]) :-
-	get_dict(ScopeName, QScope, ScopeData),
-	scope_doc(ScopeData, SubPath, Value),
-	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
-
-scope_doc(Scope, Path, Value) :-
-	is_dict(Scope),!,
-	get_dict(Key,Scope,Data),
-	scope_doc(Data,SubPath,Value),
-	(	SubPath='' -> Path=Key
-	;	atomic_list_concat([Key,SubPath],'.',Path)
-	).
-
-scope_doc(Value, '', Query) :-
-	mng_query_value(Value, Query).
-
-%%
-scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
-	option(scope(Scope), Ctx),
-	findall([Operator, array([string(ScopeValue),string(Val)])],
-		(	scope_doc1(Scope, [ScopeKey,Arg]),
-			atom_concat('$',ScopeKey,ScopeValue),
-			(	(   is_list(Arg), Arg=[Operator,ArgVal])
-			;	(\+ is_list(Arg), Arg=ArgVal, Operator='$eq')
-			),
-			% only proceed for variables in scope
-			% constants are handled earlier
-			ArgVal=string(Val0),
-			atom_concat('$',Val0,Val)
-		),
-		List
-	),
-	List \== [].
-
-
-%% scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
-%
-% The step expects input documents with VarKey
-% field, and another field Since1/Until1.
-% The step uses these field to compute an intersection
-% beteween both scopes.
-% It will fail in case the intersection is empty.
-%
-scope_intersect(VarKey, Since1, Until1, Options, Step) :-
-	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
-	atomic_list_concat(['$',VarKey,'.time.until'], '', Until0),
-	atomic_list_concat(['$',VarKey], '', VarKey0),
-	%
-	Intersect = ['time', [
-		['since', ['$max', array([string(Since0), Since1])]],
-		['until', ['$min', array([string(Until0), Until1])]]
-	]],
-	% check if ignore flag if set, if so use a conditional step
-	(	memberchk(ignore, Options)
-	->	IntersectStep = ['$cond', array([
-			['$not', array([Since1])],
-			string(VarKey0),
-			Intersect
-		])]
-	;	IntersectStep = Intersect
-	),
-	% first compute the intersection
-	(	Step=['$set', ['v_scope', IntersectStep]]
-	% then verify that the scope is non empty
-	;	Step=['$match', ['$expr',
-			['$lt', array([string(Since0), string(Until0)])]
-		]]
 	).
 
 %% drop_graph(+Name) is det.

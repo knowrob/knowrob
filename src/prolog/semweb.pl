@@ -69,8 +69,7 @@
 :- use_module(library('xsd'),
 		[ xsd_data_basetype/2 ]).
 :- use_module(library('scope'),
-		[ universal_scope/1,
-		  current_scope/1 ]).
+		[ query_scope_now/1 ]).
 :- use_module(library(dcg/basics)).
 
 %%
@@ -96,8 +95,8 @@ annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
 % currently true.
 %
 sw_triple(Subject, Predicate, Object) :-
-	current_scope(QScope),
-    sw_triple(Subject, Predicate, Object, [scope(QScope)]).
+	query_scope_now(QScope),
+    sw_triple(Subject, Predicate, Object, [query_scope(QScope)]).
 
 %% sw_triple(?Subject,+Predicate,?Object,+Conext) is nondet.
 %
@@ -151,8 +150,8 @@ post_graph(_, _, _, _).
 % instance of Class.
 %
 sw_instance_of(Resource, Class) :-
-	current_scope(QScope),
-    sw_instance_of(Resource, Class, [scope(QScope)]).
+	query_scope_now(QScope),
+    sw_instance_of(Resource, Class, [query_scope(QScope)]).
 
 %% sw_instance_of(?Resource, ?Class, +Context) is nondet.
 %
@@ -443,8 +442,8 @@ sw_assert_triple(Subject, Predicate, Object) :-
 % Same as sw_assert_triple/5 but asserts a universal (unscoped) fact.
 %
 sw_assert_triple(Subject, Predicate, Object, Graph) :-
-    universal_scope(Scope),
-    sw_assert_triple(Subject, Predicate, Object, Graph, Scope).
+    %sw_universal_scope(Scope),
+    sw_assert_triple(Subject, Predicate, Object, Graph, _).
 
 %% sw_assert_triple(+Subject, +Predicate, +Object, +Graph, +Scope) is det.
 %
@@ -501,8 +500,8 @@ sw_assert_type(Resource, Class) :-
 % Same as sw_assert_type/4 but only asserts universal (unscoped) facts.
 %
 sw_assert_type(Resource, Class, Graph) :-
-    universal_scope(Scope),
-    sw_assert_type(Resource, Class, Graph, Scope).
+    %sw_universal_scope(Scope),
+    sw_assert_type(Resource, Class, Graph, _).
 
 %% sw_assert_type(+Resource, +Class, +Graph, +Scope) is semidet.
 %
@@ -857,9 +856,10 @@ triple_json_scope(Triples,Scope) :-
 	),
 	time_scope(Since_number, Until_number, Scope).
 
-triple_json_scope(_Triples,Scope) :-
+triple_json_scope(_Triples,_Scope) :-
 	% create universal scope when either of 'since' or 'until' are not provided in triple
-	universal_scope(Scope).
+	%sw_universal_scope(Scope)
+	true.
 
      /*******************************
      *          UNIT TESTS          *

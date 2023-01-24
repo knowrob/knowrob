@@ -381,8 +381,8 @@ strip_module_(Term,_,Term).
 % @param Goal A compound term expanding into an aggregation pipeline
 %
 mongolog_call(Goal) :-
-	current_scope(QScope),
-	mongolog_call(Goal,[scope(QScope)]).
+	query_scope_now(QScope),
+	mongolog_call(Goal,[query_scope(QScope)]).
 
 %% mongolog_call(+Goal, +Options) is nondet.
 %
@@ -415,8 +415,8 @@ mongolog_call(Goal, ContextIn) :-
 	term_keys_variables_(Goal, GlobalVars),
 	merge_options([global_vars(GlobalVars)], ContextIn, Context0),
 	% retrieve scope of inferred facts if requested
-	(   option(fscope(FScope),ContextIn)
-	->  merge_options([user_vars([['v_scope',FScope]])], Context0, Context)
+	(   option(solution_scope(_),ContextIn)
+	->  merge_options([user_vars([['v_scope',_]])], Context0, Context)
 	;   Context = Context0
 	),
 	% get the pipeline document
@@ -428,9 +428,25 @@ mongolog_call(Goal, ContextIn) :-
 	append(Vars1, GlobalVars, Vars2),
 	list_to_set(Vars2,Vars3),
 	% run the pipeline
-	query_1(Doc, Vars3).
+	query_1(Doc, Vars3),
+	%
+	(   option(solution_scope(FScope), Context)
+	->  format_solution_scope_(Context, FScope)
+	;   true
+    ).
 
-%
+%%
+format_solution_scope_(Context, _{ time: range(Since,Until) }) :-
+    option(user_vars(UserVars), Context),
+    memberchk(['v_scope',VScope], UserVars),
+    VScope = _{ time: _{
+        since: SinceTyped,
+        until: UntilTyped
+    }},
+	mng_strip_type(SinceTyped, _, Since),
+	mng_strip_type(UntilTyped, _, Until).
+
+%%
 term_keys_variables_(Goal, GoalVars) :-
     term_variables(Goal, Vars),
     term_keys_variables_1(Vars, GoalVars).
@@ -612,13 +628,13 @@ atom_to_term_(Atom, _) :-
 
 %%
 mongolog_assert(Fact) :-
-	universal_scope(QScope),
-	mongolog_call(assert(Fact),[scope(QScope)]).
+	mongolog_universal_scope(QScope),
+	mongolog_call(assert(Fact),[query_scope(QScope)]).
 
 %%
 mongolog_project(Fact) :-
-	universal_scope(QScope),
-	mongolog_call(project(Fact),[scope(QScope)]).
+	mongolog_universal_scope(QScope),
+	mongolog_call(project(Fact),[query_scope(QScope)]).
 
 %% mongolog_retract(+Statement) is nondet.
 %
@@ -627,8 +643,7 @@ mongolog_project(Fact) :-
 % @param Statement a statement term.
 %
 mongolog_retract(Statement) :-
-	wildcard_scope(Scope),
-	mongolog_retract(Statement, Scope, []).
+	mongolog_retract(Statement, dict{}, []).
 
 %% mongolog_retract(+Statement, +Scope) is nondet.
 %
@@ -671,7 +686,7 @@ mongolog_retract(triple(S,P,O), Scope, Options) :-
 	% ensure there is a graph option
 	set_graph_option(Options, Options0),
 	% append scope to options
-	merge_options([scope(Scope)], Options0, Options1),
+	merge_options([query_scope(Scope)], Options0, Options1),
 	% get the query document
 	mng_triple_doc(triple(S,P,O), Doc, Options1),
 	% run a remove query
@@ -795,12 +810,6 @@ step_command(user,stepvars).
 
 %%
 match_equals(X, Exp, ['$match', ['$expr', ['$eq', array([X,Exp])]]]).
-
-%%
-match_scope(['$match', ['$expr', ['$lt', array([
-				string('$v_scope.time.since'),
-				string('$v_scope.time.until')
-			])]]]).
 
 %%
 lookup_let_doc(InnerVars, LetDoc) :-
@@ -987,20 +996,25 @@ goal_var(Compound, Ctx, Var) :-
 
 %%
 context_var(Ctx, [Key,ReferredVar]) :-
-	option(scope(Scope), Ctx),
-	% NOTE: vars are resolved to keys in scope already!
+    option(query_scope(Scope), Ctx),
+    context_var_key(Scope, Key),
+    once((
+        (option(outer_vars(Vars), Ctx) ; option(disj_vars(Vars), Ctx)),
+        member([Key,ReferredVar],Vars)
+    )).
+
+%%
+context_var_key(Dict, CtxVarKey) :-
+	is_dict(Dict),!,
+	get_dict(_Key, Dict, Val),
+	context_var_key(Val, CtxVarKey).
+
+context_var_key(Val, CtxVarKey) :-
+	% NOTE: vars should ne resolved to keys in the scope already.
 	%       e.g. `Since == =<(string($v_235472))`
-	time_scope(Since, Until, Scope),
-	member(X, [Since, Until]),
-	mng_strip(X, _, string, Stripped),
+	mng_strip(Val, _, string, Stripped),
 	atom(Stripped),
-	atom_concat('$', Key, Stripped),
-	once((
-		(	option(outer_vars(Vars), Ctx)
-		;	option(disj_vars(Vars), Ctx)
-		),
-		member([Key,ReferredVar],Vars)
-	)).
+	atom_concat('$', CtxVarKey, Stripped).
 
 %%
 % Conditional $set command for ungrounded vars.
@@ -1028,7 +1042,7 @@ get_var(Term, Ctx, [Key,Var]) :-
 %
 var_key(Var, Ctx, Key) :-
 	var(Var),
-	% TODO: can this be done better then iterating over all variables?
+	% TODO: can this be done better than iterating over all variables?
 	%		- i.e. by testing if some variable is element of a list
 	%		- member/2 cannot be used as it would unify each array element
 	(	option(global_vars(Vars), Ctx)
@@ -1198,10 +1212,10 @@ expand_ask_rule_(SourceFile, ReasonerModule, Head, Body, Export) :-
 	length(Args, Arity),
     prolog_load_context(module, DstModule),
 	(	DstModule:current_predicate(Functor/Arity) -> Export=[]
-	;	(   current_scope(QScope),
+	;	(   query_scope_now(QScope),
 	        length(Args1,Arity),
 	        Term1 =.. [Functor|Args1],
-		    Export=[(:-(Term1, mongolog:mongolog_call(Term1, [scope(QScope)])))]
+		    Export=[(:-(Term1, mongolog:mongolog_call(Term1, [query_scope(QScope)])))]
 	    )
 	).
 
@@ -1386,7 +1400,6 @@ take_until_cut([X|Xs],[X|Ys],Remaining) :-
 % 
 has_list_head([]) :- !.
 has_list_head([_|_]).
-
 
      /*******************************
      *        SEARCH INDEX          *

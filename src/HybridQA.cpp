@@ -39,13 +39,13 @@ void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 	}
 }
 
-std::shared_ptr<Query> HybridQA::parseQuery(const std::string &queryString)
+std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString)
 {
 	auto term =prologReasoner_->readTerm(queryString);
 	return PrologQuery::toQuery(term);
 }
 
-void HybridQA::runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler) {
+void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler) {
 	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
 	auto bb = std::make_shared<Blackboard>(reasonerManager_, bbq, query);
 	QueryResultPtr solution;

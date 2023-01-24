@@ -376,6 +376,15 @@ void BottomTerm::write(std::ostream& os) const
 }
 
 
+void Reversible::rollBack()
+{
+	while(!empty()) {
+		auto &revertFunction = front();
+		revertFunction();
+		pop();
+	}
+}
+
 void Substitution::set(const Variable &var, const TermPtr &term)
 {
 	mapping_.insert(std::pair<Variable,TermPtr>(var, term));
@@ -399,17 +408,17 @@ const TermPtr& Substitution::get(const Variable &var) const
 	}
 }
 
-bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitution::Diff &changes)
+bool Substitution::unifyWith(const std::shared_ptr<Substitution> &other, Reversible *reversible)
 {
 	for(const auto &pair : other->mapping_) {
 		auto it = mapping_.find(pair.first);
 		if(it == mapping_.end()) {
 			// new variable instantiation
-			changes.push(std::shared_ptr<Operation>(
-				new Added(mapping_.insert(pair).first)));
+			auto jt = mapping_.insert(pair).first;
+			if(reversible) reversible->push(([this,jt](){ mapping_.erase(jt); }));
 		}
 		else {
-			// variable has already an instantation, need to unify
+			// variable has already an instantiation, need to unify
 			TermPtr t0 = it->second;
 			TermPtr t1 = pair.second;
 			
@@ -418,7 +427,7 @@ bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitut
 			if(sigma.exists()) {
 				// a unifier exists
 				it->second = sigma.apply();
-				changes.push(std::shared_ptr<Operation>(new Replaced(it, t0)));
+				if(reversible) reversible->push(([it,t0](){ it->second = t0; }));
 			}
 			else {
 				// no unifier exists
@@ -428,40 +437,6 @@ bool Substitution::combine(const std::shared_ptr<Substitution> &other, Substitut
 	}
 	
 	return true;
-}
-
-void Substitution::rollBack(Substitution::Diff &changes)
-{
-	while(!changes.empty()) {
-		auto &change = changes.front();
-		change->rollBack(*this);
-		changes.pop();
-	}
-}
-
-
-Substitution::Replaced::Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance)
-: Substitution::Operation(),
-  it_(it),
-  replacedInstance_(replacedInstance)
-{}
-
-void Substitution::Replaced::rollBack(Substitution &sub)
-{
-	// set old value
-	it_->second = replacedInstance_;
-}
-
-
-Substitution::Added::Added(const Substitution::Iterator &it)
-: Substitution::Operation(),
-  it_(it)
-{}
-
-void Substitution::Added::rollBack(Substitution &sub)
-{
-	// remove the added variable instantiation
-	sub.mapping_.erase(it_);
 }
 
 
@@ -581,11 +556,9 @@ namespace std {
 	{
 		uint32_t i=0;
 		os << '{';
-		for(const auto &pair : omega.mapping()) {
+		for(const auto &pair : omega) {
+			if(i++ > 0) os << ',';
 			os << pair.first.name() << ':' << ' ' << (*pair.second);
-			if(++i < omega.mapping().size()) {
-				os << ',';
-			}
 		}
 		return os << '}';
 	}

@@ -76,7 +76,7 @@ Another domain ontology in KnowRob has the scope
 to capture categories underying robot control.
 This includes the concepts sensor, actor, and capability.
 
-Finally, an *application ontology* contains all application-specific definitions.
+Finally, an *application ontology* isMoreGeneralThan all application-specific definitions.
 As KnowRob is a general framework, no such ontology will be auto-loaded by default.
 However, some application ontologies are available as part of public
 [repositories](https://github.com/knowrob/),

@@ -25,7 +25,7 @@ namespace knowrob {
 		Blackboard(
 			const std::shared_ptr<ReasonerManager> &reasonerManager,
 			const std::shared_ptr<QueryResultQueue> &outputQueue,
-			const std::shared_ptr<Query> &goal);
+			const std::shared_ptr<const Query> &goal);
 		
 		~Blackboard();
 
@@ -69,6 +69,8 @@ namespace knowrob {
 		
 		protected:
 			std::shared_ptr<IReasoner> reasoner_;
+			std::shared_ptr<const Query> goal_;
+			std::shared_ptr<QueryResultStream::Channel> outputStream_;
 			uint32_t queryID_;
 			std::atomic<bool> isQueryOpened_;
 			std::atomic<bool> hasStopRequest_;
@@ -101,7 +103,7 @@ namespace knowrob {
 		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
 		std::shared_ptr<QueryResultBroadcaster> inputStream_;
 		std::shared_ptr<QueryResultStream::Channel> inputChannel_;
-		std::shared_ptr<Query> goal_;
+		std::shared_ptr<const Query> goal_;
 		
 		std::list<std::shared_ptr<Segment>> segments_;
 

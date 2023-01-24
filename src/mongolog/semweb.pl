@@ -550,8 +550,8 @@ load_owl(URL, Options) :-
 	% get parent graph name, fall back to "common"
 	option(parent_graph(ParentGraph), Options, common),
 	% get fact scope
-	universal_scope(UScope),
-	option(scope(Scope), Options, UScope),
+	mongolog_universal_scope(UScope),
+	option(query_scope(Scope), Options, UScope),
     %
 	load_owl(URL, Scope, ParentGraph) .
 
@@ -596,7 +596,7 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 		(	member(Term, TripleTerms)
 		;	member(Term, AnnotationTerms)
 		),
-		mongolog_call(assert(Term), [ scope(Scope), graph(OntologyGraph) ])
+		mongolog_call(assert(Term), [ query_scope(Scope), graph(OntologyGraph) ])
 	),
 	% assert ontology version
 	set_mongo_ontology_version(AssertedURL, OntologyVersion, OntologyGraph),

@@ -9,6 +9,7 @@
 // STD
 #include <memory>
 #include <sstream>
+#include <limits>
 // SWI Prolog
 #include <SWI-Prolog.h>
 // KnowRob
@@ -139,17 +140,245 @@ void PredicateFormula::write(std::ostream& os) const
 	predicate_->write(os);
 }
 
+
+/******************************************/
+/************ Scoped queries **************/
+/******************************************/
+
+TimePoint::TimePoint(const double& value)
+: value_(value)
+{
+}
+
+TimePoint TimePoint::now()
+{
+	auto time = std::chrono::system_clock::now().time_since_epoch();
+	std::chrono::seconds seconds = std::chrono::duration_cast< std::chrono::seconds >(time);
+	std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(time);
+	return { (double) seconds.count() + ((double) (ms.count() % 1000)/1000.0) };
+}
+
+bool TimePoint::operator<(const TimePoint& other) const
+{
+	return value_ < other.value_;
+}
+
+
+TimeInterval::TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange)
+: FuzzyInterval<TimePoint>(sinceRange, untilRange)
+{}
+
+const TimeInterval& TimeInterval::anytime()
+{
+	// sinceRange: [*,*], untilRange: [*,*]
+	static const TimeInterval timeInterval(
+			Range<TimePoint>(std::nullopt, std::nullopt),
+			Range<TimePoint>(std::nullopt, std::nullopt));
+	return timeInterval;
+}
+
+TimeInterval TimeInterval::currently()
+{
+	// sinceRange: [*,Now], untilRange: [Now,*]
+	TimePoint now = TimePoint::now();
+	return {Range<TimePoint>(std::nullopt, now),
+			Range<TimePoint>(now, std::nullopt) };
+}
+
+std::shared_ptr<TimeInterval> TimeInterval::intersectWith(const TimeInterval &other) const
+{
+	return std::make_shared<TimeInterval>(
+			minRange_.intersectWith(other.minRange_),
+			maxRange_.intersectWith(other.maxRange_));
+}
+
+ConfidenceValue::ConfidenceValue(double value)
+: value_(value)
+{
+}
+
+const ConfidenceValue& ConfidenceValue::max()
+{
+	static ConfidenceValue v(0.0);
+	return v;
+}
+
+const ConfidenceValue& ConfidenceValue::min()
+{
+	static ConfidenceValue v(1.0);
+	return v;
+}
+
+bool ConfidenceValue::operator<(const ConfidenceValue& other) const
+{
+	return value_ < other.value_;
+}
+
+bool ConfidenceValue::operator==(const ConfidenceValue& other) const
+{
+	return this == &other || fabs(value_ - other.value_) < std::numeric_limits<double>::epsilon();
+}
+
+ConfidenceInterval::ConfidenceInterval(const Range<ConfidenceValue> &minRange,
+									   const Range<ConfidenceValue> &maxRange)
+: FuzzyInterval<ConfidenceValue>(minRange,maxRange)
+{
+}
+
+const ConfidenceInterval& ConfidenceInterval::any()
+{
+	// minRange: [*,*], maxRange: [*,*]
+	static const ConfidenceInterval interval(
+			Range<ConfidenceValue>(std::nullopt, std::nullopt),
+			Range<ConfidenceValue>(std::nullopt, std::nullopt));
+	return interval;
+}
+
+const ConfidenceInterval& ConfidenceInterval::certain()
+{
+	// minRange: [MAX_CONFIDENCE,MAX_CONFIDENCE], maxRange: [MAX_CONFIDENCE,MAX_CONFIDENCE]
+	static const ConfidenceInterval interval(
+			Range<ConfidenceValue>(ConfidenceValue::max(), ConfidenceValue::max()),
+			Range<ConfidenceValue>(ConfidenceValue::max(), ConfidenceValue::max()));
+	return interval;
+}
+
+ConfidenceInterval ConfidenceInterval::at_least(const ConfidenceValue &value)
+{
+	// minRange: [$VALUE,*], maxRange: [*,*]
+	return { Range<ConfidenceValue>(value, std::nullopt),
+			 Range<ConfidenceValue>(std::nullopt, std::nullopt) };
+}
+
+
+QueryResult::QueryResult()
+: substitution_(std::make_shared<Substitution>()),
+  o_timeInterval_(std::nullopt),
+  o_confidence_(std::nullopt)
+{
+}
+
+QueryResult::QueryResult(const std::shared_ptr<Substitution> &substitution)
+: substitution_(substitution),
+  o_timeInterval_(std::nullopt),
+  o_confidence_(std::nullopt)
+{
+}
+
+QueryResult::QueryResult(const QueryResult &other)
+: substitution_(std::make_shared<Substitution>(*other.substitution_))
+{
+	setTimeInterval(other.timeInterval_);
+	setConfidenceValue(other.confidence_);
+}
+
+const std::shared_ptr<const QueryResult>& QueryResult::emptyResult()
+{
+	static auto result = std::make_shared<const QueryResult>();
+	return result;
+}
+
+void QueryResult::substitute(const Variable &var, const TermPtr &term)
+{
+	substitution_->set(var, term);
+}
+
+bool QueryResult::hasSubstitution(const Variable &var)
+{
+	return substitution_->contains(var);
+}
+
+void QueryResult::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
+{
+	timeInterval_ = timeInterval;
+	o_timeInterval_ = (timeInterval_ ?
+			std::optional<const TimeInterval*>(timeInterval_.get()) :
+			std::optional<const TimeInterval*>(std::nullopt));
+}
+
+void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence)
+{
+	confidence_ = confidence;
+	o_confidence_ = (confidence_ ?
+			std::optional<const ConfidenceValue*>(confidence_.get()) :
+			std::optional<const ConfidenceValue*>(std::nullopt));
+}
+
+bool QueryResult::combine(std::shared_ptr<QueryResult> &other, Reversible *changes)
+{
+	// unify substitutions
+	if(!substitution_->unifyWith(other->substitution_, changes)) {
+		// unification failed -> results cannot be combined
+		return false;
+	}
+	// compute intersection of time intervals
+	if(combineTimeInterval(other->timeInterval_, changes)) {
+		// intersection empty -> results cannot be combined
+		if(timeInterval_->empty()) return false;
+	}
+	// accumulate confidence values
+	auto oldConfidence = confidence_;
+	if(combineConfidence(other->confidence_)) {
+		if(changes) changes->push([this,oldConfidence](){
+			setConfidenceValue(oldConfidence);
+		});
+	}
+	return true;
+}
+
+bool QueryResult::combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval, Reversible *reversible)
+{
+	if(otherTimeInterval) {
+		if(o_timeInterval_.has_value()) {
+			if(!otherTimeInterval->isMoreGeneralThan(*timeInterval_)) {
+				auto old = timeInterval_;
+				setTimeInterval(timeInterval_->intersectWith(*otherTimeInterval));
+				if(reversible) reversible->push([this,old](){ setTimeInterval(old); });
+				return true;
+			}
+		}
+		else {
+			setTimeInterval(otherTimeInterval);
+			if(reversible) reversible->push([this](){ setTimeInterval(std::shared_ptr<TimeInterval>()); });
+			return true;
+		}
+	}
+	return false;
+}
+
+bool QueryResult::combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence)
+{
+	if(otherConfidence) {
+		if(confidence_) {
+			auto newConfidence = otherConfidence->value() * confidence_->value();
+			setConfidenceValue(std::make_shared<ConfidenceValue>(newConfidence));
+			return true;
+		}
+		else {
+			setConfidenceValue(otherConfidence);
+			return true;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
 /******************************************/
 /**************** Queries *****************/
 /******************************************/
 
 Query::Query(const std::shared_ptr<Formula> &formula)
-: formula_(formula)
+: formula_(formula),
+  o_timeInterval_(std::nullopt),
+  o_confidenceInterval_(std::nullopt)
 {
 }
 
 Query::Query(const std::shared_ptr<Predicate> &predicate)
-: formula_(new PredicateFormula(predicate))
+: formula_(new PredicateFormula(predicate)),
+  o_timeInterval_(std::nullopt),
+  o_confidenceInterval_(std::nullopt)
 {
 }
 
@@ -162,6 +391,102 @@ std::shared_ptr<Query> Query::applySubstitution(const Substitution &sub) const
 	);
 }
 
+void Query::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
+{
+	timeInterval_ = timeInterval;
+	o_timeInterval_ = (timeInterval_ ?
+					   std::optional<const TimeInterval*>(timeInterval_.get()) :
+					   std::optional<const TimeInterval*>(std::nullopt));
+}
+
+void Query::setConfidenceInterval(const std::shared_ptr<ConfidenceInterval> &confidenceInterval)
+{
+	confidenceInterval_ = confidenceInterval;
+	o_confidenceInterval_ = (confidenceInterval_ ?
+					 std::optional<const ConfidenceInterval*>(confidenceInterval_.get()) :
+					 std::optional<const ConfidenceInterval*>(std::nullopt));
+}
+
+
+QueryInstance::QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
+							 const std::shared_ptr<QueryResultStream::Channel> &outputChannel,
+							 const std::shared_ptr<const QueryResult> &partialResult)
+: uninstantiatedQuery_(uninstantiatedQuery),
+  outputChannel_(outputChannel),
+  partialResult_(partialResult)
+{
+}
+
+QueryInstance::QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
+							 const std::shared_ptr<QueryResultStream::Channel> &outputChannel)
+: uninstantiatedQuery_(uninstantiatedQuery),
+  outputChannel_(outputChannel),
+  partialResult_(QueryResult::emptyResult())
+{
+}
+
+std::shared_ptr<const Query> QueryInstance::create()
+{
+	// TODO: set scope for query generated, else would be dangerous because
+	//   both QueryInstance and Query have an interface for getting the scope.
+	if(partialResult_->substitution()->empty()) {
+		return uninstantiatedQuery_;
+	}
+	else {
+		return uninstantiatedQuery_->applySubstitution(*partialResult_->substitution());
+	}
+}
+
+void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
+{
+	// include substitutions of partialResult_
+	for (const auto& pair: *partialResult_->substitution())
+		if (!solution->hasSubstitution(pair.first)) {
+			solution->substitute(pair.first, pair.second);
+		} else {
+			// assume both terms unify
+		}
+
+	// combine time intervals
+	std::shared_ptr<TimeInterval> otherTimeInterval = (
+			partialResult_->timeInterval().has_value() ?
+			partialResult_->timeInterval_ :
+			uninstantiatedQuery_->timeInterval_);
+	solution->combineTimeInterval(otherTimeInterval);
+	// ignore solution if time interval is empty
+	if(solution->timeInterval_ && solution->timeInterval_->empty()) return;
+
+	// combine confidence values
+	solution->combineConfidence(partialResult_->confidence_);
+	// ignore solution if confidence value does not lie within desired interval
+	if(uninstantiatedQuery_->confidenceInterval_ && solution->confidence_ &&
+	  !uninstantiatedQuery_->confidenceInterval_->contains(*solution->confidence_)) {
+		return;
+	}
+
+	// finally push result into the stream
+	outputChannel_->push(solution);
+}
+
+void QueryInstance::pushEOS()
+{
+	outputChannel_->push(QueryResultStream::eos());
+}
+
+const std::optional<const TimeInterval*>& QueryInstance::timeInterval() const
+{
+	if(partialResult_->timeInterval().has_value()) {
+		return partialResult_->timeInterval();
+	}
+	else {
+		return uninstantiatedQuery_->timeInterval();
+	}
+}
+
+const std::optional<const ConfidenceInterval*>& QueryInstance::confidenceInterval() const
+{
+	return uninstantiatedQuery_->confidenceInterval();
+}
 
 /******************************************/
 /************* Query results **************/
@@ -188,23 +513,23 @@ void QueryResultStream::close()
 	}
 }
 
-bool QueryResultStream::isEOS(const SubstitutionPtr &item)
+bool QueryResultStream::isEOS(const QueryResultPtr &item)
 {
 	return (item.get() == eos().get());
 }
 
-SubstitutionPtr& QueryResultStream::bos()
+QueryResultPtr& QueryResultStream::bos()
 {
-	// TODO: make substitution immutable
-	static SubstitutionPtr x = std::make_shared<QueryResult>();
-	return x;
+	// TODO: make immutable
+	static auto msg = std::make_shared<QueryResult>();
+	return msg;
 }
 
-SubstitutionPtr& QueryResultStream::eos()
+QueryResultPtr& QueryResultStream::eos()
 {
-	// TODO: make substitution immutable
-	static SubstitutionPtr x = std::make_shared<QueryResult>();
-	return x;
+	// TODO: make immutable
+	static auto msg = std::make_shared<QueryResult>();
+	return msg;
 }
 
 bool QueryResultStream::isOpened() const
@@ -212,7 +537,7 @@ bool QueryResultStream::isOpened() const
 	return isOpened_;
 }
 
-void QueryResultStream::push(const Channel &channel, const SubstitutionPtr &item)
+void QueryResultStream::push(const Channel &channel, const QueryResultPtr &item)
 {
 	if(QueryResultStream::isEOS(item)) {
 		// prevent channels from being created while processing EOS message
@@ -306,7 +631,7 @@ QueryResultQueue::~QueryResultQueue()
 	}
 }
 
-void QueryResultQueue::pushToQueue(const SubstitutionPtr &item)
+void QueryResultQueue::pushToQueue(const QueryResultPtr &item)
 {
 	{
 		std::lock_guard<std::mutex> lock(queue_mutex_);
@@ -315,12 +640,12 @@ void QueryResultQueue::pushToQueue(const SubstitutionPtr &item)
 	queue_CV_.notify_one();
 }
 
-void QueryResultQueue::push(const SubstitutionPtr &item)
+void QueryResultQueue::push(const QueryResultPtr &item)
 {
 	pushToQueue(item);
 }
-		
-SubstitutionPtr& QueryResultQueue::front()
+
+QueryResultPtr& QueryResultQueue::front()
 {
 	std::unique_lock<std::mutex> lock(queue_mutex_);
 	queue_CV_.wait(lock, [&]{ return !queue_.empty(); });
@@ -333,9 +658,9 @@ void QueryResultQueue::pop()
 	queue_.pop();
 }
 
-SubstitutionPtr QueryResultQueue::pop_front()
+QueryResultPtr QueryResultQueue::pop_front()
 {
-	SubstitutionPtr x = front();
+	QueryResultPtr x = front();
 	pop();
 	return x;
 }
@@ -362,12 +687,12 @@ void QueryResultBroadcaster::removeSubscriber(const std::shared_ptr<Channel> &su
 	subscribers_.remove(subscriber);
 }
 
-void QueryResultBroadcaster::push(const SubstitutionPtr &item)
+void QueryResultBroadcaster::push(const QueryResultPtr &item)
 {
 	pushToBroadcast(item);
 }
 
-void QueryResultBroadcaster::pushToBroadcast(const SubstitutionPtr &item)
+void QueryResultBroadcaster::pushToBroadcast(const QueryResultPtr &item)
 {
 	// broadcast the query result to all subscribers
 	for(auto &x : subscribers_) {
@@ -380,11 +705,10 @@ QueryResultCombiner::QueryResultCombiner()
 : QueryResultBroadcaster()
 {}
 
-void QueryResultCombiner::push(const Channel &channel, const SubstitutionPtr &msg)
+void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg)
 {
 	const uint32_t channelID = channel.id();
 	// need to lock the whole push as genCombinations uses an iterator over the buffer.
-	// TODO: support concurrent genCombinations call below
 	std::lock_guard<std::mutex> lock(buffer_mutex_);
 	
 	// add to the buffer for later combinations
@@ -393,7 +717,7 @@ void QueryResultCombiner::push(const Channel &channel, const SubstitutionPtr &ms
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		SubstitutionPtr combination(new Substitution(*(msg.get())));
+		QueryResultPtr combination(new QueryResult(*(msg.get())));
 		// generate all combinations and push combined messages
 		genCombinations(channelID, buffer_.begin(), combination);
 	}
@@ -402,15 +726,13 @@ void QueryResultCombiner::push(const Channel &channel, const SubstitutionPtr &ms
 void QueryResultCombiner::genCombinations(
 		uint32_t pushedChannelID,
 		QueryResultBuffer::iterator it,
-		SubstitutionPtr &combinedSubstitution)
+		QueryResultPtr &combinedResult)
 {
 	if(it == buffer_.end()) {
 		// end reached, push combination
 		// note: need to create a new SubstitutionPtr due to the rollBack below.
-		// TODO: it could be that the same combination is generated
-		// multiple time, avoid redundant push here?
-		Substitution *s = combinedSubstitution.get();
-		QueryResultBroadcaster::push(std::make_shared<Substitution>(*s));
+		// TODO: it could be that the same combination is generated multiple times, avoid redundant push here?
+		QueryResultBroadcaster::push(std::make_shared<QueryResult>(*combinedResult));
 	}
 	else if(it->first == pushedChannelID) {
 		// ignore pushed channel
@@ -419,14 +741,14 @@ void QueryResultCombiner::genCombinations(
 		// only a single message buffered from this channel
 		auto it1 = it; ++it1;
 		// keep track of changes for rolling them back
-		Substitution::Diff changes;
+		Reversible changes;
 		// combine and continue with next channel.
 		// this is done to avoid creating many copies of the substitution map.
-		if(combinedSubstitution->combine(it->second.front(), changes)) {
-			genCombinations(pushedChannelID, it1, combinedSubstitution);
+		if(combinedResult->combine(it->second.front(), &changes)) {
+			genCombinations(pushedChannelID, it1, combinedResult);
 		}
 		// roll back changes
-		combinedSubstitution->rollBack(changes);
+		changes.rollBack();
 	}
 	else {
 		// generate a combination for each buffered message
@@ -438,16 +760,16 @@ void QueryResultCombiner::genCombinations(
 		//   must happen here
 		auto it1 = it; ++it1;
 		// keep track of changes for rolling them back
-		Substitution::Diff changes;
+		Reversible changes;
 		// combine each buffered message
 		for(auto &msg : it->second) {
 			// combine and continue with next channel
-			if(combinedSubstitution->combine(msg, changes)) {
-				genCombinations(pushedChannelID, it1, combinedSubstitution);
+			if(combinedResult->combine(msg, &changes)) {
+				genCombinations(pushedChannelID, it1, combinedResult);
 			}
 			// roll back changes, note this also clears the `changes` object
 			// so it can be re-used in the next iteration
-			combinedSubstitution->rollBack(changes);
+			changes.rollBack();
 		}
 	}
 }

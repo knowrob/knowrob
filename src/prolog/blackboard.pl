@@ -4,7 +4,8 @@
       reasoner_setting/2,             % +Name, ?Value
       reasoner_setting/4,             % +Name, +Type, +Default, +Comment
       reasoner_set_setting/3,         % +ResonerModule, +Name, +Value
-      reasoner_rdf_init/1             % +ResonerModule
+      reasoner_rdf_init/1,            % +ResonerModule
+      prolog_call/2
 /*    kb_call(t),             % +Goal
       kb_call(t,t,t),         % +Goal, +QScope, -FScope
       kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
@@ -25,12 +26,6 @@
 
 :- use_module(library('settings'), [ setting/2 ]).
 :- use_module(library('logging')).
-/*
-:- use_module(library('semweb/rdf_db'),
-	[ rdf_global_term/2 ]).
-:- use_module(library('scope'),
-    [ current_scope/1, universal_scope/1 ]).
-*/
 
 %% current_reasoner_module(?Reasoner) is semidet.
 %
@@ -142,6 +137,12 @@ reasoner_rdf_init(Reasoner) :-
     Reasoner:assert(':-'(instance_of(S,Cls,Ctx),   semweb:sw_instance_of(S,Cls,Ctx))).
 
 %%
+%
+prolog_call(Goal, _QueryContext) :-
+    % note: PrologReasoner does not support scoped queries
+    call(Goal).
+
+%%
 % Assert the collection names to be used by remember/memorize
 %
 /*
@@ -184,11 +185,6 @@ mng_export(Dir) :-
 %
 % @param Statement a statement term.
 %
-/*
-kb_call(Statement) :-
-	current_scope(QScope),
-	kb_call(Statement, QScope, _, []).
-*/
 
 %% kb_call(+Statement, +QScope, -FScope) is nondet.
 %
@@ -196,10 +192,6 @@ kb_call(Statement) :-
 %
 % @param Statement a statement term.
 %
-/*
-kb_call(Statement, QScope, FScope) :-
-	kb_call(Statement, QScope, FScope, []).
-*/
 
 %% kb_call(+Statement, +QScope, -FScope, +Options) is nondet.
 %
@@ -220,76 +212,6 @@ kb_call(Statement, QScope, FScope) :-
 % @param FScope the actual scope.
 % @param Options list of options.
 %
-/*
-kb_call(Statements, QScope, FScope, Options) :-
-	is_list(Statements),
-	!,
-	comma_list(Goal, Statements),
-	kb_call(Goal, QScope, FScope, Options).
-
-kb_call(Statement, QScope, FScope, Options) :-
-	% grounded statements have no variables
-	% in this case we can limit to one solution here
-	ground(Statement),
-	!,
-	once(kb_call0(Statement, QScope, FScope, Options)).
-
-kb_call(Statement, QScope, FScope, Options) :-
-	%\+ ground(Statement),
-	kb_call0(Statement, QScope, FScope, Options).
-
-%%
-kb_call0(Goal, QScope, FScope, Options) :-
-	option(fields(Fields), Options, []),
-	% add all toplevel variables to context
-	% FIXME: this seems to be mongolog related, move it there!
-	term_keys_variables_(Goal, GlobalVars),
-	merge_options(
-		[ scope(QScope),
-		  user_vars([['v_scope',FScope]|Fields]),
-		  global_vars(GlobalVars)
-		],
-		Options, Options1),
-	kb_call1(Goal, Options1).
-*/
-
-%%
-/*
-kb_call1(SubGoals, Options) :-
-	% create a list of step(SubGoal, OutQueue, Channels) terms
-	maplist([SubGoal,Step]>>
-		query_step(SubGoal,Step),
-		SubGoals, Steps),
-	% combine steps if possible
-	% TODO: use partial results of backends to reduce number of operations
-	%       for some cases
-	combine_steps(Steps, Combined),
-	% need to remember pattern of variables for later unification
-	% TODO: improve the way how instantiations are communicated between steps.
-	%       currently the same pattern of _all_ variables in the expanded goal
-	%       is used in each step. But this is not needed e.g. the input for the
-	%       first step could be empty list instead.
-	%       An easy optimization would be that each step has a pattern with
-	%       variables so far to reduce overall number of elements in comm pattern.
-	term_variables(SubGoals, Pattern),
-	setup_call_cleanup(
-		start_pipeline(Combined, Pattern, Options, FinalStep),
-		materialize_pipeline(FinalStep, Pattern, Options),
-		stop_pipeline(Combined)
-	).
-*/
-
-%
-/*
-term_keys_variables_(Goal, GoalVars) :-
-	term_variables(Goal, Vars),
-	term_keys_variables_1(Vars, GoalVars).
-term_keys_variables_1([], []) :- !.
-term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
-	term_to_atom(X,Atom),
-	atom_concat('v',Atom,Key),
-	term_keys_variables_1(Xs, Ys).
-*/
 
 %% kb_project(+Statement) is nondet.
 %
@@ -297,11 +219,6 @@ term_keys_variables_1([X|Xs], [[Key,X]|Ys]) :-
 %
 % @param Statement a statement term.
 %
-/*
-kb_project(Statement) :-
-	universal_scope(Scope),
-	kb_project(Statement, Scope, []).
-*/
 
 %% kb_project(+Statement, +Scope) is nondet.
 %
@@ -310,10 +227,6 @@ kb_project(Statement) :-
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-/*
-kb_project(Statement, Scope) :-
-	kb_project(Statement, Scope, []).
-*/
 
 %% kb_project(+Statement, +Scope, +Options) is semidet.
 %
@@ -330,25 +243,6 @@ kb_project(Statement, Scope) :-
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
-/*
-kb_project(Statements, Scope, Options) :-
-	is_list(Statements),
-	!,
-	comma_list(Statement, Statements),
-	kb_project(Statement, Scope, Options).
-
-kb_project(Statement, Scope, Options) :-
-	% ensure there is a graph option
-	set_graph_option(Options, Options0),
-	/*
-	% compile and call statement
-	(	reasoner_setting(mongodb:read_only, true)
-	->	log_warning(db(read_only(projection)))
-	;	mongolog_call(project(Statement), [scope(Scope)|Options0])
-	).
-	*/
-	kb_project1(Statement, [scope(Scope)|Options0]).
-*/
 
 
 %% kb_unproject(+Statement) is nondet.
@@ -357,11 +251,6 @@ kb_project(Statement, Scope, Options) :-
 %
 % @param Statement a statement term.
 %
-/*
-kb_unproject(Statement) :-
-	wildcard_scope(Scope),
-	kb_unproject(Statement, Scope, []).
-*/
 
 %% kb_unproject(+Statement, +Scope) is nondet.
 %
@@ -370,10 +259,6 @@ kb_unproject(Statement) :-
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-/*
-kb_unproject(Statement, Scope) :-
-	kb_unproject(Statement, Scope, []).
-*/
 
 %% kb_unproject(+Statement, +Scope, +Options) is semidet.
 %
@@ -391,12 +276,3 @@ kb_unproject(Statement, Scope) :-
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
-/*
-kb_unproject(Statements, Scope, Options) :-
-	is_list(Statements),
-	!,
-	forall(
-		member(Statement, Statements),
-		kb_unproject(Statement, Scope, Options)
-	).
-*/

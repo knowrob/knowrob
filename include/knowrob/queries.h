@@ -16,6 +16,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <optional>
 // KnowRob
 #include <knowrob/ThreadPool.h>
 #include <knowrob/terms.h>
@@ -65,7 +66,7 @@ namespace knowrob {
 		bool isAtomic() const;
 		
 		/**
-		 * @return true if this formula contains no free variables.
+		 * @return true if this formula isMoreGeneralThan no free variables.
 		 */
 		virtual bool isGround() const = 0;
 		
@@ -195,6 +196,252 @@ namespace knowrob {
 	protected:
 		DisjunctionFormula(const DisjunctionFormula &other, const Substitution &sub);
 	};
+
+	/**
+	 * A value range [min,max]
+	 * @tparam ValueType the type of values
+	 */
+	template <class ValueType> class Range {
+	public:
+		/**
+		 * @param min the minimum value of the range
+		 * @param max the maximum value of the range
+		 */
+		Range(const std::optional<ValueType> &min, const std::optional<ValueType> &max)
+		: min_(min), max_(max) {}
+
+		/**
+		 * @return the minimum value of the range
+		 */
+		const std::optional<ValueType>& min() const { return min_; }
+
+		/**
+		 * @return the maximum value of the range
+		 */
+		const std::optional<ValueType>& max() const { return max_; }
+
+		/**
+		 * @return true if the range has no elements, i.e. max<min
+		 */
+		bool empty() const { return max_.has_value() && min_.has_value() && max_.value() < min_.value(); }
+
+		/**
+		 * @param other another range.
+		 * @return true if this range isMoreGeneralThan another one.
+		 */
+		bool contains(const Range<ValueType> &other) const {
+			return !((min_.has_value() && (!other.min_.has_value() || other.min_.value() < min_.value())) ||
+					 (max_.has_value() && (!other.max_.has_value() || max_.value() < other.max_.value())));
+		}
+
+		/**
+		 * Intersect this range with another one.
+		 * @param other another range.
+		 */
+		Range<ValueType> intersectWith(const Range<ValueType> &other) const {
+			auto *min = &min_;
+			auto *max = &max_;
+			if(other.min_.has_value() && (!min_.has_value() ||
+				    min_.value() < other.min_.value())) {
+				min = &other.min_;
+			}
+			if(other.max_.has_value() && (!max_.has_value() ||
+					other.max_.value() < max_.value())) {
+				max = &other.max_;
+			}
+			return { *min, *max };
+		}
+
+		bool hasValue() const { return min_.has_value() || max_.has_value(); }
+
+	protected:
+		std::optional<ValueType> min_;
+		std::optional<ValueType> max_;
+	};
+
+	/**
+	 * A interval with fuzzy boundaries described by a range [min,max].
+	 * @tparam ValueType the value type of the interval.
+	 */
+	template <class ValueType> class FuzzyInterval {
+	public:
+		/**
+		 * @param minRange the range where the interval starts
+		 * @param maxRange the range where the interval ends
+		 */
+		FuzzyInterval(const Range<ValueType> &minRange, const Range<ValueType> &maxRange)
+				: minRange_(minRange), maxRange_(maxRange) {}
+
+		/**
+		 * @return the range where the interval starts
+		 */
+		const Range<ValueType>& minRange() const { return minRange_; }
+
+		/**
+		 * @return the range where the interval ends
+		 */
+		const Range<ValueType>& maxRange() const { return maxRange_; }
+
+		/**
+		 * @return true if this interval does not contain any elements.
+		 */
+		bool empty() const {
+			return minRange_.empty() || maxRange_.empty() ||
+				   (maxRange_.max().has_value() && minRange_.min().has_value() &&
+				    maxRange_.max().value() < minRange_.min().value());
+		}
+
+		/**
+		 * @param elem a confidenceInterval value.
+		 * @return true if the value falls within this interval.
+		 */
+		bool contains(const ValueType &elem) const {
+			return (minRange_.min().has_value() && elem < minRange_.min().value()) ||
+				   (maxRange_.max().has_value() && maxRange_.max().value() < elem);
+		}
+
+		/**
+		 * A fuzzy interval is thought to be more general than another
+		 * if its min and max range contains the respective range of the other.
+		 * @param other another interval
+		 * @return true if other is a specialization of this
+		 */
+		bool isMoreGeneralThan(const FuzzyInterval<ValueType> &other) const {
+			return minRange_.contains(other.minRange_) &&
+				   maxRange_.contains(other.maxRange_);
+		}
+
+	protected:
+		Range<ValueType> minRange_;
+		Range<ValueType> maxRange_;
+	};
+
+	/**
+	 * A point in time.
+	 */
+	class TimePoint {
+	public:
+		/**
+		 * @param value time in seconds
+		 */
+		TimePoint(const double& value);
+
+		/**
+		 * @return the current system time
+		 */
+		static TimePoint now();
+
+		/**
+		 * @return the value of this time point in seconds
+		 */
+		const double& value() const { return value_; }
+
+		/**
+		 * @param other another time point
+		 * @return true if this time point occurs earlier than another one.
+		 */
+		bool operator< (const TimePoint& other) const;
+
+	protected:
+		double value_;
+	};
+
+	/**
+	 * A fuzzy time interval where start and end time point lie within a range.
+	 */
+	class TimeInterval : public FuzzyInterval<TimePoint> {
+	public:
+		/**
+		 * @param sinceRange the time range where the interval starts
+		 * @param untilRange the time range where the interval ends
+		 */
+		TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange);
+
+		/**
+		 * @return a time interval without further constraints on begin and end time point of the interval.
+		 */
+		static const TimeInterval& anytime();
+
+		/**
+		 * @return a time interval that at least intersects with the current time.
+		 */
+		static TimeInterval currently();
+
+		/**
+		 * Intersect this time interval with another one.
+		 * @param other another time interval.
+		 */
+		std::shared_ptr<TimeInterval> intersectWith(const TimeInterval &other) const;
+	};
+
+	/**
+	 * The amount of confidenceInterval for something represented within the range [0,1].
+	 */
+	class ConfidenceValue {
+	public:
+		/**
+		 * @param value the confidenceInterval value in the range [0,1]
+		 */
+		explicit ConfidenceValue(double value);
+
+		/**
+		 * @return the maximum confidenceInterval value.
+		 */
+		static const ConfidenceValue& max();
+
+		/**
+		 * @return the minimum confidenceInterval value.
+		 */
+		static const ConfidenceValue& min();
+
+		/**
+		 * @return the confidenceInterval value in the range [0,1]
+		 */
+		const double& value() const { return value_; }
+
+		/**
+		 * @param other another confidenceInterval value.
+		 * @return true if this confidenceInterval value is smaller than the other.
+		 */
+		bool operator<(const ConfidenceValue& other) const;
+
+		/**
+		 * @param other another confidenceInterval value.
+		 * @return true if both values are the same
+		 */
+		bool operator==(const ConfidenceValue& other) const;
+
+	protected:
+		double value_;
+	};
+
+	/**
+	 * A fuzzy confidenceInterval interval where min and end max confidence lie within a range.
+	 */
+	class ConfidenceInterval : public FuzzyInterval<ConfidenceValue> {
+	public:
+		/**
+		 * @param minRange the value range for the minimum confidenceInterval
+		 * @param maxRange the value range for the maximum confidenceInterval
+		 */
+		ConfidenceInterval(const Range<ConfidenceValue> &minRange, const Range<ConfidenceValue> &maxRange);
+
+		/**
+		 * @return an interval that only includes the maximum confidenceInterval value.
+		 */
+		static const ConfidenceInterval& certain();
+
+		/**
+		 * @return a confidenceInterval interval without any further constraints on min and max confidence values.
+		 */
+		static const ConfidenceInterval& any();
+
+		/**
+		 * @param value the minimum confidenceInterval value
+		 * @return a confidence interval including all confidenceInterval values larger than the one provided
+		 */
+		static ConfidenceInterval at_least(const ConfidenceValue &value);
+	};
 	
 	/**
 	 * A query represented by a propositional formula.
@@ -223,13 +470,132 @@ namespace knowrob {
 		 */
 		std::shared_ptr<Query> applySubstitution(const Substitution &sub) const;
 
+		/**
+		 * Assigns a time interval to this query indicating that solutions
+		 * should only be generated that are valid within this interval.
+		 * @param timeInterval the time interval of this query.
+		 */
+		void setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval);
+
+		/**
+		 * Assigns a confidenceInterval interval to this query indicating that solutions
+		 * should only be generated that are valid within this interval.
+		 * @param confidence the confidenceInterval interval of this query.
+		 */
+		void setConfidenceInterval(const std::shared_ptr<ConfidenceInterval> &confidenceInterval);
+
+		/**
+		 * @return an optional time interval of this query.
+		 */
+		const std::optional<const TimeInterval*>& timeInterval() const { return o_timeInterval_; }
+
+		/**
+		 * @return an optional confidenceInterval interval of this query.
+		 */
+		const std::optional<const ConfidenceInterval*>& confidenceInterval() const { return o_confidenceInterval_; }
+
 	protected:
 		const std::shared_ptr<Formula> formula_;
+		std::shared_ptr<TimeInterval> timeInterval_;
+		std::shared_ptr<ConfidenceInterval> confidenceInterval_;
+		std::optional<const TimeInterval*> o_timeInterval_;
+		std::optional<const ConfidenceInterval*> o_confidenceInterval_;
+		friend class QueryInstance;
 	};
-	
-	// aliases
-	using QueryResult = Substitution;
-	using QueryResultPtr = SubstitutionPtr;
+
+	/**
+	 * The result of query evaluation.
+	 * A result indicates that the evaluation succeeded, i.e.,
+	 * that a reasoner was able to find an instance of the query that is true.
+	 */
+	class QueryResult {
+	public:
+		QueryResult();
+
+		/**
+		 * @param substitution a mapping from variables to terms.
+		 */
+		explicit QueryResult(const SubstitutionPtr &substitution);
+
+		/**
+		 * Copy another result.
+		 * Modification of the constructed result won't affect the copied one.
+		 * @param other another query result.
+		 */
+		QueryResult(const QueryResult &other);
+
+		/**
+		 * @return a positive result without additional constraints.
+		 */
+		static const std::shared_ptr<const QueryResult>& emptyResult();
+
+		/**
+		 * Adds to this result a substitution of a variable with a term.
+		 * @param var a variable
+		 * @param term a term
+		 */
+		void substitute(const Variable &var, const TermPtr &term);
+
+		/**
+		 * @param var a variable.
+		 * @return true is this solution substitutes the variable
+		 */
+		bool hasSubstitution(const Variable &var);
+
+		/**
+		 * @return a mapping from variables to terms.
+		 */
+		const SubstitutionPtr& substitution() const { return substitution_; }
+
+		/**
+		 * Assigns a time interval to this solution indicating that the solution
+		 * is only valid in a restricted time frame.
+		 * @param timeInterval the time interval of the result being valid.
+		 */
+		void setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval);
+
+		/**
+		 * Assigns a confidenceInterval value to this solution.
+		 * @param confidence a confidenceInterval value of the result being valid.
+		 */
+		void setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence);
+
+		/**
+		 * @return an optional time interval of the result being valid.
+		 */
+		const std::optional<const TimeInterval*>& timeInterval() const { return o_timeInterval_; }
+
+		/**
+		 * @return an optional confidenceInterval value of the result being valid.
+		 */
+		const std::optional<const ConfidenceValue*>& confidence() const { return o_confidence_; }
+
+		/**
+		 * Merge another query result into this one.
+		 * A merge failure is indicated by the return value, e.g. in case
+		 * both substitutions cannot be unified false is returned.
+		 * @param other another query result.
+		 * @param changes used to make the merge operation reversible, can be null.
+		 * @return false if merge is not possible.
+		 */
+		bool combine(std::shared_ptr<QueryResult> &other, Reversible *changes=nullptr);
+
+	protected:
+		SubstitutionPtr substitution_;
+		std::shared_ptr<TimeInterval> timeInterval_;
+		std::shared_ptr<ConfidenceValue> confidence_;
+		std::optional<const TimeInterval*> o_timeInterval_;
+		std::optional<const ConfidenceValue*> o_confidence_;
+
+		bool combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence);
+
+		bool combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval,
+								 Reversible *changes= nullptr);
+
+		friend class QueryInstance;
+	};
+	// alias
+	using QueryResultPtr = std::shared_ptr<QueryResult>;
 	
 	/**
 	 * A stream of query results.
@@ -430,8 +796,66 @@ namespace knowrob {
 		
 		void genCombinations(uint32_t pushedChannelID,
 			QueryResultBuffer::iterator it,
-			SubstitutionPtr &combination);
+			QueryResultPtr &combinedResult);
 	};
+
+	/**
+	 * An instantiation of a query, i.e. where some variables may be substituted by terms.
+	 */
+	class QueryInstance {
+	public:
+		/**
+		 * @param uninstantiatedQuery a query that may contain variables
+		 * @param outputChannel an output channel where solutions are pushed
+		 * @param partialResult a partial result from sub-queries evaluated before
+		 */
+		QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
+					  const std::shared_ptr<QueryResultStream::Channel> &outputChannel,
+					  const std::shared_ptr<const QueryResult> &partialResult);
+		/**
+		 * @param uninstantiatedQuery a query that may contain variables
+		 * @param outputChannel an output channel where solutions are pushed
+		 */
+		QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
+					  const std::shared_ptr<QueryResultStream::Channel> &outputChannel);
+
+		/**
+		 * @return an instane of the input query.
+		 */
+		std::shared_ptr<const Query> create();
+
+		/**
+		 * Push a new solution for the instantiated query into the QA pipeline.
+		 * @param solution a query solution
+		 */
+		void pushSolution(const std::shared_ptr<QueryResult> &solution);
+
+		/**
+		 * Push EOS message indicating that no more solutions will be generated.
+		 */
+		void pushEOS();
+
+		/**
+		 * @return the uninstantiated query.
+		 */
+		const std::shared_ptr<const Query>& uninstantiatedQuery() const { return uninstantiatedQuery_; }
+
+		/**
+		 * @return an optional time interval of this query.
+		 */
+		const std::optional<const TimeInterval*>& timeInterval() const;
+
+		/**
+		 * @return an optional confidenceInterval interval of this query.
+		 */
+		const std::optional<const ConfidenceInterval*>& confidenceInterval() const;
+
+	protected:
+		std::shared_ptr<const Query> uninstantiatedQuery_;
+		std::shared_ptr<const QueryResult> partialResult_;
+		std::shared_ptr<QueryResultStream::Channel> outputChannel_;
+	};
+	using QueryInstancePtr = std::shared_ptr<QueryInstance>;
 	
 	/**
 	 * A querying-related runtime error.

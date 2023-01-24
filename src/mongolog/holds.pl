@@ -173,15 +173,13 @@ test('holds(+S,+P,+O)') :-
 	assert_true(holds(test:'Ernest', test:'hasSibling', test:'Fred')).
 
 test('project(holds(+S,+P,+O))') :-
-    universal_scope(Scope),
 	assert_false(holds(test:'Lea', test:'hasNumber', '+493564754647')),
-	assert_true(mongolog_call(project(holds(test:'Lea', test:'hasNumber', '+493564754647')), [scope(Scope)])),
+	assert_true(mongolog_project(holds(test:'Lea', test:'hasNumber', '+493564754647'))),
 	assert_true(holds(test:'Lea', test:'hasNumber', '+493564754647')).
 
 test('holds(+S,+P,+Unit(+O))') :-
-    universal_scope(Scope),
 	assert_false(holds(test:'Lea',test:'hasHeightInMeters', _)),
-	assert_true(mongolog_call(project(holds(test:'Lea',test:'hasHeightInMeters', m(6.5))), [scope(Scope)])),
+	assert_true(mongolog_project(holds(test:'Lea',test:'hasHeightInMeters', m(6.5)))),
 	assert_true(holds(test:'Lea',test:'hasHeightInMeters', cm(650))),
 	assert_true(holds(test:'Lea',test:'hasHeightInMeters', cm(650.0))),
 	assert_false(holds(test:'Lea',test:'hasHeightInMeters', cm(750.0))),
