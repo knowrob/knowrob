@@ -24,7 +24,7 @@ bool PrologReasoner::isInitialized_ = false;
 
 PrologReasoner::PrologReasoner(std::string reasonerID)
 : reasonerID_(std::move(reasonerID)),
-  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
+  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID)),
   hasRDFData_(false)
 {
 	addDataFileHandler(PrologDataFile::PROLOG_FORMAT, [this]

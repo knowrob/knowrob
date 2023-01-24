@@ -59,7 +59,7 @@ namespace knowrob {
 		{ return std::make_shared<T>(reasonerID); }
 
 		// Override ReasonerFactory
-		const std::string& name() const override {  return name_; };
+		const std::string& name() const override {  return name_; }
 	protected:
 		std::string name_;
 	};
@@ -117,6 +117,38 @@ namespace knowrob {
 	};
 
 	/**
+	 * A reasoner with a name managed by the reasoner manager.
+	 */
+	class ManagedReasoner {
+	public:
+		/**
+		 * @param name the name of the reasoner, unique within manager
+		 * @param reasoner the reasoner instance
+		 */
+		ManagedReasoner(const std::string &name, const std::shared_ptr<IReasoner> &reasoner)
+		: name_(name), reasoner_(reasoner) {}
+
+		/**
+		 * @return the reasoner instance
+		 */
+		const std::shared_ptr<IReasoner>& operator()() const { return reasoner_; }
+
+		/**
+		 * @return the reasoner instance
+		 */
+		const std::shared_ptr<IReasoner>& reasoner() const { return reasoner_; }
+
+		/**
+		 * @return the reasoner name.
+		 */
+		const std::string& name() const { return name_; }
+
+	protected:
+		const std::string name_;
+		const std::shared_ptr<IReasoner> reasoner_;
+	};
+
+	/**
 	 * Manages a set of available reasoning subsystems.
 	 */
 	class ReasonerManager {
@@ -147,24 +179,32 @@ namespace knowrob {
 		 * Add a reasoner to this manager.
 		 * @reasoner a reasoner.
 		 */
-		void addReasoner(const std::shared_ptr<IReasoner> &reasoner);
+		std::shared_ptr<ManagedReasoner> addReasoner(
+				const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
 
 		/**
 		 * Remove a reasoner from this manager.
 		 * @reasoner a reasoner.
 		 */
-		void removeReasoner(const std::shared_ptr<IReasoner> &reasoner);
+		void removeReasoner(const std::shared_ptr<ManagedReasoner> &reasoner);
 
 		/** Get list of reasoner that can handle given predicate.
 		 *
 		 * @param predicate the predicate in question
 		 * @return an essemble of reasoner that can handle the predicate
 		 */
-		std::list<std::shared_ptr<IReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
+		std::list<std::shared_ptr<ManagedReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
+
+		/**
+		 * @param reasonerID a reasoner ID string.
+		 * @return a reasoner instance or a null pointer reference.
+		 */
+		std::shared_ptr<ManagedReasoner> getReasonerWithID(const std::string &reasonerID);
 
 	private:
 		// pool of all reasoner instances created via this manager
-		std::list<std::shared_ptr<IReasoner>> reasonerPool_;
+		// maps reasoner ID to reasoner instance.
+		std::map<std::string, std::shared_ptr<ManagedReasoner>> reasonerPool_;
 		// maps reasoner type name to factory used to create instances of that type
 		std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
 		// maps plugin names to factories used to create reasoner instances

@@ -120,6 +120,8 @@ namespace knowrob {
 		std::map<std::string, DataFileLoader> dataFileHandler_;
 
 		virtual bool loadDataFileWithUnknownFormat(const DataFilePtr&) { return false; }
+
+		friend class ReasonerManager;
 	};
 
 	/**

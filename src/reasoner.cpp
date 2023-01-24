@@ -93,6 +93,7 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	// create a reasoner id, or use name property
 	std::string reasonerID;
 	if(name.has_value()) {
+		// TODO: print warning if a name is used multiple times
 		reasonerID = name.value();
 	}
 	else {
@@ -107,7 +108,7 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
 	}
 	else {
-		addReasoner(reasoner);
+		addReasoner(reasonerID, reasoner);
 	}
 	// increase reasonerIndex_
 	reasonerIndex_ += 1;
@@ -136,22 +137,35 @@ void ReasonerManager::addReasonerFactory(const std::string &typeName, const std:
 	reasonerFactories_[typeName] = factory;
 }
 
-void ReasonerManager::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
+std::shared_ptr<ManagedReasoner> ReasonerManager::addReasoner(const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
 {
-	reasonerPool_.push_back(reasoner);
+	auto managedReasoner = std::make_shared<ManagedReasoner>(reasonerID,reasoner);
+	reasonerPool_[reasonerID] = managedReasoner;
+	return managedReasoner;
 }
 
-void ReasonerManager::removeReasoner(const std::shared_ptr<IReasoner> &reasoner)
+void ReasonerManager::removeReasoner(const std::shared_ptr<ManagedReasoner> &reasoner)
 {
-	reasonerPool_.remove(reasoner);
+	reasonerPool_.erase(reasoner->name());
 }
 
-std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(const PredicateIndicator &predicate)
+std::shared_ptr<ManagedReasoner> ReasonerManager::getReasonerWithID(const std::string &reasonerID)
 {
-	std::list<std::shared_ptr<IReasoner>> out;
+	auto it = reasonerPool_.find(reasonerID);
+	if(it != reasonerPool_.end()) {
+		return it->second;
+	}
+	else {
+		return {};
+	}
+}
+
+std::list<std::shared_ptr<ManagedReasoner>> ReasonerManager::getReasonerForPredicate(const PredicateIndicator &predicate)
+{
+	std::list<std::shared_ptr<ManagedReasoner>> out;
 	for(auto &x : reasonerPool_) {
-		if(x->isCurrentPredicate(predicate)) {
-			out.push_back(x);
+		if(x.second->reasoner()->isCurrentPredicate(predicate)) {
+			out.push_back(x.second);
 		}
 	}
 	return out;
