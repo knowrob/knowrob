@@ -33,6 +33,57 @@
     %action_effects_apply(r,t),
     %action_grounding_(r,r,r,r).
 
+
+
+%% task_effect(?EventType, ?Effect) is nondet
+%
+% Relates an action or task to roles that imply change,
+% and that need to be taken by some object when the task is executed.
+%
+%	| created(Type)			| An object has been created.	|
+%	| destroyed(Type)		| An object has been destroyed.	|
+%	| altered(Type,QualityType)	| An object has been changed.	|
+%	| linked(Type)			| An object has been linked. 	|
+%	| deposited(Type)		| An object has been deposited. |
+%	| commited(Type)		| An object has been commited. 	|
+%	| included(Type)		| An object has been included.	|
+%	| extracted(Type)		| An object has been extracted.	|
+%
+% @param ActOrTsk An individual of type dul:'Action' or dul:'Task', or a subclass of dul:'Task'.
+%
+/*
+task_effect(Tsk,Effect) :-
+	ground(Effect)
+	->	once(task_effect_(Tsk,Effect))
+	;	task_effect_(Tsk,Effect).
+
+task_effect_(Tsk, created(Type))   :- task_role_range(Tsk,soma:'CreatedObject',Type).
+task_effect_(Tsk, destroyed(Type)) :- task_role_range(Tsk,soma:'DestroyedObject',Type).
+task_effect_(Tsk, linked(Type))    :- task_role_range(Tsk,soma:'LinkedObject',Type).
+task_effect_(Tsk, commited(Type))  :- task_role_range(Tsk,soma:'CommitedObject',Type).
+task_effect_(Tsk, deposited(Type)) :- task_role_range(Tsk,soma:'DepositedObject',Type).
+task_effect_(Tsk, extracted(Type)) :- task_role_range(Tsk,soma:'ExtractedObject',Type).
+task_effect_(Tsk, included(Type))  :- task_role_range(Tsk,soma:'IncludedObject',Type).
+
+task_effect_(Tsk, altered(Type,QualityType)) :-
+	task_role_range(Tsk,soma:'AlteredObject',Type),
+	has_parameter_range(Tsk,soma:'Setpoint',Region),
+	get_altered_quality_type_(Type,Region,QualityType).
+
+%%
+get_altered_quality_type_(Concept,Region,Quality_type) :-
+	get_altered_quality_type__(Concept,Region,Quality_type),
+	\+ rdf_equal(Quality_type,dul:'Quality'),!.
+
+get_altered_quality_type__(_Concept,Region,Quality_type) :-
+	holds(Region, dul:isRegionFor, only(Quality_type)).
+
+get_altered_quality_type__(Concept,_Region,Quality_type) :-
+	holds(Concept, soma:isTriggerDefinedIn, only(Affordance)),
+	subclass_of_expr(Affordance,only(soma:describesQuality,Quality_type)).
+*/
+
+
 %%% action_effects_apply(+ActOrTsk::iri,+Grounding::dict) is det.
 %%
 %% Some action effects may imply new relations, for example, that
