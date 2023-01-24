@@ -54,7 +54,6 @@ public:
     HybridQAResultHandler(const boost::property_tree::ptree &config, const std::string &queryString, bool incremental = false)
 	: has_stop_request_(false),
 	  currentQuery_(""),
-	  cursor_(0),
       hybridQA_(config)
 	{
         incrementalMode = incremental;
@@ -73,7 +72,9 @@ public:
             solutions_.push_back(std::make_shared<std::string>("True."));
         }
         else {
-            solutions_.push_back(std::make_shared<std::string>(substitutionToString(solution)));
+            std::stringstream ss;
+            ss << *solution << ".";
+            solutions_.push_back(std::make_shared<std::string>(ss.str()));
         }
         numSolutions_ += 1;
         return !has_stop_request_;
@@ -132,7 +133,6 @@ protected:
     HybridQA hybridQA_;
 	std::atomic<bool> has_stop_request_;
 	int numSolutions_;
-	uint32_t cursor_;
 	std::string currentQuery_;
 };
 
@@ -236,22 +236,24 @@ void sigint_handler(int sig)
     g_request_shutdown=1;
 }
 
-int ensure_loaded(HybridQA hybridQA_, const char *ros_pkg)
-{
-    std::stringstream ss;
-    ss << ros::package::getPath(ros_pkg) << "/src/__init__.pl";
-    if(!hybridQA_.callPrologDirect("ensure_loaded(" + ss.str() + ").")) {
-        ROS_ERROR("Failed to load __init__.pl of %s.", ros_pkg);
-        return FALSE;
-    }
-    return TRUE;
-}
+// TODO: Decide if loading specific init.pls is still necessary?
+//int ensure_loaded(HybridQA hybridQA_, const char *ros_pkg)
+//{
+//    std::stringstream ss;
+//    ss << ros::package::getPath(ros_pkg) << "/src/__init__.pl";
+//    if(!hybridQA_.callPrologDirect("ensure_loaded(" + ss.str() + ").")) {
+//        ROS_ERROR("Failed to load __init__.pl of %s.", ros_pkg);
+//        return FALSE;
+//    }
+//    return TRUE;
+//}
 
 int initializeRos(ros::NodeHandle node) {
     HybridQA hybridQA_(config);
-    if(!ensure_loaded(hybridQA_, "rosprolog")) {
-        return FALSE;
-    }
+    // TODO: Decide if loading specific init.pls is still necessary?
+//    if(!ensure_loaded(hybridQA_, "knowrob")) {
+//        return FALSE;
+//    }
     std::string param;
     // register initial packages
     if (node.getParam(PARAM_INITIAL_PACKAGE, param)) {
@@ -309,7 +311,8 @@ int run(int argc, char **argv) {
     // This must be set after the first NodeHandle is created.
     signal(SIGINT, sigint_handler);
     //
-    initializeRos(n);
+    // initializeRos(n);
+    is_initialized_ = true;
     if(is_initialized()) {
         ros::ServiceServer service_query = n.advertiseService(
                 "/rosprolog/query", query);
