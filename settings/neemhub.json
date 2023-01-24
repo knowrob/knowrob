@@ -2,6 +2,7 @@
   "reasoner": [
     {
       "type": "Mongolog",
+      "name": "mongolog1",
       "mongodb": {
         "host": "localhost",
         "db": "neems",
