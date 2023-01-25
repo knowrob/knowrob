@@ -434,6 +434,7 @@ std::shared_ptr<const Query> QueryInstance::create()
 {
 	// TODO: set scope for query generated, else would be dangerous because
 	//   both QueryInstance and Query have an interface for getting the scope.
+	//   maybe just hide the query object? seems query instance might be sufficient
 	if(partialResult_->substitution()->empty()) {
 		return uninstantiatedQuery_;
 	}
@@ -552,16 +553,22 @@ bool QueryResultStream::isOpened() const
 void QueryResultStream::push(const Channel &channel, const QueryResultPtr &item)
 {
 	if(QueryResultStream::isEOS(item)) {
-		// prevent channels from being created while processing EOS message
-		std::lock_guard<std::mutex> lock(channel_mutex_);
-		// remove channel once EOS is reached
-		channels_.erase(channel.iterator_);
-		
-		// auto-close this stream if no channels are left,
-		// also send EOS in this case.
-		if(channels_.empty() && isOpened()) {
-			isOpened_ = false;
-			// TODO: lift lock before pushing
+		bool doPushMsg; {
+			// prevent channels from being created while processing EOS message
+			std::lock_guard<std::mutex> lock(channel_mutex_);
+			// remove channel once EOS is reached
+			channels_.erase(channel.iterator_);
+			// auto-close this stream if no channels are left
+			if(channels_.empty() && isOpened()) {
+				isOpened_ = false;
+				doPushMsg = true;
+			}
+			else {
+				doPushMsg = false;
+			}
+		}
+		// send EOS on this stream if no channels are left
+		if(doPushMsg) {
 			push(item);
 		}
 	}
@@ -804,29 +811,29 @@ std::string QueryError::formatErrorString(
 
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const ConfidenceValue& confidence)
+	std::ostream& operator<<(std::ostream& os, const ConfidenceValue& confidence) //NOLINT
 	{
 		return os << confidence.value();
 	}
 
-	std::ostream& operator<<(std::ostream& os, const TimePoint& tp)
+	std::ostream& operator<<(std::ostream& os, const TimePoint& tp) //NOLINT
 	{
 		return os << tp.value();
 	}
 
-	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi)
+	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi) //NOLINT
 	{
 		phi.write(os);
 		return os;
 	}
 	
-	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q)
+	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q) //NOLINT
 	{
 		os << *q.formula();
 		return os;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution)
+	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution) //NOLINT
 	{
 		if(solution.confidence().has_value()) {
 			os << *solution.confidence().value() << "::";
@@ -841,7 +848,7 @@ namespace std {
 		return os;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Range<TimePoint>& t)
+	std::ostream& operator<<(std::ostream& os, const Range<TimePoint>& t) //NOLINT
 	{
 		if(t.min().has_value() && t.max().has_value()) {
 			if(t.min().value() == t.max().value()) {
@@ -862,7 +869,7 @@ namespace std {
 		}
 	}
 
-	std::ostream& operator<<(std::ostream& os, const TimeInterval& ti)
+	std::ostream& operator<<(std::ostream& os, const TimeInterval& ti) //NOLINT
 	{
 		return os << '[' << ti.minRange() << ',' << ti.maxRange() << ']';
 	}

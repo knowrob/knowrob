@@ -125,8 +125,8 @@ namespace knowrob {
 		 * @param name the name of the reasoner, unique within manager
 		 * @param reasoner the reasoner instance
 		 */
-		ManagedReasoner(const std::string &name, const std::shared_ptr<IReasoner> &reasoner)
-		: name_(name), reasoner_(reasoner) {}
+		ManagedReasoner(std::string name, const std::shared_ptr<IReasoner> &reasoner)
+		: name_(std::move(name)), reasoner_(reasoner) {}
 
 		/**
 		 * @return the reasoner instance

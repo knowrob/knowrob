@@ -33,7 +33,6 @@ static const char* PROMPT = "?- ";
 
 // TODO support queries like: mongolog:(woman(X), ...) or (mongolog | prolog):(woman(X), ...)
 //    but there could be different instances of the same reasoner type. So might need a reasoner id instead.
-// TODO: include scope in output
 
 class QueryHistory {
 public:
