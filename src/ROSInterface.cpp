@@ -68,12 +68,12 @@ public:
 
 // Override QueryResultHandler
     bool pushQueryResult(const QueryResultPtr &solution) override {
-        if(solution->mapping().empty()) {
+        if(solution->substitution()->empty()) {
             solutions_.push_back(std::make_shared<std::string>("True."));
         }
         else {
             std::stringstream ss;
-            ss << *solution << ".";
+            ss << *solution->substitution() << ".";
             solutions_.push_back(std::make_shared<std::string>(ss.str()));
         }
         numSolutions_ += 1;

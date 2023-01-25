@@ -1,8 +1,5 @@
 :- module(mng_client,
-    [ mng_db_name/1,
-      mng_get_db/3,
-      mng_one_db/2,
-      mng_collection/2,
+    [ mng_collection/2,
       mng_distinct_values/4,
       mng_drop/2,
       mng_store/3,
@@ -36,8 +33,7 @@
       mng_strip_type/3,
       mng_strip_operator/3,
       mng_strip_variable/2,
-      mng_operator/2,
-      mng_uri/1
+      mng_operator/2
     ]).
 /** <module> A mongo DB client for Prolog.
 
@@ -56,59 +52,6 @@ To this end, Prolog datastructures are translated from and into BSON format.
 
 :- use_foreign_library('libmongo_kb.so').
 
-:- dynamic mng_db_name/1.
-
-% formatting of messages
-prolog:message(mng_db_name(Name)) -->
-	[ 'Using MongoDB database `~w`.'-[Name] ].
-
-% define some settings
-:- setting(db_name, atom, roslog,
-	'Name of the Mongo DB used by KnowRob.').
-:- setting(collection_prefix, atom, '',
-	'ID of the current neem. Empty if neemhub is not used').
-:- setting(read_only, atom, false,
-	'Flag if the tripledb is read only').
-
-:- setting(mng_client:db_name, DBName),
-   assertz(mng_db_name(DBName)),
-   log_info(mng_db_name(DBName)).
-
-%% mng_db_name(-DB) is det
-%
-% Get the name of the database the client is connected to.
-%
-
-%% mng_get_db(?DB, -Collection, +DBType) is det.
-%
-% Get database and collection name for type
-% of data denoted by DBType identifier.
-% The type identifier can be choosen freely but should
-% not conflict with another collection in the database.
-%
-% @param DB The database name
-% @param Collection The collection name
-% @param DBType type identifier
-%
-mng_get_db(DB, Collection, DBType) :-
-	mng_db_name(DB),
-	(	(setting(mng_client:collection_prefix, Id), Id \= '') 
-	->	atomic_list_concat([Id,'_',DBType], Collection)
-	;	Collection = DBType
-	).
-
-%% mng_one_db(?DB, -Collection) is det.
-%
-% Get a special database collection with just one empty document.
-% This is used for feeding just this one document into aggregate
-% pipelines.
-%
-% @param DB The database name
-% @param Collection The collection name
-%
-mng_one_db(DB, one) :-
-	mng_db_name(DB).
-
 %% mng_drop(+DB,+Collection) is det.
 %
 % Drop a named collection. That is delete all documents
@@ -119,12 +62,9 @@ mng_one_db(DB, one) :-
 % @see https://docs.mongodb.com/manual/reference/method/db.collection.drop/index.html
 %
 mng_drop(DB,Collection) :-
-	catch(
-		mng_drop_unsafe(DB,Collection),
-		% collection does not exist yet
-		mng_error(drop_failed('ns not found')),
-		true
-	).
+	catch(mng_drop_unsafe(DB,Collection),
+		  mng_error(drop_failed(Collection)),
+		  true).
 
 %% mng_collection(+DB,?Collection) is nondet
 %
@@ -283,7 +223,7 @@ mng_index_create(DB,Collection,Keys) :-
 		),
 		Keys0
 	),
-	(	setting(mng_client:read_only, true)
+	(	reasoner_setting(mongodb:read_only, true)
 	->	true
     ;	mng_index_create_core(DB,Collection,Keys0)
     ).
@@ -301,10 +241,8 @@ mng_index_create(DB,Collection,Keys) :-
 % @see https://docs.mongodb.com/manual/core/index-compound/
 %
 mng_index_create(DB,Indices) :-
-	forall(
-		member([Coll,Keys],Indices),
-		mng_index_create(DB,Coll,Keys)
-	).
+	forall(member([Coll,Keys],Indices),
+		   mng_index_create(DB,Coll,Keys)).
 
 %%
 format_key_(+(K),+(K)) :- !.
@@ -347,7 +285,8 @@ mng_dump(DB,Dir) :-
 	mng_dump(DB,Dir,_).
 
 mng_dump(DB,Dir,Output) :-
-	mng_uri(URI),
+    % TODO should be moved into mongolog
+	mongolog_database:mongolog_uri(URI),
 	process_create(path(mongodump),
 		[ '--uri', URI, '--db', DB, '--out', Dir ],
 		[ process(PID), stderr(pipe(StdErrStream)) ]
@@ -383,7 +322,8 @@ mng_restore(_DB,Dir) :-
 	mng_restore(_,Dir,_).
 
 mng_restore(_DB,Dir,Output) :-
-	mng_uri(URI),
+    % TODO should be moved into mongolog
+	mongolog_database:mongolog_uri(URI),
 	process_create(path(mongorestore),
 		[ '--uri', URI, '--dir', Dir ],
 		[ process(PID), stderr(pipe(StdErrStream)) ]
@@ -646,21 +586,6 @@ mng_strip_operator(    X,    =, X) :- !.
 %
 mng_strip_variable(X->_,X) :- nonvar(X), !.
 mng_strip_variable(X,X) :- !.
-
-%% mng_uri(-URI) is det.
-%
-% Get the URI connection string
-%
-mng_uri(URI) :-
-  getenv('KNOWROB_MONGO_HOST', Host),
-  getenv('KNOWROB_MONGO_USER', User),
-  getenv('KNOWROB_MONGO_PASS', Pass),
-  getenv('KNOWROB_MONGO_PORT', Port),
-  atomic_list_concat([ 'mongodb://', User, ':', Pass,
-    '@', Host, ':', Port ], URI),
-  !.
-
-mng_uri('mongodb://localhost:27017').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

@@ -1,11 +1,10 @@
 :- use_module(library('rdf_test')).
-:- begin_rdf_tests(
-		'activity_parser',
-		'owl/test/parser-test.owl',
-		[ namespace('http://knowrob.org/kb/parser-test.owl#') ]).
+:- begin_rdf_tests('activity_parser', 'owl/test/parser-test.owl').
 
 :- use_module('parser.pl', [ parser_create/2 ]).
 :- use_module(library('semweb/rdf_db')).
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/parser-test.owl#', [force(true)]).
 
 :- dynamic test_parser/1.
 :- rdf_meta test_parser_run(t,t),

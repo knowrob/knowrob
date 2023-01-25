@@ -2,14 +2,18 @@
   "reasoner": [
     {
       "type": "Mongolog",
-      "mng_client": {
-        "db_name": "knowrob",
+      "name": "mongolog1",
+      "mongodb": {
+        "host": "localhost",
+        "port": 27017,
+        "db": "mongolog1",
         "read_only": false,
-        "collection_prefix": ""
+        "drop_graphs": ["user"]
       }
     },
     {
-      "type": "Prolog"
+      "type": "Prolog",
+      "name": "prolog1"
     }
   ]
 }

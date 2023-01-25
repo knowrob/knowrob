@@ -1,4 +1,4 @@
-:- module(model_DUL,
+:- module(mongolog_dul,
 	[ is_object(r),
 	  is_quality(r),  % ?Quality
 	  is_concept(r),
@@ -33,10 +33,7 @@
 	  has_location(r,r),
 	  has_role(r,r), % ?Object, ?Role
 	  has_part(r,r),
-	  % FIXME: pl module process defines this already.
-	  %        - probably better assert all into another module then user,
-	  %          then prefer this over user
-	  %is_process(r),
+	  is_process(r),
 	  is_classified_by(r,r),
 	  has_participant(r,r),
 	  has_participant(r,r,r),
@@ -66,23 +63,13 @@ for modeling physical and social contexts.
 @license BSD
 */
 
-:- use_module(library('model/RDFS'),
-	[ has_type/2 ]).
-:- use_module(library('lang/db'),
-	[ load_owl/2 ]).
-
-% load RDF data
-:- load_owl('http://www.ease-crc.org/ont/DUL.owl',
-	[ namespace(dul,'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#') ]).
-
 %% is_object(?Entity) is nondet.
 %
 % True iff Entity is an instance of dul:'Object'.
 %
 % @param Entity An entity IRI.
 %
-is_object(Entity) ?+>
-	has_type(Entity, dul:'Object').
+is_object(Entity) ?+> has_type(Entity, dul:'Object').
 
 %% is_quality(?Entity) is nondet.
 %
@@ -90,8 +77,7 @@ is_object(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_quality(Entity) ?+>
-	has_type(Entity, dul:'Quality').
+is_quality(Entity) ?+> has_type(Entity, dul:'Quality').
 
 %% is_concept(?Entity) is nondet.
 %
@@ -99,8 +85,7 @@ is_quality(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_concept(Entity) ?+>
-	has_type(Entity, dul:'Concept').
+is_concept(Entity) ?+> has_type(Entity, dul:'Concept').
 
 %% is_role(?Entity) is nondet.
 %
@@ -108,8 +93,7 @@ is_concept(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_role(Entity) ?+>
-	has_type(Entity, dul:'Role').
+is_role(Entity) ?+> has_type(Entity, dul:'Role').
 
 %% is_agent(?Entity) is nondet.
 %
@@ -117,8 +101,7 @@ is_role(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_agent(Entity) ?+>
-	has_type(Entity, dul:'Agent').
+is_agent(Entity) ?+> has_type(Entity, dul:'Agent').
 
 %% is_physical_object(?Entity) is nondet.
 %
@@ -126,8 +109,7 @@ is_agent(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_physical_object(Entity) ?+>
-	has_type(Entity, dul:'PhysicalObject').
+is_physical_object(Entity) ?+> has_type(Entity, dul:'PhysicalObject').
 
 %% is_physical_artifact(?Entity) is nondet.
 %
@@ -135,8 +117,7 @@ is_physical_object(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_physical_artifact(Entity) ?+>
-	has_type(Entity, dul:'PhysicalArtifact').
+is_physical_artifact(Entity) ?+> has_type(Entity, dul:'PhysicalArtifact').
 
 %% is_social_object(?Entity) is nondet.
 %
@@ -144,8 +125,7 @@ is_physical_artifact(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_social_object(Entity) ?+>
-	has_type(Entity, dul:'SocialObject').
+is_social_object(Entity) ?+> has_type(Entity, dul:'SocialObject').
 
 %% has_quality_type(+Entity,?Type) is nondet.
 %
@@ -181,8 +161,7 @@ has_object_type(Entity,Type) ?>
 % @param Object named individual
 % @param Location named individual
 %
-has_location(Object, Location) ?+>
-	holds(Object, dul:hasLocation, Location).
+has_location(Object, Location) ?+> triple(Object, dul:hasLocation, Location).
 
 %% has_role(?Entity,?Role) is nondet.
 %
@@ -191,8 +170,7 @@ has_location(Object, Location) ?+>
 % @param Entity named individual
 % @param Role named individual
 %
-has_role(Entity,Role) ?+>
-	holds(Role, dul:classifies, Entity).
+has_role(Entity,Role) ?+> triple(Role, dul:classifies, Entity).
 
 %% has_part(?Entity,?Part) is nondet.
 %
@@ -201,10 +179,7 @@ has_role(Entity,Role) ?+>
 % @param Entity IRI atom
 % @param Part IRI atom
 %
-% TODO: not object related, probably best to add a module DUL.pl and add it there
-%
-has_part(Entity,Part) ?+>
-	holds(Entity, dul:hasPart, Part).
+has_part(Entity,Part) ?+> triple(Entity, dul:hasPart, Part).
 
 %% is_event(?Entity) is nondet.
 %
@@ -212,8 +187,7 @@ has_part(Entity,Part) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_event(Entity) ?+>
-	has_type(Entity, dul:'Event').
+is_event(Entity) ?+> has_type(Entity, dul:'Event').
 
 %% is_event_type(?Entity) is nondet.
 %
@@ -221,8 +195,7 @@ is_event(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_event_type(Entity) ?+>
-	has_type(Entity, dul:'EventType').
+is_event_type(Entity) ?+> has_type(Entity, dul:'EventType').
 
 %% is_action(?Entity) is nondet.
 %
@@ -230,8 +203,7 @@ is_event_type(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_action(Entity) ?+>
-	has_type(Entity, dul:'Action').
+is_action(Entity) ?+> has_type(Entity, dul:'Action').
 
 %% is_task(?Entity) is nondet.
 %
@@ -239,8 +211,7 @@ is_action(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_task(Entity) ?+>
-	has_type(Entity, dul:'Task').
+is_task(Entity) ?+> has_type(Entity, dul:'Task').
 
 %% is_process(?Entity) is nondet.
 %
@@ -248,8 +219,7 @@ is_task(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_process(Entity) ?+>
-	has_type(Entity, dul:'Process').
+is_process(Entity) ?+> has_type(Entity, dul:'Process').
 
 %% has_participant(+Evt,?Participant,?Class) is nondet.
 %
@@ -263,20 +233,18 @@ is_process(Entity) ?+>
 % @param Class The most specific type of Participant.
 %
 has_participant(Evt,Participant) ?+>
-	holds(Evt,dul:hasParticipant,Participant).
+	triple(Evt,dul:hasParticipant,Participant).
 
 has_participant(Evt,Participant,Class) ?>
-	holds(Evt,dul:hasParticipant,Participant),
+	triple(Evt,dul:hasParticipant,Participant),
 	has_object_type(Participant,Class).
 
 %% is_classified_by(+Evt, ?Tsk) is nondet
 %
-% 
-%
 % @param Evt The Event
 % @param Task The task that classifies the Event
-is_classified_by(Evt, Task) ?+>
-	holds(Evt,dul:isClassifiedBy,Task).
+%
+is_classified_by(Evt, Task) ?+> triple(Evt,dul:isClassifiedBy,Task).
 
 %% executes_task(?Act,?Tsk) is nondet.
 %
@@ -287,8 +255,7 @@ is_classified_by(Evt, Task) ?+>
 % @param Act An individual of type dul:'Action'.
 % @param Tsk An individual of type dul:'Task'.
 %
-executes_task(Act,Tsk) ?+>
-	holds(Act,dul:executesTask,Tsk).
+executes_task(Act,Tsk) ?+> triple(Act,dul:executesTask,Tsk).
 
 %% task_role(?Tsk,?Role) is nondet.
 %
@@ -299,11 +266,9 @@ executes_task(Act,Tsk) ?+>
 % @param Tsk An individual of type dul:'Task'.
 % @param Role An individual of type dul:'Role'.
 %
-task_role(Tsk,Role) ?+>
-	holds(Tsk, dul:isTaskOf ,Role).
+task_role(Tsk,Role) ?+> triple(Tsk, dul:isTaskOf ,Role).
 
-has_task_role(Tsk,Role) ?+>
-	task_role(Tsk,Role).
+has_task_role(Tsk,Role) ?+> task_role(Tsk,Role).
 
 %% task_role_type(?Tsk,?Role,?RoleType) is nondet.
 %
@@ -315,7 +280,7 @@ has_task_role(Tsk,Role) ?+>
 % @param RoleType A sub-class of dul:'Role'.
 %
 task_role_type(Tsk,Role,RoleType) ?>
-	holds(Tsk, dul:isTaskOf, Role),
+	triple(Tsk, dul:isTaskOf, Role),
 	has_object_type(Role,RoleType).
 
 %% task_role_range(?Tsk,?Role,?Range) is nondet.
@@ -328,8 +293,8 @@ task_role_type(Tsk,Role,RoleType) ?>
 % @param Range A sub-class of dul:'Object'.
 %
 task_role_range(Tsk,Role,Range) ?>
-	holds(Tsk,dul:isTaskOf,Role),
-	holds(Role,dul:classifies,only(Range)).
+	triple(Tsk,dul:isTaskOf,Role),
+	triple(Role,dul:classifies,only(Range)).
 
 
 %% is_region(?Entity) is nondet.
@@ -338,8 +303,7 @@ task_role_range(Tsk,Role,Range) ?>
 %
 % @param Entity An entity IRI.
 %
-is_region(Entity) ?+>
-	has_type(Entity, dul:'Region').
+is_region(Entity) ?+> has_type(Entity, dul:'Region').
 
 %% is_parameter(?Entity) is nondet.
 %
@@ -347,8 +311,7 @@ is_region(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_parameter(Entity) ?+>
-	has_type(Entity, dul:'Parameter').
+is_parameter(Entity) ?+> has_type(Entity, dul:'Parameter').
 
 %% is_space_region(?Entity) is nondet.
 %
@@ -356,8 +319,7 @@ is_parameter(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_space_region(Entity) ?+>
-	has_type(Entity, dul:'SpaceRegion').
+is_space_region(Entity) ?+> has_type(Entity, dul:'SpaceRegion').
 
 %% is_amount(?Entity) is nondet.
 %
@@ -365,8 +327,7 @@ is_space_region(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_amount(Entity) ?+>
-	has_type(Entity, dul:'Amount').
+is_amount(Entity) ?+> has_type(Entity, dul:'Amount').
 
 %% is_physical_attribute(?Entity) is nondet.
 %
@@ -374,8 +335,7 @@ is_amount(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_physical_attribute(Entity) ?+>
-	has_type(Entity, dul:'PhysicalAttribute').
+is_physical_attribute(Entity) ?+> has_type(Entity, dul:'PhysicalAttribute').
 
 %% is_social_attribute(?Entity) is nondet.
 %
@@ -383,8 +343,7 @@ is_physical_attribute(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_social_attribute(Entity) ?+>
-	has_type(Entity, dul:'SocialAttribute').
+is_social_attribute(Entity) ?+> has_type(Entity, dul:'SocialAttribute').
 
 %% is_time_interval(?Entity) is nondet.
 %
@@ -392,8 +351,7 @@ is_social_attribute(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_time_interval(Entity) ?+>
-	has_type(Entity, dul:'TimeInterval').
+is_time_interval(Entity) ?+> has_type(Entity, dul:'TimeInterval').
 
 %% has_region(?Entity,?Region) is nondet.
 %
@@ -405,8 +363,7 @@ is_time_interval(Entity) ?+>
 % @param Entity An entity IRI.
 % @param Region An region IRI.
 %
-has_region(Entity,Region) ?+>
-	holds(Entity, dul:hasRegion, Region).
+has_region(Entity,Region) ?+> triple(Entity, dul:hasRegion, Region).
 
 %% has_parameter(?Entity,?Param) is nondet.
 %
@@ -418,8 +375,7 @@ has_region(Entity,Region) ?+>
 % @param Entity An entity IRI.
 % @param Param An parameter IRI.
 %
-has_parameter(Entity,Param) ?+>
-	holds(Entity,dul:hasParameter,Param).
+has_parameter(Entity,Param) ?+> triple(Entity,dul:hasParameter,Param).
 
 %% has_parameter(?Entity,?Param,?ParamType) is nondet.
 %
@@ -431,7 +387,7 @@ has_parameter(Entity,Param) ?+>
 % @param Param parameter type IRI.
 %
 has_parameter(Entity,Param,ParamType) ?>
-	holds(Entity,dul:hasParameter,Param),
+	triple(Entity,dul:hasParameter,Param),
 	has_object_type(Param,ParamType).
 
 %% has_parameter_range(?Entity,?Param,?Range) is nondet.
@@ -444,8 +400,8 @@ has_parameter(Entity,Param,ParamType) ?>
 % @param Range parameter range IRI.
 %
 has_parameter_range(Entity,Param,Range) ?>
-	holds(Entity,dul:hasParameter,Param),
-	holds(Param,dul:classifies,only(Range)).
+	triple(Entity,dul:hasParameter,Param),
+	triple(Param,dul:classifies,only(Range)).
 
 %% has_assignment(?Param,?Region) is nondet.
 %
@@ -454,8 +410,7 @@ has_parameter_range(Entity,Param,Range) ?>
 % @param Param parameter IRI.
 % @param Region region IRI.
 %
-has_assignment(Param,Region) ?+>
-	holds(Param,dul:classifies,Region).
+has_assignment(Param,Region) ?+> triple(Param,dul:classifies,Region).
 
 %% has_data_value(?Entity,?DataValue) is nondet.
 %
@@ -464,14 +419,12 @@ has_assignment(Param,Region) ?+>
 % @param Entity entity IRI.
 % @param DataValue typed data value.
 %
-has_data_value(Entity,DataValue) ?+>
-	triple(Entity,dul:hasDataValue,DataValue).
+has_data_value(Entity,DataValue) ?+> triple(Entity,dul:hasDataValue,DataValue).
 
 %% has_time_interval(+Entity,?Interval) is semidet. 
 %
 %
-has_time_interval(Entity,TimeInterval) ?+>
-	triple(Entity,dul:hasTimeInterval,TimeInterval).
+has_time_interval(Entity,TimeInterval) ?+> triple(Entity,dul:hasTimeInterval,TimeInterval).
 
 %% is_description(?Entity) is nondet.
 %
@@ -479,8 +432,7 @@ has_time_interval(Entity,TimeInterval) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_description(Entity) ?+>
-	has_type(Entity, dul:'Description').
+is_description(Entity) ?+> has_type(Entity, dul:'Description').
 
 %% is_situation(?Entity) is nondet.
 %
@@ -488,8 +440,7 @@ is_description(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_situation(Entity) ?+>
-	has_type(Entity, dul:'Situation').
+is_situation(Entity) ?+> has_type(Entity, dul:'Situation').
 
 %% is_goal(?Entity) is nondet.
 %
@@ -497,8 +448,7 @@ is_situation(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_goal(Entity) ?+>
-	has_type(Entity, dul:'Goal').
+is_goal(Entity) ?+> has_type(Entity, dul:'Goal').
 
 %% is_design(?Entity) is nondet.
 %
@@ -506,8 +456,7 @@ is_goal(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_design(Entity) ?+>
-	has_type(Entity, dul:'Design').
+is_design(Entity) ?+> has_type(Entity, dul:'Design').
 
 %% is_diagnosis(?Entity) is nondet.
 %
@@ -515,8 +464,7 @@ is_design(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_diagnosis(Entity) ?+>
-	has_type(Entity, dul:'Diagnosis').
+is_diagnosis(Entity) ?+> has_type(Entity, dul:'Diagnosis').
 
 %% is_plan(?Entity) is nondet.
 %
@@ -524,8 +472,7 @@ is_diagnosis(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_plan(Entity) ?+>
-	has_type(Entity, dul:'Plan').
+is_plan(Entity) ?+> has_type(Entity, dul:'Plan').
 
 %% is_plan_execution(?Entity) is nondet.
 %
@@ -533,8 +480,7 @@ is_plan(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_plan_execution(Entity) ?+>
-	has_type(Entity, dul:'PlanExecution').
+is_plan_execution(Entity) ?+> has_type(Entity, dul:'PlanExecution').
 
 %% is_norm(?Entity) is nondet.
 %
@@ -542,8 +488,7 @@ is_plan_execution(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_norm(Entity) ?+>
-	has_type(Entity, dul:'Norm').
+is_norm(Entity) ?+> has_type(Entity, dul:'Norm').
 
 %% is_transition(?Entity) is nondet.
 %
@@ -551,8 +496,7 @@ is_norm(Entity) ?+>
 %
 % @param Entity An entity IRI.
 %
-is_transition(Entity) ?+>
-	has_type(Entity, dul:'Transition').
+is_transition(Entity) ?+> has_type(Entity, dul:'Transition').
 
 %% plan_has_goal(?Plan,?Goal) is nondet.
 %
@@ -562,7 +506,7 @@ is_transition(Entity) ?+>
 % @param Goal An individual of type dul:'Description'.
 %
 plan_has_goal(Plan,Goal) ?+>
-	holds(Plan,dul:hasComponent,Goal),
+	triple(Plan,dul:hasComponent,Goal),
 	has_type(Goal,dul:'Goal').
 
 %% satisfies(?Sit,?Descr) is nondet.
@@ -573,8 +517,7 @@ plan_has_goal(Plan,Goal) ?+>
 % @param Sit An individual of type dul:'Situation'.
 % @param Descr An individual of type dul:'Description'.
 %
-satisfies(Sit,Descr) ?+>
-	holds(Sit,dul:satisfies,Descr).
+satisfies(Sit,Descr) ?+> triple(Sit,dul:satisfies,Descr).
 
 %% is_setting_for(+Sit,+Entity) is nondet.
 %
@@ -586,8 +529,7 @@ satisfies(Sit,Descr) ?+>
 % @param Sit An individual of type dul:'Situation'.
 % @param Entity A named individual.
 %
-is_setting_for(Sit,Entity) ?>
-	triple(Sit,dul:isSettingFor,Entity).
+is_setting_for(Sit,Entity) ?> triple(Sit,dul:isSettingFor,Entity).
 
 is_setting_for(Sit,Entity) +>
 	(	is_action(Entity) -> triple(Sit,dul:includesAction,Entity)

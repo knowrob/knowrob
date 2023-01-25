@@ -10,14 +10,9 @@
 
 :- use_module(library('mongodb/client'),
 	[ mng_strip_operator/3, mng_strip_type/3 ]).
-:- use_module(library('qudt'),
-	[ qudt_unit/4 ]).
-:- use_module('mongolog_test').
+:- use_module(library('qudt'), [ qudt_unit/4 ]).
 :- use_module(library('scope')).
 :- use_module('temporal').
-
-:- dynamic holds/3.
-:- multifile holds/3.
 
 %%
 % Enforce arithmetic operator.
@@ -98,15 +93,78 @@ holds(Query) ?+>
 	pragma(Query =.. [P,S,O]),
 	holds(S,P,O).
 
+
+/*
+%%
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=only(O)),
+	instance_of_expr(S,only(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=some(O)),
+	instance_of_expr(S,some(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=value(O)),
+	instance_of_expr(S,value(P,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=min(M,O)),
+	instance_of_expr(S,min(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=max(M,O)),
+	instance_of_expr(S,max(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=exactly(M,O)),
+	instance_of_expr(S,exactly(P,M,O)).
+
+holds_description(S,P,Descr) ?>
+	pragma(compound(Descr)),
+	pragma(Descr=value(O)),
+	instance_of_expr(S,value(P,O)).
+
+%%
+% Allow OWL descriptions in instance_of expressions.
+%
+model_RDFS:instance_of(S,Descr) ?>
+	pragma(is_owl_term(Descr)),
+	instance_of_expr(S,Descr).
+
+%%
+% Allow OWL descriptions in subclass_of expressions.
+%
+model_RDFS:subclass_of(Class, Descr) ?>
+	pragma(is_owl_term(Descr)),
+	subclass_of_expr(Class, Descr).
+
+%%
+% Allow OWL descriptions in holds expressions.
+%
+%lang_holds:holds(S,P,O) ?>
+%	pragma(\+ is_owl_term(O)),
+%	instance_of_expr(S, value(P,O)).
+
+lang_holds:holds(S,P,Descr) ?>
+	pragma(is_owl_term(Descr)),
+	holds_description(S,P,Descr).
+*/
+
      /*******************************
      *	    UNIT TESTS	     		    *
      *******************************/
 
-:- begin_mongolog_tests(
-	'mongolog_holds',
-	'owl/test/swrl.owl',
-	[ namespace('http://knowrob.org/kb/swrl_test#')
-	]).
+:- use_module('mongolog_test').
+:- begin_mongolog_tests('mongolog_holds','owl/test/swrl.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test('holds/1 with ns', [ blocked('holds/1 cannot handle namespaces') ]) :-
 	assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).
@@ -115,15 +173,13 @@ test('holds(+S,+P,+O)') :-
 	assert_true(holds(test:'Ernest', test:'hasSibling', test:'Fred')).
 
 test('project(holds(+S,+P,+O))') :-
-    universal_scope(Scope),
 	assert_false(holds(test:'Lea', test:'hasNumber', '+493564754647')),
-	assert_true(mongolog_call(project(holds(test:'Lea', test:'hasNumber', '+493564754647')), [scope(Scope)])),
+	assert_true(mongolog_project(holds(test:'Lea', test:'hasNumber', '+493564754647'))),
 	assert_true(holds(test:'Lea', test:'hasNumber', '+493564754647')).
 
 test('holds(+S,+P,+Unit(+O))') :-
-    universal_scope(Scope),
 	assert_false(holds(test:'Lea',test:'hasHeightInMeters', _)),
-	assert_true(mongolog_call(project(holds(test:'Lea',test:'hasHeightInMeters', m(6.5))), [scope(Scope)])),
+	assert_true(mongolog_project(holds(test:'Lea',test:'hasHeightInMeters', m(6.5)))),
 	assert_true(holds(test:'Lea',test:'hasHeightInMeters', cm(650))),
 	assert_true(holds(test:'Lea',test:'hasHeightInMeters', cm(650.0))),
 	assert_false(holds(test:'Lea',test:'hasHeightInMeters', cm(750.0))),

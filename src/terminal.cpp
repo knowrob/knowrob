@@ -10,12 +10,16 @@
 // STD
 #include <exception>
 #include <iostream>
+#include <algorithm>
+#include <list>
 // BOOST
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 // KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/logging.h>
@@ -30,14 +34,95 @@ static const char* PROMPT = "?- ";
 // TODO support queries like: mongolog:(woman(X), ...) or (mongolog | prolog):(woman(X), ...)
 //    but there could be different instances of the same reasoner type. So might need a reasoner id instead.
 
+class QueryHistory {
+public:
+	explicit QueryHistory()
+	: selection_(data_.end()),
+	  pos_(-1),
+	  maxHistoryItems_(100) {}
+
+	void append(const std::string &queryString) {
+		data_.push_front(queryString);
+		reset();
+	}
+
+	void reset() {
+		selection_ = data_.end();
+		pos_ = -1;
+	}
+
+	void save(const std::string &historyFile) {
+		std::ofstream file(historyFile);
+		if(file.good()) {
+			boost::archive::text_oarchive oa(file);
+			oa << data_.size();
+			for(auto &x : data_) oa << x;
+		}
+		else {
+			KB_WARN("unable to write history to file '{}'", historyFile);
+		}
+	}
+
+	void load(const std::string &historyFile) {
+		std::ifstream file(historyFile);
+		if(file.good()) {
+			boost::archive::text_iarchive ia(file);
+			std::list<std::string>::size_type size;
+			ia >> size;
+			size = std::min(maxHistoryItems_, size);
+			for(int i = 0; i < size; ++i) {
+				std::string queryString;
+				ia >> queryString;
+				data_.push_back(queryString);
+			}
+		}
+	}
+
+	const std::string& getSelection() { return *selection_; }
+
+	bool hasSelection() { return selection_ != data_.end(); }
+
+	void nextItem() {
+		if(pos_ == -1) {
+			selection_ = data_.begin();
+			pos_ = 0;
+		}
+		else if(pos_ == 0) {
+			selection_++;
+		}
+		if(selection_ == data_.end()) {
+			pos_ = 1;
+		}
+	}
+
+	void previousItem() {
+		if(selection_ == data_.begin()) {
+			selection_ = data_.end();
+			pos_ = -1;
+		}
+		else if(pos_ == 0 || pos_ == 1) {
+			selection_--;
+			pos_ = 0;
+		}
+	}
+protected:
+	std::list<std::string> data_;
+	std::list<std::string>::iterator selection_;
+	const std::string historyFile_;
+	unsigned long maxHistoryItems_;
+	int pos_;
+};
+
 class HybridQATerminal : public QueryResultHandler {
 public:
-	HybridQATerminal(const boost::property_tree::ptree &config)
+	explicit HybridQATerminal(const boost::property_tree::ptree &config)
 	: has_stop_request_(false),
-	  currentQuery_(""),
 	  cursor_(0),
-	  hybridQA_(config)
+	  numSolutions_(0),
+	  hybridQA_(config),
+	  historyFile_("history.txt")
 	{
+		history_.load(historyFile_);
 	}
 
 	static char getch() {
@@ -60,11 +145,12 @@ public:
 
 	// Override QueryResultHandler
 	bool pushQueryResult(const QueryResultPtr &solution) override {
-		if(solution->mapping().empty()) {
+		if(solution->substitution()->empty()) {
+			// TODO: print scope if it is the not the universal scope.
 			std::cout << "yes." << std::endl;
 		}
 		else {
-			std::cout << *solution << std::endl;
+			std::cout << *solution->substitution() << std::endl;
 		}
 		numSolutions_ += 1;
 		return !has_stop_request_;
@@ -80,6 +166,9 @@ public:
 			if(numSolutions_ == 0) {
 				std::cout << "no." << std::endl;
 			}
+			// add query to history
+			history_.append(queryString);
+			history_.save(historyFile_);
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
@@ -107,6 +196,24 @@ public:
 			currentQuery_ += c;
 		}
 		cursor_ += 1;
+	}
+
+	void setQuery(const std::string &queryString) {
+		auto oldLength = currentQuery_.length();
+		auto newLength = queryString.length();
+		// move to cursor pos=0 and insert the new query
+		std::cout << "\r" << PROMPT << queryString;
+		// overwrite remainder of old query string with spaces
+		for(auto counter = oldLength; counter > newLength; --counter) {
+			std::cout << ' ';
+		}
+		// move back cursor
+		if(oldLength > newLength) {
+			std::cout << "\033[" << (oldLength-newLength) << "D";
+		}
+		std::cout << std::flush;
+		currentQuery_ = queryString;
+		cursor_ = currentQuery_.length();
 	}
 
 	void backspace() {
@@ -155,11 +262,15 @@ public:
 	}
 
 	void moveUp() {
-		// TODO: implement UP KEY
+		history_.nextItem();
+		if(history_.hasSelection()) {
+			setQuery(history_.getSelection());
+		}
 	}
 
 	void moveDown() {
-		// TODO: implement DOWN KEY
+		history_.previousItem();
+		setQuery(history_.hasSelection() ? history_.getSelection() : "");
 	}
 
 	void handleEscapeSequence() {
@@ -224,6 +335,8 @@ protected:
 	int numSolutions_;
 	uint32_t cursor_;
 	std::string currentQuery_;
+	std::string historyFile_;
+	QueryHistory history_;
 };
 
 
@@ -232,7 +345,7 @@ int run(int argc, char **argv) {
 	general.add_options()
 			("help", "produce a help message")
 			("verbose", "print informational messages")
-			("config-file", po::value<std::string>(), "a configuration file in JSON format")
+			("config-file", po::value<std::string>()->required(), "a configuration file in JSON format")
 			("version", "output the version number");
 	// Declare an options description instance which will be shown
 	// to the user
@@ -260,13 +373,13 @@ int run(int argc, char **argv) {
 	}
 
 	// configure logging
-	auto &log_config = config.get_child("logging");
-	if(!log_config.empty()) {
-		Logger::loadConfiguration(log_config);
+	auto log_config = config.get_child_optional("logging");
+	if(log_config) {
+		Logger::loadConfiguration(log_config.value());
 	}
-	// overwrite console logger level (default: prevent messages being printed, only print errors)
+	// overwrite console logger level (default: prevent messages being printed, only print warnings and errors)
 	Logger::setSinkLevel(Logger::Console,
-						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::err);
+						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::warn);
 
 	return HybridQATerminal(config).run();
 }

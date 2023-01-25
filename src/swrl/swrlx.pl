@@ -62,11 +62,9 @@ swrlx_make_individual(Individual, Pattern) ?>
 	;	(var(Individual), swrlx_make_new_individual(Individual, PatternAtom))
 	)).
 
-:- begin_rdf_tests(
-		'swrlx',
-		'package://knowrob/owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+:- begin_rdf_tests('swrlx', 'owl/test/swrl.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test(swrl_makeOWLIndividual) :-
 	findall(X, has_type(X, test:'Car'), Cars0),

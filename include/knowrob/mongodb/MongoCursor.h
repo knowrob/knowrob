@@ -10,8 +10,9 @@
 #define __KB_MONGO_CURSOR_H__
 
 #include <mongoc.h>
-
+// STD
 #include <string>
+#include <memory>
 // SWI Prolog
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
@@ -20,10 +21,7 @@
 
 class MongoCursor {
 public:
-	MongoCursor(
-		mongoc_client_pool_t *pool,
-		const char *db_name,
-		const char *coll_name);
+	MongoCursor(const std::shared_ptr<MongoCollection> &collection);
 	~MongoCursor();
 	
 	const std::string& id() { return id_; };
@@ -43,7 +41,7 @@ public:
 	bool erase();
 	
 private:
-	MongoCollection coll_;
+	std::shared_ptr<MongoCollection> coll_;
 	mongoc_cursor_t *cursor_;
 	bson_t *query_;
 	bson_t *opts_;

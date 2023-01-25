@@ -98,7 +98,7 @@ namespace knowrob {
 		 * @param doTransformQuery
 		 * @return the first solution found, or QueryResultStream::eos() if none.
 		 */
-		QueryResultPtr oneSolution(const std::shared_ptr<Query> &goal,
+		QueryResultPtr oneSolution(const std::shared_ptr<const Query> &goal,
 								   const char *contextModule={},
 								   bool doTransformQuery=true);
 
@@ -120,7 +120,7 @@ namespace knowrob {
 		 * @param doTransformQuery
 		 * @return list of solutions.
 		 */
-		std::list<QueryResultPtr> allSolutions(const std::shared_ptr<Query> &goal,
+		std::list<QueryResultPtr> allSolutions(const std::shared_ptr<const Query> &goal,
 											   const char *contextModule={},
 											   bool doTransformQuery=true);
 
@@ -162,11 +162,8 @@ namespace knowrob {
 		std::list<TermPtr> runTests(const std::string &target);
 		
 		/**
-		 * Transforms each input query.
-		 * The intended purpose is that subclasses of this reasoner can wrap a goal in a
-		 * reasoner specific higher-order predicate, e.g. `my_reasoner_call/1`.
 		 */
-		virtual std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) { return q; }
+		virtual const functor_t& callFunctor();
 
 		/**
 		 * Resolve the path to a Prolog file.
@@ -194,15 +191,15 @@ namespace knowrob {
 		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
 
 		// Override IReasoner
-		void startQuery(uint32_t queryID,
-			const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-			const std::shared_ptr<Query> &goal) override;
+		void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) override;
+
+		// Override IReasoner
+		void runQueryInstance(uint32_t queryID, const std::shared_ptr<QueryInstance> &queryInstance) override;
 		
 		// Override IReasoner
-		void finishQuery(uint32_t queryID, bool isImmediateStopRequested) override;
-		
-		// Override IReasoner
-		void pushSubstitution(uint32_t queryID, const SubstitutionPtr &bindings) override;
+		void finishQuery(uint32_t queryID,
+						 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+						 bool isImmediateStopRequested) override;
 
 	protected:
 		static bool isInitialized_;
@@ -212,21 +209,26 @@ namespace knowrob {
 
 		/** a query request for a runner */
 		struct Request {
-			uint32_t queryID;
+			const uint32_t queryID;
 			const char *queryModule;
-			std::shared_ptr<Query> goal;
-			explicit Request(const std::shared_ptr<Query> &goal, const char *queryModule, uint32_t queryID=0)
-			: queryID(queryID), queryModule(queryModule), goal(goal) {};
+			std::shared_ptr<QueryInstance> queryInstance;
+			functor_t callFunctor;
+			const std::shared_ptr<const Query> goal;
+			Request(const std::shared_ptr<QueryInstance> &queryInstance,
+					functor_t callFunctor,
+					const char *queryModule,
+					uint32_t queryID=0)
+			: queryID(queryID),
+			  queryModule(queryModule),
+			  queryInstance(queryInstance),
+			  callFunctor(callFunctor),
+			  goal(queryInstance->create()) {};
 		};
 
 		/** A runner that evaluates a Prolog query.  */
 		class Runner : public ThreadPool::Runner {
 		public:
-			Runner(PrologReasoner *reasoner,
-				   Request request,
-				   const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-				   bool sendEOS=false,
-				   const SubstitutionPtr &bindings=QueryResultStream::eos());
+			Runner(PrologReasoner *reasoner, Request request, bool sendEOS=false);
 
 			// Override Runner
 			void run() override;
@@ -234,17 +236,22 @@ namespace knowrob {
 		protected:
 			PrologReasoner *reasoner_;
 			Request request_;
-			SubstitutionPtr bindings_;
-			std::shared_ptr<QueryResultStream::Channel> outputStream_;
 			bool sendEOS_;
+
+			term_t createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScope);
+			term_t createContextTerm(term_t solutionScope);
+
+			void setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope);
+
+			template <class T> bool createIntervalDict(term_t intervalDict, const FuzzyInterval<T> &interval);
+			template <class T> bool createRangeDict(term_t intervalDict, const Range<T> &range);
 
 			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
 			friend class PrologReasoner;
 		};
 		
 		struct ActiveQuery {
-			std::shared_ptr<QueryResultStream::Channel> outputStream;
-			std::shared_ptr<Query> goal;
+			std::shared_ptr<const Query> goal;
 			std::atomic<bool> hasReceivedAllInput;
 			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
 			std::mutex mutex;

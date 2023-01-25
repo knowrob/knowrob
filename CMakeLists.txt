@@ -16,7 +16,7 @@ find_package(spdlog REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -110,7 +110,7 @@ target_link_libraries(mongo_kb
 #### QUERY ANSWERING
 ##############
 
-add_library(hyres SHARED
+add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
 		src/logging.cpp
@@ -126,7 +126,7 @@ add_library(hyres SHARED
 		src/mongolog/MongologReasoner.cpp
 		src/swrl/SWRLReasoner.cpp
 		src/esg/ESGReasoner.cpp)
-target_link_libraries(hyres
+target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
 		${GTEST_LIBRARIES})
@@ -134,11 +134,12 @@ target_link_libraries(hyres
 add_executable(knowrob-terminal src/terminal.cpp)
 target_link_libraries(knowrob-terminal
 		Boost::program_options
-		hyres)
+		Boost::serialization
+		knowrob_qa)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
 add_executable(test_qa tests/test_qa.cpp)
-target_link_libraries(test_qa hyres)
+target_link_libraries(test_qa knowrob_qa)
 
 ##############
 ########## ROS1 block
@@ -147,7 +148,7 @@ target_link_libraries(test_qa hyres)
 if (catkin_FOUND)
 	# install into ROS workspace
 	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(hyres ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 	### TF messages ###
@@ -195,13 +196,15 @@ endif()
 ##############
 
 # add an executable target for GTest.
-# but the testing code is actually in the *hyres* library
+# but the testing code is actually in the *knowrob_qa* library
 # where gtest won't find them without using the "--no-as-needed"
 # flag for the linker.
-add_executable(all_gtests tests/gtests.cpp)
+add_executable(all_gtests
+		tests/gtests.cpp
+		src/neems/test.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
-		hyres
+		knowrob_qa
 		-Wl,--no-whole-archive
 		${GTEST_MAIN_LIBRARIES})
 

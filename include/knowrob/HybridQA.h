@@ -28,11 +28,11 @@ namespace knowrob {
 	public:
 		HybridQA(const boost::property_tree::ptree &config);
 
-		std::shared_ptr<Query> parseQuery(const std::string &queryString);
+		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
 
         int callPrologDirect(const std::string &queryString);
 
-		void runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler, bool incremental = false);
+		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler, bool incremental = false);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;

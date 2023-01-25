@@ -84,10 +84,6 @@ prolog:message(test_blocked(Name,Msg)) -->
 prolog:message(test_fixme(num_tests(1)))   --> [ '[plunit] 1 test is labeled as `fixme`' ].
 prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled as `fixme`'-[Num] ].
 
-% formatting of messages
-prolog:message(mng_db_name(Name)) -->
-	[ 'Using MongoDB database `~w`.'-[Name] ].
-
 %% Intercept plunit messages, and
 %% create facts using the dynamic "test_*" predicates.
 %user:message_hook(MsgTerm, _Level, _Lines) :-

@@ -16,7 +16,7 @@ using namespace knowrob;
 Blackboard::Blackboard(
 	const std::shared_ptr<ReasonerManager> &reasonerManager,
 	const std::shared_ptr<QueryResultQueue> &outputQueue,
-	const std::shared_ptr<Query> &goal)
+	const std::shared_ptr<const Query> &goal)
 : reasonerManager_(reasonerManager),
   outputQueue_(outputQueue),
   goal_(goal)
@@ -95,7 +95,7 @@ void Blackboard::decomposePredicate(
 	std::list<std::shared_ptr<IReasoner>> ensemble =
 		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
 	// create a subquery for the predicate p
-	std::shared_ptr<Query> subq = std::make_shared<Query>(phi);
+	std::shared_ptr<Query> subQuery = std::make_shared<Query>(phi);
 
     if (ensemble.empty()) {
 		throw QueryError("no reasoner registered for query `{}`", *phi);
@@ -105,7 +105,7 @@ void Blackboard::decomposePredicate(
 		// create IO channels
 		reasonerOutChan = QueryResultStream::Channel::create(out);
 		reasonerIn = std::make_shared<Blackboard::Stream>(
-			r,reasonerOutChan,subq);
+			r,reasonerOutChan, subQuery);
 		reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
 		in->addSubscriber(reasonerInChan);
 		// create a new segment
@@ -161,11 +161,13 @@ Blackboard::Stream::Stream(
 : QueryResultStream(),
   queryID_(reinterpret_cast<std::uintptr_t>(this)),
   reasoner_(reasoner),
+  outputStream_(outputStream),
+  goal_(goal),
   isQueryOpened_(true),
   hasStopRequest_(false)
 {
 	// tell the reasoner that a new request has been made
-	reasoner_->startQuery(queryID_, outputStream, goal);
+	reasoner_->startQuery(queryID_, goal);
 }
 
 Blackboard::Stream::~Stream()
@@ -184,15 +186,17 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!
 			//          else consumer will never be called with EOS
-			reasoner_->finishQuery(queryID_, hasStopRequest());
+			reasoner_->finishQuery(queryID_, outputStream_, hasStopRequest());
 		}
 	}
 	else if(!isQueryOpened()) {
 		KB_WARN("ignoring attempt to write to a closed stream.");
 	}
 	else {
-		// push substitution to reasoner
-		reasoner_->pushSubstitution(queryID_, msg);
+		// evaluate an instance of the input query
+		auto queryInstance = std::make_shared<QueryInstance>(
+				goal_, outputStream_, msg);
+		reasoner_->runQueryInstance(queryID_, queryInstance);
 	}
 }
 

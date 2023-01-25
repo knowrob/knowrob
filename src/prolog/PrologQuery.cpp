@@ -12,7 +12,7 @@
 using namespace knowrob;
 
 	
-PrologQuery::PrologQuery(const std::shared_ptr<Query> &qa_query)
+PrologQuery::PrologQuery(const std::shared_ptr<const Query> &qa_query)
 : qa_query_(qa_query),
   pl_query_(PL_new_term_ref())
 {
@@ -268,7 +268,7 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t)
 	}
 }
 
-std::shared_ptr<Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
+std::shared_ptr<const Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
 	return std::make_shared<Query>(toFormula(t));
 }

@@ -21,11 +21,12 @@
 // TODO: make configurable
 #define WATCH_RATE_MS 200
 
+std::atomic<long> MongoWatch::id_counter_ = 0;
+
 MongoWatch::MongoWatch(mongoc_client_pool_t *client_pool)
 : client_pool_(client_pool),
   isRunning_(false),
-  thread_(NULL),
-  id_counter_(0)
+  thread_(nullptr)
 {
 	// TODO: consider using one thread per collection,
 	//       _and_ one stream per collection.
@@ -43,10 +44,9 @@ MongoWatch::~MongoWatch()
 	stopWatchThread();
 	// then stop all watcher
 	std::lock_guard<std::mutex> guard(lock_);
-	for(std::map<long, MongoWatcher*>::iterator
-			it=watcher_map_.begin(); it!=watcher_map_.end(); ++it)
+	for(auto & it : watcher_map_)
 	{
-		MongoWatcher *watcher = it->second;
+		MongoWatcher *watcher = it.second;
 		delete watcher;
 	}
 	watcher_map_.clear();
@@ -68,7 +68,7 @@ void MongoWatch::stopWatchThread()
 		isRunning_ = false;
 		thread_->join();
 		delete thread_;
-		thread_ = NULL;
+		thread_ = nullptr;
 	}
 }
 
@@ -78,23 +78,22 @@ long MongoWatch::watch(
 		const std::string &callback_goal,
 		const PlTerm &query_term)
 {
+	auto next_id = (id_counter_++);
 	// add to map
 	{
-		MongoWatcher *watcher = new MongoWatcher(client_pool_,
+		auto *watcher = new MongoWatcher(client_pool_,
 				db_name, coll_name, callback_goal, query_term);
 		std::lock_guard<std::mutex> guard(lock_);
-		watcher_map_[id_counter_] = watcher;
-		id_counter_ += 1;
+		watcher_map_[next_id] = watcher;
 	}
 	// start the thread when the first watch is added
 	startWatchThread();
-	return id_counter_-1;
+	return next_id;
 }
 
 void MongoWatch::unwatch(long watcher_id)
 {
-	std::map<long, MongoWatcher*>::iterator
-		needle = watcher_map_.find(watcher_id);
+	auto needle = watcher_map_.find(watcher_id);
 	if(needle != watcher_map_.end()) {
 		MongoWatcher *watcher = needle->second;
 		std::lock_guard<std::mutex> guard(lock_);
@@ -111,7 +110,7 @@ void MongoWatch::loop()
 	// bind a Prolog engine to this thread.
 	// this is needed as callback's are predicates in the
 	// Prolog knowledge base.
-	if(!PL_thread_attach_engine(NULL)) {
+	if(!PL_thread_attach_engine(nullptr)) {
 		std::cerr << "failed to attach engine!" << std::endl;
 		isRunning_ = false;
 	}
@@ -120,10 +119,9 @@ void MongoWatch::loop()
 	while(isRunning_) {
 		{
 			std::lock_guard<std::mutex> guard(lock_);
-			for(std::map<long, MongoWatcher*>::iterator
-					it=watcher_map_.begin(); it!=watcher_map_.end(); ++it)
+			for(auto &it : watcher_map_)
 			{
-				it->second->next(it->first);
+				it.second->next(it.first);
 			}
 		}
 		// try to run at constant rate
@@ -139,8 +137,8 @@ MongoWatcher::MongoWatcher(
 		const char *coll_name,
 		const std::string &callback_goal,
 		const PlTerm &query_term)
-: collection_(NULL),
-  stream_(NULL),
+: collection_(nullptr),
+  stream_(nullptr),
   callback_goal_(callback_goal)
 {
 	// create pipeline object
@@ -165,7 +163,7 @@ MongoWatcher::MongoWatcher(
 	collection_->appendSession(opts);
 	// create the stream object
 	stream_ = mongoc_collection_watch(
-			(*collection_)(), pipeline, opts);
+			collection_->coll(), pipeline, opts);
 	// cleanup
 	bson_destroy(pipeline);
 	bson_destroy(opts);
@@ -173,19 +171,19 @@ MongoWatcher::MongoWatcher(
 
 MongoWatcher::~MongoWatcher()
 {
-	if(stream_!=NULL) {
+	if(stream_!=nullptr) {
 		mongoc_change_stream_destroy(stream_);
-		stream_ = NULL;
+		stream_ = nullptr;
 	}
-	if(collection_!=NULL) {
+	if(collection_!=nullptr) {
 		delete collection_;
-		collection_ = NULL;
+		collection_ = nullptr;
 	}
 }
 
 bool MongoWatcher::next(long watcher_id)
 {
-	if(stream_==NULL) {
+	if(stream_==nullptr) {
 		// stream had an error before
 		return false;
 	}
@@ -202,13 +200,13 @@ bool MongoWatcher::next(long watcher_id)
 		bson_error_t error;
 		if(mongoc_change_stream_error_document(stream_, &error, &err_doc)) {
 			if(!bson_empty (err_doc)) {
-				fprintf(stderr, "mongodb server error: %s\n", bson_as_relaxed_extended_json (err_doc, NULL));
+				fprintf(stderr, "mongodb server error: %s\n", bson_as_relaxed_extended_json (err_doc, nullptr));
 			}
 			else {
 				fprintf (stderr, "mongodb client error: %s\n", error.message);
 			}
 			mongoc_change_stream_destroy(stream_);
-			stream_ = NULL;
+			stream_ = nullptr;
 			return false;
 		}
 		else {

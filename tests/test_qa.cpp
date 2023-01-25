@@ -22,19 +22,19 @@ void test_kb1_PrologReasoner(
 	KB_INFO("PrologReasoner query: {}", (*query1.get()));
 	for(auto &solution : reasoner->allSolutions(query1))
 	{
-		KB_INFO("{}", (*solution.get()));
+		KB_INFO("{}", *solution->substitution());
 	}
 
 	KB_INFO("PrologReasoner query: {}", (*query2.get()));
 	for(auto &solution : reasoner->allSolutions(query2))
 	{
-		KB_INFO("{}", (*solution.get()));
+		KB_INFO("{}", *solution->substitution());
 	}
 
 	KB_INFO("PrologReasoner query: {}", (*query3.get()));
 	for(auto &solution : reasoner->allSolutions(query3))
 	{
-		KB_INFO("{}", (*solution.get()));
+		KB_INFO("{}", *solution->substitution());
 	}
 
 	KB_INFO("Blackboard query: {}", (*query1.get())); {
@@ -44,7 +44,7 @@ void test_kb1_PrologReasoner(
 		while(true) {
 			auto solution = bbq->pop_front();
 			if(knowrob::QueryResultStream::isEOS(solution)) break;
-			KB_INFO("{}", (*solution.get()));
+			KB_INFO("{}", *solution->substitution());
 		}
 	}
 
@@ -65,7 +65,7 @@ void test_kb1_PrologReasoner(
 		while(true) {
 			auto solution = bbq->pop_front();
 			if(knowrob::QueryResultStream::isEOS(solution)) break;
-			KB_INFO("{}", (*solution.get()));
+			KB_INFO("{}", *solution->substitution());
 		}
 	}
 }

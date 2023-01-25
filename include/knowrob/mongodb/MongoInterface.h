@@ -10,6 +10,9 @@
 #define __KB_MONGO_IFACE_H__
 
 #include <mongoc.h>
+// STD
+#include <map>
+#include <memory>
 // SWI Prolog
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
@@ -27,46 +30,48 @@
 class MongoInterface {
 public:
 	static MongoInterface& get();
-	
-	static mongoc_client_pool_t* pool();
-	
-	
-	void drop(const char *db_name, const char *coll_name);
-	
-	void store(const char *db_name, const char *coll_name, const PlTerm &doc_term);
-	
-	void update(const char *db_name, const char *coll_name, const PlTerm &query_term, const PlTerm &update_term);
-	
-	void remove(const char *db_name, const char *coll_name, const PlTerm &doc_term);
-	
-	void bulk_write(const char *db_name, const char *coll_name, const PlTerm &doc_term);
 
-	void create_index(const char *db_name, const char *coll_name, const PlTerm &keys_term);
-	
-	
-	static MongoCursor* cursor_create(const char *db_name, const char *coll_name);
-	
-	static MongoCollection* get_collection(const char *db_name, const char *coll_name);
+	std::shared_ptr<MongoDatabase> connect(const PlTerm &dbTerm);
 
-	static void cursor_destroy(const char *curser_id);
+	std::shared_ptr<MongoCollection> connect(const PlTerm &dbTerm, const char* collectionName);
 	
-	static MongoCursor* cursor(const char *curser_id);
+	std::shared_ptr<MongoCursor> cursor_create(const PlTerm &db_term, const char *coll_name);
+
+	void cursor_destroy(const char *curser_id);
 	
-	static MongoWatch* get_watch();
+	std::shared_ptr<MongoCursor> cursor(const char *curser_id);
+
+	long watch(const PlTerm &db_term,
+			   const char *coll_name,
+			   const std::string &callback_goal,
+			   const PlTerm &query_term);
+
+	void unwatch(long i);
 
 private:
 	MongoInterface();
-	MongoInterface(const std::string &mongoURI);
 	~MongoInterface();
 	
 	MongoInterface(MongoInterface const&); // Don't Implement
-	void operator=(MongoInterface const&); // Don't implement
-	
-	mongoc_uri_t *uri_;
-	mongoc_client_pool_t *pool_;
-	
-	std::map<std::string, MongoCursor*> cursors_;
-	MongoWatch *watch_;
+	void operator=(MongoInterface const&); // Don't implements
+
+	class Connection {
+	public:
+		mongoc_uri_t *uri_;
+		mongoc_client_pool_t *pool_;
+		std::shared_ptr<MongoWatch> watch_;
+		std::string uri_string_;
+
+		explicit Connection(const std::string &uri_string);
+		~Connection();
+	};
+
+	std::shared_ptr<MongoInterface::Connection> getOrCreateConnection(const char *uri_string_c);
+
+	// maps URI to MongoDatabase for all previously accessed MongoDatabase's
+	std::map<std::string, std::shared_ptr<Connection>> connections_;
+	std::map<std::string, std::shared_ptr<MongoCursor>> cursors_;
+	std::map<long, std::shared_ptr<Connection>> watcher_;
 
 	std::mutex mongo_mutex_;
 };

@@ -25,13 +25,19 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 
 void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 {
-	for(const auto &pair : config.get_child("reasoner")) {
-		try {
-			reasonerManager_->loadReasoner(pair.second);
+	auto reasonerList = config.get_child_optional("reasoner");
+	if(reasonerList) {
+		for(const auto &pair : reasonerList.value()) {
+			try {
+				reasonerManager_->loadReasoner(pair.second);
+			}
+			catch(std::exception& e) {
+				KB_ERROR("failed to load a reasoner: {}", e.what());
+			}
 		}
-		catch(std::exception& e) {
-			KB_ERROR("failed to load a reasoner: {}", e.what());
-		}
+	}
+	else {
+		KB_ERROR("configuration has no 'reasoner' key.");
 	}
 }
 
@@ -44,14 +50,14 @@ int HybridQA::callPrologDirect(const std::string &queryString)
     return TRUE;
 }
 
-std::shared_ptr<Query> HybridQA::parseQuery(const std::string &queryString)
+std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString)
 {
 	auto term = prologReasoner_->readTerm(queryString);
 	return PrologQuery::toQuery(term);
 }
 
 
-void HybridQA::runQuery(const std::shared_ptr<Query> &query, QueryResultHandler &handler, bool incremental) {
+void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler, bool incremental) {
     QueryResultPtr solution;
     if (!runQueryInitialized) {
         bbq_ = std::make_shared<knowrob::QueryResultQueue>();

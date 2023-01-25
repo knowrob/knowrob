@@ -1,14 +1,14 @@
 :- use_module(library('rdf_test')).
-:- begin_rdf_tests('swrl',
-		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#') ]).
+:- begin_rdf_tests('swrl', 'owl/test/swrl.owl').
 
-:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_has/3 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_equal/2, rdf_has/3, rdf_register_prefix/3 ]).
 :- use_module(library('semweb/rdfs'), [ rdfs_individual_of/2 ]).
 :- use_module(library('logging')).
 :- use_module(library('unittest')).
 :- use_module('swrl').
 :- use_module('parser').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 swrl_test_file(test('swrl/test.swrl')).
 

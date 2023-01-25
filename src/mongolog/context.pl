@@ -58,20 +58,25 @@ mongolog:step_compile(
 
 %%
 % variables maybe used in the scope.
-% if this is the case, they must be replaces by variable
-% keys to be referred to in queries.
+% if this is the case, they must be replaced by variable keys to be referred to in queries.
 %
-resolve_scope(In, Ctx, [scope(Scope1)|Rest]) :-
-	select_option(scope(Scope0),In,Rest),!,
-	time_scope(Since0, Until0, Scope0),
-	time_scope(Since1, Until1, Scope1),
-	resolve_scope1(Since0,Ctx,Since1),
-	resolve_scope1(Until0,Ctx,Until1).
-resolve_scope(In, _, In).
+% TODO: is it sufficient to do this only for call_with_context/2? maybe it should also be
+%       done by mongolog_call predicate?
+% TODO: move to scope.pl
+%
+resolve_scope(In, Ctx, [query_scope(Scope1)|Rest]) :-
+	select_option(query_scope(Scope0),In,Rest),!,
+	resolve_scope1(Scope0, Ctx, Scope1).
 
-%%
+resolve_scope1(DictIn, Ctx, DictOut) :-
+	is_dict(DictIn),!,
+	findall(Key-Rewritten,
+		(	get_dict(Key,DictIn,Val),
+			resolve_scope1(Val, Ctx, Rewritten)
+		), Pairs),
+	dict_pairs(DictOut, dict, Pairs).
+
 resolve_scope1(In, Ctx, Out) :-
-	mng_strip_operator(In, Operator, Time1),
-	mongolog:var_key_or_val(Time1, Ctx, Time2),
-	mng_strip_operator(Out, Operator, Time2).
-
+	mng_strip_operator(In, Operator, Val1),
+	mongolog:var_key_or_val(Val1, Ctx, Val2),
+	mng_strip_operator(Out, Operator, Val2).

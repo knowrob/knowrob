@@ -9,13 +9,7 @@
 @license BSD
 */
 
-:- use_module(library('scope'),
-		[ time_scope/3, universal_scope/1 ]).
-:- use_module(library('mongolog/mongolog_test')).
-
-:- multifile during/2.
-:- multifile since/2.
-:- multifile until/2.
+:- use_module(library('scope'), [ time_scope/3 ]).
 
 :- op(800, yfx, user:during).
 :- op(800, yfx, user:since).
@@ -42,31 +36,29 @@ during(Statement, [Since,Until]) ?>
 	number(Since),
 	number(Until),
 	pragma(time_scope(=<(Since), >=(Until), Scope)),
-	call_with_context(Statement, [scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 during(Statement, [Since,Until]) ?>
 	var(Since),
 	var(Until),
-	% Note: goal must be called with "wildcard" scope to include all records.
-	%       the default mode is to only include records that are still true.
+	% Note: goal must be called with below scope to include all records.
+	%       the default mode is to only include records true now.
 	pragma(time_scope(
 		>=(0),
 		=<(double('Infinity')),
 		Scope
 	)),
-	call_with_context(Statement, [scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% read computed fact scope
-	% FIXME: this is not really accurate as get('v_scope')
-	% yields the accumulated scope so far.
-	% but we only want the accumulated scope for Goal here.
-	% SOLUTION: do the get within the *call*
-	% same for since and until.
+	% FIXME: this is not really accurate as get('v_scope') yields the accumulated scope so far.
+	%   but we only want the accumulated scope for Goal here.
+	%   SOLUTION: do the get within the *call* same for since and until.
 	assign(Since, string('$v_scope.time.since')),
 	assign(Until, string('$v_scope.time.until')).
 
 during(Statement, [Since, Until]) +>
 	pragma(time_scope(=(Since), =(Until), Scope)),
-	call_with_context(Statement, [scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 %% since(+Statement, ?Instant) is nondet.
 %
@@ -90,7 +82,7 @@ since(Statement, Instant) ?>
 	% only include records that hold at least since
 	% instant and at least until now
 	pragma(time_scope(=<(Instant), >=(Now), Scope)),
-	call_with_context(Statement, [scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 since(Statement, Instant) ?>
 	var(Instant),
@@ -98,7 +90,7 @@ since(Statement, Instant) ?>
 	pragma(get_time(Now)),
 	% only include records that still are thought to be true
 	pragma(time_scope(>=(0), >=(Now), Scope)),
-	call_with_context(Statement, [scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% read computed fact scope
 	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.since')).
@@ -114,7 +106,7 @@ since(Statement, Instant) +>
 		=(double('Infinity')),
 		Scope
 	)),
-	call_with_context(Statement, [scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 %% until(+Statement, ?Instant) is nondet.
 %
@@ -136,7 +128,7 @@ until(Statement, Instant) ?>
 	number(Instant),
 	% only include records that hold at instant
 	pragma(time_scope(=<(Instant), >=(Instant), Scope)),
-	call_with_context(Statement, [scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 until(Statement, Instant) ?>
 	var(Instant),
@@ -146,7 +138,7 @@ until(Statement, Instant) ?>
 		=<(double('Infinity')),
 		Scope
 	)),
-	call_with_context(Statement, [scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.until')).
 
@@ -159,17 +151,16 @@ until(Statement, Instant) +>
 	% TODO: better disable project cases for until and since?
 	pragma(time_scope(=(0), =(Instant), Scope)),
 	call_with_context(Statement,
-		[intersect_scope, scope(Scope)]).
+		[intersect_scope, query_scope(Scope)]).
 
 		 /*******************************
 		 *	    UNIT TESTS	     		*
 		 *******************************/
 
-:- begin_mongolog_tests(
-		'mongolog_temporal',
-		'owl/test/swrl.owl',
-		[ namespace('http://knowrob.org/kb/swrl_test#')
-		]).
+:- use_module(library('mongolog/mongolog_test')).
+:- begin_mongolog_tests('mongolog_temporal','owl/test/swrl.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test('during(+Triple,+Interval)') :-
 	assert_true(mongolog_call(project(

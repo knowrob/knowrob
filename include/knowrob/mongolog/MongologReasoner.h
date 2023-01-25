@@ -29,7 +29,7 @@ namespace knowrob {
 	protected:
 		
 		// Override PrologReasoner
-		std::shared_ptr<Query> transformQuery(const std::shared_ptr<Query> &q) override;
+		const functor_t& callFunctor() override;
 
 		// Override PrologReasoner
 		bool initializeDefaultPackages() override;

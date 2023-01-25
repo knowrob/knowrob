@@ -57,6 +57,8 @@ mongolog_fluent(Term, TimeField, ArgFields, Options) :-
 % @param Options option list
 %
 mongolog_add_fluent(Functor, _, _, _) :-
+    % TODO: allow that the same fluent is defined in different reasoner modules.
+    %   (look at database.pl handling of facts)
 	mongolog_fluent(Functor, _, _, _),
 	!,
 	throw(permission_error(modify,database_fluent,Functor)).
@@ -64,7 +66,8 @@ mongolog_add_fluent(Functor, _, _, _) :-
 mongolog_add_fluent(Functor, ArgFields, TimeField, Options) :-
 	setup_fluent_collection(Functor, ArgFields, TimeField, Options),
 	assertz(mongolog_fluent(Functor, ArgFields, TimeField, Options)),
-	mongolog:add_command(Functor).
+	current_reasoner_module(ReasonerModule),
+	mongolog:add_command(Functor, ReasonerModule).
 
 %%
 setup_fluent_collection(Functor, ArgFields, TimeField, Options) :-
@@ -114,7 +117,7 @@ mongolog_add_fluent(Functor, ArgFields, TimeField) :-
 % @param Functor functor of the predicate
 %
 mongolog_drop_fluent(Functor) :-
-	mng_get_db(DB, Collection, Functor),
+	mongolog_get_db(DB, Collection, Functor),
 	mng_drop(DB, Collection).
 
 %%
@@ -144,8 +147,8 @@ mongolog_fluent_call(Term, Ctx, Pipeline, StepVars) :-
 		TimeField, Ctx_fluent, read),
 	option(step_vars(StepVars), Ctx_fluent),
 	% get since+until time
-	option(scope(Scope), Ctx_fluent),
-	time_scope(=<(Since_typed), >=(Until_typed), Scope),
+	option(query_scope(Scope), Ctx_fluent),
+	mongolog_time_scope(Scope, Since_typed, Until_typed),
 	% FIXME: below makes it impossible to use Since variable
 	%        inferred in the query.
 	mng_strip_type(Since_typed, _, Since),
@@ -184,8 +187,8 @@ mongolog_fluent_retractall(Term, Ctx, Pipeline, StepVars) :-
 	option(step_vars(StepVars), Ctx_fluent),
 	option(collection(Collection), Ctx_fluent),
 	% get since+until time
-	option(scope(Scope), Ctx_fluent),
-	time_scope(=<(Since_typed), >=(Until_typed), Scope),
+	option(query_scope(Scope), Ctx_fluent),
+	mongolog_time_scope(Scope, Since_typed, Until_typed),
 	% FIXME: below makes it impossible to use Since variable
 	%        inferred in the query.
 	mng_strip_type(Since_typed, _, Since),
@@ -213,9 +216,8 @@ mongolog_fluent_assert(Term, Ctx, Pipeline, StepVars) :-
 	option(step_vars(StepVars), Ctx_fluent),
 	option(collection(Collection), Ctx_fluent),
 	% add since time to Zipped list
-	option(scope(Scope), Ctx_fluent),
-	time_scope(Since_query, _, Scope),
-	mng_strip_operator(Since_query, _, Since_typed),
+	option(query_scope(Scope), Ctx_fluent),
+	mongolog_time_scope(Scope, Since_typed, _),
 	% FIXME: below makes it impossible to use Since variable
 	%        inferred in the query.
 	mng_strip_type(Since_typed, _, Since),
@@ -369,13 +371,13 @@ fluent_fact_scope(TimeKey, Step) :-
 			string('$v_scope.time.until')
 		])]]]
 	% make sure scope is non-empty
-	;	mongolog:match_scope(Step)
+	;	mongolog_scope_is_valid(Step)
 	).
 
 %%
 fluent_collection(Functor, Options, Collection) :-
 	(	option(collection(Collection), Options)
-	;	mng_get_db(_DB, Collection, Functor)
+	;	mongolog_get_db(_DB, Collection, Functor)
 	).
 
 		 /*******************************

@@ -19,6 +19,7 @@
 #include <queue>
 #include <memory>
 #include <iostream>
+#include <functional>
 
 namespace knowrob {
 	/** The type of a term.
@@ -68,7 +69,7 @@ namespace knowrob {
 		bool isBottom() const;
 		
 		/**
-		 * @return true if this term contains no variables.
+		 * @return true if this term isMoreGeneralThan no variables.
 		 */
 		virtual bool isGround() const = 0;
 		
@@ -130,7 +131,8 @@ namespace knowrob {
 		bool isEqual(const Term &other) const override;
 	};
 
-	/** A typed constant.
+	/**
+	 * A typed constant.
 	 */
 	template <typename T> class Constant : public Term {
 	public:
@@ -166,7 +168,8 @@ namespace knowrob {
 		{ return value_ == static_cast<const Constant<T>&>(other).value_; }
 	};
 	
-	/** A string value.
+	/**
+	 * A string value.
 	 */
 	class StringTerm : public Constant<std::string> {
 	public:
@@ -176,28 +179,32 @@ namespace knowrob {
 		void write(std::ostream& os) const override;
 	};
 	
-	/** A floating point value.
+	/**
+	 * A floating point value.
 	 */
 	class DoubleTerm : public Constant<double> {
 	public:
 		explicit DoubleTerm(const double &v);
 	};
 	
-	/** A long value.
+	/**
+	 * A long value.
 	 */
 	class LongTerm : public Constant<long> {
 	public:
 		explicit LongTerm(const long &v);
 	};
 	
-	/** An integer with 32 bit encoding.
+	/**
+	 * An integer with 32 bit encoding.
 	 */
 	class Integer32Term : public Constant<int32_t> {
 	public:
 		explicit Integer32Term(const int32_t &v);
 	};
 
-	/** The indicator of a predicate defined by its functor and arity.
+	/**
+	 * The indicator of a predicate defined by its functor and arity.
 	 */
 	class PredicateIndicator {
 	public:
@@ -212,13 +219,15 @@ namespace knowrob {
 		// Override '<' operator
 		bool operator< (const PredicateIndicator& other) const;
 		
-		/** Get the functor of this predicate.
+		/**
+		 * Get the functor of this predicate.
 		 *
 		 * @return the functor name.
 		 */
 		const std::string& functor() const { return functor_; }
 		
-		/** Get the arity of this predicate.
+		/**
+		 * Get the arity of this predicate.
 		 *
 		 * @return arity of predicate
 		 */
@@ -241,7 +250,8 @@ namespace knowrob {
 	// forward declaration
 	class Substitution;
 
-	/** A predicate with a functor and a number of term arguments.
+	/**
+	 * A predicate with a functor and a number of term arguments.
 	 */
 	class Predicate : public Term {
 	public:
@@ -261,24 +271,28 @@ namespace knowrob {
 			const std::shared_ptr<PredicateIndicator> &indicator,
 			const std::vector<TermPtr> &arguments);
 		
-		/** Substitution constructor.
+		/**
+		 * Substitution constructor.
 		 *
 		 * @other a predicate.
 		 * @sub a mapping from terms to variables.
 		 */
 		Predicate(const Predicate &other, const Substitution &sub);
 
-		/** Get the indicator of this predicate.
+		/**
+		 * Get the indicator of this predicate.
 		 * @return the indicator of this predicate.
 		 */
 		const PredicateIndicator& indicator() const { return *indicator_; }
 
-		/** Get the arguments of this predicate.
+		/**
+		 * Get the arguments of this predicate.
 		 * @return a vector of predicate arguments.
 		 */
 		const std::vector<TermPtr>& arguments() const { return arguments_; }
 		
-		/** Create a copy of this predicate where variables are replaced by terms.
+		/**
+		 * Create a copy of this predicate where variables are replaced by terms.
 		 * @sub a mapping from variables to terms.
 		 */
 		std::shared_ptr<Predicate> applySubstitution(const Substitution &sub) const;
@@ -335,7 +349,7 @@ namespace knowrob {
 	};
 	
 	/**
-	 * A composite term that contains a list of terms.
+	 * A composite term that isMoreGeneralThan a list of terms.
 	 * The empty list is a special constant NIL.
 	 */
 	class ListTerm : public Term {
@@ -352,7 +366,8 @@ namespace knowrob {
 		 */
 		bool isNIL() const;
 
-		/** Get the elements of this list.
+		/**
+		 * Get the elements of this list.
 		 * @return a vector of list elements.
 		 */
 		const std::vector<TermPtr>& elements() const { return elements_; }
@@ -405,7 +420,7 @@ namespace knowrob {
 
 		/**
 		 * @param key key of option.
-		 * @return true is this list contains the key.
+		 * @return true is this list isMoreGeneralThan the key.
 		 */
 		bool contains(const std::string &key);
 
@@ -437,6 +452,17 @@ namespace knowrob {
 
 		void readOption(const TermPtr &option);
 	};
+
+	/**
+	 * Queue  of reversible operations.
+	 */
+	class Reversible : public std::queue<std::function<void()>> {
+	public:
+		/**
+		 * Reverts changes made.
+		 */
+		void rollBack();
+	};
 	
 	/**
 	 * A substitution is a mapping from variables to terms.
@@ -447,16 +473,20 @@ namespace knowrob {
 	 */
 	class Substitution {
 	public:
-		// forward declaration
-		class Operation;
-		// alias
-		using Diff = std::queue<std::shared_ptr<Substitution::Operation>>;
-		using Iterator = std::map<Variable,TermPtr>::iterator;
-		
 		/**
-		 * @return the substitution mapping.
+		 * @return true if this substitution does not map a single variable to a term.
 		 */
-		const std::map<Variable,TermPtr>& mapping() const { return mapping_; }
+		bool empty() const { return mapping_.empty(); }
+
+		/**
+		 * @return begin iterator of substitution.
+		 */
+		auto begin() const { return mapping_.begin(); }
+
+		/**
+		 * @return end iterator of substitution.
+		 */
+		auto end() const { return mapping_.end(); }
 		
 		/**
 		 * @var a variable.
@@ -477,10 +507,10 @@ namespace knowrob {
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
-		 * @return true if this substitution contains the variable.
+		 * @return true if this substitution isMoreGeneralThan the variable.
 		 */
 		bool contains(const Variable &var) const;
-		
+
 		/**
 		 * Combine with another substitution.
 		 * If both substitute the same variable to some term, then
@@ -490,47 +520,10 @@ namespace knowrob {
 		 * @changes the diff of the substitute operation
 		 * @return true if the operation succeeded.
 		 */
-		bool combine(const std::shared_ptr<Substitution> &other, Substitution::Diff &changes);
-		
-		/**
-		 * Reverts changes made to a substitution.
-		 * @changes the diff of a substitute operation
-		 */
-		void rollBack(Substitution::Diff &changes);
-		
-		/**
-		 * An atomic operation performed on a substitution.
-		 */
-		class Operation {
-		public:
-			/**
-			 * Roll back this operation.
-			 * @sub a substitution.
-			 */
-			virtual void rollBack(Substitution &sub) = 0;
-		};
+		bool unifyWith(const std::shared_ptr<Substitution> &other, Reversible *reversible= nullptr);
 
 	protected:
 		std::map<Variable,TermPtr> mapping_;
-		
-		class Added : public Operation {
-		public:
-			explicit Added(const Substitution::Iterator &it);
-			// Override Operation
-			void rollBack(Substitution &sub) override;
-		protected:
-			Substitution::Iterator it_;
-		};
-		
-		class Replaced : public Operation {
-		public:
-			Replaced(const Substitution::Iterator &it, const TermPtr &replacedInstance);
-			// Override Operation
-			void rollBack(Substitution &sub) override;
-		protected:
-			Substitution::Iterator it_;
-			const TermPtr replacedInstance_;
-		};
 	};
 	
 	// alias declaration

@@ -80,17 +80,14 @@ namespace knowrob {
 
 		/**
 		 * Indicate that a new query needs to be evaluated.
-		 * Note that different instances of @goal are to be evaluated.
-		 * Each instance is generated through a substitution (see pushSubstitution).
+		 * Note that different instances of @uninstantiatedQuery are to be evaluated.
 		 * Answers computed over all instances of the query can be published via a
 		 * shared message channel.
 		 * @param queryID a query ID
 		 * @param outputStream an output stream where answers can be published
 		 * @param goal a query
 		 */
-		virtual void startQuery(uint32_t queryID,
-			const std::shared_ptr<QueryResultStream::Channel> &outputStream,
-			const std::shared_ptr<Query> &goal) = 0;
+		virtual void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) = 0;
 
 		/**
 		 * Adds a substitution to an active query request.
@@ -100,7 +97,7 @@ namespace knowrob {
 		 * @param queryID a query ID
 		 * @param substitution a substitution
 		 */
-		virtual void pushSubstitution(uint32_t queryID, const SubstitutionPtr &substitution) = 0;
+		virtual void runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance) = 0;
 		
 		/**
 		 * Indicate that a query has been completed, i.e. that no further
@@ -115,7 +112,9 @@ namespace knowrob {
 		 * @param queryID a query ID
 		 * @param isImmediateStopRequested a flag indicating whether a reasoner may stop query evaluation immediately
 		 */
-		virtual void finishQuery(uint32_t queryID, bool isImmediateStopRequested) = 0;
+		virtual void finishQuery(uint32_t queryID,
+								 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+								 bool isImmediateStopRequested) = 0;
 
 	protected:
 		std::map<std::string, DataFileLoader> dataFileHandler_;

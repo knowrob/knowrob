@@ -1,17 +1,11 @@
-:- module(model_terms,
-    [ occurs(r),    % ?Event
-	  is_a(r,r)     % +Resource, ?Type
-    ]).
+:- module(mongolog_occurs, [ occurs(r) ]).
 /** <module> The occurs predicate.
 
 @author Daniel Beßler
 @license BSD
 */
 
-:- use_module('OWL').
 :- use_module('SOMA').
-
-:- op(1000, xf, occurs).
 
 %% occurs(?Event) is nondet.
 %
@@ -23,14 +17,13 @@ occurs(Evt) ?>
 	% query event interval
 	call_with_context(
 		event_interval(Evt, EventBegin, EventEnd),
-		[scope(dict{ time: dict{
-			since: =(double(0)),
-			until: =(double('Infinity'))
+		[query_scope(dict{ time: dict{
+			min: dict{ min: double(0),          max: double(0) },
+			max: dict{ min: double('Infinity'), max: double('Infinity') }
 		}})]),
 	% read time interval from compile context
-	context(scope(dict{
-		time: dict{ since: Since0, until: Until0 }
-	})),
+	context(query_scope(QScope)),
+	pragma(mongolog_time_scope(QScope, Since0, Until0)),
 	pragma(mng_strip_operator(Since0,_,Since1)),
 	pragma(mng_strip_operator(Until0,_,Until1)),
 	% only succeed if time intervals intersect each other
@@ -40,9 +33,8 @@ occurs(Evt) +>
 	% read time scope provided by e.g. during/2 as in `occurs(Evt) during [Since,Until]`
 	% from compile context.
 	% TODO: this will be [0,inf] if not provided? is this a problem?
-	context(scope(dict{
-		time: dict{ since: Since0, until: Until0 }
-	})),
+	context(query_scope(QScope)),
+	pragma(mongolog_time_scope(QScope, Since0, Until0)),
 	pragma(mng_strip_operator(Since0,_,Since1)),
 	pragma(mng_strip_operator(Until0,_,Until1)),
 	% call with universal scope
@@ -50,74 +42,41 @@ occurs(Evt) +>
 		[ is_event(Evt),
 		  event_interval(Evt, Since1, Until1)
 		],
-		[scope(dict{ time: dict{
-			since: =(double(0)),
-			until: =(double('Infinity'))
+		[query_scope(dict{ time: dict{
+			min: dict{ min: double(0),          max: double(0) },
+			max: dict{ min: double('Infinity'), max: double('Infinity') }
 		}})]
 	).
 
 %%
-lang_temporal:during(Query, Event) ?+>
+during(Query, Event) ?+>
 	atom(Event),
 	pragma(time_scope(=<(Since), >=(Until), Scope)),
 	ask(event_interval(Event, Since, Until)),
-	call_with_context(Query, [scope(Scope)]).
+	call_with_context(Query, [query_scope(Scope)]).
 
-lang_temporal:since(Query, Event) ?+>
+since(Query, Event) ?+>
 	atom(Event),
 	ask(event_interval(Event, Time, _)),
-	call_with_context(Query, [scope(dict{
-		time: dict{ since: =<(Time) }
+	call_with_context(Query, [query_scope(dict{
+		time: dict{ min: dict{ max: Time } }
 	})]).
 
-lang_temporal:until(Query, Event) ?+>
+until(Query, Event) ?+>
 	atom(Event),
 	ask(event_interval(Event, Time, _)),
-	call_with_context(Query, [scope(dict{
-		time: dict{ until: >=(Time) }
+	call_with_context(Query, [query_scope(dict{
+		time: dict{ max: dict{ min: Time } }
 	})]).
-
-%% is_a(+Resource,?Type) is nondet.
-%
-% Wrapper around instance_of, subclass_of, and subproperty_of.
-% Using this is a bit slower as an additional type check
-% is needed.
-% For example: `Cat is_a Animal` and `Nibbler is_a Cat`.
-% 
-% Note that contrary to wrapped predicates, is_a/2 requires
-% the Resource to be ground.
-%
-% @param Resource a RDF resource
-% @param Type the type of the resource
-%
-is_a(A,B) ?>
-	ground(A),
-	is_individual(A),
-	!,
-	instance_of(A,B).
-
-is_a(A,B) ?>
-	ground(A),
-	is_class(A),
-	!,
-	subclass_of(A,B).
-
-is_a(A,B) ?>
-	ground(A),
-	is_property(A),
-	!,
-	subproperty_of(A,B).
-
 
      /*******************************
      *        UNIT TESTS            *
      *******************************/
 
-:- begin_rdf_tests(
-    model_terms,
-    'package://knowrob/owl/test/events.owl',
-    [ namespace('http://knowrob.org/kb/test_events.owl#')
-    ]).
+:- use_module(library('mongolog/mongolog_test')).
+:- begin_mongolog_tests(mongolog_occurs, 'owl/test/events.owl').
+
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#', [force(true)]).
 
 test('during(occurs(+),+Interval)') :-
 	assert_true(occurs(test:'Short4') during [1377777009, 1377777011]),
@@ -129,7 +88,7 @@ test('during(occurs(+),+Interval)') :-
 
 test('assert(during(occurs(+),+Interval))') :-
 	assert_false(occurs(a) during [8,12]),
-	assert_true(kb_project(occurs(a) during [8,12])),
+	assert_true(mongolog_project(occurs(a) during [8,12])),
 	assert_true(occurs(a) during [8,12]),
 	assert_true(occurs(a) during [10,20]),
 	assert_false(occurs(a) during [5,7]).
@@ -143,7 +102,7 @@ test('during(occurs(+),+Event)') :-
 	assert_false(occurs(test:'Short1') during test:'Short4').
 
 test('assert(during(occurs(+),+Event))') :-
-	assert_true(kb_project(occurs(test:'Event6') during test:'Short1')),
+	assert_true(mongolog_project(occurs(test:'Event6') during test:'Short1')),
 	assert_true(occurs(test:'Event6') during test:'Short1').
 
-:- end_rdf_tests(model_terms).
+:- end_mongolog_tests(mongolog_occurs).

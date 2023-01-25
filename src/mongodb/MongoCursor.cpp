@@ -17,17 +17,14 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 
-MongoCursor::MongoCursor(
-		mongoc_client_pool_t *pool,
-		const char *db_name,
-		const char *coll_name)
-: cursor_(NULL),
-  coll_(pool, db_name, coll_name),
+MongoCursor::MongoCursor(const std::shared_ptr<MongoCollection> &coll)
+: cursor_(nullptr),
+  coll_(coll),
   is_aggregate_query_(false)
 {
 	query_ = bson_new();
 	opts_ = bson_new();
-	coll_.appendSession(opts_);
+	coll_->appendSession(opts_);
 	// use pointer as id
 	std::stringstream ss;
 	ss << static_cast<const void*>(this);  
@@ -36,7 +33,7 @@ MongoCursor::MongoCursor(
 
 MongoCursor::~MongoCursor()
 {
-	if(cursor_!=NULL) {
+	if(cursor_!= nullptr) {
 		mongoc_cursor_destroy(cursor_);
 	}
 	bson_destroy(query_);
@@ -85,14 +82,14 @@ void MongoCursor::aggregate(const PlTerm &query_term)
 
 bool MongoCursor::next(const bson_t **doc, bool ignore_empty)
 {
-	if(cursor_==NULL) {
+	if(cursor_== nullptr) {
 		if(is_aggregate_query_) {
 			cursor_ = mongoc_collection_aggregate(
-				coll_(), MONGOC_QUERY_NONE, query_, opts_, NULL /* read_prefs */ );
+				coll_->coll(), MONGOC_QUERY_NONE, query_, opts_, nullptr /* read_prefs */ );
 		}
 		else {
 			cursor_ = mongoc_collection_find_with_opts(
-			    coll_(), query_, opts_, NULL /* read_prefs */ );
+					coll_->coll(), query_, opts_, nullptr /* read_prefs */ );
 		}
 		// make sure cursor has no error after creation
 		bson_error_t err1;
@@ -118,7 +115,7 @@ bool MongoCursor::erase()
 {
 	bson_error_t err;
 	bool success = mongoc_collection_delete_many(
-		    coll_(), query_, opts_, NULL /* reply */, &err);
+		    coll_->coll(), query_, opts_, nullptr /* reply */, &err);
 	if(!success) {
 		throw MongoException("erase_error",err);
 	}

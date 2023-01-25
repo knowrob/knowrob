@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @query a Query object.
 		 */
-		PrologQuery(const std::shared_ptr<Query> &query);
+		PrologQuery(const std::shared_ptr<const Query> &query);
 		
 		~PrologQuery();
 
@@ -45,7 +45,7 @@ namespace knowrob {
 		 * Returns the query object.
 		 * @return the Query object
 		 */
-		const std::shared_ptr<Query>& qa_query() const { return qa_query_; }
+		const std::shared_ptr<const Query>& qa_query() const { return qa_query_; }
 
 		/**
 		 * Get map of all variables in this query.
@@ -65,7 +65,7 @@ namespace knowrob {
 		 * @t a Term pointer.
 		 * @return the Query object created.
 		 */
-		static std::shared_ptr<Query> toQuery(const TermPtr &t);
+		static std::shared_ptr<const Query> toQuery(const TermPtr &t);
 
 		/**
 		 * Converts a formula to a term by converting formula
@@ -115,7 +115,7 @@ namespace knowrob {
 		static const predicate_t& PREDICATE_semicolon();
 		
 	protected:
-		std::shared_ptr<Query> qa_query_;
+		std::shared_ptr<const Query> qa_query_;
 		term_t pl_query_;
 		std::map<std::string, term_t> vars_;
 

@@ -1,11 +1,10 @@
 :- use_module(library('rdf_test')).
-:- begin_rdf_tests(
-		'time_interval',
-		'owl/test/events.owl',
-		[ namespace('http://knowrob.org/kb/test_events.owl#')
-		]).
+:- begin_rdf_tests('time_interval', 'owl/test/events.owl').
 
 :- use_module('interval.pl').
+
+:- use_module(library('semweb/rdf_db'), [ rdf_register_prefix/3 ]).
+:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#', [force(true)]).
 
 /********************************
  *	    QUANTITATIVE INPUT     	*

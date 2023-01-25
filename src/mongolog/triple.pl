@@ -1,14 +1,11 @@
 :- module(mongolog_triple,
-		[ 
-			mng_triple_doc(t,-,t),
-			triple(t,t,t),
-			get_unique_name(r,-),
-			is_unique_name(r),
-			load_owl/1,
-			load_owl/2,
-			load_owl/3,
-            drop_graph(+)
-		]).
+        [ mng_triple_doc(t,-,t),
+          triple(t,t,t),
+          get_unique_name(r,-),
+          is_unique_name(r),
+          drop_graph(+),
+          auto_drop_graphs/0
+        ]).
 /** <module> Handling of triples in query expressions.
 
 The following predicates are supported:
@@ -23,41 +20,22 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('scope'),
-		[ universal_scope/1, time_scope/3, time_scope_data/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('semweb')).
-:- use_module('subgraph').
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(must_propagate_assert(r)).
 :- rdf_meta(lookup_parents_property(t,t)).
-
-% define some settings
-:- setting(drop_graphs, list, [user],
-		'List of named graphs that should initially by erased.').
-
-%%
-% register the "triples" collection.
-% This is needed for import/export.
-% It also creates search indices.
-%
-:- setup_collection(triples, [
-		['s'], ['p'], ['o'], ['p*'], ['o*'],
-		['s','p'], ['s','o'], ['o','p'],
-		['s','p*'], ['s','o*'], ['o','p*'], ['p','o*'],
-		['s','o','p'], ['s','o','p*'], ['s','o*','p'] ]).
+:- rdf_meta(triple(t,t,t)).
 
 %% register query commands
 :- mongolog:add_command(triple).
 
 %%
-mongolog:step_expand(
-	project(triple(S,P,O)),
-	assert(triple(S,P,O))) :-
-	!.
+mongolog:step_expand(project(triple(S,P,O)),
+                     assert(triple(S,P,O))) :- !.
 
 %%
 mongolog:step_compile(assert(triple(S,P,term(O))), Ctx, Pipeline, StepVars) :-
@@ -125,7 +103,7 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		% this is done using $match or $lookup operators.
 		(	member(Step, LookupSteps)
 		% compute the intersection of scope so far with scope of next document
-		;	scope_intersect('v_scope',
+		;	mongolog_scope_intersect('v_scope',
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
 				Ctx0, Step)
@@ -150,9 +128,9 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 	% add additional options to the compile context
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	option(collection(Collection), Ctx0),
-	option(scope(Scope), Ctx0),
+	option(query_scope(Scope), Ctx0),
 	triple_graph(Ctx0, Graph),
-	time_scope_values(Scope, SinceTyped, UntilTyped),
+	mongolog_time_scope(Scope, SinceTyped, UntilTyped),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
@@ -187,7 +165,7 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 			]]]]]
 		% lookup documents that overlap with triple into 'next' field,
 		% and toggle their delete flag to true
-		;	delete_overlapping(triple(S,P,O), Ctx0, Step)
+		;	delete_overlapping(triple(S,P,O), SinceTyped, UntilTyped, Ctx0, Step)
 		% lookup parent documents into the 'parents' field
 		;	lookup_parents(triple(S,P1,O), Ctx0, Step)
 		% update v_scope.time.since
@@ -207,20 +185,6 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 		Pipeline
 	).
 
-%%
-time_scope_values(Scope, SinceValue, UntilValue) :-
-	time_scope_data(Scope, [Since,Until]),
-	time_scope_value1(Since, SinceValue),
-	time_scope_value1(Until, UntilValue).
-
-time_scope_value1(V0, Value) :-
-	mng_strip_operator(V0, _, V1),
-	once(time_scope_value2(V1, Value)).
-
-time_scope_value2('Infinity', double('Infinity')).
-time_scope_value2(Num,  double(Num))  :- number(Num).
-time_scope_value2(Atom, string(Atom)) :- atom(Atom).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -230,7 +194,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
-	% FIXME: revise below
+	% TODO: revise below
 	mng_triple_doc(triple(S,P,V), QueryDoc, Ctx),
 	(	memberchk(['s',_],QueryDoc)
 	->	StartValue='$start.s'
@@ -257,7 +221,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 					ArgExpr % else perform a match
 				])]]
 			)
-		;	scope_match(Ctx, MatchQuery)
+		;	mongolog_scope_match(Ctx, MatchQuery)
 		;	graph_match(Ctx, MatchQuery)
 		),
 		MatchQueries
@@ -303,7 +267,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% read options
 	option(transitive, Ctx),
 	option(collection(Coll), Ctx),
-	mng_one_db(_DB, OneColl),
+	mongolog_one_db(_DB, OneColl),
 	% infer lookup parameters
 	query_value(P,Query_p),
 	% TODO: can query operators be supported?
@@ -396,7 +360,7 @@ reflexivity(StartValue, Ctx, Step) :-
 	).
 
 %%
-delete_overlapping(triple(S,P,V), Ctx,
+delete_overlapping(triple(S,P,V), SinceTyped, UntilTyped, Ctx,
 		['$lookup', [
 			['from',string(Coll)],
 			['as',string('next')],
@@ -409,9 +373,6 @@ delete_overlapping(triple(S,P,V), Ctx,
 	mongolog:var_key_or_val1(P, Ctx, P0),
 	mongolog:var_key_or_val1(S, Ctx, S0),
 	mongolog:var_key_or_val1(V, Ctx, V0),
-	% read scope data
-	option(scope(Scope), Ctx),
-	time_scope_values(Scope, Since, Until),
 	% set Since=Until in case of scope intersection.
 	% this is to limit to results that do hold at Until timestamp.
 	% FIXME: when overlap yields no results, zero is used as since
@@ -420,8 +381,8 @@ delete_overlapping(triple(S,P,V), Ctx,
 	%		 so better remove special handling here?
 	%        but then the until time maybe is set to an unwanted value? 
 	(	option(intersect_scope, Ctx)
-	->	Since0=Until
-	;	Since0=Since
+	->	Since0=UntilTyped
+	;	Since0=SinceTyped
 	),
 	mongolog:lookup_let_doc(StepVars, LetDoc),
 	% build pipeline
@@ -429,7 +390,7 @@ delete_overlapping(triple(S,P,V), Ctx,
 		% $match s,p,o and overlapping scope
 		(	Step=['$match',[
 				['s',S0], ['p',P0], ['o',V0],
-				['scope.time.since',['$lte',Until]],
+				['scope.time.since',['$lte',UntilTyped]],
 				['scope.time.until',['$gte',Since0]]
 			]]
 		% only keep scope field
@@ -559,7 +520,7 @@ must_propagate_assert(rdfs:subPropertyOf).
 % @param Value The object of a triple.
 %
 triple(S,P,O) :-
-	kb_call(triple(S,P,O)).
+	mongolog_call(triple(S,P,O)).
 
 %% mng_triple_doc(+Triple, -Doc, +Context) is semidet.
 %
@@ -568,7 +529,7 @@ triple(S,P,O) :-
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
 	triple_graph(Context, Graph),
-	option(scope(Scope), Context, dict{}),
+	option(query_scope(Scope), Context, dict{}),
 	% special handling for some properties
 	(	taxonomical_property(P)
 	->	( Key_p='p',  Key_o='o*' )
@@ -585,7 +546,7 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 		;	( query_value(P1,Query_p), X=[Key_p,Query_p] )
 		;	( query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
-		;	scope_doc(Scope,X)
+		;	mongolog_scope_doc(Scope,X)
 		),
 		Doc
 	),
@@ -632,7 +593,10 @@ graph_doc('*', _)    :- !, fail.
 graph_doc('user', _) :- !, fail.
 graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
 graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
-	sw_get_supgraphs(GraphName,Graphs).
+	ground(GraphName),!,
+	findall(string(X),
+		(X=GraphName ; sw_graph_includes(GraphName,X)),
+		Graphs).
 
 %%
 graph_match(Ctx, ['$expr', [Operator,
@@ -645,193 +609,6 @@ graph_match(Ctx, ['$expr', [Operator,
 	;	(\+ is_list(Arg), Arg=[ArgVal], Operator='$eq')
 	).
 
-%%
-scope_doc(QScope, [Key,Value]) :-
-	scope_doc1(QScope, [Key,Value]),
-	% do not proceed for variables in scope
-	% these are handled later
-	(Value=[_,string(_)] -> fail ; true).
-
-scope_doc1(QScope, [Key,Value]) :-
-	get_dict(ScopeName, QScope, ScopeData),
-	scope_doc(ScopeData, SubPath, Value),
-	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
-
-scope_doc(Scope, Path, Value) :-
-	is_dict(Scope),!,
-	get_dict(Key,Scope,Data),
-	scope_doc(Data,SubPath,Value),
-	(	SubPath='' -> Path=Key
-	;	atomic_list_concat([Key,SubPath],'.',Path)
-	).
-
-scope_doc(Value, '', Query) :-
-	mng_query_value(Value, Query).
-
-%%
-scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
-	option(scope(Scope), Ctx),
-	findall([Operator, array([string(ScopeValue),string(Val)])],
-		(	scope_doc1(Scope, [ScopeKey,Arg]),
-			atom_concat('$',ScopeKey,ScopeValue),
-			(	(   is_list(Arg), Arg=[Operator,ArgVal])
-			;	(\+ is_list(Arg), Arg=ArgVal, Operator='$eq')
-			),
-			% only proceed for variables in scope
-			% constants are handled earlier
-			ArgVal=string(Val0),
-			atom_concat('$',Val0,Val)
-		),
-		List
-	),
-	List \== [].
-
-
-%% scope_intersect(+VarKey, +Since1, +Until1, +Options, -Step) is nondet.
-%
-% The step expects input documents with VarKey
-% field, and another field Since1/Until1.
-% The step uses these field to compute an intersection
-% beteween both scopes.
-% It will fail in case the intersection is empty.
-%
-scope_intersect(VarKey, Since1, Until1, Options, Step) :-
-	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
-	atomic_list_concat(['$',VarKey,'.time.until'], '', Until0),
-	atomic_list_concat(['$',VarKey], '', VarKey0),
-	%
-	Intersect = ['time', [
-		['since', ['$max', array([string(Since0), Since1])]],
-		['until', ['$min', array([string(Until0), Until1])]]
-	]],
-	% check if ignore flag if set, if so use a conditional step
-	(	memberchk(ignore, Options)
-	->	IntersectStep = ['$cond', array([
-			['$not', array([Since1])],
-			string(VarKey0),
-			Intersect
-		])]
-	;	IntersectStep = Intersect
-	),
-	% first compute the intersection
-	(	Step=['$set', ['v_scope', IntersectStep]]
-	% then verify that the scope is non empty
-	;	Step=['$match', ['$expr',
-			['$lt', array([string(Since0), string(Until0)])]
-		]]
-	).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%% ontology loading
-%%%%%%%%%%%%%%%%%%%%%%%
-
-load_owl(URL) :-
-    load_owl(URL,[]).
-
-load_owl(URL, Options) :-
-    sw_url_register_ns(URL, Options),
-    % FIXME: it is hard to follow here how the subgraph-of relation is build, i.e. using sw_add_subgraph/2.
-    %        it is also a question whether this relation should be maintained centrally
-    %        for all reasoner that use RDF data.
-	% get parent graph name, fall back to "common"
-	option(parent_graph(ParentGraph), Options, common),
-	% get fact scope
-	universal_scope(UScope),
-	option(scope(Scope), Options, UScope),
-    %
-	load_owl(URL, Scope, ParentGraph) .
-
-load_owl(_URL, _Scope, _ParentGraph) :-
-    setting(mng_client:read_only, true),
-    !.
-
-load_owl(URL, Scope, ParentGraph) :-
-    % read graph and ontology version from URL
-    sw_url(URL, Resolved, OntologyGraph, OntologyVersion),
-	% setup graph structure:
-	% the parent graph is a super graph of the ontology graph, meaning the
-	% ontology graph is included in the parent graph.
-	% if the parent graph is dropped, the ontology graph will also be dropped.
-	(	sw_add_subgraph(OntologyGraph,ParentGraph),
-	    % TODO: doesn't this create a cricle in the relation, e.g. when 'test' is used as
-	    %        a parent in unittests to auto-drop the ontology graph after the test.
-		sw_add_subgraph(user,OntologyGraph)
-	),
-	% tests whether the ontology is already loaded. no triples mustbe loaded if versions unify,
-	% but the ontology graph must be a sub-graph of all imported ontologies.
-	(  mongo_ontology_version(OntologyGraph, OntologyVersion)
-	-> load_ontology_graph(OntologyGraph)
-	;  load_owl1(Resolved, OntologyGraph, OntologyVersion, Scope, ParentGraph)
-	).
-
-load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
-    % read ontology data from URL
-	sw_url_read(URL, [
-	    asserted_url(AssertedURL),
-	    triples(TripleTerms),
-	    annotations(AnnotationTerms)
-	]),
-	% erase old triples
-	drop_graph(OntologyGraph),
-	% load RDF data of imported ontologies
-	rdf_equal(owl:'imports',OWL_Imports),
-	forall(
-		member(triple(AssertedURL, OWL_Imports, string(ImportedURL)), TripleTerms),
-		(	sw_url_graph(ImportedURL, ImportedGraph),
-			sw_add_subgraph(ImportedGraph, OntologyGraph),
-			load_owl(ImportedURL, Scope, ParentGraph)
-		)
-	),
-	% FIXME: o* for subClassOf only includes direct super class when loading a list of triples at once.
-	%mongolog_assert(TripleTerms, Scope, [graph(Graph)]),
-	%mongolog_assert(AnnotationTerms, Scope, [graph(Graph)]),
-	forall(
-		(	member(Term, TripleTerms)
-		;	member(Term, AnnotationTerms)
-		),
-		mongolog_call(assert(Term), [ scope(Scope), graph(OntologyGraph) ])
-	),
-	% assert ontology version
-	set_mongo_ontology_version(AssertedURL, OntologyVersion, OntologyGraph),
-	!,
-	log_debug(mongolog(ontology_loaded(OntologyGraph,OntologyVersion))).
-
-
-%%
-load_ontology_graph(OntologyGraph) :-
-	rdf_equal(owl:'imports',OWL_Imports),
-	mng_get_db(DB, Coll, 'triples'),
-	forall(
-		mng_find(DB, Coll, [
-			['p',     string(OWL_Imports)],
-			['graph', string(OntologyGraph)]
-		], Doc),
-		(	mng_get_dict('o', Doc, string(Imported)),
-			sw_url_graph(Imported,ImportedGraph),
-			sw_add_subgraph(ImportedGraph,OntologyGraph)
-		)
-	).
-
-%% The version/last modification time of a loaded ontology
-mongo_ontology_version(OntologyGraph, Version) :-
-	mng_get_db(DB, Coll, 'triples'),
-	once(mng_find(DB, Coll, [
-		['p',     string(tripledbVersionString)],
-		['graph', string(OntologyGraph)]
-	], Doc)),
-	mng_get_dict(o, Doc, string(Version)).
-
-%% Write version string into DB
-set_mongo_ontology_version(URL, Version, OntoGraph) :-
-	mng_get_db(DB, Coll, 'triples'),
-	mng_store(DB, Coll, [
-		['s',     string(URL)],
-		['p',     string(tripledbVersionString)],
-		['o',     string(Version)],
-		['graph', string(OntoGraph)]
-	]).
-
 %% drop_graph(+Name) is det.
 %
 % Deletes all triples asserted into given named graph.
@@ -839,10 +616,8 @@ set_mongo_ontology_version(URL, Version, OntoGraph) :-
 % @param Name the graph name.
 %
 drop_graph(Name) :-
-	mng_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, [
-		[graph, string(Name)]
-	]).
+	mongolog_get_db(DB, Coll, 'triples'),
+	mng_remove(DB, Coll, [[graph, string(Name)]]).
 
 %%
 % Drop graphs on startup if requested through settings.
@@ -850,11 +625,9 @@ drop_graph(Name) :-
 % when KnowRob is started.
 %
 auto_drop_graphs :-
-	\+ setting(mng_client:read_only, true),
-	setting(mongolog_triple:drop_graphs, L),
+	\+ reasoner_setting(mongodb:read_only, true),
+	reasoner_setting(mongodb:drop_graphs, L),
 	forall(member(X,L), drop_graph(X)).
-
-:- ignore(auto_drop_graphs).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
@@ -869,7 +642,7 @@ triple_graph(Ctx, Graph) :-
 extend_context(triple(_,P,_), P1, Context, Context0) :-
 	% get the collection name
 	(	option(collection(Coll), Context)
-	;	mng_get_db(_DB, Coll, 'triples')
+	;	mongolog_get_db(_DB, Coll, 'triples')
 	),
 	% read options from argument terms
 	% e.g. properties can be wrapped in transitive/1 term to
@@ -941,7 +714,7 @@ reduce_num_array(ArrayKey, Operator, Path, ValKey, Step) :-
 % True if Name is not the subject of any known fact.
 %
 is_unique_name(Name) :-
-	mng_get_db(DB, Coll, 'triples'),
+	mongolog_get_db(DB, Coll, 'triples'),
 	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
 
 %% get_unique_name(+Prefix, -Name) is semidet.

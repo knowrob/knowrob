@@ -21,8 +21,6 @@ The following predicates are supported:
 */
 
 :- use_module('mongolog').
-:- use_module(library('mongodb/client'),
-	    [ mng_one_db/2 ]).
 
 %% query commands
 :- mongolog:add_command(length).
@@ -123,7 +121,7 @@ mongolog:step_compile(
 		sort(List, Sorted), Ctx, Pipeline) :-
 	mongolog:var_key_or_val(List,Ctx,List0),
 	mongolog:var_key(Sorted,Ctx,SortedKey),
-	mng_one_db(_DB, Coll),
+	mongolog_one_db(_DB, Coll),
 	% compute steps of the aggregate pipeline
 	findall(Step,
 		% assign list field and remove duplicates
