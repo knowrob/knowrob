@@ -18,6 +18,7 @@ The following predicates are supported:
 :- use_module(library('mongodb/client'),
 		[ mng_strip/4 ]).
 :- use_module('mongolog').
+:- use_module('scope', [ mongolog_resolve_scope/3 ]).
 
 %%%% query commands
 :- mongolog:add_command(call).
@@ -25,6 +26,8 @@ The following predicates are supported:
 :- mongolog:add_command(limit).
 :- mongolog:add_command(ignore).
 :- mongolog:add_command(call_with_args).
+:- mongolog:add_command(call_with_context).
+:- mongolog:add_command(context).
 
 %%%% query expansion
 	
@@ -113,6 +116,41 @@ mongolog:step_compile(
 	append(Buf0, Args, Buf1),
 	Term1 =.. Buf1,
 	mongolog:step_compile(call(Term1), Ctx, Pipeline, StepVars).
+
+%%
+mongolog:step_expand(
+		call_with_context(Goal,Args),
+		call_with_context(Expanded,Args)) :-
+	mongolog_expand(Goal, Expanded).
+
+%%
+%
+mongolog:step_compile(
+		call_with_context(Terminals, NewCtx),
+		OldCtx, Pipeline, StepVars) :-
+	option(outer_vars(V0), OldCtx),
+	% resolve since/until values.
+	% this is needed if the values are grounded within the query
+	% by mongo DB and not provided in the call context.
+	mongolog_resolve_scope(NewCtx, OldCtx, NewCtx0),
+	% add provided options to context
+	merge_options(NewCtx0, OldCtx, Ctx),
+	% finally compile call goal with new context
+	mongolog:compile_terms(
+		Terminals, Pipeline,
+		V0->_, StepVars, Ctx).
+
+%%
+% context(-Option) and context(-Option, +Default) are used to read
+% options from compile context to make them accessible in rules.
+% The main usecase is that some temporal predicates need to access
+% the query scope.
+%
+mongolog:step_compile(context(Option), Ctx, []) :-
+	option(Option, Ctx).
+
+mongolog:step_compile(context(Option, Default), Ctx, []) :-
+	option(Option, Ctx, Default).
 
 %%
 lookup_next_unwind(Terminals, Suffix, Ctx, Pipeline, StepVars) :-

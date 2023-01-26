@@ -4,7 +4,8 @@
 	  mongolog_scope_intersect/5,
 	  mongolog_scope_is_valid/1,
 	  mongolog_scope_match/2,
-	  mongolog_time_scope/3
+	  mongolog_time_scope/3,
+	  mongolog_resolve_scope/3
 	]).
 
 :- use_module(library('mongodb/client'),
@@ -170,3 +171,26 @@ time_scope_data_(max,Dict,Val) :-
 	;   get_dict(min,Range,Val)
 	),!.
 time_scope_data_(max,_,_).
+
+%%
+% variables maybe used in the scope.
+% if this is the case, they must be replaced by variable keys to be referred to in queries.
+%
+mongolog_resolve_scope(In, Ctx, [query_scope(Scope1)|Rest]) :-
+    % TODO: is it sufficient to do this only for call_with_context/2? maybe it should also be
+    %       done by mongolog_call predicate?
+	select_option(query_scope(Scope0),In,Rest),!,
+	resolve_scope1(Scope0, Ctx, Scope1).
+
+resolve_scope1(DictIn, Ctx, DictOut) :-
+	is_dict(DictIn),!,
+	findall(Key-Rewritten,
+		(	get_dict(Key,DictIn,Val),
+			resolve_scope1(Val, Ctx, Rewritten)
+		), Pairs),
+	dict_pairs(DictOut, dict, Pairs).
+
+resolve_scope1(In, Ctx, Out) :-
+	mng_strip_operator(In, Operator, Val1),
+	mongolog:var_key_or_val(Val1, Ctx, Val2),
+	mng_strip_operator(Out, Operator, Val2).
