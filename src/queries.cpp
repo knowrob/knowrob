@@ -309,7 +309,7 @@ void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &con
 			std::optional<const ConfidenceValue*>(std::nullopt));
 }
 
-bool QueryResult::combine(std::shared_ptr<QueryResult> &other, Reversible *changes)
+bool QueryResult::combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes)
 {
 	// unify substitutions
 	if(!substitution_->unifyWith(*other->substitution_, changes)) {
@@ -533,15 +533,13 @@ bool QueryResultStream::isEOS(const QueryResultPtr &item)
 
 QueryResultPtr& QueryResultStream::bos()
 {
-	// TODO: make immutable
-	static auto msg = std::make_shared<QueryResult>();
+	static auto msg = std::make_shared<const QueryResult>();
 	return msg;
 }
 
 QueryResultPtr& QueryResultStream::eos()
 {
-	// TODO: make immutable
-	static auto msg = std::make_shared<QueryResult>();
+	static auto msg = std::make_shared<const QueryResult>();
 	return msg;
 }
 
@@ -736,7 +734,7 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		QueryResultPtr combination(new QueryResult(*(msg.get())));
+		std::shared_ptr<QueryResult> combination(new QueryResult(*(msg.get())));
 		// generate all combinations and push combined messages
 		genCombinations(channelID, buffer_.begin(), combination);
 	}
@@ -745,7 +743,7 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 void QueryResultCombiner::genCombinations(
 		uint32_t pushedChannelID,
 		QueryResultBuffer::iterator it,
-		QueryResultPtr &combinedResult)
+		std::shared_ptr<QueryResult> &combinedResult)
 {
 	if(it == buffer_.end()) {
 		// end reached, push combination

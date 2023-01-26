@@ -546,13 +546,13 @@ TermPtr Unifier::apply()
 /******************************************/
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const Term& t)
+	std::ostream& operator<<(std::ostream& os, const Term& t) //NOLINT
 	{
 		t.write(os);
 		return os;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Substitution& omega)
+	std::ostream& operator<<(std::ostream& os, const Substitution& omega) //NOLINT
 	{
 		uint32_t i=0;
 		os << '{';

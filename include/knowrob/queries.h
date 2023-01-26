@@ -584,7 +584,7 @@ namespace knowrob {
 		 * @param changes used to make the merge operation reversible, can be null.
 		 * @return false if merge is not possible.
 		 */
-		bool combine(std::shared_ptr<QueryResult> &other, Reversible *changes=nullptr);
+		bool combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes=nullptr);
 
 	protected:
 		SubstitutionPtr substitution_;
@@ -601,7 +601,7 @@ namespace knowrob {
 		friend class QueryInstance;
 	};
 	// alias
-	using QueryResultPtr = std::shared_ptr<QueryResult>;
+	using QueryResultPtr = std::shared_ptr<const QueryResult>;
 	
 	/**
 	 * A stream of query results.
@@ -802,7 +802,7 @@ namespace knowrob {
 		
 		void genCombinations(uint32_t pushedChannelID,
 			QueryResultBuffer::iterator it,
-			QueryResultPtr &combinedResult);
+			std::shared_ptr<QueryResult> &combinedResult);
 	};
 
 	/**

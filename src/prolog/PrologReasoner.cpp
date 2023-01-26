@@ -293,18 +293,18 @@ bool PrologReasoner::eval(const std::shared_ptr<Predicate> &p,
 	return !QueryResultStream::isEOS(oneSolution(p, moduleName, doTransformQuery));
 }
 
-std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
-														 const char *moduleName,
-														 bool doTransformQuery)
+QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
+										   const char *moduleName,
+										   bool doTransformQuery)
 {
 	return oneSolution(std::make_shared<Query>(goal), moduleName, doTransformQuery);
 }
 
-std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
-														 const char *moduleName,
-														 bool doTransformQuery)
+QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
+										   const char *moduleName,
+										   bool doTransformQuery)
 {
-	std::shared_ptr<QueryResult> result;
+	QueryResultPtr result;
 
 	// create an output queue for the query
 	auto outputStream = std::make_shared<QueryResultQueue>();
@@ -322,19 +322,19 @@ std::shared_ptr<QueryResult> PrologReasoner::oneSolution(const std::shared_ptr<c
 	return outputStream->pop_front();
 }
 
-std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
-																	 const char *moduleName,
-																	 bool doTransformQuery)
+std::list<QueryResultPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
+													   const char *moduleName,
+													   bool doTransformQuery)
 {
 	return allSolutions(std::make_shared<Query>(goal), moduleName, doTransformQuery);
 }
 
-std::list<std::shared_ptr<QueryResult>> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
-																	 const char *moduleName,
-																	 bool doTransformQuery)
+std::list<QueryResultPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
+													   const char *moduleName,
+													   bool doTransformQuery)
 {
-	std::list<std::shared_ptr<QueryResult>> results;
-	std::shared_ptr<QueryResult> nextResult;
+	std::list<QueryResultPtr> results;
+	QueryResultPtr nextResult;
 	
 	// create an output queue for the query
 	auto outputStream = std::make_shared<QueryResultQueue>();
@@ -812,7 +812,7 @@ void PrologReasoner::Runner::run()
 	// make sure EOS is published on output stream
 	// TODO: can be done in QueryInstance somehow? why does the flag exist?
 	//   - only for the case oneSolution/allSolutions is called directly
-	if(sendEOS_) request_.queryInstance->pushSolution(QueryResultStream::eos());
+	if(sendEOS_) request_.queryInstance->pushEOS();
 	// throw error if Prolog evaluation has caused an exception.
 	if(exceptionTerm) throw QueryError(*request_.goal, *exceptionTerm);
 }

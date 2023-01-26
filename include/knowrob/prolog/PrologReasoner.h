@@ -241,7 +241,7 @@ namespace knowrob {
 			term_t createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScope);
 			term_t createContextTerm(term_t solutionScope);
 
-			void setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope);
+			static void setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope);
 
 			template <class T> bool createIntervalDict(term_t intervalDict, const FuzzyInterval<T> &interval);
 			template <class T> bool createRangeDict(term_t intervalDict, const Range<T> &range);
