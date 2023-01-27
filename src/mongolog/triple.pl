@@ -269,7 +269,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	option(collection(Coll), Ctx),
 	mongolog_one_db(_DB, OneColl),
 	% infer lookup parameters
-	query_value(P,Query_p),
+	mng_query_value(P,Query_p),
 	% TODO: can query operators be supported?
 	mng_strip_variable(S, S0),
 	mng_strip_variable(V, V0),
@@ -540,11 +540,11 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	mng_strip_variable(P, P1),
 	mng_strip_variable(V, V1),
 	% get the query pattern
-	% FIXME: query_value may silently fail on invalid input and this rule still succeeds
+	% FIXME: mng_query_value may silently fail on invalid input and this rule still succeeds
 	findall(X,
-		(	( query_value(S1,Query_s), X=['s',Query_s] )
-		;	( query_value(P1,Query_p), X=[Key_p,Query_p] )
-		;	( query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
+		(	( mng_query_value(S1,Query_s), X=['s',Query_s] )
+		;	( mng_query_value(P1,Query_p), X=[Key_p,Query_p] )
+		;	( mng_query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
 		;	graph_doc(Graph,X)
 		;	mongolog_scope_doc(Scope,X)
 		),
@@ -558,17 +558,6 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 %%
 is_term_query([[type,string(compound)],_]).
 is_term_query([_, [[type,string(compound)],_]]).
-
-%%
-query_value(In, Out) :-
-	% strip $eq operator not needed in triple query.
-	% this is needed for current handling of regular expression patterns.
-	% FIXME: still needed after $exp fix?
-	mng_query_value(In, X),
-	(	X=['$eq',Y]
-	->	Out=Y
-	;	Out=X
-	).
 
 %%
 triple_arg_var(Arg, ArgVar) :-

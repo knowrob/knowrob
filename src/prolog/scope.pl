@@ -25,13 +25,14 @@ query_scope_now(dict{
 %
 % @param Scope A scope dict.
 %
+time_scope(_, _, Scope) :-
+    nonvar(Scope),!,
+    fail.
+
 time_scope(Since, Until, Scope) :-
-    var(Scope),!,
-	Scope=dict{ time:
-	    dict{ min: MinRange, max: MaxRange } },
+	Scope=dict{ time: dict{ min: MinRange, max: MaxRange } },
 	min_range(Since, MinRange),
-	max_range(Until, MaxRange),
-	!.
+	max_range(Until, MaxRange),!.
 
 %%
 min_range(=(Since),  dict{ min: Since, max: Since }).
