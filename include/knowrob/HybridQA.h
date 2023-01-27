@@ -32,7 +32,7 @@ namespace knowrob {
 
         int callPrologDirect(const std::string &queryString);
 
-		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler, bool incremental = false);
+		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;

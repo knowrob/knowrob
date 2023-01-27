@@ -88,9 +88,6 @@ public:
         std::string solution = solutions_.front()->c_str();
         solutions_.pop_front();
         numSolutions_ -= 1;
-        if(incrementalMode) {
-            runQuery(currentQuery_);
-        }
         return solution;
     }
 
@@ -113,7 +110,7 @@ public:
             auto query = hybridQA_.parseQuery(queryString);
             // evaluate query in hybrid QA system
             numSolutions_ = 0;
-            hybridQA_.runQuery(query, *this, incrementalMode);
+            hybridQA_.runQuery(query, *this);
             if(numSolutions_ == 0) {
                 solutions_.push_back(std::make_shared<std::string>("False."));
             }

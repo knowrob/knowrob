@@ -90,7 +90,7 @@ std::shared_ptr<MongoDatabase> MongoInterface::connect(const PlTerm &dbTerm)
 
 std::shared_ptr<MongoCollection> MongoInterface::connect(const PlTerm &dbTerm, const char* collectionName)
 {
-	return connect((char*)dbTerm[1], (char*)dbTerm[2]);
+	return connect((char*)dbTerm[1], (char*)dbTerm[2], collectionName);
 }
 
 std::shared_ptr<MongoCollection> MongoInterface::connect(const char *db_uri, const char *db_name, const char *collectionName)

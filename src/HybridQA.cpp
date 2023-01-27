@@ -57,26 +57,17 @@ std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString
 }
 
 
-void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler, bool incremental) {
+void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler) {
+    auto bbq = std::make_shared<knowrob::QueryResultQueue>();
+    auto bb = std::make_shared<Blackboard>(reasonerManager_, bbq, query);
     QueryResultPtr solution;
-    if (!runQueryInitialized) {
-        bbq_ = std::make_shared<knowrob::QueryResultQueue>();
-        bb_ = std::make_shared<Blackboard>(reasonerManager_, bbq_, query);
 
-        bb_->start();
-
-        runQueryInitialized = true;
-    }
-
-    if (incremental) {
-        solution = bbq_->pop_front();
-        handler.pushQueryResult(solution);
-    } else {
-        do {
-            solution = bbq_->pop_front();
-            if (QueryResultStream::isEOS(solution)) {
-                break;
-            }
-        } while (handler.pushQueryResult(solution));
-    }
+    bb->start();
+    do {
+        solution = bbq->pop_front();
+        if(QueryResultStream::isEOS(solution)) {
+            break;
+        }
+    } while(handler.pushQueryResult(solution));
 }
+
