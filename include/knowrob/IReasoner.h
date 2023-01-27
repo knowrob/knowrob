@@ -120,6 +120,8 @@ namespace knowrob {
 		std::map<std::string, DataFileLoader> dataFileHandler_;
 
 		virtual bool loadDataFileWithUnknownFormat(const DataFilePtr&) { return false; }
+
+		friend class ReasonerManager;
 	};
 
 	/**
@@ -133,7 +135,7 @@ namespace knowrob {
 		 * @param args list of arguments used to instantiate the pattern.
 		 */
 		template<typename ... Args>
-		ReasonerError(const char *fmt, Args&& ... args)
+		explicit ReasonerError(const char *fmt, Args&& ... args)
 		: std::runtime_error(fmt::format(fmt, args...)) {}
 	};
 }

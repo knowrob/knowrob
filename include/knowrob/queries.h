@@ -340,7 +340,13 @@ namespace knowrob {
 		 * @param other another time point
 		 * @return true if this time point occurs earlier than another one.
 		 */
-		bool operator< (const TimePoint& other) const;
+		bool operator<(const TimePoint& other) const;
+
+		/**
+		 * @param other another time point
+		 * @return true if this time point equals the other in nanosecond resolution.
+		 */
+		bool operator==(const TimePoint& other) const;
 
 	protected:
 		double value_;
@@ -578,7 +584,7 @@ namespace knowrob {
 		 * @param changes used to make the merge operation reversible, can be null.
 		 * @return false if merge is not possible.
 		 */
-		bool combine(std::shared_ptr<QueryResult> &other, Reversible *changes=nullptr);
+		bool combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes=nullptr);
 
 	protected:
 		SubstitutionPtr substitution_;
@@ -595,7 +601,7 @@ namespace knowrob {
 		friend class QueryInstance;
 	};
 	// alias
-	using QueryResultPtr = std::shared_ptr<QueryResult>;
+	using QueryResultPtr = std::shared_ptr<const QueryResult>;
 	
 	/**
 	 * A stream of query results.
@@ -796,7 +802,7 @@ namespace knowrob {
 		
 		void genCombinations(uint32_t pushedChannelID,
 			QueryResultBuffer::iterator it,
-			QueryResultPtr &combinedResult);
+			std::shared_ptr<QueryResult> &combinedResult);
 	};
 
 	/**
@@ -884,8 +890,15 @@ namespace knowrob {
 }
 
 namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::ConfidenceValue& confidence);
+	std::ostream& operator<<(std::ostream& os, const knowrob::TimePoint& tp);
+
 	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi);
 	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q);
+	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution);
+
+	std::ostream& operator<<(std::ostream& os, const knowrob::Range<knowrob::TimePoint>& t);
+	std::ostream& operator<<(std::ostream& os, const knowrob::TimeInterval& ti);
 }
 
 #endif //KNOWROB_QUERIES_H_

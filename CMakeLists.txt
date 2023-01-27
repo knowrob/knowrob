@@ -138,9 +138,6 @@ target_link_libraries(knowrob-terminal
 		knowrob_qa)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
-add_executable(test_qa tests/test_qa.cpp)
-target_link_libraries(test_qa knowrob_qa)
-
 ##############
 ########## ROS1 block
 ##############

@@ -14,7 +14,7 @@
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/queries.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include "Blackboard.h"
 
@@ -26,7 +26,7 @@ namespace knowrob {
 
 	class HybridQA {
 	public:
-		HybridQA(const boost::property_tree::ptree &config);
+		explicit HybridQA(const boost::property_tree::ptree &config);
 
 		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
 

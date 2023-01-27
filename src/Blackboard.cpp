@@ -92,8 +92,7 @@ void Blackboard::decomposePredicate(
 	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
 
 	// get ensemble of reasoner
-	std::list<std::shared_ptr<IReasoner>> ensemble =
-		reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
+	auto ensemble = reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
 	// create a subquery for the predicate p
 	std::shared_ptr<Query> subQuery = std::make_shared<Query>(phi);
 
@@ -101,7 +100,7 @@ void Blackboard::decomposePredicate(
 		throw QueryError("no reasoner registered for query `{}`", *phi);
 	}
 
-    for(std::shared_ptr<IReasoner> &r : ensemble) {
+    for(auto &r : ensemble) {
 		// create IO channels
 		reasonerOutChan = QueryResultStream::Channel::create(out);
 		reasonerIn = std::make_shared<Blackboard::Stream>(
@@ -155,7 +154,7 @@ void Blackboard::decomposeDisjunction(
 
 
 Blackboard::Stream::Stream(
-	const std::shared_ptr<IReasoner> &reasoner,
+	const std::shared_ptr<ManagedReasoner> &reasoner,
 	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 : QueryResultStream(),
@@ -167,7 +166,7 @@ Blackboard::Stream::Stream(
   hasStopRequest_(false)
 {
 	// tell the reasoner that a new request has been made
-	reasoner_->startQuery(queryID_, goal);
+	(*reasoner_)()->startQuery(queryID_, goal);
 }
 
 Blackboard::Stream::~Stream()
@@ -186,7 +185,7 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!
 			//          else consumer will never be called with EOS
-			reasoner_->finishQuery(queryID_, outputStream_, hasStopRequest());
+			(*reasoner_)()->finishQuery(queryID_, outputStream_, hasStopRequest());
 		}
 	}
 	else if(!isQueryOpened()) {
@@ -196,7 +195,7 @@ void Blackboard::Stream::push(const QueryResultPtr &msg)
 		// evaluate an instance of the input query
 		auto queryInstance = std::make_shared<QueryInstance>(
 				goal_, outputStream_, msg);
-		reasoner_->runQueryInstance(queryID_, queryInstance);
+		(*reasoner_)()->runQueryInstance(queryID_, queryInstance);
 	}
 }
 

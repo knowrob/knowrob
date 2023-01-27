@@ -6,13 +6,16 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+// STD
+#include <filesystem>
+// KnowRob
 #include <knowrob/logging.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>
 #include <knowrob/swrl/SWRLReasoner.h>
 #include <knowrob/esg/ESGReasoner.h>
-// shared libraries
+// loading shared libraries
 #include <dlfcn.h>
 
 #include <utility>
@@ -54,7 +57,9 @@ ReasonerManager::ReasonerManager()
 : reasonerIndex_(0)
 {
 	// add some default factory functions to create reasoner instances
-	// TODO: can be done automatically in InitKnowledgeBase?
+	// TODO: come up with a better way to register builtin reasoner types.
+	//	- create a singleton registry of IReasoner types, than make use of the registry here.
+	//   	require that each reasoner type registers itself with the registry.
 	addReasonerFactory("Mongolog", std::make_shared<TypedReasonerFactory<MongologReasoner>>("Mongolog"));
 	addReasonerFactory("Prolog",   std::make_shared<TypedReasonerFactory<PrologReasoner>>("Prolog"));
 	addReasonerFactory("ESG",      std::make_shared<TypedReasonerFactory<ESGReasoner>>("ESG"));
@@ -107,7 +112,7 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
 	}
 	else {
-		addReasoner(reasoner);
+		addReasoner(reasonerID, reasoner);
 	}
 	// increase reasonerIndex_
 	reasonerIndex_ += 1;
@@ -115,11 +120,12 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 
 std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::string &path)
 {
-	// TODO: map path to absolute path to avoid loading DLLs multiple times.
-	auto it = loadedPlugins_.find(path);
+	auto absPath = std::filesystem::absolute(path);
+	auto it = loadedPlugins_.find(absPath);
 	if(it == loadedPlugins_.end()) {
-		auto p = std::make_shared<ReasonerPlugin>(path);
-		auto jt = loadedPlugins_.insert(std::pair<std::string, std::shared_ptr<ReasonerPlugin>>(path, p));
+		auto p = std::make_shared<ReasonerPlugin>(absPath);
+		auto jt = loadedPlugins_.insert(std::pair<std::string,
+										std::shared_ptr<ReasonerPlugin>>(absPath, p));
 		if(jt.first->second->loadDLL()) {
 			return jt.first->second;
 		}
@@ -133,25 +139,44 @@ std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::s
 
 void ReasonerManager::addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory)
 {
+	if(reasonerFactories_.find(typeName) != reasonerFactories_.end()) {
+		KB_WARN("overwriting factory for reasoner type '{}'", typeName);
+	}
 	reasonerFactories_[typeName] = factory;
 }
 
-void ReasonerManager::addReasoner(const std::shared_ptr<IReasoner> &reasoner)
+std::shared_ptr<ManagedReasoner> ReasonerManager::addReasoner(const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
 {
-	reasonerPool_.push_back(reasoner);
+	if(reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
+		KB_WARN("overwriting reasoner with name '{}'", reasonerID);
+	}
+	auto managedReasoner = std::make_shared<ManagedReasoner>(reasonerID,reasoner);
+	reasonerPool_[reasonerID] = managedReasoner;
+	return managedReasoner;
 }
 
-void ReasonerManager::removeReasoner(const std::shared_ptr<IReasoner> &reasoner)
+void ReasonerManager::removeReasoner(const std::shared_ptr<ManagedReasoner> &reasoner)
 {
-	reasonerPool_.remove(reasoner);
+	reasonerPool_.erase(reasoner->name());
 }
 
-std::list<std::shared_ptr<IReasoner>> ReasonerManager::getReasonerForPredicate(const PredicateIndicator &predicate)
+std::shared_ptr<ManagedReasoner> ReasonerManager::getReasonerWithID(const std::string &reasonerID)
 {
-	std::list<std::shared_ptr<IReasoner>> out;
+	auto it = reasonerPool_.find(reasonerID);
+	if(it != reasonerPool_.end()) {
+		return it->second;
+	}
+	else {
+		return {};
+	}
+}
+
+std::list<std::shared_ptr<ManagedReasoner>> ReasonerManager::getReasonerForPredicate(const PredicateIndicator &predicate)
+{
+	std::list<std::shared_ptr<ManagedReasoner>> out;
 	for(auto &x : reasonerPool_) {
-		if(x->isCurrentPredicate(predicate)) {
-			out.push_back(x);
+		if(x.second->reasoner()->isCurrentPredicate(predicate)) {
+			out.push_back(x.second);
 		}
 	}
 	return out;
@@ -245,7 +270,17 @@ void ReasonerConfiguration::loadSettings(const TermPtr &key1, const boost::prope
 	for(const auto& key_val : ptree) {
 		if(key_val.first.empty()) {
 			// this indicates a list
-			// TODO: handle list values here
+			// TODO: handle list values here, needs an interface to translate a subtree to a term.
+			//		recursive call of loadSettings wouldn't do the trick.
+			/*
+			auto &listData = key_val.second;
+			std::vector<TermPtr> elements(listData.size());
+			int index = 0;
+			for(const auto& l_key_val : listData) {
+				elements[index++] = std::make_shared<StringTerm>(l_key_val.second.get_value<std::string>());
+			}
+			settings.emplace_back(key1, std::make_shared<ListTerm>(elements));
+			*/
 			continue;
 		}
 		else {

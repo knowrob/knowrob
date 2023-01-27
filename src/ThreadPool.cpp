@@ -8,7 +8,6 @@
 
 // STD
 #include <stdexcept>
-#include <sstream>
 // KnowRob
 #include <knowrob/logging.h>
 #include <knowrob/ThreadPool.h>

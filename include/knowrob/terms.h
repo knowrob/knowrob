@@ -34,7 +34,8 @@ namespace knowrob {
 		LIST
 	};
 	
-	/** An expression in the querying language.
+	/**
+	 * An expression in the querying language.
 	 * Terms are used as components of formulas and are recursively
 	 * constructed over the set of constants, variables, function symbols,
 	 * and predicate symbols.
@@ -94,7 +95,7 @@ namespace knowrob {
 	
 	/**
 	 * A variable term.
-	 * It is identified by a name string in the scope of a formula,
+	 * A variable is identified by a name string in the scope of a formula,
 	 * i.e. within a formula two variables with the same name are considered to be equal.
 	 */
 	class Variable : public Term {
@@ -121,7 +122,7 @@ namespace knowrob {
 		// Override Term
 		bool isAtomic() const override { return false; }
 		
-		// Overload Term
+		// Override Term
 		void write(std::ostream& os) const override;
 
 	protected:
@@ -327,7 +328,7 @@ namespace knowrob {
 	public:
 		static const std::shared_ptr<TopTerm>& get();
 		
-		// Overload Term
+		// Override Term
 		void write(std::ostream& os) const override;
 	
 	private:
@@ -341,7 +342,7 @@ namespace knowrob {
 	public:
 		static const std::shared_ptr<BottomTerm>& get();
 		
-		// Overload Term
+		// Override Term
 		void write(std::ostream& os) const override;
 	
 	private:
@@ -514,13 +515,12 @@ namespace knowrob {
 		/**
 		 * Combine with another substitution.
 		 * If both substitute the same variable to some term, then
-		 * the combination maps to the unification of these terms,
-		 * if one exists.
+		 * the combination maps to the unification of these terms, if one exists.
 		 * @other another substitution
 		 * @changes the diff of the substitute operation
 		 * @return true if the operation succeeded.
 		 */
-		bool unifyWith(const std::shared_ptr<Substitution> &other, Reversible *reversible= nullptr);
+		bool unifyWith(const Substitution &other, Reversible *reversible= nullptr);
 
 	protected:
 		std::map<Variable,TermPtr> mapping_;

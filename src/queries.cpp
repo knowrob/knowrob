@@ -163,6 +163,11 @@ bool TimePoint::operator<(const TimePoint& other) const
 	return value_ < other.value_;
 }
 
+bool TimePoint::operator==(const TimePoint& other) const
+{
+	return fabs(value_ - other.value_) < 1e-9;
+}
+
 
 TimeInterval::TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange)
 : FuzzyInterval<TimePoint>(sinceRange, untilRange)
@@ -304,10 +309,10 @@ void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &con
 			std::optional<const ConfidenceValue*>(std::nullopt));
 }
 
-bool QueryResult::combine(std::shared_ptr<QueryResult> &other, Reversible *changes)
+bool QueryResult::combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes)
 {
 	// unify substitutions
-	if(!substitution_->unifyWith(other->substitution_, changes)) {
+	if(!substitution_->unifyWith(*other->substitution_, changes)) {
 		// unification failed -> results cannot be combined
 		return false;
 	}
@@ -429,6 +434,7 @@ std::shared_ptr<const Query> QueryInstance::create()
 {
 	// TODO: set scope for query generated, else would be dangerous because
 	//   both QueryInstance and Query have an interface for getting the scope.
+	//   maybe just hide the query object? seems query instance might be sufficient
 	if(partialResult_->substitution()->empty()) {
 		return uninstantiatedQuery_;
 	}
@@ -448,10 +454,17 @@ void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
 		}
 
 	// combine time intervals
+#if 0
+	auto otherTimeInterval = std::make_shared<TimeInterval>(
+			Range<TimePoint>(2.0,3.0),
+			Range<TimePoint>(std::nullopt,10.0)
+			);
+#else
 	std::shared_ptr<TimeInterval> otherTimeInterval = (
 			partialResult_->timeInterval().has_value() ?
 			partialResult_->timeInterval_ :
 			uninstantiatedQuery_->timeInterval_);
+#endif
 	solution->combineTimeInterval(otherTimeInterval);
 	// ignore solution if time interval is empty
 	if(solution->timeInterval_ && solution->timeInterval_->empty()) return;
@@ -520,15 +533,13 @@ bool QueryResultStream::isEOS(const QueryResultPtr &item)
 
 QueryResultPtr& QueryResultStream::bos()
 {
-	// TODO: make immutable
-	static auto msg = std::make_shared<QueryResult>();
+	static auto msg = std::make_shared<const QueryResult>();
 	return msg;
 }
 
 QueryResultPtr& QueryResultStream::eos()
 {
-	// TODO: make immutable
-	static auto msg = std::make_shared<QueryResult>();
+	static auto msg = std::make_shared<const QueryResult>();
 	return msg;
 }
 
@@ -540,16 +551,22 @@ bool QueryResultStream::isOpened() const
 void QueryResultStream::push(const Channel &channel, const QueryResultPtr &item)
 {
 	if(QueryResultStream::isEOS(item)) {
-		// prevent channels from being created while processing EOS message
-		std::lock_guard<std::mutex> lock(channel_mutex_);
-		// remove channel once EOS is reached
-		channels_.erase(channel.iterator_);
-		
-		// auto-close this stream if no channels are left,
-		// also send EOS in this case.
-		if(channels_.empty() && isOpened()) {
-			isOpened_ = false;
-			// TODO: lift lock before pushing
+		bool doPushMsg; {
+			// prevent channels from being created while processing EOS message
+			std::lock_guard<std::mutex> lock(channel_mutex_);
+			// remove channel once EOS is reached
+			channels_.erase(channel.iterator_);
+			// auto-close this stream if no channels are left
+			if(channels_.empty() && isOpened()) {
+				isOpened_ = false;
+				doPushMsg = true;
+			}
+			else {
+				doPushMsg = false;
+			}
+		}
+		// send EOS on this stream if no channels are left
+		if(doPushMsg) {
 			push(item);
 		}
 	}
@@ -717,7 +734,7 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		QueryResultPtr combination(new QueryResult(*(msg.get())));
+		std::shared_ptr<QueryResult> combination(new QueryResult(*(msg.get())));
 		// generate all combinations and push combined messages
 		genCombinations(channelID, buffer_.begin(), combination);
 	}
@@ -726,7 +743,7 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 void QueryResultCombiner::genCombinations(
 		uint32_t pushedChannelID,
 		QueryResultBuffer::iterator it,
-		QueryResultPtr &combinedResult)
+		std::shared_ptr<QueryResult> &combinedResult)
 {
 	if(it == buffer_.end()) {
 		// end reached, push combination
@@ -792,15 +809,66 @@ std::string QueryError::formatErrorString(
 
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi)
+	std::ostream& operator<<(std::ostream& os, const ConfidenceValue& confidence) //NOLINT
+	{
+		return os << confidence.value();
+	}
+
+	std::ostream& operator<<(std::ostream& os, const TimePoint& tp) //NOLINT
+	{
+		return os << tp.value();
+	}
+
+	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi) //NOLINT
 	{
 		phi.write(os);
 		return os;
 	}
 	
-	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q)
+	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q) //NOLINT
 	{
-		os << *(q.formula().get());
+		os << *q.formula();
 		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution) //NOLINT
+	{
+		if(solution.confidence().has_value()) {
+			os << *solution.confidence().value() << "::";
+		}
+		if(solution.timeInterval().has_value()) {
+			os << *solution.timeInterval().value() << "::";
+		}
+		if(solution.substitution()->empty())
+			os << "yes";
+		else
+			os << *solution.substitution();
+		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Range<TimePoint>& t) //NOLINT
+	{
+		if(t.min().has_value() && t.max().has_value()) {
+			if(t.min().value() == t.max().value()) {
+				return os << t.min().value();
+			}
+			else {
+				return os << '(' << t.min().value() << ',' << t.max().value() << ')';
+			}
+		}
+		else if(t.min().has_value()) {
+			return os << ">=" << t.max().value();
+		}
+		else if(t.max().has_value()) {
+			return os << "<=" << t.max().value();
+		}
+		else {
+			return os << '*';
+		}
+	}
+
+	std::ostream& operator<<(std::ostream& os, const TimeInterval& ti) //NOLINT
+	{
+		return os << '[' << ti.minRange() << ',' << ti.maxRange() << ']';
 	}
 }

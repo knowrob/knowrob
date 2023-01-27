@@ -14,7 +14,7 @@
 #include <memory>
 // KnowRob
 #include <knowrob/queries.h>
-#include <knowrob/ReasonerManager.h>
+#include <knowrob/reasoner.h>
 
 namespace knowrob {
 	/**
@@ -47,7 +47,7 @@ namespace knowrob {
 		class Stream : public QueryResultStream {
 		public:
 			Stream(
-				const std::shared_ptr<IReasoner> &reasoner,
+				const std::shared_ptr<ManagedReasoner> &reasoner,
 				const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 				const std::shared_ptr<Query> &goal);
 			~Stream();
@@ -68,7 +68,7 @@ namespace knowrob {
 			bool hasStopRequest() const { return hasStopRequest_; }
 		
 		protected:
-			std::shared_ptr<IReasoner> reasoner_;
+			std::shared_ptr<ManagedReasoner> reasoner_;
 			std::shared_ptr<const Query> goal_;
 			std::shared_ptr<QueryResultStream::Channel> outputStream_;
 			uint32_t queryID_;
