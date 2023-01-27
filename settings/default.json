@@ -1,4 +1,8 @@
 {
+  "logging": {
+    "console-sink": { "level": "debug" },
+    "file-sink": { "level": "debug" }
+  },
   "reasoner": [
     {
       "type": "Mongolog",

@@ -3,7 +3,7 @@
   <arg name="initial_goal" default="true" />
   <arg name="num_pl_threads" default="2" />
   <arg name="num_ros_threads" default="4" />
-  <arg name="knowrob_settings" default="$(find knowrob)/settings/test.json" />
+  <arg name="knowrob_settings" default="$(find knowrob)/settings/default.json" />
 
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
   

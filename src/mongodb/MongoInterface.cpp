@@ -90,9 +90,15 @@ std::shared_ptr<MongoDatabase> MongoInterface::connect(const PlTerm &dbTerm)
 
 std::shared_ptr<MongoCollection> MongoInterface::connect(const PlTerm &dbTerm, const char* collectionName)
 {
-	auto dbConnection = getOrCreateConnection((char*)dbTerm[1]);
-	return std::make_shared<MongoCollection>(dbConnection->pool_, (char*)dbTerm[2], collectionName);
+	return connect((char*)dbTerm[1], (char*)dbTerm[2]);
 }
+
+std::shared_ptr<MongoCollection> MongoInterface::connect(const char *db_uri, const char *db_name, const char *collectionName)
+{
+    auto dbConnection = getOrCreateConnection(db_uri);
+    return std::make_shared<MongoCollection>(dbConnection->pool_, db_name, collectionName);
+}
+
 
 std::shared_ptr<MongoCursor> MongoInterface::cursor_create(const PlTerm &db_term, const char *coll_name)
 {
@@ -114,3 +120,4 @@ std::shared_ptr<MongoCursor> MongoInterface::cursor(const char *curser_id)
 	std::lock_guard<std::mutex> scoped_lock(mongo_mutex_);
 	return cursors_[std::string(curser_id)];
 }
+
