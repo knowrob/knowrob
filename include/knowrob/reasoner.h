@@ -149,6 +149,42 @@ namespace knowrob {
 	};
 
 	/**
+	 * A predicate description with associated reasoners that can
+	 * evaluate the predicate.
+	 */
+	class PredicateDefinition {
+	public:
+		/**
+		 * @param indicator the indicator of the described predicate.
+		 */
+		explicit PredicateDefinition(const std::shared_ptr<PredicateIndicator> &indicator);
+
+		/**
+		 * Add a reasoner to this description.
+		 * @param managedReasoner a managed reasoner.
+		 * @param definition a predicate description.
+		 * @return true if the reasoner was added successfully.
+		 */
+		bool addReasoner(const std::shared_ptr<ManagedReasoner> &managedReasoner,
+						 const std::shared_ptr<PredicateDescription> &definition);
+
+		/**
+		 * @return the type of the described predicate.
+		 */
+		PredicateType predicateType() const { return predicateType_; }
+
+		/**
+		 * @return set of reasoners associated to this description.
+		 */
+		const std::set<std::shared_ptr<ManagedReasoner>>& reasonerEnsemble() const { return reasonerEnsemble_; }
+
+	protected:
+		const std::shared_ptr<PredicateIndicator> indicator_;
+		PredicateType predicateType_;
+		std::set<std::shared_ptr<ManagedReasoner>> reasonerEnsemble_;
+	};
+
+	/**
 	 * Manages a set of available reasoning subsystems.
 	 */
 	class ReasonerManager {
@@ -188,12 +224,13 @@ namespace knowrob {
 		 */
 		void removeReasoner(const std::shared_ptr<ManagedReasoner> &reasoner);
 
-		/** Get list of reasoner that can handle given predicate.
-		 *
+		/**
+		 * Get the definition of a predicate.
 		 * @param predicate the predicate in question
-		 * @return an essemble of reasoner that can handle the predicate
+		 * @return a predicate definition
 		 */
-		std::list<std::shared_ptr<ManagedReasoner>> getReasonerForPredicate(const PredicateIndicator &predicate);
+		std::shared_ptr<PredicateDefinition> getPredicateDefinition(
+				const std::shared_ptr<PredicateIndicator> &predicate);
 
 		/**
 		 * @param reasonerID a reasoner ID string.

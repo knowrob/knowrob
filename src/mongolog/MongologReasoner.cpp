@@ -46,16 +46,6 @@ bool MongologReasoner::initializeDefaultPackages()
 	return true;
 }
 
-bool MongologReasoner::isCurrentPredicate(const PredicateIndicator &predicate)
-{
-	return eval(std::make_shared<Predicate>(Predicate(
-			"current_predicate", {
-				std::make_shared<StringTerm>(predicate.functor()) //,
-				//std::make_shared<Integer32Term>(predicate.arity())
-			}
-	)));
-}
-
 const functor_t& MongologReasoner::callFunctor()
 {
 	static const auto call_f = PL_new_functor(PL_new_atom("mongolog_call"), 2);

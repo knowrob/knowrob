@@ -6,11 +6,13 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+// STD
+#include <utility>
+// GTEST
+#include <gtest/gtest.h>
+// KnowRob
 #include <knowrob/logging.h>
 #include <knowrob/terms.h>
-#include <gtest/gtest.h>
-
-#include <utility>
 
 using namespace knowrob;
 
@@ -142,18 +144,18 @@ void OptionList::readOption(const TermPtr &option) {
 	if(option->type() != TermType::PREDICATE) return;
 	auto *p = (Predicate*)option.get();
 
-	if(p->indicator().arity()==2) {
+	if(p->indicator()->arity()==2) {
 		// an option of the form `Key = Value`
-		if (p->indicator().functor() != "=") return;
+		if (p->indicator()->functor() != "=") return;
 		auto keyTerm = p->arguments()[0];
 		auto valTerm = p->arguments()[1];
 		// TODO: rather allow nullary predicate here!
 		if (keyTerm->type() != TermType::STRING) return;
 		options_[((StringTerm *) keyTerm.get())->value()] = valTerm;
 	}
-	else if(p->indicator().arity()==1) {
+	else if(p->indicator()->arity()==1) {
 		// an option of the form `Key(Value)`
-		options_[p->indicator().functor()] = p->arguments()[0];
+		options_[p->indicator()->functor()] = p->arguments()[0];
 	}
 }
 
@@ -181,8 +183,8 @@ const std::string& OptionList::getString(const std::string &key, const std::stri
 	}
 	else if(it->second->type() == TermType::PREDICATE) {
 		Predicate *p = ((Predicate*)it->second.get());
-		if(p->indicator().arity()==0) {
-			return p->indicator().functor();
+		if(p->indicator()->arity()==0) {
+			return p->indicator()->functor();
 		}
 		else {
 			return defaultValue;
@@ -205,6 +207,13 @@ long OptionList::getLong(const std::string &key, long defaultValue) {
 	return defaultValue;
 }
 
+namespace knowrob {
+	PredicateType predicateTypeFromTerm(const TermPtr &term) {
+		auto type_string = ((StringTerm*)term.get())->value();
+		if(type_string == "relation") return PredicateType::RELATION;
+		else                          return PredicateType::BUILT_IN;
+	}
+}
 
 PredicateIndicator::PredicateIndicator(std::string functor, unsigned int arity)
 : functor_(std::move(functor)),
@@ -265,7 +274,7 @@ Predicate::Predicate(
 
 bool Predicate::isEqual(const Term& other) const {
 	const auto &x = static_cast<const Predicate&>(other); // NOLINT
-    if(indicator() == x.indicator() && arguments_.size() == x.arguments_.size()) {
+    if(*indicator() == *x.indicator() && arguments_.size() == x.arguments_.size()) {
         for(int i=0; i<arguments_.size(); ++i) {
             if(!(*(arguments_[i]) == *(x.arguments_[i]))) return false;
         }
@@ -448,7 +457,7 @@ Unifier::Unifier(const TermPtr &t0, const TermPtr &t1)
 {
 }
 
-bool Unifier::unify(const TermPtr &t0, const TermPtr &t1)
+bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 {
 	if(t1->type() == TermType::VARIABLE) {
 		unify(*((Variable*)t1.get()), t0);
@@ -466,12 +475,12 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1)
 			auto *p0 = (Predicate*)t0.get();
             auto *p1 = (Predicate*)t1.get();
 			// tests for functor equality, and matching arity
-			if(p0->indicator().functor() != p1->indicator().functor() ||
-			   p0->indicator().arity()   != p1->indicator().arity()) {
+			if(p0->indicator()->functor() != p1->indicator()->functor() ||
+			   p0->indicator()->arity()   != p1->indicator()->arity()) {
 				return false;
 			}
 			// unify all arguments
-			for(uint32_t i=0; i<p0->indicator().arity(); ++i) {
+			for(uint32_t i=0; i<p0->indicator()->arity(); ++i) {
 				if(!unify(p0->arguments()[i], p1->arguments()[i])) {
 					return false;
 				}
@@ -609,7 +618,7 @@ TEST(terms, unify) {
     // - instantiation of a variable to a constant
     EXPECT_TRUE(Unifier(x0,x5).exists());
     // - instantiation of a variable to a term in which the variable occurs
-    //   NOTE: this does not fail because not *occurs* check is performed.
+    //   NOTE: this does not fail because no *occurs* check is performed.
     EXPECT_TRUE(Unifier(x0,x4).exists());
     // for positive examples, the unifier can be applied to get an instance of the input terms
     EXPECT_EQ(*((Term*)x4.get()), *(Unifier(x0,x4).apply()));

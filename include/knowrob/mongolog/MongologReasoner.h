@@ -23,9 +23,6 @@ namespace knowrob {
 
 		~MongologReasoner() override;
 		
-		// Override IReasoner
-		bool isCurrentPredicate(const PredicateIndicator &predicate) override;
-		
 	protected:
 		
 		// Override PrologReasoner

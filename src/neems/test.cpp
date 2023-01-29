@@ -16,5 +16,5 @@ protected:
 	}
 };
 
-TEST_F(NEEMTests, occurs) { runTests(getPath("occurs.pl")); }
+TEST_F(NEEMTests, occurs) { runTests(getPath("occurs.plt")); }
 TEST_F(NEEMTests, neem_logging) { runTests(getPath("NEEM.pl")); }

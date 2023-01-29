@@ -1,3 +1,8 @@
+:- module(kb1,
+    [ woman/1,
+      loves/2,
+      jealous/2
+    ]).
 
 woman(mia).
 woman(jody).

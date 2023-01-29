@@ -75,17 +75,36 @@
 % True if Predicate is a currently defined predicated.
 %
 mongolog_current_predicate(PredicateIndicator) :-
+    mongolog_current_predicate(PredicateIndicator, _).
+
+%%
+mongolog_current_predicate(PredicateIndicator, PredicateType) :-
     ground(PredicateIndicator),
 	strip_module_(PredicateIndicator, Module, Stripped),
-	(   Stripped=(Functor/_Arity) -> true
+	(   Stripped=(Functor/Arity) -> true
 	;   atom(PredicateIndicator) -> Functor=PredicateIndicator
 	),
 	(   ground(Module) -> CommandModule = Module
 	;   current_reasoner_module(CommandModule)
 	),
+	mongolog_current_predicate1(CommandModule, Functor, Arity, PredicateType).
+
+%%
+mongolog_current_predicate1(_Module, Functor, _Arity, built_in) :-
 	% TODO: take arity into account
-	once((step_command1(CommandModule, Functor) ;
-	      mongolog_rule1(CommandModule, Functor, _, _))).
+    step_command(user, Functor), !.
+
+mongolog_current_predicate1(Module, Functor, _Arity, relation) :-
+	% TODO: take arity into account
+    step_command(Module, Functor), !.
+
+mongolog_current_predicate1(_Module, Functor, Arity, built_in) :-
+    mongolog_rule(user, Functor, Args, _),
+    length(Args, Arity),!.
+
+mongolog_current_predicate1(Module, Functor, Arity, relation) :-
+    mongolog_rule(Module, Functor, Args, _),
+    length(Args, Arity),!.
 
 %% add_command(+Command) is det.
 %
@@ -391,9 +410,11 @@ mongolog_call(Goal) :-
 % @param Goal A compound term expanding into an aggregation pipeline
 % @param Options Additional options
 %
+mongolog_call(reasoner_defined_predicate(Indicator,PredicateType), _Ctx) :-
+    !, mongolog_current_predicate(Indicator,PredicateType).
+
 mongolog_call(current_predicate(Predicate), _Ctx) :-
-	!,
-	mongolog_current_predicate(Predicate).
+	!, mongolog_current_predicate(Predicate).
 
 mongolog_call(consult(File), _Ctx) :-
     !,

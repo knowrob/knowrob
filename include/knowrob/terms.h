@@ -22,7 +22,8 @@
 #include <functional>
 
 namespace knowrob {
-	/** The type of a term.
+	/**
+	 * The type of a term.
 	 */
 	enum class TermType {
 		PREDICATE = 0,
@@ -239,13 +240,55 @@ namespace knowrob {
 		 * @return the indicator as a term.
 		 */
 		std::shared_ptr<Term> toTerm() const;
-		
-		// Override Term
+
 		void write(std::ostream& os) const;
 	
 	private:
 		const std::string functor_;
 		const unsigned int arity_;
+	};
+
+	/**
+	 * The type of a predicate.
+	 */
+	enum class PredicateType {
+		BUILT_IN = 0,
+		FORMULA,
+		RELATION
+	};
+
+	/**
+	 * Read predicate type from term.
+	 * @param term a term.
+	 * @return the predicate type encoded by term.
+	 */
+	PredicateType predicateTypeFromTerm(const TermPtr &term);
+
+	/**
+	 * The description of a defined predicate.
+	 */
+	class PredicateDescription {
+	public:
+		/**
+		 * @param indicator the indicator of the predicate.
+		 * @param type the type of the predicate.
+		 */
+		PredicateDescription(const std::shared_ptr<PredicateIndicator> &indicator, PredicateType type)
+		: indicator_(indicator), type_(type) {}
+
+		/**
+		 * @return the indicator of the predicate.
+		 */
+		const std::shared_ptr<PredicateIndicator>& indicator() const { return indicator_; }
+
+		/**
+		 * @return the type of the predicate.
+		 */
+		PredicateType type() const { return type_; }
+
+	protected:
+		std::shared_ptr<PredicateIndicator> indicator_;
+		PredicateType type_;
 	};
 	
 	// forward declaration
@@ -284,7 +327,7 @@ namespace knowrob {
 		 * Get the indicator of this predicate.
 		 * @return the indicator of this predicate.
 		 */
-		const PredicateIndicator& indicator() const { return *indicator_; }
+		const std::shared_ptr<PredicateIndicator>& indicator() const { return indicator_; }
 
 		/**
 		 * Get the arguments of this predicate.

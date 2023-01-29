@@ -40,6 +40,18 @@ namespace knowrob {
 	};
 
 	using DataFileLoader = std::function<bool(const std::shared_ptr<DataFile>&)>;
+
+	/**
+	 * Flags indicating the capability of a reasoner.
+	 * Flags can be combined into a bitmask of all reasoner capabilities.
+	 */
+	enum ReasonerCapability : unsigned long {
+		CAPABILITY_NONE = 0x0,
+		/** The reasoner can answer conjunctive queries */
+		CAPABILITY_CONJUNCTIVE_QUERIES = 0x1,
+		/** The reasoner can answer disjunctive queries */
+		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2
+	};
 	
 	/**
 	 * An interface for reasoning subsystems.
@@ -69,14 +81,27 @@ namespace knowrob {
 		virtual bool loadConfiguration(const ReasonerConfiguration &cfg) = 0;
 
 		/**
-		 * Find out whether a predicate is a current predicate in this reasoner.
-		 * A predicate is thought to be "current" is it is defined by the reasoner,
-		 * or imported in some way such that the reasoning system can evaluate it.
+		 * Get the description of a predicate currently defined by this reasoner.
+		 * A predicate is thought to be currently defined if it is defined by the reasoner,
+		 * or imported in some way such that the reasoner can evaluate it.
 		 *
 		 * @param indicator a predicate indicator
-		 * @return true if the indicated predicate is a current predicate.
+		 * @return a predicate description if the predicate is a defined one or null otherwise.
 		 */
-		virtual bool isCurrentPredicate(const PredicateIndicator &indicator) = 0;
+		virtual std::shared_ptr<PredicateDescription> getPredicateDescription(
+				const std::shared_ptr<PredicateIndicator> &indicator) = 0;
+
+		/**
+		 * @return bitmask of reasoner capabilities.
+		 */
+		virtual unsigned long getCapabilities() const = 0;
+
+		/**
+		 * @param capability a reasoner capability.
+		 * @return true of this reasoner has the capability.
+		 */
+		bool hasCapability(ReasonerCapability capability) const
+		{ return (getCapabilities() & capability); }
 
 		/**
 		 * Indicate that a new query needs to be evaluated.

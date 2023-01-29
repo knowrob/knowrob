@@ -6,12 +6,14 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+// STD
 #include <memory>
 #include <filesystem>
 #include <sstream>
 #include <utility>
+// GTEST
 #include <gtest/gtest.h>
-
+// KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/logging.h>
 #include <knowrob/prolog/PrologReasoner.h>
@@ -24,7 +26,7 @@ bool PrologReasoner::isInitialized_ = false;
 
 PrologReasoner::PrologReasoner(std::string reasonerID)
 : reasonerID_(std::move(reasonerID)),
-  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID)),
+  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
   hasRDFData_(false)
 {
 	addDataFileHandler(PrologDataFile::PROLOG_FORMAT, [this]
@@ -44,6 +46,18 @@ PrologReasoner::~PrologReasoner()
 		}
 	}
 	activeQueries_.clear();
+}
+
+unsigned long PrologReasoner::getCapabilities() const
+{
+	return CAPABILITY_CONJUNCTIVE_QUERIES |
+		   CAPABILITY_DISJUNCTIVE_QUERIES;
+}
+
+const functor_t& PrologReasoner::callFunctor()
+{
+	static const auto reasoner_call_f = PL_new_functor(PL_new_atom("reasoner_call"), 2);
+	return reasoner_call_f;
 }
 
 std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path &filePath)
@@ -69,8 +83,6 @@ std::filesystem::path PrologReasoner::getResourcePath(const std::filesystem::pat
 {
 	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
 	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
-
-	// TODO: redundant with above
 
 	if(!exists(filePath)) {
 		auto possiblePaths = {
@@ -222,15 +234,24 @@ bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 	return eval(std::make_shared<Predicate>(Predicate(assert_f, { fact })));
 }
 
-bool PrologReasoner::isCurrentPredicate(const PredicateIndicator &indicator)
+std::shared_ptr<PredicateDescription> PrologReasoner::getPredicateDescription(
+		const std::shared_ptr<PredicateIndicator> &indicator)
 {
-	static auto current_predicate_f = std::make_shared<PredicateIndicator>("current_predicate", 1);
-	// TODO: could be cached, or initially loaded into a set
-	// NOTE: current_predicate includes all predicates loaded into the reasoner module,
-	//       not only the ones defined in it. e.g. builtins like `is/2` are included
-	//       for each PrologReasoner instance.
-	return eval(std::make_shared<Predicate>(Predicate(
-				current_predicate_f, { indicator.toTerm() })));
+	// TODO: could be cached
+	static auto current_predicate_f = std::make_shared<PredicateIndicator>(
+			"reasoner_defined_predicate", 2);
+	// evaluate query
+	auto type_v = std::make_shared<Variable>("Type");
+	auto solution = oneSolution(std::make_shared<Predicate>(Predicate(
+				current_predicate_f, { indicator->toTerm(), type_v })));
+
+	if(QueryResultStream::isEOS(solution)) return {};
+	else {
+		// read type of predicate
+		auto ptype = predicateTypeFromTerm(solution->substitution()->get(*type_v));
+		// create a PredicateDescription
+		return std::make_shared<PredicateDescription>(indicator, ptype);
+	}
 }
 
 std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
@@ -278,12 +299,6 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 			return term;
 		}
 	}
-}
-
-const functor_t& PrologReasoner::callFunctor()
-{
-	static const auto prolog_call_f = PL_new_functor(PL_new_atom("prolog_call"), 2);
-	return prolog_call_f;
 }
 
 bool PrologReasoner::eval(const std::shared_ptr<Predicate> &p,
@@ -744,7 +759,8 @@ void PrologReasoner::Runner::run()
 {
 	static const int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
 
-	KB_DEBUG("Prolog has new query `{}`.", *request_.goal);
+	KB_DEBUG("PrologReasoner has new query {}:({})`.",
+			 request_.queryModule, *request_.goal);
 	// use the reasoner module as context module for query evaluation
 	module_t ctx_module = PL_new_module(PL_new_atom(request_.queryModule));
 	// the exception risen by the Prolog engine, if any
@@ -861,8 +877,8 @@ void PrologTestsBase::runPrologTests(
 		// each result is a term element/3
 		ASSERT_EQ(t->type(), TermType::PREDICATE);
 		auto *pElem = (Predicate*)t.get();
-		ASSERT_EQ(pElem->indicator().functor(), "element");
-		ASSERT_EQ(pElem->indicator().arity(), 3);
+		ASSERT_EQ(pElem->indicator()->functor(), "element");
+		ASSERT_EQ(pElem->indicator()->arity(), 3);
 		ASSERT_EQ(*(pElem->arguments()[0]), StringTerm("testcase"));
 
 		// the second argument has the form:
@@ -884,8 +900,8 @@ void PrologTestsBase::runPrologTests(
 			ASSERT_EQ(failureTerm->type(), TermType::PREDICATE);
 			// each failure is a term element/3
 			auto *errElem = (Predicate*)failureTerm.get();
-			ASSERT_EQ(errElem->indicator().functor(), "element");
-			ASSERT_EQ(errElem->indicator().arity(), 3);
+			ASSERT_EQ(errElem->indicator()->functor(), "element");
+			ASSERT_EQ(errElem->indicator()->arity(), 3);
 			ASSERT_EQ(*(errElem->arguments()[0]), StringTerm("failure"));
 
 			OptionList errOpts(errElem->arguments()[1]);

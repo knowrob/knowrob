@@ -8,6 +8,7 @@
 
 // STD
 #include <filesystem>
+#include <utility>
 // KnowRob
 #include <knowrob/logging.h>
 #include <knowrob/reasoner.h>
@@ -17,8 +18,6 @@
 #include <knowrob/esg/ESGReasoner.h>
 // loading shared libraries
 #include <dlfcn.h>
-
-#include <utility>
 
 using namespace knowrob;
 
@@ -171,15 +170,38 @@ std::shared_ptr<ManagedReasoner> ReasonerManager::getReasonerWithID(const std::s
 	}
 }
 
-std::list<std::shared_ptr<ManagedReasoner>> ReasonerManager::getReasonerForPredicate(const PredicateIndicator &predicate)
+std::shared_ptr<PredicateDefinition> ReasonerManager::getPredicateDefinition(
+		const std::shared_ptr<PredicateIndicator> &indicator)
 {
-	std::list<std::shared_ptr<ManagedReasoner>> out;
+	auto description = std::make_shared<PredicateDefinition>(indicator);
 	for(auto &x : reasonerPool_) {
-		if(x.second->reasoner()->isCurrentPredicate(predicate)) {
-			out.push_back(x.second);
+		auto description_n = x.second->reasoner()->getPredicateDescription(indicator);
+		if(description_n && !description->addReasoner(x.second, description_n)) {
+			KB_WARN("ignoring inconsistent reasoner descriptions provided.");
 		}
 	}
-	return out;
+	return description;
+}
+
+PredicateDefinition::PredicateDefinition(const std::shared_ptr<PredicateIndicator> &indicator)
+: indicator_(indicator),
+  predicateType_(PredicateType::BUILT_IN)
+{
+}
+
+bool PredicateDefinition::addReasoner(
+		const std::shared_ptr<ManagedReasoner> &managedReasoner,
+		const std::shared_ptr<PredicateDescription> &description)
+{
+	if(reasonerEnsemble_.empty()) {
+		predicateType_ = description->type();
+	}
+	else if(predicateType_ != description->type()) {
+		// another reasoner has this predicate defined with another type!
+		return false;
+	}
+	reasonerEnsemble_.insert(managedReasoner);
+	return true;
 }
 
 /******************************************/
@@ -263,7 +285,8 @@ void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &
 	}
 }
 
-void ReasonerConfiguration::loadSettings(const TermPtr &key1, const boost::property_tree::ptree &ptree)
+void ReasonerConfiguration::loadSettings( //NOLINT
+		const TermPtr &key1, const boost::property_tree::ptree &ptree)
 {
 	static auto colon_f = std::make_shared<PredicateIndicator>(":", 2);
 

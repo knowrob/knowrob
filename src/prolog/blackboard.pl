@@ -1,11 +1,12 @@
 :- module(blackboard,
     [ current_reasoner_module/1,      % -ReasonerModule
       set_current_reasoner_module/1,  % +ReasonerModule
+      reasoner_defined_predicate/2,   % ?PredicateIndicator, ?PredicateType
       reasoner_setting/2,             % +Name, ?Value
       reasoner_setting/4,             % +Name, +Type, +Default, +Comment
       reasoner_set_setting/3,         % +ResonerModule, +Name, +Value
       reasoner_rdf_init/1,            % +ResonerModule
-      prolog_call/2
+      reasoner_call/2
 /*    kb_call(t),             % +Goal
       kb_call(t,t,t),         % +Goal, +QScope, -FScope
       kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
@@ -136,11 +137,61 @@ reasoner_rdf_init(Reasoner) :-
     Reasoner:assert(':-'(triple(S,P,O,Ctx),        semweb:sw_triple(S,P,O,Ctx))),
     Reasoner:assert(':-'(instance_of(S,Cls,Ctx),   semweb:sw_instance_of(S,Cls,Ctx))).
 
+%% reasoner_defined_predicate(?Indicator, ?PredicateType) is nondet.
+%
+% True if Name/Arity is the indicator of a predicate defined by the
+% current reasoner, and which has the type PredicateType where
+% PredicateType can be one of *built_in* or *relation*.
+%
+reasoner_defined_predicate(Name/Arity, PredicateType) :-
+    nonvar(Name),!,
+    functor(Head, Name, Arity),
+    current_reasoner_module(Reasoner),
+    reasoner_defined_predicate_1(Reasoner, Head, PredicateType).
+
+reasoner_defined_predicate(Name/Arity, PredicateType) :-
+    %var(Name),!,
+    reasoner_defined_predicate_2(Name, Arity, PredicateType).
+
+%
+reasoner_defined_predicate_1(_, Head, built_in) :-
+    system:predicate_property(Head, visible), !.
+
+reasoner_defined_predicate_1(_, Head, built_in) :-
+    user:predicate_property(Head, visible), !.
+
+% TODO: in case IDB vs. EDB needs to be distinguished:
+%reasoner_defined_predicate_1(Reasoner, Head, relation(idb)) :-
+%    Reasoner:predicate_property(Head, number_of_rules(NumRules)),
+%    NumRules > 0, !.
+
+reasoner_defined_predicate_1(Reasoner, Head, relation) :-
+    \+ user:predicate_property(Head, defined),
+    Reasoner:predicate_property(Head, visible), !.
+
+%
+reasoner_defined_predicate_2(Name, Arity, built_in) :-
+    system:predicate_property(Head, defined),
+    functor(Head, Name, Arity),
+    \+ sub_atom(Name, 0, _, _, $).
+
+reasoner_defined_predicate_2(Name, Arity, built_in) :-
+    user:predicate_property(Head, defined),
+    \+ system:predicate_property(Head, defined),
+    functor(Head, Name, Arity).
+
+reasoner_defined_predicate_2(Name, Arity, relation) :-
+    current_reasoner_module(Reasoner),
+    Reasoner:predicate_property(Head, defined),
+    \+ user:predicate_property(Head, defined),
+    functor(Head, Name, Arity).
+
 %%
 %
-prolog_call(Goal, _QueryContext) :-
+reasoner_call(Goal, _QueryContext) :-
     % note: PrologReasoner does not support scoped queries
-    call(Goal).
+    current_reasoner_module(Reasoner),
+    Reasoner:call(Goal).
 
 %%
 % Assert the collection names to be used by remember/memorize
@@ -178,6 +229,7 @@ mng_export(Dir) :-
 	).
 */
 
+% TODO: allow prolog rules to issue queries for other reasoner
 %% kb_call(+Statement) is nondet.
 %
 % Same as kb_call/3 with default scope to include
