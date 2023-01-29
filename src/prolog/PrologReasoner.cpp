@@ -237,20 +237,33 @@ bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 std::shared_ptr<PredicateDescription> PrologReasoner::getPredicateDescription(
 		const std::shared_ptr<PredicateIndicator> &indicator)
 {
-	// TODO: could be cached
 	static auto current_predicate_f = std::make_shared<PredicateIndicator>(
 			"reasoner_defined_predicate", 2);
-	// evaluate query
-	auto type_v = std::make_shared<Variable>("Type");
-	auto solution = oneSolution(std::make_shared<Predicate>(Predicate(
+
+	auto it = predicateDescriptions_.find(*indicator);
+	if(it != predicateDescriptions_.end()) {
+		return it->second;
+	}
+	else {
+		// evaluate query
+		auto type_v = std::make_shared<Variable>("Type");
+		auto solution = oneSolution(std::make_shared<Predicate>(Predicate(
 				current_predicate_f, { indicator->toTerm(), type_v })));
 
-	if(QueryResultStream::isEOS(solution)) return {};
-	else {
-		// read type of predicate
-		auto ptype = predicateTypeFromTerm(solution->substitution()->get(*type_v));
-		// create a PredicateDescription
-		return std::make_shared<PredicateDescription>(indicator, ptype);
+		if(QueryResultStream::isEOS(solution)) {
+			// FIXME: this is not safe if files are consulted at runtime
+			static std::shared_ptr<PredicateDescription> nullDescr;
+			predicateDescriptions_[*indicator] = nullDescr;
+			return nullDescr;
+		}
+		else {
+			// read type of predicate
+			auto ptype = predicateTypeFromTerm(solution->substitution()->get(*type_v));
+			// create a PredicateDescription
+			auto newDescr = std::make_shared<PredicateDescription>(indicator, ptype);
+			predicateDescriptions_[*indicator] = newDescr;
+			return newDescr;
+		}
 	}
 }
 

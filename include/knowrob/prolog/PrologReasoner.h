@@ -209,6 +209,8 @@ namespace knowrob {
 		static bool isInitialized_;
 		const std::string reasonerID_;
 		std::shared_ptr<StringTerm> reasonerIDTerm_;
+		// cache of predicate descriptions
+		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 		bool hasRDFData_;
 
 		/** a query request for a runner */
