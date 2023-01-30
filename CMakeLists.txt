@@ -113,6 +113,7 @@ add_library(knowrob_qa SHARED
 		src/ThreadPool.cpp
 		src/logging.cpp
 		src/terms.cpp
+		src/builtins.cpp
 		src/queries.cpp
 		src/Blackboard.cpp
         src/reasoner.cpp

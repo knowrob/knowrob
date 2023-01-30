@@ -7,6 +7,7 @@
  */
 
 #include <knowrob/logging.h>
+#include <knowrob/builtins.h>
 #include <knowrob/Blackboard.h>
 
 #include <memory>
@@ -18,6 +19,7 @@ Blackboard::Blackboard(
 		const std::shared_ptr<QueryResultQueue> &outputQueue,
 		const std::shared_ptr<const Query> &goal)
 		: reasonerManager_(reasonerManager),
+		  builtinEvaluator_(std::make_shared<ManagedReasoner>("builtins", BuiltinEvaluator::get())),
 		  outputQueue_(outputQueue),
 		  goal_(goal)
 {
@@ -147,6 +149,7 @@ void Blackboard::combineAdjacentNodes()
 	//  		`(p1,p2,p3);(p1,p4,p5);(p1,p4,p6)` with redundant goals.
 	//	- TODO: start with the innermost term, and combine generation of disjunctions and conjunctions
 	//           but current graph structure doesn't support this nicely
+	// - FIXME: might be some redundant nodes are generated for builtins
 	//
 	for(auto it = initialNodes_.begin(); it != initialNodes_.end();)
 		createConjunctiveQueries(*(it++));
@@ -345,7 +348,7 @@ void Blackboard::createPipeline( //NOLINT
 			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
 
 	if(n0->predicateType_ == PredicateType::BUILT_IN) {
-		auto builtInReasoner = selectBuiltInReasoner(n0->reasoner_);
+		auto builtInReasoner = selectBuiltInReasoner(n0->phi_, n0->reasoner_);
 		createReasonerPipeline(builtInReasoner, subQuery, pipelineInput, nodeOutput);
 	}
 	else {
@@ -361,14 +364,23 @@ void Blackboard::createPipeline( //NOLINT
 }
 
 std::shared_ptr<ManagedReasoner> Blackboard::selectBuiltInReasoner(
+		const FormulaPtr &phi,
 		const std::set<std::shared_ptr<ManagedReasoner>> &setOfReasoner)
 {
-	// TODO: prefer to use QA framework to evaluate built ins
-	//	- create a special reasoner implemented in C++ that covers some built ins
-	if(setOfReasoner.empty())
+	// prefer to use BuiltinEvaluator
+	if(phi->type() == FormulaType::PREDICATE) {
+		auto p = ((PredicateFormula*)phi.get())->predicate();
+		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
+			return builtinEvaluator_;
+		}
+	}
+	// else pick any from setOfReasoner
+	if(setOfReasoner.empty()) {
 		return {};
-	else
+	}
+	else {
 		return *setOfReasoner.begin();
+	}
 }
 
 void Blackboard::createReasonerPipeline(const std::shared_ptr<ManagedReasoner> &r,

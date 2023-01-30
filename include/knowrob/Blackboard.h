@@ -47,6 +47,7 @@ namespace knowrob {
 		class Stream;
 
 		std::shared_ptr<ReasonerManager> reasonerManager_;
+		std::shared_ptr<ManagedReasoner> builtinEvaluator_;
 		std::shared_ptr<QueryResultQueue> outputQueue_;
 		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
 		std::shared_ptr<QueryResultBroadcaster> inputStream_;
@@ -84,6 +85,7 @@ namespace knowrob {
 									const std::shared_ptr<QueryResultBroadcaster> &nodeOutput);
 
 		std::shared_ptr<ManagedReasoner> selectBuiltInReasoner(
+				const FormulaPtr &phi,
 				const std::set<std::shared_ptr<ManagedReasoner>> &setOfReasoner);
 
 		template<class T> static
