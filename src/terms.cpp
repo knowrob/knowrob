@@ -14,7 +14,12 @@
 #include <knowrob/logging.h>
 #include <knowrob/terms.h>
 
+// macro toggles on *occurs* check in unification
+#define USE_OCCURS_CHECK
+
 using namespace knowrob;
+
+const VariableSet Term::noVariables_ = {};
 
 Term::Term(TermType type)
 : type_(type)
@@ -36,11 +41,17 @@ bool Term::isTop() const
 	return (this == TopTerm::get().get());
 }
 
+bool VariableComparator::operator()(const Variable* const &v0, const Variable* const &v1) const
+{
+	return *v0 < *v1;
+}
 
 Variable::Variable(std::string name)
 : Term(TermType::VARIABLE),
   name_(std::move(name))
-{}
+{
+	variables_.insert(this);
+}
 
 bool Variable::isEqual(const Term& other) const
 {
@@ -83,7 +94,7 @@ Integer32Term::Integer32Term(const int32_t &v)
 ListTerm::ListTerm(const std::vector<TermPtr> &elements)
 : Term(TermType::LIST),
   elements_(elements),
-  isGround_(isGround1())
+  variables_(getVariables1())
 {
 }
 
@@ -95,10 +106,15 @@ bool ListTerm::isEqual(const Term& other) const {
     return true;
 }
 
-bool ListTerm::isGround1() const
+VariableSet ListTerm::getVariables1() const
 {
-	return std::all_of(elements_.begin(), elements_.end(),
-					   [](const TermPtr &x){ return x->isGround(); });
+	VariableSet out;
+	for(auto &arg : elements_) {
+		for(auto &var : arg->getVariables()) {
+			out.insert(var);
+		}
+	}
+	return out;
 }
 		
 std::shared_ptr<ListTerm> ListTerm::nil()
@@ -149,7 +165,7 @@ void OptionList::readOption(const TermPtr &option) {
 		if (p->indicator()->functor() != "=") return;
 		auto keyTerm = p->arguments()[0];
 		auto valTerm = p->arguments()[1];
-		// TODO: rather allow nullary predicate here!
+		// TODO: rather allow nullary predicate here?
 		if (keyTerm->type() != TermType::STRING) return;
 		options_[((StringTerm *) keyTerm.get())->value()] = valTerm;
 	}
@@ -253,7 +269,7 @@ Predicate::Predicate(
 : Term(TermType::PREDICATE),
   indicator_(indicator),
   arguments_(arguments),
-  isGround_(isGround1())
+  variables_(getVariables1())
 {
 }
 
@@ -261,7 +277,7 @@ Predicate::Predicate(const Predicate &other, const Substitution &sub)
 : Term(TermType::PREDICATE),
   indicator_(other.indicator_),
   arguments_(applySubstitution(other.arguments_, sub)),
-  isGround_(isGround1())
+  variables_(getVariables1())
 {
 }
 
@@ -285,10 +301,15 @@ bool Predicate::isEqual(const Term& other) const {
     }
 }
 
-bool Predicate::isGround1() const
+VariableSet Predicate::getVariables1() const
 {
-	return std::all_of(arguments_.begin(), arguments_.end(),
-					   [](const TermPtr &x){ return x->isGround(); });
+	VariableSet out;
+	for(auto &arg : arguments_) {
+		for(auto &var : arg->getVariables()) {
+			out.insert(var);
+		}
+	}
+	return out;
 }
 
 std::vector<TermPtr> Predicate::applySubstitution(
@@ -460,13 +481,12 @@ Unifier::Unifier(const TermPtr &t0, const TermPtr &t1)
 bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 {
 	if(t1->type() == TermType::VARIABLE) {
-		unify(*((Variable*)t1.get()), t0);
+		return unify((Variable*)t1.get(), t0);
 	}
 	else {
 		switch(t0->type()) {
 		case TermType::VARIABLE:
-			unify(*((Variable*)t0.get()), t1);
-			break;
+			return unify((Variable*)t0.get(), t1);
 		case TermType::PREDICATE: {
 			// predicates only unify with other predicates
 			if(t1->type()!=TermType::PREDICATE) {
@@ -480,7 +500,7 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 				return false;
 			}
 			// unify all arguments
-			for(uint32_t i=0; i<p0->indicator()->arity(); ++i) {
+			for(int i=0; i<p0->indicator()->arity(); ++i) {
 				if(!unify(p0->arguments()[i], p1->arguments()[i])) {
 					return false;
 				}
@@ -508,13 +528,19 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 	return true;
 }
 
-bool Unifier::unify(const Variable &var, const TermPtr &t)
+bool Unifier::unify(const Variable *var, const TermPtr &t)
 {
-	// TODO: fail if var *occurs* in t (occurs check)
-	//    - requirement: store set of variables with each term
-	//      to avoid redundant computation, and to enable quick occurs tests.
-	set(var, t);
-	return true;
+#ifdef USE_OCCURS_CHECK
+	if(t->getVariables().find(var) != t->getVariables().end()) {
+		// fail if var *occurs* in t (occurs check)
+		return false;
+	} else {
+#endif
+		set(*var, t);
+		return true;
+#ifdef USE_OCCURS_CHECK
+	}
+#endif
 }
 
 TermPtr Unifier::apply()
@@ -539,9 +565,10 @@ TermPtr Unifier::apply()
 	else if(t0_->type()==TermType::PREDICATE) {
 		// both t0_ and t1_ contain variables, so they are either Variables
 		// or Predicates where an argument contains a variable.
-		// the variable case if covered above so both must be predicates.
-		// TODO: choose the one with less variables?
-		auto *p = (Predicate*)t0_.get();
+		// the variable case is covered above so both must be predicates.
+		auto *p = (Predicate*)(
+				t0_->getVariables().size() < t1_->getVariables().size()?
+				t0_:t1_).get();
 		return p->applySubstitution(*this);
 	}
 	else {
@@ -601,6 +628,7 @@ TEST(terms, lists) {
 
 TEST(terms, unify) {
     auto varX = std::make_shared<Variable>("X");
+	auto varX_2 = std::make_shared<Variable>("X");
     auto varY = std::make_shared<Variable>("Y");
 
     auto x0 = std::make_shared<Predicate>("p", std::vector<TermPtr>{varX});
@@ -608,7 +636,7 @@ TEST(terms, unify) {
     auto x2 = std::make_shared<Predicate>("q", std::vector<TermPtr>{varX});
     auto x3 = std::make_shared<Predicate>("p", std::vector<TermPtr>{varX,varY});
     auto x4 = std::make_shared<Predicate>("p", std::vector<TermPtr>{
-        std::make_shared<Predicate>("p", std::vector<TermPtr>{varX}) });
+        std::make_shared<Predicate>("p", std::vector<TermPtr>{varX_2}) });
     auto x5 = std::make_shared<Predicate>("p", std::vector<TermPtr>{
         std::make_shared<LongTerm>(4) });
 
@@ -617,11 +645,12 @@ TEST(terms, unify) {
     EXPECT_TRUE(Unifier(x0,x1).exists());
     // - instantiation of a variable to a constant
     EXPECT_TRUE(Unifier(x0,x5).exists());
-    // - instantiation of a variable to a term in which the variable occurs
-    //   NOTE: this does not fail because no *occurs* check is performed.
+#ifndef USE_OCCURS_CHECK
+    // - instantiation of a variable to a term in which the variable occurs (without occurs check)
     EXPECT_TRUE(Unifier(x0,x4).exists());
     // for positive examples, the unifier can be applied to get an instance of the input terms
     EXPECT_EQ(*((Term*)x4.get()), *(Unifier(x0,x4).apply()));
+#endif
     EXPECT_EQ(*((Term*)x5.get()), *(Unifier(x0,x5).apply()));
 
     // some negative examples
@@ -632,4 +661,8 @@ TEST(terms, unify) {
     EXPECT_FALSE(Unifier(x0,x3).exists());
     EXPECT_FALSE(Unifier(x1,x3).exists());
     EXPECT_FALSE(Unifier(x2,x3).exists());
+#ifdef USE_OCCURS_CHECK
+	// - occurs check
+	EXPECT_FALSE(Unifier(x0,x4).exists());
+#endif
 }

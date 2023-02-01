@@ -11,6 +11,7 @@
 
 // STD
 #include <list>
+#include <set>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -34,7 +35,22 @@ namespace knowrob {
 		LONG,
 		LIST
 	};
-	
+
+	// forward declaration
+	class Variable;
+
+	/**
+	 * Used to compare variable pointers by value.
+	 */
+	struct VariableComparator {
+		/**
+		 * Compares Variable pointers by value.
+		 */
+		bool operator()(const Variable* const &v0, const Variable* const &v1) const;
+	};
+	// a set of const variable pointers compared by value.
+	using VariableSet = std::set<const Variable*,VariableComparator>;
+
 	/**
 	 * An expression in the querying language.
 	 * Terms are used as components of formulas and are recursively
@@ -79,6 +95,11 @@ namespace knowrob {
 		 * @return true if this term is bound and not compound.
 		 */
 		virtual bool isAtomic() const = 0;
+
+		/**
+		 * @return set of variables of this term.
+		 */
+		virtual const VariableSet& getVariables() = 0;
 		
 		/**
 		 * Write the term into an ostream.
@@ -86,6 +107,7 @@ namespace knowrob {
 		virtual void write(std::ostream& os) const = 0;
 	
 	protected:
+		static const VariableSet noVariables_;
 		const TermType type_;
 
 		virtual bool isEqual(const Term &other) const = 0;
@@ -122,12 +144,16 @@ namespace knowrob {
 		
 		// Override Term
 		bool isAtomic() const override { return false; }
+
+		// Override Term
+		const VariableSet& getVariables() override { return variables_; }
 		
 		// Override Term
 		void write(std::ostream& os) const override;
 
 	protected:
 		const std::string name_;
+		VariableSet variables_;
 
 		// Override Term
 		bool isEqual(const Term &other) const override;
@@ -158,6 +184,9 @@ namespace knowrob {
 		
 		// Override Term
 		bool isAtomic() const override { return true; }
+
+		// Override Term
+		const VariableSet& getVariables() override { return Term::noVariables_; }
 		
 		// Override Term
 		void write(std::ostream& os) const override { os << value_; }
@@ -342,10 +371,13 @@ namespace knowrob {
 		std::shared_ptr<Predicate> applySubstitution(const Substitution &sub) const;
 		
 		// Override Term
-		bool isGround() const override { return isGround_; }
+		bool isGround() const override { return variables_.empty(); }
 		
 		// Override Term
 		bool isAtomic() const override { return false; }
+
+		// Override Term
+		const VariableSet& getVariables() override { return variables_; }
 		
 		// Override Term
 		void write(std::ostream& os) const override;
@@ -353,9 +385,9 @@ namespace knowrob {
 	protected:
 		const std::shared_ptr<PredicateIndicator> indicator_;
 		const std::vector<TermPtr> arguments_;
-		const bool isGround_;
-		
-		bool isGround1() const;
+		const VariableSet variables_;
+
+		VariableSet getVariables1() const;
 		// Override Term
 		bool isEqual(const Term &other) const override;
 		
@@ -427,19 +459,22 @@ namespace knowrob {
 		std::vector<TermPtr>::const_iterator end()   { return elements_.end(); }
 		
 		// Override Term
-		bool isGround() const override { return isGround_; }
+		bool isGround() const override { return variables_.empty(); }
 		
 		// Override Term
 		bool isAtomic() const override { return isNIL(); }
+
+		// Override Term
+		const VariableSet& getVariables() override { return variables_; }
 		
 		// Override Term
 		void write(std::ostream& os) const override;
 	
 	protected:
 		const std::vector<TermPtr> elements_;
-		bool isGround_;
-		
-		bool isGround1() const;
+		const VariableSet variables_;
+
+		VariableSet getVariables1() const;
 		// Override Term
 		bool isEqual(const Term &other) const override;
 	};
@@ -601,7 +636,7 @@ namespace knowrob {
 		bool exists_;
 		
 		bool unify(const TermPtr &t0, const TermPtr &t1);
-		bool unify(const Variable &var, const TermPtr &t);
+		bool unify(const Variable *var, const TermPtr &t);
 	};
 }
 
