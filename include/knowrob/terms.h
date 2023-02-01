@@ -153,7 +153,7 @@ namespace knowrob {
 
 	protected:
 		const std::string name_;
-		VariableSet variables_;
+		const VariableSet variables_;
 
 		// Override Term
 		bool isEqual(const Term &other) const override;

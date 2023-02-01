@@ -48,9 +48,9 @@ bool VariableComparator::operator()(const Variable* const &v0, const Variable* c
 
 Variable::Variable(std::string name)
 : Term(TermType::VARIABLE),
-  name_(std::move(name))
+  name_(std::move(name)),
+  variables_({ this })
 {
-	variables_.insert(this);
 }
 
 bool Variable::isEqual(const Term& other) const
