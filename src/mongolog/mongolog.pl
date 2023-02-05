@@ -435,13 +435,23 @@ mongolog_call(Goal, ContextIn) :-
 	% note that this is important to avoid that Prolog garbage collects the variables!
 	term_keys_variables_(Goal, GlobalVars),
 	merge_options([global_vars(GlobalVars)], ContextIn, Context0),
-	% retrieve scope of inferred facts if requested
-	(   option(solution_scope(_),ContextIn)
-	->  merge_options([user_vars([['v_scope',_]])], Context0, Context)
-	;   Context = Context0
+	% retrieve scope of inferred facts and instantiation of inferred predicates if requested
+	findall([UserVarKey,_], (
+	    ( option(solution_scope(_),ContextIn), UserVarKey='v_scope')
+	;   ( option(predicates(_),ContextIn),     UserVarKey='v_predicates')
+	),  UserVars0),
+	(   UserVars0==[] -> Context = Context0
+	;   merge_options([user_vars(UserVars0)], Context0, Context)
 	),
 	% get the pipeline document
-	mongolog_compile(Goal, pipeline(Doc,Vars), Context),
+	(   option(predicates(_),ContextIn) -> (
+	        % add trace_predicate/1 calls where appropriate
+	        expand_instantiations(Goal, GoalWithInstantiations),
+	        mongolog_compile(GoalWithInstantiations, pipeline(Doc0,Vars), Context),
+	        Doc=[['$set',['v_predicates',array([])]] | Doc0]
+	    )
+	;   mongolog_compile(Goal, pipeline(Doc,Vars), Context)
+	),
 	%
 	option(user_vars(UserVars), Context, []),
 	option(global_vars(GlobalVars), Context, []),
@@ -453,6 +463,10 @@ mongolog_call(Goal, ContextIn) :-
 	%
 	(   option(solution_scope(FScope), Context)
 	->  format_solution_scope_(Context, FScope)
+	;   true
+    ),
+	(   (option(predicates(Predicates), Context),option(user_vars(UserVars), Context))
+	->  memberchk(['v_predicates',Predicates], UserVars)
 	;   true
     ).
 
@@ -781,7 +795,7 @@ compile_expanded_term(List, Doc, Vars, StepVars, Context) :-
 compile_expanded_term(Expanded, Pipeline, V0->V1, StepVars_unique, Context) :-
 	% create inner context
 	merge_options([outer_vars(V0)], Context, InnerContext),
-	% and finall compile expanded terms
+	% and finally compile expanded terms
 	once(step_compile(Expanded, InnerContext, Doc, StepVars)),
 	% merge StepVars with variables in previous steps (V0)
 	list_to_set(StepVars, StepVars_unique),
@@ -823,11 +837,19 @@ step_compile(pragma(Goal), _, [], StepVars) :-
 	StepVars=[],
 	call(Goal).
 
-step_compile(stepvars(_), _, []) :- true.
+step_compile(stepvars(_), _Ctx, []) :- true.
+
+step_compile(trace_predicate(Predicate), Ctx,
+	[['$set', ['v_predicates', ['$concatArrays', array([
+		string('$v_predicates'),
+		array([ Predicate0 ])
+	])]]]]) :-
+	var_key_or_val(Predicate, Ctx, Predicate0).
 
 step_command(user,ask).
 step_command(user,pragma).
 step_command(user,stepvars).
+step_command(user,trace_predicate).
 
 %%
 match_equals(X, Exp, ['$match', ['$expr', ['$eq', array([X,Exp])]]]).
@@ -1262,6 +1284,36 @@ is_expanded_(SourceFile, ReasonerModule) :-
 	mongolog_source_file(SourceFile, RealModule),
 	(RealModule==user ; RealModule==ReasonerModule),
 	!.
+
+%%
+% explicitely do not expand some of the meta predicates
+expand_instantiations((\+ Goal), (\+ Goal)) :- !.
+expand_instantiations(not(Goal), not(Goal)) :- !.
+expand_instantiations(forall(Cond,Action), forall(Cond,Action)) :- !.
+% meta predicates like `,/2`, `call/1`, `once/1`, `->\2` that receive a goal as an argument,
+% and where the goal argument can be expanded.
+% FIXME: findall-family of predicates and instantiations in their goal argument (see blackboard.pl)
+expand_instantiations(Head, Expanded) :-
+	user:predicate_property(Head, meta_predicate(MetaSpecifier)), !,
+	Head =.. [HeadFunctor|Args],
+	MetaSpecifier =.. [_MetaFunctor|Modes],
+	expand_meta_instantiations(Args, Modes, ExpandedArgs),
+	Expanded =..  [HeadFunctor|ExpandedArgs].
+% user defined relations
+expand_instantiations(Head, (Head, trace_predicate(Head))) :-
+    Head =.. [Functor|Args], length(Args,Arity),
+    mongolog_current_predicate(Functor/Arity, relation), !.
+% builtins
+expand_instantiations(Head, Head).
+
+%%
+expand_meta_instantiations([], [], []) :- !.
+expand_meta_instantiations([ArgN|Args], [ModeN|Modes], [Next|Rest]) :-
+	number(ModeN),!, % higher-order argument
+	expand_instantiations(ArgN, Next),
+    expand_meta_instantiations(Args, Modes, Rest).
+expand_meta_instantiations([ArgN|Args], [_|Modes], [ArgN|Rest]) :-
+    expand_meta_instantiations(Args, Modes, Rest).
 
 %% mongolog_expand(+Term, -Expanded) is det.
 %
