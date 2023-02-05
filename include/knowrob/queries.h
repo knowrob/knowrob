@@ -510,6 +510,34 @@ namespace knowrob {
 	};
 
 	/**
+	 * The instantiation of a predicate in a reasoner module.
+	 */
+	class PredicateInstance {
+	public:
+		/**
+		 * @param reasonerModule reasoner module term
+		 * @param predicate a predicate instance
+		 */
+		PredicateInstance(const std::shared_ptr<StringTerm> &reasonerModule,
+						  const std::shared_ptr<Predicate> &predicate)
+		: reasonerModule_(reasonerModule), predicate_(predicate) {}
+
+		/**
+		 * @return reasoner module term
+		 */
+		const std::shared_ptr<StringTerm>& reasonerModule() const { return reasonerModule_; }
+
+		/**
+		 * @return a predicate instance
+		 */
+		const std::shared_ptr<Predicate>& predicate() const { return predicate_; }
+
+	protected:
+		const std::shared_ptr<StringTerm> reasonerModule_;
+		const std::shared_ptr<Predicate> predicate_;
+	};
+
+	/**
 	 * The result of query evaluation.
 	 * A result indicates that the evaluation succeeded, i.e.,
 	 * that a reasoner was able to find an instance of the query that is true.
@@ -517,11 +545,6 @@ namespace knowrob {
 	class QueryResult {
 	public:
 		QueryResult();
-
-		/**
-		 * @param substitution a mapping from variables to terms.
-		 */
-		explicit QueryResult(const SubstitutionPtr &substitution);
 
 		/**
 		 * Copy another result.
@@ -552,6 +575,21 @@ namespace knowrob {
 		 * @return a mapping from variables to terms.
 		 */
 		const SubstitutionPtr& substitution() const { return substitution_; }
+
+		/**
+		 * @param reasonerModule the reasoner module the inferred the instance
+		 * @param instance an instance of a query predicate
+		 */
+		void addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
+						  const std::shared_ptr<Predicate> &predicate);
+
+		/**
+		 * A list of all query predicates that were instantiated to reach
+		 * this solution. Only predicates that appear in the user query are
+		 * included in this list.
+		 * @return instantiated predicates.
+		 */
+		const std::list<PredicateInstance>& predicates() const { return predicates_; }
 
 		/**
 		 * Assigns a time interval to this solution indicating that the solution
@@ -588,6 +626,7 @@ namespace knowrob {
 
 	protected:
 		SubstitutionPtr substitution_;
+		std::list<PredicateInstance> predicates_;
 		std::shared_ptr<TimeInterval> timeInterval_;
 		std::shared_ptr<ConfidenceValue> confidence_;
 		std::optional<const TimeInterval*> o_timeInterval_;

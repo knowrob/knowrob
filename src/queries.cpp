@@ -263,15 +263,9 @@ QueryResult::QueryResult()
 {
 }
 
-QueryResult::QueryResult(const std::shared_ptr<Substitution> &substitution)
-: substitution_(substitution),
-  o_timeInterval_(std::nullopt),
-  o_confidence_(std::nullopt)
-{
-}
-
 QueryResult::QueryResult(const QueryResult &other)
-: substitution_(std::make_shared<Substitution>(*other.substitution_))
+: substitution_(std::make_shared<Substitution>(*other.substitution_)),
+  predicates_(other.predicates_)
 {
 	setTimeInterval(other.timeInterval_);
 	setConfidenceValue(other.confidence_);
@@ -291,6 +285,12 @@ void QueryResult::substitute(const Variable &var, const TermPtr &term)
 bool QueryResult::hasSubstitution(const Variable &var)
 {
 	return substitution_->contains(var);
+}
+
+void QueryResult::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
+							   const std::shared_ptr<Predicate> &predicate)
+{
+	predicates_.emplace_back(reasonerModule, predicate);
 }
 
 void QueryResult::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
@@ -328,6 +328,10 @@ bool QueryResult::combine(const std::shared_ptr<const QueryResult> &other, Rever
 			setConfidenceValue(oldConfidence);
 		});
 	}
+	// merge instantiated predicates
+	predicates_.insert(predicates_.end(),
+					   other->predicates_.begin(),
+					   other->predicates_.end());
 	return true;
 }
 
@@ -355,6 +359,7 @@ bool QueryResult::combineConfidence(const std::shared_ptr<ConfidenceValue> &othe
 {
 	if(otherConfidence) {
 		if(confidence_) {
+			// FIXME: this is not ok if there is dependency between subgoals
 			auto newConfidence = otherConfidence->value() * confidence_->value();
 			setConfidenceValue(std::make_shared<ConfidenceValue>(newConfidence));
 			return true;
@@ -453,18 +458,15 @@ void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
 			// assume both terms unify
 		}
 
+	// include instantiations of partialResult_
+	for (const auto& pi: partialResult_->predicates())
+		solution->addPredicate(pi.reasonerModule(), pi.predicate());
+
 	// combine time intervals
-#if 0
-	auto otherTimeInterval = std::make_shared<TimeInterval>(
-			Range<TimePoint>(2.0,3.0),
-			Range<TimePoint>(std::nullopt,10.0)
-			);
-#else
 	std::shared_ptr<TimeInterval> otherTimeInterval = (
 			partialResult_->timeInterval().has_value() ?
 			partialResult_->timeInterval_ :
 			uninstantiatedQuery_->timeInterval_);
-#endif
 	solution->combineTimeInterval(otherTimeInterval);
 	// ignore solution if time interval is empty
 	if(solution->timeInterval_ && solution->timeInterval_->empty()) return;
@@ -590,7 +592,8 @@ QueryResultStream::Channel::~Channel()
 	close();
 }
 
-std::shared_ptr<QueryResultStream::Channel> QueryResultStream::Channel::create(const std::shared_ptr<QueryResultStream> &stream)
+std::shared_ptr<QueryResultStream::Channel> QueryResultStream::Channel::create(
+		const std::shared_ptr<QueryResultStream> &stream)
 {
 	std::lock_guard<std::mutex> lock(stream->channel_mutex_);
 	if(stream->isOpened()) {
@@ -740,7 +743,7 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 	}
 }
 
-void QueryResultCombiner::genCombinations(
+void QueryResultCombiner::genCombinations( //NOLINT
 		uint32_t pushedChannelID,
 		QueryResultBuffer::iterator it,
 		std::shared_ptr<QueryResult> &combinedResult)
@@ -843,6 +846,13 @@ namespace std {
 			os << "yes";
 		else
 			os << *solution.substitution();
+
+		if(!solution.predicates().empty()) {
+			os << "\nwith:";
+			for(auto &instance : solution.predicates()) {
+				os << '\n' << '\t' << instance.reasonerModule()->value() << ':' << *instance.predicate();
+			}
+		}
 		return os;
 	}
 
