@@ -186,12 +186,86 @@ reasoner_defined_predicate_2(Name, Arity, relation) :-
     \+ user:predicate_property(Head, defined),
     functor(Head, Name, Arity).
 
-%%
+%% reasoner_call(+Goal, +QueryContext) is nondet.
 %
-reasoner_call(Goal, _QueryContext) :-
+% option(instantiations(List)): List is a list of predicate instantations
+%
+reasoner_call(Goal, QueryContext) :-
     % note: PrologReasoner does not support scoped queries
     current_reasoner_module(Reasoner),
-    Reasoner:call(Goal).
+    % record instantiated predicates into a list if requested
+    (   option(predicates(Instantiations), QueryContext)
+    ->  expand_instantiations(Goal, Expanded, Instantiations)
+    ;   Expanded = Goal
+    ),
+    Reasoner:call(Expanded).
+
+%%
+expand_instantiations(Goal, Expanded, Instantiations) :-
+    % use difference lists for O(1) append
+	expand_instantiations1(Goal, Expanded, Instantiations-[]).
+
+expand_instantiations1((Goal0, Goal1), (Expanded0, Expanded1), Xs-Zs) :-
+    % conjunctive query
+	expand_instantiations1(Goal0,Expanded0,Xs-Ys),
+	expand_instantiations1(Goal1,Expanded1,Ys-Zs), !.
+
+expand_instantiations1((Goal0 ; Goal1), (Expanded0 ; Expanded1), Xs-Ys) :-
+    % disjunctive query
+	expand_instantiations1(Goal0,Expanded0,Xs-Ys),
+	expand_instantiations1(Goal1,Expanded1,Xs-Ys), !.
+expand_instantiations1((X0 | X1), Expanded, Xs-Ys) :-
+    expand_instantiations1((X0 ; X1), Expanded, Xs-Ys).
+
+expand_instantiations1(ignore(Goal), once(Expanded ; Xs=Ys), Xs-Ys) :-
+    % special handling for ignore/1 case where there is no solution
+    expand_instantiations1(Goal, Expanded, Xs-Ys), !.
+
+% explicitely not expand some of the meta predicates arguments
+expand_instantiations1((\+ Goal), (\+ Goal, Xs=Ys),   Xs-Ys) :- !.
+expand_instantiations1(not(Goal), (not(Goal), Xs=Ys), Xs-Ys) :- !.
+expand_instantiations1(forall(Cond,Action),
+    (forall(Cond,Action), Xs=Ys), Xs-Ys) :- !.
+
+expand_instantiations1(Head, Expanded, Xs-Ys) :-
+    % meta predicates like `call/1`, `once/1`, `->\2` that receive a goal as an argument,
+    % and where the goal argument can be recursively expanded.
+    % TODO: findall-family of predicates cannot change the list of instantiations in their goal argument.
+    %   in fact, each predicate would need to appear in the pattern of the findall such that it is
+    %   recorded. Hence, findall-family of predicates need in addition a rewriting of the pattern
+    %   argument, adding the list of instantiations. but the meaning would not be clear. and also
+    %   uses of the list would need to be rewritten. seems difficult.
+    %   currently instantations made during the evaluation of findall predicates
+    %   are not included in the Instantiations list.
+	user:predicate_property(Head, defined),
+	user:predicate_property(Head, meta_predicate(MetaSpecifier)), !,
+	expand_meta_instantiations(Head, MetaSpecifier, Expanded, Xs-Ys).
+
+expand_instantiations1(Head, (Head, Xs=Ys), Xs-Ys) :-
+    % predicates defined in the "user" module are seen as builtins
+	user:predicate_property(Head, defined), !.
+
+% if above clauses fail, assume it's a user-defined relation without further checking.
+% make sure the predicate is added to the list of instantiated predicates.
+expand_instantiations1(Head, (Head, Xs=[Head|Ys]), Xs-Ys).
+
+%%
+expand_meta_instantiations(Head, MetaSpecifier, Expanded, Xs-Ys) :-
+	Head =.. [HeadFunctor|Args],
+	MetaSpecifier =.. [_MetaFunctor|Modes],
+	expand_meta_instantiations1(Args, Modes, ExpandedArgs, Xs-Ys),
+	Expanded =..  [HeadFunctor|ExpandedArgs].
+
+%%
+expand_meta_instantiations1([], [], [], Xs-Xs) :- !.
+
+expand_meta_instantiations1([ArgN|Args], [ModeN|Modes], [Next|Rest], Xs-Zs) :-
+	number(ModeN),!, % higher-order argument
+	expand_instantiations1(ArgN,Next,Xs-Ys),
+    expand_meta_instantiations1(Args,Modes,Rest,Ys-Zs).
+
+expand_meta_instantiations1([ArgN|Args], [_|Modes], [ArgN|Rest], Xs-Ys) :-
+    expand_meta_instantiations1(Args,Modes,Rest,Xs-Ys).
 
 %%
 % Assert the collection names to be used by remember/memorize
