@@ -18,6 +18,142 @@
 
 namespace knowrob {
 	/**
+	 * A directed acyclic graph where nodes correspond to steps
+	 * in a reasoning pipeline.
+	 * The meaning of an edge in the graph is that the predecessor
+	 * is evaluated before the successor node, and that instantiations
+	 * done during the evaluation of the predecessor node are provided
+	 * as a parameter for the evaluation of the successor node.
+	 */
+	class ReasoningGraph {
+	public:
+		// forward declaration
+		class Node;
+		// define aliases
+		using NodePtr = std::shared_ptr<Node>;
+		using NodeList = std::list<NodePtr>;
+
+		ReasoningGraph() = default;
+
+		/**
+		 * Adds a node to this graph list of initial nodes.
+		 * @param node a node.
+		 */
+		void addInitialNode(const NodePtr &node);
+
+		/**
+		 * Removes a node from this graph.
+		 * @param node a node.
+		 */
+		void removeNode(const NodePtr &node);
+
+		/**
+		 * Computes the conjunction with another graph.
+		 * @param other another graph.
+		 */
+		void conjunction(const ReasoningGraph &other);
+
+		/**
+		 * Computes the disjunction with another graph.
+		 * @param other another graph.
+		 */
+		void disjunction(const ReasoningGraph &other);
+
+		/**
+		 * Add a directed edge between two nodes.
+		 * @param predecessor the predecessor node.
+		 * @param successor the successor node.
+		 */
+		void addSuccessor(const NodePtr &predecessor, const NodePtr &successor);
+
+		/**
+		 * @return set of initial nodes.
+		 */
+		const NodeList& initialNodes() const { return initialNodes_; }
+
+		/**
+		 * @return set of terminal nodes.
+		 */
+		const NodeList& terminalNodes() const { return terminalNodes_; }
+
+		/**
+		 * A node in an evaluation graph.
+		 */
+		class Node {
+		public:
+			/**
+			 * @param phi a formula to be evaluated
+			 * @param reasoner a reasoner that can evaluate the formula
+			 * @param predicateType a type identifier.
+			 */
+			Node(const std::shared_ptr<Formula> &phi,
+				 const std::shared_ptr<ManagedReasoner> &reasoner,
+				 PredicateType predicateType);
+
+			/**
+			 * @param phi a formula to be evaluated
+			 * @param reasoner a list of reasoner that can evaluate the formula
+			 * @param predicateType a type identifier.
+			 */
+			Node(const std::shared_ptr<Formula> &phi,
+				 const std::set<std::shared_ptr<ManagedReasoner>> &reasonerChoices,
+				 PredicateType predicateType);
+
+			/**
+			 * @param phi a builtin predicate
+			 * @return true if reasoner of this node define given builtin
+			 */
+			bool isBuiltinSupported(const PredicateFormula &phi) const;
+
+			/**
+			 * @param other another node
+			 * @param requiredCapability a capability flag
+			 * @return true if this node can be combined with another via a reasoner capability
+			 */
+			bool canBeCombinedWith(const NodePtr &other, ReasonerCapability requiredCapability);
+
+			/**
+			 * @return the formula associated to this node.
+			 */
+			const std::shared_ptr<Formula>& phi() const { return phi_; }
+
+			/**
+			 * @return the predicate type associated to this node.
+			 */
+			PredicateType predicateType() const { return predicateType_; }
+
+			/**
+			 * @return the reasoner associated to this node.
+			 */
+			const std::set<std::shared_ptr<ManagedReasoner>>& reasonerChoices() { return reasonerChoices_; }
+
+			/**
+			 * @return list of node successors.
+			 */
+			const NodeList& successors() const { return successors_; }
+
+			/**
+			 * @return list of node predecessors.
+			 */
+			const NodeList& predecessors() const { return  predecessors_; }
+
+		protected:
+			std::shared_ptr<Formula> phi_;
+			PredicateType predicateType_;
+			std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices_;
+			std::list<std::shared_ptr<Node>> successors_;
+			std::list<std::shared_ptr<Node>> predecessors_;
+			friend class ReasoningGraph;
+		};
+	protected:
+		NodeList initialNodes_;
+		NodeList terminalNodes_;
+
+		static bool isEdgeNeeded(const NodePtr &a, const NodePtr &b);
+		void addConjunctiveNode(const NodePtr &a, const NodePtr &b);
+	};
+
+	/**
 	 * A board that manages the evaluation of a query.
 	 */
 	class Blackboard {
@@ -41,10 +177,7 @@ namespace knowrob {
 		void start();
 
 	protected:
-		class Node;
-		using NodePtr = std::shared_ptr<Node>;
-		using NodeList = std::list<NodePtr>;
-		class Stream;
+		class Stream; // forward declaration
 
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<ManagedReasoner> builtinEvaluator_;
@@ -54,42 +187,25 @@ namespace knowrob {
 		std::shared_ptr<QueryResultStream::Channel> inputChannel_;
 		std::list<std::shared_ptr<Blackboard::Stream>> reasonerInputs_;
 		std::shared_ptr<const Query> goal_;
-		NodeList initialNodes_;
 
 		/** Stop all reasoning processes attached to segments. */
 		void stop();
 
-		void combineAdjacentNodes();
+		ReasoningGraph decomposeFormula(const std::shared_ptr<Formula> &phi) const;
 
-		void createPipeline(const std::shared_ptr<QueryResultBroadcaster> &inputStream,
-							const std::shared_ptr<QueryResultBroadcaster> &outputStream);
+		ReasoningGraph decomposePredicate(const std::shared_ptr<PredicateFormula> &phi) const;
 
-		void print(const NodePtr &node={});
+		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
+									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);
 
-		static void addSuccessor(const NodePtr &predecessor, const NodePtr &successor);
-		static void removeSuccessor(const NodePtr &predecessor, const NodePtr &successor);
+		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
+									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
+									 const std::shared_ptr<ReasoningGraph::Node> &n0);
 
-		NodeList decomposeFormula(const std::shared_ptr<Formula> &phi, const NodeList &predecessors);
-		NodeList decomposePredicate(const std::shared_ptr<PredicateFormula> &phi, const NodeList &predecessors);
-
-		void createConjunctiveQueries(const std::shared_ptr<Node> &node);
-		void createDisjunctiveQueries(NodeList &node);
-
-		void createPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-							const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
-							const std::shared_ptr<Node> &n0);
-
-		void createReasonerPipeline(const std::shared_ptr<ManagedReasoner> &r,
-									const std::shared_ptr<Query> &subQuery,
-									const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-									const std::shared_ptr<QueryResultBroadcaster> &nodeOutput);
-
-		std::shared_ptr<ManagedReasoner> selectBuiltInReasoner(
-				const FormulaPtr &phi,
-				const std::set<std::shared_ptr<ManagedReasoner>> &setOfReasoner);
-
-		template<class T> static
-		std::shared_ptr<T> createConnectiveFormula(const FormulaPtr &phi1, const FormulaPtr &phi2, FormulaType type);
+		void createReasoningStep(const std::shared_ptr<ManagedReasoner> &managedReasoner,
+								 const std::shared_ptr<Query> &subQuery,
+								 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
+								 const std::shared_ptr<QueryResultBroadcaster> &stepOutput);
 
 		class Stream : public QueryResultStream {
 		public:
@@ -112,23 +228,6 @@ namespace knowrob {
 			std::atomic<bool> isQueryOpened_;
 			std::atomic<bool> hasStopRequest_;
 			void push(const QueryResultPtr &msg) override;
-			friend class Blackboard;
-		};
-
-		class Node {
-		public:
-			Node(const std::shared_ptr<Formula> &phi,
-				 const std::set<std::shared_ptr<ManagedReasoner>> &reasoner,
-				 PredicateType predicateType);
-			Node(const std::shared_ptr<Formula> &phi,
-				 const std::shared_ptr<ManagedReasoner> &reasoner,
-				 PredicateType predicateType);
-		protected:
-			std::shared_ptr<Formula> phi_;
-			PredicateType predicateType_;
-			std::set<std::shared_ptr<ManagedReasoner>> reasoner_;
-			std::list<std::shared_ptr<Node>> successors_;
-			std::list<std::shared_ptr<Node>> predecessors_;
 			friend class Blackboard;
 		};
 	};

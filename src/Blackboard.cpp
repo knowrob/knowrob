@@ -14,293 +14,11 @@
 
 using namespace knowrob;
 
-Blackboard::Blackboard(
-		const std::shared_ptr<ReasonerManager> &reasonerManager,
-		const std::shared_ptr<QueryResultQueue> &outputQueue,
-		const std::shared_ptr<const Query> &goal)
-		: reasonerManager_(reasonerManager),
-		  builtinEvaluator_(std::make_shared<ManagedReasoner>("builtins", BuiltinEvaluator::get())),
-		  outputQueue_(outputQueue),
-		  goal_(goal)
-{
-	// decompose the reasoning task
-	inputStream_ = std::make_shared<QueryResultBroadcaster>();
-	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
-	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
 
-	// create a channel of outputQueue_, and add it as subscriber
-	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
-	outBroadcaster_->addSubscriber(queueChannel);
-
-	decomposeFormula(goal->formula(), NodeList());
-	combineAdjacentNodes();
-	createPipeline(inputStream_, outBroadcaster_);
-}
-
-Blackboard::~Blackboard()
-{
-	stop();
-}
-
-void Blackboard::print(const NodePtr &node) //NOLINT
-{
-	if(node) {
-		if(node->successors_.empty()) {
-			std::string reasonerList;
-			for(auto &r : node->reasoner_) reasonerList += ":"+r->name();
-			KB_INFO("terminal: {} {}", *node->phi_, reasonerList);
-		}
-		for(auto &successor : node->successors_) {
-			KB_INFO("edge: {} -- {}", *node->phi_, *successor->phi_);
-			print(successor);
-		}
-	} else {
-		for(auto &n0 : initialNodes_) {
-			print(n0);
-		}
-	}
-}
-
-void Blackboard::start()
-{
-	// push empty message into in stream, and close the channel
-	inputChannel_->push(QueryResultStream::bos());
-	inputChannel_->close();
-}
-
-void Blackboard::stop()
-{
-	for(auto &inputStream : reasonerInputs_) {
-		inputStream->stop();
-	}
-}
-
-void Blackboard::addSuccessor(const NodePtr &predecessor, const NodePtr &successor)
-{
-	predecessor->successors_.push_back(successor);
-	successor->predecessors_.push_back(predecessor);
-}
-
-void Blackboard::removeSuccessor(const NodePtr &predecessor, const NodePtr &successor)
-{
-	predecessor->successors_.remove(successor);
-	successor->predecessors_.remove(predecessor);
-}
-
-Blackboard::NodeList Blackboard::decomposeFormula( //NOLINT
-		const std::shared_ptr<Formula> &phi, const NodeList &predecessors)
-{
-	switch(phi->type()) {
-		case FormulaType::CONJUNCTION: {
-			NodeList terminalNodes = predecessors;
-			for(const std::shared_ptr<Formula> &psi : ((ConjunctionFormula*)phi.get())->formulae()) {
-				terminalNodes = decomposeFormula(psi, terminalNodes);
-			}
-			return terminalNodes;
-		}
-		case FormulaType::DISJUNCTION: {
-			NodeList terminalNodes;
-			for(const std::shared_ptr<Formula> &psi : ((DisjunctionFormula*)phi.get())->formulae()) {
-				terminalNodes.splice(terminalNodes.end(), decomposeFormula(psi, predecessors));
-			}
-			return terminalNodes;
-		}
-		case FormulaType::PREDICATE: {
-			return decomposePredicate(std::static_pointer_cast<PredicateFormula>(phi), predecessors);
-		}
-		default:
-			KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
-			return {};
-	}
-}
-
-Blackboard::NodeList Blackboard::decomposePredicate(
-		const std::shared_ptr<PredicateFormula> &phi, const NodeList &predecessors)
-{
-	// get ensemble of reasoner
-	auto predicateDescription = reasonerManager_->getPredicateDefinition(
-			phi->predicate()->indicator());
-	if (!predicateDescription || predicateDescription->reasonerEnsemble().empty()) {
-		throw QueryError("no reasoner registered for query `{}`", *phi);
-	}
-
-	NodeList out; {
-		auto newNode = std::make_shared<Node>(phi,
-				predicateDescription->reasonerEnsemble(),
-				predicateDescription->predicateType());
-		if(predecessors.empty()) {
-			initialNodes_.push_back(newNode);
-		}
-		else {
-			for(auto &n : predecessors) {
-				addSuccessor(n,newNode);
-			}
-		}
-		out.push_back(newNode);
-	}
-	return out;
-}
-
-void Blackboard::combineAdjacentNodes()
-{
-	// note: combineAdjacentNodes currently may generate redundant evaluation graph nodes
-	//  - it generates a kind of canonical form e.g. a query
-	//  		`p1,((p2,p3);(p4,(p5;p6)))` may generate a graph representing the query
-	//  		`(p1,p2,p3);(p1,p4,p5);(p1,p4,p6)` with redundant goals.
-	//	- TODO: start with the innermost term, and combine generation of disjunctions and conjunctions
-	//           but current graph structure doesn't support this nicely
-	// - FIXME: might be some redundant nodes are generated for builtins
-	//
-	for(auto it = initialNodes_.begin(); it != initialNodes_.end();)
-		createConjunctiveQueries(*(it++));
-	createDisjunctiveQueries(initialNodes_);
-}
-
-void Blackboard::createConjunctiveQueries( //NOLINT
-		const std::shared_ptr<Node> &node)
-{
-	bool hasSuccessors = !node->successors_.empty();
-	for(auto it = node->successors_.begin(); it !=  node->successors_.end();) {
-		auto successor = *(it++);
-		std::set<std::shared_ptr<ManagedReasoner>> combinableReasoner;
-		// find list of reasoner shared between both nodes that are capable
-		// of evaluating conjunctive queries.
-		std::copy_if(node->reasoner_.begin(), node->reasoner_.end(),
-					 std::inserter(combinableReasoner, combinableReasoner.begin()),
-					 [successor](auto &r){
-			return r->reasoner()->hasCapability(CAPABILITY_CONJUNCTIVE_QUERIES) &&
-					successor->reasoner_.find(r)!=successor->reasoner_.end();
-		});
-		if(combinableReasoner.empty()) {
-			createConjunctiveQueries(successor);
-		}
-		else {
-			// conjunctive query is possible, remove old successor relation
-			removeSuccessor(node, successor);
-
-			// create node for the conjunctive query
-			auto conjunction = createConnectiveFormula<ConjunctionFormula>(
-					node->phi_, successor->phi_, FormulaType::CONJUNCTION);
-			auto conjunctiveNode = std::make_shared<Node>(
-					conjunction, combinableReasoner, PredicateType::FORMULA);
-			if(node->predecessors_.empty()) {
-				initialNodes_.push_front(conjunctiveNode);
-			} else {
-				for(auto &x : node->predecessors_)
-					addSuccessor(x, conjunctiveNode);
-			}
-			for(auto &x : successor->successors_)
-				addSuccessor(conjunctiveNode, x);
-			createConjunctiveQueries(conjunctiveNode);
-
-			// handle case that not all reasoner of node can be combined with the successor
-			if(combinableReasoner.size() < node->reasoner_.size()) {
-				// get set of reasoner without combinableReasoner
-				std::set<std::shared_ptr<ManagedReasoner>> remainderReasoner;
-				std::copy_if(node->reasoner_.begin(), node->reasoner_.end(),
-							 std::inserter(remainderReasoner, remainderReasoner.begin()),
-							 [combinableReasoner](auto &r){
-								 return combinableReasoner.find(r)==combinableReasoner.end();
-							 });
-				// create remainder node
-				auto remainderNode = std::make_shared<Node>(
-						node->phi_, remainderReasoner, node->predicateType_);
-				if(node->predecessors_.empty()) {
-					initialNodes_.push_front(remainderNode);
-				} else {
-					for(auto &x : node->predecessors_)
-						addSuccessor(x, remainderNode);
-				}
-				addSuccessor(remainderNode, successor);
-				createConjunctiveQueries(successor);
-			}
-		}
-	}
-	if(hasSuccessors && node->successors_.empty()) {
-		// all successors have been merged into a conjunctive query above
-		if(node->predecessors_.empty()) {
-			// node was an initial node
-			initialNodes_.remove(node);
-		}
-		else {
-			// also remove node as successor for all of its predecessors
-			// note: dangling node is deleted automatically thanks to smart pointer.
-			for(auto it = node->predecessors_.begin(); it != node->predecessors_.end();) {
-				removeSuccessor(*(it++), node);
-			}
-		}
-	}
-}
-
-void Blackboard::createDisjunctiveQueries(NodeList &successors)
-{
-	if(successors.size()>1) {
-		// iterate over all alternatives, and find other alternatives that use the same reasoner
-		for(auto it1 = successors.begin(); it1 !=  successors.end();) {
-			auto &node = *(it1++);
-
-			// go through each reasoner of node
-			for(auto jt1 = node->reasoner_.begin(); jt1 != node->reasoner_.end();) {
-				auto successorReasoner = *(jt1++);
-				auto disjunction = node->phi_;
-				std::set<NodePtr> disjunctionPredecessors, disjunctionSuccessors;
-
-				// find other alternatives that share the reasoner
-				for(auto it2 = it1; it2 !=  successors.end();) {
-					auto &otherNode = *(it2++);
-					auto needle = otherNode->reasoner_.find(successorReasoner);
-					if(needle != otherNode->reasoner_.end()) {
-						// otherNode can be merged with node
-						// remove reasoner from otherNode
-						otherNode->reasoner_.erase(needle);
-						// add argument to disjunction term
-						disjunction = createConnectiveFormula<DisjunctionFormula>(
-								disjunction, otherNode->phi_, FormulaType::DISJUNCTION);
-						// remember predecessors and successors of otherSuccessor
-						disjunctionPredecessors.insert(otherNode->predecessors_.begin(), otherNode->predecessors_.end());
-						disjunctionSuccessors.insert(otherNode->successors_.begin(), otherNode->successors_.end());
-					}
-				}
-
-				if(disjunction != node->phi_) {
-					// some nodes were merged
-					// reasoner can be removed from node
-					node->reasoner_.erase(successorReasoner);
-					// make sure node predecessors and successors are included
-					disjunctionPredecessors.insert(node->predecessors_.begin(), node->predecessors_.end());
-					disjunctionSuccessors.insert(node->successors_.begin(), node->successors_.end());
-
-					auto disjunctiveNode = std::make_shared<Node>(
-							disjunction, successorReasoner, PredicateType::FORMULA);
-					if(disjunctionPredecessors.empty()) {
-						initialNodes_.push_front(disjunctiveNode);
-					} else {
-						for(auto &x : disjunctionPredecessors) {
-							x->successors_.push_front(disjunctiveNode);
-							disjunctiveNode->predecessors_.push_back(x);
-						}
-					}
-					for(auto &x : disjunctionSuccessors)
-						addSuccessor(disjunctiveNode, x);
-				}
-			}
-		}
-	}
-
-	// remove all option without reasoner assigned
-	for(auto it1 = successors.begin(); it1 !=  successors.end();) {
-		auto &successor = *(it1++);
-		if(successor->reasoner_.empty()) {
-			successors.remove(successor);
-		}
-	}
-
-	// TODO: proceed for successors recursively
-}
-
-template<class T> std::shared_ptr<T> Blackboard::createConnectiveFormula(
+template<class T> std::shared_ptr<T> createConnectiveFormula(
 		const FormulaPtr &phi1, const FormulaPtr &phi2, FormulaType type)
 {
+	// attempt to merge if phi1 or phi2 is already a connective formula of the given type
 	if(phi1->type() == type) {
 		auto *c1 = (T*)phi1.get();
 		if(phi2->type() == type) {
@@ -329,91 +47,356 @@ template<class T> std::shared_ptr<T> Blackboard::createConnectiveFormula(
 	}
 }
 
-void Blackboard::createPipeline(const std::shared_ptr<QueryResultBroadcaster> &inputStream,
-								const std::shared_ptr<QueryResultBroadcaster> &outputStream)
+
+ReasoningGraph::Node::Node(
+		const std::shared_ptr<Formula> &phi,
+		const std::shared_ptr<ManagedReasoner> &reasoner,
+		PredicateType predicateType)
+: phi_(phi),
+  predicateType_(predicateType),
+  reasonerChoices_({ reasoner })
 {
-	for(auto &n0 : initialNodes_)
-		createPipeline(inputStream, outputStream, n0);
 }
 
-void Blackboard::createPipeline( //NOLINT
-		const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-		const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
-		const std::shared_ptr<Node> &n0)
+ReasoningGraph::Node::Node(
+		const std::shared_ptr<Formula> &phi,
+		const std::set<std::shared_ptr<ManagedReasoner>> &reasonerChoices,
+		PredicateType predicateType)
+: phi_(phi),
+  predicateType_(predicateType),
+  reasonerChoices_(reasonerChoices)
 {
-	// create a subquery for the predicate p
-	std::shared_ptr<Query> subQuery = std::make_shared<Query>(n0->phi_);
-	// create an output stream for this node
-	std::shared_ptr<QueryResultBroadcaster> nodeOutput = (n0->successors_.empty() ?
-			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
+}
 
-	if(n0->predicateType_ == PredicateType::BUILT_IN) {
-		auto builtInReasoner = selectBuiltInReasoner(n0->phi_, n0->reasoner_);
-		createReasonerPipeline(builtInReasoner, subQuery, pipelineInput, nodeOutput);
+bool ReasoningGraph::Node::canBeCombinedWith(
+		const NodePtr &other, ReasonerCapability requiredCapability)
+{
+	for(auto &r1 : reasonerChoices_) {
+		// reasoner must support the capability
+		// and other node must have the same reasoner choice
+		if(r1->reasoner()->hasCapability(requiredCapability) &&
+		   other->reasonerChoices_.find(r1) != other->reasonerChoices_.end())
+			return true;
+	}
+	return false;
+}
+
+bool ReasoningGraph::Node::isBuiltinSupported(const PredicateFormula &phi) const
+{
+	for(auto &r1 : reasonerChoices_) {
+		if(r1->reasoner()->getPredicateDescription(phi.predicate()->indicator()) != nullptr)
+			return true;
+	}
+	return false;
+}
+
+
+void ReasoningGraph::addInitialNode(const NodePtr &node)
+{
+	initialNodes_.push_back(node);
+	if(node->successors_.empty()) {
+		terminalNodes_.push_back(node);
+	}
+}
+
+void ReasoningGraph::removeNode(const NodePtr &node)
+{
+	if(node->predecessors_.empty()) {
+		initialNodes_.remove(node);
 	}
 	else {
-		// add a node in communication graph for each reasoner in list
-		for(auto &r : n0->reasoner_)
-			createReasonerPipeline(r, subQuery, pipelineInput, nodeOutput);
+		for(auto &predecessor : node->predecessors_) {
+			predecessor->successors_.remove(node);
+			if(node->successors_.empty()) terminalNodes_.push_back(predecessor);
+		}
+		node->predecessors_.clear();
 	}
 
-	// continue for successors
-	for(auto &successor : n0->successors_) {
-		createPipeline(nodeOutput, pipelineOutput, successor);
+	if(node->successors_.empty()) {
+		terminalNodes_.remove(node);
+	}
+	else {
+		for(auto &successor : node->successors_) {
+			successor->predecessors_.remove(node);
+			if(node->predecessors_.empty()) initialNodes_.push_back(successor);
+		}
+		node->successors_.clear();
 	}
 }
 
-std::shared_ptr<ManagedReasoner> Blackboard::selectBuiltInReasoner(
-		const FormulaPtr &phi,
-		const std::set<std::shared_ptr<ManagedReasoner>> &setOfReasoner)
+void ReasoningGraph::addSuccessor(const NodePtr &predecessor, const NodePtr &successor)
 {
-	// prefer to use BuiltinEvaluator
-	if(phi->type() == FormulaType::PREDICATE) {
-		auto p = ((PredicateFormula*)phi.get())->predicate();
-		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
-			return builtinEvaluator_;
+	if(predecessor->successors_.empty()) terminalNodes_.remove(predecessor);
+	if(successor->predecessors_.empty()) initialNodes_.remove(successor);
+
+	predecessor->successors_.push_back(successor);
+	successor->predecessors_.push_back(predecessor);
+}
+
+void ReasoningGraph::disjunction(const ReasoningGraph &other)
+{
+	// gather initial nodes of this graph without successors
+	std::list<NodePtr> simpleNodes;
+	for(auto &node1 : initialNodes_) {
+		if(node1->successors_.empty()) simpleNodes.push_back(node1);
+	}
+	// iterate over initial nodes of the other graph.
+	// if the node has no successors it may be combinable into a disjunctive query
+	// with a node in simpleNodes.
+	for(auto &node2 : other.initialNodes())
+	{
+		if(node2->successors_.empty()) {
+			bool hasNode = false;
+			for(auto &simple1 : simpleNodes)
+			{
+				if(simple1->canBeCombinedWith(node2, CAPABILITY_DISJUNCTIVE_QUERIES))
+				{
+					std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices;
+					for(auto &reasonerChoice : node2->reasonerChoices_)
+						if(simple1->reasonerChoices_.find(reasonerChoice) != simple1->reasonerChoices_.end())
+							reasonerChoices.insert(reasonerChoice);
+
+					auto phi = createConnectiveFormula<DisjunctionFormula>(
+							simple1->phi_, node2->phi_, FormulaType::DISJUNCTION);
+					auto disjunctiveNode = std::make_shared<Node>(
+							phi, reasonerChoices, PredicateType::FORMULA);
+					initialNodes_.remove(simple1);
+					initialNodes_.push_back(disjunctiveNode);
+					simpleNodes.remove(simple1);
+					simpleNodes.push_back(disjunctiveNode);
+					hasNode = true;
+					break;
+				}
+			}
+			if(hasNode) continue;
+		}
+		initialNodes_.push_back(node2);
+	}
+}
+
+void ReasoningGraph::conjunction(const ReasoningGraph &other)
+{
+	// create a copy of terminal nodes list as it is modified below
+	auto terminals = terminalNodes();
+	// look at each pair of terminal node of this, and initial node of the other graph.
+	// if possible, create a conjunctive query node, else add edges between the
+	// nodes to connect both graphs.
+	for(auto &terminal1 : terminals)
+	{
+		for(auto &initial2 : other.initialNodes())
+		{
+			if(terminal1->canBeCombinedWith(initial2, CAPABILITY_CONJUNCTIVE_QUERIES)) {
+				// create a conjunctive node (terminal1 AND initial2)
+				addConjunctiveNode(terminal1, initial2);
+			}
+			else if(isEdgeNeeded(terminal1, initial2)) {
+				// terminal1 and initial2 cannot be combined via conjunction.
+				// but it could be that one of the nodes refers to a builtin
+				// in which case the edge is omittable for some cases.
+				addSuccessor(terminal1, initial2);
+			}
+		}
+		// remove dangling node in this graph, i.e. terminal nodes not connected
+		// to the other graph.
+		// NOTE: dangling nodes in the other graph are not referred to in this graph, so can be ignored
+		if(terminal1->successors_.empty()) removeNode(terminal1);
+	}
+}
+
+void ReasoningGraph::addConjunctiveNode(const NodePtr &a, const NodePtr &b)
+{
+	std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices;
+	for(auto &r1 : a->reasonerChoices_)
+		if(b->reasonerChoices_.find(r1) != b->reasonerChoices_.end()) reasonerChoices.insert(r1);
+	// create a conjunctive node
+	auto phi = createConnectiveFormula<ConjunctionFormula>(
+			a->phi_, b->phi_, FormulaType::CONJUNCTION);
+	auto conjunctiveNode = std::make_shared<Node>(
+			phi, reasonerChoices, PredicateType::FORMULA);
+
+	// connect the node to the rest of the graph
+	if(a->predecessors_.empty()) {
+		initialNodes_.push_back(conjunctiveNode);
+	} else {
+		for(auto &x : a->predecessors_)
+			addSuccessor(x,conjunctiveNode);
+	}
+	if(b->successors_.empty()) {
+		terminalNodes_.push_back(conjunctiveNode);
+	} else {
+		for(auto &x : b->successors_)
+			addSuccessor(conjunctiveNode, x);
+	}
+}
+
+bool ReasoningGraph::isEdgeNeeded(const NodePtr &a, const NodePtr &b)
+{
+	if(a->predicateType_ == PredicateType::BUILT_IN) {
+		// no edge needed if phi_a is a builtin supported by reasoner_b
+		if(b->isBuiltinSupported(*(PredicateFormula*)a->phi_.get()))
+				return false;
+	}
+	if(b->predicateType_ == PredicateType::BUILT_IN) {
+		// no edge needed if phi_b is a builtin supported by reasoner_a
+		if(a->isBuiltinSupported(*(PredicateFormula*)b->phi_.get()))
+			return false;
+	}
+	return true;
+}
+
+
+Blackboard::Blackboard(
+		const std::shared_ptr<ReasonerManager> &reasonerManager,
+		const std::shared_ptr<QueryResultQueue> &outputQueue,
+		const std::shared_ptr<const Query> &goal)
+		: reasonerManager_(reasonerManager),
+		  builtinEvaluator_(std::make_shared<ManagedReasoner>("builtins", BuiltinEvaluator::get())),
+		  outputQueue_(outputQueue),
+		  goal_(goal)
+{
+	// decompose the reasoning task
+	inputStream_ = std::make_shared<QueryResultBroadcaster>();
+	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
+	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
+
+	// create a channel of outputQueue_, and add it as subscriber
+	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
+	outBroadcaster_->addSubscriber(queueChannel);
+
+	createReasoningPipeline(inputStream_, outBroadcaster_);
+}
+
+Blackboard::~Blackboard()
+{
+	stop();
+}
+
+void Blackboard::start()
+{
+	// push empty message into in stream, and close the channel
+	inputChannel_->push(QueryResultStream::bos());
+	inputChannel_->close();
+}
+
+void Blackboard::stop()
+{
+	for(auto &inputStream : reasonerInputs_) {
+		inputStream->stop();
+	}
+}
+
+ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi) const //NOLINT
+{
+	switch(phi->type()) {
+		case FormulaType::CONJUNCTION: {
+			auto args = ((ConjunctionFormula*)phi.get())->formulae();
+			auto graph(decomposeFormula(args[0]));
+			for(int i=1; i<args.size(); ++i) {
+				graph.conjunction(decomposeFormula(args[i]));
+			}
+			return graph;
+		}
+		case FormulaType::DISJUNCTION: {
+			auto args = ((DisjunctionFormula*)phi.get())->formulae();
+			auto graph(decomposeFormula(args[0]));
+			for(int i=1; i<args.size(); ++i) {
+				graph.disjunction(decomposeFormula(args[i]));
+			}
+			return graph;
+		}
+		case FormulaType::PREDICATE: {
+			return decomposePredicate(std::static_pointer_cast<PredicateFormula>(phi));
+		}
+		default:
+			KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
+			return {};
+	}
+}
+
+ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<PredicateFormula> &phi) const
+{
+	// get ensemble of reasoner
+	auto predicateDescription = reasonerManager_->getPredicateDefinition(
+			phi->predicate()->indicator());
+	if (!predicateDescription || predicateDescription->reasonerEnsemble().empty()) {
+		throw QueryError("no reasoner registered for query `{}`", *phi);
+	}
+
+	ReasoningGraph out; {
+		if(predicateDescription->predicateType() == PredicateType::BUILT_IN) {
+			// builtins are not evaluated wrt. to the database, all options
+			// to evaluate one can be collapsed into a single node.
+			// FIXME: introduce a notion of meta predicates, they are currently
+			//   seen as builtins here, and it is ignored if their higher-order argument
+			//   is a database predicate or not, which may cause incomplete results.
+			//   for a meta predicate with database predicate each option of evaluation
+			//   should be added instead.
+			auto newNode = std::make_shared<ReasoningGraph::Node>(
+					phi, predicateDescription->reasonerEnsemble(),
+					predicateDescription->predicateType());
+			out.addInitialNode(newNode);
+		}
+		else {
+			for(auto &r : predicateDescription->reasonerEnsemble()) {
+				auto newNode = std::make_shared<ReasoningGraph::Node>(
+						phi, r, predicateDescription->predicateType());
+				out.addInitialNode(newNode);
+			}
 		}
 	}
-	// else pick any from setOfReasoner
-	if(setOfReasoner.empty()) {
-		return {};
+	return out;
+}
+
+void Blackboard::createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &inputStream,
+										 const std::shared_ptr<QueryResultBroadcaster> &outputStream)
+{
+	auto graph = decomposeFormula(goal_->formula());
+	for(auto &n0 : graph.initialNodes())
+		createReasoningPipeline(inputStream, outputStream, n0);
+}
+
+void Blackboard::createReasoningPipeline( //NOLINT
+		const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
+		const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
+		const std::shared_ptr<ReasoningGraph::Node> &n0)
+{
+	// create a subquery for the predicate p
+	std::shared_ptr<Query> subQuery = std::make_shared<Query>(n0->phi());
+	// create an output stream for this node
+	std::shared_ptr<QueryResultBroadcaster> nodeOutput = (n0->successors().empty() ?
+			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
+
+	auto n0_reasoner = *n0->reasonerChoices().begin();
+	if(n0->predicateType() == PredicateType::BUILT_IN) {
+		// prefer to use BuiltinEvaluator
+		auto p = ((PredicateFormula*)n0->phi().get())->predicate();
+		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
+			n0_reasoner = builtinEvaluator_;
+		}
 	}
-	else {
-		return *setOfReasoner.begin();
+	createReasoningStep(n0_reasoner, subQuery, pipelineInput, nodeOutput);
+
+	// continue for successors
+	for(auto &successor : n0->successors()) {
+		createReasoningPipeline(nodeOutput, pipelineOutput, successor);
 	}
 }
 
-void Blackboard::createReasonerPipeline(const std::shared_ptr<ManagedReasoner> &r,
-										const std::shared_ptr<Query> &subQuery,
-										const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-										const std::shared_ptr<QueryResultBroadcaster> &nodeOutput)
+void Blackboard::createReasoningStep(const std::shared_ptr<ManagedReasoner> &r,
+									 const std::shared_ptr<Query> &subQuery,
+									 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
+									 const std::shared_ptr<QueryResultBroadcaster> &stepOutput)
 {
 	std::shared_ptr<Blackboard::Stream> reasonerIn;
 	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
 	// create IO channels
-	reasonerOutChan = QueryResultStream::Channel::create(nodeOutput);
+	reasonerOutChan = QueryResultStream::Channel::create(stepOutput);
 	reasonerIn = std::make_shared<Blackboard::Stream>(
 			r,reasonerOutChan, subQuery);
 	reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
-	pipelineInput->addSubscriber(reasonerInChan);
+	stepInput->addSubscriber(reasonerInChan);
 	// create a new segment
 	reasonerInputs_.push_back(reasonerIn);
-}
-
-
-Blackboard::Node::Node(const std::shared_ptr<Formula> &phi,
-					   const std::set<std::shared_ptr<ManagedReasoner>> &reasoner,
-					   PredicateType predicateType)
-		: phi_(phi), reasoner_(reasoner), predicateType_(predicateType)
-{
-}
-
-Blackboard::Node::Node(const std::shared_ptr<Formula> &phi,
-					   const std::shared_ptr<ManagedReasoner> &reasoner,
-					   PredicateType predicateType)
-		: phi_(phi), predicateType_(predicateType)
-{
-	reasoner_.insert(reasoner);
 }
 
 
