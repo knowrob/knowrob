@@ -244,8 +244,8 @@ namespace knowrob {
 			Request request_;
 			bool sendEOS_;
 
-			term_t createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScope);
-			term_t createContextTerm(term_t solutionScope);
+			term_t createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScopeVar, term_t predicatesVar);
+			term_t createContextTerm(term_t solutionScopeVar, term_t predicatesVar);
 
 			static void setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope);
 

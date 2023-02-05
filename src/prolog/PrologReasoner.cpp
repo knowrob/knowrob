@@ -240,6 +240,7 @@ std::shared_ptr<PredicateDescription> PrologReasoner::getPredicateDescription(
 	static auto current_predicate_f = std::make_shared<PredicateIndicator>(
 			"reasoner_defined_predicate", 2);
 
+	// TODO: rather cache predicate descriptions centrally for all reasoner
 	auto it = predicateDescriptions_.find(*indicator);
 	if(it != predicateDescriptions_.end()) {
 		return it->second;
@@ -624,12 +625,16 @@ bool PrologReasoner::Runner::createIntervalDict(term_t intervalDict, const Fuzzy
 	return PL_put_dict(intervalDict, 0,numRangeKeys, rangeKeys, rangeValues);
 }
 
-term_t PrologReasoner::Runner::createContextTerm(term_t solutionScopeVar)
+term_t PrologReasoner::Runner::createContextTerm(
+		term_t solutionScopeVar, term_t predicatesVar)
 {
 	static const auto time_key = PL_new_atom("time");
 	static const auto confidence_key = PL_new_atom("confidenceInterval");
+
 	static const auto query_scope_f = PL_new_functor(PL_new_atom("query_scope"), 1);
 	static const auto solution_scope_f = PL_new_functor(PL_new_atom("solution_scope"), 1);
+	static const auto predicates_f = PL_new_functor(PL_new_atom("predicates"), 1);
+
 	auto &timeInterval = request_.queryInstance->timeInterval();
 	auto &confidenceInterval = request_.queryInstance->confidenceInterval();
 
@@ -674,10 +679,19 @@ term_t PrologReasoner::Runner::createContextTerm(term_t solutionScopeVar)
 		return (term_t)0;
 	}
 
+	// option: predicates(predicatesVar)
+	auto predicatesOption = PL_new_term_ref();
+	if(!PL_cons_functor(predicatesOption, predicates_f, predicatesVar) ||
+	   !PL_cons_list(listTerm, predicatesOption, listTerm))
+	{
+		return (term_t)0;
+	}
+
 	return listTerm;
 }
 
-term_t PrologReasoner::Runner::createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScopeVar)
+term_t PrologReasoner::Runner::createQueryArgumentTerms(
+		PrologQuery &pl_goal, term_t solutionScopeVar, term_t predicatesVar)
 {
 	static const auto reasoner_module_a = PL_new_atom("reasoner_module");
 	static const auto b_setval_f = PL_new_functor(PL_new_atom("b_setval"), 2);
@@ -700,7 +714,7 @@ term_t PrologReasoner::Runner::createQueryArgumentTerms(PrologQuery &pl_goal, te
 		// construct arguments for call/2 predicate
 		auto call_args = PL_new_term_refs(2);
 		if(!PL_put_term(call_args, pl_goal.pl_query()) ||
-		   !PL_put_term(call_args+1, createContextTerm(solutionScopeVar)) ||
+		   !PL_put_term(call_args+1, createContextTerm(solutionScopeVar,predicatesVar)) ||
 		   !PL_cons_functor_v(query_args+1, call_f, call_args))
 		{
 			return (term_t)0;
@@ -782,7 +796,8 @@ void PrologReasoner::Runner::run()
 	// construct two arguments: `b_setval(reasoner_module, $request_.queryModule)` and `$request_.goal`
 	PrologQuery pl_goal(request_.goal);
 	auto solution_scope  = PL_new_term_ref();
-	auto query_args = createQueryArgumentTerms(pl_goal, solution_scope);
+	auto instantiations  = PL_new_term_ref();
+	auto query_args = createQueryArgumentTerms(pl_goal, solution_scope, instantiations);
 	if(query_args==(term_t)0) {
 		KB_WARN("failed to construct Prolog query `{}`.", *request_.goal);
 		stop(false);
@@ -812,6 +827,16 @@ void PrologReasoner::Runner::run()
 		for(const auto& kv: pl_goal.vars()) {
 			// TODO: what about var-var substitutions? they might need some special handling...
 			solution->substitute(Variable(kv.first), PrologQuery::constructTerm(kv.second));
+		}
+		// store instantiations of predicates
+		if(PL_is_list(instantiations)){
+			auto head = PL_new_term_ref(); /* the elements */
+			auto list = PL_copy_term_ref(instantiations);
+			while(PL_get_list(list, head, list)) {
+				auto t = PrologQuery::constructTerm(head);
+				solution->addPredicate(reasoner_->reasonerIDTerm_,
+									   std::static_pointer_cast<Predicate>(t));
+			}
 		}
 		// set the solution scope, if reasoner specified it
 		setSolutionScope(solution, solution_scope);
