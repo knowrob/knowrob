@@ -112,7 +112,7 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
 		src/logging.cpp
-		src/BuiltinEvaluator.cpp
+        src/reasoner/BuiltinEvaluator.cpp
 		src/DependencyGraph.cpp
 		src/ReasoningGraph.cpp
 		src/Blackboard.cpp
