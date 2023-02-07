@@ -13,9 +13,9 @@
 // gtest
 #include <gtest/gtest.h>
 // KnowRob
-#include <knowrob/logging.h>
-#include <knowrob/prolog/PrologQuery.h>
-#include <knowrob/prolog/logging.h>
+#include "knowrob/logging.h"
+#include "knowrob/reasoner/prolog/PrologQuery.h"
+#include "knowrob/reasoner/prolog/logging.h"
 
 using namespace knowrob;
 

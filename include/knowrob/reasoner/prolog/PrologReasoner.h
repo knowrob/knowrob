@@ -18,10 +18,10 @@
 // gtest
 #include <gtest/gtest.h>
 // KnowRob
-#include <knowrob/ThreadPool.h>
+#include "knowrob/ThreadPool.h"
 #include "knowrob/terms/Term.h"
-#include <knowrob/LogicProgramReasoner.h>
-#include <knowrob/prolog/PrologQuery.h>
+#include "knowrob/LogicProgramReasoner.h"
+#include "PrologQuery.h"
 
 namespace knowrob {
 	/**

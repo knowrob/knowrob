@@ -14,17 +14,17 @@
 // GTEST
 #include <gtest/gtest.h>
 // KnowRob
-#include <knowrob/knowrob.h>
-#include <knowrob/logging.h>
-#include <knowrob/reasoner.h>
-#include <knowrob/prolog/PrologReasoner.h>
-#include <knowrob/prolog/logging.h>
-#include <knowrob/prolog/algebra.h>
-#include <knowrob/terms/ListTerm.h>
-#include <knowrob/terms/OptionList.h>
-#include <knowrob/terms/Bottom.h>
-#include <knowrob/queries/QueryResultQueue.h>
-#include <knowrob/queries/QueryError.h>
+#include "knowrob/knowrob.h"
+#include "knowrob/logging.h"
+#include "knowrob/reasoner.h"
+#include "knowrob/reasoner/prolog/PrologReasoner.h"
+#include "knowrob/reasoner/prolog/logging.h"
+#include "knowrob/reasoner/prolog/algebra.h"
+#include "knowrob/terms/ListTerm.h"
+#include "knowrob/terms/OptionList.h"
+#include "knowrob/terms/Bottom.h"
+#include "knowrob/queries/QueryResultQueue.h"
+#include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
 

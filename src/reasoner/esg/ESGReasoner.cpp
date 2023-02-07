@@ -9,8 +9,8 @@
 // STD
 #include <memory>
 // KnowRob
-#include <knowrob/esg/ESGReasoner.h>
-#include <knowrob/reasoner.h>
+#include "knowrob/reasoner/esg/ESGReasoner.h"
+#include "knowrob/reasoner.h"
 
 using namespace knowrob;
 

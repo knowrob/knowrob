@@ -7,8 +7,8 @@
  */
 
 // KnowRob
-#include <knowrob/swrl/SWRLReasoner.h>
-#include <knowrob/reasoner.h>
+#include "knowrob/reasoner/swrl/SWRLReasoner.h"
+#include "knowrob/reasoner.h"
 
 /*
 	- TODO: make swrl configurable for mongolog

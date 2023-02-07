@@ -13,8 +13,8 @@
 #include <memory>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include <knowrob/IReasoner.h>
-#include <knowrob/prolog/PrologReasoner.h>
+#include "knowrob/IReasoner.h"
+#include "knowrob/reasoner/prolog/PrologReasoner.h"
 
 namespace knowrob {
 	class MongologReasoner : public PrologReasoner {

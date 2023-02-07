@@ -144,13 +144,13 @@ add_library(knowrob_qa SHARED
 		src/queries/QueryResultQueue.cpp
 		src/queries/QueryResultCombiner.cpp
 		src/queries/QueryResultBroadcaster.cpp
-		src/prolog/PrologQuery.cpp
-		src/prolog/PrologReasoner.cpp
-		src/prolog/logging.cpp
-		src/prolog/algebra.cpp
-		src/mongolog/MongologReasoner.cpp
-		src/swrl/SWRLReasoner.cpp
-		src/esg/ESGReasoner.cpp)
+		src/reasoner/prolog/PrologQuery.cpp
+		src/reasoner/prolog/PrologReasoner.cpp
+		src/reasoner/prolog/logging.cpp
+		src/reasoner/prolog/algebra.cpp
+		src/reasoner/mongolog/MongologReasoner.cpp
+		src/reasoner/swrl/SWRLReasoner.cpp
+		src/reasoner/esg/ESGReasoner.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
@@ -231,5 +231,5 @@ target_link_libraries(all_gtests
 #install(DIRECTORY prolog/
 #		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
 
-install(DIRECTORY src/prolog DESTINATION share
+install(DIRECTORY src/reasoner/prolog DESTINATION share
 		PATTERN ".cpp" EXCLUDE)

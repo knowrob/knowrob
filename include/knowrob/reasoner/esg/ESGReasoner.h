@@ -10,7 +10,7 @@
 #define KNOWROB_ESGREASONER_H
 
 // KnowRob
-#include <knowrob/prolog/PrologReasoner.h>
+#include "knowrob/reasoner/prolog/PrologReasoner.h"
 
 namespace knowrob {
 
