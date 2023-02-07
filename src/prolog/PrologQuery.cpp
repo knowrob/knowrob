@@ -8,6 +8,10 @@
 
 #include <knowrob/logging.h>
 #include <knowrob/prolog/PrologQuery.h>
+#include <knowrob/queries/QueryError.h>
+#include <knowrob/formulas/PredicateFormula.h>
+#include <knowrob/formulas/Conjunction.h>
+#include <knowrob/formulas/Disjunction.h>
 
 using namespace knowrob;
 
