@@ -10,8 +10,12 @@
 #include <memory>
 // KnowRob
 #include <knowrob/esg/ESGReasoner.h>
+#include <knowrob/reasoner.h>
 
 using namespace knowrob;
+
+// make reasoner type accessible
+KNOWROB_BUILTIN_REASONER("ESG", ESGReasoner);
 
 ESGReasoner::ESGReasoner(const std::string &reasonerID)
 : PrologReasoner(reasonerID)

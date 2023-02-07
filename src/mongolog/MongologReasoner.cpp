@@ -8,9 +8,13 @@
 
 #include <gtest/gtest.h>
 #include <knowrob/logging.h>
+#include <knowrob/reasoner.h>
 #include <knowrob/mongolog/MongologReasoner.h>
 
 using namespace knowrob;
+
+// make reasoner type accessible
+KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner);
 
 MongologReasoner::MongologReasoner(const std::string &reasonerID)
 : PrologReasoner(reasonerID)
