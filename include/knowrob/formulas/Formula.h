@@ -11,7 +11,7 @@
 
 #include <memory>
 #include <ostream>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Substitution.h"
 
 namespace knowrob {
 	/**

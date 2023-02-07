@@ -10,7 +10,7 @@
 #define KNOWROB_DISJUNCTION_FORMULA_H_
 
 #include <vector>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/formulas/ConnectiveFormula.h>
 
 namespace knowrob {

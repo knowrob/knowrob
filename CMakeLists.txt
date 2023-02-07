@@ -112,7 +112,6 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
 		src/logging.cpp
-		src/terms.cpp
 		src/BuiltinEvaluator.cpp
 		src/DependencyGraph.cpp
 		src/ReasoningGraph.cpp
@@ -123,6 +122,15 @@ add_library(knowrob_qa SHARED
 		src/scope/ConfidenceInterval.cpp
 		src/scope/Timepoint.cpp
 		src/scope/TimeInterval.cpp
+		src/terms/Term.cpp
+		src/terms/Variable.cpp
+		src/terms/Predicate.cpp
+		src/terms/Bottom.cpp
+		src/terms/Top.cpp
+		src/terms/ListTerm.cpp
+		src/terms/OptionList.cpp
+		src/terms/Substitution.cpp
+		src/terms/Unifier.cpp
 		src/formulas/Formula.cpp
 		src/formulas/ConnectiveFormula.cpp
 		src/formulas/Conjunction.cpp

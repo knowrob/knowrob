@@ -11,7 +11,7 @@
 
 #include <ostream>
 #include <vector>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/formulas/Formula.h>
 
 namespace knowrob {
