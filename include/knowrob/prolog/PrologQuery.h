@@ -17,7 +17,8 @@
 #include <SWI-Prolog.h>
 // KnowRob
 #include <knowrob/terms.h>
-#include <knowrob/queries.h>
+#include <knowrob/queries/Query.h>
+#include <knowrob/formulas/ConnectiveFormula.h>
 
 namespace knowrob {
 	/**

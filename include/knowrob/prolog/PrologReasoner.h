@@ -20,7 +20,6 @@
 // KnowRob
 #include <knowrob/ThreadPool.h>
 #include <knowrob/terms.h>
-#include <knowrob/queries.h>
 #include <knowrob/LogicProgramReasoner.h>
 #include <knowrob/prolog/PrologQuery.h>
 
