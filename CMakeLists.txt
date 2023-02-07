@@ -113,11 +113,29 @@ add_library(knowrob_qa SHARED
 		src/ThreadPool.cpp
 		src/logging.cpp
 		src/terms.cpp
-		src/builtins.cpp
-		src/queries.cpp
+		src/BuiltinEvaluator.cpp
+		src/DependencyGraph.cpp
+		src/ReasoningGraph.cpp
 		src/Blackboard.cpp
         src/reasoner.cpp
 		src/HybridQA.cpp
+		src/scope/ConfidenceValue.cpp
+		src/scope/ConfidenceInterval.cpp
+		src/scope/Timepoint.cpp
+		src/scope/TimeInterval.cpp
+		src/formulas/Formula.cpp
+		src/formulas/ConnectiveFormula.cpp
+		src/formulas/Conjunction.cpp
+		src/formulas/Disjunction.cpp
+		src/formulas/PredicateFormula.cpp
+		src/queries/Query.cpp
+		src/queries/QueryInstance.cpp
+		src/queries/QueryError.cpp
+		src/queries/QueryResult.cpp
+		src/queries/QueryResultStream.cpp
+		src/queries/QueryResultQueue.cpp
+		src/queries/QueryResultCombiner.cpp
+		src/queries/QueryResultBroadcaster.cpp
 		src/prolog/PrologQuery.cpp
 		src/prolog/PrologReasoner.cpp
 		src/prolog/logging.cpp
