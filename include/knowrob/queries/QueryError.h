@@ -11,7 +11,7 @@
 
 #include <string>
 #include <fmt/core.h>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/queries/Query.h>
 
 namespace knowrob {

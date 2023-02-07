@@ -10,7 +10,9 @@
 #define KNOWROB_PREDICATE_INSTANCE_H_
 
 #include <memory>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
+#include "knowrob/terms/Constant.h"
+#include "knowrob/terms/Predicate.h"
 
 namespace knowrob {
 	/**

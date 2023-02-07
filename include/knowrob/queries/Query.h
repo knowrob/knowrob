@@ -12,7 +12,7 @@
 #include <memory>
 #include <ostream>
 #include <optional>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Predicate.h"
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/scope/TimeInterval.h"
 #include "knowrob/scope/ConfidenceInterval.h"

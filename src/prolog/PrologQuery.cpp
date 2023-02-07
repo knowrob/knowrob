@@ -6,8 +6,14 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <list>
 #include <knowrob/logging.h>
 #include <knowrob/prolog/PrologQuery.h>
+#include <knowrob/terms/Term.h>
+#include <knowrob/terms/Constant.h>
+#include <knowrob/terms/ListTerm.h>
+#include <knowrob/terms/Bottom.h>
+#include <knowrob/terms/Top.h>
 #include <knowrob/queries/QueryError.h>
 #include <knowrob/formulas/PredicateFormula.h>
 #include <knowrob/formulas/Conjunction.h>

@@ -20,6 +20,9 @@
 #include <knowrob/prolog/PrologReasoner.h>
 #include <knowrob/prolog/logging.h>
 #include <knowrob/prolog/algebra.h>
+#include <knowrob/terms/ListTerm.h>
+#include <knowrob/terms/OptionList.h>
+#include <knowrob/terms/Bottom.h>
 #include <knowrob/queries/QueryResultQueue.h>
 #include <knowrob/queries/QueryError.h>
 

@@ -12,7 +12,7 @@
 // STD
 #include <memory>
 // KnowRob
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/IReasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
 

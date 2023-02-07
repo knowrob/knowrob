@@ -6,6 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <sstream>
 #include <knowrob/queries/QueryError.h>
 
 using namespace knowrob;

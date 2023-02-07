@@ -18,7 +18,7 @@
 #include <utility>
 // KnowRob
 #include <knowrob/ThreadPool.h>
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/IReasoner.h>
 
 namespace knowrob {

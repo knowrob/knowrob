@@ -16,7 +16,7 @@
 // FMT
 #include <fmt/core.h>
 // KnowRob
-#include <knowrob/terms.h>
+#include "knowrob/terms/Term.h"
 #include <knowrob/queries/QueryInstance.h>
 #include <knowrob/data_sources.h>
 
