@@ -7,8 +7,10 @@
  */
 
 #include <boost/algorithm/string/predicate.hpp>
-
-#include <knowrob/builtins.h>
+#include <knowrob/logging.h>
+#include <knowrob/BuiltinEvaluator.h>
+#include <knowrob/formulas/PredicateFormula.h>
+#include <knowrob/queries/QueryError.h>
 
 using namespace knowrob;
 
