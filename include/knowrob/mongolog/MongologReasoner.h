@@ -24,7 +24,6 @@ namespace knowrob {
 		~MongologReasoner() override;
 		
 	protected:
-		
 		// Override PrologReasoner
 		const functor_t& callFunctor() override;
 

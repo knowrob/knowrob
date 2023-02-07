@@ -13,9 +13,11 @@
 #include <memory>
 // BOOST
 #include <boost/property_tree/ptree.hpp>
+// FMT
+#include <fmt/core.h>
 // KnowRob
 #include <knowrob/terms.h>
-#include <knowrob/queries.h>
+#include <knowrob/queries/QueryInstance.h>
 #include <knowrob/data_sources.h>
 
 namespace knowrob {
