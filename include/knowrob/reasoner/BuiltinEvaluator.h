@@ -6,10 +6,10 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_BUILTINEVALUATOR_H
-#define KNOWROB_BUILTINEVALUATOR_H
+#ifndef KNOWROB_BUILTIN_EVALUATOR_H
+#define KNOWROB_BUILTIN_EVALUATOR_H
 
-#include <knowrob/IReasoner.h>
+#include "knowrob/reasoner/IReasoner.h"
 
 namespace knowrob {
 	/**
@@ -70,4 +70,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_BUILTINEVALUATOR_H
+#endif //KNOWROB_BUILTIN_EVALUATOR_H

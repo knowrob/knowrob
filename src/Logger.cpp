@@ -7,7 +7,7 @@
  */
 
 // KnowRob
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 // logging
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>

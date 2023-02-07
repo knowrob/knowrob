@@ -13,8 +13,8 @@
 :- use_module('filesystem', [ path_concat/3 ]).
 
 :- prolog_load_context(directory, PrologDir),
-   once(( atom_concat(ProjectDir, '/src/prolog', PrologDir)  % loaded from source tree
-        ; atom_concat(ProjectDir, '/prolog', PrologDir)      % loaded installed file
+   once(( atom_concat(ProjectDir, '/src/reasoner/prolog', PrologDir)  % loaded from source tree
+        ; atom_concat(ProjectDir, '/reasoner/prolog', PrologDir)      % loaded installed file
    )),
    assert(project_directory(ProjectDir)).
 

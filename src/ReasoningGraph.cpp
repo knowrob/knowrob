@@ -9,8 +9,8 @@
 // STD
 #include <memory>
 // KnowRob
-#include <knowrob/logging.h>
-#include <knowrob/BuiltinEvaluator.h>
+#include <knowrob/Logger.h>
+#include "knowrob/reasoner/BuiltinEvaluator.h"
 #include <knowrob/ReasoningGraph.h>
 #include <knowrob/formulas/Disjunction.h>
 #include <knowrob/formulas/Conjunction.h>
@@ -52,7 +52,7 @@ template<class T> std::shared_ptr<T> createConnectiveFormula(
 
 ReasoningGraph::Node::Node(
 		const std::shared_ptr<Formula> &phi,
-		const std::shared_ptr<ManagedReasoner> &reasoner,
+		const std::shared_ptr<DefinedReasoner> &reasoner,
 		PredicateType predicateType)
 : phi_(phi),
   predicateType_(predicateType),
@@ -62,7 +62,7 @@ ReasoningGraph::Node::Node(
 
 ReasoningGraph::Node::Node(
 		const std::shared_ptr<Formula> &phi,
-		const std::set<std::shared_ptr<ManagedReasoner>> &reasonerChoices,
+		const std::set<std::shared_ptr<DefinedReasoner>> &reasonerChoices,
 		PredicateType predicateType)
 : phi_(phi),
   predicateType_(predicateType),
@@ -153,7 +153,7 @@ void ReasoningGraph::disjunction(const ReasoningGraph &other)
 			{
 				if(simple1->canBeCombinedWith(node2, CAPABILITY_DISJUNCTIVE_QUERIES))
 				{
-					std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices;
+					std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices;
 					for(auto &reasonerChoice : node2->reasonerChoices_)
 						if(simple1->reasonerChoices_.find(reasonerChoice) != simple1->reasonerChoices_.end())
 							reasonerChoices.insert(reasonerChoice);
@@ -207,7 +207,7 @@ void ReasoningGraph::conjunction(const ReasoningGraph &other)
 
 void ReasoningGraph::addConjunctiveNode(const NodePtr &a, const NodePtr &b)
 {
-	std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices;
+	std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices;
 	for(auto &r1 : a->reasonerChoices_)
 		if(b->reasonerChoices_.find(r1) != b->reasonerChoices_.end()) reasonerChoices.insert(r1);
 	// create a conjunctive node

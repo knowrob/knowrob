@@ -9,7 +9,7 @@
 // STD
 #include <stdexcept>
 // KnowRob
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/ThreadPool.h>
 
 using namespace knowrob;

@@ -13,7 +13,7 @@
 // BOOST
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
-#include <knowrob/reasoner.h>
+#include "knowrob/reasoner/ReasonerManager.h"
 #include <knowrob/reasoner/prolog/PrologReasoner.h>
 
 namespace knowrob {

@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
 #include <knowrob/Blackboard.h>
 

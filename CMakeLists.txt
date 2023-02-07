@@ -111,12 +111,10 @@ target_link_libraries(mongo_kb
 add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
-		src/logging.cpp
-        src/reasoner/BuiltinEvaluator.cpp
+        src/Logger.cpp
 		src/DependencyGraph.cpp
 		src/ReasoningGraph.cpp
 		src/Blackboard.cpp
-        src/reasoner.cpp
 		src/HybridQA.cpp
 		src/scope/ConfidenceValue.cpp
 		src/scope/ConfidenceInterval.cpp
@@ -144,6 +142,12 @@ add_library(knowrob_qa SHARED
 		src/queries/QueryResultQueue.cpp
 		src/queries/QueryResultCombiner.cpp
 		src/queries/QueryResultBroadcaster.cpp
+		src/reasoner/BuiltinEvaluator.cpp
+		src/reasoner/DefinedPredicate.cpp
+		src/reasoner/ReasonerPlugin.cpp
+		src/reasoner/IReasoner.cpp
+		src/reasoner/ReasonerManager.cpp
+		src/reasoner/ReasonerConfiguration.cpp
 		src/reasoner/prolog/PrologQuery.cpp
 		src/reasoner/prolog/PrologReasoner.cpp
 		src/reasoner/prolog/logging.cpp

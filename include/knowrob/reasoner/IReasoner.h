@@ -11,36 +11,15 @@
 
 // STD
 #include <memory>
-// BOOST
-#include <boost/property_tree/ptree.hpp>
 // FMT
 #include <fmt/core.h>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include <knowrob/queries/QueryInstance.h>
-#include <knowrob/data_sources.h>
+#include "knowrob/queries/QueryInstance.h"
+#include "knowrob/reasoner/ReasonerConfiguration.h"
+#include "knowrob/data_sources.h"
 
 namespace knowrob {
-	/**
-	 * A configuration of a reasoner.
-	 * Each instance of a reasoner type may have its own configuration.
-	 */
-	class ReasonerConfiguration {
-	public:
-		/**
-		 * Load a reasoner configuration from a property tree.
-		 * @param ptree a property tree.
-		 */
-		void loadPropertyTree(const boost::property_tree::ptree &ptree);
-
-		std::list<std::pair<TermPtr,TermPtr>> settings;
-		std::list<std::shared_ptr<DataFile>> dataFiles;
-		std::list<std::shared_ptr<FactBase>> factBases;
-		std::list<std::shared_ptr<RuleBase>> ruleBases;
-	private:
-		void loadSettings(const TermPtr &key_t, const boost::property_tree::ptree &ptree);
-	};
-
 	using DataFileLoader = std::function<bool(const std::shared_ptr<DataFile>&)>;
 
 	/**
@@ -150,37 +129,6 @@ namespace knowrob {
 
 		friend class ReasonerManager;
 	};
-
-	/**
-	 * A reasoner-related runtime error.
-	 */
-	class ReasonerError : public std::runtime_error {
-	public:
-		/**
-		 * @tparam Args fmt-printable arguments.
-		 * @param fmt A fmt string pattern.
-		 * @param args list of arguments used to instantiate the pattern.
-		 */
-		template<typename ... Args>
-		explicit ReasonerError(const char *fmt, Args&& ... args)
-		: std::runtime_error(fmt::format(fmt, args...)) {}
-	};
 }
-
-/**
- * Define a reasoner plugin.
- * The macro generates two functions that are used as entry points for
- * loading the plugin.
- * First, a factory function is defined that creates instances of @classType.
- * This will only work when @classType has a single argument constructor that
- * accepts a string as argument (the reasoner instance ID).
- * Second, a function is generated that exposes the plugin name.
- * @classType the type of the reasoner, must be a subclass of IReasoner
- * @pluginName a plugin identifier, e.g. the name of the reasoner type.
- */
-#define REASONER_PLUGIN(classType, pluginName) extern "C" { \
-		std::shared_ptr<knowrob::IReasoner> knowrob_createReasoner(const std::string &reasonerID) \
-			{ return std::make_shared<classType>(reasonerID); } \
-		const char* knowrob_getPluginName() { return pluginName; } }
 
 #endif //KNOWROB_IREASONER_H_

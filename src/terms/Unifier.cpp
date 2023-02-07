@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "knowrob/logging.h"
+#include "knowrob/Logger.h"
 #include "knowrob/terms/Unifier.h"
 #include "knowrob/terms/Predicate.h"
 #include "knowrob/terms/Constant.h"

@@ -7,7 +7,7 @@
  */
 
 #include <mutex>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/queries/QueryResultStream.h>
 #include <knowrob/queries/QueryError.h>
 

@@ -22,7 +22,7 @@
 #include <boost/archive/text_iarchive.hpp>
 // KnowRob
 #include <knowrob/knowrob.h>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
 
 using namespace knowrob;

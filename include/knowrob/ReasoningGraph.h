@@ -12,7 +12,7 @@
 #include <list>
 #include <memory>
 #include <knowrob/formulas/PredicateFormula.h>
-#include <knowrob/reasoner.h>
+#include "knowrob/reasoner/ReasonerManager.h"
 
 namespace knowrob {
 	/**
@@ -85,7 +85,7 @@ namespace knowrob {
 			 * @param predicateType a type identifier.
 			 */
 			Node(const std::shared_ptr<Formula> &phi,
-				 const std::shared_ptr<ManagedReasoner> &reasoner,
+				 const std::shared_ptr<DefinedReasoner> &reasoner,
 				 PredicateType predicateType);
 
 			/**
@@ -94,7 +94,7 @@ namespace knowrob {
 			 * @param predicateType a type identifier.
 			 */
 			Node(const std::shared_ptr<Formula> &phi,
-				 const std::set<std::shared_ptr<ManagedReasoner>> &reasonerChoices,
+				 const std::set<std::shared_ptr<DefinedReasoner>> &reasonerChoices,
 				 PredicateType predicateType);
 
 			/**
@@ -123,7 +123,7 @@ namespace knowrob {
 			/**
 			 * @return the reasoner associated to this node.
 			 */
-			const std::set<std::shared_ptr<ManagedReasoner>>& reasonerChoices() { return reasonerChoices_; }
+			const std::set<std::shared_ptr<DefinedReasoner>>& reasonerChoices() { return reasonerChoices_; }
 
 			/**
 			 * @return list of node successors.
@@ -138,7 +138,7 @@ namespace knowrob {
 		protected:
 			std::shared_ptr<Formula> phi_;
 			PredicateType predicateType_;
-			std::set<std::shared_ptr<ManagedReasoner>> reasonerChoices_;
+			std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices_;
 			std::list<std::shared_ptr<Node>> successors_;
 			std::list<std::shared_ptr<Node>> predecessors_;
 			friend class ReasoningGraph;

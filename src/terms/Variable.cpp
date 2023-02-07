@@ -11,7 +11,7 @@
 // GTEST
 #include <gtest/gtest.h>
 // KnowRob
-#include "knowrob/logging.h"
+#include "knowrob/Logger.h"
 #include "knowrob/terms/Variable.h"
 
 using namespace knowrob;

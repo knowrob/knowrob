@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/reasoner/mongolog/MongologReasoner.h>
 
 using namespace knowrob;

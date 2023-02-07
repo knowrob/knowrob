@@ -7,7 +7,7 @@
  */
 
 #include <list>
-#include "knowrob/logging.h"
+#include "knowrob/Logger.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Constant.h"

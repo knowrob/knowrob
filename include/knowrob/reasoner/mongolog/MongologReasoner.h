@@ -13,7 +13,7 @@
 #include <memory>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include "knowrob/IReasoner.h"
+#include "knowrob/reasoner/IReasoner.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 
 namespace knowrob {

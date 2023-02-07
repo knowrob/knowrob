@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/logging.h>
-#include <knowrob/BuiltinEvaluator.h>
+#include <knowrob/Logger.h>
+#include "knowrob/reasoner/BuiltinEvaluator.h"
 #include <knowrob/Blackboard.h>
 #include <knowrob/formulas/Conjunction.h>
 #include <knowrob/formulas/Disjunction.h>
@@ -22,7 +22,7 @@ Blackboard::Blackboard(
 		const std::shared_ptr<QueryResultQueue> &outputQueue,
 		const std::shared_ptr<const Query> &goal)
 		: reasonerManager_(reasonerManager),
-		  builtinEvaluator_(std::make_shared<ManagedReasoner>("builtins", BuiltinEvaluator::get())),
+		  builtinEvaluator_(std::make_shared<DefinedReasoner>("builtins", BuiltinEvaluator::get())),
 		  outputQueue_(outputQueue),
 		  goal_(goal)
 {
@@ -154,7 +154,7 @@ void Blackboard::createReasoningPipeline( //NOLINT
 	}
 }
 
-void Blackboard::createReasoningStep(const std::shared_ptr<ManagedReasoner> &r,
+void Blackboard::createReasoningStep(const std::shared_ptr<DefinedReasoner> &r,
 									 const std::shared_ptr<Query> &subQuery,
 									 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
 									 const std::shared_ptr<QueryResultBroadcaster> &stepOutput)
@@ -173,7 +173,7 @@ void Blackboard::createReasoningStep(const std::shared_ptr<ManagedReasoner> &r,
 
 
 Blackboard::Stream::Stream(
-	const std::shared_ptr<ManagedReasoner> &reasoner,
+	const std::shared_ptr<DefinedReasoner> &reasoner,
 	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 : QueryResultStream(),

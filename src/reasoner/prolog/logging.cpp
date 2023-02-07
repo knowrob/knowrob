@@ -13,7 +13,7 @@
 // gtest
 #include <gtest/gtest.h>
 // KnowRob
-#include "knowrob/logging.h"
+#include "knowrob/Logger.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
 #include "knowrob/reasoner/prolog/logging.h"
 

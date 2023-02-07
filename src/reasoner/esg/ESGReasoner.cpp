@@ -10,7 +10,7 @@
 #include <memory>
 // KnowRob
 #include "knowrob/reasoner/esg/ESGReasoner.h"
-#include "knowrob/reasoner.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 
 using namespace knowrob;
 
@@ -24,13 +24,13 @@ ESGReasoner::ESGReasoner(const std::string &reasonerID)
 
 bool ESGReasoner::initializeDefaultPackages()
 {
-	return consult(std::filesystem::path("esg") / "__init__.pl");
+	return consult(std::filesystem::path("reasoner") / "esg" / "__init__.pl");
 }
 
 class ESGTests: public PrologTests<knowrob::ESGReasoner> {
 protected:
 	static std::string getPath(const std::string &filename)
-	{ return std::filesystem::path("esg") / filename; }
+	{ return std::filesystem::path("reasoner") / "esg" / filename; }
 };
 
 TEST_F(ESGTests, esg)      { runTests(getPath("esg.plt")); }

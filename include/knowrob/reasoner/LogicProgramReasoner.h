@@ -13,7 +13,7 @@
 #include <list>
 #include <memory>
 // KnowRob
-#include <knowrob/IReasoner.h>
+#include "IReasoner.h"
 
 namespace knowrob {
 	/**

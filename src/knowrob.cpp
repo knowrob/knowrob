@@ -7,7 +7,7 @@
  */
 
 #include <knowrob/knowrob.h>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 
 namespace knowrob {
 	// stores the name of the executable as provided in argv[0]

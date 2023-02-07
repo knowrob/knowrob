@@ -13,7 +13,7 @@
 #include <list>
 #include <memory>
 // KnowRob
-#include <knowrob/reasoner.h>
+#include "knowrob/reasoner/ReasonerManager.h"
 #include <knowrob/ReasoningGraph.h>
 #include <knowrob/queries/QueryResultQueue.h>
 #include <knowrob/queries/QueryResultBroadcaster.h>
@@ -46,7 +46,7 @@ namespace knowrob {
 		class Stream; // forward declaration
 
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-		std::shared_ptr<ManagedReasoner> builtinEvaluator_;
+		std::shared_ptr<DefinedReasoner> builtinEvaluator_;
 		std::shared_ptr<QueryResultQueue> outputQueue_;
 		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
 		std::shared_ptr<QueryResultBroadcaster> inputStream_;
@@ -68,7 +68,7 @@ namespace knowrob {
 									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
 									 const std::shared_ptr<ReasoningGraph::Node> &n0);
 
-		void createReasoningStep(const std::shared_ptr<ManagedReasoner> &managedReasoner,
+		void createReasoningStep(const std::shared_ptr<DefinedReasoner> &managedReasoner,
 								 const std::shared_ptr<Query> &subQuery,
 								 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
 								 const std::shared_ptr<QueryResultBroadcaster> &stepOutput);
@@ -76,7 +76,7 @@ namespace knowrob {
 		class Stream : public QueryResultStream {
 		public:
 			Stream(
-					const std::shared_ptr<ManagedReasoner> &reasoner,
+					const std::shared_ptr<DefinedReasoner> &reasoner,
 					const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 					const std::shared_ptr<Query> &goal);
 			~Stream();
@@ -87,7 +87,7 @@ namespace knowrob {
 			// @return true if stop has been requested.
 			bool hasStopRequest() const { return hasStopRequest_; }
 		protected:
-			std::shared_ptr<ManagedReasoner> reasoner_;
+			std::shared_ptr<DefinedReasoner> reasoner_;
 			std::shared_ptr<const Query> goal_;
 			std::shared_ptr<QueryResultStream::Channel> outputStream_;
 			uint32_t queryID_;

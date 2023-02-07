@@ -8,7 +8,7 @@
 
 // KnowRob
 #include "knowrob/reasoner/swrl/SWRLReasoner.h"
-#include "knowrob/reasoner.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 
 /*
 	- TODO: make swrl configurable for mongolog
@@ -56,13 +56,13 @@ bool SWRLReasoner::loadSWRLFile(const DataFilePtr &dataFile)
 
 bool SWRLReasoner::initializeDefaultPackages()
 {
-	return consult(std::filesystem::path("swrl") / "__init__.pl");
+	return consult(std::filesystem::path("reasoner") / "swrl" / "__init__.pl");
 }
 
 class SWRLTests: public PrologTests<knowrob::SWRLReasoner> {
 protected:
 	static std::string getPath(const std::string &filename)
-	{ return std::filesystem::path("swrl") / filename; }
+	{ return std::filesystem::path("reasoner") / "swrl" / filename; }
 };
 
 TEST_F(SWRLTests, swrl) { runTests(getPath("swrl.plt")); }

@@ -15,8 +15,8 @@
 #include <gtest/gtest.h>
 // KnowRob
 #include "knowrob/knowrob.h"
-#include "knowrob/logging.h"
-#include "knowrob/reasoner.h"
+#include "knowrob/Logger.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 #include "knowrob/reasoner/prolog/logging.h"
 #include "knowrob/reasoner/prolog/algebra.h"
@@ -78,7 +78,7 @@ std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path 
 		auto possiblePaths = {
 				projectPath / filePath,
 				projectPath / "src" / filePath,
-				projectPath / "src" / "prolog" / filePath,
+				projectPath / "src" / "reasoner" / "prolog" / filePath,
 				installPath / "share" / "knowrob" / filePath
 		};
 		for(const auto &p : possiblePaths) {
@@ -135,7 +135,7 @@ void PrologReasoner::initializeProlog() {
 bool PrologReasoner::initializeGlobalPackages()
 {
 	// load some default code into user module.  e.g. the extended module syntax etc
-	return consult(std::filesystem::path("prolog") / "__init__.pl", "user", false);
+	return consult(std::filesystem::path("reasoner") / "prolog" / "__init__.pl", "user", false);
 }
 
 bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
@@ -970,7 +970,7 @@ void PrologTestsBase::runPrologTests(
 class PrologTestsCore: public PrologTests<knowrob::PrologReasoner> {
 protected:
 	static std::string getPath(const std::string &filename)
-	{ return std::filesystem::path("prolog") / filename; }
+	{ return std::filesystem::path("reasoner") / "prolog" / filename; }
 };
 
 TEST_F(PrologTestsCore, semweb)	{ runTests(getPath("semweb.pl")); }

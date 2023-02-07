@@ -14,7 +14,7 @@
 #include <optional>
 #include <ostream>
 #include "knowrob/terms/Term.h"
-#include <knowrob/queries/PredicateInstance.h>
+#include "knowrob/terms/PredicateInstance.h"
 #include "knowrob/scope/TimeInterval.h"
 #include "knowrob/scope/ConfidenceValue.h"
 

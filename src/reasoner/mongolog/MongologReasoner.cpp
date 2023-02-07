@@ -7,8 +7,8 @@
  */
 
 #include <gtest/gtest.h>
-#include "knowrob/logging.h"
-#include "knowrob/reasoner.h"
+#include "knowrob/Logger.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/mongolog/MongologReasoner.h"
 
 using namespace knowrob;
@@ -30,7 +30,7 @@ bool MongologReasoner::initializeDefaultPackages()
 	if(!initialized) {
 		initialized = true;
 		// load mongolog code once globally into the Prolog engine
-		consult(std::filesystem::path("mongolog") / "__init__.pl", "user", false);
+		consult(std::filesystem::path("reasoner") / "mongolog" / "__init__.pl", "user", false);
 	}
 
 	// mongolog uses a special collection "one" that contains one empty document.
@@ -62,7 +62,7 @@ protected:
 		reasoner()->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 	}
 	static std::string getPath(const std::string &filename)
-	{ return std::filesystem::path("mongolog") / filename; }
+	{ return std::filesystem::path("reasoner") / "mongolog" / filename; }
 };
 
 TEST_F(MongologTests, arithmetic)	{ runTests(getPath("arithmetic.pl")); }
