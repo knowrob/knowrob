@@ -12,10 +12,6 @@
 // KnowRob
 #include <knowrob/logging.h>
 #include <knowrob/reasoner.h>
-#include <knowrob/prolog/PrologReasoner.h>
-#include <knowrob/mongolog/MongologReasoner.h>
-#include <knowrob/swrl/SWRLReasoner.h>
-#include <knowrob/esg/ESGReasoner.h>
 // loading shared libraries
 #include <dlfcn.h>
 
@@ -52,17 +48,11 @@ bool IReasoner::loadDataFile(const DataFilePtr &dataFile)
 /************ ReasonerManager *************/
 /******************************************/
 
+std::map<std::string, std::shared_ptr<ReasonerFactory>> ReasonerManager::reasonerFactories_ = {};
+
 ReasonerManager::ReasonerManager()
 : reasonerIndex_(0)
 {
-	// add some default factory functions to create reasoner instances
-	// TODO: come up with a better way to register builtin reasoner types.
-	//	- create a singleton registry of IReasoner types, than make use of the registry here.
-	//   	require that each reasoner type registers itself with the registry.
-	addReasonerFactory("Mongolog", std::make_shared<TypedReasonerFactory<MongologReasoner>>("Mongolog"));
-	addReasonerFactory("Prolog",   std::make_shared<TypedReasonerFactory<PrologReasoner>>("Prolog"));
-	addReasonerFactory("ESG",      std::make_shared<TypedReasonerFactory<ESGReasoner>>("ESG"));
-	addReasonerFactory("SWRL",     std::make_shared<TypedReasonerFactory<SWRLReasoner>>("SWRL"));
 }
 
 void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
@@ -136,12 +126,13 @@ std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::s
 	return {};
 }
 
-void ReasonerManager::addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory)
+bool ReasonerManager::addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory)
 {
 	if(reasonerFactories_.find(typeName) != reasonerFactories_.end()) {
 		KB_WARN("overwriting factory for reasoner type '{}'", typeName);
 	}
 	reasonerFactories_[typeName] = factory;
+	return true;
 }
 
 std::shared_ptr<ManagedReasoner> ReasonerManager::addReasoner(const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
