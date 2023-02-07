@@ -56,7 +56,7 @@ ReasoningGraph::Node::Node(
 		PredicateType predicateType)
 : phi_(phi),
   predicateType_(predicateType),
-  reasonerChoices_({ reasoner })
+  reasonerAlternatives_({reasoner })
 {
 }
 
@@ -66,18 +66,18 @@ ReasoningGraph::Node::Node(
 		PredicateType predicateType)
 : phi_(phi),
   predicateType_(predicateType),
-  reasonerChoices_(reasonerChoices)
+  reasonerAlternatives_(reasonerChoices)
 {
 }
 
 bool ReasoningGraph::Node::canBeCombinedWith(
 		const NodePtr &other, ReasonerCapability requiredCapability)
 {
-	for(auto &r1 : reasonerChoices_) {
+	for(auto &r1 : reasonerAlternatives_) {
 		// reasoner must support the capability
 		// and other node must have the same reasoner choice
 		if(r1->reasoner()->hasCapability(requiredCapability) &&
-		   other->reasonerChoices_.find(r1) != other->reasonerChoices_.end())
+		   other->reasonerAlternatives_.find(r1) != other->reasonerAlternatives_.end())
 			return true;
 	}
 	return false;
@@ -85,7 +85,7 @@ bool ReasoningGraph::Node::canBeCombinedWith(
 
 bool ReasoningGraph::Node::isBuiltinSupported(const PredicateFormula &phi) const
 {
-	for(auto &r1 : reasonerChoices_) {
+	for(auto &r1 : reasonerAlternatives_) {
 		if(r1->reasoner()->getPredicateDescription(phi.predicate()->indicator()) != nullptr)
 			return true;
 	}
@@ -154,8 +154,8 @@ void ReasoningGraph::disjunction(const ReasoningGraph &other)
 				if(simple1->canBeCombinedWith(node2, CAPABILITY_DISJUNCTIVE_QUERIES))
 				{
 					std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices;
-					for(auto &reasonerChoice : node2->reasonerChoices_)
-						if(simple1->reasonerChoices_.find(reasonerChoice) != simple1->reasonerChoices_.end())
+					for(auto &reasonerChoice : node2->reasonerAlternatives_)
+						if(simple1->reasonerAlternatives_.find(reasonerChoice) != simple1->reasonerAlternatives_.end())
 							reasonerChoices.insert(reasonerChoice);
 
 					auto phi = createConnectiveFormula<DisjunctionFormula>(
@@ -208,8 +208,8 @@ void ReasoningGraph::conjunction(const ReasoningGraph &other)
 void ReasoningGraph::addConjunctiveNode(const NodePtr &a, const NodePtr &b)
 {
 	std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices;
-	for(auto &r1 : a->reasonerChoices_)
-		if(b->reasonerChoices_.find(r1) != b->reasonerChoices_.end()) reasonerChoices.insert(r1);
+	for(auto &r1 : a->reasonerAlternatives_)
+		if(b->reasonerAlternatives_.find(r1) != b->reasonerAlternatives_.end()) reasonerChoices.insert(r1);
 	// create a conjunctive node
 	auto phi = createConnectiveFormula<ConjunctionFormula>(
 			a->phi_, b->phi_, FormulaType::CONJUNCTION);

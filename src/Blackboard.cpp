@@ -138,7 +138,7 @@ void Blackboard::createReasoningPipeline( //NOLINT
 	std::shared_ptr<QueryResultBroadcaster> nodeOutput = (n0->successors().empty() ?
 			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
 
-	auto n0_reasoner = *n0->reasonerChoices().begin();
+	auto n0_reasoner = *n0->reasonerAlternatives().begin();
 	if(n0->predicateType() == PredicateType::BUILT_IN) {
 		// prefer to use BuiltinEvaluator
 		auto p = ((PredicateFormula*)n0->phi().get())->predicate();

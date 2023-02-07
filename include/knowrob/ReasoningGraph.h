@@ -123,7 +123,7 @@ namespace knowrob {
 			/**
 			 * @return the reasoner associated to this node.
 			 */
-			const std::set<std::shared_ptr<DefinedReasoner>>& reasonerChoices() { return reasonerChoices_; }
+			const std::set<std::shared_ptr<DefinedReasoner>>& reasonerAlternatives() { return reasonerAlternatives_; }
 
 			/**
 			 * @return list of node successors.
@@ -138,7 +138,7 @@ namespace knowrob {
 		protected:
 			std::shared_ptr<Formula> phi_;
 			PredicateType predicateType_;
-			std::set<std::shared_ptr<DefinedReasoner>> reasonerChoices_;
+			std::set<std::shared_ptr<DefinedReasoner>> reasonerAlternatives_;
 			std::list<std::shared_ptr<Node>> successors_;
 			std::list<std::shared_ptr<Node>> predecessors_;
 			friend class ReasoningGraph;
