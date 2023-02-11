@@ -28,19 +28,15 @@ void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &
 		}
 	}
 
-	auto data_sources = config.get_child_optional("data-sources");
+    // process list of data sources that should be imported into the reasoner backend.
+	auto data_sources = config.get_child_optional("imports");
 	if(data_sources) {
 		for(const auto &pair : data_sources.value()) {
 			auto &subtree = pair.second;
-
-			auto fileValue = subtree.get_optional<std::string>("file");
-			if(fileValue.has_value()) {
-				auto fileFormat = subtree.get("format",formatDefault);
-				dataFiles.push_back(std::make_shared<DataFile>(fileValue.value(), fileFormat));
-			}
-			else {
-				KB_WARN("Ignoring data source without \"file\" key.");
-			}
+			auto dataFormat = subtree.get("format",formatDefault);
+			auto source = std::make_shared<DataSource>(dataFormat);
+			source->loadSettings(subtree);
+			dataSources.push_back(source);
 		}
 	}
 }

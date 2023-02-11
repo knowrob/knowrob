@@ -17,11 +17,9 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/queries/QueryInstance.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
-#include "knowrob/data_sources.h"
+#include "knowrob/DataSource.h"
 
 namespace knowrob {
-	using DataFileLoader = std::function<bool(const std::shared_ptr<DataFile>&)>;
-
 	/**
 	 * Flags indicating the capability of a reasoner.
 	 * Flags can be combined into a bitmask of all reasoner capabilities.
@@ -45,14 +43,15 @@ namespace knowrob {
 		 * @param format
 		 * @param fn
 		 */
-		void addDataFileHandler(const std::string &format, const DataFileLoader& fn);
+		void addDataSourceHandler(const std::string &format,
+                                  const std::function<bool(const DataSourcePtr &)> &fn);
 
 		/**
 		 *
-		 * @param dataFile
+		 * @param dataSource
 		 * @return
 		 */
-		bool loadDataFile(const DataFilePtr &dataFile);
+		bool loadDataSource(const DataSourcePtr &dataSource);
 
 		/**
 		 * Load a reasoner configuration.
@@ -81,8 +80,7 @@ namespace knowrob {
 		 * @param capability a reasoner capability.
 		 * @return true of this reasoner has the capability.
 		 */
-		bool hasCapability(ReasonerCapability capability) const
-		{ return (getCapabilities() & capability); }
+		bool hasCapability(ReasonerCapability capability) const;
 
 		/**
 		 * Indicate that a new query needs to be evaluated.
@@ -123,9 +121,9 @@ namespace knowrob {
 								 bool isImmediateStopRequested) = 0;
 
 	protected:
-		std::map<std::string, DataFileLoader> dataFileHandler_;
+		std::map<std::string, DataSourceLoader> dataSourceHandler_;
 
-		virtual bool loadDataFileWithUnknownFormat(const DataFilePtr&) { return false; }
+		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr&) { return false; }
 
 		friend class ReasonerManager;
 	};

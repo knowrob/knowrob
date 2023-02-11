@@ -1,5 +1,6 @@
 
 :- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
+:- use_module(library('url')).
 
 :- use_module(mongolog).
 :- use_module(arithmetic).

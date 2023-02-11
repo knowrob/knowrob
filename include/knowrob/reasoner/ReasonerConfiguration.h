@@ -13,7 +13,7 @@
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/terms/Term.h"
-#include "knowrob/data_sources.h"
+#include "knowrob/DataSource.h"
 
 namespace knowrob {
 	/**
@@ -29,9 +29,7 @@ namespace knowrob {
 		void loadPropertyTree(const boost::property_tree::ptree &ptree);
 
 		std::list<std::pair<TermPtr,TermPtr>> settings;
-		std::list<std::shared_ptr<DataFile>> dataFiles;
-		std::list<std::shared_ptr<FactBase>> factBases;
-		std::list<std::shared_ptr<RuleBase>> ruleBases;
+		std::list<std::shared_ptr<DataSource>> dataSources;
 	private:
 		void loadSettings(const TermPtr &key_t, const boost::property_tree::ptree &ptree);
 	};

@@ -7,7 +7,9 @@
  */
 
 #include <gtest/gtest.h>
+
 #include "knowrob/Logger.h"
+#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/mongolog/MongologReasoner.h"
 
@@ -30,22 +32,27 @@ bool MongologReasoner::initializeDefaultPackages()
 	if(!initialized) {
 		initialized = true;
 		// load mongolog code once globally into the Prolog engine
-		consult(std::filesystem::path("reasoner") / "mongolog" / "__init__.pl", "user", false);
+		consult(std::filesystem::path("reasoner") / "mongolog" / "__init__.pl",
+                "user", false);
 	}
 
 	// mongolog uses a special collection "one" that contains one empty document.
 	// auto-create it if possible.
-	eval(std::make_shared<Predicate>(Predicate("initialize_one_db",{})), nullptr, false);
+	eval(std::make_shared<Predicate>(Predicate("initialize_one_db",{})),
+         nullptr, false);
 	// initialize hierarchical organization of triple graphs
-	eval(std::make_shared<Predicate>(Predicate("load_graph_structure",{})), nullptr, false);
+	eval(std::make_shared<Predicate>(Predicate("load_graph_structure",{})),
+         nullptr, false);
 	//
-	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})), nullptr, false);
+	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})),
+         nullptr, false);
 
 	// load RDFS and OWL model into DB, other RDF-XML files can be listed in settings.
 	// TODO: only do below if mongolog reasoner includes semweb predicates.
-	eval(std::make_shared<Predicate>(Predicate("setup_triple_collection",{})), nullptr, false);
-	loadDataFile(std::make_shared<DataFile>("owl/rdf-schema.xml", "rdf-xml"));
-	loadDataFile(std::make_shared<DataFile>("owl/owl.rdf", "rdf-xml"));
+	eval(std::make_shared<Predicate>(Predicate("setup_triple_collection",{})),
+         nullptr, false);
+    loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/rdf-schema.xml"));
+    loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/owl.rdf"));
 
 	return true;
 }

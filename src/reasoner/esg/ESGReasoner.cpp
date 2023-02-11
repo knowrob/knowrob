@@ -6,9 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// STD
 #include <memory>
-// KnowRob
+
+#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/reasoner/esg/ESGReasoner.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 

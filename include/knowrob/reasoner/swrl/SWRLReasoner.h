@@ -20,7 +20,7 @@ namespace knowrob {
 
 		explicit SWRLReasoner(const std::string &reasonerID);
 
-		bool loadSWRLFile(const std::shared_ptr<DataFile> &dataFile);
+		bool loadSWRLFile(const DataSourcePtr &dataFile);
 
 	protected:
 		// Override PrologReasoner

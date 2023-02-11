@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// KnowRob
+#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/reasoner/swrl/SWRLReasoner.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 
@@ -42,14 +42,14 @@ const std::string SWRLReasoner::SWRL_FORMAT="pl-swrl";
 SWRLReasoner::SWRLReasoner(const std::string &reasonerID)
 		: PrologReasoner(reasonerID)
 {
-	addDataFileHandler(SWRL_FORMAT, [this]
-		(const DataFilePtr &dataFile){ return loadSWRLFile(dataFile); });
+    addDataSourceHandler(SWRL_FORMAT, [this]
+            (const DataSourcePtr &dataFile) { return loadSWRLFile(dataFile); });
 }
 
-bool SWRLReasoner::loadSWRLFile(const DataFilePtr &dataFile)
+bool SWRLReasoner::loadSWRLFile(const DataSourcePtr &dataFile)
 {
 	static auto consult_f = std::make_shared<PredicateIndicator>("swrl_file_load", 1);
-	auto path = getResourcePath(dataFile->path());
+	auto path = getResourcePath(dataFile->uri());
 	auto arg0 = std::make_shared<StringTerm>(path.native());
 	return eval(std::make_shared<Predicate>(Predicate(consult_f, { arg0 })));
 }

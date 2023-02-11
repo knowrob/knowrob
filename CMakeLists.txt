@@ -149,12 +149,15 @@ add_library(knowrob_qa SHARED
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
 		src/reasoner/prolog/PrologQuery.cpp
+		src/reasoner/prolog/PrologQueryRunner.cpp
+		src/reasoner/prolog/PrologThreadPool.cpp
 		src/reasoner/prolog/PrologReasoner.cpp
+		src/reasoner/prolog/PrologTests.cpp
 		src/reasoner/prolog/logging.cpp
 		src/reasoner/prolog/algebra.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
-		src/reasoner/esg/ESGReasoner.cpp)
+		src/reasoner/esg/ESGReasoner.cpp src/DataSource.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog

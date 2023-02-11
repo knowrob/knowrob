@@ -11,25 +11,23 @@
 
 using namespace knowrob;
 
-void IReasoner::addDataFileHandler(const std::string &format, const DataFileLoader &fn)
+bool IReasoner::hasCapability(ReasonerCapability capability) const
 {
-	dataFileHandler_[format] = fn;
+    return (getCapabilities() & capability);
 }
 
-bool IReasoner::loadDataFile(const DataFilePtr &dataFile)
+void IReasoner::addDataSourceHandler(const std::string &format, const DataSourceLoader &fn)
 {
-	if(dataFile->hasUnknownFormat()) {
-		return loadDataFileWithUnknownFormat(dataFile);
+	dataSourceHandler_[format] = fn;
+}
+
+bool IReasoner::loadDataSource(const DataSourcePtr &dataSource)
+{
+	if(dataSource->dataFormat().empty()) {
+		return loadDataSourceWithUnknownFormat(dataSource);
 	}
 	else {
-		auto it = dataFileHandler_.find(dataFile->format());
-		if(it == dataFileHandler_.end()) {
-			KB_WARN("Ignoring data file with unknown format \"{}\"", dataFile->format());
-			return false;
-		}
-		else {
-			KB_INFO("Using data file {} with format \"{}\".", dataFile->path(), dataFile->format());
-			return it->second(dataFile);
-		}
+		auto it = dataSourceHandler_.find(dataSource->dataFormat());
+		return (it != dataSourceHandler_.end()) && it->second(dataSource);
 	}
 }

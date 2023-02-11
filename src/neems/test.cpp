@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <knowrob/Logger.h>
 #include <knowrob/reasoner/mongolog/MongologReasoner.h>
+#include "knowrob/reasoner/prolog/PrologTests.h"
 
 using namespace knowrob;
 

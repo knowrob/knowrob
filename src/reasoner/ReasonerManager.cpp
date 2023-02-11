@@ -6,10 +6,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// STD
 #include <filesystem>
 #include <utility>
-// KnowRob
+
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/ReasonerError.h"
@@ -69,6 +68,11 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
 	}
 	else {
+        for(auto &dataSource : reasonerConfig.dataSources) {
+            if(!reasoner->loadDataSource(dataSource)) {
+                KB_WARN("Reasoner `{}` failed to load data source {}.", reasonerID, dataSource->uri());
+            }
+        }
 		addReasoner(reasonerID, reasoner);
 	}
 	// increase reasonerIndex_
