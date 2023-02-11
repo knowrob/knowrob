@@ -22,35 +22,10 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/reasoner/LogicProgramReasoner.h"
 #include "PrologQuery.h"
+#include "PrologQueryRunner.h"
+#include "PrologThreadPool.h"
 
 namespace knowrob {
-	/**
-	 * A pool of threads with attached Prolog engines.
-	 * Prolog threads have their own stacks and only share the Prolog heap:
-	 * predicates, records, flags and other global non-backtrackable data.
-	 */
-	class PrologThreadPool : public ThreadPool {
-	public:
-		/**
-		 * @maxNumThreads maximum number of worker threads.
-		 */
-		explicit PrologThreadPool(uint32_t maxNumThreads=0);
-
-	protected:
-		// Override ThreadPool
-		bool initializeWorker() override;
-		
-		// Override ThreadPool
-		void finalizeWorker() override;
-	};
-	
-	class PrologDataFile : public DataFile {
-	public:
-		static const std::string PROLOG_FORMAT;
-
-		explicit PrologDataFile(const std::string &path);
-	};
-
 	/**
 	 * A Prolog reasoner that answers queries using SWI Prolog.
 	 */
@@ -211,54 +186,11 @@ namespace knowrob {
 		// cache of predicate descriptions
 		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 		bool hasRDFData_;
-
-		/** a query request for a runner */
-		struct Request {
-			const uint32_t queryID;
-			const char *queryModule;
-			std::shared_ptr<QueryInstance> queryInstance;
-			functor_t callFunctor;
-			const std::shared_ptr<const Query> goal;
-			Request(const std::shared_ptr<QueryInstance> &queryInstance,
-					functor_t callFunctor,
-					const char *queryModule,
-					uint32_t queryID=0)
-			: queryID(queryID),
-			  queryModule(queryModule),
-			  queryInstance(queryInstance),
-			  callFunctor(callFunctor),
-			  goal(queryInstance->create()) {};
-		};
-
-		/** A runner that evaluates a Prolog query.  */
-		class Runner : public ThreadPool::Runner {
-		public:
-			Runner(PrologReasoner *reasoner, Request request, bool sendEOS=false);
-
-			// Override Runner
-			void run() override;
-
-		protected:
-			PrologReasoner *reasoner_;
-			Request request_;
-			bool sendEOS_;
-
-			term_t createQueryArgumentTerms(PrologQuery &pl_goal, term_t solutionScopeVar, term_t predicatesVar);
-			term_t createContextTerm(term_t solutionScopeVar, term_t predicatesVar);
-
-			static void setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope);
-
-			template <class T> bool createIntervalDict(term_t intervalDict, const FuzzyInterval<T> &interval);
-			template <class T> bool createRangeDict(term_t intervalDict, const Range<T> &range);
-
-			std::list<std::shared_ptr<PrologReasoner::Runner>>::iterator requestIterator;
-			friend class PrologReasoner;
-		};
 		
 		struct ActiveQuery {
 			std::shared_ptr<const Query> goal;
 			std::atomic<bool> hasReceivedAllInput;
-			std::list<std::shared_ptr<PrologReasoner::Runner>> runner;
+			std::list<std::shared_ptr<PrologQueryRunner>> runner;
 			std::mutex mutex;
 		};
 		using ActiveQueryMap = std::map<uint32_t, PrologReasoner::ActiveQuery*>;
@@ -266,51 +198,19 @@ namespace knowrob {
 		ActiveQueryMap activeQueries_;
 		std::mutex request_mutex_;
 		
-		void finishRunner(uint32_t queryID, PrologReasoner::Runner *runner);
-
-		bool consult(const std::shared_ptr<FactBase> &factBase);
-		bool consult(const std::shared_ptr<RuleBase> &ruleBase);
+		void finishRunner(uint32_t queryID, PrologQueryRunner *runner);
 
 		void initializeProlog();
 		bool initializeGlobalPackages();
 
 		virtual bool initializeDefaultPackages() { return true; }
 
-		bool loadDataFileWithUnknownFormat(const DataFilePtr &dataFile) override
-		{ return consult(dataFile->path()); };
+		bool loadDataSourceWithUnknownFormat(const DataSourcePtr &dataFile) override
+		{ return consult(dataFile->uri()); };
 		
 		PrologThreadPool& threadPool();
 		
-		friend class PrologReasoner::Runner;
-	};
-
-	/**
-	 * A baseclass for prolog test fixtures.
-	 */
-	class PrologTestsBase: public testing::Test {
-	protected:
-		static void runPrologTests(const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
-								   const std::string &target);
-	};
-
-	template <class T> class PrologTests: public PrologTestsBase {
-	protected:
-		// Per-test-suite set-up.
-		static void SetUpTestSuite() { reasoner();  }
-
-		static void runTests(const std::string &t) { runPrologTests(reasoner(), t); }
-
-		static std::shared_ptr<T> reasoner() {
-			static std::shared_ptr<T> r;
-			static int reasonerIndex_=0;
-			if(!r) {
-				std::stringstream ss;
-				ss << "prolog" << reasonerIndex_++;
-				r = std::make_shared<T>(ss.str());
-				r->loadConfiguration(knowrob::ReasonerConfiguration());
-			}
-			return r;
-		}
+		friend class PrologQueryRunner;
 	};
 }
 
