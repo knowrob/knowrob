@@ -3,8 +3,9 @@
 
 :- use_module('parser.pl', [ parser_create/2 ]).
 :- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb'), [ sw_register_prefix/2 ]).
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/parser-test.owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/parser-test.owl#').
 
 :- dynamic test_parser/1.
 :- rdf_meta test_parser_run(t,t),

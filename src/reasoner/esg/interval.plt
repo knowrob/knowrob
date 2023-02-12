@@ -3,8 +3,8 @@
 
 :- use_module('interval.pl').
 
-:- use_module(library('semweb/rdf_db'), [ rdf_register_prefix/3 ]).
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#', [force(true)]).
+:- use_module(library('semweb'), [ sw_register_prefix/2 ]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#').
 
 /********************************
  *	    QUANTITATIVE INPUT     	*

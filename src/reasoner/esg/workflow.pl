@@ -45,7 +45,7 @@ workflow_sequence(Steps, StepSequence) :-
 
 :- begin_rdf_tests(temporal_workflow, 'owl/test/pancake.owl').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/pancake.owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/pancake.owl#').
 
 test('WF_MakingPancakes_0 steps', [fixme('the OWL reasoner yields some redundant results')]) :-
 	findall(S, workflow_step(test:'WF_MakingPancakes_0',S), Steps),
