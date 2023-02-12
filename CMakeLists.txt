@@ -116,6 +116,7 @@ add_library(knowrob_qa SHARED
 		src/ReasoningGraph.cpp
 		src/Blackboard.cpp
 		src/HybridQA.cpp
+		src/DataSource.cpp
 		src/scope/ConfidenceValue.cpp
 		src/scope/ConfidenceInterval.cpp
 		src/scope/Timepoint.cpp
@@ -129,6 +130,8 @@ add_library(knowrob_qa SHARED
 		src/terms/OptionList.cpp
 		src/terms/Substitution.cpp
 		src/terms/Unifier.cpp
+		src/terms/Constant.cpp
+		src/rdf/PrefixRegistry.cpp
 		src/formulas/Formula.cpp
 		src/formulas/ConnectiveFormula.cpp
 		src/formulas/Conjunction.cpp
@@ -157,7 +160,7 @@ add_library(knowrob_qa SHARED
 		src/reasoner/prolog/algebra.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
-		src/reasoner/esg/ESGReasoner.cpp src/DataSource.cpp)
+		src/reasoner/esg/ESGReasoner.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
