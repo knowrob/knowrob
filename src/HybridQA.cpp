@@ -9,6 +9,7 @@
 #include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
 #include <knowrob/Blackboard.h>
+#include "knowrob/rdf/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -23,6 +24,22 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 
 void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 {
+    auto semwebTree = config.get_child_optional("semantic-web");
+    if(semwebTree) {
+        // load RDF URI aliases
+        auto prefixesList = semwebTree.value().get_child_optional("prefixes");
+        for(const auto &pair : prefixesList.value()) {
+            auto alias = pair.second.get("alias","");
+            auto uri = pair.second.get("uri","");
+            if(!alias.empty() && !uri.empty()) {
+                rdf::PrefixRegistry::get().registerPrefix(alias, uri);
+            }
+            else {
+                KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");
+            }
+        }
+    }
+
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
 		for(const auto &pair : reasonerList.value()) {
