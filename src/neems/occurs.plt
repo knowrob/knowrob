@@ -3,11 +3,11 @@
 
 :- begin_mongolog_tests(mongolog_occurs, 'owl/test/events.owl').
 
-:- use_module(library('semweb/rdf_db'), [rdf_register_prefix/3]).
+:- use_module(library('semweb'), [sw_register_prefix/2]).
 :- use_module(library('mongolog/mongolog')).
 :- use_module('occurs').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/test_events.owl#').
 
 test('during(occurs(+),+Interval)') :-
 	assert_true(during(occurs(test:'Short4'), [1377777009, 1377777011])),

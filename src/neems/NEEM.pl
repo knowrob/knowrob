@@ -35,9 +35,8 @@ knowrob_load_neem(NEEM_id) :-
 :- use_module(library('mongolog/mongolog_test')).
 :- begin_mongolog_tests(mongolog_neem, 'owl/test/memory.owl').
 
-:- use_module(library('semweb/rdf_db'),
-        [ rdf_equal/2,
-          rdf_register_prefix/3 ]).
+:- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
+:- use_module(library('semweb'), [ sw_register_prefix/2 ]).
 :- use_module(library('mongolog/mongolog'),
         [ mongolog_call/1,
           mongolog_project/1 ]).
@@ -48,7 +47,7 @@ knowrob_load_neem(NEEM_id) :-
 :- dynamic test_episode/1,
            test_action/1.
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/mem-test.owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/mem-test.owl#').
 
 test('is_episode') :-
 	mongolog_call(new_iri(Episode,dul:'Situation')),
