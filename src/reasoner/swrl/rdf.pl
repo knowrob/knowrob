@@ -13,8 +13,9 @@
 @author Daniel Beßler
 */
 
-:- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
+:- use_module(library('semweb'), [sw_register_prefix/2]).
+:- sw_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#').
+:- sw_register_prefix(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
