@@ -12,7 +12,7 @@
 		'package://knowrob/owl/test/swrl.owl',
 		[ setup(tf_setup), cleanup(tf_cleanup) ]).
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 :- rdf_meta(test_set_pose(r,+,+)).
 :- rdf_meta(test_get_pose(r,+,+)).

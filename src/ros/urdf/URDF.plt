@@ -3,7 +3,7 @@
 :- use_module(library('model/RDFS')).
 :- use_module('URDF').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
 
 test(load_urdf_file_pr2) :-
   ros_package_path('knowrob', X),
