@@ -4,7 +4,9 @@
           get_unique_name(r,-),
           is_unique_name(r),
           drop_graph(+),
-          auto_drop_graphs/0
+          auto_drop_graphs/0,
+          mongo_rdf_current_predicate/2,
+          update_rdf_predicates/0
         ]).
 /** <module> Handling of triples in query expressions.
 
@@ -20,6 +22,7 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
+:- use_module(library('blackboard'), [ current_reasoner_module/1 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
@@ -29,6 +32,13 @@ The following predicates are supported:
 :- rdf_meta(must_propagate_assert(r)).
 :- rdf_meta(lookup_parents_property(t,t)).
 :- rdf_meta(triple(t,t,t)).
+
+
+%% mongo_rdf_current_predicate(Reasoner,PredicateName) is nondet.
+%
+% Stores all predicates that are defined in a reasoner database backend.
+%
+:- dynamic mongo_rdf_current_predicate/2.
 
 %% register query commands
 :- mongolog:add_command(triple).
@@ -697,6 +707,36 @@ reduce_num_array(ArrayKey, Operator, Path, ValKey, Step) :-
 	;	Step=['$set', [ValKey, [Operator, string('$num_array')]]]
 	;	Step=['$unset',string('num_array')]
 	).
+
+%% update_rdf_predicates is det.
+%
+% Read all properties defined in the database, and assert
+% mongo_rdf_current_predicate/2 for each of them.
+%
+update_rdf_predicates :-
+    current_reasoner_module(Reasoner),
+	mongolog_get_db(DB, Coll, 'triples'),
+	rdf_equal(rdf:'type',RDFType),
+	rdf_equal(rdf:'Property',PropertyType),
+    retractall(mongo_rdf_current_predicate(Reasoner, _)),
+	forall(
+	    mng_find(DB, Coll, [
+	        ['p', string(RDFType)],
+	        ['o*', string(PropertyType)]
+	    ],  Doc),
+	    (   mng_get_dict('s', Doc, string(PropertyName)),
+	        define_property(Reasoner, PropertyName)
+	    )
+	).
+
+%%
+define_property(Property) :-
+    current_reasoner_module(Reasoner),
+    define_property(Reasoner, Property).
+define_property(Reasoner, Property) :-
+    mongo_rdf_current_predicate(Reasoner, Property), !.
+define_property(Reasoner, Property) :-
+    assertz(mongo_rdf_current_predicate(Reasoner, Property)).
 
 %% is_unique_name(+Name) is semidet.
 %
