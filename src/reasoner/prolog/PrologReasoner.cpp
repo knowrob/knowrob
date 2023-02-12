@@ -19,18 +19,22 @@
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/Bottom.h"
 #include "knowrob/queries/QueryResultQueue.h"
+#include "knowrob/rdf/PrefixRegistry.h"
 
 using namespace knowrob;
 
 // make reasoner type accessible
 KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
-bool PrologReasoner::isInitialized_ = false;
+// forward declarations of foreign predicates
+foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term);
+
+bool PrologReasoner::isPrologInitialized_ = false;
+bool PrologReasoner::isKnowRobInitialized_ = false;
 
 PrologReasoner::PrologReasoner(std::string reasonerID)
 : reasonerID_(std::move(reasonerID)),
-  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
-  hasRDFData_(false)
+  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_))
 {
     addDataSourceHandler(DataSource::PROLOG_FORMAT, [this]
             (const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
@@ -72,9 +76,9 @@ PrologThreadPool& PrologReasoner::threadPool()
 }
 
 void PrologReasoner::initializeProlog() {
-	if(isInitialized_) return;
+	if(isPrologInitialized_) return;
 	// toggle on flag
-	isInitialized_ = true;
+    isPrologInitialized_ = true;
 
 	static int pl_ac = 0;
 	static char *pl_av[5];
@@ -98,16 +102,33 @@ bool PrologReasoner::initializeGlobalPackages()
 
 bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 {
-	if(!isInitialized_) {
-		// call PL_initialize
-		initializeProlog();
+    // call PL_initialize
+    initializeProlog();
+
+	if(!isKnowRobInitialized_) {
+        isKnowRobInitialized_ = true;
 		// register some foreign predicates, i.e. cpp functions that are used to evaluate predicates.
 		// note: the predicates are loaded into module "user"
+        PL_register_foreign("knowrob_register_namespace",
+                            2, (pl_function_t)pl_rdf_register_namespace2, 0);
 		PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
 		PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
 		PL_register_extensions_in_module("algebra", algebra_predicates);
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
+
+        // register RDF namespaces with Prolog.
+        // in particular the ones specified in settings are globally registered with PrefixRegistry.
+        static const auto register_prefix_i =
+                std::make_shared<PredicateIndicator>("rdf_register_prefix", 3);
+        for(auto &pair : rdf::PrefixRegistry::get()) {
+            const auto &uri = pair.first;
+            const auto &alias = pair.second;
+            eval(std::make_shared<Predicate>(Predicate(register_prefix_i, {
+                    std::make_shared<StringTerm>(alias),
+                    std::make_shared<StringTerm>(uri+"#")
+            })), nullptr, false);
+        }
 	}
 
 	// load properties into the reasoner module.
@@ -117,20 +138,6 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 	}
 	// load reasoner default packages. this is usually the code that implements the reasoner.
 	initializeDefaultPackages();
-
-	/*
-	if(cfg.get<bool>("semweb:enable", false)) {
-		// TODO: maybe a more general handling of data stored "somewhere else" should
-		//  be provided
-		// TODO: not nice adding this for all reasoner instances here. better require configuration
-		//   for adding triple predicate definition into reasoner module
-		// load rdf predicates into the reasoner module.
-		// this includes triple/3, instance_of/2, etc.
-		static auto rdf_init_f =
-				std::make_shared<PredicateIndicator>("reasoner_rdf_init", 1);
-		eval(std::make_shared<Predicate>(Predicate(rdf_init_f, { reasonerIDTerm_ })), nullptr, false);
-	}
-	 */
 
 	return true;
 }
@@ -159,11 +166,8 @@ bool PrologReasoner::load_rdf_xml(const std::filesystem::path &rdfFile)
 	static auto consult_f = std::make_shared<PredicateIndicator>("load_rdf_xml", 2);
 	auto path = getResourcePath(rdfFile);
 	auto arg0 = std::make_shared<StringTerm>(path.native());
-	// remember that an rdf file was loaded
-	hasRDFData_ = true;
 	return eval(std::make_shared<Predicate>(Predicate(consult_f, { arg0, reasonerIDTerm_ })));
 }
-
 
 bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 {
@@ -216,7 +220,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 	auto termAtom = std::make_shared<StringTerm>(queryString);
 	// run a query
 	auto result = oneSolution(std::make_shared<Predicate>(Predicate(
-				"read_term_from_atom", { termAtom, termVar, opts })), nullptr, false);
+				"read_query", { termAtom, termVar, opts })), nullptr, false);
 	
 	if(QueryResultStream::isEOS(result)) {
 		return BottomTerm::get();
@@ -532,4 +536,15 @@ std::list<TermPtr> PrologReasoner::runTests(const std::string &target)
 		output.push_back(solution->substitution()->get(*xunit_var));
 	}
 	return output;
+}
+
+// FOREIGN PREDICATES
+
+foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term)
+{
+    char *prefix, *uri;
+    if(PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
+        rdf::PrefixRegistry::get().registerPrefix(prefix, uri);
+    }
+    return TRUE;
 }
