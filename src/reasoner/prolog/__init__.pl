@@ -33,10 +33,6 @@
 
 % load common Prolog libraries
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2, rdf_register_prefix/3]).
-% register some common RDF namespaces
-:- rdf_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#', [keep(true)]).
-:- rdf_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#', [keep(true)]).
-:- rdf_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 % more fancy module declarations
 :- use_module(library('module')).
@@ -58,6 +54,10 @@
 :- use_module(library('semweb')).
 :- sw_graph_include(user,common),
    sw_graph_include(test,user).
+
+:- sw_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#').
+:- sw_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#').
+:- sw_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#').
 
 % auto-load common models
 :- use_module(library('xsd')).

@@ -2,11 +2,11 @@
 :- use_module('mongolog_test').
 :- begin_mongolog_tests(mongolog_semweb, 'owl/test/test_owl.owl').
 
-:- use_module(library('semweb/rdf_db'), [ rdf_register_prefix/3 ]).
 :- use_module('mongolog', [ mongolog_call/1 ]).
+:- use_module(library('semweb'), [ sw_register_prefix/2 ]).
 :- use_module('semweb').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/test_owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/test_owl#').
 
 test('is_resource(+Resource)') :-
 	assert_true(is_resource(test:'E')),

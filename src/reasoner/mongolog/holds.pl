@@ -164,7 +164,7 @@ lang_holds:holds(S,P,Descr) ?>
 :- use_module('mongolog_test').
 :- begin_mongolog_tests('mongolog_holds','owl/test/swrl.owl').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/swrl_test#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/swrl_test#').
 
 test('holds/1 with ns', [ blocked('holds/1 cannot handle namespaces') ]) :-
 	assert_true(holds(test:'hasHeightInMeters'(test:'RectangleBig',13))).

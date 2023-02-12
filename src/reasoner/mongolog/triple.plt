@@ -10,8 +10,6 @@
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_global_term/2 ]).
-:- use_module(library('semweb/rdf_db'),
-		[ rdf_register_ns/3 ]).
 
 :- use_module(library('mongodb/client')).
 :- use_module(library('scope')).
@@ -20,12 +18,8 @@
 :- use_module('triple').
 
 % register namespaces for following tests
-:- rdf_register_ns(swrl_tests,
-		'http://knowrob.org/kb/swrl_test#',
-		[keep(true)]).
-:- rdf_register_ns(test_datatype,
-		'http://knowrob.org/kb/datatype_test#',
-		[keep(true)]).
+:- sw_register_prefix(swrl_tests,    'http://knowrob.org/kb/swrl_test#').
+:- sw_register_prefix(test_datatype, 'http://knowrob.org/kb/datatype_test#').
 
 test('assert triple(a,b,c)') :-
 	assert_true(mongolog_assert(triple(a,b,c))).
