@@ -180,12 +180,13 @@ namespace knowrob {
 						 bool isImmediateStopRequested) override;
 
 	protected:
-		static bool isInitialized_;
+        static bool isPrologInitialized_;
+        static bool isKnowRobInitialized_;
+
 		const std::string reasonerID_;
 		std::shared_ptr<StringTerm> reasonerIDTerm_;
 		// cache of predicate descriptions
 		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
-		bool hasRDFData_;
 		
 		struct ActiveQuery {
 			std::shared_ptr<const Query> goal;
@@ -200,7 +201,7 @@ namespace knowrob {
 		
 		void finishRunner(uint32_t queryID, PrologQueryRunner *runner);
 
-		void initializeProlog();
+		static void initializeProlog();
 		bool initializeGlobalPackages();
 
 		virtual bool initializeDefaultPackages() { return true; }
@@ -208,7 +209,7 @@ namespace knowrob {
 		bool loadDataSourceWithUnknownFormat(const DataSourcePtr &dataFile) override
 		{ return consult(dataFile->uri()); };
 		
-		PrologThreadPool& threadPool();
+		static PrologThreadPool& threadPool();
 		
 		friend class PrologQueryRunner;
 	};
