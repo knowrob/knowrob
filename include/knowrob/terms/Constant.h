@@ -62,8 +62,9 @@ namespace knowrob {
 				: Constant(TermType::STRING, v) {}
 		
 		// Override Term
-		void write(std::ostream& os) const override
-		{ os << '\'' << value_ << '\''; }
+		void write(std::ostream& os) const override;
+    protected:
+        static void write1(std::ostream& os, const std::string &str);
 	};
 	
 	/**
