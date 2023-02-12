@@ -580,6 +580,16 @@ load_owl1(URL, OntologyGraph, OntologyVersion, Scope, ParentGraph) :-
 	]),
 	% erase old triples
 	mongolog_triple:drop_graph(OntologyGraph),
+	% define properties loaded in the ontology
+	rdf_equal(rdf:'type',RDFType),
+	forall(
+	    (   member(triple(PropertyName, RDFType, string(PropertyType)), TripleTerms),
+	        (   rdf_equal(owl:'ObjectProperty',PropertyType)
+	        ;   rdf_equal(owl:'DatatypeProperty',PropertyType)
+	        )
+	    ),
+	    mongolog_triple:define_property(PropertyName)
+	),
 	% load RDF data of imported ontologies
 	rdf_equal(owl:'imports',OWL_Imports),
 	forall(
