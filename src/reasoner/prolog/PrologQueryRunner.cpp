@@ -26,7 +26,7 @@ void PrologQueryRunner::run()
 	static const int flags = PL_Q_CATCH_EXCEPTION|PL_Q_NODEBUG;
 
 	KB_DEBUG("PrologReasoner has new query {}:({}).",
-			 request_.queryModule, *request_.goal);
+			 request_.queryModule->value(), *request_.goal);
 	// use the reasoner module as context module for query evaluation
 	module_t ctx_module = PL_new_module(PL_new_atom(request_.queryModule->value().c_str()));
 	// the exception risen by the Prolog engine, if any
