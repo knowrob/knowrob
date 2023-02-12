@@ -98,6 +98,9 @@ mongolog_current_predicate1(Module, Functor, _Arity, relation) :-
 	% TODO: take arity into account
     step_command(Module, Functor), !.
 
+mongolog_current_predicate1(Module, Functor, 2, relation) :-
+    mongo_rdf_current_predicate(Module, Functor), !.
+
 mongolog_current_predicate1(_Module, Functor, Arity, built_in) :-
     mongolog_rule(user, Functor, Args, _),
     length(Args, Arity),!.
@@ -431,6 +434,7 @@ mongolog_call(load_rdf_xml(File,_Module), _Ctx) :-
     ).
 
 mongolog_call(Goal, ContextIn) :-
+
 	% Add all toplevel variables to context.
 	% note that this is important to avoid that Prolog garbage collects the variables!
 	term_keys_variables_(Goal, GlobalVars),
@@ -447,12 +451,15 @@ mongolog_call(Goal, ContextIn) :-
 	(   option(predicates(_),ContextIn) -> (
 	        % add trace_predicate/1 calls where appropriate
 	        expand_instantiations(Goal, GoalWithInstantiations),
-	        mongolog_compile(GoalWithInstantiations, pipeline(Doc0,Vars), Context),
+	        blackboard:expand_rdf_predicates(GoalWithInstantiations, RDFExpanded),
+	        mongolog_compile(RDFExpanded, pipeline(Doc0,Vars), Context),
 	        Doc=[['$set',['v_predicates',array([])]] | Doc0]
 	    )
-	;   mongolog_compile(Goal, pipeline(Doc,Vars), Context)
+	;   (   blackboard:expand_rdf_predicates(Goal, RDFExpanded),
+	        mongolog_compile(RDFExpanded, pipeline(Doc,Vars), Context)
+	    )
 	),
-	%
+    %
 	option(user_vars(UserVars), Context, []),
 	option(global_vars(GlobalVars), Context, []),
 	append(Vars, UserVars, Vars1),
