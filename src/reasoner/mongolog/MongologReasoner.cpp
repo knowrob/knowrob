@@ -46,6 +46,8 @@ bool MongologReasoner::initializeDefaultPackages()
 	//
 	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})),
          nullptr, false);
+    eval(std::make_shared<Predicate>(Predicate("update_rdf_predicates",{})),
+         nullptr, false);
 
 	// load RDFS and OWL model into DB, other RDF-XML files can be listed in settings.
 	// TODO: only do below if mongolog reasoner includes semweb predicates.
