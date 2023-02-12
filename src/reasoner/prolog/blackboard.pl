@@ -204,7 +204,7 @@ reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     \+ user:predicate_property(Head, defined),
     Reasoner:predicate_property(Head, visible), !.
 
-reasoner_defined_predicate_1(Reasoner, Head, relation) :-
+reasoner_defined_predicate_1(_Reasoner, Head, relation) :-
     % RDF predicates
     functor(Head, Name, 2),
     % FIXME: is defined by reasoner?
@@ -229,7 +229,7 @@ reasoner_defined_predicate_2(Name, Arity, relation) :-
 
 reasoner_defined_predicate_2(Name, 2, relation) :-
     % RDF predicates
-    current_reasoner_module(Reasoner),
+    %current_reasoner_module(Reasoner),
     % FIXME: is defined by Reasoner?
     rdf_current_predicate(Name).
 
