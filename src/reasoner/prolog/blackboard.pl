@@ -1,5 +1,6 @@
 :- module(blackboard,
-    [ current_reasoner_module/1,      % -ReasonerModule
+    [ read_query/3,
+      current_reasoner_module/1,      % -ReasonerModule
       set_current_reasoner_module/1,  % +ReasonerModule
       reasoner_defined_predicate/2,   % ?PredicateIndicator, ?PredicateType
       reasoner_setting/2,             % +Name, ?Value
@@ -25,8 +26,42 @@
 @license BSD
 */
 
+:- use_module(library('semweb/rdf_db'), [ rdf_current_predicate/1, rdf_global_term/2 ]).
 :- use_module(library('settings'), [ setting/2 ]).
 :- use_module(library('logging')).
+
+%% read_query(+Atom, -Term, +Options) is semidet.
+%
+% Calls read_term_from_atom/3 and does some additional
+% rewriting for expansion of RDF prefixes.
+%
+%
+read_query(Atom, Term, Options) :-
+    read_term_from_atom(Atom, Term0, Options),
+    rdf_global_term(Term0, Term1),
+    expand_rdf_query(Term1, Term).
+
+%%
+expand_rdf_query(NS:Goal, Expanded) :-
+    compound(Goal),
+    Goal =.. [P, S, O],
+    rdf_global_term(NS:P,P0),
+    atom_concat('http', _, P0),
+    Expanded =.. [P0, S, O], !.
+expand_rdf_query(Goal, Goal) :-
+    is_list(Goal), !.
+expand_rdf_query(Goal, Expanded) :-
+    compound(Goal), !,
+    Goal =.. [Functor | Args],
+    expand_rdf_query1(Args, ExpandedArgs),
+    Expanded =.. [Functor | ExpandedArgs].
+expand_rdf_query(Goal, Goal).
+
+%%
+expand_rdf_query1([],[]).
+expand_rdf_query1([X|Xs],[Y|Ys]) :-
+    expand_rdf_query(X,Y),
+    expand_rdf_query1(Xs,Ys).
 
 %% current_reasoner_module(?Reasoner) is semidet.
 %
@@ -169,6 +204,12 @@ reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     \+ user:predicate_property(Head, defined),
     Reasoner:predicate_property(Head, visible), !.
 
+reasoner_defined_predicate_1(Reasoner, Head, relation) :-
+    % RDF predicates
+    functor(Head, Name, 2),
+    % FIXME: is defined by reasoner?
+    rdf_current_predicate(Name), !.
+
 %
 reasoner_defined_predicate_2(Name, Arity, built_in) :-
     system:predicate_property(Head, defined),
@@ -186,6 +227,12 @@ reasoner_defined_predicate_2(Name, Arity, relation) :-
     \+ user:predicate_property(Head, defined),
     functor(Head, Name, Arity).
 
+reasoner_defined_predicate_2(Name, 2, relation) :-
+    % RDF predicates
+    current_reasoner_module(Reasoner),
+    % FIXME: is defined by Reasoner?
+    rdf_current_predicate(Name).
+
 %% reasoner_call(+Goal, +QueryContext) is nondet.
 %
 % option(instantiations(List)): List is a list of predicate instantations
@@ -195,10 +242,34 @@ reasoner_call(Goal, QueryContext) :-
     current_reasoner_module(Reasoner),
     % record instantiated predicates into a list if requested
     (   option(predicates(Instantiations), QueryContext)
-    ->  expand_instantiations(Goal, Expanded, Instantiations)
-    ;   Expanded = Goal
+    ->  expand_instantiations(Goal, Expanded0, Instantiations)
+    ;   Expanded0 = Goal
     ),
+    % RDF predicates may appear as `P(S,O)` in queries, rewrite
+    % such expressions to `triple(S,P,O)`.
+    expand_rdf_predicates(Expanded0, Expanded),
     Reasoner:call(Expanded).
+
+%%
+expand_rdf_predicates(Goal, triple(S, P, O)) :-
+    compound(Goal),
+    Goal =.. [P, S, O],
+    atom(P),
+    atom_concat('http', _, P), !.
+expand_rdf_predicates(Goal, Goal) :-
+    is_list(Goal), !.
+expand_rdf_predicates(Goal, Expanded) :-
+    compound(Goal), !,
+    Goal =.. [Functor | Args],
+    expand_rdf_predicates1(Args, ExpandedArgs),
+    Expanded =.. [Functor | ExpandedArgs].
+expand_rdf_predicates(Goal, Goal).
+
+%%
+expand_rdf_predicates1([],[]).
+expand_rdf_predicates1([X|Xs],[Y|Ys]) :-
+    expand_rdf_predicates(X,Y),
+    expand_rdf_predicates1(Xs,Ys).
 
 %%
 expand_instantiations(Goal, Expanded, Instantiations) :-
