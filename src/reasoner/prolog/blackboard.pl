@@ -26,7 +26,10 @@
 @license BSD
 */
 
-:- use_module(library('semweb/rdf_db'), [ rdf_current_predicate/1, rdf_global_term/2 ]).
+:- use_module(library('semweb/rdf_db'),
+        [ rdf_current_predicate/1,
+          rdf_global_term/2,
+          rdf/4 ]).
 :- use_module(library('settings'), [ setting/2 ]).
 :- use_module(library('logging')).
 
@@ -42,6 +45,7 @@ read_query(Atom, Term, Options) :-
     expand_rdf_query(Term1, Term).
 
 %%
+% TODO: rewrite triple(S,P,O) to P(S,O) here if ground(P)
 expand_rdf_query(NS:Goal, Expanded) :-
     compound(Goal),
     Goal =.. [P, S, O],
@@ -204,11 +208,14 @@ reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     \+ user:predicate_property(Head, defined),
     Reasoner:predicate_property(Head, visible), !.
 
-reasoner_defined_predicate_1(_Reasoner, Head, relation) :-
+reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     % RDF predicates
     functor(Head, Name, 2),
-    % FIXME: is defined by reasoner?
-    rdf_current_predicate(Name), !.
+    rdf_current_predicate(Name),
+    once((
+        rdf(Name, rdf:type, _, Graph:_),
+        sw_current_graph(Reasoner, Graph)
+    )), !.
 
 %
 reasoner_defined_predicate_2(Name, Arity, built_in) :-
@@ -229,9 +236,12 @@ reasoner_defined_predicate_2(Name, Arity, relation) :-
 
 reasoner_defined_predicate_2(Name, 2, relation) :-
     % RDF predicates
-    %current_reasoner_module(Reasoner),
-    % FIXME: is defined by Reasoner?
-    rdf_current_predicate(Name).
+    current_reasoner_module(Reasoner),
+    rdf_current_predicate(Name),
+    once((
+        rdf(Name, rdf:type, _, Graph:_),
+        sw_current_graph(Reasoner, Graph)
+    )).
 
 %% reasoner_call(+Goal, +QueryContext) is nondet.
 %

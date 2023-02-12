@@ -30,6 +30,7 @@
       sw_set_default_graph/1,      % +Graph
       sw_default_graph/1,          % ?Graph
       set_graph_option/2,
+      sw_current_graph/2,
 
       load_rdf_xml/2,              % +URL, +ParentGraph
       load_json_rdf/1
@@ -48,6 +49,7 @@
 		  rdf_load/2,
 		  rdf_assert/4,
 		  rdf_has/3,
+		  rdf_has/4,
 		  rdf_equal/2,
 		  rdf_unload_graph/1,
 		  rdf_is_literal/1,
@@ -81,7 +83,6 @@ annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
 
 % TODO: support temporally scoped predicates
 % TODO: support fuzzy predicates
-% TODO: support restricting queries to graphs loaded into reasoner module
 % TODO: set predicate properties, rdf_db supports some
 %   - rdf_predicate_property(?Predicate, ?Property)
 %       - symmetric(Bool), inverse_of(Inverse), transitive(Bool)
@@ -107,11 +108,13 @@ sw_triple(Subject, Predicate, Object) :-
 sw_triple(Subject, Predicate, Object, _Context) :-
     atom(Object),!,
     % TODO: better check if it is datatype property, and query literal in this case?
-    rdf_has(Subject, Predicate, Object).
+    rdf_has(Subject, Predicate, Object, RealPredicate),
+    post_graph(Subject, RealPredicate, Object).
 
 sw_triple(Subject, Predicate, Object, _Context) :-
     var(Object),!,
-    rdf_has(Subject, Predicate, Value),
+    rdf_has(Subject, Predicate, Value, RealPredicate),
+    post_graph(Subject, RealPredicate, Value),
     % convert XSD atom value into native type
     ( atom(Value) -> Object=Value ; rdf_literal_value(Value,Object) ).
 
@@ -122,28 +125,31 @@ sw_triple(Subject, Predicate, Object, _Context) :-
     % get XSD IRI
     xsd_data_basetype(XSDType, Type),
     % typed triple lookup
-    rdf_has(Subject, Predicate, literal(type(XSDType, Value))).
+    LiteralValue = literal(type(XSDType, Value)),
+    rdf_has(Subject, Predicate, LiteralValue, RealPredicate),
+    post_graph(Subject, RealPredicate, LiteralValue).
 
 sw_triple(Subject, Predicate, Number, _Context) :-
     number(Number),!,
     atom_number(ValueAtom, Number),
-    rdf_has(Subject, Predicate, literal(type(_XSDType, ValueAtom))).
+    LiteralValue = literal(type(_XSDType, ValueAtom)),
+    rdf_has(Subject, Predicate, LiteralValue, RealPredicate),
+    post_graph(Subject, RealPredicate, LiteralValue).
 
 sw_triple(Subject, Predicate, Object, _Context) :-
     throw(error(type_error(resource, Object),
                 sw_triple(Subject,Predicate,Object))).
 
-/* TODO: restrict to graph
-post_graph(Subject, RealPredicate, Object, Context) :-
-    option(graph(Graph), Context),!,
-	% get graph where triple is asserted
-	rdf(Subject, RealPredicate, Object, RealGraph),
-	% unify graphs, if not possible check subgraph relation
-	(   RealGraph=Graph -> true
-	;   sw_graph_includes(Graph, RealGraph)
-	).
-post_graph(_, _, _, _).
-*/
+%%
+post_graph(Subject, RealPredicate, Object) :-
+    current_reasoner_module(Reasoner),
+    % NOTE: rdf_has does not have a graph parameter.
+    %       so the only option is to call rdf_has/4 followed by rdf/4 with the real predicate
+    %       to obtain the graph where the fact is asserted, and to check then if it is a defined
+    %       graph for the current reasoner.
+    rdf(Subject, RealPredicate, Object, Graph:_),
+    sw_current_graph(Reasoner, Graph),
+    !.
 
 %% sw_instance_of(?Resource, ?Class) is nondet.
 %
@@ -695,6 +701,20 @@ convert_rdf_value_(        O,  string(O)) :- !.
       *       GRAPH HIERARCHY       *
       *******************************/
 
+:- dynamic sw_current_graph_/2.
+
+%%
+sw_current_graph(_, common) :- !.
+sw_current_graph(_, user) :- !.
+sw_current_graph(Reasoner, GraphName) :-
+    sw_current_graph_(Reasoner, GraphName).
+
+%%
+sw_set_current_graph(Reasoner, GraphName) :-
+    sw_current_graph_(Reasoner, GraphName), !.
+sw_set_current_graph(Reasoner, GraphName) :-
+    assertz(sw_current_graph_(Reasoner, GraphName)).
+
 %% sw_graph_includes(?Graph, ?IncludedGraph) is nondet.
 %
 :- dynamic sw_graph_includes/2.
@@ -784,6 +804,9 @@ load_rdf_xml1(URL, ParentGraph) :-
 	    rdf_load(Stream, [graph(OntologyGraph), silent(true)]),
 	    close(Stream)
 	),
+	% remember reasoner to graph association
+	current_reasoner_module(Reasoner),
+	sw_set_current_graph(Reasoner, OntologyGraph),
 	% lookup ontology URL
 	(	rdf(AssertedURL, RDF_Type, OWL_Ontology, OntologyGraph) -> true
 	;	log_error_and_fail(type_error(ontology,URL))
