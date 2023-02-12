@@ -21,6 +21,7 @@
       sw_url_graph/2,              % +URL, ?OntologyGraph
       sw_url_version/2,            % +URL, ?OntologyVersion
       sw_url_read/2,
+      sw_register_prefix/2,
       sw_url_register_ns/2,
 
       sw_graph_include/2,          % +Graph, +IncludedGraph
@@ -44,7 +45,6 @@
 		[ load_rdf/3 ]).
 :- use_module(library('semweb/rdf_db'), 
 		[ rdf_equal/2,
-		  rdf_register_ns/3,
 		  rdf_load/2,
 		  rdf_assert/4,
 		  rdf_has/3,
@@ -54,6 +54,7 @@
 		  rdf_resource/1,
 		  rdf_subject/1,
 		  rdf_literal_value/2,
+		  rdf_register_prefix/3,
 		  rdf/3,
 		  rdf/4 ]).
 :- use_module(library('semweb/rdf11'),
@@ -579,6 +580,16 @@ version_matcher --> "v", version_matcher.
 version_matcher --> digits(_), ".", digits(_), ".", digits(_).
 version_matcher --> digits(_), ".", digits(_).
 
+%%
+sw_register_prefix(Prefix, URI) :-
+    rdf_register_prefix(Prefix, URI, [force(true)]),
+    knowrob_register_namespace(Prefix, URI).
+
+% register some common RDF namespaces
+:- sw_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#').
+:- sw_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#').
+:- sw_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#').
+
 %% sw_url_register_ns(+URL,+Options) is semidet.
 %
 % @param URL URL of a RDF file.
@@ -588,12 +599,12 @@ sw_url_register_ns(URL, Opts) :-
 	% register namespace
 	(	option(namespace(NS), Opts)
 	->	(	atom_concat(URL, '#', Prefix),
-			rdf_register_ns(NS, Prefix, [keep(true)])
+			sw_register_prefix(NS, Prefix)
 		)
 	;	true
 	),
 	(	option(namespace(NS,Prefix), Opts)
-	->	rdf_register_ns(NS, Prefix, [keep(true)])
+	->	sw_register_prefix(NS, Prefix)
 	;	true
 	).
 
@@ -868,7 +879,7 @@ triple_json_scope(_Triples,_Scope) :-
 :- use_module(library('rdf_test')).
 :- begin_rdf_tests('semweb', 'owl/test/pancake.owl').
 
-:- rdf_register_prefix(test, 'http://knowrob.org/kb/pancake.owl#', [force(true)]).
+:- sw_register_prefix(test, 'http://knowrob.org/kb/pancake.owl#').
 
 test('sw_class_expr(+,-)') :-
     assert_true(sw_class_expr(test:'FlippingAPancake',_)),
