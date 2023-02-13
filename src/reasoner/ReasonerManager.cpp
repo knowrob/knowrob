@@ -16,10 +16,31 @@
 using namespace knowrob;
 
 std::map<std::string, std::shared_ptr<ReasonerFactory>> ReasonerManager::reasonerFactories_ = {};
+std::map<uint32_t, ReasonerManager*> ReasonerManager::reasonerManagers_ = {};
+uint32_t ReasonerManager::managerIDCounter_ = 0;
 
 ReasonerManager::ReasonerManager()
 : reasonerIndex_(0)
 {
+    std::lock_guard<std::mutex> scoped_lock(staticMutex_);
+    managerID_ = (managerIDCounter_++);
+    reasonerManagers_[managerID_] = this;
+}
+
+ReasonerManager::~ReasonerManager()
+{
+    std::lock_guard<std::mutex> scoped_lock(staticMutex_);
+    reasonerManagers_.erase(managerID_);
+}
+
+ReasonerManager* ReasonerManager::getReasonerManager(uint32_t managerID)
+{
+    auto it = reasonerManagers_.find(managerID);
+    if(it != reasonerManagers_.end()) {
+        return it->second;
+    } else {
+        return nullptr;
+    }
 }
 
 void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
@@ -62,6 +83,10 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	KB_INFO("Using reasoner `{}` with type `{}`.", reasonerID, factory->name());
 	// create a new reasoner instance
 	auto reasoner = factory->createReasoner(reasonerID);
+    // reasoner need to have a reference to the reasoner manager such that
+    // predicates can be defined that interact with other reasoner subsystems.
+    reasoner->setReasonerManager(managerID_);
+
 	ReasonerConfiguration reasonerConfig;
 	reasonerConfig.loadPropertyTree(config);
 	if(!reasoner->loadConfiguration(reasonerConfig)) {
@@ -107,7 +132,8 @@ bool ReasonerManager::addReasonerFactory(const std::string &typeName, const std:
 	return true;
 }
 
-std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
+std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
+        const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
 {
 	if(reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
 		KB_WARN("overwriting reasoner with name '{}'", reasonerID);

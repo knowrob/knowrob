@@ -21,6 +21,13 @@ namespace knowrob {
 	class ReasonerManager {
 	public:
 		ReasonerManager();
+        ~ReasonerManager();
+
+        /**
+         * @param managerID the ID of a reasoner manager
+         * @return the reasoner manager, or nullptr if ID is unknown
+         */
+        static ReasonerManager* getReasonerManager(uint32_t managerID);
 
 		/**
 		 * Add a reasoner factory to the manager.
@@ -46,19 +53,6 @@ namespace knowrob {
 		void loadReasoner(const boost::property_tree::ptree &config);
 
 		/**
-		 * Add a reasoner to this manager.
-		 * @reasoner a reasoner.
-		 */
-		std::shared_ptr<DefinedReasoner> addReasoner(
-				const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
-
-		/**
-		 * Remove a reasoner from this manager.
-		 * @reasoner a reasoner.
-		 */
-		void removeReasoner(const std::shared_ptr<DefinedReasoner> &reasoner);
-
-		/**
 		 * Get the definition of a predicate.
 		 * @param predicate the predicate in question
 		 * @return a predicate definition
@@ -75,6 +69,12 @@ namespace knowrob {
 	private:
 		// maps reasoner type name to factory used to create instances of that type
 		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
+        // maps manager id to manager
+        static std::map<uint32_t, ReasonerManager*> reasonerManagers_;
+        // counts number of initialized managers
+        static uint32_t managerIDCounter_;
+        // mutex used to interact with static variables
+        std::mutex staticMutex_;
 		// pool of all reasoner instances created via this manager
 		// maps reasoner ID to reasoner instance.
 		std::map<std::string, std::shared_ptr<DefinedReasoner>> reasonerPool_;
@@ -82,8 +82,23 @@ namespace knowrob {
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
 		// a counter used to generate unique IDs
 		uint32_t reasonerIndex_;
+        // an identifier for this manager
+        uint32_t managerID_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
+
+        /**
+         * Add a reasoner to this manager.
+         * @reasoner a reasoner.
+         */
+        std::shared_ptr<DefinedReasoner> addReasoner(
+                const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
+
+        /**
+         * Remove a reasoner from this manager.
+         * @reasoner a reasoner.
+         */
+        void removeReasoner(const std::shared_ptr<DefinedReasoner> &reasoner);
 	};
 
 	// a macro for static registration of a reasoner type.
