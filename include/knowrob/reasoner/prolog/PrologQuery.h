@@ -19,8 +19,11 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/queries/Query.h"
 #include "knowrob/formulas/ConnectiveFormula.h"
+#include "knowrob/queries/QueryResult.h"
 
 namespace knowrob {
+    using PrologVariableMap = std::map<std::string, term_t>;
+
 	/**
 	 * Maps a Query object into term_t type of Prolog.
 	 */
@@ -52,21 +55,21 @@ namespace knowrob {
 		 * Get map of all variables in this query.
 		 * @return the map.
 		 */
-		const std::map<std::string, term_t>& vars() const{ return vars_; }
+		const std::map<std::string, term_t>& vars() const { return vars_; }
 
 		/**
 		 * Translates a term_t reference to a Term object.
 		 * @t a term_t reference.
 		 * @return the Term object created.
 		 */
-		static TermPtr constructTerm(const term_t &t);
+		static TermPtr constructTerm(const term_t &t, std::map<std::string,term_t> *vars=nullptr);
 		
 		/**
 		 * Creates a query from a term pointer by translation into a formula.
 		 * @t a Term pointer.
 		 * @return the Query object created.
 		 */
-		static std::shared_ptr<const Query> toQuery(const TermPtr &t);
+		static std::shared_ptr<Query> toQuery(const TermPtr &t);
 
 		/**
 		 * Converts a formula to a term by converting formula
@@ -75,6 +78,64 @@ namespace knowrob {
 		 * @return the term created
 		 */
 		static TermPtr toTerm(const FormulaPtr &phi);
+
+        /**
+         * Put a Term in a Prolog term reference.
+         * @param pl_term A Prolog term.
+         * @param qa_term A Term object.
+         * @param vars maps variable names to Prolog terms.
+         * @return true on success.
+         */
+        static bool putTerm(term_t pl_term, const TermPtr& qa_term, PrologVariableMap &vars);
+
+        /**
+         * Put a Formula in a Prolog term reference.
+         * @param pl_term A Prolog term.
+         * @param phi A Formula object.
+         * @param vars maps variable names to Prolog terms.
+         * @return true on success.
+         */
+        static bool putTerm(term_t pl_term, const FormulaPtr& phi, PrologVariableMap &vars);
+
+        /**
+         * Put a TimeInterval in a Prolog term reference.
+         * @param pl_term A Prolog term.
+         * @param phi A TimeInterval object.
+         * @return true on success.
+         */
+        static bool putTerm(term_t pl_term, const TimeInterval& timeInterval);
+
+        /**
+         * Put a ConfidenceInterval in a Prolog term reference.
+         * @param pl_term A Prolog term.
+         * @param confidenceInterval A ConfidenceInterval object.
+         * @return true on success.
+         */
+        static bool putTerm(term_t pl_term, const ConfidenceInterval& confidenceInterval);
+
+        /**
+         * Put a Prolog term encoding the scope in a Query object.
+         * @param query A Query object.
+         * @param pl_scope A Prolog term.
+         * @return true on success.
+         */
+        static bool putScope(const std::shared_ptr<Query> &query, term_t pl_scope);
+
+        /**
+         * Put a Prolog term encoding the scope in a QueryResult object.
+         * @param solution A QueryResult object.
+         * @param pl_scope A Prolog term.
+         * @return true on success.
+         */
+        static bool putScope(const std::shared_ptr<QueryResult> &solution, term_t pl_scope);
+
+        /**
+         * Put the scope of a QueryResult in a Prolog term reference.
+         * @param pl_term A Prolog term.
+         * @param solution A QueryResult object.
+         * @return true on success.
+         */
+        static bool putScope(term_t pl_scope, const QueryResultPtr &solution);
 
 		/**
 		 * @return the 'fail' atom.
@@ -118,14 +179,12 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<const Query> qa_query_;
 		term_t pl_query_;
-		std::map<std::string, term_t> vars_;
-
-		bool constructPrologTerm(const TermPtr& qa_term, term_t &pl_term);
-		bool constructPrologTerm(const FormulaPtr& phi, term_t &pl_term);
-		bool constructPrologTerm(ConnectiveFormula *phi, const functor_t &pl_functor, term_t &pl_term);
+        PrologVariableMap vars_;
 		
 		static FormulaPtr toFormula(const TermPtr &t);
-		static TermPtr    toTerm(ConnectiveFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
+		static TermPtr toTerm(ConnectiveFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
+        static bool putTerm(term_t pl_term, const functor_t &pl_functor,
+                            ConnectiveFormula *phi, PrologVariableMap &vars);
 	};
 }
 

@@ -77,7 +77,7 @@ void PrologQueryRunner::run()
 			}
 		}
 		// set the solution scope, if reasoner specified it
-		setSolutionScope(solution, solution_scope);
+        PrologQuery::putScope(solution, solution_scope);
 		// push the solution into the output stream
 		request_.queryInstance->pushSolution(solution);
 	}
@@ -102,61 +102,6 @@ void PrologQueryRunner::run()
 	if(sendEOS_) request_.queryInstance->pushEOS();
 	// throw error if Prolog evaluation has caused an exception.
 	if(exceptionTerm) throw QueryError(*request_.goal, *exceptionTerm);
-}
-
-void PrologQueryRunner::setSolutionScope(std::shared_ptr<QueryResult> &solution, term_t solutionScope)
-{
-    static const auto time_key = PL_new_atom("time");
-    static const auto confidence_key = PL_new_atom("confidence");
-
-    if(PL_is_variable(solutionScope)) {
-        // reasoner did not specify a solution scope
-        return;
-    }
-    else if(PL_is_dict(solutionScope)) {
-        // the solution scope was generated as a Prolog dictionary
-        auto scope_val = PL_new_term_ref();
-
-        // read "time" key, the value is expected to be a predicate `range(Since,Until)`
-        if(PL_get_dict_key(time_key, solutionScope, scope_val)) {
-            term_t arg = PL_new_term_ref();
-            std::optional<TimePoint> v_since, v_until;
-            double val=0.0;
-
-            if(PL_get_arg(1, scope_val, arg) &&
-               PL_term_type(arg)==PL_FLOAT &&
-               PL_get_float(arg, &val) &&
-               val > 0.001)
-            { v_since = val; }
-
-            if(PL_get_arg(2, scope_val, arg) &&
-               PL_term_type(arg)==PL_FLOAT &&
-               PL_get_float(arg, &val))
-            { v_until = val; }
-
-            if(v_since.has_value() || v_until.has_value()) {
-                solution->setTimeInterval(std::make_shared<TimeInterval>(
-                        Range<TimePoint>(v_since, std::nullopt),
-                        Range<TimePoint>(std::nullopt, v_until)));
-            }
-        }
-
-        // read "confidence" key, the value is expected to be a float value
-        if(PL_get_dict_key(confidence_key, solutionScope, scope_val)) {
-            double v_confidence=0.0;
-            if(PL_term_type(scope_val)==PL_FLOAT &&
-               PL_get_float(scope_val, &v_confidence))
-            {
-                solution->setConfidenceValue(
-                        std::make_shared<ConfidenceValue>(v_confidence));
-            }
-        }
-
-        PL_reset_term_refs(scope_val);
-    }
-    else {
-        KB_WARN("solution scope has an unexpected type (should be dict).");
-    }
 }
 
 term_t PrologQueryRunner::createContextTerm(
@@ -187,11 +132,11 @@ term_t PrologQueryRunner::createContextTerm(
 
         int keyIndex = 0;
         if(timeInterval.has_value()) {
-            createIntervalDict(scopeValues, *timeInterval.value());
+            PrologQuery::putTerm(scopeValues, *timeInterval.value());
             scopeKeys[keyIndex++] = time_key;
         }
         if(confidenceInterval.has_value()) {
-            createIntervalDict(scopeValues+keyIndex, *confidenceInterval.value());
+            PrologQuery::putTerm(scopeValues+keyIndex, *confidenceInterval.value());
             scopeKeys[keyIndex++] = confidence_key;
         }
 
@@ -228,21 +173,33 @@ term_t PrologQueryRunner::createQueryArgumentTerms(
         PrologQuery &pl_goal, term_t solutionScopeVar, term_t predicatesVar)
 {
     static const auto reasoner_module_a = PL_new_atom("reasoner_module");
+    static const auto reasoner_manager_a = PL_new_atom("reasoner_manager");
     static const auto b_setval_f = PL_new_functor(PL_new_atom("b_setval"), 2);
     const auto call_f = request_.callFunctor;
 
     // construct b_setval/2 arguments
-    auto setval_args = PL_new_term_refs(2);
-    if(!PL_put_atom(setval_args, reasoner_module_a) ||
-       !PL_put_atom_chars(setval_args+1, request_.queryModule->value().c_str()))
+    auto setval_args1 = PL_new_term_refs(2);
+    if(!PL_put_atom(setval_args1, reasoner_module_a) ||
+       !PL_put_atom_chars(setval_args1+1, request_.queryModule->value().c_str()))
     {
+        return (term_t)0;
+    }
+    auto setval_args2 = PL_new_term_refs(2);
+    if(!PL_put_atom(setval_args2, reasoner_manager_a) ||
+       !PL_put_integer(setval_args2+1, reasoner_->reasonerManagerID()))
+    {
+        return (term_t)0;
+    }
+    auto setval_args3 = PL_new_term_refs(2);
+    if(!PL_cons_functor_v(setval_args3, b_setval_f, setval_args1) ||
+       !PL_cons_functor_v(setval_args3+1, b_setval_f, setval_args2)) {
         return (term_t)0;
     }
 
     // construct arguments for the comma predicate
     auto query_args  = PL_new_term_refs(2);
     // first argument is the predicate b_setval/2
-    if(!PL_cons_functor_v(query_args, b_setval_f, setval_args)) return (term_t)0;
+    if(!PL_cons_functor_v(query_args, PrologQuery::FUNCTOR_comma(), setval_args3)) return (term_t)0;
     // second argument is the query, optionally wrapped in a call/2 predicate
     if(call_f != (functor_t)0) {
         // construct arguments for call/2 predicate
@@ -259,54 +216,4 @@ term_t PrologQueryRunner::createQueryArgumentTerms(
     }
 
     return query_args;
-}
-
-template <class T>
-bool PrologQueryRunner::createRangeDict(term_t intervalDict, const Range<T> &range)
-{
-    static const auto min_key = PL_new_atom("min");
-    static const auto max_key = PL_new_atom("max");
-
-    int numRangeKeys = 0;
-    if(range.min().has_value()) numRangeKeys += 1;
-    if(range.max().has_value()) numRangeKeys += 1;
-    atom_t rangeKeys[numRangeKeys];
-    auto rangeValues = PL_new_term_refs(numRangeKeys);
-
-    int keyIndex = 0;
-    if(range.min().has_value()) {
-        if(!PL_put_float(rangeValues, range.min().value().value())) return false;
-        rangeKeys[keyIndex++] = min_key;
-    }
-    if(range.max().has_value()) {
-        if(!PL_put_float(rangeValues+keyIndex, range.max().value().value())) return false;
-        rangeKeys[keyIndex++] = max_key;
-    }
-
-    return PL_put_dict(intervalDict, 0, numRangeKeys, rangeKeys, rangeValues);
-}
-
-template <class T>
-bool PrologQueryRunner::createIntervalDict(term_t intervalDict, const FuzzyInterval<T> &i)
-{
-    static const auto min_key = PL_new_atom("min");
-    static const auto max_key = PL_new_atom("max");
-
-    int numRangeKeys = 0;
-    if(i.minRange().hasValue()) numRangeKeys += 1;
-    if(i.maxRange().hasValue()) numRangeKeys += 1;
-    atom_t rangeKeys[numRangeKeys];
-    auto rangeValues = PL_new_term_refs(numRangeKeys);
-
-    int keyIndex = 0;
-    if(i.minRange().hasValue()) {
-        createRangeDict(rangeValues, i.minRange());
-        rangeKeys[keyIndex++] = min_key;
-    }
-    if(i.maxRange().hasValue()) {
-        createRangeDict(rangeValues+keyIndex, i.maxRange());
-        rangeKeys[keyIndex++] = max_key;
-    }
-
-    return PL_put_dict(intervalDict, 0,numRangeKeys, rangeKeys, rangeValues);
 }

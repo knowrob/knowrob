@@ -21,13 +21,12 @@
 
 using namespace knowrob;
 
-	
 PrologQuery::PrologQuery(const std::shared_ptr<const Query> &qa_query)
 : qa_query_(qa_query),
   pl_query_(PL_new_term_ref())
 {
 	// translate into term_t
-	if(!constructPrologTerm(qa_query->formula(), pl_query_)) {
+	if(!putTerm(pl_query_, qa_query->formula(), vars_)) {
 		throw QueryError("Failed to create term_t from Query.");
 	}
 }
@@ -37,29 +36,29 @@ PrologQuery::~PrologQuery()
 	PL_reset_term_refs(pl_query_);
 }
 
-bool PrologQuery::constructPrologTerm( //NOLINT
-		const FormulaPtr& phi, term_t &pl_term)
+bool PrologQuery::putTerm( //NOLINT
+        term_t pl_term, const FormulaPtr& phi, PrologVariableMap &vars)
 {
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		const std::shared_ptr<Predicate> &qa_pred =
 			((PredicateFormula*) phi.get())->predicate();
-		return constructPrologTerm(qa_pred, pl_term);
+		return putTerm(pl_term, qa_pred, vars);
 	}
 	case FormulaType::CONJUNCTION:
-		return constructPrologTerm(
-			(ConnectiveFormula*)phi.get(), PrologQuery::FUNCTOR_comma(), pl_term);
+		return putTerm(pl_term, PrologQuery::FUNCTOR_comma(),
+                (ConnectiveFormula *) phi.get(), vars);
 	case FormulaType::DISJUNCTION:
-		return constructPrologTerm(
-			(ConnectiveFormula*)phi.get(), PrologQuery::FUNCTOR_semicolon(), pl_term);
+		return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
+                (ConnectiveFormula *) phi.get(), vars);
 	default:
 		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
 		return false;
 	}
 }
 
-bool PrologQuery::constructPrologTerm( //NOLINT
-		const TermPtr& qa_term, term_t &pl_term)
+bool PrologQuery::putTerm( //NOLINT
+        term_t pl_term, const TermPtr& qa_term, PrologVariableMap &vars)
 {
 	switch(qa_term->type()) {
 	case TermType::PREDICATE: {
@@ -70,7 +69,7 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 			term_t pl_arg0 = pl_arg;
 			// construct argument terms
 			for(const auto &qa_arg : qa_pred->arguments()) {
-				if(!constructPrologTerm(qa_arg, pl_arg)) {
+				if(!putTerm(pl_arg, qa_arg, vars)) {
 					return false;
 				}
 				pl_arg += 1;
@@ -92,14 +91,14 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 	case TermType::VARIABLE: {
 		auto *qa_var = (Variable*)qa_term.get();
 		// try to use previously created term_t
-		auto it = vars_.find(qa_var->name());
-		if(it != vars_.end()) {
+		auto it = vars.find(qa_var->name());
+		if(it != vars.end()) {
 			return PL_put_term(pl_term, it->second);
 		}
 		// create a new variable
 		// TODO: any way to assign the name here?
 		else if(PL_put_variable(pl_term)) {
-			vars_[qa_var->name()] = pl_term;
+			vars[qa_var->name()] = pl_term;
 			return true;
 		}
 		else {
@@ -123,8 +122,8 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 		auto *list = (ListTerm*)qa_term.get();
 		term_t pl_elem = PL_new_term_ref();
 		for(auto &elem : list->elements()) {
-			if(!constructPrologTerm(elem, pl_elem) ||
-			   !PL_cons_list(pl_term, pl_elem, pl_term))
+			if(!putTerm(pl_elem, elem, vars) ||
+               !PL_cons_list(pl_term, pl_elem, pl_term))
 			{
 				return false;
 			}
@@ -137,11 +136,11 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 	}
 }
 
-bool PrologQuery::constructPrologTerm( //NOLINT
-		ConnectiveFormula *phi, const functor_t &pl_functor, term_t &pl_term)
+bool PrologQuery::putTerm( //NOLINT
+        term_t pl_term, const functor_t &pl_functor, ConnectiveFormula *phi, PrologVariableMap &vars)
 {
 	if(phi->formulae().size()==1) {
-		return constructPrologTerm(phi->formulae()[0], pl_term);
+		return putTerm(pl_term, phi->formulae()[0], vars);
 	}
 	else {
 		int counter = 1;
@@ -150,14 +149,14 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 		for(int i=phi->formulae().size()-1; i>=0; --i) {
 			if(counter==1) {
 				// create term for last formula, remember in last_head term
-				if(!constructPrologTerm(phi->formulae()[i], last_head)) return false;
+				if(!putTerm(last_head, phi->formulae()[i], vars)) return false;
 			}
 			else {
 				// create a 2-ary predicate using last_head as second argument
 				term_t pl_arg = PL_new_term_refs(2);
-				if(!constructPrologTerm(phi->formulae()[i], pl_arg) ||
-				   !PL_put_term(pl_arg+1, last_head) ||
-				   !PL_cons_functor_v((i==0 ? pl_term : last_head), pl_functor, pl_arg))
+				if(!putTerm(pl_arg, phi->formulae()[i], vars) ||
+                   !PL_put_term(pl_arg+1, last_head) ||
+                   !PL_cons_functor_v((i==0 ? pl_term : last_head), pl_functor, pl_arg))
 				{
 					return false;
 				}
@@ -170,7 +169,7 @@ bool PrologQuery::constructPrologTerm( //NOLINT
 	}
 }
 
-TermPtr PrologQuery::constructTerm(const term_t &t) //NOLINT
+TermPtr PrologQuery::constructTerm(const term_t &t, std::map<std::string,term_t> *vars) //NOLINT
 {
 	switch(PL_term_type(t)) {
 	case PL_TERM: {
@@ -184,7 +183,7 @@ TermPtr PrologQuery::constructTerm(const term_t &t) //NOLINT
 		term_t arg = PL_new_term_ref();
 		for(int n=1; n<=arity; n++) {
 			if(PL_get_arg(n, t, arg)) {
-				arguments[n-1] = constructTerm(arg);
+				arguments[n-1] = constructTerm(arg, vars);
 			}
 			else {
 				KB_WARN("Failed to construct argument {} of predicate {}.", n, functorName);
@@ -198,6 +197,7 @@ TermPtr PrologQuery::constructTerm(const term_t &t) //NOLINT
 		// TODO: could support a mapping to internal names here
 		char *s;
 		if(!PL_get_chars(t, &s, CVT_VARIABLE)) break;
+        if(vars) (*vars)[std::string(s)] = t;
 		return std::make_shared<Variable>(std::string(s));
 	}
 	case PL_ATOM: {
@@ -238,7 +238,7 @@ TermPtr PrologQuery::constructTerm(const term_t &t) //NOLINT
 		term_t head = PL_new_term_ref();
 		std::list<TermPtr> elements;
 		while(PL_get_list(t, head, t)) {
-			elements.push_back(PrologQuery::constructTerm(head));
+			elements.push_back(PrologQuery::constructTerm(head, vars));
 		}
 		return std::make_shared<ListTerm>(
 			std::vector<TermPtr>(elements.begin(), elements.end()));
@@ -281,7 +281,7 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 	}
 }
 
-std::shared_ptr<const Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
+std::shared_ptr<Query> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
 	return std::make_shared<Query>(toFormula(t));
 }
@@ -326,6 +326,247 @@ TermPtr PrologQuery::toTerm(  //NOLINT
 	
 	// outermost predicate is stored in args vector.
 	return args[1];
+}
+
+template <class PointType>
+static inline void readFuzzyInterval(
+        term_t interval_term,
+        std::optional<PointType> *minMin,
+        std::optional<PointType> *minMax,
+        std::optional<PointType> *maxMin,
+        std::optional<PointType> *maxMax)
+{
+    static const auto min_key = PL_new_atom("min");
+    static const auto max_key = PL_new_atom("max");
+
+    auto time_range = PL_new_term_ref();
+    auto inner_arg = PL_new_term_ref();
+    double val=0.0;
+
+    if(PL_get_dict_key(min_key, interval_term, time_range)) {
+        if(PL_get_dict_key(min_key, time_range, inner_arg) &&
+           PL_term_type(inner_arg)==PL_FLOAT && PL_get_float(inner_arg, &val))
+        {
+            *minMin = PointType(val);
+        }
+        if(PL_get_dict_key(max_key, time_range, inner_arg) &&
+           PL_term_type(inner_arg)==PL_FLOAT && PL_get_float(inner_arg, &val))
+        {
+            *minMax = PointType(val);
+        }
+    }
+
+    if(PL_get_dict_key(max_key, interval_term, time_range)) {
+        if(PL_get_dict_key(min_key, time_range, inner_arg) &&
+           PL_term_type(inner_arg)==PL_FLOAT && PL_get_float(inner_arg, &val))
+        {
+            *maxMin = PointType(val);
+        }
+        if(PL_get_dict_key(max_key, time_range, inner_arg) &&
+           PL_term_type(inner_arg)==PL_FLOAT && PL_get_float(inner_arg, &val))
+        {
+            *maxMax = PointType(val);
+        }
+    }
+}
+
+bool PrologQuery::putScope(const std::shared_ptr<Query> &query, term_t pl_scope)
+{
+    static const auto time_key = PL_new_atom("time");
+    static const auto confidence_key = PL_new_atom("confidence");
+
+    if(PL_is_variable(pl_scope)) {
+        // reasoner did not specify a solution scope
+        return false;
+    }
+    else if(PL_is_dict(pl_scope)) {
+        // the solution scope was generated as a Prolog dictionary
+        auto scope_val = PL_new_term_ref();
+
+        // read "time" key, the value is expected to be a dictionary of the form
+        //    { min: {min: <double>, max: <double>}, max: {min: <double>, max: <double>}  }
+        //    all keys are optional
+        if(PL_get_dict_key(time_key, pl_scope, scope_val)) {
+            std::optional<TimePoint> minMin, minMax, maxMin, maxMax;
+            readFuzzyInterval<TimePoint>(scope_val, &minMin, &minMax, &maxMin, &maxMax);
+
+            if(minMin.has_value() || minMax.has_value() || maxMin.has_value() || maxMax.has_value()) {
+                query->setTimeInterval(std::make_shared<TimeInterval>(
+                        Range<TimePoint>(minMin, minMax),
+                        Range<TimePoint>(maxMin, maxMax)));
+            }
+        }
+
+        // read "confidence" key, the value is expected to be a dictionary of the form
+        //        { min: {min: <double>, max: <double>}, max: {min: <double>, max: <double>}  }
+        //        all keys are optional
+        if(PL_get_dict_key(confidence_key, pl_scope, scope_val)) {
+            std::optional<ConfidenceValue> minMin, minMax, maxMin, maxMax;
+            readFuzzyInterval<ConfidenceValue>(scope_val, &minMin, &minMax, &maxMin, &maxMax);
+
+            if(minMin.has_value() || minMax.has_value() || maxMin.has_value() || maxMax.has_value()) {
+                query->setConfidenceInterval(std::make_shared<ConfidenceInterval>(
+                        Range<ConfidenceValue>(minMin, minMax),
+                        Range<ConfidenceValue>(maxMin, maxMax)));
+            }
+        }
+
+        PL_reset_term_refs(scope_val);
+        return true;
+    }
+    else {
+        KB_WARN("scope has an unexpected type (should be dict).");
+        return false;
+    }
+}
+
+bool PrologQuery::putScope(const std::shared_ptr<QueryResult> &solution, term_t pl_scope)
+{
+    static const auto time_key = PL_new_atom("time");
+    static const auto confidence_key = PL_new_atom("confidence");
+
+    if(PL_is_variable(pl_scope)) {
+        // reasoner did not specify a solution scope
+        return false;
+    }
+    else if(PL_is_dict(pl_scope)) {
+        // the solution scope was generated as a Prolog dictionary
+        auto scope_val = PL_new_term_ref();
+
+        // read "time" key, the value is expected to be a predicate `range(Since,Until)`
+        if(PL_get_dict_key(time_key, pl_scope, scope_val)) {
+            term_t arg = PL_new_term_ref();
+            std::optional<TimePoint> v_since, v_until;
+            double val=0.0;
+
+            if(PL_get_arg(1, scope_val, arg) &&
+               PL_term_type(arg)==PL_FLOAT &&
+               PL_get_float(arg, &val) &&
+               val > 0.001)
+            { v_since = val; }
+
+            if(PL_get_arg(2, scope_val, arg) &&
+               PL_term_type(arg)==PL_FLOAT &&
+               PL_get_float(arg, &val))
+            { v_until = val; }
+
+            if(v_since.has_value() || v_until.has_value()) {
+                solution->setTimeInterval(std::make_shared<TimeInterval>(
+                        Range<TimePoint>(v_since, std::nullopt),
+                        Range<TimePoint>(std::nullopt, v_until)));
+            }
+        }
+
+        // read "confidence" key, the value is expected to be a float value
+        if(PL_get_dict_key(confidence_key, pl_scope, scope_val)) {
+            double v_confidence=0.0;
+            if(PL_term_type(scope_val)==PL_FLOAT &&
+               PL_get_float(scope_val, &v_confidence))
+            {
+                solution->setConfidenceValue(
+                        std::make_shared<ConfidenceValue>(v_confidence));
+            }
+        }
+
+        PL_reset_term_refs(scope_val);
+        return true;
+    }
+    else {
+        KB_WARN("solution scope has an unexpected type (should be dict).");
+        return false;
+    }
+}
+
+template <class T>
+static inline bool putRangeDict(term_t intervalDict, const Range<T> &range)
+{
+    static const auto min_key = PL_new_atom("min");
+    static const auto max_key = PL_new_atom("max");
+
+    int numRangeKeys = 0;
+    if(range.min().has_value()) numRangeKeys += 1;
+    if(range.max().has_value()) numRangeKeys += 1;
+    atom_t rangeKeys[numRangeKeys];
+    auto rangeValues = PL_new_term_refs(numRangeKeys);
+
+    int keyIndex = 0;
+    if(range.min().has_value()) {
+        if(!PL_put_float(rangeValues, range.min().value().value())) return false;
+        rangeKeys[keyIndex++] = min_key;
+    }
+    if(range.max().has_value()) {
+        if(!PL_put_float(rangeValues+keyIndex, range.max().value().value())) return false;
+        rangeKeys[keyIndex++] = max_key;
+    }
+
+    return PL_put_dict(intervalDict, 0, numRangeKeys, rangeKeys, rangeValues);
+}
+
+template <class T>
+static inline bool putIntervalDict(term_t intervalDict, const FuzzyInterval<T> &i)
+{
+    static const auto min_key = PL_new_atom("min");
+    static const auto max_key = PL_new_atom("max");
+
+    int numRangeKeys = 0;
+    if(i.minRange().hasValue()) numRangeKeys += 1;
+    if(i.maxRange().hasValue()) numRangeKeys += 1;
+    atom_t rangeKeys[numRangeKeys];
+    auto rangeValues = PL_new_term_refs(numRangeKeys);
+
+    int keyIndex = 0;
+    if(i.minRange().hasValue()) {
+        putRangeDict<T>(rangeValues, i.minRange());
+        rangeKeys[keyIndex++] = min_key;
+    }
+    if(i.maxRange().hasValue()) {
+        putRangeDict<T>(rangeValues+keyIndex, i.maxRange());
+        rangeKeys[keyIndex++] = max_key;
+    }
+
+    return PL_put_dict(intervalDict, 0,numRangeKeys, rangeKeys, rangeValues);
+}
+
+bool PrologQuery::putTerm(term_t pl_term, const TimeInterval& timeInterval)
+{
+    return putIntervalDict<TimePoint>(pl_term, timeInterval);
+}
+
+bool PrologQuery::putTerm(term_t pl_term, const ConfidenceInterval& confidenceInterval)
+{
+    return putIntervalDict<ConfidenceValue>(pl_term, confidenceInterval);
+}
+
+bool PrologQuery::putScope(term_t pl_term, const QueryResultPtr &solution)
+{
+    static const auto time_key = PL_new_atom("time");
+    static const auto confidence_key = PL_new_atom("confidenceInterval");
+
+    auto &timeInterval = solution->timeInterval();
+    auto &confidenceValue = solution->confidence();
+
+    int numScopeKeys = 0;
+    if(timeInterval.has_value())    numScopeKeys += 1;
+    if(confidenceValue.has_value()) numScopeKeys += 1;
+    atom_t scopeKeys[numScopeKeys];
+    auto scopeValues = PL_new_term_refs(numScopeKeys);
+
+    if(numScopeKeys>0) {
+        int keyIndex = 0;
+        if(timeInterval.has_value() &&
+           PrologQuery::putTerm(scopeValues, *timeInterval.value())) {
+            scopeKeys[keyIndex++] = time_key;
+        }
+        if(confidenceValue.has_value() &&
+           PL_put_float(scopeValues+keyIndex, confidenceValue.value()->value())) {
+            scopeKeys[keyIndex++] = confidence_key;
+        }
+        if(!PL_put_dict(pl_term, 0, numScopeKeys, scopeKeys, scopeValues)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /******************************************/
