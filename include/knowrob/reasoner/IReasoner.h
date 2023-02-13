@@ -30,7 +30,7 @@ namespace knowrob {
 		/** The reasoner can answer disjunctive queries */
 		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2,
         /** The reasoner can store/recover data to/from a local path. */
-        CAPABILITY_IMPORT_EXPORT = 0x3
+        CAPABILITY_IMPORT_EXPORT = 0x4
 	};
 	
 	/**
