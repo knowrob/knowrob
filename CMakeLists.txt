@@ -158,6 +158,7 @@ add_library(knowrob_qa SHARED
 		src/reasoner/prolog/PrologTests.cpp
 		src/reasoner/prolog/logging.cpp
 		src/reasoner/prolog/algebra.cpp
+		src/reasoner/prolog/blackboard.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp)

@@ -1,16 +1,18 @@
 :- module(blackboard,
     [ read_query/3,
       current_reasoner_module/1,      % -ReasonerModule
+      current_reasoner_manager/1,     % -ReasonerManager
       set_current_reasoner_module/1,  % +ReasonerModule
       reasoner_defined_predicate/2,   % ?PredicateIndicator, ?PredicateType
       reasoner_setting/2,             % +Name, ?Value
       reasoner_setting/4,             % +Name, +Type, +Default, +Comment
       reasoner_set_setting/3,         % +ResonerModule, +Name, +Value
       reasoner_rdf_init/1,            % +ResonerModule
-      reasoner_call/2
-/*    kb_call(t),             % +Goal
-      kb_call(t,t,t),         % +Goal, +QScope, -FScope
-      kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
+      reasoner_call/2,
+      kb_call(t),                     % +Goal
+      kb_call(t,t,t)                  % +Goal, +QScope, -FScope
+      %kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
+      /*
       kb_project(t),          % +Goal
       kb_project(t,t),        % +Goal, +Scope
       kb_project(t,t,t),      % +Goal, +Scope, +Options
@@ -80,6 +82,13 @@ current_reasoner_module(Reasoner) :-
     nb_current(reasoner_module, Reasoner),
     !.
 current_reasoner_module(user).
+
+%% current_reasoner_manager(?ReasonerManager) is semidet.
+%
+current_reasoner_manager(ReasonerManager) :-
+    nb_current(reasoner_manager, ReasonerManager),
+    !.
+current_reasoner_manager(0).
 
 %% set_current_reasoner_module(+Reasoner) is det.
 %
@@ -351,40 +360,14 @@ expand_meta_instantiations1([ArgN|Args], [_|Modes], [ArgN|Rest], Xs-Ys) :-
     expand_meta_instantiations1(Args,Modes,Rest,Xs-Ys).
 
 %%
-% Assert the collection names to be used by remember/memorize
-%
-/*
-auto_collection_names :-
-	setting(mng_client:collection_names, L),
-	forall(member(X,L), assertz(collection_name(X))).
-
-:- ignore(auto_collection_names).
-*/
-
-/*
-%%
-mng_import(Dir) :-
-	forall(
-		(	collection_name(Name),
-			mng_get_db(DB, Collection, Name)
-		),
-		(	path_concat(Dir, Collection, Dir0),
-			mng_restore(DB, Dir0)
-		)
-	).
-
+kb_call(Goal) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_call(ReasonerManager, Goal).
 
 %%
-mng_export(Dir) :-
-	forall(
-		(	collection_name(Name),
-			mng_get_db(DB, Collection, Name)
-		),
-		(	path_concat(Dir, Collection, Dir0),
-			mng_dump_collection(DB, Collection, Dir0)
-		)
-	).
-*/
+kb_call(Goal, QScope, FScope) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_call(ReasonerManager, Goal, QScope, FScope).
 
 % TODO: allow prolog rules to issue queries for other reasoner
 %% kb_call(+Statement) is nondet.

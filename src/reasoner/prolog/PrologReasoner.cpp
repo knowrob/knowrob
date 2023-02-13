@@ -28,6 +28,8 @@ KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
 // forward declarations of foreign predicates
 foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term);
+// defined in blackboard.cpp
+extern PL_extension qa_predicates[];
 
 bool PrologReasoner::isPrologInitialized_ = false;
 bool PrologReasoner::isKnowRobInitialized_ = false;
@@ -114,6 +116,7 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 		PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
 		PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
 		PL_register_extensions_in_module("algebra", algebra_predicates);
+		PL_register_extensions_in_module("user", qa_predicates);
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
 
