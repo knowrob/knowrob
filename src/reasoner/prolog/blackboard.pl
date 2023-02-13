@@ -10,16 +10,18 @@
       reasoner_rdf_init/1,            % +ResonerModule
       reasoner_call/2,
       kb_call(t),                     % +Goal
-      kb_call(t,t,t)                  % +Goal, +QScope, -FScope
-      %kb_call(t,t,t,t),       % +Goal, +QScope, -FScope, +Options
-      /*
-      kb_project(t),          % +Goal
-      kb_project(t,t),        % +Goal, +Scope
-      kb_project(t,t,t),      % +Goal, +Scope, +Options
-      kb_unproject(t),        % +Goal
-      kb_unproject(t,t),      % +Goal, +Scope
-      kb_unproject(t,t,t)     % +Goal, +Scope, +Options
-      */
+      kb_call(t,t,t),                 % +Goal, +QScope, -FScope
+      %kb_call(t,t,t,t),               % +Goal, +QScope, -FScope, +Options
+      %kb_project(t),                  % +Goal
+      %kb_project(t,t),                % +Goal, +Scope
+      %kb_project(t,t,t),              % +Goal, +Scope, +Options
+      %kb_unproject(t),                % +Goal
+      %kb_unproject(t,t),              % +Goal, +Scope
+      %kb_unproject(t,t,t)             % +Goal, +Scope, +Options
+      memorize/1,                     % +Path
+      memorize/2,                     % +Path, +Options
+      remember/1,                     % +Path
+      remember/2                      % +Path, +Options
     ]).
 
 /** <module> Query evaluation via a blackboard.
@@ -359,31 +361,26 @@ expand_meta_instantiations1([ArgN|Args], [ModeN|Modes], [Next|Rest], Xs-Zs) :-
 expand_meta_instantiations1([ArgN|Args], [_|Modes], [ArgN|Rest], Xs-Ys) :-
     expand_meta_instantiations1(Args,Modes,Rest,Xs-Ys).
 
-%%
-kb_call(Goal) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_call(ReasonerManager, Goal).
-
-%%
-kb_call(Goal, QScope, FScope) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_call(ReasonerManager, Goal, QScope, FScope).
-
-% TODO: allow prolog rules to issue queries for other reasoner
-%% kb_call(+Statement) is nondet.
+%% kb_call(+Goal) is nondet.
 %
 % Same as kb_call/3 with default scope to include
 % only facts that hold now.
 %
 % @param Statement a statement term.
 %
+kb_call(Goal) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_call(ReasonerManager, Goal).
 
-%% kb_call(+Statement, +QScope, -FScope) is nondet.
+%% kb_call(+Goal, +QScope, -FScope) is nondet.
 %
 % Same as kb_call/4 with empty options list.
 %
 % @param Statement a statement term.
 %
+kb_call(Goal, QScope, FScope) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_call(ReasonerManager, Goal, QScope, FScope).
 
 %% kb_call(+Statement, +QScope, -FScope, +Options) is nondet.
 %
@@ -404,6 +401,7 @@ kb_call(Goal, QScope, FScope) :-
 % @param FScope the actual scope.
 % @param Options list of options.
 %
+%kb_call(Goal, QScope, FScope, Options) :- fail.
 
 %% kb_project(+Statement) is nondet.
 %
@@ -436,7 +434,6 @@ kb_call(Goal, QScope, FScope) :-
 % @param Options list of options.
 %
 
-
 %% kb_unproject(+Statement) is nondet.
 %
 % Same as kb_unproject/2 with universal scope.
@@ -468,3 +465,21 @@ kb_call(Goal, QScope, FScope) :-
 % @param Scope the scope of the statement.
 % @param Options list of options.
 %
+
+%%
+memorize(Path, Options) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_memorize(ReasonerManager, Path, Options).
+
+%%
+memorize(Path) :-
+    memorize(Path, []).
+
+%%
+remember(Path, Options) :-
+    current_reasoner_manager(ReasonerManager),
+    qa_remember(ReasonerManager, Path, Options).
+
+%%
+remember(Path) :-
+    remember(Path, []).
