@@ -1,11 +1,15 @@
 
 #include <SWI-Prolog.h>
+#include <filesystem>
 
 #include "knowrob/queries/QueryResultStream.h"
 #include "knowrob/queries/QueryResultQueue.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
 #include "knowrob/Blackboard.h"
 #include "knowrob/Logger.h"
+#include "knowrob/terms/OptionList.h"
+#include "knowrob/terms/Bottom.h"
+#include "knowrob/terms/ListTerm.h"
 
 using namespace knowrob;
 
@@ -121,43 +125,141 @@ foreign_t pl_qa_call2(term_t t_reasonerManager, term_t t_goal, control_t handle)
 
 /*
 // +Goal, +Options
-PREDICATE(kb_project1, 1) {
-return TRUE;
-}
-
+PREDICATE(kb_project1, 1)
 // +Goal, +Scope, +Options
-PREDICATE(kb_unproject, 3) {
-return TRUE;
-}
-
-PREDICATE(memorize, 3) {
-
-%% memorize(+Directory) is det.
-%
-% Store knowledge into given directory.
-%
-% @param Directory filesystem path
-%
-memorize(Directory) :-
-mng_export(Directory).
-return TRUE;
-}
-
-PREDICATE(remember, 3) {
-%% remember(+Directory) is det.
-%
-% Restore memory previously stored into given directory.
-%
-% @param Directory filesystem path
-%
-remember(Directory) :-
-mng_import(Directory).
-return TRUE;
-}
+PREDICATE(kb_unproject, 3)
 */
+
+inline foreign_t qa_remember(ReasonerManager *reasonerManager,
+                             const std::filesystem::path &path,
+                             const std::string &reasonerName)
+{
+    auto definedReasoner = reasonerManager->getReasonerWithID(reasonerName);
+    if(definedReasoner) {
+        if(definedReasoner->reasoner()->hasCapability(CAPABILITY_IMPORT_EXPORT)) {
+            KB_INFO("Importing from {} into reasoner '{}'.", path, reasonerName);
+            return definedReasoner->reasoner()->importData(path);
+        }
+        else {
+            return true;
+        }
+    }
+    else {
+        KB_WARN("reasoner '{}' is not defined.", reasonerName);
+        return false;
+    }
+}
+
+inline foreign_t qa_remember(ReasonerManager *reasonerManager,
+                             const std::filesystem::path &path,
+                             const OptionList &options)
+{
+    auto reasonerOpt = options.get("reasoner", BottomTerm::get());
+    // TODO: consider handling include/exlcude option
+    //auto includeOpt = options.get("include", ListTerm::nil());
+    //auto excludeOpt = options.get("exclude", ListTerm::nil());
+
+    if(!reasonerOpt->isBottom()) {
+        // import into one reasoner backend.
+        // assume the provided directory contains the exported data.
+        const auto &reasonerName = ((StringTerm*)reasonerOpt.get())->value();
+        return qa_remember(reasonerManager, path, reasonerName);
+    }
+    else {
+        for(auto &subdir : std::filesystem::directory_iterator(path)) {
+            // assume subdirectories are named after reasoner
+            if(is_directory(subdir)) {
+                // get reasoner from reasoner name
+                const auto reasonerName = subdir.path().filename();
+                qa_remember(reasonerManager, subdir, reasonerName);
+            }
+        }
+        return true;
+    }
+}
+
+foreign_t pl_qa_remember3(term_t t_reasonerManager, term_t t_path, term_t t_options)
+{
+    int reasonerManagerID=0;
+    char *path_str;
+    if(PL_get_integer(t_reasonerManager, &reasonerManagerID) &&
+       PL_get_atom_chars(t_path, &path_str))
+    {
+        auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
+        if(reasonerManager) {
+            auto optionTerm = PrologQuery::constructTerm(t_options);
+            return qa_remember(reasonerManager, path_str, OptionList(optionTerm));
+        }
+    }
+    return false;
+}
+
+inline foreign_t qa_memorize(const std::shared_ptr<IReasoner> &reasoner,
+                             const std::string &reasonerName,
+                             const std::filesystem::path &path)
+{
+    if(reasoner->hasCapability(CAPABILITY_IMPORT_EXPORT)) {
+        KB_INFO("Exporting from {} from reasoner '{}'.", path, reasonerName);
+        return reasoner->exportData(path);
+    }
+    else {
+        return true;
+    }
+}
+
+inline foreign_t qa_memorize(ReasonerManager *reasonerManager,
+                             const std::filesystem::path &path,
+                             const OptionList &options)
+{
+    auto reasonerOpt = options.get("reasoner", BottomTerm::get());
+    // TODO: consider handling include/exlcude option
+    //auto includeOpt = options.get("include", ListTerm::nil());
+    //auto excludeOpt = options.get("exclude", ListTerm::nil());
+
+    if(!exists(path)) create_directories(path);
+
+    if(!reasonerOpt->isBottom()) {
+        // export from one reasoner backend.
+        const auto &reasonerName = ((StringTerm*)reasonerOpt.get())->value();
+        auto definedReasoner = reasonerManager->getReasonerWithID(reasonerName);
+        if(definedReasoner) {
+            return qa_memorize(definedReasoner->reasoner(), reasonerName, path);
+        }
+        else {
+            KB_WARN("reasoner '{}' is not defined.", reasonerName);
+            return false;
+        }
+    }
+    else {
+        for(auto &pair : reasonerManager->reasonerPool()) {
+            auto subdir = path / pair.first;
+            if(!exists(subdir)) create_directories(subdir);
+            qa_memorize(pair.second->reasoner(), pair.first, subdir);
+        }
+        return true;
+    }
+}
+
+foreign_t pl_qa_memorize3(term_t t_reasonerManager, term_t t_path, term_t t_options)
+{
+    int reasonerManagerID=0;
+    char *path_str;
+    if(PL_get_integer(t_reasonerManager, &reasonerManagerID) &&
+       PL_get_atom_chars(t_path, &path_str))
+    {
+        auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
+        if(reasonerManager) {
+            auto optionTerm = PrologQuery::constructTerm(t_options);
+            return qa_memorize(reasonerManager, path_str, OptionList(optionTerm));
+        }
+    }
+    return false;
+}
 
 PL_extension qa_predicates[] = {
         { "qa_call", 2, (pl_function_t)pl_qa_call2, PL_FA_NONDETERMINISTIC },
         { "qa_call", 4, (pl_function_t)pl_qa_call4, PL_FA_NONDETERMINISTIC },
+        { "qa_remember", 3, (pl_function_t)pl_qa_remember3, 0 },
+        { "qa_memorize", 3, (pl_function_t)pl_qa_memorize3, 0 },
         { nullptr,   0, nullptr, 0 }
 };
