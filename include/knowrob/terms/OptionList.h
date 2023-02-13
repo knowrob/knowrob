@@ -36,14 +36,14 @@ namespace knowrob {
 		 * @param key key of option.
 		 * @return true is this list isMoreGeneralThan the key.
 		 */
-		bool contains(const std::string &key);
+		bool contains(const std::string &key) const;
 
 		/**
 		 * @param key an option key
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
-		const TermPtr& get(const std::string &key, const TermPtr &defaultValue);
+		const TermPtr& get(const std::string &key, const TermPtr &defaultValue) const;
 
 		/**
 		 * Read option value as a string.
@@ -51,7 +51,7 @@ namespace knowrob {
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
-		const std::string& getString(const std::string &key, const std::string &defaultValue);
+		const std::string& getString(const std::string &key, const std::string &defaultValue) const;
 
 		/**
 		 * Read option value as a long.
@@ -59,7 +59,7 @@ namespace knowrob {
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
-		long getLong(const std::string &key, long defaultValue);
+		long getLong(const std::string &key, long defaultValue) const;
 
 	protected:
 		std::map<std::string, TermPtr> options_;

@@ -45,11 +45,11 @@ void OptionList::readOption(const TermPtr &option) {
 	}
 }
 
-bool OptionList::contains(const std::string &key) {
+bool OptionList::contains(const std::string &key) const {
 	return options_.count(key)>0;
 }
 
-const TermPtr& OptionList::get(const std::string &key, const TermPtr &defaultValue) {
+const TermPtr& OptionList::get(const std::string &key, const TermPtr &defaultValue) const {
 	auto it = options_.find(key);
 	if(it == options_.end()) {
 		return defaultValue;
@@ -59,7 +59,7 @@ const TermPtr& OptionList::get(const std::string &key, const TermPtr &defaultVal
 	}
 }
 
-const std::string& OptionList::getString(const std::string &key, const std::string &defaultValue) {
+const std::string& OptionList::getString(const std::string &key, const std::string &defaultValue) const {
 	auto it = options_.find(key);
 	if(it == options_.end()) {
 		return defaultValue;
@@ -79,7 +79,7 @@ const std::string& OptionList::getString(const std::string &key, const std::stri
 	return defaultValue;
 }
 
-long OptionList::getLong(const std::string &key, long defaultValue) {
+long OptionList::getLong(const std::string &key, long defaultValue) const {
 	auto it = options_.find(key);
 	if(it == options_.end()) {
 		return defaultValue;
