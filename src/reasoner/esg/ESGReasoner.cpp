@@ -15,7 +15,7 @@
 using namespace knowrob;
 
 // make reasoner type accessible
-KNOWROB_BUILTIN_REASONER("ESG", ESGReasoner);
+KNOWROB_BUILTIN_REASONER("ESG", ESGReasoner)
 
 ESGReasoner::ESGReasoner(const std::string &reasonerID)
 : PrologReasoner(reasonerID)

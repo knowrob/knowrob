@@ -35,7 +35,7 @@
 using namespace knowrob;
 
 // make reasoner type accessible
-KNOWROB_BUILTIN_REASONER("SWRL", SWRLReasoner);
+KNOWROB_BUILTIN_REASONER("SWRL", SWRLReasoner)
 
 const std::string SWRLReasoner::SWRL_FORMAT="pl-swrl";
 

@@ -45,13 +45,16 @@ read_query(Atom, Term, Options) :-
     expand_rdf_query(Term1, Term).
 
 %%
-% TODO: rewrite triple(S,P,O) to P(S,O) here if ground(P)
 expand_rdf_query(NS:Goal, Expanded) :-
     compound(Goal),
     Goal =.. [P, S, O],
     rdf_global_term(NS:P,P0),
     atom_concat('http', _, P0),
     Expanded =.. [P0, S, O], !.
+expand_rdf_query(triple(S,P,O), Expanded) :-
+    % rewrite triple(S,P,O) to P(S,O) if ground(P)
+    ground(P),!,
+    Expanded =.. [P,S,O].
 expand_rdf_query(Goal, Goal) :-
     is_list(Goal), !.
 expand_rdf_query(Goal, Expanded) :-
@@ -199,7 +202,6 @@ reasoner_defined_predicate_1(_, Head, built_in) :-
 reasoner_defined_predicate_1(_, Head, built_in) :-
     user:predicate_property(Head, visible), !.
 
-% TODO: in case IDB vs. EDB needs to be distinguished:
 %reasoner_defined_predicate_1(Reasoner, Head, relation(idb)) :-
 %    Reasoner:predicate_property(Head, number_of_rules(NumRules)),
 %    NumRules > 0, !.

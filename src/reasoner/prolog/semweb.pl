@@ -630,7 +630,6 @@ sw_url_read(URL, Opts) :-
 	rdf_equal(owl:'Ontology',OWL_Ontology),
 	rdf_equal(rdf:'type',RDF_Type),
 	% load RDF data and ookup ontology URL
-	% TODO: look into library(semweb/rdf_http_plugin)
 	setup_call_cleanup(
 	    sw_url_stream(URL, Stream),
 	    load_rdf(Stream, Triples, [blank_nodes(noshare)]),

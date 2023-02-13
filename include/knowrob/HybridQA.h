@@ -36,6 +36,6 @@ namespace knowrob {
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};
-};
+}
 
 #endif //KNOWROB_HYBRIDQA_H

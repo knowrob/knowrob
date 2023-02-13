@@ -21,7 +21,7 @@
 
 class MongoCursor {
 public:
-	MongoCursor(const std::shared_ptr<MongoCollection> &collection);
+	explicit MongoCursor(const std::shared_ptr<MongoCollection> &collection);
 	~MongoCursor();
 	
 	const std::string& id() { return id_; };

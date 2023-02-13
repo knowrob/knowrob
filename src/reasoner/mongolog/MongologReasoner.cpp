@@ -16,7 +16,7 @@
 using namespace knowrob;
 
 // make reasoner type accessible
-KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner);
+KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner)
 
 MongologReasoner::MongologReasoner(const std::string &reasonerID)
 : PrologReasoner(reasonerID)

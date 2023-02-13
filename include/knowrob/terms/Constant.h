@@ -10,6 +10,7 @@
 #define KNOWROB_CONSTANT_H_
 
 #include <ostream>
+#include <utility>
 #include "Term.h"
 
 namespace knowrob {
@@ -22,8 +23,8 @@ namespace knowrob {
 		 * @type the type of this term.
 		 * @value the value.
 		 */
-		Constant(TermType type, const T &value)
-		: Term(type), value_(value) {}
+		Constant(TermType type, T value)
+		: Term(type), value_(std::move(value)) {}
 
 		// Override '<' operator
 		bool operator<(const Constant<T> &other) const { return value_ < other.value_; }
