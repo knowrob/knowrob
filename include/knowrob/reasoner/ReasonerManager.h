@@ -66,6 +66,11 @@ namespace knowrob {
 		 */
 		std::shared_ptr<DefinedReasoner> getReasonerWithID(const std::string &reasonerID);
 
+        /**
+         * @return map of all reasoner defined by this manager.
+         */
+        const std::map<std::string, std::shared_ptr<DefinedReasoner>>& reasonerPool() const  { return reasonerPool_; }
+
 	private:
 		// maps reasoner type name to factory used to create instances of that type
 		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
