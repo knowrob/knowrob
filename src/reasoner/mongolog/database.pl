@@ -2,6 +2,8 @@
 		[ mongolog_get_db/3,
 		  mongolog_one_db/2,
 		  mongolog_uri/1,
+		  mongolog_export/1,
+		  mongolog_import/1,
 		  mongolog_add_predicate/3,
 		  mongolog_add_predicate/4,
 		  mongolog_drop_predicate/1,
@@ -110,6 +112,22 @@ mongolog_uri_(Host, Port, User, '', URI) :-
     !, atomic_list_concat([ 'mongodb://', User, '@', Host, ':', Port ], URI).
 mongolog_uri_(Host, Port, User, PW, URI) :-
     !, atomic_list_concat([ 'mongodb://', User, ':', PW, '@', Host, ':', Port ], URI).
+
+%% mongolog_export(+Path) is semidet.
+%
+% Exports the MongoDB database to local filesystem.
+%
+mongolog_export(Path) :-
+    mongolog_db_name(DB),
+    mng_dump(DB, Path).
+
+%% mongolog_impor(+Path) is semidet.
+%
+% Imports the MongoDB database from local filesystem.
+%
+mongolog_import(Path) :-
+    mongolog_db_name(DB),
+    mng_restore(DB, Path).
 
 %% mongolog_predicate(+Term, ?Arity, ?Fields, ?DstModule, ?SourceID, ?Options) is semidet.
 %

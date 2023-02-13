@@ -25,6 +25,13 @@ MongologReasoner::MongologReasoner(const std::string &reasonerID)
 MongologReasoner::~MongologReasoner()
 = default;
 
+unsigned long MongologReasoner::getCapabilities() const
+{
+    return CAPABILITY_CONJUNCTIVE_QUERIES |
+           CAPABILITY_DISJUNCTIVE_QUERIES |
+           CAPABILITY_IMPORT_EXPORT;
+}
+
 bool MongologReasoner::initializeDefaultPackages()
 {
 	static bool initialized = false;
@@ -63,6 +70,22 @@ const functor_t& MongologReasoner::callFunctor()
 {
 	static const auto call_f = PL_new_functor(PL_new_atom("mongolog_call"), 2);
 	return call_f;
+}
+
+bool MongologReasoner::importData(const std::filesystem::path &path)
+{
+    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_import",{
+            std::make_shared<StringTerm>(path.u8string())
+    }));
+    return eval(mng_dump, nullptr, false);
+}
+
+bool MongologReasoner::exportData(const std::filesystem::path &path)
+{
+    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_export",{
+        std::make_shared<StringTerm>(path.u8string())
+    }));
+    return eval(mng_dump, nullptr, false);
 }
 
 class MongologTests: public PrologTests<knowrob::MongologReasoner> {

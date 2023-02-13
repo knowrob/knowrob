@@ -22,6 +22,12 @@ namespace knowrob {
 		explicit MongologReasoner(const std::string &reasonerID);
 
 		~MongologReasoner() override;
+
+        unsigned long getCapabilities() const override;
+
+        bool exportData(const std::filesystem::path &path) override;
+
+        bool importData(const std::filesystem::path &path) override;
 		
 	protected:
 		// Override PrologReasoner
