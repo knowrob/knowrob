@@ -9,11 +9,10 @@
 #ifndef KNOWROB_IREASONER_H_
 #define KNOWROB_IREASONER_H_
 
-// STD
 #include <memory>
-// FMT
+#include <filesystem>
 #include <fmt/core.h>
-// KnowRob
+
 #include "knowrob/terms/Term.h"
 #include "knowrob/queries/QueryInstance.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
@@ -29,7 +28,9 @@ namespace knowrob {
 		/** The reasoner can answer conjunctive queries */
 		CAPABILITY_CONJUNCTIVE_QUERIES = 0x1,
 		/** The reasoner can answer disjunctive queries */
-		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2
+		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2,
+        /** The reasoner can store/recover data to/from a local path. */
+        CAPABILITY_IMPORT_EXPORT = 0x3
 	};
 	
 	/**
@@ -125,6 +126,22 @@ namespace knowrob {
 		virtual void finishQuery(uint32_t queryID,
 								 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 								 bool isImmediateStopRequested) = 0;
+
+        /**
+         * Export data to local filesystem.
+         * This function is only assumed to be implemented if CAPABILITY_IMPORT_EXPORT is set.
+         * @param path an existing local filesystem path.
+         * @return true on success.
+         */
+        virtual bool exportData(const std::filesystem::path &path) { return false; }
+
+        /**
+         * Import data from local filesystem.
+         * This function is only assumed to be implemented if CAPABILITY_IMPORT_EXPORT is set.
+         * @param path an existing local filesystem path.
+         * @return true on success.
+         */
+        virtual bool importData(const std::filesystem::path &path) { return false; }
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;
