@@ -64,7 +64,7 @@ std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString
 
 void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler) {
 	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
-	auto bb = std::make_shared<Blackboard>(reasonerManager_, bbq, query);
+	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
 	QueryResultPtr solution;
 
 	bb->start();

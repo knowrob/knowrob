@@ -24,8 +24,7 @@ namespace knowrob {
 	 */
 	class Blackboard {
 	public:
-		Blackboard(
-			const std::shared_ptr<ReasonerManager> &reasonerManager,
+		Blackboard(ReasonerManager *reasonerManager,
 			const std::shared_ptr<QueryResultQueue> &outputQueue,
 			const std::shared_ptr<const Query> &goal);
 		
@@ -45,7 +44,7 @@ namespace knowrob {
 	protected:
 		class Stream; // forward declaration
 
-		std::shared_ptr<ReasonerManager> reasonerManager_;
+		ReasonerManager *reasonerManager_;
 		std::shared_ptr<DefinedReasoner> builtinEvaluator_;
 		std::shared_ptr<QueryResultQueue> outputQueue_;
 		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;

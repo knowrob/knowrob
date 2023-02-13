@@ -18,7 +18,7 @@
 using namespace knowrob;
 
 Blackboard::Blackboard(
-		const std::shared_ptr<ReasonerManager> &reasonerManager,
+		ReasonerManager *reasonerManager,
 		const std::shared_ptr<QueryResultQueue> &outputQueue,
 		const std::shared_ptr<const Query> &goal)
 		: reasonerManager_(reasonerManager),
