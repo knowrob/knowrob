@@ -41,6 +41,11 @@ namespace knowrob {
 		 */
 		QueryResultPtr pop_front();
 
+        /**
+         * @return true if the queue is currently empty.
+         */
+        bool empty() const { return queue_.empty(); }
+
 	protected:
 		std::queue<QueryResultPtr> queue_;
 		std::condition_variable queue_CV_;
