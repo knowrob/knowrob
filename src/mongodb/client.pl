@@ -318,14 +318,14 @@ mng_dump_collection(DB,Collection,Directory) :-
 % @param DB the database name
 % @param Directory absolute path to output directory
 %
-mng_restore(_DB,Dir) :-
-	mng_restore(_,Dir,_).
+mng_restore(DB,Dir) :-
+	mng_restore(DB,Dir,_).
 
-mng_restore(_DB,Dir,Output) :-
+mng_restore(DB,Dir,Output) :-
     % TODO should be moved into mongolog
 	mongolog_database:mongolog_uri(URI),
 	process_create(path(mongorestore),
-		[ '--uri', URI, '--dir', Dir ],
+		[ '--uri', URI, '--db', DB, '--dir', Dir, '--quiet' ],
 		[ process(PID), stderr(pipe(StdErrStream)) ]
 	),
 	read_lines(StdErrStream, Output),
