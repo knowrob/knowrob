@@ -37,7 +37,13 @@ namespace knowrob {
 	 */
 	class IReasoner {
 	public:
+        IReasoner();
 		virtual ~IReasoner()= default;
+
+        /**
+         * @return ID of the manager that created the reasoner.
+         */
+        uint32_t reasonerManagerID() const { return reasonerManagerID_; }
 
 		/**
 		 * @param format
@@ -122,8 +128,11 @@ namespace knowrob {
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;
+        uint32_t reasonerManagerID_;
 
 		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr&) { return false; }
+
+        void setReasonerManager(uint32_t managerID);
 
 		friend class ReasonerManager;
 	};

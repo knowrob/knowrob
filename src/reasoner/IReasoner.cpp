@@ -11,6 +11,16 @@
 
 using namespace knowrob;
 
+IReasoner::IReasoner()
+: reasonerManagerID_(0)
+{
+}
+
+void IReasoner::setReasonerManager(uint32_t managerID)
+{
+    reasonerManagerID_ = managerID;
+}
+
 bool IReasoner::hasCapability(ReasonerCapability capability) const
 {
     return (getCapabilities() & capability);
