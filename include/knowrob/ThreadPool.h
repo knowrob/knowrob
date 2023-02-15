@@ -132,6 +132,8 @@ namespace knowrob {
 		uint32_t maxNumThreads_;
 		// number of terminated threads that are still in workerThreads_ list
 		std::atomic_uint32_t numFinishedThreads_;
+        // number of currently active workers
+        std::atomic_uint32_t numActiveWorker_;
 		
 		// get work from queue
 		std::shared_ptr<ThreadPool::Runner> popWork();

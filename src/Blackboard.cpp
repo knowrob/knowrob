@@ -6,32 +6,36 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
+#include "knowrob/reasoner/BuiltinEvaluator.h"
 #include <knowrob/Blackboard.h>
+#include <knowrob/formulas/Conjunction.h>
+#include <knowrob/formulas/Disjunction.h>
+#include <knowrob/queries/QueryError.h>
 
 #include <memory>
 
 using namespace knowrob;
 
 Blackboard::Blackboard(
-	const std::shared_ptr<ReasonerManager> &reasonerManager,
-	const std::shared_ptr<QueryResultQueue> &outputQueue,
-	const std::shared_ptr<const Query> &goal)
-: reasonerManager_(reasonerManager),
-  outputQueue_(outputQueue),
-  goal_(goal)
+		ReasonerManager *reasonerManager,
+		const std::shared_ptr<QueryResultQueue> &outputQueue,
+		const std::shared_ptr<const Query> &goal)
+		: reasonerManager_(reasonerManager),
+		  builtinEvaluator_(std::make_shared<DefinedReasoner>("builtins", BuiltinEvaluator::get())),
+		  outputQueue_(outputQueue),
+		  goal_(goal)
 {
 	// decompose the reasoning task
 	inputStream_ = std::make_shared<QueryResultBroadcaster>();
 	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
 	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
-	
+
 	// create a channel of outputQueue_, and add it as subscriber
 	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
 	outBroadcaster_->addSubscriber(queueChannel);
 
-	// decompose into atomic formulas
-	decompose(goal->formula(), inputStream_, outBroadcaster_);
+	createReasoningPipeline(inputStream_, outBroadcaster_);
 }
 
 Blackboard::~Blackboard()
@@ -48,113 +52,128 @@ void Blackboard::start()
 
 void Blackboard::stop()
 {
-	for(auto &segment : segments_) {
-		segment->stop();
+	for(auto &inputStream : reasonerInputs_) {
+		inputStream->stop();
 	}
 }
 
-void Blackboard::decompose(const std::shared_ptr<Formula> &phi,
-		std::shared_ptr<QueryResultBroadcaster> &in,
-		std::shared_ptr<QueryResultBroadcaster> &out)
+ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi) const //NOLINT
 {
 	switch(phi->type()) {
-	case FormulaType::PREDICATE: {
-		decomposePredicate(
-			std::static_pointer_cast<PredicateFormula>(phi),
-			in, out);
-		break;
-	}
-	case FormulaType::CONJUNCTION: {
-		decomposeConjunction(
-			std::static_pointer_cast<ConjunctionFormula>(phi),
-			in, out);
-		break;
-	}
-	case FormulaType::DISJUNCTION: {
-		decomposeDisjunction(
-			std::static_pointer_cast<DisjunctionFormula>(phi),
-			in, out);
-		break;
-	}
-	default:
-		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
-		break;
+		case FormulaType::CONJUNCTION: {
+			auto args = ((ConjunctionFormula*)phi.get())->formulae();
+			auto graph(decomposeFormula(args[0]));
+			for(int i=1; i<args.size(); ++i) {
+				graph.conjunction(decomposeFormula(args[i]));
+			}
+			return graph;
+		}
+		case FormulaType::DISJUNCTION: {
+			auto args = ((DisjunctionFormula*)phi.get())->formulae();
+			auto graph(decomposeFormula(args[0]));
+			for(int i=1; i<args.size(); ++i) {
+				graph.disjunction(decomposeFormula(args[i]));
+			}
+			return graph;
+		}
+		case FormulaType::PREDICATE: {
+			return decomposePredicate(std::static_pointer_cast<PredicateFormula>(phi));
+		}
+		default:
+			KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
+			return {};
 	}
 }
 
-void Blackboard::decomposePredicate(
-		const std::shared_ptr<PredicateFormula> &phi,
-		std::shared_ptr<QueryResultBroadcaster> &in,
-		std::shared_ptr<QueryResultBroadcaster> &out)
+ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<PredicateFormula> &phi) const
 {
-	std::shared_ptr<Blackboard::Stream> reasonerIn;
-	std::shared_ptr<Blackboard::Segment> segment;
-	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
-
 	// get ensemble of reasoner
-	auto ensemble = reasonerManager_->getReasonerForPredicate(phi->predicate()->indicator());
-	// create a subquery for the predicate p
-	std::shared_ptr<Query> subQuery = std::make_shared<Query>(phi);
-
-    if (ensemble.empty()) {
+	auto predicateDescription = reasonerManager_->getPredicateDefinition(
+			phi->predicate()->indicator());
+	if (!predicateDescription || predicateDescription->reasonerEnsemble().empty()) {
 		throw QueryError("no reasoner registered for query `{}`", *phi);
 	}
 
-    for(auto &r : ensemble) {
-		// create IO channels
-		reasonerOutChan = QueryResultStream::Channel::create(out);
-		reasonerIn = std::make_shared<Blackboard::Stream>(
-			r,reasonerOutChan, subQuery);
-		reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
-		in->addSubscriber(reasonerInChan);
-		// create a new segment
-		segments_.push_back(std::make_shared<Segment>(reasonerIn,out));
-	}
-}
-
-void Blackboard::decomposeConjunction(
-		const std::shared_ptr<ConjunctionFormula> &phi,
-		std::shared_ptr<QueryResultBroadcaster> &firstQueue,
-		std::shared_ptr<QueryResultBroadcaster> &lastQueue)
-{
-	std::shared_ptr<QueryResultBroadcaster> in = firstQueue;
-	std::shared_ptr<QueryResultBroadcaster> out;
-	
-	// TODO: compute a dependency relation between atomic formulae of a query.
-	//   atomic formulae that are independent can be evaluated concurrently.
-	
-	// add blackboard segments for each predicate in the conjunction
-	unsigned long counter = 1;
-	auto numFormulae = phi->formulae().size();
-	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
-		if(numFormulae == counter) {
-			out = lastQueue;
+	ReasoningGraph out; {
+		if(predicateDescription->predicateType() == PredicateType::BUILT_IN) {
+			// builtins are not evaluated wrt. to the database, all options
+			// to evaluate one can be collapsed into a single node.
+			// FIXME: introduce a notion of meta predicates, they are currently
+			//   seen as builtins here, and it is ignored if their higher-order argument
+			//   is a database predicate or not, which may cause incomplete results.
+			//   for a meta predicate with database predicate each option of evaluation
+			//   should be added instead.
+			auto newNode = std::make_shared<ReasoningGraph::Node>(
+					phi, predicateDescription->reasonerEnsemble(),
+					predicateDescription->predicateType());
+			out.addInitialNode(newNode);
 		}
 		else {
-			out = std::make_shared<QueryResultBroadcaster>();
+			for(auto &r : predicateDescription->reasonerEnsemble()) {
+				auto newNode = std::make_shared<ReasoningGraph::Node>(
+						phi, r, predicateDescription->predicateType());
+				out.addInitialNode(newNode);
+			}
 		}
-		decompose(psi, in, out);
-		// output queue of this predicate is used as input for the next one
-		in = out;
-		counter += 1;
+	}
+	return out;
+}
+
+void Blackboard::createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &inputStream,
+										 const std::shared_ptr<QueryResultBroadcaster> &outputStream)
+{
+	auto graph = decomposeFormula(goal_->formula());
+	for(auto &n0 : graph.initialNodes())
+		createReasoningPipeline(inputStream, outputStream, n0);
+}
+
+void Blackboard::createReasoningPipeline( //NOLINT
+		const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
+		const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
+		const std::shared_ptr<ReasoningGraph::Node> &n0)
+{
+	// create a subquery for the predicate p
+	std::shared_ptr<Query> subQuery = std::make_shared<Query>(n0->phi());
+	// create an output stream for this node
+	std::shared_ptr<QueryResultBroadcaster> nodeOutput = (n0->successors().empty() ?
+			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
+
+	auto n0_reasoner = *n0->reasonerAlternatives().begin();
+	if(n0->predicateType() == PredicateType::BUILT_IN) {
+		// prefer to use BuiltinEvaluator
+		auto p = ((PredicateFormula*)n0->phi().get())->predicate();
+		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
+			n0_reasoner = builtinEvaluator_;
+		}
+	}
+	createReasoningStep(n0_reasoner, subQuery, pipelineInput, nodeOutput);
+
+	// continue for successors
+	for(auto &successor : n0->successors()) {
+		createReasoningPipeline(nodeOutput, pipelineOutput, successor);
 	}
 }
 
-void Blackboard::decomposeDisjunction(
-		const std::shared_ptr<DisjunctionFormula> &phi,
-		std::shared_ptr<QueryResultBroadcaster> &in,
-		std::shared_ptr<QueryResultBroadcaster> &out)
+void Blackboard::createReasoningStep(const std::shared_ptr<DefinedReasoner> &r,
+									 const std::shared_ptr<Query> &subQuery,
+									 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
+									 const std::shared_ptr<QueryResultBroadcaster> &stepOutput)
 {
-	// add blackboard segments for each formula in the disjunction.
-	// all having the same input and out stream.
-	for(const std::shared_ptr<Formula> &psi : phi->formulae()) {
-		decompose(psi, in, out);
-	}
+	std::shared_ptr<Blackboard::Stream> reasonerIn;
+	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
+	// create IO channels
+	reasonerOutChan = QueryResultStream::Channel::create(stepOutput);
+	reasonerIn = std::make_shared<Blackboard::Stream>(
+			r,reasonerOutChan, subQuery);
+	reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
+	stepInput->addSubscriber(reasonerInChan);
+	// create a new segment
+	reasonerInputs_.push_back(reasonerIn);
 }
 
 
 Blackboard::Stream::Stream(
-	const std::shared_ptr<ManagedReasoner> &reasoner,
+	const std::shared_ptr<DefinedReasoner> &reasoner,
 	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
 : QueryResultStream(),
@@ -204,15 +223,3 @@ void Blackboard::Stream::stop()
 	hasStopRequest_ = true;
 	close();
 }
-
-
-Blackboard::Segment::Segment(const std::shared_ptr<Blackboard::Stream> &in,
-	const std::shared_ptr<QueryResultBroadcaster> &out)
-: in_(in), out_(out)
-{}
-
-void Blackboard::Segment::stop()
-{
-	in_->stop();
-}
-

@@ -113,19 +113,57 @@ target_link_libraries(mongo_kb
 add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
-		src/logging.cpp
-		src/terms.cpp
-		src/queries.cpp
+        src/Logger.cpp
+		src/DependencyGraph.cpp
+		src/ReasoningGraph.cpp
 		src/Blackboard.cpp
-        src/reasoner.cpp
 		src/HybridQA.cpp
-		src/prolog/PrologQuery.cpp
-		src/prolog/PrologReasoner.cpp
-		src/prolog/logging.cpp
-		src/prolog/algebra.cpp
-		src/mongolog/MongologReasoner.cpp
-		src/swrl/SWRLReasoner.cpp
-		src/esg/ESGReasoner.cpp)
+		src/DataSource.cpp
+		src/scope/ConfidenceValue.cpp
+		src/scope/ConfidenceInterval.cpp
+		src/scope/Timepoint.cpp
+		src/scope/TimeInterval.cpp
+		src/terms/Term.cpp
+		src/terms/Variable.cpp
+		src/terms/Predicate.cpp
+		src/terms/Bottom.cpp
+		src/terms/Top.cpp
+		src/terms/ListTerm.cpp
+		src/terms/OptionList.cpp
+		src/terms/Substitution.cpp
+		src/terms/Unifier.cpp
+		src/terms/Constant.cpp
+		src/rdf/PrefixRegistry.cpp
+		src/formulas/Formula.cpp
+		src/formulas/ConnectiveFormula.cpp
+		src/formulas/Conjunction.cpp
+		src/formulas/Disjunction.cpp
+		src/formulas/PredicateFormula.cpp
+		src/queries/Query.cpp
+		src/queries/QueryInstance.cpp
+		src/queries/QueryError.cpp
+		src/queries/QueryResult.cpp
+		src/queries/QueryResultStream.cpp
+		src/queries/QueryResultQueue.cpp
+		src/queries/QueryResultCombiner.cpp
+		src/queries/QueryResultBroadcaster.cpp
+		src/reasoner/BuiltinEvaluator.cpp
+		src/reasoner/DefinedPredicate.cpp
+		src/reasoner/ReasonerPlugin.cpp
+		src/reasoner/IReasoner.cpp
+		src/reasoner/ReasonerManager.cpp
+		src/reasoner/ReasonerConfiguration.cpp
+		src/reasoner/prolog/PrologQuery.cpp
+		src/reasoner/prolog/PrologQueryRunner.cpp
+		src/reasoner/prolog/PrologThreadPool.cpp
+		src/reasoner/prolog/PrologReasoner.cpp
+		src/reasoner/prolog/PrologTests.cpp
+		src/reasoner/prolog/logging.cpp
+		src/reasoner/prolog/algebra.cpp
+		src/reasoner/prolog/blackboard.cpp
+		src/reasoner/mongolog/MongologReasoner.cpp
+		src/reasoner/swrl/SWRLReasoner.cpp
+		src/reasoner/esg/ESGReasoner.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		spdlog::spdlog
@@ -214,5 +252,5 @@ target_link_libraries(all_gtests
 #install(DIRECTORY prolog/
 #		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
 
-install(DIRECTORY src/prolog DESTINATION share
+install(DIRECTORY src/reasoner/prolog DESTINATION share
 		PATTERN ".cpp" EXCLUDE)

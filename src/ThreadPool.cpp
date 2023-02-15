@@ -9,14 +9,15 @@
 // STD
 #include <stdexcept>
 // KnowRob
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/ThreadPool.h>
 
 using namespace knowrob;
 
 ThreadPool::ThreadPool(uint32_t maxNumThreads)
 : maxNumThreads_(maxNumThreads),
-  numFinishedThreads_(0)
+  numFinishedThreads_(0),
+  numActiveWorker_(0)
 {
 	// NOTE: do not add worker threads in the constructor.
 	//  The problem is the virtual initializeWorker function that could be called
@@ -43,7 +44,10 @@ void ThreadPool::pushWork(const std::shared_ptr<ThreadPool::Runner> &goal)
 	{
 		std::lock_guard<std::mutex> scoped_lock(workMutex_);
 		workQueue_.push(goal);
-		if(workQueue_.size()>1 || workerThreads_.empty()) {
+
+        uint32_t numAliveThreads = workerThreads_.size()-numFinishedThreads_;
+        uint32_t numAvailableThreads = numAliveThreads - numActiveWorker_;
+		if(numAvailableThreads == 0) {
 			// add another thread if max num not reached yet
 			if(workerThreads_.size() < (maxNumThreads_ + numFinishedThreads_)) {
 				workerThreads_.push_back(new Worker(this));
@@ -94,6 +98,7 @@ void ThreadPool::Worker::run()
 	}
 	KB_DEBUG("Worker initialized.");
 	hasTerminateRequest_ = false;
+    threadPool_->numActiveWorker_ += 1;
 	
 	// loop until the application exits
 	while(!hasTerminateRequest_) {
@@ -101,9 +106,11 @@ void ThreadPool::Worker::run()
 		{
 			KB_DEBUG("Worker going to sleep.");
 			std::unique_lock<std::mutex> lk(threadPool_->workMutex_);
+            threadPool_->numActiveWorker_ -= 1;
 			threadPool_->workCV_.wait(lk, [this]{
 				return hasTerminateRequest_ || !threadPool_->workQueue_.empty();
 			});
+            threadPool_->numActiveWorker_ += 1;
 			KB_DEBUG("Worker woke up.");
 		}
 		if(hasTerminateRequest_) {
@@ -129,6 +136,7 @@ void ThreadPool::Worker::run()
 	threadPool_->finalizeWorker();
 	// note: counter indicates that there are finished threads in workerThreads_ list.
 	threadPool_->numFinishedThreads_ += 1;
+    threadPool_->numActiveWorker_ -= 1;
 	KB_DEBUG("Worker terminated.");
 }
 

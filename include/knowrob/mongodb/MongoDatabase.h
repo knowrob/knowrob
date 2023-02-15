@@ -36,4 +36,4 @@ private:
 	mongoc_database_t *db_;
 };
 
-#endif //__KB_MONGO_COLLECTION_H__
+#endif //__KB_MONGO_DATABASE_H__

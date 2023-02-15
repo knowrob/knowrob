@@ -22,9 +22,8 @@
 #include <boost/archive/text_iarchive.hpp>
 // KnowRob
 #include <knowrob/knowrob.h>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
-#include <knowrob/queries.h>
 
 using namespace knowrob;
 namespace po = boost::program_options;

@@ -13,10 +13,8 @@
 // BOOST
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
-#include <knowrob/queries.h>
-#include <knowrob/reasoner.h>
-#include <knowrob/prolog/PrologReasoner.h>
-#include <knowrob/Blackboard.h>
+#include "knowrob/reasoner/ReasonerManager.h"
+#include <knowrob/reasoner/prolog/PrologReasoner.h>
 
 namespace knowrob {
 	class QueryResultHandler {
@@ -30,19 +28,14 @@ namespace knowrob {
 
 		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
 
-        int callPrologDirect(const std::string &queryString);
-
 		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<PrologReasoner> prologReasoner_;
 
-        std::shared_ptr<knowrob::QueryResultQueue> bbq_;
-        std::shared_ptr<Blackboard> bb_;
-
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};
-};
+}
 
 #endif //KNOWROB_HYBRIDQA_H

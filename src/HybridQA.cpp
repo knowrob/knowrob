@@ -6,9 +6,10 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
 #include <knowrob/Blackboard.h>
+#include "knowrob/rdf/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -23,6 +24,22 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 
 void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 {
+    auto semwebTree = config.get_child_optional("semantic-web");
+    if(semwebTree) {
+        // load RDF URI aliases
+        auto prefixesList = semwebTree.value().get_child_optional("prefixes");
+        for(const auto &pair : prefixesList.value()) {
+            auto alias = pair.second.get("alias","");
+            auto uri = pair.second.get("uri","");
+            if(!alias.empty() && !uri.empty()) {
+                rdf::PrefixRegistry::get().registerPrefix(alias, uri);
+            }
+            else {
+                KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");
+            }
+        }
+    }
+
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
 		for(const auto &pair : reasonerList.value()) {
@@ -46,22 +63,20 @@ int HybridQA::callPrologDirect(const std::string &queryString)
 
 std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString)
 {
-	auto term = prologReasoner_->readTerm(queryString);
+	auto term =prologReasoner_->readTerm(queryString);
 	return PrologQuery::toQuery(term);
 }
 
-
 void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler) {
-    auto bbq = std::make_shared<knowrob::QueryResultQueue>();
-    auto bb = std::make_shared<Blackboard>(reasonerManager_, bbq, query);
-    QueryResultPtr solution;
+	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
+	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
+	QueryResultPtr solution;
 
-    bb->start();
-    do {
-        solution = bbq->pop_front();
-        if(QueryResultStream::isEOS(solution)) {
-            break;
-        }
-    } while(handler.pushQueryResult(solution));
+	bb->start();
+	do {
+		solution = bbq->pop_front();
+		if(QueryResultStream::isEOS(solution)) {
+			break;
+		}
+	} while(handler.pushQueryResult(solution));
 }
-
