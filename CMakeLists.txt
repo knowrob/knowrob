@@ -143,10 +143,10 @@ install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 ##############
 
 if (catkin_FOUND)
-	# install into ROS workspace
-	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#	# install into ROS workspace
+#	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #	### TF messages ###
 #	add_library(tf_knowrob SHARED
@@ -165,27 +165,27 @@ if (catkin_FOUND)
 #		${catkin_EXPORTED_TARGETS})
 
 	### RViz marker ###
-	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
-	target_link_libraries(marker_knowrob
-		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-	add_dependencies(marker_knowrob
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
+#	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
+#	target_link_libraries(marker_knowrob
+#		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+#	add_dependencies(marker_knowrob
+#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+#		${catkin_EXPORTED_TARGETS})
 	
 	### URDf ###
-	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
-	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-	add_dependencies(urdf_parser
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
+#	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
+#	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+#	add_dependencies(urdf_parser
+#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+#		${catkin_EXPORTED_TARGETS})
 
 	### ROS Interface ###
-	add_executable(knowrob-ros src/ROSInterface.cpp)
-	target_link_libraries(knowrob-ros
-			Boost::program_options
-			knowrob_qa
-			${catkin_LIBRARIES})
-	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
+#	add_executable(knowrob-ros src/ROSInterface.cpp)
+#	target_link_libraries(knowrob-ros
+#			Boost::program_options
+#			knowrob_qa
+#			${catkin_LIBRARIES})
+#	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
 endif()
 
 ##############

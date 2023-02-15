@@ -293,6 +293,14 @@ bool PrologReasoner::eval(const std::shared_ptr<Predicate> &p,
 	return !QueryResultStream::isEOS(oneSolution(p, moduleName, doTransformQuery));
 }
 
+bool PrologReasoner::eval(std::shared_ptr<const Query> q,
+                          const char *moduleName,
+                          bool doTransformQuery)
+{
+    return !QueryResultStream::isEOS(oneSolution(q, moduleName, doTransformQuery));
+}
+
+
 QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
 										   const char *moduleName,
 										   bool doTransformQuery)

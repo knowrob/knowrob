@@ -16,7 +16,7 @@
 #include <knowrob/queries.h>
 #include <knowrob/reasoner.h>
 #include <knowrob/prolog/PrologReasoner.h>
-#include "Blackboard.h"
+#include <knowrob/Blackboard.h>
 
 namespace knowrob {
 	class QueryResultHandler {

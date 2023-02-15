@@ -12,8 +12,6 @@
 
 using namespace knowrob;
 
-bool runQueryInitialized = false;
-
 HybridQA::HybridQA(const boost::property_tree::ptree &config)
 {
 	reasonerManager_ = std::make_shared<ReasonerManager>();
@@ -43,11 +41,7 @@ void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 
 int HybridQA::callPrologDirect(const std::string &queryString)
 {
-    auto result = prologReasoner_->allSolutions(parseQuery(queryString), "user", false);
-    if (result.empty()) {
-        return FALSE;
-    }
-    return TRUE;
+    return prologReasoner_->eval(parseQuery(queryString), "user", false);
 }
 
 std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString)

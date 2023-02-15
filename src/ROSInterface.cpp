@@ -85,7 +85,7 @@ public:
     }
 
     std::string next_solution() {
-        std::string solution = solutions_.front()->c_str();
+        std::string solution = solutions_.front();
         solutions_.pop_front();
         numSolutions_ -= 1;
         return solution;
@@ -100,7 +100,7 @@ public:
 
     }
 
-    std::string error() {
+    const std::string& error() const {
         return errorMessage;
     }
 
@@ -207,9 +207,8 @@ bool next_solution(json_prolog_msgs::PrologNextSolution::Request &req,
         }
         else {
             res.status = json_prolog_msgs::PrologNextSolution::Response::OK;
-            std::string solution =
+            res.solution  =
                     resultHandlers_.find(req.id)->second->next_solution();
-            res.solution = solution;
         }
     }
     return true;

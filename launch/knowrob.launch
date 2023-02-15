@@ -12,7 +12,6 @@
   <param name="initial_package" type="string" value="$(arg initial_package)" />
   <param name="initial_goal" type="string" value="$(arg initial_goal)" />
   
-  <param name="num_pl_threads" type="int" value="$(arg num_pl_threads)" />
   <param name="num_ros_threads" type="int" value="$(arg num_ros_threads)" />
   
   <node name="knowrob_ros" pkg="knowrob" type="knowrob-ros" cwd="node" output="screen" />

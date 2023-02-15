@@ -145,8 +145,20 @@ namespace knowrob {
 		bool eval(const std::shared_ptr<Predicate> &goal,
 				  const char *contextModule={},
 				  bool doTransformQuery=true);
-		
-		/**
+
+        /**
+        *
+        * @param goal
+        * @param contextModule
+        * @param doTransformQuery
+        * @return
+        */
+        bool eval(std::shared_ptr<const Query> q,
+                  const char *moduleName,
+                  bool doTransformQuery);
+
+
+        /**
 		 * Parse a string into a term.
 		 */
 		TermPtr readTerm(const std::string &queryString);
@@ -277,7 +289,7 @@ namespace knowrob {
 		PrologThreadPool& threadPool();
 		
 		friend class PrologReasoner::Runner;
-	};
+    };
 
 	/**
 	 * A baseclass for prolog test fixtures.

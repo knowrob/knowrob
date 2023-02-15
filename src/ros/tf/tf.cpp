@@ -26,7 +26,7 @@ PREDICATE(tf_republish_set_goal, 4) {
 	std::string coll_name((char*)PL_A2);
 	double time_min = (double)PL_A3;
 	double time_max = (double)PL_A4;
-	get_republisher().set_db_name(db_name);
+	get_republisher().set_db_uri(db_name);
 	get_republisher().set_db_collection(coll_name);
 	get_republisher().set_goal(time_min,time_max);
 	return true;

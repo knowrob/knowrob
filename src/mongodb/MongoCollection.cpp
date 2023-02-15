@@ -200,3 +200,8 @@ bool MongoCollection::bulk_write(const PlTerm &doc_term)
 	}
 	return success;
 }
+
+mongoc_collection_t* MongoCollection::operator()()
+{
+    return coll_;
+}

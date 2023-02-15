@@ -36,6 +36,9 @@ public:
 	void set_db_name(std::string db_name)
 	{ db_name_ = db_name; }
 
+    void set_db_uri(std::string db_uri)
+    { db_uri_ = db_uri; }
+
 	void set_db_collection(std::string db_collection)
 	{ db_collection_ = db_collection; }
 
@@ -66,8 +69,9 @@ protected:
 	double time_;
 
 	std::string db_name_;
+    std::string db_uri_;
 	std::string db_collection_;
-	MongoCollection *collection_;
+    std::shared_ptr<MongoCollection> collection_;
 
 	mongoc_cursor_t *cursor_;
 	geometry_msgs::TransformStamped ts_;
