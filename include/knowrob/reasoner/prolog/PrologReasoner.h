@@ -127,7 +127,7 @@ namespace knowrob {
         * @param doTransformQuery
         * @return
         */
-        bool eval(std::shared_ptr<const Query> q,
+        bool eval(const std::shared_ptr<const Query> &q,
                   const char *moduleName,
                   bool doTransformQuery);
 
@@ -223,6 +223,7 @@ namespace knowrob {
         static PrologThreadPool& threadPool();
 
         friend class PrologQueryRunner;
+
     };
 }
 
