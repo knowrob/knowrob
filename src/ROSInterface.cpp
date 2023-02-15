@@ -18,9 +18,8 @@
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
 #include <knowrob/knowrob.h>
-#include <knowrob/logging.h>
+#include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
-#include <knowrob/queries.h>
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -62,8 +61,16 @@ public:
         runQuery(currentQuery_);
 	}
 
-    std::string substitutionToString(const QueryResultPtr &sharedPtr) {
-        return "";
+    std::string substitutionToJSONString(const std::shared_ptr<Substitution> &omega) {
+        auto ss = std::stringstream();
+        uint32_t i=0;
+        ss << "{\n";
+        for(const auto &pair : *omega) {
+            if(i++ > 0) ss << ",\n";
+            ss << '\"' << pair.first.name() << "\":" << '\"' << (*pair.second) << "\"";
+        }
+        ss << '}';
+        return ss.str();
     }
 
 // Override QueryResultHandler
@@ -73,7 +80,7 @@ public:
         }
         else {
             std::stringstream ss;
-            ss << *solution->substitution() << ".";
+            ss << substitutionToJSONString(solution->substitution());
             solutions_.push_back(std::make_shared<std::string>(ss.str()));
         }
         numSolutions_ += 1;
@@ -85,7 +92,7 @@ public:
     }
 
     std::string next_solution() {
-        std::string solution = solutions_.front();
+        std::string solution = *(solutions_.front());
         solutions_.pop_front();
         numSolutions_ -= 1;
         return solution;
@@ -272,6 +279,7 @@ int initializeRos(ros::NodeHandle node) {
         qaHandler_->finish();
     }
     is_initialized_ = true;
+    return is_initialized_;
 }
 
 int run(int argc, char **argv) {

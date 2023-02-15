@@ -29,6 +29,9 @@ public:
 	void set_db_name(const std::string &db_name)
 	{ db_name_ = db_name; }
 
+    void set_db_uri(std::string db_uri)
+    { db_uri_ = db_uri; }
+
 	const std::string& get_db_name()
 	{ return db_name_; }
 
@@ -60,6 +63,7 @@ protected:
 	double angularThreshold_;
 	double timeThreshold_;
 	std::string db_name_;
+    std::string db_uri_;
 	std::string topic_;
 
 	char buf_[16];
