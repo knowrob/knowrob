@@ -30,20 +30,13 @@
 
 #define PARAM_INITIAL_PACKAGE "initial_package"
 #define PARAM_INITIAL_GOAL "initial_goal"
-#define PARAM_NUM_PL_THREADS "num_pl_threads"
 #define PARAM_NUM_ROS_THREADS "num_ros_threads"
 #define PARAM_ENABLE_DEBUG "pl_debug"
 
-#define NUM_PL_THREADS_DEFAULT 2
 #define NUM_ROS_THREADS_DEFAULT 2
 
 using namespace knowrob;
 namespace po = boost::program_options;
-
-static const char* PROMPT = "?- ";
-
-// TODO support queries like: mongolog:(woman(X), ...) or (mongolog | prolog):(woman(X), ...)
-//    but there could be different instances of the same reasoner type. So might need a reasoner id instead.
 
 class HybridQAResultHandler : public QueryResultHandler {
 public:
