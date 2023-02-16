@@ -133,9 +133,6 @@ void TFRepublisher::create_cursor(double start_time)
 	if(cursor_!=NULL) {
 		mongoc_cursor_destroy(cursor_);
 	}
-    if(collection_) {
-        collection_.reset();
-    }
 
 	collection_ = MongoInterface::get().connect(
 		db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());

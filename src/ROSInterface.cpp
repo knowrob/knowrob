@@ -42,7 +42,7 @@ class HybridQAResultHandler : public QueryResultHandler {
 public:
     bool incrementalMode;
     std::string errorMessage;
-    std::list<std::shared_ptr<std::string>> solutions_;
+    std::list<std::string> solutions_;
     HybridQAResultHandler(const boost::property_tree::ptree &config, const std::string &queryString, bool incremental = false)
 	: has_stop_request_(false),
 	  currentQuery_(""),
@@ -69,12 +69,10 @@ public:
 // Override QueryResultHandler
     bool pushQueryResult(const QueryResultPtr &solution) override {
         if(solution->substitution()->empty()) {
-            solutions_.push_back(std::make_shared<std::string>("True."));
+            solutions_.push_back("True.");
         }
         else {
-            std::stringstream ss;
-            ss << substitutionToJSONString(solution->substitution());
-            solutions_.push_back(std::make_shared<std::string>(ss.str()));
+            solutions_.push_back(substitutionToJSONString(solution->substitution()));
         }
         numSolutions_ += 1;
         return !has_stop_request_;
@@ -85,7 +83,7 @@ public:
     }
 
     std::string next_solution() {
-        std::string solution = *(solutions_.front());
+        std::string solution = solutions_.front();
         solutions_.pop_front();
         numSolutions_ -= 1;
         return solution;
@@ -112,11 +110,11 @@ public:
             numSolutions_ = 0;
             hybridQA_.runQuery(query, *this);
             if(numSolutions_ == 0) {
-                solutions_.push_back(std::make_shared<std::string>("False."));
+                solutions_.push_back("False.");
             }
         }
         catch (std::exception& e) {
-            std::cout << e.what() << std::endl;
+            KB_ERROR("ERROR: {}.", e.what());
             errorMessage = e.what();
         }
     }
@@ -174,7 +172,7 @@ bool query(json_prolog_msgs::PrologQuery::Request &req,
 {
     if (exists(req.id)) {
         std::stringstream ss;
-        ss << "Another query is already being processed with id " << req.id << ".";
+        ss << "Another query is already being processed with id " << req.id << '.';
         res.ok = false;
         res.message = ss.str();
     } else {
