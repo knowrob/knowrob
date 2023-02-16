@@ -34,10 +34,6 @@ TFRepublisher::~TFRepublisher()
 	is_running_ = false;
 	thread_.join();
 	tick_thread_.join();
-	if(collection_) {
-		collection_.reset();
-		collection_ = NULL;
-	}
 }
 
 void TFRepublisher::clear()
@@ -203,9 +199,6 @@ void TFRepublisher::set_initial_poses(double unix_time)
 	}
 	if(append_opts) {
 		bson_destroy(append_opts);
-	}
-	if(collection_) {
-		collection_.reset();
 	}
 }
 

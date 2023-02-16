@@ -32,7 +32,6 @@ void TFLogger::store_document(bson_t *doc)
 	{
 		ROS_WARN("[TFLogger] insert failed: %s.", err.message);
 	}
-	collection_.reset();
 }
 
 void TFLogger::store(const geometry_msgs::TransformStamped &ts)
