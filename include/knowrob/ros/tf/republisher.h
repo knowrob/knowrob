@@ -36,7 +36,7 @@ public:
 	void set_db_name(std::string db_name)
 	{ db_name_ = db_name; }
 
-    void set_db_uri(std::string db_uri)
+    void set_db_uri(const std::string &db_uri)
     { db_uri_ = db_uri; }
 
 	void set_db_collection(std::string db_collection)
