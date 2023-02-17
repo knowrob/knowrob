@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
+ * Copyright (c) 2023, Sascha Jongebloed
  * All rights reserved.
  *
  * This file is part of KnowRob, please consult
@@ -11,9 +11,7 @@
 #include <exception>
 #include <iostream>
 // BOOST
-#include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/parsers.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
@@ -27,113 +25,40 @@
 #include <json_prolog_msgs/PrologQuery.h>
 #include <json_prolog_msgs/PrologFinish.h>
 #include <json_prolog_msgs/PrologNextSolution.h>
+// ResultHandler
+#include "IterativeQAResultHandler.cpp"
 
 #define PARAM_INITIAL_PACKAGE "initial_package"
 #define PARAM_INITIAL_GOAL "initial_goal"
 #define PARAM_NUM_ROS_THREADS "num_ros_threads"
-#define PARAM_ENABLE_DEBUG "pl_debug"
 
 #define NUM_ROS_THREADS_DEFAULT 2
 
 using namespace knowrob;
 namespace po = boost::program_options;
 
-class HybridQAResultHandler : public QueryResultHandler {
-public:
-    bool incrementalMode;
-    std::string errorMessage;
-    std::list<std::string> solutions_;
-    HybridQAResultHandler(const boost::property_tree::ptree &config, const std::string &queryString, bool incremental = false)
-	: has_stop_request_(false),
-	  currentQuery_(""),
-      hybridQA_(config)
-	{
-        incrementalMode = incremental;
-        errorMessage = "";
-        currentQuery_ = queryString;
-        runQuery(currentQuery_);
-	}
-
-    std::string substitutionToJSONString(const std::shared_ptr<Substitution> &omega) {
-        auto ss = std::stringstream();
-        uint32_t i=0;
-        ss << "{\n";
-        for(const auto &pair : *omega) {
-            if(i++ > 0) ss << ",\n";
-            ss << '\"' << pair.first.name() << "\":" << '\"' << (*pair.second) << "\"";
-        }
-        ss << '}';
-        return ss.str();
-    }
-
-// Override QueryResultHandler
-    bool pushQueryResult(const QueryResultPtr &solution) override {
-        if(solution->substitution()->empty()) {
-            solutions_.push_back("True.");
-        }
-        else {
-            solutions_.push_back(substitutionToJSONString(solution->substitution()));
-        }
-        numSolutions_ += 1;
-        return !has_stop_request_;
-    }
-
-    bool has_more_solutions() {
-        return numSolutions_ > 0;
-    }
-
-    std::string next_solution() {
-        std::string solution = solutions_.front();
-        solutions_.pop_front();
-        numSolutions_ -= 1;
-        return solution;
-    }
-
-    bool has_error() {
-        if (errorMessage == "") {
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-
-    const std::string& error() const {
-        return errorMessage;
-    }
-
-    void runQuery(const std::string &queryString) {
-        try {
-            // parse query
-            auto query = hybridQA_.parseQuery(queryString);
-            // evaluate query in hybrid QA system
-            numSolutions_ = 0;
-            hybridQA_.runQuery(query, *this);
-            if(numSolutions_ == 0) {
-                solutions_.push_back("False.");
-            }
-        }
-        catch (std::exception& e) {
-            KB_ERROR("ERROR: {}.", e.what());
-            errorMessage = e.what();
-        }
-    }
-
-    void finish() {
-        // TODO: What to do during finish?
-    }
-
-
-protected:
-    HybridQA hybridQA_;
-	std::atomic<bool> has_stop_request_;
-	int numSolutions_;
-	std::string currentQuery_;
-};
-
-std::map< std::string, std::shared_ptr<HybridQAResultHandler> > resultHandlers_;
+std::map< std::string, std::shared_ptr<IterativeQAResultHandler> > resultHandlers_;
 boost::property_tree::ptree config;
 bool is_initialized_ = false;
+HybridQA* hybridQA_;
+int numSolutions_;
+
+void runQuery(const std::string &queryString, IterativeQAResultHandler &handler) {
+    try {
+        // parse query
+        auto query = hybridQA_->parseQuery(queryString);
+        // evaluate query in hybrid QA system
+        numSolutions_ = 0;
+        hybridQA_->runQuery(query, handler);
+        if(handler.getNumSolutions() == 0) {
+            handler.pushSolution("False.");
+        }
+    }
+    catch (std::exception& e) {
+        KB_ERROR("ERROR: {}.", e.what());
+        handler.setError(e.what());
+    }
+}
 
 bool exists(const std::string &id)
 {
@@ -176,7 +101,8 @@ bool query(json_prolog_msgs::PrologQuery::Request &req,
         res.ok = false;
         res.message = ss.str();
     } else {
-        resultHandlers_[req.id] = std::make_shared<HybridQAResultHandler>(config, req.query, req.mode);
+        resultHandlers_[req.id] = std::make_shared<IterativeQAResultHandler>(config, req.query, req.mode);
+        runQuery(req.query, *resultHandlers_[req.id]);
         res.ok = true;
         res.message = "";
     }
@@ -192,7 +118,7 @@ bool next_solution(json_prolog_msgs::PrologNextSolution::Request &req,
     }
     else {
         if (!has_more_solutions(req.id)){
-            std::shared_ptr<HybridQAResultHandler> x = resultHandlers_.find(req.id)->second;
+            std::shared_ptr<IterativeQAResultHandler> x = resultHandlers_.find(req.id)->second;
             if(x->has_error()) {
                 res.status = json_prolog_msgs::PrologNextSolution::Response::QUERY_FAILED;
                 res.solution = x->error();
@@ -224,12 +150,6 @@ bool finish(json_prolog_msgs::PrologFinish::Request &req,
     return true;
 }
 
-sig_atomic_t volatile g_request_shutdown = 0;
-void sigint_handler(int sig)
-{
-    g_request_shutdown=1;
-}
-
 // TODO: Decide if loading specific init.pls is still necessary?
 //int ensure_loaded(HybridQA hybridQA_, const char *ros_pkg)
 //{
@@ -243,7 +163,6 @@ void sigint_handler(int sig)
 //}
 
 int initializeRos(ros::NodeHandle node) {
-    HybridQA hybridQA_(config);
     // TODO: Decide if loading specific init.pls is still necessary?
 //    if(!ensure_loaded(hybridQA_, "knowrob")) {
 //        return FALSE;
@@ -251,26 +170,32 @@ int initializeRos(ros::NodeHandle node) {
     std::string param;
     // register initial packages
     if (node.getParam(PARAM_INITIAL_PACKAGE, param)) {
-        if(!hybridQA_.callPrologDirect("register_ros_package(" + param + ")")) {
+        if(!hybridQA_->callPrologDirect("register_ros_package(" + param + ")")) {
             ROS_ERROR("Failed to load initial_package %s.", param.c_str());
             return FALSE;
         }
     }
-    else if(!hybridQA_.callPrologDirect("register_ros_package(knowrob).")) {
+    else if(!hybridQA_->callPrologDirect("register_ros_package(knowrob).")) {
         ROS_ERROR("Failed to load knowrob.");
         return FALSE;
     }
     // execute initial goal
     if (node.getParam(PARAM_INITIAL_GOAL, param)) {
-        std::shared_ptr<HybridQAResultHandler> qaHandler_ = std::make_shared<HybridQAResultHandler>(config, param, false);
-        qaHandler_->runQuery(param);
-        if(qaHandler_->has_error()) {
-            ROS_WARN("initial goal failed: %s", qaHandler_->error().c_str());
+        IterativeQAResultHandler qaHandler_(config, param, false);
+        runQuery(param, qaHandler_);
+        if(qaHandler_.has_error()) {
+            ROS_WARN("initial goal failed: %s", qaHandler_.error().c_str());
         }
-        qaHandler_->finish();
+        qaHandler_.finish();
     }
     is_initialized_ = true;
     return is_initialized_;
+}
+
+sig_atomic_t volatile g_request_shutdown = 0;
+void sigint_handler(int sig)
+{
+    g_request_shutdown=1;
 }
 
 int run(int argc, char **argv) {
@@ -282,6 +207,9 @@ int run(int argc, char **argv) {
 
     // read settings
     boost::property_tree::read_json(config_path, config);
+
+    // init hybrid qa
+    hybridQA_ = new HybridQA(config);
 
     // configure logging
     auto &log_config = config.get_child("logging");
@@ -332,7 +260,6 @@ int run(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 }
-
 
 int main(int argc, char **argv) {
 	InitKnowledgeBase(argc, argv);

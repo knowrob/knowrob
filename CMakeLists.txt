@@ -218,7 +218,7 @@ if (catkin_FOUND)
 		${catkin_EXPORTED_TARGETS})
 
 	## ROS Interface ###
-	add_executable(knowrob-ros src/ROSInterface.cpp)
+	add_executable(knowrob-ros src/ROSInterface.cpp src/IterativeQAResultHandler.cpp)
 	target_link_libraries(knowrob-ros
 			Boost::program_options
 			knowrob_qa
