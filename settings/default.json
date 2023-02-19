@@ -3,6 +3,11 @@
     "console-sink": { "level": "debug" },
     "file-sink": { "level": "debug" }
   },
+  "semantic-web": {
+    "prefixes": [
+      { "alias": "swrl_test", "uri":  "http://knowrob.org/kb/swrl_test" }
+    ]
+  },
   "reasoner": [
     {
       "type": "Mongolog",
@@ -11,13 +16,24 @@
         "host": "localhost",
         "port": 27017,
         "db": "mongolog1",
-        "read_only": false,
-        "drop_graphs": ["user"]
-      }
+        "read_only": false
+      },
+      "data-sources": [
+        { "path": "owl/test/swrl.owl", "format": "rdf-xml" }
+      ]
     },
     {
-      "type": "Prolog",
-      "name": "prolog1"
+      "type": "Mongolog",
+      "name": "mongolog2",
+      "mongodb": {
+        "host": "localhost",
+        "port": 27017,
+        "db": "mongolog2",
+        "read_only": false
+      },
+      "data-sources": [
+        { "path": "owl/test/events.owl", "format": "rdf-xml" }
+      ]
     }
   ]
 }

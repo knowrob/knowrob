@@ -6,7 +6,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <termios.h>
 // STD
 #include <exception>
 #include <iostream>
@@ -28,8 +27,8 @@
 // ResultHandler
 #include "IterativeQAResultHandler.cpp"
 
-#define PARAM_INITIAL_PACKAGE "initial_package"
-#define PARAM_INITIAL_GOAL "initial_goal"
+// #define PARAM_INITIAL_PACKAGE "initial_package"
+// #define PARAM_INITIAL_GOAL "initial_goal"
 #define PARAM_NUM_ROS_THREADS "num_ros_threads"
 
 #define NUM_ROS_THREADS_DEFAULT 2
@@ -101,7 +100,7 @@ bool query(json_prolog_msgs::PrologQuery::Request &req,
         res.ok = false;
         res.message = ss.str();
     } else {
-        resultHandlers_[req.id] = std::make_shared<IterativeQAResultHandler>(config, req.query, req.mode);
+        resultHandlers_[req.id] = std::make_shared<IterativeQAResultHandler>(req.query);
         runQuery(req.query, *resultHandlers_[req.id]);
         res.ok = true;
         res.message = "";
@@ -162,35 +161,35 @@ bool finish(json_prolog_msgs::PrologFinish::Request &req,
 //    return TRUE;
 //}
 
-int initializeRos(ros::NodeHandle node) {
-    // TODO: Decide if loading specific init.pls is still necessary?
-//    if(!ensure_loaded(hybridQA_, "knowrob")) {
+// TODO: Decide if loading specific init.pls over launch file is still necessary?
+//int initializeRos(ros::NodeHandle node) {
+////    if(!ensure_loaded(hybridQA_, "knowrob")) {
+////        return FALSE;
+////    }
+//    std::string param;
+//    // register initial packages
+//    if (node.getParam(PARAM_INITIAL_PACKAGE, param)) {
+//        if(!hybridQA_->callPrologDirect("register_ros_package(" + param + ")")) {
+//            ROS_ERROR("Failed to load initial_package %s.", param.c_str());
+//            return FALSE;
+//        }
+//    }
+//    else if(!hybridQA_->callPrologDirect("register_ros_package(knowrob).")) {
+//        ROS_ERROR("Failed to load knowrob.");
 //        return FALSE;
 //    }
-    std::string param;
-    // register initial packages
-    if (node.getParam(PARAM_INITIAL_PACKAGE, param)) {
-        if(!hybridQA_->callPrologDirect("register_ros_package(" + param + ")")) {
-            ROS_ERROR("Failed to load initial_package %s.", param.c_str());
-            return FALSE;
-        }
-    }
-    else if(!hybridQA_->callPrologDirect("register_ros_package(knowrob).")) {
-        ROS_ERROR("Failed to load knowrob.");
-        return FALSE;
-    }
-    // execute initial goal
-    if (node.getParam(PARAM_INITIAL_GOAL, param)) {
-        IterativeQAResultHandler qaHandler_(config, param, false);
-        runQuery(param, qaHandler_);
-        if(qaHandler_.has_error()) {
-            ROS_WARN("initial goal failed: %s", qaHandler_.error().c_str());
-        }
-        qaHandler_.finish();
-    }
-    is_initialized_ = true;
-    return is_initialized_;
-}
+//    // execute initial goal
+//    if (node.getParam(PARAM_INITIAL_GOAL, param)) {
+//        IterativeQAResultHandler qaHandler_(param);
+//        runQuery(param, qaHandler_);
+//        if(qaHandler_.has_error()) {
+//            ROS_WARN("initial goal failed: %s", qaHandler_.error().c_str());
+//        }
+//        qaHandler_.finish();
+//    }
+//    is_initialized_ = true;
+//    return is_initialized_;
+//}
 
 sig_atomic_t volatile g_request_shutdown = 0;
 void sigint_handler(int sig)
