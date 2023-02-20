@@ -34,10 +34,6 @@ TFRepublisher::~TFRepublisher()
 	is_running_ = false;
 	thread_.join();
 	tick_thread_.join();
-	if(collection_) {
-		delete collection_;
-		collection_ = NULL;
-	}
 }
 
 void TFRepublisher::clear()
@@ -137,11 +133,9 @@ void TFRepublisher::create_cursor(double start_time)
 	if(cursor_!=NULL) {
 		mongoc_cursor_destroy(cursor_);
 	}
-	if(collection_) {
-		delete collection_;
-	}
-	collection_ = MongoInterface::get_collection(
-		db_name_.c_str(),db_collection_.c_str());
+
+	collection_ = MongoInterface::get().connect(
+		db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());
 	collection_->appendSession(opts);
 	cursor_ = mongoc_collection_find_with_opts(
 	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
@@ -181,11 +175,11 @@ void TFRepublisher::set_initial_poses(double unix_time)
 		"{", "$replaceRoot", "{", "newRoot", BCON_UTF8("$tf"), "}", "}",
 	"]");
 	// create the cursor
-	MongoCollection *collection = MongoInterface::get_collection(
-			db_name_.c_str(), db_collection_.c_str());
-	collection->appendSession(append_opts);
+    collection_ = MongoInterface::get().connect(
+            db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());
+	collection_->appendSession(append_opts);
 	mongoc_cursor_t *cursor = mongoc_collection_aggregate(
-		(*collection)(), MONGOC_QUERY_NONE, pipeline, NULL, NULL);
+		(*collection_)(), MONGOC_QUERY_NONE, pipeline, NULL, NULL);
 	memory_.clear_transforms_only();
 	if(cursor!=NULL) {
 		const bson_t *doc;
@@ -202,9 +196,6 @@ void TFRepublisher::set_initial_poses(double unix_time)
 	}
 	if(append_opts) {
 		bson_destroy(append_opts);
-	}
-	if(collection) {
-		delete collection;
 	}
 }
 

@@ -1,11 +1,17 @@
 <launch>
-  <!-- Configure settings file. -->
-  <arg name="knowrob_settings" default="$(find knowrob)/settings/default.pl" />
+  <arg name="initial_package" default="knowrob" />
+  <arg name="initial_goal" default="true" />
+  <arg name="num_ros_threads" default="4" />
+  <arg name="knowrob_settings" default="$(find knowrob)/settings/default.json" />
+
   <env name="KNOWROB_SETTINGS" value="$(arg knowrob_settings)" />
-  <param name="mongodb_uri" value="$(optenv KNOWROB_MONGODB_URI mongodb://localhost:27017/?appname=knowrob)" />
   
-  <include file="$(find rosprolog)/launch/rosprolog.launch">
-    <arg name="initial_package" default="knowrob" />
-    <arg name="initial_goal" default="urdf_init" />
-  </include>
+  <param name="mongodb_uri" value="$(optenv KNOWROB_MONGODB_URI mongodb://localhost:27017/?appname=knowrob)" />
+
+  <param name="initial_package" type="string" value="$(arg initial_package)" />
+  <param name="initial_goal" type="string" value="$(arg initial_goal)" />
+  
+  <param name="num_ros_threads" type="int" value="$(arg num_ros_threads)" />
+  
+  <node name="knowrob_ros" pkg="knowrob" type="knowrob-ros" cwd="node" output="screen" />
 </launch>

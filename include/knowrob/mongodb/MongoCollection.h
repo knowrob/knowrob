@@ -31,6 +31,8 @@ public:
 	bool remove(const PlTerm &doc);
 	bool bulk_write(const PlTerm &doc);
 	bool update(const PlTerm &query, const PlTerm &update);
+
+    mongoc_collection_t* operator()();
 	
 private:
 	mongoc_client_pool_t *pool_;

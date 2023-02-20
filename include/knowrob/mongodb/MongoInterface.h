@@ -34,6 +34,8 @@ public:
 	std::shared_ptr<MongoDatabase> connect(const PlTerm &dbTerm);
 
 	std::shared_ptr<MongoCollection> connect(const PlTerm &dbTerm, const char* collectionName);
+
+    std::shared_ptr<MongoCollection> connect(const char* db_uri, const char* db_name, const char* collectionName);
 	
 	std::shared_ptr<MongoCursor> cursor_create(const PlTerm &db_term, const char *coll_name);
 

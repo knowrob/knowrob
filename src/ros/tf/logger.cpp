@@ -25,13 +25,13 @@ TFLogger::~TFLogger()
 void TFLogger::store_document(bson_t *doc)
 {
 	bson_error_t err;
-	MongoCollection *collection = MongoInterface::get_collection(db_name_.c_str(),topic_.c_str());
+    std::shared_ptr<MongoCollection> collection_ = MongoInterface::get().connect(
+            db_uri_.c_str(), db_name_.c_str(),topic_.c_str());
 	if(!mongoc_collection_insert(
-			(*collection)(),MONGOC_INSERT_NONE,doc,NULL,&err))
+			(*collection_)(),MONGOC_INSERT_NONE,doc,NULL,&err))
 	{
 		ROS_WARN("[TFLogger] insert failed: %s.", err.message);
 	}
-	delete collection;
 }
 
 void TFLogger::store(const geometry_msgs::TransformStamped &ts)
