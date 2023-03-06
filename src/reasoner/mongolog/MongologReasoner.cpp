@@ -75,6 +75,7 @@ const functor_t& MongologReasoner::callFunctor()
 
 bool MongologReasoner::projectIntoEDB(const Statement &statement)
 {
+    // FIXME: handle time interval and confidence value!
     auto mongolog_project = std::make_shared<Predicate>(Predicate("mongolog_project",{
             statement.predicate()
     }));
