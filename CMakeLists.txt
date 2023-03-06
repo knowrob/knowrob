@@ -119,6 +119,7 @@ add_library(knowrob_qa SHARED
 		src/Blackboard.cpp
 		src/HybridQA.cpp
 		src/DataSource.cpp
+		src/Statement.cpp
 		src/scope/ConfidenceValue.cpp
 		src/scope/ConfidenceInterval.cpp
 		src/scope/Timepoint.cpp

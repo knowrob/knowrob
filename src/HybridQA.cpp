@@ -67,7 +67,8 @@ std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString
 	return PrologQuery::toQuery(term);
 }
 
-void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler) {
+void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler)
+{
 	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
 	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
 	QueryResultPtr solution;
@@ -79,4 +80,49 @@ void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHa
 			break;
 		}
 	} while(handler.pushQueryResult(solution));
+}
+
+bool HybridQA::projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID)
+{
+    bool allProjected = true;
+    for(auto &x : statements) {
+        allProjected = projectIntoEDB(x, reasonerID) && allProjected;
+    }
+    return allProjected;
+}
+
+bool HybridQA::projectIntoEDB(const Statement &statement, const std::string &reasonerID)
+{
+    if(reasonerID == "*") {
+        bool oneSucceeded = false;
+        bool oneAttempted = false;
+        for(auto &pair : reasonerManager_->reasonerPool()) {
+            if(pair.second->reasoner()->hasCapability(CAPABILITY_DYNAMIC_ASSERTIONS)) {
+                auto description_n = pair.second->reasoner()->getPredicateDescription(statement.predicate()->indicator());
+                if(description_n) {
+                    oneSucceeded = pair.second->reasoner()->projectIntoEDB(statement) || oneSucceeded;
+                    oneAttempted = true;
+                }
+            }
+        }
+        if(!oneSucceeded && !oneAttempted) {
+            KB_ERROR("None of the known reasoners is able to project the predicate {}.", *statement.predicate());
+        }
+        return oneSucceeded;
+    }
+    else {
+        // project into user-specified reasoner backend
+        auto definedReasoner = reasonerManager_->getReasonerWithID(reasonerID);
+        if(definedReasoner) {
+            if(definedReasoner->reasoner()->hasCapability(CAPABILITY_DYNAMIC_ASSERTIONS)) {
+                return definedReasoner->reasoner()->projectIntoEDB(statement);
+            }
+            else {
+                KB_ERROR("Reasoner with id '{}' has not the capability to dynamically assert factual knowledge.", reasonerID);
+            }
+        } else {
+            KB_ERROR("No reasoner with id '{}' is known.", reasonerID);
+        }
+        return false;
+    }
 }

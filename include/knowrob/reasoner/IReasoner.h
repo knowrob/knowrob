@@ -17,6 +17,7 @@
 #include "knowrob/queries/QueryInstance.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
+#include "knowrob/Statement.h"
 
 namespace knowrob {
 	/**
@@ -30,7 +31,9 @@ namespace knowrob {
 		/** The reasoner can answer disjunctive queries */
 		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2,
         /** The reasoner can store/recover data to/from a local path. */
-        CAPABILITY_IMPORT_EXPORT = 0x4
+        CAPABILITY_IMPORT_EXPORT = 0x4,
+        /** The reasoner can insert new facts into the knowledge base at runtime. */
+        CAPABILITY_DYNAMIC_ASSERTIONS = 0x8
 	};
 	
 	/**
@@ -126,6 +129,14 @@ namespace knowrob {
 		virtual void finishQuery(uint32_t queryID,
 								 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
 								 bool isImmediateStopRequested) = 0;
+
+        /**
+         * Project a statement into the extensional database (EDB) where factual
+         * knowledge is stored.
+         * @param statement A statement.
+         * @return true if the statement was inserted into the EDB used by the reasoner.
+         */
+        virtual bool projectIntoEDB(const Statement &statement) { return false; }
 
         /**
          * Export data to local filesystem.
