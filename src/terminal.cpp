@@ -24,6 +24,7 @@
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
+#include "knowrob/formulas/PredicateFormula.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -153,20 +154,54 @@ public:
 		try {
 			// parse query
 			auto query = hybridQA_.parseQuery(queryString);
-			// evaluate query in hybrid QA system
-			numSolutions_ = 0;
-			hybridQA_.runQuery(query, *this);
-			if(numSolutions_ == 0) {
-				std::cout << "no." << std::endl;
-			}
-			// add query to history
-			history_.append(queryString);
-			history_.save(historyFile_);
+
+            if(query->formula()->type() == FormulaType::PREDICATE) {
+                // special handling for some predicates
+                auto *pf = (PredicateFormula*)query->formula().get();
+                auto &p = pf->predicate();
+                if(p->indicator()->functor() == "project") {
+                    projectStatement(p);
+                }
+                else {
+                    runQuery(query);
+                }
+            }
+            else {
+                runQuery(query);
+            }
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
+        // add query to history
+        history_.append(queryString);
+        history_.save(historyFile_);
 	}
+
+    void runQuery(const std::shared_ptr<const Query> &query) {
+        // evaluate query in hybrid QA system
+        numSolutions_ = 0;
+        hybridQA_.runQuery(query, *this);
+        if(numSolutions_ == 0) {
+            std::cout << "no." << std::endl;
+        }
+    }
+
+    void projectStatement(const PredicatePtr &p) {
+        if(p->indicator()->arity() == 1) {
+            auto &arg = p->arguments()[0];
+            if(arg->type() == TermType::PREDICATE) {
+                auto arg_p = std::static_pointer_cast<Predicate>(arg);
+                hybridQA_.projectIntoEDB(Statement(arg_p));
+            }
+            else {
+                KB_WARN("the argument of project is not a predicate in '{}'", *p);
+            }
+        }
+        else {
+            KB_WARN("project has more than one arg in '{}'", *p);
+        }
+    }
 
 	void enter() {
 		std::cout << std::endl;
