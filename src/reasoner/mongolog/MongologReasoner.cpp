@@ -29,7 +29,8 @@ unsigned long MongologReasoner::getCapabilities() const
 {
     return CAPABILITY_CONJUNCTIVE_QUERIES |
            CAPABILITY_DISJUNCTIVE_QUERIES |
-           CAPABILITY_IMPORT_EXPORT;
+           CAPABILITY_IMPORT_EXPORT |
+           CAPABILITY_DYNAMIC_ASSERTIONS;
 }
 
 bool MongologReasoner::initializeDefaultPackages()
@@ -70,6 +71,14 @@ const functor_t& MongologReasoner::callFunctor()
 {
 	static const auto call_f = PL_new_functor(PL_new_atom("mongolog_call"), 2);
 	return call_f;
+}
+
+bool MongologReasoner::projectIntoEDB(const Statement &statement)
+{
+    auto mongolog_project = std::make_shared<Predicate>(Predicate("mongolog_project",{
+            statement.predicate()
+    }));
+    return eval(mongolog_project, nullptr, false);
 }
 
 bool MongologReasoner::importData(const std::filesystem::path &path)

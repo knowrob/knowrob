@@ -175,7 +175,7 @@ namespace knowrob {
 			const Substitution &sub) ;
 	};
 
-    using PredicatePtr = std::shared_ptr<const Predicate>;
+    using PredicatePtr = std::shared_ptr<Predicate>;
 }
 
 #endif //KNOWROB_PREDICATE_H_

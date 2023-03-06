@@ -25,6 +25,8 @@ namespace knowrob {
 
         unsigned long getCapabilities() const override;
 
+        bool projectIntoEDB(const Statement &statement) override;
+
         bool exportData(const std::filesystem::path &path) override;
 
         bool importData(const std::filesystem::path &path) override;
