@@ -12,18 +12,18 @@
 #include <memory>
 #include <ostream>
 #include "knowrob/terms/Predicate.h"
-#include <knowrob/formulas/Formula.h>
+#include "Formula.h"
 
 namespace knowrob {
 	/**
 	 * A predicate formula.
 	 */
-	class PredicateFormula : public Formula {
+	class AtomicProposition : public Formula {
 	public:
 		/**
 		 * @predicate a predicate reference.
 		 */
-		explicit PredicateFormula(const std::shared_ptr<Predicate> &predicate);
+		explicit AtomicProposition(const std::shared_ptr<Predicate> &predicate);
 		
 		/**
 		 * @return the predicate associated to this formula.

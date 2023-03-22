@@ -15,7 +15,7 @@
 #include "knowrob/terms/Bottom.h"
 #include "knowrob/terms/Top.h"
 #include "knowrob/queries/QueryError.h"
-#include "knowrob/formulas/PredicateFormula.h"
+#include "knowrob/formulas/AtomicProposition.h"
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
 
@@ -42,15 +42,15 @@ bool PrologQuery::putTerm( //NOLINT
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		const std::shared_ptr<Predicate> &qa_pred =
-			((PredicateFormula*) phi.get())->predicate();
+			((AtomicProposition*) phi.get())->predicate();
 		return putTerm(pl_term, qa_pred, vars);
 	}
 	case FormulaType::CONJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_comma(),
-                (ConnectiveFormula *) phi.get(), vars);
+                       (CompoundFormula *) phi.get(), vars);
 	case FormulaType::DISJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
-                (ConnectiveFormula *) phi.get(), vars);
+                       (CompoundFormula *) phi.get(), vars);
 	default:
 		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
 		return false;
@@ -137,7 +137,7 @@ bool PrologQuery::putTerm( //NOLINT
 }
 
 bool PrologQuery::putTerm( //NOLINT
-        term_t pl_term, const functor_t &pl_functor, ConnectiveFormula *phi, PrologVariableMap &vars)
+        term_t pl_term, const functor_t &pl_functor, CompoundFormula *phi, PrologVariableMap &vars)
 {
 	if(phi->formulae().size()==1) {
 		return putTerm(pl_term, phi->formulae()[0], vars);
@@ -267,17 +267,17 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 		for(int i=0; i<formulas.size(); i++) {
 			formulas[i] = toFormula(p->arguments()[i]);
 		}
-		return std::make_shared<ConjunctionFormula>(formulas);
+		return std::make_shared<Conjunction>(formulas);
 	}
 	else if(p->indicator()->functor() == semicolon_functor) {
 		std::vector<FormulaPtr> formulas(p->indicator()->arity());
 		for(int i=0; i<formulas.size(); i++) {
 			formulas[i] = toFormula(p->arguments()[i]);
 		}
-		return std::make_shared<DisjunctionFormula>(formulas);
+		return std::make_shared<Disjunction>(formulas);
 	}
 	else {
-		return std::make_shared<PredicateFormula>(p);
+		return std::make_shared<AtomicProposition>(p);
 	}
 }
 
@@ -293,13 +293,13 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 	
 	switch(phi->type()) {
 	case FormulaType::PREDICATE:
-		return ((PredicateFormula*) phi.get())->predicate();
+		return ((AtomicProposition*) phi.get())->predicate();
 		
 	case FormulaType::CONJUNCTION:
-		return toTerm((ConnectiveFormula*)phi.get(), commaIndicator);
+		return toTerm((CompoundFormula*)phi.get(), commaIndicator);
 		
 	case FormulaType::DISJUNCTION:
-		return toTerm((ConnectiveFormula*)phi.get(), semicolonIndicator);
+		return toTerm((CompoundFormula*)phi.get(), semicolonIndicator);
 		
 	default:
 		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
@@ -308,8 +308,8 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 }
 
 TermPtr PrologQuery::toTerm(  //NOLINT
-		ConnectiveFormula *phi,
-		const std::shared_ptr<PredicateIndicator> &indicator)
+		CompoundFormula *phi,
+        const std::shared_ptr<PredicateIndicator> &indicator)
 {
 	std::vector<TermPtr> args(2);
 	int numArgs=0;

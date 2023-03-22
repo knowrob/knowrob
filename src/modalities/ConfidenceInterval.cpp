@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/scope/ConfidenceInterval.h"
+#include "knowrob/modalities/ConfidenceInterval.h"
 
 using namespace knowrob;
 

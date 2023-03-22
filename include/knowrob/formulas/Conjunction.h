@@ -11,18 +11,18 @@
 
 #include <vector>
 #include "knowrob/terms/Term.h"
-#include <knowrob/formulas/ConnectiveFormula.h>
+#include <knowrob/formulas/CompoundFormula.h>
 
 namespace knowrob {
 	/**
-	 * A conjunctive expression.
+	 * A conjunction of formulae.
 	 */
-	class ConjunctionFormula : public ConnectiveFormula {
+	class Conjunction : public CompoundFormula {
 	public:
 		/**
 		 * @formulae list of sub-formulas.
 		 */
-		explicit ConjunctionFormula(const std::vector<FormulaPtr> &formulae);
+		explicit Conjunction(const std::vector<FormulaPtr> &formulae);
 		
 		// Override Formula
 		FormulaPtr applySubstitution(const Substitution &sub) const override;
@@ -31,7 +31,7 @@ namespace knowrob {
 		const char* operator_symbol() const override { return "\u2227"; }
 		
 	protected:
-		ConjunctionFormula(const ConjunctionFormula &other, const Substitution &sub);
+		Conjunction(const Conjunction &other, const Substitution &sub);
 	};
 }
 

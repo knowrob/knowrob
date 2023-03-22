@@ -10,18 +10,18 @@
 
 using namespace knowrob;
 
-DisjunctionFormula::DisjunctionFormula(const std::vector<std::shared_ptr<Formula>> &formulae)
-: ConnectiveFormula(FormulaType::DISJUNCTION, formulae)
+Disjunction::Disjunction(const std::vector<std::shared_ptr<Formula>> &formulae)
+: CompoundFormula(FormulaType::DISJUNCTION, formulae)
 {
 }
 
-DisjunctionFormula::DisjunctionFormula(const DisjunctionFormula &other, const Substitution &sub)
-: ConnectiveFormula(other, sub)
+Disjunction::Disjunction(const Disjunction &other, const Substitution &sub)
+: CompoundFormula(other, sub)
 {
 }
 
-std::shared_ptr<Formula> DisjunctionFormula::applySubstitution(const Substitution &sub) const
+std::shared_ptr<Formula> Disjunction::applySubstitution(const Substitution &sub) const
 {
-	return std::shared_ptr<DisjunctionFormula>(
-		new DisjunctionFormula(*this, sub));
+	return std::shared_ptr<Disjunction>(
+		new Disjunction(*this, sub));
 }

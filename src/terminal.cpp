@@ -24,7 +24,7 @@
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
-#include "knowrob/formulas/PredicateFormula.h"
+#include "knowrob/formulas/AtomicProposition.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -157,7 +157,7 @@ public:
 
             if(query->formula()->type() == FormulaType::PREDICATE) {
                 // special handling for some predicates
-                auto *pf = (PredicateFormula*)query->formula().get();
+                auto *pf = (AtomicProposition*)query->formula().get();
                 auto &p = pf->predicate();
                 if(p->indicator()->functor() == "project") {
                     projectStatement(p);

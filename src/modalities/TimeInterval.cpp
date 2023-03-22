@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/scope/TimeInterval.h"
+#include "knowrob/modalities/TimeInterval.h"
 
 using namespace knowrob;
 

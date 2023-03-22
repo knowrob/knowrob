@@ -9,7 +9,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/BuiltinEvaluator.h"
-#include "knowrob/formulas/PredicateFormula.h"
+#include "knowrob/formulas/AtomicProposition.h"
 #include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
@@ -63,7 +63,7 @@ void BuiltinEvaluator::finishQuery(uint32_t queryID,
 void BuiltinEvaluator::runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance)
 {
 	auto builtinQuery = queryInstance->create();
-	auto &builtinPredicate = ((PredicateFormula*)builtinQuery->formula().get())->predicate();
+	auto &builtinPredicate = ((AtomicProposition*)builtinQuery->formula().get())->predicate();
 
 	auto it = builtins_.find(*builtinPredicate->indicator());
 	if(it == builtins_.end()) {

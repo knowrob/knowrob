@@ -114,16 +114,18 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
-		src/DependencyGraph.cpp
-		src/ReasoningGraph.cpp
-		src/Blackboard.cpp
+		src/formulas/DependencyGraph.cpp
+		src/graphs/ReasoningGraph.cpp
+		src/reasoner/Blackboard.cpp
 		src/HybridQA.cpp
 		src/DataSource.cpp
 		src/Statement.cpp
-		src/scope/ConfidenceValue.cpp
-		src/scope/ConfidenceInterval.cpp
-		src/scope/Timepoint.cpp
-		src/scope/TimeInterval.cpp
+		src/graphs/PossibleWorld.cpp
+		src/modalities/ConfidenceValue.cpp
+		src/modalities/ConfidenceInterval.cpp
+		src/modalities/Timepoint.cpp
+		src/modalities/TimeInterval.cpp
+		src/terms/NestedModality.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/Predicate.cpp
@@ -134,12 +136,18 @@ add_library(knowrob_qa SHARED
 		src/terms/Substitution.cpp
 		src/terms/Unifier.cpp
 		src/terms/Constant.cpp
-		src/rdf/PrefixRegistry.cpp
+		src/terms/ModalOperator.cpp
+		src/graphs/PrefixRegistry.cpp
+		src/graphs/KnowledgeGraph.cpp
+		src/graphs/GraphPattern.cpp
 		src/formulas/Formula.cpp
-		src/formulas/ConnectiveFormula.cpp
+		src/formulas/CompoundFormula.cpp
 		src/formulas/Conjunction.cpp
 		src/formulas/Disjunction.cpp
-		src/formulas/PredicateFormula.cpp
+		src/formulas/Implication.cpp
+        src/formulas/NegatedFormula.cpp
+		src/formulas/AtomicProposition.cpp
+		src/formulas/ModalFormula.cpp
 		src/queries/Query.cpp
 		src/queries/QueryInstance.cpp
 		src/queries/QueryError.cpp
@@ -148,12 +156,16 @@ add_library(knowrob_qa SHARED
 		src/queries/QueryResultQueue.cpp
 		src/queries/QueryResultCombiner.cpp
 		src/queries/QueryResultBroadcaster.cpp
+		src/queries/QueryParser.cpp
+		src/queries/QueryTree.cpp
 		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
 		src/reasoner/IReasoner.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
+        src/reasoner/HybridReasoner.cpp
+		src/reasoner/ReasonerAttention.cpp
 		src/reasoner/prolog/PrologQuery.cpp
 		src/reasoner/prolog/PrologQueryRunner.cpp
 		src/reasoner/prolog/PrologThreadPool.cpp

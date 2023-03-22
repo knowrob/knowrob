@@ -15,8 +15,8 @@
 #include <ostream>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/scope/TimeInterval.h"
-#include "knowrob/scope/ConfidenceValue.h"
+#include "knowrob/modalities/TimeInterval.h"
+#include "knowrob/modalities/ConfidenceValue.h"
 
 namespace knowrob {
 	/**

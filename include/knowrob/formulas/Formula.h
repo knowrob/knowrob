@@ -24,13 +24,10 @@ namespace knowrob {
 		// A formula of the form `phi_1 AND ... AND phi_n` where each phi_i is a formula.
 		CONJUNCTION,
 		// A formula of the form `phi_1 OR ... OR phi_n` where each phi_i is a formula.
-		DISJUNCTION
-		// TODO handle more types of formulae
-		// EQUALITY / UNIFICATION
-		// IMPLICATION
-		// NEGATION
-		// ONCE / IGNORE
-		// FORALL
+		DISJUNCTION,
+        NEGATION,
+        IMPLICATION,
+        MODAL
 	};
 	
 	/**

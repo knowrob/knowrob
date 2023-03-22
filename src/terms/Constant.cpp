@@ -9,7 +9,7 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
-#include "knowrob/rdf/PrefixRegistry.h"
+#include "knowrob/graphs/PrefixRegistry.h"
 #include "knowrob/terms/Constant.h"
 
 using namespace knowrob;

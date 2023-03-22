@@ -8,8 +8,8 @@
 
 #include <knowrob/Logger.h>
 #include <knowrob/HybridQA.h>
-#include <knowrob/Blackboard.h>
-#include "knowrob/rdf/PrefixRegistry.h"
+#include "knowrob/reasoner/Blackboard.h"
+#include "knowrob/graphs/PrefixRegistry.h"
 
 using namespace knowrob;
 

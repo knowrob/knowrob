@@ -8,7 +8,7 @@
 
 #include <chrono>
 #include <cmath>
-#include "knowrob/scope/TimePoint.h"
+#include "knowrob/modalities/TimePoint.h"
 
 using namespace knowrob;
 

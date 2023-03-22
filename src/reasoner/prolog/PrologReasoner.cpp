@@ -19,7 +19,7 @@
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/Bottom.h"
 #include "knowrob/queries/QueryResultQueue.h"
-#include "knowrob/rdf/PrefixRegistry.h"
+#include "knowrob/graphs/PrefixRegistry.h"
 
 using namespace knowrob;
 

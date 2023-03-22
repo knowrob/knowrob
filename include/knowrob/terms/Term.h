@@ -24,7 +24,8 @@ namespace knowrob {
 		DOUBLE,
 		INT32,
 		LONG,
-		LIST
+		LIST,
+        MODAL_OPERATOR
 	};
 
 	// forward declaration

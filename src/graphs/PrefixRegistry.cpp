@@ -2,7 +2,7 @@
 // Created by daniel on 11.02.23.
 //
 
-#include "knowrob/rdf/PrefixRegistry.h"
+#include "knowrob/graphs/PrefixRegistry.h"
 
 using namespace knowrob;
 

@@ -6,12 +6,12 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/Logger.h>
+#include "knowrob/Logger.h"
 #include "knowrob/reasoner/BuiltinEvaluator.h"
-#include <knowrob/Blackboard.h>
-#include <knowrob/formulas/Conjunction.h>
-#include <knowrob/formulas/Disjunction.h>
-#include <knowrob/queries/QueryError.h>
+#include "knowrob/reasoner/Blackboard.h"
+#include "knowrob/formulas/Conjunction.h"
+#include "knowrob/formulas/Disjunction.h"
+#include "knowrob/queries/QueryError.h"
 
 #include <memory>
 
@@ -61,7 +61,7 @@ ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi)
 {
 	switch(phi->type()) {
 		case FormulaType::CONJUNCTION: {
-			auto args = ((ConjunctionFormula*)phi.get())->formulae();
+			auto args = ((Conjunction*)phi.get())->formulae();
 			auto graph(decomposeFormula(args[0]));
 			for(int i=1; i<args.size(); ++i) {
 				graph.conjunction(decomposeFormula(args[i]));
@@ -69,7 +69,7 @@ ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi)
 			return graph;
 		}
 		case FormulaType::DISJUNCTION: {
-			auto args = ((DisjunctionFormula*)phi.get())->formulae();
+			auto args = ((Disjunction*)phi.get())->formulae();
 			auto graph(decomposeFormula(args[0]));
 			for(int i=1; i<args.size(); ++i) {
 				graph.disjunction(decomposeFormula(args[i]));
@@ -77,7 +77,7 @@ ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi)
 			return graph;
 		}
 		case FormulaType::PREDICATE: {
-			return decomposePredicate(std::static_pointer_cast<PredicateFormula>(phi));
+			return decomposePredicate(std::static_pointer_cast<AtomicProposition>(phi));
 		}
 		default:
 			KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
@@ -85,7 +85,7 @@ ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi)
 	}
 }
 
-ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<PredicateFormula> &phi) const
+ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<AtomicProposition> &phi) const
 {
 	// get ensemble of reasoner
 	auto predicateDescription = reasonerManager_->getPredicateDefinition(
@@ -141,7 +141,7 @@ void Blackboard::createReasoningPipeline( //NOLINT
 	auto n0_reasoner = *n0->reasonerAlternatives().begin();
 	if(n0->predicateType() == PredicateType::BUILT_IN) {
 		// prefer to use BuiltinEvaluator
-		auto p = ((PredicateFormula*)n0->phi().get())->predicate();
+		auto p = ((AtomicProposition*)n0->phi().get())->predicate();
 		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
 			n0_reasoner = builtinEvaluator_;
 		}

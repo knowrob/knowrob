@@ -5,7 +5,7 @@
 #include "knowrob/queries/QueryResultStream.h"
 #include "knowrob/queries/QueryResultQueue.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
-#include "knowrob/Blackboard.h"
+#include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/Logger.h"
 #include "knowrob/terms/OptionList.h"
 #include "knowrob/terms/Bottom.h"

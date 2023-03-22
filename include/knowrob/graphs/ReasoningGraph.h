@@ -11,7 +11,7 @@
 
 #include <list>
 #include <memory>
-#include <knowrob/formulas/PredicateFormula.h>
+#include "knowrob/formulas/AtomicProposition.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 
 namespace knowrob {
@@ -101,7 +101,7 @@ namespace knowrob {
 			 * @param phi a builtin predicate
 			 * @return true if reasoner of this node define given builtin
 			 */
-			bool isBuiltinSupported(const PredicateFormula &phi) const;
+			bool isBuiltinSupported(const AtomicProposition &phi) const;
 
 			/**
 			 * @param other another node

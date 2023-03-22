@@ -18,7 +18,7 @@
 // KnowRob
 #include "knowrob/terms/Term.h"
 #include "knowrob/queries/Query.h"
-#include "knowrob/formulas/ConnectiveFormula.h"
+#include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/queries/QueryResult.h"
 
 namespace knowrob {
@@ -182,9 +182,9 @@ namespace knowrob {
         PrologVariableMap vars_;
 		
 		static FormulaPtr toFormula(const TermPtr &t);
-		static TermPtr toTerm(ConnectiveFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
+		static TermPtr toTerm(CompoundFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
         static bool putTerm(term_t pl_term, const functor_t &pl_functor,
-                            ConnectiveFormula *phi, PrologVariableMap &vars);
+                            CompoundFormula *phi, PrologVariableMap &vars);
 	};
 }
 

@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_DEPENDENCYGRAPH_H
-#define KNOWROB_DEPENDENCYGRAPH_H
+#ifndef KNOWROB_DEPENDENCY_GRAPH_H
+#define KNOWROB_DEPENDENCY_GRAPH_H
 
 namespace knowrob {
 
@@ -17,4 +17,4 @@ namespace knowrob {
 
 } // knowrob
 
-#endif //KNOWROB_DEPENDENCYGRAPH_H
+#endif //KNOWROB_DEPENDENCY_GRAPH_H

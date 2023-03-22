@@ -9,11 +9,11 @@
 // STD
 #include <memory>
 // KnowRob
-#include <knowrob/Logger.h>
+#include "knowrob/Logger.h"
 #include "knowrob/reasoner/BuiltinEvaluator.h"
-#include <knowrob/ReasoningGraph.h>
-#include <knowrob/formulas/Disjunction.h>
-#include <knowrob/formulas/Conjunction.h>
+#include "knowrob/graphs/ReasoningGraph.h"
+#include "knowrob/formulas/Disjunction.h"
+#include "knowrob/formulas/Conjunction.h"
 
 using namespace knowrob;
 
@@ -83,7 +83,7 @@ bool ReasoningGraph::Node::canBeCombinedWith(
 	return false;
 }
 
-bool ReasoningGraph::Node::isBuiltinSupported(const PredicateFormula &phi) const
+bool ReasoningGraph::Node::isBuiltinSupported(const AtomicProposition &phi) const
 {
 	for(auto &r1 : reasonerAlternatives_) {
 		if(r1->reasoner()->getPredicateDescription(phi.predicate()->indicator()) != nullptr)
@@ -158,7 +158,7 @@ void ReasoningGraph::disjunction(const ReasoningGraph &other)
 						if(simple1->reasonerAlternatives_.find(reasonerChoice) != simple1->reasonerAlternatives_.end())
 							reasonerChoices.insert(reasonerChoice);
 
-					auto phi = createConnectiveFormula<DisjunctionFormula>(
+					auto phi = createConnectiveFormula<Disjunction>(
 							simple1->phi_, node2->phi_, FormulaType::DISJUNCTION);
 					auto disjunctiveNode = std::make_shared<Node>(
 							phi, reasonerChoices, PredicateType::FORMULA);
@@ -211,7 +211,7 @@ void ReasoningGraph::addConjunctiveNode(const NodePtr &a, const NodePtr &b)
 	for(auto &r1 : a->reasonerAlternatives_)
 		if(b->reasonerAlternatives_.find(r1) != b->reasonerAlternatives_.end()) reasonerChoices.insert(r1);
 	// create a conjunctive node
-	auto phi = createConnectiveFormula<ConjunctionFormula>(
+	auto phi = createConnectiveFormula<Conjunction>(
 			a->phi_, b->phi_, FormulaType::CONJUNCTION);
 	auto conjunctiveNode = std::make_shared<Node>(
 			phi, reasonerChoices, PredicateType::FORMULA);
@@ -235,12 +235,12 @@ bool ReasoningGraph::isEdgeNeeded(const NodePtr &a, const NodePtr &b)
 {
 	if(a->predicateType_ == PredicateType::BUILT_IN) {
 		// no edge needed if phi_a is a builtin supported by reasoner_b
-		if(b->isBuiltinSupported(*(PredicateFormula*)a->phi_.get()))
+		if(b->isBuiltinSupported(*(AtomicProposition*)a->phi_.get()))
 				return false;
 	}
 	if(b->predicateType_ == PredicateType::BUILT_IN) {
 		// no edge needed if phi_b is a builtin supported by reasoner_a
-		if(a->isBuiltinSupported(*(PredicateFormula*)b->phi_.get()))
+		if(a->isBuiltinSupported(*(AtomicProposition*)b->phi_.get()))
 			return false;
 	}
 	return true;

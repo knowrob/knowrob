@@ -6,8 +6,8 @@
 #define KNOWROB_STATEMENT_H
 
 #include "knowrob/terms/Predicate.h"
-#include "knowrob/scope/TimeInterval.h"
-#include "knowrob/scope/ConfidenceValue.h"
+#include "knowrob/modalities/TimeInterval.h"
+#include "knowrob/modalities/ConfidenceValue.h"
 
 namespace knowrob {
 

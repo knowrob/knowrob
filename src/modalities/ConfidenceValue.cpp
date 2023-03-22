@@ -8,7 +8,7 @@
 
 #include <limits>
 #include <cmath>
-#include "knowrob/scope/ConfidenceValue.h"
+#include "knowrob/modalities/ConfidenceValue.h"
 
 using namespace knowrob;
 

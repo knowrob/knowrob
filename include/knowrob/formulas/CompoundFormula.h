@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_CONNECTIVE_FORMULA_H_
-#define KNOWROB_CONNECTIVE_FORMULA_H_
+#ifndef KNOWROB_COMPOUND_FORMULA_H_
+#define KNOWROB_COMPOUND_FORMULA_H_
 
 #include <ostream>
 #include <vector>
@@ -18,13 +18,13 @@ namespace knowrob {
 	/**
 	 * A formula with sub-formulas linked via logical connectives.
 	 */
-	class ConnectiveFormula : public Formula {
+	class CompoundFormula : public Formula {
 	public:
 		/**
 		 * @type the type of the formula.
 		 * @formulae list of connected formulae.
 		 */
-		ConnectiveFormula(FormulaType type, const std::vector<FormulaPtr> &formulae);
+		CompoundFormula(FormulaType type, const std::vector<FormulaPtr> &formulae);
 		
 		/**
 		 * @return the sub-formulas associated to this formula.
@@ -46,7 +46,7 @@ namespace knowrob {
 		const std::vector<FormulaPtr> formulae_;
 		const bool isGround_;
 		
-		ConnectiveFormula(const ConnectiveFormula &other, const Substitution &sub);
+		CompoundFormula(const CompoundFormula &other, const Substitution &sub);
 		
 		bool isGround1() const;
 		
@@ -56,4 +56,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_CONNECTIVE_FORMULA_H_
+#endif //KNOWROB_COMPOUND_FORMULA_H_

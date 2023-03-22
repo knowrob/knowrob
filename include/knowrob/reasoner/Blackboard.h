@@ -14,9 +14,9 @@
 #include <memory>
 // KnowRob
 #include "knowrob/reasoner/ReasonerManager.h"
-#include <knowrob/ReasoningGraph.h>
-#include <knowrob/queries/QueryResultQueue.h>
-#include <knowrob/queries/QueryResultBroadcaster.h>
+#include "knowrob/graphs/ReasoningGraph.h"
+#include "knowrob/queries/QueryResultQueue.h"
+#include "knowrob/queries/QueryResultBroadcaster.h"
 
 namespace knowrob {
 	/**
@@ -58,7 +58,7 @@ namespace knowrob {
 
 		ReasoningGraph decomposeFormula(const std::shared_ptr<Formula> &phi) const;
 
-		ReasoningGraph decomposePredicate(const std::shared_ptr<PredicateFormula> &phi) const;
+		ReasoningGraph decomposePredicate(const std::shared_ptr<AtomicProposition> &phi) const;
 
 		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
 									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);

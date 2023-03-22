@@ -18,6 +18,8 @@
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
 #include "knowrob/Statement.h"
+#include "knowrob/graphs/PossibleWorld.h"
+#include "knowrob/graphs/GraphPattern.h"
 
 namespace knowrob {
 	/**
@@ -92,6 +94,15 @@ namespace knowrob {
 		 */
 		bool hasCapability(ReasonerCapability capability) const;
 
+        /*
+        virtual void startGraphCompletion(uint32_t requestID,
+                                          const std::shared_ptr<PossibleWorld> &possibleWorld,
+                                          const std::shared_ptr<GraphPattern> &focus) = 0;
+
+        virtual void stopGraphCompletion(uint32_t requestID, bool isImmediateStopRequested) = 0;
+         */
+
+
 		/**
 		 * Indicate that a new query needs to be evaluated.
 		 * Note that different instances of @uninstantiatedQuery are to be evaluated.
@@ -100,6 +111,7 @@ namespace knowrob {
 		 * @param queryID a query ID
 		 * @param outputStream an output stream where answers can be published
 		 * @param goal a query
+		 * @deprecated
 		 */
 		virtual void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) = 0;
 
@@ -110,6 +122,7 @@ namespace knowrob {
 		 * different substitutions are generated e.g. through other sub-queries.
 		 * @param queryID a query ID
 		 * @param substitution a substitution
+		 * @deprecated
 		 */
 		virtual void runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance) = 0;
 		
@@ -125,6 +138,7 @@ namespace knowrob {
 		 * done with the query.
 		 * @param queryID a query ID
 		 * @param isImmediateStopRequested a flag indicating whether a reasoner may stop query evaluation immediately
+		 * @deprecated
 		 */
 		virtual void finishQuery(uint32_t queryID,
 								 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
