@@ -16,9 +16,9 @@ namespace knowrob {
 
     class ModalOperator : public Term {
     public:
-        ModalOperator(const ModalityPtr &modality, ModalOperatorType operatorType);
+        ModalOperator(const Modality *modality, ModalOperatorType operatorType);
 
-        const ModalityPtr& modality() const { return modality_; }
+        const Modality* modality() const { return modality_; }
 
         ModalOperatorType modalOperatorType() const { return operatorType_; }
 
@@ -39,7 +39,7 @@ namespace knowrob {
         void write(std::ostream& os) const override;
 
     protected:
-        const ModalityPtr modality_;
+        const Modality *modality_;
         const ModalOperatorType operatorType_;
 
         // Override Term

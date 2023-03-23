@@ -12,8 +12,25 @@ namespace knowrob {
      * A modality using the operator "K" where `Kp` stands for "the agent knows that p".
      */
     class KnowledgeModality : public EpistemicModality {
-    public:
-        KnowledgeModality() : EpistemicModality() {}
+	protected:
+		KnowledgeModality() : EpistemicModality() {}
+
+	public:
+		/**
+		 * @return the belief modality singleton.
+		 */
+		static const KnowledgeModality* get() {
+			static KnowledgeModality instance;
+			return &instance;
+		}
+
+		/**
+		 * @return the belief operator `K`
+		 */
+		static const ModalOperator& K() {
+			const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+			return op;
+		}
 
         // Override Modality, modal axiom "D"
         //  - you never stop learning new knowledge, i.e. `K phi -> diamond_K phi`.
@@ -56,6 +73,7 @@ namespace knowrob {
 
         // Override EpistemicModality
         const char* possibility_symbol() const override { return "\u22C4_K"; }
+
     };
 
 } // knowrob

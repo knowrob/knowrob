@@ -13,7 +13,7 @@ void NestedModality::push_back(const ModalOperator &modalOperator)
     }
     else {
         auto &last = modalitySequence_.back();
-        if(last.modality().get() == modalOperator.modality().get()) {
+        if(last.modality() == modalOperator.modality()) {
             // do some simplifications on the fly if the same modality is iterated
             if(last.modalOperatorType() == modalOperator.modalOperatorType()) {
                 if(modalOperator.isTransitive()) {

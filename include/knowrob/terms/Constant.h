@@ -61,6 +61,8 @@ namespace knowrob {
 	public:
 		explicit StringTerm(const std::string &v)
 				: Constant(TermType::STRING, v) {}
+		explicit StringTerm(const char *v)
+				: Constant(TermType::STRING, v) {}
 		
 		// Override Term
 		void write(std::ostream& os) const override;

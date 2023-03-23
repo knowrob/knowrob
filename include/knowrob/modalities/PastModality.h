@@ -13,8 +13,33 @@ namespace knowrob {
      * The operator "H" is the dual of "P" where `Hq` stands for "it is and was always the case that q".
      */
     class PastModality : public TemporalModality {
-    public:
-        PastModality() : TemporalModality() {}
+	protected:
+		PastModality() : TemporalModality() {}
+
+	public:
+		/**
+		 * @return the belief modality singleton.
+		 */
+		static const PastModality* get() {
+			static PastModality instance;
+			return &instance;
+		}
+
+		/**
+		 * @return the belief operator `P`
+		 */
+		static const ModalOperator& P() {
+			const ModalOperator op(get(), ModalOperatorType::POSSIBLE);
+			return op;
+		}
+
+		/**
+		 * @return the belief operator `H`
+		 */
+		static const ModalOperator& H() {
+			const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+			return op;
+		}
 
         // Override Modality, modal axiom "D"
         // - note: assumes there is no begin of time

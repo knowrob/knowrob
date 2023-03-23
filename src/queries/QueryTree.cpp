@@ -60,6 +60,7 @@ int QueryTree::Node::priority() const
                     *formula, (int)formula->type());
             break;
     }
+	return 0;
 }
 
 bool QueryTree::NodeComparator::operator()(const Node *a, const Node *b) const

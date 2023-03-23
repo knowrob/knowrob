@@ -12,8 +12,25 @@ namespace knowrob {
      * A modality using the operator "B" where `Bp` stands for "the agent believes that p".
      */
     class BeliefModality : public EpistemicModality {
+	protected:
+		BeliefModality() : EpistemicModality() {}
+
     public:
-        BeliefModality() : EpistemicModality() {}
+		/**
+		 * @return the belief modality singleton.
+		 */
+		static const BeliefModality* get() {
+			static BeliefModality instance;
+			return &instance;
+		}
+
+		/**
+		 * @return the belief operator `B`
+		 */
+		static const ModalOperator& B() {
+			const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+			return op;
+		}
 
         // Override Modality, modal axiom "D"
         //  - the agent never stops forming new beliefs, i.e. `B phi -> diamond_B phi`.
@@ -58,7 +75,8 @@ namespace knowrob {
 
         // Override EpistemicModality
         const char* possibility_symbol() const override { return "\u22C4_B"; }
-    };
+
+	};
 
 } // knowrob
 

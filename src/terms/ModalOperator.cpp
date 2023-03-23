@@ -6,7 +6,7 @@
 
 using namespace knowrob;
 
-ModalOperator::ModalOperator(const ModalityPtr &modality, ModalOperatorType operatorType)
+ModalOperator::ModalOperator(const Modality *modality, ModalOperatorType operatorType)
 : Term(TermType::MODAL_OPERATOR),
   modality_(modality),
   operatorType_(operatorType)
@@ -34,5 +34,5 @@ void ModalOperator::write(std::ostream& os) const
 bool ModalOperator::isEqual(const Term &other) const
 {
     const auto &x = static_cast<const ModalOperator&>(other); // NOLINT
-    return operatorType_ == x.operatorType_ && modality_.get() == x.modality_.get();
+    return operatorType_ == x.operatorType_ && modality_ == x.modality_;
 }
