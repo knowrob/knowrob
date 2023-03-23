@@ -28,7 +28,7 @@ namespace knowrob {
 		 * @return the belief operator `B`
 		 */
 		static const ModalOperator& B() {
-			const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+            static const ModalOperator op(get(), ModalOperatorType::NECESSARY);
 			return op;
 		}
 

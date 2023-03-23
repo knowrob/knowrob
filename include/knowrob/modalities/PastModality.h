@@ -29,7 +29,7 @@ namespace knowrob {
 		 * @return the belief operator `P`
 		 */
 		static const ModalOperator& P() {
-			const ModalOperator op(get(), ModalOperatorType::POSSIBLE);
+			static const ModalOperator op(get(), ModalOperatorType::POSSIBLE);
 			return op;
 		}
 
@@ -37,7 +37,7 @@ namespace knowrob {
 		 * @return the belief operator `H`
 		 */
 		static const ModalOperator& H() {
-			const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+            static const ModalOperator op(get(), ModalOperatorType::NECESSARY);
 			return op;
 		}
 

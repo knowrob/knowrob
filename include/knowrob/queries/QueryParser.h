@@ -6,6 +6,7 @@
 #define KNOWROB_QUERY_PARSER_H
 
 #include "knowrob/formulas/Formula.h"
+#include "knowrob/terms/Predicate.h"
 
 namespace knowrob {
 	// note: forward declared to avoid including parser library in the header.
@@ -21,6 +22,8 @@ namespace knowrob {
 		~QueryParser();
 
 		FormulaPtr parse(const std::string &queryString);
+
+        PredicatePtr parsePredicate(const std::string &queryString);
 
 	protected:
 		ParserRules *bnf_;
