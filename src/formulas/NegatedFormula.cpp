@@ -7,7 +7,7 @@
 using namespace knowrob;
 
 NegatedFormula::NegatedFormula(const FormulaPtr &formula)
-        : CompoundFormula(FormulaType::IMPLICATION, { formula })
+        : CompoundFormula(FormulaType::NEGATION, { formula })
 {
 }
 

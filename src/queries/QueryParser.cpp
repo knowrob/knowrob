@@ -119,8 +119,8 @@ QueryParser::QueryParser()
     bnf_->predicate %= bnf_->predicateWithArgs | bnf_->predicateNullary;
 
 	// formulas
-	bnf_->brackets = (('(' >> bnf_->formula >> ')') [qi::_val = qi::_1]);
-	bnf_->atomic = (bnf_->predicate                 [qi::_val = ptr_<AtomicProposition>()(qi::_1)]);
+	bnf_->brackets %= ('(' >> bnf_->formula >> ')');
+	bnf_->atomic = (bnf_->predicate [qi::_val = ptr_<AtomicProposition>()(qi::_1)]);
 
 	// unary operators
 	bnf_->negation   = (('~' >> (bnf_->unary | bnf_->brackets))
@@ -142,21 +142,21 @@ QueryParser::QueryParser()
     // compound formulae
     bnf_->conjunction = (((bnf_->unary | bnf_->brackets)
             >> (qi::char_(',')|qi::char_('&'))
-            >> bnf_->formula)
+            >> (bnf_->conjunction | bnf_->brackets))
             [ qi::_val = (qi::_1 & qi::_3) ]
             | bnf_->unary [qi::_val = qi::_1] );
     bnf_->disjunction = (((bnf_->conjunction | bnf_->brackets)
             >> (qi::char_(';')|qi::char_('|'))
-            >> bnf_->formula)
+            >> (bnf_->disjunction | bnf_->brackets))
             [ qi::_val = (qi::_1 | qi::_3) ]
             | bnf_->conjunction [qi::_val = qi::_1] );
     bnf_->implication = (((bnf_->disjunction | bnf_->brackets)
             >> "->"
-            >> bnf_->formula)
+            >> (bnf_->implication | bnf_->brackets))
             [ qi::_val = ptr_<Implication>()(qi::_1, qi::_2) ]
             | bnf_->disjunction [qi::_val = qi::_1] );
 
-	bnf_->formula %= bnf_->implication | ('(' >> bnf_->formula >> ')');
+	bnf_->formula %= bnf_->implication | bnf_->brackets;
     //BOOST_SPIRIT_DEBUG_NODES((bnf_->conjunction)(bnf_->formula))
 }
 
@@ -347,13 +347,13 @@ TEST_F(QueryParserTest, Conjunctions)
                            parser_.parse("p,q"),
                            2, { FormulaType::PREDICATE, FormulaType::PREDICATE }))
     _NO_THROW(testCompound(FormulaType::CONJUNCTION,
-                           parser_.parse("  p,   q  ,  r  "),
+                           parser_.parse("  p,   q  &  r  "),
                            3, { FormulaType::PREDICATE, FormulaType::PREDICATE, FormulaType::PREDICATE }))
     _NO_THROW(testCompound(FormulaType::CONJUNCTION,
                            parser_.parse("p,(q;r)"),
                            2, { FormulaType::PREDICATE, FormulaType::DISJUNCTION }))
     _NO_THROW(testCompound(FormulaType::CONJUNCTION,
-                           parser_.parse("(p;q),r"),
+                           parser_.parse("(p|q)&r"),
                            2, { FormulaType::DISJUNCTION, FormulaType::PREDICATE }))
 }
 
@@ -363,7 +363,7 @@ TEST_F(QueryParserTest, Disjunctions)
                            parser_.parse("p;q"),
                            2, { FormulaType::PREDICATE, FormulaType::PREDICATE }))
     _NO_THROW(testCompound(FormulaType::DISJUNCTION,
-                           parser_.parse("  p;   q  ;  r  "),
+                           parser_.parse("  p;   q  |  r  "),
                            3, { FormulaType::PREDICATE, FormulaType::PREDICATE, FormulaType::PREDICATE }))
     _NO_THROW(testCompound(FormulaType::DISJUNCTION,
                            parser_.parse("p;(q,r)"),
@@ -408,10 +408,19 @@ TEST_F(QueryParserTest, Precedence)
     _NO_THROW(testCompound(FormulaType::DISJUNCTION,
                            parser_.parse("p,q;r"),
                            2, { FormulaType::CONJUNCTION, FormulaType::PREDICATE }))
+    _NO_THROW(testCompound(FormulaType::DISJUNCTION,
+                           parser_.parse("Bp;r"),
+                           2, { FormulaType::MODAL, FormulaType::PREDICATE }))
     _NO_THROW(testCompound(FormulaType::IMPLICATION,
                            parser_.parse("p,q->r;p"),
                            2, { FormulaType::CONJUNCTION, FormulaType::DISJUNCTION }))
     _NO_THROW(testCompound(FormulaType::IMPLICATION,
                            parser_.parse("p,q->r->p"),
                            2, { FormulaType::CONJUNCTION, FormulaType::IMPLICATION }))
+    _NO_THROW(testCompound(FormulaType::IMPLICATION,
+                           parser_.parse("Bp->Kp"),
+                           2, { FormulaType::MODAL, FormulaType::MODAL }))
+    _NO_THROW(testCompound(FormulaType::IMPLICATION,
+                           parser_.parse("Bp->~p"),
+                           2, { FormulaType::MODAL, FormulaType::NEGATION }))
 }
