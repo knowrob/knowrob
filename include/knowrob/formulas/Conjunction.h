@@ -33,6 +33,14 @@ namespace knowrob {
 	protected:
 		Conjunction(const Conjunction &other, const Substitution &sub);
 	};
+
+    /**
+     * Construct conjunction of formulae.
+     * @param phi a formula
+     * @param psi a formula
+     * @return conjunction of phi and psi.
+     */
+    FormulaPtr operator&(const FormulaPtr& phi, const FormulaPtr &psi);
 }
 
 #endif //KNOWROB_CONJUNCTION_FORMULA_H_

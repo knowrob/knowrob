@@ -26,6 +26,8 @@ namespace knowrob {
 
         bool isEuclidean() const;
 
+        const char* symbol() const;
+
         // Override Term
         bool isGround() const override { return true; }
 

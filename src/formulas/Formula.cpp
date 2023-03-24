@@ -7,6 +7,7 @@
  */
 
 #include <knowrob/formulas/Formula.h>
+#include <knowrob/formulas/AtomicProposition.h>
 
 using namespace knowrob;
 
@@ -17,6 +18,16 @@ Formula::Formula(const FormulaType &type)
 bool Formula::isAtomic() const
 {
 	return type() == FormulaType::PREDICATE;
+}
+
+bool Formula::isTop() const
+{
+    return type() == FormulaType::PREDICATE && ((AtomicProposition*)this)->predicate()->isTop();
+}
+
+bool Formula::isBottom() const
+{
+    return type() == FormulaType::PREDICATE && ((AtomicProposition*)this)->predicate()->isBottom();
 }
 
 namespace std {

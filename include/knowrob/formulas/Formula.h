@@ -40,7 +40,7 @@ namespace knowrob {
 		 * @type the type of the formula.
 		 */
 		explicit Formula(const FormulaType &type);
-		
+
 		/**
 		 * @return the type of this formula.
 		 */
@@ -57,6 +57,16 @@ namespace knowrob {
 		 * @return true if this formula isMoreGeneralThan no free variables.
 		 */
 		virtual bool isGround() const = 0;
+
+        /**
+         * @return true if this is the top concept.
+         */
+        bool isTop() const;
+
+        /**
+         * @return true if this is the bottom concept.
+         */
+        bool isBottom() const;
 		
 		/**
 		 * Replaces variables in the formula with terms.

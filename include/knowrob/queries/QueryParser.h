@@ -25,6 +25,8 @@ namespace knowrob {
 
         PredicatePtr parsePredicate(const std::string &queryString);
 
+        TermPtr parseConstant(const std::string &queryString);
+
 	protected:
 		ParserRules *bnf_;
 	};

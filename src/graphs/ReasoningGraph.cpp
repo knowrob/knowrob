@@ -45,7 +45,7 @@ template<class T> std::shared_ptr<T> createConnectiveFormula(
 		return std::make_shared<T>(args);
 	}
 	else {
-		return std::make_shared<T>(T({phi1, phi2}));
+		return std::make_shared<T>(T(std::vector<FormulaPtr>({phi1, phi2})));
 	}
 }
 

@@ -23,6 +23,14 @@ bool ModalOperator::isEuclidean() const
     return modality_->isEuclidean();
 }
 
+const char* ModalOperator::symbol() const
+{
+    if(operatorType_ == ModalOperatorType::NECESSARY)
+        return modality_->necessity_symbol();
+    else
+        return modality_->possibility_symbol();
+}
+
 void ModalOperator::write(std::ostream& os) const
 {
     if(operatorType_ == ModalOperatorType::NECESSARY)
