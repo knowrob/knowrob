@@ -83,10 +83,10 @@ bool ReasoningGraph::Node::canBeCombinedWith(
 	return false;
 }
 
-bool ReasoningGraph::Node::isBuiltinSupported(const AtomicProposition &phi) const
+bool ReasoningGraph::Node::isBuiltinSupported(const Predicate &phi) const
 {
 	for(auto &r1 : reasonerAlternatives_) {
-		if(r1->reasoner()->getPredicateDescription(phi.predicate()->indicator()) != nullptr)
+		if(r1->reasoner()->getPredicateDescription(phi.indicator()) != nullptr)
 			return true;
 	}
 	return false;
@@ -235,12 +235,12 @@ bool ReasoningGraph::isEdgeNeeded(const NodePtr &a, const NodePtr &b)
 {
 	if(a->predicateType_ == PredicateType::BUILT_IN) {
 		// no edge needed if phi_a is a builtin supported by reasoner_b
-		if(b->isBuiltinSupported(*(AtomicProposition*)a->phi_.get()))
+		if(b->isBuiltinSupported(*(Predicate*)a->phi_.get()))
 				return false;
 	}
 	if(b->predicateType_ == PredicateType::BUILT_IN) {
 		// no edge needed if phi_b is a builtin supported by reasoner_a
-		if(a->isBuiltinSupported(*(AtomicProposition*)b->phi_.get()))
+		if(a->isBuiltinSupported(*(Predicate*)b->phi_.get()))
 			return false;
 	}
 	return true;

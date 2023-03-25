@@ -5,7 +5,7 @@
 #ifndef KNOWROB_STATEMENT_H
 #define KNOWROB_STATEMENT_H
 
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceValue.h"
 

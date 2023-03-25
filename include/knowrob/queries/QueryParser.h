@@ -6,26 +6,29 @@
 #define KNOWROB_QUERY_PARSER_H
 
 #include "knowrob/formulas/Formula.h"
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 
 namespace knowrob {
 	// note: forward declared to avoid including parser library in the header.
 	//       struct is defined in c++ file.
 	struct ParserRules;
 
+    /**
+     * Constructs formulae from strings.
+     */
     class QueryParser {
+    protected:
+        QueryParser();
+        ~QueryParser();
+
+        static ParserRules* get();
+
 	public:
-		QueryParser();
+		static FormulaPtr parse(const std::string &queryString);
 
-		QueryParser(const QueryParser&) = delete;
+        static PredicatePtr parsePredicate(const std::string &queryString);
 
-		~QueryParser();
-
-		FormulaPtr parse(const std::string &queryString);
-
-        PredicatePtr parsePredicate(const std::string &queryString);
-
-        TermPtr parseConstant(const std::string &queryString);
+        static TermPtr parseConstant(const std::string &queryString);
 
 	protected:
 		ParserRules *bnf_;

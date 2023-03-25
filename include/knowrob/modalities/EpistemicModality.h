@@ -9,7 +9,7 @@
 
 namespace knowrob {
     /**
-     * Epistemic modalities are concerned with knowledge and belief.
+     * Epistemic label are concerned with knowledge and belief.
      */
     class EpistemicModality : public Modality {
     public:

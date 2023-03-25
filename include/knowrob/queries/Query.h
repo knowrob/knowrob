@@ -12,7 +12,7 @@
 #include <memory>
 #include <ostream>
 #include <optional>
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
@@ -27,11 +27,6 @@ namespace knowrob {
 		 * @formula the formula associated to this query.
 		 */
 		explicit Query(const FormulaPtr &formula);
-		
-		/**
-		 * @predicate the predicate that is queried.
-		 */
-		explicit Query(const std::shared_ptr<Predicate> &predicate);
 
 		/**
 		 * @return the formula associated to this query.

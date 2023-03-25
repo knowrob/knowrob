@@ -11,12 +11,12 @@ namespace knowrob {
     /**
      * A negated formula.
      */
-    class NegatedFormula : public CompoundFormula {
+    class Negation : public CompoundFormula {
     public:
         /**
          * @formula the negated formula.
          */
-        explicit NegatedFormula(const FormulaPtr &formula);
+        explicit Negation(const FormulaPtr &formula);
 
         const FormulaPtr& negatedFormula() const { return formulae_[0]; }
 
@@ -27,8 +27,15 @@ namespace knowrob {
         const char* operator_symbol() const override { return "~"; }
 
     protected:
-        NegatedFormula(const NegatedFormula &other, const Substitution &sub);
+        Negation(const Negation &other, const Substitution &sub);
     };
+
+    /**
+     * Negate a formula.
+     * @param phi a formula
+     * @return negation of phi.
+     */
+    FormulaPtr operator~(const FormulaPtr& phi);
 
 } // knowrob
 

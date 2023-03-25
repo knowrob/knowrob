@@ -6,6 +6,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/formulas/DependencyGraph.h"
+#include "knowrob/graphs/DependencyGraph.h"
 
 using namespace knowrob;

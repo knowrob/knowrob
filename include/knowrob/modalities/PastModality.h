@@ -29,7 +29,7 @@ namespace knowrob {
 		 * @return the belief operator `P`
 		 */
 		static const ModalOperator& P() {
-			static const ModalOperator op(get(), ModalOperatorType::POSSIBLE);
+			static const ModalOperator op(get(), ModalOperatorType::POSSIBILITY);
 			return op;
 		}
 
@@ -37,39 +37,39 @@ namespace knowrob {
 		 * @return the belief operator `H`
 		 */
 		static const ModalOperator& H() {
-            static const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+            static const ModalOperator op(get(), ModalOperatorType::NECESSITY);
 			return op;
 		}
 
         // Override Modality, modal axiom "D"
         // - note: assumes there is no begin of time
         //
-        bool isSerial() const { return true; }
+        bool isSerial() const override { return true; }
 
         // Override Modality, modal axiom "T"
         // - note: assumes "current time" is included
         //
-        bool isReflexive() const { return true; }
+        bool isReflexive() const override { return true; }
 
         // Override Modality, modal axiom "4"
         // - all states reachable from the past are also directly reachable from "now".
         //
-        bool isTransitive() const { return true; }
+        bool isTransitive() const override { return true; }
 
         // Override Modality, modal axiom "C4"
         // - there is always a time instant between two others
         //
-        bool isDense() const { return true; }
+        bool isDense() const override { return true; }
 
         // Override Modality, modal axiom "5"
         // - cannot be adopted as we can only travel further into the past.
         //
-        bool isEuclidean() const { return false; }
+        bool isEuclidean() const override { return false; }
 
         // Override Modality, modal axiom "B"
         // - cannot be adopted as we can only travel further into the past.
         //
-        bool isSymmetric() const { return false; }
+        bool isSymmetric() const override { return false; }
 
         // Override EpistemicModality
         const char* necessity_symbol() const override { return "P"; }

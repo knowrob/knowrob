@@ -83,9 +83,23 @@ namespace knowrob {
 	protected:
 		const FormulaType type_;
 	};
-	
-	// alias declaration
-	using FormulaPtr = std::shared_ptr<Formula>;
+
+    /**
+     * A label for a formula.
+     */
+    class FormulaLabel {
+    public:
+        FormulaLabel() = default;
+
+        bool operator==(const FormulaLabel &other);
+
+    protected:
+        virtual bool isEqual(const FormulaLabel &other) const = 0;
+    };
+
+    // alias declaration
+    using FormulaPtr = std::shared_ptr<Formula>;
+    using FormulaLabelPtr = std::shared_ptr<FormulaLabel>;
 }
 
 namespace std {

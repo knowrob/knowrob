@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-set (CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
+set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 set (CMAKE_CXX_STANDARD 17)
 
 project(knowrob)
@@ -114,7 +114,7 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
-		src/formulas/DependencyGraph.cpp
+        src/graphs/DependencyGraph.cpp
 		src/graphs/ReasoningGraph.cpp
 		src/reasoner/Blackboard.cpp
 		src/HybridQA.cpp
@@ -125,18 +125,14 @@ add_library(knowrob_qa SHARED
 		src/modalities/ConfidenceInterval.cpp
 		src/modalities/Timepoint.cpp
 		src/modalities/TimeInterval.cpp
-		src/terms/NestedModality.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
-		src/terms/Predicate.cpp
-		src/terms/Bottom.cpp
-		src/terms/Top.cpp
 		src/terms/ListTerm.cpp
 		src/terms/OptionList.cpp
 		src/terms/Substitution.cpp
 		src/terms/Unifier.cpp
 		src/terms/Constant.cpp
-		src/terms/ModalOperator.cpp
+		src/modalities/ModalOperator.cpp
 		src/graphs/PrefixRegistry.cpp
 		src/graphs/KnowledgeGraph.cpp
 		src/graphs/GraphPattern.cpp
@@ -145,8 +141,10 @@ add_library(knowrob_qa SHARED
 		src/formulas/Conjunction.cpp
 		src/formulas/Disjunction.cpp
 		src/formulas/Implication.cpp
-        src/formulas/NegatedFormula.cpp
-		src/formulas/AtomicProposition.cpp
+        src/formulas/Negation.cpp
+		src/formulas/Predicate.cpp
+		src/formulas/Bottom.cpp
+		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
 		src/queries/Query.cpp
 		src/queries/QueryInstance.cpp

@@ -8,7 +8,7 @@
 
 #include "knowrob/terms/OptionList.h"
 #include "knowrob/terms/ListTerm.h"
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Constant.h"
 
 using namespace knowrob;

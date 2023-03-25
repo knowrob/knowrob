@@ -7,26 +7,26 @@
  */
 
 #include <gtest/gtest.h>
-#include "knowrob/terms/Bottom.h"
+#include "knowrob/formulas/Bottom.h"
 
 using namespace knowrob;
 
-const std::shared_ptr<BottomTerm>& BottomTerm::get()
+const std::shared_ptr<Bottom>& Bottom::get()
 {
-	static std::shared_ptr<BottomTerm> singleton(new BottomTerm);
+	static std::shared_ptr<Bottom> singleton(new Bottom);
 	return singleton;
 }
 
-BottomTerm::BottomTerm()
+Bottom::Bottom()
 : Predicate("false", std::vector<TermPtr>())
 {
 }
 
-void BottomTerm::write(std::ostream& os) const
+void Bottom::write(std::ostream& os) const
 {
 	os << "\u22A5";
 }
 
 TEST(bottom_term, isGround) {
-    EXPECT_TRUE(BottomTerm::get()->isGround());
+    EXPECT_TRUE(Bottom::get()->isGround());
 }

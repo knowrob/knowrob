@@ -9,9 +9,9 @@
 #include <gtest/gtest.h>
 #include "knowrob/Logger.h"
 #include "knowrob/terms/Unifier.h"
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Constant.h"
-#include "knowrob/terms/Bottom.h"
+#include "knowrob/formulas/Bottom.h"
 
 // macro toggles on *occurs* check in unification
 #define USE_OCCURS_CHECK
@@ -67,9 +67,6 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 		case TermType::LONG:
 			return t1->type()==TermType::LONG &&
 				((LongTerm*)t0.get())->value()==((LongTerm*)t1.get())->value();
-		default:
-			KB_WARN("Ignoring unknown term type '{}'.", (int)t0->type());
-			return false;
 		}
 	}
 	
@@ -95,7 +92,7 @@ TermPtr Unifier::apply()
 {
 	if(!exists_) {
 		// no unifier exists
-		return BottomTerm::get();
+		return Bottom::get();
 	}
 	else if(mapping_.empty() ||
 		t0_->isGround() ||
@@ -117,11 +114,11 @@ TermPtr Unifier::apply()
 		auto *p = (Predicate*)(
 				t0_->getVariables().size() < t1_->getVariables().size()?
 				t0_:t1_).get();
-		return p->applySubstitution(*this);
+		return std::dynamic_pointer_cast<Predicate>(p->applySubstitution(*this));
 	}
 	else {
 		KB_WARN("something went wrong.");
-		return BottomTerm::get();
+		return Bottom::get();
 	}
 }
 

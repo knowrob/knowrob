@@ -2,13 +2,24 @@
 // Created by daniel on 21.03.23.
 //
 
+#include <gtest/gtest.h>
+
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryTree.h"
+#include "knowrob/formulas/Top.h"
+#include "knowrob/modalities/KnowledgeModality.h"
 
 using namespace knowrob;
+using namespace knowrob::modality;
+
+ModalityLabelPtr& emptyLabel() {
+    static auto empty =
+            std::make_shared<ModalityLabel>(ModalIteration::emptyIteration());
+    return empty;
+}
 
 QueryTree::QueryTree(const FormulaPtr &query)
-: rootNode_(new Node(nullptr, std::make_shared<NestedModality>(), query, false))
+: rootNode_(new Node(nullptr, emptyLabel(), query, false))
 {
     openNodes_.push(rootNode_);
     while(!openNodes_.empty()) {
@@ -32,11 +43,11 @@ QueryTree::~QueryTree()
 }
 
 QueryTree::Node::Node(Node *parent,
-                      const ModalitySequencePtr &modalities,
+                      const ModalityLabelPtr &modalities,
                       const FormulaPtr &formula,
                       bool isNegated)
 : parent(parent),
-  modalities(modalities),
+  label(modalities),
   formula(formula),
   isNegated(isNegated),
   isOpen(true)
@@ -55,10 +66,6 @@ int QueryTree::Node::priority() const
         case FormulaType::DISJUNCTION:
         case FormulaType::IMPLICATION:
             return isNegated ? 1 : 0;
-        default:
-            KB_WARN("Ignoring formula {} of unknown type {}.",
-                    *formula, (int)formula->type());
-            break;
     }
 	return 0;
 }
@@ -96,7 +103,7 @@ std::list<QueryTree::Node*> QueryTree::getLeafs(Node *n)
 }
 
 QueryTree::Node* QueryTree::createNode(Node *parent,
-                                       const ModalitySequencePtr &modalities,
+                                       const ModalityLabelPtr &modalities,
                                        const FormulaPtr &phi,
                                        bool isNegated)
 {
@@ -106,7 +113,7 @@ QueryTree::Node* QueryTree::createNode(Node *parent,
     return newNode;
 }
 
-bool QueryTree::hasClosedPath(Node *leaf)
+bool QueryTree::hasCompletePath(Node *leaf)
 {
     Node *parent = leaf;
     do {
@@ -116,13 +123,13 @@ bool QueryTree::hasClosedPath(Node *leaf)
     return true;
 }
 
-void QueryTree::constructConjunction(Node *leaf, std::list<ModalLiteral> &path)
+void QueryTree::constructPath(Node *leaf, Path &path)
 {
     Node *parent = leaf;
     do {
         if(parent->formula->type() == FormulaType::PREDICATE) {
             auto phi = std::dynamic_pointer_cast<Predicate>(parent->formula);
-            path.emplace_back(parent->modalities, phi, parent->isNegated);
+            path.literals_.emplace_back(parent->label, phi, parent->isNegated);
         }
         parent = parent->parent;
     } while(parent);
@@ -137,102 +144,270 @@ void QueryTree::expandNextNode()
     switch(next->formula->type()) {
         case FormulaType::PREDICATE:
             for(Node *leaf : getLeafs(next)) {
-                if(hasClosedPath(leaf)) {
+                if(hasCompletePath(leaf)) {
                     paths_.emplace_back();
                     auto &path = paths_.back();
-                    constructConjunction(leaf, path);
+                    constructPath(leaf, path);
                 }
             }
             break;
-        case FormulaType::CONJUNCTION:
-            expandNode(next, (Conjunction*)next->formula.get());
-            break;
-        case FormulaType::DISJUNCTION:
-            expandNode(next, (Disjunction*)next->formula.get());
-            break;
-        case FormulaType::IMPLICATION:
-            expandNode(next, (Implication*)next->formula.get());
-            break;
-        case FormulaType::NEGATION:
-            expandNode(next, (NegatedFormula*)next->formula.get());
-            break;
-        case FormulaType::MODAL:
-            expandNode(next, (ModalFormula*)next->formula.get());
-            break;
-        default:
-            KB_WARN("Ignoring formula {} of unknown type {}.",
-                    *next->formula, (int)next->formula->type());
-            break;
-    }
-}
 
-void QueryTree::expandNode(Node *n, Conjunction *formula)
-{
-    if(n->isNegated) {
-        for(Node *leaf : getLeafs(n)) {
-            for(auto &phi : formula->formulae()) {
-                createNode(leaf, n->modalities, phi, true);
+        case FormulaType::CONJUNCTION: {
+            auto *formula = (Conjunction*)next->formula.get();
+            if(next->isNegated) {
+                for(Node *leaf : getLeafs(next)) {
+                    for(auto &phi : formula->formulae()) {
+                        createNode(leaf, next->label, phi, true);
+                    }
+                }
             }
-        }
-    }
-    else {
-        for(Node *leaf : getLeafs(n)) {
-            Node *parent = leaf;
-            for (auto &phi: formula->formulae()) {
-                parent = createNode(parent, n->modalities, phi, false);
+            else {
+                for(Node *leaf : getLeafs(next)) {
+                    Node *parent = leaf;
+                    for (auto &phi: formula->formulae()) {
+                        parent = createNode(parent, next->label, phi, false);
+                    }
+                }
             }
+            break;
         }
-    }
-}
 
-void QueryTree::expandNode(Node *n, Disjunction *formula)
-{
-    if(n->isNegated) {
-        for(Node *leaf : getLeafs(n)) {
-            Node *parent = leaf;
-            for (auto &phi: formula->formulae()) {
-                parent = createNode(parent, n->modalities, phi, false);
+        case FormulaType::DISJUNCTION: {
+            auto *formula = (Disjunction*)next->formula.get();
+            if(next->isNegated) {
+                for(Node *leaf : getLeafs(next)) {
+                    Node *parent = leaf;
+                    for (auto &phi: formula->formulae()) {
+                        parent = createNode(parent, next->label, phi, true);
+                    }
+                }
             }
-        }
-    }
-    else {
-        for(Node *leaf : getLeafs(n)) {
-            for (auto &phi: formula->formulae()) {
-                createNode(leaf, n->modalities, phi, true);
+            else {
+                for(Node *leaf : getLeafs(next)) {
+                    for (auto &phi: formula->formulae()) {
+                        createNode(leaf, next->label, phi, false);
+                    }
+                }
             }
+            break;
+        }
+
+        case FormulaType::IMPLICATION: {
+            auto *formula = (Implication*)next->formula.get();
+            if(next->isNegated) {
+                for(Node *leaf : getLeafs(next)) {
+                    Node *parent = leaf;
+                    parent = createNode(parent, next->label, formula->antecedent(), false);
+                    createNode(parent, next->label, formula->consequent(), true);
+                }
+            }
+            else {
+                for(Node *leaf : getLeafs(next)) {
+                    createNode(leaf, next->label, formula->antecedent(), true);
+                    createNode(leaf, next->label, formula->consequent(), false);
+                }
+            }
+            break;
+        }
+
+        case FormulaType::NEGATION: {
+            auto *formula = (Negation*)next->formula.get();
+            for(Node *leaf : getLeafs(next)) {
+                createNode(leaf, next->label, formula->negatedFormula(), !next->isNegated);
+            }
+            break;
+        }
+
+        case FormulaType::MODAL: {
+            auto *formula = (ModalFormula*)next->formula.get();
+            for(Node *leaf : getLeafs(next)) {
+                // add modality to iteration
+                auto modalityIteration =
+                        std::make_shared<ModalIteration>(next->label->modalOperators());
+                modalityIteration->push_back(formula->modalOperator());
+                // create a node with updated label
+                createNode(leaf,
+                           std::make_shared<ModalityLabel>(modalityIteration),
+                           formula->modalFormula(),
+                           next->isNegated);
+            }
+            break;
         }
     }
 }
 
-void QueryTree::expandNode(Node *n, Implication *formula)
-{
-    if(n->isNegated) {
-        for(Node *leaf : getLeafs(n)) {
-            Node *parent = leaf;
-            parent = createNode(parent, n->modalities, formula->antecedent(), false);
-            createNode(parent, n->modalities, formula->consequent(), true);
-        }
+
+// fixture class for testing
+class QueryTreeTest : public ::testing::Test {
+protected:
+    FormulaPtr p_, q_, r_;
+    void SetUp() override {
+        p_ = std::make_shared<Predicate>("p");
+        q_ = std::make_shared<Predicate>("q");
+        r_ = std::make_shared<Predicate>("r");
     }
-    else {
-        for(Node *leaf : getLeafs(n)) {
-            createNode(leaf, n->modalities, formula->antecedent(), true);
-            createNode(leaf, n->modalities, formula->consequent(), false);
+    // void TearDown() override {}
+};
+
+
+TEST_F(QueryTreeTest, PositiveLiteral)
+{
+    QueryTree qt(p_);
+    EXPECT_EQ(qt.numPaths(), 1);
+    if (qt.numPaths() == 1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if (path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isPositive());
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_EQ(lit.functor(), "p");
+            EXPECT_EQ(lit.arity(), 0);
         }
     }
 }
 
-void QueryTree::expandNode(Node *n, NegatedFormula *formula)
+TEST_F(QueryTreeTest, NegativeLiteral)
 {
-    for(Node *leaf : getLeafs(n)) {
-        createNode(leaf, n->modalities, formula->negatedFormula(), !n->isNegated);
+    QueryTree qt(~p_);
+    EXPECT_EQ(qt.numPaths(), 1);
+    if(qt.numPaths()==1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if(path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isNegative());
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_EQ(lit.functor(), "p");
+            EXPECT_EQ(lit.arity(), 0);
+        }
     }
 }
 
-void QueryTree::expandNode(Node *n, ModalFormula *formula)
+TEST_F(QueryTreeTest, LiteralWithModality)
 {
-    for(Node *leaf : getLeafs(n)) {
-        auto newModalities = std::make_shared<NestedModality>(*n->modalities);
-        newModalities->push_back(formula->modalOperator());
-        createNode(leaf, newModalities, formula->modalFormula(), !n->isNegated);
+    QueryTree qt(K(p_));
+    EXPECT_EQ(qt.numPaths(), 1);
+    if (qt.numPaths() == 1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if (path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isPositive());
+            EXPECT_EQ(lit.functor(), "p");
+            EXPECT_EQ(lit.arity(), 0);
+
+            auto label = (ModalityLabel*)(lit.label().get());
+            EXPECT_EQ(label->numOperators(), 1);
+            EXPECT_EQ(*label->modalOperators().begin(), KnowledgeModality::K());
+        }
     }
 }
+
+TEST_F(QueryTreeTest, NestedModality)
+{
+    QueryTree qt(K(B(~p_)));
+    EXPECT_EQ(qt.numPaths(), 1);
+    if (qt.numPaths() == 1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if (path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isNegative());
+            EXPECT_EQ(lit.functor(), "p");
+            EXPECT_EQ(lit.arity(), 0);
+
+            auto label = (ModalityLabel*)(lit.label().get());
+            EXPECT_EQ(label->numOperators(), 2);
+            EXPECT_EQ(*label->modalOperators().begin(), KnowledgeModality::K());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, Conjunction_pq)
+{
+    QueryTree qt(p_ & q_);
+    EXPECT_EQ(qt.numPaths(), 1);
+    if(qt.numPaths()==1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 2);
+        if(path.numLiterals() == 2) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isPositive());
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, Conjunction_pqr)
+{
+    QueryTree qt(~p_ & q_ & r_);
+    EXPECT_EQ(qt.numPaths(), 1);
+    if(qt.numPaths()==1) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 3);
+        if(path.numLiterals() == 3) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isNegative());
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, Disjunction_pq)
+{
+    QueryTree qt(p_ | q_);
+    EXPECT_EQ(qt.numPaths(), 2);
+    if(qt.numPaths()==2) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if(path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(lit.isPositive());
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, Disjunction_pqr)
+{
+    QueryTree qt(~p_ | q_ | r_);
+    EXPECT_EQ(qt.numPaths(), 3);
+    if(qt.numPaths()==3) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 1);
+        if(path.numLiterals() == 1) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, AndOr)
+{
+    QueryTree qt((p_ | ~r_) & (q_ | r_));
+    EXPECT_EQ(qt.numPaths(), 4);
+    if(qt.numPaths()==4) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 2);
+        if(path.numLiterals() == 2) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+
+TEST_F(QueryTreeTest, OrAnd)
+{
+    QueryTree qt((p_ & ~r_) | (q_ & r_));
+    EXPECT_EQ(qt.numPaths(), 2);
+    if(qt.numPaths()==2) {
+        auto &path = qt.paths().front();
+        EXPECT_EQ(path.numLiterals(), 2);
+        if(path.numLiterals() == 2) {
+            auto &lit = path.literals().front();
+            EXPECT_TRUE(*lit.label() == *emptyLabel());
+        }
+    }
+}
+

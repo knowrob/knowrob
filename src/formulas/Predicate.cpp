@@ -6,14 +6,14 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Constant.h"
 
 using namespace knowrob;
 
 namespace knowrob {
 	PredicateType predicateTypeFromTerm(const TermPtr &term) {
-		auto type_string = ((StringTerm*)term.get())->value();
+		auto &type_string = ((StringTerm*)term.get())->value();
 		if(type_string == "relation") return PredicateType::RELATION;
 		else                          return PredicateType::BUILT_IN;
 	}
@@ -55,6 +55,7 @@ Predicate::Predicate(
 	const std::shared_ptr<PredicateIndicator> &indicator,
 	const std::vector<TermPtr> &arguments)
 : Term(TermType::PREDICATE),
+  Formula(FormulaType::PREDICATE),
   indicator_(indicator),
   arguments_(arguments),
   variables_(getVariables1())
@@ -63,6 +64,7 @@ Predicate::Predicate(
 
 Predicate::Predicate(const Predicate &other, const Substitution &sub)
 : Term(TermType::PREDICATE),
+  Formula(FormulaType::PREDICATE),
   indicator_(other.indicator_),
   arguments_(applySubstitution(other.arguments_, sub)),
   variables_(getVariables1())
@@ -123,9 +125,9 @@ std::vector<TermPtr> Predicate::applySubstitution(
 		case TermType::PREDICATE: {
 			// recursively apply substitution
 			auto *p = (Predicate*)in[i].get();
-			out[i] = (p->isGround() ?
-				in[i] :
-				p->applySubstitution(sub));
+			out[i] = (p->isGround()
+                    ? in[i]
+                    : std::dynamic_pointer_cast<Predicate>(p->applySubstitution(sub)));
 			break;
 		}
 		default:
@@ -137,7 +139,7 @@ std::vector<TermPtr> Predicate::applySubstitution(
 	return out;
 }
 
-std::shared_ptr<Predicate> Predicate::applySubstitution(const Substitution &sub) const
+FormulaPtr Predicate::applySubstitution(const Substitution &sub) const
 {
 	return std::make_shared<Predicate>(*this, sub);
 }
@@ -157,4 +159,12 @@ void Predicate::write(std::ostream& os) const
 		}
 		os << ')';
 	}
+}
+
+namespace std {
+    std::ostream& operator<<(std::ostream& os, const knowrob::Predicate& p) //NOLINT
+    {
+        p.write(os);
+        return os;
+    }
 }

@@ -7,8 +7,8 @@
  */
 
 #include "knowrob/terms/Term.h"
-#include "knowrob/terms/Bottom.h"
-#include "knowrob/terms/Top.h"
+#include "knowrob/formulas/Bottom.h"
+#include "knowrob/formulas/Top.h"
 
 using namespace knowrob;
 
@@ -22,16 +22,6 @@ bool Term::operator==(const Term& other) const
 {
 	// note: isEqual can safely perform static cast as type id's do match
 	return typeid(*this) == typeid(other) && isEqual(other);
-}
-
-bool Term::isBottom() const
-{
-	return (this == BottomTerm::get().get());
-}
-
-bool Term::isTop() const
-{
-	return (this == TopTerm::get().get());
 }
 
 bool VariableComparator::operator()(const Variable* const &v0, const Variable* const &v1) const

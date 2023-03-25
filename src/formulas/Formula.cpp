@@ -7,7 +7,8 @@
  */
 
 #include <knowrob/formulas/Formula.h>
-#include <knowrob/formulas/AtomicProposition.h>
+#include "knowrob/formulas/Top.h"
+#include "knowrob/formulas/Bottom.h"
 
 using namespace knowrob;
 
@@ -20,14 +21,19 @@ bool Formula::isAtomic() const
 	return type() == FormulaType::PREDICATE;
 }
 
-bool Formula::isTop() const
-{
-    return type() == FormulaType::PREDICATE && ((AtomicProposition*)this)->predicate()->isTop();
-}
-
 bool Formula::isBottom() const
 {
-    return type() == FormulaType::PREDICATE && ((AtomicProposition*)this)->predicate()->isBottom();
+    return (this == Bottom::get().get());
+}
+
+bool Formula::isTop() const
+{
+    return (this == Top::get().get());
+}
+
+bool FormulaLabel::operator==(const FormulaLabel &other)
+{
+    return typeid(*this) == typeid(other) && isEqual(other);
 }
 
 namespace std {

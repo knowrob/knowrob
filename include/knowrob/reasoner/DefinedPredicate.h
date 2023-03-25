@@ -9,7 +9,7 @@
 #ifndef KNOWROB_DEFINED_PREDICATE_H_
 #define KNOWROB_DEFINED_PREDICATE_H_
 
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
 
 namespace knowrob {

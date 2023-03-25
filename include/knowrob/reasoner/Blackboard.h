@@ -58,7 +58,7 @@ namespace knowrob {
 
 		ReasoningGraph decomposeFormula(const std::shared_ptr<Formula> &phi) const;
 
-		ReasoningGraph decomposePredicate(const std::shared_ptr<AtomicProposition> &phi) const;
+		ReasoningGraph decomposePredicate(const std::shared_ptr<Predicate> &phi) const;
 
 		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
 									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);

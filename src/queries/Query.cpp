@@ -7,19 +7,12 @@
  */
 
 #include <knowrob/queries/Query.h>
-#include <knowrob/formulas/AtomicProposition.h>
+#include <knowrob/formulas/Predicate.h>
 
 using namespace knowrob;
 
 Query::Query(const std::shared_ptr<Formula> &formula)
 : formula_(formula),
-  o_timeInterval_(std::nullopt),
-  o_confidenceInterval_(std::nullopt)
-{
-}
-
-Query::Query(const std::shared_ptr<Predicate> &predicate)
-: formula_(new AtomicProposition(predicate)),
   o_timeInterval_(std::nullopt),
   o_confidenceInterval_(std::nullopt)
 {

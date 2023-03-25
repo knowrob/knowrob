@@ -17,7 +17,7 @@
 #include "knowrob/reasoner/prolog/logging.h"
 #include "knowrob/reasoner/prolog/algebra.h"
 #include "knowrob/terms/ListTerm.h"
-#include "knowrob/terms/Bottom.h"
+#include "knowrob/formulas/Bottom.h"
 #include "knowrob/queries/QueryResultQueue.h"
 #include "knowrob/graphs/PrefixRegistry.h"
 
@@ -226,7 +226,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 				"read_query", { termAtom, termVar, opts })), nullptr, false);
 	
 	if(QueryResultStream::isEOS(result)) {
-		return BottomTerm::get();
+		return Bottom::get();
 	}
 	else {
 		std::shared_ptr<Term> term     = result->substitution()->get(*termVar);
@@ -250,7 +250,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 			}
 			
 			auto *p0 = (Predicate*)term.get();
-			return p0->applySubstitution(s);
+			return std::dynamic_pointer_cast<Predicate>(p0->applySubstitution(s));
 		}
 		else {
 			KB_WARN("something went wrong");

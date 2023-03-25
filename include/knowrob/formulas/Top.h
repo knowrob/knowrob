@@ -17,15 +17,15 @@ namespace knowrob {
 	/**
 	 * A predicate with a fixed truth value being `true`.
 	 */
-	class TopTerm : public Predicate {
+	class Top : public Predicate {
 	public:
-		static const std::shared_ptr<TopTerm>& get();
+		static const std::shared_ptr<Top>& get();
 
 		// Override Term
 		void write(std::ostream& os) const override;
 
 	private:
-		TopTerm();
+		Top();
 	};
 }
 

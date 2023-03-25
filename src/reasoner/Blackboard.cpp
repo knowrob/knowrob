@@ -77,19 +77,16 @@ ReasoningGraph Blackboard::decomposeFormula(const std::shared_ptr<Formula> &phi)
 			return graph;
 		}
 		case FormulaType::PREDICATE: {
-			return decomposePredicate(std::static_pointer_cast<AtomicProposition>(phi));
+			return decomposePredicate(std::static_pointer_cast<Predicate>(phi));
 		}
-		default:
-			KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
-			return {};
 	}
 }
 
-ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<AtomicProposition> &phi) const
+ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<Predicate> &phi) const
 {
 	// get ensemble of reasoner
 	auto predicateDescription = reasonerManager_->getPredicateDefinition(
-			phi->predicate()->indicator());
+			phi->indicator());
 	if (!predicateDescription || predicateDescription->reasonerEnsemble().empty()) {
 		throw QueryError("no reasoner registered for query `{}`", *phi);
 	}
@@ -141,7 +138,7 @@ void Blackboard::createReasoningPipeline( //NOLINT
 	auto n0_reasoner = *n0->reasonerAlternatives().begin();
 	if(n0->predicateType() == PredicateType::BUILT_IN) {
 		// prefer to use BuiltinEvaluator
-		auto p = ((AtomicProposition*)n0->phi().get())->predicate();
+		auto p = ((Predicate*)n0->phi().get());
 		if(BuiltinEvaluator::get()->isBuiltinSupported(p->indicator())) {
 			n0_reasoner = builtinEvaluator_;
 		}

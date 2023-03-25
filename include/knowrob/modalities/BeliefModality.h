@@ -28,7 +28,7 @@ namespace knowrob {
 		 * @return the belief operator `B`
 		 */
 		static const ModalOperator& B() {
-            static const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+            static const ModalOperator op(get(), ModalOperatorType::NECESSITY);
 			return op;
 		}
 
@@ -36,39 +36,39 @@ namespace knowrob {
         //  - the agent never stops forming new beliefs, i.e. `B phi -> diamond_B phi`.
         //    so there will always be a possible world where the agent beliefs in additional things.
         //
-        bool isSerial() const { return true; }
+        bool isSerial() const override { return true; }
 
         // Override Modality, modal axiom "4"
         //  - what is believed remains believed: `BB phi -> B phi`.
         //    (the belief modality is truth preserving)
         // - Note: mix instead with time modality to handle dynamics of beliefs.
         //
-        bool isTransitive() const { return true; }
+        bool isTransitive() const override { return true; }
 
         // Override Modality, modal axiom "5"
         //  - TODO: this is disputed, I would follow Hintikka's viewpoint and
         //          avoid closed world assumption.
         //
-        bool isEuclidean() const { return false; }
+        bool isEuclidean() const override { return false; }
 
         // Override Modality, modal axiom "T"
         // - cannot be adopted as reflexivity would imply that `B phi -> phi`
         //   but that an agent believes that phi does not mean it is actually true.
         //
-        bool isReflexive() const { return false; }
+        bool isReflexive() const override { return false; }
 
         // Override Modality, modal axiom "B"
         // - cannot be adopted assuming belief is truth preserving as we cannot
         //   travel back to the world where some belief is removed.
         // - Note: mix instead with time modality to handle dynamics of beliefs.
         //
-        bool isSymmetric() const { return false; }
+        bool isSymmetric() const override { return false; }
 
         // Override Modality, modal axiom "C4"
         // - cannot be adopted assuming there is no step between a world
         //   and adding an atomic belief to it.
         //
-        bool isDense() const { return false; }
+        bool isDense() const override { return false; }
 
         // Override EpistemicModality
         const char* necessity_symbol() const override { return "B"; }

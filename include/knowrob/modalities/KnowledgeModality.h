@@ -28,7 +28,7 @@ namespace knowrob {
 		 * @return the belief operator `K`
 		 */
 		static const ModalOperator& K() {
-            static const ModalOperator op(get(), ModalOperatorType::NECESSARY);
+            static const ModalOperator op(get(), ModalOperatorType::NECESSITY);
 			return op;
 		}
 
@@ -36,37 +36,37 @@ namespace knowrob {
         //  - you never stop learning new knowledge, i.e. `K phi -> diamond_K phi`.
         //    so there will always be a possible world where the agent knows additional things.
         //
-        bool isSerial() const { return true; }
+        bool isSerial() const override { return true; }
 
         // Override Modality, modal axiom "T"
         // - what is known is considered to be true `K phi -> phi`.
         //
-        bool isReflexive() const { return true; }
+        bool isReflexive() const override { return true; }
 
         // Override Modality, modal axiom "4"
         //  - what is known remains known: `KK phi -> K phi`.
         //    (the knowledge modality is truth preserving)
         //  - "principles of positive introspection"
         //
-        bool isTransitive() const { return true; }
+        bool isTransitive() const override { return true; }
 
         // Override Modality, modal axiom "5"
         //  - TODO: this is disputed, I would follow Hintikka's viewpoint and
         //          avoid closed world assumption. but that seems to entail
         //          symmetry must be dropped too :/
         //
-        bool isEuclidean() const { return false; }
+        bool isEuclidean() const override { return false; }
 
         // Override Modality, modal axiom "B"
         //  - TODO: explain
         //
-        bool isSymmetric() const { return false; }
+        bool isSymmetric() const override { return false; }
 
         // Override Modality, modal axiom "C4"
         // - cannot be adopted assuming there is no step between a world
         //   and adding atomic propositions to it.
         //
-        bool isDense() const { return false; }
+        bool isDense() const override { return false; }
 
         // Override EpistemicModality
         const char* necessity_symbol() const override { return "K"; }

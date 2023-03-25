@@ -12,8 +12,9 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "Term.h"
-#include "Substitution.h"
+#include "Formula.h"
+#include "knowrob/terms/Term.h"
+#include "knowrob/terms/Substitution.h"
 
 namespace knowrob {
 	/**
@@ -105,15 +106,15 @@ namespace knowrob {
 	/**
 	 * A predicate with a functor and a number of term arguments.
 	 */
-	class Predicate : public Term {
+	class Predicate : public Term, public Formula {
 	public:
 		/**
 		 * @functor the functor name.
 		 * @arguments vector of predicate arguments.
 		 */
-		Predicate(
+		explicit Predicate(
 			const std::string &functor,
-			const std::vector<TermPtr> &arguments);
+			const std::vector<TermPtr> &arguments={});
 		
 		/**
 		 * @indicator a predicate indicator reference.
@@ -142,14 +143,11 @@ namespace knowrob {
 		 * @return a vector of predicate arguments.
 		 */
 		const std::vector<TermPtr>& arguments() const { return arguments_; }
+
+        // Override Formula
+        FormulaPtr applySubstitution(const Substitution &sub) const override;
 		
-		/**
-		 * Create a copy of this predicate where variables are replaced by terms.
-		 * @sub a mapping from variables to terms.
-		 */
-		std::shared_ptr<Predicate> applySubstitution(const Substitution &sub) const;
-		
-		// Override Term
+		// Override Term, Formula
 		bool isGround() const override { return variables_.empty(); }
 		
 		// Override Term
@@ -158,7 +156,7 @@ namespace knowrob {
 		// Override Term
 		const VariableSet& getVariables() override { return variables_; }
 		
-		// Override Term
+		// Override Term, Formula
 		void write(std::ostream& os) const override;
 	
 	protected:
@@ -176,6 +174,10 @@ namespace knowrob {
 	};
 
     using PredicatePtr = std::shared_ptr<Predicate>;
+}
+
+namespace std {
+    std::ostream& operator<<(std::ostream& os, const knowrob::Predicate& p);
 }
 
 #endif //KNOWROB_PREDICATE_H_

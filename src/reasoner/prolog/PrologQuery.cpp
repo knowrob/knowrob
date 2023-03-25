@@ -12,10 +12,10 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/terms/ListTerm.h"
-#include "knowrob/terms/Bottom.h"
-#include "knowrob/terms/Top.h"
+#include "knowrob/formulas/Bottom.h"
+#include "knowrob/formulas/Top.h"
 #include "knowrob/queries/QueryError.h"
-#include "knowrob/formulas/AtomicProposition.h"
+#include "knowrob/formulas/Predicate.h"
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
 
@@ -41,19 +41,18 @@ bool PrologQuery::putTerm( //NOLINT
 {
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
-		const std::shared_ptr<Predicate> &qa_pred =
-			((AtomicProposition*) phi.get())->predicate();
+		auto qa_pred = std::dynamic_pointer_cast<Term>(phi);
 		return putTerm(pl_term, qa_pred, vars);
 	}
+
 	case FormulaType::CONJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_comma(),
                        (CompoundFormula *) phi.get(), vars);
+
 	case FormulaType::DISJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
                        (CompoundFormula *) phi.get(), vars);
-	default:
-		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
-		return false;
+
 	}
 }
 
@@ -129,11 +128,7 @@ bool PrologQuery::putTerm( //NOLINT
 			}
 		}
 		return true;
-	}
-	default:
-		KB_WARN("Ignoring unknown term type '{}'.", (int)qa_term->type());
-		return false;
-	}
+	}}
 }
 
 bool PrologQuery::putTerm( //NOLINT
@@ -207,11 +202,11 @@ TermPtr PrologQuery::constructTerm(const term_t &t, std::map<std::string,term_t>
 		//   not sure if predicates with arity 0 generally appear here as atoms...
 		// map `fail/0` and `false/0` to BottomTerm
 		if(atom == PrologQuery::ATOM_fail() || atom == PrologQuery::ATOM_false()) {
-			return BottomTerm::get();
+			return Bottom::get();
 		}
 		// map `true/0` to TopTerm
 		else if(atom == PrologQuery::ATOM_true()) {
-			return TopTerm::get();
+			return Top::get();
 		}
 		else {
 			return std::make_shared<StringTerm>(std::string(PL_atom_chars(atom)));
@@ -249,7 +244,7 @@ TermPtr PrologQuery::constructTerm(const term_t &t, std::map<std::string,term_t>
 	}
 	
 	KB_WARN("Failed to read Prolog term of type {}.", PL_term_type(t));
-	return BottomTerm::get();
+	return Bottom::get();
 }
 
 FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
@@ -259,8 +254,8 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 	
 	std::shared_ptr<Predicate> p = (
 		t->type()==TermType::PREDICATE ?
-		std::static_pointer_cast<Predicate>(t) :
-		BottomTerm::get());
+        std::static_pointer_cast<Predicate>(t) :
+        Bottom::get());
 	
 	if(p->indicator()->functor() == comma_functor) {
 		std::vector<FormulaPtr> formulas(p->indicator()->arity());
@@ -277,7 +272,7 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 		return std::make_shared<Disjunction>(formulas);
 	}
 	else {
-		return std::make_shared<AtomicProposition>(p);
+		return p;
 	}
 }
 
@@ -293,17 +288,13 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 	
 	switch(phi->type()) {
 	case FormulaType::PREDICATE:
-		return ((AtomicProposition*) phi.get())->predicate();
+		return std::dynamic_pointer_cast<Predicate>(phi);
 		
 	case FormulaType::CONJUNCTION:
 		return toTerm((CompoundFormula*)phi.get(), commaIndicator);
 		
 	case FormulaType::DISJUNCTION:
 		return toTerm((CompoundFormula*)phi.get(), semicolonIndicator);
-		
-	default:
-		KB_WARN("Ignoring unknown formula type '{}'.", (int)phi->type());
-		return BottomTerm::get();
 	}
 }
 

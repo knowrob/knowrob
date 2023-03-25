@@ -12,7 +12,7 @@
 #include <memory>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Constant.h"
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 
 namespace knowrob {
 	/**

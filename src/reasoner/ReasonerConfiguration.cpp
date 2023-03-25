@@ -9,7 +9,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/terms/Constant.h"
-#include "knowrob/terms/Predicate.h"
+#include "knowrob/formulas/Predicate.h"
 
 using namespace knowrob;
 

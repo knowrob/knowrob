@@ -8,7 +8,7 @@
 #include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/Logger.h"
 #include "knowrob/terms/OptionList.h"
-#include "knowrob/terms/Bottom.h"
+#include "knowrob/formulas/Bottom.h"
 #include "knowrob/terms/ListTerm.h"
 
 using namespace knowrob;
@@ -154,12 +154,12 @@ inline foreign_t qa_remember(ReasonerManager *reasonerManager,
                              const std::filesystem::path &path,
                              const OptionList &options)
 {
-    auto reasonerOpt = options.get("reasoner", BottomTerm::get());
+    auto reasonerOpt = options.get("reasoner", Bottom::get());
     // TODO: consider handling include/exlcude option
     //auto includeOpt = options.get("include", ListTerm::nil());
     //auto excludeOpt = options.get("exclude", ListTerm::nil());
 
-    if(!reasonerOpt->isBottom()) {
+    if(reasonerOpt.get() != Bottom::get().get()) {
         // import into one reasoner backend.
         // assume the provided directory contains the exported data.
         const auto &reasonerName = ((StringTerm*)reasonerOpt.get())->value();
@@ -211,14 +211,14 @@ inline foreign_t qa_memorize(ReasonerManager *reasonerManager,
                              const std::filesystem::path &path,
                              const OptionList &options)
 {
-    auto reasonerOpt = options.get("reasoner", BottomTerm::get());
+    auto reasonerOpt = options.get("reasoner", Bottom::get());
     // TODO: consider handling include/exlcude option
     //auto includeOpt = options.get("include", ListTerm::nil());
     //auto excludeOpt = options.get("exclude", ListTerm::nil());
 
     if(!exists(path)) create_directories(path);
 
-    if(!reasonerOpt->isBottom()) {
+    if(reasonerOpt.get() != Bottom::get().get()) {
         // export from one reasoner backend.
         const auto &reasonerName = ((StringTerm*)reasonerOpt.get())->value();
         auto definedReasoner = reasonerManager->getReasonerWithID(reasonerName);

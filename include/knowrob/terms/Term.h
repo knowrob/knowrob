@@ -68,16 +68,6 @@ namespace knowrob {
 		const TermType& type() const { return type_; }
 		
 		/**
-		 * @return true if this is the top concept.
-		 */
-		bool isTop() const;
-		
-		/**
-		 * @return true if this is the bottom concept.
-		 */
-		bool isBottom() const;
-		
-		/**
 		 * @return true if this term isMoreGeneralThan no variables.
 		 */
 		virtual bool isGround() const = 0;
