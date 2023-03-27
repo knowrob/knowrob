@@ -11,9 +11,9 @@
 
 using namespace knowrob;
 
-ModalFormula::ModalFormula(ModalOperator modalOperator, const FormulaPtr &formula)
+ModalFormula::ModalFormula(const ModalOperatorPtr &modalOperator, const FormulaPtr &formula)
         : CompoundFormula(FormulaType::MODAL, { formula }),
-          modalOperator_(std::move(modalOperator))
+          modalOperator_(modalOperator)
 {
 }
 
@@ -30,16 +30,16 @@ std::shared_ptr<Formula> ModalFormula::applySubstitution(const Substitution &sub
 
 bool ModalFormula::isModalNecessity() const
 {
-    return modalOperator_.modalOperatorType() == ModalOperatorType::NECESSITY;
+    return modalOperator_->isModalNecessity();
 }
 
 const char* ModalFormula::operator_symbol() const
 {
     if(isModalNecessity()) {
-        return modalOperator_.modality()->necessity_symbol();
+        return modalOperator_->modality()->necessity_symbol();
     }
     else {
-        return modalOperator_.modality()->possibility_symbol();
+        return modalOperator_->modality()->possibility_symbol();
     }
 }
 

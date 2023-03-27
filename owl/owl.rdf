@@ -19,7 +19,7 @@
 <Ontology rdf:about="">
   <versionInfo>March 18. 2003, GS</versionInfo>
   <dc:title>Classes and properties for the Web Ontology Language OWL</dc:title>
-  <dc:creator>W3C Web Ontology (WebOnt) Working Group</dc:creator>
+  <dc:creator>W3C Web Ontology (WebOnt) Working DependencyGroup</dc:creator>
   <dc:subject>OWL; Web Ontology Language; Semantic Web</dc:subject>
   <dc:description>This file specifies in RDF Schema format the
     built-in classes and properties that together form the basis of

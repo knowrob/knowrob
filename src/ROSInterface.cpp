@@ -16,7 +16,7 @@
 // KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
-#include <knowrob/HybridQA.h>
+#include <knowrob/KnowledgeBase.h>
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>

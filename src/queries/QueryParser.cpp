@@ -279,7 +279,7 @@ static inline void testModal(const FormulaPtr &phi, const std::string &op, const
         EXPECT_EQ(phi->type(), FormulaType::MODAL);
         if(phi->type() == FormulaType::MODAL) {
             auto *m = (ModalFormula*)phi.get();
-            EXPECT_EQ(std::string(m->modalOperator().symbol()), op);
+            EXPECT_EQ(std::string(m->modalOperator()->symbol()), op);
 
             EXPECT_NE(m->modalFormula().get(), nullptr);
             if(m->modalFormula()) {

@@ -124,6 +124,12 @@ namespace knowrob {
 	// alias
 	using QueryResultPtr = std::shared_ptr<const QueryResult>;
 	using QueryResultBuffer = std::map<uint32_t, std::list<QueryResultPtr>>;
+
+    class QueryResultHandler {
+    public:
+        virtual bool pushQueryResult(const QueryResultPtr &solution) = 0;
+    };
+
 }
 
 namespace std {

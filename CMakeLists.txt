@@ -114,10 +114,10 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
-        src/graphs/DependencyGraph.cpp
+        src/queries/DependencyGraph.cpp
 		src/graphs/ReasoningGraph.cpp
 		src/reasoner/Blackboard.cpp
-		src/HybridQA.cpp
+        src/KnowledgeBase.cpp
 		src/DataSource.cpp
 		src/Statement.cpp
 		src/graphs/PossibleWorld.cpp
@@ -125,6 +125,9 @@ add_library(knowrob_qa SHARED
 		src/modalities/ConfidenceInterval.cpp
 		src/modalities/Timepoint.cpp
 		src/modalities/TimeInterval.cpp
+		src/modalities/BeliefModality.cpp
+		src/modalities/KnowledgeModality.cpp
+		src/modalities/PastModality.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
@@ -156,6 +159,8 @@ add_library(knowrob_qa SHARED
 		src/queries/QueryResultBroadcaster.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
+		src/queries/QueryProcessor.cpp
+		src/queries/QueryPipeline.cpp
 		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp

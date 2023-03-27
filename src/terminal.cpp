@@ -23,7 +23,7 @@
 // KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
-#include <knowrob/HybridQA.h>
+#include <knowrob/KnowledgeBase.h>
 #include "knowrob/formulas/Predicate.h"
 
 using namespace knowrob;
@@ -357,7 +357,7 @@ public:
 	}
 
 protected:
-	HybridQA hybridQA_;
+	KnowledgeBase hybridQA_;
 	std::atomic<bool> has_stop_request_;
 	int numSolutions_;
 	uint32_t cursor_;

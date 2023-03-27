@@ -3,6 +3,7 @@
 //
 
 #include "knowrob/modalities/ModalOperator.h"
+#include "knowrob/modalities/Modality.h"
 
 using namespace knowrob;
 
@@ -45,6 +46,16 @@ bool ModalOperator::isEqual(const Term &other) const
     return operatorType_ == x.operatorType_ && modality_ == x.modality_;
 }
 
+bool ModalOperator::isModalNecessity() const
+{
+    return operatorType_ == ModalOperatorType::NECESSITY;
+}
+
+bool ModalOperator::isModalPossibility() const
+{
+    return operatorType_ == ModalOperatorType::NECESSITY;
+}
+
 const std::shared_ptr<ModalIteration>& ModalIteration::emptyIteration()
 {
     static auto empty = std::make_shared<ModalIteration>();
@@ -68,30 +79,42 @@ bool ModalIteration::operator==(const ModalIteration &other) const
     return true;
 }
 
-void ModalIteration::push_back(const ModalOperator &modalOperator)
+void ModalIteration::operator+=(const ModalOperatorPtr &next) //NOLINT
 {
     if(modalitySequence_.empty()) {
-        modalitySequence_.push_back(modalOperator);
+        modalitySequence_.push_back(next);
     }
     else {
         auto &last = modalitySequence_.back();
-        if(last.modality() == modalOperator.modality()) {
-            // do some simplifications on the fly if the same modality is iterated
-            if(last.modalOperatorType() == modalOperator.modalOperatorType()) {
-                if(modalOperator.isTransitive()) {
-                    // no need to add the same operator twice in case of transitivity
-                    // note: an operation would be needed here for graded modalities,
-                    //       e.g. "10m ago it was the case that 10m ago it was the case that ..."
-                    //       becomes "20m ago it was the case that ...".
-                    return;
-                }
-            }
-            else if(modalOperator.isEuclidean()) {
-                // iteration from possible to necessary or vice version can
-                // be simplified to just using the latter operator.
-                modalitySequence_.pop_back();
-            }
+
+        ModalOperatorPtr reduced;
+        if(last->modality() == next->modality()) {
+            // Axiom (4): <square>p -> <square><square>p corresponds to a transitive accessibility relation.
+            // If the axioms is adopted by a modality, then iteration over the same operator
+            // symbol can be omitted.
+            if(last->operatorType() == next->operatorType() &&
+               last->modality()->isTransitive())
+            { reduced = last; }
+
+            // Axiom (5): <square>p -> <diamond><square>p corresponds to a euclidean accessibility relation.
+            // If the axioms is adopted by a modality, then iteration over possibility and necessity operator
+            // can be reduced to the latter operator.
+            if(last->operatorType() != next->operatorType() &&
+               last->modality()->isEuclidean())
+            { reduced = next; }
         }
-        modalitySequence_.push_back(modalOperator);
+        else {
+            // different modalities can be reduced in case some principles governing their
+            // interaction or known.
+            reduced = last->modality()->reduce(last, next);
+        }
+
+        if(reduced) {
+            modalitySequence_.pop_back();
+            *this += reduced;
+        }
+        else {
+            modalitySequence_.push_back(next);
+        }
     }
 }

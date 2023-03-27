@@ -15,9 +15,9 @@ namespace knowrob {
      */
     class ModalFormula : public CompoundFormula {
     public:
-        ModalFormula(ModalOperator modalOperator, const FormulaPtr &formula);
+        ModalFormula(const ModalOperatorPtr &modalOperator, const FormulaPtr &formula);
 
-        const ModalOperator& modalOperator() const { return modalOperator_; }
+        const ModalOperatorPtr& modalOperator() const { return modalOperator_; }
 
         const FormulaPtr& modalFormula() const { return formulae_[0]; }
 
@@ -32,7 +32,7 @@ namespace knowrob {
         FormulaPtr applySubstitution(const Substitution &sub) const override;
 
     protected:
-        const ModalOperator modalOperator_;
+        const ModalOperatorPtr modalOperator_;
 
         ModalFormula(const ModalFormula &other, const Substitution &sub);
     };

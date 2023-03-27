@@ -20,6 +20,7 @@
 namespace knowrob {
 	/**
 	 * A query represented by a propositional formula.
+	 * @deprecated use Formula instead
 	 */
 	class Query {
 	public:

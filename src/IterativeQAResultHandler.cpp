@@ -4,7 +4,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 // KnowRob
-#include <knowrob/HybridQA.h>
+#include <knowrob/KnowledgeBase.h>
 
 using namespace knowrob;
 namespace po = boost::program_options;

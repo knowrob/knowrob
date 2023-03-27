@@ -13,66 +13,45 @@ namespace knowrob {
      */
     class KnowledgeModality : public EpistemicModality {
 	protected:
-		KnowledgeModality() : EpistemicModality() {}
+		KnowledgeModality();
 
 	public:
 		/**
-		 * @return the belief modality singleton.
+		 * @return the knowledge modality singleton.
 		 */
-		static const KnowledgeModality* get() {
-			static KnowledgeModality instance;
-			return &instance;
-		}
+		static const KnowledgeModality* get();
 
 		/**
-		 * @return the belief operator `K`
+		 * @return the knowledge operator `K`
 		 */
-		static const ModalOperator& K() {
-            static const ModalOperator op(get(), ModalOperatorType::NECESSITY);
-			return op;
-		}
+		static const ModalOperatorPtr& K();
 
-        // Override Modality, modal axiom "D"
-        //  - you never stop learning new knowledge, i.e. `K phi -> diamond_K phi`.
-        //    so there will always be a possible world where the agent knows additional things.
-        //
-        bool isSerial() const override { return true; }
+        // Override Modality
+        bool isSerial() const override;
 
-        // Override Modality, modal axiom "T"
-        // - what is known is considered to be true `K phi -> phi`.
-        //
-        bool isReflexive() const override { return true; }
+        // Override Modality
+        bool isReflexive() const override;
 
-        // Override Modality, modal axiom "4"
-        //  - what is known remains known: `KK phi -> K phi`.
-        //    (the knowledge modality is truth preserving)
-        //  - "principles of positive introspection"
-        //
-        bool isTransitive() const override { return true; }
+        // Override Modality
+        bool isTransitive() const override;
 
-        // Override Modality, modal axiom "5"
-        //  - TODO: this is disputed, I would follow Hintikka's viewpoint and
-        //          avoid closed world assumption. but that seems to entail
-        //          symmetry must be dropped too :/
-        //
-        bool isEuclidean() const override { return false; }
+        // Override Modality
+        bool isEuclidean() const override;
 
-        // Override Modality, modal axiom "B"
-        //  - TODO: explain
-        //
-        bool isSymmetric() const override { return false; }
+        // Override Modality
+        bool isSymmetric() const override;
 
-        // Override Modality, modal axiom "C4"
-        // - cannot be adopted assuming there is no step between a world
-        //   and adding atomic propositions to it.
-        //
-        bool isDense() const override { return false; }
+        // Override Modality
+        bool isDense() const override;
 
-        // Override EpistemicModality
-        const char* necessity_symbol() const override { return "K"; }
+        // Override Modality
+        const char* necessity_symbol() const override;
 
-        // Override EpistemicModality
-        const char* possibility_symbol() const override { return "\u22C4_K"; }
+        // Override Modality
+        const char* possibility_symbol() const override;
+
+        // Override Modality
+        ModalOperatorPtr reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const override;
 
     };
 

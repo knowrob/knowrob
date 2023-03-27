@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_HYBRIDQA_H
-#define KNOWROB_HYBRIDQA_H
+#ifndef KNOWROB_KNOWLEDGEBASE_H
+#define KNOWROB_KNOWLEDGEBASE_H
 
 #include <memory>
 // BOOST
@@ -18,14 +18,9 @@
 #include <knowrob/reasoner/prolog/PrologReasoner.h>
 
 namespace knowrob {
-	class QueryResultHandler {
+	class KnowledgeBase {
 	public:
-		virtual bool pushQueryResult(const QueryResultPtr &solution) = 0;
-	};
-
-	class HybridQA {
-	public:
-		explicit HybridQA(const boost::property_tree::ptree &config);
+		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
 		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
 
@@ -60,6 +55,8 @@ namespace knowrob {
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};
+
+    using KnowledgeBasePtr = std::shared_ptr<KnowledgeBase>;
 }
 
-#endif //KNOWROB_HYBRIDQA_H
+#endif //KNOWROB_KNOWLEDGEBASE_H

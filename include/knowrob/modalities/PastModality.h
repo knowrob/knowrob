@@ -14,68 +14,47 @@ namespace knowrob {
      */
     class PastModality : public TemporalModality {
 	protected:
-		PastModality() : TemporalModality() {}
+		PastModality();
 
 	public:
 		/**
-		 * @return the belief modality singleton.
+		 * @return the past modality singleton.
 		 */
-		static const PastModality* get() {
-			static PastModality instance;
-			return &instance;
-		}
+		static const PastModality* get();
 
 		/**
-		 * @return the belief operator `P`
+		 * @return the past operator `P`
 		 */
-		static const ModalOperator& P() {
-			static const ModalOperator op(get(), ModalOperatorType::POSSIBILITY);
-			return op;
-		}
+		static const ModalOperatorPtr& P();
 
 		/**
-		 * @return the belief operator `H`
+		 * @return the past operator `H`
 		 */
-		static const ModalOperator& H() {
-            static const ModalOperator op(get(), ModalOperatorType::NECESSITY);
-			return op;
-		}
+		static const ModalOperatorPtr& H();
 
-        // Override Modality, modal axiom "D"
-        // - note: assumes there is no begin of time
-        //
-        bool isSerial() const override { return true; }
+        // Override Modality
+        bool isSerial() const override;
 
-        // Override Modality, modal axiom "T"
-        // - note: assumes "current time" is included
-        //
-        bool isReflexive() const override { return true; }
+        // Override Modality
+        bool isReflexive() const override;
 
-        // Override Modality, modal axiom "4"
-        // - all states reachable from the past are also directly reachable from "now".
-        //
-        bool isTransitive() const override { return true; }
+        // Override Modality
+        bool isTransitive() const override;
 
-        // Override Modality, modal axiom "C4"
-        // - there is always a time instant between two others
-        //
-        bool isDense() const override { return true; }
+        // Override Modality
+        bool isDense() const override;
 
-        // Override Modality, modal axiom "5"
-        // - cannot be adopted as we can only travel further into the past.
-        //
-        bool isEuclidean() const override { return false; }
+        // Override Modality
+        bool isEuclidean() const override;
 
-        // Override Modality, modal axiom "B"
-        // - cannot be adopted as we can only travel further into the past.
-        //
-        bool isSymmetric() const override { return false; }
+        // Override Modality
+        bool isSymmetric() const override;
 
-        // Override EpistemicModality
-        const char* necessity_symbol() const override { return "P"; }
+        // Override Modality
+        const char* necessity_symbol() const override;
 
-        // Override EpistemicModality
-        const char* possibility_symbol() const override { return "H"; }
+        // Override Modality
+        const char* possibility_symbol() const override;
     };
 
 } // knowrob

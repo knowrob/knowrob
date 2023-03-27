@@ -2,8 +2,8 @@
 // Created by daniel on 21.03.23.
 //
 
-#ifndef KNOWROB_MODAL_LITERAL_H
-#define KNOWROB_MODAL_LITERAL_H
+#ifndef KNOWROB_LITERAL_H
+#define KNOWROB_LITERAL_H
 
 #include <memory>
 #include "knowrob/modalities/ModalityLabel.h"
@@ -17,6 +17,15 @@ namespace knowrob {
     public:
         Literal(const PredicatePtr &predicate, bool isNegative)
                 : predicate_(predicate), isNegative_(isNegative) {}
+        /**
+         * Substitution constructor.
+         *
+         * @other a literal.
+         * @sub a mapping from terms to variables.
+         */
+        Literal(const Literal &other, const Substitution &sub)
+                : predicate_(std::make_shared<Predicate>(*other.predicate_, sub)),
+                  isNegative_(other.isNegative_) {}
 
         /**
          * @return the predicate of this literal.
@@ -47,6 +56,14 @@ namespace knowrob {
          */
         auto arity() const { return predicate_->indicator()->arity(); }
 
+        /**
+		 * Replaces variables in the literal with terms.
+		 * @sub a substitution mapping.
+		 * @return the created literal.
+         */
+        auto applySubstitution(const Substitution &sub) const
+        { return std::make_shared<Literal>(*this, sub); }
+
     protected:
         const PredicatePtr predicate_;
         const bool isNegative_;
@@ -69,6 +86,9 @@ namespace knowrob {
         const FormulaLabelPtr label_;
     };
 
+    using LiteralPtr = std::shared_ptr<Literal>;
+    using LabeledLiteralPtr = std::shared_ptr<LabeledLiteral>;
+
 } // knowrob
 
-#endif //KNOWROB_MODAL_LITERAL_H
+#endif //KNOWROB_LITERAL_H

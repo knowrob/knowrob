@@ -78,7 +78,7 @@ namespace knowrob {
             auto end() const { return literals_.end(); }
 
         protected:
-            std::list<LabeledLiteral> literals_;
+            std::list<LabeledLiteralPtr> literals_;
             friend class QueryTree;
         };
 

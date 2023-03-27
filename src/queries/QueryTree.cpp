@@ -8,6 +8,7 @@
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/formulas/Top.h"
 #include "knowrob/modalities/KnowledgeModality.h"
+#include "knowrob/modalities/BeliefModality.h"
 
 using namespace knowrob;
 using namespace knowrob::modality;
@@ -129,7 +130,8 @@ void QueryTree::constructPath(Node *leaf, Path &path)
     do {
         if(parent->formula->type() == FormulaType::PREDICATE) {
             auto phi = std::dynamic_pointer_cast<Predicate>(parent->formula);
-            path.literals_.emplace_back(parent->label, phi, parent->isNegated);
+            path.literals_.push_back(std::make_shared<LabeledLiteral>(
+                    parent->label, phi, parent->isNegated));
         }
         parent = parent->parent;
     } while(parent);
@@ -224,7 +226,7 @@ void QueryTree::expandNextNode()
                 // add modality to iteration
                 auto modalityIteration =
                         std::make_shared<ModalIteration>(next->label->modalOperators());
-                modalityIteration->push_back(formula->modalOperator());
+                *modalityIteration += formula->modalOperator();
                 // create a node with updated label
                 createNode(leaf,
                            std::make_shared<ModalityLabel>(modalityIteration),
@@ -259,10 +261,10 @@ TEST_F(QueryTreeTest, PositiveLiteral)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isPositive());
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
-            EXPECT_EQ(lit.functor(), "p");
-            EXPECT_EQ(lit.arity(), 0);
+            EXPECT_TRUE(lit->isPositive());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
+            EXPECT_EQ(lit->functor(), "p");
+            EXPECT_EQ(lit->arity(), 0);
         }
     }
 }
@@ -276,10 +278,10 @@ TEST_F(QueryTreeTest, NegativeLiteral)
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isNegative());
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
-            EXPECT_EQ(lit.functor(), "p");
-            EXPECT_EQ(lit.arity(), 0);
+            EXPECT_TRUE(lit->isNegative());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
+            EXPECT_EQ(lit->functor(), "p");
+            EXPECT_EQ(lit->arity(), 0);
         }
     }
 }
@@ -293,11 +295,11 @@ TEST_F(QueryTreeTest, LiteralWithModality)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isPositive());
-            EXPECT_EQ(lit.functor(), "p");
-            EXPECT_EQ(lit.arity(), 0);
+            EXPECT_TRUE(lit->isPositive());
+            EXPECT_EQ(lit->functor(), "p");
+            EXPECT_EQ(lit->arity(), 0);
 
-            auto label = (ModalityLabel*)(lit.label().get());
+            auto label = (ModalityLabel*)(lit->label().get());
             EXPECT_EQ(label->numOperators(), 1);
             EXPECT_EQ(*label->modalOperators().begin(), KnowledgeModality::K());
         }
@@ -313,13 +315,14 @@ TEST_F(QueryTreeTest, NestedModality)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isNegative());
-            EXPECT_EQ(lit.functor(), "p");
-            EXPECT_EQ(lit.arity(), 0);
+            EXPECT_TRUE(lit->isNegative());
+            EXPECT_EQ(lit->functor(), "p");
+            EXPECT_EQ(lit->arity(), 0);
 
-            auto label = (ModalityLabel*)(lit.label().get());
-            EXPECT_EQ(label->numOperators(), 2);
-            EXPECT_EQ(*label->modalOperators().begin(), KnowledgeModality::K());
+            // note: KBp is simplified to Bp
+            auto label = (ModalityLabel*)(lit->label().get());
+            EXPECT_EQ(label->numOperators(), 1);
+            EXPECT_EQ(*label->modalOperators().begin(), BeliefModality::B());
         }
     }
 }
@@ -333,8 +336,8 @@ TEST_F(QueryTreeTest, Conjunction_pq)
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isPositive());
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(lit->isPositive());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }
@@ -348,8 +351,8 @@ TEST_F(QueryTreeTest, Conjunction_pqr)
         EXPECT_EQ(path.numLiterals(), 3);
         if(path.numLiterals() == 3) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isNegative());
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(lit->isNegative());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }
@@ -363,8 +366,8 @@ TEST_F(QueryTreeTest, Disjunction_pq)
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit.isPositive());
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(lit->isPositive());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }
@@ -378,7 +381,7 @@ TEST_F(QueryTreeTest, Disjunction_pqr)
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }
@@ -392,7 +395,7 @@ TEST_F(QueryTreeTest, AndOr)
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }
@@ -406,7 +409,7 @@ TEST_F(QueryTreeTest, OrAnd)
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(*lit.label() == *emptyLabel());
+            EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
 }

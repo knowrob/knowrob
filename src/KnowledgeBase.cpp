@@ -7,13 +7,13 @@
  */
 
 #include <knowrob/Logger.h>
-#include <knowrob/HybridQA.h>
+#include <knowrob/KnowledgeBase.h>
 #include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/graphs/PrefixRegistry.h"
 
 using namespace knowrob;
 
-HybridQA::HybridQA(const boost::property_tree::ptree &config)
+KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 {
 	reasonerManager_ = std::make_shared<ReasonerManager>();
 	loadConfiguration(config);
@@ -22,7 +22,7 @@ HybridQA::HybridQA(const boost::property_tree::ptree &config)
 	prologReasoner_->loadConfiguration(ReasonerConfiguration());
 }
 
-void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
+void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 {
     auto semwebTree = config.get_child_optional("semantic-web");
     if(semwebTree) {
@@ -56,18 +56,18 @@ void HybridQA::loadConfiguration(const boost::property_tree::ptree &config)
 	}
 }
 
-int HybridQA::callPrologDirect(const std::string &queryString)
+int KnowledgeBase::callPrologDirect(const std::string &queryString)
 {
     return prologReasoner_->eval(parseQuery(queryString), "user", false);
 }
 
-std::shared_ptr<const Query> HybridQA::parseQuery(const std::string &queryString)
+std::shared_ptr<const Query> KnowledgeBase::parseQuery(const std::string &queryString)
 {
 	auto term =prologReasoner_->readTerm(queryString);
 	return PrologQuery::toQuery(term);
 }
 
-void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler)
+void KnowledgeBase::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler)
 {
 	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
 	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
@@ -82,7 +82,7 @@ void HybridQA::runQuery(const std::shared_ptr<const Query> &query, QueryResultHa
 	} while(handler.pushQueryResult(solution));
 }
 
-bool HybridQA::projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID)
+bool KnowledgeBase::projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID)
 {
     bool allProjected = true;
     for(auto &x : statements) {
@@ -91,7 +91,7 @@ bool HybridQA::projectIntoEDB(const std::list<Statement> &statements, const std:
     return allProjected;
 }
 
-bool HybridQA::projectIntoEDB(const Statement &statement, const std::string &reasonerID)
+bool KnowledgeBase::projectIntoEDB(const Statement &statement, const std::string &reasonerID)
 {
     if(reasonerID == "*") {
         bool oneSucceeded = false;

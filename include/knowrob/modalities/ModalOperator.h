@@ -6,8 +6,8 @@
 #define KNOWROB_MODAL_OPERATOR_H
 
 #include <list>
+#include <optional>
 #include "knowrob/terms/Term.h"
-#include "knowrob/modalities/Modality.h"
 
 namespace knowrob {
     /**
@@ -17,6 +17,7 @@ namespace knowrob {
         NECESSITY,
         POSSIBILITY
     };
+    class Modality;
 
     /**
      * An operator of a modal language, e.g. "B" is often used for "belief" and
@@ -31,10 +32,14 @@ namespace knowrob {
          */
         const auto* modality() const { return modality_; }
 
+        bool isModalNecessity() const;
+
+        bool isModalPossibility() const;
+
         /**
          * @return the type of this operator.
          */
-        auto modalOperatorType() const { return operatorType_; }
+        auto operatorType() const { return operatorType_; }
 
         /**
          * @return true if the accessibility relation of this modality is transitive.
@@ -71,6 +76,8 @@ namespace knowrob {
         bool isEqual(const Term &other) const override;
     };
 
+    using ModalOperatorPtr = std::shared_ptr<ModalOperator>;
+
     /**
      * An iteration over modalities.
      * Each iteration corresponds to applying the accessibility relation once.
@@ -86,14 +93,14 @@ namespace knowrob {
         bool operator==(const ModalIteration &other) const;
 
         /**
+         * @param modalOperator add an operator to this iteration.
+         */
+        void operator+=(const ModalOperatorPtr &modalOperator);
+
+        /**
          * @return number of operators in this sequence.
          */
         auto numOperators() const { return modalitySequence_.size(); }
-
-        /**
-         * @param modalOperator add an operator to this iteration.
-         */
-        void push_back(const ModalOperator &modalOperator);
 
         /**
          * @return begin iterator of modal operators.
@@ -111,7 +118,7 @@ namespace knowrob {
         static const std::shared_ptr<ModalIteration>& emptyIteration();
 
     protected:
-        std::list<ModalOperator> modalitySequence_;
+        std::list<ModalOperatorPtr> modalitySequence_;
     };
 
 } // knowrob
