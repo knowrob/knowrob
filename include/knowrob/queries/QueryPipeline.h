@@ -12,61 +12,72 @@
 #include "DependencyGraph.h"
 
 namespace knowrob {
+    /**
+     * A step within a query pipeline.
+     */
+    class QueryPipelineStage : public QueryResultStream {
+    public:
+        QueryPipelineStage(const std::shared_ptr<QueryResultStream> &outStream,
+                           const std::list<LiteralPtr> &literals,
+                           const ModalityLabelPtr &label={});
 
+        ~QueryPipelineStage();
+
+        /**
+         * Request the stage to stop any active processes.
+         * This will not necessary cause the processes to immediately exit,
+         * but will ensure no more messages will be pushed into the output
+         * stream of this stage.
+         */
+        void stop();
+
+        /**
+         * @return true if no EOS has been received.
+         */
+        bool isQueryOpened() const { return isQueryOpened_; }
+
+        /**
+         * @return true if it has been requested that the stage stops any active processes.
+         */
+        bool hasStopRequest() const { return hasStopRequest_; }
+
+    protected:
+        const std::list<LiteralPtr> literals_;
+        const ModalityLabelPtr label_;
+        const std::shared_ptr<QueryResultStream::Channel> outChan_;
+        std::atomic<bool> isQueryOpened_;
+        std::atomic<bool> hasStopRequest_;
+
+        void push(const QueryResultPtr &msg) override;
+        std::shared_ptr<QueryResultBroadcaster> submitQuery();
+
+        friend class QueryProcessor;
+    };
+
+    // forward declaration of internal data structure
+    class QueryPipelineNode;
+
+    /**
+     * A pipeline where stages generate partial results to an input query.
+     */
     class QueryPipeline {
     public:
-        QueryPipeline(const KnowledgeBasePtr &kb,
-                      const std::shared_ptr<QueryResultQueue> &outputQueue);
+        QueryPipeline(const std::shared_ptr<QueryResultQueue> &outputQueue);
 
-        void addDependencyGroup(const std::list<ModalDependencyNode*> &dependencyGroup);
+        void addDependencyGroup(const std::list<DependencyNodePtr> &dependencyGroup);
 
         void run();
 
     protected:
-        KnowledgeBasePtr kb_;
         std::shared_ptr<QueryResultQueue> outputQueue_;
         std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
         std::shared_ptr<QueryResultBroadcaster> inputStream_;
         std::shared_ptr<QueryResultStream::Channel> inputChannel_;
+        std::list<std::shared_ptr<QueryPipelineStage>> stages_;
 
-        struct CompareNodes { bool operator()(
-                    ModalDependencyNode *a,
-                    ModalDependencyNode *b) const; };
-        struct QueryNode {
-            explicit QueryNode(const ModalDependencyNode *node);
-
-            const ModalDependencyNode *node_;
-            std::list<std::shared_ptr<QueryNode>> successors_;
-            std::priority_queue<ModalDependencyNode*,
-                std::vector<ModalDependencyNode*>, CompareNodes> neighbors_;
-        };
-        using QueryNodePtr = std::shared_ptr<QueryNode>;
-
-        class Stream : public QueryResultStream {
-        public:
-            Stream(const KnowledgeBasePtr &kb,
-                   const QueryNodePtr &qn,
-                   const std::shared_ptr<QueryResultStream::Channel> &outChan);
-            ~Stream();
-            void stop();
-            bool isQueryOpened() const { return isQueryOpened_; }
-            bool hasStopRequest() const { return hasStopRequest_; }
-
-        protected:
-            const KnowledgeBasePtr kb_;
-            const QueryNodePtr qn_;
-            const std::shared_ptr<QueryResultStream::Channel> outChan_;
-            std::atomic<bool> isQueryOpened_;
-            std::atomic<bool> hasStopRequest_;
-            void push(const QueryResultPtr &msg) override;
-            friend class QueryProcessor;
-        };
-
-        std::list<std::shared_ptr<Stream>> queryStreams_;
-
-        void createPipeline(std::shared_ptr<QueryNode> &qn,
-                            const std::shared_ptr<QueryResultBroadcaster> &qnInput,
-                            const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);
+        void generate(const std::shared_ptr<QueryPipelineNode> &node_,
+                      const std::shared_ptr<QueryResultBroadcaster> &qnInput,
+                      const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);
     };
 
 } // knowrob

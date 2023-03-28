@@ -13,25 +13,38 @@
 #include "knowrob/formulas/Literal.h"
 
 namespace knowrob {
-
     /**
-     * A group of nodes with dependencies.
-     * @tparam NodeType the node type.
+     * A node in a dependency graph.
      */
-    template <class NodeType> struct DependencyGroup {
-        VariableSet variables_;
-        std::list<NodeType*> member_;
-
-        void operator+=(const DependencyGroup &other) {
-            member_.insert(other.member_.end(), other.member_.begin(), other.member_.end());
-            variables_.insert(other.variables_.begin(), other.variables_.end());
-        }
-    };
-
     class DependencyNode {
     public:
         DependencyNode() = default;
+
+        /**
+         * @return the set of variables appearing in literal nodes.
+         */
+        virtual const VariableSet& variables() const = 0;
+
+        /**
+         * @return number of free variables in this node.
+         */
+        auto numVariables() const { return variables().size(); }
+
+        /**
+         * @return number of modal nodes with shared free variables.
+         */
+        auto numNeighbors() const { return neighbors_.size(); }
+
+        /**
+         * @return nodes with free variables shared with this node.
+         */
+        const auto& neighbors() const { return neighbors_; }
+
+    protected:
+        std::list<std::shared_ptr<DependencyNode>> neighbors_;
+        friend class DependencyGraph;
     };
+    using DependencyNodePtr = std::shared_ptr<DependencyNode>;
 
     /**
      * A node labeled with a literal.
@@ -43,19 +56,22 @@ namespace knowrob {
         /**
          * @return the literal associated to this node.
          */
-        const auto literal() const { return literal_; }
+        const auto& literal() const { return literal_; }
+
+        // Override DependencyNode
+        const VariableSet& variables() const override { return literal_->predicate()->getVariables(); }
 
     protected:
         const LiteralPtr literal_;
     };
 
     /**
-     * A node labeled with a modality that contains a graph
-     * of literal nodes.
+     * A node labeled with a modality that contains dependency groups of literals.
      */
     class ModalDependencyNode : public DependencyNode {
     public:
-        ModalDependencyNode(const ModalityLabelPtr &label, const std::list<LiteralPtr> &literals);
+        explicit ModalDependencyNode(const std::list<LiteralPtr> &literals,
+                                     const ModalityLabelPtr &label={});
 
         /**
          * @return the modality label of this node.
@@ -63,54 +79,77 @@ namespace knowrob {
         const auto& label() const { return label_; }
 
         /**
-         * @return the set of variables appearing in literal nodes.
+         * @return the literal nodes within this modal node.
          */
-        const auto& variables() const { return variables_; }
+        const auto& literals() const { return literals_; }
 
         /**
          * @return number of nodes with literal label.
          */
-        auto numLiteralNodes() const { return nodes_.size(); }
+        auto numLiterals() const { return literals_.size(); }
 
-        /**
-         * @return number of dependency groups among literal labeled nodes.
-         */
-        auto numLiteralGroups() const { return groups_.size(); }
-
-        auto numNeighbors() const { return neighbors_.size(); }
-
-        auto numVariables() const { return variables_.size(); }
-
-        const auto& literalNodes() const { return nodes_; }
-
-        const auto& literalGroups() const { return groups_; }
-
-        const auto& neighbors() const { return neighbors_; }
+        // Override DependencyNode
+        const VariableSet& variables() const override { return variables_; }
 
     protected:
+        const std::list<LiteralPtr> literals_;
         const ModalityLabelPtr label_;
-        std::list<LiteralDependencyNode> nodes_;
-        std::list<DependencyGroup<LiteralDependencyNode>> groups_;
-        std::list<ModalDependencyNode*> neighbors_;
         VariableSet variables_;
-        friend class DependencyGraph;
     };
 
     /**
-     * A graph capturing the dependency between literals in a query.
-     * Two literals are seen as dependant in case they share a free variable.
+     * A group of nodes with dependencies.
+     * @tparam NodeType the node type.
      */
-	class DependencyGraph {
+    struct DependencyGroup {
+        VariableSet variables_;
+        std::list<DependencyNodePtr> member_;
+
+        void operator+=(const DependencyGroup &other) {
+            member_.insert(other.member_.end(), other.member_.begin(), other.member_.end());
+            variables_.insert(other.variables_.begin(), other.variables_.end());
+        }
+    };
+
+    /**
+     * A graph capturing a dependency relation between literals in a formula.
+     * Two literals are viewed as dependant in case they share a free variable.
+     * Here, labeled literal are considered.
+     * The graph is made of nodes labeled with a modality that contain groups of literals.
+     * Literals that are part of the same node are all evaluated wrt. the modality label of this node.
+     * The dependency dependency relation is rather computed between these modality groups.
+     */
+    class DependencyGraph {
     public:
         DependencyGraph() = default;
 
         /**
-         * Create one node labeled by a modality consisting of
-         * a set of literal nodes.
-         * @param label the label for the modal formula node.
-         * @param literals the labels of literal nodes.
+         * Same as insert(node).
+         * @param node a dependency node.
          */
-        void addNodes(const ModalityLabelPtr &label, const std::list<LiteralPtr> &literals);
+        void operator+=(const DependencyNodePtr &node);
+
+        /**
+         * Add a new node to the graph and compute dependency relation
+         * with other nodes.
+         * @param node a dependency node.
+         */
+        void insert(const DependencyNodePtr &node);
+
+        /**
+         * Add a new node to the graph and compute dependency relation
+         * with other nodes.
+         * @param literals set of literals considered in conjunction.
+         * @param label a modality label.
+         */
+        void insert(const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label);
+
+        /**
+         * Add a new node to the graph and compute dependency relation
+         * with other nodes.
+         * @param literal a literal.
+         */
+        void insert(const LiteralPtr &literal);
 
         /**
          * @return begin iterator over literals in a path.
@@ -125,26 +164,16 @@ namespace knowrob {
         /**
          * @return number of nodes with modality label.
          */
-        auto numModalNodes() const { return nodes_.size(); }
+        auto numNodes() const { return nodes_.size(); }
 
         /**
          * @return number of dependency groups among modality labeled nodes.
          */
-        auto numModalGroups() const { return groups_.size(); }
-
-        /**
-         * @return number of nodes with literal label.
-         */
-        unsigned long numLiteralNodes() const;
-
-        /**
-         * @return number of dependency groups among literal labeled nodes.
-         */
-        unsigned long numLiteralGroups() const;
+        auto numGroups() const { return groups_.size(); }
 
     protected:
-        std::list<ModalDependencyNode> nodes_;
-        std::list<DependencyGroup<ModalDependencyNode>> groups_;
+        std::list<DependencyNodePtr> nodes_;
+        std::list<DependencyGroup> groups_;
 	};
 
 } // knowrob

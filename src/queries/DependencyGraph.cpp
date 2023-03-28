@@ -23,87 +23,34 @@ static inline bool has_intersection(const VariableSet &a, const VariableSet &b)
                        [larger](auto *v){ return larger.count(v)>0; });
 }
 
-LiteralDependencyNode::LiteralDependencyNode(const LiteralPtr &literal)
-        : DependencyNode(),
-          literal_(literal)
+void DependencyGraph::operator+=(const DependencyNodePtr &node)
 {
+    insert(node);
 }
 
-ModalDependencyNode::ModalDependencyNode(
-        const ModalityLabelPtr &label, const std::list<LiteralPtr> &literals)
-        : DependencyNode(),
-          label_(label)
+void DependencyGraph::insert(const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label)
 {
-    for(auto lit : literals) {
-        auto &litVars = lit->predicate()->getVariables();
-        // add a new node
-        auto &litNode = nodes_.emplace_back(lit);
-        // find the literal node groups that have a shared variable with the literal.
-        std::list<std::list<DependencyGroup < LiteralDependencyNode>>::iterator > dependencies;
-        for(auto it=groups_.begin(); it!=groups_.end(); ++it) {
-            if(has_intersection(it->variables_, litVars)) {
-                dependencies.push_back(it);
-            }
-        }
-
-        if(dependencies.empty()) {
-            // the literal does not have a shared variable with an existing group.
-            // create a new one with just the literal as a member.
-            auto &newGroup = groups_.emplace_back();
-            newGroup.variables_ = litVars;
-            newGroup.member_.push_back(&litNode);
-        }
-        else if(dependencies.size()==1) {
-            // add to group
-            auto &group = dependencies.front();
-            group->member_.push_back(&litNode);
-            group->variables_.insert(litVars.begin(), litVars.end());
-        }
-        else {
-            auto &newGroup = groups_.emplace_back();
-            for(auto groupIterator : dependencies) {
-                newGroup += *groupIterator;
-                groups_.erase(groupIterator);
-            }
-        }
-
-        // remember variables that appear in the literal
-        variables_.insert(litVars.begin(), litVars.end());
-    }
+    insert(std::make_shared<ModalDependencyNode>(literals, label));
 }
 
-unsigned long DependencyGraph::numLiteralNodes() const
+void DependencyGraph::insert(const LiteralPtr &literal)
 {
-    unsigned long count=0;
-    for(auto &n : nodes_) {
-        count += n.numLiteralNodes();
-    }
-    return count;
+    insert(std::make_shared<LiteralDependencyNode>(literal));
 }
 
-unsigned long DependencyGraph::numLiteralGroups() const
+void DependencyGraph::insert(const DependencyNodePtr &newNode)
 {
-    unsigned long count=0;
-    for(auto &n : nodes_) {
-        count += n.numLiteralGroups();
-    }
-    return count;
-}
-
-void DependencyGraph::addNodes(const ModalityLabelPtr &label,
-                               const std::list<LiteralPtr> &literals)
-{
-    auto &newNode = nodes_.emplace_back(label, literals);
+    nodes_.push_back(newNode);
 
     // find the modal node groups that have a shared variable with newNode.
-    std::list<std::list<DependencyGroup < ModalDependencyNode>>::iterator > dependencies;
+    std::list<std::list<DependencyGroup>::iterator > dependencies;
     for(auto it=groups_.begin(); it!=groups_.end(); ++it) {
-        if(has_intersection(it->variables_, newNode.variables())) {
+        if(has_intersection(it->variables_, newNode->variables())) {
             dependencies.push_back(it);
         }
     }
 
-    DependencyGroup<ModalDependencyNode> *newNodeGroup = nullptr;
+    DependencyGroup *newNodeGroup = nullptr;
     if(dependencies.empty()) {
         // the literal does not have a shared variable with an existing group.
         // create a new one with just the literal as a member.
@@ -126,14 +73,35 @@ void DependencyGraph::addNodes(const ModalityLabelPtr &label,
     }
     // update neighbor relation based on shared variables with other nodes
     for(auto &x : newNodeGroup->member_) {
-        if(has_intersection(x->variables(), newNode.variables())) {
-            x->neighbors_.push_back(&newNode);
-            newNode.neighbors_.push_back(x);
+        if(has_intersection(x->variables(), newNode->variables())) {
+            x->neighbors_.push_back(newNode);
+            newNode->neighbors_.push_back(x);
         }
     }
     // finally add the new node to the group
-    newNodeGroup->member_.push_back(&newNode);
-    newNodeGroup->variables_.insert(newNode.variables().begin(), newNode.variables().end());
+    newNodeGroup->member_.push_back(newNode);
+    newNodeGroup->variables_.insert(newNode->variables().begin(), newNode->variables().end());
+}
+
+
+
+LiteralDependencyNode::LiteralDependencyNode(const LiteralPtr &literal)
+        : DependencyNode(),
+          literal_(literal)
+{
+}
+
+ModalDependencyNode::ModalDependencyNode(
+        const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label)
+        : DependencyNode(),
+          literals_(literals),
+          label_(label)
+{
+    for(auto &literal : literals) {
+        auto &literalVariables = literal->predicate()->getVariables();
+        // remember variables that appear in the literal
+        variables_.insert(literalVariables.begin(), literalVariables.end());
+    }
 }
 
 
@@ -158,61 +126,49 @@ protected:
 TEST_F(DependencyGraphTest, SingleLiteral)
 {
     DependencyGraph dg;
-    dg.addNodes(m1_, { p_ });
-    ASSERT_EQ(dg.numModalNodes(),1);
-    ASSERT_EQ(dg.numModalGroups(),1);
-    ASSERT_EQ(dg.numLiteralNodes(),1);
-    ASSERT_EQ(dg.numLiteralGroups(),1);
+    dg.insert({p_}, m1_);
+    ASSERT_EQ(dg.numNodes(),1);
+    ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, DependantLiterals)
 {
     DependencyGraph dg;
-    dg.addNodes(m2_, { p_, q_ });
-    ASSERT_EQ(dg.numModalNodes(),1);
-    ASSERT_EQ(dg.numModalGroups(),1);
-    ASSERT_EQ(dg.numLiteralNodes(),2);
-    ASSERT_EQ(dg.numLiteralGroups(),1);
+    dg.insert({p_, q_}, m2_);
+    ASSERT_EQ(dg.numNodes(),1);
+    ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, IndependantLiterals)
 {
     DependencyGraph dg;
-    dg.addNodes(m1_, { p_, r_ });
-    ASSERT_EQ(dg.numModalNodes(),1);
-    ASSERT_EQ(dg.numModalGroups(),1);
-    ASSERT_EQ(dg.numLiteralNodes(),2);
-    ASSERT_EQ(dg.numLiteralGroups(),2);
+    dg.insert({p_, r_}, m1_);
+    ASSERT_EQ(dg.numNodes(),1);
+    ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, ChainAndOne)
 {
     DependencyGraph dg;
-    dg.addNodes(m1_, { p_, q_, r_, s_ });
-    ASSERT_EQ(dg.numModalNodes(),1);
-    ASSERT_EQ(dg.numModalGroups(),1);
-    ASSERT_EQ(dg.numLiteralNodes(),4);
-    ASSERT_EQ(dg.numLiteralGroups(),2);
+    dg.insert({p_, q_, r_, s_}, m1_);
+    ASSERT_EQ(dg.numNodes(),1);
+    ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, MultiModalDependant)
 {
     DependencyGraph dg;
-    dg.addNodes(m1_, { p_, r_, s_ });
-    dg.addNodes(m2_, { q_ });
-    ASSERT_EQ(dg.numModalNodes(),2);
-    ASSERT_EQ(dg.numModalGroups(),1);
-    ASSERT_EQ(dg.numLiteralNodes(),4);
-    ASSERT_EQ(dg.numLiteralGroups(),4);
+    dg.insert({p_, r_, s_}, m1_);
+    dg.insert({q_}, m2_);
+    ASSERT_EQ(dg.numNodes(),2);
+    ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, MultiModalIndependant)
 {
     DependencyGraph dg;
-    dg.addNodes(m1_, { p_, r_, q_ });
-    dg.addNodes(m2_, { s_ });
-    ASSERT_EQ(dg.numModalNodes(),2);
-    ASSERT_EQ(dg.numModalGroups(),2);
-    ASSERT_EQ(dg.numLiteralNodes(),4);
-    ASSERT_EQ(dg.numLiteralGroups(),2);
+    dg.insert({p_, r_, q_}, m1_);
+    dg.insert({s_}, m2_);
+    ASSERT_EQ(dg.numNodes(),2);
+    ASSERT_EQ(dg.numGroups(),2);
 }

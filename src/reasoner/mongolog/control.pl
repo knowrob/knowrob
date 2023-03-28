@@ -166,19 +166,19 @@ aggregate_disjunction(FindallStages, StepVars, Pipeline, StepVars) :-
 		atom_concat('$',In,Out),
 		VarKeys, VarValues),
 	%
-	findall(Stage,
+	findall(QueryPipelineStage,
 		% first, compute array of results for each facet
-		(	member([Stage,_,_], FindallStages)
+		(	member([QueryPipelineStage,_,_], FindallStages)
 		% second, concatenate the results
-		;	Stage=['$set', ['next', ['$concatArrays', array(VarValues)]]]
+		;	QueryPipelineStage=['$set', ['next', ['$concatArrays', array(VarValues)]]]
 		% third, delete unneeded array
-		;	Stage=['$unset', array(VarKeys)]
+		;	QueryPipelineStage=['$unset', array(VarKeys)]
 		% unwind all solutions from disjunction
-		;	Stage=['$unwind', string('$next')]
+		;	QueryPipelineStage=['$unwind', string('$next')]
 		% finally project the result of a disjunction goal
-		;	mongolog:set_next_vars(StepVars, Stage)
+		;	mongolog:set_next_vars(StepVars, QueryPipelineStage)
 		% and unset the next field
-		;	Stage=['$unset', string('next')]
+		;	QueryPipelineStage=['$unset', string('next')]
 		),
 		Pipeline
 	).
@@ -192,7 +192,7 @@ compile_disjunction(
 		[Goal|RestGoals],
 		[Var|RestVars],
 		CutVars, Ctx,
-		[[Stage,Key,Goal]|Ys],
+		[[QueryPipelineStage,Key,Goal]|Ys],
 		StepVars) :-
 	option(outer_vars(OuterVarsOrig), Ctx),
 	option(global_vars(GlobalVarsOrig), Ctx, []),
@@ -244,7 +244,7 @@ compile_disjunction(
 	% compile the step
 	mongolog:var_key(Var, Ctx, Key),
 	mongolog:lookup_array(Key, GoalCopy, CutMatches, [],
-		InnerCtx, StepVars_copy, Stage),
+		InnerCtx, StepVars_copy, QueryPipelineStage),
 	!,
 	% check if this goal has a cut, if so extend CutVars list
 	(	has_cut(Goal) -> CutVars0=[[Key,Var]|CutVars]

@@ -254,23 +254,23 @@ mongolog_consult1(URL, URLVersion) :-
 	             source_url(URL),
 	             relative_to(FileDirectory)],
 	setup_call_cleanup(
-        open(URL, read, Stream),
+        open(URL, read, QueryPipelineStage),
         (	URLVersion==CurrentVersion
-        ->	mongolog_consult2(Stream, [reload|ConsultOpts])
-        ;	mongolog_consult2(Stream, [load|ConsultOpts])
+        ->	mongolog_consult2(QueryPipelineStage, [reload|ConsultOpts])
+        ;	mongolog_consult2(QueryPipelineStage, [load|ConsultOpts])
         ),
-        close(Stream)
+        close(QueryPipelineStage)
     ),
 	% update version, and array of loaded predicates
 	(	URLVersion==CurrentVersion -> true
 	;	mongolog_stored_source_update(DocumentID, URL, URLVersion)
 	).
 
-mongolog_consult2(Stream, Options) :-
-	read(Stream, Term),
+mongolog_consult2(QueryPipelineStage, Options) :-
+	read(QueryPipelineStage, Term),
 	(	Term==end_of_file -> true
 	;	(	mongolog_consult3(Term, Options),
-			mongolog_consult2(Stream, Options)
+			mongolog_consult2(QueryPipelineStage, Options)
 		)
 	).
 

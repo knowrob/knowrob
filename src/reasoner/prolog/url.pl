@@ -47,11 +47,11 @@ url_resolve1(Path, Path).
 file_iri_hook(Operation, IRI, _) :-
     writeln(file_iri_hook(Operation, IRI)),
     fail.
-file_iri_hook(open(Mode,Options), IRI, Stream) :-
+file_iri_hook(open(Mode,Options), IRI, QueryPipelineStage) :-
     writeln(file_iri_hook(open(Mode,Options), IRI)),
     atom_concat('file://', Path, IRI),
     url_resolve1(Path, AbsPath),
-    open(AbsPath, Mode, Stream, Options).
+    open(AbsPath, Mode, QueryPipelineStage, Options).
 file_iri_hook(access(Mode), IRI, True) :-
     atom_concat('file://', Path, IRI),
     url_resolve1(Path, AbsPath),

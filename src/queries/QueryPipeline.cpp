@@ -6,15 +6,128 @@
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryResultCombiner.h"
 #include "knowrob/queries/DependencyGraph.h"
+#include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
 
-using Node = ModalDependencyNode;
+namespace knowrob {
+    // used to sort nodes in a priority queue.
+    // the priority value is used to determine which nodes should be evaluated first.
+    struct CompareNodes {
+        bool operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const {
+            // note: using ">" in return statements means that smaller element appears before larger.
+            if (a->numVariables() != b->numVariables()) {
+                // prefer node with less variables
+                return a->numVariables() > b->numVariables();
+            }
+            if(a->numNeighbors() != b->numNeighbors()) {
+                // prefer node with less neighbors
+                return a->numNeighbors() > b->numNeighbors();
+            }
+            return a<b;
+        }
+    };
 
-QueryPipeline::QueryPipeline(const KnowledgeBasePtr &kb,
-                             const std::shared_ptr<QueryResultQueue> &outputQueue)
-        : kb_(kb),
-          outputQueue_(outputQueue)
+    // represents a possible step in the query pipeline
+    struct QueryPipelineNode {
+        explicit QueryPipelineNode(const DependencyNodePtr &node) : node_(node) {
+            // add all nodes to a priority queue
+            for(auto &neighbor : node->neighbors()) {
+                neighbors_.push(neighbor);
+            }
+        }
+        const DependencyNodePtr &node_;
+        std::list<std::shared_ptr<QueryPipelineNode>> successors_;
+        std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, CompareNodes> neighbors_;
+    };
+    using QueryNodePtr = std::shared_ptr<QueryPipelineNode>;
+}
+
+
+QueryPipelineStage::QueryPipelineStage(const std::shared_ptr<QueryResultStream> &outStream,
+                                       const std::list<LiteralPtr> &literals,
+                                       const ModalityLabelPtr &label)
+        : literals_(literals),
+          label_(label),
+          outChan_(QueryResultStream::Channel::create(outStream)),
+          isQueryOpened_(true),
+          hasStopRequest_(false)
+{
+}
+
+QueryPipelineStage::~QueryPipelineStage()
+{
+    stop();
+}
+
+void QueryPipelineStage::stop()
+{
+    // TODO: how can the graphQueryEngine_ be notified about the stop request?
+    hasStopRequest_ = true;
+    close();
+}
+
+std::shared_ptr<QueryResultBroadcaster> QueryPipelineStage::submitQuery()
+{
+    // TODO: call some component to start a graph query here.
+    //       best to create some interface dedicated just for the graph queries
+    //       that can be implemented in different ways.
+    // the parameters we have here are: std::list<LiteralPtr>, ModalityLabelPtr
+    //return graphQueryEngine_->submitQuery(literals_, label_);
+    return {};
+}
+
+void QueryPipelineStage::push(const QueryResultPtr &partialResult)
+{
+    if(QueryResultStream::isEOS(partialResult)) {
+        if(isQueryOpened()) {
+            isQueryOpened_ = false;
+        }
+        // TODO eos need to be propagated? no not directly only if immediate stop is requested.
+        //      else only send eos once done with all graph queries plus eos received as input.
+    }
+    else if(!isQueryOpened()) {
+        KB_WARN("ignoring attempt to write to a closed stream.");
+    }
+    else {
+        // compute dependencies
+        DependencyGraph dg;
+        for(auto &literal : literals_) {
+            dg.insert(literal);
+        }
+
+        // iterate over dependency groups
+        for(auto &literalGroup : dg) {
+            std::vector<LiteralPtr> literalInstances(literalGroup.member_.size());
+
+            // apply the substitution mapping
+            unsigned long nextInstance=0;
+            if(partialResult->substitution()->empty()) {
+                for(auto &literalNode : literalGroup.member_) {
+                    auto &literal = ((LiteralDependencyNode*)literalNode.get())->literal();
+                    literalInstances[nextInstance++] = literal;
+                }
+            }
+            else {
+                for(auto &literalNode : literalGroup.member_) {
+                    auto &literal = ((LiteralDependencyNode*)literalNode.get())->literal();
+                    literalInstances[nextInstance++] = literal->applySubstitution(*partialResult->substitution());
+                }
+            }
+
+            auto queryResultStream = submitQuery();
+            // TODO: msgs coming from queryResultStream need to be combined with partialResult before
+            //       being published on outChan_!
+            //       - could be done via a combiner node without unification that generates all permutations
+            //         which is unproblematic in this case
+            //queryResultStream->addSubscriber(outChan_);
+        }
+    }
+}
+
+
+QueryPipeline::QueryPipeline(const std::shared_ptr<QueryResultQueue> &outputQueue)
+        : outputQueue_(outputQueue)
 {
     inputStream_ = std::make_shared<QueryResultBroadcaster>();
     inputChannel_ = QueryResultStream::Channel::create(inputStream_);
@@ -26,22 +139,15 @@ QueryPipeline::QueryPipeline(const KnowledgeBasePtr &kb,
     outBroadcaster_->addSubscriber(queueChannel);
 }
 
-void QueryPipeline::run()
-{
-    // push empty message into in stream, and close the channel
-    inputChannel_->push(QueryResultStream::bos());
-    inputChannel_->close();
-}
-
-void QueryPipeline::addDependencyGroup(const std::list<Node*> &dependencyGroup)
+void QueryPipeline::addDependencyGroup(const std::list<DependencyNodePtr> &dependencyGroup)
 {
     if(dependencyGroup.empty()) return;
 
     // Pick a node to start with.
     // For now pick the one with minimum number of neighbors is picked.
-    const Node *first = nullptr;
+    DependencyNodePtr first;
     unsigned long minNumNeighbors = 0;
-    for(auto *n : dependencyGroup) {
+    for(auto &n : dependencyGroup) {
         if(!first || n->numNeighbors() < minNumNeighbors) {
             minNumNeighbors = n->numNeighbors();
             first = n;
@@ -50,12 +156,12 @@ void QueryPipeline::addDependencyGroup(const std::list<Node*> &dependencyGroup)
 
     // remember visited nodes, needed for circular dependencies
     // all nodes added to the queue should also be added to this set.
-    std::set<const Node*> visited;
+    std::set<DependencyNodePtr> visited;
     visited.insert(first);
 
     // start with a FIFO queue only containing first node
     std::deque<QueryNodePtr> queue;
-    auto qn0 = queue.emplace_front(std::make_shared<QueryNode>(first));
+    auto qn0 = queue.emplace_front(std::make_shared<QueryPipelineNode>(first));
 
     // loop until queue is empty and process exactly one successor of
     // the top element in the FIFO in each step. If an element has no
@@ -65,7 +171,7 @@ void QueryPipeline::addDependencyGroup(const std::list<Node*> &dependencyGroup)
         auto front = queue.front();
 
         // get top successor node that has not been visited yet
-        Node *topNext = nullptr;
+        DependencyNodePtr topNext;
         while(!front->neighbors_.empty()) {
             auto topNeighbor = front->neighbors_.top();
             front->neighbors_.pop();
@@ -80,140 +186,57 @@ void QueryPipeline::addDependencyGroup(const std::list<Node*> &dependencyGroup)
 
         if(topNext) {
             // push a new node onto FIFO
-            auto &qn_next = queue.emplace_front(std::make_shared<QueryNode>(topNext));
+            auto &qn_next = queue.emplace_front(std::make_shared<QueryPipelineNode>(topNext));
             front->successors_.push_back(qn_next);
             visited.insert(topNext);
         }
     }
 
     // now the pipeline can be build starting from qn0 following the successor relation.
-    createPipeline(qn0, inputStream_, outBroadcaster_);
+    generate(qn0, inputStream_, outBroadcaster_);
 }
 
-void QueryPipeline::createPipeline(QueryNodePtr &qn, //NOLINT
-                                   const std::shared_ptr<QueryResultBroadcaster> &qnInput,
-                                   const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput)
+void QueryPipeline::generate(const QueryNodePtr &qn, //NOLINT
+                             const std::shared_ptr<QueryResultBroadcaster> &qnInput,
+                             const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput)
 {
     // create an output stream for this node
     auto qnOutput = (qn->successors_.empty() ? pipelineOutput : std::make_shared<QueryResultBroadcaster>());
 
-    std::shared_ptr<QueryPipeline::Stream> qnInStream;
-    std::shared_ptr<QueryResultStream::Channel> qnInChan, qnOutChan;
-    // create IO channels
-    qnOutChan = QueryResultStream::Channel::create(qnOutput);
-    qnInStream = std::make_shared<QueryPipeline::Stream>(kb_,qn,qnOutChan);
-    qnInChan = QueryResultStream::Channel::create(qnInStream);
+    // create a pipeline stage
+    std::shared_ptr<QueryPipelineStage> stage;
+    auto modalNode = std::dynamic_pointer_cast<ModalDependencyNode>(qn->node_);
+    if(modalNode) {
+        stage = std::make_shared<QueryPipelineStage>(qnOutput,
+                                                     modalNode->literals(),
+                                                     modalNode->label());
+    }
+    else {
+        auto literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(qn->node_);
+        if(literalNode) {
+            stage = std::make_shared<QueryPipelineStage>(
+                    qnOutput, std::list<LiteralPtr>({ literalNode->literal() }));
+        }
+        else {
+            throw QueryError("unexpected dependency node type: not a modal or literal node!");
+        }
+    }
+    stages_.push_back(stage);
+
+    // link input stream to the stage
+    std::shared_ptr<QueryResultStream::Channel> qnInChan =
+            QueryResultStream::Channel::create(stage);
     qnInput->addSubscriber(qnInChan);
-    // create a new segment
-    queryStreams_.push_back(qnInStream);
 
     // continue for successors
     for(auto &successor : qn->successors_) {
-        createPipeline(successor, qnOutput, pipelineOutput);
+        generate(successor, qnOutput, pipelineOutput);
     }
 }
 
-
-bool QueryPipeline::CompareNodes::operator()(Node *a, Node *b) const
+void QueryPipeline::run()
 {
-    // note: using ">" in return statements means that smaller element appears before larger.
-    if (a->numVariables() != b->numVariables()) {
-        // prefer node with less variables
-        return a->numVariables() > b->numVariables();
-    }
-    if(a->numNeighbors() != b->numNeighbors()) {
-        // prefer node with less neighbors
-        return a->numNeighbors() > b->numNeighbors();
-    }
-    // some additional metrics:
-    /*
-    if (a->numLiteralNodes() != b->numLiteralNodes()) {
-        // prefer node with larger number of literals
-        return a->numLiteralNodes() < b->numLiteralNodes();
-    }
-    if (a->numLiteralGroups() != b->numLiteralGroups()) {
-        return a->numLiteralGroups() < b->numLiteralGroups();
-    }
-    */
-    return a<b;
-}
-
-QueryPipeline::QueryNode::QueryNode(const Node *node)
-        : node_(node)
-{
-    for(auto &neighbor : node->neighbors()) {
-        neighbors_.push(neighbor);
-    }
-}
-
-
-QueryPipeline::Stream::Stream(const KnowledgeBasePtr &kb,
-                              const QueryNodePtr &qn,
-                              const std::shared_ptr<QueryResultStream::Channel> &outChan)
-        : kb_(kb),
-          qn_(qn),
-          outChan_(outChan),
-          isQueryOpened_(true),
-          hasStopRequest_(false)
-{
-}
-
-QueryPipeline::Stream::~Stream()
-{
-    stop();
-}
-
-void QueryPipeline::Stream::stop()
-{
-    // TODO: notify ongoing graph queries to stop?
-    hasStopRequest_ = true;
-    close();
-}
-
-void QueryPipeline::Stream::push(const QueryResultPtr &msg)
-{
-    if(QueryResultStream::isEOS(msg)) {
-        if(isQueryOpened()) {
-            isQueryOpened_ = false;
-        }
-    }
-    else if(!isQueryOpened()) {
-        KB_WARN("ignoring attempt to write to a closed stream.");
-    }
-    else {
-        // TODO: literal groups should be computed here. Because we have a substitution here that
-        //        might change dependency relations!
-        //        so better generate a dependency for literals here and above rather one for modal formulas only.
-        for(auto &literalGroup : qn_->node_->literalGroups()) {
-            std::vector<std::shared_ptr<Literal>> literalInstances(literalGroup.member_.size());
-
-            // apply the substitution mapping
-            unsigned long nextInstance=0;
-            if(msg->substitution()->empty()) {
-                for(auto &literalNode : literalGroup.member_) {
-                    literalInstances[nextInstance++] = literalNode->literal();
-                }
-            }
-            else {
-                for(auto &literalNode : literalGroup.member_) {
-                    literalInstances[nextInstance++] = literalNode->literal()->applySubstitution(*msg->substitution());
-                }
-            }
-
-/*
-            // FIXME: so currently the idea would be that
-            // results to graph queries should be published using outChan_.
-            // the QueryResult should contain all substitutions so far, so cannot be generate given
-            // the literals.
-            // so effectively a hook is needed that applies the new instantiations to the substitution.
-            auto graphQueryOutput = kb_->submitQuery(literalInstances, qn_->node_->label());
-            // TODO: it would be nice if kb_ could generate just a partial instantiation. I would like to write:
-            //outChan_ << graphQueryOutput;
-            // meaning to feed all messages of RHS stream into LHS channel
-            // TODO can't we just add a subscriber? nope does not combine with msg
-            // TODO: I wonder answer generated super quick vanish here?
-            graphQueryOutput->addSubscriber(outChan_);
-            */
-        }
-    }
+    // push empty message into in stream, and close the channel
+    inputChannel_->push(QueryResultStream::bos());
+    inputChannel_->close();
 }

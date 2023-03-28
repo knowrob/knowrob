@@ -307,9 +307,9 @@ test_suite_retract_ :-
 	retractall(test_case_failure(_,_,_)).
 
 %% make a call but redirect *user_error* to another stream.
-with_error_to_(Stream,Goal) :-
+with_error_to_(QueryPipelineStage,Goal) :-
 	stream_property(OldErr, alias(user_error)),
-	set_stream(Stream, alias(user_error)),
+	set_stream(QueryPipelineStage, alias(user_error)),
 	call(Goal),
 	set_stream(OldErr, alias(user_error)).
 
@@ -341,8 +341,8 @@ test_report_xunit_(File) :-
 	test_report_num_tests(Terms,NumTests),
 	test_report_num_failures(Terms,NumFailures),
 	test_report_time(Terms,TimeTotal),
-	open(File,write,Stream),
-	xml_write(Stream,
+	open(File,write,QueryPipelineStage),
+	xml_write(QueryPipelineStage,
 		element(testsuites,
 			[ name='plunit',
 			  tests=NumTests,
@@ -352,7 +352,7 @@ test_report_xunit_(File) :-
 			Terms
 		),
 		[layout(true)]),
-	close(Stream).
+	close(QueryPipelineStage).
 
 %%
 test_report_num_tests([],0) :- !.

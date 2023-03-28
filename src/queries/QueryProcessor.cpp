@@ -43,14 +43,14 @@ std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const FormulaPtr &p
         // compute dependencies
         DependencyGraph dg;
         for(auto &pair : modalityMap) {
-            dg.addNodes(pair.first, pair.second);
+            dg.insert(pair.second, pair.first);
         }
 
         // iterate over groups of modal queries with shared free variables
         // and create a query pipeline where each group is processed
         // in parallel steps.
         // FIXME: need a mechanism to remove finished pipelines from the pipelines_ list!
-        auto &pipeline = pipelines_.emplace_back(kb_, outQueue);
+        auto &pipeline = pipelines_.emplace_back(outQueue);
         for(auto &queryGroup : dg) {
             pipeline.addDependencyGroup(queryGroup.member_);
         }
