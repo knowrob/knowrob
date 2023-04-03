@@ -32,7 +32,6 @@ namespace knowrob {
 
     protected:
         const std::string graphName_;
-        std::string blankPrefix_;
         const uint32_t batchSize_;
         uint32_t operationCounter_;
 

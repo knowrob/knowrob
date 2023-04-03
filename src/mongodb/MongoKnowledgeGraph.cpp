@@ -131,9 +131,13 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
         std::filesystem::path(resolved).filename();
     const std::string *importURI = (exists(p) ? &p.native() : &resolved);
 
+    // define a prefix for naming blank nodes
+    std::string blankPrefix("_");
+    blankPrefix += graphName;
+
     KB_INFO("Loading ontology at '{}' with version \"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, *importURI, graphName, format)) {
+    if(!loadURI(loader, *importURI, blankPrefix, format)) {
         KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
@@ -157,7 +161,6 @@ MongoTripleLoader::MongoTripleLoader(std::string graphName,
                                      const std::shared_ptr<MongoCollection> &oneCollection,
                                      const uint32_t batchSize)
                                      : graphName_(std::move(graphName)),
-                                       blankPrefix_(std::string("_")+graphName),
                                        tripleCollection_(tripleCollection),
                                        oneCollection_(oneCollection),
                                        batchSize_(batchSize),
@@ -280,7 +283,9 @@ void MongoTripleLoader::finish()
     }
 
     // update property hierarchy
+    std::set<std::string_view> visited;
     for(auto &assertion : subPropertyAssertions_) {
+        visited.insert(assertion.first);
         auto update = MongoDocument(mngUpdateKGHierarchyO(
                 tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
                 assertion.first, assertion.second));
@@ -288,14 +293,10 @@ void MongoTripleLoader::finish()
     }
 
     // update property assertions
-    std::set<std::string_view> visited;
-    for(auto &assertion : subPropertyAssertions_) {
-        if(visited.count(assertion.first)>0) continue;
-        visited.insert(assertion.first);
-
+    for(auto &newProperty : visited) {
         auto update = MongoDocument(mngUpdateKGHierarchyP(
                 tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
-                assertion.first));
+                newProperty.data()));
         oneCollection_->evalAggregation(update.bson());
     }
 }
