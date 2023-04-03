@@ -3,7 +3,7 @@
 //
 
 #include <set>
-#include "xsd.h"
+#include "knowrob/graphs/xsd.h"
 
 namespace knowrob::xsd {
     class XSD {
