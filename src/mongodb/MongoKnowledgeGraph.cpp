@@ -16,22 +16,73 @@
 #include "knowrob/mongodb/MongoInterface.h"
 #include "pipelines/graphHierarchy.h"
 
-#define KB_TRIPLE_VERSION_KEY "tripledbVersionString"
+#define MONGO_KG_ONE_COLLECTION "one"
+#define MONGO_KG_VERSION_KEY "tripledbVersionString"
+
+#define MONGO_KG_SETTING_HOST "host"
+#define MONGO_KG_SETTING_PORT "port"
+#define MONGO_KG_SETTING_USER "user"
+#define MONGO_KG_SETTING_PASSWORD "password"
+#define MONGO_KG_SETTING_DB "db"
+#define MONGO_KG_SETTING_COLLECTION "collection"
+
+#define MONGO_KG_DEFAULT_HOST "localhost"
+#define MONGO_KG_DEFAULT_PORT "27017"
+#define MONGO_KG_DEFAULT_DB "knowrob"
+#define MONGO_KG_DEFAULT_COLLECTION "triples"
 
 using namespace knowrob;
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
-: tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
+: KnowledgeGraph(),
+  tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
     initialize();
 }
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const boost::property_tree::ptree &config)
-: KnowledgeGraph()
+: KnowledgeGraph(),
+  tripleCollection_(MongoInterface::get().connect(
+          getURI(config).c_str(),
+          getDBName(config),
+          getCollectionName(config)))
 {
-    // TODO: read db_uri, db_name, collectionName from settings
-    //collection_ = MongoInterface::get().connect(db_uri, db_name, collectionName);
     initialize();
+}
+
+const char* MongoKnowledgeGraph::getDBName(const boost::property_tree::ptree &config)
+{
+    static const char *defaultDBName = MONGO_KG_DEFAULT_DB;
+    auto o_dbname = config.get_optional<std::string>(MONGO_KG_SETTING_DB);
+    return (o_dbname ? o_dbname->c_str() : defaultDBName);
+}
+
+const char* MongoKnowledgeGraph::getCollectionName(const boost::property_tree::ptree &config)
+{
+    static const char *defaultCollectionName = MONGO_KG_DEFAULT_COLLECTION;
+    auto o_collection = config.get_optional<std::string>(MONGO_KG_SETTING_COLLECTION);
+    return (o_collection ? o_collection->c_str() : defaultCollectionName);
+}
+
+std::string MongoKnowledgeGraph::getURI(const boost::property_tree::ptree &config)
+{
+    auto o_host = config.get_optional<std::string>(MONGO_KG_SETTING_HOST);
+    auto o_port = config.get_optional<std::string>(MONGO_KG_SETTING_PORT);
+    auto o_user = config.get_optional<std::string>(MONGO_KG_SETTING_USER);
+    auto o_password = config.get_optional<std::string>(MONGO_KG_SETTING_PASSWORD);
+    // format URI of the form "mongodb://USER:PW@HOST:PORT"
+    std::stringstream uriStream;
+    uriStream << "mongodb://";
+    if(o_user) {
+        uriStream << o_user.value();
+        if(o_password) uriStream << ':' << o_password.value();
+        uriStream << '@';
+    }
+    uriStream
+        << (o_host ? o_host.value() : MONGO_KG_DEFAULT_HOST)
+        << ':'
+        << (o_port ? o_port.value() : MONGO_KG_DEFAULT_PORT);
+    return uriStream.str();
 }
 
 void MongoKnowledgeGraph::initialize()
@@ -43,7 +94,7 @@ void MongoKnowledgeGraph::initialize()
             tripleCollection_->client(),
             tripleCollection_->session(),
             tripleCollection_->dbName().c_str(),
-            "one");
+            MONGO_KG_ONE_COLLECTION);
 }
 
 void MongoKnowledgeGraph::createSearchIndices()
@@ -82,7 +133,7 @@ void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphURI,
 {
     auto document = MongoDocument(BCON_NEW(
             "s",     BCON_UTF8(graphURI.c_str()),
-            "p",     BCON_UTF8(KB_TRIPLE_VERSION_KEY),
+            "p",     BCON_UTF8(MONGO_KG_VERSION_KEY),
             "o",     BCON_UTF8(graphVersion.c_str()),
             "graph", BCON_UTF8(graphName.c_str())));
     tripleCollection_->storeOne(document.bson());
@@ -91,7 +142,7 @@ void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphURI,
 std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std::string &graphName)
 {
     auto document = MongoDocument(BCON_NEW(
-            "p",     BCON_UTF8(KB_TRIPLE_VERSION_KEY),
+            "p",     BCON_UTF8(MONGO_KG_VERSION_KEY),
             "graph", BCON_UTF8(graphName.c_str())));
     const bson_t *result;
     MongoCursor cursor(tripleCollection_);

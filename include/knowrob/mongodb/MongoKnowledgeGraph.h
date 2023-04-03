@@ -80,6 +80,10 @@ namespace knowrob {
         void setCurrentGraphVersion(const std::string &graphURI,
                                     const std::string &graphVersion,
                                     const std::string &graphName);
+
+        static const char* getDBName(const boost::property_tree::ptree &config);
+        static const char* getCollectionName(const boost::property_tree::ptree &config);
+        static std::string getURI(const boost::property_tree::ptree &config);
     };
 
 } // knowrob
