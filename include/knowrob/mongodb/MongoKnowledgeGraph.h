@@ -33,7 +33,7 @@ namespace knowrob {
         const uint32_t batchSize_;
         uint32_t operationCounter_;
 
-        std::shared_ptr<MongoCollection> collection_;
+        std::shared_ptr<MongoCollection> tripleCollection_;
         std::shared_ptr<MongoBulkOperation> bulkOperation_;
 
         std::list<std::string> imports_;

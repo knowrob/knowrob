@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <utility>
+#include <filesystem>
 #include "knowrob/Logger.h"
 #include "knowrob/URI.h"
 #include "knowrob/mongodb/MongoKnowledgeGraph.h"
@@ -127,9 +128,17 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     if(currentVersion) dropGraph(graphName);
 
     MongoTripleLoader loader(graphName, tripleCollection_);
+    // some OWL files are downloaded compile-time via CMake,
+    // they are downloaded into owl/external e.g. there are SOMA.owl and DUL.owl.
+    // TODO: rework handling of cmake-downloaded ontologies, e.g. should also work when installed
+    auto p =  std::filesystem::path(KNOWROB_SOURCE_DIR) / "owl" / "external" /
+        std::filesystem::path(resolved).filename();
+    const std::string *importURI = (exists(p) ? &p.native() : &resolved);
+
+    KB_INFO("Loading ontology at '{}' with version \"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, resolved, format)) {
-        KB_WARN("failed to parse RDF file {} ({})", resolved, uriString);
+    if(!loadURI(loader, *importURI, format)) {
+        KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
     updateGraphHierarchy(loader);
@@ -191,7 +200,7 @@ MongoTripleLoader::MongoTripleLoader(std::string graphName,
                                      const std::shared_ptr<MongoCollection> &collection,
                                      const uint32_t batchSize)
                                      : graphName_(std::move(graphName)),
-                                       collection_(collection),
+                                       tripleCollection_(collection),
                                        batchSize_(batchSize),
                                        operationCounter_(0),
                                        timeZero_(),
@@ -312,7 +321,7 @@ void MongoTripleLoader::loadTriple(const TripleData &tripleData)
 
     auto document = createTripleDocument(tripleData, graphName_, isTaxonomic);
     if(!bulkOperation_) {
-        bulkOperation_ = collection_->createBulkOperation();
+        bulkOperation_ = tripleCollection_->createBulkOperation();
     }
     bulkOperation_->pushInsert(document);
     bson_free(document);
