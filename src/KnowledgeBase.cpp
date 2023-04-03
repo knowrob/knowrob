@@ -69,14 +69,14 @@ std::shared_ptr<const Query> KnowledgeBase::parseQuery(const std::string &queryS
 
 void KnowledgeBase::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler)
 {
-	auto bbq = std::make_shared<knowrob::QueryResultQueue>();
+	auto bbq = std::make_shared<knowrob::AnswerQueue>();
 	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
-	QueryResultPtr solution;
+	AnswerPtr solution;
 
 	bb->start();
 	do {
 		solution = bbq->pop_front();
-		if(QueryResultStream::isEOS(solution)) {
+		if(AnswerStream::isEOS(solution)) {
 			break;
 		}
 	} while(handler.pushQueryResult(solution));

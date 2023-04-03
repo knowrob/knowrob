@@ -17,14 +17,16 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 
+using namespace knowrob;
+
 MongoCursor::MongoCursor(const std::shared_ptr<MongoCollection> &coll)
 : cursor_(nullptr),
-  coll_(coll),
-  is_aggregate_query_(false)
+  collection_(coll),
+  isAggregateQuery_(false)
 {
 	query_ = bson_new();
 	opts_ = bson_new();
-	coll_->appendSession(opts_);
+	collection_->appendSession(opts_);
 	// use pointer as id
 	std::stringstream ss;
 	ss << static_cast<const void*>(this);  
@@ -57,39 +59,27 @@ void MongoCursor::descending(const char *key)
 	bson_concat(opts_,doc);
 }
 
-void MongoCursor::filter(const PlTerm &query_term)
+void MongoCursor::filter(const bson_t *query_doc)
 {
-	bson_error_t err;
-	if(!bsonpl_concat(query_, query_term, &err)) {
-		throw MongoException("invalid_term",err);
-	}
+    bson_concat(query_, query_doc);
 }
 
-void MongoCursor::aggregate(const PlTerm &query_term)
+void MongoCursor::aggregate(const bson_t *query_doc)
 {
-	bson_error_t err;
-	is_aggregate_query_ = true;
-	if(!bsonpl_concat(query_, query_term, &err)) {
-		throw MongoException("invalid_term",err);
-	}
-//	else {
-//		size_t len;
-//		char *str = bson_as_canonical_extended_json (query_, &len);
-//		std::cout << str << std::endl;
-//		bson_free (str);
-//	}
+    isAggregateQuery_ = true;
+    bson_concat(query_, query_doc);
 }
 
 bool MongoCursor::next(const bson_t **doc, bool ignore_empty)
 {
 	if(cursor_== nullptr) {
-		if(is_aggregate_query_) {
+		if(isAggregateQuery_) {
 			cursor_ = mongoc_collection_aggregate(
-				coll_->coll(), MONGOC_QUERY_NONE, query_, opts_, nullptr /* read_prefs */ );
+                    collection_->coll(), MONGOC_QUERY_NONE, query_, opts_, nullptr /* read_prefs */ );
 		}
 		else {
 			cursor_ = mongoc_collection_find_with_opts(
-					coll_->coll(), query_, opts_, nullptr /* read_prefs */ );
+                    collection_->coll(), query_, opts_, nullptr /* read_prefs */ );
 		}
 		// make sure cursor has no error after creation
 		bson_error_t err1;
@@ -115,7 +105,7 @@ bool MongoCursor::erase()
 {
 	bson_error_t err;
 	bool success = mongoc_collection_delete_many(
-		    coll_->coll(), query_, opts_, nullptr /* reply */, &err);
+            collection_->coll(), query_, opts_, nullptr /* reply */, &err);
 	if(!success) {
 		throw MongoException("erase_error",err);
 	}

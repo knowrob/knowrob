@@ -11,6 +11,8 @@
 
 #include <knowrob/mongodb/MongoInterface.h>
 
+using namespace knowrob;
+
 MongoInterface::MongoInterface()
 {
 	mongoc_init();

@@ -19,7 +19,7 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/queries/Query.h"
 #include "knowrob/formulas/CompoundFormula.h"
-#include "knowrob/queries/QueryResult.h"
+#include "knowrob/queries/Answer.h"
 
 namespace knowrob {
     using PrologVariableMap = std::map<std::string, term_t>;
@@ -127,7 +127,7 @@ namespace knowrob {
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
-        static bool putScope(const std::shared_ptr<QueryResult> &solution, term_t pl_scope);
+        static bool putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope);
 
         /**
          * Put the scope of a QueryResult in a Prolog term reference.
@@ -135,7 +135,7 @@ namespace knowrob {
          * @param solution A QueryResult object.
          * @return true on success.
          */
-        static bool putScope(term_t pl_scope, const QueryResultPtr &solution);
+        static bool putScope(term_t pl_scope, const AnswerPtr &solution);
 
 		/**
 		 * @return the 'fail' atom.

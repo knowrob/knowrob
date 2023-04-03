@@ -4,6 +4,10 @@ set (CMAKE_CXX_STANDARD 17)
 
 project(knowrob)
 
+IF( NOT WIN32 )
+	INCLUDE( FindPkgConfig )
+ENDIF()
+
 set(SOMA_VERSION "current")
 
 # include additional CMake macros
@@ -23,6 +27,9 @@ find_package(GTest REQUIRED)
 
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
+
+pkg_check_modules(RAPTOR REQUIRED raptor2)
+include_directories(include ${RAPTOR_INCLUDE_DIRS})
 
 # install additional Prolog code
 # FIXME: is added by rosprolog
@@ -47,7 +54,10 @@ install_ontology(
 	VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
-include_directories(include ${SWIPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+include_directories(include
+		${SWIPL_INCLUDE_DIRS}
+		${EIGEN3_INCLUDE_DIR}
+		${Boost_INCLUDE_DIRS})
 
 # define some constants for the compilation of source files that
 # are used to load project-relative files.
@@ -93,18 +103,18 @@ pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
 include_directories(${MONGOC_INCLUDE_DIRS})
 link_directories(${MONGOC_LIBRARY_DIRS})
 
-add_library(mongo_kb SHARED
-		src/mongodb/mongo_kb.cpp
-		src/mongodb/bson_pl.cpp
-		src/mongodb/MongoException.cpp
-		src/mongodb/MongoInterface.cpp
-		src/mongodb/MongoDatabase.cpp
-		src/mongodb/MongoCollection.cpp
-		src/mongodb/MongoCursor.cpp
-		src/mongodb/MongoWatch.cpp)
-target_link_libraries(mongo_kb
-		${SWIPL_LIBRARIES}
-		${MONGOC_LIBRARIES})
+#add_library(mongo_kb SHARED
+#		src/mongodb/mongo_kb.cpp
+#		src/mongodb/bson_pl.cpp
+#		src/mongodb/MongoException.cpp
+#		src/mongodb/MongoInterface.cpp
+#		src/mongodb/MongoDatabase.cpp
+#		src/mongodb/MongoCollection.cpp
+#		src/mongodb/MongoCursor.cpp
+#		src/mongodb/MongoWatch.cpp)
+#target_link_libraries(mongo_kb
+#		${SWIPL_LIBRARIES}
+#		${MONGOC_LIBRARIES})
 
 ##############
 #### QUERY ANSWERING
@@ -152,11 +162,11 @@ add_library(knowrob_qa SHARED
 		src/queries/Query.cpp
 		src/queries/QueryInstance.cpp
 		src/queries/QueryError.cpp
-		src/queries/QueryResult.cpp
-		src/queries/QueryResultStream.cpp
-		src/queries/QueryResultQueue.cpp
-		src/queries/QueryResultCombiner.cpp
-		src/queries/QueryResultBroadcaster.cpp
+        src/queries/Answer.cpp
+		src/queries/AnswerStream.cpp
+		src/queries/AnswerQueue.cpp
+		src/queries/AnswerCombiner.cpp
+		src/queries/AnswerBroadcaster.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
 		src/queries/QueryProcessor.cpp
@@ -179,9 +189,22 @@ add_library(knowrob_qa SHARED
 		src/reasoner/prolog/blackboard.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
-		src/reasoner/esg/ESGReasoner.cpp)
+		src/reasoner/esg/ESGReasoner.cpp
+		src/queries/BufferedAnswerStream.cpp
+		src/mongodb/mongo_kb.cpp
+		src/mongodb/bson_pl.cpp
+		src/mongodb/MongoInterface.cpp
+		src/mongodb/MongoDatabase.cpp
+		src/mongodb/MongoCollection.cpp
+		src/mongodb/MongoCursor.cpp
+		src/mongodb/MongoWatch.cpp
+		src/mongodb/MongoKnowledgeGraph.cpp
+		src/mongodb/MongoBulkOperation.cpp
+		src/URI.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
+		${MONGOC_LIBRARIES}
+		${RAPTOR_LIBRARIES}
 		spdlog::spdlog
 		${GTEST_LIBRARIES})
 

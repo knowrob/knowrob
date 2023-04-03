@@ -141,7 +141,7 @@ namespace knowrob {
 		 * @deprecated
 		 */
 		virtual void finishQuery(uint32_t queryID,
-								 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+								 const std::shared_ptr<AnswerStream::Channel> &outputStream,
 								 bool isImmediateStopRequested) = 0;
 
         /**

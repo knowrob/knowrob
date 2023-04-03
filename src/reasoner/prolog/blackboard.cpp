@@ -2,8 +2,8 @@
 #include <SWI-Prolog.h>
 #include <filesystem>
 
-#include "knowrob/queries/QueryResultStream.h"
-#include "knowrob/queries/QueryResultQueue.h"
+#include "knowrob/queries/AnswerStream.h"
+#include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
 #include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/Logger.h"
@@ -20,12 +20,12 @@ using namespace knowrob;
 class QACallContext {
 public:
     std::shared_ptr<Blackboard> blackboard_;
-    std::shared_ptr<QueryResultQueue> results_;
+    std::shared_ptr<AnswerQueue> results_;
     std::shared_ptr<Query> query_;
     std::map<std::string, term_t> queryVars_;
 
     QACallContext(term_t t_reasonerManagerID, term_t t_goal, term_t t_queryCtx)
-    : results_(std::make_shared<QueryResultQueue>())
+    : results_(std::make_shared<AnswerQueue>())
     {
         // create query object
         query_ = PrologQuery::toQuery(PrologQuery::constructTerm(t_goal, &queryVars_));
@@ -42,7 +42,7 @@ public:
         blackboard_->start();
     }
 
-    void applySolution(const QueryResultPtr &solution) {
+    void applySolution(const AnswerPtr &solution) {
         // FIXME: for some reason this does not work as expected.
         //    idea is to remember all variables on PL_FIRST_CALL to quickly instantiate them
         //    with each solution. for now PL_unify is used instead.
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    QueryResultPtr nextSolution() {
+    AnswerPtr nextSolution() {
         return results_->pop_front();
     }
 
@@ -89,7 +89,7 @@ foreign_t pl_qa_call4(term_t t_reasonerManager, term_t t_goal,
     // callContext is an existing context below, try to get next solution
     // TODO: list of instantiated predicates is lost here, need to hand it back to Prolog!
     auto solution = callContext->nextSolution();
-    if(QueryResultStream::isEOS(solution)) {
+    if(AnswerStream::isEOS(solution)) {
         // no solution, fail
         delete callContext;
         return FALSE;

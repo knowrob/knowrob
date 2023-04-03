@@ -6,9 +6,9 @@
 #define KNOWROB_QUERY_PROCESSOR_H
 
 #include "knowrob/formulas/Formula.h"
-#include "QueryResult.h"
-#include "QueryResultQueue.h"
-#include "QueryResultBroadcaster.h"
+#include "Answer.h"
+#include "AnswerQueue.h"
+#include "AnswerBroadcaster.h"
 #include "QueryTree.h"
 #include "DependencyGraph.h"
 #include "knowrob/KnowledgeBase.h"
@@ -26,7 +26,7 @@ namespace knowrob {
          * @param query a formula
          * @return a queue of query results
          */
-        std::shared_ptr<QueryResultQueue> operator<<(const FormulaPtr &query);
+        std::shared_ptr<AnswerQueue> operator<<(const FormulaPtr &query);
 
         /**
          * Evaluate a query represented as a Literal.
@@ -34,7 +34,7 @@ namespace knowrob {
          * @param query a literal
          * @return a queue of query results
          */
-        std::shared_ptr<QueryResultQueue> operator<<(const LiteralPtr &query);
+        std::shared_ptr<AnswerQueue> operator<<(const LiteralPtr &query);
 
         /**
          * Evaluate a query represented as a LabeledLiteral.
@@ -42,7 +42,7 @@ namespace knowrob {
          * @param query a labeled literal
          * @return a queue of query results
          */
-        std::shared_ptr<QueryResultQueue> operator<<(const LabeledLiteralPtr &query);
+        std::shared_ptr<AnswerQueue> operator<<(const LabeledLiteralPtr &query);
 
     protected:
         KnowledgeBasePtr kb_;

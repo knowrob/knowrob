@@ -61,7 +61,7 @@ void PrologQueryRunner::run()
 
 		KB_DEBUG("Prolog has a next solution for query `{}`.", request_.queryID);
 		// create an empty solution
-		auto solution = std::make_shared<QueryResult>();
+		auto solution = std::make_shared<Answer>();
 		// add substitutions
 		for(const auto& kv: pl_goal.vars()) {
 			solution->substitute(Variable(kv.first), PrologQuery::constructTerm(kv.second));

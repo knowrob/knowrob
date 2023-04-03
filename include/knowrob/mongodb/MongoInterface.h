@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KB_MONGO_IFACE_H__
-#define __KB_MONGO_IFACE_H__
+#ifndef KNOWROB_MONGO_INTERFACE_H
+#define KNOWROB_MONGO_INTERFACE_H
 
 #include <mongoc.h>
 // STD
@@ -27,55 +27,57 @@
 #include <knowrob/mongodb/MongoCursor.h>
 #include <knowrob/mongodb/MongoWatch.h>
 
-class MongoInterface {
-public:
-	static MongoInterface& get();
+namespace knowrob {
+    class MongoInterface {
+    public:
+        static MongoInterface& get();
 
-	std::shared_ptr<MongoDatabase> connect(const PlTerm &dbTerm);
+        std::shared_ptr<MongoDatabase> connect(const PlTerm &dbTerm);
 
-	std::shared_ptr<MongoCollection> connect(const PlTerm &dbTerm, const char* collectionName);
+        std::shared_ptr<MongoCollection> connect(const PlTerm &dbTerm, const char* collectionName);
 
-    std::shared_ptr<MongoCollection> connect(const char* db_uri, const char* db_name, const char* collectionName);
-	
-	std::shared_ptr<MongoCursor> cursor_create(const PlTerm &db_term, const char *coll_name);
+        std::shared_ptr<MongoCollection> connect(const char* db_uri, const char* db_name, const char* collectionName);
 
-	void cursor_destroy(const char *curser_id);
-	
-	std::shared_ptr<MongoCursor> cursor(const char *curser_id);
+        std::shared_ptr<MongoCursor> cursor_create(const PlTerm &db_term, const char *coll_name);
 
-	long watch(const PlTerm &db_term,
-			   const char *coll_name,
-			   const std::string &callback_goal,
-			   const PlTerm &query_term);
+        void cursor_destroy(const char *curser_id);
 
-	void unwatch(long i);
+        std::shared_ptr<MongoCursor> cursor(const char *curser_id);
 
-private:
-	MongoInterface();
-	~MongoInterface();
-	
-	MongoInterface(MongoInterface const&); // Don't Implement
-	void operator=(MongoInterface const&); // Don't implements
+        long watch(const PlTerm &db_term,
+                   const char *coll_name,
+                   const std::string &callback_goal,
+                   const PlTerm &query_term);
 
-	class Connection {
-	public:
-		mongoc_uri_t *uri_;
-		mongoc_client_pool_t *pool_;
-		std::shared_ptr<MongoWatch> watch_;
-		std::string uri_string_;
+        void unwatch(long i);
 
-		explicit Connection(const std::string &uri_string);
-		~Connection();
-	};
+    private:
+        MongoInterface();
+        ~MongoInterface();
 
-	std::shared_ptr<MongoInterface::Connection> getOrCreateConnection(const char *uri_string_c);
+        MongoInterface(MongoInterface const&); // Don't Implement
+        void operator=(MongoInterface const&); // Don't implements
 
-	// maps URI to MongoDatabase for all previously accessed MongoDatabase's
-	std::map<std::string, std::shared_ptr<Connection>> connections_;
-	std::map<std::string, std::shared_ptr<MongoCursor>> cursors_;
-	std::map<long, std::shared_ptr<Connection>> watcher_;
+        class Connection {
+        public:
+            mongoc_uri_t *uri_;
+            mongoc_client_pool_t *pool_;
+            std::shared_ptr<MongoWatch> watch_;
+            std::string uri_string_;
 
-	std::mutex mongo_mutex_;
-};
+            explicit Connection(const std::string &uri_string);
+            ~Connection();
+        };
 
-#endif //__KB_MONGO_IFACE_H__
+        std::shared_ptr<MongoInterface::Connection> getOrCreateConnection(const char *uri_string_c);
+
+        // maps URI to MongoDatabase for all previously accessed MongoDatabase's
+        std::map<std::string, std::shared_ptr<Connection>> connections_;
+        std::map<std::string, std::shared_ptr<MongoCursor>> cursors_;
+        std::map<long, std::shared_ptr<Connection>> watcher_;
+
+        std::mutex mongo_mutex_;
+    };
+}
+
+#endif //KNOWROB_MONGO_INTERFACE_H

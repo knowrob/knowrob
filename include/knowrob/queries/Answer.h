@@ -24,21 +24,21 @@ namespace knowrob {
 	 * A result indicates that the evaluation succeeded, i.e.,
 	 * that a reasoner was able to find an instance of the query that is true.
 	 */
-	class QueryResult {
+	class Answer {
 	public:
-		QueryResult();
+		Answer();
 
 		/**
 		 * Copy another result.
 		 * Modification of the constructed result won't affect the copied one.
 		 * @param other another query result.
 		 */
-		QueryResult(const QueryResult &other);
+		Answer(const Answer &other);
 
 		/**
 		 * @return a positive result without additional constraints.
 		 */
-		static const std::shared_ptr<const QueryResult>& emptyResult();
+		static const std::shared_ptr<const Answer>& emptyResult();
 
 		/**
 		 * Adds to this result a substitution of a variable with a term.
@@ -104,7 +104,7 @@ namespace knowrob {
 		 * @param changes used to make the merge operation reversible, can be null.
 		 * @return false if merge is not possible.
 		 */
-		bool combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes=nullptr);
+		bool combine(const std::shared_ptr<const Answer> &other, Reversible *changes=nullptr);
 
 	protected:
 		SubstitutionPtr substitution_;
@@ -122,18 +122,18 @@ namespace knowrob {
 		friend class QueryInstance;
 	};
 	// alias
-	using QueryResultPtr = std::shared_ptr<const QueryResult>;
-	using QueryResultBuffer = std::map<uint32_t, std::list<QueryResultPtr>>;
+	using AnswerPtr = std::shared_ptr<const Answer>;
+	using AnswerBuffer = std::map<uint32_t, std::list<AnswerPtr>>;
 
     class QueryResultHandler {
     public:
-        virtual bool pushQueryResult(const QueryResultPtr &solution) = 0;
+        virtual bool pushQueryResult(const AnswerPtr &solution) = 0;
     };
 
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution);
+	std::ostream& operator<<(std::ostream& os, const knowrob::Answer& solution);
 }
 
 #endif //KNOWROB_QUERY_RESULT_H_

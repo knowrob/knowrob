@@ -21,6 +21,8 @@
 // TODO: make configurable
 #define WATCH_RATE_MS 200
 
+using namespace knowrob;
+
 std::atomic<long> MongoWatch::id_counter_ = 0;
 
 MongoWatch::MongoWatch(mongoc_client_pool_t *client_pool)

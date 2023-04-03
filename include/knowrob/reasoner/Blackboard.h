@@ -15,8 +15,8 @@
 // KnowRob
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/graphs/ReasoningGraph.h"
-#include "knowrob/queries/QueryResultQueue.h"
-#include "knowrob/queries/QueryResultBroadcaster.h"
+#include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/queries/AnswerBroadcaster.h"
 
 namespace knowrob {
 	/**
@@ -25,7 +25,7 @@ namespace knowrob {
 	class Blackboard {
 	public:
 		Blackboard(ReasonerManager *reasonerManager,
-			const std::shared_ptr<QueryResultQueue> &outputQueue,
+			const std::shared_ptr<AnswerQueue> &outputQueue,
 			const std::shared_ptr<const Query> &goal);
 		
 		~Blackboard();
@@ -46,10 +46,10 @@ namespace knowrob {
 
 		ReasonerManager *reasonerManager_;
 		std::shared_ptr<DefinedReasoner> builtinEvaluator_;
-		std::shared_ptr<QueryResultQueue> outputQueue_;
-		std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
-		std::shared_ptr<QueryResultBroadcaster> inputStream_;
-		std::shared_ptr<QueryResultStream::Channel> inputChannel_;
+		std::shared_ptr<AnswerQueue> outputQueue_;
+		std::shared_ptr<AnswerBroadcaster> outBroadcaster_;
+		std::shared_ptr<AnswerBroadcaster> inputStream_;
+		std::shared_ptr<AnswerStream::Channel> inputChannel_;
 		std::list<std::shared_ptr<Blackboard::Stream>> reasonerInputs_;
 		std::shared_ptr<const Query> goal_;
 
@@ -60,23 +60,23 @@ namespace knowrob {
 
 		ReasoningGraph decomposePredicate(const std::shared_ptr<Predicate> &phi) const;
 
-		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);
+		void createReasoningPipeline(const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
+									 const std::shared_ptr<AnswerBroadcaster> &pipelineOutput);
 
-		void createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-									 const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
+		void createReasoningPipeline(const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
+									 const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
 									 const std::shared_ptr<ReasoningGraph::Node> &n0);
 
 		void createReasoningStep(const std::shared_ptr<DefinedReasoner> &managedReasoner,
 								 const std::shared_ptr<Query> &subQuery,
-								 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
-								 const std::shared_ptr<QueryResultBroadcaster> &stepOutput);
+								 const std::shared_ptr<AnswerBroadcaster> &stepInput,
+								 const std::shared_ptr<AnswerBroadcaster> &stepOutput);
 
-		class Stream : public QueryResultStream {
+		class Stream : public AnswerStream {
 		public:
 			Stream(
 					const std::shared_ptr<DefinedReasoner> &reasoner,
-					const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+					const std::shared_ptr<AnswerStream::Channel> &outputStream,
 					const std::shared_ptr<Query> &goal);
 			~Stream();
 			// Stop the stream by sending EOS message.
@@ -88,11 +88,11 @@ namespace knowrob {
 		protected:
 			std::shared_ptr<DefinedReasoner> reasoner_;
 			std::shared_ptr<const Query> goal_;
-			std::shared_ptr<QueryResultStream::Channel> outputStream_;
+			std::shared_ptr<AnswerStream::Channel> outputStream_;
 			uint32_t queryID_;
 			std::atomic<bool> isQueryOpened_;
 			std::atomic<bool> hasStopRequest_;
-			void push(const QueryResultPtr &msg) override;
+			void push(const AnswerPtr &msg) override;
 			friend class Blackboard;
 		};
 	};

@@ -56,7 +56,7 @@ void BuiltinEvaluator::startQuery(uint32_t queryID,
 {}
 
 void BuiltinEvaluator::finishQuery(uint32_t queryID,
-								   const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+								   const std::shared_ptr<AnswerStream::Channel> &outputStream,
 								   bool isImmediateStopRequested)
 {}
 
@@ -81,7 +81,7 @@ void BuiltinEvaluator::pushSubstitution1(
 		const QueryInstancePtr &queryInstance,
 		Variable &var, const TermPtr& value)
 {
-	auto result = std::make_shared<QueryResult>();
+	auto result = std::make_shared<Answer>();
 	result->substitute(var,value);
 	queryInstance->pushSolution(result);
 }
@@ -115,7 +115,7 @@ void BuiltinEvaluator::atom_concat3(const QueryInstancePtr &queryInstance, const
 		auto atom3 = ((StringTerm*)args[2].get());
 		if(atom1->value() + atom2->value() == atom3->value()) {
 			// return true
-			queryInstance->pushSolution(std::make_shared<QueryResult>());
+			queryInstance->pushSolution(std::make_shared<Answer>());
 		}
 	}
 	else if(args[0]->type()==TermType::VARIABLE) {

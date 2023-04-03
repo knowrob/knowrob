@@ -411,7 +411,7 @@ bool PrologQuery::putScope(const std::shared_ptr<Query> &query, term_t pl_scope)
     }
 }
 
-bool PrologQuery::putScope(const std::shared_ptr<QueryResult> &solution, term_t pl_scope)
+bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope)
 {
     static const auto time_key = PL_new_atom("time");
     static const auto confidence_key = PL_new_atom("confidence");
@@ -528,7 +528,7 @@ bool PrologQuery::putTerm(term_t pl_term, const ConfidenceInterval& confidenceIn
     return putIntervalDict<ConfidenceValue>(pl_term, confidenceInterval);
 }
 
-bool PrologQuery::putScope(term_t pl_term, const QueryResultPtr &solution)
+bool PrologQuery::putScope(term_t pl_term, const AnswerPtr &solution)
 {
     static const auto time_key = PL_new_atom("time");
     static const auto confidence_key = PL_new_atom("confidenceInterval");

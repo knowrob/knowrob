@@ -9,7 +9,7 @@
 #include <knowrob/mongodb/MongoDatabase.h>
 #include <knowrob/mongodb/MongoException.h>
 
-static const PlAtom ATOM_minus("-");
+using namespace knowrob;
 
 MongoDatabase::MongoDatabase(mongoc_client_pool_t *pool, const std::string &db_name)
 : pool_(pool)
@@ -26,6 +26,8 @@ MongoDatabase::~MongoDatabase()
 
 bool MongoDatabase::create_index(const char *coll_name, const PlTerm &keys_pl)
 {
+    static const PlAtom ATOM_minus("-");
+
 	bson_t reply;
 	bson_error_t err;
 	bson_t keys;

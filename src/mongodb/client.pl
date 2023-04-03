@@ -5,7 +5,6 @@
       mng_store/3,
       mng_update/4,
       mng_remove/3,
-      mng_bulk_write/3,
       mng_find/4,
       mng_watch/5,
       mng_unwatch/1,
@@ -50,7 +49,7 @@ To this end, Prolog datastructures are translated from and into BSON format.
 :- use_module(library('http/json')).
 :- use_module(library('filesystem'), [ path_concat/3 ]).
 
-:- use_foreign_library('libmongo_kb.so').
+%:- use_foreign_library('libmongo_kb.so').
 
 %% mng_drop(+DB,+Collection) is det.
 %
@@ -626,16 +625,6 @@ mng_strip_variable(X,X) :- !.
 % @param Query A query document
 % @param Update A update document or pipeline
 % @see https://docs.mongodb.com/manual/reference/method/db.collection.update/index.html
-%
-
-%% mng_bulk_write(+DB, +Collection, +Operations)
-%
-% Performs bulk operations.
-%
-% Operations is a list of operation terms, each being one of:
-% - insert(Document) (see mng_store/3)
-% - remove(Query) (see mng_remove/3)
-% - update(Query,Update) (see mng_update/4)
 %
 
 %% mng_watch(+DB, +Collection, +Callback, +Pipeline, -WatcherID) is det.

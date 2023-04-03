@@ -52,7 +52,7 @@ namespace knowrob {
 
 		// Override IReasoner
 		void finishQuery(uint32_t queryID,
-						 const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+						 const std::shared_ptr<AnswerStream::Channel> &outputStream,
 						 bool isImmediateStopRequested) override;
 	protected:
 		static std::shared_ptr<BuiltinEvaluator> singleton_;

@@ -144,7 +144,7 @@ public:
 	}
 
 	// Override QueryResultHandler
-	bool pushQueryResult(const QueryResultPtr &solution) override {
+	bool pushQueryResult(const AnswerPtr &solution) override {
 		std::cout << *solution << std::endl;
 		numSolutions_ += 1;
 		return !has_stop_request_;

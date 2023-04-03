@@ -37,10 +37,10 @@ send via the communication topic `tf`:
 
 In the layout, the name `tf` corresponds to a named collection in the DB that collects
 recorded PoseStamped messages send via the named topic `tf`.
-The collection should be indexed by the key `header.stamp` such that the mongo server
+The collection should be indexed by the value `header.stamp` such that the mongo server
 can quickly filter out records based on the timestamp when they were acquired.
 `Note` in case of array values (as for tf) it is important
-that the indexed key has identical values for all array members (e.g., the same header stamp
+that the indexed value has identical values for all array members (e.g., the same header stamp
 in case of tf) -- however, *it is advised to avoid generating indices over arrays*.
 For tf, this means that it might be best to store each tranform in an individual document.
 
@@ -51,11 +51,11 @@ the cursor has reached the last document matching the query.
 Cursors can limit the results, sort them, and filter them
 according to a pattern given in the query.
 The query is generally given as Prolog list holding two elements:
-the key (or operator) and the value.
+the value (or operator) and the value.
 However, to avoid conversion problems, the value must be wrapped in an atom indicating its type.
 
 As an example, below is a query that retrieves documents from a collection named *triples*.
-The cursor only retrieves documents where the *subject* key has the value "Obj1",
+The cursor only retrieves documents where the *subject* value has the value "Obj1",
 and where the *begin* field has a date value smaller then the Unix timestamp *1579888948.52*.
 
 ```Prolog

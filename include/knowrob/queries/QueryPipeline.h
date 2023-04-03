@@ -5,9 +5,10 @@
 #ifndef KNOWROB_QUERY_PIPELINE_H
 #define KNOWROB_QUERY_PIPELINE_H
 
-#include "QueryResult.h"
-#include "QueryResultQueue.h"
-#include "QueryResultBroadcaster.h"
+#include "Answer.h"
+#include "AnswerQueue.h"
+#include "BufferedAnswerStream.h"
+#include "AnswerBroadcaster.h"
 #include "knowrob/KnowledgeBase.h"
 #include "DependencyGraph.h"
 
@@ -15,10 +16,9 @@ namespace knowrob {
     /**
      * A step within a query pipeline.
      */
-    class QueryPipelineStage : public QueryResultStream {
+    class QueryPipelineStage : public AnswerBroadcaster {
     public:
-        QueryPipelineStage(const std::shared_ptr<QueryResultStream> &outStream,
-                           const std::list<LiteralPtr> &literals,
+        QueryPipelineStage(const std::list<LiteralPtr> &literals,
                            const ModalityLabelPtr &label={});
 
         ~QueryPipelineStage();
@@ -44,16 +44,17 @@ namespace knowrob {
     protected:
         const std::list<LiteralPtr> literals_;
         const ModalityLabelPtr label_;
-        const std::shared_ptr<QueryResultStream::Channel> outChan_;
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> hasStopRequest_;
 
-        void push(const QueryResultPtr &msg) override;
-        std::shared_ptr<QueryResultBroadcaster> submitQuery();
+        void push(const AnswerPtr &msg) override;
+        std::shared_ptr<BufferedAnswerStream> submitQuery();
+        void handleAnswer(const AnswerPtr &answer);
 
         friend class QueryProcessor;
     };
 
+    using QueryPipelineStagePtr = std::shared_ptr<QueryPipelineStage>;
     // forward declaration of internal data structure
     class QueryPipelineNode;
 
@@ -62,22 +63,28 @@ namespace knowrob {
      */
     class QueryPipeline {
     public:
-        QueryPipeline(const std::shared_ptr<QueryResultQueue> &outputQueue);
+        explicit QueryPipeline(const std::shared_ptr<AnswerQueue> &outputQueue={});
 
-        void addDependencyGroup(const std::list<DependencyNodePtr> &dependencyGroup);
+        const std::shared_ptr<AnswerQueue>& outputQueue() const { return outputQueue_; }
+
+        const std::list<QueryPipelineStagePtr>& stages() const { return stages_; }
+
+        auto numStages() const { return stages_.size(); }
+
+        void add(const std::list<DependencyNodePtr> &dependencyGroup);
 
         void run();
 
     protected:
-        std::shared_ptr<QueryResultQueue> outputQueue_;
-        std::shared_ptr<QueryResultBroadcaster> outBroadcaster_;
-        std::shared_ptr<QueryResultBroadcaster> inputStream_;
-        std::shared_ptr<QueryResultStream::Channel> inputChannel_;
-        std::list<std::shared_ptr<QueryPipelineStage>> stages_;
+        std::shared_ptr<AnswerQueue> outputQueue_;
+        std::shared_ptr<AnswerBroadcaster> outBroadcaster_;
+        std::shared_ptr<AnswerBroadcaster> inputStream_;
+        std::shared_ptr<AnswerStream::Channel> inputChannel_;
+        std::list<QueryPipelineStagePtr> stages_;
 
         void generate(const std::shared_ptr<QueryPipelineNode> &node_,
-                      const std::shared_ptr<QueryResultBroadcaster> &qnInput,
-                      const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput);
+                      const std::shared_ptr<AnswerBroadcaster> &qnInput,
+                      const std::shared_ptr<AnswerBroadcaster> &pipelineOutput);
     };
 
 } // knowrob

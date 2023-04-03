@@ -10,7 +10,7 @@
 #define KNOWROB_QUERY_RESULT_COMBINER_H_
 
 #include <mutex>
-#include <knowrob/queries/QueryResultBroadcaster.h>
+#include <knowrob/queries/AnswerBroadcaster.h>
 
 namespace knowrob {
 	/**
@@ -19,20 +19,20 @@ namespace knowrob {
 	 * This is intended to be used for parallel evaluation of
 	 * sub-goals within a query.
 	 */
-	class QueryResultCombiner : public QueryResultBroadcaster {
+	class AnswerCombiner : public AnswerBroadcaster {
 	public:
-		QueryResultCombiner();
+		AnswerCombiner();
 	
 	protected:
-		QueryResultBuffer buffer_;
+		AnswerBuffer buffer_;
 		std::mutex buffer_mutex_;
-		
+
 		// Override QueryResultStream
-		void push(const Channel &channel, const QueryResultPtr &msg) override;
+		void push(const Channel &channel, const AnswerPtr &msg) override;
 		
 		void genCombinations(uint32_t pushedChannelID,
-			QueryResultBuffer::iterator it,
-			std::shared_ptr<QueryResult> &combinedResult);
+                             AnswerBuffer::iterator it,
+                             std::shared_ptr<Answer> &combinedResult);
 	};
 }
 

@@ -14,9 +14,9 @@ QueryProcessor::QueryProcessor(const KnowledgeBasePtr &kb)
 {
 }
 
-std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const FormulaPtr &phi)
+std::shared_ptr<AnswerQueue> QueryProcessor::operator<<(const FormulaPtr &phi)
 {
-    auto outQueue = std::make_shared<knowrob::QueryResultQueue>();
+    auto outQueue = std::make_shared<knowrob::AnswerQueue>();
 
     // convert into DNF and submit a query for each conjunction.
     // note that the number of conjunctions can get pretty high for
@@ -52,7 +52,7 @@ std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const FormulaPtr &p
         // FIXME: need a mechanism to remove finished pipelines from the pipelines_ list!
         auto &pipeline = pipelines_.emplace_back(outQueue);
         for(auto &queryGroup : dg) {
-            pipeline.addDependencyGroup(queryGroup.member_);
+            pipeline.add(queryGroup.member_);
         }
         pipeline.run();
     }
@@ -60,16 +60,16 @@ std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const FormulaPtr &p
     return outQueue;
 }
 
-std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const LiteralPtr &literal)
+std::shared_ptr<AnswerQueue> QueryProcessor::operator<<(const LiteralPtr &literal)
 {
-    auto outQueue = std::make_shared<knowrob::QueryResultQueue>();
+    auto outQueue = std::make_shared<knowrob::AnswerQueue>();
     // TODO: just submit a graph query here
     return outQueue;
 }
 
-std::shared_ptr<QueryResultQueue> QueryProcessor::operator<<(const LabeledLiteralPtr &literal)
+std::shared_ptr<AnswerQueue> QueryProcessor::operator<<(const LabeledLiteralPtr &literal)
 {
-    auto outQueue = std::make_shared<knowrob::QueryResultQueue>();
+    auto outQueue = std::make_shared<knowrob::AnswerQueue>();
     // TODO: just submit a graph query here
     return outQueue;
 }

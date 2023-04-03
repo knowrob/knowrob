@@ -11,17 +11,17 @@
 
 #include <memory>
 #include <list>
-#include <knowrob/queries/QueryResult.h>
-#include <knowrob/queries/QueryResultStream.h>
+#include <knowrob/queries/Answer.h>
+#include <knowrob/queries/AnswerStream.h>
 
 namespace knowrob {
 	/**
 	 * A broadcaster of query results.
 	 */
-	class QueryResultBroadcaster : public QueryResultStream {
+	class AnswerBroadcaster : public AnswerStream {
 	public:
-		QueryResultBroadcaster();
-		~QueryResultBroadcaster();
+		AnswerBroadcaster();
+		~AnswerBroadcaster();
 		
 		/**
 		 * Add a subscriber to this broadcast.
@@ -38,11 +38,14 @@ namespace knowrob {
 
 	protected:
 		std::list<std::shared_ptr<Channel>> subscribers_;
-		
+
 		// Override QueryResultStream
-		void push(const QueryResultPtr &msg) override;
-		void pushToBroadcast(const QueryResultPtr &msg);
+		void push(const AnswerPtr &msg) override;
+		void pushToBroadcast(const AnswerPtr &msg);
 	};
+
+    void operator>>(const std::shared_ptr<AnswerBroadcaster> &a,
+                    const std::shared_ptr<AnswerStream> &b);
 }
 
 #endif //KNOWROB_QUERY_RESULT_BROADCASTER_H_

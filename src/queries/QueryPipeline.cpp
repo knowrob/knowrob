@@ -2,11 +2,15 @@
 // Created by daniel on 27.03.23.
 //
 
+#include <gtest/gtest.h>
+
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryPipeline.h"
-#include "knowrob/queries/QueryResultCombiner.h"
+#include "knowrob/queries/AnswerCombiner.h"
 #include "knowrob/queries/DependencyGraph.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/queries/QueryParser.h"
+#include "knowrob/modalities/KnowledgeModality.h"
 
 using namespace knowrob;
 
@@ -36,20 +40,19 @@ namespace knowrob {
                 neighbors_.push(neighbor);
             }
         }
-        const DependencyNodePtr &node_;
+        const DependencyNodePtr node_;
         std::list<std::shared_ptr<QueryPipelineNode>> successors_;
         std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, CompareNodes> neighbors_;
     };
-    using QueryNodePtr = std::shared_ptr<QueryPipelineNode>;
+    using QueryPipelineNodePtr = std::shared_ptr<QueryPipelineNode>;
 }
 
 
-QueryPipelineStage::QueryPipelineStage(const std::shared_ptr<QueryResultStream> &outStream,
-                                       const std::list<LiteralPtr> &literals,
+QueryPipelineStage::QueryPipelineStage(const std::list<LiteralPtr> &literals,
                                        const ModalityLabelPtr &label)
-        : literals_(literals),
+        : AnswerBroadcaster(),
+          literals_(literals),
           label_(label),
-          outChan_(QueryResultStream::Channel::create(outStream)),
           isQueryOpened_(true),
           hasStopRequest_(false)
 {
@@ -67,7 +70,7 @@ void QueryPipelineStage::stop()
     close();
 }
 
-std::shared_ptr<QueryResultBroadcaster> QueryPipelineStage::submitQuery()
+std::shared_ptr<BufferedAnswerStream> QueryPipelineStage::submitQuery()
 {
     // TODO: call some component to start a graph query here.
     //       best to create some interface dedicated just for the graph queries
@@ -77,9 +80,9 @@ std::shared_ptr<QueryResultBroadcaster> QueryPipelineStage::submitQuery()
     return {};
 }
 
-void QueryPipelineStage::push(const QueryResultPtr &partialResult)
+void QueryPipelineStage::push(const AnswerPtr &partialResult)
 {
-    if(QueryResultStream::isEOS(partialResult)) {
+    if(AnswerStream::isEOS(partialResult)) {
         if(isQueryOpened()) {
             isQueryOpened_ = false;
         }
@@ -115,7 +118,7 @@ void QueryPipelineStage::push(const QueryResultPtr &partialResult)
                 }
             }
 
-            auto queryResultStream = submitQuery();
+            auto queryAnswers = submitQuery();
             // TODO: msgs coming from queryResultStream need to be combined with partialResult before
             //       being published on outChan_!
             //       - could be done via a combiner node without unification that generates all permutations
@@ -125,21 +128,24 @@ void QueryPipelineStage::push(const QueryResultPtr &partialResult)
     }
 }
 
-
-QueryPipeline::QueryPipeline(const std::shared_ptr<QueryResultQueue> &outputQueue)
-        : outputQueue_(outputQueue)
+void QueryPipelineStage::handleAnswer(const AnswerPtr &answer)
 {
-    inputStream_ = std::make_shared<QueryResultBroadcaster>();
-    inputChannel_ = QueryResultStream::Channel::create(inputStream_);
-    // TODO: could use a simpler variant that does not use unification!
-    outBroadcaster_ = std::make_shared<QueryResultCombiner>();
-    // create a channel of outputQueue_, and add it as subscriber such that messages from
-    // outBroadcaster_ are added to the queue.
-    auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
-    outBroadcaster_->addSubscriber(queueChannel);
+    pushToBroadcast(answer);
 }
 
-void QueryPipeline::addDependencyGroup(const std::list<DependencyNodePtr> &dependencyGroup)
+
+QueryPipeline::QueryPipeline(const std::shared_ptr<AnswerQueue> &outputQueue)
+        : outputQueue_(outputQueue ? outputQueue : std::make_shared<AnswerQueue>())
+{
+    inputStream_ = std::make_shared<AnswerBroadcaster>();
+    inputChannel_ = AnswerStream::Channel::create(inputStream_);
+    // TODO: could use a simpler variant that does not use unification!
+    outBroadcaster_ = std::make_shared<AnswerCombiner>();
+    // feed broadcast into queue
+    outBroadcaster_ >> outputQueue_;
+}
+
+void QueryPipeline::add(const std::list<DependencyNodePtr> &dependencyGroup)
 {
     if(dependencyGroup.empty()) return;
 
@@ -156,12 +162,13 @@ void QueryPipeline::addDependencyGroup(const std::list<DependencyNodePtr> &depen
 
     // remember visited nodes, needed for circular dependencies
     // all nodes added to the queue should also be added to this set.
-    std::set<DependencyNodePtr> visited;
-    visited.insert(first);
+    std::set<DependencyNode*> visited;
+    visited.insert(first.get());
 
     // start with a FIFO queue only containing first node
-    std::deque<QueryNodePtr> queue;
-    auto qn0 = queue.emplace_front(std::make_shared<QueryPipelineNode>(first));
+    std::deque<QueryPipelineNodePtr> queue;
+    auto qn0 = std::make_shared<QueryPipelineNode>(first);
+    queue.push_front(qn0);
 
     // loop until queue is empty and process exactly one successor of
     // the top element in the FIFO in each step. If an element has no
@@ -176,19 +183,22 @@ void QueryPipeline::addDependencyGroup(const std::list<DependencyNodePtr> &depen
             auto topNeighbor = front->neighbors_.top();
             front->neighbors_.pop();
 
-            if(visited.count(topNeighbor) == 0) {
+            if(visited.count(topNeighbor.get()) == 0) {
                 topNext = topNeighbor;
                 break;
             }
         }
         // pop element from queue if all neighbors were processed
-        if(front->neighbors_.empty()) queue.pop_front();
+        if(front->neighbors_.empty()) {
+            queue.pop_front();
+        }
 
         if(topNext) {
             // push a new node onto FIFO
-            auto &qn_next = queue.emplace_front(std::make_shared<QueryPipelineNode>(topNext));
+            auto qn_next = std::make_shared<QueryPipelineNode>(topNext);
+            queue.push_front(qn_next);
             front->successors_.push_back(qn_next);
-            visited.insert(topNext);
+            visited.insert(topNext.get());
         }
     }
 
@@ -196,37 +206,34 @@ void QueryPipeline::addDependencyGroup(const std::list<DependencyNodePtr> &depen
     generate(qn0, inputStream_, outBroadcaster_);
 }
 
-void QueryPipeline::generate(const QueryNodePtr &qn, //NOLINT
-                             const std::shared_ptr<QueryResultBroadcaster> &qnInput,
-                             const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput)
+void QueryPipeline::generate(const QueryPipelineNodePtr &qn, //NOLINT
+                             const std::shared_ptr<AnswerBroadcaster> &qnInput,
+                             const std::shared_ptr<AnswerBroadcaster> &pipelineOutput)
 {
     // create an output stream for this node
-    auto qnOutput = (qn->successors_.empty() ? pipelineOutput : std::make_shared<QueryResultBroadcaster>());
+    auto qnOutput = (qn->successors_.empty() ? pipelineOutput : std::make_shared<AnswerBroadcaster>());
+
+    if(!qn->node_) {
+        throw QueryError("invalid input: a node is null!");
+    }
 
     // create a pipeline stage
     std::shared_ptr<QueryPipelineStage> stage;
-    auto modalNode = std::dynamic_pointer_cast<ModalDependencyNode>(qn->node_);
-    if(modalNode) {
-        stage = std::make_shared<QueryPipelineStage>(qnOutput,
-                                                     modalNode->literals(),
-                                                     modalNode->label());
+    std::shared_ptr<ModalDependencyNode> modalNode;
+    std::shared_ptr<LiteralDependencyNode> literalNode;
+    if((modalNode = std::dynamic_pointer_cast<ModalDependencyNode>(qn->node_))) {
+        stage = std::make_shared<QueryPipelineStage>(modalNode->literals(), modalNode->label());
+    }
+    else if((literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(qn->node_))) {
+        stage = std::make_shared<QueryPipelineStage>(std::list<LiteralPtr>({ literalNode->literal() }));
     }
     else {
-        auto literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(qn->node_);
-        if(literalNode) {
-            stage = std::make_shared<QueryPipelineStage>(
-                    qnOutput, std::list<LiteralPtr>({ literalNode->literal() }));
-        }
-        else {
-            throw QueryError("unexpected dependency node type: not a modal or literal node!");
-        }
+        throw QueryError("unexpected node type");
     }
     stages_.push_back(stage);
-
-    // link input stream to the stage
-    std::shared_ptr<QueryResultStream::Channel> qnInChan =
-            QueryResultStream::Channel::create(stage);
-    qnInput->addSubscriber(qnInChan);
+    // link stage with input and output
+    qnInput >> stage;
+    stage >> qnOutput;
 
     // continue for successors
     for(auto &successor : qn->successors_) {
@@ -237,6 +244,88 @@ void QueryPipeline::generate(const QueryNodePtr &qn, //NOLINT
 void QueryPipeline::run()
 {
     // push empty message into in stream, and close the channel
-    inputChannel_->push(QueryResultStream::bos());
+    inputChannel_->push(AnswerStream::bos());
     inputChannel_->close();
+}
+
+
+// fixture class for testing
+class QueryPipelineTest : public ::testing::Test {
+protected:
+    void SetUp() override {}
+    void TearDown() override {}
+
+    static std::shared_ptr<LiteralDependencyNode> make_literal(const std::string &literalString, bool isNegative) {
+        return std::make_shared<LiteralDependencyNode>(std::make_shared<Literal>(
+                QueryParser::parsePredicate(literalString), isNegative));
+    }
+    static std::shared_ptr<LiteralDependencyNode> literal_p(const std::string &literalString) {
+        return make_literal(literalString, false);
+    }
+    static std::shared_ptr<LiteralDependencyNode> literal_n(const std::string &literalString) {
+        return make_literal(literalString, true);
+    }
+
+    static void addDependency(std::shared_ptr<LiteralDependencyNode> &a,
+                              std::shared_ptr<LiteralDependencyNode> &b) {
+        a->addDependency(b);
+        b->addDependency(a);
+    }
+};
+
+TEST_F(QueryPipelineTest, OneLiteral)
+{
+    // create dependency group of literals with shared variables
+    auto n11 = literal_p("p(a,X)");
+    // generate a querying pipeline
+    QueryPipeline qp;
+    EXPECT_NO_THROW(qp.add({n11}));
+    EXPECT_EQ(qp.numStages(), 1);
+}
+
+TEST_F(QueryPipelineTest, Path)
+{
+    // create dependency group of literals with shared variables
+    auto n11 = literal_p("p(a,X)");
+    auto n12 = literal_p("q(X,Y)");
+    auto n13 = literal_p("r(Y,z)");
+    addDependency(n11, n12);
+    addDependency(n12, n13);
+    // generate a querying pipeline
+    QueryPipeline qp;
+    EXPECT_NO_THROW(qp.add({n11, n12, n13}));
+    EXPECT_EQ(qp.numStages(), 3);
+}
+
+TEST_F(QueryPipelineTest, Circle)
+{
+    // create dependency group of literals with shared variables
+    auto n11 = literal_p("p(U,X)");
+    auto n12 = literal_p("q(X,Y)");
+    auto n13 = literal_p("r(Y,U)");
+    addDependency(n11, n12);
+    addDependency(n12, n13);
+    addDependency(n13, n11);
+    // generate a querying pipeline
+    QueryPipeline qp;
+    EXPECT_NO_THROW(qp.add({n11, n12, n13}));
+    EXPECT_EQ(qp.numStages(), 3);
+}
+
+TEST_F(QueryPipelineTest, IndependentSubPaths)
+{
+    // create dependency group of literals with shared variables
+    auto n11 = literal_p("p(a,X)");
+    auto n12 = literal_p("q(X,X1)");
+    auto n14 = literal_p("q(X1,b)");
+    auto n13 = literal_p("r(X,Y1)");
+    auto n15 = literal_p("r(Y1,c)");
+    addDependency(n11, n12);
+    addDependency(n11, n13);
+    addDependency(n12, n14);
+    addDependency(n13, n15);
+    // generate a querying pipeline
+    QueryPipeline qp;
+    EXPECT_NO_THROW(qp.add({n11, n12, n13, n14, n15}));
+    EXPECT_EQ(qp.numStages(), 5);
 }

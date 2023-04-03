@@ -1,15 +1,18 @@
-#ifndef __KB_MONGO_EXCEPTION_H__
-#define __KB_MONGO_EXCEPTION_H__
+#ifndef KNOWROB_MONGO_EXCEPTION_H
+#define KNOWROB_MONGO_EXCEPTION_H
 
 #include <mongoc.h>
-// SWI Prolog
-#define PL_SAFE_ARG_MACROS
-#include <SWI-cpp.h>
+#include <fmt/core.h>
 
-class MongoException : public PlException
-{
-public:
-	MongoException(const char *msg, const bson_error_t &err);
-}; 
+namespace knowrob {
+    /**
+     * A runtime exception that occurred when interacting with Mongo DB.
+     */
+    class MongoException : public std::runtime_error {
+    public:
+        MongoException(const char *msg, const bson_error_t &err)
+                : std::runtime_error(fmt::format("mng_error({},{})", msg, err.message)) {}
+    };
+}
 
-#endif //__KB_MONGO_EXCEPTION_H__
+#endif //KNOWROB_MONGO_EXCEPTION_H

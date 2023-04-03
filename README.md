@@ -171,7 +171,7 @@ sudo rm -r /var/lib/mongodb
 # Be aware that this also removes unrelated packages starting with 'mongo*'
 sudo apt purge mongo*
 # Fetch the latest packages of mongodb-org
-wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-value add -
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 # Update references and install mongodb
 sudo apt update

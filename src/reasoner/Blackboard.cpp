@@ -19,7 +19,7 @@ using namespace knowrob;
 
 Blackboard::Blackboard(
 		ReasonerManager *reasonerManager,
-		const std::shared_ptr<QueryResultQueue> &outputQueue,
+		const std::shared_ptr<AnswerQueue> &outputQueue,
 		const std::shared_ptr<const Query> &goal)
 		: reasonerManager_(reasonerManager),
 		  builtinEvaluator_(std::make_shared<DefinedReasoner>("builtins", BuiltinEvaluator::get())),
@@ -27,12 +27,12 @@ Blackboard::Blackboard(
 		  goal_(goal)
 {
 	// decompose the reasoning task
-	inputStream_ = std::make_shared<QueryResultBroadcaster>();
-	inputChannel_ = QueryResultStream::Channel::create(inputStream_);
-	outBroadcaster_ = std::make_shared<QueryResultBroadcaster>();
+	inputStream_ = std::make_shared<AnswerBroadcaster>();
+	inputChannel_ = AnswerStream::Channel::create(inputStream_);
+	outBroadcaster_ = std::make_shared<AnswerBroadcaster>();
 
 	// create a channel of outputQueue_, and add it as subscriber
-	auto queueChannel = QueryResultStream::Channel::create(outputQueue_);
+	auto queueChannel = AnswerStream::Channel::create(outputQueue_);
 	outBroadcaster_->addSubscriber(queueChannel);
 
 	createReasoningPipeline(inputStream_, outBroadcaster_);
@@ -46,7 +46,7 @@ Blackboard::~Blackboard()
 void Blackboard::start()
 {
 	// push empty message into in stream, and close the channel
-	inputChannel_->push(QueryResultStream::bos());
+	inputChannel_->push(AnswerStream::bos());
 	inputChannel_->close();
 }
 
@@ -116,8 +116,8 @@ ReasoningGraph Blackboard::decomposePredicate(const std::shared_ptr<Predicate> &
 	return out;
 }
 
-void Blackboard::createReasoningPipeline(const std::shared_ptr<QueryResultBroadcaster> &inputStream,
-										 const std::shared_ptr<QueryResultBroadcaster> &outputStream)
+void Blackboard::createReasoningPipeline(const std::shared_ptr<AnswerBroadcaster> &inputStream,
+										 const std::shared_ptr<AnswerBroadcaster> &outputStream)
 {
 	auto graph = decomposeFormula(goal_->formula());
 	for(auto &n0 : graph.initialNodes())
@@ -125,15 +125,15 @@ void Blackboard::createReasoningPipeline(const std::shared_ptr<QueryResultBroadc
 }
 
 void Blackboard::createReasoningPipeline( //NOLINT
-		const std::shared_ptr<QueryResultBroadcaster> &pipelineInput,
-		const std::shared_ptr<QueryResultBroadcaster> &pipelineOutput,
+		const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
+		const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
 		const std::shared_ptr<ReasoningGraph::Node> &n0)
 {
 	// create a subquery for the predicate p
 	std::shared_ptr<Query> subQuery = std::make_shared<Query>(n0->phi());
 	// create an output stream for this node
-	std::shared_ptr<QueryResultBroadcaster> nodeOutput = (n0->successors().empty() ?
-			pipelineOutput : std::make_shared<QueryResultBroadcaster>());
+	std::shared_ptr<AnswerBroadcaster> nodeOutput = (n0->successors().empty() ?
+                                                     pipelineOutput : std::make_shared<AnswerBroadcaster>());
 
 	auto n0_reasoner = *n0->reasonerAlternatives().begin();
 	if(n0->predicateType() == PredicateType::BUILT_IN) {
@@ -153,16 +153,16 @@ void Blackboard::createReasoningPipeline( //NOLINT
 
 void Blackboard::createReasoningStep(const std::shared_ptr<DefinedReasoner> &r,
 									 const std::shared_ptr<Query> &subQuery,
-									 const std::shared_ptr<QueryResultBroadcaster> &stepInput,
-									 const std::shared_ptr<QueryResultBroadcaster> &stepOutput)
+									 const std::shared_ptr<AnswerBroadcaster> &stepInput,
+									 const std::shared_ptr<AnswerBroadcaster> &stepOutput)
 {
 	std::shared_ptr<Blackboard::Stream> reasonerIn;
-	std::shared_ptr<QueryResultStream::Channel> reasonerInChan, reasonerOutChan;
+	std::shared_ptr<AnswerStream::Channel> reasonerInChan, reasonerOutChan;
 	// create IO channels
-	reasonerOutChan = QueryResultStream::Channel::create(stepOutput);
+	reasonerOutChan = AnswerStream::Channel::create(stepOutput);
 	reasonerIn = std::make_shared<Blackboard::Stream>(
 			r,reasonerOutChan, subQuery);
-	reasonerInChan = QueryResultStream::Channel::create(reasonerIn);
+	reasonerInChan = AnswerStream::Channel::create(reasonerIn);
 	stepInput->addSubscriber(reasonerInChan);
 	// create a new segment
 	reasonerInputs_.push_back(reasonerIn);
@@ -171,9 +171,9 @@ void Blackboard::createReasoningStep(const std::shared_ptr<DefinedReasoner> &r,
 
 Blackboard::Stream::Stream(
 	const std::shared_ptr<DefinedReasoner> &reasoner,
-	const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+	const std::shared_ptr<AnswerStream::Channel> &outputStream,
 	const std::shared_ptr<Query> &goal)
-: QueryResultStream(),
+: AnswerStream(),
   queryID_(reinterpret_cast<std::uintptr_t>(this)),
   reasoner_(reasoner),
   outputStream_(outputStream),
@@ -190,9 +190,9 @@ Blackboard::Stream::~Stream()
 	stop();
 }
 
-void Blackboard::Stream::push(const QueryResultPtr &msg)
+void Blackboard::Stream::push(const AnswerPtr &msg)
 {
-	if(QueryResultStream::isEOS(msg)) {
+	if(AnswerStream::isEOS(msg)) {
 		// tell the reasoner to finish up.
 		// if hasStopRequest_=true it means that the reasoner is requested
 		// to immediately shutdown. however, note that not all reasoner

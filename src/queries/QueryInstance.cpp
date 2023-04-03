@@ -11,8 +11,8 @@
 using namespace knowrob;
 
 QueryInstance::QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
-							 const std::shared_ptr<QueryResultStream::Channel> &outputChannel,
-							 const std::shared_ptr<const QueryResult> &partialResult)
+							 const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+							 const std::shared_ptr<const Answer> &partialResult)
 : uninstantiatedQuery_(uninstantiatedQuery),
   outputChannel_(outputChannel),
   partialResult_(partialResult)
@@ -20,10 +20,10 @@ QueryInstance::QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQ
 }
 
 QueryInstance::QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
-							 const std::shared_ptr<QueryResultStream::Channel> &outputChannel)
+							 const std::shared_ptr<AnswerStream::Channel> &outputChannel)
 : uninstantiatedQuery_(uninstantiatedQuery),
   outputChannel_(outputChannel),
-  partialResult_(QueryResult::emptyResult())
+  partialResult_(Answer::emptyResult())
 {
 }
 
@@ -40,7 +40,7 @@ std::shared_ptr<const Query> QueryInstance::create()
 	}
 }
 
-void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
+void QueryInstance::pushSolution(const std::shared_ptr<Answer> &solution)
 {
 	// include substitutions of partialResult_
 	for (const auto& pair: *partialResult_->substitution())
@@ -77,7 +77,7 @@ void QueryInstance::pushSolution(const std::shared_ptr<QueryResult> &solution)
 
 void QueryInstance::pushEOS()
 {
-	outputChannel_->push(QueryResultStream::eos());
+	outputChannel_->push(AnswerStream::eos());
 }
 
 const std::optional<const TimeInterval*>& QueryInstance::timeInterval() const

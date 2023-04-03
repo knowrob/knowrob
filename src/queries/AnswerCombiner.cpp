@@ -6,15 +6,15 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/queries/QueryResultCombiner.h>
+#include <knowrob/queries/AnswerCombiner.h>
 
 using namespace knowrob;
 
-QueryResultCombiner::QueryResultCombiner()
-: QueryResultBroadcaster()
+AnswerCombiner::AnswerCombiner()
+: AnswerBroadcaster()
 {}
 
-void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg)
+void AnswerCombiner::push(const Channel &channel, const AnswerPtr &msg)
 {
 	const uint32_t channelID = channel.id();
 	// need to lock the whole push as genCombinations uses an iterator over the buffer.
@@ -26,22 +26,22 @@ void QueryResultCombiner::push(const Channel &channel, const QueryResultPtr &msg
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		std::shared_ptr<QueryResult> combination(new QueryResult(*(msg.get())));
+		std::shared_ptr<Answer> combination(new Answer(*(msg.get())));
 		// generate all combinations and push combined messages
 		genCombinations(channelID, buffer_.begin(), combination);
 	}
 }
 
-void QueryResultCombiner::genCombinations( //NOLINT
+void AnswerCombiner::genCombinations( //NOLINT
 		uint32_t pushedChannelID,
-		QueryResultBuffer::iterator it,
-		std::shared_ptr<QueryResult> &combinedResult)
+        AnswerBuffer::iterator it,
+        std::shared_ptr<Answer> &combinedResult)
 {
 	if(it == buffer_.end()) {
 		// end reached, push combination
 		// note: need to create a new SubstitutionPtr due to the rollBack below.
 		// TODO: it could be that the same combination is generated multiple times, avoid redundant push here?
-		QueryResultBroadcaster::push(std::make_shared<QueryResult>(*combinedResult));
+		AnswerBroadcaster::push(std::make_shared<Answer>(*combinedResult));
 	}
 	else if(it->first == pushedChannelID) {
 		// ignore pushed channel

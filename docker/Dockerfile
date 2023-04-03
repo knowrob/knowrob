@@ -25,7 +25,7 @@ ENV LANG en_US.UTF-8
 # Install ROS
 RUN sh -c 'echo "deb ${ROS_SOURCES} bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 #RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
-RUN sh -c 'wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key && apt-key add ros.key' && \
+RUN sh -c 'wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.value && apt-value add ros.value' && \
     apt-get -qq -y update && \
     apt-get -qq -y install ros-melodic-desktop \
                            libjson-glib-dev python-yaml python-catkin-pkg python-rospkg \

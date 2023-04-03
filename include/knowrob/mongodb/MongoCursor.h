@@ -6,47 +6,50 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KB_MONGO_CURSOR_H__
-#define __KB_MONGO_CURSOR_H__
+#ifndef KNOWROB_MONGO_CURSOR_H
+#define KNOWROB_MONGO_CURSOR_H
 
 #include <mongoc.h>
-// STD
 #include <string>
 #include <memory>
-// SWI Prolog
-#define PL_SAFE_ARG_MACROS
-#include <SWI-cpp.h>
-// knowrob_mongo
 #include <knowrob/mongodb/MongoCollection.h>
 
-class MongoCursor {
-public:
-	explicit MongoCursor(const std::shared_ptr<MongoCollection> &collection);
-	~MongoCursor();
-	
-	const std::string& id() { return id_; };
-	
-	void limit(unsigned int limit);
-	
-	void ascending(const char *key);
-	
-	void descending(const char *key);
-	
-	void filter(const PlTerm &query_term);
-	
-	void aggregate(const PlTerm &query_term);
+namespace knowrob {
+    /**
+     * A cursor that iterates over different results of a query.
+     */
+    class MongoCursor {
+    public:
+        explicit MongoCursor(const std::shared_ptr<MongoCollection> &collection);
 
-	bool next(const bson_t **doc, bool ignore_empty=false);
-	
-	bool erase();
-	
-private:
-	std::shared_ptr<MongoCollection> coll_;
-	mongoc_cursor_t *cursor_;
-	bson_t *query_;
-	bson_t *opts_;
-	std::string id_;
-	bool is_aggregate_query_;
-};
+        MongoCursor(const MongoCursor&) = delete;
 
-#endif //__KB_MONGO_CURSOR_H__
+        ~MongoCursor();
+
+        const auto& id() { return id_; };
+
+        void limit(unsigned int limit);
+
+        void ascending(const char *key);
+
+        void descending(const char *key);
+
+        void filter(const bson_t *query_doc);
+
+        void aggregate(const bson_t *query_doc);
+
+        bool next(const bson_t **doc, bool ignore_empty=false);
+
+        bool erase();
+
+    private:
+        std::shared_ptr<MongoCollection> collection_;
+        mongoc_cursor_t *cursor_;
+        bson_t *query_;
+        bson_t *opts_;
+        std::string id_;
+        bool isAggregateQuery_;
+    };
+}
+
+#endif //KNOWROB_MONGO_CURSOR_H

@@ -8,21 +8,21 @@
 
 #include <mutex>
 #include <knowrob/Logger.h>
-#include <knowrob/queries/QueryResultStream.h>
+#include <knowrob/queries/AnswerStream.h>
 #include <knowrob/queries/QueryError.h>
 
 using namespace knowrob;
 
-QueryResultStream::QueryResultStream()
+AnswerStream::AnswerStream()
 : isOpened_(true)
 {}
 
-QueryResultStream::~QueryResultStream()
+AnswerStream::~AnswerStream()
 {
 	close();
 }
 
-void QueryResultStream::close()
+void AnswerStream::close()
 {
 	if(isOpened()) {
 		std::lock_guard<std::mutex> lock(channel_mutex_);
@@ -34,31 +34,31 @@ void QueryResultStream::close()
 	}
 }
 
-bool QueryResultStream::isEOS(const QueryResultPtr &item)
+bool AnswerStream::isEOS(const AnswerPtr &item)
 {
 	return (item.get() == eos().get());
 }
 
-QueryResultPtr& QueryResultStream::bos()
+AnswerPtr& AnswerStream::bos()
 {
-	static auto msg = std::make_shared<const QueryResult>();
+	static auto msg = std::make_shared<const Answer>();
 	return msg;
 }
 
-QueryResultPtr& QueryResultStream::eos()
+AnswerPtr& AnswerStream::eos()
 {
-	static auto msg = std::make_shared<const QueryResult>();
+	static auto msg = std::make_shared<const Answer>();
 	return msg;
 }
 
-bool QueryResultStream::isOpened() const
+bool AnswerStream::isOpened() const
 {
 	return isOpened_;
 }
 
-void QueryResultStream::push(const Channel &channel, const QueryResultPtr &item)
+void AnswerStream::push(const Channel &channel, const AnswerPtr &item)
 {
-	if(QueryResultStream::isEOS(item)) {
+	if(AnswerStream::isEOS(item)) {
 		bool doPushMsg; {
 			// prevent channels from being created while processing EOS message
 			std::lock_guard<std::mutex> lock(channel_mutex_);
@@ -87,23 +87,23 @@ void QueryResultStream::push(const Channel &channel, const QueryResultPtr &item)
 }
 
 
-QueryResultStream::Channel::Channel(const std::shared_ptr<QueryResultStream> &stream)
+AnswerStream::Channel::Channel(const std::shared_ptr<AnswerStream> &stream)
 : stream_(stream),
   isOpened_(true)
 {
 }
 
-QueryResultStream::Channel::~Channel()
+AnswerStream::Channel::~Channel()
 {
 	close();
 }
 
-std::shared_ptr<QueryResultStream::Channel> QueryResultStream::Channel::create(
-		const std::shared_ptr<QueryResultStream> &stream)
+std::shared_ptr<AnswerStream::Channel> AnswerStream::Channel::create(
+		const std::shared_ptr<AnswerStream> &stream)
 {
 	std::lock_guard<std::mutex> lock(stream->channel_mutex_);
 	if(stream->isOpened()) {
-		auto channel = std::make_shared<QueryResultStream::Channel>(stream);
+		auto channel = std::make_shared<AnswerStream::Channel>(stream);
 		stream->channels_.push_back(channel);
 		channel->iterator_ = stream->channels_.end();
 		--channel->iterator_;
@@ -114,33 +114,33 @@ std::shared_ptr<QueryResultStream::Channel> QueryResultStream::Channel::create(
 	}
 }
 
-void QueryResultStream::Channel::close()
+void AnswerStream::Channel::close()
 {
 	if(isOpened()) {
-		stream_->push(*this, QueryResultStream::eos());
+		stream_->push(*this, AnswerStream::eos());
 		isOpened_ = false;
 	}
 }
 
-uint32_t QueryResultStream::Channel::id() const
+uint32_t AnswerStream::Channel::id() const
 {
 	return reinterpret_cast<std::uintptr_t>(this);
 }
 
-void QueryResultStream::Channel::push(const QueryResultPtr &msg)
+void AnswerStream::Channel::push(const AnswerPtr &msg)
 {
 	if(isOpened()) {
 		stream_->push(*this, msg);
-		if(QueryResultStream::isEOS(msg)) {
+		if(AnswerStream::isEOS(msg)) {
 			isOpened_ = false;
 		}
 	}
-	else if(!QueryResultStream::isEOS(msg)) {
+	else if(!AnswerStream::isEOS(msg)) {
 		KB_WARN("message pushed to closed stream {}", reinterpret_cast<std::uintptr_t>(this));
 	}
 }
 
-bool QueryResultStream::Channel::isOpened() const
+bool AnswerStream::Channel::isOpened() const
 {
 	return isOpened_;
 }

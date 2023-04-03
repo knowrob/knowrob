@@ -10,12 +10,12 @@ Documents with a dedicated time field are used to represent fluents.
 Any existing database collection with time index may be used as a backend for fluents.
 At any timepoint, the document with the latest stamp before the timepoint provides fluent value.
 There can only be one fluent value at a time.
-However, fluents may have additional "key" arguments. For each combination of key arguments
+However, fluents may have additional "value" arguments. For each combination of value arguments
 a different value is stored.
 The value of a fluent is given by the remaining "value" arguments.
 Each argument may be an atomic value, or a compound term.
 Fluents support assert/1 and retractall/1 for adding and removing them from the database.
-All key arguments must be grounded, value arguments maybe grounded to apply additional
+All value arguments must be grounded, value arguments maybe grounded to apply additional
 filtering based on the fluent value.
 
 @author Daniel Beßler

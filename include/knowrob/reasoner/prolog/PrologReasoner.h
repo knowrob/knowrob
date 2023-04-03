@@ -72,9 +72,9 @@ namespace knowrob {
          * @param doTransformQuery
          * @return the first solution found, or QueryResultStream::eos() if none.
          */
-        QueryResultPtr oneSolution(const std::shared_ptr<const Query> &goal,
-                                   const char *contextModule={},
-                                   bool doTransformQuery=true);
+        AnswerPtr oneSolution(const std::shared_ptr<const Query> &goal,
+                              const char *contextModule={},
+                              bool doTransformQuery=true);
 
         /**
          *
@@ -83,9 +83,9 @@ namespace knowrob {
          * @param doTransformQuery
          * @return
          */
-        QueryResultPtr oneSolution(const std::shared_ptr<Predicate> &goal,
-                                   const char *contextModule={},
-                                   bool doTransformQuery=true);
+        AnswerPtr oneSolution(const std::shared_ptr<Predicate> &goal,
+                              const char *contextModule={},
+                              bool doTransformQuery=true);
 
         /**
          * Evaluates a query and returns all solutions.
@@ -94,9 +94,9 @@ namespace knowrob {
          * @param doTransformQuery
          * @return list of solutions.
          */
-        std::list<QueryResultPtr> allSolutions(const std::shared_ptr<const Query> &goal,
-                                               const char *contextModule={},
-                                               bool doTransformQuery=true);
+        std::list<AnswerPtr> allSolutions(const std::shared_ptr<const Query> &goal,
+                                          const char *contextModule={},
+                                          bool doTransformQuery=true);
 
         /**
          *
@@ -105,9 +105,9 @@ namespace knowrob {
          * @param doTransformQuery
          * @return
          */
-        std::list<QueryResultPtr> allSolutions(const std::shared_ptr<Predicate> &goal,
-                                               const char *contextModule={},
-                                               bool doTransformQuery=true);
+        std::list<AnswerPtr> allSolutions(const std::shared_ptr<Predicate> &goal,
+                                          const char *contextModule={},
+                                          bool doTransformQuery=true);
 
         /**
          *
@@ -187,7 +187,7 @@ namespace knowrob {
 
         // Override IReasoner
         void finishQuery(uint32_t queryID,
-                         const std::shared_ptr<QueryResultStream::Channel> &outputStream,
+                         const std::shared_ptr<AnswerStream::Channel> &outputStream,
                          bool isImmediateStopRequested) override;
 
     protected:

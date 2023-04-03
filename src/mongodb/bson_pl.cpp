@@ -15,23 +15,6 @@
 #define APPEND_BSON_PL_PAIR(list,key,value,type) ((PlTail*)list)->append(PlCompound("-", \
 		PlTermv(PlTerm(key), PlCompound(type, PlTerm(value))))) && false
 
-// TODO: better use 'inf' on the Prolog side!
-// TODO: support 'nan' as well
-static PlAtom ATOM_Pos_Infinity("Infinity");
-static PlAtom ATOM_Neg_Infinity("-Infinity");
-static PlAtom ATOM_int("int");
-static PlAtom ATOM_integer("integer");
-static PlAtom ATOM_bool("bool");
-static PlAtom ATOM_double("double");
-static PlAtom ATOM_id("id");
-static PlAtom ATOM_regex("regex");
-static PlAtom ATOM_string("string");
-static PlAtom ATOM_time("time");
-static PlAtom ATOM_list("list");
-static PlAtom ATOM_array("array");
-static PlAtom ATOM_true("true");
-static PlAtom ATOM_false("false");
-
 static bool bson_visit_double(const bson_iter_t *iter, const char *key, double v_double, void *data)
 {
 	return APPEND_BSON_PL_PAIR(data,key,v_double,"double");
@@ -56,6 +39,9 @@ static bool bson_visit_oid(const bson_iter_t *iter, const char *key, const bson_
 
 static bool bson_visit_bool(const bson_iter_t *iter, const char *key, bool v_bool, void *data)
 {
+    static PlAtom ATOM_true("true");
+    static PlAtom ATOM_false("false");
+
 	if(v_bool) {
 		return APPEND_BSON_PL_PAIR(data,key,ATOM_true,"bool");
 	}
@@ -77,7 +63,10 @@ static bool bson_visit_date_time(const bson_iter_t *iter, const char *key, int64
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const bson_decimal128_t *v_decimal128, void *data)
 {
-	PlTail *v_pl = (PlTail*)data;
+    static PlAtom ATOM_Neg_Infinity("-Infinity");
+    static PlAtom ATOM_Pos_Infinity("Infinity");
+
+    auto *v_pl = (PlTail*)data;
 	// positive infinity
 	if(v_decimal128->high == 0x7800000000000000) {
 		v_pl->append(PlCompound("double", PlTerm(ATOM_Pos_Infinity)));
@@ -98,7 +87,10 @@ static bool bson_visit_decimal128(const bson_iter_t *iter, const bson_decimal128
 
 static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, const bson_decimal128_t *v_decimal128, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
+    static PlAtom ATOM_Neg_Infinity("-Infinity");
+    static PlAtom ATOM_Pos_Infinity("Infinity");
+
+    auto *out_list = (PlTail*)data;
 	PlTermv v_pl(2);
 	v_pl[0] = PlTerm(key);
 	// positive infinity
@@ -122,19 +114,22 @@ static bool bson_visit_decimal128(const bson_iter_t *iter, const char *key, cons
 
 static bool bson_iter_append_array(bson_iter_t *iter, PlTail *pl_array)
 {
+    static PlAtom ATOM_true("true");
+    static PlAtom ATOM_false("false");
+
 	if(BSON_ITER_HOLDS_UTF8(iter)) {
 		pl_array->append(PlCompound("string",
-				PlTerm(bson_iter_utf8(iter,NULL))));
+				PlTerm(bson_iter_utf8(iter, nullptr))));
 	}
 	else if(BSON_ITER_HOLDS_DOCUMENT(iter)) {
-		const uint8_t *data = NULL;
+		const uint8_t *data = nullptr;
 		uint32_t len = 0;
 		bson_iter_document(iter, &len, &data);
 		bson_t *doc = bson_new_from_data(data, len);
 		pl_array->append(bson_to_term(doc));
 	}
 	else if(BSON_ITER_HOLDS_ARRAY(iter)) {
-		const uint8_t *array = NULL;
+		const uint8_t *array = nullptr;
 		uint32_t array_len = 0;
 		bson_iter_array(iter, &array_len, &array);
 		bson_t *inner_doc = bson_new_from_data(array, array_len);
@@ -202,7 +197,7 @@ static bool bson_visit_array(const bson_iter_t *iter, const char *key, const bso
 
 static bool bson_visit_document(const bson_iter_t *iter, const char *key, const bson_t *v_document, void *data)
 {
-	PlTail *out_list = (PlTail*)data;
+	auto *out_list = (PlTail*)data;
 	out_list->append(PlCompound("-",
 			PlTermv(PlTerm(key), bson_to_term(v_document))));
 	return false; // NOTE: returning true stops further iteration of the document
@@ -238,7 +233,7 @@ PlTerm bson_to_term(const bson_t *doc)
 				MONGOC_ERROR_BSON,
 				MONGOC_ERROR_BSON_INVALID,
 				"BSON iteration prematurely stopped.");
-			throw MongoException("bson",err);
+			throw knowrob::MongoException("bson",err);
 		}
 	}
 	out_list.close();
@@ -247,6 +242,18 @@ PlTerm bson_to_term(const bson_t *doc)
 
 static bool bsonpl_append_typed(bson_t *doc, const char *key, const PlTerm &term, bson_error_t *err)
 {
+    static PlAtom ATOM_array("array");
+    static PlAtom ATOM_time("time");
+    static PlAtom ATOM_id("id");
+    static PlAtom ATOM_regex("regex");
+    static PlAtom ATOM_double("double");
+    static PlAtom ATOM_bool("bool");
+    static PlAtom ATOM_string("string");
+    static PlAtom ATOM_integer("integer");
+    static PlAtom ATOM_int("int");
+    static PlAtom ATOM_true("true");
+    static PlAtom ATOM_false("false");
+
 	const PlAtom type_atom(term.name());
 	const PlTerm &pl_value = term[1];
 	if(type_atom == ATOM_string) {

@@ -12,8 +12,8 @@
 #include <memory>
 #include <optional>
 #include <knowrob/queries/Query.h>
-#include <knowrob/queries/QueryResult.h>
-#include <knowrob/queries/QueryResultStream.h>
+#include <knowrob/queries/Answer.h>
+#include <knowrob/queries/AnswerStream.h>
 
 namespace knowrob {
 	/**
@@ -27,14 +27,14 @@ namespace knowrob {
 		 * @param partialResult a partial result from sub-queries evaluated before
 		 */
 		QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
-					  const std::shared_ptr<QueryResultStream::Channel> &outputChannel,
-					  const std::shared_ptr<const QueryResult> &partialResult);
+					  const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+					  const std::shared_ptr<const Answer> &partialResult);
 		/**
 		 * @param uninstantiatedQuery a query that may contain variables
 		 * @param outputChannel an output channel where solutions are pushed
 		 */
 		QueryInstance(const std::shared_ptr<const Query> &uninstantiatedQuery,
-					  const std::shared_ptr<QueryResultStream::Channel> &outputChannel);
+					  const std::shared_ptr<AnswerStream::Channel> &outputChannel);
 
 		/**
 		 * @return an instane of the input query.
@@ -45,7 +45,7 @@ namespace knowrob {
 		 * Push a new solution for the instantiated query into the QA pipeline.
 		 * @param solution a query solution
 		 */
-		void pushSolution(const std::shared_ptr<QueryResult> &solution);
+		void pushSolution(const std::shared_ptr<Answer> &solution);
 
 		/**
 		 * Push EOS message indicating that no more solutions will be generated.
@@ -69,8 +69,8 @@ namespace knowrob {
 
 	protected:
 		std::shared_ptr<const Query> uninstantiatedQuery_;
-		std::shared_ptr<const QueryResult> partialResult_;
-		std::shared_ptr<QueryResultStream::Channel> outputChannel_;
+		std::shared_ptr<const Answer> partialResult_;
+		std::shared_ptr<AnswerStream::Channel> outputChannel_;
 	};
 	using QueryInstancePtr = std::shared_ptr<QueryInstance>;
 }

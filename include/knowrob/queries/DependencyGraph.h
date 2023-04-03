@@ -40,6 +40,8 @@ namespace knowrob {
          */
         const auto& neighbors() const { return neighbors_; }
 
+        void addDependency(const std::shared_ptr<DependencyNode> &other);
+
     protected:
         std::list<std::shared_ptr<DependencyNode>> neighbors_;
         friend class DependencyGraph;

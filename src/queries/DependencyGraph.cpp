@@ -85,6 +85,11 @@ void DependencyGraph::insert(const DependencyNodePtr &newNode)
 
 
 
+void DependencyNode::addDependency(const std::shared_ptr<DependencyNode> &other)
+{
+    neighbors_.push_back(other);
+}
+
 LiteralDependencyNode::LiteralDependencyNode(const LiteralPtr &literal)
         : DependencyNode(),
           literal_(literal)

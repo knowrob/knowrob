@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef __KB_MONGO_WATCH_H__
-#define __KB_MONGO_WATCH_H__
+#ifndef KNOWROB_MONGO_WATCH_H
+#define KNOWROB_MONGO_WATCH_H
 
 #include <mongoc.h>
 #include <string>
@@ -23,48 +23,50 @@
 // knowrob_mongo
 #include <knowrob/mongodb/MongoCollection.h>
 
-class MongoWatcher {
-public:
-	MongoWatcher(
-		mongoc_client_pool_t *pool,
-		const char *db_name,
-		const char *coll_name,
-		const std::string &callback_goal,
-		const PlTerm &query_term);
-	~MongoWatcher();
+namespace knowrob {
+    class MongoWatcher {
+    public:
+        MongoWatcher(
+                mongoc_client_pool_t *pool,
+                const char *db_name,
+                const char *coll_name,
+                const std::string &callback_goal,
+                const PlTerm &query_term);
+        ~MongoWatcher();
 
-	bool next(long watcher_id);
+        bool next(long watcher_id);
 
-protected:
-	MongoCollection *collection_;
-	std::string callback_goal_;
-	mongoc_change_stream_t *stream_;
-};
+    protected:
+        MongoCollection *collection_;
+        std::string callback_goal_;
+        mongoc_change_stream_t *stream_;
+    };
 
-class MongoWatch {
-public:
-	MongoWatch(mongoc_client_pool_t *client_pool);
-	~MongoWatch();
+    class MongoWatch {
+    public:
+        explicit MongoWatch(mongoc_client_pool_t *client_pool);
+        ~MongoWatch();
 
-	long watch(const char *db_name,
-			   const char *coll_name,
-			   const std::string &callback_goal,
-			   const PlTerm &query_term);
+        long watch(const char *db_name,
+                   const char *coll_name,
+                   const std::string &callback_goal,
+                   const PlTerm &query_term);
 
-	void unwatch(long watcher_id);
+        void unwatch(long watcher_id);
 
-protected:
-	mongoc_client_pool_t *client_pool_;
-	std::map<long, MongoWatcher*> watcher_map_;
+    protected:
+        mongoc_client_pool_t *client_pool_;
+        std::map<long, MongoWatcher*> watcher_map_;
 
-	std::thread *thread_;
-	bool isRunning_;
-	std::mutex lock_;
-	static std::atomic<long> id_counter_;
+        std::thread *thread_;
+        bool isRunning_;
+        std::mutex lock_;
+        static std::atomic<long> id_counter_;
 
-	void startWatchThread();
-	void stopWatchThread();
-	void loop();
-};
+        void startWatchThread();
+        void stopWatchThread();
+        void loop();
+    };
+}
 
-#endif //__KB_MONGO_WATCH_H__
+#endif //KNOWROB_MONGO_WATCH_H

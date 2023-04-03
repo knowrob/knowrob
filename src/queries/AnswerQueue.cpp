@@ -6,22 +6,22 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/queries/QueryResultQueue.h>
+#include <knowrob/queries/AnswerQueue.h>
 
 using namespace knowrob;
 
-QueryResultQueue::QueryResultQueue()
-: QueryResultStream()
+AnswerQueue::AnswerQueue()
+: AnswerStream()
 {}
 
-QueryResultQueue::~QueryResultQueue()
+AnswerQueue::~AnswerQueue()
 {
 	if(isOpened()) {
-		pushToQueue(QueryResultStream::eos());
+		pushToQueue(AnswerStream::eos());
 	}
 }
 
-void QueryResultQueue::pushToQueue(const QueryResultPtr &item)
+void AnswerQueue::pushToQueue(const AnswerPtr &item)
 {
 	{
 		std::lock_guard<std::mutex> lock(queue_mutex_);
@@ -30,27 +30,27 @@ void QueryResultQueue::pushToQueue(const QueryResultPtr &item)
 	queue_CV_.notify_one();
 }
 
-void QueryResultQueue::push(const QueryResultPtr &item)
+void AnswerQueue::push(const AnswerPtr &item)
 {
 	pushToQueue(item);
 }
 
-QueryResultPtr& QueryResultQueue::front()
+AnswerPtr& AnswerQueue::front()
 {
 	std::unique_lock<std::mutex> lock(queue_mutex_);
 	queue_CV_.wait(lock, [&]{ return !queue_.empty(); });
 	return queue_.front();
 }
 
-void QueryResultQueue::pop()
+void AnswerQueue::pop()
 {
 	std::lock_guard<std::mutex> lock(queue_mutex_);
 	queue_.pop();
 }
 
-QueryResultPtr QueryResultQueue::pop_front()
+AnswerPtr AnswerQueue::pop_front()
 {
-	QueryResultPtr x = front();
+	AnswerPtr x = front();
 	pop();
 	return x;
 }

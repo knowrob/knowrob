@@ -18,7 +18,7 @@
 #include "knowrob/reasoner/prolog/algebra.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Bottom.h"
-#include "knowrob/queries/QueryResultQueue.h"
+#include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/graphs/PrefixRegistry.h"
 
 using namespace knowrob;
@@ -195,7 +195,7 @@ std::shared_ptr<PredicateDescription> PrologReasoner::getPredicateDescription(
 		auto solution = oneSolution(std::make_shared<Predicate>(Predicate(
 				current_predicate_f, { indicator->toTerm(), type_v })));
 
-		if(QueryResultStream::isEOS(solution)) {
+		if(AnswerStream::isEOS(solution)) {
 			// FIXME: this is not safe if files are consulted at runtime
 			static std::shared_ptr<PredicateDescription> nullDescr;
 			predicateDescriptions_[*indicator] = nullDescr;
@@ -225,7 +225,7 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 	auto result = oneSolution(std::make_shared<Predicate>(Predicate(
 				"read_query", { termAtom, termVar, opts })), nullptr, false);
 	
-	if(QueryResultStream::isEOS(result)) {
+	if(AnswerStream::isEOS(result)) {
 		return Bottom::get();
 	}
 	else {
@@ -262,31 +262,31 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 bool PrologReasoner::eval(const std::shared_ptr<Predicate> &p,
                           const char *moduleName,
                           bool doTransformQuery) {
-    return !QueryResultStream::isEOS(oneSolution(p, moduleName, doTransformQuery));
+    return !AnswerStream::isEOS(oneSolution(p, moduleName, doTransformQuery));
 }
 
 bool PrologReasoner::eval(const std::shared_ptr<const Query> &q,
                               const char *moduleName,
                               bool doTransformQuery) {
-        return !QueryResultStream::isEOS(oneSolution(q, moduleName, doTransformQuery));
+        return !AnswerStream::isEOS(oneSolution(q, moduleName, doTransformQuery));
 }
 
-QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
-										   const char *moduleName,
-										   bool doTransformQuery)
+AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
+                                      const char *moduleName,
+                                      bool doTransformQuery)
 {
 	return oneSolution(std::make_shared<Query>(goal), moduleName, doTransformQuery);
 }
 
-QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
-										   const char *moduleName,
-										   bool doTransformQuery)
+AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
+                                      const char *moduleName,
+                                      bool doTransformQuery)
 {
-	QueryResultPtr result;
+	AnswerPtr result;
 
 	// create an output queue for the query
-	auto outputStream = std::make_shared<QueryResultQueue>();
-	auto outputChannel = QueryResultStream::Channel::create(outputStream);
+	auto outputStream = std::make_shared<AnswerQueue>();
+	auto outputChannel = AnswerStream::Channel::create(outputStream);
 	auto queryInstance = std::make_shared<QueryInstance>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
 	// create a runner for a worker thread
@@ -302,23 +302,23 @@ QueryResultPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &g
 	return outputStream->pop_front();
 }
 
-std::list<QueryResultPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
-													   const char *moduleName,
-													   bool doTransformQuery)
+std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
+                                                  const char *moduleName,
+                                                  bool doTransformQuery)
 {
 	return allSolutions(std::make_shared<Query>(goal), moduleName, doTransformQuery);
 }
 
-std::list<QueryResultPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
-													   const char *moduleName,
-													   bool doTransformQuery)
+std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
+                                                  const char *moduleName,
+                                                  bool doTransformQuery)
 {
-	std::list<QueryResultPtr> results;
-	QueryResultPtr nextResult;
+	std::list<AnswerPtr> results;
+	AnswerPtr nextResult;
 	
 	// create an output queue for the query
-	auto outputStream = std::make_shared<QueryResultQueue>();
-	auto outputChannel = QueryResultStream::Channel::create(outputStream);
+	auto outputStream = std::make_shared<AnswerQueue>();
+	auto outputChannel = AnswerStream::Channel::create(outputStream);
 	auto queryInstance = std::make_shared<QueryInstance>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
 	// create a runner for a worker thread
@@ -333,12 +333,12 @@ std::list<QueryResultPtr> PrologReasoner::allSolutions(const std::shared_ptr<con
 	PrologReasoner::threadPool().pushWork(workerGoal);
 	// wait until work is done, and push EOS
 	workerGoal->join();
-	outputChannel->push(QueryResultStream::eos());
+	outputChannel->push(AnswerStream::eos());
 	// get all results
 	while(true) {
 		nextResult = outputStream->pop_front();
 		
-		if(QueryResultStream::isEOS(nextResult)) {
+		if(AnswerStream::isEOS(nextResult)) {
 			break;
 		}
 		else {
@@ -398,7 +398,7 @@ void PrologReasoner::runQueryInstance(uint32_t queryID,
 }
 
 void PrologReasoner::finishQuery(uint32_t queryID,
-								 const std::shared_ptr<QueryResultStream::Channel> &os,
+								 const std::shared_ptr<AnswerStream::Channel> &os,
 								 bool isImmediateStopRequested)
 {
 	// Get query request from query ID
@@ -427,7 +427,7 @@ void PrologReasoner::finishQuery(uint32_t queryID,
 				x->stop(false);
 			}
 		}
-		os->push(QueryResultStream::eos());
+		os->push(AnswerStream::eos());
 	}
 	else {
 		// push EOS message to indicate to subscribers that no more
@@ -438,7 +438,7 @@ void PrologReasoner::finishQuery(uint32_t queryID,
 		}
 		if(isEmpty) {
 			// cleanup if no runners are active anymore
-			os->push(QueryResultStream::eos());
+			os->push(AnswerStream::eos());
 			delete req;
 			{
 				// protect activeQueries_ with request_mutex_

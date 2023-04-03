@@ -12,23 +12,23 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
-#include <knowrob/queries/QueryResultStream.h>
+#include <knowrob/queries/AnswerStream.h>
 
 namespace knowrob {
 	/**
 	 * A queue of QueryResult objects.
 	 */
-	class QueryResultQueue : public QueryResultStream {
+	class AnswerQueue : public AnswerStream {
 	public:
-		QueryResultQueue();
-		~QueryResultQueue();
+		AnswerQueue();
+		~AnswerQueue();
 		
 		/**
 		 * Get the front element of this queue without removing it.
 		 * This will block until the queue is non empty.
 		 * @return the front element of the queue.
 		 */
-		QueryResultPtr& front();
+		AnswerPtr& front();
 		
 		/**
 		 * Remove the front element of this queue.
@@ -39,7 +39,7 @@ namespace knowrob {
 		 * Get front element and remove it from the queue.
 		 * @return the front element of the queue.
 		 */
-		QueryResultPtr pop_front();
+		AnswerPtr pop_front();
 
         /**
          * @return true if the queue is currently empty.
@@ -47,13 +47,13 @@ namespace knowrob {
         bool empty() const { return queue_.empty(); }
 
 	protected:
-		std::queue<QueryResultPtr> queue_;
+		std::queue<AnswerPtr> queue_;
 		std::condition_variable queue_CV_;
 		std::mutex queue_mutex_;
-		
+
 		// Override QueryResultStream
-		void push(const QueryResultPtr &item) override;
-		void pushToQueue(const QueryResultPtr &item);
+		void push(const AnswerPtr &item) override;
+		void pushToQueue(const AnswerPtr &item);
 	};
 }
 

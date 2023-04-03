@@ -6,18 +6,18 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <knowrob/queries/QueryResult.h>
+#include <knowrob/queries/Answer.h>
 
 using namespace knowrob;
 
-QueryResult::QueryResult()
+Answer::Answer()
 : substitution_(std::make_shared<Substitution>()),
   o_timeInterval_(std::nullopt),
   o_confidence_(std::nullopt)
 {
 }
 
-QueryResult::QueryResult(const QueryResult &other)
+Answer::Answer(const Answer &other)
 : substitution_(std::make_shared<Substitution>(*other.substitution_)),
   predicates_(other.predicates_)
 {
@@ -25,29 +25,29 @@ QueryResult::QueryResult(const QueryResult &other)
 	setConfidenceValue(other.confidence_);
 }
 
-const std::shared_ptr<const QueryResult>& QueryResult::emptyResult()
+const std::shared_ptr<const Answer>& Answer::emptyResult()
 {
-	static auto result = std::make_shared<const QueryResult>();
+	static auto result = std::make_shared<const Answer>();
 	return result;
 }
 
-void QueryResult::substitute(const Variable &var, const TermPtr &term)
+void Answer::substitute(const Variable &var, const TermPtr &term)
 {
 	substitution_->set(var, term);
 }
 
-bool QueryResult::hasSubstitution(const Variable &var)
+bool Answer::hasSubstitution(const Variable &var)
 {
 	return substitution_->contains(var);
 }
 
-void QueryResult::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
-							   const std::shared_ptr<Predicate> &predicate)
+void Answer::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
+                          const std::shared_ptr<Predicate> &predicate)
 {
 	predicates_.emplace_back(reasonerModule, predicate);
 }
 
-void QueryResult::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
+void Answer::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
 {
 	timeInterval_ = timeInterval;
 	o_timeInterval_ = (timeInterval_ ?
@@ -55,7 +55,7 @@ void QueryResult::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInter
 			std::optional<const TimeInterval*>(std::nullopt));
 }
 
-void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence)
+void Answer::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence)
 {
 	confidence_ = confidence;
 	o_confidence_ = (confidence_ ?
@@ -63,7 +63,7 @@ void QueryResult::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &con
 			std::optional<const ConfidenceValue*>(std::nullopt));
 }
 
-bool QueryResult::combine(const std::shared_ptr<const QueryResult> &other, Reversible *changes)
+bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *changes)
 {
 	// unify substitutions
 	if(!substitution_->unifyWith(*other->substitution_, changes)) {
@@ -89,7 +89,7 @@ bool QueryResult::combine(const std::shared_ptr<const QueryResult> &other, Rever
 	return true;
 }
 
-bool QueryResult::combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval, Reversible *reversible)
+bool Answer::combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval, Reversible *reversible)
 {
 	if(otherTimeInterval) {
 		if(o_timeInterval_.has_value()) {
@@ -109,7 +109,7 @@ bool QueryResult::combineTimeInterval(const std::shared_ptr<TimeInterval> &other
 	return false;
 }
 
-bool QueryResult::combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence)
+bool Answer::combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence)
 {
 	if(otherConfidence) {
 		if(confidence_) {
@@ -129,7 +129,7 @@ bool QueryResult::combineConfidence(const std::shared_ptr<ConfidenceValue> &othe
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::QueryResult& solution) //NOLINT
+	std::ostream& operator<<(std::ostream& os, const knowrob::Answer& solution) //NOLINT
 	{
 		if(solution.confidence().has_value()) {
 			os << *solution.confidence().value() << "::";
