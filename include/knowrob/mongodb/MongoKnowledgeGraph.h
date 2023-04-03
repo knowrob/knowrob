@@ -43,10 +43,11 @@ namespace knowrob {
         bson_decimal128_t timeZero_;
         bson_decimal128_t timeInfinity_;
 
+        static std::set<std::string_view> annotationProperties_;
+        static bool hasStaticInitialization_;
+
         static std::string getSubjectString(const TripleData &tripleData, const std::string &graphName);
         static std::string getObjectString(const TripleData &tripleData, const std::string &graphName);
-
-        static bool isAnnotationProperty(const char *propertyString);
 
         bson_t* createTripleDocument(const TripleData &tripleData,
                                      const std::string &graphName,

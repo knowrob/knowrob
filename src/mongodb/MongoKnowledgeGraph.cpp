@@ -7,20 +7,16 @@
 #include <filesystem>
 #include "knowrob/Logger.h"
 #include "knowrob/URI.h"
+#include "knowrob/graphs/rdf.h"
+#include "knowrob/graphs/rdfs.h"
+#include "knowrob/graphs/owl.h"
 #include "knowrob/mongodb/MongoKnowledgeGraph.h"
 #include "knowrob/mongodb/MongoDocument.h"
 #include "knowrob/mongodb/MongoCursor.h"
 #include "knowrob/mongodb/MongoInterface.h"
-
-// aggregation pipelines
 #include "pipelines/graphHierarchy.h"
 
 #define KB_TRIPLE_VERSION_KEY "tripledbVersionString"
-
-// TODO: better handling of IRIs
-#define IRI_RDFS_SUBCLASS_OF "http://www.w3.org/2000/01/rdf-schema#subClassOf"
-#define IRI_RDFS_SUBPROPERTY_OF "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
-#define IRI_RDF_TYPE "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 
 using namespace knowrob;
 
@@ -169,7 +165,7 @@ void MongoKnowledgeGraph::updateGraphHierarchy(MongoTripleLoader &loader)
     // update class hierarchy
     for(auto &assertion : loader.subClassAssertions()) {
         auto update = MongoDocument(mngUpdateKGHierarchyO(
-                tripleCollection_->name(), IRI_RDFS_SUBCLASS_OF,
+                tripleCollection_->name(), rdfs::IRI_subClassOf.c_str(),
                 assertion.first.c_str(), assertion.second.c_str()));
         oneCollection_->evalAggregation(update.bson());
     }
@@ -177,24 +173,26 @@ void MongoKnowledgeGraph::updateGraphHierarchy(MongoTripleLoader &loader)
     // update property hierarchy
     for(auto &assertion : loader.subPropertyAssertions()) {
         auto update = MongoDocument(mngUpdateKGHierarchyO(
-                tripleCollection_->name(), IRI_RDFS_SUBPROPERTY_OF,
+                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
                 assertion.first.c_str(), assertion.second.c_str()));
         oneCollection_->evalAggregation(update.bson());
     }
 
     // update property assertions
-    std::set<std::string> visited;
+    std::set<std::string_view> visited;
     for(auto &assertion : loader.subPropertyAssertions()) {
         if(visited.count(assertion.first)>0) continue;
         visited.insert(assertion.first);
 
         auto update = MongoDocument(mngUpdateKGHierarchyP(
-                tripleCollection_->name(), IRI_RDFS_SUBPROPERTY_OF,
+                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
                 assertion.first.c_str()));
         oneCollection_->evalAggregation(update.bson());
     }
 }
 
+std::set<std::string_view> MongoTripleLoader::annotationProperties_ = std::set<std::string_view>();
+bool MongoTripleLoader::hasStaticInitialization_ = false;
 
 MongoTripleLoader::MongoTripleLoader(std::string graphName,
                                      const std::shared_ptr<MongoCollection> &collection,
@@ -208,6 +206,13 @@ MongoTripleLoader::MongoTripleLoader(std::string graphName,
 {
     bson_decimal128_from_string ("0.0", &timeZero_);
     bson_decimal128_from_string (BSON_DECIMAL128_INF, &timeInfinity_);
+    if(!hasStaticInitialization_) {
+        hasStaticInitialization_ = true;
+        annotationProperties_.insert(rdfs::IRI_comment);
+        annotationProperties_.insert(rdfs::IRI_seeAlso);
+        annotationProperties_.insert(rdfs::IRI_label);
+        annotationProperties_.insert(owl::IRI_versionInfo);
+    }
 }
 
 static inline std::string formatBNode(const char *name, const std::string &graphName)
@@ -283,39 +288,34 @@ bson_t* MongoTripleLoader::createTripleDocument(const TripleData &tripleData,
     return nullptr;
 }
 
-bool MongoTripleLoader::isAnnotationProperty(const char *propertyString)
-{
-    // TODO: better handling of annotation properties.
-    //       best would be to maintain property hierarchy+types in memory.
-    return !strcmp(propertyString, "http://www.w3.org/2000/01/rdf-schema#comment") ||
-           !strcmp(propertyString, "http://www.w3.org/2000/01/rdf-schema#seeAlso") ||
-           !strcmp(propertyString, "http://www.w3.org/2000/01/rdf-schema#label") ||
-           !strcmp(propertyString, "http://www.w3.org/2002/07/owl#versionInfo");
-}
-
 void MongoTripleLoader::loadTriple(const TripleData &tripleData)
 {
     bool isTaxonomic=false;
 
     // skip annotations. they may contain spacial characters and cannot ne indexed.
     // TODO: optionally allow inserting annotation properties into separate collection
-    if(isAnnotationProperty(tripleData.predicate)) return;
+    if(annotationProperties_.count(
+            std::string_view(tripleData.predicate)) > 0) return;
 
     // keep track of imports, subclasses, and subproperties
-    if(!strcmp(tripleData.predicate, "http://www.w3.org/2002/07/owl#imports")) {
+    // TODO: copying strings below could be avoided if processing happens before the
+    //       parser is destroyed. which is currently not the case when updateGraphHierarchy() is called.
+    //       there are quite a few strings copied so would make sense to rather refer to memory allocated
+    //       by the parser if possible.
+    if(owl::IRI_imports == tripleData.predicate) {
         imports_.emplace_back(tripleData.object);
     }
-    else if(!strcmp(tripleData.predicate, IRI_RDFS_SUBCLASS_OF)) {
+    else if(rdfs::isSubClassOfIRI(tripleData.predicate)) {
         subClassAssertions_.emplace_back(getSubjectString(tripleData, graphName_),
                                          getObjectString(tripleData, graphName_));
         isTaxonomic = true;
     }
-    else if(!strcmp(tripleData.predicate, IRI_RDFS_SUBPROPERTY_OF)) {
+    else if(rdfs::isSubPropertyOfIRI(tripleData.predicate)) {
         subPropertyAssertions_.emplace_back(getSubjectString(tripleData, graphName_),
                                             getObjectString(tripleData, graphName_));
         isTaxonomic = true;
     }
-    else if(!strcmp(tripleData.predicate, IRI_RDF_TYPE)) {
+    else if(rdf::isTypeIRI(tripleData.predicate)) {
         isTaxonomic = true;
     }
 

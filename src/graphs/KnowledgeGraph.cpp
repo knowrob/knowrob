@@ -10,6 +10,7 @@
 
 #include "knowrob/Logger.h"
 #include "knowrob/graphs/KnowledgeGraph.h"
+#include "knowrob/graphs/xsd.h"
 
 namespace fs = std::filesystem;
 namespace qi = boost::spirit::qi;
@@ -32,32 +33,16 @@ struct TripleHandler {
 
 static RDFType getRDFTypeFromURI(const char *typeURI)
 {
-    // TODO: improve this. e.g. would be nice if custom types could be handled.
-    //        e.g. qudt defines a lot of types.
-    if(!typeURI || !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#string")) {
+    if(!typeURI || xsd::isStringType(typeURI))
         return RDF_STRING_LITERAL;
-    }
-    else if(!strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#int") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#integer") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#positiveInteger") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#negativeInteger") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#nonNegativeInteger") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#nonPositiveInteger") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#long") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#unsignedInt") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#unsignedLong") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#unsignedShort")) {
+    else if(xsd::isIntegerType(typeURI))
         return RDF_INT64_LITERAL;
-    }
-    else if(!strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#double") ||
-            !strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#float")) {
+    else if(xsd::isDoubleType(typeURI))
         return RDF_DOUBLE_LITERAL;
-    }
-    else if(!strcmp(typeURI, "http://www.w3.org/2001/XMLSchema#boolean")) {
+    else if(xsd::isBooleanType(typeURI))
         return RDF_BOOLEAN_LITERAL;
-    }
     else {
-        KB_WARN("Unknown RDF type {} treated as string.", typeURI);
+        KB_WARN("Unknown data type {} treated as string.", typeURI);
         return RDF_STRING_LITERAL;
     }
 }
@@ -276,5 +261,5 @@ TEST_F(KnowledgeGraphTest, GraphNameFromURI)
 
 TEST_F(KnowledgeGraphTest, GraphVersionFromURI)
 {
-    EXPECT_EQ(KnowledgeGraph::getGraphVersionFromURI("http://foo/v1.2.2/owl"), "v1.2.2");
+    EXPECT_EQ(KnowledgeGraph::getGraphVersionFromURI("https://foo/v1.2.2/owl"), "v1.2.2");
 }
