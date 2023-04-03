@@ -10,7 +10,9 @@
 namespace knowrob::rdf {
     const std::string IRI_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
-    bool isTypeIRI(std::string_view iri) { return iri == IRI_type; }
+    bool isTypeIRI(std::string_view iri) {
+        return iri == IRI_type;
+    }
 } // knowrob::rdf
 
 #endif //KNOWROB_RDF_H

@@ -16,8 +16,7 @@ namespace knowrob {
         RDF_STRING_LITERAL,
         RDF_DOUBLE_LITERAL,
         RDF_INT64_LITERAL,
-        RDF_BOOLEAN_LITERAL,
-        RDF_BLANK
+        RDF_BOOLEAN_LITERAL
     };
 
     enum TripleFormat {
@@ -34,11 +33,10 @@ namespace knowrob {
         TripleData() : subject(nullptr),
                        predicate(nullptr),
                        object(nullptr),
-                       objectType(RDF_BLANK) {}
+                       objectType(RDF_RESOURCE) {}
         const char* subject;
         const char *predicate;
         const char* object;
-        RDFType subjectType;
         RDFType objectType;
     };
 
@@ -46,6 +44,7 @@ namespace knowrob {
     public:
         virtual void loadTriple(const TripleData &tripleData) = 0;
         virtual void flush() = 0;
+        virtual void finish() = 0;
     };
 
     class KnowledgeGraph {
@@ -63,7 +62,10 @@ namespace knowrob {
     protected:
         raptor_world *raptorWorld_;
 
-        bool loadURI(TripleLoader &loader, const std::string &uriString, TripleFormat format);
+        bool loadURI(TripleLoader &loader,
+                     const std::string &uriString,
+                     std::string &blankPrefix,
+                     TripleFormat format);
     };
 
     using KnowledgeGraphPtr = std::shared_ptr<KnowledgeGraph>;

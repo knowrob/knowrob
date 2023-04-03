@@ -73,24 +73,17 @@ static void processTriple(void* user_data, raptor_statement* triple)
     }
 
     // read predicate
-    handler->triple.predicate = (const char*)
-            raptor_uri_as_string(triple->predicate->value.uri);
-
+    handler->triple.predicate = (const char*) raptor_uri_as_string(triple->predicate->value.uri);
     // read subject
-    if(triple->subject->type == RAPTOR_TERM_TYPE_BLANK) {
+    if(triple->subject->type == RAPTOR_TERM_TYPE_BLANK)
         handler->triple.subject = (const char*) triple->subject->value.blank.string;
-        handler->triple.subjectType = RDF_BLANK;
-    }
-    else {
-        handler->triple.subject = (const char*)
-                raptor_uri_as_string(triple->subject->value.uri);
-        handler->triple.subjectType = RDF_RESOURCE;
-    }
+    else
+        handler->triple.subject = (const char*) raptor_uri_as_string(triple->subject->value.uri);
 
     // read object
     if(triple->object->type == RAPTOR_TERM_TYPE_BLANK) {
         handler->triple.object = (const char*) triple->object->value.blank.string;
-        handler->triple.objectType = RDF_BLANK;
+        handler->triple.objectType = RDF_RESOURCE;
     }
     else if(triple->object->type == RAPTOR_TERM_TYPE_LITERAL) {
         handler->triple.object = (const char*) triple->object->value.literal.string;
@@ -129,7 +122,10 @@ KnowledgeGraph::~KnowledgeGraph()
     raptor_free_world(raptorWorld_);
 }
 
-bool KnowledgeGraph::loadURI(TripleLoader &loader, const std::string &uriString, TripleFormat format)
+bool KnowledgeGraph::loadURI(TripleLoader &loader,
+                             const std::string &uriString,
+                             std::string &blankPrefix,
+                             TripleFormat format)
 {
     // create a raptor parser
     raptor_parser *parser;
@@ -148,6 +144,12 @@ bool KnowledgeGraph::loadURI(TripleLoader &loader, const std::string &uriString,
     // pass TripleHandler as user data to statement_handler of raptor
     TripleHandler handler(&loader);
     raptor_parser_set_statement_handler(parser, &handler, processTriple);
+    // make sure blanks are generated with proper prefix.
+    // FIXME: changing this globally makes it impossible to call this function from multiple threads.
+    //      - add a mutex
+    //      - any way this can be changed on per-parser level?
+    //      - else one could have short living raptor worlds, one for each call
+    raptor_world_set_generate_bnodeid_parameters(raptorWorld_, blankPrefix.data(), 1);
 
     raptor_uri *uri, *base_uri;
     int result;
@@ -168,6 +170,7 @@ bool KnowledgeGraph::loadURI(TripleLoader &loader, const std::string &uriString,
 
     // cleanup
     loader.flush();
+    loader.finish();
     raptor_free_parser(parser);
     raptor_free_uri(uri);
     raptor_free_uri(base_uri);

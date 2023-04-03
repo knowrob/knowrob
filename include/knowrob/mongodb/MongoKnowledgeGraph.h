@@ -17,6 +17,7 @@ namespace knowrob {
     public:
         MongoTripleLoader(std::string graphName,
                           const std::shared_ptr<MongoCollection> &collection,
+                          const std::shared_ptr<MongoCollection> &oneCollection,
                           uint32_t batchSize=1000);
 
         const auto& imports() const { return imports_; }
@@ -27,27 +28,27 @@ namespace knowrob {
         // Override TripleLoader
         void loadTriple(const TripleData &tripleData) override;
         void flush() override;
+        void finish() override;
 
     protected:
         const std::string graphName_;
+        std::string blankPrefix_;
         const uint32_t batchSize_;
         uint32_t operationCounter_;
 
         std::shared_ptr<MongoCollection> tripleCollection_;
+        std::shared_ptr<MongoCollection> oneCollection_;
         std::shared_ptr<MongoBulkOperation> bulkOperation_;
 
         std::list<std::string> imports_;
-        std::list<std::pair<std::string,std::string>> subClassAssertions_;
-        std::list<std::pair<std::string,std::string>> subPropertyAssertions_;
+        std::list<std::pair<const char*,const char*>> subClassAssertions_;
+        std::list<std::pair<const char*,const char*>> subPropertyAssertions_;
 
         bson_decimal128_t timeZero_;
         bson_decimal128_t timeInfinity_;
 
         static std::set<std::string_view> annotationProperties_;
         static bool hasStaticInitialization_;
-
-        static std::string getSubjectString(const TripleData &tripleData, const std::string &graphName);
-        static std::string getObjectString(const TripleData &tripleData, const std::string &graphName);
 
         bson_t* createTripleDocument(const TripleData &tripleData,
                                      const std::string &graphName,
@@ -80,8 +81,6 @@ namespace knowrob {
         void setCurrentGraphVersion(const std::string &graphURI,
                                     const std::string &graphVersion,
                                     const std::string &graphName);
-
-        void updateGraphHierarchy(MongoTripleLoader &loader);
     };
 
 } // knowrob

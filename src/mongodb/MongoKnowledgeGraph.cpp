@@ -123,7 +123,7 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     // delete old triples if a new version is loaded
     if(currentVersion) dropGraph(graphName);
 
-    MongoTripleLoader loader(graphName, tripleCollection_);
+    MongoTripleLoader loader(graphName, tripleCollection_, oneCollection_);
     // some OWL files are downloaded compile-time via CMake,
     // they are downloaded into owl/external e.g. there are SOMA.owl and DUL.owl.
     // TODO: rework handling of cmake-downloaded ontologies, e.g. should also work when installed
@@ -133,11 +133,10 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
 
     KB_INFO("Loading ontology at '{}' with version \"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, *importURI, format)) {
+    if(!loadURI(loader, *importURI, graphName, format)) {
         KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
-    updateGraphHierarchy(loader);
 
     // update the version record of the ontology
     setCurrentGraphVersion(resolved, newVersion, graphName);
@@ -150,55 +149,17 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     return true;
 }
 
-void MongoKnowledgeGraph::updateGraphHierarchy(MongoTripleLoader &loader)
-{
-    // below performs the update purely server-side.
-    // each step computes the parents in class or property hierarchy.
-    // However, there are many steps for large ontologies so this is very
-    // time consuming.
-    // TODO: can the hierarchy update be done faster?
-    //       - keeping the class and property hierarchy in a std::map could speed things up.
-    //       - try doing all updates in one call.
-    //         But it seems problematic doing all updates in one call using $merge stage. seems
-    //         iterations cannot access updates made in previous iterations.
-
-    // update class hierarchy
-    for(auto &assertion : loader.subClassAssertions()) {
-        auto update = MongoDocument(mngUpdateKGHierarchyO(
-                tripleCollection_->name(), rdfs::IRI_subClassOf.c_str(),
-                assertion.first.c_str(), assertion.second.c_str()));
-        oneCollection_->evalAggregation(update.bson());
-    }
-
-    // update property hierarchy
-    for(auto &assertion : loader.subPropertyAssertions()) {
-        auto update = MongoDocument(mngUpdateKGHierarchyO(
-                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
-                assertion.first.c_str(), assertion.second.c_str()));
-        oneCollection_->evalAggregation(update.bson());
-    }
-
-    // update property assertions
-    std::set<std::string_view> visited;
-    for(auto &assertion : loader.subPropertyAssertions()) {
-        if(visited.count(assertion.first)>0) continue;
-        visited.insert(assertion.first);
-
-        auto update = MongoDocument(mngUpdateKGHierarchyP(
-                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
-                assertion.first.c_str()));
-        oneCollection_->evalAggregation(update.bson());
-    }
-}
-
 std::set<std::string_view> MongoTripleLoader::annotationProperties_ = std::set<std::string_view>();
 bool MongoTripleLoader::hasStaticInitialization_ = false;
 
 MongoTripleLoader::MongoTripleLoader(std::string graphName,
-                                     const std::shared_ptr<MongoCollection> &collection,
+                                     const std::shared_ptr<MongoCollection> &tripleCollection,
+                                     const std::shared_ptr<MongoCollection> &oneCollection,
                                      const uint32_t batchSize)
                                      : graphName_(std::move(graphName)),
-                                       tripleCollection_(collection),
+                                       blankPrefix_(std::string("_")+graphName),
+                                       tripleCollection_(tripleCollection),
+                                       oneCollection_(oneCollection),
                                        batchSize_(batchSize),
                                        operationCounter_(0),
                                        timeZero_(),
@@ -215,28 +176,8 @@ MongoTripleLoader::MongoTripleLoader(std::string graphName,
     }
 }
 
-static inline std::string formatBNode(const char *name, const std::string &graphName)
-{
-    return std::string()+name+"_"+graphName;
-}
-
-std::string MongoTripleLoader::getSubjectString(const TripleData &tripleData, const std::string &graphName)
-{
-    return tripleData.subjectType == RDF_BLANK ?
-           formatBNode(tripleData.subject, graphName).c_str() : tripleData.subject;
-}
-
-std::string MongoTripleLoader::getObjectString(const TripleData &tripleData, const std::string &graphName)
-{
-    return tripleData.objectType == RDF_BLANK ?
-           formatBNode(tripleData.object, graphName).c_str() : tripleData.object;
-}
-
-#define KNOWROB_BCON_SUBJECT(Triple) BCON_UTF8(Triple.subjectType == RDF_BLANK ? \
-                    formatBNode(Triple.subject,graphName).c_str() : Triple.subject)
-
-#define KNOWROB_BCON_NEW_TRIPLE_O(Triple, ObjectValue) BCON_NEW(\
-    "s", KNOWROB_BCON_SUBJECT(Triple),              \
+#define KNOWROB_BCON_NEW_TRIPLE_O(Triple,ObjectValue) BCON_NEW(\
+    "s", BCON_UTF8(Triple.subject),                 \
     "p", BCON_UTF8(Triple.predicate),               \
     "o", ObjectValue,                               \
     "o*", "[", ObjectValue, "]",                    \
@@ -244,8 +185,8 @@ std::string MongoTripleLoader::getObjectString(const TripleData &tripleData, con
     "scope", "{", "time", "{", "since", BCON_DECIMAL128(&timeZero_), \
                                "until", BCON_DECIMAL128(&timeInfinity_), "}", "}")
 
-#define KNOWROB_BCON_NEW_TRIPLE_P(Triple, ObjectValue) BCON_NEW(\
-    "s", KNOWROB_BCON_SUBJECT(Triple),              \
+#define KNOWROB_BCON_NEW_TRIPLE_P(Triple,ObjectValue) BCON_NEW(\
+    "s", BCON_UTF8(Triple.subject),                 \
     "p", BCON_UTF8(Triple.predicate),               \
     "o", ObjectValue,                               \
     "p*", "[", BCON_UTF8(Triple.predicate), "]",    \
@@ -262,11 +203,6 @@ bson_t* MongoTripleLoader::createTripleDocument(const TripleData &tripleData,
         case RDF_STRING_LITERAL:
             if(isTaxonomic) return KNOWROB_BCON_NEW_TRIPLE_O(tripleData, BCON_UTF8(tripleData.object));
             else            return KNOWROB_BCON_NEW_TRIPLE_P(tripleData, BCON_UTF8(tripleData.object));
-        case RDF_BLANK: {
-            auto objectValue = formatBNode(tripleData.object, graphName);
-            if(isTaxonomic) return KNOWROB_BCON_NEW_TRIPLE_O(tripleData, BCON_UTF8(objectValue.c_str()));
-            else            return KNOWROB_BCON_NEW_TRIPLE_P(tripleData, BCON_UTF8(objectValue.c_str()));
-        }
         case RDF_DOUBLE_LITERAL: {
             auto objectValue = strtod(tripleData.object, nullptr);
             if(isTaxonomic) return KNOWROB_BCON_NEW_TRIPLE_O(tripleData, BCON_DOUBLE(objectValue));
@@ -298,25 +234,19 @@ void MongoTripleLoader::loadTriple(const TripleData &tripleData)
             std::string_view(tripleData.predicate)) > 0) return;
 
     // keep track of imports, subclasses, and subproperties
-    // TODO: copying strings below could be avoided if processing happens before the
-    //       parser is destroyed. which is currently not the case when updateGraphHierarchy() is called.
-    //       there are quite a few strings copied so would make sense to rather refer to memory allocated
-    //       by the parser if possible.
-    if(owl::IRI_imports == tripleData.predicate) {
-        imports_.emplace_back(tripleData.object);
-    }
-    else if(rdfs::isSubClassOfIRI(tripleData.predicate)) {
-        subClassAssertions_.emplace_back(getSubjectString(tripleData, graphName_),
-                                         getObjectString(tripleData, graphName_));
+    if(rdfs::isSubClassOfIRI(tripleData.predicate)) {
+        subClassAssertions_.emplace_back(tripleData.subject, tripleData.object);
         isTaxonomic = true;
     }
     else if(rdfs::isSubPropertyOfIRI(tripleData.predicate)) {
-        subPropertyAssertions_.emplace_back(getSubjectString(tripleData, graphName_),
-                                            getObjectString(tripleData, graphName_));
+        subPropertyAssertions_.emplace_back(tripleData.subject, tripleData.object);
         isTaxonomic = true;
     }
     else if(rdf::isTypeIRI(tripleData.predicate)) {
         isTaxonomic = true;
+    }
+    else if(owl::IRI_imports == tripleData.predicate) {
+        imports_.emplace_back(tripleData.object);
     }
 
     auto document = createTripleDocument(tripleData, graphName_, isTaxonomic);
@@ -327,6 +257,47 @@ void MongoTripleLoader::loadTriple(const TripleData &tripleData)
     bson_free(document);
 
     if(operationCounter_++ > batchSize_) flush();
+}
+
+void MongoTripleLoader::finish()
+{
+    // below performs the update purely server-side.
+    // each step computes the parents in class or property hierarchy.
+    // However, there are many steps for large ontologies so this is very
+    // time consuming.
+    // TODO: can the hierarchy update be done faster?
+    //       - keeping the class and property hierarchy in a std::map could speed things up.
+    //       - try doing all updates in one call.
+    //         But it seems problematic doing all updates in one call using $merge stage. seems
+    //         iterations cannot access updates made in previous iterations.
+
+    // update class hierarchy
+    for(auto &assertion : subClassAssertions_) {
+        auto update = MongoDocument(mngUpdateKGHierarchyO(
+                tripleCollection_->name(), rdfs::IRI_subClassOf.c_str(),
+                assertion.first, assertion.second));
+        oneCollection_->evalAggregation(update.bson());
+    }
+
+    // update property hierarchy
+    for(auto &assertion : subPropertyAssertions_) {
+        auto update = MongoDocument(mngUpdateKGHierarchyO(
+                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
+                assertion.first, assertion.second));
+        oneCollection_->evalAggregation(update.bson());
+    }
+
+    // update property assertions
+    std::set<std::string_view> visited;
+    for(auto &assertion : subPropertyAssertions_) {
+        if(visited.count(assertion.first)>0) continue;
+        visited.insert(assertion.first);
+
+        auto update = MongoDocument(mngUpdateKGHierarchyP(
+                tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
+                assertion.first));
+        oneCollection_->evalAggregation(update.bson());
+    }
 }
 
 void MongoTripleLoader::flush()
