@@ -55,6 +55,15 @@ namespace knowrob {
 
         ~KnowledgeGraph();
 
+        /**
+         * Read RDF ontology from a remote URI or a local file, and load
+         * triple data into the database backend.
+         * @param uriString the URI pointing to a RDF file
+         * @param format the format of the file
+         * @return true if the file was loaded successfully
+         */
+        virtual bool loadTriples(const std::string &uriString, TripleFormat format) = 0;
+
         static std::string getGraphNameFromURI(const std::string &uriString);
         static std::string getGraphVersionFromURI(const std::string &uriString);
         static bool isGraphVersionString(const std::string &versionString);

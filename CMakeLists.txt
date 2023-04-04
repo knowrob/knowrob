@@ -201,7 +201,8 @@ add_library(knowrob_qa SHARED
 		src/mongodb/MongoKnowledgeGraph.cpp
 		src/mongodb/MongoBulkOperation.cpp
 		src/URI.cpp
-        src/graphs/xsd.cpp)
+        src/graphs/xsd.cpp
+		src/mongodb/MongoTripleLoader.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

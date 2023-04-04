@@ -12,48 +12,6 @@
 #include "MongoCollection.h"
 
 namespace knowrob {
-
-    class MongoTripleLoader : public TripleLoader {
-    public:
-        MongoTripleLoader(std::string graphName,
-                          const std::shared_ptr<MongoCollection> &collection,
-                          const std::shared_ptr<MongoCollection> &oneCollection,
-                          uint32_t batchSize=1000);
-
-        const auto& imports() const { return imports_; }
-
-        const auto& subClassAssertions() const { return subClassAssertions_; }
-        const auto& subPropertyAssertions() const { return subPropertyAssertions_; }
-
-        // Override TripleLoader
-        void loadTriple(const TripleData &tripleData) override;
-        void flush() override;
-        void finish() override;
-
-    protected:
-        const std::string graphName_;
-        const uint32_t batchSize_;
-        uint32_t operationCounter_;
-
-        std::shared_ptr<MongoCollection> tripleCollection_;
-        std::shared_ptr<MongoCollection> oneCollection_;
-        std::shared_ptr<MongoBulkOperation> bulkOperation_;
-
-        std::list<std::string> imports_;
-        std::list<std::pair<const char*,const char*>> subClassAssertions_;
-        std::list<std::pair<const char*,const char*>> subPropertyAssertions_;
-
-        bson_decimal128_t timeZero_;
-        bson_decimal128_t timeInfinity_;
-
-        static std::set<std::string_view> annotationProperties_;
-        static bool hasStaticInitialization_;
-
-        bson_t* createTripleDocument(const TripleData &tripleData,
-                                     const std::string &graphName,
-                                     bool isTaxonomic);
-    };
-
     class MongoKnowledgeGraph : public KnowledgeGraph {
     public:
         explicit MongoKnowledgeGraph(const char* db_uri="mongodb://localhost:27017",
@@ -62,27 +20,31 @@ namespace knowrob {
 
         explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
 
-        bool loadTriples(const std::string &uriString, TripleFormat format);
-
         void drop();
 
         void dropGraph(const std::string &graphName);
 
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
 
+        // Override KnowledgeGraph
+        bool loadTriples(const std::string &uriString, TripleFormat format) override;
+
     protected:
         std::shared_ptr<MongoCollection> tripleCollection_;
         std::shared_ptr<MongoCollection> oneCollection_;
 
         void initialize();
+
         void createSearchIndices();
 
-        void setCurrentGraphVersion(const std::string &graphURI,
-                                    const std::string &graphVersion,
-                                    const std::string &graphName);
+        void setCurrentGraphVersion(const std::string &graphName,
+                                    const std::string &graphURI,
+                                    const std::string &graphVersion);
 
         static const char* getDBName(const boost::property_tree::ptree &config);
+
         static const char* getCollectionName(const boost::property_tree::ptree &config);
+
         static std::string getURI(const boost::property_tree::ptree &config);
     };
 
