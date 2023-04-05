@@ -136,28 +136,28 @@ void MongoTripleLoader::finish()
 
     // update class hierarchy
     for(auto &assertion : subClassAssertions_) {
-        auto update = MongoDocument(mngUpdateKGHierarchyO(
+        MongoDocument update(mngUpdateKGHierarchyO(
                 tripleCollection_->name(), rdfs::IRI_subClassOf.c_str(),
                 assertion.first, assertion.second));
-        oneCollection_->evalAggregation(update.bson());
+        oneCollection_->evalAggregation(update);
     }
 
     // update property hierarchy
     std::set<std::string_view> visited;
     for(auto &assertion : subPropertyAssertions_) {
         visited.insert(assertion.first);
-        auto update = MongoDocument(mngUpdateKGHierarchyO(
+        MongoDocument update(mngUpdateKGHierarchyO(
                 tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
                 assertion.first, assertion.second));
-        oneCollection_->evalAggregation(update.bson());
+        oneCollection_->evalAggregation(update);
     }
 
     // update property assertions
     for(auto &newProperty : visited) {
-        auto update = MongoDocument(mngUpdateKGHierarchyP(
+        MongoDocument update(mngUpdateKGHierarchyP(
                 tripleCollection_->name(), rdfs::IRI_subPropertyOf.c_str(),
                 newProperty.data()));
-        oneCollection_->evalAggregation(update.bson());
+        oneCollection_->evalAggregation(update);
     }
 }
 

@@ -85,13 +85,13 @@ void MongoCollection::drop()
 	}
 }
 
-void MongoCollection::storeOne(const bson_t *document)
+void MongoCollection::storeOne(const MongoDocument &document)
 {
     bson_error_t err;
     if(!mongoc_collection_insert(
             coll_,
             INSERT_NO_VALIDATE_FLAG,
-            document,
+            document.bson(),
             nullptr,
             &err))
     {
@@ -99,23 +99,23 @@ void MongoCollection::storeOne(const bson_t *document)
     }
 }
 
-void MongoCollection::removeAll(const bson_t *document)
+void MongoCollection::removeAll(const MongoDocument &document)
 {
     remove(document, MONGOC_REMOVE_NONE);
 }
 
-void MongoCollection::removeOne(const bson_t *document)
+void MongoCollection::removeOne(const MongoDocument &document)
 {
     remove(document, MONGOC_REMOVE_SINGLE_REMOVE);
 }
 
-void MongoCollection::remove(const bson_t *document, mongoc_remove_flags_t flag)
+void MongoCollection::remove(const MongoDocument &document, mongoc_remove_flags_t flag)
 {
     bson_error_t err;
     if(!mongoc_collection_remove(
             coll_,
             MONGOC_REMOVE_NONE,
-            document,
+            document.bson(),
             nullptr,
             &err))
     {
@@ -124,14 +124,14 @@ void MongoCollection::remove(const bson_t *document, mongoc_remove_flags_t flag)
 }
 
 
-void MongoCollection::update(const bson_t *query, const bson_t *update)
+void MongoCollection::update(const MongoDocument &query, const MongoDocument &update)
 {
     bson_error_t err;
     if(!mongoc_collection_update(
             coll_,
             UPDATE_NO_VALIDATE_FLAG,
-            query,
-            update,
+            query.bson(),
+            update.bson(),
             nullptr,
             &err))
     {
@@ -139,12 +139,12 @@ void MongoCollection::update(const bson_t *query, const bson_t *update)
     }
 }
 
-void MongoCollection::evalAggregation(bson_t *pipeline)
+void MongoCollection::evalAggregation(const MongoDocument &pipeline)
 {
     auto cursor = mongoc_collection_aggregate(
             coll_,
             MONGOC_QUERY_NONE,
-            pipeline,
+            pipeline.bson(),
             nullptr,
             nullptr);
     // make sure cursor has no error after creation

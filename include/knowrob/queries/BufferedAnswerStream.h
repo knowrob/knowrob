@@ -13,6 +13,9 @@ namespace knowrob {
 
     };
 
+
+    using BufferedAnswerStreamPtr = std::shared_ptr<BufferedAnswerStream>;
+
 } // knowrob
 
 #endif //KNOWROB_ANSWER_BUFFERED_STREAM_H

@@ -12,6 +12,7 @@
 #include <mongoc.h>
 #include <string>
 #include "MongoBulkOperation.h"
+#include "MongoDocument.h"
 
 namespace knowrob {
     /**
@@ -84,28 +85,28 @@ namespace knowrob {
          * Remove a single matching document from this collection.
          * @param document a document pattern.
          */
-        void removeOne(const bson_t *document);
+        void removeOne(const MongoDocument &document);
 
         /**
          * Remove all matching JSON documents from this collection.
          * @param document a document pattern.
          */
-        void removeAll(const bson_t *document);
+        void removeAll(const MongoDocument &document);
 
         /**
          * Store one document into this collection.
          * @param document a JSON document.
          */
-        void storeOne(const bson_t *document);
+        void storeOne(const MongoDocument &document);
 
         /**
          * Update all existing documents matching the document pattern.
          * @param query a document pattern.
          * @param update the update document.
          */
-        void update(const bson_t *query, const bson_t *update);
+        void update(const MongoDocument &query, const MongoDocument &update);
 
-        void evalAggregation(bson_t *pipeline);
+        void evalAggregation(const MongoDocument &pipeline);
 
         /**
          * @return a new bulk operation.
@@ -134,7 +135,7 @@ namespace knowrob {
         const std::string dbName_;
         bool isSessionOwned_;
 
-        void remove(const bson_t *document, mongoc_remove_flags_t flag);
+        void remove(const MongoDocument &document, mongoc_remove_flags_t flag);
         void createIndex_internal(const bson_t &keys);
     };
 }

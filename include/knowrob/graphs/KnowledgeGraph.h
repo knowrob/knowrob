@@ -7,7 +7,10 @@
 
 #include "memory"
 #include "optional"
-#include <raptor2.h>
+#include "raptor2.h"
+#include "knowrob/formulas/Literal.h"
+#include "knowrob/queries/BufferedAnswerStream.h"
+#include "GraphQuery.h"
 
 namespace knowrob {
 
@@ -56,6 +59,22 @@ namespace knowrob {
         ~KnowledgeGraph();
 
         /**
+         * Find instantiations of a literal in the knowledge graph.
+         * @param query a graph query
+         * @return a stream with answers to the query
+         */
+        virtual BufferedAnswerStreamPtr submitQuery(const GraphQueryPtr &query) = 0;
+
+        /**
+         * Watch for instantiations of a literal in the knowledge graph.
+         * @param literal a literal
+         * @return a stream with answers to the query
+         */
+        virtual BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &query) = 0;
+
+        //virtual bool unwatchQuery(const BufferedAnswerStreamPtr &queryStream) = 0;
+
+        /**
          * Read RDF ontology from a remote URI or a local file, and load
          * triple data into the database backend.
          * @param uriString the URI pointing to a RDF file
@@ -64,9 +83,26 @@ namespace knowrob {
          */
         virtual bool loadTriples(const std::string &uriString, TripleFormat format) = 0;
 
-        static std::string getGraphNameFromURI(const std::string &uriString);
-        static std::string getGraphVersionFromURI(const std::string &uriString);
-        static bool isGraphVersionString(const std::string &versionString);
+        /**
+         * Ontologies are loaded into named sub-graphs of the knowledge graph.
+         * The name is generated from the URI in case of loading RDF files.
+         * @param uriString A URI pointing to a RDF ontology.
+         * @return a graph name for the ontology
+         */
+        static std::string getNameFromURI(const std::string &uriString);
+
+        /**
+         * Get a version string from an ontology URI.
+         * In case the URI points to a local file, the modification time of the file
+         * is used as version.
+         * For other URIs it is attempted to extract version information from the URI string,
+         * if this fails, then the current day is used as a version string.
+         * @param uriString A URI pointing to a RDF ontology.
+         * @return a version string
+         */
+        static std::string getVersionFromURI(const std::string &uriString);
+
+        static bool isVersionString(const std::string &versionString);
 
     protected:
         raptor_world *raptorWorld_;

@@ -10,6 +10,8 @@
 #include "boost/property_tree/ptree.hpp"
 #include "knowrob/graphs/KnowledgeGraph.h"
 #include "MongoCollection.h"
+#include "knowrob/queries/BufferedAnswerStream.h"
+#include "knowrob/formulas/Literal.h"
 
 namespace knowrob {
     class MongoKnowledgeGraph : public KnowledgeGraph {
@@ -24,7 +26,17 @@ namespace knowrob {
 
         void dropGraph(const std::string &graphName);
 
+        /**
+         * @param graphName the name of a graph
+         * @return the version string associated to the named graph if any
+         */
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
+
+        // Override KnowledgeGraph
+        BufferedAnswerStreamPtr submitQuery(const GraphQueryPtr &literal) override;
+
+        // Override KnowledgeGraph
+        BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &literal) override;
 
         // Override KnowledgeGraph
         bool loadTriples(const std::string &uriString, TripleFormat format) override;

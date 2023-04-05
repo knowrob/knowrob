@@ -86,8 +86,7 @@ PREDICATE(mng_drop_unsafe, 2) {
 
 PREDICATE(mng_store, 3) {
     try {
-        MongoDocument a(termToDocument(PL_A3));
-        PREDICATE_COLLECTION->storeOne(a.bson());
+        PREDICATE_COLLECTION->storeOne(MongoDocument(termToDocument(PL_A3)));
         return TRUE;
     }
     catch(const std::exception&) {
@@ -97,8 +96,7 @@ PREDICATE(mng_store, 3) {
 
 PREDICATE(mng_remove, 3) {
     try {
-        MongoDocument a(termToDocument(PL_A3));
-        PREDICATE_COLLECTION->removeAll(a.bson());
+        PREDICATE_COLLECTION->removeAll(MongoDocument(termToDocument(PL_A3)));
         return TRUE;
     }
     catch(const std::exception&) {
@@ -108,9 +106,9 @@ PREDICATE(mng_remove, 3) {
 
 PREDICATE(mng_update, 4) {
     try {
-        MongoDocument doc_a(termToDocument(PL_A3));
-        MongoDocument doc_b(termToDocument(PL_A4));
-        PREDICATE_COLLECTION->update(doc_a.bson(), doc_b.bson());
+        PREDICATE_COLLECTION->update(
+                MongoDocument(termToDocument(PL_A3)),
+                MongoDocument(termToDocument(PL_A4)));
         return TRUE;
     }
     catch(const std::exception&) {

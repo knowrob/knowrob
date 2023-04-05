@@ -119,20 +119,19 @@ void MongoKnowledgeGraph::drop()
 
 void MongoKnowledgeGraph::dropGraph(const std::string &graphName)
 {
-    auto document = MongoDocument(BCON_NEW("graph", BCON_UTF8(graphName.c_str())));
-    tripleCollection_->removeAll(document.bson());
+    tripleCollection_->removeAll(MongoDocument(
+            BCON_NEW("graph", BCON_UTF8(graphName.c_str()))));
 }
 
 void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphName,
                                                  const std::string &graphURI,
                                                  const std::string &graphVersion)
 {
-    auto document = MongoDocument(BCON_NEW(
+    tripleCollection_->storeOne(MongoDocument(BCON_NEW(
             "s",     BCON_UTF8(graphURI.c_str()),
             "p",     BCON_UTF8(MONGO_KG_VERSION_KEY),
             "o",     BCON_UTF8(graphVersion.c_str()),
-            "graph", BCON_UTF8(graphName.c_str())));
-    tripleCollection_->storeOne(document.bson());
+            "graph", BCON_UTF8(graphName.c_str()))));
 }
 
 std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std::string &graphName)
@@ -154,15 +153,34 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
     return {};
 }
 
+BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
+{
+    // TODO: masterplan:
+    //  - re-implement triple querying in c++, this might take some hours!
+    //  - use a worker thread to pull from the cursor and push into stream,
+    //    but also allow synchronous processing via a flag
+    //
+    // TODO: what mechanism is used to convert modality labels to query parameters
+    //       and selection of collections etc.?
+    //
+    return {};
+}
+
+BufferedAnswerStreamPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
+{
+    // TODO
+    return {};
+}
+
 bool MongoKnowledgeGraph::loadTriples( //NOLINT
         const std::string &uriString, TripleFormat format)
 {
     auto resolved = URI::resolve(uriString);
-    auto graphName = getGraphNameFromURI(resolved);
+    auto graphName = getNameFromURI(resolved);
 
     // check if ontology is already loaded
     auto currentVersion = getCurrentGraphVersion(graphName);
-    auto newVersion = getGraphVersionFromURI(resolved);
+    auto newVersion = getVersionFromURI(resolved);
     if(currentVersion) {
         // ontology was loaded before
         if(currentVersion == newVersion) return true;

@@ -179,12 +179,12 @@ bool KnowledgeGraph::loadURI(TripleLoader &loader,
     return (result==0);
 }
 
-std::string KnowledgeGraph::getGraphNameFromURI(const std::string &uriString)
+std::string KnowledgeGraph::getNameFromURI(const std::string &uriString)
 {
     return fs::path(uriString).stem();
 }
 
-std::string KnowledgeGraph::getGraphVersionFromURI(const std::string &uriString)
+std::string KnowledgeGraph::getVersionFromURI(const std::string &uriString)
 {
     fs::path p(uriString);
 
@@ -202,7 +202,7 @@ std::string KnowledgeGraph::getGraphVersionFromURI(const std::string &uriString)
 
     // try to extract version from URI
     auto versionString = p.parent_path().filename();
-    if(isGraphVersionString(versionString)) {
+    if(isVersionString(versionString)) {
         return versionString;
     }
 
@@ -217,7 +217,7 @@ std::string KnowledgeGraph::getGraphVersionFromURI(const std::string &uriString)
     }
 }
 
-bool KnowledgeGraph::isGraphVersionString(const std::string &versionString)
+bool KnowledgeGraph::isVersionString(const std::string &versionString)
 {
     // parser rules
     qi::rule<std::string::const_iterator> numbers = (
@@ -244,25 +244,25 @@ protected:
 
 TEST_F(KnowledgeGraphTest, IsGraphVersionString)
 {
-    EXPECT_TRUE(KnowledgeGraph::isGraphVersionString("v1.1"));
-    EXPECT_TRUE(KnowledgeGraph::isGraphVersionString("v10.1.54"));
-    EXPECT_TRUE(KnowledgeGraph::isGraphVersionString("1.1"));
-    EXPECT_TRUE(KnowledgeGraph::isGraphVersionString("10.1.54"));
-    EXPECT_FALSE(KnowledgeGraph::isGraphVersionString("10"));
-    EXPECT_FALSE(KnowledgeGraph::isGraphVersionString("x10.54.3"));
-    EXPECT_FALSE(KnowledgeGraph::isGraphVersionString("x.y.z"));
+    EXPECT_TRUE(KnowledgeGraph::isVersionString("v1.1"));
+    EXPECT_TRUE(KnowledgeGraph::isVersionString("v10.1.54"));
+    EXPECT_TRUE(KnowledgeGraph::isVersionString("1.1"));
+    EXPECT_TRUE(KnowledgeGraph::isVersionString("10.1.54"));
+    EXPECT_FALSE(KnowledgeGraph::isVersionString("10"));
+    EXPECT_FALSE(KnowledgeGraph::isVersionString("x10.54.3"));
+    EXPECT_FALSE(KnowledgeGraph::isVersionString("x.y.z"));
 }
 
 TEST_F(KnowledgeGraphTest, GraphNameFromURI)
 {
-    EXPECT_EQ(KnowledgeGraph::getGraphNameFromURI("https://www.ontologydesignpatterns.org/ont/dul/DUL.owl"), "DUL");
-    EXPECT_EQ(KnowledgeGraph::getGraphNameFromURI("file:///owl/SOMA.owl"), "SOMA");
-    EXPECT_EQ(KnowledgeGraph::getGraphNameFromURI("./ont/SOMA.owl"), "SOMA");
-    EXPECT_EQ(KnowledgeGraph::getGraphNameFromURI("SOMA.owl"), "SOMA");
-    EXPECT_EQ(KnowledgeGraph::getGraphNameFromURI("SOMA"), "SOMA");
+    EXPECT_EQ(KnowledgeGraph::getNameFromURI("https://www.ontologydesignpatterns.org/ont/dul/DUL.owl"), "DUL");
+    EXPECT_EQ(KnowledgeGraph::getNameFromURI("file:///owl/SOMA.owl"), "SOMA");
+    EXPECT_EQ(KnowledgeGraph::getNameFromURI("./ont/SOMA.owl"), "SOMA");
+    EXPECT_EQ(KnowledgeGraph::getNameFromURI("SOMA.owl"), "SOMA");
+    EXPECT_EQ(KnowledgeGraph::getNameFromURI("SOMA"), "SOMA");
 }
 
 TEST_F(KnowledgeGraphTest, GraphVersionFromURI)
 {
-    EXPECT_EQ(KnowledgeGraph::getGraphVersionFromURI("https://foo/v1.2.2/owl"), "v1.2.2");
+    EXPECT_EQ(KnowledgeGraph::getVersionFromURI("https://foo/v1.2.2/owl"), "v1.2.2");
 }

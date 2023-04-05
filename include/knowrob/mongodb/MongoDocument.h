@@ -15,11 +15,12 @@ namespace knowrob {
     class MongoDocument {
     public:
         explicit MongoDocument(bson_t *bson) : bson_(bson) {}
+
         MongoDocument(const MongoDocument&) = delete;
 
-        ~MongoDocument() { bson_free(bson_); }
+        ~MongoDocument() { bson_destroy(bson_); }
 
-        bson_t* bson() { return bson_; }
+        bson_t* bson() const { return bson_; }
     protected:
         bson_t *bson_;
     };
