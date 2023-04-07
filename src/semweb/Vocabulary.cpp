@@ -114,6 +114,13 @@ bool Vocabulary::isAnnotationProperty(const std::string_view &iri)
     return it != definedProperties_.end() && it->second->hasFlag(ANNOTATION_PROPERTY);
 }
 
+bool Vocabulary::isTaxonomicProperty(const std::string_view &iri)
+{
+    return isSubClassOfIRI(iri) ||
+            isSubPropertyOfIRI(iri) ||
+            isTypeIRI(iri);
+}
+
 
 void Vocabulary::addResourceType(const std::string_view &resource_iri, const std::string_view &type_iri)
 {

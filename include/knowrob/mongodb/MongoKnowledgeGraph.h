@@ -11,6 +11,7 @@
 #include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "Collection.h"
+#include "Cursor.h"
 #include "knowrob/queries/BufferedAnswerStream.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
@@ -51,6 +52,18 @@ namespace knowrob {
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
 
         // Override KnowledgeGraph
+        void assertTriple(const TripleData &tripleData) override;
+
+        // Override KnowledgeGraph
+        void assertTriples(const std::vector<TripleData> &tripleData) override;
+
+        // Override KnowledgeGraph
+        void removeAllTriples(const semweb::TripleExpression &tripleExpression) override;
+
+        // Override KnowledgeGraph
+        void removeOneTriple(const semweb::TripleExpression &tripleExpression) override;
+
+        // Override KnowledgeGraph
         BufferedAnswerStreamPtr submitQuery(const GraphQueryPtr &literal) override;
 
         // Override KnowledgeGraph
@@ -76,6 +89,11 @@ namespace knowrob {
         static std::string getURI(const boost::property_tree::ptree &config);
 
         void updateHierarchy(mongo::TripleLoader &tripleLoader);
+
+        static bson_t* getTripleSelector(const semweb::TripleExpression &tripleExpression,
+                                  bool isTaxonomicProperty);
+
+        bool isTaxonomicProperty(const TermPtr &propertyTerm);
     };
 
 } // knowrob::mongo

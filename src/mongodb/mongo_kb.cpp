@@ -256,8 +256,8 @@ PREDICATE(mng_watch, 5) {
        	}
 
         long id = MongoInterface::get().watch(PL_A1, coll_name, pipeline,
-            [callback](long watcherID, const bson_t *result) {
-                PlTerm term = bson_to_term(result);
+            [callback](long watcherID, const bson_wrapper_ptr &result) {
+                PlTerm term = bson_to_term(result.bson);
                 PlCall(callback, PlTermv(PlTerm(watcherID), term));
             });
 

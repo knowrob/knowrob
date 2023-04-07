@@ -10,12 +10,13 @@
 #include <memory>
 #include "Collection.h"
 #include "bson.h"
+#include "bson-helper.h"
 
 namespace knowrob::mongo {
     /**
      * Called for each result of a change stream.
      */
-    using ChangeStreamCallback = std::function<void(long, const bson_t*)>;
+    using ChangeStreamCallback = std::function<void(long, const bson_wrapper_ptr&)>;
 
     /**
      * A stream of query results that invokes a callback whenever a new
@@ -41,6 +42,7 @@ namespace knowrob::mongo {
         std::unique_ptr<Collection> collection_;
         ChangeStreamCallback callback_;
         mongoc_change_stream_t *stream_;
+        bson_wrapper_ptr next_ptr_;
         long queryID_;
     };
 

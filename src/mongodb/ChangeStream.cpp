@@ -48,7 +48,8 @@ bool ChangeStream::next()
 	// try retrieving next document
 	const bson_t *doc;
 	if(mongoc_change_stream_next(stream_, &doc)) {
-        callback_(queryID_, doc);
+        next_ptr_.bson = doc;
+        callback_(queryID_, next_ptr_);
 		return true;
 	}
 

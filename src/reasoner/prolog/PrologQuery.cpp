@@ -54,6 +54,7 @@ bool PrologQuery::putTerm( //NOLINT
                        (CompoundFormula *) phi.get(), vars);
 
 	}
+	return false;
 }
 
 bool PrologQuery::putTerm( //NOLINT
@@ -129,6 +130,8 @@ bool PrologQuery::putTerm( //NOLINT
 		}
 		return true;
 	}}
+
+	return false;
 }
 
 bool PrologQuery::putTerm( //NOLINT
@@ -296,6 +299,8 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 	case FormulaType::DISJUNCTION:
 		return toTerm((CompoundFormula*)phi.get(), semicolonIndicator);
 	}
+
+	return {};
 }
 
 TermPtr PrologQuery::toTerm(  //NOLINT

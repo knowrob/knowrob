@@ -15,6 +15,7 @@
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
+#include "knowrob/terms/ListTerm.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
@@ -25,6 +26,11 @@
 #define MONGO_KG_SETTING_PASSWORD "password"
 #define MONGO_KG_SETTING_DB "db"
 #define MONGO_KG_SETTING_COLLECTION "collection"
+
+#define MONGO_OPERATOR_LTE  "$lte"
+#define MONGO_OPERATOR_GTE  "$gte"
+#define MONGO_OPERATOR_LT   "$lt"
+#define MONGO_OPERATOR_GT   "$gt"
 
 #define MONGO_KG_DEFAULT_HOST "localhost"
 #define MONGO_KG_DEFAULT_PORT "27017"
@@ -195,6 +201,168 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
     return {};
 }
 
+void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
+{
+    TripleLoader loader("user",
+                        tripleCollection_,
+                        oneCollection_,
+                        vocabulary_);
+    loader.loadTriple(tripleData);
+    loader.flush();
+    updateHierarchy(loader);
+}
+
+void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleData)
+{
+    TripleLoader loader("user",
+                        tripleCollection_,
+                        oneCollection_,
+                        vocabulary_);
+    auto loaderPtr = &loader;
+    std::for_each(tripleData.begin(), tripleData.end(),
+        [loaderPtr](auto &data) {
+            loaderPtr->loadTriple(data);
+        });
+    loader.flush();
+    updateHierarchy(loader);
+}
+
+// forward declaration
+static inline void appendArrayQuery(bson_t *doc, const char *key, const std::vector<TermPtr> &terms);
+
+static inline void appendTermQuery( //NOLINT
+        bson_t *doc,
+        const char *key,
+        const TermPtr &term,
+        const char *queryOperator=nullptr)
+{
+    bson_t queryOperatorDoc;
+    bson_t *valueDocument;
+    const char *valueKey;
+
+    if(queryOperator) {
+        BSON_APPEND_DOCUMENT_BEGIN(doc, key, &queryOperatorDoc);
+        valueDocument = &queryOperatorDoc;
+        valueKey = queryOperator;
+    }
+    else {
+        valueDocument = doc;
+        valueKey = key;
+    }
+
+    switch(term->type()) {
+        case TermType::STRING:
+            BSON_APPEND_UTF8(valueDocument, valueKey,
+                             ((StringTerm*)term.get())->value().c_str());
+            break;
+        case TermType::VARIABLE:
+            break;
+        case TermType::DOUBLE:
+            BSON_APPEND_DOUBLE(valueDocument, valueKey,
+                               ((DoubleTerm*)term.get())->value());
+            break;
+        case TermType::INT32:
+            BSON_APPEND_INT32(valueDocument, valueKey,
+                              ((Integer32Term*)term.get())->value());
+            break;
+        case TermType::LONG:
+            BSON_APPEND_INT64(valueDocument, valueKey,
+                              ((LongTerm*)term.get())->value());
+            break;
+        case TermType::LIST:
+            appendArrayQuery(valueDocument, valueKey,
+                             ((ListTerm*)term.get())->elements());
+            break;
+        case TermType::MODAL_OPERATOR:
+        case TermType::PREDICATE:
+            break;
+    }
+
+    if(queryOperator) {
+        bson_append_document_end(doc, &queryOperatorDoc);
+    }
+}
+
+static inline void appendArrayQuery( // NOLINT
+        bson_t *doc, const char *key, const std::vector<TermPtr> &terms)
+{
+    bson_t orOperator, orArray;
+    BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
+    BSON_APPEND_ARRAY_BEGIN(&orOperator, "$or", &orArray);
+    uint32_t arrayIndex = 0;
+    for(auto &term : terms) {
+        auto indexKey = std::to_string(arrayIndex++);
+        appendTermQuery(doc, indexKey.c_str(), term);
+        //BSON_APPEND_UTF8(&orArray, indexKey.c_str(), entity);
+    }
+    bson_append_array_end(&orOperator, &orArray);
+    bson_append_document_end(doc, &orOperator);
+}
+
+bson_t* MongoKnowledgeGraph::getTripleSelector(
+            const semweb::TripleExpression &tripleExpression,
+            bool b_isTaxonomicProperty)
+{
+    auto doc = bson_new();
+
+    // subject field
+    appendTermQuery(doc, "s", tripleExpression.subjectTerm());
+    // property field
+    appendTermQuery(doc,
+            (b_isTaxonomicProperty ? "p" : "p*"),
+            tripleExpression.propertyTerm());
+
+    // object field
+    const char* objectOperator = nullptr;
+    switch(tripleExpression.objectOperator()) {
+        case semweb::TripleExpression::EQ:
+            break;
+        case semweb::TripleExpression::LEQ:
+            objectOperator = MONGO_OPERATOR_LTE;
+            break;
+        case semweb::TripleExpression::GEQ:
+            objectOperator = MONGO_OPERATOR_GTE;
+            break;
+        case semweb::TripleExpression::LT:
+            objectOperator = MONGO_OPERATOR_LT;
+            break;
+        case semweb::TripleExpression::GT:
+            objectOperator = MONGO_OPERATOR_GT;
+            break;
+    }
+    appendTermQuery(doc,
+            (b_isTaxonomicProperty ? "o*" : "o"),
+            tripleExpression.objectTerm(),
+            objectOperator);
+
+    // TODO: handle graph field
+    // TODO: support for graph hierarchy
+    // TODO: handle time
+    // TODO: handle confidence
+
+    return doc;
+}
+
+void MongoKnowledgeGraph::removeAllTriples(const semweb::TripleExpression &tripleExpression)
+{
+    bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
+    tripleCollection_->removeAll(
+        Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
+    if(b_isTaxonomicProperty) {
+        // FIXME: must update hierarchy!
+    }
+}
+
+void MongoKnowledgeGraph::removeOneTriple(const semweb::TripleExpression &tripleExpression)
+{
+    bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
+    tripleCollection_->removeOne(
+        Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
+    if(b_isTaxonomicProperty) {
+        // FIXME: must update hierarchy!
+    }
+}
+
 BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
 {
     // TODO: masterplan:
@@ -339,6 +507,17 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
 
     bson_destroy(&pipelineDoc);
 }
+
+bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm)
+{
+    if(propertyTerm->type()==TermType::STRING) {
+        return vocabulary_->isTaxonomicProperty(((StringTerm*)propertyTerm.get())->value());
+    }
+    else {
+        return false;
+    }
+}
+
 
 // fixture class for testing
 class MongoKnowledgeGraphTest : public ::testing::Test {

@@ -336,6 +336,17 @@ TEST_F(QueryParserTest, Predicates)
             "nullary", 0, { }))
 }
 
+TEST_F(QueryParserTest, PredicateWithCompundArgument)
+{
+    TEST_NO_THROW(testPredicate(
+            QueryParser::parsePredicate("p(X,<(a))"),
+            // TODO: rather use compound type here
+            "p", 2, { TermType::VARIABLE, TermType::PREDICATE }));
+    TEST_NO_THROW(testPredicate(
+            QueryParser::parsePredicate("p(X,[a,b])"),
+            "p", 2, { TermType::VARIABLE, TermType::LIST }));
+}
+
 TEST_F(QueryParserTest, InvalidPredicates)
 {
     EXPECT_THROW(QueryParser::parsePredicate("X1"), QueryError);

@@ -12,6 +12,7 @@
 #include "knowrob/queries/BufferedAnswerStream.h"
 #include "GraphQuery.h"
 #include "Vocabulary.h"
+#include "TripleExpression.h"
 
 namespace knowrob {
 
@@ -69,6 +70,23 @@ namespace knowrob {
         bool isDefinedClass(const std::string_view &iri);
 
         /**
+         * Read RDF ontology from a remote URI or a local file, and load
+         * triple data into the database backend.
+         * @param uriString the URI pointing to a RDF file
+         * @param format the format of the file
+         * @return true if the file was loaded successfully
+         */
+        virtual bool loadTriples(const std::string &uriString, TripleFormat format) = 0;
+
+        virtual void assertTriple(const TripleData &tripleData) = 0;
+
+        virtual void assertTriples(const std::vector<TripleData> &tripleData) = 0;
+
+        virtual void removeAllTriples(const semweb::TripleExpression &tripleExpression) = 0;
+
+        virtual void removeOneTriple(const semweb::TripleExpression &tripleExpression) = 0;
+
+        /**
          * Find instantiations of a literal in the knowledge graph.
          * @param query a graph query
          * @return a stream with answers to the query
@@ -83,15 +101,6 @@ namespace knowrob {
         virtual BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &query) = 0;
 
         //virtual bool unwatchQuery(const BufferedAnswerStreamPtr &queryStream) = 0;
-
-        /**
-         * Read RDF ontology from a remote URI or a local file, and load
-         * triple data into the database backend.
-         * @param uriString the URI pointing to a RDF file
-         * @param format the format of the file
-         * @return true if the file was loaded successfully
-         */
-        virtual bool loadTriples(const std::string &uriString, TripleFormat format) = 0;
 
         /**
          * Ontologies are loaded into named sub-graphs of the knowledge graph.

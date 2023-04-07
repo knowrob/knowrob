@@ -12,7 +12,8 @@
 
 namespace knowrob::mongo::aggregation
 {
-    void lookupParents(Pipeline &pipeline,
+    void lookupParents(
+            aggregation::Pipeline &pipeline,
             const std::string_view &collectionName,
             const std::string_view &entity,
             const std::string_view &hierarchyRelation);

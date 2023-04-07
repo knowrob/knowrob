@@ -7,6 +7,7 @@
 
 #include <mongoc.h>
 #include <list>
+#include "bson-helper.h"
 
 namespace knowrob::mongo::aggregation {
 
@@ -40,9 +41,8 @@ namespace knowrob::mongo::aggregation {
     protected:
         bson_t *arrayDocument_;
         uint32_t numStages_;
-        std::list<bson_t> stages_;
-        std::list<bson_t> stageOperators_;
-        std::list<bson_t> subDocuments_;
+        std::list<bson_wrapper> stages_;
+        std::list<bson_wrapper> stageOperators_;
 
         bson_t *lastStage_;
         bson_t *lastOperator_;

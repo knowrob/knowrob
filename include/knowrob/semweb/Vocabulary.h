@@ -100,6 +100,12 @@ namespace knowrob::semweb {
          */
         bool isAnnotationProperty(const std::string_view &iri);
 
+        /**
+         * @param iri a IRI
+         * @return true if IRI is a defined taxonomic property
+         */
+        static bool isTaxonomicProperty(const std::string_view &iri);
+
     protected:
         std::map<std::string_view, ClassPtr> definedClasses_;
         std::map<std::string_view, PropertyPtr> definedProperties_;

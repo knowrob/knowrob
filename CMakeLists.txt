@@ -209,7 +209,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/TripleCursor.cpp
 		src/semweb/owl.cpp
 		src/semweb/rdfs.cpp
-		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp include/knowrob/mongodb/ChangeStream.h src/semweb/Property.cpp src/semweb/Class.cpp)
+		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp include/knowrob/mongodb/ChangeStream.h src/semweb/Property.cpp src/semweb/Class.cpp include/knowrob/semweb/TripleExpression.cpp include/knowrob/semweb/TripleExpression.h)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

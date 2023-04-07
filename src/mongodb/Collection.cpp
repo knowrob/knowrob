@@ -9,7 +9,6 @@
 #include <knowrob/mongodb/Collection.h>
 #include <knowrob/mongodb/MongoException.h>
 #include <knowrob/mongodb/Document.h>
-#include <knowrob/mongodb/bson_pl.h>
 
 using namespace knowrob::mongo;
 
@@ -71,8 +70,7 @@ void Collection::appendSession(bson_t *opts)
 	if(session_!=nullptr) {
 		bson_error_t error;
 		if(!mongoc_client_session_append(session_, opts, &error)) {
-			// TODO make use of KB_LOG macro
-			//ROS_WARN("[MongoCollection] unable to append session to opts: %s.", error.message);
+		    throw MongoException("append_session", error);
 		}
 	}
 }
@@ -114,7 +112,7 @@ void Collection::remove(const Document &document, mongoc_remove_flags_t flag)
     bson_error_t err;
     if(!mongoc_collection_remove(
             coll_,
-            MONGOC_REMOVE_NONE,
+            flag,
             document.bson(),
             nullptr,
             &err))

@@ -18,22 +18,22 @@ Pipeline::Pipeline(bson_t *arrayDocument)
 bson_t* Pipeline::appendStageBegin()
 {
     auto arrayKey = std::to_string(numStages_++);
-    bson_t &stage = stages_.emplace_back();
-    BSON_APPEND_DOCUMENT_BEGIN(arrayDocument_, arrayKey.c_str(), &stage);
-    lastStage_ = &stage;
-    return &stage;
+    bson_wrapper &stage = stages_.emplace_back();
+    BSON_APPEND_DOCUMENT_BEGIN(arrayDocument_, arrayKey.c_str(), &stage.bson);
+    lastStage_ = &stage.bson;
+    return &stage.bson;
 }
 
 bson_t* Pipeline::appendStageBegin(const char* stageOperatorString)
 {
     auto arrayKey = std::to_string(numStages_++);
-    bson_t &stage = stages_.emplace_back();
-    bson_t &stageOperator = stageOperators_.emplace_back();
-    BSON_APPEND_DOCUMENT_BEGIN(arrayDocument_, arrayKey.c_str(), &stage);
-    BSON_APPEND_DOCUMENT_BEGIN(&stage, stageOperatorString, &stageOperator);
-    lastOperator_ = &stageOperator;
-    lastStage_ = &stage;
-    return &stageOperator;
+    bson_wrapper &stage = stages_.emplace_back();
+    bson_wrapper &stageOperator = stageOperators_.emplace_back();
+    BSON_APPEND_DOCUMENT_BEGIN(arrayDocument_, arrayKey.c_str(), &stage.bson);
+    BSON_APPEND_DOCUMENT_BEGIN(&stage.bson, stageOperatorString, &stageOperator.bson);
+    lastOperator_ = &stageOperator.bson;
+    lastStage_ = &stage.bson;
+    return &stageOperator.bson;
 }
 
 void Pipeline::appendStageEnd(bson_t *stage)
