@@ -14,6 +14,7 @@
 #include "knowrob/mongodb/aggregation/graph.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
+#include "knowrob/semweb/owl.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
@@ -123,7 +124,14 @@ void MongoKnowledgeGraph::initialize()
         while(cursor.nextTriple(tripleData))
             vocabulary_->addSubPropertyOf(tripleData.subject, tripleData.object);
     }
-    // TODO: init inverse properties too!
+    {
+        // iterate over all owl::inverseOf assertions
+        TripleCursor cursor(tripleCollection_);
+        cursor.filter(Document(BCON_NEW(
+            "p", BCON_UTF8(semweb::IRI_inverseOf.c_str()))).bson());
+        while(cursor.nextTriple(tripleData))
+            vocabulary_->setInverseOf(tripleData.subject, tripleData.object);
+    }
 }
 
 void MongoKnowledgeGraph::createSearchIndices()
@@ -255,19 +263,22 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
 
 void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
 {
-    // below performs the update purely server-side.
-    // each step computes the parents in class or property hierarchy.
-    // However, there are many steps for large ontologies so this is very
-    // time consuming.
-    // TODO: can the hierarchy update be done faster?
-    //       - keeping the class and property hierarchy in a std::map could speed things up.
-    //       - try doing all updates in one call.
-    //         But it seems problematic doing all updates in one call using $merge stage. seems
-    //         iterations cannot access updates made in previous iterations.
+    // below performs the server-side data transformation for updating hierarchy relations
+    // such as rdf::type.
+    // However, there are many steps for large ontologies so this might consume some time.
+    // TODO: list of parents could be supplied as a constant in aggregation queries below.
+    //       currently parents are computed in the query, maybe it would be a bit faster using a constant
+    //       baked into the query.
+    // TODO: the same pipeline template is used many times below.
+    //       is there some means one could optimize this? e.g. by generating only once a bson_t
+    //       and then modifying it? not sure if it would be worth it though.
 
     bson_t pipelineDoc = BSON_INITIALIZER;
 
-    // update class hierarchy
+    // update class hierarchy.
+    // unfortunately must be done step-by-step as it is undefined yet in mongo
+    // if it's possible to access $merge results in following pipeline iterations
+    // via e.g. $lookup.
     for(auto &assertion : tripleLoader.subClassAssertions()) {
         bson_reinit(&pipelineDoc);
 
@@ -284,7 +295,10 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         oneCollection_->evalAggregation(&pipelineDoc);
     }
 
-    // update property hierarchy
+    // update property hierarchy.
+    // unfortunately must be done step-by-step as it is undefined yet in mongo
+    // if it's possible to access $merge results in following pipeline iterations
+    // via e.g. $lookup.
     std::set<std::string_view> visited;
     for(auto &assertion : tripleLoader.subPropertyAssertions()) {
         visited.insert(assertion.first->iri());
@@ -305,6 +319,9 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
 
 
     // update property assertions
+    // TODO: below steps are independent, and could run in parallel.
+    //       could bake an array of properties into pipeline,
+    //       or rather use a bulk operation.
     for(auto &newProperty : visited) {
         bson_reinit(&pipelineDoc);
 

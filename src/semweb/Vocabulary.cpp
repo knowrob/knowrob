@@ -26,12 +26,12 @@ Vocabulary::Vocabulary()
     }
 }
 
-bool Vocabulary::isDefinedClass(std::string_view iri)
+bool Vocabulary::isDefinedClass(const std::string_view &iri)
 {
     return definedClasses_.count(iri)>0;
 }
 
-ClassPtr Vocabulary::getDefinedClass(std::string_view iri) const
+ClassPtr Vocabulary::getDefinedClass(const std::string_view &iri) const
 {
     auto it = definedClasses_.find(iri);
     if(it == definedClasses_.end()) {
@@ -42,7 +42,7 @@ ClassPtr Vocabulary::getDefinedClass(std::string_view iri) const
     }
 }
 
-ClassPtr Vocabulary::defineClass(std::string_view iri)
+ClassPtr Vocabulary::defineClass(const std::string_view &iri)
 {
     auto it = definedClasses_.find(iri);
     if(it == definedClasses_.end()) {
@@ -55,18 +55,18 @@ ClassPtr Vocabulary::defineClass(std::string_view iri)
     }
 }
 
-void Vocabulary::addSubClassOf(std::string_view subClass, std::string_view superClass)
+void Vocabulary::addSubClassOf(const std::string_view &subClass, const std::string_view &superClass)
 {
     defineClass(subClass)->addDirectParent(defineClass(superClass));
 }
 
 
-bool Vocabulary::isDefinedProperty(std::string_view iri)
+bool Vocabulary::isDefinedProperty(const std::string_view &iri)
 {
     return definedProperties_.count(iri)>0;
 }
 
-PropertyPtr Vocabulary::getDefinedProperty(std::string_view iri) const
+PropertyPtr Vocabulary::getDefinedProperty(const std::string_view &iri) const
 {
     auto it = definedProperties_.find(iri);
     if(it == definedProperties_.end()) {
@@ -77,7 +77,7 @@ PropertyPtr Vocabulary::getDefinedProperty(std::string_view iri) const
     }
 }
 
-PropertyPtr Vocabulary::defineProperty(std::string_view iri)
+PropertyPtr Vocabulary::defineProperty(const std::string_view &iri)
 {
     auto it = definedProperties_.find(iri);
     if(it == definedProperties_.end()) {
@@ -90,24 +90,32 @@ PropertyPtr Vocabulary::defineProperty(std::string_view iri)
     }
 }
 
-void Vocabulary::setPropertyFlag(std::string_view iri, PropertyFlag flag)
+void Vocabulary::setPropertyFlag(const std::string_view &iri, PropertyFlag flag)
 {
     defineProperty(iri)->setFlag(flag);
 }
 
-void Vocabulary::addSubPropertyOf(std::string_view subProperty, std::string_view superProperty)
+void Vocabulary::addSubPropertyOf(const std::string_view &subProperty, const std::string_view &superProperty)
 {
     defineProperty(subProperty)->addDirectParent(defineProperty(superProperty));
 }
 
-bool Vocabulary::isAnnotationProperty(std::string_view iri)
+void Vocabulary::setInverseOf(const std::string_view &a, const std::string_view &b)
+{
+    auto a1 = defineProperty(a);
+    auto b1 = defineProperty(b);
+    a1->setInverse(b1);
+    b1->setInverse(a1);
+}
+
+bool Vocabulary::isAnnotationProperty(const std::string_view &iri)
 {
     auto it = definedProperties_.find(iri);
     return it != definedProperties_.end() && it->second->hasFlag(ANNOTATION_PROPERTY);
 }
 
 
-void Vocabulary::addResourceType(std::string_view resource_iri, std::string_view type_iri)
+void Vocabulary::addResourceType(const std::string_view &resource_iri, const std::string_view &type_iri)
 {
     if(isObjectPropertyIRI(type_iri))
         setPropertyFlag(resource_iri, OBJECT_PROPERTY);

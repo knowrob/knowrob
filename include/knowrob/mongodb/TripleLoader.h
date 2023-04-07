@@ -30,6 +30,10 @@ namespace knowrob::mongo {
                      const semweb::VocabularyPtr &vocabulary,
                      uint32_t batchSize=1000);
 
+        TripleLoader(const TripleLoader&) = delete;
+
+        ~TripleLoader();
+
         /**
          * @return list of import statements that occurred while loading
          */
@@ -55,6 +59,7 @@ namespace knowrob::mongo {
         const std::string graphName_;
         const uint32_t batchSize_;
         uint32_t operationCounter_;
+        bson_t parentsArray_;
 
         std::shared_ptr<Collection> tripleCollection_;
         std::shared_ptr<Collection> oneCollection_;

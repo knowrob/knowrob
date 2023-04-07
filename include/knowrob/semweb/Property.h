@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <list>
+#include <functional>
 #include "Resource.h"
 
 namespace knowrob::semweb {
@@ -22,17 +23,23 @@ namespace knowrob::semweb {
         SYMMETRIC_PROPERTY      = 1 << 5
     };
 
+    // forward declaration
+    class Property;
+
+    // called for each parent in the property hierarchy
+    using PropertyVisitor = std::function<void(Property&)>;
+
     /**
      * A property used in knowledge graphs.
      */
     class Property : public Resource {
     public:
-        explicit Property(std::string_view iri) : Resource(iri), flags_(0) {}
+        explicit Property(std::string_view iri);
 
         /**
          * @param directParent a direct super property.
          */
-        void addDirectParent(const std::shared_ptr<Property> &directParent) { directParents_.push_back(directParent); }
+        void addDirectParent(const std::shared_ptr<Property> &directParent);
 
         /**
          * @return all direct super properties of this property.
@@ -43,7 +50,7 @@ namespace knowrob::semweb {
          * Define the inverse property of this property.
          * @param inverse a property.
          */
-        void setInverse(const std::shared_ptr<Property> &inverse) { inverse_ = inverse; }
+        void setInverse(const std::shared_ptr<Property> &inverse);
 
         /**
          * @return the inverse of this property or a null pointer reference.
@@ -54,13 +61,15 @@ namespace knowrob::semweb {
          * @param flag a property flag.
          * @return true if this property has the flag.
          */
-        bool hasFlag(PropertyFlag flag) const { return flags_ & flag; }
+        bool hasFlag(PropertyFlag flag) const;
 
         /**
          * Define a flag of this property.
          * @param flag a property flag.
          */
-        void setFlag(PropertyFlag flag) { flags_ |= flag; }
+        void setFlag(PropertyFlag flag);
+
+        void forallParents(const PropertyVisitor &visitor, bool includeSelf=true, bool skipDuplicates=true);
 
     protected:
         std::shared_ptr<Property> inverse_;

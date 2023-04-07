@@ -25,26 +25,26 @@ namespace knowrob::semweb {
          * @param resource_iri a resource
          * @param type_iri the type of the resource
          */
-        void addResourceType(std::string_view resource_iri, std::string_view type_iri);
+        void addResourceType(const std::string_view &resource_iri, const std::string_view &type_iri);
 
         /**
          * @param iri a IRI
          * @return true if IRI is a defined class
          */
-        bool isDefinedClass(std::string_view iri);
+        bool isDefinedClass(const std::string_view &iri);
 
         /**
          * @param iri a IRI
          * @return the class defined for the IRI or a null reference
          */
-        ClassPtr getDefinedClass(std::string_view iri) const;
+        ClassPtr getDefinedClass(const std::string_view &iri) const;
 
         /**
          * Define a new class if it has not been defined before.
          * @param iri a IRI
          * @return the class defined for the IRI
          */
-        ClassPtr defineClass(std::string_view iri);
+        ClassPtr defineClass(const std::string_view &iri);
 
         /**
          * Adds subclass-of relation between two classes,
@@ -52,26 +52,26 @@ namespace knowrob::semweb {
          * @param subClass a IRI
          * @param superClass a IRI
          */
-        void addSubClassOf(std::string_view subClass, std::string_view superClass);
+        void addSubClassOf(const std::string_view &subClass, const std::string_view &superClass);
 
         /**
          * @param iri a IRI
          * @return true if IRI is a defined property
          */
-        bool isDefinedProperty(std::string_view iri);
+        bool isDefinedProperty(const std::string_view &iri);
 
         /**
          * @param iri a IRI
          * @return the property defined for the IRI or a null reference
          */
-        PropertyPtr getDefinedProperty(std::string_view iri) const;
+        PropertyPtr getDefinedProperty(const std::string_view &iri) const;
 
         /**
          * Define a new property if it has not been defined before.
          * @param iri a IRI
          * @return the property defined for the IRI
          */
-        PropertyPtr defineProperty(std::string_view iri);
+        PropertyPtr defineProperty(const std::string_view &iri);
 
         /**
          * Adds subproperty-of relation between two properties,
@@ -79,19 +79,26 @@ namespace knowrob::semweb {
          * @param subProperty a IRI
          * @param superProperty a IRI
          */
-        void addSubPropertyOf(std::string_view subProperty, std::string_view superProperty);
+        void addSubPropertyOf(const std::string_view &subProperty, const std::string_view &superProperty);
+
+        /**
+         * Define inverseOf relation between properties.
+         * @param a a property IRI
+         * @param b a property IRI
+         */
+        void setInverseOf(const std::string_view &a, const std::string_view &b);
 
         /**
          * @param iri a property IRI
          * @param flag a property flag
          */
-        void setPropertyFlag(std::string_view iri, PropertyFlag flag);
+        void setPropertyFlag(const std::string_view &iri, PropertyFlag flag);
 
         /**
          * @param iri a IRI
          * @return true if IRI is a defined annotation property
          */
-        bool isAnnotationProperty(std::string_view iri);
+        bool isAnnotationProperty(const std::string_view &iri);
 
     protected:
         std::map<std::string_view, ClassPtr> definedClasses_;

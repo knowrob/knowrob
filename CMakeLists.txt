@@ -196,7 +196,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/Database.cpp
 		src/mongodb/Collection.cpp
         src/mongodb/Cursor.cpp
-		src/mongodb/MongoWatch.cpp
+        src/mongodb/QueryWatch.cpp
 		src/mongodb/MongoKnowledgeGraph.cpp
 		src/mongodb/BulkOperation.cpp
 		src/URI.cpp
@@ -209,7 +209,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/TripleCursor.cpp
 		src/semweb/owl.cpp
 		src/semweb/rdfs.cpp
-		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp include/knowrob/mongodb/ChangeStream.h)
+		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp include/knowrob/mongodb/ChangeStream.h src/semweb/Property.cpp src/semweb/Class.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

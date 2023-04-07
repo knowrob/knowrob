@@ -69,9 +69,12 @@ void aggregation::updateHierarchyO(
     BSON_APPEND_UTF8(lookupStage, "as", "doc");
     BSON_APPEND_ARRAY_BEGIN(lookupStage, "pipeline", &lookupArray); {
         aggregation::Pipeline lookupPipeline(&lookupArray);
+        // { $match: { "o*": $newChild } }
+        auto matchStage = lookupPipeline.appendStageBegin("$match");
+        BSON_APPEND_UTF8(matchStage, "o*", newChild.data());
         // { $match: { $or: [ { s: $newChild, p:  $relation, o:  $newParent },
         //                    { "o*": $newChild } ] } }
-        auto matchStage = lookupPipeline.appendStageBegin("$match");
+        /*
         BSON_APPEND_ARRAY_BEGIN(matchStage, "$or", &orArray); {
             BSON_APPEND_DOCUMENT_BEGIN(&orArray, "0", &orDoc1);
             BSON_APPEND_UTF8(&orDoc1, "s", newChild.data());
@@ -84,6 +87,7 @@ void aggregation::updateHierarchyO(
             bson_append_document_end(&orArray, &orDoc2);
         }
         bson_append_array_end(matchStage, &orArray);
+         */
         lookupPipeline.appendStageEnd(matchStage);
         // { $project: { "o*": 1 } }
         lookupPipeline.project("o*");
