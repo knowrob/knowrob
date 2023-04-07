@@ -19,7 +19,7 @@
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/queries/AnswerQueue.h"
-#include "knowrob/graphs/PrefixRegistry.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -124,7 +124,7 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
         // in particular the ones specified in settings are globally registered with PrefixRegistry.
         static const auto register_prefix_i =
                 std::make_shared<PredicateIndicator>("rdf_register_prefix", 3);
-        for(auto &pair : rdf::PrefixRegistry::get()) {
+        for(auto &pair : semweb::PrefixRegistry::get()) {
             const auto &uri = pair.first;
             const auto &alias = pair.second;
             eval(std::make_shared<Predicate>(Predicate(register_prefix_i, {
@@ -552,7 +552,7 @@ foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term)
 {
     char *prefix, *uri;
     if(PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
-        rdf::PrefixRegistry::get().registerPrefix(prefix, uri);
+        semweb::PrefixRegistry::get().registerPrefix(prefix, uri);
     }
     return TRUE;
 }

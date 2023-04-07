@@ -22,32 +22,32 @@
 #include <mutex>
 
 #include <knowrob/mongodb/MongoException.h>
-#include <knowrob/mongodb/MongoDatabase.h>
-#include <knowrob/mongodb/MongoCollection.h>
-#include <knowrob/mongodb/MongoCursor.h>
-#include <knowrob/mongodb/MongoWatch.h>
+#include <knowrob/mongodb/Database.h>
+#include <knowrob/mongodb/Collection.h>
+#include <knowrob/mongodb/Cursor.h>
+#include <knowrob/mongodb/QueryWatch.h>
 
-namespace knowrob {
+namespace knowrob::mongo {
     class MongoInterface {
     public:
         static MongoInterface& get();
 
-        std::shared_ptr<MongoDatabase> connect(const PlTerm &dbTerm);
+        std::shared_ptr<Database> connect(const PlTerm &dbTerm);
 
-        std::shared_ptr<MongoCollection> connect(const PlTerm &dbTerm, const char* collectionName);
+        std::shared_ptr<Collection> connect(const PlTerm &dbTerm, const char* collectionName);
 
-        std::shared_ptr<MongoCollection> connect(const char* db_uri, const char* db_name, const char* collectionName);
+        std::shared_ptr<Collection> connect(const char* db_uri, const char* db_name, const char* collectionName);
 
-        std::shared_ptr<MongoCursor> cursor_create(const PlTerm &db_term, const char *coll_name);
+        std::shared_ptr<Cursor> cursor_create(const PlTerm &db_term, const char *coll_name);
 
         void cursor_destroy(const char *curser_id);
 
-        std::shared_ptr<MongoCursor> cursor(const char *curser_id);
+        std::shared_ptr<Cursor> cursor(const char *curser_id);
 
         long watch(const PlTerm &db_term,
                    const char *coll_name,
-                   const std::string &callback_goal,
-                   const PlTerm &query_term);
+                   const bson_t *query,
+                   const ChangeStreamCallback &callback);
 
         void unwatch(long i);
 
@@ -62,7 +62,7 @@ namespace knowrob {
         public:
             mongoc_uri_t *uri_;
             mongoc_client_pool_t *pool_;
-            std::shared_ptr<MongoWatch> watch_;
+            std::shared_ptr<QueryWatch> connectionWatch_;
             std::string uri_string_;
 
             explicit Connection(const std::string &uri_string);
@@ -73,7 +73,7 @@ namespace knowrob {
 
         // maps URI to MongoDatabase for all previously accessed MongoDatabase's
         std::map<std::string, std::shared_ptr<Connection>> connections_;
-        std::map<std::string, std::shared_ptr<MongoCursor>> cursors_;
+        std::map<std::string, std::shared_ptr<Cursor>> cursors_;
         std::map<long, std::shared_ptr<Connection>> watcher_;
 
         std::mutex mongo_mutex_;

@@ -8,13 +8,18 @@
 #include <optional>
 #include <list>
 #include "boost/property_tree/ptree.hpp"
-#include "knowrob/graphs/KnowledgeGraph.h"
-#include "MongoCollection.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/semweb/Vocabulary.h"
+#include "Collection.h"
 #include "knowrob/queries/BufferedAnswerStream.h"
 #include "knowrob/formulas/Literal.h"
+#include "knowrob/mongodb/TripleLoader.h"
 
 namespace knowrob {
-    class MongoKnowledgeGraph : public KnowledgeGraph {
+    /**
+     * A knowledge graph implemented with MongoDB.
+     */
+    class MongoKnowledgeGraph : public knowrob::KnowledgeGraph {
     public:
         explicit MongoKnowledgeGraph(const char* db_uri="mongodb://localhost:27017",
                                      const char* db_name="knowrob",
@@ -22,9 +27,22 @@ namespace knowrob {
 
         explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
 
-        void drop();
+        /**
+         * (re)create search indices.
+         */
+        void createSearchIndices();
 
+        /**
+         * Delete all triples of a named graph in this knowledge graph.
+         * @param graphName a graph name
+         */
         void dropGraph(const std::string &graphName);
+
+        /**
+         * Delete all triples in the database.
+         * Note: ths will also delete all indices which need to be re-created afterwards.
+         */
+        void drop();
 
         /**
          * @param graphName the name of a graph
@@ -42,12 +60,10 @@ namespace knowrob {
         bool loadTriples(const std::string &uriString, TripleFormat format) override;
 
     protected:
-        std::shared_ptr<MongoCollection> tripleCollection_;
-        std::shared_ptr<MongoCollection> oneCollection_;
+        std::shared_ptr<mongo::Collection> tripleCollection_;
+        std::shared_ptr<mongo::Collection> oneCollection_;
 
         void initialize();
-
-        void createSearchIndices();
 
         void setCurrentGraphVersion(const std::string &graphName,
                                     const std::string &graphURI,
@@ -58,8 +74,10 @@ namespace knowrob {
         static const char* getCollectionName(const boost::property_tree::ptree &config);
 
         static std::string getURI(const boost::property_tree::ptree &config);
+
+        void updateHierarchy(mongo::TripleLoader &tripleLoader);
     };
 
-} // knowrob
+} // knowrob::mongo
 
 #endif //KNOWROB_MONGO_KNOWLEDGE_GRAPH_H

@@ -125,12 +125,11 @@ add_library(knowrob_qa SHARED
 		src/ThreadPool.cpp
         src/Logger.cpp
         src/queries/DependencyGraph.cpp
-		src/graphs/ReasoningGraph.cpp
+        src/reasoner/ReasoningGraph.cpp
 		src/reasoner/Blackboard.cpp
         src/KnowledgeBase.cpp
 		src/DataSource.cpp
 		src/Statement.cpp
-		src/graphs/PossibleWorld.cpp
 		src/modalities/ConfidenceValue.cpp
 		src/modalities/ConfidenceInterval.cpp
 		src/modalities/Timepoint.cpp
@@ -146,9 +145,9 @@ add_library(knowrob_qa SHARED
 		src/terms/Unifier.cpp
 		src/terms/Constant.cpp
 		src/modalities/ModalOperator.cpp
-		src/graphs/PrefixRegistry.cpp
-		src/graphs/KnowledgeGraph.cpp
-		src/graphs/GraphPattern.cpp
+		src/semweb/PrefixRegistry.cpp
+		src/semweb/KnowledgeGraph.cpp
+		src/semweb/GraphPattern.cpp
 		src/formulas/Formula.cpp
 		src/formulas/CompoundFormula.cpp
 		src/formulas/Conjunction.cpp
@@ -194,15 +193,23 @@ add_library(knowrob_qa SHARED
 		src/mongodb/mongo_kb.cpp
 		src/mongodb/bson_pl.cpp
 		src/mongodb/MongoInterface.cpp
-		src/mongodb/MongoDatabase.cpp
-		src/mongodb/MongoCollection.cpp
-		src/mongodb/MongoCursor.cpp
+		src/mongodb/Database.cpp
+		src/mongodb/Collection.cpp
+        src/mongodb/Cursor.cpp
 		src/mongodb/MongoWatch.cpp
 		src/mongodb/MongoKnowledgeGraph.cpp
-		src/mongodb/MongoBulkOperation.cpp
+		src/mongodb/BulkOperation.cpp
 		src/URI.cpp
-        src/graphs/xsd.cpp
-		src/mongodb/MongoTripleLoader.cpp include/knowrob/graphs/GraphQuery.cpp include/knowrob/graphs/GraphQuery.h)
+		src/semweb/xsd.cpp
+		src/mongodb/TripleLoader.cpp
+		src/semweb/GraphQuery.cpp
+		src/mongodb/aggregation/graph.cpp
+		src/mongodb/Pipeline.cpp
+		src/semweb/Vocabulary.cpp
+		src/mongodb/TripleCursor.cpp
+		src/semweb/owl.cpp
+		src/semweb/rdfs.cpp
+		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp include/knowrob/mongodb/ChangeStream.h)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

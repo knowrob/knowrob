@@ -7,10 +7,13 @@
 #include "knowrob/Logger.h"
 #include "knowrob/URI.h"
 #include "knowrob/mongodb/MongoKnowledgeGraph.h"
-#include "knowrob/mongodb/MongoDocument.h"
-#include "knowrob/mongodb/MongoCursor.h"
+#include "knowrob/mongodb/Document.h"
+#include "knowrob/mongodb/Cursor.h"
 #include "knowrob/mongodb/MongoInterface.h"
-#include "knowrob/mongodb/MongoTripleLoader.h"
+#include "knowrob/mongodb/TripleCursor.h"
+#include "knowrob/mongodb/aggregation/graph.h"
+#include "knowrob/semweb/rdf.h"
+#include "knowrob/semweb/rdfs.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
@@ -28,6 +31,7 @@
 #define MONGO_KG_DEFAULT_COLLECTION "triples"
 
 using namespace knowrob;
+using namespace knowrob::mongo;
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
 : KnowledgeGraph(),
@@ -85,12 +89,41 @@ void MongoKnowledgeGraph::initialize()
 {
     createSearchIndices();
     // a collection with just a single document used for querying
-    oneCollection_ = std::make_shared<MongoCollection>(
+    oneCollection_ = std::make_shared<Collection>(
             tripleCollection_->pool(),
             tripleCollection_->client(),
             tripleCollection_->session(),
             tripleCollection_->dbName().c_str(),
             MONGO_KG_ONE_COLLECTION);
+
+    // initialize vocabulary
+    TripleData tripleData;
+    {
+        // iterate over all rdf::type assertions
+        // TODO: could avoid going over all type assertions by looking for specific type iris
+        TripleCursor cursor(tripleCollection_);
+        cursor.filter(Document(BCON_NEW(
+            "p", BCON_UTF8(semweb::IRI_type.c_str()))).bson());
+        while(cursor.nextTriple(tripleData))
+            vocabulary_->addResourceType(tripleData.subject, tripleData.object);
+    }
+    {
+        // iterate over all rdfs::subClassOf assertions
+        TripleCursor cursor(tripleCollection_);
+        cursor.filter(Document(BCON_NEW(
+            "p", BCON_UTF8(semweb::IRI_subClassOf.c_str()))).bson());
+        while(cursor.nextTriple(tripleData))
+            vocabulary_->addSubClassOf(tripleData.subject, tripleData.object);
+    }
+    {
+        // iterate over all rdfs::subPropertyOf assertions
+        TripleCursor cursor(tripleCollection_);
+        cursor.filter(Document(BCON_NEW(
+            "p", BCON_UTF8(semweb::IRI_subPropertyOf.c_str()))).bson());
+        while(cursor.nextTriple(tripleData))
+            vocabulary_->addSubPropertyOf(tripleData.subject, tripleData.object);
+    }
+    // TODO: init inverse properties too!
 }
 
 void MongoKnowledgeGraph::createSearchIndices()
@@ -115,11 +148,12 @@ void MongoKnowledgeGraph::createSearchIndices()
 void MongoKnowledgeGraph::drop()
 {
     tripleCollection_->drop();
+    vocabulary_ = std::make_shared<semweb::Vocabulary>();
 }
 
 void MongoKnowledgeGraph::dropGraph(const std::string &graphName)
 {
-    tripleCollection_->removeAll(MongoDocument(
+    tripleCollection_->removeAll(Document(
             BCON_NEW("graph", BCON_UTF8(graphName.c_str()))));
 }
 
@@ -127,7 +161,7 @@ void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphName,
                                                  const std::string &graphURI,
                                                  const std::string &graphVersion)
 {
-    tripleCollection_->storeOne(MongoDocument(BCON_NEW(
+    tripleCollection_->storeOne(Document(BCON_NEW(
             "s",     BCON_UTF8(graphURI.c_str()),
             "p",     BCON_UTF8(MONGO_KG_VERSION_KEY),
             "o",     BCON_UTF8(graphVersion.c_str()),
@@ -136,11 +170,11 @@ void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphName,
 
 std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std::string &graphName)
 {
-    auto document = MongoDocument(BCON_NEW(
+    auto document = Document(BCON_NEW(
             "p",     BCON_UTF8(MONGO_KG_VERSION_KEY),
             "graph", BCON_UTF8(graphName.c_str())));
     const bson_t *result;
-    MongoCursor cursor(tripleCollection_);
+    Cursor cursor(tripleCollection_);
     cursor.limit(1);
     cursor.filter(document.bson());
     if(cursor.next(&result)) {
@@ -175,6 +209,8 @@ BufferedAnswerStreamPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &lit
 bool MongoKnowledgeGraph::loadTriples( //NOLINT
         const std::string &uriString, TripleFormat format)
 {
+    // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces somehow as part of graph?
+    //          or just assume namespace prefixes are unique withing knowrob
     auto resolved = URI::resolve(uriString);
     auto graphName = getNameFromURI(resolved);
 
@@ -188,7 +224,7 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
         dropGraph(graphName);
     }
 
-    MongoTripleLoader loader(graphName, tripleCollection_, oneCollection_);
+    TripleLoader loader(graphName, tripleCollection_, oneCollection_, vocabulary_);
     // some OWL files are downloaded compile-time via CMake,
     // they are downloaded into owl/external e.g. there are SOMA.owl and DUL.owl.
     // TODO: rework handling of cmake-downloaded ontologies, e.g. should also work when installed
@@ -209,10 +245,82 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     }
     // update the version record of the ontology
     setCurrentGraphVersion(graphName, resolved, newVersion);
+    // update o* and p* fields
+    updateHierarchy(loader);
     // load imported ontologies
     for(auto &imported : loader.imports()) loadTriples(imported, format);
 
     return true;
+}
+
+void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
+{
+    // below performs the update purely server-side.
+    // each step computes the parents in class or property hierarchy.
+    // However, there are many steps for large ontologies so this is very
+    // time consuming.
+    // TODO: can the hierarchy update be done faster?
+    //       - keeping the class and property hierarchy in a std::map could speed things up.
+    //       - try doing all updates in one call.
+    //         But it seems problematic doing all updates in one call using $merge stage. seems
+    //         iterations cannot access updates made in previous iterations.
+
+    bson_t pipelineDoc = BSON_INITIALIZER;
+
+    // update class hierarchy
+    for(auto &assertion : tripleLoader.subClassAssertions()) {
+        bson_reinit(&pipelineDoc);
+
+        bson_t pipelineArray;
+        BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+        aggregation::Pipeline pipeline(&pipelineArray);
+        aggregation::updateHierarchyO(pipeline,
+                        tripleCollection_->name(),
+                        semweb::IRI_subClassOf,
+                        assertion.first->iri(),
+                        assertion.second->iri());
+        bson_append_array_end(&pipelineDoc, &pipelineArray);
+
+        oneCollection_->evalAggregation(&pipelineDoc);
+    }
+
+    // update property hierarchy
+    std::set<std::string_view> visited;
+    for(auto &assertion : tripleLoader.subPropertyAssertions()) {
+        visited.insert(assertion.first->iri());
+        bson_reinit(&pipelineDoc);
+
+        bson_t pipelineArray;
+        BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+        aggregation::Pipeline pipeline(&pipelineArray);
+        aggregation::updateHierarchyO(pipeline,
+                        tripleCollection_->name(),
+                        semweb::IRI_subPropertyOf,
+                        assertion.first->iri(),
+                        assertion.second->iri());
+        bson_append_array_end(&pipelineDoc, &pipelineArray);
+
+        oneCollection_->evalAggregation(&pipelineDoc);
+    }
+
+
+    // update property assertions
+    for(auto &newProperty : visited) {
+        bson_reinit(&pipelineDoc);
+
+        bson_t pipelineArray;
+        BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+        aggregation::Pipeline pipeline(&pipelineArray);
+        aggregation::updateHierarchyP(pipeline,
+                        tripleCollection_->name(),
+                        semweb::IRI_subPropertyOf,
+                        newProperty);
+        bson_append_array_end(&pipelineDoc, &pipelineArray);
+
+        oneCollection_->evalAggregation(&pipelineDoc);
+    }
+
+    bson_destroy(&pipelineDoc);
 }
 
 // fixture class for testing
@@ -225,6 +333,7 @@ protected:
                 "knowrob",
                 "triplesTest");
         kg_->drop();
+        kg_->createSearchIndices();
     }
     // void TearDown() override {}
 };

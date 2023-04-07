@@ -14,7 +14,7 @@
 #include <memory>
 // KnowRob
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/graphs/ReasoningGraph.h"
+#include "ReasoningGraph.h"
 #include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/queries/AnswerBroadcaster.h"
 

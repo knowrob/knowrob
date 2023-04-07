@@ -18,8 +18,7 @@
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
 #include "knowrob/Statement.h"
-#include "knowrob/graphs/PossibleWorld.h"
-#include "knowrob/graphs/GraphPattern.h"
+#include "knowrob/semweb/GraphPattern.h"
 
 namespace knowrob {
 	/**

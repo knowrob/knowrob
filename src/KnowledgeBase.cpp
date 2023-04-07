@@ -9,7 +9,7 @@
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
 #include "knowrob/reasoner/Blackboard.h"
-#include "knowrob/graphs/PrefixRegistry.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -32,7 +32,7 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
             auto alias = pair.second.get("alias","");
             auto uri = pair.second.get("uri","");
             if(!alias.empty() && !uri.empty()) {
-                rdf::PrefixRegistry::get().registerPrefix(alias, uri);
+                semweb::PrefixRegistry::get().registerPrefix(alias, uri);
             }
             else {
                 KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");

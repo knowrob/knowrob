@@ -14,9 +14,10 @@
 // KnowRob
 #include <knowrob/mongodb/MongoInterface.h>
 #include <knowrob/mongodb/bson_pl.h>
-#include "knowrob/mongodb/MongoDocument.h"
+#include "knowrob/mongodb/Document.h"
 
 using namespace knowrob;
+using namespace knowrob::mongo;
 
 #define PREDICATE_COLLECTION MongoInterface::get().connect(PL_A1, (char*)PL_A2)
 #define PREDICATE_CURSOR MongoInterface::get().cursor((char*)PL_A1)
@@ -26,7 +27,7 @@ static inline bson_t* termToDocument(const PlTerm &term) {
     auto document = bson_new();
     if(!bsonpl_concat(document,term, &err)) {
         bson_free(document);
-        throw MongoException("invalid_term",err);
+        throw MongoException("invalid_term", err);
     }
     return document;
 }
@@ -46,7 +47,7 @@ PREDICATE(mng_collections,2) {
 		return TRUE;
 	}
 	else {
-		throw MongoException("collection_lookup_failed",err);
+		throw MongoException("collection_lookup_failed", err);
 	}
 }
 
@@ -86,7 +87,7 @@ PREDICATE(mng_drop_unsafe, 2) {
 
 PREDICATE(mng_store, 3) {
     try {
-        PREDICATE_COLLECTION->storeOne(MongoDocument(termToDocument(PL_A3)));
+        PREDICATE_COLLECTION->storeOne(Document(termToDocument(PL_A3)));
         return TRUE;
     }
     catch(const std::exception&) {
@@ -96,7 +97,7 @@ PREDICATE(mng_store, 3) {
 
 PREDICATE(mng_remove, 3) {
     try {
-        PREDICATE_COLLECTION->removeAll(MongoDocument(termToDocument(PL_A3)));
+        PREDICATE_COLLECTION->removeAll(Document(termToDocument(PL_A3)));
         return TRUE;
     }
     catch(const std::exception&) {
@@ -107,8 +108,8 @@ PREDICATE(mng_remove, 3) {
 PREDICATE(mng_update, 4) {
     try {
         PREDICATE_COLLECTION->update(
-                MongoDocument(termToDocument(PL_A3)),
-                MongoDocument(termToDocument(PL_A4)));
+                Document(termToDocument(PL_A3)),
+                Document(termToDocument(PL_A4)));
         return TRUE;
     }
     catch(const std::exception&) {
@@ -205,9 +206,9 @@ PREDICATE(mng_bulk_write, 3) {
             bson_error_t err;
 
             // parse the document
-            auto doc1 = MongoDocument(bson_new());
+            auto doc1 = Document(bson_new());
             if(!bsonpl_concat(doc1.bson(),pl_value1,&err)) {
-                throw MongoException("invalid_term",err);
+                throw MongoException("invalid_term", err);
             }
 
             if(operation_name == ATOM_insert) {
@@ -218,9 +219,9 @@ PREDICATE(mng_bulk_write, 3) {
             }
             else if(operation_name == ATOM_update) {
                 const auto &pl_value2 = pl_member[2];
-                auto doc2 = MongoDocument(bson_new());
+                auto doc2 = Document(bson_new());
                 if(!bsonpl_concat(doc2.bson(), pl_value2, &err)) {
-                    throw MongoException("invalid_term",err);
+                    throw MongoException("invalid_term", err);
                 }
                 bulk->pushUpdate(doc1.bson(), doc2.bson());
             }
@@ -229,7 +230,7 @@ PREDICATE(mng_bulk_write, 3) {
                                MONGOC_ERROR_COMMAND,
                                MONGOC_ERROR_COMMAND_INVALID_ARG,
                                "unknown bulk operation '%s'", pl_member.name());
-                throw MongoException("bulk_error",err);
+                throw MongoException("bulk_error", err);
             }
         }
 
@@ -246,8 +247,22 @@ PREDICATE(mng_watch, 5) {
     try {
         char* coll_name = (char*)PL_A2;
         char* callback  = (char*)PL_A3;
-        long id = MongoInterface::get().watch(PL_A1, coll_name, callback, PL_A4);
+
+        bson_t *pipeline = bson_new();
+       	bson_error_t err;
+       	if(!bsonpl_concat(pipeline, PL_A4, &err)) {
+       		bson_destroy(pipeline);
+       		throw MongoException("invalid_query", err);
+       	}
+
+        long id = MongoInterface::get().watch(PL_A1, coll_name, pipeline,
+            [callback](long watcherID, const bson_t *result) {
+                PlTerm term = bson_to_term(result);
+                PlCall(callback, PlTermv(PlTerm(watcherID), term));
+            });
+
         PL_A5 = PlTerm(id);
+        bson_destroy(pipeline);
         return TRUE;
     }
     catch(const std::exception&) {
@@ -279,7 +294,7 @@ PREDICATE(mng_cursor_create, 3) {
 
 PREDICATE(mng_cursor_create, 4) {
     try {
-        MongoDocument doc_a(termToDocument(PL_A4));
+        Document doc_a(termToDocument(PL_A4));
         auto cursor = MongoInterface::get().cursor_create(PL_A1,(char*)PL_A2);
         cursor->filter(doc_a.bson());
         PL_A3 = cursor->id().c_str();
@@ -312,7 +327,7 @@ PREDICATE(mng_cursor_erase, 1) {
 
 PREDICATE(mng_cursor_filter, 2) {
     try {
-        MongoDocument doc_a(termToDocument(PL_A2));
+        Document doc_a(termToDocument(PL_A2));
         PREDICATE_CURSOR->filter(doc_a.bson());
         return TRUE;
     }
@@ -323,7 +338,7 @@ PREDICATE(mng_cursor_filter, 2) {
 
 PREDICATE(mng_cursor_aggregate, 2) {
     try {
-        MongoDocument doc_a(termToDocument(PL_A2));
+        Document doc_a(termToDocument(PL_A2));
         PREDICATE_CURSOR->aggregate(doc_a.bson());
         return TRUE;
     }

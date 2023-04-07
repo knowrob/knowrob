@@ -149,8 +149,8 @@ compile_assert(triple(S,P,O), Ctx, Pipeline) :-
 	% special handling for RDFS semantic
 	% FIXME: with below code P can not be inferred in query
 	(	taxonomical_property(P1)
-	->	( Pstar=array([string(P1)]), Ostar=string('$parents') )
-	;	( Pstar=string('$parents'),  Ostar=array([V_query]) )
+	->	( Pstar=array([string(P1)]), Ostar=string('$directParents') )
+	;	( Pstar=string('$directParents'),  Ostar=array([V_query]) )
 	),
 	% build triple docuemnt
 	TripleDoc=[
@@ -453,7 +453,7 @@ lookup_parents(Triple, Context, Step) :-
 	% first, lookup matching documents and yield o* in parents array
 	(	Step=['$lookup', [
 			['from',string(Coll)],
-			['as',string('parents')],
+			['as',string('directParents')],
 			['pipeline',array([
 				['$match', [
 					['s',TypedValue],
@@ -464,12 +464,12 @@ lookup_parents(Triple, Context, Step) :-
 			])]
 		]]
 	% convert parents from list of documents to list of strings.
-	;	Step=['$set',['parents',['$map',[
-			['input',string('$parents')],
+	;	Step=['$set',['directParents',['$map',[
+			['input',string('$directParents')],
 			['in',string('$$this.o*')]
 		]]]]
 	% also add child to parents list
-	;	array_concat('parents', array([TypedValue]), Step)
+	;	array_concat('directParents', array([TypedValue]), Step)
 	).
 
 %%
@@ -481,7 +481,7 @@ propagate_assert(S, Context, Step) :-
 		% match every document with S in o*
 		(	X=['$match', [['o*',TypedS]]]
 		% and add parent field from input documents to o*
-		;	array_concat('o*', string('$$parents'), X)
+		;	array_concat('o*', string('$$directParents'), X)
 		% only replace o*
 		;	X=['$project',[['o*',int(1)]]]
 		),
@@ -490,7 +490,7 @@ propagate_assert(S, Context, Step) :-
 	(	Step=['$lookup', [
 			['from',string(Collection)],
 			['as',string('next')],
-			['let',[['parents',string('$parents')]]],
+			['let',[['directParents',string('$directParents')]]],
 			['pipeline',array(Inner)]
 		]]
 	% second, add each document to triples array

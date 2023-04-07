@@ -9,7 +9,7 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
-#include "knowrob/graphs/PrefixRegistry.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/terms/Constant.h"
 
 using namespace knowrob;
@@ -23,7 +23,7 @@ void StringTerm::write(std::ostream& os) const
         boost::split(urlAndFragment, value_, boost::is_any_of("#"));
 
         if(urlAndFragment.size() == 2 && !urlAndFragment[1].empty()) {
-            auto alias = rdf::PrefixRegistry::get().uriToAlias(urlAndFragment[0]);
+            auto alias = semweb::PrefixRegistry::get().uriToAlias(urlAndFragment[0]);
             if(alias) {
                 write1(os, alias.value());
                 os << ':';
