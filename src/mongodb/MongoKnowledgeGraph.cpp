@@ -12,6 +12,7 @@
 #include "knowrob/mongodb/MongoInterface.h"
 #include "knowrob/mongodb/TripleCursor.h"
 #include "knowrob/mongodb/aggregation/graph.h"
+#include "knowrob/mongodb/aggregation/triples.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
@@ -26,11 +27,6 @@
 #define MONGO_KG_SETTING_PASSWORD "password"
 #define MONGO_KG_SETTING_DB "db"
 #define MONGO_KG_SETTING_COLLECTION "collection"
-
-#define MONGO_OPERATOR_LTE  "$lte"
-#define MONGO_OPERATOR_GTE  "$gte"
-#define MONGO_OPERATOR_LT   "$lt"
-#define MONGO_OPERATOR_GT   "$gt"
 
 #define MONGO_KG_DEFAULT_HOST "localhost"
 #define MONGO_KG_DEFAULT_PORT "27017"
@@ -201,6 +197,15 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
     return {};
 }
 
+bson_t* MongoKnowledgeGraph::getTripleSelector(
+            const semweb::TripleExpression &tripleExpression,
+            bool b_isTaxonomicProperty)
+{
+    auto doc = bson_new();
+    aggregation::appendTripleSelector(doc, tripleExpression, b_isTaxonomicProperty);
+    return doc;
+}
+
 void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 {
     TripleLoader loader("user",
@@ -227,130 +232,11 @@ void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleDat
     updateHierarchy(loader);
 }
 
-// forward declaration
-static inline void appendArrayQuery(bson_t *doc, const char *key, const std::vector<TermPtr> &terms);
-
-static inline void appendTermQuery( //NOLINT
-        bson_t *doc,
-        const char *key,
-        const TermPtr &term,
-        const char *queryOperator=nullptr)
-{
-    bson_t queryOperatorDoc;
-    bson_t *valueDocument;
-    const char *valueKey;
-
-    if(queryOperator) {
-        BSON_APPEND_DOCUMENT_BEGIN(doc, key, &queryOperatorDoc);
-        valueDocument = &queryOperatorDoc;
-        valueKey = queryOperator;
-    }
-    else {
-        valueDocument = doc;
-        valueKey = key;
-    }
-
-    switch(term->type()) {
-        case TermType::STRING:
-            BSON_APPEND_UTF8(valueDocument, valueKey,
-                             ((StringTerm*)term.get())->value().c_str());
-            break;
-        case TermType::VARIABLE:
-            break;
-        case TermType::DOUBLE:
-            BSON_APPEND_DOUBLE(valueDocument, valueKey,
-                               ((DoubleTerm*)term.get())->value());
-            break;
-        case TermType::INT32:
-            BSON_APPEND_INT32(valueDocument, valueKey,
-                              ((Integer32Term*)term.get())->value());
-            break;
-        case TermType::LONG:
-            BSON_APPEND_INT64(valueDocument, valueKey,
-                              ((LongTerm*)term.get())->value());
-            break;
-        case TermType::LIST:
-            appendArrayQuery(valueDocument, valueKey,
-                             ((ListTerm*)term.get())->elements());
-            break;
-        case TermType::MODAL_OPERATOR:
-        case TermType::PREDICATE:
-            break;
-    }
-
-    if(queryOperator) {
-        bson_append_document_end(doc, &queryOperatorDoc);
-    }
-}
-
-static inline void appendArrayQuery( // NOLINT
-        bson_t *doc, const char *key, const std::vector<TermPtr> &terms)
-{
-    bson_t orOperator, orArray;
-    BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
-    BSON_APPEND_ARRAY_BEGIN(&orOperator, "$or", &orArray);
-    uint32_t arrayIndex = 0;
-    for(auto &term : terms) {
-        auto indexKey = std::to_string(arrayIndex++);
-        appendTermQuery(doc, indexKey.c_str(), term);
-        //BSON_APPEND_UTF8(&orArray, indexKey.c_str(), entity);
-    }
-    bson_append_array_end(&orOperator, &orArray);
-    bson_append_document_end(doc, &orOperator);
-}
-
-bson_t* MongoKnowledgeGraph::getTripleSelector(
-            const semweb::TripleExpression &tripleExpression,
-            bool b_isTaxonomicProperty)
-{
-    auto doc = bson_new();
-
-    // subject field
-    appendTermQuery(doc, "s", tripleExpression.subjectTerm());
-    // property field
-    appendTermQuery(doc,
-            (b_isTaxonomicProperty ? "p" : "p*"),
-            tripleExpression.propertyTerm());
-
-    // object field
-    const char* objectOperator = nullptr;
-    switch(tripleExpression.objectOperator()) {
-        case semweb::TripleExpression::EQ:
-            break;
-        case semweb::TripleExpression::LEQ:
-            objectOperator = MONGO_OPERATOR_LTE;
-            break;
-        case semweb::TripleExpression::GEQ:
-            objectOperator = MONGO_OPERATOR_GTE;
-            break;
-        case semweb::TripleExpression::LT:
-            objectOperator = MONGO_OPERATOR_LT;
-            break;
-        case semweb::TripleExpression::GT:
-            objectOperator = MONGO_OPERATOR_GT;
-            break;
-    }
-    appendTermQuery(doc,
-            (b_isTaxonomicProperty ? "o*" : "o"),
-            tripleExpression.objectTerm(),
-            objectOperator);
-
-    // TODO: handle graph field
-    // TODO: support for graph hierarchy
-    // TODO: handle time
-    // TODO: handle confidence
-
-    return doc;
-}
-
 void MongoKnowledgeGraph::removeAllTriples(const semweb::TripleExpression &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeAll(
         Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
-    if(b_isTaxonomicProperty) {
-        // FIXME: must update hierarchy!
-    }
 }
 
 void MongoKnowledgeGraph::removeOneTriple(const semweb::TripleExpression &tripleExpression)
@@ -358,9 +244,25 @@ void MongoKnowledgeGraph::removeOneTriple(const semweb::TripleExpression &triple
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeOne(
         Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
-    if(b_isTaxonomicProperty) {
-        // FIXME: must update hierarchy!
+}
+
+std::shared_ptr<AnswerCursor> MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpression &tripleExpression)
+{
+    bson_t pipelineDoc = BSON_INITIALIZER;
+    bson_t pipelineArray;
+
+    BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+    aggregation::Pipeline pipeline(&pipelineArray); {
+        // append lookup stages to pipeline
+        aggregation::TripleLookupData lookupData(&tripleExpression);
+        aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, lookupData);
     }
+    bson_append_array_end(&pipelineDoc, &pipelineArray);
+
+    auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
+    cursor->aggregate(&pipelineDoc);
+    return cursor;
+    //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
 BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
@@ -485,7 +387,6 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         oneCollection_->evalAggregation(&pipelineDoc);
     }
 
-
     // update property assertions
     // TODO: below steps are independent, and could run in parallel.
     //       could bake an array of properties into pipeline,
@@ -522,8 +423,8 @@ bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm)
 // fixture class for testing
 class MongoKnowledgeGraphTest : public ::testing::Test {
 protected:
-    std::shared_ptr<MongoKnowledgeGraph> kg_;
-    void SetUp() override {
+    static std::shared_ptr<MongoKnowledgeGraph> kg_;
+    static void SetUpTestSuite() {
         kg_ = std::make_shared<MongoKnowledgeGraph>(
                 "mongodb://localhost:27017",
                 "knowrob",
@@ -533,10 +434,37 @@ protected:
     }
     // void TearDown() override {}
 };
+std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 
 TEST_F(MongoKnowledgeGraphTest, LoadLocal)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("memory").has_value());
     EXPECT_NO_THROW(kg_->loadTriples("owl/test/memory.owl", knowrob::RDF_XML));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("memory").has_value());
+}
+
+TEST_F(MongoKnowledgeGraphTest, QueryTriple)
+{
+    KB_INFO("foo1");
+    semweb::TripleExpression tripleExpression(
+        std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#predicate1"),
+        std::make_shared<Variable>("P"),
+        std::make_shared<Variable>("O"),
+        knowrob::semweb::TripleExpression::EQ);
+    KB_INFO("foo2");
+    auto cursor = kg_->lookupTriples(tripleExpression);
+    const bson_t *resultDoc;
+
+    KB_INFO("foo3");
+    auto queryStr = bson_as_json(cursor->query(), nullptr);
+    if(queryStr) KB_INFO("query: {}", queryStr);
+    else         KB_INFO("query is null!");
+    bson_free (queryStr);
+
+    KB_INFO("foo4");
+    auto resultAnswer = std::make_shared<Answer>();
+    while(cursor->nextAnswer(resultAnswer)) {
+        KB_INFO("result: {}", *resultAnswer);
+        resultAnswer = std::make_shared<Answer>();
+    }
 }

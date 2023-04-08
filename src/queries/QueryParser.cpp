@@ -21,6 +21,7 @@
 #include "knowrob/modalities/KnowledgeModality.h"
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/terms/ListTerm.h"
 
 using namespace knowrob;
 
@@ -59,8 +60,10 @@ namespace knowrob {
 
 		// a rule that matches a single argument of a predicate
 		TermRule argument;
+        TermRule compound;
 		TermRule variable;
 		TermRule constant;
+        TermRule constantList;
 		TermRule number;
 		TermRule atom;
 		TermRule string;
@@ -106,8 +109,14 @@ QueryParser::QueryParser()
 	bnf_->constant %= (bnf_->atom
 			| bnf_->string
             | bnf_->number);
+    bnf_->constantList = ((qi::char_('[') >> (bnf_->constant % ',') >> qi::char_(']'))
+            [qi::_val = ptr_<ListTerm>()(qi::_2)]);
 	bnf_->variable = (bnf_->upperPrefix [qi::_val = ptr_<Variable>()(qi::_1)]);
-	bnf_->argument %= bnf_->variable | bnf_->constant;
+	// TODO: also support some operators like '<', '>' etc. without quotes
+    bnf_->compound = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
+   			qi::char_('(') >> (bnf_->argument % ',') >> ')')
+   			[qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
+	bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
 
 	// predicates
 	bnf_->predicateWithArgs = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
@@ -339,7 +348,7 @@ TEST_F(QueryParserTest, Predicates)
 TEST_F(QueryParserTest, PredicateWithCompundArgument)
 {
     TEST_NO_THROW(testPredicate(
-            QueryParser::parsePredicate("p(X,<(a))"),
+            QueryParser::parsePredicate("p(X,'<'(a))"),
             // TODO: rather use compound type here
             "p", 2, { TermType::VARIABLE, TermType::PREDICATE }));
     TEST_NO_THROW(testPredicate(

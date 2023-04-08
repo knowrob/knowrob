@@ -24,11 +24,19 @@ namespace knowrob::mongo::aggregation {
         bson_t* appendStageBegin(const char* stageOperator);
         void appendStageEnd(bson_t *stage);
 
+        void limit(uint32_t maxDocuments);
+
         void unwind(const std::string_view &field);
+
+        void unset(const std::string_view &field);
 
         void replaceRoot(const std::string_view &newRootField);
 
         void merge(const std::string_view &collection);
+
+        void sortAscending(const std::string_view &field);
+
+        void sortDescending(const std::string_view &field);
 
         void project(const std::string_view &field);
 

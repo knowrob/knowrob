@@ -77,6 +77,8 @@ namespace knowrob::mongo {
          */
         bool erase();
 
+        const auto query() const { return query_; }
+
     private:
         std::shared_ptr<Collection> collection_;
         mongoc_cursor_t *cursor_;

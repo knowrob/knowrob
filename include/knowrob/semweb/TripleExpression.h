@@ -22,9 +22,13 @@ namespace knowrob::semweb {
         TripleExpression(const TermPtr &subjectTerm,
                          const TermPtr &propertyTerm,
                          const TermPtr &objectTerm,
-                         OperatorType objectOperator);
+                         OperatorType objectOperator=EQ,
+                         const std::string_view &graphName="*");
 
-        explicit TripleExpression(const PredicatePtr &triplePredicate);
+        explicit TripleExpression(const PredicatePtr &triplePredicate,
+                                  const std::string_view &graphName="*");
+
+        bool isGround() const;
 
         auto& subjectTerm() const { return subjectTerm_; }
 
@@ -32,13 +36,46 @@ namespace knowrob::semweb {
 
         auto& objectTerm() const { return objectTerm_; }
 
-        auto& objectOperator() const { return objectOperator_; }
+        auto& graphTerm() const { return graphTerm_; }
+
+        auto& beginTerm() const { return beginTerm_; }
+
+        auto& endTerm() const { return endTerm_; }
+
+        auto& confidenceTerm() const { return confidenceTerm_; }
+
+        auto objectOperator() const { return objectOperator_; }
+
+        auto confidenceOperator() const { return confidenceOperator_; }
+
+        auto beginOperator() const { return beginOperator_; }
+
+        auto endOperator() const { return endOperator_; }
+
+        void setMinConfidence(double limit);
+
+        void setMaxConfidence(double limit);
+
+        void setMinBegin(double limit);
+
+        void setMaxBegin(double limit);
+
+        void setMinEnd(double limit);
+
+        void setMaxEnd(double limit);
 
     protected:
         TermPtr subjectTerm_;
         TermPtr propertyTerm_;
         TermPtr objectTerm_;
+        TermPtr graphTerm_;
+        TermPtr beginTerm_;
+        TermPtr endTerm_;
+        TermPtr confidenceTerm_;
         OperatorType objectOperator_;
+        OperatorType beginOperator_;
+        OperatorType endOperator_;
+        OperatorType confidenceOperator_;
     };
 
 } // knowrob

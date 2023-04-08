@@ -68,7 +68,7 @@ namespace knowrob {
 		const TermType& type() const { return type_; }
 		
 		/**
-		 * @return true if this term isMoreGeneralThan no variables.
+		 * @return true if this term has no variables.
 		 */
 		virtual bool isGround() const = 0;
 		

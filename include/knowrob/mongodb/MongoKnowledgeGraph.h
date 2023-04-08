@@ -15,6 +15,7 @@
 #include "knowrob/queries/BufferedAnswerStream.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
+#include "knowrob/mongodb/AnswerCursor.h"
 
 namespace knowrob {
     /**
@@ -27,6 +28,8 @@ namespace knowrob {
                                      const char* collectionName="triples");
 
         explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
+
+        std::shared_ptr<mongo::AnswerCursor> lookupTriples(const semweb::TripleExpression &tripleExpression);
 
         /**
          * (re)create search indices.

@@ -20,7 +20,7 @@ Cursor::Cursor(const std::shared_ptr<Collection> &collection)
   collection_(collection),
   isAggregateQuery_(false)
 {
-	query_ = bson_new();
+	query_ = bson_new(); // FIXME leak here
 	opts_ = bson_new();
 	collection_->appendSession(opts_);
 	// use pointer as id

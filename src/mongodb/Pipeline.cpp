@@ -47,10 +47,24 @@ void Pipeline::appendStageEnd(bson_t *stage)
     }
 }
 
+void Pipeline::limit(uint32_t maxDocuments)
+{
+    auto unwindStage = appendStageBegin();
+    BSON_APPEND_INT32(unwindStage, "$limit", maxDocuments);
+    appendStageEnd(unwindStage);
+}
+
 void Pipeline::unwind(const std::string_view &field)
 {
     auto unwindStage = appendStageBegin();
     BSON_APPEND_UTF8(unwindStage, "$unwind", field.data());
+    appendStageEnd(unwindStage);
+}
+
+void Pipeline::unset(const std::string_view &field)
+{
+    auto unwindStage = appendStageBegin();
+    BSON_APPEND_UTF8(unwindStage, "$unset", field.data());
     appendStageEnd(unwindStage);
 }
 
@@ -59,6 +73,20 @@ void Pipeline::replaceRoot(const std::string_view &newRootField)
     auto unwindStage = appendStageBegin("$replaceRoot");
     BSON_APPEND_UTF8(unwindStage, "newRoot", newRootField.data());
     appendStageEnd(unwindStage);
+}
+
+void Pipeline::sortAscending(const std::string_view &field)
+{
+    auto sortStage = appendStageBegin("$sort");
+    BSON_APPEND_INT32(sortStage, field.data(), 1);
+    appendStageEnd(sortStage);
+}
+
+void Pipeline::sortDescending(const std::string_view &field)
+{
+    auto sortStage = appendStageBegin("$sort");
+    BSON_APPEND_INT32(sortStage, field.data(), -1);
+    appendStageEnd(sortStage);
 }
 
 void Pipeline::merge(const std::string_view &collection)
