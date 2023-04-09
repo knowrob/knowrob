@@ -29,7 +29,6 @@
       sw_unload_graph/1,           % +Graph
       sw_set_default_graph/1,      % +Graph
       sw_default_graph/1,          % ?Graph
-      set_graph_option/2,
       sw_current_graph/2,
 
       load_rdf_xml/2,              % +URL, +ParentGraph
@@ -767,14 +766,6 @@ sw_default_graph(user).
 sw_set_default_graph(Graph) :-
 	retractall(sw_default_graph(_)),
 	assertz(sw_default_graph(Graph)).
-
-%%
-set_graph_option(Options, Options) :-
-	option(graph(_), Options),
-	!.
-set_graph_option(Options, Merged) :-
-	sw_default_graph(DG),
-	merge_options([graph(DG)], Options, Merged).
 
      /*******************************
       *    LOADING RDF/XML DATA     *

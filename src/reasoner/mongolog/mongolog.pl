@@ -25,8 +25,6 @@
 	      rdf_global_term/2 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('scope')).
-:- use_module(library('semweb'),
-        [ set_graph_option/2 ]).
 :- use_module(library('blackboard'),
         [ reasoner_setting/4,
           reasoner_setting/2,
@@ -752,6 +750,14 @@ mongolog_retract(triple(S,P,O), Scope, Options) :-
 	% run a remove query
 	mongolog_get_db(DB, Coll, 'triples'),
 	mng_remove(DB, Coll, Doc).
+
+%%
+set_graph_option(Options, Options) :-
+	option(graph(_), Options),
+	!.
+set_graph_option(Options, Merged) :-
+	sw_default_graph(DG),
+	merge_options([graph(DG)], Options, Merged).
 
 %% mongolog_compile(+Term, -Pipeline, +Context) is semidet.
 %
