@@ -23,12 +23,8 @@ TripleLoader::TripleLoader(std::string graphName,
           batchSize_(batchSize),
           vocabulary_(vocabulary),
           operationCounter_(0),
-          parentsArray_(BSON_INITIALIZER),
-          timeZero_(),
-          timeInfinity_()
+          parentsArray_(BSON_INITIALIZER)
 {
-    bson_decimal128_from_string ("0.0", &timeZero_);
-    bson_decimal128_from_string (BSON_DECIMAL128_INF, &timeInfinity_);
 }
 
 TripleLoader::~TripleLoader()

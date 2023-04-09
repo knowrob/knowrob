@@ -91,17 +91,28 @@ static inline void appendSetVariable(bson_t *doc,
 
 static inline void appendMatchVariable(bson_t *doc,
                                        const std::string_view &fieldValue,
-                                       const std::string_view &varName)
+                                       const std::string_view &varName,
+                                       const aggregation::TripleLookupData &lookupData)
 {
     const auto varKey = getVariableKey(varName)+".val";
     const auto varLetValue = std::string("$$")+varKey;
     const auto matchOperator = (fieldValue.back()=='*' ? "$in" : "$eq");
     bson_t exprDoc, orArr, notDoc, notArr, matchDoc, matchArr;
-    // {$expr: {$or: [ { $not: [ varLetValue ] }, { matchOperator: [varLetValue, fieldValue] } ]}}
-    // TODO: conditional can be avoided for cases where it is certain that a variable must have a grounding
-    //       or that it cannot have one.
+
     BSON_APPEND_DOCUMENT_BEGIN(doc, "$expr", &exprDoc);
-    BSON_APPEND_ARRAY_BEGIN(&exprDoc, "$or", &orArr); {
+
+    if(lookupData.knownGroundedVariables.count(varName)>0) {
+        // variable is known to have a grounding in the v_VARS field
+        // {$expr: { matchOperator: [varLetValue, fieldValue] } }
+        BSON_APPEND_ARRAY_BEGIN(&exprDoc, matchOperator, &matchArr);
+        BSON_APPEND_UTF8(&matchArr, "0", varLetValue.c_str());
+        BSON_APPEND_UTF8(&matchArr, "1", fieldValue.data());
+        bson_append_array_end(&exprDoc, &matchArr);
+    }
+    else {
+        // {$expr: {$or: [ { $not: [ varLetValue ] }, { matchOperator: [varLetValue, fieldValue] } ]}}
+        BSON_APPEND_ARRAY_BEGIN(&exprDoc, "$or", &orArr);
+
         // { $not: [ varLetValue ] }
         BSON_APPEND_DOCUMENT_BEGIN(&orArr, "0", &notDoc);
         BSON_APPEND_ARRAY_BEGIN(&notDoc, "$not", &notArr);
@@ -116,9 +127,40 @@ static inline void appendMatchVariable(bson_t *doc,
         BSON_APPEND_UTF8(&matchArr, "1", fieldValue.data());
         bson_append_array_end(&matchDoc, &matchArr);
         bson_append_document_end(&orArr, &matchDoc);
+
+        bson_append_array_end(&exprDoc, &orArr);
     }
-    bson_append_array_end(&exprDoc, &orArr);
     bson_append_document_end(doc, &exprDoc);
+}
+
+static void setTripleVariables(
+        aggregation::Pipeline &pipeline,
+        const aggregation::TripleLookupData &lookupData)
+{
+    // TODO: consider storing the document id of the triple in which var is grounded.
+    // TODO: consider storing the confidence value of triples
+    //      - both would need a list as multiple predicates could back a grounding
+
+    std::list<std::pair<const char*,Variable*>> varList;
+    for(auto &it : {
+            std::make_pair("$next.s",lookupData.expr->subjectTerm()),
+            std::make_pair("$next.p",lookupData.expr->propertyTerm()),
+            std::make_pair("$next.o",lookupData.expr->objectTerm())
+    }) {
+        if(it.second->type()!=TermType::VARIABLE) continue;
+        auto var = (Variable*)it.second.get();
+        // skip variables that were instantiated in previous steps
+        if(lookupData.knownGroundedVariables.count(var->name())>0) continue;
+        varList.emplace_back(it.first, var);
+    }
+
+    if(!varList.empty()) {
+        auto setVariables = pipeline.appendStageBegin("$set");
+        for(auto &it : varList) {
+            appendSetVariable(setVariables, it.second->name(), it.first);
+        }
+        pipeline.appendStageEnd(setVariables);
+    }
 }
 
 static inline const char* getOperatorString(knowrob::semweb::TripleExpression::OperatorType operatorType)
@@ -159,7 +201,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleE
 
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
 {
-    static const bool b_allowNullValues = true;
+    static const bool allowNullValues = true;
     auto &bt = tripleExpression.beginTerm();
     auto &et = tripleExpression.endTerm();
 
@@ -171,7 +213,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleEx
                     "scope.time.since",
                     bt,
                     beginOperator,
-                    b_allowNullValues);
+                    allowNullValues);
         }
         else {
             KB_WARN("begin term {} has unexpected type", *bt);
@@ -185,7 +227,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleEx
                     "scope.time.until",
                     et,
                     endOperator,
-                    b_allowNullValues);
+                    allowNullValues);
         }
         else {
             KB_WARN("end term {} has unexpected type", *et);
@@ -195,7 +237,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleEx
 
 void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
 {
-    static const bool b_allowNullValues = true;
+    static const bool allowNullValues = true;
     auto &ct = tripleExpression.confidenceTerm();
     if(!ct) return;
 
@@ -203,10 +245,10 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::Tr
         const char* confidenceOperator = getOperatorString(tripleExpression.confidenceOperator());
         aggregation::appendTermQuery(
                 selectorDoc,
-                "scope.confidence",
+                "c",
                 ct,
                 confidenceOperator,
-                b_allowNullValues);
+                allowNullValues);
     }
     else {
         KB_WARN("confidence term {} has unexpected type", *ct);
@@ -239,29 +281,6 @@ void aggregation::appendTripleSelector(
     appendConfidenceSelector(selectorDoc, tripleExpression);
 }
 
-static void setTripleVariables(
-        aggregation::Pipeline &pipeline,
-        const aggregation::TripleLookupData &lookupData)
-{
-    if(lookupData.expr->isGround()) return;
-
-    // TODO: consider storing the document id of the triple in which var is grounded.
-    // TODO: consider storing the confidence value of triples
-    //      - both would need a list as multiple predicates could back a grounding
-    auto setVariables = pipeline.appendStageBegin("$set");
-    for(auto &it : {
-            std::make_pair("$next.s",lookupData.expr->subjectTerm()),
-            std::make_pair("$next.p",lookupData.expr->propertyTerm()),
-            std::make_pair("$next.o",lookupData.expr->objectTerm())
-    }) {
-        if(it.second->type()==TermType::VARIABLE) {
-            auto var = (Variable*)it.second.get();
-            appendSetVariable(setVariables, var->name(), it.first);
-        }
-    }
-    pipeline.appendStageEnd(setVariables);
-}
-
 static inline void lookupTriple_nontransitive_(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
@@ -272,12 +291,36 @@ static inline void lookupTriple_nontransitive_(
     bool b_isTaxonomicProperty = (definedProperty &&
                 vocabulary->isTaxonomicProperty(definedProperty->iri()));
     bool b_isReflexiveProperty = (definedProperty &&
-                definedProperty->hasFlag(semweb::PropertyFlag::REFLEXIVE_PROPERTY));;
-    bool b_hasVarGroundings = lookupData.mayHasMoreGroundings ||
-                              !lookupData.knownGroundedVariables.empty();
+                definedProperty->hasFlag(semweb::PropertyFlag::REFLEXIVE_PROPERTY));
     char arrIndexStr[16];
     const char *arrIndexKey;
     uint32_t arrIndex;
+
+    bool b_skipInputGroundings=false;
+    if(lookupData.expr->isGround()) {
+        // the triple expression has no variables
+        b_skipInputGroundings = true;
+    }
+    else if(!lookupData.mayHasMoreGroundings) {
+        // all possible previous instantiations are known and stored
+        // in lookupData.knownGroundedVariables.
+        b_skipInputGroundings = true;
+        for(auto &exprTerm : {
+                lookupData.expr->subjectTerm(),
+                lookupData.expr->propertyTerm(),
+                lookupData.expr->objectTerm()
+        }) {
+            if(exprTerm->type()!=TermType::VARIABLE) continue;
+            auto var = (Variable*)exprTerm.get();
+            // skip if this variable cannot have a runtime grounding
+            if(lookupData.knownGroundedVariables.count(var->name())>0) {
+                // the expression contains a variable that is known to have received
+                // a grounding before
+                b_skipInputGroundings = false;
+                break;
+            }
+        }
+    }
 
     // filter out documents that do not match the triple pattern.
   	// this is done using $match or $lookup operators.
@@ -286,7 +329,7 @@ static inline void lookupTriple_nontransitive_(
     auto lookupStage = pipeline.appendStageBegin("$lookup");
     BSON_APPEND_UTF8(lookupStage, "from", collection.data());
     BSON_APPEND_UTF8(lookupStage, "as", "next");
-    if(b_hasVarGroundings) {
+    if(!b_skipInputGroundings) {
         // pass "v_VARS" field to lookup pipeline
         BSON_APPEND_DOCUMENT_BEGIN(lookupStage, "let", &letDoc);
         BSON_APPEND_UTF8(&letDoc, "v_VARS", "$v_VARS");
@@ -296,7 +339,12 @@ static inline void lookupTriple_nontransitive_(
         aggregation::Pipeline lookupPipeline(&lookupArray);
 
         auto matchStage = lookupPipeline.appendStageBegin("$match");
-        if(b_hasVarGroundings) {
+        if(b_skipInputGroundings) {
+            aggregation::appendTripleSelector(matchStage,
+                                              *lookupData.expr,
+                                              b_isTaxonomicProperty);
+        }
+        else {
             // need to match with potential groundings of variables from previous steps
             // these are stored in the "v_VARS" field.
             bson_t andArray, tripleDoc, variablesDoc;
@@ -312,20 +360,23 @@ static inline void lookupTriple_nontransitive_(
                         std::make_pair(b_isTaxonomicProperty ? "$p" : "$p*",lookupData.expr->propertyTerm()),
                         std::make_pair(b_isTaxonomicProperty ? "$o*" : "$o",lookupData.expr->objectTerm())
                 }) {
-                    if(it.second->type()==TermType::VARIABLE) {
-                        bson_uint32_to_string (arrIndex++,
-                            &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
-                        BSON_APPEND_DOCUMENT_BEGIN(&andArray, arrIndexKey, &variablesDoc);
-                        auto var = (Variable*)it.second.get();
-                        appendMatchVariable(&variablesDoc, it.first, var->name());
-                        bson_append_document_end(&andArray, &variablesDoc);
-                    }
+                    if(it.second->type()!=TermType::VARIABLE) continue;
+                    auto var = (Variable*)it.second.get();
+                    // skip if this variable cannot have a runtime grounding
+                    if(!lookupData.mayHasMoreGroundings &&
+                       lookupData.knownGroundedVariables.count(var->name())==0) continue;
+
+                    bson_uint32_to_string (arrIndex++,
+                        &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
+                    BSON_APPEND_DOCUMENT_BEGIN(&andArray, arrIndexKey, &variablesDoc);
+                    appendMatchVariable(&variablesDoc,
+                                        it.first,
+                                        var->name(),
+                                        lookupData);
+                    bson_append_document_end(&andArray, &variablesDoc);
                 }
             }
             bson_append_array_end(matchStage, &andArray);
-        }
-        else {
-            aggregation::appendTripleSelector(matchStage, *lookupData.expr, b_isTaxonomicProperty);
         }
         lookupPipeline.appendStageEnd(matchStage);
         // { $limit: maxNumOfTriples }

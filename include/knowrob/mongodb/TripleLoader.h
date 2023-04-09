@@ -71,9 +71,6 @@ namespace knowrob::mongo {
         std::list<ClassPair> subClassAssertions_;
         std::list<PropertyPair> subPropertyAssertions_;
 
-        bson_decimal128_t timeZero_;
-        bson_decimal128_t timeInfinity_;
-
         bson_t* createTripleDocument(const TripleData &tripleData,
                                      const std::string &graphName,
                                      bool isTaxonomic);

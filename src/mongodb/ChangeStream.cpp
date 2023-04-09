@@ -16,7 +16,8 @@ ChangeStream::ChangeStream(
         ChangeStreamCallback callback)
 : stream_(nullptr),
   callback_(std::move(callback)),
-  queryID_(queryID)
+  queryID_(queryID),
+  next_ptr_()
 {
 	// connect and append session ID to options
 	collection_ = std::make_unique<Collection>(pool, database, collection);

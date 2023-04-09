@@ -82,16 +82,21 @@ void aggregation::appendTermQuery( //NOLINT
 }
 
 void aggregation::appendArrayQuery( // NOLINT
-        bson_t *doc, const char *key, const std::vector<TermPtr> &terms)
+        bson_t *doc,
+        const char *key,
+        const std::vector<TermPtr> &terms)
 {
     bson_t orOperator, orArray;
+    char arrIndexStr[16];
+    const char *arrIndexKey;
+    uint32_t arrIndex = 0;
+
     BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
     BSON_APPEND_ARRAY_BEGIN(&orOperator, "$or", &orArray);
-    uint32_t arrayIndex = 0;
     for(auto &term : terms) {
-        auto indexKey = std::to_string(arrayIndex++);
-        appendTermQuery(doc, indexKey.c_str(), term);
-        //BSON_APPEND_UTF8(&orArray, indexKey.c_str(), entity);
+        bson_uint32_to_string(arrIndex++,
+            &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
+        appendTermQuery(doc, arrIndexKey, term);
     }
     bson_append_array_end(&orOperator, &orArray);
     bson_append_document_end(doc, &orOperator);

@@ -24,7 +24,7 @@ namespace knowrob::mongo::aggregation
           {}
         const semweb::TripleExpression *expr;
         uint32_t maxNumOfTriples;
-        std::list<std::shared_ptr<Variable>> knownGroundedVariables;
+        std::set<std::string_view> knownGroundedVariables;
         bool mayHasMoreGroundings;
         bool forceTransitiveLookup;
     };
