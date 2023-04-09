@@ -40,36 +40,28 @@ TripleLoader::~TripleLoader()
     "s", BCON_UTF8((Triple).subject),                 \
     "p", BCON_UTF8((Triple).predicate),               \
     "o", ObjectValue,                                 \
-    "graph", BCON_UTF8(graphName.c_str()),            \
-    "scope", "{", "time", "{", "since", BCON_DECIMAL128(&timeZero_), \
-                               "until", BCON_DECIMAL128(&timeInfinity_), "}", "}")
+    "graph", BCON_UTF8(graphName.c_str()))
 
 #define KNOWROB_BCON_NEW_TRIPLE_O2(Triple,Parents,ObjectValue) BCON_NEW(\
     "s", BCON_UTF8((Triple).subject),                 \
     "p", BCON_UTF8((Triple).predicate),               \
     "o", ObjectValue,                                 \
     "o*", Parents,                                    \
-    "graph", BCON_UTF8(graphName.c_str()),            \
-    "scope", "{", "time", "{", "since", BCON_DECIMAL128(&timeZero_), \
-                               "until", BCON_DECIMAL128(&timeInfinity_), "}", "}")
+    "graph", BCON_UTF8(graphName.c_str()))
 
 #define KNOWROB_BCON_NEW_TRIPLE_O3(Triple,ObjectValue) BCON_NEW(\
     "s", BCON_UTF8((Triple).subject),                 \
     "p", BCON_UTF8((Triple).predicate),               \
     "o", ObjectValue,                                 \
     "o*", "[", ObjectValue, "]",                      \
-    "graph", BCON_UTF8(graphName.c_str()),            \
-    "scope", "{", "time", "{", "since", BCON_DECIMAL128(&timeZero_), \
-                               "until", BCON_DECIMAL128(&timeInfinity_), "}", "}")
+    "graph", BCON_UTF8(graphName.c_str()))
 
 #define KNOWROB_BCON_NEW_TRIPLE_P(Triple,Parents,ObjectValue) BCON_NEW(\
     "s", BCON_UTF8((Triple).subject),               \
     "p", BCON_UTF8((Triple).predicate),             \
     "p*", Parents,                                  \
     "o", ObjectValue,                               \
-    "graph", BCON_UTF8(graphName.c_str()),          \
-    "scope", "{", "time", "{", "since", BCON_DECIMAL128(&timeZero_), \
-                               "until", BCON_DECIMAL128(&timeInfinity_), "}", "}")
+    "graph", BCON_UTF8(graphName.c_str()))
 
 bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                                            const std::string &graphName,

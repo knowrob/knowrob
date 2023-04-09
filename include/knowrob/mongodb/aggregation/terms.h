@@ -14,7 +14,8 @@ namespace knowrob::mongo::aggregation
             bson_t *doc,
             const char *key,
             const TermPtr &term,
-            const char *queryOperator=nullptr);
+            const char *queryOperator=nullptr,
+            bool matchNullValue=false);
 
     void appendArrayQuery(
             bson_t *doc,

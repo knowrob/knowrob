@@ -19,13 +19,13 @@ namespace knowrob::mongo::aggregation
         explicit TripleLookupData(const semweb::TripleExpression *expr)
         : expr(expr),
           maxNumOfTriples(0),
-          mayHasMoreGrounding(true),
+          mayHasMoreGroundings(true),
           forceTransitiveLookup(false)
           {}
         const semweb::TripleExpression *expr;
         uint32_t maxNumOfTriples;
         std::list<std::shared_ptr<Variable>> knownGroundedVariables;
-        bool mayHasMoreGrounding;
+        bool mayHasMoreGroundings;
         bool forceTransitiveLookup;
     };
 

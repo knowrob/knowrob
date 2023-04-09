@@ -14,19 +14,33 @@ void aggregation::appendTermQuery( //NOLINT
         bson_t *doc,
         const char *key,
         const TermPtr &term,
-        const char *queryOperator)
+        const char *queryOperator,
+        bool matchNullValues)
 {
     bson_t queryOperatorDoc;
+    bson_t orArray, orCase1, orCase2;
     bson_t *valueDocument;
     const char *valueKey;
 
+    if(matchNullValues) {
+        // allow to pass through if key is undefined. e.g. important for time scope etc.
+        // e.g. {$or: [ { b: null }, { b: {$gt: 10.0} } ]}
+        BSON_APPEND_ARRAY_BEGIN(doc, "$or", &orArray);
+
+        BSON_APPEND_DOCUMENT_BEGIN(&orArray, "0", &orCase1);
+        BSON_APPEND_NULL(&orCase1, "b");
+        bson_append_document_end(&orArray, &orCase1);
+
+        BSON_APPEND_DOCUMENT_BEGIN(&orArray, "1", &orCase2);
+    }
+
     if(queryOperator) {
-        BSON_APPEND_DOCUMENT_BEGIN(doc, key, &queryOperatorDoc);
+        BSON_APPEND_DOCUMENT_BEGIN(matchNullValues ? &orCase2 : doc, key, &queryOperatorDoc);
         valueDocument = &queryOperatorDoc;
         valueKey = queryOperator;
     }
     else {
-        valueDocument = doc;
+        valueDocument = (matchNullValues ? &orCase2 : doc);
         valueKey = key;
     }
 
@@ -59,7 +73,11 @@ void aggregation::appendTermQuery( //NOLINT
     }
 
     if(queryOperator) {
-        bson_append_document_end(doc, &queryOperatorDoc);
+        bson_append_document_end(matchNullValues ? &orCase2 : doc, &queryOperatorDoc);
+    }
+    if(matchNullValues) {
+        bson_append_document_end(&orArray, &orCase2);
+        bson_append_array_end(doc, &orArray);
     }
 }
 

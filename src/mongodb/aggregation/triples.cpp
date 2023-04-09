@@ -159,21 +159,33 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleE
 
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
 {
+    static const bool b_allowNullValues = true;
     auto &bt = tripleExpression.beginTerm();
+    auto &et = tripleExpression.endTerm();
+
     if(bt) {
         if(bt->type() == TermType::DOUBLE) {
             const char* beginOperator = getOperatorString(tripleExpression.beginOperator());
-            aggregation::appendTermQuery(selectorDoc,"scope.time.since", bt, beginOperator);
+            aggregation::appendTermQuery(
+                    selectorDoc,
+                    "scope.time.since",
+                    bt,
+                    beginOperator,
+                    b_allowNullValues);
         }
         else {
             KB_WARN("begin term {} has unexpected type", *bt);
         }
     }
-    auto &et = tripleExpression.endTerm();
     if(et) {
         if(et->type() == TermType::DOUBLE) {
             const char* endOperator = getOperatorString(tripleExpression.endOperator());
-            aggregation::appendTermQuery(selectorDoc,"scope.time.until", et, endOperator);
+            aggregation::appendTermQuery(
+                    selectorDoc,
+                    "scope.time.until",
+                    et,
+                    endOperator,
+                    b_allowNullValues);
         }
         else {
             KB_WARN("end term {} has unexpected type", *et);
@@ -183,11 +195,18 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleEx
 
 void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
 {
+    static const bool b_allowNullValues = true;
     auto &ct = tripleExpression.confidenceTerm();
     if(!ct) return;
+
     if(ct->type() == TermType::DOUBLE) {
         const char* confidenceOperator = getOperatorString(tripleExpression.confidenceOperator());
-        aggregation::appendTermQuery(selectorDoc,"scope.confidence", ct, confidenceOperator);
+        aggregation::appendTermQuery(
+                selectorDoc,
+                "scope.confidence",
+                ct,
+                confidenceOperator,
+                b_allowNullValues);
     }
     else {
         KB_WARN("confidence term {} has unexpected type", *ct);
@@ -215,7 +234,7 @@ void aggregation::appendTripleSelector(
     // "g" field
     appendGraphSelector(selectorDoc, tripleExpression);
     // "b" & "e" fields
-    appendConfidenceSelector(selectorDoc, tripleExpression);
+    appendTimeSelector(selectorDoc, tripleExpression);
     // "c" field
     appendConfidenceSelector(selectorDoc, tripleExpression);
 }
@@ -254,8 +273,8 @@ static inline void lookupTriple_nontransitive_(
                 vocabulary->isTaxonomicProperty(definedProperty->iri()));
     bool b_isReflexiveProperty = (definedProperty &&
                 definedProperty->hasFlag(semweb::PropertyFlag::REFLEXIVE_PROPERTY));;
-    bool b_hasVarGroundings = lookupData.mayHasMoreGrounding ||
-                !lookupData.knownGroundedVariables.empty();
+    bool b_hasVarGroundings = lookupData.mayHasMoreGroundings ||
+                              !lookupData.knownGroundedVariables.empty();
     char arrIndexStr[16];
     const char *arrIndexKey;
     uint32_t arrIndex;

@@ -255,6 +255,9 @@ std::shared_ptr<AnswerCursor> MongoKnowledgeGraph::lookupTriples(const semweb::T
     aggregation::Pipeline pipeline(&pipelineArray); {
         // append lookup stages to pipeline
         aggregation::TripleLookupData lookupData(&tripleExpression);
+        // indicate that no variables in tripleExpression may have been instantiated
+        // by a previous step to allow for some optimizations.
+        lookupData.mayHasMoreGroundings = false;
         aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, lookupData);
     }
     bson_append_array_end(&pipelineDoc, &pipelineArray);
