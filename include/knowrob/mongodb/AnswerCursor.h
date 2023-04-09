@@ -21,6 +21,8 @@ namespace knowrob::mongo {
         bson_iter_t varIter_;
         bson_iter_t valIter_;
     };
+
+    using AnswerCursorPtr = std::shared_ptr<AnswerCursor>;
 } // mongo
 
 #endif //KNOWROB_ANSWERCURSOR_H

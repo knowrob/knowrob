@@ -29,7 +29,9 @@ namespace knowrob {
 
         explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
 
-        std::shared_ptr<mongo::AnswerCursor> lookupTriples(const semweb::TripleExpression &tripleExpression);
+        mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
+
+        mongo::AnswerCursorPtr lookupTriplePaths(const std::vector<semweb::TripleExpression> &tripleExpressions);
 
         /**
          * (re)create search indices.

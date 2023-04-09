@@ -51,6 +51,12 @@ namespace knowrob::mongo::aggregation
             const std::string_view &collection,
             const std::shared_ptr<semweb::Vocabulary> &vocabulary,
             const TripleLookupData &lookupData);
+
+    void lookupTriplePaths(
+            aggregation::Pipeline &pipeline,
+            const std::string_view &collection,
+            const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+            const std::vector<semweb::TripleExpression> &tripleExpressions);
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TRIPLES_H

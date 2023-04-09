@@ -489,6 +489,7 @@ static inline void lookupTriple_transitive_(
     pipeline.appendStageEnd(lookupStage);
 
     // $graphLookup does not ensure order, so we need to order by recursion depth in a separate step
+    // TODO: mongo v5.2 has $sortArray that could replace below $lookup
     bson_t letDoc, orderingArray;
     auto orderingStage = pipeline.appendStageBegin("$lookup");
     BSON_APPEND_UTF8(orderingStage, "from", "one");
@@ -589,4 +590,33 @@ void aggregation::lookupTriple(
         lookupTriple_transitive_(pipeline, collection, vocabulary, lookupData, definedProperty);
     else
         lookupTriple_nontransitive_(pipeline, collection, vocabulary, lookupData, definedProperty);
+}
+
+void aggregation::lookupTriplePaths(
+        aggregation::Pipeline &pipeline,
+        const std::string_view &collection,
+        const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+        const std::vector<semweb::TripleExpression> &tripleExpressions)
+{
+    std::set<std::string_view> varsSoFar;
+
+    for(auto &expr : tripleExpressions) {
+        // append lookup stages to pipeline
+        aggregation::TripleLookupData lookupData(&expr);
+
+        // indicate that all previous groundings of variables are known
+        lookupData.mayHasMoreGroundings = false;
+        lookupData.knownGroundedVariables = varsSoFar;
+        // remember variables in tripleExpression, they have a grounding in next step
+        for(auto &exprTerm : {
+                expr.subjectTerm(), expr.propertyTerm(), expr.objectTerm() }) {
+            if(exprTerm->type()==TermType::VARIABLE)
+                varsSoFar.insert(((Variable*)exprTerm.get())->name());
+        }
+
+        aggregation::lookupTriple(pipeline,
+                                  collection,
+                                  vocabulary,
+                                  lookupData);
+    }
 }

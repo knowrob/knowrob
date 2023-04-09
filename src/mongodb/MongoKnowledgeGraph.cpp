@@ -246,7 +246,7 @@ void MongoKnowledgeGraph::removeOneTriple(const semweb::TripleExpression &triple
         Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-std::shared_ptr<AnswerCursor> MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpression &tripleExpression)
+AnswerCursorPtr MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpression &tripleExpression)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -260,6 +260,24 @@ std::shared_ptr<AnswerCursor> MongoKnowledgeGraph::lookupTriples(const semweb::T
         lookupData.mayHasMoreGroundings = false;
         aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, lookupData);
     }
+    bson_append_array_end(&pipelineDoc, &pipelineArray);
+
+    auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
+    cursor->aggregate(&pipelineDoc);
+    return cursor;
+    //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
+}
+
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::vector<semweb::TripleExpression> &tripleExpressions)
+{
+    bson_t pipelineDoc = BSON_INITIALIZER;
+    bson_t pipelineArray;
+    BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+    aggregation::Pipeline pipeline(&pipelineArray);
+    aggregation::lookupTriplePaths(pipeline,
+                                  tripleCollection_->name(),
+                                  vocabulary_,
+                                  tripleExpressions);
     bson_append_array_end(&pipelineDoc, &pipelineArray);
 
     auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
@@ -448,23 +466,45 @@ TEST_F(MongoKnowledgeGraphTest, LoadLocal)
 
 TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 {
-    KB_INFO("foo1");
     semweb::TripleExpression tripleExpression(
-        std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#predicate1"),
+        std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#Substance_0"),
         std::make_shared<Variable>("P"),
         std::make_shared<Variable>("O"),
         knowrob::semweb::TripleExpression::EQ);
-    KB_INFO("foo2");
     auto cursor = kg_->lookupTriples(tripleExpression);
     const bson_t *resultDoc;
 
-    KB_INFO("foo3");
     auto queryStr = bson_as_json(cursor->query(), nullptr);
     if(queryStr) KB_INFO("query: {}", queryStr);
     else         KB_INFO("query is null!");
     bson_free (queryStr);
 
-    KB_INFO("foo4");
+    auto resultAnswer = std::make_shared<Answer>();
+    while(cursor->nextAnswer(resultAnswer)) {
+        KB_INFO("result: {}", *resultAnswer);
+        resultAnswer = std::make_shared<Answer>();
+    }
+}
+
+
+TEST_F(MongoKnowledgeGraphTest, PathQuery)
+{
+    semweb::TripleExpression tripleExpression1(
+            std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#Substance_0"),
+            std::make_shared<Variable>("P"),
+            std::make_shared<Variable>("O"));
+    semweb::TripleExpression tripleExpression2(
+            std::make_shared<Variable>("O"),
+            std::make_shared<StringTerm>("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            std::make_shared<Variable>("T"));
+    auto cursor = kg_->lookupTriplePaths({tripleExpression1, tripleExpression2});
+    const bson_t *resultDoc;
+
+    auto queryStr = bson_as_json(cursor->query(), nullptr);
+    if(queryStr) KB_INFO("query: {}", queryStr);
+    else         KB_INFO("query is null!");
+    bson_free (queryStr);
+
     auto resultAnswer = std::make_shared<Answer>();
     while(cursor->nextAnswer(resultAnswer)) {
         KB_INFO("result: {}", *resultAnswer);

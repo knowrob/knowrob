@@ -17,6 +17,10 @@ Vocabulary::Vocabulary()
     setPropertyFlag(IRI_label, ANNOTATION_PROPERTY);
     setPropertyFlag(IRI_versionInfo, ANNOTATION_PROPERTY);
 
+    defineProperty(IRI_type);
+    defineProperty(IRI_subPropertyOf);
+    defineProperty(IRI_subClassOf);
+
     auto it = definedProperties_.find(IRI_comment);
     if(it == definedProperties_.end()) {
         KB_WARN("not a defined property");
