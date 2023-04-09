@@ -52,7 +52,10 @@ mongolog_scope_doc(QScope, [Key,Value]) :-
 	% these are handled later
 	(Value=[_,string(_)] -> fail ; true).
 
-scope_doc1(QScope, [Key,Value]) :-
+scope_doc1(QScope, ["$or", array([
+		[Key, ["$exists",bool(false)]],
+		[Key, Value]
+	])]) :-
 	get_dict(ScopeName, QScope, ScopeData),
 	scope_doc(ScopeName, ScopeData, SubPath, Value),
 	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
@@ -84,9 +87,13 @@ scope_doc_range1(Min, Max, Operator, Value) :-
 %
 mongolog_scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 	option(query_scope(Scope), Ctx),
-	findall([Operator, array([string(ScopeValue),string(Val)])],
+	findall(
+		% [Operator, array([string(ScopeValue),string(Val)])],
+		['$or', array([
+			['$not', array([string(ScopeValue)])],
+			[Operator, array([string(ScopeValue),string(Val)])]
+		])],
 		% only include variables, constants are handled earlier
-		% TODO: is it really worth to separate compile-time/run-time? why not everything using $expr?
 		(	scope_doc1(Scope, [ScopeKey,[Operator,string(Val0)]]),
 			atom_concat('$',ScopeKey,ScopeValue),
 			atom_concat('$',Val0,Val)

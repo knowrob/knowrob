@@ -60,30 +60,6 @@ std::shared_ptr<MongoInterface::Connection> MongoInterface::getOrCreateConnectio
 	}
 }
 
-long MongoInterface::watch(const PlTerm &db_term,
-						   const char *coll_name,
-                           const bson_t *query,
-                           const ChangeStreamCallback &callback)
-{
-	auto connection = getOrCreateConnection((char*)db_term[1]);
-	auto watch_id = connection->connectionWatch_->watch(
-			(char*)db_term[2],
-			coll_name, query, callback);
-	std::lock_guard<std::mutex> scoped_lock(mongo_mutex_);
-	watcher_[watch_id] = connection;
-	return watch_id;
-}
-
-void MongoInterface::unwatch(long watch_id)
-{
-	std::lock_guard<std::mutex> scoped_lock(mongo_mutex_);
-	auto it = watcher_.find(watch_id);
-	if(it != watcher_.end()) {
-		it->second->connectionWatch_->unwatch(watch_id);
-		watcher_.erase(it);
-	}
-}
-
 std::shared_ptr<Database> MongoInterface::connect(const PlTerm &dbTerm)
 {
 	auto dbConnection = getOrCreateConnection((char*)dbTerm[1]);

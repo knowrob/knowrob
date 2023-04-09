@@ -2,6 +2,7 @@
 	[ mongolog_call(t),
 	  mongolog_call(t,+),
 	  mongolog_assert(t),
+	  mongolog_assert(t,t),			% +Statement, +Scope
 	  mongolog_project(t),
 	  mongolog_retract(t),        % +Statement
 	  mongolog_retract(t,t),      % +Statement, +Scope
@@ -289,13 +290,6 @@ mongolog_consult3((:- module(_Module, _PublicList)), _) :-
     % NOTE: mongolog currently does not support a notion of modules
     !.
 
-mongolog_consult3((:- load_owl(FileSpec)), _Options) :-
-    !, load_owl(FileSpec).
-mongolog_consult3((:- load_owl(FileSpec, LoadOpts)), _Options) :-
-    !, load_owl(FileSpec, LoadOpts).
-mongolog_consult3((:- load_owl(FileSpec, LoadOpts, Graph)), _Options) :-
-    !, load_owl(FileSpec, LoadOpts, Graph).
-
 mongolog_consult3((:- Goal), _) :-
 	!, log_warning(mongolog(unknown_directive(Goal))).
 
@@ -428,9 +422,11 @@ mongolog_call(consult(File), _Ctx) :-
 
 mongolog_call(load_rdf_xml(File,_Module), _Ctx) :-
     !,
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(ReasonerModule),
     (   var(File)
     ->  throw(error(instantiation_error(File), mongolog_call(load_rdf_xml(File))))
-    ;   load_owl(File)
+    ;   mng_load_triples_cpp(ReasonerManager, ReasonerModule, File)
     ).
 
 mongolog_call(Goal, ContextIn) :-
@@ -465,6 +461,7 @@ mongolog_call(Goal, ContextIn) :-
 	append(Vars, UserVars, Vars1),
 	append(Vars1, GlobalVars, Vars2),
 	list_to_set(Vars2,Vars3),
+
 	% run the pipeline
 	query_1(Doc, Vars3),
 	%
@@ -669,9 +666,30 @@ atom_to_term_(Atom, _) :-
 	throw(error(conversion_error(atom_to_term(Atom)))).
 
 %%
+mongolog_assert(triple(S,P,O)) :-
+	\+ ground([S,P,O]), !,
+	throw(error(instantiation_error, assert(triple(S,P,O)))).
+
+mongolog_assert(triple(S,P,O)) :-
+	!,
+	current_reasoner_manager(ReasonerManager),
+	current_reasoner_module(ReasonerModule),
+	mng_assert_triple_cpp(ReasonerManager, ReasonerModule, S, P, O, _, _, _, _).
+
 mongolog_assert(Fact) :-
 	mongolog_universal_scope(QScope),
 	mongolog_call(assert(Fact),[query_scope(QScope)]).
+
+mongolog_assert(triple(S,P,O), Scope) :-
+	option(query_scope(QS), Scope),
+	mongolog_time_scope(QS, SinceValue0, UntilValue0),
+	mng_strip_type(SinceValue0, _, SinceValue),
+	mng_strip_type(UntilValue0, _, UntilValue),
+	current_reasoner_manager(ReasonerManager),
+	current_reasoner_module(ReasonerModule),
+	mng_assert_triple_cpp(ReasonerManager, ReasonerModule,
+			S, P, O, _,
+			SinceValue, UntilValue, _).
 
 %%
 mongolog_project(Fact) :-

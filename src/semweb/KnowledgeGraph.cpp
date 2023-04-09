@@ -11,6 +11,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/semweb/xsd.h"
+#include "knowrob/queries/QueryError.h"
 
 namespace fs = std::filesystem;
 namespace qi = boost::spirit::qi;
@@ -26,7 +27,7 @@ template <typename TP> std::time_t to_time_t(TP tp) {
 }
 
 struct TripleHandler {
-    explicit TripleHandler(ITripleLoader *loader) : loader(loader) {}
+    explicit TripleHandler(ITripleLoader *loader) : loader(loader), triple() {}
     ITripleLoader *loader;
     TripleData triple;
 };
@@ -120,6 +121,7 @@ static void processTriple(void* user_data, raptor_statement* triple)
 
     handler->loader->loadTriple(handler->triple);
 }
+
 
 KnowledgeGraph::KnowledgeGraph()
 : raptorWorld_(raptor_new_world()),

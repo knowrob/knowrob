@@ -13,9 +13,12 @@
 
 using namespace knowrob;
 
-void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree &config)
+void ReasonerConfiguration::loadPropertyTree(const boost::property_tree::ptree *ptreePtr)
 {
 	static const std::string formatDefault = {};
+
+	auto config = *ptreePtr;
+	this->ptree = ptreePtr;
 
 	// load all key-value pairs into settings list
 	for(const auto& key_val : config) {

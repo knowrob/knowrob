@@ -22,14 +22,16 @@ namespace knowrob {
 	 */
 	class ReasonerConfiguration {
 	public:
+        ReasonerConfiguration() : ptree(nullptr) {}
 		/**
 		 * Load a reasoner configuration from a property tree.
 		 * @param ptree a property tree.
 		 */
-		void loadPropertyTree(const boost::property_tree::ptree &ptree);
+		void loadPropertyTree(const boost::property_tree::ptree *ptree);
 
 		std::list<std::pair<TermPtr,TermPtr>> settings;
 		std::list<std::shared_ptr<DataSource>> dataSources;
+        const boost::property_tree::ptree *ptree;
 	private:
 		void loadSettings(const TermPtr &key_t, const boost::property_tree::ptree &ptree);
 	};

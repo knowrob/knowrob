@@ -10,7 +10,7 @@
 namespace knowrob {
     class URI {
     public:
-        static std::string resolve(const std::string &uriString);
+        static std::string resolve(const std::string_view &uriString);
     };
 }
 

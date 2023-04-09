@@ -67,9 +67,18 @@ namespace knowrob {
 		std::shared_ptr<DefinedReasoner> getReasonerWithID(const std::string &reasonerID);
 
         /**
+         * Add a reasoner to this manager.
+         * @reasoner a reasoner.
+         */
+        std::shared_ptr<DefinedReasoner> addReasoner(
+                const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
+
+        /**
          * @return map of all reasoner defined by this manager.
          */
-        const std::map<std::string, std::shared_ptr<DefinedReasoner>>& reasonerPool() const  { return reasonerPool_; }
+        const auto& reasonerPool() const  { return reasonerPool_; }
+
+        auto managerID() const  { return managerID_; }
 
 	private:
 		// maps reasoner type name to factory used to create instances of that type
@@ -91,13 +100,6 @@ namespace knowrob {
         uint32_t managerID_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
-
-        /**
-         * Add a reasoner to this manager.
-         * @reasoner a reasoner.
-         */
-        std::shared_ptr<DefinedReasoner> addReasoner(
-                const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
 
         /**
          * Remove a reasoner from this manager.

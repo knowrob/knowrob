@@ -21,6 +21,7 @@
 #include "knowrob/ThreadPool.h"
 #include "knowrob/terms/Term.h"
 #include "knowrob/reasoner/LogicProgramReasoner.h"
+#include "knowrob/reasoner/DefinedReasoner.h"
 #include "PrologQuery.h"
 #include "PrologQueryRunner.h"
 #include "PrologThreadPool.h"
@@ -166,6 +167,9 @@ namespace knowrob {
          */
         static std::filesystem::path getResourcePath(const std::filesystem::path &filename);
 
+        static std::shared_ptr<DefinedReasoner> getDefinedReasoner(
+                const term_t &t_reasonerManager, const term_t &t_reasonerModule);
+
         // Override LogicProgramReasoner
         bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
 
@@ -213,7 +217,7 @@ namespace knowrob {
         void finishRunner(uint32_t queryID, PrologQueryRunner *runner);
 
         static void initializeProlog();
-        bool initializeGlobalPackages();
+        virtual bool initializeGlobalPackages();
 
         virtual bool initializeDefaultPackages() { return true; }
 

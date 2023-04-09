@@ -22,15 +22,14 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('blackboard'), [ current_reasoner_module/1 ]).
+:- use_module(library('blackboard'),
+		[ current_reasoner_module/1 ]).
 :- use_module(library('mongodb/client')).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('semweb')).
 
 :- rdf_meta(taxonomical_property(r)).
-:- rdf_meta(must_propagate_assert(r)).
-:- rdf_meta(lookup_parents_property(t,t)).
 :- rdf_meta(triple(t,t,t)).
 
 
@@ -43,33 +42,12 @@ The following predicates are supported:
 %% register query commands
 :- mongolog:add_command(triple).
 
-%%
-mongolog:step_expand(project(triple(S,P,O)),
-                     assert(triple(S,P,O))) :- !.
-
-%%
-mongolog:step_compile(assert(triple(S,P,term(O))), Ctx, Pipeline, StepVars) :-
-	% HACK: convert term(A) argument to string.
-	%       it would be better to store lists/terms directly without conversion.
-	ground(O),!,
-	( atom(O) -> Atom=O ; term_to_atom(O, Atom) ),
-	mongolog:step_compile(assert(triple(S,P,string(Atom))), Ctx, Pipeline, StepVars).
-
 mongolog:step_compile(triple(S,P,term(O)), Ctx, Pipeline, StepVars) :-
 	% HACK: convert term(A) argument to string.
 	%       it would be better to store lists/terms directly without conversion.
 	ground(O),!,
 	( atom(O) -> Atom=O ; term_to_atom(O, Atom) ),
 	mongolog:step_compile(triple(S,P,string(Atom)), Ctx, Pipeline, StepVars).
-
-%%
-mongolog:step_compile(assert(triple(S,P,O)), Ctx, Pipeline, StepVars) :-
-	% add step variables to compile context
-	triple_step_vars(triple(S,P,O), Ctx, StepVars0),
-	mongolog:add_assertion_var(StepVars0, StepVars),
-	merge_options([step_vars(StepVars)], Ctx, Ctx0),
-	% create pipeline
-	compile_assert(triple(S,P,O), Ctx0, Pipeline).
 
 %%
 mongolog:step_compile(triple(S,P,O), Ctx, Pipeline, StepVars) :-
@@ -129,72 +107,6 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 		Pipeline
 	).
 
-%%
-% assert(triple(S,P,O)) uses $lookup to find matching triples
-% with overlapping scope which are toggled to be removed in next stage.
-% then the union of their scopes is computed and used for output document.
-%
-compile_assert(triple(S,P,O), Ctx, Pipeline) :-
-	% add additional options to the compile context
-	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
-	option(collection(Collection), Ctx0),
-	option(query_scope(Scope), Ctx0),
-	triple_graph(Ctx0, Graph),
-	mongolog_time_scope(Scope, SinceTyped, UntilTyped),
-	% throw instantiation_error if one of the arguments was not referred to before
-	mongolog:all_ground([S,O], Ctx),
-	% resolve arguments
-	mongolog:var_key_or_val(S, Ctx, S_query),
-	mongolog:var_key_or_val(O, Ctx, V_query),
-	% special handling for RDFS semantic
-	% FIXME: with below code P can not be inferred in query
-	(	taxonomical_property(P1)
-	->	( Pstar=array([string(P1)]), Ostar=string('$directParents') )
-	;	( Pstar=string('$directParents'),  Ostar=array([V_query]) )
-	),
-	% build triple docuemnt
-	TripleDoc=[
-		['s', S_query], ['p', string(P1)], ['o', V_query],
-		['p*', Pstar], ['o*', Ostar],
-		['graph', string(Graph)],
-		['scope', string('$v_scope')]
-	],
-	% configure the operation performed on scopes.
-	% the default is to compute the union of scopes.
-	(	option(intersect_scope, Ctx)
-	->	(SinceOp='$max', UntilOp='$min')
-	;	(SinceOp='$min', UntilOp='$max')
-	),
-	% compute steps of the aggregate pipeline
-	% TODO: if just one document, update instead of delete
-	findall(Step,
-		% assign v_scope field. 
-		(	Step=['$set', ['v_scope', [['time',[
-					['since', SinceTyped],
-					['until', UntilTyped]
-			]]]]]
-		% lookup documents that overlap with triple into 'next' field,
-		% and toggle their delete flag to true
-		;	delete_overlapping(triple(S,P,O), SinceTyped, UntilTyped, Ctx0, Step)
-		% lookup parent documents into the 'parents' field
-		;	lookup_parents(triple(S,P1,O), Ctx0, Step)
-		% update v_scope.time.since
-		;	reduce_num_array(string('$next'), SinceOp,
-				'scope.time.since', 'v_scope.time.since', Step)
-		% get max until of scopes in $next, update v_scope.time.until
-		;	reduce_num_array(string('$next'), UntilOp,
-				'scope.time.until', 'v_scope.time.until', Step)
-		% add triples to triples array that have been queued to be removed
-		;	mongolog:add_assertions(string('$next'), Collection, Step)
-		% add merged triple document to triples array
-		;	mongolog:add_assertion(TripleDoc, Collection, Step)
-		;	(	once(must_propagate_assert(P)),
-				propagate_assert(S, Ctx0, Step)
-			)
-		),
-		Pipeline
-	).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% LOOKUP triple documents
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -232,7 +144,8 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 				])]]
 			)
 		;	mongolog_scope_match(Ctx, MatchQuery)
-		;	graph_match(Ctx, MatchQuery)
+		% TODO: re-enable once c++ gets graph hierarch right
+		%;	graph_match(Ctx, MatchQuery)
 		),
 		MatchQueries
 	),
@@ -369,48 +282,6 @@ reflexivity(StartValue, Ctx, Step) :-
 	;	Step=['$unset', array([string('t_refl'),string('start')])]
 	).
 
-%%
-delete_overlapping(triple(S,P,V), SinceTyped, UntilTyped, Ctx,
-		['$lookup', [
-			['from',string(Coll)],
-			['as',string('next')],
-			['let',LetDoc],
-			['pipeline',array(Pipeline)]
-		]]) :-
-	memberchk(collection(Coll), Ctx),
-	memberchk(step_vars(StepVars), Ctx),
-	% read triple data
-	mongolog:var_key_or_val1(P, Ctx, P0),
-	mongolog:var_key_or_val1(S, Ctx, S0),
-	mongolog:var_key_or_val1(V, Ctx, V0),
-	% set Since=Until in case of scope intersection.
-	% this is to limit to results that do hold at Until timestamp.
-	% FIXME: when overlap yields no results, zero is used as since
-	%        by until. but then the new document could overlap
-	%        with existing docs, which is not wanted.
-	%		 so better remove special handling here?
-	%        but then the until time maybe is set to an unwanted value? 
-	(	option(intersect_scope, Ctx)
-	->	Since0=UntilTyped
-	;	Since0=SinceTyped
-	),
-	mongolog:lookup_let_doc(StepVars, LetDoc),
-	% build pipeline
-	findall(Step,
-		% $match s,p,o and overlapping scope
-		(	Step=['$match',[
-				['s',S0], ['p',P0], ['o',V0],
-				['scope.time.since',['$lte',UntilTyped]],
-				['scope.time.until',['$gte',Since0]]
-			]]
-		% only keep scope field
-		;	Step=['$project',[['scope',int(1)]]]
-		% toggle delete flag
-		;	Step=['$set',['delete',bool(true)]]
-		),
-		Pipeline
-	).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% RDFS
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -436,70 +307,6 @@ unwind_parents(Context, Step) :-
 	(	Step=['$unwind', string('$next.o*')]
 	;	Step=['$set', ['next.o', string('$next.o*')]]
 	).
-
-%% set "parents" field by looking up subject+property then yielding o* field
-lookup_parents_property(triple(_,rdf:type,O),           [O,rdfs:subClassOf]).
-lookup_parents_property(triple(_,rdfs:subClassOf,O),    [O,rdfs:subClassOf]).
-lookup_parents_property(triple(_,rdfs:subPropertyOf,P), [P,rdfs:subPropertyOf]).
-lookup_parents_property(triple(_,P,_),                  [P,rdfs:subPropertyOf]).
-
-%%
-lookup_parents(Triple, Context, Step) :-
-	memberchk(collection(Coll), Context),
-	once(lookup_parents_property(Triple, [Child, Property])),
-	% make sure value is wrapped in type term
-	mng_typed_value(Child,   TypedValue),
-	mng_typed_value(Property,TypedProperty),
-	% first, lookup matching documents and yield o* in parents array
-	(	Step=['$lookup', [
-			['from',string(Coll)],
-			['as',string('directParents')],
-			['pipeline',array([
-				['$match', [
-					['s',TypedValue],
-					['p',TypedProperty]
-				]],
-				['$project', [['o*', int(1)]]],
-				['$unwind', string('$o*')]
-			])]
-		]]
-	% convert parents from list of documents to list of strings.
-	;	Step=['$set',['directParents',['$map',[
-			['input',string('$directParents')],
-			['in',string('$$this.o*')]
-		]]]]
-	% also add child to parents list
-	;	array_concat('directParents', array([TypedValue]), Step)
-	).
-
-%%
-propagate_assert(S, Context, Step) :-
-	memberchk(collection(Collection), Context),
-	mng_typed_value(S,TypedS),
-	% the inner lookup matches documents with S in o*
-	findall(X,
-		% match every document with S in o*
-		(	X=['$match', [['o*',TypedS]]]
-		% and add parent field from input documents to o*
-		;	array_concat('o*', string('$$directParents'), X)
-		% only replace o*
-		;	X=['$project',[['o*',int(1)]]]
-		),
-		Inner),
-	% first, lookup matching documents and update o*
-	(	Step=['$lookup', [
-			['from',string(Collection)],
-			['as',string('next')],
-			['let',[['directParents',string('$directParents')]]],
-			['pipeline',array(Inner)]
-		]]
-	% second, add each document to triples array
-	;	mongolog:add_assertions(string('$next'), Collection, Step)
-	).
-
-%% the properties for which assertions must be propagated
-must_propagate_assert(rdfs:subClassOf).
-must_propagate_assert(rdfs:subPropertyOf).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% triple/3 query pattern
@@ -555,7 +362,8 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 		(	( mng_query_value(S1,Query_s), X=['s',Query_s] )
 		;	( mng_query_value(P1,Query_p), X=[Key_p,Query_p] )
 		;	( mng_query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
-		;	graph_doc(Graph,X)
+		% TODO: re-enable once c++ gets graph hierarch right
+		%;	graph_doc(Graph,X)
 		;	mongolog_scope_doc(Scope,X)
 		),
 		Doc
@@ -687,26 +495,6 @@ strip_property_modifier1(transitive(X),      ostar,      X) :- taxonomical_prope
 strip_property_modifier1(transitive(X),      transitive, X).
 strip_property_modifier1(reflexive(X),       reflexive,  X).
 strip_property_modifier1(include_parents(X), pstar,      X).
-
-%%
-array_concat(Key,Arr,['$set',
-		[Key,['$setUnion',
-			array([string(Arr0),Arr])]
-		]]) :-
-	atom_concat('$',Key,Arr0).
-
-%%
-reduce_num_array(ArrayKey, Operator, Path, ValKey, Step) :-
-	atom_concat('$$this.', Path, Path0),
-	atom_concat('$', ValKey, ValKey0),
-	(	Step=['$set',['num_array',['$map',[
-			['input', ArrayKey],
-			['in', string(Path0)]
-		]]]]
-	;	array_concat('num_array', array([string(ValKey0)]), Step)
-	;	Step=['$set', [ValKey, [Operator, string('$num_array')]]]
-	;	Step=['$unset',string('num_array')]
-	).
 
 %% update_rdf_predicates is det.
 %

@@ -243,44 +243,6 @@ PREDICATE(mng_bulk_write, 3) {
 }
 
 
-PREDICATE(mng_watch, 5) {
-    try {
-        char* coll_name = (char*)PL_A2;
-        char* callback  = (char*)PL_A3;
-
-        bson_t *pipeline = bson_new();
-       	bson_error_t err;
-       	if(!bsonpl_concat(pipeline, PL_A4, &err)) {
-       		bson_destroy(pipeline);
-       		throw MongoException("invalid_query", err);
-       	}
-
-        long id = MongoInterface::get().watch(PL_A1, coll_name, pipeline,
-            [callback](long watcherID, const bson_wrapper_ptr &result) {
-                PlTerm term = bson_to_term(result.bson);
-                PlCall(callback, PlTermv(PlTerm(watcherID), term));
-            });
-
-        PL_A5 = PlTerm(id);
-        bson_destroy(pipeline);
-        return TRUE;
-    }
-    catch(const std::exception&) {
-        return FALSE;
-    }
-}
-
-PREDICATE(mng_unwatch, 1) {
-    try {
-        long watcher_id = (long)PL_A1;
-        MongoInterface::get().unwatch(watcher_id);
-        return TRUE;
-    }
-    catch(const std::exception&) {
-        return FALSE;
-    }
-}
-
 
 PREDICATE(mng_cursor_create, 3) {
     try {

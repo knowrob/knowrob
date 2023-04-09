@@ -103,7 +103,6 @@ void MongoKnowledgeGraph::initialize()
     TripleData tripleData;
     {
         // iterate over all rdf::type assertions
-        // TODO: could avoid going over all type assertions by looking for specific type iris
         TripleCursor cursor(tripleCollection_);
         cursor.filter(Document(BCON_NEW(
             "p", BCON_UTF8(semweb::IRI_type.c_str()))).bson());
@@ -138,6 +137,13 @@ void MongoKnowledgeGraph::initialize()
 
 void MongoKnowledgeGraph::createSearchIndices()
 {
+    /*
+        setup_collection(annotations, [
+            ['s'],
+            ['p'],
+            ['s','p']
+        ]),
+     */
     tripleCollection_->createAscendingIndex({"s"});
     tripleCollection_->createAscendingIndex({"p"});
     tripleCollection_->createAscendingIndex({"o"});
@@ -208,7 +214,7 @@ bson_t* MongoKnowledgeGraph::getTripleSelector(
 
 void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 {
-    TripleLoader loader("user",
+    TripleLoader loader(tripleData.graph ? tripleData.graph : "user",
                         tripleCollection_,
                         oneCollection_,
                         vocabulary_);
@@ -289,12 +295,8 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::vector<
 BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
 {
     // TODO: masterplan:
-    //  - re-implement triple querying in c++, this might take some hours!
     //  - use a worker thread to pull from the cursor and push into stream,
     //    but also allow synchronous processing via a flag
-    //
-    // TODO: what mechanism is used to convert modality labels to query parameters
-    //       and selection of collections etc.?
     //
     return {};
 }
@@ -306,7 +308,7 @@ BufferedAnswerStreamPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &lit
 }
 
 bool MongoKnowledgeGraph::loadTriples( //NOLINT
-        const std::string &uriString, TripleFormat format)
+        const std::string_view &uriString, TripleFormat format)
 {
     // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces somehow as part of graph?
     //          or just assume namespace prefixes are unique withing knowrob
@@ -457,7 +459,7 @@ protected:
 };
 std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 
-TEST_F(MongoKnowledgeGraphTest, LoadLocal)
+TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("memory").has_value());
     EXPECT_NO_THROW(kg_->loadTriples("owl/test/memory.owl", knowrob::RDF_XML));
@@ -485,7 +487,6 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple)
         resultAnswer = std::make_shared<Answer>();
     }
 }
-
 
 TEST_F(MongoKnowledgeGraphTest, PathQuery)
 {

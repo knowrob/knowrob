@@ -22,66 +22,40 @@ TripleLoader::TripleLoader(std::string graphName,
           oneCollection_(oneCollection),
           batchSize_(batchSize),
           vocabulary_(vocabulary),
-          operationCounter_(0),
-          parentsArray_(BSON_INITIALIZER)
+          operationCounter_(0)
 {
 }
 
 TripleLoader::~TripleLoader()
 {
-    bson_destroy(&parentsArray_);
 }
-
-#define KNOWROB_BCON_NEW_TRIPLE_O1(Triple,ObjectValue) BCON_NEW(\
-    "s", BCON_UTF8((Triple).subject),                 \
-    "p", BCON_UTF8((Triple).predicate),               \
-    "o", ObjectValue,                                 \
-    "graph", BCON_UTF8(graphName.c_str()))
-
-#define KNOWROB_BCON_NEW_TRIPLE_O2(Triple,Parents,ObjectValue) BCON_NEW(\
-    "s", BCON_UTF8((Triple).subject),                 \
-    "p", BCON_UTF8((Triple).predicate),               \
-    "o", ObjectValue,                                 \
-    "o*", Parents,                                    \
-    "graph", BCON_UTF8(graphName.c_str()))
-
-#define KNOWROB_BCON_NEW_TRIPLE_O3(Triple,ObjectValue) BCON_NEW(\
-    "s", BCON_UTF8((Triple).subject),                 \
-    "p", BCON_UTF8((Triple).predicate),               \
-    "o", ObjectValue,                                 \
-    "o*", "[", ObjectValue, "]",                      \
-    "graph", BCON_UTF8(graphName.c_str()))
-
-#define KNOWROB_BCON_NEW_TRIPLE_P(Triple,Parents,ObjectValue) BCON_NEW(\
-    "s", BCON_UTF8((Triple).subject),               \
-    "p", BCON_UTF8((Triple).predicate),             \
-    "p*", Parents,                                  \
-    "o", ObjectValue,                               \
-    "graph", BCON_UTF8(graphName.c_str()))
 
 bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                                            const std::string &graphName,
                                            bool isTaxonomic)
 {
-    auto parentsPtr = &parentsArray_;
     long counter=0;
     auto counterPtr=&counter;
-    bson_reinit(&parentsArray_);
+    bson_t parentsArray;
+
+    bson_t *tripleDoc = bson_new();
+    BSON_APPEND_UTF8(tripleDoc, "s", tripleData.subject);
+    BSON_APPEND_UTF8(tripleDoc, "p", tripleData.predicate);
 
     if(isTaxonomic) {
         switch(tripleData.objectType) {
             case RDF_STRING_LITERAL:
             case RDF_RESOURCE: {
+                BSON_APPEND_UTF8(tripleDoc, "o", tripleData.object);
+
+                BSON_APPEND_ARRAY_BEGIN(tripleDoc, "o*", &parentsArray);
+                auto parentsPtr = &parentsArray;
                 if(vocabulary_->isDefinedProperty(tripleData.object)) {
-                    // read parents array
                     vocabulary_->getDefinedProperty(tripleData.object)->forallParents(
                         [parentsPtr,counterPtr](const auto &parent){
-                            auto counterKey = std::to_string((*counterPtr)++);
+                            auto counterKey = std::to_string((*counterPtr)++); // TODO improve key handling here and below
                             BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
                         });
-                    return KNOWROB_BCON_NEW_TRIPLE_O2(tripleData,
-                                                      BCON_ARRAY(&parentsArray_),
-                                                      BCON_UTF8(tripleData.object));
                 }
                 else if(vocabulary_->isDefinedClass(tripleData.object)) {
                     // read parents array
@@ -90,52 +64,66 @@ bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                             auto counterKey = std::to_string((*counterPtr)++);
                             BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
                         });
-                    return KNOWROB_BCON_NEW_TRIPLE_O2(tripleData,
-                                                      BCON_ARRAY(&parentsArray_),
-                                                      BCON_UTF8(tripleData.object));
                 }
                 else {
-                    return KNOWROB_BCON_NEW_TRIPLE_O3(tripleData, BCON_UTF8(tripleData.object));
+                    BSON_APPEND_UTF8(&parentsArray, "0", tripleData.object);
                 }
+                bson_append_array_end(tripleDoc, &parentsArray);
+                break;
             }
             case RDF_DOUBLE_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_O1(tripleData, BCON_DOUBLE(tripleData.objectDouble));
+                BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.objectDouble);
+                break;
             case RDF_INT64_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_O1(tripleData, BCON_INT64(tripleData.objectInteger));
+                BSON_APPEND_INT64(tripleDoc, "o", tripleData.objectInteger);
+                break;
             case RDF_BOOLEAN_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_O1(tripleData, BCON_BOOL(tripleData.objectInteger));
+                BSON_APPEND_BOOL(tripleDoc, "o", tripleData.objectInteger);
+                break;
         }
     }
     else {
+        switch(tripleData.objectType) {
+            case RDF_RESOURCE:
+            case RDF_STRING_LITERAL:
+                BSON_APPEND_UTF8(tripleDoc, "o", tripleData.object);
+                break;
+            case RDF_DOUBLE_LITERAL:
+                BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.objectDouble);
+                break;
+            case RDF_INT64_LITERAL:
+                BSON_APPEND_INT64(tripleDoc, "o", tripleData.objectInteger);
+                break;
+            case RDF_BOOLEAN_LITERAL:
+                BSON_APPEND_BOOL(tripleDoc, "o", tripleData.objectInteger);
+                break;
+        }
         // read parents array
+        BSON_APPEND_ARRAY_BEGIN(tripleDoc, "p*", &parentsArray);
+        auto parentsPtr = &parentsArray;
         vocabulary_->defineProperty(tripleData.predicate)->forallParents(
             [parentsPtr,counterPtr](const auto &parent){
                 auto counterKey = std::to_string((*counterPtr)++);
                 BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
             });
-        switch(tripleData.objectType) {
-            case RDF_RESOURCE:
-            case RDF_STRING_LITERAL: {
-                return KNOWROB_BCON_NEW_TRIPLE_P(tripleData,
-                                                 BCON_ARRAY(&parentsArray_),
-                                                 BCON_UTF8(tripleData.object));
-            }
-            case RDF_DOUBLE_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_P(tripleData,
-                            BCON_ARRAY(&parentsArray_),
-                            BCON_DOUBLE(tripleData.objectDouble));
-            case RDF_INT64_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_P(tripleData,
-                            BCON_ARRAY(&parentsArray_),
-                            BCON_INT64(tripleData.objectInteger));
-            case RDF_BOOLEAN_LITERAL:
-                return KNOWROB_BCON_NEW_TRIPLE_P(tripleData,
-                            BCON_ARRAY(&parentsArray_),
-                            BCON_BOOL(tripleData.objectInteger));
-        }
+        bson_append_array_end(tripleDoc, &parentsArray);
     }
 
-    return nullptr;
+    BSON_APPEND_UTF8(tripleDoc, "graph", graphName.c_str());
+    if(tripleData.confidence.has_value())
+        BSON_APPEND_DOUBLE(tripleDoc, "c", tripleData.confidence.value());
+
+    if(tripleData.begin.has_value() || tripleData.end.has_value()) {
+        bson_t scopeDoc, timeDoc;
+        BSON_APPEND_DOCUMENT_BEGIN(tripleDoc, "scope", &scopeDoc);
+        BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
+        if(tripleData.begin.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", tripleData.begin.value());
+        if(tripleData.end.has_value())   BSON_APPEND_DOUBLE(&timeDoc, "until", tripleData.end.value());
+        bson_append_document_end(&scopeDoc, &timeDoc);
+        bson_append_document_end(tripleDoc, &scopeDoc);
+    }
+
+    return tripleDoc;
 }
 
 void TripleLoader::loadTriple(const TripleData &tripleData)

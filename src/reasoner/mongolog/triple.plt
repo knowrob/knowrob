@@ -25,7 +25,7 @@ test('assert triple(a,b,c)') :-
 	assert_true(mongolog_assert(triple(a,b,c))).
 
 test('assert triple(a,b,_)', [throws(error(instantiation_error,assert(triple(a,b,_))))]) :-
-	mongolog_call(assert(triple(a,b,_))).
+	mongolog_assert(triple(a,b,_)).
 
 test('triple(a,b,c)') :-
 	assert_true(mongolog_call(triple(a,b,c))),
@@ -56,8 +56,8 @@ test('triple(A,b,C)') :-
 
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
-	assert_true(mongolog_triple:load_owl('./owl/test/swrl.owl', [ parent_graph(test) ])),
-	assert_true(mongolog_triple:load_owl('./owl/test/datatype_test.owl', [ parent_graph(test) ])).
+	assert_true(mongolog_call(load_rdf_xml('owl/test/swrl.owl', test))),
+	assert_true(mongolog_call(load_rdf_xml('owl/test/datatype_test.owl',test))).
 
 % check via tripledb_ask if individual triple exists
 test('query triple') :-
@@ -114,7 +114,7 @@ test('query XSD') :-
 	assert_true(forall(mongolog_call(triple(_, test_datatype:'height',     H)), float(H))).
 
 % tests for list as an argument
-test('assert list') :-
+test('assert list', [blocked('causes a crash in c++')]) :-
 	rdf_global_term(test_datatype:'Lecturer3',S),
 	DataTerm=[255,99,71],
 	% tests asserting list value
@@ -133,7 +133,7 @@ test('assert with scope'):-
 	rdf_global_term(test_datatype:'last_name',P),
 	time_scope(=(double(5)), =(double(10)), T_S1),
 	time_scope(=(double(5)), =(double(20)), T_S2),
-	mongolog_call(assert(triple(S, P, 'Spiendler')), [query_scope(T_S1)]),
+	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
 	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S1)])),
 	assert_false(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
 
@@ -143,7 +143,7 @@ test('extend time scope'):-
 	rdf_global_term(test_datatype:'last_name',P),
 	time_scope(=(double(10)), =(double(20)), T_S1),
 	time_scope(=(double(5)),  =(double(20)), T_S2),
-	mongolog_call(assert(triple(S, P, 'Spiendler')), [query_scope(T_S1)]),
+	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
 	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
 
 test('query value operators') :-

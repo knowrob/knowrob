@@ -44,13 +44,6 @@ namespace knowrob::mongo {
 
         std::shared_ptr<Cursor> cursor(const char *curser_id);
 
-        long watch(const PlTerm &db_term,
-                   const char *coll_name,
-                   const bson_t *query,
-                   const ChangeStreamCallback &callback);
-
-        void unwatch(long i);
-
     private:
         MongoInterface();
         ~MongoInterface();

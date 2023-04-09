@@ -58,7 +58,9 @@ end_mongolog_tests(Name) :-
 %%
 setup(RDFFile) :-
 	sw_set_default_graph(test),
-	mongolog_semweb:load_owl(RDFFile,[parent_graph(test)]).
+	mongolog_triple:drop_graph(user),
+	mongolog_triple:drop_graph(test),
+	mongolog_call(load_rdf_xml(RDFFile,test)).
 
 %%
 cleanup(RDFFile) :-

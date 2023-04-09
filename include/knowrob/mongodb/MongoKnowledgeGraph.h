@@ -75,7 +75,7 @@ namespace knowrob {
         BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &literal) override;
 
         // Override KnowledgeGraph
-        bool loadTriples(const std::string &uriString, TripleFormat format) override;
+        bool loadTriples(const std::string_view &uriString, TripleFormat format) override;
 
     protected:
         std::shared_ptr<mongo::Collection> tripleCollection_;

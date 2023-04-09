@@ -38,12 +38,20 @@ namespace knowrob {
         TripleData() : subject(nullptr),
                        predicate(nullptr),
                        object(nullptr),
+                       graph(nullptr),
                        objectDouble(0.0),
                        objectInteger(0),
+                       begin(),
+                       end(),
+                       confidence(),
                        objectType(RDF_RESOURCE) {}
         const char* subject;
         const char *predicate;
         const char* object;
+        const char* graph;
+        std::optional<double> begin;
+        std::optional<double> end;
+        std::optional<double> confidence;
         double objectDouble;
         long objectInteger;
         RDFType objectType;
@@ -76,7 +84,7 @@ namespace knowrob {
          * @param format the format of the file
          * @return true if the file was loaded successfully
          */
-        virtual bool loadTriples(const std::string &uriString, TripleFormat format) = 0;
+        virtual bool loadTriples(const std::string_view &uriString, TripleFormat format) = 0;
 
         virtual void assertTriple(const TripleData &tripleData) = 0;
 

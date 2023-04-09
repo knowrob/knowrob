@@ -12,6 +12,8 @@
 #include <gtest/gtest.h>
 
 #include "PrologReasoner.h"
+#include "knowrob/reasoner/ReasonerManager.h"
+#include "knowrob/Logger.h"
 
 namespace knowrob {
 	/**
@@ -32,12 +34,14 @@ namespace knowrob {
 
 		static std::shared_ptr<T> reasoner() {
 			static std::shared_ptr<T> r;
+			static ReasonerManager reasonerManager;
 			static int reasonerIndex_=0;
 			if(!r) {
 				std::stringstream ss;
 				ss << "prolog" << reasonerIndex_++;
 				r = std::make_shared<T>(ss.str());
-				r->loadConfiguration(knowrob::ReasonerConfiguration());
+                reasonerManager.addReasoner(ss.str(), r);
+                r->loadConfiguration(knowrob::ReasonerConfiguration());
 			}
 			return r;
 		}

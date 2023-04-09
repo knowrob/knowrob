@@ -59,7 +59,6 @@ namespace knowrob::mongo {
         const std::string graphName_;
         const uint32_t batchSize_;
         uint32_t operationCounter_;
-        bson_t parentsArray_;
 
         std::shared_ptr<Collection> tripleCollection_;
         std::shared_ptr<Collection> oneCollection_;

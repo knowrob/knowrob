@@ -7,7 +7,7 @@
 
 using namespace knowrob;
 
-std::string URI::resolve(const std::string &uriString)
+std::string URI::resolve(const std::string_view &uriString)
 {
     static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
     static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
@@ -23,5 +23,5 @@ std::string URI::resolve(const std::string &uriString)
             if(exists(p)) return p.u8string();
         }
     }
-    return uriString;
+    return std::string(uriString);
 }

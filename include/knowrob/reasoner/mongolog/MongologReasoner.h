@@ -13,6 +13,7 @@
 #include <memory>
 // KnowRob
 #include "knowrob/terms/Term.h"
+#include "knowrob/mongodb/MongoKnowledgeGraph.h"
 #include "knowrob/reasoner/IReasoner.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 
@@ -30,8 +31,14 @@ namespace knowrob {
         bool exportData(const std::filesystem::path &path) override;
 
         bool importData(const std::filesystem::path &path) override;
+
+        bool loadConfiguration(const ReasonerConfiguration &cfg) override;
+
+        const auto& knowledgeGraph() const { return knowledgeGraph_; }
 		
 	protected:
+	    std::shared_ptr<MongoKnowledgeGraph> knowledgeGraph_;
+
 		// Override PrologReasoner
 		const functor_t& callFunctor() override;
 

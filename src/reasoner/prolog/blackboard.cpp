@@ -240,19 +240,26 @@ inline foreign_t qa_memorize(ReasonerManager *reasonerManager,
     }
 }
 
-foreign_t pl_qa_memorize3(term_t t_reasonerManager, term_t t_path, term_t t_options)
+static inline ReasonerManager* getReasonerManager(const term_t &t_reasonerManager)
 {
     int reasonerManagerID=0;
+    if(PL_get_integer(t_reasonerManager, &reasonerManagerID))
+        return ReasonerManager::getReasonerManager(reasonerManagerID);
+    else
+        return nullptr;
+}
+
+foreign_t pl_qa_memorize3(term_t t_reasonerManager, term_t t_path, term_t t_options)
+{
+    auto reasonerManager = getReasonerManager(t_reasonerManager);
+    if(!reasonerManager) return false;
+
     char *path_str;
-    if(PL_get_integer(t_reasonerManager, &reasonerManagerID) &&
-       PL_get_atom_chars(t_path, &path_str))
-    {
-        auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
-        if(reasonerManager) {
-            auto optionTerm = PrologQuery::constructTerm(t_options);
-            return qa_memorize(reasonerManager, path_str, OptionList(optionTerm));
-        }
+    if(PL_get_atom_chars(t_path, &path_str)) {
+        auto optionTerm = PrologQuery::constructTerm(t_options);
+        return qa_memorize(reasonerManager, path_str, OptionList(optionTerm));
     }
+
     return false;
 }
 
