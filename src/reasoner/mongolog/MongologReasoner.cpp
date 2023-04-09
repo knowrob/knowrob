@@ -20,8 +20,9 @@ using namespace knowrob;
 KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner)
 
 // foreign predicates
-foreign_t pl_load_triples_cpp3(term_t, term_t, term_t);
-foreign_t pl_assert_triple_cpp9(term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t);
+foreign_t pl_load_triples_cpp3(term_t,term_t,term_t);
+foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
+foreign_t pl_assert_triple_cpp9(term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t);
 
 MongologReasoner::MongologReasoner(const std::string &reasonerID)
 : PrologReasoner(reasonerID)
@@ -50,6 +51,8 @@ bool MongologReasoner::initializeDefaultPackages()
 
         PL_register_foreign("mng_load_triples_cpp",
                             3, (pl_function_t)pl_load_triples_cpp3, 0);
+        PL_register_foreign("mng_rdf_current_property_cpp",
+                            3, (pl_function_t) pl_rdf_current_property_cpp3, 0);
         PL_register_foreign("mng_assert_triple_cpp",
                             9, (pl_function_t)pl_assert_triple_cpp9, 0);
 	}
@@ -74,14 +77,8 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
         knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
     }
 
-    // mongolog uses a special collection "one" that contains one empty document.
-   	// auto-create it if possible.
-   	eval(std::make_shared<Predicate>(Predicate("initialize_one_db",{})),
-         nullptr, false);
    	//
    	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})),
-         nullptr, false);
-    eval(std::make_shared<Predicate>(Predicate("update_rdf_predicates",{})),
          nullptr, false);
 
     // load some common ontologies
@@ -141,6 +138,18 @@ static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_rea
                  *PrologQuery::constructTerm(t_reasonerManager));
     }
     return mongolog;
+}
+
+foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager,
+                                       term_t t_reasonerModule,
+                                       term_t t_propertyIRI)
+{
+    auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
+    char *propertyIRI;
+    if(mongolog && PL_get_atom_chars(t_propertyIRI, &propertyIRI)) {
+        return mongolog->knowledgeGraph()->vocabulary()->isDefinedProperty(propertyIRI);
+    }
+    return false;
 }
 
 foreign_t pl_load_triples_cpp3(term_t t_reasonerManager,

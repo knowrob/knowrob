@@ -4,9 +4,7 @@
           get_unique_name(r,-),
           is_unique_name(r),
           drop_graph(+),
-          auto_drop_graphs/0,
-          mongo_rdf_current_predicate/2,
-          update_rdf_predicates/0
+          auto_drop_graphs/0
         ]).
 /** <module> Handling of triples in query expressions.
 
@@ -31,13 +29,6 @@ The following predicates are supported:
 
 :- rdf_meta(taxonomical_property(r)).
 :- rdf_meta(triple(t,t,t)).
-
-
-%% mongo_rdf_current_predicate(Reasoner,PredicateName) is nondet.
-%
-% Stores all predicates that are defined in a reasoner database backend.
-%
-:- dynamic mongo_rdf_current_predicate/2.
 
 %% register query commands
 :- mongolog:add_command(triple).
@@ -495,36 +486,6 @@ strip_property_modifier1(transitive(X),      ostar,      X) :- taxonomical_prope
 strip_property_modifier1(transitive(X),      transitive, X).
 strip_property_modifier1(reflexive(X),       reflexive,  X).
 strip_property_modifier1(include_parents(X), pstar,      X).
-
-%% update_rdf_predicates is det.
-%
-% Read all properties defined in the database, and assert
-% mongo_rdf_current_predicate/2 for each of them.
-%
-update_rdf_predicates :-
-    current_reasoner_module(Reasoner),
-	mongolog_get_db(DB, Coll, 'triples'),
-	rdf_equal(rdf:'type',RDFType),
-	rdf_equal(rdf:'Property',PropertyType),
-    retractall(mongo_rdf_current_predicate(Reasoner, _)),
-	forall(
-	    mng_find(DB, Coll, [
-	        ['p', string(RDFType)],
-	        ['o*', string(PropertyType)]
-	    ],  Doc),
-	    (   mng_get_dict('s', Doc, string(PropertyName)),
-	        define_property(Reasoner, PropertyName)
-	    )
-	).
-
-%%
-define_property(Property) :-
-    current_reasoner_module(Reasoner),
-    define_property(Reasoner, Property).
-define_property(Reasoner, Property) :-
-    mongo_rdf_current_predicate(Reasoner, Property), !.
-define_property(Reasoner, Property) :-
-    assertz(mongo_rdf_current_predicate(Reasoner, Property)).
 
 %% is_unique_name(+Name) is semidet.
 %

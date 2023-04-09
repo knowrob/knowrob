@@ -92,12 +92,27 @@ void MongoKnowledgeGraph::initialize()
 {
     createSearchIndices();
     // a collection with just a single document used for querying
+    // TODO: could share once collection with other parts of mongo kb
+    // TODO: initialize one collection
     oneCollection_ = std::make_shared<Collection>(
             tripleCollection_->pool(),
-            tripleCollection_->client(),
-            tripleCollection_->session(),
             tripleCollection_->dbName().c_str(),
             MONGO_KG_ONE_COLLECTION);
+    // make sure there is one document in the "one" collection.
+    if(oneCollection_->empty()) {
+        Document oneDoc(bson_new());
+        bson_t scopeDoc, timeDoc;
+        bson_decimal128_t infinity, zero;
+        bson_decimal128_from_string(BSON_DECIMAL128_INF, &infinity);
+        bson_decimal128_from_string("0", &zero);
+        BSON_APPEND_DOCUMENT_BEGIN(oneDoc.bson(), "v_scope", &scopeDoc);
+        BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
+        BSON_APPEND_DECIMAL128(&timeDoc, "since", &zero);
+        BSON_APPEND_DECIMAL128(&timeDoc, "until", &infinity);
+        bson_append_document_end(&scopeDoc, &timeDoc);
+        bson_append_document_end(oneDoc.bson(), &scopeDoc);
+        oneCollection_->storeOne(oneDoc);
+    }
 
     // initialize vocabulary
     TripleData tripleData;

@@ -24,52 +24,39 @@ Collection::Collection(
 : pool_(pool),
   name_(collectionName),
   dbName_(databaseName),
-  isSessionOwned_(true)
+  session_(nullptr)
 {
 	client_ = mongoc_client_pool_pop(pool_);
-	{
-		bson_error_t error;
-		session_ = mongoc_client_start_session (client_, nullptr, &error);
-	}
 	coll_ = mongoc_client_get_collection(client_, dbName_.c_str(), name_.c_str());
     db_ = mongoc_client_get_database(client_, dbName_.c_str());
 }
 
-Collection::Collection(
-        mongoc_client_pool_t *pool,
-        mongoc_client_t *client,
-        mongoc_client_session_t *session,
-        const std::string_view &databaseName,
-        const std::string_view &collectionName)
-        : pool_(pool),
-          client_(client),
-          session_(session),
-          name_(collectionName),
-          dbName_(databaseName),
-          isSessionOwned_(false)
-{
-    coll_ = mongoc_client_get_collection(client_, databaseName.data(), collectionName.data());
-    db_ = mongoc_client_get_database(client_, databaseName.data());
-}
-
 Collection::~Collection()
 {
+    if(session_) {
+        mongoc_client_session_destroy(session_);
+        session_ = nullptr;
+    }
     mongoc_database_destroy(db_);
 	mongoc_collection_destroy(coll_);
-    if(isSessionOwned_) {
-        if(session_) {
-            mongoc_client_session_destroy(session_);
-            session_ = nullptr;
-        }
-        mongoc_client_pool_push(pool_, client_);
+    mongoc_client_pool_push(pool_, client_);
+}
+
+mongoc_client_session_t* Collection::session()
+{
+    if(!session_) {
+        bson_error_t error;
+        session_ = mongoc_client_start_session (client_, nullptr, &error);
     }
+    return session_;
 }
 
 void Collection::appendSession(bson_t *opts)
 {
-	if(session_!=nullptr) {
+    auto s = session();
+	if(s!=nullptr) {
 		bson_error_t error;
-		if(!mongoc_client_session_append(session_, opts, &error)) {
+		if(!mongoc_client_session_append(s, opts, &error)) {
 		    throw MongoException("append_session", error);
 		}
 	}
@@ -215,4 +202,24 @@ void Collection::createIndex(const std::vector<IndexKey> &keys)
         }
     }
     createIndex_internal(b_keys);
+}
+
+bool Collection::empty()
+{
+    bson_t* opts = BCON_NEW("limit", BCON_INT64(1));
+    bson_t filter = BSON_INITIALIZER;
+    bson_error_t error;
+    int64_t count;
+
+    count = mongoc_collection_count_documents(
+            coll_,
+            &filter,
+            opts,
+            nullptr,
+            nullptr,
+            &error);
+    bson_destroy(opts);
+    bson_destroy(&filter);
+
+    return count==0;
 }

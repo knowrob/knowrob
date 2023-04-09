@@ -71,6 +71,8 @@ namespace knowrob {
 
         ~KnowledgeGraph();
 
+        const auto& vocabulary() const { return vocabulary_; }
+
         bool isDefinedResource(const std::string_view &iri);
 
         bool isDefinedProperty(const std::string_view &iri);

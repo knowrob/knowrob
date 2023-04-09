@@ -22,8 +22,6 @@ namespace knowrob::mongo {
     public:
         explicit Cursor(const std::shared_ptr<Collection> &collection);
 
-        Cursor(const std::shared_ptr<Collection> &collection, bson_t *query, bool aggregate);
-
         Cursor(const Cursor&) = delete;
 
         ~Cursor();

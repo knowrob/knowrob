@@ -20,7 +20,7 @@ Cursor::Cursor(const std::shared_ptr<Collection> &collection)
   collection_(collection),
   isAggregateQuery_(false)
 {
-	query_ = bson_new(); // FIXME leak here
+	query_ = bson_new();
 	opts_ = bson_new();
 	collection_->appendSession(opts_);
 	// use pointer as id
@@ -29,27 +29,12 @@ Cursor::Cursor(const std::shared_ptr<Collection> &collection)
 	id_ = ss.str(); 
 }
 
-Cursor::Cursor(const std::shared_ptr<Collection> &collection, bson_t *query, bool aggregate)
-: cursor_(nullptr),
-  collection_(collection),
-  query_(query),
-  isAggregateQuery_(aggregate)
-{
-
-    opts_ = bson_new();
-   	collection_->appendSession(opts_); // FIXME really ok to append at this point??
-   	// use pointer as id
-   	std::stringstream ss;
-   	ss << static_cast<const void*>(this);
-   	id_ = ss.str();
-}
-
 Cursor::~Cursor()
 {
 	if(cursor_!= nullptr) {
 		mongoc_cursor_destroy(cursor_);
 	}
-	//bson_destroy(query_);
+	bson_destroy(query_);
 	bson_destroy(opts_);
 }
 

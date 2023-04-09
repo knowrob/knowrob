@@ -34,9 +34,9 @@ bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                                            const std::string &graphName,
                                            bool isTaxonomic)
 {
-    long counter=0;
-    auto counterPtr=&counter;
     bson_t parentsArray;
+    uint32_t arrIndex=0;
+    auto counterPtr=&arrIndex;
 
     bson_t *tripleDoc = bson_new();
     BSON_APPEND_UTF8(tripleDoc, "s", tripleData.subject);
@@ -53,7 +53,7 @@ bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                 if(vocabulary_->isDefinedProperty(tripleData.object)) {
                     vocabulary_->getDefinedProperty(tripleData.object)->forallParents(
                         [parentsPtr,counterPtr](const auto &parent){
-                            auto counterKey = std::to_string((*counterPtr)++); // TODO improve key handling here and below
+                            auto counterKey = std::to_string((*counterPtr)++);
                             BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
                         });
                 }

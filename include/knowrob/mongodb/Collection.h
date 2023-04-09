@@ -36,13 +36,6 @@ namespace knowrob::mongo {
                 const std::string_view &databaseName,
                 const std::string_view &collectionName);
 
-        Collection(
-                mongoc_client_pool_t *pool,
-                mongoc_client_t *client,
-                mongoc_client_session_t *session,
-                const std::string_view &databaseName,
-                const std::string_view &collectionName);
-
         ~Collection();
 
         /**
@@ -54,7 +47,7 @@ namespace knowrob::mongo {
         /**
          * @return the session handle.
          */
-        auto session() { return session_; }
+        mongoc_client_session_t* session();
 
         /**
          * @return the client pool of this collection.
@@ -135,6 +128,8 @@ namespace knowrob::mongo {
          */
         void createIndex(const std::vector<IndexKey> &keys);
 
+        bool empty();
+
     private:
         mongoc_client_pool_t *pool_;
         mongoc_client_t *client_;
@@ -143,7 +138,6 @@ namespace knowrob::mongo {
         mongoc_database_t *db_;
         const std::string name_;
         const std::string dbName_;
-        bool isSessionOwned_;
 
         void remove(const Document &document, mongoc_remove_flags_t flag);
         void createIndex_internal(const bson_t &keys);

@@ -11,8 +11,7 @@
 	  mongolog_drop_rule(t),
 	  mongolog_expand(t,-),
 	  mongolog_current_predicate/1,
-	  setup_collection/2,
-	  initialize_one_db/0
+	  setup_collection/2
 	]).
 /** <module> Compiling goals into aggregation pipelines.
 
@@ -100,7 +99,8 @@ mongolog_current_predicate1(Module, Functor, _Arity, relation) :-
     step_command(Module, Functor), !.
 
 mongolog_current_predicate1(Module, Functor, 2, relation) :-
-    mongo_rdf_current_predicate(Module, Functor), !.
+	current_reasoner_manager(Manager),
+	mng_rdf_current_property_cpp(Manager, Module, Functor), !.
 
 mongolog_current_predicate1(_Module, Functor, Arity, built_in) :-
     mongolog_rule(user, Functor, Args, _),
@@ -1524,39 +1524,6 @@ create_indices(Name, Indices) :-
 	mongolog_get_db(DB, Coll, Name),
 	forall(member(Index, Indices),
 		   mng_index_create(DB, Coll, Index)).
-
-
-     /*******************************
-     *    SPECIAL COLLECTIONS       *
-     *******************************/
-
-%%
-% True if "one" collection has a document.
-%
-has_one_db :-
-	mongolog_one_db(DB, Collection),
-	mng_find(DB, Collection, [], _),
-	!.
-
-%%
-% Ensure that "one" collection has one document.
-%
-initialize_one_db :-
-	has_one_db, !.
-
-initialize_one_db :-
-	reasoner_setting(mongodb:read_only, true),!.
-
-initialize_one_db :-
-	mongolog_one_db(DB, Collection),
-	mng_store(DB, Collection, [
-		['v_scope', [
-			['time', [
-				['since',double(0)],
-				['until',double('Infinity')]
-			]]
-		]]
-	]).
 
 		 /*******************************
 		 *    	  UNIT TESTING     		*
