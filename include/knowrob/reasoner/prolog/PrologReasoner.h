@@ -25,6 +25,7 @@
 #include "PrologQuery.h"
 #include "PrologQueryRunner.h"
 #include "PrologThreadPool.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 namespace knowrob {
     /**
@@ -170,6 +171,8 @@ namespace knowrob {
         static std::shared_ptr<DefinedReasoner> getDefinedReasoner(
                 const term_t &t_reasonerManager, const term_t &t_reasonerModule);
 
+        auto& importHierarchy() { return importHierarchy_; }
+
         // Override LogicProgramReasoner
         bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
 
@@ -197,6 +200,7 @@ namespace knowrob {
     protected:
         static bool isPrologInitialized_;
         static bool isKnowRobInitialized_;
+        std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 
         const std::string reasonerID_;
         std::shared_ptr<StringTerm> reasonerIDTerm_;

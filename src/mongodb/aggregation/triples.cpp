@@ -187,12 +187,18 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleE
 
     if(gt->type() == TermType::STRING) {
         auto graphString = (StringTerm*)gt.get();
-        // TODO: support graph hierarchy lookups
-        //      - rather construct ListTerm of all parents from graphString (@see sw_graph_includes)
         if(graphString->value()=="*" || graphString->value()=="user") {}
         else {
             aggregation::appendTermQuery(selectorDoc, "graph", gt);
         }
+    }
+    else if(gt->type() == TermType::LIST) {
+        // TODO: support graph hierarchy lookups, i.e. include all solutions of imported graphs.
+        //       imported graphs can be obtained from ImportHierarchy.
+        //       then the graph term can be encoded as ListTerm of all imports and handled here.
+        //       where should this list be constructed? it should still be possible to query
+        //       for records of a particular graph
+        KB_WARN("graph term {} has unexpected type", *gt);
     }
     else {
         KB_WARN("graph term {} has unexpected type", *gt);

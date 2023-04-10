@@ -215,7 +215,8 @@ add_library(knowrob_qa SHARED
 		include/knowrob/semweb/TripleExpression.cpp
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
-		src/mongodb/AnswerCursor.cpp)
+		src/mongodb/AnswerCursor.cpp
+		src/semweb/ImportHierarchy.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

@@ -20,6 +20,7 @@
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 using namespace knowrob;
 
@@ -27,7 +28,12 @@ using namespace knowrob;
 KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
 // forward declarations of foreign predicates
-foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term);
+foreign_t pl_rdf_register_namespace2(term_t, term_t);
+foreign_t sw_graph_get_imports4(term_t, term_t, term_t, term_t);
+foreign_t sw_graph_add_direct_import4(term_t, term_t, term_t, term_t);
+foreign_t sw_current_graph3(term_t, term_t, term_t);
+foreign_t sw_set_current_graph3(term_t, term_t, term_t);
+foreign_t sw_unset_current_graph3(term_t, term_t, term_t);
 // defined in blackboard.cpp
 extern PL_extension qa_predicates[];
 
@@ -36,7 +42,8 @@ bool PrologReasoner::isKnowRobInitialized_ = false;
 
 PrologReasoner::PrologReasoner(std::string reasonerID)
 : reasonerID_(std::move(reasonerID)),
-  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_))
+  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
+  importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
 {
     addDataSourceHandler(DataSource::PROLOG_FORMAT, [this]
             (const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
@@ -113,6 +120,16 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 		// note: the predicates are loaded into module "user"
         PL_register_foreign("knowrob_register_namespace",
                             2, (pl_function_t)pl_rdf_register_namespace2, 0);
+        PL_register_foreign("sw_graph_get_imports_cpp",
+                            4, (pl_function_t)sw_graph_get_imports4, 0);
+        PL_register_foreign("sw_graph_add_direct_import_cpp",
+                            4, (pl_function_t)sw_graph_add_direct_import4, 0);
+        PL_register_foreign("sw_current_graph_cpp",
+                            3, (pl_function_t)sw_current_graph3, 0);
+        PL_register_foreign("sw_set_current_graph_cpp",
+                            3, (pl_function_t)sw_set_current_graph3, 0);
+        PL_register_foreign("sw_unset_current_graph_cpp",
+                            3, (pl_function_t)sw_unset_current_graph3, 0);
 		PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
 		PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
 		PL_register_extensions_in_module("algebra", algebra_predicates);
@@ -572,4 +589,95 @@ foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term)
         semweb::PrefixRegistry::get().registerPrefix(prefix, uri);
     }
     return TRUE;
+}
+
+std::shared_ptr<semweb::ImportHierarchy>& getImportHierarchy(term_t t_manager, term_t t_reasoner)
+{
+    static std::shared_ptr<semweb::ImportHierarchy> null;
+    auto definedReasoner =
+            PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
+    if(!definedReasoner) return null;
+    auto prologReasoner =
+            std::dynamic_pointer_cast<PrologReasoner>(definedReasoner->reasoner());
+    return prologReasoner ? prologReasoner->importHierarchy() : null;
+}
+
+foreign_t sw_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
+{
+    auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
+
+    char *graph;
+    if(hierarchy && PL_get_atom_chars(t_graph, &graph)) {
+        return hierarchy->isCurrentGraph(graph);
+    }
+    else {
+        return false;
+    }
+}
+
+foreign_t sw_set_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
+{
+    auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
+
+    char *graph;
+    if(hierarchy && PL_get_atom_chars(t_graph, &graph)) {
+        hierarchy->addCurrentGraph(graph);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+foreign_t sw_unset_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
+{
+    auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
+
+    char *graph;
+    if(hierarchy && PL_get_atom_chars(t_graph, &graph)) {
+        hierarchy->removeCurrentGraph(graph);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+foreign_t sw_graph_add_direct_import4(term_t t_manager, term_t t_reasoner, term_t t_importer, term_t t_imported)
+{
+    auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
+
+    char *importer, *imported;
+    if(hierarchy &&
+            PL_get_atom_chars(t_importer, &importer) &&
+            PL_get_atom_chars(t_imported, &imported))
+    {
+        hierarchy->addDirectImport(importer, imported);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+foreign_t sw_graph_get_imports4(term_t t_manager, term_t t_reasoner, term_t t_importer, term_t t_importedList)
+{
+    auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
+
+    char *importer, *imported;
+    if(hierarchy && PL_get_atom_chars(t_importer, &importer)) {
+        auto &imports = hierarchy->getImports(importer);
+
+        term_t a = PL_new_term_ref();
+        PL_put_nil(t_importedList);
+        for(auto &x : imports) {
+            PL_put_atom_chars(a, x->name().c_str());
+            if(!PL_cons_list(t_importedList, a, t_importedList)) return false;
+        }
+
+        return true;
+    }
+    else {
+        return false;
+    }
 }

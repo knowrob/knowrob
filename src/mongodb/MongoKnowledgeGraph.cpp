@@ -36,8 +36,12 @@
 using namespace knowrob;
 using namespace knowrob::mongo;
 
+// AGGREGATION PIPELINES
+bson_t* newPipelineImportHierarchy(const char *collection);
+
 MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
 : KnowledgeGraph(),
+  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
     initialize();
@@ -45,6 +49,7 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const boost::property_tree::ptree &config)
 : KnowledgeGraph(),
+  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(MongoInterface::get().connect(
           getURI(config).c_str(),
           getDBName(config),
@@ -92,8 +97,6 @@ void MongoKnowledgeGraph::initialize()
 {
     createSearchIndices();
     // a collection with just a single document used for querying
-    // TODO: could share once collection with other parts of mongo kb
-    // TODO: initialize one collection
     oneCollection_ = std::make_shared<Collection>(
             tripleCollection_->pool(),
             tripleCollection_->dbName().c_str(),
@@ -148,6 +151,23 @@ void MongoKnowledgeGraph::initialize()
         while(cursor.nextTriple(tripleData))
             vocabulary_->setInverseOf(tripleData.subject, tripleData.object);
     }
+
+    // initialize the import hierarchy
+    {
+        const bson_t *result;
+        Cursor cursor(tripleCollection_);
+        Document document(newPipelineImportHierarchy(tripleCollection_->name().c_str()));
+        cursor.aggregate(document.bson());
+        while(cursor.next(&result)) {
+            bson_iter_t iter;
+            if(!bson_iter_init(&iter, result)) break;
+            if(!bson_iter_find(&iter, "importer")) break;
+            auto importer = bson_iter_utf8(&iter, nullptr);
+            if(!bson_iter_find(&iter, "imported")) break;
+            auto imported = bson_iter_utf8(&iter, nullptr);
+            importHierarchy_->addDirectImport(importer, imported);
+        }
+    }
 }
 
 void MongoKnowledgeGraph::createSearchIndices()
@@ -180,12 +200,14 @@ void MongoKnowledgeGraph::drop()
 {
     tripleCollection_->drop();
     vocabulary_ = std::make_shared<semweb::Vocabulary>();
+    importHierarchy_->clear();
 }
 
 void MongoKnowledgeGraph::dropGraph(const std::string &graphName)
 {
     tripleCollection_->removeAll(Document(
             BCON_NEW("graph", BCON_UTF8(graphName.c_str()))));
+    importHierarchy_->removeCurrentGraph(graphName);
 }
 
 void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphName,
@@ -312,6 +334,11 @@ BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &qu
     // TODO: masterplan:
     //  - use a worker thread to pull from the cursor and push into stream,
     //    but also allow synchronous processing via a flag
+    //  - this could be done via watch interface!
+    //      it is particularly there for calling a function for each result of the cursor,
+    //      so why not just use it in any case?
+    //  - then important to get the condition right for stopping the change stream
+    //      also how do change streams handle initial results?
     //
     return {};
 }
@@ -444,6 +471,13 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         oneCollection_->evalAggregation(&pipelineDoc);
     }
 
+    // update import hierarchy
+    for(auto &importString : tripleLoader.imports()) {
+        auto resolvedImport = URI::resolve(importString);
+        auto importedGraph = getNameFromURI(resolvedImport);
+        importHierarchy_->addDirectImport(tripleLoader.graphName(), importedGraph);
+    }
+
     bson_destroy(&pipelineDoc);
 }
 
@@ -455,6 +489,43 @@ bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm)
     else {
         return false;
     }
+}
+
+
+// AGGREGATION PIPELINES
+
+bson_t* newPipelineImportHierarchy(const char *collection)
+{
+    return BCON_NEW("pipeline", "[",
+        "{", "$match", "{", "p", BCON_UTF8(MONGO_KG_VERSION_KEY), "}", "}",
+        "{", "$lookup", "{",
+       		"from", BCON_UTF8(collection),
+       		"as", BCON_UTF8("x"),
+       		"let", "{", "x", BCON_UTF8("$graph"), "}",
+       		"pipeline", "["
+                "{", "$match", "{",
+       				"p", BCON_UTF8(semweb::IRI_imports.c_str()),
+       				"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
+       			"}", "}",
+       			"{", "$project", "{", "o", BCON_INT32(1), "}", "}",
+       		"]",
+       	"}","}",
+        "{", "$unwind", BCON_UTF8("$x"), "}",
+        "{", "$lookup", "{",
+            "from", BCON_UTF8(collection),
+            "as", BCON_UTF8("y"),
+            "let", "{", "x", BCON_UTF8("$x.o"), "}",
+            "pipeline", "["
+               "{", "$match", "{",
+                    "p", BCON_UTF8(MONGO_KG_VERSION_KEY),
+                    "$expr", "{", "$eq", "[", BCON_UTF8("$s"), BCON_UTF8("$$x"), "]", "}",
+                "}", "}",
+                "{", "$project", "{", "graph", BCON_INT32(1), "}", "}",
+            "]",
+        "}","}",
+        "{", "$unwind", BCON_UTF8("$y"), "}",
+        "{", "$project", "{", "importer", BCON_UTF8("$graph"), "imported", BCON_UTF8("$y.graph"), "}", "}",
+    "]");
 }
 
 

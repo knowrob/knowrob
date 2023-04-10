@@ -135,8 +135,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 				])]]
 			)
 		;	mongolog_scope_match(Ctx, MatchQuery)
-		% TODO: re-enable once c++ gets graph hierarch right
-		%;	graph_match(Ctx, MatchQuery)
+		;	graph_match(Ctx, MatchQuery)
 		),
 		MatchQueries
 	),
@@ -353,8 +352,7 @@ mng_triple_doc(triple(S,P,V), Doc, Context) :-
 		(	( mng_query_value(S1,Query_s), X=['s',Query_s] )
 		;	( mng_query_value(P1,Query_p), X=[Key_p,Query_p] )
 		;	( mng_query_value(V1,Query_v), \+ is_term_query(Query_v), X=[Key_o,Query_v] )
-		% TODO: re-enable once c++ gets graph hierarch right
-		%;	graph_doc(Graph,X)
+		;	graph_doc(Graph,X)
 		;	mongolog_scope_doc(Scope,X)
 		),
 		Doc
@@ -415,7 +413,11 @@ graph_match(Ctx, ['$expr', [Operator,
 %
 drop_graph(Name) :-
 	mongolog_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, [[graph, string(Name)]]).
+	mng_remove(DB, Coll, [[graph, string(Name)]]),
+	% also make sure to update graph hierarchy
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Name).
 
 %%
 % Drop graphs on startup if requested through settings.
@@ -492,6 +494,7 @@ strip_property_modifier1(include_parents(X), pstar,      X).
 % True if Name is not the subject of any known fact.
 %
 is_unique_name(Name) :-
+	% TODO: rather interact with vocabulary of MongoKG in cpp
 	mongolog_get_db(DB, Coll, 'triples'),
 	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
 

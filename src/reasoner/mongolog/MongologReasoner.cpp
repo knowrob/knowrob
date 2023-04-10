@@ -76,6 +76,7 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
     else {
         knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
     }
+    importHierarchy_ = knowledgeGraph_->importHierarchy();
 
    	//
    	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})),

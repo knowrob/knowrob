@@ -16,6 +16,7 @@
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
 #include "knowrob/mongodb/AnswerCursor.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 namespace knowrob {
     /**
@@ -28,6 +29,8 @@ namespace knowrob {
                                      const char* collectionName="triples");
 
         explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
+
+        const auto& importHierarchy() const { return importHierarchy_; }
 
         mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
 
@@ -80,6 +83,7 @@ namespace knowrob {
     protected:
         std::shared_ptr<mongo::Collection> tripleCollection_;
         std::shared_ptr<mongo::Collection> oneCollection_;
+        std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 
         void initialize();
 

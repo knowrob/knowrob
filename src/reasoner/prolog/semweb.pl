@@ -699,23 +699,25 @@ convert_rdf_value_(        O,  string(O)) :- !.
       *       GRAPH HIERARCHY       *
       *******************************/
 
-:- dynamic sw_current_graph_/2.
-
 %%
 sw_current_graph(_, common) :- !.
 sw_current_graph(_, user) :- !.
 sw_current_graph(Reasoner, GraphName) :-
-    sw_current_graph_(Reasoner, GraphName).
+    current_reasoner_manager(ReasonerManager),
+	sw_current_graph_cpp(ReasonerManager, Reasoner, GraphName).
 
 %%
 sw_set_current_graph(Reasoner, GraphName) :-
-    sw_current_graph_(Reasoner, GraphName), !.
-sw_set_current_graph(Reasoner, GraphName) :-
-    assertz(sw_current_graph_(Reasoner, GraphName)).
+    current_reasoner_manager(ReasonerManager),
+	sw_set_current_graph_cpp(ReasonerManager, Reasoner, GraphName).
 
 %% sw_graph_includes(?Graph, ?IncludedGraph) is nondet.
 %
-:- dynamic sw_graph_includes/2.
+sw_graph_includes(Graph, IncludedGraph) :-
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_graph_get_imports_cpp(ReasonerManager, Reasoner, Graph, IncludedGraphs),
+	member(IncludedGraph, IncludedGraphs).
 
 %% sw_graph_include(+Graph,+IncludedGraph) is det.
 %
@@ -725,28 +727,16 @@ sw_set_current_graph(Reasoner, GraphName) :-
 % @param Sup Name of the super-graph.
 %
 sw_graph_include(Graph, IncludedGraph) :-
-	forall(
-		(	(X=Graph         ; sw_graph_includes(X,Graph))
-		,   (Y=IncludedGraph ; sw_graph_includes(IncludedGraph,Y))
-		),
-		assert_graph_includes(X,Y)).
-
-%%
-assert_graph_includes(Graph,Graph)         :- !.
-assert_graph_includes(Graph,IncludedGraph) :- sw_graph_includes(Graph,IncludedGraph),!.
-assert_graph_includes(Graph,IncludedGraph) :- assertz(sw_graph_includes(Graph,IncludedGraph)).
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_graph_add_direct_import_cpp(ReasonerManager, Reasoner, Graph, IncludedGraph).
 
 %%
 %
 sw_unload_graph(Graph) :-
-    forall(
-        (   sw_graph_includes(ParentOfGraph, Graph),
-            sw_graph_includes(Graph, ChildOfGraph)
-        ),
-        assert_graph_includes(ParentOfGraph, ChildOfGraph)
-    ),
-    retractall(sw_graph_includes(_,Graph)),
-    retractall(sw_graph_includes(Graph,_)),
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Graph),
     rdf_unload_graph(Graph).
 
 

@@ -34,6 +34,8 @@ namespace knowrob::mongo {
 
         ~TripleLoader();
 
+        const auto& graphName() const { return graphName_; }
+
         /**
          * @return list of import statements that occurred while loading
          */
