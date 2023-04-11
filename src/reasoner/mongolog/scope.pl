@@ -48,12 +48,11 @@ mongolog_scope_is_valid(['$match',
 %
 mongolog_scope_doc(QScope, [Key,Value]) :-
 	scope_doc1(QScope, [Key,Value]),
-	% do not proceed for variables in scope
-	% these are handled later
-	(Value=[_,string(_)] -> fail ; true).
+	% do not proceed for variables in scope these are handled later
+	(Value=array([_,[_,[_,string(_)]]]) -> fail ; true).
 
-scope_doc1(QScope, ["$or", array([
-		[Key, ["$exists",bool(false)]],
+scope_doc1(QScope, ['$or', array([
+		[Key, ['$exists', bool(false)]],
 		[Key, Value]
 	])]) :-
 	get_dict(ScopeName, QScope, ScopeData),

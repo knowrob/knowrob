@@ -104,6 +104,7 @@ test('has_role') :-
 	mongolog_project(has_type(Role,test:'ARole')),
 	assert_false(has_role(Obj,Role) during Action),
 	assert_true(mongolog_call(project(has_role(Obj,Role) during Action))),
+	assert_true(has_role(Obj,Role) during [24,464]),
 	assert_true(has_role(Obj,Role) during Action).
 
 test('has_transition') :-

@@ -114,7 +114,7 @@ test('query XSD') :-
 	assert_true(forall(mongolog_call(triple(_, test_datatype:'height',     H)), float(H))).
 
 % tests for list as an argument
-test('assert list', [blocked('causes a crash in c++')]) :-
+test('assert list') :-
 	rdf_global_term(test_datatype:'Lecturer3',S),
 	DataTerm=[255,99,71],
 	% tests asserting list value

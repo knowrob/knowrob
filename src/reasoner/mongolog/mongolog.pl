@@ -696,6 +696,11 @@ mongolog_assert(triple(S,P,O)) :-
 	\+ ground([S,P,O]), !,
 	throw(error(instantiation_error, assert(triple(S,P,O)))).
 
+mongolog_assert(triple(S,P,term(Compound))) :-
+	compound(Compound), !,
+	catch(term_to_atom(Compound,O), _, fail),
+	mongolog_assert(triple(S,P,O)).
+
 mongolog_assert(triple(S,P,O)) :-
 	!,
 	current_reasoner_manager(ReasonerManager),

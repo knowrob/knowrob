@@ -45,7 +45,7 @@ namespace knowrob {
          * Delete all triples of a named graph in this knowledge graph.
          * @param graphName a graph name
          */
-        void dropGraph(const std::string &graphName);
+        void dropGraph(const std::string_view &graphName);
 
         /**
          * Delete all triples in the database.

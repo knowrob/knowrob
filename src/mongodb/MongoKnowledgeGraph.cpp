@@ -221,12 +221,15 @@ void MongoKnowledgeGraph::drop()
     importHierarchy_->clear();
 }
 
-void MongoKnowledgeGraph::dropGraph(const std::string &graphName)
+void MongoKnowledgeGraph::dropGraph(const std::string_view &graphName)
 {
     KB_INFO("dropping graph with name \"{}\".", graphName);
     tripleCollection_->removeAll(Document(
-            BCON_NEW("graph", BCON_UTF8(graphName.c_str()))));
-    importHierarchy_->removeCurrentGraph(graphName);
+            BCON_NEW("graph", BCON_UTF8(graphName.data()))));
+    // TODO: improve handling of default graph names.
+    //       here it is avoided that import relations are forgotten.
+    if(graphName != "user" && graphName != "common" && graphName != "test")
+        importHierarchy_->removeCurrentGraph(graphName);
 }
 
 void MongoKnowledgeGraph::setCurrentGraphVersion(const std::string &graphName,
@@ -270,7 +273,8 @@ bson_t* MongoKnowledgeGraph::getTripleSelector(
 
 void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 {
-    TripleLoader loader(tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph(),
+    auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
+    TripleLoader loader(graph,
                         tripleCollection_,
                         oneCollection_,
                         vocabulary_);
@@ -281,7 +285,8 @@ void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 
 void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleData)
 {
-    TripleLoader loader(importHierarchy_->defaultGraph(),
+    auto &graph = importHierarchy_->defaultGraph();
+    TripleLoader loader(graph,
                         tripleCollection_,
                         oneCollection_,
                         vocabulary_);

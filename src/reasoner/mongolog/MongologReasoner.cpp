@@ -21,6 +21,7 @@ using namespace knowrob;
 KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner)
 
 // foreign predicates
+foreign_t mng_drop_graph3(term_t,term_t,term_t);
 foreign_t pl_load_triples_cpp4(term_t,term_t,term_t,term_t);
 foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
 foreign_t pl_assert_triple_cpp9(term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t);
@@ -50,6 +51,8 @@ bool MongologReasoner::initializeDefaultPackages()
 		consult(std::filesystem::path("reasoner") / "mongolog" / "__init__.pl",
                 "user", false);
 
+        PL_register_foreign("mng_drop_graph_cpp",
+                            3, (pl_function_t)mng_drop_graph3, 0);
         PL_register_foreign("mng_load_triples_cpp",
                             4, (pl_function_t)pl_load_triples_cpp4, 0);
         PL_register_foreign("mng_rdf_current_property_cpp",
@@ -78,6 +81,7 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
         knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
     }
     importHierarchy_ = knowledgeGraph_->importHierarchy();
+    importHierarchy_->addDirectImport("user", reasonerID_);
 
     // load some common ontologies
     loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/rdf-schema.xml"));
@@ -169,6 +173,20 @@ foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
             auto graphName = KnowledgeGraph::getNameFromURI(resolved);
             mongolog->importHierarchy()->addDirectImport(parentGraph, graphName);
         }
+        return true;
+    }
+    return false;
+}
+
+
+foreign_t mng_drop_graph3(term_t t_reasonerManager,
+                          term_t t_reasonerModule,
+                          term_t t_graph)
+{
+    auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
+    char *graph;
+    if(mongolog && PL_get_atom_chars(t_graph, &graph)) {
+        mongolog->knowledgeGraph()->dropGraph(graph);
         return true;
     }
     return false;

@@ -63,7 +63,7 @@ setup(RDFFile) :-
 		\+  sw_graph_includes(user, TestSubGraph),
 		\+  TestSubGraph==user
 		),
-		mongolog_triple:drop_graph(test)
+		mongolog_triple:drop_graph(TestSubGraph)
 	),
 	mongolog_call(load_rdf_xml(RDFFile,test)).
 

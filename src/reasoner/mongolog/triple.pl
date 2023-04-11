@@ -178,7 +178,6 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 				])]]
 			)
 		;	mongolog_scope_match(Ctx, MatchQuery)
-		;	graph_match(Ctx, MatchQuery)
 		),
 		MatchQueries
 	),
@@ -437,17 +436,6 @@ graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 		(X=GraphName ; sw_graph_includes(GraphName,X)),
 		Graphs).
 
-%%
-graph_match(Ctx, ['$expr', [Operator,
-		array([ string(GraphValue), ArgVal ])
-	]]) :-
-	triple_graph(Ctx, Graph),
-	graph_doc(Graph, [GraphKey, Arg]),
-	atom_concat('$',GraphKey,GraphValue),
-	(	(   is_list(Arg), Arg=[Operator,ArgVal])
-	;	(\+ is_list(Arg), Arg=[ArgVal], Operator='$eq')
-	).
-
 %% drop_graph(+Name) is det.
 %
 % Deletes all triples asserted into given named graph.
@@ -455,12 +443,9 @@ graph_match(Ctx, ['$expr', [Operator,
 % @param Name the graph name.
 %
 drop_graph(Name) :-
-	mongolog_get_db(DB, Coll, 'triples'),
-	mng_remove(DB, Coll, [[graph, string(Name)]]),
-	% also make sure to update graph hierarchy
     current_reasoner_manager(ReasonerManager),
     current_reasoner_module(Reasoner),
-	semweb:sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Name).
+	mng_drop_graph_cpp(ReasonerManager, Reasoner, Name).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
