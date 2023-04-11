@@ -5,7 +5,18 @@
 #include <memory>
 #include "knowrob/semweb/ImportHierarchy.h"
 
+#define KNOWROB_SEMWEB_DEFAULT_GRAPH "user"
+#define KNOWROB_SEMWEB_COMMON_GRAPH "common"
+#define KNOWROB_SEMWEB_TEST_GRAPH "test"
+
 using namespace knowrob::semweb;
+
+ImportHierarchy::ImportHierarchy()
+: defaultGraph_(KNOWROB_SEMWEB_DEFAULT_GRAPH)
+{
+    addDirectImport(KNOWROB_SEMWEB_DEFAULT_GRAPH, KNOWROB_SEMWEB_COMMON_GRAPH);
+    addDirectImport(KNOWROB_SEMWEB_TEST_GRAPH, KNOWROB_SEMWEB_DEFAULT_GRAPH);
+}
 
 void ImportHierarchy::addCurrentGraph(const std::string_view &graphName)
 {

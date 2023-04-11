@@ -251,7 +251,7 @@ bson_t* MongoKnowledgeGraph::getTripleSelector(
 
 void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 {
-    TripleLoader loader(tripleData.graph ? tripleData.graph : "user",
+    TripleLoader loader(tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph(),
                         tripleCollection_,
                         oneCollection_,
                         vocabulary_);
@@ -262,7 +262,7 @@ void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
 
 void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleData)
 {
-    TripleLoader loader("user",
+    TripleLoader loader(importHierarchy_->defaultGraph(),
                         tripleCollection_,
                         oneCollection_,
                         vocabulary_);

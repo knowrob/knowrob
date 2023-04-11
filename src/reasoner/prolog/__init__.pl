@@ -52,8 +52,6 @@
 
 % extensions for semantic web
 :- use_module(library('semweb')).
-:- sw_graph_include(user,common),
-   sw_graph_include(test,user).
 
 :- sw_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#').
 :- sw_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#').

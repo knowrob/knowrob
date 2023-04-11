@@ -30,12 +30,16 @@ namespace knowrob::semweb {
 
     class ImportHierarchy {
     public:
-        ImportHierarchy() = default;
+        ImportHierarchy();
 
         bool isCurrentGraph(const std::string_view &graphName) const
         { return graphs_.count(graphName)>0; }
 
         void clear() { graphs_.clear(); }
+
+        void setDefaultGraph(const std::string_view &defaultGraph) { defaultGraph_ = defaultGraph; }
+
+        const auto& defaultGraph() const { return defaultGraph_; }
 
         void addCurrentGraph(const std::string_view &graphName);
 
@@ -48,6 +52,7 @@ namespace knowrob::semweb {
 
     protected:
         std::map<std::string_view, std::unique_ptr<CurrentGraph>> graphs_;
+        std::string defaultGraph_;
     };
 
 } // knowrob::semweb

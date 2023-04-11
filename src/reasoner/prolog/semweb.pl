@@ -541,10 +541,6 @@ sw_url(URL, Resolved, OntologyGraph, OntologyVersion) :-
 % according to the ontology. The name is extracted as the basename
 % of the URL without file type extension.
 %
-sw_url_graph(URL,Name) :-
-	file_base_name(URL,FileName),
-	file_name_extension(Name,_,FileName),
-	!.
 
 %% sw_url_version(+URL, ?Version) is det.
 %
@@ -555,35 +551,6 @@ sw_url_graph(URL,Name) :-
 % If this fails, the current date is used such that the file
 % is reloaded on each day once.
 %
-sw_url_version(URL, Version) :-
-    % get modification time of local file.
-    % this is to cause re-loading the file in case of it has changed locally.
-	catch(exists_file(URL), _, fail),
-	!,
-	set_time_file(URL, [modified(ModStamp)],[]),
-	atom_number(Version, ModStamp).
-
-sw_url_version(URL, Version) :-
-    % try to extract version from URI
-	atomic_list_concat(XL,'/',URL),
-	% TODO: some ontologies use e.g. ".../2005/07/xx.owl"
-	reverse(XL, [_,Version|_]),
-	is_version_string(Version),
-	!.
-
-sw_url_version(_URL, Version) :-
-    % remote URL -> reload only one update per day
-	date(VersionTerm),
-	term_to_atom(VersionTerm, Version).
-
-%% version string validation
-is_version_string(Atom) :-
-	atom_codes(Atom,Codes),
-	phrase(version_matcher,Codes),!.
-
-version_matcher --> "v", version_matcher.
-version_matcher --> digits(_), ".", digits(_), ".", digits(_).
-version_matcher --> digits(_), ".", digits(_).
 
 %%
 sw_register_prefix(Prefix, URI) :-
@@ -739,23 +706,23 @@ sw_unload_graph(Graph) :-
 	sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Graph),
     rdf_unload_graph(Graph).
 
-
-% name of default fact graph
-:- dynamic sw_default_graph/1.
-
 %% sw_default_graph(?Graph) is det.
 %
 % True if Graph is the current default graph.
 %
-sw_default_graph(user).
+sw_default_graph(Graph) :-
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_default_graph_cpp(ReasonerManager, Reasoner, Graph).
 
 %%
 % Set the name of the graph where facts are asserted and retrieved
 % if no other graph was specified.
 %
 sw_set_default_graph(Graph) :-
-	retractall(sw_default_graph(_)),
-	assertz(sw_default_graph(Graph)).
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+	sw_set_default_graph_cpp(ReasonerManager, Reasoner, Graph).
 
      /*******************************
       *    LOADING RDF/XML DATA     *
