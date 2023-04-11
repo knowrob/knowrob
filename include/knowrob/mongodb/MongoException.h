@@ -11,7 +11,11 @@ namespace knowrob {
     class MongoException : public std::runtime_error {
     public:
         MongoException(const char *msg, const bson_error_t &err)
-                : std::runtime_error(fmt::format("mng_error({},{})", msg, err.message)) {}
+                : contextMessage_(msg),
+                  bsonMessage_(err.message),
+                  std::runtime_error(fmt::format("mng_error({},{})", msg, err.message)) {}
+        const std::string bsonMessage_;
+        const std::string contextMessage_;
     };
 }
 

@@ -418,13 +418,13 @@ mongolog_call(consult(File), _Ctx) :-
     ;   mongolog_consult(File)
     ).
 
-mongolog_call(load_rdf_xml(File,_Module), _Ctx) :-
+mongolog_call(load_rdf_xml(File,ParentGraph), _Ctx) :-
     !,
     current_reasoner_manager(ReasonerManager),
     current_reasoner_module(ReasonerModule),
     (   var(File)
-    ->  throw(error(instantiation_error(File), mongolog_call(load_rdf_xml(File))))
-    ;   mng_load_triples_cpp(ReasonerManager, ReasonerModule, File)
+    ->  throw(error(instantiation_error(File), mongolog_call(load_rdf_xml(File,ParentGraph))))
+    ;   mng_load_triples_cpp(ReasonerManager, ReasonerModule, File, ParentGraph)
     ).
 
 mongolog_call(Goal, ContextIn) :-
@@ -541,6 +541,34 @@ assert_documents0([Coll|Next], Assertions) :-
 
 assert_documents1(array([]), _) :- !.
 assert_documents1([], _) :- !.
+assert_documents1(array(Docs), Coll) :-
+	mongolog_get_db(_DB, Coll, 'triples'),!,
+	current_reasoner_manager(ReasonerManager),
+	current_reasoner_module(ReasonerModule),
+
+	% TODO: rather provide array of triples to cpp instead of
+	%       calling pl_assert_triple_cpp9 for each.
+	forall(member(TripleData, Docs), (
+		dict_pairs(TripleDict,_,TripleData),
+		get_dict(s, TripleDict, string(Subject)),
+		get_dict(p, TripleDict, string(Predicate)),
+		get_dict(graph, TripleDict, string(Graph)),
+
+		get_dict(o, TripleDict, ObjectTerm),
+		mng_strip_type(ObjectTerm, _, Object),
+
+		get_dict(scope, TripleDict, [time-[(since)-double(Since),(until)-double(Until)]]),
+		( (Since==0.0, Until=='Infinity') -> (Begin=_, End=_)
+		; (Until=='Infinity')             -> (Begin=Since, End=_)
+		; (Begin=Since, End=Until)
+		),
+
+		mng_assert_triple_cpp(
+				ReasonerManager,
+				ReasonerModule,
+				Subject, Predicate, Object,
+				Graph, Begin, End, _)
+	)).
 assert_documents1(array(Docs), Key) :-
 	% NOTE: the mongo client currently returns documents as pairs A-B instead of
 	%       [A,B] which is required as input.
@@ -672,7 +700,8 @@ mongolog_assert(triple(S,P,O)) :-
 	!,
 	current_reasoner_manager(ReasonerManager),
 	current_reasoner_module(ReasonerModule),
-	mng_assert_triple_cpp(ReasonerManager, ReasonerModule, S, P, O, _, _, _, _).
+	sw_default_graph(G),
+	mng_assert_triple_cpp(ReasonerManager, ReasonerModule, S, P, O, G, _, _, _).
 
 mongolog_assert(Fact) :-
 	mongolog_universal_scope(QScope),
@@ -685,8 +714,9 @@ mongolog_assert(triple(S,P,O), Scope) :-
 	mng_strip_type(UntilValue0, _, UntilValue),
 	current_reasoner_manager(ReasonerManager),
 	current_reasoner_module(ReasonerModule),
+	sw_default_graph(G),
 	mng_assert_triple_cpp(ReasonerManager, ReasonerModule,
-			S, P, O, _,
+			S, P, O, G,
 			SinceValue, UntilValue, _).
 
 %%

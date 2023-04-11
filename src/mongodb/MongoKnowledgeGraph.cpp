@@ -47,6 +47,7 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name
   tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
     initialize();
+    dropGraph("user");
 }
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const boost::property_tree::ptree &config)

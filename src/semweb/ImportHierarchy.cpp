@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "knowrob/semweb/ImportHierarchy.h"
+#include "knowrob/Logger.h"
 
 #define KNOWROB_SEMWEB_DEFAULT_GRAPH "user"
 #define KNOWROB_SEMWEB_COMMON_GRAPH "common"
@@ -42,6 +43,7 @@ const std::set<CurrentGraph*>& ImportHierarchy::getImports(const std::string_vie
 void ImportHierarchy::addDirectImport(const std::string_view &importerGraphName,
                                       const std::string_view &importedGraphName)
 {
+    KB_DEBUG("Graph \"{}\" imports \"{}\".", importerGraphName, importedGraphName);
     // add nodes if not existing
     auto it1 = graphs_.find(importerGraphName);
     if(it1 == graphs_.end()) {

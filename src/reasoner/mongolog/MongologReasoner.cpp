@@ -13,6 +13,7 @@
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/mongolog/MongologReasoner.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/URI.h"
 
 using namespace knowrob;
 
@@ -20,7 +21,7 @@ using namespace knowrob;
 KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner)
 
 // foreign predicates
-foreign_t pl_load_triples_cpp3(term_t,term_t,term_t);
+foreign_t pl_load_triples_cpp4(term_t,term_t,term_t,term_t);
 foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
 foreign_t pl_assert_triple_cpp9(term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t,term_t);
 
@@ -50,7 +51,7 @@ bool MongologReasoner::initializeDefaultPackages()
                 "user", false);
 
         PL_register_foreign("mng_load_triples_cpp",
-                            3, (pl_function_t)pl_load_triples_cpp3, 0);
+                            4, (pl_function_t)pl_load_triples_cpp4, 0);
         PL_register_foreign("mng_rdf_current_property_cpp",
                             3, (pl_function_t) pl_rdf_current_property_cpp3, 0);
         PL_register_foreign("mng_assert_triple_cpp",
@@ -149,14 +150,26 @@ foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager,
     return false;
 }
 
-foreign_t pl_load_triples_cpp3(term_t t_reasonerManager,
+foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
                                term_t t_reasonerModule,
-                               term_t t_ontologyURI)
+                               term_t t_ontologyURI,
+                               term_t t_parentGraph)
 {
     auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
     char *ontologyURI;
     if(mongolog && PL_get_atom_chars(t_ontologyURI, &ontologyURI)) {
-        return mongolog->knowledgeGraph()->loadTriples(ontologyURI, TripleFormat::RDF_XML);
+        auto &kg = mongolog->knowledgeGraph();
+
+        if(!kg->loadTriples(ontologyURI, TripleFormat::RDF_XML)) return false;
+
+        char *parentGraph;
+        if(!PL_is_variable(t_parentGraph) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {
+            // FIXME: redundant
+            auto resolved = URI::resolve(ontologyURI);
+            auto graphName = KnowledgeGraph::getNameFromURI(resolved);
+            mongolog->importHierarchy()->addDirectImport(parentGraph, graphName);
+        }
+        return true;
     }
     return false;
 }

@@ -22,12 +22,23 @@ using namespace knowrob::mongo;
 #define PREDICATE_COLLECTION MongoInterface::get().connect(PL_A1, (char*)PL_A2)
 #define PREDICATE_CURSOR MongoInterface::get().cursor((char*)PL_A1)
 
+class MongoPLException : public PlException, std::exception {
+public:
+    explicit MongoPLException(const MongoException &exc)
+    : PlException(PlCompound(
+        "mng_error", PlCompound(exc.contextMessage_.c_str(), PlTerm(exc.bsonMessage_.c_str()))
+    )) {}
+
+    explicit MongoPLException(const std::exception &exc)
+    : PlException(PlCompound("mng_error", PlTerm(exc.what()))) {}
+};
+
 static inline bson_t* termToDocument(const PlTerm &term) {
     bson_error_t err;
     auto document = bson_new();
     if(!bsonpl_concat(document,term, &err)) {
         bson_free(document);
-        throw MongoException("invalid_term", err);
+        throw MongoPLException(MongoException("invalid_term", err));
     }
     return document;
 }
@@ -47,7 +58,7 @@ PREDICATE(mng_collections,2) {
 		return TRUE;
 	}
 	else {
-		throw MongoException("collection_lookup_failed", err);
+		throw MongoPLException(MongoException("collection_lookup_failed", err));
 	}
 }
 
@@ -80,9 +91,8 @@ PREDICATE(mng_drop_unsafe, 2) {
         PREDICATE_COLLECTION->drop();
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_store, 3) {
@@ -90,9 +100,8 @@ PREDICATE(mng_store, 3) {
         PREDICATE_COLLECTION->storeOne(Document(termToDocument(PL_A3)));
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_remove, 3) {
@@ -100,9 +109,8 @@ PREDICATE(mng_remove, 3) {
         PREDICATE_COLLECTION->removeAll(Document(termToDocument(PL_A3)));
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_update, 4) {
@@ -112,9 +120,8 @@ PREDICATE(mng_update, 4) {
                 Document(termToDocument(PL_A4)));
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 /*
@@ -237,9 +244,8 @@ PREDICATE(mng_bulk_write, 3) {
         bulk->execute();
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 
@@ -249,9 +255,8 @@ PREDICATE(mng_cursor_create, 3) {
         PL_A3 = MongoInterface::get().cursor_create(PL_A1,(char*)PL_A2)->id().c_str();
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_create, 4) {
@@ -262,9 +267,8 @@ PREDICATE(mng_cursor_create, 4) {
         PL_A3 = cursor->id().c_str();
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_destroy, 1) {
@@ -273,18 +277,16 @@ PREDICATE(mng_cursor_destroy, 1) {
         MongoInterface::get().cursor_destroy(cursor_id);
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_erase, 1) {
     try {
 	    return PREDICATE_CURSOR->erase();
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_filter, 2) {
@@ -293,9 +295,8 @@ PREDICATE(mng_cursor_filter, 2) {
         PREDICATE_CURSOR->filter(doc_a.bson());
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_aggregate, 2) {
@@ -304,9 +305,8 @@ PREDICATE(mng_cursor_aggregate, 2) {
         PREDICATE_CURSOR->aggregate(doc_a.bson());
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_descending, 2) {
@@ -314,9 +314,8 @@ PREDICATE(mng_cursor_descending, 2) {
         PREDICATE_CURSOR->descending((char*)PL_A2);
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_ascending, 2) {
@@ -324,9 +323,8 @@ PREDICATE(mng_cursor_ascending, 2) {
         PREDICATE_CURSOR->ascending((char*)PL_A2);
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_limit, 2) {
@@ -334,9 +332,8 @@ PREDICATE(mng_cursor_limit, 2) {
         PREDICATE_CURSOR->limit((int)PL_A2);
         return TRUE;
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_next_pairs, 2) {
@@ -350,9 +347,8 @@ PREDICATE(mng_cursor_next_pairs, 2) {
             return FALSE;
         }
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }
 
 PREDICATE(mng_cursor_next_json, 2) {
@@ -368,7 +364,6 @@ PREDICATE(mng_cursor_next_json, 2) {
             return FALSE;
         }
     }
-    catch(const std::exception&) {
-        return FALSE;
-    }
+    catch(const MongoException &exc) { throw MongoPLException(exc); }
+    catch(const std::exception &exc) { throw MongoPLException(exc); }
 }

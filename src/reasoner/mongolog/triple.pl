@@ -32,6 +32,50 @@ The following predicates are supported:
 %% register query commands
 :- mongolog:add_command(triple).
 
+
+%%
+mongolog:step_expand(project(triple(S,P,O)), assert(triple(S,P,O))) :- !.
+
+%%
+mongolog:step_compile(assert(triple(S,P,term(O))), Ctx, Pipeline, StepVars) :-
+	% HACK: convert term(A) argument to string.
+	%       it would be better to store lists/terms directly without conversion.
+	ground(O),!,
+	( atom(O) -> Atom=O ; term_to_atom(O, Atom) ),
+	mongolog:step_compile(assert(triple(S,P,string(Atom))), Ctx, Pipeline, StepVars).
+
+%%
+mongolog:step_compile(assert(triple(S,P,O)), CtxIn, Pipeline, StepVars) :-
+	% add step variables to compile context
+	triple_step_vars(triple(S,P,O), CtxIn, StepVars0),
+	mongolog:add_assertion_var(StepVars0, StepVars),
+	merge_options([step_vars(StepVars)], CtxIn, Ctx),
+	% add additional options to the compile context
+	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
+	option(collection(Collection), Ctx0),
+	option(query_scope(Scope), Ctx0),
+	triple_graph(Ctx0, Graph),
+	mongolog_time_scope(Scope, SinceTyped, UntilTyped),
+	% throw instantiation_error if one of the arguments was not referred to before
+	mongolog:all_ground([S,O], Ctx),
+	% resolve arguments
+	mongolog:var_key_or_val(S, Ctx, S_query),
+	mongolog:var_key_or_val(P1, Ctx, P_query),
+	mongolog:var_key_or_val(O, Ctx, V_query),
+	% create assertion pipeline
+	findall(Step,
+		mongolog:add_assertion([
+			['s', S_query],
+			['p', P_query],
+			['o', V_query],
+			['graph', string(Graph)],
+			['scope', [['time',[
+				['since', SinceTyped],
+				['until', UntilTyped]
+			]]]]], Collection, Step),
+		Pipeline).
+
+
 mongolog:step_compile(triple(S,P,term(O)), Ctx, Pipeline, StepVars) :-
 	% HACK: convert term(A) argument to string.
 	%       it would be better to store lists/terms directly without conversion.
