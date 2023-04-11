@@ -91,6 +91,8 @@ namespace knowrob {
                                     const std::string &graphURI,
                                     const std::string &graphVersion);
 
+        static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
+
         static const char* getDBName(const boost::property_tree::ptree &config);
 
         static const char* getCollectionName(const boost::property_tree::ptree &config);

@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <filesystem>
+#include <boost/foreach.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/URI.h"
 #include "knowrob/mongodb/MongoKnowledgeGraph.h"
@@ -27,6 +28,7 @@
 #define MONGO_KG_SETTING_PASSWORD "password"
 #define MONGO_KG_SETTING_DB "db"
 #define MONGO_KG_SETTING_COLLECTION "collection"
+#define MONGO_KG_SETTING_DROP_GRAPHS "drop_graphs"
 
 #define MONGO_KG_DEFAULT_HOST "localhost"
 #define MONGO_KG_DEFAULT_PORT "27017"
@@ -50,12 +52,27 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name
 MongoKnowledgeGraph::MongoKnowledgeGraph(const boost::property_tree::ptree &config)
 : KnowledgeGraph(),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
-  tripleCollection_(MongoInterface::get().connect(
-          getURI(config).c_str(),
-          getDBName(config),
-          getCollectionName(config)))
+  tripleCollection_(connect(config))
 {
     initialize();
+
+    // auto-drop some named graphs
+    auto o_drop_graphs = config.get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
+    if(o_drop_graphs.has_value()) {
+        BOOST_FOREACH(const auto &v, o_drop_graphs.value()) {
+            dropGraph(v.second.data());
+        }
+    } else {
+        dropGraph("user");
+    }
+}
+
+std::shared_ptr<Collection> MongoKnowledgeGraph::connect(const boost::property_tree::ptree &config)
+{
+    return MongoInterface::get().connect(
+              getURI(config).c_str(),
+              getDBName(config),
+              getCollectionName(config));
 }
 
 const char* MongoKnowledgeGraph::getDBName(const boost::property_tree::ptree &config)
@@ -205,6 +222,7 @@ void MongoKnowledgeGraph::drop()
 
 void MongoKnowledgeGraph::dropGraph(const std::string &graphName)
 {
+    KB_INFO("dropping graph with name \"{}\".", graphName);
     tripleCollection_->removeAll(Document(
             BCON_NEW("graph", BCON_UTF8(graphName.c_str()))));
     importHierarchy_->removeCurrentGraph(graphName);
@@ -502,7 +520,7 @@ bson_t* newPipelineImportHierarchy(const char *collection)
        		"from", BCON_UTF8(collection),
        		"as", BCON_UTF8("x"),
        		"let", "{", "x", BCON_UTF8("$graph"), "}",
-       		"pipeline", "["
+       		"pipeline", "[",
                 "{", "$match", "{",
        				"p", BCON_UTF8(semweb::IRI_imports.c_str()),
        				"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
@@ -515,7 +533,7 @@ bson_t* newPipelineImportHierarchy(const char *collection)
             "from", BCON_UTF8(collection),
             "as", BCON_UTF8("y"),
             "let", "{", "x", BCON_UTF8("$x.o"), "}",
-            "pipeline", "["
+            "pipeline", "[",
                "{", "$match", "{",
                     "p", BCON_UTF8(MONGO_KG_VERSION_KEY),
                     "$expr", "{", "$eq", "[", BCON_UTF8("$s"), BCON_UTF8("$$x"), "]", "}",

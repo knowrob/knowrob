@@ -44,13 +44,13 @@ void ImportHierarchy::addDirectImport(const std::string_view &importerGraphName,
 {
     // add nodes if not existing
     auto it1 = graphs_.find(importerGraphName);
-    if(it1 != graphs_.end()) {
+    if(it1 == graphs_.end()) {
         auto newGraph = new CurrentGraph(importerGraphName);
         auto inserted = graphs_.emplace(newGraph->name(), newGraph);
         it1 = inserted.first;
     }
     auto it2 = graphs_.find(importedGraphName);
-    if(it2 != graphs_.end()) {
+    if(it2 == graphs_.end()) {
         auto newGraph = new CurrentGraph(importedGraphName);
         auto inserted = graphs_.emplace(newGraph->name(), newGraph);
         it2 = inserted.first;

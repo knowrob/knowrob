@@ -78,10 +78,6 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
     }
     importHierarchy_ = knowledgeGraph_->importHierarchy();
 
-   	//
-   	eval(std::make_shared<Predicate>(Predicate("auto_drop_graphs",{})),
-         nullptr, false);
-
     // load some common ontologies
     loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/rdf-schema.xml"));
     loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/owl.rdf"));

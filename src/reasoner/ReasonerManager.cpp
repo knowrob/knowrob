@@ -29,7 +29,6 @@ ReasonerManager::ReasonerManager()
 
 ReasonerManager::~ReasonerManager()
 {
-    KB_WARN("~ReasonerManager");
     std::lock_guard<std::mutex> scoped_lock(staticMutex_);
     reasonerManagers_.erase(managerID_);
 }
@@ -136,10 +135,9 @@ bool ReasonerManager::addReasonerFactory(const std::string &typeName, const std:
 std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
         const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
 {
-	//if(reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
-	//	KB_WARN("overwriting reasoner with name '{}'", reasonerID);
-	//}
-    KB_WARN("addReasoner with name '{}' to {}", reasonerID, managerID_);
+	if(reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
+		KB_WARN("overwriting reasoner with name '{}'", reasonerID);
+	}
 	auto managedReasoner = std::make_shared<DefinedReasoner>(reasonerID, reasoner);
 	reasonerPool_[reasonerID] = managedReasoner;
     reasoner->setReasonerManager(managerID_);

@@ -9,6 +9,8 @@
 #include <memory>
 #include <filesystem>
 #include <utility>
+#define PL_SAFE_ARG_MACROS
+#include <SWI-cpp.h>
 
 #include "knowrob/knowrob.h"
 #include "knowrob/Logger.h"
@@ -44,7 +46,7 @@ PL_extension sw_extension[] = {
         { "sw_url_graph",                       2, (pl_function_t)sw_url_graph2, 0 },
         { "sw_url_version",                     2, (pl_function_t)sw_url_version2, 0 },
         { "sw_default_graph_cpp",               3, (pl_function_t)sw_default_graph3, 0 },
-        { "sw_set_default_cpp",                 3, (pl_function_t)sw_set_default_graph3, 0 },
+        { "sw_set_default_graph_cpp",           3, (pl_function_t)sw_set_default_graph3, 0 },
         { "sw_graph_get_imports_cpp",           4, (pl_function_t)sw_graph_get_imports4, 0 },
         { "sw_graph_add_direct_import_cpp",     4, (pl_function_t)sw_graph_add_direct_import4, 0 },
         { "sw_current_graph_cpp",               3, (pl_function_t)sw_current_graph3, 0 },
@@ -143,6 +145,7 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 		PL_register_extensions_in_module("algebra", algebra_predicates);
         PL_register_extensions_in_module("semweb", sw_extension);
 		PL_register_extensions_in_module("user", qa_predicates);
+        KB_INFO("common foreign Prolog modules have been registered.");
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
 
@@ -672,18 +675,12 @@ foreign_t sw_graph_add_direct_import4(term_t t_manager, term_t t_reasoner, term_
 foreign_t sw_graph_get_imports4(term_t t_manager, term_t t_reasoner, term_t t_importer, term_t t_importedList)
 {
     auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-
     char *importer;
     if(hierarchy && PL_get_atom_chars(t_importer, &importer)) {
-        auto &imports = hierarchy->getImports(importer);
-
-        term_t a = PL_new_term_ref();
-        PL_put_nil(t_importedList);
-        for(auto &x : imports) {
-            PL_put_atom_chars(a, x->name().c_str());
-            if(!PL_cons_list(t_importedList, a, t_importedList)) return false;
-        }
-
+        PlTail l(t_importedList);
+        for(auto &x : hierarchy->getImports(importer))
+            l.append(x->name().c_str());
+       	l.close();
         return true;
     }
     return false;
@@ -704,10 +701,7 @@ foreign_t sw_set_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_gr
 foreign_t sw_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
 {
     auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-    if(hierarchy) {
-        return PL_put_atom_chars(t_graph, hierarchy->defaultGraph().c_str());
-    }
-    return false;
+    return hierarchy && PL_unify_atom_chars(t_graph, hierarchy->defaultGraph().c_str());
 }
 
 foreign_t sw_url_graph2(term_t t_url, term_t t_graph)
@@ -715,7 +709,7 @@ foreign_t sw_url_graph2(term_t t_url, term_t t_graph)
     char *url;
     if(PL_get_atom_chars(t_url, &url)) {
         auto name = KnowledgeGraph::getNameFromURI(url);
-        return PL_put_atom_chars(t_graph, name.c_str());
+        return PL_unify_atom_chars(t_graph, name.c_str());
     }
     return false;
 }
@@ -725,7 +719,7 @@ foreign_t sw_url_version2(term_t t_url, term_t t_version)
     char *url;
     if(PL_get_atom_chars(t_url, &url)) {
         auto version = KnowledgeGraph::getVersionFromURI(url);
-        return PL_put_atom_chars(t_version, version.c_str());
+        return PL_unify_atom_chars(t_version, version.c_str());
     }
     return false;
 }

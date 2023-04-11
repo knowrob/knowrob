@@ -3,8 +3,7 @@
           triple(t,t,t),
           get_unique_name(r,-),
           is_unique_name(r),
-          drop_graph(+),
-          auto_drop_graphs/0
+          drop_graph(+)
         ]).
 /** <module> Handling of triples in query expressions.
 
@@ -417,17 +416,7 @@ drop_graph(Name) :-
 	% also make sure to update graph hierarchy
     current_reasoner_manager(ReasonerManager),
     current_reasoner_module(Reasoner),
-	sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Name).
-
-%%
-% Drop graphs on startup if requested through settings.
-% This is usually done to start with an empty "user" graph
-% when KnowRob is started.
-%
-auto_drop_graphs :-
-	\+ reasoner_setting(mongodb:read_only, true),
-	reasoner_setting(mongodb:drop_graphs, L),
-	forall(member(X,L), drop_graph(X)).
+	semweb:sw_unset_current_graph_cpp(ReasonerManager, Reasoner, Name).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
