@@ -47,7 +47,6 @@
 :- use_module(library('filesystem')).
 :- use_module(library('functional')).
 :- use_module(library('algebra')).
-:- use_module(library('url')).
 %:- use_module(library('atom')).
 
 % extensions for semantic web

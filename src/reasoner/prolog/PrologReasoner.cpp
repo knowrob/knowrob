@@ -24,6 +24,7 @@
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/URI.h"
 
 using namespace knowrob;
 
@@ -41,6 +42,7 @@ foreign_t sw_default_graph3(term_t, term_t, term_t);
 foreign_t sw_set_default_graph3(term_t, term_t, term_t);
 foreign_t sw_url_graph2(term_t, term_t);
 foreign_t sw_url_version2(term_t, term_t);
+foreign_t url_resolve2(term_t, term_t);
 // semantic web extension
 PL_extension sw_extension[] = {
         { "sw_url_graph",                       2, (pl_function_t)sw_url_graph2, 0 },
@@ -140,6 +142,8 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 		// note: the predicates are loaded into module "user"
         PL_register_foreign("knowrob_register_namespace",
                             2, (pl_function_t)pl_rdf_register_namespace2, 0);
+        PL_register_foreign("url_resolve",
+                            2, (pl_function_t) url_resolve2, 0);
 		PL_register_foreign("log_message", 2, (pl_function_t)pl_log_message2, 0);
 		PL_register_foreign("log_message", 4, (pl_function_t)pl_log_message4, 0);
 		PL_register_extensions_in_module("algebra", algebra_predicates);
@@ -720,6 +724,16 @@ foreign_t sw_url_version2(term_t t_url, term_t t_version)
     if(PL_get_atom_chars(t_url, &url)) {
         auto version = KnowledgeGraph::getVersionFromURI(url);
         return PL_unify_atom_chars(t_version, version.c_str());
+    }
+    return false;
+}
+
+foreign_t url_resolve2(term_t t_url, term_t t_resolved)
+{
+    char *url;
+    if(PL_get_atom_chars(t_url, &url)) {
+        auto resolved = URI::resolve(url);
+        return PL_unify_atom_chars(t_resolved, resolved.c_str());
     }
     return false;
 }

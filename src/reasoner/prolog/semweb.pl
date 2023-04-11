@@ -66,8 +66,6 @@
 		  rdfs_subproperty_of/2 ]).
 :- use_module(library('http/http_open'),
 		[ http_open/3 ]).
-:- use_module(library('url'),
-		[ url_resolve/2 ]).
 :- use_module(library('xsd'),
 		[ xsd_data_basetype/2 ]).
 :- use_module(library('scope'),
