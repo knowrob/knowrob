@@ -433,7 +433,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const TripleData &tripleData)
     TripleCursor cursor(tripleCollection_);
     bson_t selectorDoc = BSON_INITIALIZER;
     semweb::TripleExpression overlappingExpr(tripleData);
-    auto &swap = overlappingExpr.endTerm();
+    auto swap = overlappingExpr.endTerm();
     overlappingExpr.setEndTerm(overlappingExpr.beginTerm());
     overlappingExpr.setBeginTerm(swap);
     overlappingExpr.setBeginOperator(semweb::TripleExpression::LEQ);
