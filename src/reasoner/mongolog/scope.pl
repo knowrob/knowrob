@@ -8,7 +8,7 @@
 	  mongolog_resolve_scope/3
 	]).
 
-:- use_module(library('mongodb/client'),
+:- use_module('client',
         [ mng_strip_operator/3,
           mng_typed_value/2
         ]).

@@ -9,7 +9,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/mongodb/QueryWatch.h"
 #include "knowrob/mongodb/MongoException.h"
-#include "knowrob/mongodb/bson_pl.h"
+#include "knowrob/reasoner/mongolog/bson_pl.h"
 #include <iostream>
 #include <utility>
 // SWI Prolog

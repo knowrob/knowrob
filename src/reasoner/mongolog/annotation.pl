@@ -12,7 +12,7 @@ The following predicates are supported:
 */
 
 :- use_module(library('semweb/rdf_db'), [ rdf_meta/1 ]).
-:- use_module(library('mongodb/client'), [ mng_strip_type/3 ]).
+:- use_module('client', [ mng_strip_type/3 ]).
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 

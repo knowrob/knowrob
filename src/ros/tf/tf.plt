@@ -1,7 +1,7 @@
 :- use_module(library('rostest')).
 :- use_module(library('lang/query')).
 :- use_module(library('scope')).
-:- use_module(library('mongodb/client')).
+:- use_module(library('mongolog/client')).
 :- use_module(library('semweb/rdf_db')).
 
 :- use_module('tf').

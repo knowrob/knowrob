@@ -8,7 +8,7 @@
 
 #include "knowrob/mongodb/Cursor.h"
 #include "knowrob/mongodb/MongoException.h"
-#include "knowrob/mongodb/bson_pl.h"
+#include "knowrob/reasoner/mongolog/bson_pl.h"
 
 #include <sstream>
 #include <iostream>

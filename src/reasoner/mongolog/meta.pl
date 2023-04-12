@@ -15,8 +15,7 @@ The following predicates are supported:
 @license BSD
 */
 
-:- use_module(library('mongodb/client'),
-		[ mng_strip/4 ]).
+:- use_module('client', [ mng_strip/4 ]).
 :- use_module('mongolog').
 :- use_module('scope', [ mongolog_resolve_scope/3 ]).
 

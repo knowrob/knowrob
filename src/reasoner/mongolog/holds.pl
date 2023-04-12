@@ -8,7 +8,7 @@
 @license BSD
 */
 
-:- use_module(library('mongodb/client'),
+:- use_module('client',
 	[ mng_strip_operator/3, mng_strip_type/3 ]).
 :- use_module(library('qudt'), [ qudt_unit/4 ]).
 :- use_module(library('scope')).

@@ -26,7 +26,7 @@ The following predicates are supported:
 */
 
 :- use_module('mongolog').
-:- use_module(library('mongodb/client.pl')).
+:- use_module('client').
 
 %% Predicates that are stored in a mongo collection
 :- dynamic mongolog_predicate/6.

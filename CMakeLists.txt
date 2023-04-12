@@ -190,8 +190,8 @@ add_library(knowrob_qa SHARED
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
 		src/queries/BufferedAnswerStream.cpp
-		src/mongodb/mongo_kb.cpp
-		src/mongodb/bson_pl.cpp
+		src/reasoner/mongolog/mongo_kb.cpp
+        src/reasoner/mongolog/bson_pl.cpp
 		src/mongodb/MongoInterface.cpp
 		src/mongodb/Database.cpp
 		src/mongodb/Collection.cpp

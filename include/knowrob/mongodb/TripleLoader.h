@@ -34,6 +34,9 @@ namespace knowrob::mongo {
 
         ~TripleLoader();
 
+        /**
+         * @return the named graph into which triples are loaded
+         */
         const auto& graphName() const { return graphName_; }
 
         /**

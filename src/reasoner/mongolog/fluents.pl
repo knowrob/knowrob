@@ -25,7 +25,7 @@ filtering based on the fluent value.
 :- use_module(library('option'), [ option/3 ]).
 :- use_module(library('apply'), [ convlist/3 ]).
 :- use_module('mongolog').
-:- use_module(library('mongodb/client')).
+:- use_module('client').
 :- use_module(library('scope')).
 
 %% Predicates that are stored in a mongo collection

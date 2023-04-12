@@ -20,8 +20,7 @@ The following set of basic and special purpose predicates are supported:
 */
 
 :- use_module('mongolog').
-:- use_module(library('mongodb/client'),
-		[ mng_strip_operator/3 ]).
+:- use_module('client', [ mng_strip_operator/3 ]).
 
 %% query commands
 :- mongolog:add_command(is).

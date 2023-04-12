@@ -12,8 +12,8 @@
 // STD
 #include <iostream>
 // KnowRob
-#include <knowrob/mongodb/MongoInterface.h>
-#include <knowrob/mongodb/bson_pl.h>
+#include "knowrob/mongodb/MongoInterface.h"
+#include "knowrob/reasoner/mongolog/bson_pl.h"
 #include "knowrob/mongodb/Document.h"
 
 using namespace knowrob;

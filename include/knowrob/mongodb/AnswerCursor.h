@@ -9,10 +9,20 @@
 #include "knowrob/queries/Answer.h"
 
 namespace knowrob::mongo {
+    /**
+     * A mongo cursor tht generates Answer objects.
+     * It is assumed that all grounding of free variables are recorded
+     * in output documents in a dedicated field.
+     */
     class AnswerCursor : public Cursor {
     public:
         explicit AnswerCursor(const std::shared_ptr<Collection> &collection);
 
+        /**
+         * Pull the next answer from this cursor.
+         * @param answer the answer
+         * @return true on success, false indicates that the cursor is empty
+         */
         bool nextAnswer(const std::shared_ptr<Answer> &answer);
 
     protected:

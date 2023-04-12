@@ -6,7 +6,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/mongodb/bson_pl.h"
+#include "knowrob/reasoner/mongolog/bson_pl.h"
 #include "knowrob/mongodb/MongoException.h"
 #include <sstream>
 #include <iostream>

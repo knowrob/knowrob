@@ -41,7 +41,7 @@
 */
 
 :- use_module(library('semweb/rdf_db'), [ rdf_equal/2 ]).
-:- use_module(library('mongodb/client'),
+:- use_module('client',
         [ mng_distinct_values/4
         , mng_find/4
         , mng_get_dict/3

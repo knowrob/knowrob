@@ -21,7 +21,7 @@ The following predicates are supported:
 		[ rdf_meta/1, rdf_equal/2 ]).
 :- use_module(library('blackboard'),
 		[ current_reasoner_module/1 ]).
-:- use_module(library('mongodb/client')).
+:- use_module('client').
 :- use_module(library('mongolog/mongolog')).
 :- use_module(library('mongolog/mongolog_test')).
 :- use_module(library('semweb')).

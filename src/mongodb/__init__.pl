@@ -1,2 +1,0 @@
-
-:- use_module('client').

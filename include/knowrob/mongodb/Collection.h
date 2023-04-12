@@ -134,6 +134,9 @@ namespace knowrob::mongo {
          */
         void createIndex(const std::vector<IndexKey> &keys);
 
+        /**
+         * @return true is this collection is empty.
+         */
         bool empty();
 
     private:

@@ -75,7 +75,10 @@ namespace knowrob::mongo {
          */
         bool erase();
 
-        const auto query() const { return query_; }
+        /**
+         * @return the bson_t object associated to this cursor.
+         */
+        const auto* query() const { return query_; }
 
     private:
         std::shared_ptr<Collection> collection_;

@@ -13,7 +13,7 @@
       validate_episode(r)
     ]).
 
-:- use_module(library('mongodb/client')).
+:- use_module(library('mongolog/client')).
 :- use_module(library('scope')).
 :- use_module(library('model/DUL')).
 :- use_module(library('model/SOMA')).

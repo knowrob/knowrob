@@ -9,7 +9,7 @@
 #include <mongoc.h>
 #include <sstream>
 
-#include <knowrob/mongodb/MongoInterface.h>
+#include "knowrob/mongodb/MongoInterface.h"
 
 using namespace knowrob::mongo;
 

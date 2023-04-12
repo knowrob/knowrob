@@ -27,8 +27,7 @@ TripleLoader::TripleLoader(std::string graphName,
 }
 
 TripleLoader::~TripleLoader()
-{
-}
+= default;
 
 bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
                                            const std::string &graphName,

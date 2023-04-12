@@ -4,7 +4,6 @@
 
 #include "knowrob/mongodb/BulkOperation.h"
 #include "knowrob/mongodb/MongoException.h"
-#include "knowrob/Logger.h"
 
 using namespace knowrob::mongo;
 
