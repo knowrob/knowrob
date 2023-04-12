@@ -20,14 +20,6 @@ Vocabulary::Vocabulary()
     defineProperty(IRI_type);
     defineProperty(IRI_subPropertyOf);
     defineProperty(IRI_subClassOf);
-
-    auto it = definedProperties_.find(IRI_comment);
-    if(it == definedProperties_.end()) {
-        KB_WARN("not a defined property");
-    }
-    else if(!it->second->hasFlag(ANNOTATION_PROPERTY)) {
-        KB_WARN("not a annotation property");
-    }
 }
 
 bool Vocabulary::isDefinedClass(const std::string_view &iri)

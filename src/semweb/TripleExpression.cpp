@@ -2,7 +2,7 @@
 // Created by daniel on 07.04.23.
 //
 
-#include "TripleExpression.h"
+#include "knowrob/semweb/TripleExpression.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
 

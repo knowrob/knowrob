@@ -19,6 +19,11 @@ ImportHierarchy::ImportHierarchy()
     addDirectImport(KNOWROB_SEMWEB_TEST_GRAPH, KNOWROB_SEMWEB_DEFAULT_GRAPH);
 }
 
+bool ImportHierarchy::isCurrentGraph(const std::string_view &graphName) const
+{
+    return graphs_.count(graphName)>0;
+}
+
 void ImportHierarchy::addCurrentGraph(const std::string_view &graphName)
 {
     auto it = graphs_.find(graphName);
@@ -89,7 +94,7 @@ void ImportHierarchy::removeCurrentGraph(const std::string_view &graphName)
             gx.directImports_.erase(&ga);
             gx.imports_.erase(&ga);
             // gx.directlyImports += [ga.directImports]
-            // TODO: this is a bit questionable, probably better to not add ga'a direct imports to gx.
+            // TODO: this is a bit questionable, probably better to not add ga's direct imports to gx.
             gx.directImports_.insert(ga.directImports_.begin(), ga.directImports_.end());
         }
     }

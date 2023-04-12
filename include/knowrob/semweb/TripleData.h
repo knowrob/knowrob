@@ -18,7 +18,6 @@ namespace knowrob {
 
     /**
      * Triple string data loaded from file.
-     * Subject and object can be blank nodes.
      */
     struct TripleData {
         TripleData() : documentID(nullptr),

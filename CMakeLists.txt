@@ -124,12 +124,10 @@ add_library(knowrob_qa SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
-        src/queries/DependencyGraph.cpp
-        src/reasoner/ReasoningGraph.cpp
-		src/reasoner/Blackboard.cpp
         src/KnowledgeBase.cpp
 		src/DataSource.cpp
 		src/Statement.cpp
+		src/URI.cpp
 		src/modalities/ConfidenceValue.cpp
 		src/modalities/ConfidenceInterval.cpp
 		src/modalities/Timepoint.cpp
@@ -137,6 +135,7 @@ add_library(knowrob_qa SHARED
 		src/modalities/BeliefModality.cpp
 		src/modalities/KnowledgeModality.cpp
 		src/modalities/PastModality.cpp
+		src/modalities/ModalOperator.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
@@ -144,10 +143,6 @@ add_library(knowrob_qa SHARED
 		src/terms/Substitution.cpp
 		src/terms/Unifier.cpp
 		src/terms/Constant.cpp
-		src/modalities/ModalOperator.cpp
-		src/semweb/PrefixRegistry.cpp
-		src/semweb/KnowledgeGraph.cpp
-		src/semweb/GraphPattern.cpp
 		src/formulas/Formula.cpp
 		src/formulas/CompoundFormula.cpp
 		src/formulas/Conjunction.cpp
@@ -166,14 +161,31 @@ add_library(knowrob_qa SHARED
 		src/queries/AnswerQueue.cpp
 		src/queries/AnswerCombiner.cpp
 		src/queries/AnswerBroadcaster.cpp
+		src/queries/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
 		src/queries/QueryProcessor.cpp
 		src/queries/QueryPipeline.cpp
+		src/queries/BufferedAnswerStream.cpp
+		src/semweb/PrefixRegistry.cpp
+		src/semweb/KnowledgeGraph.cpp
+		src/semweb/GraphPattern.cpp
+		src/semweb/xsd.cpp
+		src/semweb/GraphQuery.cpp
+		src/semweb/Vocabulary.cpp
+		src/semweb/owl.cpp
+		src/semweb/rdfs.cpp
+		src/semweb/rdf.cpp
+		src/semweb/Property.cpp
+		src/semweb/Class.cpp
+        src/semweb/TripleExpression.cpp
+		src/semweb/ImportHierarchy.cpp
 		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
 		src/reasoner/IReasoner.cpp
+		src/reasoner/ReasoningGraph.cpp
+		src/reasoner/Blackboard.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
         src/reasoner/HybridReasoner.cpp
@@ -187,36 +199,25 @@ add_library(knowrob_qa SHARED
 		src/reasoner/prolog/algebra.cpp
 		src/reasoner/prolog/blackboard.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
-		src/reasoner/swrl/SWRLReasoner.cpp
-		src/reasoner/esg/ESGReasoner.cpp
-		src/queries/BufferedAnswerStream.cpp
 		src/reasoner/mongolog/mongo_kb.cpp
         src/reasoner/mongolog/bson_pl.cpp
+		src/reasoner/swrl/SWRLReasoner.cpp
+		src/reasoner/esg/ESGReasoner.cpp
 		src/mongodb/MongoInterface.cpp
 		src/mongodb/Database.cpp
 		src/mongodb/Collection.cpp
+		src/mongodb/ChangeStream.cpp
         src/mongodb/Cursor.cpp
         src/mongodb/QueryWatch.cpp
 		src/mongodb/MongoKnowledgeGraph.cpp
 		src/mongodb/BulkOperation.cpp
-		src/URI.cpp
-		src/semweb/xsd.cpp
 		src/mongodb/TripleLoader.cpp
-		src/semweb/GraphQuery.cpp
 		src/mongodb/aggregation/graph.cpp
 		src/mongodb/Pipeline.cpp
-		src/semweb/Vocabulary.cpp
 		src/mongodb/TripleCursor.cpp
-		src/semweb/owl.cpp
-		src/semweb/rdfs.cpp
-		src/semweb/rdf.cpp src/mongodb/ChangeStream.cpp
-		src/semweb/Property.cpp
-		src/semweb/Class.cpp
-		include/knowrob/semweb/TripleExpression.cpp
-		src/mongodb/aggregation/terms.cpp
-		src/mongodb/aggregation/triples.cpp
 		src/mongodb/AnswerCursor.cpp
-		src/semweb/ImportHierarchy.cpp)
+		src/mongodb/aggregation/terms.cpp
+		src/mongodb/aggregation/triples.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
