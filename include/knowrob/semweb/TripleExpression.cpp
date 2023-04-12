@@ -17,6 +17,9 @@ TripleExpression::TripleExpression(
         : subjectTerm_(subjectTerm),
           propertyTerm_(propertyTerm),
           objectTerm_(objectTerm),
+          beginTerm_(),
+          endTerm_(),
+          confidenceTerm_(),
           objectOperator_(objectOperator),
           beginOperator_(EQ),
           endOperator_(EQ),
@@ -25,12 +28,53 @@ TripleExpression::TripleExpression(
 {
 }
 
+TripleExpression::TripleExpression(const TripleData &tripleData)
+        : subjectTerm_(std::make_shared<StringTerm>(tripleData.subject)),
+          propertyTerm_(std::make_shared<StringTerm>(tripleData.predicate)),
+          beginTerm_(),
+          endTerm_(),
+          confidenceTerm_(),
+          objectOperator_(EQ),
+          beginOperator_(EQ),
+          endOperator_(EQ),
+          confidenceOperator_(EQ),
+          graphTerm_(std::make_shared<StringTerm>(tripleData.graph))
+{
+    switch(tripleData.objectType) {
+        case RDF_RESOURCE:
+        case RDF_STRING_LITERAL:
+            objectTerm_ = std::make_shared<StringTerm>(tripleData.object);
+            break;
+        case RDF_DOUBLE_LITERAL:
+            objectTerm_ = std::make_shared<DoubleTerm>(tripleData.objectDouble);
+            break;
+        case RDF_BOOLEAN_LITERAL:
+            objectTerm_ = std::make_shared<LongTerm>(tripleData.objectInteger);
+            break;
+        case RDF_INT64_LITERAL:
+            objectTerm_ = std::make_shared<Integer32Term>(tripleData.objectInteger);
+            break;
+    }
+    if(tripleData.confidence.has_value()) {
+        confidenceTerm_ = std::make_shared<DoubleTerm>(tripleData.confidence.value());
+    }
+    if(tripleData.begin.has_value()) {
+        beginTerm_ = std::make_shared<DoubleTerm>(tripleData.begin.value());
+    }
+    if(tripleData.end.has_value()) {
+        endTerm_ = std::make_shared<DoubleTerm>(tripleData.end.value());
+    }
+}
+
 TripleExpression::TripleExpression(const PredicatePtr &triplePredicate,
                                    const std::string_view &graphName)
         : objectOperator_(EQ),
           beginOperator_(EQ),
           endOperator_(EQ),
           confidenceOperator_(EQ),
+          beginTerm_(),
+          endTerm_(),
+          confidenceTerm_(),
           graphTerm_(std::make_shared<StringTerm>(graphName.data()))
 {
     if(triplePredicate->indicator()->arity()!=2) {

@@ -16,6 +16,8 @@ namespace knowrob::mongo {
 
         bool nextTriple(TripleData &tripleData);
 
+        auto tripleDocument() { return tripleDocument_; }
+
     protected:
         const bson_t *tripleDocument_;
         bson_iter_t tripleIter_;

@@ -28,7 +28,7 @@ void aggregation::appendTermQuery( //NOLINT
         BSON_APPEND_ARRAY_BEGIN(doc, "$or", &orArray);
 
         BSON_APPEND_DOCUMENT_BEGIN(&orArray, "0", &orCase1);
-        BSON_APPEND_NULL(&orCase1, "b");
+        BSON_APPEND_NULL(&orCase1, key);
         bson_append_document_end(&orArray, &orCase1);
 
         BSON_APPEND_DOCUMENT_BEGIN(&orArray, "1", &orCase2);

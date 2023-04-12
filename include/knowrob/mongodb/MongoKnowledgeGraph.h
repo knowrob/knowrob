@@ -101,6 +101,8 @@ namespace knowrob {
 
         void updateHierarchy(mongo::TripleLoader &tripleLoader);
 
+        void updateTimeInterval(const TripleData &tripleLoader);
+
         static bson_t* getTripleSelector(const semweb::TripleExpression &tripleExpression,
                                   bool isTaxonomicProperty);
 

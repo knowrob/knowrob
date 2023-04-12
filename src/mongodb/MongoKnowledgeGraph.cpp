@@ -14,6 +14,7 @@
 #include "knowrob/mongodb/TripleCursor.h"
 #include "knowrob/mongodb/aggregation/graph.h"
 #include "knowrob/mongodb/aggregation/triples.h"
+#include "knowrob/semweb/TripleExpression.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
@@ -281,6 +282,7 @@ void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
     loader.loadTriple(tripleData);
     loader.flush();
     updateHierarchy(loader);
+    updateTimeInterval(tripleData);
 }
 
 void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleData)
@@ -297,6 +299,8 @@ void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleDat
         });
     loader.flush();
     updateHierarchy(loader);
+
+    for(auto &data : tripleData) updateTimeInterval(data);
 }
 
 void MongoKnowledgeGraph::removeAllTriples(const semweb::TripleExpression &tripleExpression)
@@ -418,6 +422,66 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     for(auto &imported : loader.imports()) loadTriples(imported, format);
 
     return true;
+}
+
+void MongoKnowledgeGraph::updateTimeInterval(const TripleData &tripleData)
+{
+    if(!tripleData.begin.has_value() && !tripleData.end.has_value()) return;
+    bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate);
+
+    // filter overlapping triples
+    TripleCursor cursor(tripleCollection_);
+    bson_t selectorDoc = BSON_INITIALIZER;
+    semweb::TripleExpression overlappingExpr(tripleData);
+    auto &swap = overlappingExpr.endTerm();
+    overlappingExpr.setEndTerm(overlappingExpr.beginTerm());
+    overlappingExpr.setBeginTerm(swap);
+    overlappingExpr.setBeginOperator(semweb::TripleExpression::LEQ);
+    overlappingExpr.setEndOperator(semweb::TripleExpression::GEQ);
+    aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty);
+    cursor.filter(&selectorDoc);
+
+    // iterate overlapping triples, remember document ids and compute
+    // union of time intervals
+    TripleData overlappingTriple;
+    std::list<bson_oid_t> documentIDs;
+    std::optional<double> begin = tripleData.begin;
+    std::optional<double> end = tripleData.end;
+    while(cursor.nextTriple(overlappingTriple)) {
+        // remember the ID of overlapping documents
+        auto &oid = documentIDs.emplace_back();
+        bson_oid_init(&oid, nullptr);
+        bson_oid_copy((bson_oid_t*)overlappingTriple.documentID, &oid);
+        // compute intersection of time interval
+        if(overlappingTriple.begin.has_value()) {
+            if(begin.has_value()) begin = std::min(begin.value(), overlappingTriple.begin.value());
+            else                  begin = overlappingTriple.begin.value();
+        }
+        if(overlappingTriple.end.has_value()) {
+            if(end.has_value()) end = std::max(end.value(), overlappingTriple.end.value());
+            else                end = overlappingTriple.end.value();
+        }
+    }
+
+    if(documentIDs.size()>1) {
+        auto &firstOID = documentIDs.front();
+        // update time interval of first document ID
+        Document updateDoc(bson_new());
+        bson_t setDoc, scopeDoc, timeDoc;
+        BSON_APPEND_DOCUMENT_BEGIN(updateDoc.bson(), "$set", &setDoc); {
+            BSON_APPEND_DOCUMENT_BEGIN(&setDoc, "scope", &scopeDoc);
+            BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
+            if(begin.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", begin.value());
+            if(end.has_value())   BSON_APPEND_DOUBLE(&timeDoc, "until", end.value());
+            bson_append_document_end(&scopeDoc, &timeDoc);
+            bson_append_document_end(&setDoc, &scopeDoc);
+        }
+        bson_append_document_end(updateDoc.bson(), &setDoc);
+        tripleCollection_->update(Document(BCON_NEW("_id", BCON_OID(&firstOID))), updateDoc);
+        // remove all other documents
+        auto it = documentIDs.begin();
+        for(it++; it!=documentIDs.end(); it++) tripleCollection_->removeOne(*it);
+    }
 }
 
 void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)

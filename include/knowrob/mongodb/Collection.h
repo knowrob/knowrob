@@ -86,6 +86,12 @@ namespace knowrob::mongo {
         void removeOne(const Document &document);
 
         /**
+         * Remove a single matching document from this collection.
+         * @param oid a document oid.
+         */
+        void removeOne(const bson_oid_t &oid);
+
+        /**
          * Remove all matching JSON documents from this collection.
          * @param document a document pattern.
          */
@@ -102,7 +108,7 @@ namespace knowrob::mongo {
          * @param query a document pattern.
          * @param update the update document.
          */
-        void update(const Document &query, const Document &update);
+        void update(const Document &query, const Document &update, bool upsert=false);
 
         /**
          * Evaluate an aggregation pipeline without forwarding any resulting

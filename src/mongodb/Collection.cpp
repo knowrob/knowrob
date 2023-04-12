@@ -89,6 +89,11 @@ void Collection::removeAll(const Document &document)
     remove(document, MONGOC_REMOVE_NONE);
 }
 
+void Collection::removeOne(const bson_oid_t &oid)
+{
+    removeOne(Document(BCON_NEW("_id", BCON_OID(&oid))));
+}
+
 void Collection::removeOne(const Document &document)
 {
     remove(document, MONGOC_REMOVE_SINGLE_REMOVE);
@@ -109,12 +114,16 @@ void Collection::remove(const Document &document, mongoc_remove_flags_t flag)
 }
 
 
-void Collection::update(const Document &query, const Document &update)
+void Collection::update(const Document &query, const Document &update, bool upsert)
 {
     bson_error_t err;
+
+    int flags = UPDATE_NO_VALIDATE_FLAG;
+    if(upsert) flags |= MONGOC_UPDATE_UPSERT;
+
     if(!mongoc_collection_update(
             coll_,
-            UPDATE_NO_VALIDATE_FLAG,
+            (mongoc_update_flags_t)flags,
             query.bson(),
             update.bson(),
             nullptr,

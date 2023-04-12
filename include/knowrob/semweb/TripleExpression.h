@@ -6,6 +6,7 @@
 #define KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
 
 #include "knowrob/formulas/Predicate.h"
+#include "TripleData.h"
 
 namespace knowrob::semweb {
     /**
@@ -27,6 +28,8 @@ namespace knowrob::semweb {
 
         explicit TripleExpression(const PredicatePtr &triplePredicate,
                                   const std::string_view &graphName="*");
+
+        explicit TripleExpression(const TripleData &tripleData);
 
         bool isGround() const;
 
@@ -63,6 +66,14 @@ namespace knowrob::semweb {
         void setMinEnd(double limit);
 
         void setMaxEnd(double limit);
+
+        void setBeginOperator(OperatorType beginOperator) { beginOperator_ = beginOperator; }
+
+        void setEndOperator(OperatorType endOperator) { endOperator_ = endOperator; }
+
+        void setBeginTerm(const TermPtr &beginTerm) { beginTerm_ = beginTerm; }
+
+        void setEndTerm(const TermPtr &endTerm) { endTerm_ = endTerm; }
 
     protected:
         TermPtr subjectTerm_;
