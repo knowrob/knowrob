@@ -20,17 +20,33 @@ namespace knowrob {
      * Triple string data loaded from file.
      */
     struct TripleData {
-        TripleData() : documentID(nullptr),
-                       subject(nullptr),
-                       predicate(nullptr),
-                       object(nullptr),
-                       graph(nullptr),
-                       objectDouble(0.0),
-                       objectInteger(0),
-                       begin(),
-                       end(),
-                       confidence(),
-                       objectType(RDF_RESOURCE) {}
+        TripleData()
+                : documentID(nullptr),
+                  subject(nullptr),
+                  predicate(nullptr),
+                  object(nullptr),
+                  graph(nullptr),
+                  objectDouble(0.0),
+                  objectInteger(0),
+                  begin(),
+                  end(),
+                  confidence(),
+                  objectType(RDF_RESOURCE) {}
+        TripleData(const char* subject,
+                   const char* predicate,
+                   const char* object,
+                   const char* graph="user")
+                : documentID(nullptr),
+                  subject(subject),
+                  predicate(predicate),
+                  object(object),
+                  graph(graph),
+                  objectDouble(0.0),
+                  objectInteger(0),
+                  begin(),
+                  end(),
+                  confidence(),
+                  objectType(RDF_RESOURCE) {}
         void *documentID;
         const char* subject;
         const char *predicate;

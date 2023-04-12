@@ -39,6 +39,9 @@ namespace knowrob {
          */
         mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
 
+        mongo::AnswerCursorPtr lookupTriples(const TripleData &tripleData)
+        { return lookupTriples(semweb::TripleExpression(tripleData)); }
+
         /**
          * Lookup up a path of matching triples.
          * The lookup pipeline includes a step for each expression in the vector

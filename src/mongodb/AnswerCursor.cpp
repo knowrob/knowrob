@@ -26,8 +26,8 @@ bool AnswerCursor::nextAnswer(const std::shared_ptr<Answer> &answer)
     if(!bson_iter_find(&resultIter_, "v_VARS") ||
        !bson_iter_recurse(&resultIter_, &varIter_))
     {
-        KB_WARN("missing \"v_VARS\" field in result document.");
-        return false;
+        // assume it was a grounded query, then no v_VARS field is present
+        return true;
     }
 
     while(bson_iter_next (&varIter_)) {

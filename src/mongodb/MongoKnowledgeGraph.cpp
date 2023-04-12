@@ -19,6 +19,7 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/queries/QueryParser.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
@@ -630,59 +631,89 @@ protected:
         kg_->createSearchIndices();
     }
     // void TearDown() override {}
+    template <class T>
+    std::list<std::shared_ptr<Answer>> lookup(const T &data) {
+        auto cursor = kg_->lookupTriples(data);
+        std::list<std::shared_ptr<Answer>> out;
+        while(1) {
+            std::shared_ptr<Answer> next = std::make_shared<Answer>();
+            if(cursor->nextAnswer(next)) out.push_back(next);
+            else break;
+        }
+        return out;
+    }
+    static semweb::TripleExpression parse(const std::string &str) {
+        auto p = QueryParser::parsePredicate(str);
+        return { p->arguments()[0], p->arguments()[1], p->arguments()[2] };
+    }
 };
 std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 
+TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
+{
+    TripleData data_abc("a","b","c");
+    EXPECT_NO_THROW(kg_->assertTriple(data_abc));
+    EXPECT_EQ(lookup(data_abc).size(), 1);
+    EXPECT_EQ(lookup(parse("triple(x,b,c)")).size(), 0);
+    EXPECT_EQ(lookup(parse("triple(a,x,c)")).size(), 0);
+    EXPECT_EQ(lookup(parse("triple(a,b,x)")).size(), 0);
+    EXPECT_EQ(lookup(parse("triple(A,b,c)")).size(), 1);
+    EXPECT_EQ(lookup(parse("triple(A,x,c)")).size(), 0);
+    EXPECT_EQ(lookup(parse("triple(a,B,c)")).size(), 1);
+    EXPECT_EQ(lookup(parse("triple(x,B,c)")).size(), 0);
+    EXPECT_EQ(lookup(parse("triple(a,b,C)")).size(), 1);
+    EXPECT_EQ(lookup(parse("triple(x,b,C)")).size(), 0);
+}
+
 TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
-    EXPECT_FALSE(kg_->getCurrentGraphVersion("memory").has_value());
-    EXPECT_NO_THROW(kg_->loadTriples("owl/test/memory.owl", knowrob::RDF_XML));
-    EXPECT_TRUE(kg_->getCurrentGraphVersion("memory").has_value());
+    EXPECT_FALSE(kg_->getCurrentGraphVersion("swrl").has_value());
+    EXPECT_NO_THROW(kg_->loadTriples("owl/test/swrl.owl", knowrob::RDF_XML));
+    EXPECT_TRUE(kg_->getCurrentGraphVersion("swrl").has_value());
+
+    EXPECT_FALSE(kg_->getCurrentGraphVersion("datatype_test").has_value());
+    EXPECT_NO_THROW(kg_->loadTriples("owl/test/datatype_test.owl", knowrob::RDF_XML));
+    EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
 TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 {
-    semweb::TripleExpression tripleExpression(
-        std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#Substance_0"),
-        std::make_shared<Variable>("P"),
-        std::make_shared<Variable>("O"),
-        knowrob::semweb::TripleExpression::EQ);
-    auto cursor = kg_->lookupTriples(tripleExpression);
-    const bson_t *resultDoc;
-
-    auto queryStr = bson_as_json(cursor->query(), nullptr);
-    if(queryStr) KB_INFO("query: {}", queryStr);
-    else         KB_INFO("query is null!");
-    bson_free (queryStr);
-
-    auto resultAnswer = std::make_shared<Answer>();
-    while(cursor->nextAnswer(resultAnswer)) {
-        KB_INFO("result: {}", *resultAnswer);
-        resultAnswer = std::make_shared<Answer>();
-    }
+    EXPECT_EQ(lookup(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#TestThing"
+    )).size(), 1);
 }
 
-TEST_F(MongoKnowledgeGraphTest, PathQuery)
+TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
 {
-    semweb::TripleExpression tripleExpression1(
-            std::make_shared<StringTerm>("http://knowrob.org/kb/mem-test.owl#Substance_0"),
-            std::make_shared<Variable>("P"),
-            std::make_shared<Variable>("O"));
-    semweb::TripleExpression tripleExpression2(
-            std::make_shared<Variable>("O"),
-            std::make_shared<StringTerm>("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-            std::make_shared<Variable>("T"));
-    auto cursor = kg_->lookupTriplePaths({tripleExpression1, tripleExpression2});
-    const bson_t *resultDoc;
+    EXPECT_NO_THROW(kg_->removeAllTriples(semweb::TripleExpression(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#TestThing"
+    ))));
+    EXPECT_EQ(lookup(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#TestThing"
+    )).size(), 0);
+}
 
-    auto queryStr = bson_as_json(cursor->query(), nullptr);
-    if(queryStr) KB_INFO("query: {}", queryStr);
-    else         KB_INFO("query is null!");
-    bson_free (queryStr);
-
-    auto resultAnswer = std::make_shared<Answer>();
-    while(cursor->nextAnswer(resultAnswer)) {
-        KB_INFO("result: {}", *resultAnswer);
-        resultAnswer = std::make_shared<Answer>();
-    }
+TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
+{
+    EXPECT_NO_THROW(kg_->assertTriple(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#TestThing"
+    )));
+    EXPECT_EQ(lookup(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#TestThing"
+    )).size(), 1);
+    EXPECT_EQ(lookup(TripleData(
+        "http://knowrob.org/kb/swrl_test#Adult",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://knowrob.org/kb/swrl_test#Car"
+    )).size(), 0);
 }
