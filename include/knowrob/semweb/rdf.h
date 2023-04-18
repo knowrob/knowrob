@@ -8,8 +8,11 @@
 #include "string"
 
 namespace knowrob::semweb {
-    const std::string IRI_type      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-    const std::string IRI_Property  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property";
+    namespace rdf {
+        constexpr std::string_view prefix    = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        constexpr std::string_view type      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        constexpr std::string_view Property  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property";
+    }
 
     /**
      * @param iri the IRI of a RDF resource

@@ -39,6 +39,7 @@
 
 using namespace knowrob;
 using namespace knowrob::mongo;
+using namespace knowrob::semweb;
 
 // AGGREGATION PIPELINES
 bson_t* newPipelineImportHierarchy(const char *collection);
@@ -143,7 +144,7 @@ void MongoKnowledgeGraph::initialize()
         // iterate over all rdf::type assertions
         TripleCursor cursor(tripleCollection_);
         cursor.filter(Document(BCON_NEW(
-            "p", BCON_UTF8(semweb::IRI_type.c_str()))).bson());
+            "p", BCON_UTF8(rdf::type.data()))).bson());
         while(cursor.nextTriple(tripleData))
             vocabulary_->addResourceType(tripleData.subject, tripleData.object);
     }
@@ -151,7 +152,7 @@ void MongoKnowledgeGraph::initialize()
         // iterate over all rdfs::subClassOf assertions
         TripleCursor cursor(tripleCollection_);
         cursor.filter(Document(BCON_NEW(
-            "p", BCON_UTF8(semweb::IRI_subClassOf.c_str()))).bson());
+            "p", BCON_UTF8(rdfs::subClassOf.data()))).bson());
         while(cursor.nextTriple(tripleData))
             vocabulary_->addSubClassOf(tripleData.subject, tripleData.object);
     }
@@ -159,7 +160,7 @@ void MongoKnowledgeGraph::initialize()
         // iterate over all rdfs::subPropertyOf assertions
         TripleCursor cursor(tripleCollection_);
         cursor.filter(Document(BCON_NEW(
-            "p", BCON_UTF8(semweb::IRI_subPropertyOf.c_str()))).bson());
+            "p", BCON_UTF8(rdfs::subPropertyOf.data()))).bson());
         while(cursor.nextTriple(tripleData))
             vocabulary_->addSubPropertyOf(tripleData.subject, tripleData.object);
     }
@@ -167,7 +168,7 @@ void MongoKnowledgeGraph::initialize()
         // iterate over all owl::inverseOf assertions
         TripleCursor cursor(tripleCollection_);
         cursor.filter(Document(BCON_NEW(
-            "p", BCON_UTF8(semweb::IRI_inverseOf.c_str()))).bson());
+            "p", BCON_UTF8(owl::inverseOf.data()))).bson());
         while(cursor.nextTriple(tripleData))
             vocabulary_->setInverseOf(tripleData.subject, tripleData.object);
     }
@@ -510,10 +511,10 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
         aggregation::Pipeline pipeline(&pipelineArray);
         aggregation::updateHierarchyO(pipeline,
-                        tripleCollection_->name(),
-                        semweb::IRI_subClassOf,
-                        assertion.first->iri(),
-                        assertion.second->iri());
+                                      tripleCollection_->name(),
+                                      rdfs::subClassOf,
+                                      assertion.first->iri(),
+                                      assertion.second->iri());
         bson_append_array_end(&pipelineDoc, &pipelineArray);
 
         oneCollection_->evalAggregation(&pipelineDoc);
@@ -532,10 +533,10 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
         aggregation::Pipeline pipeline(&pipelineArray);
         aggregation::updateHierarchyO(pipeline,
-                        tripleCollection_->name(),
-                        semweb::IRI_subPropertyOf,
-                        assertion.first->iri(),
-                        assertion.second->iri());
+                                      tripleCollection_->name(),
+                                      rdfs::subPropertyOf,
+                                      assertion.first->iri(),
+                                      assertion.second->iri());
         bson_append_array_end(&pipelineDoc, &pipelineArray);
 
         oneCollection_->evalAggregation(&pipelineDoc);
@@ -552,9 +553,9 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
         BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
         aggregation::Pipeline pipeline(&pipelineArray);
         aggregation::updateHierarchyP(pipeline,
-                        tripleCollection_->name(),
-                        semweb::IRI_subPropertyOf,
-                        newProperty);
+                                      tripleCollection_->name(),
+                                      rdfs::subPropertyOf,
+                                      newProperty);
         bson_append_array_end(&pipelineDoc, &pipelineArray);
 
         oneCollection_->evalAggregation(&pipelineDoc);
@@ -593,7 +594,7 @@ bson_t* newPipelineImportHierarchy(const char *collection)
        		"let", "{", "x", BCON_UTF8("$graph"), "}",
        		"pipeline", "[",
                 "{", "$match", "{",
-       				"p", BCON_UTF8(semweb::IRI_imports.c_str()),
+       				"p", BCON_UTF8(owl::imports.data()),
        				"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
        			"}", "}",
        			"{", "$project", "{", "o", BCON_INT32(1), "}", "}",
@@ -635,7 +636,7 @@ protected:
     std::list<std::shared_ptr<Answer>> lookup(const T &data) {
         auto cursor = kg_->lookupTriples(data);
         std::list<std::shared_ptr<Answer>> out;
-        while(1) {
+        while(true) {
             std::shared_ptr<Answer> next = std::make_shared<Answer>();
             if(cursor->nextAnswer(next)) out.push_back(next);
             else break;
@@ -676,44 +677,38 @@ TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
     EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
+#define swrl_test_ "http://knowrob.org/kb/swrl_test#"
+
 TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 {
-    EXPECT_EQ(lookup(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#TestThing"
-    )).size(), 1);
+    TripleData triple(
+        swrl_test_"Adult",
+        rdfs::subClassOf.data(),
+        swrl_test_"TestThing");
+    EXPECT_EQ(lookup(triple).size(), 1);
 }
 
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
 {
-    EXPECT_NO_THROW(kg_->removeAllTriples(semweb::TripleExpression(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#TestThing"
-    ))));
-    EXPECT_EQ(lookup(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#TestThing"
-    )).size(), 0);
+    TripleData triple(
+        swrl_test_"Adult",
+        rdfs::subClassOf.data(),
+        swrl_test_"TestThing");
+    EXPECT_NO_THROW(kg_->removeAllTriples(semweb::TripleExpression(triple)));
+    EXPECT_EQ(lookup(triple).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
 {
-    EXPECT_NO_THROW(kg_->assertTriple(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#TestThing"
-    )));
-    EXPECT_EQ(lookup(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#TestThing"
-    )).size(), 1);
-    EXPECT_EQ(lookup(TripleData(
-        "http://knowrob.org/kb/swrl_test#Adult",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://knowrob.org/kb/swrl_test#Car"
-    )).size(), 0);
+    TripleData existing(
+        swrl_test_"Adult",
+        rdfs::subClassOf.data(),
+        swrl_test_"TestThing");
+    TripleData not_existing(
+        swrl_test_"Adult",
+        rdfs::subClassOf.data(),
+        swrl_test_"Car");
+    EXPECT_NO_THROW(kg_->assertTriple(existing));
+    EXPECT_EQ(lookup(existing).size(), 1);
+    EXPECT_EQ(lookup(not_existing).size(), 0);
 }

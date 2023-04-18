@@ -6,9 +6,9 @@
 
 namespace knowrob::semweb {
     bool isSubClassOfIRI(std::string_view iri)
-    { return iri == IRI_subClassOf; }
+    { return iri == rdfs::subClassOf; }
 
     bool isSubPropertyOfIRI(std::string_view iri)
-    { return iri == IRI_subPropertyOf; }
+    { return iri == rdfs::subPropertyOf; }
 
 } // knowrob::semweb

@@ -12,14 +12,14 @@ using namespace knowrob::semweb;
 
 Vocabulary::Vocabulary()
 {
-    setPropertyFlag(IRI_comment, ANNOTATION_PROPERTY);
-    setPropertyFlag(IRI_seeAlso, ANNOTATION_PROPERTY);
-    setPropertyFlag(IRI_label, ANNOTATION_PROPERTY);
-    setPropertyFlag(IRI_versionInfo, ANNOTATION_PROPERTY);
+    setPropertyFlag(rdfs::comment, ANNOTATION_PROPERTY);
+    setPropertyFlag(rdfs::seeAlso, ANNOTATION_PROPERTY);
+    setPropertyFlag(rdfs::label, ANNOTATION_PROPERTY);
+    setPropertyFlag(owl::versionInfo, ANNOTATION_PROPERTY);
 
-    defineProperty(IRI_type);
-    defineProperty(IRI_subPropertyOf);
-    defineProperty(IRI_subClassOf);
+    defineProperty(rdf::type);
+    defineProperty(rdfs::subPropertyOf);
+    defineProperty(rdfs::subClassOf);
 }
 
 bool Vocabulary::isDefinedClass(const std::string_view &iri)

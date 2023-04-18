@@ -8,12 +8,14 @@
 #include "string"
 
 namespace knowrob::semweb {
-    const std::string IRI_subClassOf        = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
-    const std::string IRI_subPropertyOf     = "http://www.w3.org/2000/01/rdf-schema#subPropertyOf";
-
-    const std::string IRI_comment           = "http://www.w3.org/2000/01/rdf-schema#comment";
-    const std::string IRI_seeAlso           = "http://www.w3.org/2000/01/rdf-schema#seeAlso";
-    const std::string IRI_label             = "http://www.w3.org/2000/01/rdf-schema#label";
+    namespace rdfs {
+        constexpr std::string_view prefix            = "http://www.w3.org/2000/01/rdf-schema#";
+        constexpr std::string_view subClassOf        = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+        constexpr std::string_view subPropertyOf     = "http://www.w3.org/2000/01/rdf-schema#subPropertyOf";
+        constexpr std::string_view comment           = "http://www.w3.org/2000/01/rdf-schema#comment";
+        constexpr std::string_view seeAlso           = "http://www.w3.org/2000/01/rdf-schema#seeAlso";
+        constexpr std::string_view label             = "http://www.w3.org/2000/01/rdf-schema#label";
+    }
 
     /**
      * @param iri the IRI of a RDF resource

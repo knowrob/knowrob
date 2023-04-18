@@ -6,9 +6,9 @@
 
 namespace knowrob::semweb {
     bool isTypeIRI(std::string_view iri)
-    { return iri == IRI_type; }
+    { return iri == rdf::type; }
 
     bool isPropertyIRI(std::string_view iri)
-    { return iri == IRI_Property; }
+    { return iri == rdf::Property; }
 
 } // knowrob::semweb

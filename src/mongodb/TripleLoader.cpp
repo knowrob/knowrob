@@ -11,11 +11,12 @@
 #include "knowrob/mongodb/Document.h"
 
 using namespace knowrob::mongo;
+using namespace knowrob::semweb;
 
 TripleLoader::TripleLoader(std::string graphName,
                            const std::shared_ptr<Collection> &tripleCollection,
                            const std::shared_ptr<Collection> &oneCollection,
-                           const semweb::VocabularyPtr &vocabulary,
+                           const VocabularyPtr &vocabulary,
                            const uint32_t batchSize)
         : graphName_(std::move(graphName)),
           tripleCollection_(tripleCollection),
@@ -158,7 +159,7 @@ void TripleLoader::loadTriple(const TripleData &tripleData)
         p->setInverse(q);
         q->setInverse(p);
     }
-    else if(semweb::IRI_imports == tripleData.predicate) {
+    else if(owl::imports == tripleData.predicate) {
         // TODO: maybe better for less hierarchy updates to load right away?
         imports_.emplace_back(tripleData.object);
     }

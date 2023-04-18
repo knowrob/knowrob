@@ -6,26 +6,26 @@
 
 namespace knowrob::semweb {
     bool isClassIRI(std::string_view iri)
-    { return iri == IRI_Class; }
+    { return iri == owl::Class; }
 
     bool isInverseOfIRI(std::string_view iri)
-    { return iri == IRI_inverseOf; }
+    { return iri == owl::inverseOf; }
 
     bool isObjectPropertyIRI(std::string_view iri)
-    { return iri == IRI_ObjectProperty; }
+    { return iri == owl::ObjectProperty; }
 
     bool isDatatypePropertyIRI(std::string_view iri)
-    { return iri == IRI_DatatypeProperty; }
+    { return iri == owl::DatatypeProperty; }
 
     bool isAnnotationPropertyIRI(std::string_view iri)
-    { return iri == IRI_AnnotationProperty; }
+    { return iri == owl::AnnotationProperty; }
 
     bool isTransitivePropertyIRI(std::string_view iri)
-    { return iri == IRI_TransitiveProperty; }
+    { return iri == owl::TransitiveProperty; }
 
     bool isSymmetricPropertyIRI(std::string_view iri)
-    { return iri == IRI_SymmetricProperty; }
+    { return iri == owl::SymmetricProperty; }
 
     bool isReflexivePropertyIRI(std::string_view iri)
-    { return iri == IRI_ReflexiveProperty; }
+    { return iri == owl::ReflexiveProperty; }
 } // knowrob::semweb
