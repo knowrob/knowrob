@@ -238,7 +238,7 @@ install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
 if (catkin_FOUND)
 	# install into ROS workspace
-	add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	#add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -252,8 +252,8 @@ if (catkin_FOUND)
 	target_link_libraries(tf_knowrob
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
-		${catkin_LIBRARIES}
-		mongo_kb)
+		${catkin_LIBRARIES})
+		#mongo_kb
 	add_dependencies(tf_knowrob
 		${${PROJECT_NAME}_EXPORTED_TARGETS}
 		${catkin_EXPORTED_TARGETS})
