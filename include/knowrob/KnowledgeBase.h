@@ -6,25 +6,30 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_KNOWLEDGEBASE_H
-#define KNOWROB_KNOWLEDGEBASE_H
+#ifndef KNOWROB_KNOWLEDGE_BASE_H
+#define KNOWROB_KNOWLEDGE_BASE_H
 
 #include <memory>
-// BOOST
 #include <boost/property_tree/ptree.hpp>
-// KnowRob
 #include "knowrob/reasoner/ReasonerManager.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
 #include "Statement.h"
-#include <knowrob/reasoner/prolog/PrologReasoner.h>
+#include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/queries/MultiModalPipeline.h"
+#include "knowrob/queries/QueryEngine.h"
 
 namespace knowrob {
-	class KnowledgeBase {
+	class KnowledgeBase : public QueryEngine {
 	public:
 		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
-		std::shared_ptr<const Query> parseQuery(const std::string &queryString);
-
-		void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
+        /**
+         * Each KnowledgeBase uses a central knowledge graph that represents
+         * different characteristics of agents, task they execute and environments
+         * in which tasks are executed.
+         * @return a knowledge graph.
+         */
+        const auto& knowledgeGraph() const { return knowledgeGraph_; }
 
         /**
          * Project a statement into the extensional database (EDB) where factual
@@ -47,11 +52,31 @@ namespace knowrob {
          */
         bool projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID="*");
 
-        int callPrologDirect(const std::string &queryString);
+        // Override QueryEngine
+        BufferedAnswersPtr submitQuery(const FormulaPtr &query, int queryFlags) override;
+
+        // Override QueryEngine
+        BufferedAnswersPtr submitQuery(const std::vector<LiteralPtr> &literal,
+                                       const ModalityLabelPtr &label,
+                                       int queryFlags) override;
+
+        // Override QueryEngine
+        BufferedAnswersPtr submitQuery(const LiteralPtr &query, int queryFlags) override;
+
+        // Override QueryEngine
+        BufferedAnswersPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) override;
+
+        /**
+         * @param query
+         * @param handler
+         * @deprecated
+         */
+        void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-		std::shared_ptr<PrologReasoner> prologReasoner_;
+        std::shared_ptr<KnowledgeGraph> knowledgeGraph_;
+        std::list<MultiModalPipeline> pipelines_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};
@@ -59,4 +84,4 @@ namespace knowrob {
     using KnowledgeBasePtr = std::shared_ptr<KnowledgeBase>;
 }
 
-#endif //KNOWROB_KNOWLEDGEBASE_H
+#endif //KNOWROB_KNOWLEDGE_BASE_H

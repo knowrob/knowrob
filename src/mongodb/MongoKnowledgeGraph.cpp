@@ -359,7 +359,7 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::vector<
     //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
-BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
+BufferedAnswersPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
 {
     // TODO: masterplan:
     //  - use a worker thread to pull from the cursor and push into stream,
@@ -373,7 +373,7 @@ BufferedAnswerStreamPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &qu
     return {};
 }
 
-BufferedAnswerStreamPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
+BufferedAnswersPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
 {
     // TODO
     return {};

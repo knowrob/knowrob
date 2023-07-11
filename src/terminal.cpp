@@ -25,6 +25,7 @@
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
 #include "knowrob/formulas/Predicate.h"
+#include "knowrob/queries/QueryParser.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -117,10 +118,10 @@ class HybridQATerminal : public QueryResultHandler {
 public:
 	explicit HybridQATerminal(const boost::property_tree::ptree &config)
 	: has_stop_request_(false),
-	  cursor_(0),
-	  numSolutions_(0),
-	  hybridQA_(config),
-	  historyFile_("history.txt")
+      cursor_(0),
+      numSolutions_(0),
+      kb_(config),
+      historyFile_("history.txt")
 	{
 		history_.load(historyFile_);
 	}
@@ -153,7 +154,8 @@ public:
 	void runQuery(const std::string &queryString) {
 		try {
 			// parse query
-			auto query = hybridQA_.parseQuery(queryString);
+			auto phi = QueryParser::parse(queryString);
+			auto query = std::make_shared<Query>(phi);
 
             if(query->formula()->type() == FormulaType::PREDICATE) {
                 // special handling for some predicates
@@ -180,7 +182,7 @@ public:
     void runQuery(const std::shared_ptr<const Query> &query) {
         // evaluate query in hybrid QA system
         numSolutions_ = 0;
-        hybridQA_.runQuery(query, *this);
+        kb_.runQuery(query, *this);
         if(numSolutions_ == 0) {
             std::cout << "no." << std::endl;
         }
@@ -191,7 +193,7 @@ public:
             auto &arg = p->arguments()[0];
             if(arg->type() == TermType::PREDICATE) {
                 auto arg_p = std::static_pointer_cast<Predicate>(arg);
-                hybridQA_.projectIntoEDB(Statement(arg_p));
+                kb_.projectIntoEDB(Statement(arg_p));
             }
             else {
                 KB_WARN("the argument of project is not a predicate in '{}'", *p);
@@ -357,7 +359,7 @@ public:
 	}
 
 protected:
-	KnowledgeBase hybridQA_;
+	KnowledgeBase kb_;
 	std::atomic<bool> has_stop_request_;
 	int numSolutions_;
 	uint32_t cursor_;

@@ -7,21 +7,25 @@
 
 #include "Answer.h"
 #include "AnswerQueue.h"
-#include "BufferedAnswerStream.h"
+#include "BufferedAnswers.h"
 #include "AnswerBroadcaster.h"
-#include "knowrob/KnowledgeBase.h"
 #include "DependencyGraph.h"
+#include "QueryEngine.h"
 
 namespace knowrob {
     /**
      * A step within a query pipeline.
      */
-    class QueryPipelineStage : public AnswerBroadcaster {
+    class ModalPipelineStage : public AnswerBroadcaster {
     public:
-        QueryPipelineStage(const std::list<LiteralPtr> &literals,
-                           const ModalityLabelPtr &label={});
+        explicit ModalPipelineStage(const std::list<LiteralPtr> &literals,
+                                    const ModalityLabelPtr &label={});
 
-        ~QueryPipelineStage();
+        ~ModalPipelineStage();
+
+        void setQueryEngine(QueryEngine *queryEngine);
+
+        void setQueryFlags(int flags);
 
         /**
          * Request the stage to stop any active processes.
@@ -47,40 +51,54 @@ namespace knowrob {
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> hasStopRequest_;
 
+        QueryEngine *queryEngine_;
+        int queryFlags_;
+        std::list<BufferedAnswersPtr> graphQueries_;
+
         void push(const AnswerPtr &msg) override;
-        std::shared_ptr<BufferedAnswerStream> submitQuery();
-        void handleAnswer(const AnswerPtr &answer);
+
+        static AnswerPtr transformAnswer(const AnswerPtr &graphQueryAnswer, const AnswerPtr &partialResult);
+
+        void pushTransformed(const AnswerPtr &transformedAnswer,
+                             std::list<BufferedAnswersPtr>::iterator graphQueryIterator);
 
         friend class QueryProcessor;
+        friend class MultiModalPipeline;
     };
 
-    using QueryPipelineStagePtr = std::shared_ptr<QueryPipelineStage>;
+    using QueryPipelineStagePtr = std::shared_ptr<ModalPipelineStage>;
     // forward declaration of internal data structure
     class QueryPipelineNode;
 
     /**
      * A pipeline where stages generate partial results to an input query.
      */
-    class QueryPipeline {
+    class MultiModalPipeline {
     public:
-        explicit QueryPipeline(const std::shared_ptr<AnswerQueue> &outputQueue={});
+        explicit MultiModalPipeline(const BufferedAnswersPtr &outputStream={});
 
-        const std::shared_ptr<AnswerQueue>& outputQueue() const { return outputQueue_; }
+        void setQueryEngine(QueryEngine *queryEngine);
 
-        const std::list<QueryPipelineStagePtr>& stages() const { return stages_; }
+        void setQueryFlags(int flags);
+
+        const auto& outputQueue() const { return outputStream_; }
+
+        const auto& stages() const { return stages_; }
 
         auto numStages() const { return stages_.size(); }
 
-        void add(const std::list<DependencyNodePtr> &dependencyGroup);
+        void addModalGroup(const std::list<DependencyNodePtr> &dependencyGroup);
 
         void run();
 
     protected:
-        std::shared_ptr<AnswerQueue> outputQueue_;
+        QueryEngine *queryEngine_;
+        BufferedAnswersPtr outputStream_;
         std::shared_ptr<AnswerBroadcaster> outBroadcaster_;
         std::shared_ptr<AnswerBroadcaster> inputStream_;
         std::shared_ptr<AnswerStream::Channel> inputChannel_;
         std::list<QueryPipelineStagePtr> stages_;
+        int queryFlags_;
 
         void generate(const std::shared_ptr<QueryPipelineNode> &node_,
                       const std::shared_ptr<AnswerBroadcaster> &qnInput,

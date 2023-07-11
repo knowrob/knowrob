@@ -579,12 +579,12 @@ sw_url_register_ns(URL, Opts) :-
 	).
 
 %%
-sw_url_stream(URL, QueryPipelineStage) :-
+sw_url_stream(URL, ModalPipelineStage) :-
 	sub_string(URL,0,4,_,'http'),!,
-	http_open(URL, QueryPipelineStage, []).
+	http_open(URL, ModalPipelineStage, []).
 
-sw_url_stream(URL, QueryPipelineStage) :-
-    open(URL, read, QueryPipelineStage).
+sw_url_stream(URL, ModalPipelineStage) :-
+    open(URL, read, ModalPipelineStage).
 
 %%
 %
@@ -595,9 +595,9 @@ sw_url_read(URL, Opts) :-
 	rdf_equal(rdf:'type',RDF_Type),
 	% load RDF data and ookup ontology URL
 	setup_call_cleanup(
-	    sw_url_stream(URL, QueryPipelineStage),
-	    load_rdf(QueryPipelineStage, Triples, [blank_nodes(noshare)]),
-	    close(QueryPipelineStage)
+	    sw_url_stream(URL, ModalPipelineStage),
+	    load_rdf(ModalPipelineStage, Triples, [blank_nodes(noshare)]),
+	    close(ModalPipelineStage)
 	),
 	% get AssertedURL
 	(	member(rdf(AssertedURL,RDF_Type,OWL_Ontology), Triples) -> true
@@ -745,9 +745,9 @@ load_rdf_xml1(URL, ParentGraph) :-
 	sw_graph_include(ParentGraph, OntologyGraph),
 	% load RDF data
 	setup_call_cleanup(
-	    sw_url_stream(Resolved, QueryPipelineStage),
-	    rdf_load(QueryPipelineStage, [graph(OntologyGraph), silent(true)]),
-	    close(QueryPipelineStage)
+	    sw_url_stream(Resolved, ModalPipelineStage),
+	    rdf_load(ModalPipelineStage, [graph(OntologyGraph), silent(true)]),
+	    close(ModalPipelineStage)
 	),
 	% remember reasoner to graph association
 	current_reasoner_module(Reasoner),
@@ -779,17 +779,17 @@ load_rdf_xml1(URL, ParentGraph) :-
 % @param FilePath - Path to the json file
 %
 load_json_rdf(FilePath) :-
-	open(FilePath,read,QueryPipelineStage),
-	read_data(QueryPipelineStage,_Triples),
-	close(QueryPipelineStage).
+	open(FilePath,read,ModalPipelineStage),
+	read_data(ModalPipelineStage,_Triples),
+	close(ModalPipelineStage).
 
-read_data(QueryPipelineStage,[]):-
-	at_end_of_stream(QueryPipelineStage).
+read_data(ModalPipelineStage,[]):-
+	at_end_of_stream(ModalPipelineStage).
 
-read_data(QueryPipelineStage,[TriplesDict | Rest]):-
-	json:json_read_dict(QueryPipelineStage, TriplesDict),
+read_data(ModalPipelineStage,[TriplesDict | Rest]):-
+	json:json_read_dict(ModalPipelineStage, TriplesDict),
 	assert_triple_data(TriplesDict),
-	read_data(QueryPipelineStage,Rest).
+	read_data(ModalPipelineStage,Rest).
 
 assert_triple_data(Triples) :-
 	is_dict(Triples),!,

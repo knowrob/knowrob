@@ -5,12 +5,13 @@
 #include <gtest/gtest.h>
 
 #include "knowrob/Logger.h"
-#include "knowrob/queries/QueryPipeline.h"
+#include "knowrob/queries/MultiModalPipeline.h"
 #include "knowrob/queries/AnswerCombiner.h"
 #include "knowrob/queries/DependencyGraph.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/modalities/KnowledgeModality.h"
+#include "knowrob/queries/AnswerTransformer.h"
 
 using namespace knowrob;
 
@@ -48,109 +49,35 @@ namespace knowrob {
 }
 
 
-QueryPipelineStage::QueryPipelineStage(const std::list<LiteralPtr> &literals,
-                                       const ModalityLabelPtr &label)
-        : AnswerBroadcaster(),
-          literals_(literals),
-          label_(label),
-          isQueryOpened_(true),
-          hasStopRequest_(false)
-{
-}
-
-QueryPipelineStage::~QueryPipelineStage()
-{
-    stop();
-}
-
-void QueryPipelineStage::stop()
-{
-    // TODO: how can the graphQueryEngine_ be notified about the stop request?
-    hasStopRequest_ = true;
-    close();
-}
-
-std::shared_ptr<BufferedAnswerStream> QueryPipelineStage::submitQuery()
-{
-    // TODO: call some component to start a graph query here.
-    //       best to create some interface dedicated just for the graph queries
-    //       that can be implemented in different ways.
-    // the parameters we have here are: std::list<LiteralPtr>, ModalityLabelPtr
-    //return graphQueryEngine_->submitQuery(literals_, label_);
-    return {};
-}
-
-void QueryPipelineStage::push(const AnswerPtr &partialResult)
-{
-    if(AnswerStream::isEOS(partialResult)) {
-        if(isQueryOpened()) {
-            isQueryOpened_ = false;
-        }
-        // TODO eos need to be propagated? no not directly only if immediate stop is requested.
-        //      else only send eos once done with all graph queries plus eos received as input.
-    }
-    else if(!isQueryOpened()) {
-        KB_WARN("ignoring attempt to write to a closed stream.");
-    }
-    else {
-        // compute dependencies
-        DependencyGraph dg;
-        for(auto &literal : literals_) {
-            dg.insert(literal);
-        }
-
-        // iterate over dependency groups
-        for(auto &literalGroup : dg) {
-            std::vector<LiteralPtr> literalInstances(literalGroup.member_.size());
-
-            // apply the substitution mapping
-            unsigned long nextInstance=0;
-            if(partialResult->substitution()->empty()) {
-                for(auto &literalNode : literalGroup.member_) {
-                    auto &literal = ((LiteralDependencyNode*)literalNode.get())->literal();
-                    literalInstances[nextInstance++] = literal;
-                }
-            }
-            else {
-                for(auto &literalNode : literalGroup.member_) {
-                    auto &literal = ((LiteralDependencyNode*)literalNode.get())->literal();
-                    literalInstances[nextInstance++] = literal->applySubstitution(*partialResult->substitution());
-                }
-            }
-
-            auto queryAnswers = submitQuery();
-            // TODO: msgs coming from queryResultStream need to be combined with partialResult before
-            //       being published on outChan_!
-            //       - could be done via a combiner node without unification that generates all permutations
-            //         which is unproblematic in this case
-            //queryResultStream->addSubscriber(outChan_);
-        }
-    }
-}
-
-void QueryPipelineStage::handleAnswer(const AnswerPtr &answer)
-{
-    pushToBroadcast(answer);
-}
-
-
-QueryPipeline::QueryPipeline(const std::shared_ptr<AnswerQueue> &outputQueue)
-        : outputQueue_(outputQueue ? outputQueue : std::make_shared<AnswerQueue>())
+MultiModalPipeline::MultiModalPipeline(const BufferedAnswersPtr &outputStream)
+        : queryEngine_(nullptr),
+          queryFlags_((int)QueryFlag::ALL_SOLUTIONS),
+          outputStream_(outputStream ? outputStream : std::make_shared<BufferedAnswers>())
 {
     inputStream_ = std::make_shared<AnswerBroadcaster>();
     inputChannel_ = AnswerStream::Channel::create(inputStream_);
     // TODO: could use a simpler variant that does not use unification!
     outBroadcaster_ = std::make_shared<AnswerCombiner>();
     // feed broadcast into queue
-    outBroadcaster_ >> outputQueue_;
+    outBroadcaster_ >> outputStream_;
 }
 
-void QueryPipeline::add(const std::list<DependencyNodePtr> &dependencyGroup)
+void MultiModalPipeline::setQueryFlags(int queryFlags)
+{
+    queryFlags_ = queryFlags;
+}
+
+void MultiModalPipeline::setQueryEngine(QueryEngine *queryEngine)
+{
+    queryEngine_ = queryEngine;
+}
+
+void MultiModalPipeline::addModalGroup(const std::list<DependencyNodePtr> &dependencyGroup)
 {
     if(dependencyGroup.empty()) return;
 
     // Pick a node to start with.
-    // For now pick the one with minimum number of neighbors is picked.
+    // For now the one with minimum number of neighbors is picked.
     DependencyNodePtr first;
     unsigned long minNumNeighbors = 0;
     for(auto &n : dependencyGroup) {
@@ -206,9 +133,9 @@ void QueryPipeline::add(const std::list<DependencyNodePtr> &dependencyGroup)
     generate(qn0, inputStream_, outBroadcaster_);
 }
 
-void QueryPipeline::generate(const QueryPipelineNodePtr &qn, //NOLINT
-                             const std::shared_ptr<AnswerBroadcaster> &qnInput,
-                             const std::shared_ptr<AnswerBroadcaster> &pipelineOutput)
+void MultiModalPipeline::generate(const QueryPipelineNodePtr &qn, //NOLINT
+                                  const std::shared_ptr<AnswerBroadcaster> &qnInput,
+                                  const std::shared_ptr<AnswerBroadcaster> &pipelineOutput)
 {
     // create an output stream for this node
     auto qnOutput = (qn->successors_.empty() ? pipelineOutput : std::make_shared<AnswerBroadcaster>());
@@ -218,18 +145,23 @@ void QueryPipeline::generate(const QueryPipelineNodePtr &qn, //NOLINT
     }
 
     // create a pipeline stage
-    std::shared_ptr<QueryPipelineStage> stage;
+    std::shared_ptr<ModalPipelineStage> stage;
     std::shared_ptr<ModalDependencyNode> modalNode;
     std::shared_ptr<LiteralDependencyNode> literalNode;
     if((modalNode = std::dynamic_pointer_cast<ModalDependencyNode>(qn->node_))) {
-        stage = std::make_shared<QueryPipelineStage>(modalNode->literals(), modalNode->label());
+        stage = std::make_shared<ModalPipelineStage>(
+                modalNode->literals(),
+                modalNode->label());
     }
     else if((literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(qn->node_))) {
-        stage = std::make_shared<QueryPipelineStage>(std::list<LiteralPtr>({ literalNode->literal() }));
+        stage = std::make_shared<ModalPipelineStage>(
+                std::list<LiteralPtr>({literalNode->literal() }));
     }
     else {
         throw QueryError("unexpected node type");
     }
+    stage->setQueryEngine(queryEngine_);
+    stage->setQueryFlags(queryFlags_);
     stages_.push_back(stage);
     // link stage with input and output
     qnInput >> stage;
@@ -241,11 +173,133 @@ void QueryPipeline::generate(const QueryPipelineNodePtr &qn, //NOLINT
     }
 }
 
-void QueryPipeline::run()
+void MultiModalPipeline::run()
 {
-    // push empty message into in stream, and close the channel
     inputChannel_->push(AnswerStream::bos());
-    inputChannel_->close();
+    inputChannel_->push(AnswerStream::eos());
+}
+
+
+ModalPipelineStage::ModalPipelineStage(const std::list<LiteralPtr> &literals,
+                                       const ModalityLabelPtr &label)
+        : AnswerBroadcaster(),
+          queryEngine_(nullptr),
+          queryFlags_((int)QueryFlag::ALL_SOLUTIONS),
+          literals_(literals),
+          label_(label),
+          isQueryOpened_(true),
+          hasStopRequest_(false)
+{
+}
+
+ModalPipelineStage::~ModalPipelineStage()
+{
+    stop();
+}
+
+void ModalPipelineStage::setQueryEngine(QueryEngine *queryEngine)
+{
+    queryEngine_ = queryEngine;
+}
+
+void ModalPipelineStage::setQueryFlags(int queryFlags)
+{
+    queryFlags_ = queryFlags;
+}
+
+void ModalPipelineStage::stop()
+{
+    // toggle on stop request
+    hasStopRequest_ = true;
+    // close all channels
+    close();
+    // clear all graph queries
+    for(auto &graphQuery : graphQueries_) graphQuery->close();
+    graphQueries_.clear();
+    // make sure EOS is published on this stream
+    pushToBroadcast(AnswerStream::eos());
+}
+
+void ModalPipelineStage::pushTransformed(const AnswerPtr &transformedAnswer,
+                                         std::list<BufferedAnswersPtr>::iterator graphQueryIterator)
+{
+    if(AnswerStream::isEOS(transformedAnswer)) {
+        graphQueries_.erase(graphQueryIterator);
+        // only push EOS message if no graph query is still active and
+        // if the stream has received EOS as input already.
+        if(graphQueries_.empty() && !isQueryOpened()) {
+            pushToBroadcast(transformedAnswer);
+        }
+    }
+    else if(isQueryOpened()) {
+        pushToBroadcast(transformedAnswer);
+        // close the stage if only one solution is requested
+        if((queryFlags_ & (int)QueryFlag::ONE_SOLUTION) == (int)QueryFlag::ONE_SOLUTION) stop();
+    }
+}
+
+AnswerPtr ModalPipelineStage::transformAnswer(const AnswerPtr &graphQueryAnswer,
+                                              const AnswerPtr &partialResult)
+{
+    if(AnswerStream::isEOS(graphQueryAnswer)) {
+        return graphQueryAnswer;
+    }
+    else {
+        // TODO: could be done without unification
+        graphQueryAnswer->combine(partialResult);
+        return graphQueryAnswer;
+    }
+}
+
+void ModalPipelineStage::push(const AnswerPtr &partialResult)
+{
+    if(AnswerStream::isEOS(partialResult)) {
+        if(isQueryOpened()) {
+            isQueryOpened_ = false;
+        }
+        // only broadcast EOS if no graph query is still active.
+        if(graphQueries_.empty() && !hasStopRequest_) {
+            pushToBroadcast(partialResult);
+        }
+    }
+    else if(!isQueryOpened()) {
+        KB_WARN("ignoring attempt to write to a closed stream.");
+    }
+    else if(!queryEngine_) {
+        KB_ERROR("no query engine has been assigned.");
+    }
+    else {
+        // apply the substitution mapping
+        std::vector<LiteralPtr> literalInstances(literals_.size());
+        unsigned long nextInstance=0;
+        if(partialResult->substitution()->empty()) {
+            for(auto &literal : literals_) {
+                literalInstances[nextInstance++] = literal;
+            }
+        }
+        else {
+            for(auto &literal : literals_) {
+                literalInstances[nextInstance++] = literal->applySubstitution(*partialResult->substitution());
+            }
+        }
+
+        // create a new graph query
+        auto graphQueryStream = queryEngine_->submitQuery(
+                literalInstances, label_, queryFlags_);
+        // keep a reference on the stream
+        graphQueries_.push_front(graphQueryStream);
+        auto graphQueryIt = graphQueries_.begin();
+        // combine graph query answer with partialResult and push it to the broadcast
+        graphQueryStream >> std::make_shared<AnswerTransformer>(
+                [this,partialResult,graphQueryIt](const AnswerPtr &graphQueryAnswer) {
+                    auto transformed = transformAnswer(graphQueryAnswer, partialResult);
+                    pushTransformed(transformed, graphQueryIt);
+                });
+        // start sending messages into AnswerTransformer.
+        // the messages are buffered before to avoid them being lost before the transformer
+        // is connected.
+        graphQueryStream->stopBuffering();
+    }
 }
 
 
@@ -278,8 +332,8 @@ TEST_F(QueryPipelineTest, OneLiteral)
     // create dependency group of literals with shared variables
     auto n11 = literal_p("p(a,X)");
     // generate a querying pipeline
-    QueryPipeline qp;
-    EXPECT_NO_THROW(qp.add({n11}));
+    MultiModalPipeline qp;
+    EXPECT_NO_THROW(qp.addModalGroup({n11}));
     EXPECT_EQ(qp.numStages(), 1);
 }
 
@@ -292,8 +346,8 @@ TEST_F(QueryPipelineTest, Path)
     addDependency(n11, n12);
     addDependency(n12, n13);
     // generate a querying pipeline
-    QueryPipeline qp;
-    EXPECT_NO_THROW(qp.add({n11, n12, n13}));
+    MultiModalPipeline qp;
+    EXPECT_NO_THROW(qp.addModalGroup({n11, n12, n13}));
     EXPECT_EQ(qp.numStages(), 3);
 }
 
@@ -307,8 +361,8 @@ TEST_F(QueryPipelineTest, Circle)
     addDependency(n12, n13);
     addDependency(n13, n11);
     // generate a querying pipeline
-    QueryPipeline qp;
-    EXPECT_NO_THROW(qp.add({n11, n12, n13}));
+    MultiModalPipeline qp;
+    EXPECT_NO_THROW(qp.addModalGroup({n11, n12, n13}));
     EXPECT_EQ(qp.numStages(), 3);
 }
 
@@ -325,7 +379,7 @@ TEST_F(QueryPipelineTest, IndependentSubPaths)
     addDependency(n12, n14);
     addDependency(n13, n15);
     // generate a querying pipeline
-    QueryPipeline qp;
-    EXPECT_NO_THROW(qp.add({n11, n12, n13, n14, n15}));
+    MultiModalPipeline qp;
+    EXPECT_NO_THROW(qp.addModalGroup({n11, n12, n13, n14, n15}));
     EXPECT_EQ(qp.numStages(), 5);
 }

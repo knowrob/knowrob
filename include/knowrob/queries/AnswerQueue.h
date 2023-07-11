@@ -21,6 +21,7 @@ namespace knowrob {
 	class AnswerQueue : public AnswerStream {
 	public:
 		AnswerQueue();
+
 		~AnswerQueue();
 		
 		/**

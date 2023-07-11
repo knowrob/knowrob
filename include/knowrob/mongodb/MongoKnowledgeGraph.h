@@ -12,7 +12,7 @@
 #include "knowrob/semweb/Vocabulary.h"
 #include "Collection.h"
 #include "Cursor.h"
-#include "knowrob/queries/BufferedAnswerStream.h"
+#include "knowrob/queries/BufferedAnswers.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
 #include "knowrob/mongodb/AnswerCursor.h"
@@ -87,10 +87,10 @@ namespace knowrob {
         void removeOneTriple(const semweb::TripleExpression &tripleExpression) override;
 
         // Override KnowledgeGraph
-        BufferedAnswerStreamPtr submitQuery(const GraphQueryPtr &literal) override;
+        BufferedAnswersPtr submitQuery(const GraphQueryPtr &literal) override;
 
         // Override KnowledgeGraph
-        BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &literal) override;
+        BufferedAnswersPtr watchQuery(const GraphQueryPtr &literal) override;
 
         // Override KnowledgeGraph
         bool loadTriples(const std::string_view &uriString, TripleFormat format) override;

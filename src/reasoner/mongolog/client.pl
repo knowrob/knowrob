@@ -98,8 +98,8 @@ mng_distinct_values(DB, Collection, Key, DistinctValues) :-
 
 read_json_(JSON,Dict) :-
 	atom_to_chars(JSON,Chars),
-	open_chars_stream(Chars,QueryPipelineStage),
-	json_read_dict(QueryPipelineStage,Dict).
+	open_chars_stream(Chars,ModalPipelineStage),
+	json_read_dict(ModalPipelineStage,Dict).
 
 %% mng_find(+DB, +Collection, +Filter, -Result) is nondet.
 %

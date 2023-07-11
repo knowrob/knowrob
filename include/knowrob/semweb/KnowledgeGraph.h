@@ -9,7 +9,7 @@
 #include "optional"
 #include "raptor2.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/queries/BufferedAnswerStream.h"
+#include "knowrob/queries/BufferedAnswers.h"
 #include "GraphQuery.h"
 #include "Vocabulary.h"
 #include "TripleExpression.h"
@@ -67,14 +67,14 @@ namespace knowrob {
          * @param query a graph query
          * @return a stream with answers to the query
          */
-        virtual BufferedAnswerStreamPtr submitQuery(const GraphQueryPtr &query) = 0;
+        virtual BufferedAnswersPtr submitQuery(const GraphQueryPtr &query) = 0;
 
         /**
          * Watch for instantiations of a literal in the knowledge graph.
          * @param literal a literal
          * @return a stream with answers to the query
          */
-        virtual BufferedAnswerStreamPtr watchQuery(const GraphQueryPtr &query) = 0;
+        virtual BufferedAnswersPtr watchQuery(const GraphQueryPtr &query) = 0;
 
         //virtual bool unwatchQuery(const BufferedAnswerStreamPtr &queryStream) = 0;
 

@@ -164,9 +164,8 @@ add_library(knowrob_qa SHARED
 		src/queries/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-		src/queries/QueryProcessor.cpp
-		src/queries/QueryPipeline.cpp
-		src/queries/BufferedAnswerStream.cpp
+        src/queries/MultiModalPipeline.cpp
+		src/queries/BufferedAnswers.cpp
 		src/semweb/PrefixRegistry.cpp
 		src/semweb/KnowledgeGraph.cpp
 		src/semweb/GraphPattern.cpp

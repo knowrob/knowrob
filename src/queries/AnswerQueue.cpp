@@ -11,7 +11,7 @@
 using namespace knowrob;
 
 AnswerQueue::AnswerQueue()
-: AnswerStream()
+        : AnswerStream()
 {}
 
 AnswerQueue::~AnswerQueue()
