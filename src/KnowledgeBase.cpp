@@ -19,9 +19,9 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 {
 	reasonerManager_ = std::make_shared<ReasonerManager>();
 	loadConfiguration(config);
-	if(!knowledgeGraph_) {
+	if(!knowledgeGraphs_.empty()) {
 	    // TODO: rather fallback to default implementation
-	    throw std::runtime_error("knowledge graph must be configured");
+	    throw std::runtime_error("data backend configuration is missing");
 	}
 }
 
@@ -42,6 +42,13 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
             }
         }
     }
+
+    // TODO: initialize RDF data backends from configuration
+    //  - decide if there should be a separate section for KGs in the settings file.
+    //    would have advantage that different reasoner could easily be linked to the same.
+    //    also data files would need to be outside the scope of data backend for now, as
+    //    data for now must be shared among all backends.
+    knowledgeGraphs_ = xx;
 
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
@@ -125,37 +132,54 @@ BufferedAnswersPtr KnowledgeBase::submitQuery(const std::vector<LiteralPtr> &lit
                                               const ModalityLabelPtr &label,
                                               int queryFlags)
 {
-    // TODO: come up with a plan how labels can be handled.
     // NOTE: the literals are assumed to be member of the same dependency group here.
     //       so for every literal there is another literal in the vector with a shared
-    //       free variable.
+    //       free variable. ehhm but below a dependency graph is computed?!?
+    //          TODO: probably better to compute the dependency graph here
 
-    // TODO: run a query with extensional data stored in knowledgeGraph_
-    //      - design and implement KG interface
-    //          - currently BufferedAnswersPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query)
-    //          - but mongo has mongo::AnswerCursorPtr lookupTriplePaths(const std::vector<semweb::TripleExpression>&)
-    //      - XXX: so how to hook this into a pipeline?
-    //          - well maybe not needed. maybe could stream both into the same buffered stream
-    //            and return this
-
-    // compute dependencies
-    DependencyGraph dg;
-    for(auto &literal : literals) dg.insert(literal);
-    // iterate over dependency groups
-    for(auto &literalGroup : dg) {
-        // TODO: create a pipeline for top-down reasoner
-        //      - build a pipeline that runs each group in parallel,
-        //       and a simple combiner node without unification to combine results of groups.
-        //      - reuse Blackboard code
-        //          - merge nodes into complex queries if reasoner supports it and defines
-        //            the predicate
-        // TODO: for each group first pick literal with max priority
-        //      - prefer edges with more grounded nodes
-        // TODO: then continue expanding path according to preference and neighbor relation
+    auto tdReasoner = reasonerManager_->getTopDownReasoner();
+    // TODO: maybe filter the list based on whether a reasoner has a
+    //       theory about one of the literals.
+    if(tdReasoner.empty()) {
+        // just run EDB query in case no top-down reasoner is in use.
+        // else it is assumed that a top-down reasoner will include
+        // all EDB facts in its set of answers.
+        return preferredKnowledgeGraph_->query();
     }
 
-    // TODO: allow storing inference results in KG
-    // TODO: avoid redundant results
+    // compute dependency groups based on shared variables of literals.
+    // each group can be evaluated independently.
+    DependencyGraph dg;
+    for(auto &literal : literals) {
+        dg.insert(literal);
+    }
+
+    pipeline = createPipeline();
+    // iterate over dependency groups
+    for(auto &literalGroup : dg) {
+        // TODO: there must be combiner node merging results of different dependency groups.
+        //       within a group the stages are rather options and do not need to be merged
+
+        // only first reasoner must include results completely
+        // stored in the KG already. this is just to avoid redundant results.
+        bool allowEDBOnly = true;
+
+        // add a pipeline stage for each reasoner
+        for(auto r : tdReasoner) {
+            addParallelStep(pipeline, r, label, literalGroup, allowEDBOnly);
+            allowEDBOnly = false;
+        }
+    }
+
+    // TODO: write inferences into data backend, and notify top-down reasoner
+    //  about inferences of others.
+    //  probably best doing it as a pipeline stage that interacts with a thread
+    //  writing into the database.
+
+    //if(hasFlag(queryFlags, RemoveRedundantAnswers)) {
+        // TODO: add an optional stage to the pipeline that drops all
+        //       redundant result.
+    //}
 }
 
 

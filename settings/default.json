@@ -8,32 +8,27 @@
       { "alias": "swrl_test", "uri":  "http://knowrob.org/kb/swrl_test" }
     ]
   },
+  "data-sources": [
+    {
+      "path": "owl/test/swrl.owl",
+      "format": "rdf-xml"
+    }
+  ],
+  "data-backends": [
+    {
+      "type": "MongoDB",
+      "name": "mongodb",
+      "host": "localhost",
+      "port": 27017,
+      "db": "mongolog1",
+      "read_only": false
+    }
+  ],
   "reasoner": [
     {
       "type": "Mongolog",
-      "name": "mongolog1",
-      "mongodb": {
-        "host": "localhost",
-        "port": 27017,
-        "db": "mongolog1",
-        "read_only": false
-      },
-      "data-sources": [
-        { "path": "owl/test/swrl.owl", "format": "rdf-xml" }
-      ]
-    },
-    {
-      "type": "Mongolog",
-      "name": "mongolog2",
-      "mongodb": {
-        "host": "localhost",
-        "port": 27017,
-        "db": "mongolog2",
-        "read_only": false
-      },
-      "data-sources": [
-        { "path": "owl/test/events.owl", "format": "rdf-xml" }
-      ]
+      "name": "mongolog",
+      "data-backend": "mongodb"
     }
   ]
 }

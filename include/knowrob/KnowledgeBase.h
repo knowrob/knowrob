@@ -75,7 +75,7 @@ namespace knowrob {
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-        std::shared_ptr<KnowledgeGraph> knowledgeGraph_;
+        std::list<KnowledgeGraphPtr> knowledgeGraphs_;
         std::list<MultiModalPipeline> pipelines_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
