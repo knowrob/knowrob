@@ -9,11 +9,13 @@
 #include "optional"
 #include "raptor2.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/queries/BufferedAnswers.h"
+#include "knowrob/queries/AnswerBuffer.h"
 #include "GraphQuery.h"
 #include "Vocabulary.h"
 #include "TripleExpression.h"
 #include "TripleData.h"
+#include "knowrob/ThreadPool.h"
+#include "knowrob/Statement.h"
 
 namespace knowrob {
 
@@ -31,7 +33,7 @@ namespace knowrob {
 
     class KnowledgeGraph {
     public:
-        KnowledgeGraph();
+        explicit KnowledgeGraph(ThreadPool *threadPool);
 
         KnowledgeGraph(const KnowledgeGraph&) = delete;
 
@@ -52,29 +54,37 @@ namespace knowrob {
          * @param format the format of the file
          * @return true if the file was loaded successfully
          */
-        virtual bool loadTriples(const std::string_view &uriString, TripleFormat format) = 0;
+        virtual bool loadTriples(
+                const std::string_view &uriString,
+                TripleFormat format,
+                const std::optional<ModalIteration> &modality) = 0;
 
-        virtual void assertTriple(const TripleData &tripleData) = 0;
+        bool loadTriples(const std::string_view &uriString, TripleFormat format)
+        { return loadTriples(uriString, format, std::nullopt); }
 
-        virtual void assertTriples(const std::vector<TripleData> &tripleData) = 0;
+        virtual bool insert(const TripleData &tripleData) = 0;
 
-        virtual void removeAllTriples(const semweb::TripleExpression &tripleExpression) = 0;
+        virtual bool insert(const std::vector<TripleData> &tripleData) = 0;
 
-        virtual void removeOneTriple(const semweb::TripleExpression &tripleExpression) = 0;
+        virtual void removeAll(const semweb::TripleExpression &tripleExpression) = 0;
+
+        virtual void removeOne(const semweb::TripleExpression &tripleExpression) = 0;
 
         /**
          * Find instantiations of a literal in the knowledge graph.
          * @param query a graph query
          * @return a stream with answers to the query
          */
-        virtual BufferedAnswersPtr submitQuery(const GraphQueryPtr &query) = 0;
+        AnswerBufferPtr submitQuery(const GraphQueryPtr &query);
+
+        virtual void evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream) = 0;
 
         /**
          * Watch for instantiations of a literal in the knowledge graph.
          * @param literal a literal
          * @return a stream with answers to the query
          */
-        virtual BufferedAnswersPtr watchQuery(const GraphQueryPtr &query) = 0;
+        virtual AnswerBufferPtr watchQuery(const GraphQueryPtr &query) = 0;
 
         //virtual bool unwatchQuery(const BufferedAnswerStreamPtr &queryStream) = 0;
 
@@ -102,6 +112,7 @@ namespace knowrob {
     protected:
         raptor_world *raptorWorld_;
         std::shared_ptr<semweb::Vocabulary> vocabulary_;
+        ThreadPool *threadPool_;
 
         bool loadURI(ITripleLoader &loader,
                      const std::string &uriString,

@@ -6,6 +6,7 @@
 #define KNOWROB_PAST_MODALITY_H
 
 #include "TemporalModality.h"
+#include "TimeInterval.h"
 
 namespace knowrob {
     /**
@@ -14,24 +15,9 @@ namespace knowrob {
      */
     class PastModality : public TemporalModality {
 	protected:
-		PastModality();
+		explicit PastModality(const std::optional<TimeInterval> &timeInterval={});
 
 	public:
-		/**
-		 * @return the past modality singleton.
-		 */
-		static const PastModality* get();
-
-		/**
-		 * @return the past operator `P`
-		 */
-		static const ModalOperatorPtr& P();
-
-		/**
-		 * @return the past operator `H`
-		 */
-		static const ModalOperatorPtr& H();
-
         // Override Modality
         bool isSerial() const override;
 

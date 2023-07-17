@@ -44,8 +44,8 @@ using namespace knowrob::semweb;
 // AGGREGATION PIPELINES
 bson_t* newPipelineImportHierarchy(const char *collection);
 
-MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
-: KnowledgeGraph(),
+MongoKnowledgeGraph::MongoKnowledgeGraph(ThreadPool *threadPool, const char* db_uri, const char* db_name, const char* collectionName)
+: KnowledgeGraph(threadPool),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
@@ -53,8 +53,8 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name
     dropGraph("user");
 }
 
-MongoKnowledgeGraph::MongoKnowledgeGraph(const boost::property_tree::ptree &config)
-: KnowledgeGraph(),
+MongoKnowledgeGraph::MongoKnowledgeGraph(ThreadPool *threadPool, const boost::property_tree::ptree &config)
+: KnowledgeGraph(threadPool),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(connect(config))
 {
@@ -200,6 +200,8 @@ void MongoKnowledgeGraph::createSearchIndices()
             ['s','p']
         ]),
      */
+    // TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence" be included
+    //       in each index?
     tripleCollection_->createAscendingIndex({"s"});
     tripleCollection_->createAscendingIndex({"p"});
     tripleCollection_->createAscendingIndex({"o"});
@@ -274,7 +276,7 @@ bson_t* MongoKnowledgeGraph::getTripleSelector(
     return doc;
 }
 
-void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
+bool MongoKnowledgeGraph::insert(const TripleData &tripleData)
 {
     auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -285,9 +287,10 @@ void MongoKnowledgeGraph::assertTriple(const TripleData &tripleData)
     loader.flush();
     updateHierarchy(loader);
     updateTimeInterval(tripleData);
+    return true;
 }
 
-void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleData)
+bool MongoKnowledgeGraph::insert(const std::vector<TripleData> &tripleData)
 {
     auto &graph = importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -303,16 +306,18 @@ void MongoKnowledgeGraph::assertTriples(const std::vector<TripleData> &tripleDat
     updateHierarchy(loader);
 
     for(auto &data : tripleData) updateTimeInterval(data);
+
+    return true;
 }
 
-void MongoKnowledgeGraph::removeAllTriples(const semweb::TripleExpression &tripleExpression)
+void MongoKnowledgeGraph::removeAll(const semweb::TripleExpression &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeAll(
         Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-void MongoKnowledgeGraph::removeOneTriple(const semweb::TripleExpression &tripleExpression)
+void MongoKnowledgeGraph::removeOne(const semweb::TripleExpression &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeOne(
@@ -341,7 +346,7 @@ AnswerCursorPtr MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpressio
     //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::vector<semweb::TripleExpression> &tripleExpressions)
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::list<semweb::TripleExpression> &tripleExpressions)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -359,28 +364,38 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::vector<
     //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
-BufferedAnswersPtr MongoKnowledgeGraph::submitQuery(const GraphQueryPtr &query)
+void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
-    // TODO: masterplan:
-    //  - use a worker thread to pull from the cursor and push into stream,
-    //    but also allow synchronous processing via a flag
-    //  - this could be done via watch interface!
-    //      it is particularly there for calling a function for each result of the cursor,
-    //      so why not just use it in any case?
-    //  - then important to get the condition right for stopping the change stream
-    //      also how do change streams handle initial results?
-    //
-    return {};
+    auto channel = AnswerStream::Channel::create(resultStream);
+    auto cursor = lookupTriplePaths(query->asTripleExpression());
+
+    // limit to one solution if requested
+    if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
+        cursor->limit(1);
+    }
+
+    while(true) {
+        std::shared_ptr<Answer> next = std::make_shared<Answer>();
+        if(cursor->nextAnswer(next)) {
+            channel->push(next);
+        }
+        else {
+            channel->push(AnswerStream::eos());
+            break;
+        }
+    }
 }
 
-BufferedAnswersPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
+AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
 {
     // TODO
     return {};
 }
 
 bool MongoKnowledgeGraph::loadTriples( //NOLINT
-        const std::string_view &uriString, TripleFormat format)
+        const std::string_view &uriString,
+        TripleFormat format,
+        const std::optional<ModalIteration> &modality)
 {
     // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces somehow as part of graph?
     //          or just assume namespace prefixes are unique withing knowrob
@@ -421,7 +436,7 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     // update o* and p* fields
     updateHierarchy(loader);
     // load imported ontologies
-    for(auto &imported : loader.imports()) loadTriples(imported, format);
+    for(auto &imported : loader.imports()) loadTriples(imported, format, std::nullopt);
 
     return true;
 }
@@ -623,8 +638,11 @@ bson_t* newPipelineImportHierarchy(const char *collection)
 class MongoKnowledgeGraphTest : public ::testing::Test {
 protected:
     static std::shared_ptr<MongoKnowledgeGraph> kg_;
+    static std::shared_ptr<ThreadPool> threadPool_;
     static void SetUpTestSuite() {
+        threadPool_ = std::make_shared<ThreadPool>(4);
         kg_ = std::make_shared<MongoKnowledgeGraph>(
+                threadPool_.get(),
                 "mongodb://localhost:27017",
                 "knowrob",
                 "triplesTest");
@@ -653,7 +671,7 @@ std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 {
     TripleData data_abc("a","b","c");
-    EXPECT_NO_THROW(kg_->assertTriple(data_abc));
+    EXPECT_NO_THROW(kg_->insert(data_abc));
     EXPECT_EQ(lookup(data_abc).size(), 1);
     EXPECT_EQ(lookup(parse("triple(x,b,c)")).size(), 0);
     EXPECT_EQ(lookup(parse("triple(a,x,c)")).size(), 0);
@@ -669,11 +687,11 @@ TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("swrl").has_value());
-    EXPECT_NO_THROW(kg_->loadTriples("owl/test/swrl.owl", knowrob::RDF_XML));
+    EXPECT_NO_THROW(kg_->loadTriples("owl/test/swrl.owl", knowrob::RDF_XML, std::nullopt));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("swrl").has_value());
 
     EXPECT_FALSE(kg_->getCurrentGraphVersion("datatype_test").has_value());
-    EXPECT_NO_THROW(kg_->loadTriples("owl/test/datatype_test.owl", knowrob::RDF_XML));
+    EXPECT_NO_THROW(kg_->loadTriples("owl/test/datatype_test.owl", knowrob::RDF_XML, std::nullopt));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
@@ -694,7 +712,7 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
-    EXPECT_NO_THROW(kg_->removeAllTriples(semweb::TripleExpression(triple)));
+    EXPECT_NO_THROW(kg_->removeAll(semweb::TripleExpression(triple)));
     EXPECT_EQ(lookup(triple).size(), 0);
 }
 
@@ -708,7 +726,7 @@ TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"Car");
-    EXPECT_NO_THROW(kg_->assertTriple(existing));
+    EXPECT_NO_THROW(kg_->insert(existing));
     EXPECT_EQ(lookup(existing).size(), 1);
     EXPECT_EQ(lookup(not_existing).size(), 0);
 }

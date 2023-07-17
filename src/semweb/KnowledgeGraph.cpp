@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
+#include <utility>
 
 #include "knowrob/Logger.h"
 #include "knowrob/semweb/KnowledgeGraph.h"
@@ -18,6 +19,25 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 using namespace std::chrono_literals;
 using namespace knowrob;
+
+namespace knowrob {
+    class GraphQueryRunner : public ThreadPool::Runner {
+    public:
+        KnowledgeGraph *kg_;
+        GraphQueryPtr query_;
+        AnswerBufferPtr result_;
+
+        // FIXME: use of unsmart pointer for kg is unsafe
+        GraphQueryRunner(
+                KnowledgeGraph *kg,
+                GraphQueryPtr query,
+                AnswerBufferPtr &result)
+        : kg_(kg), query_(std::move(query)), result_(result), ThreadPool::Runner()
+        {}
+
+        void run() override { kg_->evaluateQuery(query_, result_); }
+    };
+}
 
 template <typename TP> std::time_t to_time_t(TP tp) {
     // needed to convert file modification time to string :/
@@ -123,10 +143,14 @@ static void processTriple(void* user_data, raptor_statement* triple)
 }
 
 
-KnowledgeGraph::KnowledgeGraph()
+KnowledgeGraph::KnowledgeGraph(ThreadPool *threadPool)
 : raptorWorld_(raptor_new_world()),
-  vocabulary_(std::make_shared<semweb::Vocabulary>())
+  vocabulary_(std::make_shared<semweb::Vocabulary>()),
+  threadPool_(threadPool)
 {
+    // TODO: reconsider handling of raptor worlds, e.g. some reasoner could
+    //       access data from raptor API, but in some cases it could be desired
+    //       to keep all the data only in some database
     raptor_world_set_log_handler(raptorWorld_, nullptr, raptor_log);
     // TODO: raptor can report namespaces
     //raptor_parser_set_namespace_handler(rdf_parser, user_data, namespaces_handler);
@@ -155,6 +179,14 @@ bool KnowledgeGraph::isDefinedProperty(const std::string_view &iri)
 bool KnowledgeGraph::isDefinedClass(const std::string_view &iri)
 {
     return vocabulary_->isDefinedClass(iri);
+}
+
+AnswerBufferPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query)
+{
+    AnswerBufferPtr result = std::make_shared<AnswerBuffer>();
+    auto runner = std::make_shared<GraphQueryRunner>(this, query, result);
+    threadPool_->pushWork(runner);
+    return result;
 }
 
 bool KnowledgeGraph::loadURI(ITripleLoader &loader,

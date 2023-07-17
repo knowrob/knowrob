@@ -6,14 +6,17 @@
 #define KNOWROB_QUERY_ENGINE_H
 
 #include <memory>
-#include "knowrob/queries/BufferedAnswers.h"
+#include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/Literal.h"
+#include "knowrob/semweb/GraphQuery.h"
 
 namespace knowrob {
-    enum class QueryFlag {
-        ALL_SOLUTIONS   = 1 << 0,
-        ONE_SOLUTION    = 1 << 1
+    enum QueryFlag {
+        QUERY_FLAG_ALL_SOLUTIONS     = 1 << 0,
+        QUERY_FLAG_ONE_SOLUTION      = 1 << 1,
+        QUERY_FLAG_PERSIST_SOLUTIONS = 1 << 2,
+        QUERY_FLAG_UNIQUE_SOLUTIONS  = 1 << 3
     };
 
 	class QueryEngine {
@@ -25,10 +28,7 @@ namespace knowrob {
          * @param label an optional modality label
          * @return a stream of query results
          */
-        virtual BufferedAnswersPtr submitQuery(
-                    const std::vector<LiteralPtr> &literals,
-                    const ModalityLabelPtr &label,
-                    int queryFlags) = 0;
+        virtual AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery) = 0;
 
         /**
          * Evaluate a query represented as a Formula.
@@ -36,7 +36,7 @@ namespace knowrob {
          * @param query a formula
          * @return a stream of query results
          */
-        virtual BufferedAnswersPtr submitQuery(const FormulaPtr &query, int queryFlags) = 0;
+        virtual AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags) = 0;
 
         /**
          * Evaluate a query represented as a Literal.
@@ -44,7 +44,7 @@ namespace knowrob {
          * @param query a literal
          * @return a stream of query results
          */
-        virtual BufferedAnswersPtr submitQuery(const LiteralPtr &query, int queryFlags) = 0;
+        virtual AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags) = 0;
 
         /**
          * Evaluate a query represented as a LabeledLiteral.
@@ -52,7 +52,7 @@ namespace knowrob {
          * @param query a labeled literal
          * @return a stream of query results
          */
-        virtual BufferedAnswersPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) = 0;
+        virtual AnswerBufferPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) = 0;
 	};
 }
 

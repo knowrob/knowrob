@@ -16,6 +16,7 @@
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
+#include "knowrob/modalities/ModalFrame.h"
 
 namespace knowrob {
 	/**
@@ -27,12 +28,16 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-		explicit Query(const FormulaPtr &formula);
+        Query(const FormulaPtr &formula, int flags, ModalFrame modalFrame=ModalFrame());
 
 		/**
 		 * @return the formula associated to this query.
 		 */
 		const FormulaPtr& formula() const { return formula_; }
+
+        int flags() const { return flags_; }
+
+        auto& modalFrame() const { return modalFrame_; }
 		
 		/**
 		 * Replaces variables in the query with terms based on a mapping provided in the argument.
@@ -41,37 +46,10 @@ namespace knowrob {
 		 */
 		std::shared_ptr<Query> applySubstitution(const Substitution &sub) const;
 
-		/**
-		 * Assigns a time interval to this query indicating that solutions
-		 * should only be generated that are valid within this interval.
-		 * @param timeInterval the time interval of this query.
-		 */
-		void setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval);
-
-		/**
-		 * Assigns a confidenceInterval interval to this query indicating that solutions
-		 * should only be generated that are valid within this interval.
-		 * @param confidence the confidenceInterval interval of this query.
-		 */
-		void setConfidenceInterval(const std::shared_ptr<ConfidenceInterval> &confidenceInterval);
-
-		/**
-		 * @return an optional time interval of this query.
-		 */
-		const std::optional<const TimeInterval*>& timeInterval() const { return o_timeInterval_; }
-
-		/**
-		 * @return an optional confidenceInterval interval of this query.
-		 */
-		const std::optional<const ConfidenceInterval*>& confidenceInterval() const { return o_confidenceInterval_; }
-
 	protected:
 		const std::shared_ptr<Formula> formula_;
-		std::shared_ptr<TimeInterval> timeInterval_;
-		std::shared_ptr<ConfidenceInterval> confidenceInterval_;
-		std::optional<const TimeInterval*> o_timeInterval_;
-		std::optional<const ConfidenceInterval*> o_confidenceInterval_;
-		friend class QueryInstance;
+        const ModalFrame modalFrame_;
+		const int flags_;
 	};
 }
 

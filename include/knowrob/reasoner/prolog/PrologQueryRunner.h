@@ -34,10 +34,10 @@ namespace knowrob {
         struct Request {
             const uint32_t queryID;
             std::shared_ptr<StringTerm> queryModule;
-            std::shared_ptr<QueryInstance> queryInstance;
+            std::shared_ptr<AllocatedQuery> queryInstance;
             functor_t callFunctor;
             const std::shared_ptr<const Query> goal;
-            Request(const std::shared_ptr<QueryInstance> &queryInstance,
+            Request(const std::shared_ptr<AllocatedQuery> &queryInstance,
                     functor_t callFunctor,
                     const std::shared_ptr<StringTerm> &queryModule,
                     uint32_t queryID=0)
@@ -45,7 +45,7 @@ namespace knowrob {
                       queryModule(queryModule),
                       queryInstance(queryInstance),
                       callFunctor(callFunctor),
-                      goal(queryInstance->create()) {};
+                      goal(queryInstance->query()) {};
         };
 
         PrologQueryRunner(PrologReasoner *reasoner, Request request, bool sendEOS=false);

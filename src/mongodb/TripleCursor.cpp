@@ -39,6 +39,8 @@ bool TripleCursor::nextTriple(TripleData &tripleData) //NOLINT
                 tripleData.predicate = bson_iter_utf8(&tripleIter_, nullptr);
             else if(key=="graph")
                 tripleData.graph = bson_iter_utf8(&tripleIter_, nullptr);
+            else if(key=="a")
+                tripleData.agent = bson_iter_utf8(&tripleIter_, nullptr);
             else if(key=="c")
                 tripleData.confidence = bson_iter_double(&tripleIter_);
             else if(key=="o") {

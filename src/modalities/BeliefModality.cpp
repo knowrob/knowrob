@@ -7,24 +7,11 @@
 
 using namespace knowrob;
 
-BeliefModality::BeliefModality()
-: EpistemicModality() {}
-
-const BeliefModality* BeliefModality::get()
-{
-    static BeliefModality instance;
-    return &instance;
-}
+BeliefModality::BeliefModality(const std::optional<std::string> &agent)
+: EpistemicModality(agent) {}
 
 const char* BeliefModality::necessity_symbol()   const { return "B"; }
 const char* BeliefModality::possibility_symbol() const { return "\u22C4_B"; }
-
-const ModalOperatorPtr& BeliefModality::B()
-{
-    static const auto op = std::make_shared<ModalOperator>(
-            get(), ModalOperatorType::NECESSITY);
-    return op;
-}
 
 bool BeliefModality::isSerial()     const { return true; }
 bool BeliefModality::isTransitive() const { return true; }
@@ -36,6 +23,7 @@ bool BeliefModality::isDense()      const { return false; }
 ModalOperatorPtr BeliefModality::reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const
 {
     // to "belief to know" is simply to know
+    // FIXME: take agent into account
     if(b->modality()==KnowledgeModality::get()) { return b; }
 
     return {};

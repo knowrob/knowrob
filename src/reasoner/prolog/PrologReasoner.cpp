@@ -75,20 +75,13 @@ PrologReasoner::PrologReasoner(std::string reasonerID)
 
 PrologReasoner::~PrologReasoner()
 {
-    auto queries = activeQueries_;
-	for(auto &pair : queries) {
-        auto runner = pair.second->runner;
-		for(auto &x : runner) {
-			x->stop(true);
-		}
-	}
-	activeQueries_.clear();
 }
 
 unsigned long PrologReasoner::getCapabilities() const
 {
 	return CAPABILITY_CONJUNCTIVE_QUERIES |
-		   CAPABILITY_DISJUNCTIVE_QUERIES;
+		   CAPABILITY_DISJUNCTIVE_QUERIES |
+		   CAPABILITY_TOP_DOWN_EVALUATION;
 }
 
 const functor_t& PrologReasoner::callFunctor()
@@ -309,16 +302,22 @@ std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString)
 	}
 }
 
-bool PrologReasoner::eval(const std::shared_ptr<Predicate> &p,
-                          const char *moduleName,
-                          bool doTransformQuery) {
-    return !AnswerStream::isEOS(oneSolution(p, moduleName, doTransformQuery));
+bool PrologReasoner::eval(
+        const std::shared_ptr<Predicate> &p,
+        const char *moduleName,
+        bool doTransformQuery)
+{
+    auto answer = oneSolution(p, moduleName, doTransformQuery);
+    return (answer ? !AnswerStream::isEOS(answer) : false);
 }
 
-bool PrologReasoner::eval(const std::shared_ptr<const Query> &q,
-                              const char *moduleName,
-                              bool doTransformQuery) {
-        return !AnswerStream::isEOS(oneSolution(q, moduleName, doTransformQuery));
+bool PrologReasoner::eval(
+        const std::shared_ptr<const Query> &q,
+        const char *moduleName,
+        bool doTransformQuery)
+{
+    auto answer = oneSolution(q, moduleName, doTransformQuery);
+    return (answer ? !AnswerStream::isEOS(answer) : false);
 }
 
 AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
@@ -337,7 +336,7 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
 	// create an output queue for the query
 	auto outputStream = std::make_shared<AnswerQueue>();
 	auto outputChannel = AnswerStream::Channel::create(outputStream);
-	auto queryInstance = std::make_shared<QueryInstance>(goal, outputChannel);
+	auto queryInstance = std::make_shared<AllocatedQuery>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
@@ -369,7 +368,7 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	// create an output queue for the query
 	auto outputStream = std::make_shared<AnswerQueue>();
 	auto outputChannel = AnswerStream::Channel::create(outputStream);
-	auto queryInstance = std::make_shared<QueryInstance>(goal, outputChannel);
+	auto queryInstance = std::make_shared<AllocatedQuery>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
@@ -399,140 +398,20 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	return results;
 }
 
-void PrologReasoner::startQuery(uint32_t queryID,
-								const std::shared_ptr<const Query> &uninstantiatedQuery)
+bool PrologReasoner::runQuery(const AllocatedQueryPtr &query)
 {
-	// create a request object and store it in a map
-	auto *req = new ActiveQuery;
-	req->goal = uninstantiatedQuery;
-	req->hasReceivedAllInput = false;
-	{
-		// protect activeQueries_ with request_mutex_
-		std::lock_guard<std::mutex> lock(request_mutex_);
-		activeQueries_[queryID] = req;
-	}
-}
+    bool sendEOS = true;
+    auto reasoner = this;
 
-void PrologReasoner::runQueryInstance(uint32_t queryID,
-									  const std::shared_ptr<QueryInstance> &queryInstance)
-{
-	// Get query request from query ID
-	PrologReasoner::ActiveQuery *req; {
-		// protect activeQueries_ with request_mutex_
-		std::lock_guard<std::mutex> lock(request_mutex_);
-		auto it = activeQueries_.find(queryID);
-		if(it == activeQueries_.end()) {
-			KB_WARN("cannot push substitution for inactive query {}.", queryID);
-			return;
-		}
-		req = it->second;
-	}
+   	// create a runner for a worker thread
+   	auto workerGoal = std::make_shared<PrologQueryRunner>(
+            reasoner,
+            PrologQueryRunner::Request(query, callFunctor() , reasonerIDTerm_),
+            sendEOS);
+    // assign the goal to a worker thread
+   	PrologReasoner::threadPool().pushWork(workerGoal);
 
-	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologQueryRunner>(
-            this,
-            PrologQueryRunner::Request(queryInstance, callFunctor(), reasonerIDTerm_, queryID),
-			false // sendEOS
-	);
-
-	// add runner to list of runners associated to this request
-	{
-		std::lock_guard<std::mutex> lock(req->mutex);
-		req->runner.push_back(workerGoal);
-		workerGoal->requestIterator = req->runner.end();
-		--workerGoal->requestIterator;
-	}
-
-	// add work to queue
-	PrologReasoner::threadPool().pushWork(workerGoal);
-}
-
-void PrologReasoner::finishQuery(uint32_t queryID,
-								 const std::shared_ptr<AnswerStream::Channel> &os,
-								 bool isImmediateStopRequested)
-{
-	// Get query request from query ID
-	ActiveQueryMap::iterator it; {
-		// protect activeQueries_ with request_mutex_
-		std::lock_guard<std::mutex> lock(request_mutex_);
-		it = activeQueries_.find(queryID);
-		if(it == activeQueries_.end()) {
-			KB_WARN("query {} is not active.", queryID);
-			return;
-		}
-	}
-	PrologReasoner::ActiveQuery *req = it->second;
-	req->hasReceivedAllInput = true;
-	
-	if(isImmediateStopRequested) {
-		// instruct all active query runners to stop.
-		// This basically attempts to gracefully stop them just by toggling
-		// on a flag that makes the runner break out its loop in the next iteration,
-		// or right away if the thread is sleeping.
-		// note: no need to wait for the runner to be stopped here. it could be the runner
-		// needs more time to terminate, or even never terminates.
-		{
-			std::lock_guard<std::mutex> scoped_lock(req->mutex);
-			for(auto &x : req->runner) {
-				x->stop(false);
-			}
-		}
-		os->push(AnswerStream::eos());
-	}
-	else {
-		// push EOS message to indicate to subscribers that no more
-		// messages will be published on this channel.
-		bool isEmpty; {
-			std::lock_guard<std::mutex> scoped_lock(req->mutex);
-			isEmpty = req->runner.empty();
-		}
-		if(isEmpty) {
-			// cleanup if no runners are active anymore
-			os->push(AnswerStream::eos());
-			delete req;
-			{
-				// protect activeQueries_ with request_mutex_
-				std::lock_guard<std::mutex> lock(request_mutex_);
-				activeQueries_.erase(it);
-			}
-		}
-	}
-}
-
-void PrologReasoner::finishRunner(uint32_t queryID, PrologQueryRunner *runner)
-{
-	// Get query request from query ID
-	ActiveQueryMap::iterator it; {
-		// protect activeQueries_ with request_mutex_
-		std::lock_guard<std::mutex> lock(request_mutex_);
-		
-		it = activeQueries_.find(queryID);
-		if(it == activeQueries_.end()) {
-			// query is not active
-			return;
-		}
-	}
-	PrologReasoner::ActiveQuery *req = it->second;
-	
-	bool isRequestFinished; {
-		std::lock_guard<std::mutex> lock(req->mutex);
-		// remove runner from list in the request
-		req->runner.erase(runner->requestIterator);
-		// request is finished when no more runner is active, and no more input to process
-		isRequestFinished = (req->runner.empty() && req->hasReceivedAllInput);
-	}
-
-	if(isRequestFinished) {
-		// send EOF and delete request if this was the last runner
-		// TODO: maybe there is a better way to send EOS? it is error prone that every reasoner has to do it.
-		runner->request_.queryInstance->pushEOS();
-		delete req;
-		{
-			// protect activeQueries_ with request_mutex_
-			std::lock_guard<std::mutex> lock(request_mutex_);
-			activeQueries_.erase(it);
-		}
-	}
+    return true;
 }
 
 std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path &filePath)

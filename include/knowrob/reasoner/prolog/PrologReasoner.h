@@ -187,15 +187,7 @@ namespace knowrob {
         unsigned long getCapabilities() const override;
 
         // Override IReasoner
-        void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) override;
-
-        // Override IReasoner
-        void runQueryInstance(uint32_t queryID, const std::shared_ptr<QueryInstance> &queryInstance) override;
-
-        // Override IReasoner
-        void finishQuery(uint32_t queryID,
-                         const std::shared_ptr<AnswerStream::Channel> &outputStream,
-                         bool isImmediateStopRequested) override;
+        bool runQuery(const AllocatedQueryPtr &query) override;
 
     protected:
         static bool isPrologInitialized_;
@@ -207,18 +199,7 @@ namespace knowrob {
         // cache of predicate descriptions
         std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 
-        struct ActiveQuery {
-            std::shared_ptr<const Query> goal;
-            std::atomic<bool> hasReceivedAllInput;
-            std::list<std::shared_ptr<PrologQueryRunner>> runner;
-            std::mutex mutex;
-        };
-        using ActiveQueryMap = std::map<uint32_t, PrologReasoner::ActiveQuery*>;
-
-        ActiveQueryMap activeQueries_;
         std::mutex request_mutex_;
-
-        void finishRunner(uint32_t queryID, PrologQueryRunner *runner);
 
         static void initializeProlog();
         virtual bool initializeGlobalPackages();

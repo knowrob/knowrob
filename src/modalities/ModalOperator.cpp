@@ -34,6 +34,7 @@ const char* ModalOperator::symbol() const
 
 void ModalOperator::write(std::ostream& os) const
 {
+    // TODO: also include parameters of operator such as agent
     if(operatorType_ == ModalOperatorType::NECESSITY)
         os << modality_->necessity_symbol();
     else

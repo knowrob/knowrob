@@ -15,7 +15,7 @@
 using namespace knowrob;
 
 #define BUILTIN_FUNCTION(func) [this]( \
-	const QueryInstancePtr &queryInstance, \
+	const AllocatedQueryPtr &queryInstance, \
 	const std::vector<TermPtr> &args) { return func(queryInstance, args); }
 
 BuiltinEvaluator::BuiltinEvaluator()
@@ -51,17 +51,10 @@ std::shared_ptr<PredicateDescription> BuiltinEvaluator::getPredicateDescription(
 	return {};
 }
 
-void BuiltinEvaluator::startQuery(uint32_t queryID,
-								  const std::shared_ptr<const Query> &uninstantiatedQuery)
-{}
-
-void BuiltinEvaluator::finishQuery(uint32_t queryID,
-								   const std::shared_ptr<AnswerStream::Channel> &outputStream,
-								   bool isImmediateStopRequested)
-{}
-
-void BuiltinEvaluator::runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance)
+bool BuiltinEvaluator::runQuery(const AllocatedQueryPtr &query)
 {
+    // TODO: think about in which way builtins can be supported during querying.
+/*
 	auto builtinQuery = queryInstance->create();
 	auto *builtinPredicate = ((Predicate*)builtinQuery->formula().get());
 
@@ -75,10 +68,11 @@ void BuiltinEvaluator::runQueryInstance(uint32_t queryID, const QueryInstancePtr
 		KB_DEBUG("BuiltinEvaluator has new query {}.", *builtinPredicate);
 		it->second(queryInstance, builtinPredicate->arguments());
 	}
+ */
 }
 
 void BuiltinEvaluator::pushSubstitution1(
-		const QueryInstancePtr &queryInstance,
+		const AllocatedQueryPtr &queryInstance,
 		Variable &var, const TermPtr& value)
 {
 	auto result = std::make_shared<Answer>();
@@ -86,7 +80,7 @@ void BuiltinEvaluator::pushSubstitution1(
 	queryInstance->pushSolution(result);
 }
 
-void BuiltinEvaluator::atom_concat3(const QueryInstancePtr &queryInstance, const std::vector<TermPtr> &args)
+void BuiltinEvaluator::atom_concat3(const AllocatedQueryPtr &queryInstance, const std::vector<TermPtr> &args)
 {
 	auto numVars =
 			((int)(args[0]->type()==TermType::VARIABLE)) +

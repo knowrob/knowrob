@@ -26,6 +26,7 @@ namespace knowrob {
                   predicate(nullptr),
                   object(nullptr),
                   graph(nullptr),
+                  agent(nullptr),
                   objectDouble(0.0),
                   objectInteger(0),
                   begin(),
@@ -35,12 +36,14 @@ namespace knowrob {
         TripleData(const char* subject,
                    const char* predicate,
                    const char* object,
-                   const char* graph="user")
+                   const char* graph="user",
+                   const char* agent=nullptr)
                 : documentID(nullptr),
                   subject(subject),
                   predicate(predicate),
                   object(object),
                   graph(graph),
+                  agent(agent),
                   objectDouble(0.0),
                   objectInteger(0),
                   begin(),
@@ -52,6 +55,7 @@ namespace knowrob {
         const char *predicate;
         const char* object;
         const char* graph;
+        const char* agent;
         std::optional<double> begin;
         std::optional<double> end;
         std::optional<double> confidence;

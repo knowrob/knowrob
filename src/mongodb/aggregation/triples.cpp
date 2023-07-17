@@ -205,6 +205,22 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleE
     }
 }
 
+void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
+{
+    auto &at = tripleExpression.agentTerm();
+
+    if(!at) {
+        // TODO: append null value, agent is included in all indices
+        aggregation::appendNull(selectorDoc, "agent");
+    }
+    else if(at->type() == TermType::STRING) {
+        aggregation::appendTermQuery(selectorDoc, "agent", at);
+    }
+    else {
+        KB_WARN("graph term {} has unexpected type", at);
+    }
+}
+
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
 {
     static const bool allowNullValues = true;
@@ -281,6 +297,8 @@ void aggregation::appendTripleSelector(
             objectOperator);
     // "g" field
     appendGraphSelector(selectorDoc, tripleExpression);
+    // "a" field
+    appendAgentSelector(selectorDoc, tripleExpression);
     // "b" & "e" fields
     appendTimeSelector(selectorDoc, tripleExpression);
     // "c" field
@@ -602,7 +620,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::vector<semweb::TripleExpression> &tripleExpressions)
+        const std::list<semweb::TripleExpression> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 

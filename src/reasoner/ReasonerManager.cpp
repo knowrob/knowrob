@@ -141,6 +141,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
 	auto managedReasoner = std::make_shared<DefinedReasoner>(reasonerID, reasoner);
 	reasonerPool_[reasonerID] = managedReasoner;
     reasoner->setReasonerManager(managerID_);
+
 	return managedReasoner;
 }
 

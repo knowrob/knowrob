@@ -13,7 +13,7 @@ namespace knowrob {
      */
     class KnowledgeModality : public EpistemicModality {
 	protected:
-		KnowledgeModality();
+        explicit KnowledgeModality(const std::optional<std::string> &agent={});
 
 	public:
 		/**

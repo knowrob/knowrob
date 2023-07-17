@@ -10,6 +10,9 @@
 #include "knowrob/modalities/Modality.h"
 #include "ModalOperator.h"
 #include "knowrob/formulas/Formula.h"
+#include "EpistemicModality.h"
+#include "TemporalModality.h"
+#include "PastModality.h"
 
 namespace knowrob {
     /**

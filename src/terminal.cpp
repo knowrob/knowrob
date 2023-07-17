@@ -193,7 +193,7 @@ public:
             auto &arg = p->arguments()[0];
             if(arg->type() == TermType::PREDICATE) {
                 auto arg_p = std::static_pointer_cast<Predicate>(arg);
-                kb_.projectIntoEDB(Statement(arg_p));
+                kb_.insert(Statement(arg_p));
             }
             else {
                 KB_WARN("the argument of project is not a predicate in '{}'", *p);

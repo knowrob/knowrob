@@ -6,16 +6,59 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <thread>
+
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
 #include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
+#include "knowrob/queries/AnswerCombiner.h"
 
 using namespace knowrob;
 
+namespace knowrob {
+    struct GraphQueryData {
+        std::shared_ptr<GraphQuery> graphQuery_;
+        std::shared_ptr<AnswerBroadcaster> outputStream_;
+    };
+
+    class ReasonerRunner : public ThreadPool::Runner {
+    public:
+        std::shared_ptr<IReasoner> reasoner_;
+        std::shared_ptr<AllocatedQuery> query_;
+
+        ReasonerRunner(const std::shared_ptr<IReasoner> &reasoner,
+                       const std::shared_ptr<GraphQueryData> &queryData)
+        : reasoner_(reasoner), ThreadPool::Runner()
+        {
+            auto outputChannel = AnswerStream::Channel::create(queryData->outputStream_);
+            auto literals = queryData->graphQuery_->literals();
+            // TODO: at least need to group into negative and positive literals here.
+            //       also would make sense to sort according to number of variables
+            auto phi = std::make_shared<Conjunction>(literals);
+            auto q = std::make_shared<Query>(
+                    phi,
+                    queryData->graphQuery_->flags(),
+                    queryData->graphQuery_->modalFrame());
+            query_ = std::make_shared<AllocatedQuery>(q, outputChannel);
+        }
+
+        void run() override {
+            reasoner_->runQuery(query_);
+        }
+    };
+
+    class AnswerBuffer_WithPipelines : public AnswerBuffer {
+    public:
+        AnswerBuffer_WithPipelines() : AnswerBuffer() {}
+        std::list<QueryPipeline> pipelines_;
+    };
+}
+
 KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
+: threadPool_(std::thread::hardware_concurrency())
 {
 	reasonerManager_ = std::make_shared<ReasonerManager>();
 	loadConfiguration(config);
@@ -66,10 +109,9 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	}
 }
 
-BufferedAnswersPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags)
+AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags)
 {
-    // TODO: handle flags
-    auto outStream = std::make_shared<BufferedAnswers>();
+    auto outStream = std::make_shared<AnswerBuffer_WithPipelines>();
 
     // convert into DNF and submit a query for each conjunction.
     // note that the number of conjunctions can get pretty high for
@@ -99,15 +141,18 @@ BufferedAnswersPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFl
             dg.insert(pair.second, pair.first);
         }
 
-        // iterate over groups of modal queries with shared free variables
-        // and create a query pipeline where each group is processed
-        // in parallel steps.
-        // FIXME: need a mechanism to remove finished pipelines from the pipelines_ list!
-        auto &pipeline = pipelines_.emplace_back(outStream);
+        // create a query pipeline for each conjunction.
+        // NOTE: here the output stream keeps a reference on each pipeline feeding it.
+        //       the idea is that as long as outStream is used, the pipeline will be alive.
+        //       keeping references in the KB instead would require additional bookkeeping for
+        //       removing finished pipelines.
+        auto &pipeline = outStream->pipelines_.emplace_back(outStream);
         pipeline.setQueryEngine(this);
         pipeline.setQueryFlags(queryFlags);
+        // iterate over groups of modal queries with shared free variables
+        // and create a query pipeline where each group is processed in parallel steps.
         for(auto &queryGroup : dg) {
-            pipeline.addModalGroup(queryGroup.member_);
+            pipeline.addDependencyGroup(queryGroup.member_);
         }
         pipeline.run();
     }
@@ -115,71 +160,149 @@ BufferedAnswersPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFl
     return outStream;
 }
 
-BufferedAnswersPtr KnowledgeBase::submitQuery(const LiteralPtr &query, int queryFlags)
-{
-    return submitQuery({query}, {}, queryFlags);
-}
+AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
 
-BufferedAnswersPtr KnowledgeBase::submitQuery(const LabeledLiteralPtr &query, int queryFlags)
+//const std::vector<LiteralPtr> &literals,
+                                           //const ModalityLabelPtr &label,
+                                         //  int queryFlags)
 {
-    return submitQuery(
-        {query},
-        std::dynamic_pointer_cast<ModalityLabel>(query->label()),
-        queryFlags);
-}
+    std::list<std::shared_ptr<IReasoner>> tdReasoner;
+    for(auto &pair : reasonerManager_->reasonerPool()) {
+        auto &r = pair.second->reasoner();
+        // skip reasoner that cannot perform top-down query evaluation
+        if(!r->hasCapability(CAPABILITY_TOP_DOWN_EVALUATION)) continue;
+        // TODO: consider filtering based on whether the reasoner has a definition for one of the literals.
+        tdReasoner.push_back(r);
+    }
 
-BufferedAnswersPtr KnowledgeBase::submitQuery(const std::vector<LiteralPtr> &literals,
-                                              const ModalityLabelPtr &label,
-                                              int queryFlags)
-{
-    // NOTE: the literals are assumed to be member of the same dependency group here.
-    //       so for every literal there is another literal in the vector with a shared
-    //       free variable. ehhm but below a dependency graph is computed?!?
-    //          TODO: probably better to compute the dependency graph here
-
-    auto tdReasoner = reasonerManager_->getTopDownReasoner();
-    // TODO: maybe filter the list based on whether a reasoner has a
-    //       theory about one of the literals.
     if(tdReasoner.empty()) {
         // just run EDB query in case no top-down reasoner is in use.
-        // else it is assumed that a top-down reasoner will include
-        // all EDB facts in its set of answers.
-        return preferredKnowledgeGraph_->query();
+        if(knowledgeGraphs_.empty()) {
+            return {};
+        }
+        else {
+            // TODO: flag one of the KGs as "preferred" in settings
+            auto preferredKnowledgeGraph = knowledgeGraphs_.front();
+            return preferredKnowledgeGraph->submitQuery(graphQuery);
+        }
     }
 
     // compute dependency groups based on shared variables of literals.
     // each group can be evaluated independently.
     DependencyGraph dg;
-    for(auto &literal : literals) {
+    for(auto &literal : graphQuery->literals()) {
         dg.insert(literal);
     }
 
-    pipeline = createPipeline();
-    // iterate over dependency groups
-    for(auto &literalGroup : dg) {
-        // TODO: there must be combiner node merging results of different dependency groups.
-        //       within a group the stages are rather options and do not need to be merged
+    // TODO: use AnswerCombiner without unification. the solutions that are combined do not have shared variables.
+    // NOTE: it is assumed that top-down reasoner will include all EDB facts in their set of answers.
+    auto answerCombiner = std::make_shared<AnswerCombiner>();
 
-        // only first reasoner must include results completely
-        // stored in the KG already. this is just to avoid redundant results.
-        bool allowEDBOnly = true;
+    // add additional stages for post-processing of results
+    std::shared_ptr<AnswerBroadcaster> lastStage = answerCombiner;
+    {
+        // TODO: optionally add a stage to the pipeline that drops all redundant result.
+        if(graphQuery->flags() & QUERY_FLAG_UNIQUE_SOLUTIONS) {
+            /*
+            auto filterStage = std::make_shared<XXX>();
+            lastStage >> filterStage;
+            lastStage = filterStage;
+            */
+        }
 
-        // add a pipeline stage for each reasoner
-        for(auto r : tdReasoner) {
-            addParallelStep(pipeline, r, label, literalGroup, allowEDBOnly);
-            allowEDBOnly = false;
+        // TODO: notify top-down reasoner about inferences of others.
+        if(tdReasoner.size()>1) {
+            /*
+            auto notifyStage = std::make_shared<XXX>();
+            lastStage >> notifyStage;
+            lastStage = notifyStage;
+            */
+        }
+
+        // TODO: optionally persist top-down inferences in data backend(s)
+        if(graphQuery->flags() & QUERY_FLAG_PERSIST_SOLUTIONS) {
+            /*
+            auto persistStage = std::make_shared<XXX>();
+            lastStage >> persistStage;
+            lastStage = persistStage;
+            */
+        }
+    }
+    auto out = std::make_shared<AnswerBuffer>();
+    lastStage >> out;
+
+    // iterate over dependency groups, and create reasoner runner writing into answerCombiner stream
+    for(auto &literalGroup : dg)
+    {
+        // for a group each reasoner writes into the same stream which in turn is streamed into
+        // the stream combining results from different groups.
+        auto groupAnswers = std::make_shared<AnswerBroadcaster>();
+        groupAnswers >> answerCombiner;
+
+        std::vector<LiteralPtr> queryLiterals;
+        for(auto &x : literalGroup.member_) {
+            std::shared_ptr<LiteralDependencyNode> literalNode;
+            if((literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(x))) {
+                queryLiterals.push_back(literalNode->literal());
+            }
+        }
+
+        auto queryData = std::make_shared<GraphQueryData>();
+        queryData->graphQuery_ = std::make_shared<GraphQuery>(
+                queryLiterals,
+                graphQuery->flags(),
+                graphQuery->modalFrame());
+        queryData->outputStream_ = groupAnswers;
+
+        std::list<std::shared_ptr<ReasonerRunner>> runnerList;
+        // for each group and top-down reasoner, run a graph query via a worker thread.
+        // each reasoner writes into an individual channel of the stream.
+        // note: below splits into two for-loops such that all channels are created first to avoid race condition with
+        //       worker threads finishing before all channels are created.
+        for(auto &r : tdReasoner) {
+            runnerList.push_back(std::make_shared<ReasonerRunner>(r, queryData));
+        }
+        for(auto &runner : runnerList) {
+            threadPool_.pushWork(runner);
         }
     }
 
-    // TODO: write inferences into data backend, and notify top-down reasoner
-    //  about inferences of others.
-    //  probably best doing it as a pipeline stage that interacts with a thread
-    //  writing into the database.
+    return out;
+}
 
-    //if(hasFlag(queryFlags, RemoveRedundantAnswers)) {
-        // TODO: add an optional stage to the pipeline that drops all
-        //       redundant result.
-    //}
+AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &query, int queryFlags)
+{
+    return submitQuery(std::make_shared<GraphQuery>(
+        GraphQuery({query}, queryFlags)));
+}
+
+AnswerBufferPtr KnowledgeBase::submitQuery(const LabeledLiteralPtr &query, int queryFlags)
+{
+    auto &modalOperators = query->label()->modalOperators();
+    return submitQuery(std::make_shared<GraphQuery>(
+        GraphQuery({query}, queryFlags, ModalFrame(modalOperators))));
+}
+
+bool KnowledgeBase::insert(const std::vector<TripleData> &statements)
+{
+    bool allProjected = true;
+    for(auto &x : statements) {
+        allProjected = insert(x) && allProjected;
+    }
+    return allProjected;
+}
+
+bool KnowledgeBase::insert(const TripleData &statement)
+{
+    bool status = true;
+    // assert each statement into each knowledge graph backend
+    for(auto &kg : knowledgeGraphs_) {
+        if(!kg->insert(statement)) {
+            KB_WARN("assertion of triple data failed!");
+            status = false;
+        }
+    }
+    return status;
 }
 
 
@@ -196,49 +319,4 @@ void KnowledgeBase::runQuery(const std::shared_ptr<const Query> &query, QueryRes
 			break;
 		}
 	} while(handler.pushQueryResult(solution));
-}
-
-bool KnowledgeBase::projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID)
-{
-    bool allProjected = true;
-    for(auto &x : statements) {
-        allProjected = projectIntoEDB(x, reasonerID) && allProjected;
-    }
-    return allProjected;
-}
-
-bool KnowledgeBase::projectIntoEDB(const Statement &statement, const std::string &reasonerID)
-{
-    if(reasonerID == "*") {
-        bool oneSucceeded = false;
-        bool oneAttempted = false;
-        for(auto &pair : reasonerManager_->reasonerPool()) {
-            if(pair.second->reasoner()->hasCapability(CAPABILITY_DYNAMIC_ASSERTIONS)) {
-                auto description_n = pair.second->reasoner()->getPredicateDescription(statement.predicate()->indicator());
-                if(description_n) {
-                    oneSucceeded = pair.second->reasoner()->projectIntoEDB(statement) || oneSucceeded;
-                    oneAttempted = true;
-                }
-            }
-        }
-        if(!oneSucceeded && !oneAttempted) {
-            KB_ERROR("None of the known reasoners is able to project the predicate {}.", *statement.predicate());
-        }
-        return oneSucceeded;
-    }
-    else {
-        // project into user-specified reasoner backend
-        auto definedReasoner = reasonerManager_->getReasonerWithID(reasonerID);
-        if(definedReasoner) {
-            if(definedReasoner->reasoner()->hasCapability(CAPABILITY_DYNAMIC_ASSERTIONS)) {
-                return definedReasoner->reasoner()->projectIntoEDB(statement);
-            }
-            else {
-                KB_ERROR("Reasoner with id '{}' has not the capability to dynamically assert factual knowledge.", reasonerID);
-            }
-        } else {
-            KB_ERROR("No reasoner with id '{}' is known.", reasonerID);
-        }
-        return false;
-    }
 }

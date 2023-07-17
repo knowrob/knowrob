@@ -7,6 +7,7 @@
 
 #include "knowrob/formulas/Predicate.h"
 #include "TripleData.h"
+#include "knowrob/terms/Constant.h"
 
 namespace knowrob::semweb {
     /**
@@ -55,6 +56,11 @@ namespace knowrob::semweb {
          * @return the graph term of this expression.
          */
         auto& graphTerm() const { return graphTerm_; }
+
+        /**
+         * @return the agent term of this expression.
+         */
+        auto& agentTerm() const { return agentTerm_; }
 
         /**
          * @return the begin term of this expression.
@@ -141,11 +147,15 @@ namespace knowrob::semweb {
          */
         void setEndTerm(const TermPtr &endTerm) { endTerm_ = endTerm; }
 
+        void setAgentTerm(const std::string &agentTerm)
+        { agentTerm_ = std::make_shared<StringTerm>(agentTerm); }
+
     protected:
         TermPtr subjectTerm_;
         TermPtr propertyTerm_;
         TermPtr objectTerm_;
         TermPtr graphTerm_;
+        TermPtr agentTerm_;
         TermPtr beginTerm_;
         TermPtr endTerm_;
         TermPtr confidenceTerm_;

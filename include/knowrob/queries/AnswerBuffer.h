@@ -10,9 +10,9 @@
 
 namespace knowrob {
 
-    class BufferedAnswers : public AnswerBroadcaster {
+    class AnswerBuffer : public AnswerBroadcaster {
     public:
-        BufferedAnswers();
+        AnswerBuffer();
 
         void stopBuffering();
 
@@ -26,7 +26,7 @@ namespace knowrob {
         void push(const AnswerPtr &msg) override;
     };
 
-    using BufferedAnswersPtr = std::shared_ptr<BufferedAnswers>;
+    using AnswerBufferPtr = std::shared_ptr<AnswerBuffer>;
 
 } // knowrob
 

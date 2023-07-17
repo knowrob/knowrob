@@ -42,25 +42,3 @@ const char* ModalFormula::operator_symbol() const
         return modalOperator_->modality()->possibility_symbol();
     }
 }
-
-namespace knowrob::modality {
-    std::shared_ptr<ModalFormula> B(const FormulaPtr &phi)
-    {
-        return std::make_shared<ModalFormula>(BeliefModality::B(), phi);
-    }
-
-    std::shared_ptr<ModalFormula> K(const FormulaPtr &phi)
-    {
-        return std::make_shared<ModalFormula>(KnowledgeModality::K(), phi);
-    }
-
-    std::shared_ptr<ModalFormula> P(const FormulaPtr &phi)
-    {
-        return std::make_shared<ModalFormula>(PastModality::P(), phi);
-    }
-
-    std::shared_ptr<ModalFormula> H(const FormulaPtr &phi)
-    {
-        return std::make_shared<ModalFormula>(PastModality::H(), phi);
-    }
-} // knowrob::modality

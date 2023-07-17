@@ -11,10 +11,8 @@
 
 using namespace knowrob;
 
-Query::Query(const std::shared_ptr<Formula> &formula)
-: formula_(formula),
-  o_timeInterval_(std::nullopt),
-  o_confidenceInterval_(std::nullopt)
+Query::Query(const std::shared_ptr<Formula> &formula, int flags, ModalFrame modalFrame)
+: formula_(formula), flags_(flags), modalFrame_(std::move(modalFrame))
 {
 }
 
@@ -23,29 +21,15 @@ std::shared_ptr<Query> Query::applySubstitution(const Substitution &sub) const
 	return std::make_shared<Query>(
 		formula_->isGround() ?
 		formula_ :
-		formula_->applySubstitution(sub)
+		formula_->applySubstitution(sub),
+		flags_
 	);
-}
-
-void Query::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
-{
-	timeInterval_ = timeInterval;
-	o_timeInterval_ = (timeInterval_ ?
-					   std::optional<const TimeInterval*>(timeInterval_.get()) :
-					   std::optional<const TimeInterval*>(std::nullopt));
-}
-
-void Query::setConfidenceInterval(const std::shared_ptr<ConfidenceInterval> &confidenceInterval)
-{
-	confidenceInterval_ = confidenceInterval;
-	o_confidenceInterval_ = (confidenceInterval_ ?
-					 std::optional<const ConfidenceInterval*>(confidenceInterval_.get()) :
-					 std::optional<const ConfidenceInterval*>(std::nullopt));
 }
 
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q) //NOLINT
 	{
+	    // TODO: include modal frame in ostream
 		os << *q.formula();
 		return os;
 	}

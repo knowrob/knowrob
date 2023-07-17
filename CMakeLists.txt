@@ -154,7 +154,7 @@ add_library(knowrob_qa SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
 		src/queries/Query.cpp
-		src/queries/QueryInstance.cpp
+		src/queries/AllocatedQuery.cpp
 		src/queries/QueryError.cpp
         src/queries/Answer.cpp
 		src/queries/AnswerStream.cpp
@@ -164,8 +164,8 @@ add_library(knowrob_qa SHARED
 		src/queries/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-        src/queries/MultiModalPipeline.cpp
-		src/queries/BufferedAnswers.cpp
+        src/queries/QueryPipeline.cpp
+		src/queries/AnswerBuffer.cpp
 		src/semweb/PrefixRegistry.cpp
 		src/semweb/KnowledgeGraph.cpp
 		src/semweb/GraphPattern.cpp
@@ -216,7 +216,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/TripleCursor.cpp
 		src/mongodb/AnswerCursor.cpp
 		src/mongodb/aggregation/terms.cpp
-		src/mongodb/aggregation/triples.cpp)
+		src/mongodb/aggregation/triples.cpp src/queries/QueryStage.cpp include/knowrob/queries/QueryStage.h include/knowrob/modalities/ModalFrame.cpp include/knowrob/modalities/ModalFrame.h)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

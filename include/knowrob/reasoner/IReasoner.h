@@ -14,11 +14,14 @@
 #include <fmt/core.h>
 
 #include "knowrob/terms/Term.h"
-#include "knowrob/queries/QueryInstance.h"
+#include "knowrob/queries/AllocatedQuery.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
 #include "knowrob/Statement.h"
 #include "knowrob/semweb/GraphPattern.h"
+#include "knowrob/queries/AnswerBuffer.h"
+#include "knowrob/formulas/Literal.h"
+#include "knowrob/semweb/GraphQuery.h"
 
 namespace knowrob {
 	/**
@@ -26,15 +29,17 @@ namespace knowrob {
 	 * Flags can be combined into a bitmask of all reasoner capabilities.
 	 */
 	enum ReasonerCapability : unsigned long {
-		CAPABILITY_NONE = 0x0,
+		CAPABILITY_NONE = 1 << 0,
 		/** The reasoner can answer conjunctive queries */
-		CAPABILITY_CONJUNCTIVE_QUERIES = 0x1,
+		CAPABILITY_CONJUNCTIVE_QUERIES = 1 << 1,
 		/** The reasoner can answer disjunctive queries */
-		CAPABILITY_DISJUNCTIVE_QUERIES = 0x2,
+		CAPABILITY_DISJUNCTIVE_QUERIES = 1 << 2,
+        CAPABILITY_TOP_DOWN_EVALUATION  = 1 << 3,
+        CAPABILITY_BOTTOM_UP_EVALUATION = 1 << 4
         /** The reasoner can store/recover data to/from a local path. */
-        CAPABILITY_IMPORT_EXPORT = 0x4,
+        //CAPABILITY_IMPORT_EXPORT = 0x4,
         /** The reasoner can insert new facts into the knowledge base at runtime. */
-        CAPABILITY_DYNAMIC_ASSERTIONS = 0x8
+        //CAPABILITY_DYNAMIC_ASSERTIONS = 0x8
 	};
 	
 	/**
@@ -101,47 +106,7 @@ namespace knowrob {
         virtual void stopGraphCompletion(uint32_t requestID, bool isImmediateStopRequested) = 0;
          */
 
-
-		/**
-		 * Indicate that a new query needs to be evaluated.
-		 * Note that different instances of @uninstantiatedQuery are to be evaluated.
-		 * Answers computed over all instances of the query can be published via a
-		 * shared message channel.
-		 * @param queryID a query ID
-		 * @param outputStream an output stream where answers can be published
-		 * @param goal a query
-		 * @deprecated
-		 */
-		virtual void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) = 0;
-
-		/**
-		 * Adds a substitution to an active query request.
-		 * The substitution is used to create an instance of the input query.
-		 * Note that this function is eventually called rapidly many times in case many
-		 * different substitutions are generated e.g. through other sub-queries.
-		 * @param queryID a query ID
-		 * @param substitution a substitution
-		 * @deprecated
-		 */
-		virtual void runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance) = 0;
-		
-		/**
-		 * Indicate that a query has been completed, i.e. that no further
-		 * substitutions will be added to the query request.
-		 * Note that query evaluation may still be in progress when this function is called.
-		 * A flag is used to indicate to the reasoner whether it should stop evaluation immediately,
-		 * or whether it should complete the evaluation before finishing the query request.
-		 * Note that this flag is just a request, and a reasoner may not be able to immediately stop.
-		 * In such a case it is also ok if the reasoner stops as soon as possible.
-		 * The call should further be non-blocking, i.e. it should not wait for the reasoner being
-		 * done with the query.
-		 * @param queryID a query ID
-		 * @param isImmediateStopRequested a flag indicating whether a reasoner may stop query evaluation immediately
-		 * @deprecated
-		 */
-		virtual void finishQuery(uint32_t queryID,
-								 const std::shared_ptr<AnswerStream::Channel> &outputStream,
-								 bool isImmediateStopRequested) = 0;
+        virtual bool runQuery(const AllocatedQueryPtr &query) = 0;
 
         /**
          * Project a statement into the extensional database (EDB) where factual
@@ -149,7 +114,7 @@ namespace knowrob {
          * @param statement A statement.
          * @return true if the statement was inserted into the EDB used by the reasoner.
          */
-        virtual bool projectIntoEDB(const Statement &statement) { return false; }
+        //virtual bool projectIntoEDB(const Statement &statement) { return false; }
 
         /**
          * Export data to local filesystem.
@@ -157,7 +122,7 @@ namespace knowrob {
          * @param path an existing local filesystem path.
          * @return true on success.
          */
-        virtual bool exportData(const std::filesystem::path &path) { return false; }
+        //virtual bool exportData(const std::filesystem::path &path) { return false; }
 
         /**
          * Import data from local filesystem.
@@ -165,7 +130,7 @@ namespace knowrob {
          * @param path an existing local filesystem path.
          * @return true on success.
          */
-        virtual bool importData(const std::filesystem::path &path) { return false; }
+        //virtual bool importData(const std::filesystem::path &path) { return false; }
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;

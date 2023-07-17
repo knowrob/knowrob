@@ -7,13 +7,21 @@
 
 #include "Modality.h"
 
+#include <utility>
+
 namespace knowrob {
     /**
-     * Epistemic label are concerned with knowledge and belief.
+     * Epistemic is concerned with knowledge and belief.
      */
     class EpistemicModality : public Modality {
     public:
-        EpistemicModality() : Modality() {}
+        explicit EpistemicModality(const std::optional<std::string> &agent)
+        : agent_(agent), Modality() {}
+
+        const std::optional<std::string>& agent() const { return agent_; }
+
+    protected:
+        const std::optional<std::string> agent_;
     };
 
 } // knowrob

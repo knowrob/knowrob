@@ -74,7 +74,7 @@ namespace knowrob {
      */
     class LabeledLiteral : public Literal {
     public:
-        LabeledLiteral(const FormulaLabelPtr &label, const PredicatePtr &predicate, bool isNegated)
+        LabeledLiteral(const ModalityLabelPtr &label, const PredicatePtr &predicate, bool isNegated)
         : Literal(predicate, isNegated), label_(label) {}
 
         /**
@@ -83,7 +83,7 @@ namespace knowrob {
         const auto& label() const { return label_; }
 
     protected:
-        const FormulaLabelPtr label_;
+        const ModalityLabelPtr label_;
     };
 
     using LiteralPtr = std::shared_ptr<Literal>;

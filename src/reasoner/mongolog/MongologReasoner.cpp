@@ -37,8 +37,7 @@ unsigned long MongologReasoner::getCapabilities() const
 {
     return CAPABILITY_CONJUNCTIVE_QUERIES |
            CAPABILITY_DISJUNCTIVE_QUERIES |
-           CAPABILITY_IMPORT_EXPORT |
-           CAPABILITY_DYNAMIC_ASSERTIONS;
+           CAPABILITY_TOP_DOWN_EVALUATION;
 }
 
 bool MongologReasoner::initializeDefaultPackages()
@@ -96,6 +95,7 @@ const functor_t& MongologReasoner::callFunctor()
 	return call_f;
 }
 
+/*
 bool MongologReasoner::projectIntoEDB(const Statement &statement)
 {
     // FIXME: handle time interval and confidence value!
@@ -120,7 +120,7 @@ bool MongologReasoner::exportData(const std::filesystem::path &path)
     }));
     return eval(mng_dump, nullptr, false);
 }
-
+*/
 
 static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_reasonerManager,
                                                                     term_t t_reasonerModule)
@@ -164,7 +164,7 @@ foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
     if(mongolog && PL_get_atom_chars(t_ontologyURI, &ontologyURI)) {
         auto &kg = mongolog->knowledgeGraph();
 
-        if(!kg->loadTriples(ontologyURI, TripleFormat::RDF_XML)) return false;
+        if(!kg->loadTriples(ontologyURI, TripleFormat::RDF_XML, std::nullopt)) return false;
 
         char *parentGraph;
         if(!PL_is_variable(t_parentGraph) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {
@@ -298,7 +298,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
             }
         }
 
-        mongolog->knowledgeGraph()->assertTriple(tripleData);
+        mongolog->knowledgeGraph()->insert(tripleData);
         return true;
     }
     return false;

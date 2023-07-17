@@ -8,6 +8,7 @@
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceValue.h"
+#include "knowrob/modalities/ModalityLabel.h"
 
 namespace knowrob {
 
@@ -34,6 +35,8 @@ namespace knowrob {
          */
         void setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidenceValue);
 
+        void setModality(const ModalityLabelPtr &modality);
+
         /**
          * @return an optional time interval of this query.
          */
@@ -44,12 +47,15 @@ namespace knowrob {
          */
         const std::optional<const ConfidenceValue*>& confidenceValue() const { return o_confidenceValue_; }
 
+        const ModalityLabelPtr& modality() const { return modality_; }
+
     protected:
         const PredicatePtr predicate_;
         std::shared_ptr<TimeInterval> timeInterval_;
         std::shared_ptr<ConfidenceValue> confidenceValue_;
         std::optional<const TimeInterval*> o_timeInterval_;
         std::optional<const ConfidenceValue*> o_confidenceValue_;
+        ModalityLabelPtr modality_;
     };
 
 } // knowrob

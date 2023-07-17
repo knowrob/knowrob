@@ -12,7 +12,7 @@
 #include "knowrob/semweb/Vocabulary.h"
 #include "Collection.h"
 #include "Cursor.h"
-#include "knowrob/queries/BufferedAnswers.h"
+#include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
 #include "knowrob/mongodb/AnswerCursor.h"
@@ -24,32 +24,15 @@ namespace knowrob {
      */
     class MongoKnowledgeGraph : public knowrob::KnowledgeGraph {
     public:
-        explicit MongoKnowledgeGraph(const char* db_uri="mongodb://localhost:27017",
-                                     const char* db_name="knowrob",
-                                     const char* collectionName="triples");
+        explicit MongoKnowledgeGraph(
+                ThreadPool *threadPool,
+                const char* db_uri="mongodb://localhost:27017",
+                const char* db_name="knowrob",
+                const char* collectionName="triples");
 
-        explicit MongoKnowledgeGraph(const boost::property_tree::ptree &config);
+        explicit MongoKnowledgeGraph(ThreadPool *threadPool, const boost::property_tree::ptree &config);
 
         const auto& importHierarchy() const { return importHierarchy_; }
-
-        /**
-         * Lookup up all matching triples.
-         * @param tripleExpression a triple expression
-         * @return a cursor over matching triples
-         */
-        mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
-
-        mongo::AnswerCursorPtr lookupTriples(const TripleData &tripleData)
-        { return lookupTriples(semweb::TripleExpression(tripleData)); }
-
-        /**
-         * Lookup up a path of matching triples.
-         * The lookup pipeline includes a step for each expression in the vector
-         * in the same order as the expressions are ordered in the vector.
-         * @param tripleExpressions a vector of triple expressions
-         * @return a cursor over matching triples
-         */
-        mongo::AnswerCursorPtr lookupTriplePaths(const std::vector<semweb::TripleExpression> &tripleExpressions);
 
         /**
          * (re)create search indices.
@@ -75,25 +58,47 @@ namespace knowrob {
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
 
         // Override KnowledgeGraph
-        void assertTriple(const TripleData &tripleData) override;
+        bool insert(const TripleData &tripleData) override;
 
         // Override KnowledgeGraph
-        void assertTriples(const std::vector<TripleData> &tripleData) override;
+        bool insert(const std::vector<TripleData> &tripleData) override;
 
         // Override KnowledgeGraph
-        void removeAllTriples(const semweb::TripleExpression &tripleExpression) override;
+        void removeAll(const semweb::TripleExpression &tripleExpression) override;
 
         // Override KnowledgeGraph
-        void removeOneTriple(const semweb::TripleExpression &tripleExpression) override;
+        void removeOne(const semweb::TripleExpression &tripleExpression) override;
 
         // Override KnowledgeGraph
-        BufferedAnswersPtr submitQuery(const GraphQueryPtr &literal) override;
+        bool loadTriples(
+                const std::string_view &uriString,
+                TripleFormat format,
+                const std::optional<ModalIteration> &modality) override;
 
         // Override KnowledgeGraph
-        BufferedAnswersPtr watchQuery(const GraphQueryPtr &literal) override;
+        void evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream) override;
 
         // Override KnowledgeGraph
-        bool loadTriples(const std::string_view &uriString, TripleFormat format) override;
+        AnswerBufferPtr watchQuery(const GraphQueryPtr &literal) override;
+
+        /**
+         * Lookup up all matching triples.
+         * @param tripleExpression a triple expression
+         * @return a cursor over matching triples
+         */
+        mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
+
+        mongo::AnswerCursorPtr lookupTriples(const TripleData &tripleData)
+        { return lookupTriples(semweb::TripleExpression(tripleData)); }
+
+        /**
+         * Lookup up a path of matching triples.
+         * The lookup pipeline includes a step for each expression in the vector
+         * in the same order as the expressions are ordered in the vector.
+         * @param tripleExpressions a vector of triple expressions
+         * @return a cursor over matching triples
+         */
+        mongo::AnswerCursorPtr lookupTriplePaths(const std::list<semweb::TripleExpression> &tripleExpressions);
 
     protected:
         std::shared_ptr<mongo::Collection> tripleCollection_;

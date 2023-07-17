@@ -13,19 +13,9 @@ namespace knowrob {
      */
     class BeliefModality : public EpistemicModality {
 	protected:
-		BeliefModality();
+		explicit BeliefModality(const std::optional<std::string> &agent={});
 
     public:
-		/**
-		 * @return the belief modality singleton.
-		 */
-		static const BeliefModality* get();
-
-		/**
-		 * @return the belief operator `B`
-		 */
-		static const ModalOperatorPtr& B();
-
         // Override Modality
         bool isSerial() const override;
 

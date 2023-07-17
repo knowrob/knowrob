@@ -7,8 +7,8 @@
 
 using namespace knowrob;
 
-KnowledgeModality::KnowledgeModality()
-: EpistemicModality() {}
+KnowledgeModality::KnowledgeModality(const std::optional<std::string> &agent)
+: EpistemicModality(agent) {}
 
 const KnowledgeModality* KnowledgeModality::get()
 {
@@ -36,6 +36,7 @@ bool KnowledgeModality::isDense()      const { return false; }
 ModalOperatorPtr KnowledgeModality::reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const
 {
     // "to know to belief" is simply "to belief"
+    // FIXME: take agent into account
     if(b->modality()==BeliefModality::get()) { return b; }
 
     return {};

@@ -119,7 +119,7 @@ namespace knowrob {
      * Here, labeled literal are considered.
      * The graph is made of nodes labeled with a modality that contain groups of literals.
      * Literals that are part of the same node are all evaluated wrt. the modality label of this node.
-     * The dependency dependency relation is rather computed between these modality groups.
+     * The dependency relation is rather computed between these modality groups.
      */
     class DependencyGraph {
     public:

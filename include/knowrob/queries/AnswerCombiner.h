@@ -24,14 +24,14 @@ namespace knowrob {
 		AnswerCombiner();
 	
 	protected:
-		AnswerBuffer buffer_;
+        AnswerMap buffer_;
 		std::mutex buffer_mutex_;
 
 		// Override QueryResultStream
 		void push(const Channel &channel, const AnswerPtr &msg) override;
 		
 		void genCombinations(uint32_t pushedChannelID,
-                             AnswerBuffer::iterator it,
+                             AnswerMap::iterator it,
                              std::shared_ptr<Answer> &combinedResult);
 	};
 }

@@ -6,28 +6,9 @@
 
 using namespace knowrob;
 
-PastModality::PastModality()
-: TemporalModality()
+PastModality::PastModality(const std::optional<TimeInterval> &timeInterval)
+: TemporalModality(timeInterval)
 {}
-
-const PastModality* PastModality::get()
-{
-    static PastModality instance;
-    return &instance;
-}
-
-const ModalOperatorPtr& PastModality::P()
-{
-    static const auto op = std::make_shared<ModalOperator>(
-            get(), ModalOperatorType::POSSIBILITY);
-    return op;
-}
-
-const ModalOperatorPtr& PastModality::H() {
-    static const auto op = std::make_shared<ModalOperator>(
-            get(), ModalOperatorType::NECESSITY);
-    return op;
-}
 
 const char* PastModality::necessity_symbol()   const { return "P"; }
 const char* PastModality::possibility_symbol() const { return "H"; }

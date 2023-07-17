@@ -6,6 +6,7 @@
 #define KNOWROB_TIME_MODALITY_H
 
 #include "Modality.h"
+#include "TimeInterval.h"
 
 namespace knowrob {
     /**
@@ -13,7 +14,13 @@ namespace knowrob {
      */
     class TemporalModality : public Modality {
     public:
-        TemporalModality() : Modality() {}
+        explicit TemporalModality(const std::optional<TimeInterval> &timeInterval)
+        : timeInterval_(timeInterval), Modality() {}
+
+        const std::optional<TimeInterval>& timeInterval() const { return timeInterval_; }
+
+    protected:
+        const std::optional<TimeInterval> timeInterval_;
     };
 } // knowrob
 

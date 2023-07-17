@@ -182,7 +182,8 @@ Blackboard::Stream::Stream(
   hasStopRequest_(false)
 {
 	// tell the reasoner that a new request has been made
-	(*reasoner_)()->startQuery(queryID_, goal);
+	// FIXME: remove blackboard class
+	//(*reasoner_)()->startQuery(queryID_, goal);
 }
 
 Blackboard::Stream::~Stream()
@@ -201,7 +202,8 @@ void Blackboard::Stream::push(const AnswerPtr &msg)
 			isQueryOpened_ = false;
 			// FIXME: need to call finishQuery if exception happens in runner!!
 			//          else consumer will never be called with EOS
-			(*reasoner_)()->finishQuery(queryID_, outputStream_, hasStopRequest());
+            // FIXME: remove blackboard class
+			//(*reasoner_)()->finishQuery(queryID_, outputStream_, hasStopRequest());
 		}
 	}
 	else if(!isQueryOpened()) {
@@ -209,9 +211,10 @@ void Blackboard::Stream::push(const AnswerPtr &msg)
 	}
 	else {
 		// evaluate an instance of the input query
-		auto queryInstance = std::make_shared<QueryInstance>(
+		auto queryInstance = std::make_shared<AllocatedQuery>(
 				goal_, outputStream_, msg);
-		(*reasoner_)()->runQueryInstance(queryID_, queryInstance);
+        // FIXME: remove blackboard class
+		//(*reasoner_)()->runQueryInstance(queryID_, queryInstance);
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 #include "knowrob/reasoner/prolog/PrologQueryRunner.h"
+#include "knowrob/queries/QueryEngine.h"
 
 using namespace knowrob;
 
@@ -80,6 +81,8 @@ void PrologQueryRunner::run()
         PrologQuery::putScope(solution, solution_scope);
 		// push the solution into the output stream
 		request_.queryInstance->pushSolution(solution);
+
+		if(request_.goal->flags() & QUERY_FLAG_ONE_SOLUTION) break;
 	}
 
 	// construct exception term
@@ -96,7 +99,7 @@ void PrologQueryRunner::run()
 	// free up resources
 	PL_close_query(qid);
 	// notify PrologReasoner about runner being done
-	reasoner_->finishRunner(request_.queryID, this);
+	//reasoner_->finishRunner(request_.queryID, this);
 
 	// make sure EOS is published on output stream
 	if(sendEOS_) request_.queryInstance->pushEOS();
@@ -107,19 +110,24 @@ void PrologQueryRunner::run()
 term_t PrologQueryRunner::createContextTerm(
         term_t solutionScopeVar, term_t predicatesVar)
 {
+    // TODO: reconsider encoding of ModalFrame as term, below only time-interval is handled.
+    //       so better change "query_scope" and "solution_scope" below. This will need changes in
+    //       "call" predicates of Prolog and Mongolog where these terms are processed.
+    // e.g. add to options `epistemic(know|belief, [Agent])` and `temporal(past, [(min,max),(min,max)])`
+
     static const auto time_key = PL_new_atom("time");
-    static const auto confidence_key = PL_new_atom("confidenceInterval");
+    //static const auto confidence_key = PL_new_atom("confidenceInterval");
 
     static const auto query_scope_f = PL_new_functor(PL_new_atom("query_scope"), 1);
     static const auto solution_scope_f = PL_new_functor(PL_new_atom("solution_scope"), 1);
     static const auto predicates_f = PL_new_functor(PL_new_atom("predicates"), 1);
 
-    auto &timeInterval = request_.queryInstance->timeInterval();
-    auto &confidenceInterval = request_.queryInstance->confidenceInterval();
+    auto &timeInterval = request_.queryInstance->modalFrame().timeInterval();
+    //auto &confidenceInterval = request_.queryInstance->confidenceInterval();
 
     int numScopeKeys = 0;
     if(timeInterval.has_value())       numScopeKeys += 1;
-    if(confidenceInterval.has_value()) numScopeKeys += 1;
+    //if(confidenceInterval.has_value()) numScopeKeys += 1;
 
     // create an option list
     auto listTerm = PL_new_term_ref();
@@ -132,13 +140,13 @@ term_t PrologQueryRunner::createContextTerm(
 
         int keyIndex = 0;
         if(timeInterval.has_value()) {
-            PrologQuery::putTerm(scopeValues, *timeInterval.value());
+            PrologQuery::putTerm(scopeValues, timeInterval.value());
             scopeKeys[keyIndex++] = time_key;
         }
-        if(confidenceInterval.has_value()) {
-            PrologQuery::putTerm(scopeValues+keyIndex, *confidenceInterval.value());
-            scopeKeys[keyIndex++] = confidence_key;
-        }
+        //if(confidenceInterval.has_value()) {
+        //    PrologQuery::putTerm(scopeValues+keyIndex, *confidenceInterval.value());
+        //    scopeKeys[keyIndex++] = confidence_key;
+        //}
 
         auto dictTerm = PL_new_term_ref();
         auto queryScopeOption = PL_new_term_ref();

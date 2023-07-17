@@ -45,28 +45,21 @@ namespace knowrob {
 				const std::shared_ptr<PredicateIndicator> &indicator) override;
 
 		// Override IReasoner
-		void startQuery(uint32_t queryID, const std::shared_ptr<const Query> &uninstantiatedQuery) override;
+        bool runQuery(const AllocatedQueryPtr &query) override;
 
-		// Override IReasoner
-		void runQueryInstance(uint32_t queryID, const QueryInstancePtr &queryInstance) override;
-
-		// Override IReasoner
-		void finishQuery(uint32_t queryID,
-						 const std::shared_ptr<AnswerStream::Channel> &outputStream,
-						 bool isImmediateStopRequested) override;
 	protected:
 		static std::shared_ptr<BuiltinEvaluator> singleton_;
 		// maps predicate indicator to builtin implementation
 		std::map<PredicateIndicator, std::function<void(
-				const QueryInstancePtr&,
+				const AllocatedQueryPtr&,
 				const std::vector<TermPtr>&)>> builtins_;
 
 		static void pushSubstitution1(
-				const QueryInstancePtr &queryInstance,
+				const AllocatedQueryPtr &queryInstance,
 				Variable &var, const TermPtr& value);
 
 		// builtin implementations
-		void atom_concat3(const QueryInstancePtr &queryInstance, const std::vector<TermPtr> &args);
+		void atom_concat3(const AllocatedQueryPtr &queryInstance, const std::vector<TermPtr> &args);
 	};
 }
 

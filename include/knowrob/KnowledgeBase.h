@@ -15,56 +15,32 @@
 #include "knowrob/semweb/KnowledgeGraph.h"
 #include "Statement.h"
 #include "knowrob/queries/AnswerQueue.h"
-#include "knowrob/queries/MultiModalPipeline.h"
+#include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryEngine.h"
+#include "ThreadPool.h"
 
 namespace knowrob {
 	class KnowledgeBase : public QueryEngine {
 	public:
 		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
-        /**
-         * Each KnowledgeBase uses a central knowledge graph that represents
-         * different characteristics of agents, task they execute and environments
-         * in which tasks are executed.
-         * @return a knowledge graph.
-         */
-        const auto& knowledgeGraph() const { return knowledgeGraph_; }
+        ThreadPool& threadPool() { return threadPool_; }
 
-        /**
-         * Project a statement into the extensional database (EDB) where factual
-         * knowledge is stored. However, each reasoner may use its own EDB backend.
-         * Per default the given statement is projected into each known EDB where
-         * the reasoner defines the predicate referred to in the query.
-         * A particular EDB backend can be selected via the @reasonerID parameter.
-         * @param statement A statement.
-         * @param reasonerID The ID of a reasoner or '*' to select all.
-         * @return true if the statement was inserted into at least one EDB.
-         */
-        bool projectIntoEDB(const Statement &statement, const std::string &reasonerID="*");
+        bool insert(const TripleData &tripleData);
 
-        /**
-         * Projects a series of statements into extensional databases (EDBs) where factual
-         * knowledge is stored.
-         * @param statement A statement.
-         * @param reasonerID The ID of a reasoner or '*' to select all.
-         * @return true if the statement was inserted into at least one EDB.
-         */
-        bool projectIntoEDB(const std::list<Statement> &statements, const std::string &reasonerID="*");
+        bool insert(const std::vector<TripleData> &tripleData);
 
         // Override QueryEngine
-        BufferedAnswersPtr submitQuery(const FormulaPtr &query, int queryFlags) override;
+        AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags) override;
 
         // Override QueryEngine
-        BufferedAnswersPtr submitQuery(const std::vector<LiteralPtr> &literal,
-                                       const ModalityLabelPtr &label,
-                                       int queryFlags) override;
+        AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery) override;
 
         // Override QueryEngine
-        BufferedAnswersPtr submitQuery(const LiteralPtr &query, int queryFlags) override;
+        AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags) override;
 
         // Override QueryEngine
-        BufferedAnswersPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) override;
+        AnswerBufferPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) override;
 
         /**
          * @param query
@@ -76,7 +52,7 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
         std::list<KnowledgeGraphPtr> knowledgeGraphs_;
-        std::list<MultiModalPipeline> pipelines_;
+        ThreadPool threadPool_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};

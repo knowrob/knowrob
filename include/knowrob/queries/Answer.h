@@ -119,11 +119,11 @@ namespace knowrob {
 		bool combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval,
 								 Reversible *changes= nullptr);
 
-		friend class QueryInstance;
+		friend class AllocatedQuery;
 	};
 	// alias
 	using AnswerPtr = std::shared_ptr<const Answer>;
-	using AnswerBuffer = std::map<uint32_t, std::list<AnswerPtr>>;
+	using AnswerMap = std::map<uint32_t, std::list<AnswerPtr>>;
 
     class QueryResultHandler {
     public:

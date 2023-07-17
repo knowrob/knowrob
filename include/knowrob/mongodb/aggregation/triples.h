@@ -38,6 +38,10 @@ namespace knowrob::mongo::aggregation
                 bson_t *selectorDoc,
                 const semweb::TripleExpression &tripleExpression);
 
+    void appendAgentSelector(
+                bson_t *selectorDoc,
+                const semweb::TripleExpression &tripleExpression);
+
     void appendTimeSelector(
                 bson_t *selectorDoc,
                 const semweb::TripleExpression &tripleExpression);
@@ -56,7 +60,7 @@ namespace knowrob::mongo::aggregation
             aggregation::Pipeline &pipeline,
             const std::string_view &collection,
             const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-            const std::vector<semweb::TripleExpression> &tripleExpressions);
+            const std::list<semweb::TripleExpression> &tripleExpressions);
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TRIPLES_H

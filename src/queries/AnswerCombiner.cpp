@@ -34,13 +34,12 @@ void AnswerCombiner::push(const Channel &channel, const AnswerPtr &msg)
 
 void AnswerCombiner::genCombinations( //NOLINT
 		uint32_t pushedChannelID,
-        AnswerBuffer::iterator it,
+        AnswerMap::iterator it,
         std::shared_ptr<Answer> &combinedResult)
 {
 	if(it == buffer_.end()) {
 		// end reached, push combination
 		// note: need to create a new SubstitutionPtr due to the rollBack below.
-		// TODO: it could be that the same combination is generated multiple times, avoid redundant push here?
 		AnswerBroadcaster::push(std::make_shared<Answer>(*combinedResult));
 	}
 	else if(it->first == pushedChannelID) {

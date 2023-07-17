@@ -36,33 +36,6 @@ namespace knowrob {
 
         ModalFormula(const ModalFormula &other, const Substitution &sub);
     };
-
-    namespace modality {
-        /**
-         * Apply modal operator "B" to a formula.
-         * @param phi a formula.
-         * @return a modal formula.
-         */
-        std::shared_ptr<ModalFormula> B(const FormulaPtr &phi);
-        /**
-         * Apply modal operator "K" to a formula.
-         * @param phi a formula.
-         * @return a modal formula.
-         */
-        std::shared_ptr<ModalFormula> K(const FormulaPtr &phi);
-        /**
-         * Apply modal operator "P" to a formula.
-         * @param phi a formula.
-         * @return a modal formula.
-         */
-        std::shared_ptr<ModalFormula> P(const FormulaPtr &phi);
-        /**
-         * Apply modal operator "H" to a formula.
-         * @param phi a formula.
-         * @return a modal formula.
-         */
-        std::shared_ptr<ModalFormula> H(const FormulaPtr &phi);
-    } // modality
 } // knowrob
 
 

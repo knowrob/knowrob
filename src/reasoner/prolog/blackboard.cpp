@@ -130,6 +130,7 @@ PREDICATE(kb_project1, 1)
 PREDICATE(kb_unproject, 3)
 */
 
+/*
 inline foreign_t qa_remember(ReasonerManager *reasonerManager,
                              const std::filesystem::path &path,
                              const std::string &reasonerName)
@@ -262,11 +263,12 @@ foreign_t pl_qa_memorize3(term_t t_reasonerManager, term_t t_path, term_t t_opti
 
     return false;
 }
+*/
 
 PL_extension qa_predicates[] = {
         { "qa_call", 2, (pl_function_t)pl_qa_call2, PL_FA_NONDETERMINISTIC },
         { "qa_call", 4, (pl_function_t)pl_qa_call4, PL_FA_NONDETERMINISTIC },
-        { "qa_remember", 3, (pl_function_t)pl_qa_remember3, 0 },
-        { "qa_memorize", 3, (pl_function_t)pl_qa_memorize3, 0 },
+        //{ "qa_remember", 3, (pl_function_t)pl_qa_remember3, 0 },
+        //{ "qa_memorize", 3, (pl_function_t)pl_qa_memorize3, 0 },
         { nullptr,   0, nullptr, 0 }
 };
