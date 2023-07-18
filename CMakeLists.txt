@@ -184,7 +184,6 @@ add_library(knowrob_qa SHARED
 		src/reasoner/ReasonerPlugin.cpp
 		src/reasoner/IReasoner.cpp
 		src/reasoner/ReasoningGraph.cpp
-		src/reasoner/Blackboard.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
         src/reasoner/HybridReasoner.cpp

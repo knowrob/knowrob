@@ -7,7 +7,9 @@
 
 using namespace knowrob;
 
-BeliefModality::BeliefModality(const std::optional<std::string> &agent)
+BeliefModality::BeliefModality() : EpistemicModality() {}
+
+BeliefModality::BeliefModality(const std::string_view &agent)
 : EpistemicModality(agent) {}
 
 const char* BeliefModality::necessity_symbol()   const { return "B"; }
@@ -20,11 +22,27 @@ bool BeliefModality::isReflexive()  const { return false; }
 bool BeliefModality::isSymmetric()  const { return false; }
 bool BeliefModality::isDense()      const { return false; }
 
+ModalOperatorPtr BeliefModality::B()
+{
+    static auto modality = std::make_shared<BeliefModality>();
+    static auto beliefOperator =
+        std::make_shared<ModalOperator>(modality, ModalOperatorType::POSSIBILITY);
+    return beliefOperator;
+}
+
+ModalOperatorPtr BeliefModality::B(const std::string_view &agent)
+{
+    auto modality = std::make_shared<BeliefModality>(agent);
+    return std::make_shared<ModalOperator>(modality, ModalOperatorType::POSSIBILITY);
+}
+
 ModalOperatorPtr BeliefModality::reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const
 {
     // to "belief to know" is simply to know
-    // FIXME: take agent into account
-    if(b->modality()==KnowledgeModality::get()) { return b; }
+    if(b->modality().modalityType()==ModalityType::Epistemic && b->isModalNecessity()) {
+        auto *knowledgeModality = (KnowledgeModality*)&b->modality();
+        if(this->agent() == knowledgeModality->agent()) return b;
+    }
 
     return {};
 }

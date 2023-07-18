@@ -15,10 +15,10 @@ ModalFrame::ModalFrame()
 ModalFrame::ModalFrame(const ModalIteration &modalIteration)
 {
     for(auto &x : modalIteration) {
-        if(dynamic_cast<const EpistemicModality *>(x->modality())) {
+        if(x->modality().modalityType() == ModalityType::Epistemic) {
             epistemicOperator_ = x;
         }
-        else if(dynamic_cast<const PastModality *>(x->modality())) {
+        else if(x->modality().modalityType() == ModalityType::Temporal_Past) {
             pastOperator_ = x;
         }
         else {
@@ -60,7 +60,7 @@ bool ModalFrame::isAboutPast() const
 const std::optional<std::string>& ModalFrame::agent() const
 {
     if(epistemicOperator_) {
-        auto epistemicModality = (EpistemicModality*)epistemicOperator_->modality();
+        auto epistemicModality = (EpistemicModality*)&epistemicOperator_->modality();
         return epistemicModality->agent();
     }
     else {
@@ -72,7 +72,7 @@ const std::optional<std::string>& ModalFrame::agent() const
 const std::optional<TimeInterval>& ModalFrame::timeInterval() const
 {
     if(pastOperator_) {
-        auto pastModality = (PastModality*)pastOperator_->modality();
+        auto pastModality = (PastModality*)&pastOperator_->modality();
         return pastModality->timeInterval();
     }
     else {

@@ -15,10 +15,14 @@ namespace knowrob {
      */
     class EpistemicModality : public Modality {
     public:
-        explicit EpistemicModality(const std::optional<std::string> &agent)
+        EpistemicModality() : agent_(std::nullopt), Modality() {}
+
+        explicit EpistemicModality(const std::string_view &agent)
         : agent_(agent), Modality() {}
 
         const std::optional<std::string>& agent() const { return agent_; }
+
+        ModalityType modalityType() const override { return ModalityType::Epistemic; }
 
     protected:
         const std::optional<std::string> agent_;

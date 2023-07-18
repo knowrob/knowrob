@@ -14,16 +14,15 @@ std::list<semweb::TripleExpression> GraphQuery::asTripleExpression()
     std::list<semweb::TripleExpression> out;
     auto expressions = std::list<semweb::TripleExpression>();
 
-    auto o_epistemic = modalFrame_.epistemicOperator();
-    auto o_past = modalFrame_.pastOperator();
+    auto epistemicOperator = modalFrame_.epistemicOperator();
+    auto pastOperator = modalFrame_.pastOperator();
 
     for(auto &lit : literals())
     {
         auto &expr = expressions.emplace_back(lit->predicate());
 
-        if(o_epistemic) {
-            auto epistemicOperator = o_epistemic.value();
-            auto epistemicModality = (const EpistemicModality*) epistemicOperator->modality();
+        if(epistemicOperator) {
+            auto epistemicModality = (const EpistemicModality*) &epistemicOperator->modality();
             auto o_agent = epistemicModality->agent();
             if(o_agent) {
                 expr.setAgentTerm(o_agent.value());
@@ -33,17 +32,16 @@ std::list<semweb::TripleExpression> GraphQuery::asTripleExpression()
             }
         }
 
-        if(o_past) {
-            auto temporalOperator = o_temporal.value();
-            auto pastModality = dynamic_cast<const PastModality*>(temporalOperator->modality());
+        if(pastOperator) {
+            auto pastModality = (const PastModality*) &pastOperator->modality();
             if(pastModality) {
                 // TODO: allow quantified time intervals in past modality
-                if(temporalOperator->isModalPossibility()) {
+                if(pastOperator->isModalPossibility()) {
                     // include all triples before the current time point
                     expr.setBeginOperator(semweb::TripleExpression::LT);
                     expr.setBeginTerm(std::make_shared<DoubleTerm>(TimePoint::now().value()));
                 }
-                else if(temporalOperator->isModalNecessity()) {
+                else if(pastOperator->isModalNecessity()) {
                     // include only triples that were always true in the past
                     // TODO: reconsider how this case should be encoded in triple expressions
                     expr.setBeginOperator(semweb::TripleExpression::LEQ);

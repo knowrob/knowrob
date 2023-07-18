@@ -155,7 +155,7 @@ public:
 		try {
 			// parse query
 			auto phi = QueryParser::parse(queryString);
-			auto query = std::make_shared<Query>(phi);
+			auto query = std::make_shared<Query>(phi, QUERY_FLAG_ALL_SOLUTIONS);
 
             if(query->formula()->type() == FormulaType::PREDICATE) {
                 // special handling for some predicates
@@ -191,9 +191,17 @@ public:
     void projectStatement(const PredicatePtr &p) {
         if(p->indicator()->arity() == 1) {
             auto &arg = p->arguments()[0];
-            if(arg->type() == TermType::PREDICATE) {
+            if(arg->type() == TermType::PREDICATE && arg) {
                 auto arg_p = std::static_pointer_cast<Predicate>(arg);
-                kb_.insert(Statement(arg_p));
+                if(arg_p->indicator()->arity() == 2) {
+                    // TODO: insert triple data, there should be some helper to extract triple data from Predicate!
+                    //       maybe ust add "asTripleData" to Predicate?
+                    //kb_.insert(TripleData(...));
+                    KB_WARN("triple assertion not implemented yet in terminal");
+                }
+                else {
+                    KB_WARN("the argument of project must be a 2-ary predicate");
+                }
             }
             else {
                 KB_WARN("the argument of project is not a predicate in '{}'", *p);

@@ -14,10 +14,34 @@ namespace knowrob {
      * The operator "H" is the dual of "P" where `Hq` stands for "it is and was always the case that q".
      */
     class PastModality : public TemporalModality {
-	protected:
-		explicit PastModality(const std::optional<TimeInterval> &timeInterval={});
-
 	public:
+        PastModality();
+
+		explicit PastModality(const TimeInterval &timeInterval);
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr P();
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr P(const TimeInterval &timeInterval);
+
+        /**
+		 * @return the belief operator `H`
+		 */
+		static ModalOperatorPtr H();
+
+        /**
+		 * @return the belief operator `H`
+		 */
+		static ModalOperatorPtr H(const TimeInterval &timeInterval);
+
+        // Override Modality
+        ModalityType modalityType() const override;
+
         // Override Modality
         bool isSerial() const override;
 

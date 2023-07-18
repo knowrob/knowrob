@@ -12,10 +12,21 @@ namespace knowrob {
      * A modality using the operator "B" where `Bp` stands for "the agent believes that p".
      */
     class BeliefModality : public EpistemicModality {
-	protected:
-		explicit BeliefModality(const std::optional<std::string> &agent={});
+	public:
+        BeliefModality();
 
-    public:
+		explicit BeliefModality(const std::string_view &agent);
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr B();
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr B(const std::string_view &agent);
+
         // Override Modality
         bool isSerial() const override;
 

@@ -25,12 +25,12 @@ namespace knowrob {
      */
     class ModalOperator : public Term {
     public:
-        ModalOperator(const Modality *modality, ModalOperatorType operatorType);
+        ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType);
 
         /**
          * @return the modality associated to this operator.
          */
-        const auto* modality() const { return modality_; }
+        const auto& modality() const { return *modality_; }
 
         bool isModalNecessity() const;
 
@@ -69,7 +69,7 @@ namespace knowrob {
         void write(std::ostream& os) const override;
 
     protected:
-        const Modality *modality_;
+        const std::shared_ptr<Modality> modality_;
         const ModalOperatorType operatorType_;
 
         // Override Term

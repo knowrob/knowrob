@@ -14,7 +14,10 @@ namespace knowrob {
      */
     class TemporalModality : public Modality {
     public:
-        explicit TemporalModality(const std::optional<TimeInterval> &timeInterval)
+        TemporalModality()
+        : timeInterval_(std::nullopt), Modality() {}
+
+        explicit TemporalModality(const TimeInterval &timeInterval)
         : timeInterval_(timeInterval), Modality() {}
 
         const std::optional<TimeInterval>& timeInterval() const { return timeInterval_; }

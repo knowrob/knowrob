@@ -7,21 +7,10 @@
 
 using namespace knowrob;
 
-KnowledgeModality::KnowledgeModality(const std::optional<std::string> &agent)
+KnowledgeModality::KnowledgeModality() : EpistemicModality() {}
+
+KnowledgeModality::KnowledgeModality(const std::string_view &agent)
 : EpistemicModality(agent) {}
-
-const KnowledgeModality* KnowledgeModality::get()
-{
-    static KnowledgeModality instance;
-    return &instance;
-}
-
-const ModalOperatorPtr& KnowledgeModality::K()
-{
-    static const auto op = std::make_shared<ModalOperator>(
-            get(), ModalOperatorType::NECESSITY);
-    return op;
-}
 
 const char* KnowledgeModality::necessity_symbol()   const { return "K"; }
 const char* KnowledgeModality::possibility_symbol() const { return "\u22C4_K"; }
@@ -33,11 +22,27 @@ bool KnowledgeModality::isEuclidean()  const { return false; }
 bool KnowledgeModality::isSymmetric()  const { return false; }
 bool KnowledgeModality::isDense()      const { return false; }
 
+ModalOperatorPtr KnowledgeModality::K()
+{
+    static auto modality = std::make_shared<KnowledgeModality>();
+    static auto knowOperator =
+        std::make_shared<ModalOperator>(modality, ModalOperatorType::NECESSITY);
+    return knowOperator;
+}
+
+ModalOperatorPtr KnowledgeModality::K(const std::string_view &agent)
+{
+    auto modality = std::make_shared<KnowledgeModality>(agent);
+    return std::make_shared<ModalOperator>(modality, ModalOperatorType::NECESSITY);
+}
+
 ModalOperatorPtr KnowledgeModality::reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const
 {
     // "to know to belief" is simply "to belief"
-    // FIXME: take agent into account
-    if(b->modality()==BeliefModality::get()) { return b; }
+    if(b->modality().modalityType()==ModalityType::Epistemic && b->isModalPossibility()) {
+        auto *beliefModality = (BeliefModality*)&b->modality();
+        if(this->agent() == beliefModality->agent()) return b;
+    }
 
     return {};
 }

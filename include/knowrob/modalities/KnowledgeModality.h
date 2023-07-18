@@ -12,19 +12,20 @@ namespace knowrob {
      * A modality using the operator "K" where `Kp` stands for "the agent knows that p".
      */
     class KnowledgeModality : public EpistemicModality {
-	protected:
-        explicit KnowledgeModality(const std::optional<std::string> &agent={});
-
 	public:
-		/**
-		 * @return the knowledge modality singleton.
-		 */
-		static const KnowledgeModality* get();
+        KnowledgeModality();
+
+        explicit KnowledgeModality(const std::string_view &agent);
 
 		/**
 		 * @return the knowledge operator `K`
 		 */
-		static const ModalOperatorPtr& K();
+		static ModalOperatorPtr K();
+
+		/**
+		 * @return the knowledge operator `K`
+		 */
+		static ModalOperatorPtr K(const std::string_view &agent);
 
         // Override Modality
         bool isSerial() const override;

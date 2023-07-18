@@ -9,6 +9,11 @@
 #include "knowrob/modalities/ModalOperator.h"
 
 namespace knowrob {
+    enum class ModalityType {
+        Epistemic,
+        Temporal_Past
+    };
+
     /**
      * A modality for interpreting the truth of statements.
      */
@@ -16,7 +21,9 @@ namespace knowrob {
     public:
         Modality() = default;
 
-        bool isEquivalenceRelation() { return isReflexive() && isSymmetric() && isTransitive(); }
+        bool isEquivalenceRelation() const { return isReflexive() && isSymmetric() && isTransitive(); }
+
+        virtual ModalityType modalityType() const = 0;
 
         /**
          * Seriality corresponds to modal axiom "D": `square phi -> diamond phi`.

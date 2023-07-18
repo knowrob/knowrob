@@ -116,8 +116,8 @@ void QueryStage::push(const AnswerPtr &partialResult)
         }
 
         // create a new graph query
-        auto graphQueryStream = queryEngine_->submitQuery(
-                literalInstances, label_, queryFlags_);
+        auto graphQueryStream = queryEngine_->submitQuery(std::make_shared<GraphQuery>(
+                literalInstances, queryFlags_, ModalFrame(label_->modalOperators())));
         // keep a reference on the stream
         graphQueries_.push_front(graphQueryStream);
         auto graphQueryIt = graphQueries_.begin();

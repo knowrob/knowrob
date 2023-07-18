@@ -25,6 +25,7 @@
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/URI.h"
+#include "knowrob/queries/QueryEngine.h"
 
 using namespace knowrob;
 
@@ -324,7 +325,10 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
                                       const char *moduleName,
                                       bool doTransformQuery)
 {
-	return oneSolution(std::make_shared<Query>(goal), moduleName, doTransformQuery);
+	return oneSolution(
+	        std::make_shared<Query>(goal, QUERY_FLAG_ONE_SOLUTION),
+            moduleName,
+            doTransformQuery);
 }
 
 AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
@@ -355,7 +359,10 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicat
                                                   const char *moduleName,
                                                   bool doTransformQuery)
 {
-	return allSolutions(std::make_shared<Query>(goal), moduleName, doTransformQuery);
+	return allSolutions(
+	        std::make_shared<Query>(goal, QUERY_FLAG_ALL_SOLUTIONS),
+            moduleName,
+            doTransformQuery);
 }
 
 std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
