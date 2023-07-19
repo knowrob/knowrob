@@ -21,7 +21,7 @@
 
 :- multifile swrl_builtin/4.
 % define reasoner settings.
-:- reasoner_setting(swrl:backend, atom, prolog, 'Must be one of `prolog` or `mongolog`').
+:- reasoner_setting(swrl:knowledgeGraph, atom, prolog, 'Must be one of `prolog` or `mongolog`').
 
 %% swrl_call(+Goals, +Ctx) is nondet.
 %

@@ -8,7 +8,7 @@
 #include <optional>
 #include <list>
 #include "boost/property_tree/ptree.hpp"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "Collection.h"
 #include "Cursor.h"
@@ -24,13 +24,12 @@ namespace knowrob {
      */
     class MongoKnowledgeGraph : public knowrob::KnowledgeGraph {
     public:
-        explicit MongoKnowledgeGraph(
-                ThreadPool *threadPool,
-                const char* db_uri="mongodb://localhost:27017",
+        MongoKnowledgeGraph();
+
+        MongoKnowledgeGraph(
+                const char* db_uri,
                 const char* db_name="knowrob",
                 const char* collectionName="triples");
-
-        explicit MongoKnowledgeGraph(ThreadPool *threadPool, const boost::property_tree::ptree &config);
 
         const auto& importHierarchy() const { return importHierarchy_; }
 
@@ -56,6 +55,9 @@ namespace knowrob {
          * @return the version string associated to the named graph if any
          */
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
+
+        // Override KnowledgeGraph
+        bool loadConfiguration(const boost::property_tree::ptree &config) override;
 
         // Override KnowledgeGraph
         bool insert(const TripleData &tripleData) override;

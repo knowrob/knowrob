@@ -58,14 +58,11 @@ namespace knowrob {
 }
 
 KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
-: threadPool_(std::thread::hardware_concurrency())
+: threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()))
 {
-	reasonerManager_ = std::make_shared<ReasonerManager>();
+	backendManager_ = std::make_shared<KnowledgeGraphManager>(threadPool_);
+	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
 	loadConfiguration(config);
-	if(!knowledgeGraphs_.empty()) {
-	    // TODO: rather fallback to default implementation
-	    throw std::runtime_error("data backend configuration is missing");
-	}
 }
 
 void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
@@ -86,12 +83,21 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
         }
     }
 
-    // TODO: initialize RDF data backends from configuration
-    //  - decide if there should be a separate section for KGs in the settings file.
-    //    would have advantage that different reasoner could easily be linked to the same.
-    //    also data files would need to be outside the scope of data backend for now, as
-    //    data for now must be shared among all backends.
-    knowledgeGraphs_ = xx;
+    // initialize RDF data backends from configuration
+	auto backendList = config.get_child_optional("data-backends");
+	if(backendList) {
+		for(const auto &pair : backendList.value()) {
+			try {
+                backendManager_->loadKnowledgeGraph(pair.second);
+			}
+			catch(std::exception& e) {
+				KB_ERROR("failed to load a knowledgeGraph: {}", e.what());
+			}
+		}
+	}
+	else {
+		KB_ERROR("configuration has no 'backends' key.");
+	}
 
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
@@ -177,12 +183,13 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
 
     if(tdReasoner.empty()) {
         // just run EDB query in case no top-down reasoner is in use.
+        auto knowledgeGraphs_ = backendManager_->knowledgeGraphPool();
         if(knowledgeGraphs_.empty()) {
             return {};
         }
         else {
             // TODO: flag one of the KGs as "preferred" in settings
-            auto preferredKnowledgeGraph = knowledgeGraphs_.front();
+            auto preferredKnowledgeGraph = (*knowledgeGraphs_.begin()).second->knowledgeGraph();
             return preferredKnowledgeGraph->submitQuery(graphQuery);
         }
     }
@@ -263,7 +270,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
             runnerList.push_back(std::make_shared<ReasonerRunner>(r, queryData));
         }
         for(auto &runner : runnerList) {
-            threadPool_.pushWork(runner);
+            threadPool_->pushWork(runner);
         }
     }
 
@@ -296,8 +303,8 @@ bool KnowledgeBase::insert(const TripleData &statement)
 {
     bool status = true;
     // assert each statement into each knowledge graph backend
-    for(auto &kg : knowledgeGraphs_) {
-        if(!kg->insert(statement)) {
+    for(auto &kg : backendManager_->knowledgeGraphPool()) {
+        if(!kg.second->knowledgeGraph()->insert(statement)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }

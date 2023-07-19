@@ -210,10 +210,11 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::TripleE
     auto &at = tripleExpression.agentTerm();
 
     if(!at) {
-        // TODO: append null value, agent is included in all indices
-        aggregation::appendNull(selectorDoc, "agent");
+        // TODO: should a null value be appended for using an index including the "agent" key?
+        return;
     }
-    else if(at->type() == TermType::STRING) {
+
+    if(at->type() == TermType::STRING) {
         aggregation::appendTermQuery(selectorDoc, "agent", at);
     }
     else {

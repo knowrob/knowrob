@@ -14,6 +14,7 @@
 #include "knowrob/reasoner/mongolog/MongologReasoner.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/URI.h"
+#include "knowrob/reasoner/ReasonerError.h"
 
 using namespace knowrob;
 
@@ -67,16 +68,7 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
 {
     if(!PrologReasoner::loadConfiguration(reasonerConfiguration)) return false;
 
-    // get mongo configuration from settings, and create a knowledge graph instance.
-    // FIXME: this should be synchronized with settings in mongolog!
-    if(reasonerConfiguration.ptree) { // FIXME: not optimal that ptree can be null
-        auto dbProperties = reasonerConfiguration.ptree->get_child_optional("mongodb");
-        if(dbProperties)
-            knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>(dbProperties.value());
-        else
-            knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
-    }
-    else {
+    if(!knowledgeGraph_) {
         knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
     }
     importHierarchy_ = knowledgeGraph_->importHierarchy();
@@ -87,6 +79,14 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
     loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/owl.rdf"));
 
     return true;
+}
+
+void MongologReasoner::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph)
+{
+    knowledgeGraph_ = std::dynamic_pointer_cast<MongoKnowledgeGraph>(knowledgeGraph);
+    if(!knowledgeGraph_) {
+        throw ReasonerError("Unexpected data knowledgeGraph used for Mongolog reasoner. MongoKnowledgeGraph must be used.");
+    }
 }
 
 const functor_t& MongologReasoner::callFunctor()

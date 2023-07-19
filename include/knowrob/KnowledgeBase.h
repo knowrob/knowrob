@@ -12,19 +12,20 @@
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "Statement.h"
 #include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryEngine.h"
 #include "ThreadPool.h"
+#include "knowrob/backend/KnowledgeGraphManager.h"
 
 namespace knowrob {
 	class KnowledgeBase : public QueryEngine {
 	public:
 		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
-        ThreadPool& threadPool() { return threadPool_; }
+        ThreadPool& threadPool() { return *threadPool_; }
 
         bool insert(const TripleData &tripleData);
 
@@ -51,8 +52,8 @@ namespace knowrob {
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-        std::list<KnowledgeGraphPtr> knowledgeGraphs_;
-        ThreadPool threadPool_;
+		std::shared_ptr<KnowledgeGraphManager> backendManager_;
+		std::shared_ptr<ThreadPool> threadPool_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 	};

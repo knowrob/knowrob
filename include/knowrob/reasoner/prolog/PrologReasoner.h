@@ -180,6 +180,9 @@ namespace knowrob {
         bool loadConfiguration(const ReasonerConfiguration &cfg) override;
 
         // Override IReasoner
+        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+
+        // Override IReasoner
         std::shared_ptr<PredicateDescription> getPredicateDescription(
                 const std::shared_ptr<PredicateIndicator> &indicator) override;
 

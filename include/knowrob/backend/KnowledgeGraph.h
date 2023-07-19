@@ -5,15 +5,16 @@
 #ifndef KNOWROB_KNOWLEDGE_GRAPH_H
 #define KNOWROB_KNOWLEDGE_GRAPH_H
 
+#include <boost/property_tree/ptree.hpp>
 #include "memory"
 #include "optional"
 #include "raptor2.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/queries/AnswerBuffer.h"
-#include "GraphQuery.h"
-#include "Vocabulary.h"
-#include "TripleExpression.h"
-#include "TripleData.h"
+#include "knowrob/semweb/GraphQuery.h"
+#include "knowrob/semweb/Vocabulary.h"
+#include "knowrob/semweb/TripleExpression.h"
+#include "knowrob/semweb/TripleData.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/Statement.h"
 
@@ -33,11 +34,15 @@ namespace knowrob {
 
     class KnowledgeGraph {
     public:
-        explicit KnowledgeGraph(ThreadPool *threadPool);
+        explicit KnowledgeGraph();
 
         KnowledgeGraph(const KnowledgeGraph&) = delete;
 
         ~KnowledgeGraph();
+
+        void setThreadPool(const std::shared_ptr<ThreadPool> &threadPool);
+
+        virtual bool loadConfiguration(const boost::property_tree::ptree &config) = 0;
 
         const auto& vocabulary() const { return vocabulary_; }
 
@@ -49,7 +54,7 @@ namespace knowrob {
 
         /**
          * Read RDF ontology from a remote URI or a local file, and load
-         * triple data into the database backend.
+         * triple data into the database knowledgeGraph.
          * @param uriString the URI pointing to a RDF file
          * @param format the format of the file
          * @return true if the file was loaded successfully
@@ -110,9 +115,9 @@ namespace knowrob {
         static bool isVersionString(const std::string &versionString);
 
     protected:
+        std::shared_ptr<ThreadPool> threadPool_;
         raptor_world *raptorWorld_;
         std::shared_ptr<semweb::Vocabulary> vocabulary_;
-        ThreadPool *threadPool_;
 
         bool loadURI(ITripleLoader &loader,
                      const std::string &uriString,

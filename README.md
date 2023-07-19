@@ -95,7 +95,7 @@ Knowledge is represented in form of temporalized triples --
 each subject-predicate-object triple has an additional field
 that restricts the temporal scope in which the statement
 represented by the triple is true.
-A configurable backend is used to store and retrieve temporalized triples --
+A configurable knowledgeGraph is used to store and retrieve temporalized triples --
 as a falback implementation, KnowRob provides a simple MongoDB
 implementation of a temporalized triple store.
 

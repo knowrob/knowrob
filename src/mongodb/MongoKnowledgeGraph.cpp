@@ -45,8 +45,14 @@ using namespace knowrob::semweb;
 // AGGREGATION PIPELINES
 bson_t* newPipelineImportHierarchy(const char *collection);
 
-MongoKnowledgeGraph::MongoKnowledgeGraph(ThreadPool *threadPool, const char* db_uri, const char* db_name, const char* collectionName)
-: KnowledgeGraph(threadPool),
+MongoKnowledgeGraph::MongoKnowledgeGraph()
+: KnowledgeGraph(),
+  importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
+{
+}
+
+MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
+: KnowledgeGraph(),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
@@ -54,11 +60,9 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(ThreadPool *threadPool, const char* db_
     dropGraph("user");
 }
 
-MongoKnowledgeGraph::MongoKnowledgeGraph(ThreadPool *threadPool, const boost::property_tree::ptree &config)
-: KnowledgeGraph(threadPool),
-  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
-  tripleCollection_(connect(config))
+bool MongoKnowledgeGraph::loadConfiguration(const boost::property_tree::ptree &config)
 {
+    tripleCollection_ = connect(config);
     initialize();
 
     // auto-drop some named graphs
@@ -643,10 +647,10 @@ protected:
     static void SetUpTestSuite() {
         threadPool_ = std::make_shared<ThreadPool>(4);
         kg_ = std::make_shared<MongoKnowledgeGraph>(
-                threadPool_.get(),
                 "mongodb://localhost:27017",
                 "knowrob",
                 "triplesTest");
+        kg_->setThreadPool(threadPool_);
         kg_->drop();
         kg_->createSearchIndices();
     }

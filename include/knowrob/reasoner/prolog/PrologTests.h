@@ -34,13 +34,19 @@ namespace knowrob {
 
 		static std::shared_ptr<T> reasoner() {
 			static std::shared_ptr<T> r;
-			static ReasonerManager reasonerManager;
+			static std::shared_ptr<ThreadPool> threadPool;
+			static std::shared_ptr<KnowledgeGraphManager> backendManager;
+			static std::shared_ptr<ReasonerManager> reasonerManager;
 			static int reasonerIndex_=0;
 			if(!r) {
+			    threadPool = std::make_shared<ThreadPool>(4);
+			    backendManager = std::make_shared<KnowledgeGraphManager>(threadPool);
+			    reasonerManager = std::make_shared<ReasonerManager>(threadPool, backendManager);
+
 				std::stringstream ss;
 				ss << "prolog" << reasonerIndex_++;
 				r = std::make_shared<T>(ss.str());
-                reasonerManager.addReasoner(ss.str(), r);
+                reasonerManager->addReasoner(ss.str(), r);
                 r->loadConfiguration(knowrob::ReasonerConfiguration());
 			}
 			return r;

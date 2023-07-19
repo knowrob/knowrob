@@ -3,9 +3,9 @@
 //
 
 #include "knowrob/Logger.h"
-#include "ModalFrame.h"
-#include "PastModality.h"
-#include "EpistemicModality.h"
+#include "knowrob/modalities/ModalFrame.h"
+#include "knowrob/modalities/PastModality.h"
+#include "knowrob/modalities/EpistemicModality.h"
 
 using namespace knowrob;
 

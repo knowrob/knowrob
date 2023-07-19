@@ -22,6 +22,7 @@
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/semweb/GraphQuery.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 
 namespace knowrob {
 	/**
@@ -54,6 +55,8 @@ namespace knowrob {
          * @return ID of the manager that created the reasoner.
          */
         uint32_t reasonerManagerID() const { return reasonerManagerID_; }
+
+        virtual void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) = 0;
 
 		/**
 		 * @param format

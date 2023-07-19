@@ -35,6 +35,9 @@ namespace knowrob {
 		bool isBuiltinSupported(const std::shared_ptr<PredicateIndicator> &indicator);
 
 		// Override IReasoner
+        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+
+		// Override IReasoner
 		unsigned long getCapabilities() const override;
 
 		// Override IReasoner

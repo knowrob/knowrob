@@ -24,6 +24,11 @@ BuiltinEvaluator::BuiltinEvaluator()
 	builtins_[PredicateIndicator("atom_concat",3)] = BUILTIN_FUNCTION(atom_concat3);
 }
 
+void BuiltinEvaluator::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph)
+{
+    // TODO: reconsider BuiltinEvaluator
+}
+
 const std::shared_ptr<BuiltinEvaluator>& BuiltinEvaluator::get()
 {
 	static auto singleton = std::shared_ptr<BuiltinEvaluator>(new BuiltinEvaluator());

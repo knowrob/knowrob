@@ -34,6 +34,8 @@ namespace knowrob {
 
         bool loadConfiguration(const ReasonerConfiguration &cfg) override;
 
+        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+
         const auto& knowledgeGraph() const { return knowledgeGraph_; }
 		
 	protected:

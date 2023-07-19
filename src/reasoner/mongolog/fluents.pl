@@ -7,7 +7,7 @@
 
 Fluents are functional predicates that change their value over time.
 Documents with a dedicated time field are used to represent fluents.
-Any existing database collection with time index may be used as a backend for fluents.
+Any existing database collection with time index may be used as a knowledgeGraph for fluents.
 At any timepoint, the document with the latest stamp before the timepoint provides fluent value.
 There can only be one fluent value at a time.
 However, fluents may have additional "value" arguments. For each combination of value arguments

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "knowrob/Logger.h"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/queries/QueryError.h"
 
@@ -143,10 +143,9 @@ static void processTriple(void* user_data, raptor_statement* triple)
 }
 
 
-KnowledgeGraph::KnowledgeGraph(ThreadPool *threadPool)
+KnowledgeGraph::KnowledgeGraph()
 : raptorWorld_(raptor_new_world()),
-  vocabulary_(std::make_shared<semweb::Vocabulary>()),
-  threadPool_(threadPool)
+  vocabulary_(std::make_shared<semweb::Vocabulary>())
 {
     // TODO: reconsider handling of raptor worlds, e.g. some reasoner could
     //       access data from raptor API, but in some cases it could be desired
@@ -164,6 +163,11 @@ KnowledgeGraph::KnowledgeGraph(ThreadPool *threadPool)
 KnowledgeGraph::~KnowledgeGraph()
 {
     raptor_free_world(raptorWorld_);
+}
+
+void KnowledgeGraph::setThreadPool(const std::shared_ptr<ThreadPool> &threadPool)
+{
+    threadPool_ = threadPool;
 }
 
 bool KnowledgeGraph::isDefinedResource(const std::string_view &iri)
@@ -185,6 +189,9 @@ AnswerBufferPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query)
 {
     AnswerBufferPtr result = std::make_shared<AnswerBuffer>();
     auto runner = std::make_shared<GraphQueryRunner>(this, query, result);
+    if(!threadPool_) {
+        threadPool_ = std::make_shared<ThreadPool>(4);
+    }
     threadPool_->pushWork(runner);
     return result;
 }

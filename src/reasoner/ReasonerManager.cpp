@@ -19,8 +19,11 @@ std::map<std::string, std::shared_ptr<ReasonerFactory>> ReasonerManager::reasone
 std::map<uint32_t, ReasonerManager*> ReasonerManager::reasonerManagers_ = {};
 uint32_t ReasonerManager::managerIDCounter_ = 0;
 
-ReasonerManager::ReasonerManager()
-: reasonerIndex_(0)
+ReasonerManager::ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
+                                 const std::shared_ptr<KnowledgeGraphManager> &backendManager)
+: threadPool_(threadPool),
+  backendManager_(backendManager),
+  reasonerIndex_(0)
 {
     std::lock_guard<std::mutex> scoped_lock(staticMutex_);
     managerID_ = (managerIDCounter_++);
@@ -48,6 +51,7 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	auto lib = config.get_optional<std::string>("lib");
 	auto type = config.get_optional<std::string>("type");
 	auto name = config.get_optional<std::string>("name");
+	auto backendName = config.get_optional<std::string>("data-knowledgeGraph");
 
 	// get a reasoner factory
 	std::shared_ptr<ReasonerFactory> factory;
@@ -86,6 +90,19 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
     // reasoner need to have a reference to the reasoner manager such that
     // predicates can be defined that interact with other reasoner subsystems.
     reasoner->setReasonerManager(managerID_);
+
+	if(backendName.has_value()) {
+	    auto backend = backendManager_->getKnowledgeGraphWithID(backendName.value());
+	    if(backend) {
+            reasoner->setDataBackend(backend->knowledgeGraph());
+	    }
+	    else {
+		    throw ReasonerError("Reasoner `{}` refers to unknown knowledgeGraph `{}`.", reasonerID, backendName.value());
+	    }
+	}
+	else {
+        throw ReasonerError("Reasoner `{}` has no 'knowledgeGraph' configured.", reasonerID);
+	}
 
 	ReasonerConfiguration reasonerConfig;
 	reasonerConfig.loadPropertyTree(&config);

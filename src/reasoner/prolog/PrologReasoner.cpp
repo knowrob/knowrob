@@ -23,7 +23,7 @@
 #include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/URI.h"
 #include "knowrob/queries/QueryEngine.h"
 
@@ -170,6 +170,11 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 	initializeDefaultPackages();
 
 	return true;
+}
+
+void PrologReasoner::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph)
+{
+    // TODO: think about how data backend of Prolog would be configured
 }
 
 bool PrologReasoner::setReasonerSetting(const TermPtr &key, const TermPtr &valueString)

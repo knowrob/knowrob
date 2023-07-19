@@ -13,6 +13,7 @@
 #include "knowrob/reasoner/ReasonerPlugin.h"
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
+#include "knowrob/backend/KnowledgeGraphManager.h"
 
 namespace knowrob {
 	/**
@@ -20,7 +21,8 @@ namespace knowrob {
 	 */
 	class ReasonerManager {
 	public:
-		ReasonerManager();
+		ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
+		                const std::shared_ptr<KnowledgeGraphManager> &backendManager);
         ~ReasonerManager();
 
         /**
@@ -81,6 +83,8 @@ namespace knowrob {
         auto managerID() const  { return managerID_; }
 
 	private:
+        std::shared_ptr<ThreadPool> threadPool_;
+        std::shared_ptr<KnowledgeGraphManager> backendManager_;
 		// maps reasoner type name to factory used to create instances of that type
 		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
         // maps manager id to manager
