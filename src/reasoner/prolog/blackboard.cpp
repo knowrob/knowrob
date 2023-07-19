@@ -19,7 +19,7 @@ using namespace knowrob;
  */
 class QACallContext {
 public:
-    std::shared_ptr<Blackboard> blackboard_;
+    //std::shared_ptr<Blackboard> blackboard_;
     std::shared_ptr<AnswerQueue> results_;
     std::shared_ptr<Query> query_;
     std::map<std::string, term_t> queryVars_;
@@ -37,9 +37,9 @@ public:
         int reasonerManagerID=0;
         if(!PL_get_integer(t_reasonerManagerID, &reasonerManagerID)) reasonerManagerID=0;
         auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
-        // create blackboard for the query
-        blackboard_ = std::make_shared<Blackboard>(reasonerManager, results_, query_);
-        blackboard_->start();
+        // TODO: run query
+        //blackboard_ = std::make_shared<Blackboard>(reasonerManager, results_, query_);
+        //blackboard_->start();
     }
 
     void applySolution(const AnswerPtr &solution) {

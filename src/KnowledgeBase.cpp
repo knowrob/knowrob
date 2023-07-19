@@ -10,7 +10,6 @@
 
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
-#include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
@@ -37,7 +36,13 @@ namespace knowrob {
             auto literals = queryData->graphQuery_->literals();
             // TODO: at least need to group into negative and positive literals here.
             //       also would make sense to sort according to number of variables
-            auto phi = std::make_shared<Conjunction>(literals);
+            std::vector<FormulaPtr> formulae(literals.size());
+            int counter=0;
+            for(auto &l : literals) {
+                // FIXME: handle negative literals
+                formulae[counter++] = l->predicate();
+            }
+            auto phi = std::make_shared<Conjunction>(formulae);
             auto q = std::make_shared<Query>(
                     phi,
                     queryData->graphQuery_->flags(),
@@ -310,20 +315,4 @@ bool KnowledgeBase::insert(const TripleData &statement)
         }
     }
     return status;
-}
-
-
-void KnowledgeBase::runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler)
-{
-	auto bbq = std::make_shared<knowrob::AnswerQueue>();
-	auto bb = std::make_shared<Blackboard>(reasonerManager_.get(), bbq, query);
-	AnswerPtr solution;
-
-	bb->start();
-	do {
-		solution = bbq->pop_front();
-		if(AnswerStream::isEOS(solution)) {
-			break;
-		}
-	} while(handler.pushQueryResult(solution));
 }

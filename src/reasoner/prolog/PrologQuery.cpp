@@ -388,9 +388,10 @@ bool PrologQuery::putScope(const std::shared_ptr<Query> &query, term_t pl_scope)
             readFuzzyInterval<TimePoint>(scope_val, &minMin, &minMax, &maxMin, &maxMax);
 
             if(minMin.has_value() || minMax.has_value() || maxMin.has_value() || maxMax.has_value()) {
-                query->setTimeInterval(std::make_shared<TimeInterval>(
-                        Range<TimePoint>(minMin, minMax),
-                        Range<TimePoint>(maxMin, maxMax)));
+                KB_WARN("todo: implement set time interval");
+                //query->setTimeInterval(std::make_shared<TimeInterval>(
+                //        Range<TimePoint>(minMin, minMax),
+                //        Range<TimePoint>(maxMin, maxMax)));
             }
         }
 
@@ -402,9 +403,10 @@ bool PrologQuery::putScope(const std::shared_ptr<Query> &query, term_t pl_scope)
             readFuzzyInterval<ConfidenceValue>(scope_val, &minMin, &minMax, &maxMin, &maxMax);
 
             if(minMin.has_value() || minMax.has_value() || maxMin.has_value() || maxMax.has_value()) {
-                query->setConfidenceInterval(std::make_shared<ConfidenceInterval>(
-                        Range<ConfidenceValue>(minMin, minMax),
-                        Range<ConfidenceValue>(maxMin, maxMax)));
+                KB_WARN("todo: implement set confidence interval");
+                //query->setConfidenceInterval(std::make_shared<ConfidenceInterval>(
+                //        Range<ConfidenceValue>(minMin, minMax),
+                //        Range<ConfidenceValue>(maxMin, maxMax)));
             }
         }
 

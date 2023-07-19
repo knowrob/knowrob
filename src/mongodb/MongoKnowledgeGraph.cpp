@@ -74,6 +74,8 @@ bool MongoKnowledgeGraph::loadConfiguration(const boost::property_tree::ptree &c
     } else {
         dropGraph("user");
     }
+
+    return true;
 }
 
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(const boost::property_tree::ptree &config)
@@ -643,14 +645,12 @@ bson_t* newPipelineImportHierarchy(const char *collection)
 class MongoKnowledgeGraphTest : public ::testing::Test {
 protected:
     static std::shared_ptr<MongoKnowledgeGraph> kg_;
-    static std::shared_ptr<ThreadPool> threadPool_;
     static void SetUpTestSuite() {
-        threadPool_ = std::make_shared<ThreadPool>(4);
         kg_ = std::make_shared<MongoKnowledgeGraph>(
                 "mongodb://localhost:27017",
                 "knowrob",
                 "triplesTest");
-        kg_->setThreadPool(threadPool_);
+        kg_->setThreadPool(std::make_shared<ThreadPool>(4));
         kg_->drop();
         kg_->createSearchIndices();
     }

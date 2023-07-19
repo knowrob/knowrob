@@ -181,8 +181,13 @@ public:
 
     void runQuery(const std::shared_ptr<const Query> &query) {
         // evaluate query in hybrid QA system
+        auto resultStream = kb_.submitQuery(query->formula(), QUERY_FLAG_ALL_SOLUTIONS);
+        auto resultQueue = resultStream->createQueue();
+
         numSolutions_ = 0;
-        kb_.runQuery(query, *this);
+        while(!resultQueue->empty()) {
+            pushQueryResult(resultQueue->pop_front());
+        }
         if(numSolutions_ == 0) {
             std::cout << "no." << std::endl;
         }
