@@ -5,6 +5,7 @@
 #ifndef KNOWROB_MONGO_CONNECTION_H
 #define KNOWROB_MONGO_CONNECTION_H
 
+#include <string>
 #include <mongoc/mongoc.h>
 // #include "knowrob/mongodb/QueryWatch.h"
 
