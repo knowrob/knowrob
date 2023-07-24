@@ -12,9 +12,6 @@ BeliefModality::BeliefModality() : EpistemicModality() {}
 BeliefModality::BeliefModality(const std::string_view &agent)
 : EpistemicModality(agent) {}
 
-const char* BeliefModality::necessity_symbol()   const { return "B"; }
-const char* BeliefModality::possibility_symbol() const { return "\u22C4_B"; }
-
 bool BeliefModality::isSerial()     const { return true; }
 bool BeliefModality::isTransitive() const { return true; }
 bool BeliefModality::isEuclidean()  const { return false; }

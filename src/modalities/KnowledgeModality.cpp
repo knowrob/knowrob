@@ -12,9 +12,6 @@ KnowledgeModality::KnowledgeModality() : EpistemicModality() {}
 KnowledgeModality::KnowledgeModality(const std::string_view &agent)
 : EpistemicModality(agent) {}
 
-const char* KnowledgeModality::necessity_symbol()   const { return "K"; }
-const char* KnowledgeModality::possibility_symbol() const { return "\u22C4_K"; }
-
 bool KnowledgeModality::isSerial()     const { return true; }
 bool KnowledgeModality::isReflexive()  const { return true; }
 bool KnowledgeModality::isTransitive() const { return true; }

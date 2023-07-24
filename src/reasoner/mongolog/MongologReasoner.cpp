@@ -69,7 +69,8 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
     if(!PrologReasoner::loadConfiguration(reasonerConfiguration)) return false;
 
     if(!knowledgeGraph_) {
-        knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
+        knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>("mongodb://localhost:27017", "knowrob", "triples");
+        KB_WARN("Falling back to default configuration for MongoDB!");
     }
     importHierarchy_ = knowledgeGraph_->importHierarchy();
     importHierarchy_->addDirectImport("user", reasonerID_);

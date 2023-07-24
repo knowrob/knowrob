@@ -46,12 +46,6 @@ namespace knowrob {
         bool isDense() const override;
 
         // Override Modality
-        const char* necessity_symbol() const override;
-
-        // Override Modality
-        const char* possibility_symbol() const override;
-
-        // Override Modality
         ModalOperatorPtr reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const override;
 	};
 

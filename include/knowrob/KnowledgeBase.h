@@ -43,13 +43,6 @@ namespace knowrob {
         // Override QueryEngine
         AnswerBufferPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) override;
 
-        /**
-         * @param query
-         * @param handler
-         * @deprecated
-         */
-        void runQuery(const std::shared_ptr<const Query> &query, QueryResultHandler &handler);
-
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<KnowledgeGraphManager> backendManager_;

@@ -76,6 +76,7 @@ const std::optional<TimeInterval>& ModalFrame::timeInterval() const
         return pastModality->timeInterval();
     }
     else {
-        return {};
+        static std::optional<TimeInterval> empty;
+        return empty;
     }
 }

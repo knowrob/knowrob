@@ -24,6 +24,10 @@ namespace knowrob {
 
         ModalityType modalityType() const override { return ModalityType::Epistemic; }
 
+        const char* necessity_symbol()   const override { return "K"; }
+
+        const char* possibility_symbol() const override { return "B"; }
+
     protected:
         const std::optional<std::string> agent_;
     };

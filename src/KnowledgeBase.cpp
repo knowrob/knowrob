@@ -172,10 +172,6 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags
 }
 
 AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
-
-//const std::vector<LiteralPtr> &literals,
-                                           //const ModalityLabelPtr &label,
-                                         //  int queryFlags)
 {
     std::list<std::shared_ptr<IReasoner>> tdReasoner;
     for(auto &pair : reasonerManager_->reasonerPool()) {

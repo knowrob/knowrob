@@ -37,10 +37,6 @@ namespace knowrob {
 		CAPABILITY_DISJUNCTIVE_QUERIES = 1 << 2,
         CAPABILITY_TOP_DOWN_EVALUATION  = 1 << 3,
         CAPABILITY_BOTTOM_UP_EVALUATION = 1 << 4
-        /** The reasoner can store/recover data to/from a local path. */
-        //CAPABILITY_IMPORT_EXPORT = 0x4,
-        /** The reasoner can insert new facts into the knowledge base at runtime. */
-        //CAPABILITY_DYNAMIC_ASSERTIONS = 0x8
 	};
 	
 	/**
@@ -101,39 +97,7 @@ namespace knowrob {
 		 */
 		bool hasCapability(ReasonerCapability capability) const;
 
-        /*
-        virtual void startGraphCompletion(uint32_t requestID,
-                                          const std::shared_ptr<PossibleWorld> &possibleWorld,
-                                          const std::shared_ptr<GraphPattern> &focus) = 0;
-
-        virtual void stopGraphCompletion(uint32_t requestID, bool isImmediateStopRequested) = 0;
-         */
-
         virtual bool runQuery(const AllocatedQueryPtr &query) = 0;
-
-        /**
-         * Project a statement into the extensional database (EDB) where factual
-         * knowledge is stored.
-         * @param statement A statement.
-         * @return true if the statement was inserted into the EDB used by the reasoner.
-         */
-        //virtual bool projectIntoEDB(const Statement &statement) { return false; }
-
-        /**
-         * Export data to local filesystem.
-         * This function is only assumed to be implemented if CAPABILITY_IMPORT_EXPORT is set.
-         * @param path an existing local filesystem path.
-         * @return true on success.
-         */
-        //virtual bool exportData(const std::filesystem::path &path) { return false; }
-
-        /**
-         * Import data from local filesystem.
-         * This function is only assumed to be implemented if CAPABILITY_IMPORT_EXPORT is set.
-         * @param path an existing local filesystem path.
-         * @return true on success.
-         */
-        //virtual bool importData(const std::filesystem::path &path) { return false; }
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;

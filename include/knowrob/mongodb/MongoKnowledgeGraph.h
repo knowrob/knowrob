@@ -26,7 +26,7 @@ namespace knowrob {
     public:
         MongoKnowledgeGraph();
 
-        MongoKnowledgeGraph(
+        explicit MongoKnowledgeGraph(
                 const char* db_uri,
                 const char* db_name="knowrob",
                 const char* collectionName="triples");
