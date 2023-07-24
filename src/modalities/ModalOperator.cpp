@@ -54,7 +54,7 @@ bool ModalOperator::isModalNecessity() const
 
 bool ModalOperator::isModalPossibility() const
 {
-    return operatorType_ == ModalOperatorType::NECESSITY;
+    return operatorType_ == ModalOperatorType::POSSIBILITY;
 }
 
 const std::shared_ptr<ModalIteration>& ModalIteration::emptyIteration()
@@ -104,7 +104,7 @@ void ModalIteration::operator+=(const ModalOperatorPtr &next) //NOLINT
                last->modality().isEuclidean())
             { reduced = next; }
         }
-        else {
+        if(!reduced) {
             // different modalities can be reduced in case some principles governing their
             // interaction or known.
             reduced = last->modality().reduce(last, next);
