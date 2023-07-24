@@ -14,6 +14,7 @@
 #include "BulkOperation.h"
 #include "Document.h"
 #include "Pipeline.h"
+#include "Connection.h"
 
 namespace knowrob::mongo {
     /**
@@ -32,9 +33,11 @@ namespace knowrob::mongo {
     class Collection {
     public:
         Collection(
-                mongoc_client_pool_t *pool,
+                const std::shared_ptr<Connection> &connection,
                 const std::string_view &databaseName,
                 const std::string_view &collectionName);
+
+        Collection(const Collection &collection) = delete;
 
         ~Collection();
 
@@ -52,7 +55,12 @@ namespace knowrob::mongo {
         /**
          * @return the client pool of this collection.
          */
-        auto pool() { return pool_; }
+        auto pool() { return connection_->pool_; }
+
+        /**
+         * @return the connection of this collection.
+         */
+        auto connection() { return connection_; }
 
         /**
          * @return the mongo client managing of this collection.
@@ -140,7 +148,7 @@ namespace knowrob::mongo {
         bool empty();
 
     private:
-        mongoc_client_pool_t *pool_;
+        std::shared_ptr<Connection> connection_;
         mongoc_client_t *client_;
         mongoc_client_session_t *session_;
         mongoc_collection_t *coll_;

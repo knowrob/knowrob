@@ -216,6 +216,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/AnswerCursor.cpp
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
+		src/mongodb/Connection.cpp
 		src/queries/QueryStage.cpp
 		src/modalities/ModalFrame.cpp
 		src/backend/KnowledgeGraphManager.cpp

@@ -20,7 +20,7 @@ ChangeStream::ChangeStream(
   next_ptr_()
 {
 	// connect and append session ID to options
-	collection_ = std::make_unique<Collection>(pool, database, collection);
+	//collection_ = std::make_unique<Collection>(pool, database, collection);
     bson_t *opts = BCON_NEW(
         //"batchSize": xx,
    		"maxAwaitTimeMS", BCON_INT32(1),                // the watcher should be non-blocking

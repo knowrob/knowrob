@@ -16,7 +16,6 @@
 #include <chrono>
 #include <atomic>
 #include <map>
-#include <knowrob/mongodb/Collection.h>
 #include <knowrob/mongodb/ChangeStream.h>
 
 namespace knowrob::mongo {

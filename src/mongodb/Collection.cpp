@@ -9,6 +9,7 @@
 #include <knowrob/mongodb/Collection.h>
 #include <knowrob/mongodb/MongoException.h>
 #include <knowrob/mongodb/Document.h>
+#include <iostream>
 
 using namespace knowrob::mongo;
 
@@ -17,16 +18,17 @@ static const mongoc_insert_flags_t INSERT_NO_VALIDATE_FLAG =
 static const mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 		(mongoc_update_flags_t)MONGOC_UPDATE_NO_VALIDATE;
 
+
 Collection::Collection(
-	    mongoc_client_pool_t *pool,
+	    const std::shared_ptr<Connection> &connection,
 	    const std::string_view &databaseName,
 	    const std::string_view &collectionName)
-: pool_(pool),
+: connection_(connection),
   name_(collectionName),
   dbName_(databaseName),
   session_(nullptr)
 {
-	client_ = mongoc_client_pool_pop(pool_);
+	client_ = mongoc_client_pool_pop(connection_->pool_);
 	coll_ = mongoc_client_get_collection(client_, dbName_.c_str(), name_.c_str());
     db_ = mongoc_client_get_database(client_, dbName_.c_str());
 }
@@ -39,7 +41,7 @@ Collection::~Collection()
     }
     mongoc_database_destroy(db_);
 	mongoc_collection_destroy(coll_);
-    mongoc_client_pool_push(pool_, client_);
+    mongoc_client_pool_push(connection_->pool_, client_);
 }
 
 mongoc_client_session_t* Collection::session()
@@ -232,3 +234,4 @@ bool Collection::empty()
 
     return count==0;
 }
+

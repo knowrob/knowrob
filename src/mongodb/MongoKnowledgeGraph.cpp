@@ -126,7 +126,7 @@ void MongoKnowledgeGraph::initialize()
     createSearchIndices();
     // a collection with just a single document used for querying
     oneCollection_ = std::make_shared<Collection>(
-            tripleCollection_->pool(),
+            tripleCollection_->connection(),
             tripleCollection_->dbName().c_str(),
             MONGO_KG_ONE_COLLECTION);
     // make sure there is one document in the "one" collection.

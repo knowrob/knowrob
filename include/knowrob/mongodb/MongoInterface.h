@@ -26,6 +26,7 @@
 #include <knowrob/mongodb/Collection.h>
 #include <knowrob/mongodb/Cursor.h>
 #include <knowrob/mongodb/QueryWatch.h>
+#include "Connection.h"
 
 namespace knowrob::mongo {
     class MongoInterface {
@@ -44,6 +45,9 @@ namespace knowrob::mongo {
 
         std::shared_ptr<Cursor> cursor(const char *curser_id);
 
+
+
+
     private:
         MongoInterface();
         ~MongoInterface();
@@ -51,18 +55,7 @@ namespace knowrob::mongo {
         MongoInterface(MongoInterface const&); // Don't Implement
         void operator=(MongoInterface const&); // Don't implements
 
-        class Connection {
-        public:
-            mongoc_uri_t *uri_;
-            mongoc_client_pool_t *pool_;
-            std::shared_ptr<QueryWatch> connectionWatch_;
-            std::string uri_string_;
-
-            explicit Connection(const std::string &uri_string);
-            ~Connection();
-        };
-
-        std::shared_ptr<MongoInterface::Connection> getOrCreateConnection(const char *uri_string_c);
+        std::shared_ptr<Connection> getOrCreateConnection(const char *uri_string_c);
 
         // maps URI to MongoDatabase for all previously accessed MongoDatabase's
         std::map<std::string, std::shared_ptr<Connection>> connections_;
