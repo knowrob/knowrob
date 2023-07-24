@@ -11,25 +11,41 @@
 
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/backend/KnowledgeGraph.h"
-#include "Statement.h"
-#include "knowrob/queries/AnswerQueue.h"
-#include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryEngine.h"
-#include "ThreadPool.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/backend/KnowledgeGraphManager.h"
+#include "ThreadPool.h"
 
 namespace knowrob {
+    /**
+     * The main interface to the knowledge base system implementing
+     * its 'tell' and 'ask' interface.
+     */
 	class KnowledgeBase : public QueryEngine {
 	public:
+	    /**
+	     * @param config a property tree used to configure this.
+	     */
 		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
+        /**
+         * Asserts a proposition into the knowledge base.
+         * @param tripleData data representing the proposition.
+         * @return true on success.
+         */
+        bool insert(const TripleData &proposition);
+
+        /**
+         * Asserts a sequence of propositions into the knowledge base.
+         * @param tripleData data representing a list of proposition.
+         * @return true on success.
+         */
+        bool insert(const std::vector<TripleData> &propositions);
+
+        /**
+         * @return a thread pool owned by this.
+         */
         ThreadPool& threadPool() { return *threadPool_; }
-
-        bool insert(const TripleData &tripleData);
-
-        bool insert(const std::vector<TripleData> &tripleData);
 
         // Override QueryEngine
         AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags) override;

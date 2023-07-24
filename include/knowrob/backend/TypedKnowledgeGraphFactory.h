@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_TYPED_BACKEND_FACTORY_H_
-#define KNOWROB_TYPED_BACKEND_FACTORY_H_
+#ifndef KNOWROB_TYPED_KG_FACTORY_H_
+#define KNOWROB_TYPED_KG_FACTORY_H_
 
 #include <string>
 #include <memory>
@@ -16,13 +16,13 @@
 
 namespace knowrob {
 	/**
-	 * A backend factory implementation for builtin knowledgeGraph types.
-	 * @tparam T the type of knowledgeGraph.
+	 * A KG factory implementation for builtin types.
+	 * @tparam T the type of KG.
 	 */
 	template<class T> class TypedKnowledgeGraphFactory : public KnowledgeGraphFactory {
 	public:
 		/**
-		 * @param name name of the knowledgeGraph type for which the factory can create instances.
+		 * @param name name of the KG type for which the factory can create instances.
 		 */
 		explicit TypedKnowledgeGraphFactory(std::string name) : name_(std::move(name)) {}
 
@@ -37,4 +37,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_TYPED_BACKEND_FACTORY_H_
+#endif //KNOWROB_TYPED_KG_FACTORY_H_

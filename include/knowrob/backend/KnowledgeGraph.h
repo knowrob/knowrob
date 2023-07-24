@@ -16,10 +16,11 @@
 #include "knowrob/semweb/TripleExpression.h"
 #include "knowrob/semweb/TripleData.h"
 #include "knowrob/ThreadPool.h"
-#include "knowrob/Statement.h"
 
 namespace knowrob {
-
+    /**
+     * Used to indicate the file format when loading triple data.
+     */
     enum TripleFormat {
         RDF_XML,
         TURTLE,

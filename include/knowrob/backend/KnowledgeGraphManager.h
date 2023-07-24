@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_BACKEND_MANAGER_H_
-#define KNOWROB_BACKEND_MANAGER_H_
+#ifndef KNOWROB_KG_MANAGER_H_
+#define KNOWROB_KG_MANAGER_H_
 
 #include <map>
 #include <mutex>
@@ -19,7 +19,7 @@
 
 namespace knowrob {
 	/**
-	 * Manages a set of available knowledgeGraph subsystems.
+	 * Manages a set of available KG subsystems.
 	 */
 	class KnowledgeGraphManager {
 	public:
@@ -27,17 +27,17 @@ namespace knowrob {
         ~KnowledgeGraphManager();
 
         /**
-         * @param managerID the ID of a knowledgeGraph manager
-         * @return the knowledgeGraph manager, or nullptr if ID is unknown
+         * @param managerID the ID of a KG manager
+         * @return the KG manager, or nullptr if ID is unknown
          */
         static KnowledgeGraphManager* getManager(uint32_t managerID);
 
 		/**
-		 * Add a knowledgeGraph factory to the manager.
+		 * Add a KG factory to the manager.
 		 * Note that factories for shared libraries are created on the fly, and thus
 		 * do not need to be added manually.
-		 * @param typeName the name of the knowledgeGraph type
-		 * @param factory a knowledgeGraph factory
+		 * @param typeName the name of the KG type
+		 * @param factory a KG factory
 		 */
 		static bool addFactory(const std::string &typeName, const std::shared_ptr<KnowledgeGraphFactory> &factory);
 
@@ -45,31 +45,31 @@ namespace knowrob {
 		{ return addFactory(typeName, std::make_shared<TypedKnowledgeGraphFactory<T>>(typeName)); }
 
 		/**
-		 * Load a new backend instance into the knowledgeGraph manager.
-		 * The type of the knowledgeGraph is determined based on either the value of
+		 * Load a new backend instance into the KG manager.
+		 * The type of the KG is determined based on either the value of
 		 * "type" or "lib" in the property tree root. The tree is further used
-		 * to generate a backend configuration used by the created knowledgeGraph.
+		 * to generate a backend configuration used by the created KG.
 		 * Backend factories for libraries are created on the fly, the ones
-		 * for built-in backend types need to be added to the knowledgeGraph manager before.
-		 * @param config a property tree holding a knowledgeGraph configuration
+		 * for built-in backend types need to be added to the KG manager before.
+		 * @param config a property tree holding a KG configuration
 		 */
 		void loadKnowledgeGraph(const boost::property_tree::ptree &config);
 
 		/**
-		 * @param backendID a knowledgeGraph ID string.
-		 * @return a knowledgeGraph instance or a null pointer reference.
+		 * @param backendID a KG ID string.
+		 * @return a KG instance or a null pointer reference.
 		 */
 		std::shared_ptr<DefinedKnowledgeGraph> getKnowledgeGraphWithID(const std::string &backendID);
 
         /**
-         * Add a knowledgeGraph to this manager.
-         * @reasoner a defined knowledgeGraph.
+         * Add a KG to this manager.
+         * @reasoner a defined KG.
          */
         std::shared_ptr<DefinedKnowledgeGraph> addKnowledgeGraph(
                 const std::string &reasonerID, const std::shared_ptr<KnowledgeGraph> &backend);
 
         /**
-         * @return map of all knowledgeGraph defined by this manager.
+         * @return map of all KG defined by this manager.
          */
         const auto& knowledgeGraphPool() const  { return knowledgeGraphPool_; }
 
@@ -111,4 +111,4 @@ namespace knowrob {
 		bool Type ## _Registration::isRegistered = BackendManager::addBackendFactory<Type>(Name);
 }
 
-#endif //KNOWROB_BACKEND_MANAGER_H_
+#endif //KNOWROB_KG_MANAGER_H_

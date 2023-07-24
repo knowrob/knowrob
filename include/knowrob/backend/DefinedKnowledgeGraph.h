@@ -6,8 +6,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_DEFINED_BACKEND_H_
-#define KNOWROB_DEFINED_BACKEND_H_
+#ifndef KNOWROB_DEFINED_KG_H_
+#define KNOWROB_DEFINED_KG_H_
 
 #include <string>
 #include <memory>
@@ -15,29 +15,29 @@
 
 namespace knowrob {
 	/**
-	 * A reasoner with a name managed by the reasoner manager.
+	 * A KG with a name managed by the KG manager.
 	 */
 	class DefinedKnowledgeGraph {
 	public:
 		/**
-		 * @param name the name of the reasoner, unique within manager
-		 * @param reasoner the reasoner instance
+		 * @param name the name of the KG, unique within manager
+		 * @param backend the KG instance
 		 */
 		DefinedKnowledgeGraph(std::string name, const std::shared_ptr<KnowledgeGraph> &backend)
 		: name_(std::move(name)), knowledgeGraph_(backend) {}
 
 		/**
-		 * @return the reasoner instance
+		 * @return the KG instance
 		 */
 		const std::shared_ptr<KnowledgeGraph>& operator()() const { return knowledgeGraph_; }
 
 		/**
-		 * @return the reasoner instance
+		 * @return the KG instance
 		 */
 		const std::shared_ptr<KnowledgeGraph>& knowledgeGraph() const { return knowledgeGraph_; }
 
 		/**
-		 * @return the reasoner name.
+		 * @return the KG name.
 		 */
 		const std::string& name() const { return name_; }
 
@@ -47,4 +47,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_DEFINED_REASONER_H_
+#endif //KNOWROB_DEFINED_KG_H_

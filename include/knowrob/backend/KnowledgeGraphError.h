@@ -6,14 +6,14 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_BACKEND_ERROR_H_
-#define KNOWROB_BACKEND_ERROR_H_
+#ifndef KNOWROB_KG_ERROR_H_
+#define KNOWROB_KG_ERROR_H_
 
 #include <fmt/core.h>
 
 namespace knowrob {
 	/**
-	 * A data knowledgeGraph-related runtime error.
+	 * A data KG-related runtime error.
 	 */
 	class KnowledgeGraphError : public std::runtime_error {
 	public:
@@ -28,4 +28,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_REASONER_ERROR_H_
+#endif //KNOWROB_KG_ERROR_H_

@@ -14,6 +14,7 @@
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/queries/AnswerCombiner.h"
+#include "knowrob/queries/QueryPipeline.h"
 
 using namespace knowrob;
 
@@ -291,21 +292,24 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const LabeledLiteralPtr &query, int q
         GraphQuery({query}, queryFlags, ModalFrame(modalOperators))));
 }
 
-bool KnowledgeBase::insert(const std::vector<TripleData> &statements)
+bool KnowledgeBase::insert(const std::vector<TripleData> &propositions)
 {
-    bool allProjected = true;
-    for(auto &x : statements) {
-        allProjected = insert(x) && allProjected;
+    bool status = true;
+    for(auto &kg : backendManager_->knowledgeGraphPool()) {
+        if(!kg.second->knowledgeGraph()->insert(propositions)) {
+            KB_WARN("assertion of triple data failed!");
+            status = false;
+        }
     }
-    return allProjected;
+    return status;
 }
 
-bool KnowledgeBase::insert(const TripleData &statement)
+bool KnowledgeBase::insert(const TripleData &proposition)
 {
     bool status = true;
     // assert each statement into each knowledge graph backend
     for(auto &kg : backendManager_->knowledgeGraphPool()) {
-        if(!kg.second->knowledgeGraph()->insert(statement)) {
+        if(!kg.second->knowledgeGraph()->insert(proposition)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }
