@@ -17,7 +17,6 @@
 #include "knowrob/queries/AllocatedQuery.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
-#include "knowrob/queries/AtomicProposition.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/semweb/GraphQuery.h"

@@ -126,7 +126,6 @@ add_library(knowrob_qa SHARED
         src/Logger.cpp
         src/KnowledgeBase.cpp
 		src/DataSource.cpp
-		src/queries/AtomicProposition.cpp
 		src/URI.cpp
 		src/modalities/ConfidenceValue.cpp
 		src/modalities/ConfidenceInterval.cpp
