@@ -7,22 +7,20 @@
  */
 
 #include <knowrob/queries/Answer.h>
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
 Answer::Answer()
-: substitution_(std::make_shared<Substitution>()),
-  o_timeInterval_(std::nullopt),
-  o_confidence_(std::nullopt)
+: substitution_(std::make_shared<Substitution>())
 {
 }
 
 Answer::Answer(const Answer &other)
 : substitution_(std::make_shared<Substitution>(*other.substitution_)),
-  predicates_(other.predicates_)
+  predicates_(other.predicates_),
+  modality_(other.modality_)
 {
-	setTimeInterval(other.timeInterval_);
-	setConfidenceValue(other.confidence_);
 }
 
 const std::shared_ptr<const Answer>& Answer::emptyResult()
@@ -47,22 +45,6 @@ void Answer::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
 	predicates_.emplace_back(reasonerModule, predicate);
 }
 
-void Answer::setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval)
-{
-	timeInterval_ = timeInterval;
-	o_timeInterval_ = (timeInterval_ ?
-			std::optional<const TimeInterval*>(timeInterval_.get()) :
-			std::optional<const TimeInterval*>(std::nullopt));
-}
-
-void Answer::setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence)
-{
-	confidence_ = confidence;
-	o_confidence_ = (confidence_ ?
-			std::optional<const ConfidenceValue*>(confidence_.get()) :
-			std::optional<const ConfidenceValue*>(std::nullopt));
-}
-
 bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *changes)
 {
 	// unify substitutions
@@ -71,16 +53,8 @@ bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *cha
 		return false;
 	}
 	// compute intersection of time intervals
-	if(combineTimeInterval(other->timeInterval_, changes)) {
-		// intersection empty -> results cannot be combined
-		if(timeInterval_->empty()) return false;
-	}
-	// accumulate confidence values
-	auto oldConfidence = confidence_;
-	if(combineConfidence(other->confidence_)) {
-		if(changes) changes->push([this,oldConfidence](){
-			setConfidenceValue(oldConfidence);
-		});
+	if(!combineModalFrame(other)) {
+		return false;
 	}
 	// merge instantiated predicates
 	predicates_.insert(predicates_.end(),
@@ -89,54 +63,20 @@ bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *cha
 	return true;
 }
 
-bool Answer::combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval, Reversible *reversible)
+bool Answer::combineModalFrame(const std::shared_ptr<const Answer> &other)
 {
-	if(otherTimeInterval) {
-		if(o_timeInterval_.has_value()) {
-			if(!otherTimeInterval->isMoreGeneralThan(*timeInterval_)) {
-				auto old = timeInterval_;
-				setTimeInterval(timeInterval_->intersectWith(*otherTimeInterval));
-				if(reversible) reversible->push([this,old](){ setTimeInterval(old); });
-				return true;
-			}
-		}
-		else {
-			setTimeInterval(otherTimeInterval);
-			if(reversible) reversible->push([this](){ setTimeInterval(std::shared_ptr<TimeInterval>()); });
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Answer::combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence)
-{
-	if(otherConfidence) {
-		if(confidence_) {
-			// FIXME: this is not ok if there is dependency between subgoals
-			auto newConfidence = otherConfidence->value() * confidence_->value();
-			setConfidenceValue(std::make_shared<ConfidenceValue>(newConfidence));
-			return true;
-		}
-		else {
-			setConfidenceValue(otherConfidence);
-			return true;
-		}
-	}
-	else {
-		return false;
-	}
+	// TODO: think about how modal frame of answers could be combined!
+	//modality_ = modality_.combine(other->modality_);
+	KB_WARN("todo: implement combining modal frames.");
 }
 
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Answer& solution) //NOLINT
 	{
-		if(solution.confidence().has_value()) {
-			os << *solution.confidence().value() << "::";
+		if(solution.modalFrame().hasValue()) {
+			os << solution.modalFrame() << "::";
 		}
-		if(solution.timeInterval().has_value()) {
-			os << *solution.timeInterval().value() << "::";
-		}
+
 		if(solution.substitution()->empty())
 			os << "yes";
 		else

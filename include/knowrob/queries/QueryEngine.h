@@ -25,7 +25,7 @@ namespace knowrob {
          * Evaluate a query represented as a vector of literals.
          * The call is non-blocking and returns a stream of answers.
          * @param literals a vector of literals
-         * @param label an optional modality label
+         * @param label an optional modalFrame label
          * @return a stream of query results
          */
         virtual AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery) = 0;

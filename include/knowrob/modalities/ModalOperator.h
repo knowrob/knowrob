@@ -28,7 +28,7 @@ namespace knowrob {
         ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType);
 
         /**
-         * @return the modality associated to this operator.
+         * @return the modalFrame associated to this operator.
          */
         const auto& modality() const { return *modality_; }
 
@@ -42,12 +42,12 @@ namespace knowrob {
         auto operatorType() const { return operatorType_; }
 
         /**
-         * @return true if the accessibility relation of this modality is transitive.
+         * @return true if the accessibility relation of this modalFrame is transitive.
          */
         bool isTransitive() const;
 
         /**
-         * @return true if the accessibility relation of this modality is euclidean.
+         * @return true if the accessibility relation of this modalFrame is euclidean.
          */
         bool isEuclidean() const;
 

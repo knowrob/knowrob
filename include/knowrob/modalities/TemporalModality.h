@@ -10,7 +10,7 @@
 
 namespace knowrob {
     /**
-     * A time modality such as "past" or "future".
+     * A time modalFrame such as "past" or "future".
      */
     class TemporalModality : public Modality {
     public:

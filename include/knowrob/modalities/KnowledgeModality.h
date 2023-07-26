@@ -9,7 +9,7 @@
 
 namespace knowrob {
     /**
-     * A modality using the operator "K" where `Kp` stands for "the agent knows that p".
+     * A modalFrame using the operator "K" where `Kp` stands for "the agent knows that p".
      */
     class KnowledgeModality : public EpistemicModality {
 	public:

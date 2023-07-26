@@ -15,6 +15,8 @@ namespace knowrob {
 
         explicit ModalFrame(const ModalIteration &modalIteration);
 
+		bool hasValue() const;
+
         bool isAboutKnowledge() const;
 
         bool isAboutBelief() const;
@@ -29,16 +31,22 @@ namespace knowrob {
 
         const std::optional<TimeInterval>& timeInterval() const;
 
+		void setTimeInterval(const TimeInterval &ti);
+
         ModalOperatorPtr epistemicOperator() const { return epistemicOperator_; }
 
         ModalOperatorPtr pastOperator() const { return pastOperator_; }
 
-    protected:
+	protected:
         ModalOperatorPtr epistemicOperator_;
         ModalOperatorPtr pastOperator_;
 
         bool isAboutPast() const;
-    };
+	};
+}
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::ModalFrame& modalFrame);
 }
 
 

@@ -22,9 +22,14 @@ ModalFrame::ModalFrame(const ModalIteration &modalIteration)
             pastOperator_ = x;
         }
         else {
-            KB_WARN("unexpected modality");
+            KB_WARN("unexpected modalFrame");
         }
     }
+}
+
+bool ModalFrame::hasValue() const
+{
+	return epistemicOperator_.get() != nullptr || pastOperator_.get() != nullptr;
 }
 
 bool ModalFrame::isAboutKnowledge() const
@@ -79,4 +84,20 @@ const std::optional<TimeInterval>& ModalFrame::timeInterval() const
         static std::optional<TimeInterval> empty;
         return empty;
     }
+}
+
+void ModalFrame::setTimeInterval(const TimeInterval &ti)
+{
+	pastOperator_ = PastModality::P(ti);
+}
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::ModalFrame& modality) //NOLINT
+	{
+		if(modality.epistemicOperator())
+			os << *modality.epistemicOperator();
+		if(modality.pastOperator())
+			os << *modality.pastOperator();
+		return os;
+	}
 }

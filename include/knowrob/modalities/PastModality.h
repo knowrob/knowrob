@@ -10,7 +10,7 @@
 
 namespace knowrob {
     /**
-     * A time modality using operator "P" where `Pq` stands for "it is or was the case that q".
+     * A time modalFrame using operator "P" where `Pq` stands for "it is or was the case that q".
      * The operator "H" is the dual of "P" where `Hq` stands for "it is and was always the case that q".
      */
     class PastModality : public TemporalModality {

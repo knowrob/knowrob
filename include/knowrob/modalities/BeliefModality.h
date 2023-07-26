@@ -9,7 +9,7 @@
 
 namespace knowrob {
     /**
-     * A modality using the operator "B" where `Bp` stands for "the agent believes that p".
+     * A modalFrame using the operator "B" where `Bp` stands for "the agent believes that p".
      */
     class BeliefModality : public EpistemicModality {
 	public:

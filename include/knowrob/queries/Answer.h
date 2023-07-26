@@ -15,8 +15,7 @@
 #include <ostream>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/modalities/TimeInterval.h"
-#include "knowrob/modalities/ConfidenceValue.h"
+#include "knowrob/modalities/ModalFrame.h"
 
 namespace knowrob {
 	/**
@@ -74,27 +73,14 @@ namespace knowrob {
 		const std::list<PredicateInstance>& predicates() const { return predicates_; }
 
 		/**
-		 * Assigns a time interval to this solution indicating that the solution
-		 * is only valid in a restricted time frame.
-		 * @param timeInterval the time interval of the result being valid.
+		 * @return the modal frame of this proposition.
 		 */
-		void setTimeInterval(const std::shared_ptr<TimeInterval> &timeInterval);
+		const ModalFrame& modalFrame() const { return modality_; }
 
 		/**
-		 * Assigns a confidenceInterval value to this solution.
-		 * @param confidence a confidenceInterval value of the result being valid.
+		 * @param modality the modal frame of this proposition.
 		 */
-		void setConfidenceValue(const std::shared_ptr<ConfidenceValue> &confidence);
-
-		/**
-		 * @return an optional time interval of the result being valid.
-		 */
-		const std::optional<const TimeInterval*>& timeInterval() const { return o_timeInterval_; }
-
-		/**
-		 * @return an optional confidenceInterval value of the result being valid.
-		 */
-		const std::optional<const ConfidenceValue*>& confidence() const { return o_confidence_; }
+		void setModalFrame(const ModalFrame &modality) { modality_ = modality; }
 
 		/**
 		 * Merge another query result into this one.
@@ -109,15 +95,9 @@ namespace knowrob {
 	protected:
 		SubstitutionPtr substitution_;
 		std::list<PredicateInstance> predicates_;
-		std::shared_ptr<TimeInterval> timeInterval_;
-		std::shared_ptr<ConfidenceValue> confidence_;
-		std::optional<const TimeInterval*> o_timeInterval_;
-		std::optional<const ConfidenceValue*> o_confidence_;
+		ModalFrame modality_;
 
-		bool combineConfidence(const std::shared_ptr<ConfidenceValue> &otherConfidence);
-
-		bool combineTimeInterval(const std::shared_ptr<TimeInterval> &otherTimeInterval,
-								 Reversible *changes= nullptr);
+		bool combineModalFrame(const std::shared_ptr<const Answer> &other);
 
 		friend class AllocatedQuery;
 	};

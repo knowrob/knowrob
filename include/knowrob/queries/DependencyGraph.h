@@ -68,7 +68,7 @@ namespace knowrob {
     };
 
     /**
-     * A node labeled with a modality that contains dependency groups of literals.
+     * A node labeled with a modalFrame that contains dependency groups of literals.
      */
     class ModalDependencyNode : public DependencyNode {
     public:
@@ -76,7 +76,7 @@ namespace knowrob {
                                      const ModalityLabelPtr &label={});
 
         /**
-         * @return the modality label of this node.
+         * @return the modalFrame label of this node.
          */
         const auto& label() const { return label_; }
 
@@ -117,9 +117,9 @@ namespace knowrob {
      * A graph capturing a dependency relation between literals in a formula.
      * Two literals are viewed as dependant in case they share a free variable.
      * Here, labeled literal are considered.
-     * The graph is made of nodes labeled with a modality that contain groups of literals.
-     * Literals that are part of the same node are all evaluated wrt. the modality label of this node.
-     * The dependency relation is rather computed between these modality groups.
+     * The graph is made of nodes labeled with a modalFrame that contain groups of literals.
+     * Literals that are part of the same node are all evaluated wrt. the modalFrame label of this node.
+     * The dependency relation is rather computed between these modalFrame groups.
      */
     class DependencyGraph {
     public:
@@ -142,7 +142,7 @@ namespace knowrob {
          * Add a new node to the graph and compute dependency relation
          * with other nodes.
          * @param literals set of literals considered in conjunction.
-         * @param label a modality label.
+         * @param label a modalFrame label.
          */
         void insert(const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label);
 
@@ -164,12 +164,12 @@ namespace knowrob {
         auto end() const { return groups_.end(); }
 
         /**
-         * @return number of nodes with modality label.
+         * @return number of nodes with modalFrame label.
          */
         auto numNodes() const { return nodes_.size(); }
 
         /**
-         * @return number of dependency groups among modality labeled nodes.
+         * @return number of dependency groups among modalFrame labeled nodes.
          */
         auto numGroups() const { return groups_.size(); }
 

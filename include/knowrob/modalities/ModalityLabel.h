@@ -24,7 +24,7 @@ namespace knowrob {
         : FormulaLabel(), modalOperators_(modalOperators) {}
 
         /**
-         * @param other another modality label.
+         * @param other another modalFrame label.
          * @return true this is the same label of other.
          */
         bool operator==(const ModalityLabel &other) const

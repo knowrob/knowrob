@@ -450,9 +450,11 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
             { v_until = val; }
 
             if(v_since.has_value() || v_until.has_value()) {
-                solution->setTimeInterval(std::make_shared<TimeInterval>(
+				auto mf = solution->modalFrame();
+                mf.setTimeInterval(TimeInterval(
                         Range<TimePoint>(v_since, std::nullopt),
                         Range<TimePoint>(std::nullopt, v_until)));
+				solution->setModalFrame(mf);
             }
         }
 
@@ -462,8 +464,10 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
             if(PL_term_type(scope_val)==PL_FLOAT &&
                PL_get_float(scope_val, &v_confidence))
             {
-                solution->setConfidenceValue(
-                        std::make_shared<ConfidenceValue>(v_confidence));
+				auto mf = solution->modalFrame();
+				// TODO: allow to set confidence value of answer
+				//mf.setConfidenceValue(std::make_shared<ConfidenceValue>(v_confidence));
+				solution->setModalFrame(mf);
             }
         }
 
@@ -541,8 +545,9 @@ bool PrologQuery::putScope(term_t pl_term, const AnswerPtr &solution)
     static const auto time_key = PL_new_atom("time");
     static const auto confidence_key = PL_new_atom("confidenceInterval");
 
-    auto &timeInterval = solution->timeInterval();
-    auto &confidenceValue = solution->confidence();
+    auto &timeInterval = solution->modalFrame().timeInterval();
+	std::optional<double> confidenceValue = std::nullopt;
+    //auto &confidenceValue = solution->modalFrame().confidence();
 
     int numScopeKeys = 0;
     if(timeInterval.has_value())    numScopeKeys += 1;
@@ -553,11 +558,11 @@ bool PrologQuery::putScope(term_t pl_term, const AnswerPtr &solution)
     if(numScopeKeys>0) {
         int keyIndex = 0;
         if(timeInterval.has_value() &&
-           PrologQuery::putTerm(scopeValues, *timeInterval.value())) {
+           PrologQuery::putTerm(scopeValues, timeInterval.value())) {
             scopeKeys[keyIndex++] = time_key;
         }
         if(confidenceValue.has_value() &&
-           PL_put_float(scopeValues+keyIndex, confidenceValue.value()->value())) {
+           PL_put_float(scopeValues+keyIndex, confidenceValue.value())) {
             scopeKeys[keyIndex++] = confidence_key;
         }
         if(!PL_put_dict(pl_term, 0, numScopeKeys, scopeKeys, scopeValues)) {
