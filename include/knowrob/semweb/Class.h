@@ -23,6 +23,9 @@ namespace knowrob::semweb {
      */
     class Class : public Resource {
     public:
+		/**
+		 * @param iri A class IRI.
+		 */
         explicit Class(std::string_view iri);
 
         /**

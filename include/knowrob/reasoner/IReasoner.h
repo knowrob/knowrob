@@ -18,7 +18,6 @@
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
 #include "knowrob/Statement.h"
-#include "knowrob/semweb/GraphPattern.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/semweb/GraphQuery.h"

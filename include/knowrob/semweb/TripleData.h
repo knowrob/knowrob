@@ -8,6 +8,9 @@
 #include "optional"
 
 namespace knowrob {
+	/**
+	 * The type of a RDF resource or literal.
+	 */
     enum RDFType {
         RDF_RESOURCE,
         RDF_STRING_LITERAL,

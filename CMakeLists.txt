@@ -168,7 +168,6 @@ add_library(knowrob_qa SHARED
 		src/queries/AnswerBuffer.cpp
 		src/semweb/PrefixRegistry.cpp
         src/backend/KnowledgeGraph.cpp
-		src/semweb/GraphPattern.cpp
 		src/semweb/xsd.cpp
 		src/semweb/GraphQuery.cpp
 		src/semweb/Vocabulary.cpp
@@ -186,7 +185,6 @@ add_library(knowrob_qa SHARED
 		src/reasoner/ReasoningGraph.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
-        src/reasoner/HybridReasoner.cpp
 		src/reasoner/ReasonerAttention.cpp
 		src/reasoner/prolog/PrologQuery.cpp
 		src/reasoner/prolog/PrologQueryRunner.cpp

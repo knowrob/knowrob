@@ -42,9 +42,8 @@ namespace knowrob::semweb {
 
     /**
      * Manages the import hierarchy between named graphs.
-     * Names of graph usually correspond to names of ontology files,
-     * and the import hierarchy is build based on owl:imports statements
-     * in named graphs.
+     * Names of graphs may correspond to names of ontology files,
+     * and the import hierarchy can be build based on owl:imports statements.
      */
     class ImportHierarchy {
     public:
