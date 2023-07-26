@@ -735,8 +735,8 @@ mongolog_project(Fact) :-
 %
 % @param Statement a statement term.
 %
-mongolog_retract(AtomicProposition) :-
-	mongolog_retract(AtomicProposition, dict{}, []).
+mongolog_retract(Statement) :-
+	mongolog_retract(Statement, dict{}, []).
 
 %% mongolog_retract(+Statement, +Scope) is nondet.
 %
@@ -745,8 +745,8 @@ mongolog_retract(AtomicProposition) :-
 % @param Statement a statement term.
 % @param Scope the scope of the statement.
 %
-mongolog_retract(AtomicProposition, Scope) :-
-	mongolog_retract(AtomicProposition, Scope, []).
+mongolog_retract(Statement, Scope) :-
+	mongolog_retract(Statement, Scope, []).
 
 %% kb_unproject(+Statement, +Scope, +Options) is semidet.
 %
@@ -771,8 +771,8 @@ mongolog_retract(_, _, _) :-
 mongolog_retract(Statements, Scope, Options) :-
 	is_list(Statements),
 	!,
-	forall(member(AtomicProposition, Statements),
-	       mongolog_retract(AtomicProposition, Scope, Options)).
+	forall(member(Statement, Statements),
+	       mongolog_retract(Statement, Scope, Options)).
 
 mongolog_retract(triple(S,P,O), Scope, Options) :-
 	% TODO: support retraction of other predicates

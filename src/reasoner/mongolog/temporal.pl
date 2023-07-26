@@ -32,13 +32,13 @@
 % @param Statement A language term.
 % @param Interval A 2-element list.
 %
-during(AtomicProposition, [Since,Until]) ?>
+during(Statement, [Since,Until]) ?>
 	number(Since),
 	number(Until),
 	pragma(time_scope(=<(Since), >=(Until), Scope)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
-during(AtomicProposition, [Since,Until]) ?>
+during(Statement, [Since,Until]) ?>
 	var(Since),
 	var(Until),
 	% Note: goal must be called with below scope to include all records.
@@ -48,7 +48,7 @@ during(AtomicProposition, [Since,Until]) ?>
 		=<(double('Infinity')),
 		Scope
 	)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% read computed fact scope
 	% FIXME: this is not really accurate as get('v_scope') yields the accumulated scope so far.
 	%   but we only want the accumulated scope for Goal here.
@@ -56,9 +56,9 @@ during(AtomicProposition, [Since,Until]) ?>
 	assign(Since, string('$v_scope.time.since')),
 	assign(Until, string('$v_scope.time.until')).
 
-during(AtomicProposition, [Since, Until]) +>
+during(Statement, [Since, Until]) +>
 	pragma(time_scope(=(Since), =(Until), Scope)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 %% since(+Statement, ?Instant) is nondet.
 %
@@ -74,7 +74,7 @@ during(AtomicProposition, [Since, Until]) +>
 % @param Statement A language term.
 % @param Instant A time instant.
 %
-since(AtomicProposition, Instant) ?>
+since(Statement, Instant) ?>
 	% TODO: better handling of unknown until of interval
 	number(Instant),
 	% get current time
@@ -82,20 +82,20 @@ since(AtomicProposition, Instant) ?>
 	% only include records that hold at least since
 	% instant and at least until now
 	pragma(time_scope(=<(Instant), >=(Now), Scope)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
-since(AtomicProposition, Instant) ?>
+since(Statement, Instant) ?>
 	var(Instant),
 	% get current time
 	pragma(get_time(Now)),
 	% only include records that still are thought to be true
 	pragma(time_scope(>=(0), >=(Now), Scope)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% read computed fact scope
 	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.since')).
 
-since(AtomicProposition, Instant) +>
+since(Statement, Instant) +>
 	number(Instant),
 	% FIXME: until time is set to infinity here, however, the interpretation
 	%        is that we don't know yet when it ends.
@@ -106,7 +106,7 @@ since(AtomicProposition, Instant) +>
 		=(double('Infinity')),
 		Scope
 	)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
 %% until(+Statement, ?Instant) is nondet.
 %
@@ -122,15 +122,15 @@ since(AtomicProposition, Instant) +>
 % @param Statement A language term.
 % @param Interval A time interval, instant, or event.
 %
-until(AtomicProposition, Instant) ?>
+until(Statement, Instant) ?>
 	% TODO project until has unclear semantic
 	% TODO better handling of unknown since of interval
 	number(Instant),
 	% only include records that hold at instant
 	pragma(time_scope(=<(Instant), >=(Instant), Scope)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]).
+	call_with_context(Statement, [query_scope(Scope)]).
 
-until(AtomicProposition, Instant) ?>
+until(Statement, Instant) ?>
 	var(Instant),
 	% include all records
 	pragma(time_scope(
@@ -138,11 +138,11 @@ until(AtomicProposition, Instant) ?>
 		=<(double('Infinity')),
 		Scope
 	)),
-	call_with_context(AtomicProposition, [query_scope(Scope)]),
+	call_with_context(Statement, [query_scope(Scope)]),
 	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.until')).
 
-until(AtomicProposition, Instant) +>
+until(Statement, Instant) +>
 	number(Instant),
 	% FIXME: since time is set to 0 here, however, the interpretation
 	%        is that we don't know yet when it starts.
@@ -150,7 +150,7 @@ until(AtomicProposition, Instant) +>
 	%        to hold since begin of time!
 	% TODO: better disable project cases for until and since?
 	pragma(time_scope(=(0), =(Instant), Scope)),
-	call_with_context(AtomicProposition,
+	call_with_context(Statement,
 		[intersect_scope, query_scope(Scope)]).
 
 		 /*******************************

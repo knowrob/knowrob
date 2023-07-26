@@ -46,21 +46,21 @@ get_designator_statements(Entity,Designator,Statements) :-
 	).
 
 %%
-get_designator_statement0(Entity,[A,Type|Designator],AtomicProposition) :-
+get_designator_statement0(Entity,[A,Type|Designator],Statement) :-
 	once(A=a;A=an),
-	(	get_designator_statement1(Entity,Designator,AtomicProposition)
-	;	get_type_statement(Entity,Type,AtomicProposition)
+	(	get_designator_statement1(Entity,Designator,Statement)
+	;	get_type_statement(Entity,Type,Statement)
 	).
 
 %%
-get_designator_statement1(Entity,Designator,AtomicProposition) :-
+get_designator_statement1(Entity,Designator,Statement) :-
 	member([Key,Value],Designator),
 	\+ Key=iri,
 	get_designator_property(Key,Property),
-	get_designator_statement2(Entity,Property,Value,AtomicProposition).
+	get_designator_statement2(Entity,Property,Value,Statement).
 
 %%
-get_designator_statement2(Entity,Property,NestedDesignator,AtomicProposition) :-
+get_designator_statement2(Entity,Property,NestedDesignator,Statement) :-
 	is_designator(NestedDesignator),
 	%%
 	(	member([iri,IRI],NestedDesignator)
@@ -69,8 +69,8 @@ get_designator_statement2(Entity,Property,NestedDesignator,AtomicProposition) :-
 	),
 	%%
 	!,
-	(	get_designator_statement0(NestedEntity,NestedDesignator,AtomicProposition)
-	;	AtomicProposition=holds(Entity,Property,NestedEntity)
+	(	get_designator_statement0(NestedEntity,NestedDesignator,Statement)
+	;	Statement=holds(Entity,Property,NestedEntity)
 	).
 
 get_designator_statement2(Entity,Property,AtomicValue,
