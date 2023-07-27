@@ -165,7 +165,7 @@ foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
     if(mongolog && PL_get_atom_chars(t_ontologyURI, &ontologyURI)) {
         auto &kg = mongolog->knowledgeGraph();
 
-        if(!kg->loadTriples(ontologyURI, TripleFormat::RDF_XML, std::nullopt)) return false;
+        if(!kg->loadFile(ontologyURI, TripleFormat::RDF_XML, ModalityFrame())) return false;
 
         char *parentGraph;
         if(!PL_is_variable(t_parentGraph) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {
@@ -205,7 +205,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 {
     auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
     if(mongolog) {
-        TripleData tripleData;
+        StatementData tripleData;
 
         // "s" field
         auto subjectTerm  = PrologQuery::constructTerm(t_subjectTerm);

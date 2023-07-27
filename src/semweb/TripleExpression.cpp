@@ -28,7 +28,7 @@ TripleExpression::TripleExpression(
 {
 }
 
-TripleExpression::TripleExpression(const TripleData &tripleData)
+TripleExpression::TripleExpression(const StatementData &tripleData)
         : subjectTerm_(std::make_shared<StringTerm>(tripleData.subject)),
           propertyTerm_(std::make_shared<StringTerm>(tripleData.predicate)),
           beginTerm_(),

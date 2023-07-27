@@ -110,7 +110,7 @@ void PrologQueryRunner::run()
 term_t PrologQueryRunner::createContextTerm(
         term_t solutionScopeVar, term_t predicatesVar)
 {
-    // TODO: reconsider encoding of ModalFrame as term, below only time-interval is handled.
+    // TODO: reconsider encoding of ModalityFrame as term, below only time-interval is handled.
     //       so better change "query_scope" and "solution_scope" below. This will need changes in
     //       "call" predicates of Prolog and Mongolog where these terms are processed.
     // e.g. add to options `epistemic(know|belief, [Agent])` and `temporal(past, [(min,max),(min,max)])`

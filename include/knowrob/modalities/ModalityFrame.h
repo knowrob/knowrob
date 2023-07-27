@@ -9,11 +9,11 @@
 #include "TimeInterval.h"
 
 namespace knowrob {
-    class ModalFrame {
+    class ModalityFrame {
     public:
-        ModalFrame();
+        ModalityFrame();
 
-        explicit ModalFrame(const ModalIteration &modalIteration);
+        explicit ModalityFrame(const ModalIteration &modalIteration);
 
 		bool hasValue() const;
 
@@ -46,7 +46,7 @@ namespace knowrob {
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::ModalFrame& modalFrame);
+	std::ostream& operator<<(std::ostream& os, const knowrob::ModalityFrame& modalFrame);
 }
 
 

@@ -55,7 +55,7 @@ namespace knowrob::mongo {
         const auto& subPropertyAssertions() const { return subPropertyAssertions_; }
 
         // Override ITripleLoader
-        void loadTriple(const TripleData &tripleData) override;
+        void loadTriple(const StatementData &tripleData) override;
 
         // Override ITripleLoader
         void flush() override;
@@ -75,7 +75,7 @@ namespace knowrob::mongo {
         std::list<ClassPair> subClassAssertions_;
         std::list<PropertyPair> subPropertyAssertions_;
 
-        bson_t* createTripleDocument(const TripleData &tripleData,
+        bson_t* createTripleDocument(const StatementData &tripleData,
                                      const std::string &graphName,
                                      bool isTaxonomic);
     };

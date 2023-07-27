@@ -16,7 +16,7 @@
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
-#include "knowrob/modalities/ModalFrame.h"
+#include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
 	/**
@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        Query(const FormulaPtr &formula, int flags, ModalFrame modalFrame=ModalFrame());
+        Query(const FormulaPtr &formula, int flags, ModalityFrame modalFrame=ModalityFrame());
 
 		/**
 		 * @return the formula associated to this query.
@@ -48,7 +48,7 @@ namespace knowrob {
 
 	protected:
 		const std::shared_ptr<Formula> formula_;
-        const ModalFrame modalFrame_;
+        const ModalityFrame modalFrame_;
 		const int flags_;
 	};
 }

@@ -68,6 +68,7 @@ bool Answer::combineModalFrame(const std::shared_ptr<const Answer> &other)
 	// TODO: think about how modal frame of answers could be combined!
 	//modality_ = modality_.combine(other->modality_);
 	KB_WARN("todo: implement combining modal frames.");
+    return false;
 }
 
 namespace std {

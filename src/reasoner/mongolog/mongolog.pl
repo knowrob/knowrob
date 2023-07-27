@@ -548,8 +548,8 @@ assert_documents1(array(Docs), Coll) :-
 
 	% TODO: rather provide array of triples to cpp instead of
 	%       calling pl_assert_triple_cpp9 for each.
-	forall(member(TripleData, Docs), (
-		dict_pairs(TripleDict,_,TripleData),
+	forall(member(StatementData, Docs), (
+		dict_pairs(TripleDict,_,StatementData),
 		get_dict(s, TripleDict, string(Subject)),
 		get_dict(p, TripleDict, string(Predicate)),
 		get_dict(graph, TripleDict, string(Graph)),

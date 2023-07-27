@@ -11,7 +11,7 @@
 namespace knowrob::mongo {
     /**
      * A cursor that iterates over different results of a query,
-     * and fills a TripleData structure with the data.
+     * and fills a StatementData structure with the data.
      */
     class TripleCursor : public Cursor {
     public:
@@ -22,7 +22,7 @@ namespace knowrob::mongo {
          * @param tripleData a triple data structure
          * @return true on success
          */
-        bool nextTriple(TripleData &tripleData);
+        bool nextTriple(StatementData &tripleData);
 
         /**
          * @return the last document fetched by this cursor, or null if no document was fetched before.

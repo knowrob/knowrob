@@ -12,7 +12,6 @@
 #include "knowrob/Logger.h"
 #include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/semweb/xsd.h"
-#include "knowrob/queries/QueryError.h"
 
 namespace fs = std::filesystem;
 namespace qi = boost::spirit::qi;
@@ -27,7 +26,6 @@ namespace knowrob {
         GraphQueryPtr query_;
         AnswerBufferPtr result_;
 
-        // FIXME: use of unsmart pointer for kg is unsafe
         GraphQueryRunner(
                 KnowledgeGraph *kg,
                 GraphQueryPtr query,
@@ -47,9 +45,11 @@ template <typename TP> std::time_t to_time_t(TP tp) {
 }
 
 struct TripleHandler {
-    explicit TripleHandler(ITripleLoader *loader) : loader(loader), triple() {}
+    explicit TripleHandler(ITripleLoader *loader, const ModalityFrame &frame)
+    : loader(loader), statement(), frame(frame) {}
     ITripleLoader *loader;
-    TripleData triple;
+    StatementData statement;
+    ModalityFrame frame;
 };
 
 static RDFType getRDFTypeFromURI(const char *typeURI)
@@ -85,67 +85,70 @@ static void raptor_log(void*, raptor_log_message *message) {
     }
 }
 
-static void processTriple(void* user_data, raptor_statement* triple)
+static void processTriple(void* user_data, raptor_statement* statement)
 {
     auto *handler = (TripleHandler*)user_data;
+    // FIXME: modality frame is ignored when loading RDF files!
+    auto &frame = handler->frame;
 
-    if(!triple->subject || !triple->predicate || !triple->object) {
+    if(!statement->subject || !statement->predicate || !statement->object) {
         return;
     }
 
     // read predicate
-    handler->triple.predicate = (const char*) raptor_uri_as_string(triple->predicate->value.uri);
+    handler->statement.predicate = (const char*) raptor_uri_as_string(statement->predicate->value.uri);
     // read subject
-    if(triple->subject->type == RAPTOR_TERM_TYPE_BLANK)
-        handler->triple.subject = (const char*) triple->subject->value.blank.string;
+    if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK)
+        handler->statement.subject = (const char*) statement->subject->value.blank.string;
     else
-        handler->triple.subject = (const char*) raptor_uri_as_string(triple->subject->value.uri);
+        handler->statement.subject = (const char*) raptor_uri_as_string(statement->subject->value.uri);
 
     // read object
-    if(triple->object->type == RAPTOR_TERM_TYPE_BLANK) {
-        handler->triple.object = (const char*) triple->object->value.blank.string;
-        handler->triple.objectType = RDF_RESOURCE;
+    if(statement->object->type == RAPTOR_TERM_TYPE_BLANK) {
+        handler->statement.object = (const char*) statement->object->value.blank.string;
+        handler->statement.objectType = RDF_RESOURCE;
     }
-    else if(triple->object->type == RAPTOR_TERM_TYPE_LITERAL) {
-        handler->triple.object = (const char*) triple->object->value.literal.string;
+    else if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
+        handler->statement.object = (const char*) statement->object->value.literal.string;
         // parse literal type
-        if(triple->object->value.literal.datatype) {
-            handler->triple.objectType = getRDFTypeFromURI((const char*)
-                    raptor_uri_as_string(triple->object->value.literal.datatype));
+        if(statement->object->value.literal.datatype) {
+            handler->statement.objectType = getRDFTypeFromURI((const char*)
+                    raptor_uri_as_string(statement->object->value.literal.datatype));
         }
         else {
-            handler->triple.objectType = RDF_STRING_LITERAL;
+            handler->statement.objectType = RDF_STRING_LITERAL;
         }
-        switch(handler->triple.objectType) {
+        switch(handler->statement.objectType) {
             case RDF_RESOURCE:
             case RDF_STRING_LITERAL:
                 break;
             case RDF_DOUBLE_LITERAL:
-                handler->triple.objectDouble = strtod(handler->triple.object, nullptr);
+                handler->statement.objectDouble = strtod(handler->statement.object, nullptr);
                 break;
             case RDF_INT64_LITERAL:
-                handler->triple.objectInteger = strtol(handler->triple.object, nullptr, 10);
+                handler->statement.objectInteger = strtol(handler->statement.object, nullptr, 10);
                 break;
             case RDF_BOOLEAN_LITERAL: {
                 bool objectValue;
-                std::istringstream(handler->triple.object) >> objectValue;
-                handler->triple.objectInteger = objectValue;
+                std::istringstream(handler->statement.object) >> objectValue;
+                handler->statement.objectInteger = objectValue;
                 break;
             }
         }
     }
     else {
-        handler->triple.object = (const char*) raptor_uri_as_string(triple->object->value.uri);
-        handler->triple.objectType = RDF_RESOURCE;
+        handler->statement.object = (const char*) raptor_uri_as_string(statement->object->value.uri);
+        handler->statement.objectType = RDF_RESOURCE;
     }
 
-    handler->loader->loadTriple(handler->triple);
+    handler->loader->loadTriple(handler->statement);
 }
 
 
 KnowledgeGraph::KnowledgeGraph()
 : raptorWorld_(raptor_new_world()),
-  vocabulary_(std::make_shared<semweb::Vocabulary>())
+  vocabulary_(std::make_shared<semweb::Vocabulary>()),
+  importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
 {
     // TODO: reconsider handling of raptor worlds, e.g. some reasoner could
     //       access data from raptor API, but in some cases it could be desired
@@ -162,6 +165,7 @@ KnowledgeGraph::KnowledgeGraph()
 
 KnowledgeGraph::~KnowledgeGraph()
 {
+    // FIXME: stop all GraphQueryRunner's as they hold a pointer to this
     raptor_free_world(raptorWorld_);
 }
 
@@ -199,7 +203,8 @@ AnswerBufferPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query)
 bool KnowledgeGraph::loadURI(ITripleLoader &loader,
                              const std::string &uriString,
                              std::string &blankPrefix,
-                             TripleFormat format)
+                             TripleFormat format,
+                             const ModalityFrame &frame)
 {
     // create a raptor parser
     raptor_parser *parser;
@@ -216,7 +221,7 @@ bool KnowledgeGraph::loadURI(ITripleLoader &loader,
     }
 
     // pass TripleHandler as user data to statement_handler of raptor
-    TripleHandler handler(&loader);
+    TripleHandler handler(&loader, frame);
     raptor_parser_set_statement_handler(parser, &handler, processTriple);
     // make sure blanks are generated with proper prefix.
     // FIXME: changing this globally makes it impossible to call this function from multiple threads.
@@ -250,6 +255,11 @@ bool KnowledgeGraph::loadURI(ITripleLoader &loader,
 
     // raptor returns 0 on success
     return (result==0);
+}
+
+bool KnowledgeGraph::loadFile(const std::string_view &uriString, TripleFormat format)
+{
+    return loadFile(uriString, format, ModalityFrame());
 }
 
 std::string KnowledgeGraph::getNameFromURI(const std::string &uriString)

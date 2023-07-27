@@ -11,7 +11,7 @@
 
 using namespace knowrob;
 
-Query::Query(const std::shared_ptr<Formula> &formula, int flags, ModalFrame modalFrame)
+Query::Query(const std::shared_ptr<Formula> &formula, int flags, ModalityFrame modalFrame)
 : formula_(formula), flags_(flags), modalFrame_(std::move(modalFrame))
 {
 }

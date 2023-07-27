@@ -2,8 +2,8 @@
 // Created by daniel on 11.04.23.
 //
 
-#ifndef KNOWROB_SEMWEB_TRIPLE_DATA_H
-#define KNOWROB_SEMWEB_TRIPLE_DATA_H
+#ifndef KNOWROB_SEMWEB_STATEMENT_DATA_H
+#define KNOWROB_SEMWEB_STATEMENT_DATA_H
 
 #include "optional"
 
@@ -20,10 +20,14 @@ namespace knowrob {
     };
 
     /**
-     * Triple string data loaded from file.
+     * A struct holding data that represents a statement in a knowledge graph.
+     * The data is not copied, thus this struct can be used to map memory
+     * allocated by an external library (like raptor) into datastructures used by KnowRob.
+     * However, care should be taken that the StatementData is not used anymore
+     * after the memory has been de-allocated in the external library.
      */
-    struct TripleData {
-        TripleData()
+    struct StatementData {
+        StatementData()
                 : documentID(nullptr),
                   subject(nullptr),
                   predicate(nullptr),
@@ -36,11 +40,11 @@ namespace knowrob {
                   end(),
                   confidence(),
                   objectType(RDF_RESOURCE) {}
-        TripleData(const char* subject,
-                   const char* predicate,
-                   const char* object,
-                   const char* graph="user",
-                   const char* agent=nullptr)
+        StatementData(const char* subject,
+                      const char* predicate,
+                      const char* object,
+                      const char* graph="user",
+                      const char* agent=nullptr)
                 : documentID(nullptr),
                   subject(subject),
                   predicate(predicate),
@@ -68,4 +72,4 @@ namespace knowrob {
     };
 }
 
-#endif //KNOWROB_SEMWEB_TRIPLE_DATA_H
+#endif //KNOWROB_SEMWEB_STATEMENT_DATA_H

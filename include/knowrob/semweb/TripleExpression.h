@@ -6,7 +6,7 @@
 #define KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
 
 #include "knowrob/formulas/Predicate.h"
-#include "TripleData.h"
+#include "StatementData.h"
 #include "knowrob/terms/Constant.h"
 
 namespace knowrob::semweb {
@@ -30,7 +30,7 @@ namespace knowrob::semweb {
         explicit TripleExpression(const PredicatePtr &triplePredicate,
                                   const std::string_view &graphName="*");
 
-        explicit TripleExpression(const TripleData &tripleData);
+        explicit TripleExpression(const StatementData &tripleData);
 
         /**
          * @return true if the expression has no variables.

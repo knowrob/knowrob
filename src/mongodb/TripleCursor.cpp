@@ -14,7 +14,7 @@ TripleCursor::TripleCursor(const std::shared_ptr<Collection> &collection)
 {
 }
 
-bool TripleCursor::nextTriple(TripleData &tripleData) //NOLINT
+bool TripleCursor::nextTriple(StatementData &tripleData) //NOLINT
 {
     if(next(&tripleDocument_) &&
        bson_iter_init(&tripleIter_, tripleDocument_))

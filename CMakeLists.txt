@@ -215,7 +215,7 @@ add_library(knowrob_qa SHARED
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
 		src/queries/QueryStage.cpp
-		src/modalities/ModalFrame.cpp
+        src/modalities/ModalityFrame.cpp
 		src/backend/KnowledgeGraphManager.cpp
 		src/backend/KnowledgeGraphPlugin.cpp)
 target_link_libraries(knowrob_qa

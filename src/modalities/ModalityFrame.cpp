@@ -3,16 +3,16 @@
 //
 
 #include "knowrob/Logger.h"
-#include "knowrob/modalities/ModalFrame.h"
+#include "knowrob/modalities/ModalityFrame.h"
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/modalities/EpistemicModality.h"
 
 using namespace knowrob;
 
-ModalFrame::ModalFrame()
+ModalityFrame::ModalityFrame()
 = default;
 
-ModalFrame::ModalFrame(const ModalIteration &modalIteration)
+ModalityFrame::ModalityFrame(const ModalIteration &modalIteration)
 {
     for(auto &x : modalIteration) {
         if(x->modality().modalityType() == ModalityType::Epistemic) {
@@ -27,42 +27,42 @@ ModalFrame::ModalFrame(const ModalIteration &modalIteration)
     }
 }
 
-bool ModalFrame::hasValue() const
+bool ModalityFrame::hasValue() const
 {
 	return epistemicOperator_.get() != nullptr || pastOperator_.get() != nullptr;
 }
 
-bool ModalFrame::isAboutKnowledge() const
+bool ModalityFrame::isAboutKnowledge() const
 {
     return !isAboutBelief();
 }
 
-bool ModalFrame::isAboutBelief() const
+bool ModalityFrame::isAboutBelief() const
 {
     return epistemicOperator_ ? epistemicOperator_->isModalPossibility() : false;
 }
 
-bool ModalFrame::isAboutPresent() const
+bool ModalityFrame::isAboutPresent() const
 {
     return !isAboutPast();
 }
 
-bool ModalFrame::isAboutSomePast() const
+bool ModalityFrame::isAboutSomePast() const
 {
     return isAboutPast() && pastOperator_->isModalPossibility();
 }
 
-bool ModalFrame::isAboutAllPast() const
+bool ModalityFrame::isAboutAllPast() const
 {
     return isAboutPast() && pastOperator_->isModalNecessity();
 }
 
-bool ModalFrame::isAboutPast() const
+bool ModalityFrame::isAboutPast() const
 {
     return pastOperator_.get() != nullptr;
 }
 
-const std::optional<std::string>& ModalFrame::agent() const
+const std::optional<std::string>& ModalityFrame::agent() const
 {
     if(epistemicOperator_) {
         auto epistemicModality = (EpistemicModality*)&epistemicOperator_->modality();
@@ -74,7 +74,7 @@ const std::optional<std::string>& ModalFrame::agent() const
     }
 }
 
-const std::optional<TimeInterval>& ModalFrame::timeInterval() const
+const std::optional<TimeInterval>& ModalityFrame::timeInterval() const
 {
     if(pastOperator_) {
         auto pastModality = (PastModality*)&pastOperator_->modality();
@@ -86,13 +86,13 @@ const std::optional<TimeInterval>& ModalFrame::timeInterval() const
     }
 }
 
-void ModalFrame::setTimeInterval(const TimeInterval &ti)
+void ModalityFrame::setTimeInterval(const TimeInterval &ti)
 {
 	pastOperator_ = PastModality::P(ti);
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::ModalFrame& modality) //NOLINT
+	std::ostream& operator<<(std::ostream& os, const knowrob::ModalityFrame& modality) //NOLINT
 	{
 		if(modality.epistemicOperator())
 			os << *modality.epistemicOperator();

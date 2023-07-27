@@ -9,9 +9,7 @@
 #include <list>
 #include "boost/property_tree/ptree.hpp"
 #include "knowrob/backend/KnowledgeGraph.h"
-#include "knowrob/semweb/Vocabulary.h"
-#include "Collection.h"
-#include "Cursor.h"
+#include "knowrob/mongodb/Collection.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/mongodb/TripleLoader.h"
@@ -26,12 +24,17 @@ namespace knowrob {
     public:
         MongoKnowledgeGraph();
 
+        /**
+         * Constructor with configuration.
+         * There is no need to call loadConfiguration if this constructor is used.
+         * @param db_uri MongoDB URI string
+         * @param db_name MongoDB database name where KG is stored
+         * @param collectionName MongoDB collection name where KG is stored
+         */
         explicit MongoKnowledgeGraph(
                 const char* db_uri,
                 const char* db_name="knowrob",
                 const char* collectionName="triples");
-
-        const auto& importHierarchy() const { return importHierarchy_; }
 
         /**
          * (re)create search indices.
@@ -39,16 +42,39 @@ namespace knowrob {
         void createSearchIndices();
 
         /**
-         * Delete all triples of a named graph in this knowledge graph.
+         * Delete all statements in a named graph
          * @param graphName a graph name
          */
         void dropGraph(const std::string_view &graphName);
 
         /**
-         * Delete all triples in the database.
+         * Delete all statements in the database.
          * Note: ths will also delete all indices which need to be re-created afterwards.
          */
         void drop();
+
+        /**
+         * Lookup up all matching triples.
+         * @param tripleExpression a triple expression
+         * @return a cursor over matching triples
+         */
+        mongo::AnswerCursorPtr lookup(const semweb::TripleExpression &tripleExpression);
+
+        /**
+         * Lookup up all matching triples.
+         * @param tripleData an atomic proposition
+         * @return a cursor over matching triples
+         */
+        mongo::AnswerCursorPtr lookup(const StatementData &tripleData);
+
+        /**
+         * Lookup up a path of matching triples.
+         * The lookup pipeline includes a step for each expression in the vector
+         * in the same order as the expressions are ordered in the vector.
+         * @param tripleExpressions a vector of triple expressions
+         * @return a cursor over matching triples
+         */
+        mongo::AnswerCursorPtr lookup(const std::list<semweb::TripleExpression> &tripleExpressions);
 
         /**
          * @param graphName the name of a graph
@@ -60,10 +86,13 @@ namespace knowrob {
         bool loadConfiguration(const boost::property_tree::ptree &config) override;
 
         // Override KnowledgeGraph
-        bool insert(const TripleData &tripleData) override;
+        bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityFrame &frame) override;
 
         // Override KnowledgeGraph
-        bool insert(const std::vector<TripleData> &tripleData) override;
+        bool insert(const StatementData &tripleData) override;
+
+        // Override KnowledgeGraph
+        bool insert(const std::vector<StatementData> &tripleData) override;
 
         // Override KnowledgeGraph
         void removeAll(const semweb::TripleExpression &tripleExpression) override;
@@ -72,40 +101,14 @@ namespace knowrob {
         void removeOne(const semweb::TripleExpression &tripleExpression) override;
 
         // Override KnowledgeGraph
-        bool loadTriples(
-                const std::string_view &uriString,
-                TripleFormat format,
-                const std::optional<ModalIteration> &modality) override;
-
-        // Override KnowledgeGraph
         void evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream) override;
 
         // Override KnowledgeGraph
         AnswerBufferPtr watchQuery(const GraphQueryPtr &literal) override;
 
-        /**
-         * Lookup up all matching triples.
-         * @param tripleExpression a triple expression
-         * @return a cursor over matching triples
-         */
-        mongo::AnswerCursorPtr lookupTriples(const semweb::TripleExpression &tripleExpression);
-
-        mongo::AnswerCursorPtr lookupTriples(const TripleData &tripleData)
-        { return lookupTriples(semweb::TripleExpression(tripleData)); }
-
-        /**
-         * Lookup up a path of matching triples.
-         * The lookup pipeline includes a step for each expression in the vector
-         * in the same order as the expressions are ordered in the vector.
-         * @param tripleExpressions a vector of triple expressions
-         * @return a cursor over matching triples
-         */
-        mongo::AnswerCursorPtr lookupTriplePaths(const std::list<semweb::TripleExpression> &tripleExpressions);
-
     protected:
         std::shared_ptr<mongo::Collection> tripleCollection_;
         std::shared_ptr<mongo::Collection> oneCollection_;
-        std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 
         void initialize();
 
@@ -123,10 +126,9 @@ namespace knowrob {
 
         void updateHierarchy(mongo::TripleLoader &tripleLoader);
 
-        void updateTimeInterval(const TripleData &tripleLoader);
+        void updateTimeInterval(const StatementData &tripleLoader);
 
-        static bson_t* getTripleSelector(const semweb::TripleExpression &tripleExpression,
-                                  bool isTaxonomicProperty);
+        static bson_t* getSelector(const semweb::TripleExpression &tripleExpression, bool isTaxonomicProperty);
 
         bool isTaxonomicProperty(const TermPtr &propertyTerm);
     };

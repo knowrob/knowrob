@@ -33,14 +33,14 @@ namespace knowrob {
          * @param tripleData data representing the proposition.
          * @return true on success.
          */
-        bool insert(const TripleData &proposition);
+        bool insert(const StatementData &proposition);
 
         /**
          * Asserts a sequence of propositions into the knowledge base.
          * @param tripleData data representing a list of proposition.
          * @return true on success.
          */
-        bool insert(const std::vector<TripleData> &propositions);
+        bool insert(const std::vector<StatementData> &propositions);
 
         /**
          * @return a thread pool owned by this.

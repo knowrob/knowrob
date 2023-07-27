@@ -289,10 +289,10 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const LabeledLiteralPtr &query, int q
 {
     auto &modalOperators = query->label()->modalOperators();
     return submitQuery(std::make_shared<GraphQuery>(
-        GraphQuery({query}, queryFlags, ModalFrame(modalOperators))));
+        GraphQuery({query}, queryFlags, ModalityFrame(modalOperators))));
 }
 
-bool KnowledgeBase::insert(const std::vector<TripleData> &propositions)
+bool KnowledgeBase::insert(const std::vector<StatementData> &propositions)
 {
     bool status = true;
     for(auto &kg : backendManager_->knowledgeGraphPool()) {
@@ -304,7 +304,7 @@ bool KnowledgeBase::insert(const std::vector<TripleData> &propositions)
     return status;
 }
 
-bool KnowledgeBase::insert(const TripleData &proposition)
+bool KnowledgeBase::insert(const StatementData &proposition)
 {
     bool status = true;
     // assert each statement into each knowledge graph backend

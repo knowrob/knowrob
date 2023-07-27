@@ -201,7 +201,7 @@ public:
                 if(arg_p->indicator()->arity() == 2) {
                     // TODO: insert triple data, there should be some helper to extract triple data from Predicate!
                     //       maybe ust add "asTripleData" to Predicate?
-                    //kb_.insert(TripleData(...));
+                    //kb_.insert(StatementData(...));
                     KB_WARN("triple assertion not implemented yet in terminal");
                 }
                 else {

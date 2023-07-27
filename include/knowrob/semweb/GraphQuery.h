@@ -14,7 +14,7 @@
 #include "knowrob/semweb/TripleExpression.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerBuffer.h"
-#include "knowrob/modalities/ModalFrame.h"
+#include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
 
@@ -26,7 +26,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalFrame modalFrame=ModalFrame())
+        GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame=ModalityFrame())
         : literals_(literals), modalFrame_(std::move(modalFrame)), flags_(flags) {}
 
         /**
@@ -35,7 +35,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(LiteralPtr &literal, int flags, ModalFrame modalFrame=ModalFrame())
+        GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame=ModalityFrame())
         : literals_({literal}), modalFrame_(std::move(modalFrame)), flags_(flags) {}
 
         const auto& literals() const { return literals_; }
@@ -48,7 +48,7 @@ namespace knowrob {
 
     protected:
         const std::vector<LiteralPtr> literals_;
-        const ModalFrame modalFrame_;
+        const ModalityFrame modalFrame_;
         const int flags_;
     };
 

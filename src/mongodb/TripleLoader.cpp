@@ -30,7 +30,7 @@ TripleLoader::TripleLoader(std::string graphName,
 TripleLoader::~TripleLoader()
 = default;
 
-bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
+bson_t* TripleLoader::createTripleDocument(const StatementData &tripleData,
                                            const std::string &graphName,
                                            bool isTaxonomic)
 {
@@ -126,7 +126,7 @@ bson_t* TripleLoader::createTripleDocument(const TripleData &tripleData,
     return tripleDoc;
 }
 
-void TripleLoader::loadTriple(const TripleData &tripleData)
+void TripleLoader::loadTriple(const StatementData &tripleData)
 {
     bool isTaxonomic=false;
 

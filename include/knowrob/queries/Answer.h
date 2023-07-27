@@ -15,7 +15,7 @@
 #include <ostream>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/modalities/ModalFrame.h"
+#include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
 	/**
@@ -75,12 +75,12 @@ namespace knowrob {
 		/**
 		 * @return the modal frame of this proposition.
 		 */
-		const ModalFrame& modalFrame() const { return modality_; }
+		const ModalityFrame& modalFrame() const { return modality_; }
 
 		/**
 		 * @param modality the modal frame of this proposition.
 		 */
-		void setModalFrame(const ModalFrame &modality) { modality_ = modality; }
+		void setModalFrame(const ModalityFrame &modality) { modality_ = modality; }
 
 		/**
 		 * Merge another query result into this one.
@@ -95,7 +95,7 @@ namespace knowrob {
 	protected:
 		SubstitutionPtr substitution_;
 		std::list<PredicateInstance> predicates_;
-		ModalFrame modality_;
+		ModalityFrame modality_;
 
 		bool combineModalFrame(const std::shared_ptr<const Answer> &other);
 

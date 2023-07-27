@@ -14,8 +14,9 @@
 #include "knowrob/semweb/GraphQuery.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/semweb/TripleExpression.h"
-#include "knowrob/semweb/TripleData.h"
+#include "knowrob/semweb/StatementData.h"
 #include "knowrob/ThreadPool.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 namespace knowrob {
     /**
@@ -27,12 +28,21 @@ namespace knowrob {
         N_TRIPLES
     };
 
+    /**
+     * Used when statements are loaded from external resources.
+     */
     class ITripleLoader {
     public:
-        virtual void loadTriple(const TripleData &tripleData) = 0;
+        virtual void loadTriple(const StatementData &tripleData) = 0;
         virtual void flush() = 0;
     };
 
+    /**
+     * A data structure that organizes statements in a graph.
+     * This is an abstract class with some virtual methods.
+     * It is supposed to be implemented by different backends
+     * that can be used to handle graph data.
+     */
     class KnowledgeGraph {
     public:
         explicit KnowledgeGraph();
@@ -51,9 +61,32 @@ namespace knowrob {
         virtual bool loadConfiguration(const boost::property_tree::ptree &config) = 0;
 
         /**
+         * Read RDF ontology from a remote URI or a local file, and load
+         * triple data into the database knowledgeGraph.
+         * @param uriString the URI pointing to a RDF file
+         * @param format the format of the file
+         * @param frame the modality frame of statments in the file
+         * @return true if the file was loaded successfully
+         */
+        virtual bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityFrame &frame) = 0;
+
+        /**
+         * Loads statements from file with default modality frame.
+         * @param uriString the URI pointing to a RDF file
+         * @param format the format of the file
+         * @return true if the file was loaded successfully
+         */
+        bool loadFile(const std::string_view &uriString, TripleFormat format);
+
+        /**
          * @return the vocabulary of this KG.
          */
         const auto& vocabulary() const { return vocabulary_; }
+
+        /**
+         * @return the import hierarchy between named graphs.
+         */
+        const auto& importHierarchy() const  { return importHierarchy_; }
 
         /**
          * @param iri a RDF resource IRI
@@ -74,33 +107,18 @@ namespace knowrob {
         bool isDefinedClass(const std::string_view &iri);
 
         /**
-         * Read RDF ontology from a remote URI or a local file, and load
-         * triple data into the database knowledgeGraph.
-         * @param uriString the URI pointing to a RDF file
-         * @param format the format of the file
-         * @return true if the file was loaded successfully
-         */
-        virtual bool loadTriples(
-                const std::string_view &uriString,
-                TripleFormat format,
-                const std::optional<ModalIteration> &modality) = 0;
-
-        bool loadTriples(const std::string_view &uriString, TripleFormat format)
-        { return loadTriples(uriString, format, std::nullopt); }
-
-        /**
          * Add an assertion to this KG.
          * @param tripleData data representing an atomic proposition.
          * @return true on success
          */
-        virtual bool insert(const TripleData &tripleData) = 0;
+        virtual bool insert(const StatementData &tripleData) = 0;
 
         /**
          * Add assertions to this KG.
          * @param tripleData data representing atomic propositions.
          * @return true on success
          */
-        virtual bool insert(const std::vector<TripleData> &tripleData) = 0;
+        virtual bool insert(const std::vector<StatementData> &tripleData) = 0;
 
         /**
          * Delete all matching statements from this KG.
@@ -161,6 +179,10 @@ namespace knowrob {
          */
         static std::string getVersionFromURI(const std::string &uriString);
 
+        /**
+         * @param versionString a string
+         * @return true if versionString is a valid version string
+         */
         static bool isVersionString(const std::string &versionString);
 
         /**
@@ -174,11 +196,13 @@ namespace knowrob {
         std::shared_ptr<ThreadPool> threadPool_;
         raptor_world *raptorWorld_;
         std::shared_ptr<semweb::Vocabulary> vocabulary_;
+        std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 
         bool loadURI(ITripleLoader &loader,
                      const std::string &uriString,
                      std::string &blankPrefix,
-                     TripleFormat format);
+                     TripleFormat format,
+                     const ModalityFrame &frame);
     };
 
     using KnowledgeGraphPtr = std::shared_ptr<KnowledgeGraph>;

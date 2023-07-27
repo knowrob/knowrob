@@ -18,7 +18,6 @@
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
-#include "knowrob/terms/ListTerm.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryEngine.h"
 
@@ -46,14 +45,12 @@ using namespace knowrob::semweb;
 bson_t* newPipelineImportHierarchy(const char *collection);
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
-: KnowledgeGraph(),
-  importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
+: KnowledgeGraph()
 {
 }
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
 : KnowledgeGraph(),
-  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
   tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
 {
     initialize();
@@ -136,6 +133,7 @@ void MongoKnowledgeGraph::initialize()
         bson_decimal128_t infinity, zero;
         bson_decimal128_from_string(BSON_DECIMAL128_INF, &infinity);
         bson_decimal128_from_string("0", &zero);
+        // TODO: time interval is optional now, right? so we do not need to add the fields here? test it!
         BSON_APPEND_DOCUMENT_BEGIN(oneDoc.bson(), "v_scope", &scopeDoc);
         BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
         BSON_APPEND_DECIMAL128(&timeDoc, "since", &zero);
@@ -146,7 +144,7 @@ void MongoKnowledgeGraph::initialize()
     }
 
     // initialize vocabulary
-    TripleData tripleData;
+    StatementData tripleData;
     {
         // iterate over all rdf::type assertions
         TripleCursor cursor(tripleCollection_);
@@ -200,13 +198,6 @@ void MongoKnowledgeGraph::initialize()
 
 void MongoKnowledgeGraph::createSearchIndices()
 {
-    /*
-        setup_collection(annotations, [
-            ['s'],
-            ['p'],
-            ['s','p']
-        ]),
-     */
     // TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence" be included
     //       in each index?
     tripleCollection_->createAscendingIndex({"s"});
@@ -274,7 +265,7 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
     return {};
 }
 
-bson_t* MongoKnowledgeGraph::getTripleSelector(
+bson_t* MongoKnowledgeGraph::getSelector(
             const semweb::TripleExpression &tripleExpression,
             bool b_isTaxonomicProperty)
 {
@@ -283,7 +274,7 @@ bson_t* MongoKnowledgeGraph::getTripleSelector(
     return doc;
 }
 
-bool MongoKnowledgeGraph::insert(const TripleData &tripleData)
+bool MongoKnowledgeGraph::insert(const StatementData &tripleData)
 {
     auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -297,7 +288,7 @@ bool MongoKnowledgeGraph::insert(const TripleData &tripleData)
     return true;
 }
 
-bool MongoKnowledgeGraph::insert(const std::vector<TripleData> &tripleData)
+bool MongoKnowledgeGraph::insert(const std::vector<StatementData> &statements)
 {
     auto &graph = importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -305,14 +296,14 @@ bool MongoKnowledgeGraph::insert(const std::vector<TripleData> &tripleData)
                         oneCollection_,
                         vocabulary_);
     auto loaderPtr = &loader;
-    std::for_each(tripleData.begin(), tripleData.end(),
+    std::for_each(statements.begin(), statements.end(),
         [loaderPtr](auto &data) {
             loaderPtr->loadTriple(data);
         });
     loader.flush();
     updateHierarchy(loader);
 
-    for(auto &data : tripleData) updateTimeInterval(data);
+    for(auto &data : statements) updateTimeInterval(data);
 
     return true;
 }
@@ -321,17 +312,17 @@ void MongoKnowledgeGraph::removeAll(const semweb::TripleExpression &tripleExpres
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeAll(
-        Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
+        Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
 void MongoKnowledgeGraph::removeOne(const semweb::TripleExpression &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeOne(
-        Document(getTripleSelector(tripleExpression, b_isTaxonomicProperty)));
+        Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-AnswerCursorPtr MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpression &tripleExpression)
+AnswerCursorPtr MongoKnowledgeGraph::lookup(const semweb::TripleExpression &tripleExpression)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -350,10 +341,14 @@ AnswerCursorPtr MongoKnowledgeGraph::lookupTriples(const semweb::TripleExpressio
     auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
     cursor->aggregate(&pipelineDoc);
     return cursor;
-    //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::list<semweb::TripleExpression> &tripleExpressions)
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const StatementData &tripleData)
+{
+    return lookup(semweb::TripleExpression(tripleData));
+}
+
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::list<semweb::TripleExpression> &tripleExpressions)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -368,13 +363,12 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookupTriplePaths(const std::list<se
     auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
     cursor->aggregate(&pipelineDoc);
     return cursor;
-    //return std::make_shared<Cursor>(oneCollection_, &pipelineDoc, true);
 }
 
 void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
     auto channel = AnswerStream::Channel::create(resultStream);
-    auto cursor = lookupTriplePaths(query->asTripleExpression());
+    auto cursor = lookup(query->asTripleExpression());
 
     // limit to one solution if requested
     if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
@@ -395,17 +389,18 @@ void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBuffer
 
 AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
 {
-    // TODO
+    // TODO implement watchQuery in MongoKnowledgeGraph
     return {};
 }
 
-bool MongoKnowledgeGraph::loadTriples( //NOLINT
+bool MongoKnowledgeGraph::loadFile( //NOLINT
         const std::string_view &uriString,
         TripleFormat format,
-        const std::optional<ModalIteration> &modality)
+        const ModalityFrame &frame)
 {
-    // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces somehow as part of graph?
-    //          or just assume namespace prefixes are unique withing knowrob
+    // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces as part of graph?
+    //          or just assume namespace prefixes are unique withing knowrob.
+    //          also thinkable to use an integer encoding.
     auto resolved = URI::resolve(uriString);
     auto graphName = getNameFromURI(resolved);
 
@@ -434,7 +429,7 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     KB_INFO("Loading ontology at '{}' with version "
             "\"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, *importURI, blankPrefix, format)) {
+    if(!loadURI(loader, *importURI, blankPrefix, format, frame)) {
         KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
@@ -443,12 +438,12 @@ bool MongoKnowledgeGraph::loadTriples( //NOLINT
     // update o* and p* fields
     updateHierarchy(loader);
     // load imported ontologies
-    for(auto &imported : loader.imports()) loadTriples(imported, format, std::nullopt);
+    for(auto &imported : loader.imports()) loadFile(imported, format, frame);
 
     return true;
 }
 
-void MongoKnowledgeGraph::updateTimeInterval(const TripleData &tripleData)
+void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
 {
     if(!tripleData.begin.has_value() && !tripleData.end.has_value()) return;
     bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate);
@@ -467,7 +462,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const TripleData &tripleData)
 
     // iterate overlapping triples, remember document ids and compute
     // union of time intervals
-    TripleData overlappingTriple;
+    StatementData overlappingTriple;
     std::list<bson_oid_t> documentIDs;
     std::optional<double> begin = tripleData.begin;
     std::optional<double> end = tripleData.end;
@@ -516,9 +511,6 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
     // TODO: list of parents could be supplied as a constant in aggregation queries below.
     //       currently parents are computed in the query, maybe it would be a bit faster using a constant
     //       baked into the query.
-    // TODO: the same pipeline template is used many times below.
-    //       is there some means one could optimize this? e.g. by generating only once a bson_t
-    //       and then modifying it? not sure if it would be worth it though.
 
     bson_t pipelineDoc = BSON_INITIALIZER;
 
@@ -657,7 +649,7 @@ protected:
     // void TearDown() override {}
     template <class T>
     std::list<std::shared_ptr<Answer>> lookup(const T &data) {
-        auto cursor = kg_->lookupTriples(data);
+        auto cursor = kg_->lookup(data);
         std::list<std::shared_ptr<Answer>> out;
         while(true) {
             std::shared_ptr<Answer> next = std::make_shared<Answer>();
@@ -675,7 +667,7 @@ std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 
 TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 {
-    TripleData data_abc("a","b","c");
+    StatementData data_abc("a", "b", "c");
     EXPECT_NO_THROW(kg_->insert(data_abc));
     EXPECT_EQ(lookup(data_abc).size(), 1);
     EXPECT_EQ(lookup(parse("triple(x,b,c)")).size(), 0);
@@ -692,11 +684,11 @@ TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("swrl").has_value());
-    EXPECT_NO_THROW(kg_->loadTriples("owl/test/swrl.owl", knowrob::RDF_XML, std::nullopt));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/swrl.owl", knowrob::RDF_XML, ModalityFrame()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("swrl").has_value());
 
     EXPECT_FALSE(kg_->getCurrentGraphVersion("datatype_test").has_value());
-    EXPECT_NO_THROW(kg_->loadTriples("owl/test/datatype_test.owl", knowrob::RDF_XML, std::nullopt));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/datatype_test.owl", knowrob::RDF_XML, ModalityFrame()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
@@ -704,7 +696,7 @@ TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 
 TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 {
-    TripleData triple(
+    StatementData triple(
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
@@ -713,7 +705,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
 {
-    TripleData triple(
+    StatementData triple(
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
@@ -723,11 +715,11 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
 
 TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
 {
-    TripleData existing(
+    StatementData existing(
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
-    TripleData not_existing(
+    StatementData not_existing(
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"Car");
