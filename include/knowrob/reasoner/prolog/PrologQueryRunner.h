@@ -36,7 +36,7 @@ namespace knowrob {
             std::shared_ptr<StringTerm> queryModule;
             std::shared_ptr<AllocatedQuery> queryInstance;
             functor_t callFunctor;
-            const std::shared_ptr<const Query> goal;
+            const std::shared_ptr<const GraphQuery> goal;
             Request(const std::shared_ptr<AllocatedQuery> &queryInstance,
                     functor_t callFunctor,
                     const std::shared_ptr<StringTerm> &queryModule,

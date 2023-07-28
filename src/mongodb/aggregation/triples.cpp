@@ -163,24 +163,24 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::semweb::TripleExpression::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::semweb::FramedLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case semweb::TripleExpression::EQ:
+        case semweb::FramedLiteral::EQ:
             return nullptr;
-        case semweb::TripleExpression::LEQ:
+        case semweb::FramedLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case semweb::TripleExpression::GEQ:
+        case semweb::FramedLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case semweb::TripleExpression::LT:
+        case semweb::FramedLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case semweb::TripleExpression::GT:
+        case semweb::FramedLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
 {
     auto &gt = tripleExpression.graphTerm();
     if(!gt) return;
@@ -205,7 +205,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::TripleE
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
+void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
 {
     auto &at = tripleExpression.agentTerm();
 
@@ -222,7 +222,7 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::TripleE
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     auto &bt = tripleExpression.beginTerm();
@@ -258,7 +258,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::TripleEx
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::TripleExpression &tripleExpression)
+void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     auto &ct = tripleExpression.confidenceTerm();
@@ -280,7 +280,7 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::Tr
 
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const semweb::TripleExpression &tripleExpression,
+            const semweb::FramedLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -621,7 +621,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::list<semweb::TripleExpression> &tripleExpressions)
+        const std::list<semweb::FramedLiteral> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 

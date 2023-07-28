@@ -168,14 +168,14 @@ add_library(knowrob_qa SHARED
 		src/semweb/PrefixRegistry.cpp
         src/backend/KnowledgeGraph.cpp
 		src/semweb/xsd.cpp
-		src/semweb/GraphQuery.cpp
+        src/queries/GraphQuery.cpp
 		src/semweb/Vocabulary.cpp
 		src/semweb/owl.cpp
 		src/semweb/rdfs.cpp
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/semweb/TripleExpression.cpp
+        src/formulas/FramedLiteral.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp

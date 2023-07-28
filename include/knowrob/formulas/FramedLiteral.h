@@ -6,7 +6,7 @@
 #define KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
 
 #include "knowrob/formulas/Predicate.h"
-#include "StatementData.h"
+#include "knowrob/semweb/StatementData.h"
 #include "knowrob/terms/Constant.h"
 
 namespace knowrob::semweb {
@@ -14,23 +14,23 @@ namespace knowrob::semweb {
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
      */
-    class TripleExpression {
+    class FramedLiteral {
     public:
         /**
          * Unary operators that can be applied on terms.
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
-        TripleExpression(const TermPtr &subjectTerm,
-                         const TermPtr &propertyTerm,
-                         const TermPtr &objectTerm,
-                         OperatorType objectOperator=EQ,
-                         const std::string_view &graphName="*");
+        FramedLiteral(const TermPtr &subjectTerm,
+                      const TermPtr &propertyTerm,
+                      const TermPtr &objectTerm,
+                      OperatorType objectOperator=EQ,
+                      const std::string_view &graphName="*");
 
-        explicit TripleExpression(const PredicatePtr &triplePredicate,
-                                  const std::string_view &graphName="*");
+        explicit FramedLiteral(const PredicatePtr &triplePredicate,
+                               const std::string_view &graphName="*");
 
-        explicit TripleExpression(const StatementData &tripleData);
+        explicit FramedLiteral(const StatementData &tripleData);
 
         /**
          * @return true if the expression has no variables.

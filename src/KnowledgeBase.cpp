@@ -34,21 +34,7 @@ namespace knowrob {
         : reasoner_(reasoner), ThreadPool::Runner()
         {
             auto outputChannel = AnswerStream::Channel::create(queryData->outputStream_);
-            auto literals = queryData->graphQuery_->literals();
-            // TODO: at least need to group into negative and positive literals here.
-            //       also would make sense to sort according to number of variables
-            std::vector<FormulaPtr> formulae(literals.size());
-            int counter=0;
-            for(auto &l : literals) {
-                // FIXME: handle negative literals
-                formulae[counter++] = l->predicate();
-            }
-            auto phi = std::make_shared<Conjunction>(formulae);
-            auto q = std::make_shared<Query>(
-                    phi,
-                    queryData->graphQuery_->flags(),
-                    queryData->graphQuery_->modalFrame());
-            query_ = std::make_shared<AllocatedQuery>(q, outputChannel);
+            query_ = std::make_shared<AllocatedQuery>(queryData->graphQuery_, outputChannel);
         }
 
         void run() override {

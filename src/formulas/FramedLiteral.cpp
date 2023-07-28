@@ -2,13 +2,13 @@
 // Created by daniel on 07.04.23.
 //
 
-#include "knowrob/semweb/TripleExpression.h"
+#include "knowrob/formulas/FramedLiteral.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
 
 using namespace knowrob::semweb;
 
-TripleExpression::TripleExpression(
+FramedLiteral::FramedLiteral(
             const TermPtr &subjectTerm,
             const TermPtr &propertyTerm,
             const TermPtr &objectTerm,
@@ -28,7 +28,7 @@ TripleExpression::TripleExpression(
 {
 }
 
-TripleExpression::TripleExpression(const StatementData &tripleData)
+FramedLiteral::FramedLiteral(const StatementData &tripleData)
         : subjectTerm_(std::make_shared<StringTerm>(tripleData.subject)),
           propertyTerm_(std::make_shared<StringTerm>(tripleData.predicate)),
           beginTerm_(),
@@ -66,8 +66,8 @@ TripleExpression::TripleExpression(const StatementData &tripleData)
     }
 }
 
-TripleExpression::TripleExpression(const PredicatePtr &triplePredicate,
-                                   const std::string_view &graphName)
+FramedLiteral::FramedLiteral(const PredicatePtr &triplePredicate,
+                             const std::string_view &graphName)
         : objectOperator_(EQ),
           beginOperator_(EQ),
           endOperator_(EQ),
@@ -105,43 +105,43 @@ TripleExpression::TripleExpression(const PredicatePtr &triplePredicate,
     }
 }
 
-void TripleExpression::setMinConfidence(double limit)
+void FramedLiteral::setMinConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
     confidenceOperator_ = LEQ;
 }
 
-void TripleExpression::setMaxConfidence(double limit)
+void FramedLiteral::setMaxConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
     confidenceOperator_ = GEQ;
 }
 
-void TripleExpression::setMinBegin(double limit)
+void FramedLiteral::setMinBegin(double limit)
 {
     beginTerm_ = std::make_shared<DoubleTerm>(limit);
     beginOperator_ = GEQ;
 }
 
-void TripleExpression::setMaxBegin(double limit)
+void FramedLiteral::setMaxBegin(double limit)
 {
     beginTerm_ = std::make_shared<DoubleTerm>(limit);
     beginOperator_ = LEQ;
 }
 
-void TripleExpression::setMinEnd(double limit)
+void FramedLiteral::setMinEnd(double limit)
 {
     endTerm_ = std::make_shared<DoubleTerm>(limit);
     endOperator_ = GEQ;
 }
 
-void TripleExpression::setMaxEnd(double limit)
+void FramedLiteral::setMaxEnd(double limit)
 {
     endTerm_ = std::make_shared<DoubleTerm>(limit);
     endOperator_ = LEQ;
 }
 
-bool TripleExpression::isGround() const
+bool FramedLiteral::isGround() const
 {
     return subjectTerm_->isGround() && propertyTerm()->isGround() && objectTerm_->isGround();
 }

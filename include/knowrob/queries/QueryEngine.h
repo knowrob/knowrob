@@ -9,7 +9,7 @@
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/semweb/GraphQuery.h"
+#include "GraphQuery.h"
 
 namespace knowrob {
     enum QueryFlag {

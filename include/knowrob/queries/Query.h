@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        Query(const FormulaPtr &formula, int flags, ModalityFrame modalFrame=ModalityFrame());
+        Query(const FormulaPtr &formula, int flags);
 
 		/**
 		 * @return the formula associated to this query.
@@ -36,8 +36,6 @@ namespace knowrob {
 		const FormulaPtr& formula() const { return formula_; }
 
         int flags() const { return flags_; }
-
-        auto& modalFrame() const { return modalFrame_; }
 		
 		/**
 		 * Replaces variables in the query with terms based on a mapping provided in the argument.
@@ -48,7 +46,6 @@ namespace knowrob {
 
 	protected:
 		const std::shared_ptr<Formula> formula_;
-        const ModalityFrame modalFrame_;
 		const int flags_;
 	};
 }

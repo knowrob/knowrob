@@ -11,7 +11,7 @@
 #include "vector"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/semweb/TripleExpression.h"
+#include "knowrob/formulas/FramedLiteral.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/modalities/ModalityFrame.h"
@@ -26,8 +26,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame=ModalityFrame())
-        : literals_(literals), modalFrame_(std::move(modalFrame)), flags_(flags) {}
+        GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame=ModalityFrame());
 
         /**
          * A literal query. Answers are instantiations of the literal where free variables
@@ -35,8 +34,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame=ModalityFrame())
-        : literals_({literal}), modalFrame_(std::move(modalFrame)), flags_(flags) {}
+        GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame=ModalityFrame());
 
         const auto& literals() const { return literals_; }
 
@@ -44,7 +42,7 @@ namespace knowrob {
 
         const auto& flags() const { return flags_; }
 
-        std::list<semweb::TripleExpression> asTripleExpression();
+        std::list<semweb::FramedLiteral> asTripleExpression();
 
     protected:
         const std::vector<LiteralPtr> literals_;
