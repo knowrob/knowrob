@@ -11,7 +11,7 @@
 
 #include <memory>
 #include <optional>
-#include <knowrob/queries/Query.h>
+#include <knowrob/queries/ModalQuery.h>
 #include <knowrob/queries/Answer.h>
 #include <knowrob/queries/AnswerStream.h>
 #include "GraphQuery.h"
@@ -22,10 +22,10 @@ namespace knowrob {
 	 */
 	class AllocatedQuery {
 	public:
-		AllocatedQuery(const std::shared_ptr<const GraphQuery> &query,
+		AllocatedQuery(const std::shared_ptr<const Query> &query,
                        const std::shared_ptr<AnswerStream::Channel> &outputChannel);
 
-        const std::shared_ptr<const GraphQuery>& query() const { return query_; }
+        const std::shared_ptr<const Query>& query() const { return query_; }
 
         auto& formula() const { return query_->formula(); }
 
@@ -43,7 +43,7 @@ namespace knowrob {
 		void pushEOS();
 
 	protected:
-		std::shared_ptr<const GraphQuery> query_;
+		std::shared_ptr<const Query> query_;
 		std::shared_ptr<AnswerStream::Channel> outputChannel_;
 	};
 	using AllocatedQueryPtr = std::shared_ptr<AllocatedQuery>;

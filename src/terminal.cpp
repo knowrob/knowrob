@@ -155,7 +155,7 @@ public:
 		try {
 			// parse query
 			auto phi = QueryParser::parse(queryString);
-			auto query = std::make_shared<Query>(phi, QUERY_FLAG_ALL_SOLUTIONS);
+			auto query = std::make_shared<ModalQuery>(phi, QUERY_FLAG_ALL_SOLUTIONS);
 
             if(query->formula()->type() == FormulaType::PREDICATE) {
                 // special handling for some predicates
@@ -179,7 +179,7 @@ public:
         history_.save(historyFile_);
 	}
 
-    void runQuery(const std::shared_ptr<const Query> &query) {
+    void runQuery(const std::shared_ptr<const ModalQuery> &query) {
         // evaluate query in hybrid QA system
         auto resultStream = kb_.submitQuery(query->formula(), QUERY_FLAG_ALL_SOLUTIONS);
         auto resultQueue = resultStream->createQueue();

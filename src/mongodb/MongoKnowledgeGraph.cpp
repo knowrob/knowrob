@@ -266,7 +266,7 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
 }
 
 bson_t* MongoKnowledgeGraph::getSelector(
-            const semweb::FramedLiteral &tripleExpression,
+            const FramedLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     auto doc = bson_new();
@@ -308,21 +308,21 @@ bool MongoKnowledgeGraph::insert(const std::vector<StatementData> &statements)
     return true;
 }
 
-void MongoKnowledgeGraph::removeAll(const semweb::FramedLiteral &tripleExpression)
+void MongoKnowledgeGraph::removeAll(const FramedLiteral &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeAll(
         Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-void MongoKnowledgeGraph::removeOne(const semweb::FramedLiteral &tripleExpression)
+void MongoKnowledgeGraph::removeOne(const FramedLiteral &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeOne(
         Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-AnswerCursorPtr MongoKnowledgeGraph::lookup(const semweb::FramedLiteral &tripleExpression)
+AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedLiteral &tripleExpression)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -345,10 +345,10 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const semweb::FramedLiteral &tripleE
 
 mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const StatementData &tripleData)
 {
-    return lookup(semweb::FramedLiteral(tripleData));
+    return lookup(FramedLiteral(tripleData));
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::list<semweb::FramedLiteral> &tripleExpressions)
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<FramedLiteralPtr> &tripleExpressions)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -368,7 +368,7 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::list<semweb::Frame
 void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
     auto channel = AnswerStream::Channel::create(resultStream);
-    auto cursor = lookup(query->asTripleExpression());
+    auto cursor = lookup(query->framedLiterals());
 
     // limit to one solution if requested
     if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
@@ -451,12 +451,12 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
     // filter overlapping triples
     TripleCursor cursor(tripleCollection_);
     bson_t selectorDoc = BSON_INITIALIZER;
-    semweb::FramedLiteral overlappingExpr(tripleData);
+    FramedLiteral overlappingExpr(tripleData);
     auto swap = overlappingExpr.endTerm();
     overlappingExpr.setEndTerm(overlappingExpr.beginTerm());
     overlappingExpr.setBeginTerm(swap);
-    overlappingExpr.setBeginOperator(semweb::FramedLiteral::LEQ);
-    overlappingExpr.setEndOperator(semweb::FramedLiteral::GEQ);
+    overlappingExpr.setBeginOperator(FramedLiteral::LEQ);
+    overlappingExpr.setEndOperator(FramedLiteral::GEQ);
     aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty);
     cursor.filter(&selectorDoc);
 
@@ -658,7 +658,7 @@ protected:
         }
         return out;
     }
-    static semweb::FramedLiteral parse(const std::string &str) {
+    static FramedLiteral parse(const std::string &str) {
         auto p = QueryParser::parsePredicate(str);
         return { p->arguments()[0], p->arguments()[1], p->arguments()[2] };
     }
@@ -709,7 +709,7 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
-    EXPECT_NO_THROW(kg_->removeAll(semweb::FramedLiteral(triple)));
+    EXPECT_NO_THROW(kg_->removeAll(FramedLiteral(triple)));
     EXPECT_EQ(lookup(triple).size(), 0);
 }
 

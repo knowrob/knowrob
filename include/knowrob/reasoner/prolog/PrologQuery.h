@@ -17,9 +17,10 @@
 #include <SWI-Prolog.h>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include "knowrob/queries/Query.h"
+#include "knowrob/queries/ModalQuery.h"
 #include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/queries/Answer.h"
+#include "knowrob/queries/GraphQuery.h"
 
 namespace knowrob {
     using PrologVariableMap = std::map<std::string, term_t>;
@@ -32,7 +33,7 @@ namespace knowrob {
 		/**
 		 * @query a Query object.
 		 */
-		PrologQuery(const std::shared_ptr<const Query> &query);
+		explicit PrologQuery(const std::shared_ptr<const Query> &query);
 		
 		~PrologQuery();
 
@@ -69,7 +70,7 @@ namespace knowrob {
 		 * @t a Term pointer.
 		 * @return the Query object created.
 		 */
-		static std::shared_ptr<Query> toQuery(const TermPtr &t);
+		static std::shared_ptr<ModalQuery> toQuery(const TermPtr &t);
 
 		/**
 		 * Converts a formula to a term by converting formula
@@ -119,7 +120,7 @@ namespace knowrob {
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
-        static bool putScope(const std::shared_ptr<Query> &query, term_t pl_scope);
+        static bool putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_scope);
 
         /**
          * Put a Prolog term encoding the scope in a QueryResult object.

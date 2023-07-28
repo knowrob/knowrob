@@ -21,7 +21,7 @@ class QACallContext {
 public:
     //std::shared_ptr<Blackboard> blackboard_;
     std::shared_ptr<AnswerQueue> results_;
-    std::shared_ptr<Query> query_;
+    std::shared_ptr<ModalQuery> query_;
     std::map<std::string, term_t> queryVars_;
 
     QACallContext(term_t t_reasonerManagerID, term_t t_goal, term_t t_queryCtx)

@@ -2,14 +2,16 @@
 // Created by daniel on 07.04.23.
 //
 
-#ifndef KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
-#define KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
+#ifndef KNOWROB_FRAMED_LITERAL_H
+#define KNOWROB_FRAMED_LITERAL_H
 
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/terms/Constant.h"
+#include "Literal.h"
+#include "knowrob/modalities/ModalityFrame.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     /**
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
@@ -21,16 +23,20 @@ namespace knowrob::semweb {
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
+        explicit FramedLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame=ModalityFrame());
+
+        explicit FramedLiteral(const StatementData &tripleData);
+
         FramedLiteral(const TermPtr &subjectTerm,
                       const TermPtr &propertyTerm,
                       const TermPtr &objectTerm,
                       OperatorType objectOperator=EQ,
                       const std::string_view &graphName="*");
 
+/*
         explicit FramedLiteral(const PredicatePtr &triplePredicate,
                                const std::string_view &graphName="*");
-
-        explicit FramedLiteral(const StatementData &tripleData);
+*/
 
         /**
          * @return true if the expression has no variables.
@@ -40,62 +46,62 @@ namespace knowrob::semweb {
         /**
          * @return the subject term of this expression.
          */
-        auto& subjectTerm() const { return subjectTerm_; }
+        std::shared_ptr<Term> subjectTerm() const;
 
         /**
          * @return the property term of this expression.
          */
-        auto& propertyTerm() const { return propertyTerm_; }
+        std::shared_ptr<Term> propertyTerm() const;
 
         /**
          * @return the object term of this expression.
          */
-        auto& objectTerm() const { return objectTerm_; }
+        std::shared_ptr<Term> objectTerm() const;
 
         /**
          * @return the graph term of this expression.
          */
-        auto& graphTerm() const { return graphTerm_; }
+        std::shared_ptr<Term> graphTerm() const;
 
         /**
          * @return the agent term of this expression.
          */
-        auto& agentTerm() const { return agentTerm_; }
+        std::shared_ptr<Term> agentTerm() const;
 
         /**
          * @return the begin term of this expression.
          */
-        auto& beginTerm() const { return beginTerm_; }
+        std::shared_ptr<Term> beginTerm() const;
 
         /**
          * @return the end term of this expression.
          */
-        auto& endTerm() const { return endTerm_; }
+        std::shared_ptr<Term> endTerm() const;
 
         /**
          * @return the confidence term of this expression.
          */
-        auto& confidenceTerm() const { return confidenceTerm_; }
+        std::shared_ptr<Term> confidenceTerm() const;
 
         /**
          * @return the operator for the object of the triple.
          */
-        auto objectOperator() const { return objectOperator_; }
+        OperatorType objectOperator() const;
 
         /**
          * @return the operator for the confidence of the triple.
          */
-        auto confidenceOperator() const { return confidenceOperator_; }
+        OperatorType confidenceOperator() const;
 
         /**
          * @return the operator for the begin of the triple.
          */
-        auto beginOperator() const { return beginOperator_; }
+        OperatorType beginOperator() const;
 
         /**
          * @return the operator for the end of the triple.
          */
-        auto endOperator() const { return endOperator_; }
+        OperatorType endOperator() const;
 
         /**
          * @param limit the minimum confidence of triples matching this expression
@@ -130,27 +136,29 @@ namespace knowrob::semweb {
         /**
          * @param beginOperator the operator used for the begin time of triples.
          */
-        void setBeginOperator(OperatorType beginOperator) { beginOperator_ = beginOperator; }
+        void setBeginOperator(OperatorType beginOperator);
 
         /**
          * @param beginOperator the operator used for the end time of triples.
          */
-        void setEndOperator(OperatorType endOperator) { endOperator_ = endOperator; }
+        void setEndOperator(OperatorType endOperator);
 
         /**
          * @param beginTerm a time term.
          */
-        void setBeginTerm(const TermPtr &beginTerm) { beginTerm_ = beginTerm; }
+        void setBeginTerm(const TermPtr &beginTerm);
 
         /**
          * @param endTerm a time term.
          */
-        void setEndTerm(const TermPtr &endTerm) { endTerm_ = endTerm; }
+        void setEndTerm(const TermPtr &endTerm);
 
-        void setAgentTerm(const std::string &agentTerm)
-        { agentTerm_ = std::make_shared<StringTerm>(agentTerm); }
+        void setAgentTerm(const std::string &agentTerm);
 
     protected:
+        ModalityFrame modalityFrame_;
+        LiteralPtr  literal_;
+
         TermPtr subjectTerm_;
         TermPtr propertyTerm_;
         TermPtr objectTerm_;
@@ -164,7 +172,8 @@ namespace knowrob::semweb {
         OperatorType endOperator_;
         OperatorType confidenceOperator_;
     };
+    using FramedLiteralPtr = std::shared_ptr<FramedLiteral>;
 
 } // knowrob
 
-#endif //KNOWROB_SEMWEB_TRIPLE_EXPRESSION_H
+#endif //KNOWROB_FRAMED_LITERAL_H

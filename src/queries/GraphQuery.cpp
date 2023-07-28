@@ -6,83 +6,73 @@
 #include "knowrob/modalities/BeliefModality.h"
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/Logger.h"
+#include "knowrob/formulas/Negation.h"
 
 using namespace knowrob;
 
-GraphQuery::GraphQuery(
-        const std::vector<LiteralPtr> &literals,
-        int flags,
-        ModalityFrame modalFrame)
-: literals_(literals),
-  modalFrame_(std::move(modalFrame)),
-  flags_(flags)
-{}
+GraphQuery::GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame)
+: Query(flags),
+  literals_(literals),
+  framedLiterals_(literals.size()),
+  modalFrame_(std::move(modalFrame))
+{
+    init();
+}
 
 GraphQuery::GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame)
-: literals_({literal}),
-  modalFrame_(std::move(modalFrame)),
-  flags_(flags)
-{}
-
-/**
-            auto literals = queryData->graphQuery_->literals();
-            // TODO: at least need to group into negative and positive literals here.
-            //       also would make sense to sort according to number of variables
-            std::vector<FormulaPtr> formulae(literals.size());
-            int counter=0;
-            for(auto &l : literals) {
-                // FIXME: handle negative literals
-                formulae[counter++] = l->predicate();
-            }
-            auto phi = std::make_shared<Conjunction>(formulae);
- */
-
-std::list<semweb::FramedLiteral> GraphQuery::asTripleExpression()
+: Query(flags),
+  literals_({literal}),
+  framedLiterals_(1),
+  modalFrame_(std::move(modalFrame))
 {
-    std::list<semweb::FramedLiteral> out;
-    auto expressions = std::list<semweb::FramedLiteral>();
+    init();
+}
 
-    auto epistemicOperator = modalFrame_.epistemicOperator();
-    auto pastOperator = modalFrame_.pastOperator();
+GraphQuery::GraphQuery(const PredicatePtr &predicate, int flags, ModalityFrame modalFrame)
+: Query(flags),
+  literals_({std::make_shared<Literal>(predicate, false)}),
+  framedLiterals_(1),
+  modalFrame_(std::move(modalFrame))
+{
+    init();
+}
 
-    for(auto &lit : literals())
+void GraphQuery::init()
+{
+    std::vector<FormulaPtr> formulae(literals_.size());
+
+    for(int i=0; i<literals_.size(); i++)
     {
-        auto &expr = expressions.emplace_back(lit->predicate());
-
-        if(epistemicOperator) {
-            auto epistemicModality = (const EpistemicModality*) &epistemicOperator->modality();
-            auto o_agent = epistemicModality->agent();
-            if(o_agent) {
-                expr.setAgentTerm(o_agent.value());
-            }
-            if(epistemicOperator->isModalPossibility()) {
-                expr.setMinConfidence(0.0);
-            }
+        framedLiterals_[i] = std::make_shared<FramedLiteral>(literals_[i], modalFrame_);
+        if(literals_[i]->isPositive()) {
+            formulae[i] = literals_[i]->predicate();
         }
-
-        if(pastOperator) {
-            auto pastModality = (const PastModality*) &pastOperator->modality();
-            if(pastModality) {
-                // TODO: allow quantified time intervals in past modality
-                if(pastOperator->isModalPossibility()) {
-                    // include all triples before the current time point
-                    expr.setBeginOperator(semweb::FramedLiteral::LT);
-                    expr.setBeginTerm(std::make_shared<DoubleTerm>(TimePoint::now().value()));
-                }
-                else if(pastOperator->isModalNecessity()) {
-                    // include only triples that were always true in the past
-                    // TODO: reconsider how this case should be encoded in triple expressions
-                    expr.setBeginOperator(semweb::FramedLiteral::LEQ);
-                    expr.setBeginTerm(std::make_shared<DoubleTerm>(0.0));
-                    expr.setEndOperator(semweb::FramedLiteral::GEQ);
-                    expr.setEndTerm(std::make_shared<DoubleTerm>(TimePoint::now().value()));
-                }
-            }
-            else {
-                KB_WARN("unexpected temporal operator in graph query!");
-            }
+        else {
+            formulae[i] = std::make_shared<Negation>(literals_[i]->predicate());
         }
     }
 
-    return out;
+    if(literals_.size()==1) {
+        formula_ = formulae[0];
+    }
+    else {
+        formula_ = std::make_shared<Conjunction>(formulae);
+    }
+}
+
+const FormulaPtr& GraphQuery::formula() const
+{
+    return formula_;
+}
+
+const ModalityFrame& GraphQuery::modalFrame() const
+{
+    return modalFrame_;
+}
+
+std::ostream& GraphQuery::print(std::ostream &os) const
+{
+    // TODO: also print ModalFrame
+    os << *formula();
+    return os;
 }

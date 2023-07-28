@@ -28,24 +28,20 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        Query(const FormulaPtr &formula, int flags);
+        explicit Query(int flags) : flags_(flags) {}
+
+        int flags() const { return flags_; }
+
+        virtual std::ostream& print(std::ostream &os) const = 0;
 
 		/**
 		 * @return the formula associated to this query.
 		 */
-		const FormulaPtr& formula() const { return formula_; }
+        virtual const FormulaPtr& formula() const = 0;
 
-        int flags() const { return flags_; }
-		
-		/**
-		 * Replaces variables in the query with terms based on a mapping provided in the argument.
-		 * @sub a mapping from variables to terms.
-		 * @return the new query created.
-		 */
-		std::shared_ptr<Query> applySubstitution(const Substitution &sub) const;
+        virtual const ModalityFrame& modalFrame() const = 0;
 
 	protected:
-		const std::shared_ptr<Formula> formula_;
 		const int flags_;
 	};
 }

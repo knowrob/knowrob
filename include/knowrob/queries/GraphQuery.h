@@ -14,11 +14,16 @@
 #include "knowrob/formulas/FramedLiteral.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerBuffer.h"
+#include "knowrob/queries/Query.h"
 #include "knowrob/modalities/ModalityFrame.h"
+#include "knowrob/formulas/Conjunction.h"
 
 namespace knowrob {
-
-    class GraphQuery {
+    /**
+     * A query associated to a particular graph which is identified
+     * by a ModalityFrame.
+     */
+    class GraphQuery : public Query {
     public:
         /**
          * A path query constructed from a sequence of literals.
@@ -36,18 +41,28 @@ namespace knowrob {
          */
         GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame=ModalityFrame());
 
+        GraphQuery(const PredicatePtr &predicate, int flags, ModalityFrame modalFrame=ModalityFrame());
+
         const auto& literals() const { return literals_; }
 
-        const auto& modalFrame() const { return modalFrame_; }
+        const auto& framedLiterals() const { return framedLiterals_; }
 
-        const auto& flags() const { return flags_; }
+        // Override Query
+        const ModalityFrame& modalFrame() const override;
 
-        std::list<semweb::FramedLiteral> asTripleExpression();
+        // Override Query
+		const FormulaPtr& formula() const override;
+
+        // Override Query
+        std::ostream& print(std::ostream &os) const override;
 
     protected:
-        const std::vector<LiteralPtr> literals_;
-        const ModalityFrame modalFrame_;
-        const int flags_;
+        std::vector<LiteralPtr> literals_;
+        std::vector<FramedLiteralPtr> framedLiterals_;
+        FormulaPtr formula_;
+        ModalityFrame modalFrame_;
+
+        void init();
     };
 
     using GraphQueryPtr = std::shared_ptr<GraphQuery>;

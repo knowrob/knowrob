@@ -152,7 +152,7 @@ add_library(knowrob_qa SHARED
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
-		src/queries/Query.cpp
+        src/queries/ModalQuery.cpp
 		src/queries/AllocatedQuery.cpp
 		src/queries/QueryError.cpp
         src/queries/Answer.cpp
@@ -217,7 +217,8 @@ add_library(knowrob_qa SHARED
 		src/queries/QueryStage.cpp
         src/modalities/ModalityFrame.cpp
 		src/backend/KnowledgeGraphManager.cpp
-		src/backend/KnowledgeGraphPlugin.cpp)
+		src/backend/KnowledgeGraphPlugin.cpp
+        src/queries/Query.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

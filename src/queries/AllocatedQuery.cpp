@@ -11,7 +11,7 @@
 using namespace knowrob;
 
 
-AllocatedQuery::AllocatedQuery(const std::shared_ptr<const GraphQuery> &query,
+AllocatedQuery::AllocatedQuery(const std::shared_ptr<const Query> &query,
                                const std::shared_ptr<AnswerStream::Channel> &outputChannel)
 : query_(query),
   outputChannel_(outputChannel)

@@ -163,26 +163,26 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::semweb::FramedLiteral::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::FramedLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case semweb::FramedLiteral::EQ:
+        case FramedLiteral::EQ:
             return nullptr;
-        case semweb::FramedLiteral::LEQ:
+        case FramedLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case semweb::FramedLiteral::GEQ:
+        case FramedLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case semweb::FramedLiteral::LT:
+        case FramedLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case semweb::FramedLiteral::GT:
+        case FramedLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
 {
-    auto &gt = tripleExpression.graphTerm();
+    auto gt = tripleExpression.graphTerm();
     if(!gt) return;
 
     if(gt->type() == TermType::STRING) {
@@ -205,9 +205,9 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const semweb::FramedL
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
+void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
 {
-    auto &at = tripleExpression.agentTerm();
+    auto at = tripleExpression.agentTerm();
 
     if(!at) {
         // TODO: should a null value be appended for using an index including the "agent" key?
@@ -222,11 +222,11 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const semweb::FramedL
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
-    auto &bt = tripleExpression.beginTerm();
-    auto &et = tripleExpression.endTerm();
+    auto bt = tripleExpression.beginTerm();
+    auto et = tripleExpression.endTerm();
 
     if(bt) {
         if(bt->type() == TermType::DOUBLE) {
@@ -258,10 +258,10 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const semweb::FramedLi
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::FramedLiteral &tripleExpression)
+void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
-    auto &ct = tripleExpression.confidenceTerm();
+    auto ct = tripleExpression.confidenceTerm();
     if(!ct) return;
 
     if(ct->type() == TermType::DOUBLE) {
@@ -280,7 +280,7 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const semweb::Fr
 
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const semweb::FramedLiteral &tripleExpression,
+            const FramedLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -621,20 +621,21 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::list<semweb::FramedLiteral> &tripleExpressions)
+        const std::vector<FramedLiteralPtr> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 
+    // FIXME: need to handle negative literals here
     for(auto &expr : tripleExpressions) {
         // append lookup stages to pipeline
-        aggregation::TripleLookupData lookupData(&expr);
+        aggregation::TripleLookupData lookupData(expr.get());
 
         // indicate that all previous groundings of variables are known
         lookupData.mayHasMoreGroundings = false;
         lookupData.knownGroundedVariables = varsSoFar;
         // remember variables in tripleExpression, they have a grounding in next step
         for(auto &exprTerm : {
-                expr.subjectTerm(), expr.propertyTerm(), expr.objectTerm() }) {
+                expr->subjectTerm(), expr->propertyTerm(), expr->objectTerm() }) {
             if(exprTerm->type()==TermType::VARIABLE)
                 varsSoFar.insert(((Variable*)exprTerm.get())->name());
         }

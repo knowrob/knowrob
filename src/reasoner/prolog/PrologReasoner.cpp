@@ -318,7 +318,7 @@ bool PrologReasoner::eval(
 }
 
 bool PrologReasoner::eval(
-        const std::shared_ptr<const Query> &q,
+        const std::shared_ptr<const ModalQuery> &q,
         const char *moduleName,
         bool doTransformQuery)
 {
@@ -331,12 +331,12 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
                                       bool doTransformQuery)
 {
 	return oneSolution(
-	        std::make_shared<Query>(goal, QUERY_FLAG_ONE_SOLUTION),
+	        std::make_shared<ModalQuery>(goal, QUERY_FLAG_ONE_SOLUTION),
             moduleName,
             doTransformQuery);
 }
 
-AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
+AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const ModalQuery> &goal,
                                       const char *moduleName,
                                       bool doTransformQuery)
 {
@@ -365,12 +365,12 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicat
                                                   bool doTransformQuery)
 {
 	return allSolutions(
-	        std::make_shared<Query>(goal, QUERY_FLAG_ALL_SOLUTIONS),
+	        std::make_shared<ModalQuery>(goal, QUERY_FLAG_ALL_SOLUTIONS),
             moduleName,
             doTransformQuery);
 }
 
-std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
+std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const ModalQuery> &goal,
                                                   const char *moduleName,
                                                   bool doTransformQuery)
 {

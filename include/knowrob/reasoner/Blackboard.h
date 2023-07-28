@@ -26,7 +26,7 @@ namespace knowrob {
 	public:
 		Blackboard(ReasonerManager *reasonerManager,
 			const std::shared_ptr<AnswerQueue> &outputQueue,
-			const std::shared_ptr<const Query> &goal);
+			const std::shared_ptr<const ModalQuery> &goal);
 		
 		~Blackboard();
 
@@ -51,7 +51,7 @@ namespace knowrob {
 		std::shared_ptr<AnswerBroadcaster> inputStream_;
 		std::shared_ptr<AnswerStream::Channel> inputChannel_;
 		std::list<std::shared_ptr<Blackboard::Stream>> reasonerInputs_;
-		std::shared_ptr<const Query> goal_;
+		std::shared_ptr<const ModalQuery> goal_;
 
 		/** Stop all reasoning processes attached to segments. */
 		void stop();
@@ -68,7 +68,7 @@ namespace knowrob {
 									 const std::shared_ptr<ReasoningGraph::Node> &n0);
 
 		void createReasoningStep(const std::shared_ptr<DefinedReasoner> &managedReasoner,
-								 const std::shared_ptr<Query> &subQuery,
+								 const std::shared_ptr<ModalQuery> &subQuery,
 								 const std::shared_ptr<AnswerBroadcaster> &stepInput,
 								 const std::shared_ptr<AnswerBroadcaster> &stepOutput);
 
@@ -77,7 +77,7 @@ namespace knowrob {
 			Stream(
 					const std::shared_ptr<DefinedReasoner> &reasoner,
 					const std::shared_ptr<AnswerStream::Channel> &outputStream,
-					const std::shared_ptr<Query> &goal);
+					const std::shared_ptr<ModalQuery> &goal);
 			~Stream();
 			// Stop the stream by sending EOS message.
 			void stop();
@@ -87,7 +87,7 @@ namespace knowrob {
 			bool hasStopRequest() const { return hasStopRequest_; }
 		protected:
 			std::shared_ptr<DefinedReasoner> reasoner_;
-			std::shared_ptr<const Query> goal_;
+			std::shared_ptr<const ModalQuery> goal_;
 			std::shared_ptr<AnswerStream::Channel> outputStream_;
 			uint32_t queryID_;
 			std::atomic<bool> isQueryOpened_;
