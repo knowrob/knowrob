@@ -37,6 +37,21 @@ namespace knowrob {
                 const char* collectionName="triples");
 
         /**
+         * @return the name of the database.
+         */
+        const std::string& dbName() const;
+
+        /**
+         * @return the URI string used to connect to the database.
+         */
+        const std::string& dbURI() const;
+
+        /**
+         * @return true if only read operations are allowed.
+         */
+        bool isReadOnly() const;
+
+        /**
          * (re)create search indices.
          */
         void createSearchIndices();
@@ -109,6 +124,7 @@ namespace knowrob {
     protected:
         std::shared_ptr<mongo::Collection> tripleCollection_;
         std::shared_ptr<mongo::Collection> oneCollection_;
+        bool isReadOnly_;
 
         void initialize();
 

@@ -22,6 +22,9 @@ using namespace knowrob;
 KNOWROB_BUILTIN_REASONER("Mongolog", MongologReasoner)
 
 // foreign predicates
+foreign_t pl_is_readonly2(term_t,term_t);
+foreign_t pl_db_name3(term_t,term_t,term_t);
+foreign_t pl_uri3(term_t,term_t,term_t);
 foreign_t mng_drop_graph3(term_t,term_t,term_t);
 foreign_t pl_load_triples_cpp4(term_t,term_t,term_t,term_t);
 foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
@@ -50,6 +53,13 @@ bool MongologReasoner::initializeDefaultPackages()
 		// load mongolog code once globally into the Prolog engine
 		consult(std::filesystem::path("reasoner") / "mongolog" / "__init__.pl",
                 "user", false);
+
+        PL_register_foreign("mng_is_readonly_cpp",
+                            2, (pl_function_t)pl_is_readonly2, 0);
+        PL_register_foreign("mng_db_name_cpp",
+                            3, (pl_function_t)pl_db_name3, 0);
+        PL_register_foreign("mng_uri_cpp",
+                            3, (pl_function_t)pl_uri3, 0);
 
         PL_register_foreign("mng_drop_graph_cpp",
                             3, (pl_function_t)mng_drop_graph3, 0);
@@ -142,6 +152,38 @@ static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_rea
     }
     return mongolog;
 }
+
+
+foreign_t pl_is_readonly2(term_t t_reasonerManager, term_t t_reasonerModule)
+{
+    auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
+    char *graph;
+    if(mongolog) {
+        return mongolog->knowledgeGraph()->isReadOnly();
+    }
+    return false;
+}
+
+foreign_t pl_db_name3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_dbName)
+{
+    auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
+    if(mongolog) {
+        auto &dbName = mongolog->knowledgeGraph()->dbName();
+        return PL_unify_atom_chars(t_dbName, dbName.c_str());
+    }
+    return false;
+}
+
+foreign_t pl_uri3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_uri)
+{
+    auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
+    if(mongolog) {
+        auto &uri = mongolog->knowledgeGraph()->dbURI();
+        return PL_unify_atom_chars(t_uri, uri.c_str());
+    }
+    return false;
+}
+
 
 foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager,
                                        term_t t_reasonerModule,

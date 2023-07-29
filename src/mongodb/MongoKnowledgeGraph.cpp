@@ -31,6 +31,7 @@
 #define MONGO_KG_SETTING_PASSWORD "password"
 #define MONGO_KG_SETTING_DB "db"
 #define MONGO_KG_SETTING_COLLECTION "collection"
+#define MONGO_KG_SETTING_READ_ONLY "read-only"
 #define MONGO_KG_SETTING_DROP_GRAPHS "drop_graphs"
 
 #define MONGO_KG_DEFAULT_HOST "localhost"
@@ -48,13 +49,15 @@ KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 bson_t* newPipelineImportHierarchy(const char *collection);
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
-: KnowledgeGraph()
+: KnowledgeGraph(),
+  isReadOnly_(false)
 {
 }
 
 MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name, const char* collectionName)
 : KnowledgeGraph(),
-  tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName))
+  tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName)),
+  isReadOnly_(false)
 {
     initialize();
     dropGraph("user");
@@ -64,6 +67,12 @@ bool MongoKnowledgeGraph::loadConfiguration(const boost::property_tree::ptree &c
 {
     tripleCollection_ = connect(config);
     initialize();
+
+    // set isReadOnly_ flag
+    auto o_readOnly = config.get_optional<bool>(MONGO_KG_SETTING_READ_ONLY);
+    if(o_readOnly.has_value()) {
+        isReadOnly_ = o_readOnly.value();
+    }
 
     // auto-drop some named graphs
     auto o_drop_graphs = config.get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
@@ -76,6 +85,21 @@ bool MongoKnowledgeGraph::loadConfiguration(const boost::property_tree::ptree &c
     }
 
     return true;
+}
+
+const std::string& MongoKnowledgeGraph::dbName() const
+{
+    return tripleCollection_->dbName();
+}
+
+const std::string& MongoKnowledgeGraph::dbURI() const
+{
+    return tripleCollection_->dbURI();
+}
+
+bool MongoKnowledgeGraph::isReadOnly() const
+{
+    return isReadOnly_;
 }
 
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(const boost::property_tree::ptree &config)

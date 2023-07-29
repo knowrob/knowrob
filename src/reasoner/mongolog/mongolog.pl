@@ -46,25 +46,6 @@
 :- op(1100, xfx, user:(+>)).
 :- op(1100, xfx, user:(?+>)).
 
-:- reasoner_setting(mongodb:host, atom, localhost,
-	'The host name of the MongoDB server.').
-:- reasoner_setting(mongodb:port, int, 27017,
-	'The port of the MongoDB server.').
-:- reasoner_setting(mongodb:user, atom, '',
-	'The user name to use for MongoDB connections.').
-:- reasoner_setting(mongodb:password, atom, '',
-	'The user password to use for MongoDB connections.').
-:- reasoner_setting(mongodb:db, atom, knowrob,
-	'The name of the database for MongoDB connections.').
-:- reasoner_setting(mongodb:prefix, atom, '',
-	'A prefix that is used for all collection.').
-:- reasoner_setting(mongodb:read_only, atom, false,
-	'Indicates if the database is read-only.').
-:- reasoner_setting(mongodb:drop_graphs, list, [user],
-    'List of named graphs that should initially by erased.').
-%:- reasoner_setting(mongodb:collection_names, list, [triples, tf, annotations, inferred],
-%		'List of collections that will be imported/exported with remember/memorize.').
-
 :- rdf_meta(step_compile(t,t,t)).
 :- rdf_meta(step_compile(t,t,t,-)).
 
@@ -765,7 +746,7 @@ mongolog_retract(Statement, Scope) :-
 % @param Options list of options.
 %
 mongolog_retract(_, _, _) :-
-	reasoner_setting(mongodb:read_only, true),
+	mongolog_is_readonly,
 	!.
 
 mongolog_retract(Statements, Scope, Options) :-
@@ -1559,7 +1540,7 @@ create_indices :-
 
 %% Create indices for fast annotation retrieval.
 create_indices(_Name, _Indices) :-
-	reasoner_setting(mongodb:read_only, true),
+	mongolog_is_readonly,
 	!.
 create_indices(Name, Indices) :-
 	mongolog_get_db(DB, Coll, Name),

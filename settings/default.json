@@ -21,7 +21,7 @@
       "host": "localhost",
       "port": 27017,
       "db": "mongolog1",
-      "read_only": false
+      "read-only": false
     }
   ],
   "reasoner": [

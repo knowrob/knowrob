@@ -164,7 +164,7 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 	// load properties into the reasoner module.
 	// this is needed mainly for the `reasoner_setting/2` that provides reasoner instance specific settings.
 	for(auto &pair : cfg.settings) {
-		setReasonerSetting(pair.first, pair.second);
+	    setReasonerSetting(pair.first, pair.second);
 	}
 	// load reasoner default packages. this is usually the code that implements the reasoner.
 	initializeDefaultPackages();

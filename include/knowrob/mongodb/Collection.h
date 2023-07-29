@@ -83,6 +83,11 @@ namespace knowrob::mongo {
         const auto& dbName() const { return dbName_; }
 
         /**
+         * @return the URI string used to connect to the database.
+         */
+        const auto& dbURI() const { return connection_->uri_string_; }
+
+        /**
          * Drop this collection, removing all document it contains.
          */
         void drop();
