@@ -36,7 +36,7 @@ bool KnowledgeGraphPlugin::loadDLL()
 {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
 	if(handle_ != nullptr) {
-		create_ = (std::shared_ptr<KnowledgeGraph> (*)(const std::string&))
+		create_ = (std::shared_ptr<KnowledgeGraph> (*)())
 				dlsym(handle_, "knowrob_createKnowledgeGraph");
 		get_name_ = (char* (*)())
 				dlsym(handle_, "knowrob_getPluginName");
@@ -47,7 +47,7 @@ bool KnowledgeGraphPlugin::loadDLL()
 	}
 }
 
-std::shared_ptr<KnowledgeGraph> KnowledgeGraphPlugin::createKnowledgeGraph(const std::string &reasonerID)
+std::shared_ptr<DefinedKnowledgeGraph> KnowledgeGraphPlugin::createKnowledgeGraph(const std::string &reasonerID)
 {
-	return create_(reasonerID);
+	return std::make_shared<DefinedKnowledgeGraph>(reasonerID, create_());
 }

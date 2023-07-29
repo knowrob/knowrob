@@ -68,6 +68,8 @@ namespace knowrob {
         std::shared_ptr<DefinedKnowledgeGraph> addKnowledgeGraph(
                 const std::string &reasonerID, const std::shared_ptr<KnowledgeGraph> &backend);
 
+        void addKnowledgeGraph(const std::shared_ptr<DefinedKnowledgeGraph> &backend);
+
         /**
          * @return map of all KG defined by this manager.
          */
@@ -77,8 +79,6 @@ namespace knowrob {
 
 	private:
         std::shared_ptr<ThreadPool> threadPool_;
-		// maps backend type name to factory used to create instances of that type
-		static std::map<std::string, std::shared_ptr<KnowledgeGraphFactory>> backendFactories_;
         // maps backend id to manager
         static std::map<uint32_t, KnowledgeGraphManager*> backendManagers_;
         // counts number of initialized managers
@@ -104,11 +104,11 @@ namespace knowrob {
         void removeBackend(const std::shared_ptr<DefinedKnowledgeGraph> &reasoner);
 	};
 
-	// a macro for static registration of a reasoner type.
-	// reasoner types registered with this macro are builtin reasoners that are not
+	// a macro for static registration of a knowledge graph type.
+	// knowledge graph types registered with this macro are builtin knowledge graphs that are not
 	// loaded from a plugin.
 	#define KNOWROB_BUILTIN_BACKEND(Name,Type) class Type ## _Registration{ static bool isRegistered; }; \
-		bool Type ## _Registration::isRegistered = BackendManager::addBackendFactory<Type>(Name);
+		bool Type ## _Registration::isRegistered = KnowledgeGraphManager::addFactory<Type>(Name);
 }
 
 #endif //KNOWROB_KG_MANAGER_H_

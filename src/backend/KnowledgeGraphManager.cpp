@@ -15,9 +15,13 @@
 
 using namespace knowrob;
 
-std::map<std::string, std::shared_ptr<KnowledgeGraphFactory>> KnowledgeGraphManager::backendFactories_ = {};
 std::map<uint32_t, KnowledgeGraphManager*> KnowledgeGraphManager::backendManagers_ = {};
 uint32_t KnowledgeGraphManager::managerIDCounter_ = 0;
+
+auto& getBackendFactories() {
+    static std::map<std::string, std::shared_ptr<KnowledgeGraphFactory>> x;
+    return x;
+}
 
 KnowledgeGraphManager::KnowledgeGraphManager(const std::shared_ptr<ThreadPool> &threadPool)
 : threadPool_(threadPool), backendIndex_(0)
@@ -56,21 +60,22 @@ void KnowledgeGraphManager::loadKnowledgeGraph(const boost::property_tree::ptree
 		factory = loadBackendPlugin(lib.value());
 	}
 	else if(type.has_value()) {
+	    auto &backendFactories = getBackendFactories();
 		// map type name to a factory
-		const auto &it = backendFactories_.find(type.value());
-		if(it == backendFactories_.end()) {
-			KB_WARN("no factory registered for reasoner type '{}'.", type.value());
+		const auto &it = backendFactories.find(type.value());
+		if(it == backendFactories.end()) {
+			KB_WARN("no factory registered for knowledge graph with type '{}'.", type.value());
 		}
 		else {
 			factory = it->second;
 		}
 	}
 	else {
-		KB_WARN("missing 'type' or 'lib' key in reasoner config.");
+		KB_WARN("missing 'type' or 'lib' key in knowledge graph config.");
 	}
 	// make sure factory was found above
 	if(!factory) {
-		throw KnowledgeGraphError("failed to load a reasoner.");
+		throw KnowledgeGraphError("failed to load a knowledge graph.");
 	}
 	// create a reasoner id, or use name property
 	std::string backendID;
@@ -80,17 +85,17 @@ void KnowledgeGraphManager::loadKnowledgeGraph(const boost::property_tree::ptree
 	else {
 		backendID = factory->name() + std::to_string(backendIndex_);
 	}
-	KB_INFO("Using knowledgeGraph `{}` with type `{}`.", backendID, factory->name());
+	KB_INFO("Using knowledge graph `{}` with type `{}`.", backendID, factory->name());
 
 	// create a new reasoner instance
 	auto backend = factory->createKnowledgeGraph(backendID);
-	backend->setThreadPool(threadPool_);
+	backend->knowledgeGraph()->setThreadPool(threadPool_);
 
-	if(!backend->loadConfiguration(config)) {
+	if(!backend->knowledgeGraph()->loadConfiguration(config)) {
 		KB_WARN("Backend `{}` failed to loadConfiguration.", backendID);
 	}
 	else {
-        addKnowledgeGraph(backendID, backend);
+        addKnowledgeGraph(backend);
 	}
 	// increase reasonerIndex_
 	backendIndex_ += 1;
@@ -111,16 +116,17 @@ std::shared_ptr<KnowledgeGraphPlugin> KnowledgeGraphManager::loadBackendPlugin(c
 	else if(it->second->isLoaded()) {
 		return it->second;
 	}
-	KB_WARN("Failed to open knowledgeGraph library at path '{}'.", path);
+	KB_WARN("Failed to open knowledge graph library at path '{}'.", path);
 	return {};
 }
 
 bool KnowledgeGraphManager::addFactory(const std::string &typeName, const std::shared_ptr<KnowledgeGraphFactory> &factory)
 {
-	if(backendFactories_.find(typeName) != backendFactories_.end()) {
-		KB_WARN("overwriting factory for knowledgeGraph type '{}'", typeName);
+    auto &backendFactories = getBackendFactories();
+	if(backendFactories.find(typeName) != backendFactories.end()) {
+		KB_WARN("overwriting factory for knowledge graph type '{}'", typeName);
 	}
-	backendFactories_[typeName] = factory;
+	backendFactories[typeName] = factory;
 	return true;
 }
 
@@ -128,12 +134,20 @@ std::shared_ptr<DefinedKnowledgeGraph> KnowledgeGraphManager::addKnowledgeGraph(
         const std::string &backendID, const std::shared_ptr<KnowledgeGraph> &kg)
 {
 	if(knowledgeGraphPool_.find(backendID) != knowledgeGraphPool_.end()) {
-		KB_WARN("overwriting knowledgeGraph with name '{}'", backendID);
+		KB_WARN("overwriting knowledge graph with name '{}'", backendID);
 	}
 	auto managedBackend = std::make_shared<DefinedKnowledgeGraph>(backendID, kg);
     knowledgeGraphPool_[backendID] = managedBackend;
 
 	return managedBackend;
+}
+
+void KnowledgeGraphManager::addKnowledgeGraph(const std::shared_ptr<DefinedKnowledgeGraph> &definedKG)
+{
+	if(knowledgeGraphPool_.find(definedKG->name()) != knowledgeGraphPool_.end()) {
+		KB_WARN("overwriting knowledge graph with name '{}'", definedKG->name());
+	}
+    knowledgeGraphPool_[definedKG->name()] = definedKG;
 }
 
 void KnowledgeGraphManager::removeBackend(const std::shared_ptr<DefinedKnowledgeGraph> &backend)

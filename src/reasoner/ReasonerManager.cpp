@@ -51,7 +51,7 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	auto lib = config.get_optional<std::string>("lib");
 	auto type = config.get_optional<std::string>("type");
 	auto name = config.get_optional<std::string>("name");
-	auto backendName = config.get_optional<std::string>("data-knowledgeGraph");
+	auto backendName = config.get_optional<std::string>("data-backend");
 
 	// get a reasoner factory
 	std::shared_ptr<ReasonerFactory> factory;

@@ -27,8 +27,8 @@ namespace knowrob {
 		explicit TypedKnowledgeGraphFactory(std::string name) : name_(std::move(name)) {}
 
 		// Override BackendFactory
-		std::shared_ptr<KnowledgeGraph> createKnowledgeGraph(const std::string &backendID) override
-		{ return std::make_shared<T>(backendID); }
+		std::shared_ptr<DefinedKnowledgeGraph> createKnowledgeGraph(const std::string &backendID) override
+		{ return std::make_shared<DefinedKnowledgeGraph>(backendID, std::make_shared<T>()); }
 
 		// Override BackendFactory
 		const std::string& name() const override {  return name_; }

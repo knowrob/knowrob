@@ -51,7 +51,7 @@ namespace knowrob {
 		bool loadDLL();
 
 		// Override BackendFactory
-		std::shared_ptr<KnowledgeGraph> createKnowledgeGraph(const std::string &backendID) override;
+		std::shared_ptr<DefinedKnowledgeGraph> createKnowledgeGraph(const std::string &backendID) override;
 
 		// Override BackendFactory
 		const std::string& name() const override {  return name_; };
@@ -62,7 +62,7 @@ namespace knowrob {
 		// handle of opened library
 		void *handle_;
 		// a factory function used to create new instances of a backend.
-		std::shared_ptr<KnowledgeGraph> (*create_)(const std::string &backendID);
+		std::shared_ptr<KnowledgeGraph> (*create_)();
 		// a function that returns the name of the plugin
 		char* (*get_name_)();
 	};
@@ -80,8 +80,8 @@ namespace knowrob {
  * @pluginName a plugin identifier, e.g. the name of the KG type.
  */
 #define KNOWLEDGE_GRAPH_PLUGIN(classType, pluginName) extern "C" { \
-		std::shared_ptr<knowrob::KnowledgeGraph> knowrob_createKnowledgeGraph(const std::string &backendID) \
-			{ return std::make_shared<classType>(backendID); } \
+		std::shared_ptr<knowrob::DefinedKnowledgeGraph> knowrob_createKnowledgeGraph(const std::string &backendID) \
+			{ return std::make_shared<knowrob::DefinedKnowledgeGraph>(backendID, std::make_shared<classType>()); } \
 		const char* knowrob_getPluginName() { return pluginName; } }
 
 #endif //KNOWROB_KG_PLUGIN_H_

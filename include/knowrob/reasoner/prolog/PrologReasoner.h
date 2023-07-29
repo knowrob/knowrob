@@ -74,7 +74,7 @@ namespace knowrob {
          * @param doTransformQuery
          * @return the first solution found, or QueryResultStream::eos() if none.
          */
-        AnswerPtr oneSolution(const std::shared_ptr<const ModalQuery> &goal,
+        AnswerPtr oneSolution(const std::shared_ptr<const Query> &goal,
                               const char *contextModule={},
                               bool doTransformQuery=true);
 
@@ -96,7 +96,7 @@ namespace knowrob {
          * @param doTransformQuery
          * @return list of solutions.
          */
-        std::list<AnswerPtr> allSolutions(const std::shared_ptr<const ModalQuery> &goal,
+        std::list<AnswerPtr> allSolutions(const std::shared_ptr<const Query> &goal,
                                           const char *contextModule={},
                                           bool doTransformQuery=true);
 
@@ -129,7 +129,7 @@ namespace knowrob {
         * @param doTransformQuery
         * @return
         */
-        bool eval(const std::shared_ptr<const ModalQuery> &q,
+        bool eval(const std::shared_ptr<const Query> &q,
                   const char *moduleName,
                   bool doTransformQuery);
 

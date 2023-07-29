@@ -342,9 +342,9 @@ public:
 	}
 
 	int run() {
-		std::cout << "Welcome to KnowRob." << std::endl <<
-			"For online help and background, visit http://knowrob.org/" << std::endl <<
-			std::endl;
+		std::cout << "Welcome to KnowRob." << '\n' <<
+			"For online help and background, visit http://knowrob.org/" << '\n' <<
+			'\n';
 
 		std::cout << PROMPT << std::flush;
 		while(!has_stop_request_) {
@@ -410,7 +410,7 @@ int run(int argc, char **argv) {
 				vm["config-file"].as<std::string>(),
 				config);
 	} else {
-		std::cout << "config-file is missing" << std::endl;
+		std::cout << "'config-file' commandline argument is missing" << std::endl;
 		return EXIT_FAILURE;
 	}
 

@@ -20,6 +20,7 @@
 #include "knowrob/semweb/owl.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryEngine.h"
+#include "knowrob/backend/KnowledgeGraphManager.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
@@ -40,6 +41,8 @@
 using namespace knowrob;
 using namespace knowrob::mongo;
 using namespace knowrob::semweb;
+
+KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 
 // AGGREGATION PIPELINES
 bson_t* newPipelineImportHierarchy(const char *collection);

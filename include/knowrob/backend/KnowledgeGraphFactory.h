@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include "KnowledgeGraph.h"
+#include "DefinedKnowledgeGraph.h"
 
 namespace knowrob {
 	/**
@@ -27,7 +28,7 @@ namespace knowrob {
 		 * @param backendID the ID of the KG in the knowledge base.
 		 * @return the reasoner created.
 		 */
-		virtual std::shared_ptr<KnowledgeGraph> createKnowledgeGraph(const std::string &backendID) = 0;
+		virtual std::shared_ptr<DefinedKnowledgeGraph> createKnowledgeGraph(const std::string &backendID) = 0;
 
 		/**
 		 * @return name of the KG type for which the factory can create instances.
