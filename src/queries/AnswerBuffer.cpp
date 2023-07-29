@@ -24,7 +24,7 @@ void AnswerBuffer::stopBuffering()
 
 std::shared_ptr<AnswerQueue> AnswerBuffer::createQueue()
 {
-    auto queue = std::shared_ptr<AnswerQueue>();
+    auto queue = std::make_shared<AnswerQueue>();
     addSubscriber(Channel::create(queue));
     stopBuffering();
     return queue;
