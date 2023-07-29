@@ -105,6 +105,23 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	else {
 		KB_ERROR("configuration has no 'reasoner' key.");
 	}
+
+	auto dataSourcesList = config.get_child_optional("data-sources");
+	if(dataSourcesList) {
+	    static const std::string formatDefault = {};
+
+		for(const auto &pair : dataSourcesList.value()) {
+			auto &subtree = pair.second;
+			auto dataFormat = subtree.get("format",formatDefault);
+			auto source = std::make_shared<DataSource>(dataFormat);
+			source->loadSettings(subtree);
+
+			for(auto &kg_pair : backendManager_->knowledgeGraphPool()) {
+			    // FIXME: handle format specified in settings file
+			    kg_pair.second->knowledgeGraph()->loadFile(source->uri(), TripleFormat::RDF_XML);
+			}
+        }
+    }
 }
 
 AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags)
