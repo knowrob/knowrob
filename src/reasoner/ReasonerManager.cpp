@@ -97,12 +97,13 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
             reasoner->setDataBackend(backend->knowledgeGraph());
 	    }
 	    else {
-		    throw ReasonerError("Reasoner `{}` refers to unknown knowledgeGraph `{}`.", reasonerID, backendName.value());
+		    throw ReasonerError("Reasoner `{}` refers to unknown data-backend `{}`.", reasonerID, backendName.value());
 	    }
 	}
 	else {
-        throw ReasonerError("Reasoner `{}` has no 'knowledgeGraph' configured.", reasonerID);
+        throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
 	}
+    addReasoner(reasonerID, reasoner);
 
 	ReasonerConfiguration reasonerConfig;
 	reasonerConfig.loadPropertyTree(&config);
@@ -115,7 +116,6 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
                 KB_WARN("Reasoner `{}` failed to load data source {}.", reasonerID, dataSource->uri());
             }
         }
-		addReasoner(reasonerID, reasoner);
 	}
 	// increase reasonerIndex_
 	reasonerIndex_ += 1;
