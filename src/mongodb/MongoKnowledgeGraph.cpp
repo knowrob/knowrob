@@ -82,22 +82,22 @@ std::shared_ptr<Collection> MongoKnowledgeGraph::connect(const boost::property_t
 {
     return MongoInterface::get().connect(
               getURI(config).c_str(),
-              getDBName(config),
-              getCollectionName(config));
+              getDBName(config).c_str(),
+              getCollectionName(config).c_str());
 }
 
-const char* MongoKnowledgeGraph::getDBName(const boost::property_tree::ptree &config)
+std::string MongoKnowledgeGraph::getDBName(const boost::property_tree::ptree &config)
 {
-    static const char *defaultDBName = MONGO_KG_DEFAULT_DB;
+    static std::string defaultDBName = MONGO_KG_DEFAULT_DB;
     auto o_dbname = config.get_optional<std::string>(MONGO_KG_SETTING_DB);
-    return (o_dbname ? o_dbname->c_str() : defaultDBName);
+    return (o_dbname ? o_dbname.value() : defaultDBName);
 }
 
-const char* MongoKnowledgeGraph::getCollectionName(const boost::property_tree::ptree &config)
+std::string MongoKnowledgeGraph::getCollectionName(const boost::property_tree::ptree &config)
 {
-    static const char *defaultCollectionName = MONGO_KG_DEFAULT_COLLECTION;
+    static std::string defaultCollectionName = MONGO_KG_DEFAULT_COLLECTION;
     auto o_collection = config.get_optional<std::string>(MONGO_KG_SETTING_COLLECTION);
-    return (o_collection ? o_collection->c_str() : defaultCollectionName);
+    return (o_collection ? o_collection.value() : defaultCollectionName);
 }
 
 std::string MongoKnowledgeGraph::getURI(const boost::property_tree::ptree &config)

@@ -118,9 +118,9 @@ namespace knowrob {
 
         static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
 
-        static const char* getDBName(const boost::property_tree::ptree &config);
+        static std::string getDBName(const boost::property_tree::ptree &config);
 
-        static const char* getCollectionName(const boost::property_tree::ptree &config);
+        static std::string getCollectionName(const boost::property_tree::ptree &config);
 
         static std::string getURI(const boost::property_tree::ptree &config);
 
