@@ -7,6 +7,7 @@
  */
 
 #include <knowrob/queries/AllocatedQuery.h>
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 

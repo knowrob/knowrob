@@ -185,9 +185,18 @@ public:
         auto resultQueue = resultStream->createQueue();
 
         numSolutions_ = 0;
-        while(!resultQueue->empty()) {
-            pushQueryResult(resultQueue->pop_front());
+        while(true) {
+            auto nextResult = resultQueue->pop_front();
+
+            if(AnswerStream::isEOS(nextResult)) {
+                break;
+            }
+            else {
+                pushQueryResult(nextResult);
+                numSolutions_ += 1;
+            }
         }
+
         if(numSolutions_ == 0) {
             std::cout << "no." << std::endl;
         }

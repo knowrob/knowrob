@@ -4,6 +4,7 @@
 
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
@@ -32,6 +33,10 @@ std::shared_ptr<AnswerQueue> AnswerBuffer::createQueue()
 
 void AnswerBuffer::push(const AnswerPtr &msg)
 {
-    if(isBuffering_) buffer_.push_back(msg);
-    else AnswerBroadcaster::push(msg);
+    if(isBuffering_) {
+        buffer_.push_back(msg);
+    }
+    else {
+        AnswerBroadcaster::push(msg);
+    }
 }
