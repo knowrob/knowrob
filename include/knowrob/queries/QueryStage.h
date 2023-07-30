@@ -49,6 +49,7 @@ namespace knowrob {
         const std::list<LiteralPtr> literals_;
         const ModalityLabelPtr label_;
         std::atomic<bool> isQueryOpened_;
+        std::atomic<bool> isAwaitingInput_;
         std::atomic<bool> hasStopRequest_;
 
         QueryEngine *queryEngine_;
