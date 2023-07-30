@@ -144,6 +144,23 @@ FormulaPtr Predicate::applySubstitution(const Substitution &sub) const
 	return std::make_shared<Predicate>(*this, sub);
 }
 
+size_t Predicate::computeHash() const
+{
+    static const auto GOLDEN_RATIO_HASH = static_cast<size_t>(0x9e3779b9);
+    auto seed = static_cast<size_t>(0);
+
+    // Combine the hashes.
+    // The function (a ^ (b + GOLDEN_RATIO_HASH + (a << 6) + (a >> 2))) is known to
+    // give a good distribution of hash values across the range of size_t.
+    //
+    seed ^= std::hash<std::string>{}(indicator_->functor()) + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
+    for(auto &arg : arguments_) {
+        seed ^= arg->computeHash() + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
+    }
+
+    return seed;
+}
+
 void Predicate::write(std::ostream& os) const
 {
 	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...

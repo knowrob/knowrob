@@ -45,6 +45,9 @@ namespace knowrob {
 		
 		// Override Term
 		void write(std::ostream& os) const override { os << value_; }
+
+		// Override Term
+        size_t computeHash() const override { return std::hash<T>{}(value_); }
 	
 	protected:
 		const T value_;

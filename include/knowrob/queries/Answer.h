@@ -92,6 +92,11 @@ namespace knowrob {
 		 */
 		bool combine(const std::shared_ptr<const Answer> &other, Reversible *changes=nullptr);
 
+        /**
+         * @return the hash of this.
+         */
+		size_t computeHash() const;
+
 	protected:
 		SubstitutionPtr substitution_;
 		std::list<PredicateInstance> predicates_;

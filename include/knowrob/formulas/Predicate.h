@@ -158,6 +158,9 @@ namespace knowrob {
 		
 		// Override Term, Formula
 		void write(std::ostream& os) const override;
+
+		// Override Term
+        size_t computeHash() const override;
 	
 	protected:
 		const std::shared_ptr<PredicateIndicator> indicator_;

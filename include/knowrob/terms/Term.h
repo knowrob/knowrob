@@ -86,7 +86,12 @@ namespace knowrob {
 		 * Write the term into an ostream.
 		 */
 		virtual void write(std::ostream& os) const = 0;
-	
+
+        /**
+         * @return the hash of this.
+         */
+		virtual size_t computeHash() const = 0;
+
 	protected:
 		static const VariableSet noVariables_;
 		const TermType type_;

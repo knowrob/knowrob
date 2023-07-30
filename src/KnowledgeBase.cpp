@@ -15,6 +15,7 @@
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/queries/AnswerCombiner.h"
 #include "knowrob/queries/QueryPipeline.h"
+#include "knowrob/queries/RedundantAnswerFilter.h"
 
 using namespace knowrob;
 
@@ -213,13 +214,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     // add additional stages for post-processing of results
     std::shared_ptr<AnswerBroadcaster> lastStage = answerCombiner;
     {
-        // TODO: optionally add a stage to the pipeline that drops all redundant result.
+        // optionally add a stage to the pipeline that drops all redundant result.
         if(graphQuery->flags() & QUERY_FLAG_UNIQUE_SOLUTIONS) {
-            /*
-            auto filterStage = std::make_shared<XXX>();
+            auto filterStage = std::make_shared<RedundantAnswerFilter>();
             lastStage >> filterStage;
             lastStage = filterStage;
-            */
         }
 
         // TODO: notify top-down reasoner about inferences of others.

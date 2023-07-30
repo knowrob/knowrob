@@ -60,6 +60,9 @@ namespace knowrob {
 		
 		// Override Term
 		void write(std::ostream& os) const override;
+
+		// Override Term
+        size_t computeHash() const override;
 	
 	protected:
 		const std::vector<TermPtr> elements_;

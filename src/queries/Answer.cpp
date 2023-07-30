@@ -45,6 +45,11 @@ void Answer::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
 	predicates_.emplace_back(reasonerModule, predicate);
 }
 
+size_t Answer::computeHash() const
+{
+    return substitution_->computeHash();
+}
+
 bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *changes)
 {
 	// unify substitutions
