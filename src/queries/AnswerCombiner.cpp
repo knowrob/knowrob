@@ -7,6 +7,7 @@
  */
 
 #include <knowrob/queries/AnswerCombiner.h>
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
@@ -22,13 +23,19 @@ void AnswerCombiner::push(const Channel &channel, const AnswerPtr &msg)
 	
 	// add to the buffer for later combinations
 	buffer_[channelID].push_back(msg);
-	
+
 	// generate combinations with other channels if each channel
 	// buffer has some content.
 	if(buffer_.size() == channels_.size()) {
-		std::shared_ptr<Answer> combination(new Answer(*(msg.get())));
-		// generate all combinations and push combined messages
-		genCombinations(channelID, buffer_.begin(), combination);
+        if(channels_.size()==1) {
+            // not needed to generate combinations
+            AnswerBroadcaster::push(msg);
+        }
+        else {
+            std::shared_ptr<Answer> combination(new Answer(*(msg.get())));
+            // generate all combinations and push combined messages
+            genCombinations(channelID, buffer_.begin(), combination);
+        }
 	}
 }
 
