@@ -16,6 +16,7 @@ QueryStage::QueryStage(const std::list<LiteralPtr> &literals,
           literals_(literals),
           label_(label),
           isQueryOpened_(true),
+          isAwaitingInput_(true),
           hasStopRequest_(false)
 {
 }
@@ -55,7 +56,8 @@ void QueryStage::pushTransformed(const AnswerPtr &transformedAnswer,
         graphQueries_.erase(graphQueryIterator);
         // only push EOS message if no graph query is still active and
         // if the stream has received EOS as input already.
-        if(graphQueries_.empty() && !isQueryOpened()) {
+        if(graphQueries_.empty() && !isAwaitingInput_) {
+            isQueryOpened_ = false;
             pushToBroadcast(transformedAnswer);
         }
     }
@@ -86,11 +88,11 @@ AnswerPtr QueryStage::transformAnswer(const AnswerPtr &graphQueryAnswer,
 void QueryStage::push(const AnswerPtr &partialResult)
 {
     if(AnswerStream::isEOS(partialResult)) {
-        if(isQueryOpened()) {
-            isQueryOpened_ = false;
-        }
+        // EOS indicates that no more input is to be expected
+        isAwaitingInput_ = false;
         // only broadcast EOS if no graph query is still active.
         if(graphQueries_.empty() && !hasStopRequest_) {
+            isQueryOpened_ = false;
             pushToBroadcast(partialResult);
         }
     }
@@ -115,17 +117,25 @@ void QueryStage::push(const AnswerPtr &partialResult)
             }
         }
 
+        auto gq = std::make_shared<GraphQuery>(
+                literalInstances,
+                queryFlags_,
+                ModalityFrame(label_->modalOperators()));
         // create a new graph query
-        auto graphQueryStream = queryEngine_->submitQuery(std::make_shared<GraphQuery>(
-                literalInstances, queryFlags_, ModalityFrame(label_->modalOperators())));
+        auto graphQueryStream = queryEngine_->submitQuery(gq);
         // keep a reference on the stream
         graphQueries_.push_front(graphQueryStream);
         auto graphQueryIt = graphQueries_.begin();
         // combine graph query answer with partialResult and push it to the broadcast
         graphQueryStream >> std::make_shared<AnswerTransformer>(
                 [this,partialResult,graphQueryIt](const AnswerPtr &graphQueryAnswer) {
-                    auto transformed = transformAnswer(graphQueryAnswer, partialResult);
-                    pushTransformed(transformed, graphQueryIt);
+                    if(AnswerStream::isEOS(graphQueryAnswer)) {
+                        pushTransformed(graphQueryAnswer, graphQueryIt);
+                    }
+                    else {
+                        auto transformed = transformAnswer(graphQueryAnswer, partialResult);
+                        pushTransformed(transformed, graphQueryIt);
+                    }
                 });
         // start sending messages into AnswerTransformer.
         // the messages are buffered before to avoid them being lost before the transformer
