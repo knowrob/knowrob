@@ -22,6 +22,7 @@
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -57,6 +58,7 @@ namespace knowrob {
 		PredicateRule predicate;
         PredicateRule predicateNullary;
         PredicateRule predicateWithArgs;
+        PredicateRule predicateWithNS;
 
 		// a rule that matches a single argument of a predicate
 		TermRule argument;
@@ -89,6 +91,18 @@ namespace {
 	template <typename T> using ptr_ = boost::phoenix::function<make_shared_f<T> >;
 }
 
+static std::string createIRI(const std::string &prefix, const std::string &name)
+{
+    auto uri = semweb::PrefixRegistry::get().createIRI(prefix, name);
+    if(uri.has_value()) {
+        return uri.value();
+    }
+    else {
+        throw QueryError("Cannot construct IRI for '{}': "
+                         "IRI prefix '{}' is not registered!", name, prefix);
+    }
+}
+
 QueryParser::QueryParser()
 {
 	bnf_ = new ParserRules();
@@ -119,12 +133,18 @@ QueryParser::QueryParser()
 	bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
 
 	// predicates
+	bnf_->predicateWithNS = (((bnf_->lowerPrefix) >>
+	        qi::char_(':') >> (bnf_->lowerPrefix | bnf_->singleQuotes) >>
+			qi::char_('(') >> (bnf_->argument % ',') >> ')')
+			[qi::_val = ptr_<Predicate>()(
+			    boost::phoenix::bind(&createIRI, qi::_1, qi::_3),
+			    qi::_5)]);
 	bnf_->predicateWithArgs = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
 			qi::char_('(') >> (bnf_->argument % ',') >> ')')
 			[qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->predicateNullary = ((bnf_->lowerPrefix | bnf_->singleQuotes)
             [qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
-    bnf_->predicate %= bnf_->predicateWithArgs | bnf_->predicateNullary;
+    bnf_->predicate %= bnf_->predicateWithNS | bnf_->predicateWithArgs | bnf_->predicateNullary;
 
 	// formulas
 	bnf_->brackets %= ('(' >> bnf_->formula >> ')');
