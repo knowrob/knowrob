@@ -35,7 +35,7 @@ void PrefixRegistry::registerPrefix(const std::string &prefix, const std::string
     }
 }
 
-OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri)
+OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri) const
 {
     if(uri[uri.size()-1]=='#') {
         auto x = uri;
@@ -49,8 +49,19 @@ OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri)
     }
 }
 
-OptionalStringRef PrefixRegistry::aliasToUri(const std::string &alias)
+OptionalStringRef PrefixRegistry::aliasToUri(const std::string &alias) const
 {
     auto it = aliasToURI_.find(alias);
     return it == aliasToURI_.end() ? std::nullopt : OptionalStringRef(it->second);
+}
+
+std::optional<std::string> PrefixRegistry::createIRI(const std::string &alias, const std::string &entityName) const
+{
+    auto uri = aliasToUri(alias);
+    if(uri.has_value()) {
+        return uri.value().get() + "#" + entityName;
+    }
+    else {
+        return uri;
+    }
 }
