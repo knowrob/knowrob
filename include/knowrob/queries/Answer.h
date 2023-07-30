@@ -50,7 +50,7 @@ namespace knowrob {
 		 * @param var a variable.
 		 * @return true is this solution substitutes the variable
 		 */
-		bool hasSubstitution(const Variable &var);
+		bool hasSubstitution(const Variable &var) const;
 
 		/**
 		 * @return a mapping from variables to terms.

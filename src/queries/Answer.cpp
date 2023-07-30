@@ -34,7 +34,7 @@ void Answer::substitute(const Variable &var, const TermPtr &term)
 	substitution_->set(var, term);
 }
 
-bool Answer::hasSubstitution(const Variable &var)
+bool Answer::hasSubstitution(const Variable &var) const
 {
 	return substitution_->contains(var);
 }
@@ -72,8 +72,8 @@ bool Answer::combineModalFrame(const std::shared_ptr<const Answer> &other)
 {
 	// TODO: think about how modal frame of answers could be combined!
 	//modality_ = modality_.combine(other->modality_);
-	KB_WARN("todo: implement combining modal frames.");
-    return false;
+	KB_WARN("todo: implement Answer::combineModalFrame");
+    return true;
 }
 
 namespace std {
