@@ -40,6 +40,14 @@ namespace knowrob::semweb {
         ClassPtr getDefinedClass(const std::string_view &iri) const;
 
         /**
+         * @param prefix a IRI prefix
+         * @return all known classes with matching prefix
+         */
+        std::vector<ClassPtr> getDefinedClassesWithPrefix(const std::string_view &prefix) const;
+
+        std::vector<std::string_view> getDefinedClassNamesWithPrefix(const std::string_view &prefix) const;
+
+        /**
          * Define a new class if it has not been defined before.
          * @param iri a IRI
          * @return the class defined for the IRI
@@ -65,6 +73,14 @@ namespace knowrob::semweb {
          * @return the property defined for the IRI or a null reference
          */
         PropertyPtr getDefinedProperty(const std::string_view &iri) const;
+
+        /**
+         * @param prefix a IRI prefix
+         * @return all known properties with matching prefix
+         */
+        std::vector<PropertyPtr> getDefinedPropertiesWithPrefix(const std::string_view &prefix) const;
+
+        std::vector<std::string_view> getDefinedPropertyNamesWithPrefix(const std::string_view &prefix) const;
 
         /**
          * Define a new property if it has not been defined before.
@@ -107,8 +123,8 @@ namespace knowrob::semweb {
         static bool isTaxonomicProperty(const std::string_view &iri);
 
     protected:
-        std::map<std::string_view, ClassPtr> definedClasses_;
-        std::map<std::string_view, PropertyPtr> definedProperties_;
+        std::map<std::string_view, ClassPtr, std::less<>> definedClasses_;
+        std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
     };
 
     using VocabularyPtr = std::shared_ptr<Vocabulary>;

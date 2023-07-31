@@ -165,3 +165,25 @@ std::shared_ptr<DefinedKnowledgeGraph> KnowledgeGraphManager::getKnowledgeGraphW
 		return {};
 	}
 }
+
+std::shared_ptr<semweb::Vocabulary> KnowledgeGraphManager::vocabulary()
+{
+    // TODO: if each KG has the same Vocabulary, it should be managed in KnowledgeGraphManager instead!
+    if(knowledgeGraphPool_.empty()) {
+        return {};
+    }
+    else {
+        return knowledgeGraphPool_.begin()->second->knowledgeGraph()->vocabulary();
+    }
+}
+
+std::shared_ptr<semweb::ImportHierarchy> KnowledgeGraphManager::importHierarchy()
+{
+    // TODO: if each KG has the same ImportHierarchy, it should be managed in KnowledgeGraphManager instead!
+    if(knowledgeGraphPool_.empty()) {
+        return {};
+    }
+    else {
+        return knowledgeGraphPool_.begin()->second->knowledgeGraph()->importHierarchy();
+    }
+}

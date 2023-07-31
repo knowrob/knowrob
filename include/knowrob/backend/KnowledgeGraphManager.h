@@ -77,6 +77,16 @@ namespace knowrob {
 
         auto managerID() const  { return managerID_; }
 
+        /**
+         * @return the RDF vocabulary used by the knowledge graphs
+         */
+        std::shared_ptr<semweb::Vocabulary> vocabulary();
+
+        /**
+         * @return the import hierarchy of named (sub-)graphs
+         */
+        std::shared_ptr<semweb::ImportHierarchy> importHierarchy();
+
 	private:
         std::shared_ptr<ThreadPool> threadPool_;
         // maps backend id to manager

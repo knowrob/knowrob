@@ -3,6 +3,7 @@
 //
 
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/semweb/PrefixProbe.h"
 
 using namespace knowrob::semweb;
 
@@ -64,4 +65,14 @@ std::optional<std::string> PrefixRegistry::createIRI(const std::string &alias, c
     else {
         return uri;
     }
+}
+
+std::vector<std::string_view> PrefixRegistry::getAliasesWithPrefix(const std::string &prefix) const
+{
+    auto range_it = aliasToURI_.equal_range(PrefixProbe { prefix });
+    std::vector<std::string_view> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.emplace_back(it->first.c_str());
+    }
+    return result;
 }

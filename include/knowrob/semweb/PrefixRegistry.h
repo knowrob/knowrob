@@ -53,6 +53,12 @@ namespace knowrob::semweb {
          */
         std::optional<std::string> createIRI(const std::string &alias, const std::string &entityName) const;
 
+        /**
+         * @param prefix a alias prefix
+         * @return all aliases with matching prefix
+         */
+        std::vector<std::string_view> getAliasesWithPrefix(const std::string &prefix) const;
+
 		/**
 		 * An iterator of the registry map.
 		 */
@@ -71,7 +77,7 @@ namespace knowrob::semweb {
         PrefixRegistry();
 
         std::map<std::string, std::string> uriToAlias_;
-        std::map<std::string, std::string> aliasToURI_;
+        std::map<std::string, std::string, std::less<>> aliasToURI_;
     };
 }
 
