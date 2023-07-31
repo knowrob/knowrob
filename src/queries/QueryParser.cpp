@@ -23,6 +23,8 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/terms/OptionList.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
@@ -48,8 +50,11 @@ namespace knowrob {
 		FormulaRule negation;
 		FormulaRule modalFormula;
 		FormulaRule belief;
+		FormulaRule belief2;
 		FormulaRule knowledge;
+		FormulaRule knowledge2;
 		FormulaRule oncePast;
+		FormulaRule oncePast2;
 		FormulaRule alwaysPast;
 		FormulaRule brackets;
         FormulaRule unary;
@@ -69,6 +74,10 @@ namespace knowrob {
 		TermRule number;
 		TermRule atom;
 		TermRule string;
+		TermRule option;
+		TermRule optionFlag;
+		TermRule optionValue;
+		TermRule options;
 
 		StringRule singleQuotes;
 		StringRule doubleQuotes;
@@ -103,8 +112,80 @@ static std::string createIRI(const std::string &prefix, const std::string &name)
     }
 }
 
+static std::optional<std::string> getAgentOption(const OptionList &options)
+{
+    // agent is either represented as `=(flag,$name)` or `=(agent,$name)` in option list.
+    // "flag" is used as key if no key was provided in the query.
+    if(options.contains("agent")) return options.getString("agent", "self");
+    if(options.contains("flag")) return options.getString("flag", "self");
+    return std::nullopt;
+}
+
+static std::optional<double> getConfidenceOption(const OptionList &options)
+{ return options.contains("confidence") ? options.getDouble("confidence") : std::nullopt; }
+
+static std::optional<TimePoint> getBeginOption(const OptionList &options)
+{ return options.contains("begin") ? options.getDouble("begin") : std::nullopt; }
+
+static std::optional<TimePoint> getEndOption(const OptionList &options)
+{ return options.contains("end") ? options.getDouble("end") : std::nullopt; }
+
+static ModalOperatorPtr createK(const TermPtr &optionsTerm)
+{
+    if(optionsTerm) {
+        OptionList options(optionsTerm);
+        // read options
+        auto agentName = getAgentOption(options);
+        // create a parametrized modal operator
+        if(agentName.has_value() || agentName.value() != "self") {
+            return KnowledgeModality::K(agentName.value());
+        }
+    }
+    return KnowledgeModality::K();
+}
+
+static ModalOperatorPtr createB(const TermPtr &optionsTerm)
+{
+    if(optionsTerm) {
+        OptionList options(optionsTerm);
+        // read options
+        // TODO: handle confidence option
+        auto confidenceValue = getConfidenceOption(options);
+        auto agentName = getAgentOption(options);
+        if(agentName.has_value() && agentName.value() == "self") agentName = std::nullopt;
+        // create a parametrized modal operator
+        if(agentName.has_value()) {
+            //if(confidenceValue.has_value()) return BeliefModality::B(agentName.value(), confidenceValue.value());
+            if(confidenceValue.has_value()) return BeliefModality::B(agentName.value());
+            else                            return BeliefModality::B(agentName.value());
+        }
+        //else if(confidenceValue.has_value()) {
+        //    return BeliefModality::B(confidenceValue.value());
+        //}
+    }
+    return BeliefModality::B();
+}
+
+static ModalOperatorPtr createP(const TermPtr &optionsTerm)
+{
+    if(optionsTerm) {
+        OptionList options(optionsTerm);
+        auto beginTime = getBeginOption(options);
+        auto endTime = getEndOption(options);
+        if(beginTime.has_value() || endTime.has_value()) {
+            return PastModality::P(TimeInterval(beginTime, endTime));
+        }
+    }
+    return PastModality::P();
+}
+
+static std::vector<TermPtr> createTermVector2(const TermPtr &a, const TermPtr &b) { return {a,b}; }
+
 QueryParser::QueryParser()
 {
+    static const std::string equalFunctor = "=";
+    static const std::shared_ptr<StringTerm> flagTerm = std::make_shared<StringTerm>("flag");
+
 	bnf_ = new ParserRules();
 	bnf_->singleQuotes %= qi::lexeme['\'' >> +(qi::char_ - '\'') >> '\''];
 	bnf_->doubleQuotes %= qi::lexeme['"' >> +(qi::char_ - '"') >> '"'];
@@ -118,6 +199,16 @@ QueryParser::QueryParser()
             [qi::_val = ptr_<StringTerm>()(qi::_1)]);
     bnf_->number = (qi::double_
             [qi::_val = ptr_<DoubleTerm>()(qi::_1)]);
+
+    bnf_->optionFlag = ((bnf_->atom)
+			[ qi::_val = ptr_<Predicate>()(equalFunctor,
+			  boost::phoenix::bind(&createTermVector2, flagTerm, qi::_1)) ]);
+    bnf_->optionValue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->constant))
+			[ qi::_val = ptr_<Predicate>()(equalFunctor,
+			  boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3)) ]);
+    bnf_->option %= (bnf_->optionValue | bnf_->optionFlag);
+    bnf_->options = ((qi::char_('[') >> (bnf_->option % ',') >> qi::char_(']'))
+            [qi::_val = ptr_<ListTerm>()(qi::_2)]);
 
 	// arguments of predicates: constants or variables
 	bnf_->constant %= (bnf_->atom
@@ -150,19 +241,25 @@ QueryParser::QueryParser()
 	bnf_->brackets %= ('(' >> bnf_->formula >> ')');
 
 	// unary operators
-	bnf_->negation   = (('~' >> (bnf_->unary | bnf_->brackets))
+	bnf_->negation    = (('~' >> (bnf_->unary | bnf_->brackets))
 			[qi::_val = ~qi::_1]);
-	bnf_->belief     = (('B' >> (bnf_->unary | bnf_->brackets))
+	bnf_->belief      = (('B' >> (bnf_->unary | bnf_->brackets))
 			[qi::_val = ptr_<ModalFormula>()(BeliefModality::B(), qi::_1)]);
-	bnf_->knowledge  = (('K' >> (bnf_->unary | bnf_->brackets))
+	bnf_->knowledge   = (('K' >> (bnf_->unary | bnf_->brackets))
 			[qi::_val = ptr_<ModalFormula>()(KnowledgeModality::K(), qi::_1)]);
-	bnf_->oncePast   = (('P' >> (bnf_->unary | bnf_->brackets))
+	bnf_->oncePast    = (('P' >> (bnf_->unary | bnf_->brackets))
 			[qi::_val = ptr_<ModalFormula>()(PastModality::P(), qi::_1)]);
-	bnf_->alwaysPast = (('H' >> (bnf_->unary | bnf_->brackets))
+	bnf_->alwaysPast  = (('H' >> (bnf_->unary | bnf_->brackets))
 			[qi::_val = ptr_<ModalFormula>()(PastModality::H(), qi::_1)]);
-	bnf_->modalFormula %= bnf_->belief
-			| bnf_->knowledge
-			| bnf_->oncePast
+	bnf_->belief2     = (('B' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+			[qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createB, qi::_1), qi::_2)]);
+	bnf_->knowledge2  = (('K' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+			[qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createK, qi::_1), qi::_2)]);
+	bnf_->oncePast2   = (('P' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+			[qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createP, qi::_1), qi::_2)]);
+	bnf_->modalFormula %= bnf_->belief2 | bnf_->belief
+			| bnf_->knowledge2 | bnf_->knowledge
+			| bnf_->oncePast2 | bnf_->oncePast
 			| bnf_->alwaysPast;
     bnf_->unary %= bnf_->modalFormula | bnf_->negation | bnf_->predicate;
 
