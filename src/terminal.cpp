@@ -33,9 +33,6 @@ namespace po = boost::program_options;
 
 static const char* PROMPT = "?- ";
 
-// TODO support queries like: mongolog:(woman(X), ...) or (mongolog | prolog):(woman(X), ...)
-//    but there could be different instances of the same reasoner type. So might need a reasoner id instead.
-
 class QueryHistory {
 public:
 	explicit QueryHistory()
@@ -307,8 +304,7 @@ public:
 		}
 	}
 
-	bool autoCompleteCurrentWord(const std::string &word, const std::string_view &completion)
-	{
+	bool autoCompleteCurrentWord(const std::string &word, const std::string_view &completion) {
         auto mismatch = std::mismatch(word.begin(), word.end(), completion.begin());
         if(mismatch.first == word.end()) {
             // insert remainder
@@ -319,8 +315,7 @@ public:
         return false;
     }
 
-	bool autoCompleteGlobal(const std::string &word)
-	{
+	bool autoCompleteGlobal(const std::string &word) {
 	    std::vector<std::string_view> aliases;
 		if(word.empty()) {
             aliases = semweb::PrefixRegistry::get().getAliasesWithPrefix("");
@@ -344,8 +339,7 @@ public:
         return false;
 	}
 
-	bool autoCompleteLocal(const std::string &word, const std::string &nsAlias)
-	{
+	bool autoCompleteLocal(const std::string &word, const std::string &nsAlias) {
 		auto uri = semweb::PrefixRegistry::get().aliasToUri(nsAlias);
 		if(uri.has_value()) {
 			auto partialIRI = uri.value().get() + "#" + word;
@@ -367,7 +361,7 @@ public:
                 }
             }
             else if (options.size()>1) {
-                // TODO: auto-complete up to common prefix among aliases
+                // TODO: auto-complete up to common prefix among options
                 displayOptions(options);
                 return true;
             }
@@ -378,8 +372,7 @@ public:
 		return false;
 	}
 
-	void displayOptions(const std::vector<std::string_view> &options)
-    {
+	void displayOptions(const std::vector<std::string_view> &options) {
         std::string optionsStr = "\n";
         for (const auto &option : options) {
             optionsStr += std::string(option) + "\n";
@@ -495,7 +488,6 @@ public:
 					backspace();
 					break;
 				default:
-					// FIXME: make sure c is alphabetic or numeric
 					insert(c);
 					break;
 			}
