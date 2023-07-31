@@ -137,7 +137,7 @@ static ModalOperatorPtr createK(const TermPtr &optionsTerm)
         // read options
         auto agentName = getAgentOption(options);
         // create a parametrized modal operator
-        if(agentName.has_value() || agentName.value() != "self") {
+        if(agentName.has_value() && agentName.value() != "self") {
             return KnowledgeModality::K(agentName.value());
         }
     }
