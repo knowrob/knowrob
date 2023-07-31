@@ -451,9 +451,7 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
 
             if(v_since.has_value() || v_until.has_value()) {
 				auto mf = solution->modalFrame();
-                mf.setTimeInterval(TimeInterval(
-                        Range<TimePoint>(v_since, std::nullopt),
-                        Range<TimePoint>(std::nullopt, v_until)));
+                mf.setTimeInterval(TimeInterval(v_since,v_until));
 				solution->setModalFrame(mf);
             }
         }
@@ -530,10 +528,10 @@ static inline bool putIntervalDict(term_t intervalDict, const FuzzyInterval<T> &
     return PL_put_dict(intervalDict, 0,numRangeKeys, rangeKeys, rangeValues);
 }
 
-bool PrologQuery::putTerm(term_t pl_term, const TimeInterval& timeInterval)
-{
-    return putIntervalDict<TimePoint>(pl_term, timeInterval);
-}
+//bool PrologQuery::putTerm(term_t pl_term, const TimeInterval& timeInterval)
+//{
+//    return putIntervalDict<TimePoint>(pl_term, timeInterval);
+//}
 
 bool PrologQuery::putTerm(term_t pl_term, const ConfidenceInterval& confidenceInterval)
 {
@@ -557,10 +555,11 @@ bool PrologQuery::putScope(term_t pl_term, const AnswerPtr &solution)
 
     if(numScopeKeys>0) {
         int keyIndex = 0;
-        if(timeInterval.has_value() &&
-           PrologQuery::putTerm(scopeValues, timeInterval.value())) {
-            scopeKeys[keyIndex++] = time_key;
-        }
+        // TODO: re-enable time interval parameter!
+        //if(timeInterval.has_value() &&
+        //   PrologQuery::putTerm(scopeValues, timeInterval.value())) {
+        //    scopeKeys[keyIndex++] = time_key;
+        //}
         if(confidenceValue.has_value() &&
            PL_put_float(scopeValues+keyIndex, confidenceValue.value())) {
             scopeKeys[keyIndex++] = confidence_key;

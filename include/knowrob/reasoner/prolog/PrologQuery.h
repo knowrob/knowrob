@@ -104,7 +104,7 @@ namespace knowrob {
          * @param phi A TimeInterval object.
          * @return true on success.
          */
-        static bool putTerm(term_t pl_term, const TimeInterval& timeInterval);
+        //static bool putTerm(term_t pl_term, const TimeInterval& timeInterval);
 
         /**
          * Put a ConfidenceInterval in a Prolog term reference.

@@ -10,16 +10,14 @@
 
 using namespace knowrob;
 
-TimeInterval::TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange)
-: FuzzyInterval<TimePoint>(sinceRange, untilRange)
+TimeInterval::TimeInterval(const std::optional<TimePoint> &since, const std::optional<TimePoint> &until)
+: since_(since),
+  until_(until)
 {}
 
 const TimeInterval& TimeInterval::anytime()
 {
-	// sinceRange: [*,*], untilRange: [*,*]
-	static const TimeInterval timeInterval(
-			Range<TimePoint>(std::nullopt, std::nullopt),
-			Range<TimePoint>(std::nullopt, std::nullopt));
+	static const TimeInterval timeInterval(std::nullopt,std::nullopt);
 	return timeInterval;
 }
 
@@ -27,20 +25,29 @@ TimeInterval TimeInterval::currently()
 {
 	// sinceRange: [*,Now], untilRange: [Now,*]
 	TimePoint now = TimePoint::now();
-	return {Range<TimePoint>(std::nullopt, now),
-			Range<TimePoint>(now, std::nullopt) };
+	return { now, now };
+}
+
+TimeInterval TimeInterval::during(const TimePoint &begin, const TimePoint &end)
+{
+	return { begin, end };
 }
 
 std::shared_ptr<TimeInterval> TimeInterval::intersectWith(const TimeInterval &other) const
 {
-	return std::make_shared<TimeInterval>(
-			minRange_.intersectWith(other.minRange_),
-			maxRange_.intersectWith(other.maxRange_));
+	return std::make_shared<TimeInterval>(std::max(since_, other.since_), std::min(until_, other.until_));
 }
 
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const TimeInterval& ti) //NOLINT
 	{
-		return os << '[' << ti.minRange() << ',' << ti.maxRange() << ']';
+        os << '[';
+        if(ti.since().has_value()) os << ti.since().value();
+        else os << "*";
+        os << ",";
+        if(ti.until().has_value()) os << ti.until().value();
+        else os << "*";
+        os << ']';
+        return os;
 	}
 }

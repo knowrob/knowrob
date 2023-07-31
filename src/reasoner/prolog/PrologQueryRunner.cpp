@@ -139,10 +139,11 @@ term_t PrologQueryRunner::createContextTerm(
         auto scopeValues = PL_new_term_refs(numScopeKeys);
 
         int keyIndex = 0;
-        if(timeInterval.has_value()) {
-            PrologQuery::putTerm(scopeValues, timeInterval.value());
-            scopeKeys[keyIndex++] = time_key;
-        }
+        // TODO re-enable time interval
+        //if(timeInterval.has_value()) {
+        //    PrologQuery::putTerm(scopeValues, timeInterval.value());
+        //    scopeKeys[keyIndex++] = time_key;
+        //}
         //if(confidenceInterval.has_value()) {
         //    PrologQuery::putTerm(scopeValues+keyIndex, *confidenceInterval.value());
         //    scopeKeys[keyIndex++] = confidence_key;

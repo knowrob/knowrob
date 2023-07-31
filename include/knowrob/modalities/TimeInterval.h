@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <ostream>
+#include <optional>
 #include "FuzzyInterval.h"
 #include "TimePoint.h"
 
@@ -18,13 +19,13 @@ namespace knowrob {
 	/**
 	 * A fuzzy time interval where start and end time point lie within a range.
 	 */
-	class TimeInterval : public FuzzyInterval<TimePoint> {
+	class TimeInterval {
 	public:
 		/**
 		 * @param sinceRange the time range where the interval starts
 		 * @param untilRange the time range where the interval ends
 		 */
-		TimeInterval(const Range<TimePoint> &sinceRange, const Range<TimePoint> &untilRange);
+		TimeInterval(const std::optional<TimePoint> &since, const std::optional<TimePoint> &until);
 
 		/**
 		 * @return a time interval without further constraints on begin and end time point of the interval.
@@ -36,11 +37,20 @@ namespace knowrob {
 		 */
 		static TimeInterval currently();
 
+		static TimeInterval during(const TimePoint &begin, const TimePoint &end);
+
 		/**
 		 * Intersect this time interval with another one.
 		 * @param other another time interval.
 		 */
 		std::shared_ptr<TimeInterval> intersectWith(const TimeInterval &other) const;
+
+        const auto& since() const { return since_; }
+        const auto& until() const { return until_; }
+
+    protected:
+        std::optional<TimePoint> since_;
+        std::optional<TimePoint> until_;
 	};
 }
 
