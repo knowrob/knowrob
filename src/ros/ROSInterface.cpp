@@ -41,14 +41,52 @@ void ROSInterface::executeAskAllCB(const iai_knowledge_msgs::askallGoalConstPtr&
 {
     // Implement your action here
     ModalityFrame mfram = genModalityFrame(goal->query);
+    auto phi = QueryParser::parse(goal->query.queryString);
+    auto query = std::make_shared<ModalQuery>(phi, QUERY_FLAG_ALL_SOLUTIONS);
 
-    // By default, saying the action was successful
-    askall_action_server_.setSucceeded();
+    auto resultStream = kb_.submitQuery(query->formula(), QUERY_FLAG_ALL_SOLUTIONS);
+    auto resultQueue = resultStream->createQueue();
+
+    int numSolutions_ = 0;
+    iai_knowledge_msgs::askallResult result;
+    while(true) {
+        auto nextResult = resultQueue->pop_front();
+
+
+        if(AnswerStream::isEOS(nextResult)) {
+            break;
+        }
+        else {
+            iai_knowledge_msgs::GraphAnswer answer = createGraphAnswer(nextResult->substitution());
+            result.answer.push_back(answer);
+
+            numSolutions_ += 1;
+        }
+    }
+
+    if(numSolutions_ == 0) {
+        askall_action_server_.setSucceeded();
+    } else {
+        askall_action_server_.setSucceeded(result);
+    }
+
 }
 
 ModalityFrame ROSInterface::genModalityFrame(iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type query) {
-
     return ModalityFrame();
+}
+
+iai_knowledge_msgs::GraphAnswer ROSInterface::createGraphAnswer(const SubstitutionPtr &substitution) {
+    iai_knowledge_msgs::GraphAnswer answer;
+    for (const auto& pair : *substitution) {
+        iai_knowledge_msgs::KeyValuePair kvpair;
+        kvpair.key = pair.first.name();
+        std::stringstream ss;
+        ss << *pair.second;
+        kvpair.value_string = ss.str();
+        answer.substitution.push_back(kvpair);
+    }
+    return answer;
 }
 
 

@@ -47,6 +47,10 @@ namespace knowrob {
 
         //void executeAskIterativeCB(const iai_knowledge_msgs::askiterativeGoalConstPtr &goal);
         static ModalityFrame genModalityFrame(iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type query);
+
+        iai_knowledge_msgs::KeyValuePair createKeyValuePair(AnswerPtr sharedPtr);
+
+        iai_knowledge_msgs::GraphAnswer createGraphAnswer(const SubstitutionPtr &sharedPtr);
     };
 }
 
