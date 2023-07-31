@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
+set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
 set (CMAKE_CXX_STANDARD 17)
 
 project(knowrob)
@@ -71,8 +71,8 @@ add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 # NOTE: seems catkin_package must be called *before* any library is build.
 
 find_package(catkin QUIET COMPONENTS
-		rosprolog roscpp roslib tests/urdf
-		geometry_msgs message_generation json_prolog_msgs)
+		roscpp roslib tests/urdf
+		geometry_msgs message_generation json_prolog_msgs actionlib actionlob_msgs)
 
 if (catkin_FOUND)
 	message(STATUS "Building with ROS1 support.")
@@ -87,7 +87,7 @@ if (catkin_FOUND)
 	generate_messages(DEPENDENCIES geometry_msgs)
 	
 	catkin_package(
-		CATKIN_DEPENDS rosprolog roscpp roslib
+		CATKIN_DEPENDS roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
 else()
@@ -243,39 +243,39 @@ if (catkin_FOUND)
 	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-	### TF messages ###
-	add_library(tf_knowrob SHARED
-		src/ros/tf/tf.cpp
-		src/ros/tf/memory.cpp
-		src/ros/tf/logger.cpp
-		src/ros/tf/publisher.cpp
-		src/ros/tf/republisher.cpp)
-	target_link_libraries(tf_knowrob
-		${SWIPL_LIBRARIES}
-		${MONGOC_LIBRARIES}
-		${catkin_LIBRARIES})
-		#mongo_kb
-	add_dependencies(tf_knowrob
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
-
-	## RViz marker ###
-	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
-	target_link_libraries(marker_knowrob
-		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-	add_dependencies(marker_knowrob
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
-	
-	## URDf ###
-	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
-	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-	add_dependencies(urdf_parser
-		${${PROJECT_NAME}_EXPORTED_TARGETS}
-		${catkin_EXPORTED_TARGETS})
+#	### TF messages ###
+#	add_library(tf_knowrob SHARED
+#		src/ros/tf/tf.cpp
+#		src/ros/tf/memory.cpp
+#		src/ros/tf/logger.cpp
+#		src/ros/tf/publisher.cpp
+#		src/ros/tf/republisher.cpp)
+#	target_link_libraries(tf_knowrob
+#		${SWIPL_LIBRARIES}
+#		${MONGOC_LIBRARIES}
+#		${catkin_LIBRARIES})
+#		#mongo_kb
+#	add_dependencies(tf_knowrob
+#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+#		${catkin_EXPORTED_TARGETS})
+#
+#	## RViz marker ###
+#	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
+#	target_link_libraries(marker_knowrob
+#		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+#	add_dependencies(marker_knowrob
+#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+#		${catkin_EXPORTED_TARGETS})
+#
+#	## URDf ###
+#	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
+#	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+#	add_dependencies(urdf_parser
+#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+#		${catkin_EXPORTED_TARGETS})
 
 	## ROS Interface ###
-	add_executable(knowrob-ros src/ROSInterface.cpp src/IterativeQAResultHandler.cpp)
+	add_executable(knowrob-ros src/ros/ROSInterface.cpp)
 	target_link_libraries(knowrob-ros
 			Boost::program_options
 			knowrob_qa
