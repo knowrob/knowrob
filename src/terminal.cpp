@@ -26,6 +26,7 @@
 #include <knowrob/KnowledgeBase.h>
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/queries/QueryParser.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -114,9 +115,9 @@ protected:
 	int pos_;
 };
 
-class HybridQATerminal : public QueryResultHandler {
+class KnowRobTerminal : public QueryResultHandler {
 public:
-	explicit HybridQATerminal(const boost::property_tree::ptree &config)
+	explicit KnowRobTerminal(const boost::property_tree::ptree &config)
 	: has_stop_request_(false),
       cursor_(0),
       numSolutions_(0),
@@ -249,6 +250,21 @@ public:
 		cursor_ += 1;
 	}
 
+	void insert(const std::string &str) {
+		if(cursor_ < currentQuery_.length()) {
+			auto afterInsert = currentQuery_.substr(cursor_);
+			std::cout << str << afterInsert <<
+					  "\033[" << afterInsert.length() << "D" <<
+					  std::flush;
+			currentQuery_.insert(currentQuery_.begin() + cursor_, str.begin(), str.end());
+		}
+		else {
+			std::cout << str << std::flush;
+			currentQuery_ += str;
+		}
+		cursor_ += str.length();
+	}
+
 	void setQuery(const std::string &queryString) {
 		auto oldLength = currentQuery_.length();
 		auto newLength = queryString.length();
@@ -266,6 +282,111 @@ public:
 		currentQuery_ = queryString;
 		cursor_ = currentQuery_.length();
 	}
+
+	void tabulator() {
+		// extract last typed word
+		auto itr = currentQuery_.rbegin();
+		while (itr != currentQuery_.rend() && isalpha(*itr)) { ++itr; }
+		auto lastWord = std::string(itr.base(), currentQuery_.end());
+
+		// if not the first word, check if preceded by "$ns:"
+		std::optional<std::string> namespaceAlias;
+		if(itr != currentQuery_.rend() && *itr == ':') {
+			// read the namespace alias
+			++itr;
+			auto aliasEnd = itr;
+			while (itr != currentQuery_.rend() && isalpha(*itr)) { ++itr; }
+			namespaceAlias = std::string(itr.base(), aliasEnd.base());
+		}
+
+		if(namespaceAlias.has_value()) {
+			autoCompleteLocal(lastWord, namespaceAlias.value());
+		}
+		else {
+			autoCompleteGlobal(lastWord);
+		}
+	}
+
+	bool autoCompleteCurrentWord(const std::string &word, const std::string_view &completion)
+	{
+        auto mismatch = std::mismatch(word.begin(), word.end(), completion.begin());
+        if(mismatch.first == word.end()) {
+            // insert remainder
+            auto remainder = std::string(mismatch.second, completion.end());
+            insert(remainder);
+            return true;
+        }
+        return false;
+    }
+
+	bool autoCompleteGlobal(const std::string &word)
+	{
+	    std::vector<std::string_view> aliases;
+		if(word.empty()) {
+            aliases = semweb::PrefixRegistry::get().getAliasesWithPrefix("");
+        } else {
+            aliases = semweb::PrefixRegistry::get().getAliasesWithPrefix(word);
+        }
+
+        if(aliases.size()==1) {
+            // only one possible completion
+            if(autoCompleteCurrentWord(word, aliases[0])) {
+                insert(':');
+                return true;
+            }
+        }
+        else if (aliases.size()>1) {
+            // TODO: auto-complete up to common prefix among aliases
+            displayOptions(aliases);
+            return true;
+        }
+
+        return false;
+	}
+
+	bool autoCompleteLocal(const std::string &word, const std::string &nsAlias)
+	{
+		auto uri = semweb::PrefixRegistry::get().aliasToUri(nsAlias);
+		if(uri.has_value()) {
+			auto partialIRI = uri.value().get() + "#" + word;
+			auto propertyOptions = kb_.vocabulary()->getDefinedPropertyNamesWithPrefix(partialIRI);
+			auto classOptions = kb_.vocabulary()->getDefinedClassNamesWithPrefix(partialIRI);
+			size_t namePosition = uri.value().get().length() + 1;
+
+			// create options array holding only the name of entities.
+			// note that strings are not copied by using string_view
+			std::vector<std::string_view> options(propertyOptions.size() + classOptions.size());
+			uint32_t index=0;
+			for(auto &iri : propertyOptions) options[index++] = iri.substr(namePosition);
+			for(auto &iri : classOptions) options[index++] = iri.substr(namePosition);
+
+            if(options.size()==1) {
+                // only one possible completion
+                if(autoCompleteCurrentWord(word, options[0])) {
+                    return true;
+                }
+            }
+            else if (options.size()>1) {
+                // TODO: auto-complete up to common prefix among aliases
+                displayOptions(options);
+                return true;
+            }
+		}
+		else {
+			KB_WARN("the namespace alias '{}' is unknown.", nsAlias);
+		}
+		return false;
+	}
+
+	void displayOptions(const std::vector<std::string_view> &options)
+    {
+        std::string optionsStr = "\n";
+        for (const auto &option : options) {
+            optionsStr += std::string(option) + "\n";
+        }
+        // print options to the terminal
+        std::cout << optionsStr << PROMPT << currentQuery_ << std::flush;
+    }
 
 	void backspace() {
 		if(cursor_==0) {
@@ -364,6 +485,9 @@ public:
 				case 27:
 					handleEscapeSequence();
 					break;
+				case 9:
+					tabulator();
+					break;
 				case 10:
 					enter();
 					break;
@@ -432,7 +556,7 @@ int run(int argc, char **argv) {
 	Logger::setSinkLevel(Logger::Console,
 						 vm.count("verbose") ? spdlog::level::debug : spdlog::level::warn);
 
-	return HybridQATerminal(config).run();
+	return KnowRobTerminal(config).run();
 }
 
 

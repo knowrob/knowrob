@@ -86,6 +86,10 @@ namespace knowrob {
 		 */
 		bool unifyWith(const Substitution &other, Reversible *reversible= nullptr);
 
+        /**
+         * @return the hash of this.
+         */
+		size_t computeHash() const;
 	protected:
 		std::map<Variable,TermPtr> mapping_;
 	};

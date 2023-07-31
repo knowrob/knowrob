@@ -47,6 +47,11 @@ namespace knowrob {
          */
         bool empty() const { return queue_.empty(); }
 
+        /**
+         * @return number of currently queued elements.
+         */
+        auto size() const { return queue_.size(); }
+
 	protected:
 		std::queue<AnswerPtr> queue_;
 		std::condition_variable queue_CV_;

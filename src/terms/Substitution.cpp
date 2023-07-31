@@ -43,6 +43,35 @@ const TermPtr& Substitution::get(const Variable &var) const
 	}
 }
 
+size_t Substitution::computeHash() const
+{
+    static const auto GOLDEN_RATIO_HASH = static_cast<size_t>(0x9e3779b9);
+
+    auto seed = static_cast<size_t>(0);
+
+    for(const auto &item : mapping_) {
+        // Compute the hash of the key using the in-built hash function for string.
+        auto key_hash = item.first.computeHash();
+
+        auto value_hash = static_cast<size_t>(0);
+        if (item.second) {
+            value_hash = item.second->computeHash();
+        }
+
+        /* Combine the hashes.
+           The function (a ^ (b + GOLDEN_RATIO_HASH + (a << 6) + (a >> 2))) is known to
+           give a good distribution of hash values across the range of size_t.
+           The `<< 6` and `>> 2` operations are bitwise shifts which also help to distribute the
+           hash values evenly by spreading out the influence of each bit in the input seed.
+           This helps to minimize collisions and makes the hash value sensitive to changes in
+           any part of the seed. */
+        seed ^= key_hash + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
+        seed ^= value_hash + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
+    }
+
+    return seed;
+}
+
 bool Substitution::unifyWith(const Substitution &other, Reversible *reversible)
 {
 	for(const auto &pair : other.mapping_) {

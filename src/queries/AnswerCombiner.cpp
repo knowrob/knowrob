@@ -6,8 +6,11 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <gtest/gtest.h>
 #include <knowrob/queries/AnswerCombiner.h>
 #include "knowrob/Logger.h"
+#include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/queries/QueryParser.h"
 
 using namespace knowrob;
 
@@ -50,7 +53,9 @@ void AnswerCombiner::genCombinations( //NOLINT
 		AnswerBroadcaster::push(std::make_shared<Answer>(*combinedResult));
 	}
 	else if(it->first == pushedChannelID) {
-		// ignore pushed channel
+		// pass through channel from which the new message was pushed
+		auto it1 = it; ++it1;
+		genCombinations(pushedChannelID, it1, combinedResult);
 	}
 	else if(it->second.size()==1) {
 		// only a single message buffered from this channel
@@ -87,4 +92,89 @@ void AnswerCombiner::genCombinations( //NOLINT
 			changes.rollBack();
 		}
 	}
+}
+
+
+// fixture class for testing
+class AnswerCombinerTest : public ::testing::Test {
+protected:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+TEST_F(AnswerCombinerTest, CombineOne)
+{
+    auto combiner = std::make_shared<AnswerCombiner>();
+    // feed broadcast into queue
+    auto output = std::make_shared<AnswerQueue>();
+    combiner->addSubscriber(AnswerStream::Channel::create(output));
+    // create channels for broadcast
+    auto input1 = AnswerStream::Channel::create(combiner);
+    // push a message
+    EXPECT_EQ(output->size(), 0);
+    input1->push(AnswerStream::bos());
+    EXPECT_EQ(output->size(), 1);
+    // push more messages
+    input1->push(AnswerStream::bos());
+    input1->push(AnswerStream::bos());
+    EXPECT_EQ(output->size(), 3);
+}
+
+TEST_F(AnswerCombinerTest, CombineMany_DifferentVariables)
+{
+    auto combiner = std::make_shared<AnswerCombiner>();
+    // feed broadcast into queue
+    auto output = std::make_shared<AnswerQueue>();
+    combiner->addSubscriber(AnswerStream::Channel::create(output));
+    // create channels for broadcast
+    auto input1 = AnswerStream::Channel::create(combiner);
+    auto input2 = AnswerStream::Channel::create(combiner);
+    // construct partial answers
+    auto answer11 = std::make_shared<Answer>();
+    auto answer21 = std::make_shared<Answer>();
+    auto answer22 = std::make_shared<Answer>();
+    answer11->substitute(Variable("a"), std::make_shared<Integer32Term>(4));
+    answer21->substitute(Variable("b"), std::make_shared<Integer32Term>(6));
+    answer22->substitute(Variable("b"), std::make_shared<Integer32Term>(7));
+    // push a partial answer via input1
+    EXPECT_EQ(output->size(), 0);
+    input1->push(answer11);
+    EXPECT_EQ(output->size(), 0);
+    // push a partial answer via input2
+    input2->push(answer21);
+    EXPECT_EQ(output->size(), 1);
+    input2->push(answer22);
+    EXPECT_EQ(output->size(), 2);
+}
+
+TEST_F(AnswerCombinerTest, CombineMany_Unification)
+{
+    auto combiner = std::make_shared<AnswerCombiner>();
+    // feed broadcast into queue
+    auto output = std::make_shared<AnswerQueue>();
+    combiner->addSubscriber(AnswerStream::Channel::create(output));
+    // create channels for broadcast
+    auto input1 = AnswerStream::Channel::create(combiner);
+    auto input2 = AnswerStream::Channel::create(combiner);
+    // construct partial answers
+    auto answer11 = std::make_shared<Answer>();
+    auto answer21 = std::make_shared<Answer>();
+    auto answer22 = std::make_shared<Answer>();
+    // push "a=p(X,1)" and "a=p(2,Y)" into combiner via two channels
+    answer11->substitute(Variable("a"), QueryParser::parsePredicate("p(X,1)"));
+    answer21->substitute(Variable("a"), QueryParser::parsePredicate("p(2,Y)"));
+    answer22->substitute(Variable("a"), QueryParser::parsePredicate("p(2,2)"));
+    input1->push(answer11);
+    input2->push(answer21);
+    // expect that the combiner has one output "a=p(2,1)" unifying both inputs.
+    EXPECT_EQ(output->size(), 1);
+    if(output->size()==1) {
+        auto combinedResult = output->front();
+        EXPECT_TRUE(combinedResult->hasSubstitution(Variable("a")));
+        auto instantiation = combinedResult->substitution()->get(Variable("a"));
+        EXPECT_EQ(*instantiation, *QueryParser::parsePredicate("p(2,1)"));
+    }
+    // "a=p(X,1)" and "a=p(2,2)" cannot be combined, number of outputs stays at 1
+    input2->push(answer22);
+    EXPECT_EQ(output->size(), 1);
 }

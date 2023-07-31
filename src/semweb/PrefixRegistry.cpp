@@ -3,6 +3,7 @@
 //
 
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/semweb/PrefixProbe.h"
 
 using namespace knowrob::semweb;
 
@@ -35,7 +36,7 @@ void PrefixRegistry::registerPrefix(const std::string &prefix, const std::string
     }
 }
 
-OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri)
+OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri) const
 {
     if(uri[uri.size()-1]=='#') {
         auto x = uri;
@@ -49,8 +50,29 @@ OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri)
     }
 }
 
-OptionalStringRef PrefixRegistry::aliasToUri(const std::string &alias)
+OptionalStringRef PrefixRegistry::aliasToUri(const std::string &alias) const
 {
     auto it = aliasToURI_.find(alias);
     return it == aliasToURI_.end() ? std::nullopt : OptionalStringRef(it->second);
+}
+
+std::optional<std::string> PrefixRegistry::createIRI(const std::string &alias, const std::string &entityName) const
+{
+    auto uri = aliasToUri(alias);
+    if(uri.has_value()) {
+        return uri.value().get() + "#" + entityName;
+    }
+    else {
+        return uri;
+    }
+}
+
+std::vector<std::string_view> PrefixRegistry::getAliasesWithPrefix(const std::string &prefix) const
+{
+    auto range_it = aliasToURI_.equal_range(PrefixProbe { prefix });
+    std::vector<std::string_view> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.emplace_back(it->first.c_str());
+    }
+    return result;
 }

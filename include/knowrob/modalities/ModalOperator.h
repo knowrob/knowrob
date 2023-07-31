@@ -68,6 +68,10 @@ namespace knowrob {
         // Override Term
         void write(std::ostream& os) const override;
 
+		// Override Term
+		// FIXME: must include operator type, parameters etc. in ModalOperator hash
+        size_t computeHash() const override { return std::hash<std::string>{}(symbol()); }
+
     protected:
         const std::shared_ptr<Modality> modality_;
         const ModalOperatorType operatorType_;

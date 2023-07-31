@@ -7,6 +7,7 @@
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
+#include "knowrob/semweb/PrefixProbe.h"
 
 using namespace knowrob::semweb;
 
@@ -36,6 +37,26 @@ ClassPtr Vocabulary::getDefinedClass(const std::string_view &iri) const
     else {
         return it->second;
     }
+}
+
+std::vector<ClassPtr> Vocabulary::getDefinedClassesWithPrefix(const std::string_view &prefix) const
+{
+    auto range_it = definedClasses_.equal_range(PrefixProbe { prefix });
+    std::vector<ClassPtr> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.push_back(it->second);
+    }
+    return result;
+}
+
+std::vector<std::string_view> Vocabulary::getDefinedClassNamesWithPrefix(const std::string_view &prefix) const
+{
+    auto range_it = definedClasses_.equal_range(PrefixProbe { prefix });
+    std::vector<std::string_view> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.push_back(it->first);
+    }
+    return result;
 }
 
 ClassPtr Vocabulary::defineClass(const std::string_view &iri)
@@ -71,6 +92,26 @@ PropertyPtr Vocabulary::getDefinedProperty(const std::string_view &iri) const
     else {
         return it->second;
     }
+}
+
+std::vector<PropertyPtr> Vocabulary::getDefinedPropertiesWithPrefix(const std::string_view &prefix) const
+{
+    auto range_it = definedProperties_.equal_range(PrefixProbe { prefix });
+    std::vector<PropertyPtr> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.push_back(it->second);
+    }
+    return result;
+}
+
+std::vector<std::string_view> Vocabulary::getDefinedPropertyNamesWithPrefix(const std::string_view &prefix) const
+{
+    auto range_it = definedProperties_.equal_range(PrefixProbe { prefix });
+    std::vector<std::string_view> result;
+    for (auto it = range_it.first; it != range_it.second; ++it) {
+        result.push_back(it->first);
+    }
+    return result;
 }
 
 PropertyPtr Vocabulary::defineProperty(const std::string_view &iri)

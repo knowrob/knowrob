@@ -50,7 +50,7 @@ namespace knowrob {
 		 * @param var a variable.
 		 * @return true is this solution substitutes the variable
 		 */
-		bool hasSubstitution(const Variable &var);
+		bool hasSubstitution(const Variable &var) const;
 
 		/**
 		 * @return a mapping from variables to terms.
@@ -91,6 +91,11 @@ namespace knowrob {
 		 * @return false if merge is not possible.
 		 */
 		bool combine(const std::shared_ptr<const Answer> &other, Reversible *changes=nullptr);
+
+        /**
+         * @return the hash of this.
+         */
+		size_t computeHash() const;
 
 	protected:
 		SubstitutionPtr substitution_;

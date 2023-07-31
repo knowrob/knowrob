@@ -45,7 +45,17 @@ namespace knowrob {
         /**
          * @return a thread pool owned by this.
          */
-        ThreadPool& threadPool() { return *threadPool_; }
+        auto& threadPool() { return *threadPool_; }
+
+        /**
+         * @return the vocabulary of this knowledge base, i.e. all known properties and classes
+         */
+        auto vocabulary() { return backendManager_->vocabulary(); }
+
+        /**
+         * @return import hierarchy of named graphs
+         */
+        auto importHierarchy() { return backendManager_->importHierarchy(); }
 
         // Override QueryEngine
         AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags) override;

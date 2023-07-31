@@ -34,7 +34,7 @@ void Answer::substitute(const Variable &var, const TermPtr &term)
 	substitution_->set(var, term);
 }
 
-bool Answer::hasSubstitution(const Variable &var)
+bool Answer::hasSubstitution(const Variable &var) const
 {
 	return substitution_->contains(var);
 }
@@ -43,6 +43,11 @@ void Answer::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
                           const std::shared_ptr<Predicate> &predicate)
 {
 	predicates_.emplace_back(reasonerModule, predicate);
+}
+
+size_t Answer::computeHash() const
+{
+    return substitution_->computeHash();
 }
 
 bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *changes)
@@ -67,8 +72,8 @@ bool Answer::combineModalFrame(const std::shared_ptr<const Answer> &other)
 {
 	// TODO: think about how modal frame of answers could be combined!
 	//modality_ = modality_.combine(other->modality_);
-	KB_WARN("todo: implement combining modal frames.");
-    return false;
+	KB_WARN("todo: implement Answer::combineModalFrame");
+    return true;
 }
 
 namespace std {

@@ -50,6 +50,21 @@ bool ListTerm::isNIL() const
 	return elements_.empty();
 }
 
+size_t ListTerm::computeHash() const
+{
+    static const auto GOLDEN_RATIO_HASH = static_cast<size_t>(0x9e3779b9);
+    auto seed = static_cast<size_t>(0);
+
+    for(const auto &item : elements_) {
+        /* Combine the hashes.
+           The function (a ^ (b + GOLDEN_RATIO_HASH + (a << 6) + (a >> 2))) is known to
+           give a good distribution of hash values across the range of size_t. */
+        seed ^= item->computeHash() + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
+    }
+
+    return seed;
+}
+
 void ListTerm::write(std::ostream& os) const
 {
 	os << '[';
