@@ -25,11 +25,12 @@
   <build_depend>message_generation</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <exec_depend>message_runtime</exec_depend>
-  
-  <depend>rosprolog</depend>
+
   <depend>roslib</depend>
   <depend>roscpp</depend>
   <depend>swi-prolog</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>actionlib</depend>
   <depend>urdf</depend>
   <depend>eigen</depend>
   <depend>libmongoc-dev</depend>
