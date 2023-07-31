@@ -16,8 +16,8 @@ PastModality::PastModality(const TimeInterval &timeInterval)
 
 ModalityType PastModality::modalityType() const { return ModalityType::Temporal_Past; }
 
-const char* PastModality::necessity_symbol()   const { return "P"; }
-const char* PastModality::possibility_symbol() const { return "H"; }
+const char* PastModality::necessity_symbol()   const { return "H"; }
+const char* PastModality::possibility_symbol() const { return "P"; }
 
 bool PastModality::isSerial()     const { return true; }
 bool PastModality::isReflexive()  const { return true; }

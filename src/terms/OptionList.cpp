@@ -92,3 +92,20 @@ long OptionList::getLong(const std::string &key, long defaultValue) const {
 	}
 	return defaultValue;
 }
+
+std::optional<double> OptionList::getDouble(const std::string &key) const {
+	auto it = options_.find(key);
+	if(it == options_.end()) {
+		return std::nullopt;
+	}
+	else if(it->second->type() == TermType::DOUBLE) {
+		return ((DoubleTerm*)it->second.get())->value();
+	}
+	else if(it->second->type() == TermType::LONG) {
+		return (double)((LongTerm*)it->second.get())->value();
+	}
+	else if(it->second->type() == TermType::INT32) {
+		return (double)((Integer32Term*)it->second.get())->value();
+	}
+	return std::nullopt;
+}

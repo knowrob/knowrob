@@ -10,6 +10,7 @@
 #define KNOWROB_OPTION_LIST_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include "Term.h"
 
@@ -60,6 +61,13 @@ namespace knowrob {
 		 * @return the option value, or the default value
 		 */
 		long getLong(const std::string &key, long defaultValue) const;
+
+		/**
+		 * Read option value as a double.
+		 * @param key an option key
+		 * @return the option value, or std::nullopt
+		 */
+		std::optional<double> getDouble(const std::string &key) const;
 
 	protected:
 		std::map<std::string, TermPtr> options_;
