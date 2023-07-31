@@ -442,6 +442,18 @@ TEST_F(QueryParserTest, ModalFormulas)
     TEST_NO_THROW(testModal(QueryParser::parse("B (b,q)"), "B", FormulaType::CONJUNCTION))
 }
 
+TEST_F(QueryParserTest, ModalityWithArguments)
+{
+    TEST_NO_THROW(testModal(QueryParser::parse("B[self] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B['self'] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B[fred,confidence=0.8] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B[confidence=0.8] p(x)"), "B", FormulaType::PREDICATE))
+
+    TEST_NO_THROW(testModal(QueryParser::parse("P[begin=10,end=20] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[begin=10] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[end=20] p(x)"), "P", FormulaType::PREDICATE))
+}
+
 TEST_F(QueryParserTest, Precedence)
 {
     TEST_NO_THROW(testCompound(FormulaType::DISJUNCTION,
