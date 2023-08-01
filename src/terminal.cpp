@@ -259,9 +259,11 @@ public:
 	void enter() {
 		std::cout << std::endl;
 		runQuery(currentQuery_);
-		std::cout << std::endl << PROMPT << std::flush;
-		currentQuery_.clear();
-		cursor_ = 0;
+        if(!has_stop_request_) {
+            std::cout << std::endl << PROMPT << std::flush;
+            currentQuery_.clear();
+            cursor_ = 0;
+        }
 	}
 
 	void insert(char c) {
