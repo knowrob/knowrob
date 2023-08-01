@@ -196,48 +196,45 @@ QueryParser::QueryParser() {
 
     // atomic constants: strings, numbers etc.
     bnf_->atom = ((bnf_->lowerPrefix | bnf_->singleQuotes)
-    [qi::_val = ptr_<StringTerm>()(qi::_1)]);
+            [qi::_val = ptr_<StringTerm>()(qi::_1)]);
     bnf_->string = (bnf_->doubleQuotes
-    [qi::_val = ptr_<StringTerm>()(qi::_1)]);
+            [qi::_val = ptr_<StringTerm>()(qi::_1)]);
     bnf_->number = (qi::double_
-    [qi::_val = ptr_<DoubleTerm>()(qi::_1)]);
+            [qi::_val = ptr_<DoubleTerm>()(qi::_1)]);
 
     bnf_->optionFlag = ((bnf_->atom)
-    [qi::_val = ptr_<Predicate>()(equalFunctor,
-                                  boost::phoenix::bind(&createTermVector2, flagTerm, qi::_1))]);
+            [qi::_val = ptr_<Predicate>()(equalFunctor,
+             boost::phoenix::bind(&createTermVector2, flagTerm, qi::_1))]);
     bnf_->optionValue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->constant))
-    [qi::_val = ptr_<Predicate>()(equalFunctor,
-                                  boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3))]);
+            [qi::_val = ptr_<Predicate>()(equalFunctor,
+             boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3))]);
     bnf_->option %= (bnf_->optionValue | bnf_->optionFlag);
     bnf_->options = ((qi::char_('[') >> (bnf_->option % ',') >> qi::char_(']'))
-    [qi::_val = ptr_<ListTerm>()(qi::_2)]);
+            [qi::_val = ptr_<ListTerm>()(qi::_2)]);
 
     // arguments of predicates: constants or variables
-    bnf_->constant %= (bnf_->atom
-                       | bnf_->string
-                       | bnf_->number);
+    bnf_->constant %= (bnf_->atom | bnf_->string | bnf_->number);
     bnf_->constantList = ((qi::char_('[') >> (bnf_->constant % ',') >> qi::char_(']'))
-    [qi::_val = ptr_<ListTerm>()(qi::_2)]);
+            [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->variable = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
     // TODO: also support some operators like '<', '>' etc. without quotes
     bnf_->compound = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
-                                                                qi::char_('(') >> (bnf_->argument % ',') >> ')')
-    [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
+            qi::char_('(') >> (bnf_->argument % ',') >> ')')
+            [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
 
     // predicates
     bnf_->predicateWithNS = (((bnf_->lowerPrefix) >>
-                                                  qi::char_(':') >> (bnf_->lowerPrefix | bnf_->singleQuotes) >>
-                                                  qi::char_('(') >> (bnf_->argument % ',') >> ')')
-    [qi::_val = ptr_<Predicate>()(
+            qi::char_(':') >> (bnf_->lowerPrefix | bnf_->singleQuotes) >>
+            qi::char_('(') >> (bnf_->argument % ',') >> ')')
+            [qi::_val = ptr_<Predicate>()(
                     boost::phoenix::bind(&createIRI, qi::_1, qi::_3),
                     qi::_5)]);
     bnf_->predicateWithArgs = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
-                                                                         qi::char_('(') >> (bnf_->argument % ',')
-                                                                         >> ')')
-    [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
+            qi::char_('(') >> (bnf_->argument % ',') >> ')')
+            [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->predicateNullary = ((bnf_->lowerPrefix | bnf_->singleQuotes)
-    [qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
+            [qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
     bnf_->predicate %= bnf_->predicateWithNS | bnf_->predicateWithArgs | bnf_->predicateNullary;
 
     // formulas
@@ -245,21 +242,21 @@ QueryParser::QueryParser() {
 
     // unary operators
     bnf_->negation = (('~' >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ~qi::_1]);
+            [qi::_val = ~qi::_1]);
     bnf_->belief = (('B' >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(BeliefModality::B(), qi::_1)]);
+            [qi::_val = ptr_<ModalFormula>()(BeliefModality::B(), qi::_1)]);
     bnf_->knowledge = (('K' >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(KnowledgeModality::K(), qi::_1)]);
+            [qi::_val = ptr_<ModalFormula>()(KnowledgeModality::K(), qi::_1)]);
     bnf_->oncePast = (('P' >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(PastModality::P(), qi::_1)]);
+            [qi::_val = ptr_<ModalFormula>()(PastModality::P(), qi::_1)]);
     bnf_->alwaysPast = (('H' >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(PastModality::H(), qi::_1)]);
+            [qi::_val = ptr_<ModalFormula>()(PastModality::H(), qi::_1)]);
     bnf_->belief2 = (('B' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createB, qi::_1), qi::_2)]);
+            [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createB, qi::_1), qi::_2)]);
     bnf_->knowledge2 = (('K' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createK, qi::_1), qi::_2)]);
+            [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createK, qi::_1), qi::_2)]);
     bnf_->oncePast2 = (('P' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
-    [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createP, qi::_1), qi::_2)]);
+            [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createP, qi::_1), qi::_2)]);
     bnf_->modalFormula %= bnf_->belief2 | bnf_->belief
                           | bnf_->knowledge2 | bnf_->knowledge
                           | bnf_->oncePast2 | bnf_->oncePast
