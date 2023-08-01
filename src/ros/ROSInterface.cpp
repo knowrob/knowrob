@@ -89,7 +89,6 @@ iai_knowledge_msgs::GraphAnswer ROSInterface::createGraphAnswer(std::shared_ptr<
     for (const auto& pair : *substitution) {
         iai_knowledge_msgs::KeyValuePair kvpair;
         kvpair.key = pair.first.name();
-        std::stringstream ss;
         TermPtr term = pair.second;
 
         switch(term->type()) {
@@ -119,7 +118,6 @@ iai_knowledge_msgs::GraphAnswer ROSInterface::createGraphAnswer(std::shared_ptr<
                 throw AnswerError(*answer, *term);
                 break;
         }
-        kvpair.value_string = ss.str();
         graphAnswer.substitution.push_back(kvpair);
     }
     return graphAnswer;
