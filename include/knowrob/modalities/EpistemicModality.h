@@ -5,7 +5,9 @@
 #ifndef KNOWROB_EPISTEMIC_MODALITY_H
 #define KNOWROB_EPISTEMIC_MODALITY_H
 
+#include "knowrob/Logger.h"
 #include "Modality.h"
+#include "knowrob/terms/Constant.h"
 
 #include <utility>
 
@@ -15,18 +17,17 @@ namespace knowrob {
      */
     class EpistemicModality : public Modality {
     public:
-        EpistemicModality() : agent_(std::nullopt), Modality() {}
+        EpistemicModality();
 
-        explicit EpistemicModality(const std::string_view &agent)
-        : agent_(agent), Modality() {}
+        explicit EpistemicModality(const std::string_view &agent);
 
-        const std::optional<std::string>& agent() const { return agent_; }
+        const std::optional<std::string>& agent() const;
 
-        ModalityType modalityType() const override { return ModalityType::Epistemic; }
+        ModalityType modalityType() const override;
 
-        const char* necessity_symbol()   const override { return "K"; }
+        const char* necessity_symbol() const override;
 
-        const char* possibility_symbol() const override { return "B"; }
+        const char* possibility_symbol() const override;
 
     protected:
         const std::optional<std::string> agent_;

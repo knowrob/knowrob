@@ -6,6 +6,7 @@
 #define KNOWROB_MODALITY_H
 
 #include <memory>
+#include <map>
 #include "knowrob/modalities/ModalOperator.h"
 
 namespace knowrob {
@@ -72,6 +73,11 @@ namespace knowrob {
         virtual const char* possibility_symbol() const = 0;
 
         /**
+         * @return the parameters of this modality.
+         */
+        const auto& parameters() const { return parameters_; }
+
+        /**
          * Attempt to reduce the iteration over two modal operators.
          * @param a a modal operator
          * @param b a model operator
@@ -79,6 +85,9 @@ namespace knowrob {
          */
         virtual ModalOperatorPtr reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const
         { return {}; }
+
+    protected:
+        std::map<std::string, TermPtr> parameters_;
     };
 
     using ModalityPtr = std::shared_ptr<Modality>;
