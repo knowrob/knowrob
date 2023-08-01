@@ -12,6 +12,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/queries/QueryParser.h"
+#include "knowrob/queries/AnswerError.h"
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -57,7 +58,7 @@ void ROSInterface::executeAskAllCB(const iai_knowledge_msgs::askallGoalConstPtr&
             break;
         }
         else {
-            iai_knowledge_msgs::GraphAnswer answer = createGraphAnswer(nextResult->substitution());
+            iai_knowledge_msgs::GraphAnswer answer = createGraphAnswer(nextResult);
             result.answer.push_back(answer);
 
             numSolutions_ += 1;
@@ -72,21 +73,56 @@ void ROSInterface::executeAskAllCB(const iai_knowledge_msgs::askallGoalConstPtr&
 
 }
 
-ModalityFrame ROSInterface::genModalityFrame(iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type query) {
+ModalityFrame ROSInterface::genModalityFrame(const iai_knowledge_msgs::GraphQuery& query) {
+    ModalityFrame mFrame;
+    if (query.epistemicOperator == iai_knowledge_msgs::GraphQuery::BELIEF) {
+
+    } else if (query.epistemicOperator == iai_knowledge_msgs::GraphQuery::KNOWLEDGE) {
+
+    }
     return ModalityFrame();
 }
 
-iai_knowledge_msgs::GraphAnswer ROSInterface::createGraphAnswer(const SubstitutionPtr &substitution) {
-    iai_knowledge_msgs::GraphAnswer answer;
+iai_knowledge_msgs::GraphAnswer ROSInterface::createGraphAnswer(std::shared_ptr<const Answer> answer) {
+    const SubstitutionPtr &substitution = answer->substitution();
+    iai_knowledge_msgs::GraphAnswer graphAnswer;
     for (const auto& pair : *substitution) {
         iai_knowledge_msgs::KeyValuePair kvpair;
         kvpair.key = pair.first.name();
         std::stringstream ss;
-        ss << *pair.second;
+        TermPtr term = pair.second;
+
+        switch(term->type()) {
+            case TermType::STRING:
+                kvpair.type = iai_knowledge_msgs::KeyValuePair::TYPE_STRING;
+                kvpair.value_string = ((StringTerm*)term.get())->value();
+                break;
+            case TermType::VARIABLE:
+                break;
+            case TermType::DOUBLE:
+                kvpair.type = iai_knowledge_msgs::KeyValuePair::TYPE_FLOAT;
+                kvpair.value_float = ((DoubleTerm*)term.get())->value();
+                break;
+            case TermType::INT32:
+                kvpair.type = iai_knowledge_msgs::KeyValuePair::TYPE_INT;
+                kvpair.value_int = ((Integer32Term*)term.get())->value();
+                break;
+            case TermType::LONG:
+                kvpair.type = iai_knowledge_msgs::KeyValuePair::TYPE_LONG;
+                kvpair.value_long = ((LongTerm*)term.get())->value();
+                break;
+            case TermType::LIST:
+                break;
+            case TermType::PREDICATE:
+                break;
+            case TermType::MODAL_OPERATOR:
+                throw AnswerError(*answer, *term);
+                break;
+        }
         kvpair.value_string = ss.str();
-        answer.substitution.push_back(kvpair);
+        graphAnswer.substitution.push_back(kvpair);
     }
-    return answer;
+    return graphAnswer;
 }
 
 

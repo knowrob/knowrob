@@ -277,7 +277,9 @@ if (catkin_FOUND)
 #		${catkin_EXPORTED_TARGETS})
 
 	## ROS Interface ###
-	add_executable(knowrob-ros src/ros/ROSInterface.cpp)
+	add_executable(knowrob-ros src/ros/ROSInterface.cpp
+            src/queries/AnswerError.cpp
+			include/knowrob/queries/AnswerError.h)
 	target_link_libraries(knowrob-ros
 			Boost::program_options
 			knowrob_qa
