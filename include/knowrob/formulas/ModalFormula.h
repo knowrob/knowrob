@@ -31,6 +31,9 @@ namespace knowrob {
         // Override Formula
         FormulaPtr applySubstitution(const Substitution &sub) const override;
 
+        // Override Formula
+        void write(std::ostream& os) const override;
+
     protected:
         const ModalOperatorPtr modalOperator_;
 

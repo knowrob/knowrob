@@ -4,6 +4,7 @@
 
 #include "knowrob/modalities/ModalOperator.h"
 #include "knowrob/modalities/Modality.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
@@ -34,11 +35,21 @@ const char* ModalOperator::symbol() const
 
 void ModalOperator::write(std::ostream& os) const
 {
-    // TODO: also include parameters of operator such as agent
     if(operatorType_ == ModalOperatorType::NECESSITY)
         os << modality_->necessity_symbol();
     else
         os << modality_->possibility_symbol();
+
+    auto &params = modality_->parameters();
+    if(!params.empty()) {
+        os << '[';
+        int paramIndex=0;
+        for(auto &pair : params) {
+            if(paramIndex++>0) os << ", ";
+            os << pair.first << '=' << *pair.second;
+        }
+        os << ']';
+    }
 }
 
 bool ModalOperator::isEqual(const Term &other) const

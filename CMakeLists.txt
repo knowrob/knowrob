@@ -135,6 +135,8 @@ add_library(knowrob_qa SHARED
 		src/modalities/KnowledgeModality.cpp
 		src/modalities/PastModality.cpp
 		src/modalities/ModalOperator.cpp
+        src/modalities/EpistemicModality.cpp
+        src/modalities/TemporalModality.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp

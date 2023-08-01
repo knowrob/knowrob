@@ -43,6 +43,12 @@ const char* ModalFormula::operator_symbol() const
     }
 }
 
+void ModalFormula::write(std::ostream& os) const
+{
+    os << *modalOperator_ << ' ';
+    os << *(formulae_[0].get());
+}
+
 namespace knowrob::modality {
     std::shared_ptr<ModalFormula> B(const FormulaPtr &phi)
     {

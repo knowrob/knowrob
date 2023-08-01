@@ -114,14 +114,14 @@ protected:
 	int pos_;
 };
 
-class TerminalCommand {
+template<class T> class TerminalCommand {
 public:
-    using CommandFunction = std::function<bool(const std::vector<TermPtr> &arguments)>;
+    using CommandFunction = std::function<bool(const std::vector<T> &arguments)>;
 
     TerminalCommand(std::string functor, uint32_t arity, CommandFunction function)
     : functor_(std::move(functor)), arity_(arity), function_(std::move(function)) {}
 
-    bool runCommand(const std::vector<TermPtr> &arguments) {
+    bool runCommand(const std::vector<T> &arguments) {
         if(arguments.size() != arity_) {
             throw QueryError("Wrong number of arguments for terminal command '{}/{}'. "
                              "Actual number of arguments: {}.", functor_, arity_, arguments.size());
@@ -148,6 +148,8 @@ public:
         // define some terminal commands
         registerCommand("exit", 0,
                         [this](const std::vector<TermPtr>&) { return exitTerminal(); });
+        registerCommand("assert", 1,
+                        [this](const std::vector<FormulaPtr> &x) { return assertStatements(x); });
 	}
 
 	static char getch() {
@@ -170,8 +172,14 @@ public:
 
     void registerCommand(const std::string &functor,
                          uint32_t arity,
-                         const TerminalCommand::CommandFunction &function) {
-        commands_.emplace(functor, TerminalCommand(functor, arity, function));
+                         const TerminalCommand<TermPtr>::CommandFunction &function) {
+        firstOrderCommands_.emplace(functor, TerminalCommand(functor, arity, function));
+    }
+
+    void registerCommand(const std::string &functor,
+                         uint32_t arity,
+                         const TerminalCommand<FormulaPtr>::CommandFunction &function) {
+        higherOrderCommands_.emplace(functor, TerminalCommand(functor, arity, function));
     }
 
 	// Override QueryResultHandler
@@ -181,24 +189,51 @@ public:
 		return !has_stop_request_;
 	}
 
+    bool runHigherOrderCommand(const std::string &functor, const std::string &queryString) {
+        auto argsFormula = QueryParser::parse(queryString);
+        auto needle = higherOrderCommands_.find(functor);
+        if(needle == higherOrderCommands_.end()) {
+            throw QueryError("Ignoring unknown higher-order command '{}'", functor);
+        }
+        if(argsFormula->type() == FormulaType::CONJUNCTION) {
+            return needle->second.runCommand(((Conjunction*)argsFormula.get())->formulae());
+        }
+        else {
+            return needle->second.runCommand({argsFormula});
+        }
+    }
+
 	void runQuery(const std::string &queryString) {
 		try {
-			// parse query
-			auto phi = QueryParser::parse(queryString);
-			auto query = std::make_shared<ModalQuery>(phi, QUERY_FLAG_ALL_SOLUTIONS);
-            bool isSpecialCommand = false;
-
-            if(query->formula()->type() == FormulaType::PREDICATE) {
-                // special handling for some predicates
-                auto p = std::dynamic_pointer_cast<Predicate>(query->formula());
-                auto needle = commands_.find(p->indicator()->functor());
-                if(needle != commands_.end()) {
-                    needle->second.runCommand(p->arguments());
-                    isSpecialCommand = true;
+            bool isQueryHandled = false;
+            // make a lookahead if the query string starts with a functor of a registered
+            // higher order command.
+            // NOTE: this is needed because the query parser might not accept formula as argument of a predicate.
+            size_t pos = queryString.find_first_of('(');
+            if(pos != std::string::npos) {
+                auto functor = queryString.substr(0, pos);
+                auto needle = higherOrderCommands_.find(functor);
+                if(needle != higherOrderCommands_.end()) {
+                    runHigherOrderCommand(functor, queryString.substr(pos));
+                    isQueryHandled = true;
                 }
             }
-            if(!isSpecialCommand) {
-                runQuery(query);
+
+			// parse query
+            if(!isQueryHandled) {
+                auto phi = QueryParser::parse(queryString);
+                auto query = std::make_shared<ModalQuery>(phi, QUERY_FLAG_ALL_SOLUTIONS);
+                if(query->formula()->type() == FormulaType::PREDICATE) {
+                    auto p = std::dynamic_pointer_cast<Predicate>(query->formula());
+                    auto needle = firstOrderCommands_.find(p->indicator()->functor());
+                    if(needle != firstOrderCommands_.end()) {
+                        needle->second.runCommand(p->arguments());
+                        isQueryHandled = true;
+                    }
+                }
+                if(!isQueryHandled) {
+                    runQuery(query);
+                }
             }
 		}
 		catch (std::exception& e) {
@@ -232,28 +267,33 @@ public:
         }
     }
 
-    void projectStatement(const PredicatePtr &p) {
-        if(p->indicator()->arity() == 1) {
-            auto &arg = p->arguments()[0];
-            if(arg->type() == TermType::PREDICATE && arg) {
-                auto arg_p = std::static_pointer_cast<Predicate>(arg);
-                if(arg_p->indicator()->arity() == 2) {
-                    // TODO: insert triple data, there should be some helper to extract triple data from Predicate!
-                    //       maybe ust add "asTripleData" to Predicate?
-                    //kb_.insert(StatementData(...));
-                    KB_WARN("triple assertion not implemented yet in terminal");
-                }
-                else {
-                    KB_WARN("the argument of project must be a 2-ary predicate");
-                }
-            }
-            else {
-                KB_WARN("the argument of project is not a predicate in '{}'", *p);
-            }
+    StatementData createStatementData(const FormulaPtr &arg) {
+        KB_WARN("assert: {}", *arg);
+        /*
+        if(arg->type() != TermType::PREDICATE) {
+            throw QueryError("Invalid input for 'assert' command: "
+                             "The expected argument type is {} but actually it is {}.",
+                             TermType::PREDICATE, arg->type());
         }
-        else {
-            KB_WARN("project has more than one arg in '{}'", *p);
+        auto arg_p = std::static_pointer_cast<Predicate>(arg);
+        if(arg_p->indicator()->arity() != 2) {
+            throw QueryError("Invalid input for 'assert' command: "
+                             "The expected arity of arguments is 2 but actually it is {}.",
+                             arg_p->indicator()->arity());
         }
+        return arg_p->statementData();
+         */
+        return StatementData("a","b","c");
+    }
+
+    bool assertStatements(const std::vector<FormulaPtr> &args) {
+        std::vector<StatementData> data(args.size());
+        uint32_t dataIndex = 0;
+        for(auto &term : args) {
+            data[dataIndex++] = createStatementData(term);
+        }
+        //return kb_.insert(data);
+        return false;
     }
 
 	void enter() {
@@ -543,7 +583,8 @@ protected:
 	std::string currentQuery_;
 	std::string historyFile_;
 	QueryHistory history_;
-    std::map<std::string, TerminalCommand> commands_;
+    std::map<std::string, TerminalCommand<TermPtr>> firstOrderCommands_;
+    std::map<std::string, TerminalCommand<FormulaPtr>> higherOrderCommands_;
 };
 
 
