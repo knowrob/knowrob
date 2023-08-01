@@ -285,3 +285,22 @@ bool FramedLiteral::isGround() const
 {
     return subjectTerm_->isGround() && propertyTerm()->isGround() && objectTerm_->isGround();
 }
+
+StatementData FramedLiteral::toStatementData() const
+{
+    StatementData data;
+    // TODO: fill data
+    return data;
+}
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::FramedLiteral& l)
+	{
+	    // TODO: include more information when printing FramedLiteral
+	    os << *l.propertyTerm() << '(';
+	    os << *l.subjectTerm() << ", ";
+	    os << *l.objectTerm();
+	    os << ')';
+	    return os;
+	}
+}

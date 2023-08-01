@@ -8,6 +8,7 @@
 #include <memory>
 #include "knowrob/modalities/ModalityLabel.h"
 #include "Predicate.h"
+#include "knowrob/semweb/StatementData.h"
 
 namespace knowrob {
     /**
@@ -81,6 +82,8 @@ namespace knowrob {
          * @return the label of this literal.
          */
         const auto& label() const { return label_; }
+
+        StatementData asStatementData() const;
 
     protected:
         const ModalityLabelPtr label_;

@@ -155,6 +155,8 @@ namespace knowrob {
 
         void setAgentTerm(const std::string &agentTerm);
 
+        StatementData toStatementData() const;
+
     protected:
         ModalityFrame modalityFrame_;
         LiteralPtr  literal_;
@@ -175,5 +177,9 @@ namespace knowrob {
     using FramedLiteralPtr = std::shared_ptr<FramedLiteral>;
 
 } // knowrob
+
+namespace std {
+	std::ostream& operator<<(std::ostream& os, const knowrob::FramedLiteral& l);
+}
 
 #endif //KNOWROB_FRAMED_LITERAL_H

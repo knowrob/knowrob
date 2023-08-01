@@ -29,6 +29,7 @@
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/queries/QueryTree.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -267,33 +268,25 @@ public:
         }
     }
 
-    StatementData createStatementData(const FormulaPtr &arg) {
-        KB_WARN("assert: {}", *arg);
-        /*
-        if(arg->type() != TermType::PREDICATE) {
-            throw QueryError("Invalid input for 'assert' command: "
-                             "The expected argument type is {} but actually it is {}.",
-                             TermType::PREDICATE, arg->type());
-        }
-        auto arg_p = std::static_pointer_cast<Predicate>(arg);
-        if(arg_p->indicator()->arity() != 2) {
-            throw QueryError("Invalid input for 'assert' command: "
-                             "The expected arity of arguments is 2 but actually it is {}.",
-                             arg_p->indicator()->arity());
-        }
-        return arg_p->statementData();
-         */
-        return StatementData("a","b","c");
-    }
-
     bool assertStatements(const std::vector<FormulaPtr> &args) {
         std::vector<StatementData> data(args.size());
         uint32_t dataIndex = 0;
-        for(auto &term : args) {
-            data[dataIndex++] = createStatementData(term);
+        for(auto &phi : args) {
+            const QueryTree qt(phi);
+            if(qt.numPaths()>1) {
+                throw QueryError("Disjunctions are not allowed in assertions. "
+                                 "Appears in statement {}.", *phi);
+            }
+            else if(qt.numPaths()==0) {
+                throw QueryError("Invalid assertion: '{}'", *phi);
+            }
+            for(auto &lit : qt.begin()->literals()) {
+                auto modalIteration = lit->label()->modalOperators();
+                auto framedLit = FramedLiteral(lit, ModalityFrame(modalIteration));
+                data[dataIndex++] = framedLit.toStatementData();
+            }
         }
-        //return kb_.insert(data);
-        return false;
+        return kb_.insert(data);
     }
 
 	void enter() {
