@@ -500,7 +500,7 @@ TEST_F(QueryParserTest, Implications) {
                                QueryParser::parse("p->q"),
                                2, {FormulaType::PREDICATE, FormulaType::PREDICATE}))
     TEST_NO_THROW(testCompound(FormulaType::IMPLICATION,
-                               QueryParser::parse("  p->   q  ->  r  "),
+                               QueryParser::parse("  p->    q  ->  r  "),
                                2, {FormulaType::PREDICATE, FormulaType::IMPLICATION}))
     TEST_NO_THROW(testCompound(FormulaType::IMPLICATION,
                                QueryParser::parse("p->(q,r)"),
