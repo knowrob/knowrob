@@ -20,6 +20,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <utility>
 // KnowRob
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
@@ -27,6 +28,7 @@
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -112,6 +114,27 @@ protected:
 	int pos_;
 };
 
+class TerminalCommand {
+public:
+    using CommandFunction = std::function<bool(const std::vector<TermPtr> &arguments)>;
+
+    TerminalCommand(std::string functor, uint32_t arity, CommandFunction function)
+    : functor_(std::move(functor)), arity_(arity), function_(std::move(function)) {}
+
+    bool runCommand(const std::vector<TermPtr> &arguments) {
+        if(arguments.size() != arity_) {
+            throw QueryError("Wrong number of arguments for terminal command '{}/{}'. "
+                             "Actual number of arguments: {}.", functor_, arity_, arguments.size());
+        }
+        return function_(arguments);
+    }
+
+protected:
+    const std::string functor_;
+    const uint32_t arity_;
+    const CommandFunction function_;
+};
+
 class KnowRobTerminal : public QueryResultHandler {
 public:
 	explicit KnowRobTerminal(const boost::property_tree::ptree &config)
@@ -122,6 +145,9 @@ public:
       historyFile_("history.txt")
 	{
 		history_.load(historyFile_);
+        // define some terminal commands
+        registerCommand("exit", 0,
+                        [this](const std::vector<TermPtr>&) { return exitTerminal(); });
 	}
 
 	static char getch() {
@@ -142,6 +168,12 @@ public:
 		return buf;
 	}
 
+    void registerCommand(const std::string &functor,
+                         uint32_t arity,
+                         const TerminalCommand::CommandFunction &function) {
+        commands_.emplace(functor, TerminalCommand(functor, arity, function));
+    }
+
 	// Override QueryResultHandler
 	bool pushQueryResult(const AnswerPtr &solution) override {
 		std::cout << *solution << std::endl;
@@ -154,18 +186,18 @@ public:
 			// parse query
 			auto phi = QueryParser::parse(queryString);
 			auto query = std::make_shared<ModalQuery>(phi, QUERY_FLAG_ALL_SOLUTIONS);
+            bool isSpecialCommand = false;
 
             if(query->formula()->type() == FormulaType::PREDICATE) {
                 // special handling for some predicates
                 auto p = std::dynamic_pointer_cast<Predicate>(query->formula());
-                if(p->indicator()->functor() == "project") {
-                    projectStatement(p);
-                }
-                else {
-                    runQuery(query);
+                auto needle = commands_.find(p->indicator()->functor());
+                if(needle != commands_.end()) {
+                    needle->second.runCommand(p->arguments());
+                    isSpecialCommand = true;
                 }
             }
-            else {
+            if(!isSpecialCommand) {
                 runQuery(query);
             }
 		}
@@ -464,6 +496,11 @@ public:
 		}
 	}
 
+    bool exitTerminal() {
+        has_stop_request_ = true;
+        return true;
+    }
+
 	int run() {
 		std::cout << "Welcome to KnowRob." << '\n' <<
 			"For online help and background, visit http://knowrob.org/" << '\n' <<
@@ -504,6 +541,7 @@ protected:
 	std::string currentQuery_;
 	std::string historyFile_;
 	QueryHistory history_;
+    std::map<std::string, TerminalCommand> commands_;
 };
 
 
