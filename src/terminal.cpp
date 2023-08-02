@@ -270,7 +270,9 @@ public:
 
     bool assertStatements(const std::vector<FormulaPtr> &args) {
         std::vector<StatementData> data(args.size());
+        std::vector<FramedRDFLiteral*> buf(args.size());
         uint32_t dataIndex = 0;
+
         for(auto &phi : args) {
             const QueryTree qt(phi);
             if(qt.numPaths()>1) {
@@ -282,16 +284,18 @@ public:
             }
             for(auto &lit : qt.begin()->literals()) {
                 auto modalIteration = lit->label()->modalOperators();
-                auto framedLit = FramedRDFLiteral(lit, ModalityFrame(modalIteration));
-                data[dataIndex++] = framedLit.toStatementData();
+                buf[dataIndex] = new FramedRDFLiteral(lit, ModalityFrame(modalIteration));
+                data[dataIndex++] = buf[dataIndex]->toStatementData();
             }
         }
         if(kb_.insert(data)) {
             std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
+            for(auto x : buf) delete x;
             return true;
         }
         else {
             std::cout << "assertion failed." << "\n";
+            for(auto x : buf) delete x;
             return false;
         }
     }
