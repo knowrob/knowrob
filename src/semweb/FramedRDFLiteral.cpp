@@ -13,9 +13,9 @@ FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFram
 : literal_(literal),
   modalityFrame_(modalityFrame)
 {
-    // FIXME: ensure that literal predicate is 2-ary
     if(literal_->predicate()->indicator()->arity() != 2) {
-        //throw ...
+        throw QueryError("RDF literals must be 2-ary, but "
+                         "the literal '{}' is not.", *literal);
     }
     subjectTerm_ = literal_->predicate()->arguments()[0];
     objectTerm_ = literal_->predicate()->arguments()[1];

@@ -154,6 +154,7 @@ add_library(knowrob_qa SHARED
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
+        src/formulas/Literal.cpp
         src/queries/ModalQuery.cpp
 		src/queries/AllocatedQuery.cpp
 		src/queries/QueryError.cpp

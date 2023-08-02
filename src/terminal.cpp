@@ -286,7 +286,14 @@ public:
                 data[dataIndex++] = framedLit.toStatementData();
             }
         }
-        return kb_.insert(data);
+        if(kb_.insert(data)) {
+            std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
+            return true;
+        }
+        else {
+            std::cout << "assertion failed." << "\n";
+            return false;
+        }
     }
 
 	void enter() {
