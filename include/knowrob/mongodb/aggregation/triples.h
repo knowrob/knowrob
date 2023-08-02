@@ -11,18 +11,18 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/mongodb/Pipeline.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/formulas/FramedLiteral.h"
+#include "knowrob/semweb/FramedRDFLiteral.h"
 
 namespace knowrob::mongo::aggregation
 {
     struct TripleLookupData {
-        explicit TripleLookupData(const FramedLiteral *expr)
+        explicit TripleLookupData(const FramedRDFLiteral *expr)
         : expr(expr),
           maxNumOfTriples(0),
           mayHasMoreGroundings(true),
           forceTransitiveLookup(false)
           {}
-        const FramedLiteral *expr;
+        const FramedRDFLiteral *expr;
         uint32_t maxNumOfTriples;
         std::set<std::string_view> knownGroundedVariables;
         bool mayHasMoreGroundings;
@@ -31,24 +31,24 @@ namespace knowrob::mongo::aggregation
 
     void appendTripleSelector(
                 bson_t *selectorDoc,
-                const FramedLiteral &tripleExpression,
+                const FramedRDFLiteral &tripleExpression,
                 bool b_isTaxonomicProperty);
 
     void appendGraphSelector(
                 bson_t *selectorDoc,
-                const FramedLiteral &tripleExpression);
+                const FramedRDFLiteral &tripleExpression);
 
     void appendAgentSelector(
                 bson_t *selectorDoc,
-                const FramedLiteral &tripleExpression);
+                const FramedRDFLiteral &tripleExpression);
 
     void appendTimeSelector(
                 bson_t *selectorDoc,
-                const FramedLiteral &tripleExpression);
+                const FramedRDFLiteral &tripleExpression);
 
     void appendConfidenceSelector(
                 bson_t *selectorDoc,
-                const FramedLiteral &tripleExpression);
+                const FramedRDFLiteral &tripleExpression);
 
     void lookupTriple(
             aggregation::Pipeline &pipeline,
@@ -60,7 +60,7 @@ namespace knowrob::mongo::aggregation
             aggregation::Pipeline &pipeline,
             const std::string_view &collection,
             const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-            const std::vector<FramedLiteralPtr> &tripleExpressions);
+            const std::vector<FramedRDFLiteralPtr> &tripleExpressions);
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TRIPLES_H

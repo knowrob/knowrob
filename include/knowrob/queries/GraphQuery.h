@@ -11,7 +11,7 @@
 #include "vector"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/formulas/FramedLiteral.h"
+#include "knowrob/semweb/FramedRDFLiteral.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/queries/Query.h"
@@ -58,7 +58,7 @@ namespace knowrob {
 
     protected:
         std::vector<LiteralPtr> literals_;
-        std::vector<FramedLiteralPtr> framedLiterals_;
+        std::vector<FramedRDFLiteralPtr> framedLiterals_;
         FormulaPtr formula_;
         ModalityFrame modalFrame_;
 

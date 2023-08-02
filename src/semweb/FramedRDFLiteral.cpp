@@ -2,13 +2,14 @@
 // Created by daniel on 07.04.23.
 //
 
-#include "knowrob/formulas/FramedLiteral.h"
+#include "knowrob/semweb/FramedRDFLiteral.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
+#include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
 
-FramedLiteral::FramedLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame)
+FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame)
 : literal_(literal),
   modalityFrame_(modalityFrame)
 {
@@ -61,7 +62,7 @@ FramedLiteral::FramedLiteral(const LiteralPtr &literal, const ModalityFrame &mod
     }
 }
 
-FramedLiteral::FramedLiteral(
+FramedRDFLiteral::FramedRDFLiteral(
             const TermPtr &subjectTerm,
             const TermPtr &propertyTerm,
             const TermPtr &objectTerm,
@@ -81,7 +82,7 @@ FramedLiteral::FramedLiteral(
 {
 }
 
-FramedLiteral::FramedLiteral(const StatementData &tripleData)
+FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
         : subjectTerm_(std::make_shared<StringTerm>(tripleData.subject)),
           propertyTerm_(std::make_shared<StringTerm>(tripleData.predicate)),
           beginTerm_(),
@@ -120,7 +121,7 @@ FramedLiteral::FramedLiteral(const StatementData &tripleData)
 }
 
 /*
-FramedLiteral::FramedLiteral(const PredicatePtr &triplePredicate,
+FramedRDFLiteral::FramedRDFLiteral(const PredicatePtr &triplePredicate,
                              const std::string_view &graphName)
         : objectOperator_(EQ),
           beginOperator_(EQ),
@@ -160,144 +161,194 @@ FramedLiteral::FramedLiteral(const PredicatePtr &triplePredicate,
 }
 */
 
-std::shared_ptr<Term> FramedLiteral::subjectTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::subjectTerm() const
 {
     return subjectTerm_;
 }
 
-std::shared_ptr<Term> FramedLiteral::objectTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::objectTerm() const
 {
     return objectTerm_;
 }
 
-FramedLiteral::OperatorType FramedLiteral::objectOperator() const
+FramedRDFLiteral::OperatorType FramedRDFLiteral::objectOperator() const
 {
     return objectOperator_;
 }
 
-std::shared_ptr<Term> FramedLiteral::propertyTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::propertyTerm() const
 {
     return propertyTerm_;
 }
 
-std::shared_ptr<Term> FramedLiteral::graphTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::graphTerm() const
 {
     return graphTerm_;
 }
 
-std::shared_ptr<Term> FramedLiteral::agentTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::agentTerm() const
 {
     return agentTerm_;
 }
 
-std::shared_ptr<Term> FramedLiteral::confidenceTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::confidenceTerm() const
 {
     return confidenceTerm_;
 }
 
-FramedLiteral::OperatorType FramedLiteral::confidenceOperator() const
+FramedRDFLiteral::OperatorType FramedRDFLiteral::confidenceOperator() const
 {
     return confidenceOperator_;
 }
 
-std::shared_ptr<Term> FramedLiteral::beginTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::beginTerm() const
 {
     return beginTerm_;
 }
 
-std::shared_ptr<Term> FramedLiteral::endTerm() const
+std::shared_ptr<Term> FramedRDFLiteral::endTerm() const
 {
     return endTerm_;
 }
 
-FramedLiteral::OperatorType FramedLiteral::beginOperator() const
+FramedRDFLiteral::OperatorType FramedRDFLiteral::beginOperator() const
 {
     return beginOperator_;
 }
 
-FramedLiteral::OperatorType FramedLiteral::endOperator() const
+FramedRDFLiteral::OperatorType FramedRDFLiteral::endOperator() const
 {
     return endOperator_;
 }
 
-void FramedLiteral::setMinConfidence(double limit)
+void FramedRDFLiteral::setMinConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
     confidenceOperator_ = LEQ;
 }
 
-void FramedLiteral::setMaxConfidence(double limit)
+void FramedRDFLiteral::setMaxConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
     confidenceOperator_ = GEQ;
 }
 
-void FramedLiteral::setMinBegin(double limit)
+void FramedRDFLiteral::setMinBegin(double limit)
 {
     beginTerm_ = std::make_shared<DoubleTerm>(limit);
     beginOperator_ = GEQ;
 }
 
-void FramedLiteral::setMaxBegin(double limit)
+void FramedRDFLiteral::setMaxBegin(double limit)
 {
     beginTerm_ = std::make_shared<DoubleTerm>(limit);
     beginOperator_ = LEQ;
 }
 
-void FramedLiteral::setMinEnd(double limit)
+void FramedRDFLiteral::setMinEnd(double limit)
 {
     endTerm_ = std::make_shared<DoubleTerm>(limit);
     endOperator_ = GEQ;
 }
 
-void FramedLiteral::setMaxEnd(double limit)
+void FramedRDFLiteral::setMaxEnd(double limit)
 {
     endTerm_ = std::make_shared<DoubleTerm>(limit);
     endOperator_ = LEQ;
 }
 
-void FramedLiteral::setBeginTerm(const TermPtr &beginTerm)
+void FramedRDFLiteral::setBeginTerm(const TermPtr &beginTerm)
 {
     beginTerm_ = beginTerm;
 }
 
-void FramedLiteral::setEndTerm(const TermPtr &endTerm)
+void FramedRDFLiteral::setEndTerm(const TermPtr &endTerm)
 {
     endTerm_ = endTerm;
 }
 
-void FramedLiteral::setAgentTerm(const std::string &agentTerm)
+void FramedRDFLiteral::setAgentTerm(const std::string &agentTerm)
 {
     agentTerm_ = std::make_shared<StringTerm>(agentTerm);
 }
 
-void FramedLiteral::setBeginOperator(OperatorType beginOperator)
+void FramedRDFLiteral::setBeginOperator(OperatorType beginOperator)
 {
     beginOperator_ = beginOperator;
 }
 
-void FramedLiteral::setEndOperator(OperatorType endOperator)
+void FramedRDFLiteral::setEndOperator(OperatorType endOperator)
 {
     endOperator_ = endOperator;
 }
 
-bool FramedLiteral::isGround() const
+bool FramedRDFLiteral::isGround() const
 {
     return subjectTerm_->isGround() && propertyTerm()->isGround() && objectTerm_->isGround();
 }
 
-StatementData FramedLiteral::toStatementData() const
+static inline const char* readStringConstant(const TermPtr &term)
+{ return std::static_pointer_cast<StringTerm>(term)->value().c_str(); }
+
+static inline double readDoubleConstant(const TermPtr &term)
+{ return std::static_pointer_cast<DoubleTerm>(term)->value(); }
+
+StatementData FramedRDFLiteral::toStatementData() const
 {
     StatementData data;
-    // TODO: fill data
+    if(!isGround()) {
+        throw QueryError("Only ground literals can be mapped to StatementData, but "
+                         "the literal '{}' has variables.", *this);
+    }
+    data.subject = readStringConstant(subjectTerm_);
+    data.predicate = readStringConstant(propertyTerm_);
+    switch(objectTerm_->type()) {
+        case TermType::STRING:
+            data.object = ((StringTerm*)objectTerm_.get())->value().c_str();
+            // TODO: RDF_RESOURCE or RDF_STRING_LITERAL?
+            data.objectType = RDF_RESOURCE;
+            break;
+        case TermType::DOUBLE:
+            data.objectDouble = ((DoubleTerm*)objectTerm_.get())->value();
+            data.objectType = RDF_DOUBLE_LITERAL;
+            break;
+        case TermType::INT32:
+            data.objectInteger = ((Integer32Term*)objectTerm_.get())->value();
+            data.objectType = RDF_INT64_LITERAL;
+            break;
+        case TermType::LONG:
+            data.objectInteger = ((LongTerm*)objectTerm_.get())->value();
+            data.objectType = RDF_INT64_LITERAL;
+            break;
+        case TermType::VARIABLE:
+            KB_WARN("Literal has a variable as an argument in '{}' which is not allowed.", *this);
+            break;
+        case TermType::PREDICATE:
+            KB_WARN("Literal has a predicate as an argument in '{}' which is not allowed.", *this);
+            break;
+        case TermType::LIST:
+            KB_WARN("Literal has a list as an argument in '{}' which is not allowed.", *this);
+            break;
+    }
+    if(agentTerm_)      data.agent = readStringConstant(agentTerm_);
+    if(graphTerm_)      data.graph = readStringConstant(graphTerm_);
+    if(confidenceTerm_) data.confidence = readDoubleConstant(confidenceTerm_);
+    if(beginTerm_)      data.begin = readDoubleConstant(beginTerm_);
+    if(endTerm_)        data.end = readDoubleConstant(endTerm_);
+
     return data;
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::FramedLiteral& l)
+	std::ostream& operator<<(std::ostream& os, const knowrob::FramedRDFLiteral& l)
 	{
-	    // TODO: include more information when printing FramedLiteral
-	    os << *l.propertyTerm() << '(';
+	    os << *l.propertyTerm();
+        // TODO: include modal frame when printing FramedRDFLiteral
+        if(0) {
+            os << '[';
+            os << ']';
+        }
+        os << '(';
 	    os << *l.subjectTerm() << ", ";
 	    os << *l.objectTerm();
 	    os << ')';

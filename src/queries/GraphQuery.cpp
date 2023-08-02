@@ -43,7 +43,7 @@ void GraphQuery::init()
 
     for(int i=0; i<literals_.size(); i++)
     {
-        framedLiterals_[i] = std::make_shared<FramedLiteral>(literals_[i], modalFrame_);
+        framedLiterals_[i] = std::make_shared<FramedRDFLiteral>(literals_[i], modalFrame_);
         if(literals_[i]->isPositive()) {
             formulae[i] = literals_[i]->predicate();
         }

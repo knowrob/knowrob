@@ -163,24 +163,24 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::FramedLiteral::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::FramedRDFLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case FramedLiteral::EQ:
+        case FramedRDFLiteral::EQ:
             return nullptr;
-        case FramedLiteral::LEQ:
+        case FramedRDFLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case FramedLiteral::GEQ:
+        case FramedRDFLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case FramedLiteral::LT:
+        case FramedRDFLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case FramedLiteral::GT:
+        case FramedRDFLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     auto gt = tripleExpression.graphTerm();
     if(!gt) return;
@@ -205,7 +205,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedLiteral &
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     auto at = tripleExpression.agentTerm();
 
@@ -222,7 +222,7 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedLiteral &
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     auto bt = tripleExpression.beginTerm();
@@ -258,7 +258,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &t
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     auto ct = tripleExpression.confidenceTerm();
@@ -280,7 +280,7 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedLite
 
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const FramedLiteral &tripleExpression,
+            const FramedRDFLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -621,7 +621,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::vector<FramedLiteralPtr> &tripleExpressions)
+        const std::vector<FramedRDFLiteralPtr> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 

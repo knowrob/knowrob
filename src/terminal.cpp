@@ -282,7 +282,7 @@ public:
             }
             for(auto &lit : qt.begin()->literals()) {
                 auto modalIteration = lit->label()->modalOperators();
-                auto framedLit = FramedLiteral(lit, ModalityFrame(modalIteration));
+                auto framedLit = FramedRDFLiteral(lit, ModalityFrame(modalIteration));
                 data[dataIndex++] = framedLit.toStatementData();
             }
         }

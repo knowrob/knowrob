@@ -2,13 +2,13 @@
 // Created by daniel on 07.04.23.
 //
 
-#ifndef KNOWROB_FRAMED_LITERAL_H
-#define KNOWROB_FRAMED_LITERAL_H
+#ifndef KNOWROB_FRAMED_RDF_LITERAL_H
+#define KNOWROB_FRAMED_RDF_LITERAL_H
 
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/terms/Constant.h"
-#include "Literal.h"
+#include "knowrob/formulas/Literal.h"
 #include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
@@ -16,25 +16,25 @@ namespace knowrob {
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
      */
-    class FramedLiteral {
+    class FramedRDFLiteral {
     public:
         /**
          * Unary operators that can be applied on terms.
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
-        explicit FramedLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame=ModalityFrame());
+        explicit FramedRDFLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame=ModalityFrame());
 
-        explicit FramedLiteral(const StatementData &tripleData);
+        explicit FramedRDFLiteral(const StatementData &tripleData);
 
-        FramedLiteral(const TermPtr &subjectTerm,
-                      const TermPtr &propertyTerm,
-                      const TermPtr &objectTerm,
-                      OperatorType objectOperator=EQ,
-                      const std::string_view &graphName="*");
+        FramedRDFLiteral(const TermPtr &subjectTerm,
+                         const TermPtr &propertyTerm,
+                         const TermPtr &objectTerm,
+                         OperatorType objectOperator=EQ,
+                         const std::string_view &graphName="*");
 
 /*
-        explicit FramedLiteral(const PredicatePtr &triplePredicate,
+        explicit FramedRDFLiteral(const PredicatePtr &triplePredicate,
                                const std::string_view &graphName="*");
 */
 
@@ -161,25 +161,25 @@ namespace knowrob {
         ModalityFrame modalityFrame_;
         LiteralPtr  literal_;
 
-        TermPtr subjectTerm_;
-        TermPtr propertyTerm_;
-        TermPtr objectTerm_;
-        TermPtr graphTerm_;
-        TermPtr agentTerm_;
-        TermPtr beginTerm_;
-        TermPtr endTerm_;
-        TermPtr confidenceTerm_;
+        std::shared_ptr<Term> subjectTerm_;
+        std::shared_ptr<Term> propertyTerm_;
+        std::shared_ptr<Term> objectTerm_;
+        std::shared_ptr<Term> graphTerm_;
+        std::shared_ptr<Term> agentTerm_;
+        std::shared_ptr<Term> beginTerm_;
+        std::shared_ptr<Term> endTerm_;
+        std::shared_ptr<Term> confidenceTerm_;
         OperatorType objectOperator_;
         OperatorType beginOperator_;
         OperatorType endOperator_;
         OperatorType confidenceOperator_;
     };
-    using FramedLiteralPtr = std::shared_ptr<FramedLiteral>;
+    using FramedRDFLiteralPtr = std::shared_ptr<FramedRDFLiteral>;
 
 } // knowrob
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::FramedLiteral& l);
+	std::ostream& operator<<(std::ostream& os, const knowrob::FramedRDFLiteral& l);
 }
 
-#endif //KNOWROB_FRAMED_LITERAL_H
+#endif //KNOWROB_FRAMED_RDF_LITERAL_H
