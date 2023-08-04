@@ -6,6 +6,7 @@
 #define KNOWROB_SEMWEB_STATEMENT_DATA_H
 
 #include "optional"
+#include "knowrob/modalities/TemporalModality.h"
 
 namespace knowrob {
 	/**
@@ -36,9 +37,6 @@ namespace knowrob {
                   agent(nullptr),
                   objectDouble(0.0),
                   objectInteger(0),
-                  begin(),
-                  end(),
-                  confidence(),
                   objectType(RDF_RESOURCE) {}
         StatementData(const char* subject,
                       const char* predicate,
@@ -53,9 +51,6 @@ namespace knowrob {
                   agent(agent),
                   objectDouble(0.0),
                   objectInteger(0),
-                  begin(),
-                  end(),
-                  confidence(),
                   objectType(RDF_RESOURCE) {}
         void *documentID;
         const char* subject;
@@ -63,6 +58,7 @@ namespace knowrob {
         const char* object;
         const char* graph;
         const char* agent;
+        std::optional<TemporalOperator> temporalOperator;
         std::optional<double> begin;
         std::optional<double> end;
         std::optional<double> confidence;
