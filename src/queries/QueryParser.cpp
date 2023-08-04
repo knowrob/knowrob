@@ -154,19 +154,17 @@ static ModalOperatorPtr createB(const TermPtr &optionsTerm) {
     if (optionsTerm) {
         OptionList options(optionsTerm);
         // read options
-        // TODO: handle confidence option
         auto confidenceValue = getConfidenceOption(options);
         auto agentName = getAgentOption(options);
         if (agentName.has_value() && agentName.value() == "self") agentName = std::nullopt;
         // create a parametrized modal operator
         if (agentName.has_value()) {
-            //if(confidenceValue.has_value()) return BeliefModality::B(agentName.value(), confidenceValue.value());
-            if (confidenceValue.has_value()) return BeliefModality::B(agentName.value());
+            if(confidenceValue.has_value()) return BeliefModality::B(agentName.value(), confidenceValue.value());
             else return BeliefModality::B(agentName.value());
         }
-        //else if(confidenceValue.has_value()) {
-        //    return BeliefModality::B(confidenceValue.value());
-        //}
+        else if(confidenceValue.has_value()) {
+            return BeliefModality::B(confidenceValue.value());
+        }
     }
     return BeliefModality::B();
 }
