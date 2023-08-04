@@ -274,9 +274,20 @@ StatementData FramedRDFLiteral::toStatementData() const
             KB_WARN("Literal has a list as an argument in '{}' which is not allowed.", *this);
             break;
     }
-    if(agentTerm_)      data.agent = readStringConstant(agentTerm_);
     if(graphTerm_)      data.graph = readStringConstant(graphTerm_);
-    if(confidenceTerm_) data.confidence = readDoubleConstant(confidenceTerm_);
+
+    // handle epistemic modality
+    if(modalityFrame_.epistemicOperator()) {
+        if(modalityFrame_.epistemicOperator()->isModalPossibility()) {
+            data.epistemicOperator = EpistemicOperator::BELIEF;
+        }
+    }
+    if(agentTerm_) {
+        data.agent = readStringConstant(agentTerm_);
+    }
+    if(confidenceTerm_) {
+        data.confidence = readDoubleConstant(confidenceTerm_);
+    }
 
     // handle temporal modality
     if(modalityFrame_.pastOperator()) {

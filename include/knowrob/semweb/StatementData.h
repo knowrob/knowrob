@@ -7,6 +7,7 @@
 
 #include "optional"
 #include "knowrob/modalities/TemporalModality.h"
+#include "knowrob/modalities/EpistemicModality.h"
 
 namespace knowrob {
 	/**
@@ -59,6 +60,7 @@ namespace knowrob {
         const char* graph;
         const char* agent;
         std::optional<TemporalOperator> temporalOperator;
+        std::optional<EpistemicOperator> epistemicOperator;
         std::optional<double> begin;
         std::optional<double> end;
         std::optional<double> confidence;

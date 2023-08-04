@@ -12,6 +12,11 @@
 #include <utility>
 
 namespace knowrob {
+    enum class EpistemicOperator {
+        KNOWLEDGE=0,
+        BELIEF=1
+    };
+
     /**
      * Epistemic is concerned with knowledge and belief.
      */
