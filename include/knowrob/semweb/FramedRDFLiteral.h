@@ -91,19 +91,9 @@ namespace knowrob {
         OperatorType objectOperator() const;
 
         /**
-         * @return the operator for the confidence of the triple.
-         */
-        OperatorType confidenceOperator() const;
-
-        /**
          * @param limit the minimum confidence of triples matching this expression
          */
         void setMinConfidence(double limit);
-
-        /**
-         * @param limit the maximum confidence of triples matching this expression
-         */
-        void setMaxConfidence(double limit);
 
         /**
          * @param beginTerm a time term.
@@ -132,7 +122,6 @@ namespace knowrob {
         std::shared_ptr<Term> endTerm_;
         std::shared_ptr<Term> confidenceTerm_;
         OperatorType objectOperator_;
-        OperatorType confidenceOperator_;
     };
     using FramedRDFLiteralPtr = std::shared_ptr<FramedRDFLiteral>;
 

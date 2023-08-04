@@ -6,6 +6,7 @@
 #include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/modalities/BeliefModality.h"
 
 using namespace knowrob;
 
@@ -28,12 +29,14 @@ FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFram
     if(epistemicOperator) {
         auto epistemicModality = (const EpistemicModality*) &epistemicOperator->modality();
         auto o_agent = epistemicModality->agent();
-        if(o_agent) {
+        if(o_agent.has_value()) {
             agentTerm_ = std::make_shared<StringTerm>(o_agent.value());
         }
         if(epistemicOperator->isModalPossibility()) {
-            confidenceTerm_ = std::make_shared<DoubleTerm>(0.0);
-            confidenceOperator_ = LEQ;
+            auto beliefModality = (const BeliefModality*) epistemicModality;
+            if(beliefModality->confidence().has_value()) {
+                confidenceTerm_ = std::make_shared<DoubleTerm>(beliefModality->confidence().value());
+            }
         }
     }
 
@@ -76,7 +79,6 @@ FramedRDFLiteral::FramedRDFLiteral(
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(objectOperator),
-          confidenceOperator_(EQ),
           graphTerm_(std::make_shared<StringTerm>(graphName.data()))
 {
 }
@@ -87,8 +89,7 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
           beginTerm_(),
           endTerm_(),
           confidenceTerm_(),
-          objectOperator_(EQ),
-          confidenceOperator_(EQ)
+          objectOperator_(EQ)
 {
     switch(tripleData.objectType) {
         case RDF_RESOURCE:
@@ -195,11 +196,6 @@ std::shared_ptr<Term> FramedRDFLiteral::confidenceTerm() const
     return confidenceTerm_;
 }
 
-FramedRDFLiteral::OperatorType FramedRDFLiteral::confidenceOperator() const
-{
-    return confidenceOperator_;
-}
-
 std::shared_ptr<Term> FramedRDFLiteral::beginTerm() const
 {
     return beginTerm_;
@@ -213,13 +209,6 @@ std::shared_ptr<Term> FramedRDFLiteral::endTerm() const
 void FramedRDFLiteral::setMinConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
-    confidenceOperator_ = LEQ;
-}
-
-void FramedRDFLiteral::setMaxConfidence(double limit)
-{
-    confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
-    confidenceOperator_ = GEQ;
 }
 
 void FramedRDFLiteral::setBeginTerm(const TermPtr &beginTerm)

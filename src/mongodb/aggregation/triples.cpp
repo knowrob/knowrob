@@ -284,13 +284,17 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFL
     auto ct = tripleExpression.confidenceTerm();
     if(!ct) return;
 
+    // TODO: take into account epistemic operator here
+    //  - well null value is interpreted as confidence=1.0 below,
+    //    but there could be documents in B without confidence specified.
+    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
+
     if(ct->type() == TermType::DOUBLE) {
-        const char* confidenceOperator = getOperatorString(tripleExpression.confidenceOperator());
         aggregation::appendTermQuery(
                 selectorDoc,
                 "c",
                 ct,
-                confidenceOperator,
+                MONGO_OPERATOR_GTE,
                 allowNullValues);
     }
     else {
