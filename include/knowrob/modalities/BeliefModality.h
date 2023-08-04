@@ -17,6 +17,10 @@ namespace knowrob {
 
 		explicit BeliefModality(const std::string_view &agent);
 
+		explicit BeliefModality(double confidence);
+
+        BeliefModality(const std::string_view &agent, double confidence);
+
         /**
 		 * @return the belief operator `B`
 		 */
@@ -26,6 +30,18 @@ namespace knowrob {
 		 * @return the belief operator `B`
 		 */
 		static ModalOperatorPtr B(const std::string_view &agent);
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr B(const std::string_view &agent, double confidence);
+
+        /**
+		 * @return the belief operator `B`
+		 */
+		static ModalOperatorPtr B(double confidence);
+
+        auto& confidence() const { return confidence_; }
 
         // Override Modality
         bool isSerial() const override;
@@ -47,6 +63,9 @@ namespace knowrob {
 
         // Override Modality
         ModalOperatorPtr reduce(const ModalOperatorPtr &a, const ModalOperatorPtr &b) const override;
+
+    protected:
+        std::optional<double> confidence_;
 	};
 
 } // knowrob

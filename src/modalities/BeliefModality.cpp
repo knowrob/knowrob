@@ -12,6 +12,16 @@ BeliefModality::BeliefModality() : EpistemicModality() {}
 BeliefModality::BeliefModality(const std::string_view &agent)
 : EpistemicModality(agent) {}
 
+BeliefModality::BeliefModality(const std::string_view &agent, double confidence)
+: EpistemicModality(agent),
+  confidence_(confidence)
+{}
+
+BeliefModality::BeliefModality(double confidence)
+: EpistemicModality(),
+  confidence_(confidence)
+{}
+
 bool BeliefModality::isSerial()     const { return true; }
 bool BeliefModality::isTransitive() const { return true; }
 bool BeliefModality::isEuclidean()  const { return false; }
@@ -30,6 +40,18 @@ ModalOperatorPtr BeliefModality::B()
 ModalOperatorPtr BeliefModality::B(const std::string_view &agent)
 {
     auto modality = std::make_shared<BeliefModality>(agent);
+    return std::make_shared<ModalOperator>(modality, ModalOperatorType::POSSIBILITY);
+}
+
+ModalOperatorPtr BeliefModality::B(const std::string_view &agent, double confidence)
+{
+    auto modality = std::make_shared<BeliefModality>(agent, confidence);
+    return std::make_shared<ModalOperator>(modality, ModalOperatorType::POSSIBILITY);
+}
+
+ModalOperatorPtr BeliefModality::B(double confidence)
+{
+    auto modality = std::make_shared<BeliefModality>(confidence);
     return std::make_shared<ModalOperator>(modality, ModalOperatorType::POSSIBILITY);
 }
 
