@@ -41,18 +41,19 @@ FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFram
     if(pastOperator) {
         auto pastModality = (const PastModality*) &pastOperator->modality();
         if(pastModality) {
-            // TODO: allow quantified time intervals in past modality
-            if(pastOperator->isModalPossibility()) {
-                // include all triples before the current time point
-                beginOperator_ = LT;
-                beginTerm_ = std::make_shared<DoubleTerm>(TimePoint::now().value());
+            if(pastModality->timeInterval().has_value()) {
+                auto &ti = pastModality->timeInterval().value();
+                if(ti.since().has_value()) {
+                    beginTerm_ = std::make_shared<DoubleTerm>(ti.since().value().value());
+                }
+                if(ti.until().has_value()) {
+                    endTerm_ = std::make_shared<DoubleTerm>(ti.until().value().value());
+                }
             }
-            else if(pastOperator->isModalNecessity()) {
-                // include only triples that were always true in the past
-                // TODO: reconsider how this case should be encoded in triple expressions
-                beginOperator_ = LEQ;
+            if(!beginTerm_) {
                 beginTerm_ = std::make_shared<DoubleTerm>(0.0);
-                endOperator_ = GEQ;
+            }
+            if(!endTerm_) {
                 endTerm_ = std::make_shared<DoubleTerm>(TimePoint::now().value());
             }
         }
@@ -75,8 +76,6 @@ FramedRDFLiteral::FramedRDFLiteral(
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(objectOperator),
-          beginOperator_(EQ),
-          endOperator_(EQ),
           confidenceOperator_(EQ),
           graphTerm_(std::make_shared<StringTerm>(graphName.data()))
 {
@@ -89,8 +88,6 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(EQ),
-          beginOperator_(EQ),
-          endOperator_(EQ),
           confidenceOperator_(EQ),
           graphTerm_(std::make_shared<StringTerm>(tripleData.graph))
 {
@@ -211,16 +208,6 @@ std::shared_ptr<Term> FramedRDFLiteral::endTerm() const
     return endTerm_;
 }
 
-FramedRDFLiteral::OperatorType FramedRDFLiteral::beginOperator() const
-{
-    return beginOperator_;
-}
-
-FramedRDFLiteral::OperatorType FramedRDFLiteral::endOperator() const
-{
-    return endOperator_;
-}
-
 void FramedRDFLiteral::setMinConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
@@ -231,30 +218,6 @@ void FramedRDFLiteral::setMaxConfidence(double limit)
 {
     confidenceTerm_ = std::make_shared<DoubleTerm>(limit);
     confidenceOperator_ = GEQ;
-}
-
-void FramedRDFLiteral::setMinBegin(double limit)
-{
-    beginTerm_ = std::make_shared<DoubleTerm>(limit);
-    beginOperator_ = GEQ;
-}
-
-void FramedRDFLiteral::setMaxBegin(double limit)
-{
-    beginTerm_ = std::make_shared<DoubleTerm>(limit);
-    beginOperator_ = LEQ;
-}
-
-void FramedRDFLiteral::setMinEnd(double limit)
-{
-    endTerm_ = std::make_shared<DoubleTerm>(limit);
-    endOperator_ = GEQ;
-}
-
-void FramedRDFLiteral::setMaxEnd(double limit)
-{
-    endTerm_ = std::make_shared<DoubleTerm>(limit);
-    endOperator_ = LEQ;
 }
 
 void FramedRDFLiteral::setBeginTerm(const TermPtr &beginTerm)
@@ -270,16 +233,6 @@ void FramedRDFLiteral::setEndTerm(const TermPtr &endTerm)
 void FramedRDFLiteral::setAgentTerm(const std::string &agentTerm)
 {
     agentTerm_ = std::make_shared<StringTerm>(agentTerm);
-}
-
-void FramedRDFLiteral::setBeginOperator(OperatorType beginOperator)
-{
-    beginOperator_ = beginOperator;
-}
-
-void FramedRDFLiteral::setEndOperator(OperatorType endOperator)
-{
-    endOperator_ = endOperator;
 }
 
 bool FramedRDFLiteral::isGround() const
@@ -333,8 +286,26 @@ StatementData FramedRDFLiteral::toStatementData() const
     if(agentTerm_)      data.agent = readStringConstant(agentTerm_);
     if(graphTerm_)      data.graph = readStringConstant(graphTerm_);
     if(confidenceTerm_) data.confidence = readDoubleConstant(confidenceTerm_);
-    if(beginTerm_)      data.begin = readDoubleConstant(beginTerm_);
-    if(endTerm_)        data.end = readDoubleConstant(endTerm_);
+
+    // handle temporal modality
+    if(modalityFrame_.pastOperator()) {
+        if(modalityFrame_.pastOperator()->isModalNecessity()) {
+            data.temporalOperator = TemporalOperator::ALL_PAST;
+        }
+        else {
+            data.temporalOperator = TemporalOperator::SOME_PAST;
+        }
+    }
+    else if(beginTerm_ || endTerm_) {
+        // implicit use of H operator when only time interval was specified
+        data.temporalOperator = TemporalOperator::ALL_PAST;
+    }
+    if(beginTerm_) {
+        data.begin = readDoubleConstant(beginTerm_);
+    }
+    if(endTerm_) {
+        data.end = readDoubleConstant(endTerm_);
+    }
 
     return data;
 }
@@ -343,10 +314,8 @@ namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::FramedRDFLiteral& l)
 	{
 	    os << *l.propertyTerm();
-        // TODO: include modal frame when printing FramedRDFLiteral
-        if(0) {
-            os << '[';
-            os << ']';
+        if(l.modalityFrame().hasValue()) {
+            os << l.modalityFrame();
         }
         os << '(';
 	    os << *l.subjectTerm() << ", ";

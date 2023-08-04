@@ -38,6 +38,8 @@ namespace knowrob {
                                const std::string_view &graphName="*");
 */
 
+        const ModalityFrame& modalityFrame() const { return modalityFrame_; }
+
         /**
          * @return true if the expression has no variables.
          */
@@ -94,16 +96,6 @@ namespace knowrob {
         OperatorType confidenceOperator() const;
 
         /**
-         * @return the operator for the begin of the triple.
-         */
-        OperatorType beginOperator() const;
-
-        /**
-         * @return the operator for the end of the triple.
-         */
-        OperatorType endOperator() const;
-
-        /**
          * @param limit the minimum confidence of triples matching this expression
          */
         void setMinConfidence(double limit);
@@ -112,36 +104,6 @@ namespace knowrob {
          * @param limit the maximum confidence of triples matching this expression
          */
         void setMaxConfidence(double limit);
-
-        /**
-         * @param limit the minimum begin time of triples matching this expression
-         */
-        void setMinBegin(double limit);
-
-        /**
-         * @param limit the maximum begin time of triples matching this expression
-         */
-        void setMaxBegin(double limit);
-
-        /**
-         * @param limit the minimum end time of triples matching this expression
-         */
-        void setMinEnd(double limit);
-
-        /**
-         * @param limit the maximum end time of triples matching this expression
-         */
-        void setMaxEnd(double limit);
-
-        /**
-         * @param beginOperator the operator used for the begin time of triples.
-         */
-        void setBeginOperator(OperatorType beginOperator);
-
-        /**
-         * @param beginOperator the operator used for the end time of triples.
-         */
-        void setEndOperator(OperatorType endOperator);
 
         /**
          * @param beginTerm a time term.
@@ -170,8 +132,6 @@ namespace knowrob {
         std::shared_ptr<Term> endTerm_;
         std::shared_ptr<Term> confidenceTerm_;
         OperatorType objectOperator_;
-        OperatorType beginOperator_;
-        OperatorType endOperator_;
         OperatorType confidenceOperator_;
     };
     using FramedRDFLiteralPtr = std::shared_ptr<FramedRDFLiteral>;
