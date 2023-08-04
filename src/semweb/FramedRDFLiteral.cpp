@@ -88,8 +88,7 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(EQ),
-          confidenceOperator_(EQ),
-          graphTerm_(std::make_shared<StringTerm>(tripleData.graph))
+          confidenceOperator_(EQ)
 {
     switch(tripleData.objectType) {
         case RDF_RESOURCE:
@@ -114,6 +113,9 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
     }
     if(tripleData.end.has_value()) {
         endTerm_ = std::make_shared<DoubleTerm>(tripleData.end.value());
+    }
+    if(tripleData.graph) {
+        graphTerm_ = std::make_shared<StringTerm>(tripleData.graph);
     }
 }
 
