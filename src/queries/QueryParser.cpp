@@ -56,6 +56,7 @@ namespace knowrob {
         FormulaRule oncePast;
         FormulaRule oncePast2;
         FormulaRule alwaysPast;
+        FormulaRule alwaysPast2;
         FormulaRule brackets;
         FormulaRule unary;
 
@@ -182,6 +183,18 @@ static ModalOperatorPtr createP(const TermPtr &optionsTerm) {
     return PastModality::P();
 }
 
+static ModalOperatorPtr createH(const TermPtr &optionsTerm) {
+    if (optionsTerm) {
+        OptionList options(optionsTerm);
+        auto beginTime = getBeginOption(options);
+        auto endTime = getEndOption(options);
+        if (beginTime.has_value() || endTime.has_value()) {
+            return PastModality::H(TimeInterval(beginTime, endTime));
+        }
+    }
+    return PastModality::P();
+}
+
 static std::vector<TermPtr> createTermVector2(const TermPtr &a, const TermPtr &b) { return {a, b}; }
 
 QueryParser::QueryParser() {
@@ -257,10 +270,12 @@ QueryParser::QueryParser() {
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createK, qi::_1), qi::_2)]);
     bnf_->oncePast2 = (('P' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createP, qi::_1), qi::_2)]);
+    bnf_->alwaysPast2 = (('H' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+            [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createH, qi::_1), qi::_2)]);
     bnf_->modalFormula %= bnf_->belief2 | bnf_->belief
                           | bnf_->knowledge2 | bnf_->knowledge
                           | bnf_->oncePast2 | bnf_->oncePast
-                          | bnf_->alwaysPast;
+                          | bnf_->alwaysPast2 | bnf_->alwaysPast;
     bnf_->unary %= bnf_->modalFormula | bnf_->negation | bnf_->predicate;
 
     // compound formulae
