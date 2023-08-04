@@ -225,17 +225,38 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLitera
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
+    static auto h_id = std::make_shared<Integer32Term>(
+       static_cast<int32_t>(TemporalOperator::ALL_PAST));
     auto bt = tripleExpression.beginTerm();
     auto et = tripleExpression.endTerm();
 
+    // matching must be done depending on temporal operator:
+    // - H: bt >= since_H && et <= until_H
+    // - P: et >= since_H && bt <= until_H
+    // - TODO: there is another case for operator P: bt <= since_P && et >= until_P
+    auto &mf = tripleExpression.modalityFrame();
+    if(mf.isAboutSomePast()) {
+        // just swap bt/et (see above comment)
+        auto swap = bt;
+        bt = et;
+        et = swap;
+    }
+    // ensure that input document has *H* operator.
+    // null is also ok. in particular exclude documents with *P* operator here.
+    aggregation::appendTermQuery(
+        selectorDoc,
+        "temporalOperator",
+        h_id,
+        nullptr,
+        allowNullValues);
+
     if(bt) {
         if(bt->type() == TermType::DOUBLE) {
-            const char* beginOperator = getOperatorString(tripleExpression.beginOperator());
             aggregation::appendTermQuery(
                     selectorDoc,
                     "scope.time.since",
                     bt,
-                    beginOperator,
+                    MONGO_OPERATOR_GTE,
                     allowNullValues);
         }
         else {
@@ -244,12 +265,11 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     }
     if(et) {
         if(et->type() == TermType::DOUBLE) {
-            const char* endOperator = getOperatorString(tripleExpression.endOperator());
             aggregation::appendTermQuery(
                     selectorDoc,
                     "scope.time.until",
                     et,
-                    endOperator,
+                    MONGO_OPERATOR_LTE,
                     allowNullValues);
         }
         else {

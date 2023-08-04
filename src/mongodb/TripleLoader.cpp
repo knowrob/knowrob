@@ -115,6 +115,11 @@ bson_t* TripleLoader::createTripleDocument(const StatementData &tripleData,
     if(tripleData.confidence.has_value())
         BSON_APPEND_DOUBLE(tripleDoc, "c", tripleData.confidence.value());
 
+    if(tripleData.temporalOperator.has_value()) {
+        auto operatorID = static_cast<int32_t>(tripleData.temporalOperator.value());
+        BSON_APPEND_INT32(tripleDoc, "temporalOperator", operatorID);
+    }
+
     if(tripleData.begin.has_value() || tripleData.end.has_value()) {
         bson_t scopeDoc, timeDoc;
         BSON_APPEND_DOCUMENT_BEGIN(tripleDoc, "scope", &scopeDoc);

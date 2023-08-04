@@ -472,9 +472,13 @@ bool MongoKnowledgeGraph::loadFile( //NOLINT
 
 void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
 {
+    // TODO: revise this. time intervals of *H* modality can be merged as done below,
+    //       but for *P* modality it is more difficult...
+    //       also there can be interactions between H and P like H[0,10] and P[2,4] -> H[0,10]
     if(!tripleData.begin.has_value() && !tripleData.end.has_value()) return;
     bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate);
 
+#if 0
     // filter overlapping triples
     TripleCursor cursor(tripleCollection_);
     bson_t selectorDoc = BSON_INITIALIZER;
@@ -528,6 +532,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
         auto it = documentIDs.begin();
         for(it++; it!=documentIDs.end(); it++) tripleCollection_->removeOne(*it);
     }
+#endif
 }
 
 void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader)
