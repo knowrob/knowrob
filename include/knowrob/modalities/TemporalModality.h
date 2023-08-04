@@ -9,6 +9,12 @@
 #include "TimeInterval.h"
 
 namespace knowrob {
+    enum class TemporalOperator {
+        CURRENTLY=0,
+        ALL_PAST=1,
+        SOME_PAST=2
+    };
+
     /**
      * A time modalFrame such as "past" or "future".
      */
