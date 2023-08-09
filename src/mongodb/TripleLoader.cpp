@@ -110,8 +110,20 @@ bson_t* TripleLoader::createTripleDocument(const StatementData &tripleData,
     }
 
     BSON_APPEND_UTF8(tripleDoc, "graph", graphName.c_str());
+    if(tripleData.agent)
+        BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent);
     if(tripleData.confidence.has_value())
         BSON_APPEND_DOUBLE(tripleDoc, "c", tripleData.confidence.value());
+
+    if(tripleData.temporalOperator.has_value()) {
+        auto operatorID = static_cast<int32_t>(tripleData.temporalOperator.value());
+        BSON_APPEND_INT32(tripleDoc, "temporalOperator", operatorID);
+    }
+
+    if(tripleData.epistemicOperator.has_value()) {
+        auto operatorID = static_cast<int32_t>(tripleData.epistemicOperator.value());
+        BSON_APPEND_INT32(tripleDoc, "epistemicOperator", operatorID);
+    }
 
     if(tripleData.begin.has_value() || tripleData.end.has_value()) {
         bson_t scopeDoc, timeDoc;

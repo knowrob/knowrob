@@ -154,6 +154,7 @@ add_library(knowrob_qa SHARED
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
+        src/formulas/Literal.cpp
         src/queries/ModalQuery.cpp
 		src/queries/AllocatedQuery.cpp
 		src/queries/QueryError.cpp
@@ -180,7 +181,7 @@ add_library(knowrob_qa SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/formulas/FramedLiteral.cpp
+        src/semweb/FramedRDFLiteral.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp

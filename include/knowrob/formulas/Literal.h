@@ -8,6 +8,7 @@
 #include <memory>
 #include "knowrob/modalities/ModalityLabel.h"
 #include "Predicate.h"
+#include "knowrob/semweb/StatementData.h"
 
 namespace knowrob {
     /**
@@ -64,6 +65,11 @@ namespace knowrob {
         auto applySubstitution(const Substitution &sub) const
         { return std::make_shared<Literal>(*this, sub); }
 
+        /**
+         * Write the literal into an ostream.
+         */
+        virtual std::ostream& write(std::ostream& os) const;
+
     protected:
         const PredicatePtr predicate_;
         const bool isNegative_;
@@ -82,6 +88,11 @@ namespace knowrob {
          */
         const auto& label() const { return label_; }
 
+        StatementData asStatementData() const;
+
+        // Override Literal
+        std::ostream& write(std::ostream& os) const override;
+
     protected:
         const ModalityLabelPtr label_;
     };
@@ -90,5 +101,9 @@ namespace knowrob {
     using LabeledLiteralPtr = std::shared_ptr<LabeledLiteral>;
 
 } // knowrob
+
+namespace std {
+    std::ostream& operator<<(std::ostream& os, const knowrob::Literal& l);
+}
 
 #endif //KNOWROB_LITERAL_H

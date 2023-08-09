@@ -163,24 +163,24 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::FramedLiteral::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::FramedRDFLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case FramedLiteral::EQ:
+        case FramedRDFLiteral::EQ:
             return nullptr;
-        case FramedLiteral::LEQ:
+        case FramedRDFLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case FramedLiteral::GEQ:
+        case FramedRDFLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case FramedLiteral::LT:
+        case FramedRDFLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case FramedLiteral::GT:
+        case FramedRDFLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     auto gt = tripleExpression.graphTerm();
     if(!gt) return;
@@ -205,7 +205,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedLiteral &
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     auto at = tripleExpression.agentTerm();
 
@@ -222,20 +222,41 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedLiteral &
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
+    static auto h_id = std::make_shared<Integer32Term>(
+       static_cast<int32_t>(TemporalOperator::ALL_PAST));
     auto bt = tripleExpression.beginTerm();
     auto et = tripleExpression.endTerm();
 
+    // matching must be done depending on temporal operator:
+    // - H: bt >= since_H && et <= until_H
+    // - P: et >= since_H && bt <= until_H
+    // - TODO: there is another case for operator P: bt <= since_P && et >= until_P
+    auto &mf = tripleExpression.modalityFrame();
+    if(mf.isAboutSomePast()) {
+        // just swap bt/et (see above comment)
+        auto swap = bt;
+        bt = et;
+        et = swap;
+    }
+    // ensure that input document has *H* operator.
+    // null is also ok. in particular exclude documents with *P* operator here.
+    aggregation::appendTermQuery(
+        selectorDoc,
+        "temporalOperator",
+        h_id,
+        nullptr,
+        allowNullValues);
+
     if(bt) {
         if(bt->type() == TermType::DOUBLE) {
-            const char* beginOperator = getOperatorString(tripleExpression.beginOperator());
             aggregation::appendTermQuery(
                     selectorDoc,
                     "scope.time.since",
                     bt,
-                    beginOperator,
+                    MONGO_OPERATOR_GTE,
                     allowNullValues);
         }
         else {
@@ -244,12 +265,11 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &t
     }
     if(et) {
         if(et->type() == TermType::DOUBLE) {
-            const char* endOperator = getOperatorString(tripleExpression.endOperator());
             aggregation::appendTermQuery(
                     selectorDoc,
                     "scope.time.until",
                     et,
-                    endOperator,
+                    MONGO_OPERATOR_LTE,
                     allowNullValues);
         }
         else {
@@ -258,19 +278,23 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedLiteral &t
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedLiteral &tripleExpression)
+void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     auto ct = tripleExpression.confidenceTerm();
     if(!ct) return;
 
+    // TODO: take into account epistemic operator here
+    //  - well null value is interpreted as confidence=1.0 below,
+    //    but there could be documents in B without confidence specified.
+    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
+
     if(ct->type() == TermType::DOUBLE) {
-        const char* confidenceOperator = getOperatorString(tripleExpression.confidenceOperator());
         aggregation::appendTermQuery(
                 selectorDoc,
                 "c",
                 ct,
-                confidenceOperator,
+                MONGO_OPERATOR_GTE,
                 allowNullValues);
     }
     else {
@@ -280,7 +304,7 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedLite
 
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const FramedLiteral &tripleExpression,
+            const FramedRDFLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -621,7 +645,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::vector<FramedLiteralPtr> &tripleExpressions)
+        const std::vector<FramedRDFLiteralPtr> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 

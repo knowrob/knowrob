@@ -73,7 +73,7 @@ namespace knowrob {
          * @param tripleExpression a triple expression
          * @return a cursor over matching triples
          */
-        mongo::AnswerCursorPtr lookup(const FramedLiteral &tripleExpression);
+        mongo::AnswerCursorPtr lookup(const FramedRDFLiteral &tripleExpression);
 
         /**
          * Lookup up all matching triples.
@@ -89,7 +89,7 @@ namespace knowrob {
          * @param tripleExpressions a vector of triple expressions
          * @return a cursor over matching triples
          */
-        mongo::AnswerCursorPtr lookup(const std::vector<FramedLiteralPtr> &tripleExpressions);
+        mongo::AnswerCursorPtr lookup(const std::vector<FramedRDFLiteralPtr> &tripleExpressions);
 
         /**
          * @param graphName the name of a graph
@@ -110,10 +110,10 @@ namespace knowrob {
         bool insert(const std::vector<StatementData> &tripleData) override;
 
         // Override KnowledgeGraph
-        void removeAll(const FramedLiteral &tripleExpression) override;
+        void removeAll(const FramedRDFLiteral &tripleExpression) override;
 
         // Override KnowledgeGraph
-        void removeOne(const FramedLiteral &tripleExpression) override;
+        void removeOne(const FramedRDFLiteral &tripleExpression) override;
 
         // Override KnowledgeGraph
         void evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream) override;
@@ -144,7 +144,7 @@ namespace knowrob {
 
         void updateTimeInterval(const StatementData &tripleLoader);
 
-        static bson_t* getSelector(const FramedLiteral &tripleExpression, bool isTaxonomicProperty);
+        static bson_t* getSelector(const FramedRDFLiteral &tripleExpression, bool isTaxonomicProperty);
 
         bool isTaxonomicProperty(const TermPtr &propertyTerm);
     };

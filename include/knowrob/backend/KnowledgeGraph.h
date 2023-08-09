@@ -13,7 +13,7 @@
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/queries/GraphQuery.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/formulas/FramedLiteral.h"
+#include "knowrob/semweb/FramedRDFLiteral.h"
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/semweb/ImportHierarchy.h"
@@ -124,13 +124,13 @@ namespace knowrob {
          * Delete all matching statements from this KG.
          * @param tripleExpression an expression used to match statements in the KG.
          */
-        virtual void removeAll(const FramedLiteral &tripleExpression) = 0;
+        virtual void removeAll(const FramedRDFLiteral &tripleExpression) = 0;
 
         /**
          * Delete the first matching statement from this KG.
          * @param tripleExpression an expression used to match statements in the KG.
          */
-        virtual void removeOne(const FramedLiteral &tripleExpression) = 0;
+        virtual void removeOne(const FramedRDFLiteral &tripleExpression) = 0;
 
         /**
          * Submits a graph query to this knowledge graph.
