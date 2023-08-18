@@ -1,4 +1,4 @@
-FROM knowrob:noetic-base
+FROM knowrob/noetic_base
 MAINTAINER Sascha Jongebloed, jongebloed@uni-bremen.de
 
 ENV SWI_HOME_DIR=/usr/lib/swi-prolog

@@ -16,6 +16,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/queries/QueryParser.h"
+#include "knowrob/formulas/ModalFormula.h"
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -24,6 +25,7 @@
 #include <iai_knowledge_msgs/GraphQuery.h>
 #include <iai_knowledge_msgs/KeyValuePair.h>
 #include <iai_knowledge_msgs/askallAction.h>
+#include <iai_knowledge_msgs/askoneAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace knowrob {
@@ -33,22 +35,23 @@ namespace knowrob {
 
         // Action Servers
         actionlib::SimpleActionServer <iai_knowledge_msgs::askallAction> askall_action_server_;
-        //actionlib::SimpleActionServer <iai_knowledge_msgs::askoneAction> askone_action_server_;
+        actionlib::SimpleActionServer <iai_knowledge_msgs::askoneAction> askone_action_server_;
         // actionlib::SimpleActionServer <iai_knowledge_msgs::askiterativeAction> askiterative_action_server_;
         KnowledgeBase kb_;
     public:
-        explicit ROSInterface(boost::property_tree::ptree ptree);
+        explicit ROSInterface(const boost::property_tree::ptree& ptree);
 
         virtual ~ROSInterface();
 
         void executeAskAllCB(const iai_knowledge_msgs::askallGoalConstPtr &goal);
 
-        //void executeAskOneCB(const iai_knowledge_msgs::askoneGoalConstPtr &goal);
+        void executeAskOneCB(const iai_knowledge_msgs::askoneGoalConstPtr &goal);
 
-        //void executeAskIterativeCB(const iai_knowledge_msgs::askiterativeGoalConstPtr &goal);
-        static ModalityFrame genModalityFrame(const iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type& query);
+        // void executeAskIterativeCB(const iai_knowledge_msgs::askiterativeGoalConstPtr &goal);
 
-        iai_knowledge_msgs::KeyValuePair createKeyValuePair(AnswerPtr sharedPtr);
+        static FormulaPtr
+        applyModality(const iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type &query,
+                      FormulaPtr ptr);
 
         iai_knowledge_msgs::GraphAnswer createGraphAnswer(std::shared_ptr<const Answer> sharedPtr);
     };
