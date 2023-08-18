@@ -86,7 +86,10 @@ if (catkin_FOUND)
 	# build messages
 	add_action_files(
 	  DIRECTORY action
-	  FILES askall.action askone.action
+	  FILES 
+	  	askall.action 
+	  	askone.action
+	  	askincremental.action
 	)
 
 	add_message_files(

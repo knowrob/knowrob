@@ -33,12 +33,13 @@ using namespace knowrob;
 ROSInterface::ROSInterface(const boost::property_tree::ptree& config)
         : askall_action_server_(nh_, "knowrob/askall", boost::bind(&ROSInterface::executeAskAllCB, this, _1), false),
           askone_action_server_(nh_, "knowrob/askone", boost::bind(&ROSInterface::executeAskOneCB, this, _1), false),
+          askincremental_action_server_(nh_, "knowrob/askincremental", boost::bind(&ROSInterface::executeAskIncrementalCB, this, _1), false),
           kb_(config)
 {
     // Start all action servers
     askall_action_server_.start();
     askone_action_server_.start();
-    //askiterative_action_server_.start();
+    askincremental_action_server_.start();
 }
 
 ROSInterface::~ROSInterface() = default;
@@ -193,6 +194,49 @@ void ROSInterface::executeAskAllCB(const askallGoalConstPtr& goal)
         result.status = askallResult::TRUE;
     }
     askall_action_server_.setSucceeded(result);
+}
+
+void ROSInterface::executeAskIncrementalCB(const askincrementalGoalConstPtr& goal)
+{
+
+    // Implement your action here
+    FormulaPtr phi(QueryParser::parse(goal->query.queryString));
+
+    FormulaPtr mPhi = applyModality(goal->query, phi);
+
+    auto resultStream = kb_.submitQuery(mPhi, QUERY_FLAG_ALL_SOLUTIONS);
+    auto resultQueue = resultStream->createQueue();
+
+    int numSolutions_ = 0;
+    bool isTrue = false;
+    askincrementalResult result;
+    askincrementalFeedback feedback;
+    while(true) {
+        auto nextResult = resultQueue->pop_front();
+
+        if(AnswerStream::isEOS(nextResult)) {
+            break;
+        }
+        else {
+            isTrue = true;
+            if (nextResult->substitution()->empty()) {
+                break;
+            } else {
+                // Publish feedback
+                feedback.answer = createGraphAnswer(nextResult);
+                numSolutions_ += 1;
+                askincremental_action_server_.publishFeedback(feedback);
+            }
+        }
+    }
+
+    if(isTrue) {
+        result.status = askallResult::TRUE;
+    } else {
+        result.status = askallResult::FALSE;
+    }
+    result.numberOfSolutionsFound = numSolutions_;
+    askincremental_action_server_.setSucceeded(result);
 }
 
 void ROSInterface::executeAskOneCB(const askoneGoalConstPtr& goal)
