@@ -21,11 +21,11 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <ros/package.h>
-#include <iai_knowledge_msgs/GraphAnswer.h>
-#include <iai_knowledge_msgs/GraphQuery.h>
-#include <iai_knowledge_msgs/KeyValuePair.h>
-#include <iai_knowledge_msgs/askallAction.h>
-#include <iai_knowledge_msgs/askoneAction.h>
+#include <knowrob/GraphAnswerMessage.h>
+#include <knowrob/GraphQueryMessage.h>
+#include <knowrob/KeyValuePair.h>
+#include <knowrob/askallAction.h>
+#include <knowrob/askoneAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace knowrob {
@@ -34,8 +34,8 @@ namespace knowrob {
         ros::NodeHandle nh_;
 
         // Action Servers
-        actionlib::SimpleActionServer <iai_knowledge_msgs::askallAction> askall_action_server_;
-        actionlib::SimpleActionServer <iai_knowledge_msgs::askoneAction> askone_action_server_;
+        actionlib::SimpleActionServer <askallAction> askall_action_server_;
+        actionlib::SimpleActionServer <askoneAction> askone_action_server_;
         // actionlib::SimpleActionServer <iai_knowledge_msgs::askiterativeAction> askiterative_action_server_;
         KnowledgeBase kb_;
     public:
@@ -43,17 +43,17 @@ namespace knowrob {
 
         virtual ~ROSInterface();
 
-        void executeAskAllCB(const iai_knowledge_msgs::askallGoalConstPtr &goal);
+        void executeAskAllCB(const askallGoalConstPtr &goal);
 
-        void executeAskOneCB(const iai_knowledge_msgs::askoneGoalConstPtr &goal);
+        void executeAskOneCB(const askoneGoalConstPtr &goal);
 
         // void executeAskIterativeCB(const iai_knowledge_msgs::askiterativeGoalConstPtr &goal);
 
         static FormulaPtr
-        applyModality(const iai_knowledge_msgs::askallGoal_<std::allocator<void>>::_query_type &query,
+        applyModality(const GraphQueryMessage &query,
                       FormulaPtr ptr);
 
-        iai_knowledge_msgs::GraphAnswer createGraphAnswer(std::shared_ptr<const Answer> sharedPtr);
+        GraphAnswerMessage createGraphAnswer(std::shared_ptr<const Answer> sharedPtr);
     };
 }
 

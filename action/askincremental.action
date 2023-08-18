@@ -1,0 +1,11 @@
+GraphQuery query
+---
+byte FALSE = 0
+byte TRUE = 1
+byte QUERY_FAILED = 2
+
+uint32 numberOfSolutionsFound
+bool status
+---
+GraphAnswer answer
+byte status

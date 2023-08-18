@@ -71,7 +71,7 @@ add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 # NOTE: seems catkin_package must be called *before* any library is build.
 
 find_package(catkin QUIET COMPONENTS
-		roscpp roslib tests/urdf
+		roscpp roslib tests/urdf message_generation 
 		geometry_msgs message_generation json_prolog_msgs actionlib actionlob_msgs)
 
 if (catkin_FOUND)
@@ -83,9 +83,25 @@ if (catkin_FOUND)
 	
 	catkin_python_setup()
 
-	add_message_files(FILES EventToken.msg)
-	generate_messages(DEPENDENCIES geometry_msgs)
-	
+	# build messages
+	add_action_files(
+	  DIRECTORY action
+	  FILES askall.action askone.action
+	)
+
+	add_message_files(
+	  FILES
+	  KeyValuePair.msg
+	  GraphQueryMessage.msg
+	  GraphAnswerMessage.msg
+	  EventToken.msg
+	)
+
+	generate_messages(DEPENDENCIES
+    	std_msgs
+    	geometry_msgs
+    	actionlib_msgs)	
+
 	catkin_package(
 		CATKIN_DEPENDS roscpp roslib
 		CFG_EXTRAS ontologies.cmake
@@ -243,6 +259,7 @@ install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 ##############
 
 if (catkin_FOUND)
+
 	# install into ROS workspace
 	#add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -280,9 +297,11 @@ if (catkin_FOUND)
 #		${catkin_EXPORTED_TARGETS})
 
 	## ROS Interface ###
-	add_executable(knowrob-ros src/ros/ROSInterface.cpp
-            src/queries/AnswerError.cpp
-			include/knowrob/queries/AnswerError.h)
+	add_executable(knowrob-ros 
+	src/ros/ROSInterface.cpp
+	)
+	add_dependencies(knowrob-ros
+	 ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(knowrob-ros
 			Boost::program_options
 			knowrob_qa
