@@ -7,19 +7,4 @@ services:
       - 127.0.0.1:27018:27017
     logging:
       driver: "none"
-
-  # the KnowRob container
-  knowrob:
-    image: "openease/knowrob"
-    container_name: knowrob_container
-    depends_on:
-      - 'mongo'
-    environment:
-      - KNOWROB_MONGODB_URI=mongodb://127.0.0.1:27018/?appname=knowrob
-      - KNOWROB_MONGO_HOST=127.0.0.1
-      - KNOWROB_MONGO_PORT=27018
-      - KNOWROB_MONGO_USER=
-      - KNOWROB_MONGO_PASS=
     network_mode: host
-    entrypoint: ["/run_knowrob_local.sh"]
-

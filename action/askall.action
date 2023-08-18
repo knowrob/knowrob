@@ -1,0 +1,10 @@
+GraphQueryMessage query
+---
+byte FALSE = 0
+byte TRUE = 1
+byte QUERY_FAILED = 2
+
+GraphAnswerMessage[] answer
+byte status
+---
+uint32 numberOfSolutions
