@@ -20,10 +20,8 @@
 % @param Scope A scope dictionary.
 %
 mongolog_universal_scope(dict{
-	time: dict{
-		min: dict{ min: double(0),          max: double(0) },
-		max: dict{ min: double('Infinity'), max: double('Infinity') }
-	}
+	epistemicMode: knowledge,
+	temporalMode: always
 }).
 
 %% mongolog_scope_is_valid(-Pipeline) is det.
@@ -49,35 +47,46 @@ mongolog_scope_is_valid(['$match',
 mongolog_scope_doc(QScope, [Key,Value]) :-
 	scope_doc1(QScope, [Key,Value]),
 	% do not proceed for variables in scope these are handled later
-	(Value=array([_,[_,[_,string(_)]]]) -> fail ; true).
+	% FIXME: not sure about below, how can variables be identified?
+	(( Value=array([_,[_,[_,string(VarKey)]]]),
+	   atom_concat('$',_,VarKey) ) -> fail ; true).
 
 scope_doc1(QScope, ['$or', array([
 		[Key, ['$exists', bool(false)]],
 		[Key, Value]
 	])]) :-
 	get_dict(ScopeName, QScope, ScopeData),
-	scope_doc(ScopeName, ScopeData, SubPath, Value),
-	atomic_list_concat([scope,ScopeName,SubPath], '.', Key).
+	scope_doc(ScopeName, ScopeData, Key, Value).
 
-scope_doc(time, ScopeData, TimeKey, [Operator, Value]) :-
-    !, member([ScopeKey,TimeKey], [[min,since], [max,until]]),
-    scope_doc_range(ScopeData, ScopeKey, Operator, Value).
+scope_doc(epistemicMode, ScopeVal, uncertain, DocVal) :-
+	epistemic_doc(ScopeVal, DocVal),!.
+scope_doc(agent, ScopeVal, agent, ['$eq', Typed]) :-
+	mng_typed_value(ScopeVal, Typed).
+scope_doc(confidence, ScopeVal, confidence, ['$gte', Typed]) :-
+	mng_typed_value(ScopeVal, Typed).
+
+scope_doc(temporalMode, ScopeVal, occasional, DocVal) :-
+	temporal_doc(ScopeVal, DocVal), !.
+scope_doc(since, ScopeVal, 'scope.time.since', ['$lte', Typed]) :-
+	mng_typed_value(ScopeVal, Typed).
+scope_doc(until, ScopeVal, 'scope.time.until', ['$gte', Typed]) :-
+	mng_typed_value(ScopeVal, Typed).
 
 %%
-scope_doc_range(ScopeData, ScopeKey, Operator, Value) :-
-    get_dict(ScopeKey, ScopeData, RangeData),
-    once((( get_dict(min, RangeData, Min) ; Min=none ),
-          ( get_dict(max, RangeData, Max) ; Max=none ))),
-    scope_doc_range1(Min, Max, Operator, Value).
+epistemic_doc(belief, _) :- !, fail.
+epistemic_doc(knowledge, ['$eq', bool(false)]).
+epistemic_doc('B', Val) :- epistemic_doc(belief, Val).
+epistemic_doc('K', Val) :- epistemic_doc(knowledge, Val).
+epistemic_doc(string(ScopeVal), Val) :- epistemic_doc(ScopeVal, Val).
+epistemic_doc(string(ScopeVal), ['$eq', string(ScopeVal)]).
 
 %%
-scope_doc_range1(none, none, _, _)         :- !, fail.
-scope_doc_range1(none, Max, '$lte', Typed) :- !, mng_typed_value(Max, Typed).
-scope_doc_range1(Min, none, '$gte', Typed) :- !, mng_typed_value(Min, Typed).
-scope_doc_range1(Val, Val,  '$eq',  Typed) :- !, mng_typed_value(Val, Typed).
-scope_doc_range1(Min, Max, Operator, Value) :-
-    scope_doc_range1(Min, none, Operator, Value) ;
-    scope_doc_range1(none, Max, Operator, Value).
+temporal_doc(sometimes, _) :- !, fail.
+temporal_doc(always, ['$eq', bool(false)]).
+temporal_doc('H', Val) :- temporal_doc(always, Val).
+temporal_doc('P', Val) :- temporal_doc(sometimes, Val).
+temporal_doc(string(ScopeVal), Val) :- temporal_doc(ScopeVal, Val).
+temporal_doc(string(ScopeVal), ['$eq', string(ScopeVal)]).
 
 %% mongolog_scope_match(+Ctx, -Pipeline) is semidet.
 %
@@ -94,6 +103,8 @@ mongolog_scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 		])],
 		% only include variables, constants are handled earlier
 		(	scope_doc1(Scope, [ScopeKey,[Operator,string(Val0)]]),
+			% FIXME: not sure about below, how can variables be identified?
+			atom_concat('$',_,Val0),
 			atom_concat('$',ScopeKey,ScopeValue),
 			atom_concat('$',Val0,Val)
 		),
@@ -108,6 +119,7 @@ mongolog_scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 % It will fail in case the intersection is empty.
 %
 mongolog_scope_intersect(VarKey, Since1, Until1, Options, Step) :-
+	% TODO: remember if the solution is uncertain
 	atomic_list_concat(['$',VarKey,'.time.since'], '', Since0),
 	atomic_list_concat(['$',VarKey,'.time.until'], '', Until0),
 	atomic_list_concat(['$',VarKey], '', VarKey0),
@@ -158,25 +170,8 @@ time_scope_value2(Val, Typed) :- mng_typed_value(Val, Typed).
 % not known.
 %
 time_scope_data(Scope,[Since,Until]) :-
-	( get_dict(time,Scope,X) ; X=Scope ),
-	time_scope_data_(min,X,Since),
-	time_scope_data_(max,X,Until),
-	!.
-
-%%
-time_scope_data_(min,Dict,Val) :-
-	get_dict(min,Dict,Range),
-	(   get_dict(min,Range,Val)
-	;   get_dict(max,Range,Val)
-	),!.
-time_scope_data_(min,_,_).
-
-time_scope_data_(max,Dict,Val) :-
-	get_dict(max,Dict,Range),
-	(   get_dict(max,Range,Val)
-	;   get_dict(min,Range,Val)
-	),!.
-time_scope_data_(max,_,_).
+	get_dict(since,Scope,Since),
+	get_dict(until,Scope,Until).
 
 %%
 % variables maybe used in the scope.

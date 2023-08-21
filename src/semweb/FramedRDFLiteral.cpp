@@ -53,12 +53,6 @@ FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFram
                     endTerm_ = std::make_shared<DoubleTerm>(ti.until().value().value());
                 }
             }
-            if(!beginTerm_) {
-                beginTerm_ = std::make_shared<DoubleTerm>(0.0);
-            }
-            if(!endTerm_) {
-                endTerm_ = std::make_shared<DoubleTerm>(TimePoint::now().value());
-            }
         }
         else {
             KB_WARN("unexpected temporal operator in graph query!");
@@ -290,17 +284,11 @@ StatementData FramedRDFLiteral::toStatementData() const
     }
 
     // handle temporal modality
+    data.temporalOperator = TemporalOperator::ALWAYS;
     if(modalityFrame_.pastOperator()) {
-        if(modalityFrame_.pastOperator()->isModalNecessity()) {
-            data.temporalOperator = TemporalOperator::ALL_PAST;
+        if(modalityFrame_.pastOperator()->isModalPossibility()) {
+            data.temporalOperator = TemporalOperator::SOMETIMES;
         }
-        else {
-            data.temporalOperator = TemporalOperator::SOME_PAST;
-        }
-    }
-    else if(beginTerm_ || endTerm_) {
-        // implicit use of H operator when only time interval was specified
-        data.temporalOperator = TemporalOperator::ALL_PAST;
     }
     if(beginTerm_) {
         data.begin = readDoubleConstant(beginTerm_);

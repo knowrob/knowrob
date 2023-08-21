@@ -225,8 +225,8 @@ void MongoKnowledgeGraph::initialize()
 
 void MongoKnowledgeGraph::createSearchIndices()
 {
-    // TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence" be included
-    //       in each index?
+    // TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence",
+    //  "uncertain", "occasional" be included in each index?
     tripleCollection_->createAscendingIndex({"s"});
     tripleCollection_->createAscendingIndex({"p"});
     tripleCollection_->createAscendingIndex({"o"});
@@ -479,7 +479,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
     TripleCursor cursor(tripleCollection_);
     bson_t selectorDoc = BSON_INITIALIZER;
     FramedRDFLiteral overlappingExpr(tripleData);
-    if(tripleData.temporalOperator.has_value() && tripleData.temporalOperator.value() == TemporalOperator::ALL_PAST) {
+    if(tripleData.temporalOperator.has_value() && tripleData.temporalOperator.value() == TemporalOperator::ALWAYS) {
         auto swap = overlappingExpr.endTerm();
         overlappingExpr.setEndTerm(overlappingExpr.beginTerm());
         overlappingExpr.setBeginTerm(swap);

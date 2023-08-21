@@ -10,9 +10,8 @@
 
 namespace knowrob {
     enum class TemporalOperator {
-        CURRENTLY=0,
-        ALL_PAST=1,
-        SOME_PAST=2
+        ALWAYS=0,
+        SOMETIMES=1
     };
 
     /**

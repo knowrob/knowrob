@@ -25,9 +25,10 @@ bool TripleCursor::nextTriple(StatementData &tripleData) //NOLINT
         tripleData.object = nullptr;
         tripleData.graph = nullptr;
         tripleData.begin = std::nullopt;
-        tripleData.begin = std::nullopt;
         tripleData.end = std::nullopt;
         tripleData.objectType = RDF_STRING_LITERAL;
+        tripleData.temporalOperator = TemporalOperator::ALWAYS;
+        tripleData.epistemicOperator = EpistemicOperator::KNOWLEDGE;
 
         while(bson_iter_next(&tripleIter_)) {
             std::string_view key = bson_iter_key(&tripleIter_);
@@ -39,10 +40,20 @@ bool TripleCursor::nextTriple(StatementData &tripleData) //NOLINT
                 tripleData.predicate = bson_iter_utf8(&tripleIter_, nullptr);
             else if(key=="graph")
                 tripleData.graph = bson_iter_utf8(&tripleIter_, nullptr);
-            else if(key=="a")
+            else if(key=="agent")
                 tripleData.agent = bson_iter_utf8(&tripleIter_, nullptr);
-            else if(key=="c")
+            else if(key=="uncertain" && bson_iter_bool(&tripleIter_))
+                tripleData.epistemicOperator = EpistemicOperator::BELIEF;
+            else if(key=="occasional" && bson_iter_bool(&tripleIter_))
+                tripleData.temporalOperator = TemporalOperator::SOMETIMES;
+            else if(key=="since")
+                tripleData.begin = bson_iter_double(&tripleIter_);
+            else if(key=="until")
+                tripleData.end = bson_iter_double(&tripleIter_);
+            else if(key=="confidence") {
                 tripleData.confidence = bson_iter_double(&tripleIter_);
+                tripleData.epistemicOperator = EpistemicOperator::BELIEF;
+            }
             else if(key=="o") {
                 switch(bson_iter_type(&tripleIter_)) {
                     case BSON_TYPE_UTF8:

@@ -409,7 +409,6 @@ mongolog_call(load_rdf_xml(File,ParentGraph), _Ctx) :-
     ).
 
 mongolog_call(Goal, ContextIn) :-
-
 	% Add all toplevel variables to context.
 	% note that this is important to avoid that Prolog garbage collects the variables!
 	term_keys_variables_(Goal, GlobalVars),
@@ -701,6 +700,7 @@ mongolog_assert(triple(S,P,O), Scope) :-
 	current_reasoner_manager(ReasonerManager),
 	current_reasoner_module(ReasonerModule),
 	sw_default_graph(G),
+	% FIXME: must include other fields of modal frame!
 	mng_assert_triple_cpp(ReasonerManager, ReasonerModule,
 			S, P, O, G,
 			SinceValue, UntilValue, _).
@@ -1100,7 +1100,7 @@ context_var_key(Dict, CtxVarKey) :-
 	context_var_key(Val, CtxVarKey).
 
 context_var_key(Val, CtxVarKey) :-
-	% NOTE: vars should ne resolved to keys in the scope already.
+	% NOTE: vars should be resolved to keys in the scope already.
 	%       e.g. `Since == =<(string($v_235472))`
 	mng_strip(Val, _, string, Stripped),
 	atom(Stripped),

@@ -112,17 +112,23 @@ bson_t* TripleLoader::createTripleDocument(const StatementData &tripleData,
     BSON_APPEND_UTF8(tripleDoc, "graph", graphName.c_str());
     if(tripleData.agent)
         BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent);
-    if(tripleData.confidence.has_value())
-        BSON_APPEND_DOUBLE(tripleDoc, "c", tripleData.confidence.value());
 
-    if(tripleData.temporalOperator.has_value()) {
-        auto operatorID = static_cast<int32_t>(tripleData.temporalOperator.value());
-        BSON_APPEND_INT32(tripleDoc, "temporalOperator", operatorID);
+    bool isBelief = false;
+    if(tripleData.confidence.has_value()) {
+        BSON_APPEND_DOUBLE(tripleDoc, "confidence", tripleData.confidence.value());
+        isBelief = true;
+    }
+    else if(tripleData.epistemicOperator.has_value()) {
+        isBelief = (tripleData.epistemicOperator.value() == EpistemicOperator::BELIEF);
+    }
+    if(isBelief) {
+        // flag the statement as "uncertain"
+        BSON_APPEND_BOOL(tripleDoc, "uncertain", true);
     }
 
-    if(tripleData.epistemicOperator.has_value()) {
-        auto operatorID = static_cast<int32_t>(tripleData.epistemicOperator.value());
-        BSON_APPEND_INT32(tripleDoc, "epistemicOperator", operatorID);
+    if(tripleData.temporalOperator.has_value() && tripleData.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+        // flag the statement as "occasional", meaning it is only known that it was true at some past instants
+        BSON_APPEND_BOOL(tripleDoc, "occasional", true);
     }
 
     if(tripleData.begin.has_value() || tripleData.end.has_value()) {

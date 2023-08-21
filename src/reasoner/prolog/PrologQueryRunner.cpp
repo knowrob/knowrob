@@ -110,53 +110,80 @@ void PrologQueryRunner::run()
 term_t PrologQueryRunner::createContextTerm(
         term_t solutionScopeVar, term_t predicatesVar)
 {
-    // TODO: reconsider encoding of ModalityFrame as term, below only time-interval is handled.
-    //       so better change "query_scope" and "solution_scope" below. This will need changes in
-    //       "call" predicates of Prolog and Mongolog where these terms are processed.
-    // e.g. add to options `epistemic(know|belief, [Agent])` and `temporal(past, [(min,max),(min,max)])`
+    // query frame has the form:
+    // { epistemicMode: knowledge|belief,
+    //   temporalMode: sometimes|always,
+    //   [agent: $name,]
+    //   [since: $time,]
+    //   [until: $time] }
 
-    static const auto time_key = PL_new_atom("time");
-    //static const auto confidence_key = PL_new_atom("confidenceInterval");
+    static const auto epistemicMode_a = PL_new_atom("epistemicMode");
+    static const auto temporalMode_a = PL_new_atom("temporalMode");
+    static const auto agent_a = PL_new_atom("agent");
+    static const auto knowledge_a = PL_new_atom("knowledge");
+    static const auto belief_a = PL_new_atom("belief");
+    static const auto sometimes_a = PL_new_atom("sometimes");
+    static const auto always_a = PL_new_atom("always");
+    static const auto since_a = PL_new_atom("since");
+    static const auto until_a = PL_new_atom("until");
 
     static const auto query_scope_f = PL_new_functor(PL_new_atom("query_scope"), 1);
     static const auto solution_scope_f = PL_new_functor(PL_new_atom("solution_scope"), 1);
     static const auto predicates_f = PL_new_functor(PL_new_atom("predicates"), 1);
 
-    auto &timeInterval = request_.queryInstance->modalFrame().timeInterval();
-    //auto &confidenceInterval = request_.queryInstance->confidenceInterval();
-
-    int numScopeKeys = 0;
-    if(timeInterval.has_value())       numScopeKeys += 1;
-    //if(confidenceInterval.has_value()) numScopeKeys += 1;
+    auto &frame = request_.queryInstance->modalFrame();
+    int numFrameKeys = 2;
+    if(frame.agent().has_value()) numFrameKeys +=1;
+    if(frame.timeInterval().has_value()) {
+        auto &ti = frame.timeInterval().value();
+        if(ti.since().has_value()) numFrameKeys += 1;
+        if(ti.until().has_value()) numFrameKeys += 1;
+    }
 
     // create an option list
     auto listTerm = PL_new_term_ref();
     if(!PL_put_nil(listTerm)) return (term_t)0;
 
-    // option: query_scope($dictTerm)
-    if(numScopeKeys>0) {
-        atom_t scopeKeys[numScopeKeys];
-        auto scopeValues = PL_new_term_refs(numScopeKeys);
+    // option: frame($dictTerm)
+    atom_t scopeKeys[numFrameKeys];
+    auto scopeValues = PL_new_term_refs(numFrameKeys);
 
-        int keyIndex = 0;
-        // TODO re-enable time interval
-        //if(timeInterval.has_value()) {
-        //    PrologQuery::putTerm(scopeValues, timeInterval.value());
-        //    scopeKeys[keyIndex++] = time_key;
-        //}
-        //if(confidenceInterval.has_value()) {
-        //    PrologQuery::putTerm(scopeValues+keyIndex, *confidenceInterval.value());
-        //    scopeKeys[keyIndex++] = confidence_key;
-        //}
+    // epistemicMode: knowledge|belief
+    int keyIndex = 0;
+    scopeKeys[keyIndex] = epistemicMode_a;
+    if(!PL_put_atom(scopeValues, frame.isAboutBelief() ? belief_a : knowledge_a)) return (term_t)0;
 
-        auto dictTerm = PL_new_term_ref();
-        auto queryScopeOption = PL_new_term_ref();
-        if(!PL_put_dict(dictTerm, 0, numScopeKeys, scopeKeys, scopeValues) ||
-           !PL_cons_functor(queryScopeOption, query_scope_f, dictTerm) ||
-           !PL_cons_list(listTerm, queryScopeOption, listTerm))
-        {
-            return (term_t)0;
+    // temporalMode: sometimes|always
+    scopeKeys[++keyIndex] = temporalMode_a;
+    if(!PL_put_atom(scopeValues+keyIndex, frame.isAboutSomePast() ? sometimes_a : always_a)) return (term_t)0;
+
+    // agent: $name
+    if(frame.agent().has_value()) {
+        scopeKeys[++keyIndex] = agent_a;
+        if(!PL_put_atom_chars(scopeValues+keyIndex, frame.agent().value().c_str())) return (term_t)0;
+    }
+
+    if(frame.timeInterval().has_value()) {
+        auto &ti = frame.timeInterval().value();
+        // since: $name
+        if(ti.since().has_value()) {
+            scopeKeys[++keyIndex] = since_a;
+            if(!PL_put_float(scopeValues+keyIndex, ti.since().value().value())) return (term_t)0;
         }
+        // until: $name
+        if(ti.until().has_value()) {
+            scopeKeys[++keyIndex] = until_a;
+            if(!PL_put_float(scopeValues+keyIndex, ti.until().value().value())) return (term_t)0;
+        }
+    }
+
+    auto dictTerm = PL_new_term_ref();
+    auto frameOption = PL_new_term_ref();
+    if(!PL_put_dict(dictTerm, 0, numFrameKeys, scopeKeys, scopeValues) ||
+       !PL_cons_functor(frameOption, query_scope_f, dictTerm) ||
+       !PL_cons_list(listTerm, frameOption, listTerm))
+    {
+        return (term_t)0;
     }
 
     // option: solution_scope(solutionScopeVar)

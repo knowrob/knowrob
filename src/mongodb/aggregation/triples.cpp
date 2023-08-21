@@ -226,7 +226,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
 {
     static const bool allowNullValues = true;
     static auto h_id = std::make_shared<Integer32Term>(
-       static_cast<int32_t>(TemporalOperator::ALL_PAST));
+       static_cast<int32_t>(TemporalOperator::ALWAYS));
     auto bt = tripleExpression.beginTerm();
     auto et = tripleExpression.endTerm();
 
@@ -292,7 +292,7 @@ void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFL
     if(ct->type() == TermType::DOUBLE) {
         aggregation::appendTermQuery(
                 selectorDoc,
-                "c",
+                "confidence",
                 ct,
                 MONGO_OPERATOR_GTE,
                 allowNullValues);
