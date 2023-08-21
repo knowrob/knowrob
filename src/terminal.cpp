@@ -258,8 +258,14 @@ public:
                 break;
             }
             else {
-                pushQueryResult(nextResult);
-                numSolutions_ += 1;
+                if (nextResult->substitution()->empty()) {
+                    std::cout << "yes." << std::endl;
+                    numSolutions_ += 1;
+                    break;
+                } else {
+                    pushQueryResult(nextResult);
+                    numSolutions_ += 1;
+                }
             }
         }
 
