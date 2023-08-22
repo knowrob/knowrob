@@ -50,13 +50,9 @@ namespace knowrob {
         FormulaRule negation;
         FormulaRule modalFormula;
         FormulaRule belief;
-        FormulaRule belief2;
         FormulaRule knowledge;
-        FormulaRule knowledge2;
         FormulaRule oncePast;
-        FormulaRule oncePast2;
         FormulaRule alwaysPast;
-        FormulaRule alwaysPast2;
         FormulaRule brackets;
         FormulaRule unary;
 
@@ -76,9 +72,10 @@ namespace knowrob {
         TermRule atom;
         TermRule string;
         TermRule option;
-        TermRule optionFlag;
-        TermRule optionValue;
+        //TermRule optionFlag;
+        TermRule keyvalue;
         TermRule options;
+        TermRule nil;
 
         StringRule singleQuotes;
         StringRule doubleQuotes;
@@ -117,18 +114,6 @@ static std::string createIRI(const std::string &prefix, const std::string &name)
     }
 }
 
-static std::optional<std::string> getAgentOption(const OptionList &options) {
-    // agent is either represented as `=(flag,$name)` or `=(agent,$name)` in option list.
-    // "flag" is used as key if no key was provided in the query.
-    if (options.contains("agent")) return options.getString("agent", "self");
-    if (options.contains("flag")) return options.getString("flag", "self");
-    return std::nullopt;
-}
-
-static std::optional<double> getConfidenceOption(const OptionList &options) {
-    return options.contains("confidence") ? options.getDouble("confidence") : std::nullopt;
-}
-
 static std::optional<TimePoint> getBeginOption(const OptionList &options) {
     return options.contains("begin") ? options.getDouble("begin") : std::nullopt;
 }
@@ -137,11 +122,41 @@ static std::optional<TimePoint> getEndOption(const OptionList &options) {
     return options.contains("end") ? options.getDouble("end") : std::nullopt;
 }
 
-static ModalOperatorPtr createK(const TermPtr &optionsTerm) {
-    if (optionsTerm) {
-        OptionList options(optionsTerm);
-        // read options
-        auto agentName = getAgentOption(options);
+static void reportUnrecognized(const TermPtr &option) {
+    throw QueryError("Unrecognized option ({}) in modal operator.", *option);
+}
+
+static ModalOperatorPtr createK(const TermPtr &optionsTerm)
+{
+    if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
+        auto listTerm = (ListTerm*)optionsTerm.get();
+        std::optional<std::string> agentName;
+
+        for(auto &option : *listTerm) {
+            // handle options without key
+            if(!agentName.has_value() && option->type() == TermType::STRING) {
+                // assume first string that appears to be the agent name
+                agentName = ((StringTerm*)option.get())->value();
+                continue;
+            }
+            // handle options with a key
+            else if(option->type() == TermType::PREDICATE) {
+                // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
+                auto predicate = (Predicate*)option.get();
+                if(predicate->indicator()->arity()==2) {
+                    auto &key = predicate->arguments()[0];
+                    auto &value = predicate->arguments()[1];
+                    if(!agentName.has_value() && value->type() == knowrob::TermType::STRING &&
+                            (*key == StringTerm("agent") || *key == StringTerm("a")))
+                    {
+                        agentName = ((StringTerm*)value.get())->value();
+                        continue;
+                    }
+                }
+            }
+            reportUnrecognized(option);
+        }
+
         // create a parametrized modal operator
         if (agentName.has_value() && agentName.value() != "self") {
             return KnowledgeModality::K(agentName.value());
@@ -150,17 +165,58 @@ static ModalOperatorPtr createK(const TermPtr &optionsTerm) {
     return KnowledgeModality::K();
 }
 
-static ModalOperatorPtr createB(const TermPtr &optionsTerm) {
-    if (optionsTerm) {
-        OptionList options(optionsTerm);
-        // read options
-        auto confidenceValue = getConfidenceOption(options);
-        auto agentName = getAgentOption(options);
+static ModalOperatorPtr createB(const TermPtr &optionsTerm)
+{
+    if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
+        auto listTerm = (ListTerm*)optionsTerm.get();
+        std::optional<std::string> agentName;
+        std::optional<double> confidenceValue;
+
+        for(auto &option : *listTerm) {
+            // handle options without key
+            if(!agentName.has_value() && option->type() == TermType::STRING) {
+                // assume first string that appears to be the agent name
+                agentName = ((StringTerm*)option.get())->value();
+                continue;
+            }
+            else if(!confidenceValue.has_value() && option->type() == TermType::DOUBLE) {
+                // assume first string that appears to be the agent name
+                confidenceValue = ((DoubleTerm*)option.get())->value();
+                continue;
+            }
+            // handle options with a key
+            else if(option->type() == TermType::PREDICATE) {
+                // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
+                auto predicate = (Predicate*)option.get();
+                if(predicate->indicator()->arity()==2) {
+                    auto &key = predicate->arguments()[0];
+                    auto &value = predicate->arguments()[1];
+                    if(!agentName.has_value() && value->type() == knowrob::TermType::STRING &&
+                            (*key == StringTerm("agent") || *key == StringTerm("a")))
+                    {
+                        agentName = ((StringTerm*)value.get())->value();
+                        continue;
+                    }
+                    else if(!confidenceValue.has_value() && value->type() == knowrob::TermType::DOUBLE &&
+                            (*key == StringTerm("confidence") || *key == StringTerm("c")))
+                    {
+                        confidenceValue = ((DoubleTerm*)value.get())->value();
+                        continue;
+                    }
+                }
+            }
+            reportUnrecognized(option);
+        }
+
         if (agentName.has_value() && agentName.value() == "self") agentName = std::nullopt;
         // create a parametrized modal operator
         if (agentName.has_value()) {
-            if(confidenceValue.has_value()) return BeliefModality::B(agentName.value(), confidenceValue.value());
-            else return BeliefModality::B(agentName.value());
+            if(confidenceValue.has_value()) {
+                return BeliefModality::B(agentName.value(), confidenceValue.value());
+            }
+            else {
+                return BeliefModality::B(agentName.value());
+            }
         }
         else if(confidenceValue.has_value()) {
             return BeliefModality::B(confidenceValue.value());
@@ -169,28 +225,76 @@ static ModalOperatorPtr createB(const TermPtr &optionsTerm) {
     return BeliefModality::B();
 }
 
+static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options)
+{
+    std::optional<TimePoint> beginTime, endTime;
+
+    for(auto &option : *options)
+    {
+        // handle options without key
+        // TODO: allow eg `H[,20] phi`? i.e. empty for first arg?
+        if(option->type() == TermType::DOUBLE) {
+            if(!beginTime.has_value()) {
+                beginTime = ((DoubleTerm*)option.get())->value();
+                continue;
+            }
+            else if(!endTime.has_value()) {
+                endTime = ((DoubleTerm*)option.get())->value();
+                continue;
+            }
+        }
+        // handle options with a key
+        else if(option->type() == TermType::PREDICATE) {
+            // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
+            auto predicate = (Predicate*)option.get();
+            if(predicate->indicator()->arity()==2) {
+                auto &key = predicate->arguments()[0];
+                auto &value = predicate->arguments()[1];
+                if(!beginTime.has_value() && value->type() == knowrob::TermType::DOUBLE &&
+                    (*key == StringTerm("begin") || *key == StringTerm("since")))
+                {
+                    beginTime = ((DoubleTerm*)value.get())->value();
+                    continue;
+                }
+                else if(!endTime.has_value() && value->type() == knowrob::TermType::DOUBLE &&
+                    (*key == StringTerm("end") || *key == StringTerm("until")))
+                {
+                    endTime = ((DoubleTerm*)value.get())->value();
+                    continue;
+                }
+            }
+        }
+        reportUnrecognized(option);
+    }
+
+    if (beginTime.has_value() || endTime.has_value()) {
+        return TimeInterval(beginTime, endTime);
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 static ModalOperatorPtr createP(const TermPtr &optionsTerm) {
-    if (optionsTerm) {
-        OptionList options(optionsTerm);
-        auto beginTime = getBeginOption(options);
-        auto endTime = getEndOption(options);
-        if (beginTime.has_value() || endTime.has_value()) {
-            return PastModality::P(TimeInterval(beginTime, endTime));
+    if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
+        auto listTerm = (ListTerm*)optionsTerm.get();
+        auto timeInterval = readTimeInterval(listTerm);
+        if (timeInterval.has_value()) {
+            return PastModality::P(timeInterval.value());
         }
     }
     return PastModality::P();
 }
 
 static ModalOperatorPtr createH(const TermPtr &optionsTerm) {
-    if (optionsTerm) {
-        OptionList options(optionsTerm);
-        auto beginTime = getBeginOption(options);
-        auto endTime = getEndOption(options);
-        if (beginTime.has_value() || endTime.has_value()) {
-            return PastModality::H(TimeInterval(beginTime, endTime));
+    if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
+        auto listTerm = (ListTerm*)optionsTerm.get();
+        auto timeInterval = readTimeInterval(listTerm);
+        if (timeInterval.has_value()) {
+            return PastModality::H(timeInterval.value());
         }
     }
-    return PastModality::P();
+    return PastModality::H();
 }
 
 static std::vector<TermPtr> createTermVector2(const TermPtr &a, const TermPtr &b) { return {a, b}; }
@@ -205,6 +309,7 @@ QueryParser::QueryParser() {
     bnf_->lowerPrefix %= qi::lexeme[ascii::lower >> *ascii::alnum];
     bnf_->upperPrefix %= qi::lexeme[ascii::upper >> *ascii::alnum];
 
+    ///////////////////////////
     // atomic constants: strings, numbers etc.
     bnf_->atom = ((bnf_->lowerPrefix | bnf_->singleQuotes)
             [qi::_val = ptr_<StringTerm>()(qi::_1)]);
@@ -213,16 +318,17 @@ QueryParser::QueryParser() {
     bnf_->number = (qi::double_
             [qi::_val = ptr_<DoubleTerm>()(qi::_1)]);
 
-    bnf_->optionFlag = ((bnf_->atom)
-            [qi::_val = ptr_<Predicate>()(equalFunctor,
-             boost::phoenix::bind(&createTermVector2, flagTerm, qi::_1))]);
-    bnf_->optionValue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->constant))
+    ///////////////////////////
+    // option lists
+    bnf_->keyvalue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->constant))
             [qi::_val = ptr_<Predicate>()(equalFunctor,
              boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3))]);
-    bnf_->option %= (bnf_->optionValue | bnf_->optionFlag);
+    bnf_->option %= (bnf_->keyvalue | bnf_->constant);
     bnf_->options = ((qi::char_('[') >> (bnf_->option % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
+    bnf_->nil = qi::attr(ListTerm::nil());
 
+    ///////////////////////////
     // arguments of predicates: constants or variables
     bnf_->constant %= (bnf_->atom | bnf_->string | bnf_->number);
     bnf_->constantList = ((qi::char_('[') >> (bnf_->constant % ',') >> qi::char_(']'))
@@ -234,6 +340,7 @@ QueryParser::QueryParser() {
             [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
 
+    ///////////////////////////
     // predicates
     bnf_->predicateWithNS = (((bnf_->lowerPrefix) >>
             qi::char_(':') >> (bnf_->lowerPrefix | bnf_->singleQuotes) >>
@@ -251,31 +358,23 @@ QueryParser::QueryParser() {
     // formulas
     bnf_->brackets %= ('(' >> bnf_->formula >> ')');
 
+    ///////////////////////////
     // unary operators
     bnf_->negation = (('~' >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ~qi::_1]);
-    bnf_->belief = (('B' >> (bnf_->unary | bnf_->brackets))
-            [qi::_val = ptr_<ModalFormula>()(BeliefModality::B(), qi::_1)]);
-    bnf_->knowledge = (('K' >> (bnf_->unary | bnf_->brackets))
-            [qi::_val = ptr_<ModalFormula>()(KnowledgeModality::K(), qi::_1)]);
-    bnf_->oncePast = (('P' >> (bnf_->unary | bnf_->brackets))
-            [qi::_val = ptr_<ModalFormula>()(PastModality::P(), qi::_1)]);
-    bnf_->alwaysPast = (('H' >> (bnf_->unary | bnf_->brackets))
-            [qi::_val = ptr_<ModalFormula>()(PastModality::H(), qi::_1)]);
-    bnf_->belief2 = (('B' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+    bnf_->belief = (('B' >> (bnf_->options|bnf_->nil) >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createB, qi::_1), qi::_2)]);
-    bnf_->knowledge2 = (('K' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+    bnf_->knowledge = (('K' >> (bnf_->options|bnf_->nil) >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createK, qi::_1), qi::_2)]);
-    bnf_->oncePast2 = (('P' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+    bnf_->oncePast = (('P' >> (bnf_->options|bnf_->nil) >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createP, qi::_1), qi::_2)]);
-    bnf_->alwaysPast2 = (('H' >> bnf_->options >> (bnf_->unary | bnf_->brackets))
+    bnf_->alwaysPast = (('H' >> (bnf_->options|bnf_->nil) >> (bnf_->unary | bnf_->brackets))
             [qi::_val = ptr_<ModalFormula>()(boost::phoenix::bind(&createH, qi::_1), qi::_2)]);
-    bnf_->modalFormula %= bnf_->belief2 | bnf_->belief
-                          | bnf_->knowledge2 | bnf_->knowledge
-                          | bnf_->oncePast2 | bnf_->oncePast
-                          | bnf_->alwaysPast2 | bnf_->alwaysPast;
+
+    bnf_->modalFormula %= bnf_->belief | bnf_->knowledge | bnf_->oncePast | bnf_->alwaysPast;
     bnf_->unary %= bnf_->modalFormula | bnf_->negation | bnf_->predicate;
 
+    ///////////////////////////
     // compound formulae
     bnf_->conjunction = (((bnf_->unary | bnf_->brackets)
             >> (qi::char_(',') | qi::char_('&'))
@@ -537,11 +636,28 @@ TEST_F(QueryParserTest, ModalityWithArguments) {
     TEST_NO_THROW(testModal(QueryParser::parse("B[self] p(x)"), "B", FormulaType::PREDICATE))
     TEST_NO_THROW(testModal(QueryParser::parse("B['self'] p(x)"), "B", FormulaType::PREDICATE))
     TEST_NO_THROW(testModal(QueryParser::parse("B[fred,confidence=0.8] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B[fred,0.8] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B[0.8,fred] p(x)"), "B", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("B[0.8] p(x)"), "B", FormulaType::PREDICATE))
     TEST_NO_THROW(testModal(QueryParser::parse("B[confidence=0.8] p(x)"), "B", FormulaType::PREDICATE))
 
     TEST_NO_THROW(testModal(QueryParser::parse("P[begin=10,end=20] p(x)"), "P", FormulaType::PREDICATE))
     TEST_NO_THROW(testModal(QueryParser::parse("P[begin=10] p(x)"), "P", FormulaType::PREDICATE))
     TEST_NO_THROW(testModal(QueryParser::parse("P[end=20] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[until=20] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[10.0,20.0] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[10.0] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[10,20] p(x)"), "P", FormulaType::PREDICATE))
+}
+
+TEST_F(QueryParserTest, ModalityWithWrongArguments) {
+    EXPECT_THROW(testModal(QueryParser::parse("B[foo=fred] p(x)"), "B", FormulaType::PREDICATE), QueryError);
+    EXPECT_THROW(testModal(QueryParser::parse("B[0.8,0.8] p(x)"), "B", FormulaType::PREDICATE), QueryError);
+}
+
+TEST_F(QueryParserTest, ModalityWithEmptyArguments) {
+    TEST_NO_THROW(testModal(QueryParser::parse("P[,10.0] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[10,] p(x)"), "P", FormulaType::PREDICATE))
 }
 
 TEST_F(QueryParserTest, Precedence) {
