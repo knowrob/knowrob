@@ -537,12 +537,14 @@ assert_documents1(array(Docs), Coll) :-
 		get_dict(o, TripleDict, ObjectTerm),
 		mng_strip_type(ObjectTerm, _, Object),
 
-		get_dict(scope, TripleDict, [time-[(since)-double(Since),(until)-double(Until)]]),
-		( (Since==0.0, Until=='Infinity') -> (Begin=_, End=_)
-		; (Until=='Infinity')             -> (Begin=Since, End=_)
-		; (Begin=Since, End=Until)
-		),
-
+		ignore(get_dict(scope, TripleDict, [time-[(since)-double(Since),(until)-double(Until)]])),
+		once(
+		  ( Since==0.0 -> Begin=_ ; Begin = Since )),
+		once(
+		  ( Until=='Infinity' -> End=_
+		  ; Until=='inf' -> End=_
+		  ; End=Until
+		  )),
 		mng_assert_triple_cpp(
 				ReasonerManager,
 				ReasonerModule,

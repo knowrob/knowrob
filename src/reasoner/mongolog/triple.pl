@@ -55,24 +55,34 @@ mongolog:step_compile(assert(triple(S,P,O)), CtxIn, Pipeline, StepVars) :-
 	option(collection(Collection), Ctx0),
 	option(query_scope(Scope), Ctx0),
 	triple_graph(Ctx0, Graph),
-	mongolog_time_scope(Scope, SinceTyped, UntilTyped),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
 	mongolog:var_key_or_val(S, Ctx, S_query),
 	mongolog:var_key_or_val(P1, Ctx, P_query),
 	mongolog:var_key_or_val(O, Ctx, V_query),
+	findall(Field, (
+		Field=['s', S_query] ;
+		Field=['p', P_query] ;
+		Field=['o', V_query] ;
+		Field=['graph', string(Graph)] ;
+		( option(since(Since), Scope), option(until(Until), Scope),
+		  mng_typed_value(Since, SinceTyped),
+		  mng_typed_value(Until, UntilTyped),
+		  Field=['scope', [['time',[['since', SinceTyped], ['until', UntilTyped]]]]]
+		) ;
+		( option(since(Since), Scope), \+ option(until(Until), Scope),
+		  mng_typed_value(Since, SinceTyped),
+		  Field=['scope', [['time',[['since', SinceTyped]]]]]
+		) ;
+		( \+ option(since(Since), Scope), option(until(Until), Scope),
+		  mng_typed_value(Until, UntilTyped),
+		  Field=['scope', [['time',[['until', UntilTyped]]]]]
+		)
+	), Fields),
 	% create assertion pipeline
 	findall(Step,
-		mongolog:add_assertion([
-			['s', S_query],
-			['p', P_query],
-			['o', V_query],
-			['graph', string(Graph)],
-			['scope', [['time',[
-				['since', SinceTyped],
-				['until', UntilTyped]
-			]]]]], Collection, Step),
+		mongolog:add_assertion(Fields, Collection, Step),
 		Pipeline).
 
 
