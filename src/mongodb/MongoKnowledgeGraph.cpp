@@ -775,6 +775,7 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent)
     EXPECT_EQ(lookup(statement).size(), 1);
     // the statement is not known to be true for other agents
     statement.agent = "agent_b"; EXPECT_EQ(lookup(statement).size(), 0);
+    // a null value is seen as "self", i.e. the agent running this knowledge base
     statement.agent = nullptr; EXPECT_EQ(lookup(statement).size(), 0);
 }
 

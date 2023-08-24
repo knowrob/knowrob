@@ -115,6 +115,9 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
     if(tripleData.graph) {
         graphTerm_ = std::make_shared<StringTerm>(tripleData.graph);
     }
+    if(tripleData.agent) {
+        agentTerm_ = std::make_shared<StringTerm>(tripleData.agent);
+    }
 }
 
 /*

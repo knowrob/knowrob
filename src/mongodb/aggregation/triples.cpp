@@ -208,31 +208,53 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLitera
 void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowConfidenceNullValues = true;
+    static auto zero = std::make_shared<Integer32Term>(0);
     auto ct = tripleExpression.confidenceTerm();
     auto at = tripleExpression.agentTerm();
+    auto op = tripleExpression.modalityFrame().epistemicOperator();
 
-    // TODO: take into account epistemic operator here
-    //  - well null value is interpreted as confidence=1.0 below,
-    //    but there could be documents in B without confidence specified.
-    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
+    // enforce that uncertain=false in case knowledge modality is selected in query
+    if(op && op->isModalNecessity()) {
+        // note: null value of "uncertain" field is seen as value "false"
+        aggregation::appendTermQuery(
+                    selectorDoc,
+                    "uncertain",
+                    zero,
+                    nullptr,
+                    true);
+    }
 
     if(at) {
         if(at->type() == TermType::STRING) {
-            aggregation::appendTermQuery(selectorDoc, "agent", at);
+            aggregation::appendTermQuery(
+                selectorDoc,
+                "agent",
+                at,
+                nullptr,
+                false);
         }
         else {
             KB_WARN("agent term {} has unexpected type", at);
         }
     }
+    else {
+        // make sure agent field is undefined: { agent: { $exists: false } }
+        // note: null value of agent field is seen as "self", i.e. the agent running the knowledge base
+        bson_t agentDoc;
+        BSON_APPEND_DOCUMENT_BEGIN(selectorDoc, "agent", &agentDoc);
+        BSON_APPEND_BOOL(&agentDoc, "$exists", false);
+        bson_append_document_end(selectorDoc, &agentDoc);
+    }
 
     if(ct) {
         if(ct->type() == TermType::DOUBLE) {
+            // note: null value of confidence is seen as larger than the requested threshold
             aggregation::appendTermQuery(
                     selectorDoc,
                     "confidence",
                     ct,
                     MONGO_OPERATOR_GTE,
-                    allowConfidenceNullValues);
+                    true);
         }
         else {
             KB_WARN("confidence term {} has unexpected type", *ct);
