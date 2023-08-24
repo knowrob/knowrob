@@ -38,15 +38,11 @@ namespace knowrob::mongo::aggregation
                 bson_t *selectorDoc,
                 const FramedRDFLiteral &tripleExpression);
 
-    void appendAgentSelector(
+    void appendEpistemicSelector(
                 bson_t *selectorDoc,
                 const FramedRDFLiteral &tripleExpression);
 
     void appendTimeSelector(
-                bson_t *selectorDoc,
-                const FramedRDFLiteral &tripleExpression);
-
-    void appendConfidenceSelector(
                 bson_t *selectorDoc,
                 const FramedRDFLiteral &tripleExpression);
 

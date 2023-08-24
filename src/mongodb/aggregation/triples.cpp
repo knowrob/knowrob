@@ -205,20 +205,38 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLitera
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
+    static const bool allowConfidenceNullValues = true;
+    auto ct = tripleExpression.confidenceTerm();
     auto at = tripleExpression.agentTerm();
 
-    if(!at) {
-        // TODO: should a null value be appended for using an index including the "agent" key?
-        return;
+    // TODO: take into account epistemic operator here
+    //  - well null value is interpreted as confidence=1.0 below,
+    //    but there could be documents in B without confidence specified.
+    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
+
+    if(at) {
+        if(at->type() == TermType::STRING) {
+            aggregation::appendTermQuery(selectorDoc, "agent", at);
+        }
+        else {
+            KB_WARN("agent term {} has unexpected type", at);
+        }
     }
 
-    if(at->type() == TermType::STRING) {
-        aggregation::appendTermQuery(selectorDoc, "agent", at);
-    }
-    else {
-        KB_WARN("graph term {} has unexpected type", at);
+    if(ct) {
+        if(ct->type() == TermType::DOUBLE) {
+            aggregation::appendTermQuery(
+                    selectorDoc,
+                    "confidence",
+                    ct,
+                    MONGO_OPERATOR_GTE,
+                    allowConfidenceNullValues);
+        }
+        else {
+            KB_WARN("confidence term {} has unexpected type", *ct);
+        }
     }
 }
 
@@ -278,30 +296,6 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
-{
-    static const bool allowNullValues = true;
-    auto ct = tripleExpression.confidenceTerm();
-    if(!ct) return;
-
-    // TODO: take into account epistemic operator here
-    //  - well null value is interpreted as confidence=1.0 below,
-    //    but there could be documents in B without confidence specified.
-    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
-
-    if(ct->type() == TermType::DOUBLE) {
-        aggregation::appendTermQuery(
-                selectorDoc,
-                "confidence",
-                ct,
-                MONGO_OPERATOR_GTE,
-                allowNullValues);
-    }
-    else {
-        KB_WARN("confidence term {} has unexpected type", *ct);
-    }
-}
-
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
             const FramedRDFLiteral &tripleExpression,
@@ -322,12 +316,10 @@ void aggregation::appendTripleSelector(
             objectOperator);
     // "g" field
     appendGraphSelector(selectorDoc, tripleExpression);
-    // "a" field
-    appendAgentSelector(selectorDoc, tripleExpression);
-    // "b" & "e" fields
+    // epistemic fields
+    appendEpistemicSelector(selectorDoc, tripleExpression);
+    // temporal fields
     appendTimeSelector(selectorDoc, tripleExpression);
-    // "c" field
-    appendConfidenceSelector(selectorDoc, tripleExpression);
 }
 
 static inline void lookupTriple_nontransitive_(
@@ -527,12 +519,9 @@ static inline void lookupTriple_transitive_(
         aggregation::appendTermQuery(&restrictSearchDoc,
                                      (b_isTaxonomicProperty ? "p" : "p*"),
                                      lookupData.expr->propertyTerm());
-        aggregation::appendGraphSelector(&restrictSearchDoc,
-                                         *lookupData.expr);
-        aggregation::appendTimeSelector(&restrictSearchDoc,
-                                        *lookupData.expr);
-        aggregation::appendConfidenceSelector(&restrictSearchDoc,
-                                              *lookupData.expr);
+        aggregation::appendGraphSelector(&restrictSearchDoc, *lookupData.expr);
+        aggregation::appendEpistemicSelector(&restrictSearchDoc,*lookupData.expr);
+        aggregation::appendTimeSelector(&restrictSearchDoc, *lookupData.expr);
     }
     bson_append_document_end(lookupStage, &restrictSearchDoc);
     pipeline.appendStageEnd(lookupStage);

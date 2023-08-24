@@ -752,3 +752,90 @@ TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
     EXPECT_EQ(lookup(existing).size(), 1);
     EXPECT_EQ(lookup(not_existing).size(), 0);
 }
+
+TEST_F(MongoKnowledgeGraphTest, Knowledge)
+{
+    StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "X");
+    statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    statement.epistemicOperator = EpistemicOperator::BELIEF;
+    EXPECT_EQ(lookup(statement).size(), 1);
+}
+
+TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent)
+{
+    // assert knowledge of a named agent
+    StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
+    statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
+    statement.agent = "agent_a";
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    // the statement is not known to be true for other agents
+    statement.agent = "agent_b"; EXPECT_EQ(lookup(statement).size(), 0);
+    statement.agent = nullptr; EXPECT_EQ(lookup(statement).size(), 0);
+}
+
+TEST_F(MongoKnowledgeGraphTest, Belief)
+{
+    // assert uncertain statement
+    StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
+    statement.epistemicOperator = EpistemicOperator::BELIEF;
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    // statement is filtered if knowledge operator is selected
+    statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
+    EXPECT_EQ(lookup(statement).size(), 0);
+}
+
+TEST_F(MongoKnowledgeGraphTest, WithConfidence)
+{
+    // assert uncertain statement with confidence=0.5
+    StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "A");
+    statement.epistemicOperator = EpistemicOperator::BELIEF;
+    statement.confidence = 0.5;
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    // confidence threshold of 0.0 does not filter the statement
+    statement.confidence = 0.0; EXPECT_EQ(lookup(statement).size(), 1);
+    // confidence threshold of 0.9 filters the statement
+    statement.confidence = 0.9; EXPECT_EQ(lookup(statement).size(), 0);
+}
+
+TEST_F(MongoKnowledgeGraphTest, WithTimeInterval)
+{
+    // assert a statement with time interval [5,10]
+    StatementData statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+    statement.begin = 5.0;
+    statement.end = 10.0;
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    // no solution because statement only known to be true until 10.0
+    statement.end = 20.0; EXPECT_EQ(lookup(statement).size(), 0);
+    // but temporal overlap is sufficient if "sometimes" operator is used
+    statement.temporalOperator = TemporalOperator::SOMETIMES;
+    EXPECT_EQ(lookup(statement).size(), 1);
+}
+
+TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval)
+{
+    // assert a statement with time interval [10,20]
+    StatementData statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+    statement.begin = 10.0;
+    statement.end = 20.0;
+    EXPECT_EQ(lookup(statement).size(), 0);
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(statement).size(), 1);
+    // time interval was merged with existing one into [5,20]
+    statement.begin = 5.0; EXPECT_EQ(lookup(statement).size(), 1);
+    // no solution because statement only known to be true since 5.0
+    statement.begin = 0.0; EXPECT_EQ(lookup(statement).size(), 0);
+    // temporal overlap is sufficient if "sometimes" operator is used
+    statement.temporalOperator = TemporalOperator::SOMETIMES;
+    EXPECT_EQ(lookup(statement).size(), 1);
+}

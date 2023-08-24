@@ -127,25 +127,6 @@ test('assert list') :-
 	;	true
 	).
 
-% tests for time scope
-test('assert with scope'):-
-	rdf_global_term(test_datatype:'Lecturer4',S),
-	rdf_global_term(test_datatype:'last_name',P),
-	time_scope(=(double(5)), =(double(10)), T_S1),
-	time_scope(=(double(5)), =(double(20)), T_S2),
-	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
-	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S1)])),
-	assert_false(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
-
-% tests for time scope extension
-test('extend time scope'):-
-	rdf_global_term(test_datatype:'Lecturer4',S),
-	rdf_global_term(test_datatype:'last_name',P),
-	time_scope(=(double(10)), =(double(20)), T_S1),
-	time_scope(=(double(5)),  =(double(20)), T_S2),
-	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
-	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
-
 test('query value operators') :-
 	assert_true(mongolog_call(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =(6)))),
 	assert_true(mongolog_call(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =<(9)))),
@@ -266,13 +247,13 @@ test('call_with_context(+Triple,+Context)') :-
 	assert_true(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Ernest'),
-			[ query_scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
+			[ query_scope(dict{ since: Time, until: Time }) ]
 		), Time, 999)),
 	%
 	assert_false(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Rex'),
-			[ query_scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
+			[ query_scope(dict{ since: Time, until: Time }) ]
 		), Time, 999)).
 
 :- end_tests('mongolog_triple').
