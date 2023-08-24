@@ -225,8 +225,8 @@ void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLitera
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
-    static auto h_id = std::make_shared<Integer32Term>(
-       static_cast<int32_t>(TemporalOperator::ALWAYS));
+    static auto b_occasional = std::make_shared<Integer32Term>(static_cast<int32_t>(true));
+    static auto b_always = std::make_shared<Integer32Term>(static_cast<int32_t>(false));
     auto bt = tripleExpression.beginTerm();
     auto et = tripleExpression.endTerm();
 
@@ -245,8 +245,8 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     // null is also ok. in particular exclude documents with *P* operator here.
     aggregation::appendTermQuery(
         selectorDoc,
-        "temporalOperator",
-        h_id,
+        "occasional",
+        b_always,
         nullptr,
         allowNullValues);
 

@@ -23,7 +23,7 @@ namespace knowrob {
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
-        explicit FramedRDFLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame=ModalityFrame());
+        explicit FramedRDFLiteral(const LiteralPtr &literal, ModalityFrame modalityFrame=ModalityFrame());
 
         explicit FramedRDFLiteral(const StatementData &tripleData);
 

@@ -2,6 +2,8 @@
 // Created by daniel on 07.04.23.
 //
 
+#include <utility>
+
 #include "knowrob/semweb/FramedRDFLiteral.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
@@ -10,9 +12,9 @@
 
 using namespace knowrob;
 
-FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, const ModalityFrame &modalityFrame)
+FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, ModalityFrame modalityFrame)
 : literal_(literal),
-  modalityFrame_(modalityFrame)
+  modalityFrame_(std::move(modalityFrame))
 {
     if(literal_->predicate()->indicator()->arity() != 2) {
         throw QueryError("RDF literals must be 2-ary, but "
@@ -83,7 +85,8 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
           beginTerm_(),
           endTerm_(),
           confidenceTerm_(),
-          objectOperator_(EQ)
+          objectOperator_(EQ),
+          modalityFrame_(tripleData)
 {
     switch(tripleData.objectType) {
         case RDF_RESOURCE:

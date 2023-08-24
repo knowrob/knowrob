@@ -478,12 +478,10 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
     // filter overlapping triples
     TripleCursor cursor(tripleCollection_);
     bson_t selectorDoc = BSON_INITIALIZER;
-    FramedRDFLiteral overlappingExpr(tripleData);
-    if(tripleData.temporalOperator.has_value() && tripleData.temporalOperator.value() == TemporalOperator::ALWAYS) {
-        auto swap = overlappingExpr.endTerm();
-        overlappingExpr.setEndTerm(overlappingExpr.beginTerm());
-        overlappingExpr.setBeginTerm(swap);
-    }
+
+    StatementData tripleDataCopy(tripleData);
+    tripleDataCopy.temporalOperator = TemporalOperator::SOMETIMES;
+    FramedRDFLiteral overlappingExpr(tripleDataCopy);
     aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty);
     cursor.filter(&selectorDoc);
 

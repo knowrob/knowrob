@@ -6,6 +6,8 @@
 #include "knowrob/modalities/ModalityFrame.h"
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/modalities/EpistemicModality.h"
+#include "knowrob/modalities/BeliefModality.h"
+#include "knowrob/modalities/KnowledgeModality.h"
 
 using namespace knowrob;
 
@@ -23,6 +25,53 @@ ModalityFrame::ModalityFrame(const ModalIteration &modalIteration)
         }
         else {
             KB_WARN("unexpected modalFrame");
+        }
+    }
+}
+
+ModalityFrame::ModalityFrame(const StatementData &tripleData)
+{
+    // init epistemic operator
+    auto epistemicOperator = tripleData.epistemicOperator;
+    if(!epistemicOperator.has_value()) epistemicOperator = EpistemicOperator::KNOWLEDGE;
+    if(epistemicOperator.value() == EpistemicOperator::BELIEF) {
+        if(tripleData.agent) {
+            if(tripleData.confidence.has_value()) {
+                epistemicOperator_ = BeliefModality::B(tripleData.agent, tripleData.confidence.value());
+            }
+            else {
+                epistemicOperator_ = BeliefModality::B(tripleData.agent);
+            }
+        }
+        else if(tripleData.confidence.has_value()) {
+            epistemicOperator_ = BeliefModality::B(tripleData.confidence.value());
+        }
+        else {
+            epistemicOperator_ = BeliefModality::B();
+        }
+    }
+    else { // EpistemicOperator::KNOWLEDGE
+        if(tripleData.agent) epistemicOperator_ = KnowledgeModality::K(tripleData.agent);
+        else                 epistemicOperator_ = KnowledgeModality::K();
+    }
+
+    // init time operator
+    auto temporalOperator = tripleData.temporalOperator;
+    if(!temporalOperator.has_value()) temporalOperator = TemporalOperator::ALWAYS;
+    if(temporalOperator.value() == TemporalOperator::SOMETIMES) {
+        if(tripleData.begin.has_value() || tripleData.end.has_value()) {
+            pastOperator_ = PastModality::P(TimeInterval(tripleData.begin, tripleData.end));
+        }
+        else {
+            pastOperator_ = PastModality::P();
+        }
+    }
+    else {
+        if(tripleData.begin.has_value() || tripleData.end.has_value()) {
+            pastOperator_ = PastModality::H(TimeInterval(tripleData.begin, tripleData.end));
+        }
+        else {
+            pastOperator_ = PastModality::H();
         }
     }
 }

@@ -700,7 +700,7 @@ mongolog_assert(triple(S,P,O), Scope) :-
 	current_reasoner_manager(ReasonerManager),
 	current_reasoner_module(ReasonerModule),
 	sw_default_graph(G),
-	% FIXME: must include other fields of modal frame!
+	% TODO: include other fields of modal frame!
 	mng_assert_triple_cpp(ReasonerManager, ReasonerModule,
 			S, P, O, G,
 			SinceValue, UntilValue, _).

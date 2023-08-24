@@ -7,6 +7,7 @@
 
 #include "ModalOperator.h"
 #include "TimeInterval.h"
+#include "knowrob/semweb/StatementData.h"
 
 namespace knowrob {
     class ModalityFrame {
@@ -14,6 +15,8 @@ namespace knowrob {
         ModalityFrame();
 
         explicit ModalityFrame(const ModalIteration &modalIteration);
+
+        explicit ModalityFrame(const StatementData &tripleData);
 
 		bool hasValue() const;
 
