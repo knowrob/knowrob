@@ -256,7 +256,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
                     selectorDoc,
                     "scope.time.since",
                     bt,
-                    MONGO_OPERATOR_GTE,
+                    MONGO_OPERATOR_LTE,
                     allowNullValues);
         }
         else {
@@ -269,7 +269,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
                     selectorDoc,
                     "scope.time.until",
                     et,
-                    MONGO_OPERATOR_LTE,
+                    MONGO_OPERATOR_GTE,
                     allowNullValues);
         }
         else {
