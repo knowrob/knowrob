@@ -773,6 +773,10 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent)
     EXPECT_EQ(lookup(statement).size(), 0);
     EXPECT_NO_THROW(kg_->insert(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
+    for(const auto& solution : lookup(statement))
+    {
+        EXPECT_TRUE(solution->isCertain());
+    }
     // the statement is not known to be true for other agents
     statement.agent = "agent_b"; EXPECT_EQ(lookup(statement).size(), 0);
     // a null value is seen as "self", i.e. the agent running this knowledge base
@@ -787,6 +791,10 @@ TEST_F(MongoKnowledgeGraphTest, Belief)
     EXPECT_EQ(lookup(statement).size(), 0);
     EXPECT_NO_THROW(kg_->insert(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
+    for(const auto& solution : lookup(statement))
+    {
+        EXPECT_TRUE(solution->isUncertain());
+    }
     // statement is filtered if knowledge operator is selected
     statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
     EXPECT_EQ(lookup(statement).size(), 0);
@@ -801,6 +809,10 @@ TEST_F(MongoKnowledgeGraphTest, WithConfidence)
     EXPECT_EQ(lookup(statement).size(), 0);
     EXPECT_NO_THROW(kg_->insert(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
+    for(const auto& solution : lookup(statement))
+    {
+        EXPECT_TRUE(solution->isUncertain());
+    }
     // confidence threshold of 0.0 does not filter the statement
     statement.confidence = 0.0; EXPECT_EQ(lookup(statement).size(), 1);
     // confidence threshold of 0.9 filters the statement
@@ -816,6 +828,13 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval)
     EXPECT_EQ(lookup(statement).size(), 0);
     EXPECT_NO_THROW(kg_->insert(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
+    for(const auto& solution : lookup(statement))
+    {
+        EXPECT_TRUE(solution->isCertain());
+        EXPECT_TRUE(solution->timeInterval().has_value());
+        if(solution->timeInterval().has_value())
+            EXPECT_EQ(solution->timeInterval().value(), TimeInterval(5.0,10.0));
+    }
     // no solution because statement only known to be true until 10.0
     statement.end = 20.0; EXPECT_EQ(lookup(statement).size(), 0);
     // but temporal overlap is sufficient if "sometimes" operator is used
@@ -832,6 +851,12 @@ TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval)
     EXPECT_EQ(lookup(statement).size(), 0);
     EXPECT_NO_THROW(kg_->insert(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
+    for(const auto& solution : lookup(statement))
+    {
+        EXPECT_TRUE(solution->timeInterval().has_value());
+        if(solution->timeInterval().has_value())
+            EXPECT_EQ(solution->timeInterval().value(), TimeInterval(5.0,20.0));
+    }
     // time interval was merged with existing one into [5,20]
     statement.begin = 5.0; EXPECT_EQ(lookup(statement).size(), 1);
     // no solution because statement only known to be true since 5.0

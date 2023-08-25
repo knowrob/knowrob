@@ -480,12 +480,15 @@ static inline void lookupTriple_nontransitive_(
     // at this point the 'next' field holds an array of matching documents that is unwinded next.
     pipeline.unwind("$next");
     // compute the intersection of time interval so far with time interval of next triple.
-    // note that the operations work fine in case the time interval is undefined.
+    // note that the operations works fine in case the time interval is undefined.
+    // TODO: below time interval computation is only ok assuming the statements are not "occasional"
     intersectTimeInterval(pipeline,
                           "$next.scope.time.since",
                           "$next.scope.time.until");
    	// then verify that the scope is non-empty.
    	matchSinceBeforeUntil(pipeline);
+    // TODO: maintain "uncertain" field:
+    //      - set(v_scope.uncertain = ($v_scope.uncertain || next.uncertain))
     // project new variable groundings
     setTripleVariables(pipeline, lookupData);
     // remove next field again: { $unset: "next" }

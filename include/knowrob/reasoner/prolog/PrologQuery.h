@@ -107,14 +107,6 @@ namespace knowrob {
         //static bool putTerm(term_t pl_term, const TimeInterval& timeInterval);
 
         /**
-         * Put a ConfidenceInterval in a Prolog term reference.
-         * @param pl_term A Prolog term.
-         * @param confidenceInterval A ConfidenceInterval object.
-         * @return true on success.
-         */
-        static bool putTerm(term_t pl_term, const ConfidenceInterval& confidenceInterval);
-
-        /**
          * Put a Prolog term encoding the scope in a Query object.
          * @param query A Query object.
          * @param pl_scope A Prolog term.
@@ -123,8 +115,8 @@ namespace knowrob {
         static bool putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_scope);
 
         /**
-         * Put a Prolog term encoding the scope in a QueryResult object.
-         * @param solution A QueryResult object.
+         * Put a Prolog term encoding the scope in a Answer object.
+         * @param solution A Answer object.
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
@@ -172,6 +164,7 @@ namespace knowrob {
 		 * @return the comma predicate.
 		 */
 		static const predicate_t& PREDICATE_comma();
+
 		/**
 		 * @return the semicolon predicate.
 		 */
@@ -183,9 +176,14 @@ namespace knowrob {
         PrologVariableMap vars_;
 		
 		static FormulaPtr toFormula(const TermPtr &t);
-		static TermPtr toTerm(CompoundFormula *psi, const std::shared_ptr<PredicateIndicator> &indicator);
-        static bool putTerm(term_t pl_term, const functor_t &pl_functor,
-                            CompoundFormula *phi, PrologVariableMap &vars);
+
+		static TermPtr toTerm(CompoundFormula *psi,
+                              const std::shared_ptr<PredicateIndicator> &indicator);
+
+        static bool putTerm(term_t pl_term,
+                            const functor_t &pl_functor,
+                            CompoundFormula *phi,
+                            PrologVariableMap &vars);
 	};
 }
 

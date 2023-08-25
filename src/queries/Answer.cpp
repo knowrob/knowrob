@@ -12,18 +12,21 @@
 using namespace knowrob;
 
 Answer::Answer()
-: substitution_(std::make_shared<Substitution>())
+: substitution_(std::make_shared<Substitution>()),
+  isUncertain_(false),
+  timeInterval_(std::nullopt)
 {
 }
 
 Answer::Answer(const Answer &other)
 : substitution_(std::make_shared<Substitution>(*other.substitution_)),
   predicates_(other.predicates_),
-  modality_(other.modality_)
+  isUncertain_(other.isUncertain_),
+  timeInterval_(other.timeInterval_)
 {
 }
 
-const std::shared_ptr<const Answer>& Answer::emptyResult()
+const std::shared_ptr<const Answer>& Answer::emptyAnswer()
 {
 	static auto result = std::make_shared<const Answer>();
 	return result;
@@ -57,10 +60,16 @@ bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *cha
 		// unification failed -> results cannot be combined
 		return false;
 	}
-	// compute intersection of time intervals
-	if(!combineModalFrame(other)) {
-		return false;
-	}
+	// combine modal frames
+	if(other->isUncertain()) isUncertain_ = true;
+    if(other->timeInterval().has_value()) {
+        if(timeInterval_.has_value()) {
+            timeInterval_->intersectWith(other->timeInterval().value());
+        } else {
+            timeInterval_ = other->timeInterval();
+        }
+    }
+
 	// merge instantiated predicates
 	predicates_.insert(predicates_.end(),
 					   other->predicates_.begin(),
@@ -68,20 +77,13 @@ bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *cha
 	return true;
 }
 
-bool Answer::combineModalFrame(const std::shared_ptr<const Answer> &other)
-{
-	// TODO: think about how modal frame of answers could be combined!
-	//modality_ = modality_.combine(other->modality_);
-	KB_WARN("todo: implement Answer::combineModalFrame");
-    return true;
-}
-
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Answer& solution) //NOLINT
 	{
-		if(solution.modalFrame().hasValue()) {
-			os << solution.modalFrame() << "::";
-		}
+        os << (solution.isCertain() ? "K" : "B") << "::";
+        if(solution.timeInterval().has_value())
+            os << solution.timeInterval().value();
+        os << "::";
 
 		if(solution.substitution()->empty())
 			os << "yes";
