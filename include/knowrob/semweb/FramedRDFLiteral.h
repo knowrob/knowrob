@@ -45,6 +45,8 @@ namespace knowrob {
          */
         bool isGround() const;
 
+        bool isNegated() const;
+
         /**
          * @return the subject term of this expression.
          */
@@ -122,6 +124,7 @@ namespace knowrob {
         std::shared_ptr<Term> endTerm_;
         std::shared_ptr<Term> confidenceTerm_;
         OperatorType objectOperator_;
+        bool isNegated_;
     };
     using FramedRDFLiteralPtr = std::shared_ptr<FramedRDFLiteral>;
 
