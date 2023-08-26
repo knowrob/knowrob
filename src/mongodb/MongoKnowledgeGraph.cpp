@@ -728,6 +728,17 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple)
     EXPECT_EQ(lookup(triple).size(), 1);
 }
 
+TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple)
+{
+    FramedRDFLiteral negated(std::make_shared<Literal>(
+        QueryParser::parsePredicate("p(x,y)"),
+        true));
+    EXPECT_EQ(lookup(negated).size(), 1);
+    StatementData statement("x","p","y");
+    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_EQ(lookup(negated).size(), 0);
+}
+
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
 {
     StatementData triple(

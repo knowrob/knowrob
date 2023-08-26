@@ -355,9 +355,16 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
 			true // sendEOS=true
 	);
 
-	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
-	PrologReasoner::threadPool().pushWork(workerGoal);
-	return outputStream->pop_front();
+	std::optional<std::exception> exc; auto excPtr = &exc;
+	PrologReasoner::threadPool().pushWork(workerGoal,
+	    [outputChannel,excPtr](const std::exception &e){
+            *excPtr = e;
+            outputChannel->push(AnswerStream::eos());
+        });
+	auto solution = outputStream->pop_front();
+	// rethrow any exceptions in this thread!
+	if(exc.has_value()) throw(exc.value());
+	return solution;
 }
 
 std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
@@ -382,6 +389,8 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	auto outputChannel = AnswerStream::Channel::create(outputStream);
 	auto queryInstance = std::make_shared<AllocatedQuery>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
+	// stores exception if any
+	std::optional<std::exception> exc; auto excPtr = &exc;
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
             this,
@@ -391,7 +400,11 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	);
 	
 	// assign the goal to a worker thread
-	PrologReasoner::threadPool().pushWork(workerGoal);
+	PrologReasoner::threadPool().pushWork(workerGoal,
+	    [outputChannel,excPtr](const std::exception &e){
+            *excPtr = e;
+            outputChannel->push(AnswerStream::eos());
+        });
 	// wait until work is done, and push EOS
 	workerGoal->join();
 	outputChannel->push(AnswerStream::eos());
@@ -406,6 +419,8 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 			results.push_back(nextResult);
 		}
 	}
+
+	if(exc.has_value()) throw(exc.value());
 	
 	return results;
 }
@@ -421,7 +436,11 @@ bool PrologReasoner::runQuery(const AllocatedQueryPtr &query)
             PrologQueryRunner::Request(query, callFunctor() , reasonerIDTerm_),
             sendEOS);
     // assign the goal to a worker thread
-   	PrologReasoner::threadPool().pushWork(workerGoal);
+   	PrologReasoner::threadPool().pushWork(workerGoal,
+   	    [query](const std::exception &e){
+            KB_WARN("an exception occurred for prolog query ({}): {}.", *query->query(), e.what());
+            query->pushEOS();
+        });
 
     return true;
 }

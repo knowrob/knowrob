@@ -274,7 +274,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
             runnerList.push_back(std::make_shared<ReasonerRunner>(r, queryData));
         }
         for(auto &runner : runnerList) {
-            threadPool_->pushWork(runner);
+            threadPool_->pushWork(runner,
+                [groupAnswers,graphQuery](const std::exception &e){
+                    KB_WARN("an exception occurred for graph query ({}): {}.", *graphQuery, e.what());
+                    groupAnswers->close();
+                });
         }
     }
 

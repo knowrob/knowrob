@@ -196,7 +196,10 @@ AnswerBufferPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query)
     if(!threadPool_) {
         threadPool_ = std::make_shared<ThreadPool>(4);
     }
-    threadPool_->pushWork(runner);
+    threadPool_->pushWork(runner, [result,query](const std::exception &e){
+        KB_WARN("an exception occurred for graph query ({}): {}.", *query, e.what());
+        result->close();
+    });
     return result;
 }
 
