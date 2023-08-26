@@ -14,7 +14,8 @@ using namespace knowrob;
 
 FramedRDFLiteral::FramedRDFLiteral(const LiteralPtr &literal, ModalityFrame modalityFrame)
 : literal_(literal),
-  modalityFrame_(std::move(modalityFrame))
+  modalityFrame_(std::move(modalityFrame)),
+  isNegated_(literal->isNegative())
 {
     if(literal_->predicate()->indicator()->arity() != 2) {
         throw QueryError("RDF literals must be 2-ary, but "
@@ -75,7 +76,8 @@ FramedRDFLiteral::FramedRDFLiteral(
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(objectOperator),
-          graphTerm_(std::make_shared<StringTerm>(graphName.data()))
+          graphTerm_(std::make_shared<StringTerm>(graphName.data())),
+          isNegated_(false)
 {
 }
 
@@ -86,7 +88,8 @@ FramedRDFLiteral::FramedRDFLiteral(const StatementData &tripleData)
           endTerm_(),
           confidenceTerm_(),
           objectOperator_(EQ),
-          modalityFrame_(tripleData)
+          modalityFrame_(tripleData),
+          isNegated_(false)
 {
     switch(tripleData.objectType) {
         case RDF_RESOURCE:
@@ -231,6 +234,11 @@ bool FramedRDFLiteral::isGround() const
     return subjectTerm_->isGround() && propertyTerm()->isGround() && objectTerm_->isGround();
 }
 
+bool FramedRDFLiteral::isNegated() const
+{
+    return isNegated_;
+}
+
 static inline const char* readStringConstant(const TermPtr &term)
 { return std::static_pointer_cast<StringTerm>(term)->value().c_str(); }
 
@@ -243,6 +251,10 @@ StatementData FramedRDFLiteral::toStatementData() const
     if(!isGround()) {
         throw QueryError("Only ground literals can be mapped to StatementData, but "
                          "the literal '{}' has variables.", *this);
+    }
+    if(literal_->isNegative()) {
+        throw QueryError("Only positive literals can be mapped to StatementData, but "
+                         "the literal '{}' is negative.", *this);
     }
     data.subject = readStringConstant(subjectTerm_);
     data.predicate = readStringConstant(propertyTerm_);
