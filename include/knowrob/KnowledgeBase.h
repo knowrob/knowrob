@@ -13,7 +13,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/queries/QueryEngine.h"
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
 #include "ThreadPool.h"
 
 namespace knowrob {

@@ -240,9 +240,9 @@ add_library(knowrob_qa SHARED
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
         src/modalities/ModalityFrame.cpp
-        src/backend/KnowledgeGraph.cpp
-		src/backend/KnowledgeGraphManager.cpp
-		src/backend/KnowledgeGraphPlugin.cpp)
+        src/semweb/KnowledgeGraph.cpp
+        src/semweb/KnowledgeGraphManager.cpp
+        src/semweb/KnowledgeGraphPlugin.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

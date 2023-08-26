@@ -8,7 +8,7 @@
 #include <optional>
 #include <list>
 #include "boost/property_tree/ptree.hpp"
-#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/mongodb/Collection.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"

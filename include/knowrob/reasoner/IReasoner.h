@@ -20,7 +20,7 @@
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/queries/GraphQuery.h"
-#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
 
 namespace knowrob {
 	/**

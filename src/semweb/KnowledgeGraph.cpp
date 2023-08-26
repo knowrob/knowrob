@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "knowrob/Logger.h"
-#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/semweb/xsd.h"
 
 namespace fs = std::filesystem;

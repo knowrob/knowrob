@@ -13,7 +13,7 @@
 #include "knowrob/reasoner/ReasonerPlugin.h"
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
 
 namespace knowrob {
 	/**

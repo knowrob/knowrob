@@ -20,7 +20,7 @@
 #include "knowrob/semweb/owl.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryEngine.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 #define MONGO_KG_VERSION_KEY "tripledbVersionString"
