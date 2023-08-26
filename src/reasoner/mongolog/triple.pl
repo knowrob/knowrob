@@ -116,7 +116,7 @@ triple_step_vars(triple(S,P,O), Ctx, StepVars) :-
 			),
 			StepVars)
 	;	StepVars=[]
-	).
+	),!.
 
 %%
 % ask(triple(S,P,O)) uses $lookup to join input documents with
