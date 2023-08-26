@@ -19,6 +19,7 @@
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/queries/QueryEngine.h"
+#include "knowrob/formulas/Negation.h"
 
 using namespace knowrob;
 
@@ -40,11 +41,20 @@ PrologQuery::~PrologQuery()
 bool PrologQuery::putTerm( //NOLINT
         term_t pl_term, const FormulaPtr& phi, PrologVariableMap &vars)
 {
+    static auto negationFun = PL_new_functor(PL_new_atom("\\+"),1);
+
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		auto qa_pred = std::dynamic_pointer_cast<Term>(phi);
 		return putTerm(pl_term, qa_pred, vars);
 	}
+
+	case FormulaType::NEGATION: {
+	    auto negated = std::dynamic_pointer_cast<Negation>(phi)->negatedFormula();
+	    auto negated_t = PL_new_term_ref();
+        return putTerm(negated_t, negated, vars) &&
+            PL_cons_functor_v(pl_term,negationFun, negated_t);
+    }
 
 	case FormulaType::CONJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_comma(),
@@ -53,8 +63,7 @@ bool PrologQuery::putTerm( //NOLINT
 	case FormulaType::DISJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
                        (CompoundFormula *) phi.get(), vars);
-
-	}
+    }
 	return false;
 }
 
