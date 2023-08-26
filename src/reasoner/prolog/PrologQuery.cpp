@@ -422,7 +422,8 @@ bool PrologQuery::putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_s
 bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope)
 {
     static const auto time_key = PL_new_atom("time");
-    static const auto confidence_key = PL_new_atom("confidence");
+    static const auto uncertain_key = PL_new_atom("uncertain");
+    static const auto true_a = PL_new_atom("true");
 
     if(PL_is_variable(pl_scope)) {
         // reasoner did not specify a solution scope
@@ -431,10 +432,8 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
     else if(PL_is_dict(pl_scope)) {
         // the solution scope was generated as a Prolog dictionary
         auto scope_val = PL_new_term_ref();
-        KB_WARN("todo: read solution scope into answer object");
 
         // read "time" key, the value is expected to be a predicate `range(Since,Until)`
-        /*
         if(PL_get_dict_key(time_key, pl_scope, scope_val)) {
             term_t arg = PL_new_term_ref();
             std::optional<TimePoint> v_since, v_until;
@@ -452,27 +451,18 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
             { v_until = val; }
 
             if(v_since.has_value() || v_until.has_value()) {
-				auto mf = solution->modalFrame();
-                mf.setTimeInterval(TimeInterval(v_since,v_until));
-				solution->setModalFrame(mf);
+				solution->setTimeInterval(TimeInterval(v_since, v_until));
             }
         }
-         */
 
-        // read "confidence" key, the value is expected to be a float value
-        /*
-        if(PL_get_dict_key(confidence_key, pl_scope, scope_val)) {
-            double v_confidence=0.0;
-            if(PL_term_type(scope_val)==PL_FLOAT &&
-               PL_get_float(scope_val, &v_confidence))
+        if(PL_get_dict_key(uncertain_key, pl_scope, scope_val)) {
+		    atom_t flagAtom;
+            if(PL_term_type(scope_val)==PL_ATOM &&
+               PL_get_atom(scope_val, &flagAtom))
             {
-				auto mf = solution->modalFrame();
-				// TODO: allow to set confidence value of answer
-				//mf.setConfidenceValue(std::make_shared<ConfidenceValue>(v_confidence));
-				solution->setModalFrame(mf);
+                solution->setIsUncertain(flagAtom == true_a);
             }
         }
-        */
 
         PL_reset_term_refs(scope_val);
         return true;

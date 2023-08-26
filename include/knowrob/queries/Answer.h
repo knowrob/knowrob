@@ -49,10 +49,14 @@ namespace knowrob {
          */
         bool isUncertain() const { return isUncertain_; }
 
+        void setIsUncertain(bool isUncertain) { isUncertain_ = (isUncertain_ || isUncertain); }
+
         /**
          * @return an optional time interval of this answer being true.
          */
         const auto& timeInterval() const { return timeInterval_; }
+
+        void setTimeInterval(const TimeInterval &timeInterval) { timeInterval_ = timeInterval; }
 
 		/**
 		 * Adds to this result a substitution of a variable with a term.

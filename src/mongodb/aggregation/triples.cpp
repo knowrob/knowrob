@@ -58,6 +58,20 @@ static inline void intersectTimeInterval(aggregation::Pipeline &pipeline,
     pipeline.appendStageEnd(setStage);
 }
 
+static inline void updateUncertainFlag(aggregation::Pipeline &pipeline)
+{
+    // $set(v_scope.uncertain = ($v_scope.uncertain || $next.uncertain))
+    bson_t orDoc, orArray;
+    auto stage = pipeline.appendStageBegin("$set");
+    BSON_APPEND_DOCUMENT_BEGIN(stage, "v_scope.uncertain", &orDoc);
+    BSON_APPEND_ARRAY_BEGIN(&orDoc, "$or", &orArray);
+    BSON_APPEND_UTF8(&orArray, "0", "$v_scope.uncertain");
+    BSON_APPEND_UTF8(&orArray, "1", "$next.uncertain");
+    bson_append_array_end(&orDoc, &orArray);
+    bson_append_document_end(stage, &orDoc);
+    pipeline.appendStageEnd(stage);
+}
+
 static inline std::string getVariableKey(const std::string_view &varName)
 {
     std::stringstream ss;
@@ -138,8 +152,6 @@ static void setTripleVariables(
         const aggregation::TripleLookupData &lookupData)
 {
     // TODO: consider storing the document id of the triple in which var is grounded.
-    // TODO: consider storing the confidence value of triples
-    //      - both would need a list as multiple predicates could back a grounding
 
     std::list<std::pair<const char*,Variable*>> varList;
     for(auto &it : {
@@ -487,8 +499,8 @@ static inline void lookupTriple_nontransitive_(
                           "$next.scope.time.until");
    	// then verify that the scope is non-empty.
    	matchSinceBeforeUntil(pipeline);
-    // TODO: maintain "uncertain" field:
-    //      - set(v_scope.uncertain = ($v_scope.uncertain || next.uncertain))
+    // remember if one of the statements used to draw the answer is uncertain
+    updateUncertainFlag(pipeline);
     // project new variable groundings
     setTripleVariables(pipeline, lookupData);
     // remove next field again: { $unset: "next" }
