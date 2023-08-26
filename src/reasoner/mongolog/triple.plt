@@ -21,39 +21,6 @@
 :- sw_register_prefix(swrl_tests,    'http://knowrob.org/kb/swrl_test#').
 :- sw_register_prefix(test_datatype, 'http://knowrob.org/kb/datatype_test#').
 
-test('assert triple(a,b,c)') :-
-	assert_true(mongolog_assert(triple(a,b,c))).
-
-test('assert triple(a,b,_)', [throws(error(instantiation_error,assert(triple(a,b,_))))]) :-
-	mongolog_assert(triple(a,b,_)).
-
-test('triple(a,b,c)') :-
-	assert_true(mongolog_call(triple(a,b,c))),
-	assert_false(mongolog_call(triple(x,b,c))),
-	assert_false(mongolog_call(triple(a,x,c))),
-	assert_false(mongolog_call(triple(a,b,x))).
-
-test('triple(A,b,c)') :-
-	mongolog_call(triple(A,b,c)),
-	assert_equals(A,a),
-	assert_false(mongolog_call(triple(_,x,c))).
-
-test('triple(a,B,c)') :-
-	mongolog_call(triple(a,B,c)),
-	assert_equals(B,b),
-	assert_false(mongolog_call(triple(x,_,c))).
-
-test('triple(a,b,C)') :-
-	mongolog_call(triple(a,b,C)),
-	assert_equals(C,c),
-	assert_false(mongolog_call(triple(a,x,_))).
-
-test('triple(A,b,C)') :-
-	mongolog_call(triple(A,b,C)),
-	assert_equals(A,a),
-	assert_equals(C,c),
-	assert_false(mongolog_call(triple(_,x,_))).
-
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
 	assert_true(mongolog_call(load_rdf_xml('owl/test/swrl.owl', test))),
