@@ -31,6 +31,15 @@ static inline void matchSinceBeforeUntil(aggregation::Pipeline &pipeline)
     pipeline.appendStageEnd(matchStage);
 }
 
+static inline void matchEmptyArray(aggregation::Pipeline &pipeline, const char *arrayKey)
+{
+    bson_t emptyArray;
+    auto matchStage = pipeline.appendStageBegin("$match");
+    BSON_APPEND_ARRAY_BEGIN(matchStage,arrayKey, &emptyArray);
+    bson_append_array_end(matchStage, &emptyArray);
+    pipeline.appendStageEnd(matchStage);
+}
+
 static inline void intersectTimeInterval(aggregation::Pipeline &pipeline,
                                          const char *newSinceValue,
                                          const char *newUntilValue)
@@ -489,20 +498,28 @@ static inline void lookupTriple_nontransitive_(
 */
     }
 
-    // at this point the 'next' field holds an array of matching documents that is unwinded next.
-    pipeline.unwind("$next");
-    // compute the intersection of time interval so far with time interval of next triple.
-    // note that the operations works fine in case the time interval is undefined.
-    // TODO: below time interval computation is only ok assuming the statements are not "occasional"
-    intersectTimeInterval(pipeline,
-                          "$next.scope.time.since",
-                          "$next.scope.time.until");
-   	// then verify that the scope is non-empty.
-   	matchSinceBeforeUntil(pipeline);
-    // remember if one of the statements used to draw the answer is uncertain
-    updateUncertainFlag(pipeline);
-    // project new variable groundings
-    setTripleVariables(pipeline, lookupData);
+    if(lookupData.expr->isNegated()) {
+        // following closed-world assumption succeed if no solutions have been found for
+        // the formula which appears negated in the queried literal
+        matchEmptyArray(pipeline, "next");
+    }
+    else {
+        // at this point the 'next' field holds an array of matching documents that is unwinded next.
+        pipeline.unwind("$next");
+        // compute the intersection of time interval so far with time interval of next triple.
+        // note that the operations works fine in case the time interval is undefined.
+        // TODO: below time interval computation is only ok assuming the statements are not "occasional"
+        intersectTimeInterval(pipeline,
+                              "$next.scope.time.since",
+                              "$next.scope.time.until");
+        // then verify that the scope is non-empty.
+        matchSinceBeforeUntil(pipeline);
+        // remember if one of the statements used to draw the answer is uncertain
+        updateUncertainFlag(pipeline);
+        // project new variable groundings
+        setTripleVariables(pipeline, lookupData);
+    }
+
     // remove next field again: { $unset: "next" }
     pipeline.unset("next");
 }
