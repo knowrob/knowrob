@@ -56,7 +56,7 @@ std::shared_ptr<PredicateDescription> BuiltinEvaluator::getPredicateDescription(
 	return {};
 }
 
-bool BuiltinEvaluator::runQuery(const AllocatedQueryPtr &query)
+bool BuiltinEvaluator::evaluateLiteral(const AllocatedQueryPtr &query)
 {
     // TODO: think about in which way builtins can be supported during querying.
 /*

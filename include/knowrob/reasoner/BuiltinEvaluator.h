@@ -48,7 +48,7 @@ namespace knowrob {
 				const std::shared_ptr<PredicateIndicator> &indicator) override;
 
 		// Override IReasoner
-        bool runQuery(const AllocatedQueryPtr &query) override;
+        bool evaluateLiteral(const AllocatedQueryPtr &query) override;
 
 	protected:
 		static std::shared_ptr<BuiltinEvaluator> singleton_;

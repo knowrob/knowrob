@@ -190,7 +190,7 @@ namespace knowrob {
         unsigned long getCapabilities() const override;
 
         // Override IReasoner
-        bool runQuery(const AllocatedQueryPtr &query) override;
+        bool evaluateLiteral(const AllocatedQueryPtr &query) override;
 
     protected:
         static bool isPrologInitialized_;

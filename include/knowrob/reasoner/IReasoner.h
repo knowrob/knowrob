@@ -95,7 +95,7 @@ namespace knowrob {
 		 */
 		bool hasCapability(ReasonerCapability capability) const;
 
-        virtual bool runQuery(const AllocatedQueryPtr &query) = 0;
+        virtual bool evaluateLiteral(const AllocatedQueryPtr &query) = 0;
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;

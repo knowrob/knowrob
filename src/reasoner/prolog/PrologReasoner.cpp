@@ -425,7 +425,7 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	return results;
 }
 
-bool PrologReasoner::runQuery(const AllocatedQueryPtr &query)
+bool PrologReasoner::evaluateLiteral(const AllocatedQueryPtr &query)
 {
     bool sendEOS = true;
     auto reasoner = this;

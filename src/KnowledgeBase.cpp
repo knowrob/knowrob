@@ -39,7 +39,7 @@ namespace knowrob {
         }
 
         void run() override {
-            reasoner_->runQuery(query_);
+            reasoner_->evaluateLiteral(query_);
         }
     };
 
