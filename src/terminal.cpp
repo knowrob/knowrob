@@ -276,7 +276,7 @@ public:
 
     bool assertStatements(const std::vector<FormulaPtr> &args) {
         std::vector<StatementData> data(args.size());
-        std::vector<FramedRDFLiteral*> buf(args.size());
+        std::vector<RDFLiteralPtr> buf(args.size());
         uint32_t dataIndex = 0;
 
         for(auto &phi : args) {
@@ -289,19 +289,16 @@ public:
                 throw QueryError("Invalid assertion: '{}'", *phi);
             }
             for(auto &lit : qt.begin()->literals()) {
-                auto modalIteration = lit->label()->modalOperators();
-                buf[dataIndex] = new FramedRDFLiteral(lit, ModalityFrame(modalIteration));
+                buf[dataIndex] = RDFLiteral::fromLiteral(lit);
                 data[dataIndex++] = buf[dataIndex]->toStatementData();
             }
         }
         if(kb_.insert(data)) {
             std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
-            for(auto x : buf) delete x;
             return true;
         }
         else {
             std::cout << "assertion failed." << "\n";
-            for(auto x : buf) delete x;
             return false;
         }
     }

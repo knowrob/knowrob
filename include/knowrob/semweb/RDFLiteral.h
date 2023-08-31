@@ -9,43 +9,35 @@
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
     /**
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
      */
-    class FramedRDFLiteral {
+    class RDFLiteral : public Literal {
     public:
         /**
          * Unary operators that can be applied on terms.
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
-        explicit FramedRDFLiteral(const LiteralPtr &literal, ModalityFrame modalityFrame=ModalityFrame());
+        RDFLiteral(const TermPtr &s,
+                   const TermPtr &p,
+                   const TermPtr &o,
+                   bool isNegated,
+                   const ModalityLabelPtr &label=ModalityLabel::emptyLabel());
 
-        explicit FramedRDFLiteral(const StatementData &tripleData);
-
-        FramedRDFLiteral(const TermPtr &subjectTerm,
-                         const TermPtr &propertyTerm,
-                         const TermPtr &objectTerm,
-                         OperatorType objectOperator=EQ,
-                         const std::string_view &graphName="*");
-
-/*
-        explicit FramedRDFLiteral(const PredicatePtr &triplePredicate,
-                               const std::string_view &graphName="*");
-*/
-
-        const ModalityFrame& modalityFrame() const { return modalityFrame_; }
+        explicit RDFLiteral(const StatementData &tripleData);
 
         /**
-         * @return true if the expression has no variables.
+         * Substitution constructor.
+         * @other a literal.
+         * @sub a mapping from terms to variables.
          */
-        bool isGround() const;
+        RDFLiteral(const RDFLiteral &other, const Substitution &sub);
 
-        bool isNegated() const;
+        static std::shared_ptr<RDFLiteral> fromLiteral(const LiteralPtr &literal);
 
         /**
          * @return the subject term of this expression.
@@ -66,6 +58,8 @@ namespace knowrob {
          * @return the graph term of this expression.
          */
         std::shared_ptr<Term> graphTerm() const;
+
+        void setGraphName(const std::string_view &graphName);
 
         /**
          * @return the agent term of this expression.
@@ -92,29 +86,13 @@ namespace knowrob {
          */
         OperatorType objectOperator() const;
 
-        /**
-         * @param limit the minimum confidence of triples matching this expression
-         */
-        void setMinConfidence(double limit);
+        void setObjectOperator(OperatorType objectOperator) { objectOperator_ = objectOperator; }
 
-        /**
-         * @param beginTerm a time term.
-         */
-        void setBeginTerm(const TermPtr &beginTerm);
-
-        /**
-         * @param endTerm a time term.
-         */
-        void setEndTerm(const TermPtr &endTerm);
-
-        void setAgentTerm(const std::string &agentTerm);
+        uint32_t numVariables() const override;
 
         StatementData toStatementData() const;
 
     protected:
-        ModalityFrame modalityFrame_;
-        LiteralPtr  literal_;
-
         std::shared_ptr<Term> subjectTerm_;
         std::shared_ptr<Term> propertyTerm_;
         std::shared_ptr<Term> objectTerm_;
@@ -124,14 +102,14 @@ namespace knowrob {
         std::shared_ptr<Term> endTerm_;
         std::shared_ptr<Term> confidenceTerm_;
         OperatorType objectOperator_;
-        bool isNegated_;
+
+        static std::shared_ptr<Term> getGraphTerm(const std::string_view &graphName);
+
+        static std::shared_ptr<Predicate> getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o);
+        static std::shared_ptr<Predicate> getRDFPredicate(const StatementData &data);
     };
-    using FramedRDFLiteralPtr = std::shared_ptr<FramedRDFLiteral>;
+    using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
 
 } // knowrob
-
-namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::FramedRDFLiteral& l);
-}
 
 #endif //KNOWROB_FRAMED_RDF_LITERAL_H

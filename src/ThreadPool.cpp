@@ -121,11 +121,11 @@ void ThreadPool::Worker::run()
 		}
 		
 		// pop work from queue
-		goal_ = threadPool_->popWork();
+		auto goal = threadPool_->popWork();
 		// do the work
-		if(goal_) {
+		if(goal) {
 			KB_DEBUG("Worker has a new goal.");
-			goal_->runInternal();
+			goal->runInternal();
 			KB_DEBUG("Work finished.");
 		}
 	}

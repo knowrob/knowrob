@@ -14,7 +14,7 @@
 // KnowRob
 #include "knowrob/terms/Term.h"
 #include "knowrob/mongodb/MongoKnowledgeGraph.h"
-#include "knowrob/reasoner/IReasoner.h"
+#include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 
 namespace knowrob {

@@ -26,12 +26,6 @@ std::shared_ptr<ModalQuery> ModalQuery::applySubstitution(const Substitution &su
 	);
 }
 
-const ModalityFrame& ModalQuery::modalFrame() const
-{
-	static ModalityFrame empty;
-    return empty;
-}
-
 std::ostream& ModalQuery::print(std::ostream &os) const
 {
     os << *formula();

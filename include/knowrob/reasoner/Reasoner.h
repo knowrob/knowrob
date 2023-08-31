@@ -29,6 +29,7 @@ namespace knowrob {
 	 */
 	enum ReasonerCapability : unsigned long {
 		CAPABILITY_NONE = 1 << 0,
+		CAPABILITY_NEGATIONS = 1 << 1,
 		/** The reasoner can answer conjunctive queries */
 		CAPABILITY_CONJUNCTIVE_QUERIES = 1 << 1,
 		/** The reasoner can answer disjunctive queries */
@@ -40,10 +41,10 @@ namespace knowrob {
 	/**
 	 * An interface for reasoning subsystems.
 	 */
-	class IReasoner {
+	class Reasoner {
 	public:
-        IReasoner();
-		virtual ~IReasoner()= default;
+        Reasoner();
+		virtual ~Reasoner()= default;
 
         /**
          * @return ID of the manager that created the reasoner.
@@ -75,8 +76,7 @@ namespace knowrob {
 
 		/**
 		 * Get the description of a predicate currently defined by this reasoner.
-		 * A predicate is thought to be currently defined if it is defined by the reasoner,
-		 * or imported in some way such that the reasoner can evaluate it.
+		 * A predicate is thought to be currently defined if the reasoner can submitQuery it.
 		 *
 		 * @param indicator a predicate indicator
 		 * @return a predicate description if the predicate is a defined one or null otherwise.
@@ -95,7 +95,9 @@ namespace knowrob {
 		 */
 		bool hasCapability(ReasonerCapability capability) const;
 
-        virtual bool evaluateLiteral(const AllocatedQueryPtr &query) = 0;
+		bool canEvaluate(const RDFLiteral &literal);
+
+        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) = 0;
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;

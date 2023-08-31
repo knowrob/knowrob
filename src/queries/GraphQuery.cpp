@@ -10,29 +10,16 @@
 
 using namespace knowrob;
 
-GraphQuery::GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame)
+GraphQuery::GraphQuery(const std::vector<RDFLiteralPtr> &literals, int flags)
 : Query(flags),
-  literals_(literals),
-  framedLiterals_(literals.size()),
-  modalFrame_(std::move(modalFrame))
+  literals_(literals)
 {
     init();
 }
 
-GraphQuery::GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame)
+GraphQuery::GraphQuery(const RDFLiteralPtr &literal, int flags)
 : Query(flags),
-  literals_({literal}),
-  framedLiterals_(1),
-  modalFrame_(std::move(modalFrame))
-{
-    init();
-}
-
-GraphQuery::GraphQuery(const PredicatePtr &predicate, int flags, ModalityFrame modalFrame)
-: Query(flags),
-  literals_({std::make_shared<Literal>(predicate, false)}),
-  framedLiterals_(1),
-  modalFrame_(std::move(modalFrame))
+  literals_({literal})
 {
     init();
 }
@@ -43,12 +30,11 @@ void GraphQuery::init()
 
     for(int i=0; i<literals_.size(); i++)
     {
-        framedLiterals_[i] = std::make_shared<FramedRDFLiteral>(literals_[i], modalFrame_);
-        if(literals_[i]->isPositive()) {
-            formulae[i] = literals_[i]->predicate();
+        if(literals_[i]->isNegated()) {
+            formulae[i] = std::make_shared<Negation>(literals_[i]->predicate());
         }
         else {
-            formulae[i] = std::make_shared<Negation>(literals_[i]->predicate());
+            formulae[i] = literals_[i]->predicate();
         }
     }
 
@@ -63,11 +49,6 @@ void GraphQuery::init()
 const FormulaPtr& GraphQuery::formula() const
 {
     return formula_;
-}
-
-const ModalityFrame& GraphQuery::modalFrame() const
-{
-    return modalFrame_;
 }
 
 std::ostream& GraphQuery::print(std::ostream &os) const

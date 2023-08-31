@@ -45,11 +45,11 @@ template <typename TP> std::time_t to_time_t(TP tp) {
 }
 
 struct TripleHandler {
-    explicit TripleHandler(ITripleLoader *loader, const ModalityFrame &frame)
-    : loader(loader), statement(), frame(frame) {}
+    explicit TripleHandler(ITripleLoader *loader, const ModalityLabel &label)
+    : loader(loader), statement(), label(label) {}
     ITripleLoader *loader;
     StatementData statement;
-    ModalityFrame frame;
+    ModalityLabel label;
 };
 
 static RDFType getRDFTypeFromURI(const char *typeURI)
@@ -88,8 +88,8 @@ static void raptor_log(void*, raptor_log_message *message) {
 static void processTriple(void* user_data, raptor_statement* statement)
 {
     auto *handler = (TripleHandler*)user_data;
-    // FIXME: modality frame is ignored when loading RDF files!
-    auto &frame = handler->frame;
+    // FIXME: modality label is ignored when loading RDF files!
+    auto &label = handler->label;
 
     if(!statement->subject || !statement->predicate || !statement->object) {
         return;
@@ -207,7 +207,7 @@ bool KnowledgeGraph::loadURI(ITripleLoader &loader,
                              const std::string &uriString,
                              std::string &blankPrefix,
                              TripleFormat format,
-                             const ModalityFrame &frame)
+                             const ModalityLabel &label)
 {
     // create a raptor parser
     raptor_parser *parser;
@@ -224,7 +224,7 @@ bool KnowledgeGraph::loadURI(ITripleLoader &loader,
     }
 
     // pass TripleHandler as user data to statement_handler of raptor
-    TripleHandler handler(&loader, frame);
+    TripleHandler handler(&loader, label);
     raptor_parser_set_statement_handler(parser, &handler, processTriple);
     // make sure blanks are generated with proper prefix.
     // FIXME: changing this globally makes it impossible to call this function from multiple threads.
@@ -262,7 +262,7 @@ bool KnowledgeGraph::loadURI(ITripleLoader &loader,
 
 bool KnowledgeGraph::loadFile(const std::string_view &uriString, TripleFormat format)
 {
-    return loadFile(uriString, format, ModalityFrame());
+    return loadFile(uriString, format, *ModalityLabel::emptyLabel());
 }
 
 std::string KnowledgeGraph::getNameFromURI(const std::string &uriString)

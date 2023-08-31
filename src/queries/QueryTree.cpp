@@ -15,12 +15,15 @@ using namespace knowrob::modality;
 
 ModalityLabelPtr& emptyLabel() {
     static auto empty =
-            std::make_shared<ModalityLabel>(ModalIteration::emptyIteration());
+            std::make_shared<ModalityLabel>(*ModalIteration::emptyIteration());
     return empty;
 }
 
 QueryTree::QueryTree(const FormulaPtr &query)
-: rootNode_(new Node(nullptr, emptyLabel(), query, false))
+: rootNode_(new Node(nullptr,
+        ModalIteration::emptyIteration(),
+        query,
+        false))
 {
     openNodes_.push(rootNode_);
     while(!openNodes_.empty()) {
@@ -44,11 +47,11 @@ QueryTree::~QueryTree()
 }
 
 QueryTree::Node::Node(Node *parent,
-                      const ModalityLabelPtr &modalities,
+                      const std::shared_ptr<ModalIteration> &modalOperators,
                       const FormulaPtr &formula,
                       bool isNegated)
 : parent(parent),
-  label(modalities),
+  modalOperators(modalOperators),
   formula(formula),
   isNegated(isNegated),
   isOpen(true)
@@ -104,11 +107,11 @@ std::list<QueryTree::Node*> QueryTree::getLeafs(Node *n)
 }
 
 QueryTree::Node* QueryTree::createNode(Node *parent,
-                                       const ModalityLabelPtr &modalities,
+                                       const std::shared_ptr<ModalIteration> &modalOperators,
                                        const FormulaPtr &phi,
                                        bool isNegated)
 {
-    Node *newNode = new Node(parent, modalities, phi, isNegated);
+    Node *newNode = new Node(parent, modalOperators, phi, isNegated);
     parent->successors.push_back(newNode);
     openNodes_.push(newNode);
     return newNode;
@@ -130,8 +133,9 @@ void QueryTree::constructPath(Node *leaf, Path &path)
     do {
         if(parent->formula->type() == FormulaType::PREDICATE) {
             auto phi = std::dynamic_pointer_cast<Predicate>(parent->formula);
-            path.literals_.push_back(std::make_shared<LabeledLiteral>(
-                    parent->label, phi, parent->isNegated));
+            auto label = std::make_shared<ModalityLabel>(*parent->modalOperators);
+            path.literals_.push_back(std::make_shared<Literal>(
+                    phi, parent->isNegated, label));
         }
         parent = parent->parent;
     } while(parent);
@@ -159,7 +163,7 @@ void QueryTree::expandNextNode()
             if(next->isNegated) {
                 for(Node *leaf : getLeafs(next)) {
                     for(auto &phi : formula->formulae()) {
-                        createNode(leaf, next->label, phi, true);
+                        createNode(leaf, next->modalOperators, phi, true);
                     }
                 }
             }
@@ -167,7 +171,7 @@ void QueryTree::expandNextNode()
                 for(Node *leaf : getLeafs(next)) {
                     Node *parent = leaf;
                     for (auto &phi: formula->formulae()) {
-                        parent = createNode(parent, next->label, phi, false);
+                        parent = createNode(parent, next->modalOperators, phi, false);
                     }
                 }
             }
@@ -180,14 +184,14 @@ void QueryTree::expandNextNode()
                 for(Node *leaf : getLeafs(next)) {
                     Node *parent = leaf;
                     for (auto &phi: formula->formulae()) {
-                        parent = createNode(parent, next->label, phi, true);
+                        parent = createNode(parent, next->modalOperators, phi, true);
                     }
                 }
             }
             else {
                 for(Node *leaf : getLeafs(next)) {
                     for (auto &phi: formula->formulae()) {
-                        createNode(leaf, next->label, phi, false);
+                        createNode(leaf, next->modalOperators, phi, false);
                     }
                 }
             }
@@ -199,14 +203,14 @@ void QueryTree::expandNextNode()
             if(next->isNegated) {
                 for(Node *leaf : getLeafs(next)) {
                     Node *parent = leaf;
-                    parent = createNode(parent, next->label, formula->antecedent(), false);
-                    createNode(parent, next->label, formula->consequent(), true);
+                    parent = createNode(parent, next->modalOperators, formula->antecedent(), false);
+                    createNode(parent, next->modalOperators, formula->consequent(), true);
                 }
             }
             else {
                 for(Node *leaf : getLeafs(next)) {
-                    createNode(leaf, next->label, formula->antecedent(), true);
-                    createNode(leaf, next->label, formula->consequent(), false);
+                    createNode(leaf, next->modalOperators, formula->antecedent(), true);
+                    createNode(leaf, next->modalOperators, formula->consequent(), false);
                 }
             }
             break;
@@ -215,7 +219,7 @@ void QueryTree::expandNextNode()
         case FormulaType::NEGATION: {
             auto *formula = (Negation*)next->formula.get();
             for(Node *leaf : getLeafs(next)) {
-                createNode(leaf, next->label, formula->negatedFormula(), !next->isNegated);
+                createNode(leaf, next->modalOperators, formula->negatedFormula(), !next->isNegated);
             }
             break;
         }
@@ -225,11 +229,11 @@ void QueryTree::expandNextNode()
             for(Node *leaf : getLeafs(next)) {
                 // add modality to iteration
                 auto modalityIteration =
-                        std::make_shared<ModalIteration>(next->label->modalOperators());
+                        std::make_shared<ModalIteration>(*next->modalOperators);
                 *modalityIteration += formula->modalOperator();
                 // create a node with updated label
                 createNode(leaf,
-                           std::make_shared<ModalityLabel>(modalityIteration),
+                           modalityIteration,
                            formula->modalFormula(),
                            next->isNegated);
             }
@@ -261,7 +265,7 @@ TEST_F(QueryTreeTest, PositiveLiteral)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isPositive());
+            EXPECT_FALSE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
             EXPECT_EQ(lit->functor(), "p");
             EXPECT_EQ(lit->arity(), 0);
@@ -278,7 +282,7 @@ TEST_F(QueryTreeTest, NegativeLiteral)
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isNegative());
+            EXPECT_TRUE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
             EXPECT_EQ(lit->functor(), "p");
             EXPECT_EQ(lit->arity(), 0);
@@ -295,13 +299,13 @@ TEST_F(QueryTreeTest, LiteralWithModality)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isPositive());
+            EXPECT_FALSE(lit->isNegated());
             EXPECT_EQ(lit->functor(), "p");
             EXPECT_EQ(lit->arity(), 0);
 
             auto label = (ModalityLabel*)(lit->label().get());
-            EXPECT_EQ(label->numOperators(), 1);
-            EXPECT_EQ(*label->modalOperators().begin(), KnowledgeModality::K());
+            EXPECT_EQ(label->epistemicOperator(), KnowledgeModality::K());
+            EXPECT_EQ(label->pastOperator().get(), nullptr);
         }
     }
 }
@@ -315,14 +319,14 @@ TEST_F(QueryTreeTest, NestedModality)
         EXPECT_EQ(path.numLiterals(), 1);
         if (path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isNegative());
+            EXPECT_TRUE(lit->isNegated());
             EXPECT_EQ(lit->functor(), "p");
             EXPECT_EQ(lit->arity(), 0);
 
             // note: KBp is simplified to Bp
             auto label = (ModalityLabel*)(lit->label().get());
-            EXPECT_EQ(label->numOperators(), 1);
-            EXPECT_EQ(*label->modalOperators().begin(), BeliefModality::B());
+            EXPECT_EQ(label->epistemicOperator(), BeliefModality::B());
+            EXPECT_EQ(label->pastOperator().get(), nullptr);
         }
     }
 }
@@ -336,7 +340,7 @@ TEST_F(QueryTreeTest, Conjunction_pq)
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isPositive());
+            EXPECT_TRUE(!lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
@@ -351,7 +355,7 @@ TEST_F(QueryTreeTest, Conjunction_pqr)
         EXPECT_EQ(path.numLiterals(), 3);
         if(path.numLiterals() == 3) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isNegative());
+            EXPECT_TRUE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }
@@ -366,7 +370,7 @@ TEST_F(QueryTreeTest, Disjunction_pq)
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
-            EXPECT_TRUE(lit->isPositive());
+            EXPECT_FALSE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
     }

@@ -185,10 +185,8 @@ add_library(knowrob_qa SHARED
 		src/queries/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-        src/queries/QueryPipeline.cpp
 		src/queries/AnswerBuffer.cpp
         src/queries/GraphQuery.cpp
-		src/queries/QueryStage.cpp
         src/queries/Query.cpp
         src/queries/RedundantAnswerFilter.cpp
 		src/semweb/PrefixRegistry.cpp
@@ -200,13 +198,11 @@ add_library(knowrob_qa SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/semweb/FramedRDFLiteral.cpp
+        src/semweb/RDFLiteral.cpp
 		src/semweb/ImportHierarchy.cpp
-		src/reasoner/BuiltinEvaluator.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
-		src/reasoner/IReasoner.cpp
-		src/reasoner/ReasoningGraph.cpp
+        src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
 		src/reasoner/ReasonerAttention.cpp
@@ -239,10 +235,13 @@ add_library(knowrob_qa SHARED
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
-        src/modalities/ModalityFrame.cpp
+        src/modalities/ModalityLabel.cpp
         src/semweb/KnowledgeGraph.cpp
         src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp)
+        src/semweb/KnowledgeGraphPlugin.cpp
+        src/queries/EDBStage.cpp
+        src/queries/QueryStage.cpp
+        src/queries/IDBStage.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

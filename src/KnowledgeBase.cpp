@@ -14,39 +14,72 @@
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/queries/AnswerCombiner.h"
-#include "knowrob/queries/QueryPipeline.h"
-#include "knowrob/queries/RedundantAnswerFilter.h"
+#include "knowrob/queries/IDBStage.h"
+#include "knowrob/queries/EDBStage.h"
 
 using namespace knowrob;
 
-namespace knowrob {
-    struct GraphQueryData {
-        std::shared_ptr<GraphQuery> graphQuery_;
-        std::shared_ptr<AnswerBroadcaster> outputStream_;
-    };
-
-    class ReasonerRunner : public ThreadPool::Runner {
-    public:
-        std::shared_ptr<IReasoner> reasoner_;
-        std::shared_ptr<AllocatedQuery> query_;
-
-        ReasonerRunner(const std::shared_ptr<IReasoner> &reasoner,
-                       const std::shared_ptr<GraphQueryData> &queryData)
-        : reasoner_(reasoner), ThreadPool::Runner()
+namespace knowrob
+{
+    struct EDBComparator
+    {
+        inline bool operator() (const RDFLiteralPtr& l1, const RDFLiteralPtr& l2)
         {
-            auto outputChannel = AnswerStream::Channel::create(queryData->outputStream_);
-            query_ = std::make_shared<AllocatedQuery>(queryData->graphQuery_, outputChannel);
-        }
+            // note: using ">" in return statements means that smaller element appears before larger.
+            // note: this heuristic ignores dependencies.
 
-        void run() override {
-            reasoner_->evaluateLiteral(query_);
+            // (1) prefer evaluation of literals with fewer variables
+            auto numVars1 = l1->numVariables();
+            auto numVars2 = l2->numVariables();
+            if(numVars1 < numVars2) return (numVars1 > numVars2);
+
+            // TODO: (2) prefer evaluation of literals with less EDB assertions
+
+            return (l1 < l2);
         }
     };
 
-    class AnswerBuffer_WithPipelines : public AnswerBuffer {
+    // used to sort nodes in a priority queue.
+    // the priority value is used to determine which nodes should be evaluated first.
+    struct CompareNodes
+    {
+        bool operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const
+        {
+            // note: using ">" in return statements means that smaller element appears before larger.
+            if (a->numVariables() != b->numVariables()) {
+                // prefer node with less variables
+                return a->numVariables() > b->numVariables();
+            }
+            if(a->numNeighbors() != b->numNeighbors()) {
+                // prefer node with less neighbors
+                return a->numNeighbors() > b->numNeighbors();
+            }
+            return a<b;
+        }
+    };
+
+    // represents a possible step in the query pipeline
+    struct QueryPipelineNode
+    {
+        explicit QueryPipelineNode(const DependencyNodePtr &node)
+        : node_(node)
+        {
+            // add all nodes to a priority queue
+            for(auto &neighbor : node->neighbors()) {
+                neighbors_.push(neighbor);
+            }
+        }
+        const DependencyNodePtr node_;
+        std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, CompareNodes> neighbors_;
+    };
+    using QueryPipelineNodePtr = std::shared_ptr<QueryPipelineNode>;
+
+    class AnswerBuffer_WithReference : public AnswerBuffer {
     public:
-        AnswerBuffer_WithPipelines() : AnswerBuffer() {}
-        std::list<QueryPipeline> pipelines_;
+        explicit AnswerBuffer_WithReference(const std::shared_ptr<AnswerStream> &referencedStream)
+        : AnswerBuffer(), referencedStream_(referencedStream) {}
+    protected:
+        std::shared_ptr<AnswerStream> referencedStream_;
     };
 }
 
@@ -125,9 +158,22 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
     }
 }
 
+std::shared_ptr<KnowledgeGraph> KnowledgeBase::centralKG()
+{
+    auto knowledgeGraphs_ = backendManager_->knowledgeGraphPool();
+    std::shared_ptr<KnowledgeGraph> centralKG;
+    if(knowledgeGraphs_.empty()) {
+        return {};
+    }
+    else {
+        // TODO: flag one of the KGs as "preferred" in settings
+        return (*knowledgeGraphs_.begin()).second->knowledgeGraph();
+    }
+}
+
 AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags)
 {
-    auto outStream = std::make_shared<AnswerBuffer_WithPipelines>();
+    auto outStream = std::make_shared<AnswerBuffer>();
 
     // convert into DNF and submit a query for each conjunction.
     // note that the number of conjunctions can get pretty high for
@@ -138,164 +184,278 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags
     QueryTree qt(phi);
     for(auto &path : qt)
     {
-        // group literals by modality
-        std::map<ModalityLabelPtr, std::list<LiteralPtr>> modalityMap;
-        for(auto &labeled : path.literals()) {
-            auto label = std::static_pointer_cast<ModalityLabel>(labeled->label());
-            auto it = modalityMap.find(label);
-            if(it == modalityMap.end()) {
-                modalityMap[label] = { labeled };
-            }
-            else {
-                it->second.push_back(labeled);
-            }
+        auto &literals = path.literals();
+        std::vector<RDFLiteralPtr> rdfLiterals(literals.size());
+        uint32_t literalIndex=0;
+        for(auto &l : literals) {
+            rdfLiterals[literalIndex++] = RDFLiteral::fromLiteral(l);
         }
+        auto pathQuery = std::make_shared<GraphQuery>(rdfLiterals, queryFlags);
 
-        // compute dependencies
-        DependencyGraph dg;
-        for(auto &pair : modalityMap) {
-            dg.insert(pair.second, pair.first);
-        }
-
-        // create a query pipeline for each conjunction.
-        // NOTE: here the output stream keeps a reference on each pipeline feeding it.
-        //       the idea is that as long as outStream is used, the pipeline will be alive.
-        //       keeping references in the KB instead would require additional bookkeeping for
-        //       removing finished pipelines.
-        auto &pipeline = outStream->pipelines_.emplace_back(outStream);
-        pipeline.setQueryEngine(this);
-        pipeline.setQueryFlags(queryFlags);
-        // iterate over groups of modal queries with shared free variables
-        // and create a query pipeline where each group is processed in parallel steps.
-        for(auto &queryGroup : dg) {
-            pipeline.addDependencyGroup(queryGroup.member_);
-        }
-        pipeline.run();
+        auto pathOutput = submitQuery(pathQuery);
+        pathOutput >> outStream;
+        pathOutput->stopBuffering();
     }
 
+    outStream->stopBuffering();
     return outStream;
+}
+
+std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
+        const std::list<DependencyNodePtr> &dependencyGroup)
+{
+    // Pick a node to start with.
+    // For now the one with minimum number of neighbors is picked.
+    DependencyNodePtr first;
+    unsigned long minNumNeighbors = 0;
+    for(auto &n : dependencyGroup) {
+        if(!first || n->numNeighbors() < minNumNeighbors) {
+            minNumNeighbors = n->numNeighbors();
+            first = n;
+        }
+    }
+
+    // remember visited nodes, needed for circular dependencies
+    // all nodes added to the queue should also be added to this set.
+    std::set<DependencyNode*> visited;
+    visited.insert(first.get());
+
+    std::vector<RDFComputablePtr> sequence;
+    sequence.push_back(std::static_pointer_cast<RDFComputable>(first->literal()));
+
+    // start with a FIFO queue only containing first node
+    std::deque<QueryPipelineNodePtr> queue;
+    auto qn0 = std::make_shared<QueryPipelineNode>(first);
+    queue.push_front(qn0);
+
+    // loop until queue is empty and process exactly one successor of
+    // the top element in the FIFO in each step. If an element has no
+    // more successors, it can be removed from queue.
+    // Each successor creates an additional node added to the top of the FIFO.
+    while(!queue.empty()) {
+        auto front = queue.front();
+
+        // get top successor node that has not been visited yet
+        DependencyNodePtr topNext;
+        while(!front->neighbors_.empty()) {
+            auto topNeighbor = front->neighbors_.top();
+            front->neighbors_.pop();
+
+            if(visited.count(topNeighbor.get()) == 0) {
+                topNext = topNeighbor;
+                break;
+            }
+        }
+        // pop element from queue if all neighbors were processed
+        if(front->neighbors_.empty()) {
+            queue.pop_front();
+        }
+
+        if(topNext) {
+            // push a new node onto FIFO
+            auto qn_next = std::make_shared<QueryPipelineNode>(topNext);
+            queue.push_front(qn_next);
+            sequence.push_back(std::static_pointer_cast<RDFComputable>(topNext->literal()));
+            visited.insert(topNext.get());
+        }
+    }
+
+    return sequence;
+}
+
+void KnowledgeBase::createComputationPipeline(
+    const std::vector<RDFComputablePtr> &computableLiterals,
+    const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
+    const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
+    int queryFlags)
+{
+    // This function generates a query pipeline for literals that
+    // can be computed (EDB-only literals are processed separately).
+    // The literals are part of one dependency group.
+    // They are sorted, and also evaluated in this order.
+    // For each computable literal there is at least one reasoner
+    // that can compute the literal.
+    // However, instances of the literal may also occur in the EDB.
+    // Hence, computation results must be combined with results of
+    // an EDB query for each literal.
+    // There are more sophisticated strategies that could be employed
+    // to reduce number of EDB calls.
+    // For the moment we rather use a simple implementation
+    // where a parallel query step is created for each computable literal.
+    // In this step, an EDB query and computations run in parallel.
+    // The results are then given to the next step if any.
+
+    auto lastOut = pipelineInput;
+    auto edb = centralKG();
+
+    for(auto &lit : computableLiterals) {
+        auto stepInput = lastOut;
+        auto stepOutput = std::make_shared<AnswerBroadcaster>();
+
+        auto edbStage = std::make_shared<EDBStage>(edb, lit, queryFlags);
+        stepInput >> edbStage;
+        edbStage >> stepOutput;
+
+        for(auto &r : lit->reasonerList()) {
+            auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, queryFlags);
+            stepInput >> idbStage;
+            idbStage >> stepOutput;
+        }
+
+        lastOut = stepOutput;
+    }
+
+    lastOut >> pipelineOutput;
 }
 
 AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
 {
-    std::list<std::shared_ptr<IReasoner>> tdReasoner;
-    for(auto &pair : reasonerManager_->reasonerPool()) {
-        auto &r = pair.second->reasoner();
-        // skip reasoner that cannot perform top-down query evaluation
-        if(!r->hasCapability(CAPABILITY_TOP_DOWN_EVALUATION)) continue;
-        // TODO: consider filtering based on whether the reasoner has a definition for one of the literals.
-        tdReasoner.push_back(r);
+    auto allLiterals = graphQuery->literals();
+
+    // --------------------------------------
+    // Pick a Knowledge Graph for EDB queries
+    // --------------------------------------
+    std::shared_ptr<KnowledgeGraph> kg = centralKG();
+
+    // --------------------------------------
+    // split input literals into positive and negative literals.
+    // negative literals are evaluated in parallel after all positive literals.
+    // --------------------------------------
+    std::vector<RDFLiteralPtr> positiveLiterals, negativeLiterals;
+    for(auto &l : allLiterals) {
+        if(l->isNegated()) negativeLiterals.push_back(l);
+        else               positiveLiterals.push_back(l);
     }
 
-    if(tdReasoner.empty()) {
-        // just run EDB query in case no top-down reasoner is in use.
-        auto knowledgeGraphs_ = backendManager_->knowledgeGraphPool();
-        if(knowledgeGraphs_.empty()) {
-            return {};
+    // --------------------------------------
+    // sort positive literals. the EDB might evaluate literals in the given order.
+    // --------------------------------------
+    std::sort(positiveLiterals.begin(), positiveLiterals.end(), EDBComparator());
+
+    // --------------------------------------
+    // split positive literals into edb-only and computable.
+    // also associate list of reasoner to computable literals.
+    // --------------------------------------
+    std::vector<RDFLiteralPtr> edbOnlyLiterals;
+    std::vector<RDFComputablePtr> computableLiterals;
+    for(auto &l : positiveLiterals) {
+        std::vector<std::shared_ptr<Reasoner>> l_reasoner;
+        for(auto &pair : reasonerManager_->reasonerPool()) {
+            auto &r = pair.second->reasoner();
+            if(r->canEvaluate(*l)) l_reasoner.push_back(r);
+        }
+        if(l_reasoner.empty()) edbOnlyLiterals.push_back(l);
+        else computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
+    }
+
+    std::shared_ptr<AnswerBuffer> edbOut;
+    // --------------------------------------
+    // run EDB query with all edb-only literals.
+    // --------------------------------------
+
+    if(edbOnlyLiterals.empty()) {
+        edbOut = std::make_shared<AnswerBuffer>();
+        auto channel = AnswerStream::Channel::create(edbOut);
+        channel->push(AnswerStream::bos());
+        channel->push(AnswerStream::eos());
+    }
+    else {
+        auto edbOnlyQuery = std::make_shared<GraphQuery>(
+                    edbOnlyLiterals,
+                    graphQuery->flags());
+        edbOut = kg->submitQuery(edbOnlyQuery);
+    }
+
+    std::shared_ptr<AnswerBroadcaster> idbOut;
+    if(computableLiterals.empty())
+    {
+        idbOut = edbOut;
+    }
+    else
+    {
+        idbOut = std::make_shared<AnswerBroadcaster>();
+        // --------------------------------------
+        // Compute dependency groups of computable literals.
+        // --------------------------------------
+        DependencyGraph dg;
+        dg.insert(computableLiterals.begin(), computableLiterals.end());
+
+        if(dg.numGroups()==1) {
+            auto &literalGroup = *dg.begin();
+            // --------------------------------------
+            // Construct a pipeline for each dependency group.
+            // --------------------------------------
+            createComputationPipeline(
+                createComputationSequence(literalGroup.member_),
+                edbOut,
+                idbOut,
+                graphQuery->flags());
         }
         else {
-            // TODO: flag one of the KGs as "preferred" in settings
-            auto preferredKnowledgeGraph = (*knowledgeGraphs_.begin()).second->knowledgeGraph();
-            return preferredKnowledgeGraph->submitQuery(graphQuery);
-        }
-    }
+            // there are multiple dependency groups. They can be evaluated in parallel.
 
-    // compute dependency groups based on shared variables of literals.
-    // each group can be evaluated independently.
-    DependencyGraph dg;
-    for(auto &literal : graphQuery->literals()) {
-        dg.insert(literal);
-    }
-
-    // TODO: use AnswerCombiner without unification. the solutions that are combined do not have shared variables.
-    // NOTE: it is assumed that top-down reasoner will include all EDB facts in their set of answers.
-    auto answerCombiner = std::make_shared<AnswerCombiner>();
-
-    // add additional stages for post-processing of results
-    std::shared_ptr<AnswerBroadcaster> lastStage = answerCombiner;
-    {
-        // optionally add a stage to the pipeline that drops all redundant result.
-        if(graphQuery->flags() & QUERY_FLAG_UNIQUE_SOLUTIONS) {
-            auto filterStage = std::make_shared<RedundantAnswerFilter>();
-            lastStage >> filterStage;
-            lastStage = filterStage;
-        }
-
-        // TODO: notify top-down reasoner about inferences of others.
-        if(tdReasoner.size()>1) {
-            /*
-            auto notifyStage = std::make_shared<XXX>();
-            lastStage >> notifyStage;
-            lastStage = notifyStage;
-            */
-        }
-
-        // TODO: optionally persist top-down inferences in data backend(s)
-        if(graphQuery->flags() & QUERY_FLAG_PERSIST_SOLUTIONS) {
-            /*
-            auto persistStage = std::make_shared<XXX>();
-            lastStage >> persistStage;
-            lastStage = persistStage;
-            */
-        }
-    }
-    auto out = std::make_shared<AnswerBuffer>();
-    lastStage >> out;
-
-    // iterate over dependency groups, and create reasoner runner writing into answerCombiner stream
-    for(auto &literalGroup : dg)
-    {
-        // for a group each reasoner writes into the same stream which in turn is streamed into
-        // the stream combining results from different groups.
-        auto groupAnswers = std::make_shared<AnswerBroadcaster>();
-        groupAnswers >> answerCombiner;
-
-        std::vector<LiteralPtr> queryLiterals;
-        for(auto &x : literalGroup.member_) {
-            std::shared_ptr<LiteralDependencyNode> literalNode;
-            if((literalNode = std::dynamic_pointer_cast<LiteralDependencyNode>(x))) {
-                queryLiterals.push_back(literalNode->literal());
+            // combines answers computed in different parallel steps
+            auto answerCombiner = std::make_shared<AnswerCombiner>();
+            // create a parallel step for each dependency group
+            for(auto &literalGroup : dg)
+            {
+                // --------------------------------------
+                // Construct a pipeline for each dependency group.
+                // --------------------------------------
+                createComputationPipeline(
+                        createComputationSequence(literalGroup.member_),
+                        edbOut,
+                        answerCombiner,
+                        graphQuery->flags());
             }
-        }
-
-        auto queryData = std::make_shared<GraphQueryData>();
-        queryData->graphQuery_ = std::make_shared<GraphQuery>(
-                queryLiterals,
-                graphQuery->flags(),
-                graphQuery->modalFrame());
-        queryData->outputStream_ = groupAnswers;
-
-        std::list<std::shared_ptr<ReasonerRunner>> runnerList;
-        // for each group and top-down reasoner, run a graph query via a worker thread.
-        // each reasoner writes into an individual channel of the stream.
-        // note: below splits into two for-loops such that all channels are created first to avoid race condition with
-        //       worker threads finishing before all channels are created.
-        for(auto &r : tdReasoner) {
-            runnerList.push_back(std::make_shared<ReasonerRunner>(r, queryData));
-        }
-        for(auto &runner : runnerList) {
-            threadPool_->pushWork(runner,
-                [groupAnswers,graphQuery](const std::exception &e){
-                    KB_WARN("an exception occurred for graph query ({}): {}.", *graphQuery, e.what());
-                    groupAnswers->close();
-                });
+            answerCombiner >> idbOut;
         }
     }
 
+    // --------------------------------------
+    // Evaluate all negative literals in parallel.
+    // --------------------------------------
+    std::shared_ptr<AnswerBroadcaster> lastStage;
+    if(negativeLiterals.empty()) {
+        lastStage = idbOut;
+    }
+    else {
+        // append a parallel step for each negative literal and reasoner that can compute it.
+        // FIXME: maybe every possible source must report that a negated literal cannot be grounded?
+        //xxx;
+        KB_WARN("todo: submitQuery negations");
+        lastStage = idbOut;
+    }
+
+    /*
+            // optionally add a stage to the pipeline that drops all redundant result.
+            if(graphQuery->flags() & QUERY_FLAG_UNIQUE_SOLUTIONS) {
+                auto filterStage = std::make_shared<RedundantAnswerFilter>();
+                lastStage >> filterStage;
+                lastStage = filterStage;
+            }
+
+            // TODO: optionally persist top-down inferences in data backend(s)
+            if(graphQuery->flags() & QUERY_FLAG_PERSIST_SOLUTIONS) {
+                //auto persistStage = std::make_shared<XXX>();
+                //lastStage >> persistStage;
+                //lastStage = persistStage;
+            }
+    */
+
+    // TODO: It might be better to rather use `<<` for streaming than `>>`, and to hold a reference of input in output
+    //       stream assuming the output stream is what the user will work with!
+    auto out = std::make_shared<AnswerBuffer_WithReference>(edbOut);
+    lastStage >> out;
+    edbOut->stopBuffering();
     return out;
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &query, int queryFlags)
+AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, int queryFlags)
 {
+    auto rdfLiteral = RDFLiteral::fromLiteral(literal);
     return submitQuery(std::make_shared<GraphQuery>(
-        GraphQuery({query}, queryFlags)));
-}
-
-AnswerBufferPtr KnowledgeBase::submitQuery(const LabeledLiteralPtr &query, int queryFlags)
-{
-    auto &modalOperators = query->label()->modalOperators();
-    return submitQuery(std::make_shared<GraphQuery>(
-        GraphQuery({query}, queryFlags, ModalityFrame(modalOperators))));
+        GraphQuery({rdfLiteral}, queryFlags)));
 }
 
 bool KnowledgeBase::insert(const std::vector<StatementData> &propositions)

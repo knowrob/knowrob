@@ -16,7 +16,6 @@
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
-#include "knowrob/modalities/ModalityFrame.h"
 
 namespace knowrob {
 	/**
@@ -30,6 +29,8 @@ namespace knowrob {
 		 */
         explicit Query(int flags) : flags_(flags) {}
 
+        static int defaultFlags();
+
         int flags() const { return flags_; }
 
         virtual std::ostream& print(std::ostream &os) const = 0;
@@ -38,8 +39,6 @@ namespace knowrob {
 		 * @return the formula associated to this query.
 		 */
         virtual const FormulaPtr& formula() const = 0;
-
-        virtual const ModalityFrame& modalFrame() const = 0;
 
 	protected:
 		const int flags_;

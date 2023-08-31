@@ -45,14 +45,6 @@ namespace knowrob {
          * @return a stream of query results
          */
         virtual AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags) = 0;
-
-        /**
-         * Evaluate a query represented as a LabeledLiteral.
-         * The call is non-blocking and returns a stream of answers.
-         * @param query a labeled literal
-         * @return a stream of query results
-         */
-        virtual AnswerBufferPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) = 0;
 	};
 }
 

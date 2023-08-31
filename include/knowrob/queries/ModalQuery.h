@@ -16,7 +16,6 @@
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
-#include "knowrob/modalities/ModalityFrame.h"
 #include "knowrob/queries/Query.h"
 
 namespace knowrob {
@@ -40,9 +39,6 @@ namespace knowrob {
 
         // Override Query
 		const FormulaPtr& formula() const override { return formula_; }
-
-        // Override Query
-        const ModalityFrame& modalFrame() const override;
 
         // Override Query
         std::ostream& print(std::ostream &os) const override;

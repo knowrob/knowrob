@@ -18,12 +18,9 @@ namespace knowrob {
      */
     class QueryStage : public AnswerBroadcaster {
     public:
-        explicit QueryStage(const std::list<LiteralPtr> &literals,
-                            const ModalityLabelPtr &label={});
+        explicit QueryStage(RDFLiteralPtr literal, int queryFlags=Query::defaultFlags());
 
         ~QueryStage();
-
-        void setQueryEngine(QueryEngine *queryEngine);
 
         void setQueryFlags(int flags);
 
@@ -46,17 +43,17 @@ namespace knowrob {
         bool hasStopRequest() const { return hasStopRequest_; }
 
     protected:
-        const std::list<LiteralPtr> literals_;
-        const ModalityLabelPtr label_;
+        const RDFLiteralPtr literal_;
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> isAwaitingInput_;
         std::atomic<bool> hasStopRequest_;
 
-        QueryEngine *queryEngine_;
-        int queryFlags_;
         std::list<AnswerBufferPtr> graphQueries_;
+        int queryFlags_;
 
         void push(const AnswerPtr &msg) override;
+
+        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
 
         static AnswerPtr transformAnswer(const AnswerPtr &graphQueryAnswer, const AnswerPtr &partialResult);
 

@@ -14,11 +14,15 @@
 
 using namespace knowrob;
 
-PrologQueryRunner::PrologQueryRunner(PrologReasoner *reasoner, Request request, bool sendEOS)
+PrologQueryRunner::PrologQueryRunner(PrologReasoner *reasoner,
+                Request request,
+                const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+                bool sendEOS)
 : ThreadPool::Runner(),
   reasoner_(reasoner),
   request_(std::move(request)),
-  sendEOS_(sendEOS)
+  sendEOS_(sendEOS),
+  outputChannel_(outputChannel)
 {
 }
 
@@ -80,7 +84,7 @@ void PrologQueryRunner::run()
 		// set the solution scope, if reasoner specified it
         PrologQuery::putScope(solution, solution_scope);
 		// push the solution into the output stream
-		request_.queryInstance->pushSolution(solution);
+		outputChannel_->push(solution);
 
 		if(request_.goal->flags() & QUERY_FLAG_ONE_SOLUTION) break;
 	}
@@ -102,9 +106,13 @@ void PrologQueryRunner::run()
 	//reasoner_->finishRunner(request_.queryID, this);
 
 	// make sure EOS is published on output stream
-	if(sendEOS_) request_.queryInstance->pushEOS();
+	if(sendEOS_) {
+        outputChannel_->push(AnswerStream::eos());
+    }
 	// throw error if Prolog evaluation has caused an exception.
-	if(exceptionTerm) throw QueryError(*request_.goal, *exceptionTerm);
+	if(exceptionTerm) throw QueryError(
+	    "An exception occurred during the evaluation of literal {}: {}.",
+	        *request_.goal, *exceptionTerm);
 }
 
 term_t PrologQueryRunner::createContextTerm(
@@ -131,11 +139,11 @@ term_t PrologQueryRunner::createContextTerm(
     static const auto solution_scope_f = PL_new_functor(PL_new_atom("solution_scope"), 1);
     static const auto predicates_f = PL_new_functor(PL_new_atom("predicates"), 1);
 
-    auto &frame = request_.queryInstance->modalFrame();
+    auto &label = *request_.label;
     int numFrameKeys = 2;
-    if(frame.agent().has_value()) numFrameKeys +=1;
-    if(frame.timeInterval().has_value()) {
-        auto &ti = frame.timeInterval().value();
+    if(label.agent().has_value()) numFrameKeys +=1;
+    if(label.timeInterval().has_value()) {
+        auto &ti = label.timeInterval().value();
         if(ti.since().has_value()) numFrameKeys += 1;
         if(ti.until().has_value()) numFrameKeys += 1;
     }
@@ -151,20 +159,20 @@ term_t PrologQueryRunner::createContextTerm(
     // epistemicMode: knowledge|belief
     int keyIndex = 0;
     scopeKeys[keyIndex] = epistemicMode_a;
-    if(!PL_put_atom(scopeValues, frame.isAboutBelief() ? belief_a : knowledge_a)) return (term_t)0;
+    if(!PL_put_atom(scopeValues, label.isAboutBelief() ? belief_a : knowledge_a)) return (term_t)0;
 
     // temporalMode: sometimes|always
     scopeKeys[++keyIndex] = temporalMode_a;
-    if(!PL_put_atom(scopeValues+keyIndex, frame.isAboutSomePast() ? sometimes_a : always_a)) return (term_t)0;
+    if(!PL_put_atom(scopeValues+keyIndex, label.isAboutSomePast() ? sometimes_a : always_a)) return (term_t)0;
 
     // agent: $name
-    if(frame.agent().has_value()) {
+    if(label.agent().has_value()) {
         scopeKeys[++keyIndex] = agent_a;
-        if(!PL_put_atom_chars(scopeValues+keyIndex, frame.agent().value().c_str())) return (term_t)0;
+        if(!PL_put_atom_chars(scopeValues+keyIndex, label.agent().value().c_str())) return (term_t)0;
     }
 
-    if(frame.timeInterval().has_value()) {
-        auto &ti = frame.timeInterval().value();
+    if(label.timeInterval().has_value()) {
+        auto &ti = label.timeInterval().value();
         // since: $name
         if(ti.since().has_value()) {
             scopeKeys[++keyIndex] = since_a;

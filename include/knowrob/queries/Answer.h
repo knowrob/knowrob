@@ -15,7 +15,7 @@
 #include <ostream>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/modalities/ModalityFrame.h"
+#include "knowrob/modalities/TimeInterval.h"
 
 namespace knowrob {
 	/**

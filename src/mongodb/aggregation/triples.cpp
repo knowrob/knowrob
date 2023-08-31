@@ -184,24 +184,24 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::FramedRDFLiteral::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::RDFLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case FramedRDFLiteral::EQ:
+        case RDFLiteral::EQ:
             return nullptr;
-        case FramedRDFLiteral::LEQ:
+        case RDFLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case FramedRDFLiteral::GEQ:
+        case RDFLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case FramedRDFLiteral::LT:
+        case RDFLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case FramedRDFLiteral::GT:
+        case RDFLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
     auto gt = tripleExpression.graphTerm();
     if(!gt) return;
@@ -226,13 +226,13 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLitera
     }
 }
 
-void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
     static const bool allowConfidenceNullValues = true;
     static auto zero = std::make_shared<Integer32Term>(0);
     auto ct = tripleExpression.confidenceTerm();
     auto at = tripleExpression.agentTerm();
-    auto op = tripleExpression.modalityFrame().epistemicOperator();
+    auto op = tripleExpression.label()->epistemicOperator();
 
     // enforce that uncertain=false in case knowledge modality is selected in query
     if(op && op->isModalNecessity()) {
@@ -283,7 +283,7 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedRDFLi
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     static auto b_occasional = std::make_shared<Integer32Term>(static_cast<int32_t>(true));
@@ -295,8 +295,8 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     // - H: bt >= since_H && et <= until_H
     // - P: et >= since_H && bt <= until_H
     // - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-    auto &mf = tripleExpression.modalityFrame();
-    if(mf.isAboutSomePast()) {
+    auto &label = tripleExpression.label();
+    if(label->isAboutSomePast()) {
         // just swap bt/et (see above comment)
         auto swap = bt;
         bt = et;
@@ -341,7 +341,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
 
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const FramedRDFLiteral &tripleExpression,
+            const RDFLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -381,7 +381,7 @@ static inline void lookupTriple_nontransitive_(
     uint32_t arrIndex;
 
     bool b_skipInputGroundings=false;
-    if(lookupData.expr->isGround()) {
+    if(lookupData.expr->numVariables()==0) {
         // the triple expression has no variables
         b_skipInputGroundings = true;
     }
@@ -688,7 +688,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::vector<FramedRDFLiteralPtr> &tripleExpressions)
+        const std::vector<RDFLiteralPtr> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 

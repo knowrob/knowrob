@@ -50,7 +50,7 @@ namespace knowrob {
 		bool loadDLL();
 
 		// Override ReasonerFactory
-		std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID) override;
+		std::shared_ptr<Reasoner> createReasoner(const std::string &reasonerID) override;
 
 		// Override ReasonerFactory
 		const std::string& name() const override {  return name_; };
@@ -61,7 +61,7 @@ namespace knowrob {
 		// handle of opened library
 		void *handle_;
 		// a factory function used to create new instances of a reasoner.
-		std::shared_ptr<IReasoner> (*create_)(const std::string &reasonerID);
+		std::shared_ptr<Reasoner> (*create_)(const std::string &reasonerID);
 		// a function that returns the name of the plugin
 		char* (*get_name_)();
 	};

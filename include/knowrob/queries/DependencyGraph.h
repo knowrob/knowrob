@@ -14,16 +14,16 @@
 
 namespace knowrob {
     /**
-     * A node in a dependency graph.
+     * A node in a dependency graph labeled with a literal.
      */
     class DependencyNode {
     public:
-        DependencyNode() = default;
+        explicit DependencyNode(const LiteralPtr &literal);
 
         /**
          * @return the set of variables appearing in literal nodes.
          */
-        virtual const VariableSet& variables() const = 0;
+        const VariableSet& variables() const { return literal_->predicate()->getVariables(); }
 
         /**
          * @return number of free variables in this node.
@@ -42,62 +42,17 @@ namespace knowrob {
 
         void addDependency(const std::shared_ptr<DependencyNode> &other);
 
-    protected:
-        std::list<std::shared_ptr<DependencyNode>> neighbors_;
-        friend class DependencyGraph;
-    };
-    using DependencyNodePtr = std::shared_ptr<DependencyNode>;
-
-    /**
-     * A node labeled with a literal.
-     */
-    class LiteralDependencyNode : public DependencyNode {
-    public:
-        explicit LiteralDependencyNode(const LiteralPtr &literal);
-
         /**
          * @return the literal associated to this node.
          */
         const auto& literal() const { return literal_; }
 
-        // Override DependencyNode
-        const VariableSet& variables() const override { return literal_->predicate()->getVariables(); }
-
     protected:
+        std::list<std::shared_ptr<DependencyNode>> neighbors_;
         const LiteralPtr literal_;
+        friend class DependencyGraph;
     };
-
-    /**
-     * A node labeled with a modalFrame that contains dependency groups of literals.
-     */
-    class ModalDependencyNode : public DependencyNode {
-    public:
-        explicit ModalDependencyNode(const std::list<LiteralPtr> &literals,
-                                     const ModalityLabelPtr &label={});
-
-        /**
-         * @return the modalFrame label of this node.
-         */
-        const auto& label() const { return label_; }
-
-        /**
-         * @return the literal nodes within this modal node.
-         */
-        const auto& literals() const { return literals_; }
-
-        /**
-         * @return number of nodes with literal label.
-         */
-        auto numLiterals() const { return literals_.size(); }
-
-        // Override DependencyNode
-        const VariableSet& variables() const override { return variables_; }
-
-    protected:
-        const std::list<LiteralPtr> literals_;
-        const ModalityLabelPtr label_;
-        VariableSet variables_;
-    };
+    using DependencyNodePtr = std::shared_ptr<DependencyNode>;
 
     /**
      * A group of nodes with dependencies.
@@ -141,17 +96,30 @@ namespace knowrob {
         /**
          * Add a new node to the graph and compute dependency relation
          * with other nodes.
-         * @param literals set of literals considered in conjunction.
-         * @param label a modalFrame label.
+         * @param literal a literal.
          */
-        void insert(const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label);
+        void insert(const LiteralPtr &literal);
 
         /**
          * Add a new node to the graph and compute dependency relation
          * with other nodes.
-         * @param literal a literal.
+         * @param literals set of literals considered in conjunction.
          */
-        void insert(const LiteralPtr &literal);
+        void insert(const std::vector<LiteralPtr> &literals);
+
+        /**
+         * Insert a node for each iteration.
+         * @tparam Iterator an iterator with ++ and * operator
+         * @param begin marks begin of iteration
+         * @param end marks end of iteration
+         */
+        template <typename Iterator> void insert(Iterator begin, Iterator end) {
+            while(begin != end) {
+                auto next = *begin;
+                insert(next);
+                ++begin;
+            }
+        }
 
         /**
          * @return begin iterator over literals in a path.

@@ -14,7 +14,7 @@
 #include "knowrob/mongodb/TripleCursor.h"
 #include "knowrob/mongodb/aggregation/graph.h"
 #include "knowrob/mongodb/aggregation/triples.h"
-#include "knowrob/semweb/FramedRDFLiteral.h"
+#include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
@@ -293,7 +293,7 @@ std::optional<std::string> MongoKnowledgeGraph::getCurrentGraphVersion(const std
 }
 
 bson_t* MongoKnowledgeGraph::getSelector(
-            const FramedRDFLiteral &tripleExpression,
+            const RDFLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     auto doc = bson_new();
@@ -335,21 +335,21 @@ bool MongoKnowledgeGraph::insert(const std::vector<StatementData> &statements)
     return true;
 }
 
-void MongoKnowledgeGraph::removeAll(const FramedRDFLiteral &tripleExpression)
+void MongoKnowledgeGraph::removeAll(const RDFLiteral &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeAll(
         Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-void MongoKnowledgeGraph::removeOne(const FramedRDFLiteral &tripleExpression)
+void MongoKnowledgeGraph::removeOne(const RDFLiteral &tripleExpression)
 {
     bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
     tripleCollection_->removeOne(
         Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
 }
 
-AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedRDFLiteral &tripleExpression)
+AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -372,10 +372,10 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedRDFLiteral &tripleExpres
 
 mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const StatementData &tripleData)
 {
-    return lookup(FramedRDFLiteral(tripleData));
+    return lookup(RDFLiteral(tripleData));
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<FramedRDFLiteralPtr> &tripleExpressions)
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions)
 {
     bson_t pipelineDoc = BSON_INITIALIZER;
     bson_t pipelineArray;
@@ -395,7 +395,7 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<FramedRDFLi
 void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
     auto channel = AnswerStream::Channel::create(resultStream);
-    auto cursor = lookup(query->framedLiterals());
+    auto cursor = lookup(query->literals());
 
     // limit to one solution if requested
     if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
@@ -423,7 +423,7 @@ AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
 bool MongoKnowledgeGraph::loadFile( //NOLINT
         const std::string_view &uriString,
         TripleFormat format,
-        const ModalityFrame &frame)
+        const ModalityLabel &label)
 {
     // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces as part of graph?
     //          or just assume namespace prefixes are unique withing knowrob.
@@ -456,7 +456,7 @@ bool MongoKnowledgeGraph::loadFile( //NOLINT
     KB_INFO("Loading ontology at '{}' with version "
             "\"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, *importURI, blankPrefix, format, frame)) {
+    if(!loadURI(loader, *importURI, blankPrefix, format, label)) {
         KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
@@ -465,7 +465,7 @@ bool MongoKnowledgeGraph::loadFile( //NOLINT
     // update o* and p* fields
     updateHierarchy(loader);
     // load imported ontologies
-    for(auto &imported : loader.imports()) loadFile(imported, format, frame);
+    for(auto &imported : loader.imports()) loadFile(imported, format, label);
 
     return true;
 }
@@ -481,7 +481,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData)
 
     StatementData tripleDataCopy(tripleData);
     tripleDataCopy.temporalOperator = TemporalOperator::SOMETIMES;
-    FramedRDFLiteral overlappingExpr(tripleDataCopy);
+    RDFLiteral overlappingExpr(tripleDataCopy);
     aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty);
     cursor.filter(&selectorDoc);
 
@@ -683,9 +683,9 @@ protected:
         }
         return out;
     }
-    static FramedRDFLiteral parse(const std::string &str) {
+    static RDFLiteral parse(const std::string &str) {
         auto p = QueryParser::parsePredicate(str);
-        return { p->arguments()[0], p->arguments()[1], p->arguments()[2] };
+        return { p->arguments()[0], p->arguments()[1], p->arguments()[2], false };
     }
 };
 std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
@@ -709,11 +709,11 @@ TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("swrl").has_value());
-    EXPECT_NO_THROW(kg_->loadFile("owl/test/swrl.owl", knowrob::RDF_XML, ModalityFrame()));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/swrl.owl", knowrob::RDF_XML, *ModalityLabel::emptyLabel()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("swrl").has_value());
 
     EXPECT_FALSE(kg_->getCurrentGraphVersion("datatype_test").has_value());
-    EXPECT_NO_THROW(kg_->loadFile("owl/test/datatype_test.owl", knowrob::RDF_XML, ModalityFrame()));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/datatype_test.owl", knowrob::RDF_XML, *ModalityLabel::emptyLabel()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
@@ -730,13 +730,13 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 
 TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple)
 {
-    FramedRDFLiteral negated(std::make_shared<Literal>(
+    auto negated = RDFLiteral::fromLiteral(std::make_shared<Literal>(
         QueryParser::parsePredicate("p(x,y)"),
         true));
-    EXPECT_EQ(lookup(negated).size(), 1);
+    EXPECT_EQ(lookup(*negated).size(), 1);
     StatementData statement("x","p","y");
     EXPECT_NO_THROW(kg_->insert(statement));
-    EXPECT_EQ(lookup(negated).size(), 0);
+    EXPECT_EQ(lookup(*negated).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
@@ -745,7 +745,7 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf)
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"TestThing");
-    EXPECT_NO_THROW(kg_->removeAll(FramedRDFLiteral(triple)));
+    EXPECT_NO_THROW(kg_->removeAll(RDFLiteral(triple)));
     EXPECT_EQ(lookup(triple).size(), 0);
 }
 

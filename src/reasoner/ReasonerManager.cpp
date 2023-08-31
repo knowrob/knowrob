@@ -150,7 +150,7 @@ bool ReasonerManager::addReasonerFactory(const std::string &typeName, const std:
 }
 
 std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
-        const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner)
+        const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner)
 {
 	if(reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
 		KB_WARN("overwriting reasoner with name '{}'", reasonerID);

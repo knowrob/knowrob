@@ -73,7 +73,7 @@ namespace knowrob {
          * @param tripleExpression a triple expression
          * @return a cursor over matching triples
          */
-        mongo::AnswerCursorPtr lookup(const FramedRDFLiteral &tripleExpression);
+        mongo::AnswerCursorPtr lookup(const RDFLiteral &tripleExpression);
 
         /**
          * Lookup up all matching triples.
@@ -89,7 +89,7 @@ namespace knowrob {
          * @param tripleExpressions a vector of triple expressions
          * @return a cursor over matching triples
          */
-        mongo::AnswerCursorPtr lookup(const std::vector<FramedRDFLiteralPtr> &tripleExpressions);
+        mongo::AnswerCursorPtr lookup(const std::vector<RDFLiteralPtr> &tripleExpressions);
 
         /**
          * @param graphName the name of a graph
@@ -101,7 +101,7 @@ namespace knowrob {
         bool loadConfiguration(const boost::property_tree::ptree &config) override;
 
         // Override KnowledgeGraph
-        bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityFrame &frame) override;
+        bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityLabel &label) override;
 
         // Override KnowledgeGraph
         bool insert(const StatementData &tripleData) override;
@@ -110,10 +110,10 @@ namespace knowrob {
         bool insert(const std::vector<StatementData> &tripleData) override;
 
         // Override KnowledgeGraph
-        void removeAll(const FramedRDFLiteral &tripleExpression) override;
+        void removeAll(const RDFLiteral &tripleExpression) override;
 
         // Override KnowledgeGraph
-        void removeOne(const FramedRDFLiteral &tripleExpression) override;
+        void removeOne(const RDFLiteral &tripleExpression) override;
 
         // Override KnowledgeGraph
         void evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream) override;
@@ -144,7 +144,7 @@ namespace knowrob {
 
         void updateTimeInterval(const StatementData &tripleLoader);
 
-        static bson_t* getSelector(const FramedRDFLiteral &tripleExpression, bool isTaxonomicProperty);
+        static bson_t* getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
 
         bool isTaxonomicProperty(const TermPtr &propertyTerm);
     };

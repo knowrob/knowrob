@@ -16,17 +16,19 @@ namespace knowrob {
      */
     class Literal {
     public:
-        Literal(const PredicatePtr &predicate, bool isNegative)
-                : predicate_(predicate), isNegative_(isNegative) {}
+        Literal(const PredicatePtr &predicate, bool isNegative, const ModalityLabelPtr &label=ModalityLabel::emptyLabel());
+
         /**
          * Substitution constructor.
-         *
          * @other a literal.
          * @sub a mapping from terms to variables.
          */
-        Literal(const Literal &other, const Substitution &sub)
-                : predicate_(std::make_shared<Predicate>(*other.predicate_, sub)),
-                  isNegative_(other.isNegative_) {}
+        Literal(const Literal &other, const Substitution &sub);
+
+        /**
+         * @return the label of this literal.
+         */
+        const auto& label() const { return label_; }
 
         /**
          * @return the predicate of this literal.
@@ -36,12 +38,7 @@ namespace knowrob {
         /**
          * @return true if this is a negative literal.
          */
-        auto isNegative() const { return isNegative_; }
-
-        /**
-         * @return true if this is a positive literal.
-         */
-        auto isPositive() const { return !isNegative_; }
+        auto isNegated() const { return isNegated_; }
 
         /**
          * Get the functor of this literal.
@@ -58,11 +55,16 @@ namespace knowrob {
         auto arity() const { return predicate_->indicator()->arity(); }
 
         /**
+         * @return The number of variables contained in this literal.
+         */
+        virtual uint32_t numVariables() const { return predicate_->getVariables().size(); }
+
+        /**
 		 * Replaces variables in the literal with terms.
 		 * @sub a substitution mapping.
 		 * @return the created literal.
          */
-        auto applySubstitution(const Substitution &sub) const
+        virtual std::shared_ptr<Literal> applySubstitution(const Substitution &sub) const
         { return std::make_shared<Literal>(*this, sub); }
 
         /**
@@ -72,33 +74,11 @@ namespace knowrob {
 
     protected:
         const PredicatePtr predicate_;
-        const bool isNegative_;
-    };
-
-    /**
-     * A literal and a label.
-     */
-    class LabeledLiteral : public Literal {
-    public:
-        LabeledLiteral(const ModalityLabelPtr &label, const PredicatePtr &predicate, bool isNegated)
-        : Literal(predicate, isNegated), label_(label) {}
-
-        /**
-         * @return the label of this literal.
-         */
-        const auto& label() const { return label_; }
-
-        StatementData asStatementData() const;
-
-        // Override Literal
-        std::ostream& write(std::ostream& os) const override;
-
-    protected:
         const ModalityLabelPtr label_;
+        const bool isNegated_;
     };
 
     using LiteralPtr = std::shared_ptr<Literal>;
-    using LabeledLiteralPtr = std::shared_ptr<LabeledLiteral>;
 
 } // knowrob
 

@@ -11,11 +11,10 @@
 #include "vector"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/semweb/FramedRDFLiteral.h"
+#include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/queries/Query.h"
-#include "knowrob/modalities/ModalityFrame.h"
 #include "knowrob/formulas/Conjunction.h"
 
 namespace knowrob {
@@ -31,7 +30,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(const std::vector<LiteralPtr> &literals, int flags, ModalityFrame modalFrame=ModalityFrame());
+        GraphQuery(const std::vector<RDFLiteralPtr> &literals, int flags);
 
         /**
          * A literal query. Answers are instantiations of the literal where free variables
@@ -39,16 +38,9 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(LiteralPtr &literal, int flags, ModalityFrame modalFrame=ModalityFrame());
-
-        GraphQuery(const PredicatePtr &predicate, int flags, ModalityFrame modalFrame=ModalityFrame());
+        GraphQuery(const RDFLiteralPtr &literal, int flags);
 
         const auto& literals() const { return literals_; }
-
-        const auto& framedLiterals() const { return framedLiterals_; }
-
-        // Override Query
-        const ModalityFrame& modalFrame() const override;
 
         // Override Query
 		const FormulaPtr& formula() const override;
@@ -57,10 +49,8 @@ namespace knowrob {
         std::ostream& print(std::ostream &os) const override;
 
     protected:
-        std::vector<LiteralPtr> literals_;
-        std::vector<FramedRDFLiteralPtr> framedLiterals_;
+        std::vector<RDFLiteralPtr> literals_;
         FormulaPtr formula_;
-        ModalityFrame modalFrame_;
 
         void init();
     };

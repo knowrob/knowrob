@@ -2,33 +2,29 @@
 // Created by daniel on 15.07.23.
 //
 
+#include <utility>
+
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryStage.h"
 #include "knowrob/queries/AnswerTransformer.h"
 
 using namespace knowrob;
 
-QueryStage::QueryStage(const std::list<LiteralPtr> &literals,
-                       const ModalityLabelPtr &label)
-        : AnswerBroadcaster(),
-          queryEngine_(nullptr),
-          queryFlags_((int)QueryFlag::QUERY_FLAG_ALL_SOLUTIONS),
-          literals_(literals),
-          label_(label),
-          isQueryOpened_(true),
-          isAwaitingInput_(true),
-          hasStopRequest_(false)
+QueryStage::QueryStage(RDFLiteralPtr literal, int queryFlags)
+: AnswerBroadcaster(),
+  literal_(std::move(literal)),
+  queryFlags_(queryFlags),
+  isQueryOpened_(true),
+  isAwaitingInput_(true),
+  hasStopRequest_(false)
 {
+    std::cout << "QueryStage::QueryStage " << this << std::endl;
 }
 
 QueryStage::~QueryStage()
 {
+    std::cout << "QueryStage::~QueryStage " << this << std::endl;
     stop();
-}
-
-void QueryStage::setQueryEngine(QueryEngine *queryEngine)
-{
-    queryEngine_ = queryEngine;
 }
 
 void QueryStage::setQueryFlags(int queryFlags)
@@ -38,6 +34,7 @@ void QueryStage::setQueryFlags(int queryFlags)
 
 void QueryStage::stop()
 {
+    std::cout << "QueryStage::stop " << this << std::endl;
     // toggle on stop request
     hasStopRequest_ = true;
     // close all channels
@@ -54,7 +51,7 @@ void QueryStage::pushTransformed(const AnswerPtr &transformedAnswer,
 {
     if(AnswerStream::isEOS(transformedAnswer)) {
         graphQueries_.erase(graphQueryIterator);
-        // only push EOS message if no graph query is still active and
+        // only push EOS message if no query is still active and
         // if the stream has received EOS as input already.
         if(graphQueries_.empty() && !isAwaitingInput_) {
             isQueryOpened_ = false;
@@ -75,9 +72,6 @@ AnswerPtr QueryStage::transformAnswer(const AnswerPtr &graphQueryAnswer,
         return graphQueryAnswer;
     }
     else {
-        // TODO: maybe would be good to avoid copy here. actually in this case
-        //       it should be ok to modify input graphQueryAnswer, but it is handed in as const
-        //       here because in the general case modification would not be ok.
         auto combined = std::make_shared<Answer>(*graphQueryAnswer);
         // TODO: could be done without unification
         combined->combine(partialResult);
@@ -88,8 +82,11 @@ AnswerPtr QueryStage::transformAnswer(const AnswerPtr &graphQueryAnswer,
 void QueryStage::push(const AnswerPtr &partialResult)
 {
     if(AnswerStream::isEOS(partialResult)) {
+        std::cout << "QueryStage::pushEOS " << this << std::endl;
+
         // EOS indicates that no more input is to be expected
         isAwaitingInput_ = false;
+
         // only broadcast EOS if no graph query is still active.
         if(graphQueries_.empty() && !hasStopRequest_) {
             isQueryOpened_ = false;
@@ -99,33 +96,18 @@ void QueryStage::push(const AnswerPtr &partialResult)
     else if(!isQueryOpened()) {
         KB_WARN("ignoring attempt to write to a closed stream.");
     }
-    else if(!queryEngine_) {
-        KB_ERROR("no query engine has been assigned.");
-    }
     else {
         // apply the substitution mapping
-        std::vector<LiteralPtr> literalInstances(literals_.size());
-        unsigned long nextInstance=0;
-        if(partialResult->substitution()->empty()) {
-            for(auto &literal : literals_) {
-                literalInstances[nextInstance++] = literal;
-            }
-        }
-        else {
-            for(auto &literal : literals_) {
-                literalInstances[nextInstance++] = literal->applySubstitution(*partialResult->substitution());
-            }
-        }
+        auto literalInstance =
+            std::make_shared<RDFLiteral>(*literal_, *partialResult->substitution());
 
-        auto gq = std::make_shared<GraphQuery>(
-                literalInstances,
-                queryFlags_,
-                ModalityFrame(label_->modalOperators()));
-        // create a new graph query
-        auto graphQueryStream = queryEngine_->submitQuery(gq);
+        // submit a query
+        auto graphQueryStream = submitQuery(literalInstance);
+
         // keep a reference on the stream
         graphQueries_.push_front(graphQueryStream);
         auto graphQueryIt = graphQueries_.begin();
+
         // combine graph query answer with partialResult and push it to the broadcast
         graphQueryStream >> std::make_shared<AnswerTransformer>(
                 [this,partialResult,graphQueryIt](const AnswerPtr &graphQueryAnswer) {
@@ -137,6 +119,7 @@ void QueryStage::push(const AnswerPtr &partialResult)
                         pushTransformed(transformed, graphQueryIt);
                     }
                 });
+
         // start sending messages into AnswerTransformer.
         // the messages are buffered before to avoid them being lost before the transformer
         // is connected.

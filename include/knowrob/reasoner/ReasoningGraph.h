@@ -81,7 +81,7 @@ namespace knowrob {
 		public:
 			/**
 			 * @param phi a formula to be evaluated
-			 * @param reasoner a reasoner that can evaluate the formula
+			 * @param reasoner a reasoner that can submitQuery the formula
 			 * @param predicateType a type identifier.
 			 */
 			Node(const std::shared_ptr<Formula> &phi,
@@ -90,7 +90,7 @@ namespace knowrob {
 
 			/**
 			 * @param phi a formula to be evaluated
-			 * @param reasoner a list of reasoner that can evaluate the formula
+			 * @param reasoner a list of reasoner that can submitQuery the formula
 			 * @param predicateType a type identifier.
 			 */
 			Node(const std::shared_ptr<Formula> &phi,

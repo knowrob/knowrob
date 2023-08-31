@@ -29,8 +29,6 @@ namespace knowrob {
 
         auto& formula() const { return query_->formula(); }
 
-        auto& modalFrame() const { return query_->modalFrame(); }
-
 		/**
 		 * Push a new solution for the instantiated query into the QA pipeline.
 		 * @param solution a query solution

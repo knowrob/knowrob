@@ -11,7 +11,7 @@
 
 #include <string>
 #include <memory>
-#include "knowrob/reasoner/IReasoner.h"
+#include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
 	/**
@@ -23,18 +23,18 @@ namespace knowrob {
 		 * @param name the name of the reasoner, unique within manager
 		 * @param reasoner the reasoner instance
 		 */
-		DefinedReasoner(std::string name, const std::shared_ptr<IReasoner> &reasoner)
+		DefinedReasoner(std::string name, const std::shared_ptr<Reasoner> &reasoner)
 		: name_(std::move(name)), reasoner_(reasoner) {}
 
 		/**
 		 * @return the reasoner instance
 		 */
-		const std::shared_ptr<IReasoner>& operator()() const { return reasoner_; }
+		const std::shared_ptr<Reasoner>& operator()() const { return reasoner_; }
 
 		/**
 		 * @return the reasoner instance
 		 */
-		const std::shared_ptr<IReasoner>& reasoner() const { return reasoner_; }
+		const std::shared_ptr<Reasoner>& reasoner() const { return reasoner_; }
 
 		/**
 		 * @return the reasoner name.
@@ -43,7 +43,7 @@ namespace knowrob {
 
 	protected:
 		const std::string name_;
-		const std::shared_ptr<IReasoner> reasoner_;
+		const std::shared_ptr<Reasoner> reasoner_;
 	};
 }
 

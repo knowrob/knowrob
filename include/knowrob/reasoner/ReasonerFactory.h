@@ -11,7 +11,7 @@
 
 #include <string>
 #include <memory>
-#include "knowrob/reasoner/IReasoner.h"
+#include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
 	/**
@@ -27,7 +27,7 @@ namespace knowrob {
 		 * @param reasonerID the ID of the reasoner in the knowledge base.
 		 * @return the reasoner created.
 		 */
-		virtual std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID) = 0;
+		virtual std::shared_ptr<Reasoner> createReasoner(const std::string &reasonerID) = 0;
 
 		/**
 		 * @return name of the reasoner type for which the factory can create instances.
