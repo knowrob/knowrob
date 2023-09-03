@@ -16,6 +16,7 @@
 #include "knowrob/semweb/KnowledgeGraphManager.h"
 #include "ThreadPool.h"
 #include "knowrob/queries/DependencyGraph.h"
+#include "knowrob/queries/QueryPipeline.h"
 
 namespace knowrob {
 
@@ -110,6 +111,7 @@ namespace knowrob {
                 const std::list<DependencyNodePtr> &dependencyGroup);
 
         void createComputationPipeline(
+            const std::shared_ptr<QueryPipeline> &pipeline,
             const std::vector<RDFComputablePtr> &computableLiterals,
             const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
             const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,

@@ -20,6 +20,8 @@ AnswerCombiner::AnswerCombiner()
 
 void AnswerCombiner::push(const Channel &channel, const AnswerPtr &msg)
 {
+    // FIXME: shouldn't EOS be handled here?
+
 	const uint32_t channelID = channel.id();
 	// need to lock the whole push as genCombinations uses an iterator over the buffer.
 	std::lock_guard<std::mutex> lock(buffer_mutex_);

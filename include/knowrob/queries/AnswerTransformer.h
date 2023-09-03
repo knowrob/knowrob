@@ -19,10 +19,10 @@ namespace knowrob {
         : AnswerStream(), transformFunction_(std::move(transformFunction)) {}
 
     protected:
-        TransformFunction transformFunction_;
+		TransformFunction transformFunction_;
 
-   		// Override QueryResultStream
-   		void push(const AnswerPtr &msg) override { transformFunction_(msg); }
+		// Override AnswerStream
+		void push(const AnswerPtr &msg) override { transformFunction_(msg); }
     };
 
 } // knowrob

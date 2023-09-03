@@ -7,6 +7,7 @@
  */
 
 #include <thread>
+#include <utility>
 
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
@@ -76,10 +77,10 @@ namespace knowrob
 
     class AnswerBuffer_WithReference : public AnswerBuffer {
     public:
-        explicit AnswerBuffer_WithReference(const std::shared_ptr<AnswerStream> &referencedStream)
-        : AnswerBuffer(), referencedStream_(referencedStream) {}
+        explicit AnswerBuffer_WithReference(const std::shared_ptr<QueryPipeline> &pipeline)
+        : AnswerBuffer(), pipeline_(pipeline) {}
     protected:
-        std::shared_ptr<AnswerStream> referencedStream_;
+        std::shared_ptr<QueryPipeline> pipeline_;
     };
 }
 
@@ -175,6 +176,9 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags
 {
     auto outStream = std::make_shared<AnswerBuffer>();
 
+    auto pipeline = std::make_shared<QueryPipeline>();
+    pipeline->addStage(outStream);
+
     // convert into DNF and submit a query for each conjunction.
     // note that the number of conjunctions can get pretty high for
     // queries using several disjunctions.
@@ -195,10 +199,13 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags
         auto pathOutput = submitQuery(pathQuery);
         pathOutput >> outStream;
         pathOutput->stopBuffering();
+        pipeline->addStage(pathOutput);
     }
 
+    auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
+    outStream >> out;
     outStream->stopBuffering();
-    return outStream;
+    return out;
 }
 
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
@@ -264,6 +271,7 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 }
 
 void KnowledgeBase::createComputationPipeline(
+    const std::shared_ptr<QueryPipeline> &pipeline,
     const std::vector<RDFComputablePtr> &computableLiterals,
     const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
     const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
@@ -291,15 +299,20 @@ void KnowledgeBase::createComputationPipeline(
     for(auto &lit : computableLiterals) {
         auto stepInput = lastOut;
         auto stepOutput = std::make_shared<AnswerBroadcaster>();
+        pipeline->addStage(stepOutput);
 
         auto edbStage = std::make_shared<EDBStage>(edb, lit, queryFlags);
+        edbStage->selfWeakRef_ = edbStage;
         stepInput >> edbStage;
         edbStage >> stepOutput;
+        pipeline->addStage(edbStage);
 
         for(auto &r : lit->reasonerList()) {
             auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, queryFlags);
+            idbStage->selfWeakRef_ = idbStage;
             stepInput >> idbStage;
             idbStage >> stepOutput;
+            pipeline->addStage(idbStage);
         }
 
         lastOut = stepOutput;
@@ -311,6 +324,11 @@ void KnowledgeBase::createComputationPipeline(
 AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
 {
     auto allLiterals = graphQuery->literals();
+
+    // --------------------------------------
+    // Construct a pipeline that holds references to stages.
+    // --------------------------------------
+    auto pipeline = std::make_shared<QueryPipeline>();
 
     // --------------------------------------
     // Pick a Knowledge Graph for EDB queries
@@ -365,6 +383,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
                     graphQuery->flags());
         edbOut = kg->submitQuery(edbOnlyQuery);
     }
+    pipeline->addStage(edbOut);
 
     std::shared_ptr<AnswerBroadcaster> idbOut;
     if(computableLiterals.empty())
@@ -374,6 +393,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     else
     {
         idbOut = std::make_shared<AnswerBroadcaster>();
+        pipeline->addStage(idbOut);
         // --------------------------------------
         // Compute dependency groups of computable literals.
         // --------------------------------------
@@ -386,10 +406,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
             // Construct a pipeline for each dependency group.
             // --------------------------------------
             createComputationPipeline(
-                createComputationSequence(literalGroup.member_),
-                edbOut,
-                idbOut,
-                graphQuery->flags());
+                    pipeline,
+                    createComputationSequence(literalGroup.member_),
+                    edbOut,
+                    idbOut,
+                    graphQuery->flags());
         }
         else {
             // there are multiple dependency groups. They can be evaluated in parallel.
@@ -403,12 +424,14 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
                 // Construct a pipeline for each dependency group.
                 // --------------------------------------
                 createComputationPipeline(
+                        pipeline,
                         createComputationSequence(literalGroup.member_),
                         edbOut,
                         answerCombiner,
                         graphQuery->flags());
             }
             answerCombiner >> idbOut;
+            pipeline->addStage(answerCombiner);
         }
     }
 
@@ -416,14 +439,14 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     // Evaluate all negative literals in parallel.
     // --------------------------------------
     std::shared_ptr<AnswerBroadcaster> lastStage;
-    if(negativeLiterals.empty()) {
-        lastStage = idbOut;
-    }
-    else {
+    if(!negativeLiterals.empty()) {
         // append a parallel step for each negative literal and reasoner that can compute it.
         // FIXME: maybe every possible source must report that a negated literal cannot be grounded?
         //xxx;
         KB_WARN("todo: submitQuery negations");
+        lastStage = idbOut;
+    }
+    else {
         lastStage = idbOut;
     }
 
@@ -443,9 +466,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
             }
     */
 
-    // TODO: It might be better to rather use `<<` for streaming than `>>`, and to hold a reference of input in output
-    //       stream assuming the output stream is what the user will work with!
-    auto out = std::make_shared<AnswerBuffer_WithReference>(edbOut);
+    auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
     lastStage >> out;
     edbOut->stopBuffering();
     return out;

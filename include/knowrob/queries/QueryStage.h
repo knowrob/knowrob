@@ -30,7 +30,7 @@ namespace knowrob {
          * but will ensure no more messages will be pushed into the output
          * stream of this stage.
          */
-        void stop();
+        virtual void close() override;
 
         /**
          * @return true if no EOS has been received.
@@ -47,18 +47,21 @@ namespace knowrob {
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> isAwaitingInput_;
         std::atomic<bool> hasStopRequest_;
+        std::weak_ptr<QueryStage> selfWeakRef_;
 
-        std::list<AnswerBufferPtr> graphQueries_;
+        using ActiveQuery = std::pair<AnswerBufferPtr, std::shared_ptr<AnswerStream>>;
+        std::list<ActiveQuery> graphQueries_;
         int queryFlags_;
 
         void push(const AnswerPtr &msg) override;
 
         virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
 
-        static AnswerPtr transformAnswer(const AnswerPtr &graphQueryAnswer, const AnswerPtr &partialResult);
-
         void pushTransformed(const AnswerPtr &transformedAnswer,
-                             std::list<AnswerBufferPtr>::iterator graphQueryIterator);
+                             std::list<ActiveQuery>::iterator graphQueryIterator);
+
+        friend class QueryStageTransformer;
+        friend class KnowledgeBase; // weak ref hack
     };
 
     using QueryPipelineStagePtr = std::shared_ptr<QueryStage>;

@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <knowrob/queries/AnswerBroadcaster.h>
 #include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 
@@ -19,7 +20,9 @@ AnswerBroadcaster::AnswerBroadcaster()
 AnswerBroadcaster::~AnswerBroadcaster()
 {
 	if(isOpened()) {
-		pushToBroadcast(AnswerStream::eos());
+		for(auto &x : subscribers_) {
+			x->push(AnswerStream::eos());
+		}
 	}
 }
 

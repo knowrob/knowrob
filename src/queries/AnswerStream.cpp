@@ -7,6 +7,7 @@
  */
 
 #include <mutex>
+#include <iostream>
 #include <knowrob/Logger.h>
 #include <knowrob/queries/AnswerStream.h>
 #include <knowrob/queries/QueryError.h>
@@ -24,11 +25,11 @@ AnswerStream::~AnswerStream()
 
 void AnswerStream::close()
 {
-	if(isOpened()) {
+	for(auto &channel : channels_) {
+		channel->close();
+	}
+	{
 		std::lock_guard<std::mutex> lock(channel_mutex_);
-		for(auto &c : channels_) {
-			c->isOpened_ = false;
-		}
 		channels_.clear();
 		isOpened_ = false;
 	}
@@ -59,23 +60,19 @@ bool AnswerStream::isOpened() const
 void AnswerStream::push(const Channel &channel, const AnswerPtr &item)
 {
 	if(AnswerStream::isEOS(item)) {
-		bool doPushMsg; {
+		bool doPushMsg = true;
+		if(isOpened()) {
 			// prevent channels from being created while processing EOS message
 			std::lock_guard<std::mutex> lock(channel_mutex_);
-			// remove channel once EOS is reached
+			// close this stream if no channels are left
+			// FIXME: what if a channel sends EOS twice?
 			channels_.erase(channel.iterator_);
-			// auto-close this stream if no channels are left
-			if(channels_.empty() && isOpened()) {
-				isOpened_ = false;
-				doPushMsg = true;
-			}
-			else {
-				doPushMsg = false;
-			}
+			doPushMsg = channels_.empty();
 		}
 		// send EOS on this stream if no channels are left
 		if(doPushMsg) {
 			push(item);
+			isOpened_ = false;
 		}
 	}
 	else if(!isOpened()) {
@@ -119,6 +116,7 @@ void AnswerStream::Channel::close()
 	if(isOpened()) {
 		stream_->push(*this, AnswerStream::eos());
 		isOpened_ = false;
+		stream_ = {};
 	}
 }
 
@@ -133,6 +131,7 @@ void AnswerStream::Channel::push(const AnswerPtr &msg)
 		stream_->push(*this, msg);
 		if(AnswerStream::isEOS(msg)) {
 			isOpened_ = false;
+			stream_ = {};
 		}
 	}
 	else if(!AnswerStream::isEOS(msg)) {

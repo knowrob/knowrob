@@ -241,7 +241,8 @@ add_library(knowrob_qa SHARED
         src/semweb/KnowledgeGraphPlugin.cpp
         src/queries/EDBStage.cpp
         src/queries/QueryStage.cpp
-        src/queries/IDBStage.cpp)
+        src/queries/IDBStage.cpp
+        src/queries/QueryPipeline.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
