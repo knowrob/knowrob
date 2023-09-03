@@ -10,7 +10,8 @@
 #include "AnswerBuffer.h"
 #include "AnswerBroadcaster.h"
 #include "DependencyGraph.h"
-#include "QueryEngine.h"
+#include "Query.h"
+#include "knowrob/semweb/RDFLiteral.h"
 
 namespace knowrob {
     /**

@@ -10,7 +10,7 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 #include "knowrob/reasoner/prolog/PrologQueryRunner.h"
-#include "knowrob/queries/QueryEngine.h"
+#include "knowrob/KnowledgeBase.h"
 
 using namespace knowrob;
 

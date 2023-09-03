@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "knowrob/Logger.h"
+#include "knowrob/KnowledgeBase.h"
 #include "knowrob/queries/QueryStage.h"
 #include "knowrob/queries/AnswerTransformer.h"
 

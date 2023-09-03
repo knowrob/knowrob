@@ -3,7 +3,7 @@
 //
 
 #include "knowrob/queries/Query.h"
-#include "knowrob/queries/QueryEngine.h"
+#include "knowrob/KnowledgeBase.h"
 
 using namespace knowrob;
 

@@ -25,7 +25,7 @@
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/URI.h"
-#include "knowrob/queries/QueryEngine.h"
+#include "knowrob/KnowledgeBase.h"
 
 using namespace knowrob;
 

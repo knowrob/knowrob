@@ -14,7 +14,6 @@
 #include <fmt/core.h>
 
 #include "knowrob/terms/Term.h"
-#include "knowrob/queries/AllocatedQuery.h"
 #include "knowrob/reasoner/ReasonerConfiguration.h"
 #include "knowrob/DataSource.h"
 #include "knowrob/queries/AnswerBuffer.h"

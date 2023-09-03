@@ -18,7 +18,6 @@
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
-#include "knowrob/queries/QueryEngine.h"
 #include "knowrob/formulas/Negation.h"
 
 using namespace knowrob;
@@ -291,7 +290,7 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 
 std::shared_ptr<ModalQuery> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
-	return std::make_shared<ModalQuery>(toFormula(t), QUERY_FLAG_ALL_SOLUTIONS);
+	return std::make_shared<ModalQuery>(toFormula(t), Query::defaultFlags());
 }
 
 TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT

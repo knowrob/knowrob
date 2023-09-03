@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/queries/QueryEngine.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/semweb/KnowledgeGraphManager.h"
 #include "ThreadPool.h"
@@ -19,7 +18,12 @@
 #include "knowrob/queries/QueryPipeline.h"
 
 namespace knowrob {
-
+    enum QueryFlag {
+        QUERY_FLAG_ALL_SOLUTIONS     = 1 << 0,
+        QUERY_FLAG_ONE_SOLUTION      = 1 << 1,
+        QUERY_FLAG_PERSIST_SOLUTIONS = 1 << 2,
+        QUERY_FLAG_UNIQUE_SOLUTIONS  = 1 << 3
+    };
 
     class RDFComputable : public RDFLiteral
     {
