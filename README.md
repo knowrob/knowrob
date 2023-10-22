@@ -185,7 +185,10 @@ sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.4.<ve
 sudo systemctl start mongod.service
 # Check if the service is running properly
 sudo systemctl status mongod.service
-# Refer to the mongodb error code explaination for further insight: 
+# Optional: Make the mongod service start on boot
+sudo systemctl enable mongod.service
+
+# In case of errors, refer to the mongodb error code explaination for further insight: 
 # https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
 # Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
 # To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
