@@ -13,12 +13,12 @@
 #include <list>
 #include <memory>
 // KnowRob
-#include "IReasoner.h"
+#include "Reasoner.h"
 
 namespace knowrob {
 	/**
 	 */
-	class LogicProgramReasoner : public IReasoner {
+	class LogicProgramReasoner : public Reasoner {
 	public:
 		LogicProgramReasoner() = default;
 

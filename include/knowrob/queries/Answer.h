@@ -15,7 +15,7 @@
 #include <ostream>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/modalities/ModalityFrame.h"
+#include "knowrob/modalities/TimeInterval.h"
 
 namespace knowrob {
 	/**
@@ -37,7 +37,26 @@ namespace knowrob {
 		/**
 		 * @return a positive result without additional constraints.
 		 */
-		static const std::shared_ptr<const Answer>& emptyResult();
+		static const std::shared_ptr<const Answer>& emptyAnswer();
+
+        /**
+         * @return true if truth of this answer is certain.
+         */
+        bool isCertain() const { return !isUncertain_; }
+
+        /**
+         * @return true if truth of this answer is uncertain.
+         */
+        bool isUncertain() const { return isUncertain_; }
+
+        void setIsUncertain(bool isUncertain) { isUncertain_ = (isUncertain_ || isUncertain); }
+
+        /**
+         * @return an optional time interval of this answer being true.
+         */
+        const auto& timeInterval() const { return timeInterval_; }
+
+        void setTimeInterval(const TimeInterval &timeInterval) { timeInterval_ = timeInterval; }
 
 		/**
 		 * Adds to this result a substitution of a variable with a term.
@@ -70,17 +89,7 @@ namespace knowrob {
 		 * included in this list.
 		 * @return instantiated predicates.
 		 */
-		const std::list<PredicateInstance>& predicates() const { return predicates_; }
-
-		/**
-		 * @return the modal frame of this proposition.
-		 */
-		const ModalityFrame& modalFrame() const { return modality_; }
-
-		/**
-		 * @param modality the modal frame of this proposition.
-		 */
-		void setModalFrame(const ModalityFrame &modality) { modality_ = modality; }
+		const auto& predicates() const { return predicates_; }
 
 		/**
 		 * Merge another query result into this one.
@@ -100,9 +109,8 @@ namespace knowrob {
 	protected:
 		SubstitutionPtr substitution_;
 		std::list<PredicateInstance> predicates_;
-		ModalityFrame modality_;
-
-		bool combineModalFrame(const std::shared_ptr<const Answer> &other);
+        std::optional<TimeInterval> timeInterval_;
+        bool isUncertain_;
 
 		friend class AllocatedQuery;
 	};

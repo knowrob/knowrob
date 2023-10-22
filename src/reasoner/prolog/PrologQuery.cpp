@@ -18,7 +18,7 @@
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
-#include "knowrob/queries/QueryEngine.h"
+#include "knowrob/formulas/Negation.h"
 
 using namespace knowrob;
 
@@ -40,11 +40,20 @@ PrologQuery::~PrologQuery()
 bool PrologQuery::putTerm( //NOLINT
         term_t pl_term, const FormulaPtr& phi, PrologVariableMap &vars)
 {
+    static auto negationFun = PL_new_functor(PL_new_atom("\\+"),1);
+
 	switch(phi->type()) {
 	case FormulaType::PREDICATE: {
 		auto qa_pred = std::dynamic_pointer_cast<Term>(phi);
 		return putTerm(pl_term, qa_pred, vars);
 	}
+
+	case FormulaType::NEGATION: {
+	    auto negated = std::dynamic_pointer_cast<Negation>(phi)->negatedFormula();
+	    auto negated_t = PL_new_term_ref();
+        return putTerm(negated_t, negated, vars) &&
+            PL_cons_functor_v(pl_term,negationFun, negated_t);
+    }
 
 	case FormulaType::CONJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_comma(),
@@ -53,8 +62,7 @@ bool PrologQuery::putTerm( //NOLINT
 	case FormulaType::DISJUNCTION:
 		return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
                        (CompoundFormula *) phi.get(), vars);
-
-	}
+    }
 	return false;
 }
 
@@ -282,7 +290,7 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 
 std::shared_ptr<ModalQuery> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
-	return std::make_shared<ModalQuery>(toFormula(t), QUERY_FLAG_ALL_SOLUTIONS);
+	return std::make_shared<ModalQuery>(toFormula(t), Query::defaultFlags());
 }
 
 TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
@@ -422,7 +430,8 @@ bool PrologQuery::putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_s
 bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope)
 {
     static const auto time_key = PL_new_atom("time");
-    static const auto confidence_key = PL_new_atom("confidence");
+    static const auto uncertain_key = PL_new_atom("uncertain");
+    static const auto true_a = PL_new_atom("true");
 
     if(PL_is_variable(pl_scope)) {
         // reasoner did not specify a solution scope
@@ -450,22 +459,16 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
             { v_until = val; }
 
             if(v_since.has_value() || v_until.has_value()) {
-				auto mf = solution->modalFrame();
-                mf.setTimeInterval(TimeInterval(v_since,v_until));
-				solution->setModalFrame(mf);
+				solution->setTimeInterval(TimeInterval(v_since, v_until));
             }
         }
 
-        // read "confidence" key, the value is expected to be a float value
-        if(PL_get_dict_key(confidence_key, pl_scope, scope_val)) {
-            double v_confidence=0.0;
-            if(PL_term_type(scope_val)==PL_FLOAT &&
-               PL_get_float(scope_val, &v_confidence))
+        if(PL_get_dict_key(uncertain_key, pl_scope, scope_val)) {
+		    atom_t flagAtom;
+            if(PL_term_type(scope_val)==PL_ATOM &&
+               PL_get_atom(scope_val, &flagAtom))
             {
-				auto mf = solution->modalFrame();
-				// TODO: allow to set confidence value of answer
-				//mf.setConfidenceValue(std::make_shared<ConfidenceValue>(v_confidence));
-				solution->setModalFrame(mf);
+                solution->setIsUncertain(flagAtom == true_a);
             }
         }
 
@@ -478,73 +481,13 @@ bool PrologQuery::putScope(const std::shared_ptr<Answer> &solution, term_t pl_sc
     }
 }
 
-template <class T>
-static inline bool putRangeDict(term_t intervalDict, const Range<T> &range)
-{
-    static const auto min_key = PL_new_atom("min");
-    static const auto max_key = PL_new_atom("max");
-
-    int numRangeKeys = 0;
-    if(range.min().has_value()) numRangeKeys += 1;
-    if(range.max().has_value()) numRangeKeys += 1;
-    atom_t rangeKeys[numRangeKeys];
-    auto rangeValues = PL_new_term_refs(numRangeKeys);
-
-    int keyIndex = 0;
-    if(range.min().has_value()) {
-        if(!PL_put_float(rangeValues, range.min().value().value())) return false;
-        rangeKeys[keyIndex++] = min_key;
-    }
-    if(range.max().has_value()) {
-        if(!PL_put_float(rangeValues+keyIndex, range.max().value().value())) return false;
-        rangeKeys[keyIndex++] = max_key;
-    }
-
-    return PL_put_dict(intervalDict, 0, numRangeKeys, rangeKeys, rangeValues);
-}
-
-template <class T>
-static inline bool putIntervalDict(term_t intervalDict, const FuzzyInterval<T> &i)
-{
-    static const auto min_key = PL_new_atom("min");
-    static const auto max_key = PL_new_atom("max");
-
-    int numRangeKeys = 0;
-    if(i.minRange().hasValue()) numRangeKeys += 1;
-    if(i.maxRange().hasValue()) numRangeKeys += 1;
-    atom_t rangeKeys[numRangeKeys];
-    auto rangeValues = PL_new_term_refs(numRangeKeys);
-
-    int keyIndex = 0;
-    if(i.minRange().hasValue()) {
-        putRangeDict<T>(rangeValues, i.minRange());
-        rangeKeys[keyIndex++] = min_key;
-    }
-    if(i.maxRange().hasValue()) {
-        putRangeDict<T>(rangeValues+keyIndex, i.maxRange());
-        rangeKeys[keyIndex++] = max_key;
-    }
-
-    return PL_put_dict(intervalDict, 0,numRangeKeys, rangeKeys, rangeValues);
-}
-
-//bool PrologQuery::putTerm(term_t pl_term, const TimeInterval& timeInterval)
-//{
-//    return putIntervalDict<TimePoint>(pl_term, timeInterval);
-//}
-
-bool PrologQuery::putTerm(term_t pl_term, const ConfidenceInterval& confidenceInterval)
-{
-    return putIntervalDict<ConfidenceValue>(pl_term, confidenceInterval);
-}
-
 bool PrologQuery::putScope(term_t pl_term, const AnswerPtr &solution)
 {
     static const auto time_key = PL_new_atom("time");
     static const auto confidence_key = PL_new_atom("confidenceInterval");
 
-    auto &timeInterval = solution->modalFrame().timeInterval();
-	std::optional<double> confidenceValue = std::nullopt;
+    auto &timeInterval = solution->timeInterval();
+    std::optional<double> confidenceValue = std::nullopt;
     //auto &confidenceValue = solution->modalFrame().confidence();
 
     int numScopeKeys = 0;

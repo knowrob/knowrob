@@ -78,7 +78,7 @@ namespace knowrob {
             auto end() const { return literals_.end(); }
 
         protected:
-            std::list<LabeledLiteralPtr> literals_;
+            std::list<LiteralPtr> literals_;
             friend class QueryTree;
         };
 
@@ -89,11 +89,11 @@ namespace knowrob {
         class Node {
         public:
             Node(Node *parent,
-                 const ModalityLabelPtr &label,
+                 const std::shared_ptr<ModalIteration> &modalOperators,
                  const FormulaPtr &formula,
                  bool isNegated);
             Node *parent;
-            const ModalityLabelPtr label;
+            std::shared_ptr<ModalIteration> modalOperators;
             const FormulaPtr formula;
             bool isNegated;
             bool isOpen;
@@ -110,7 +110,7 @@ namespace knowrob {
         std::priority_queue<Node*, std::vector<Node*>, NodeComparator> openNodes_;
 
         Node* createNode(Node *parent,
-                         const ModalityLabelPtr &modalities,
+                         const std::shared_ptr<ModalIteration> &modalOperators,
                          const FormulaPtr &phi,
                          bool isNegated);
 

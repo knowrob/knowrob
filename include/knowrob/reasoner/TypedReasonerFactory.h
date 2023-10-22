@@ -11,7 +11,7 @@
 
 #include <string>
 #include <memory>
-#include "knowrob/reasoner/IReasoner.h"
+#include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/ReasonerFactory.h"
 
 namespace knowrob {
@@ -27,7 +27,7 @@ namespace knowrob {
 		explicit TypedReasonerFactory(std::string name) : name_(std::move(name)) {}
 
 		// Override ReasonerFactory
-		std::shared_ptr<IReasoner> createReasoner(const std::string &reasonerID) override
+		std::shared_ptr<Reasoner> createReasoner(const std::string &reasonerID) override
 		{ return std::make_shared<T>(reasonerID); }
 
 		// Override ReasonerFactory

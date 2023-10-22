@@ -15,7 +15,7 @@
 namespace knowrob {
 	/**
 	 * A predicate description with associated reasoners that can
-	 * evaluate the predicate.
+	 * submitQuery the predicate.
 	 */
 	class DefinedPredicate {
 	public:

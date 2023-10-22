@@ -23,9 +23,9 @@
 #include "knowrob/queries/AnswerQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/semweb/KnowledgeGraph.h"
 #include "knowrob/URI.h"
-#include "knowrob/queries/QueryEngine.h"
+#include "knowrob/KnowledgeBase.h"
 
 using namespace knowrob;
 
@@ -345,19 +345,27 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
 	// create an output queue for the query
 	auto outputStream = std::make_shared<AnswerQueue>();
 	auto outputChannel = AnswerStream::Channel::create(outputStream);
-	auto queryInstance = std::make_shared<AllocatedQuery>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
+	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
+                std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_;
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
             this,
-            PrologQueryRunner::Request(queryInstance, call_f, moduleName ?
-                std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_),
-			true // sendEOS=true
+            PrologQueryRunner::Request(goal, call_f, moduleTerm, ModalityLabel::emptyLabel()),
+            outputChannel,
+			true
 	);
 
-	// TODO: get any exceptions thrown during evaluation, and throw them here instead!
-	PrologReasoner::threadPool().pushWork(workerGoal);
-	return outputStream->pop_front();
+	std::optional<std::exception> exc; auto excPtr = &exc;
+	PrologReasoner::threadPool().pushWork(workerGoal,
+	    [outputStream,excPtr](const std::exception &e){
+            *excPtr = e;
+            outputStream->close();
+        });
+	auto solution = outputStream->pop_front();
+	// rethrow any exceptions in this thread!
+	if(exc.has_value()) throw(exc.value());
+	return solution;
 }
 
 std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
@@ -380,21 +388,27 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	// create an output queue for the query
 	auto outputStream = std::make_shared<AnswerQueue>();
 	auto outputChannel = AnswerStream::Channel::create(outputStream);
-	auto queryInstance = std::make_shared<AllocatedQuery>(goal, outputChannel);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t)0);
+	// stores exception if any
+	std::optional<std::exception> exc; auto excPtr = &exc;
+	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
+                std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_;
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
             this,
-            PrologQueryRunner::Request(queryInstance, call_f, moduleName ?
-                std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_),
-			true // sendEOS=true
+            PrologQueryRunner::Request(goal, call_f, moduleTerm, ModalityLabel::emptyLabel()),
+            outputChannel,
+			true
 	);
 	
 	// assign the goal to a worker thread
-	PrologReasoner::threadPool().pushWork(workerGoal);
+	PrologReasoner::threadPool().pushWork(workerGoal,
+	    [outputStream,excPtr](const std::exception &e){
+            *excPtr = e;
+            outputStream->close();
+        });
 	// wait until work is done, and push EOS
 	workerGoal->join();
-	outputChannel->push(AnswerStream::eos());
 	// get all results
 	while(true) {
 		nextResult = outputStream->pop_front();
@@ -406,24 +420,38 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 			results.push_back(nextResult);
 		}
 	}
+
+	if(exc.has_value()) throw(exc.value());
 	
 	return results;
 }
 
-bool PrologReasoner::runQuery(const AllocatedQueryPtr &query)
+AnswerBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, int queryFlags)
 {
     bool sendEOS = true;
     auto reasoner = this;
+    auto answerBuffer = std::make_shared<AnswerBuffer>();
+    auto outputChannel = AnswerStream::Channel::create(answerBuffer);
 
+    auto query = std::make_shared<GraphQuery>(literal, queryFlags);
    	// create a runner for a worker thread
    	auto workerGoal = std::make_shared<PrologQueryRunner>(
             reasoner,
-            PrologQueryRunner::Request(query, callFunctor() , reasonerIDTerm_),
+            PrologQueryRunner::Request(
+				query,
+				callFunctor(),
+				reasonerIDTerm_,
+				literal->label()),
+            outputChannel,
             sendEOS);
     // assign the goal to a worker thread
-   	PrologReasoner::threadPool().pushWork(workerGoal);
+   	PrologReasoner::threadPool().pushWork(workerGoal,
+   	    [literal,outputChannel](const std::exception &e){
+            KB_WARN("an exception occurred for prolog query ({}): {}.", literal, e.what());
+            outputChannel->close();
+        });
 
-    return true;
+    return answerBuffer;
 }
 
 std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path &filePath)

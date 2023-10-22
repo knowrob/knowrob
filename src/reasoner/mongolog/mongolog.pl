@@ -453,15 +453,21 @@ mongolog_call(Goal, ContextIn) :-
     ).
 
 %%
-format_solution_scope_(Context, _{ time: range(Since,Until) }) :-
+format_solution_scope_(Context, _{
+		time: range(Since,Until),
+		uncertain: IsUncertain
+}) :-
     option(user_vars(UserVars), Context),
     memberchk(['v_scope',VScope], UserVars),
-    VScope = _{ time: _{
+    % handle time interval
+    get_dict(time, VScope, _{
         since: SinceTyped,
         until: UntilTyped
-    }},
+    }),
 	mng_strip_type(SinceTyped, _, Since),
-	mng_strip_type(UntilTyped, _, Until).
+	mng_strip_type(UntilTyped, _, Until),
+	% handle uncertainty flag
+	once(( get_dict(uncertain, VScope, bool(IsUncertain)) ; IsUncertain=false )).
 
 %%
 term_keys_variables_(Goal, GoalVars) :-

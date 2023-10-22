@@ -13,7 +13,7 @@
 #include "knowrob/reasoner/ReasonerPlugin.h"
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
 
 namespace knowrob {
 	/**
@@ -73,7 +73,7 @@ namespace knowrob {
          * @reasoner a reasoner.
          */
         std::shared_ptr<DefinedReasoner> addReasoner(
-                const std::string &reasonerID, const std::shared_ptr<IReasoner> &reasoner);
+                const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner);
 
         /**
          * @return map of all reasoner defined by this manager.

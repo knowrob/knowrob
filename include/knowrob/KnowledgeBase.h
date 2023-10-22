@@ -11,17 +11,37 @@
 
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/queries/QueryEngine.h"
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
 #include "ThreadPool.h"
+#include "knowrob/queries/DependencyGraph.h"
+#include "knowrob/queries/QueryPipeline.h"
 
 namespace knowrob {
+    enum QueryFlag {
+        QUERY_FLAG_ALL_SOLUTIONS     = 1 << 0,
+        QUERY_FLAG_ONE_SOLUTION      = 1 << 1,
+        QUERY_FLAG_PERSIST_SOLUTIONS = 1 << 2,
+        QUERY_FLAG_UNIQUE_SOLUTIONS  = 1 << 3
+    };
+
+    class RDFComputable : public RDFLiteral
+    {
+    public:
+        RDFComputable(const RDFLiteral &lit, const std::vector<std::shared_ptr<Reasoner>> &reasonerList)
+        : RDFLiteral(lit), reasonerList_(reasonerList) {}
+
+        const auto& reasonerList() const { return reasonerList_; }
+    protected:
+        std::vector<std::shared_ptr<Reasoner>> reasonerList_;
+    };
+    using RDFComputablePtr = std::shared_ptr<RDFComputable>;
+
     /**
      * The main interface to the knowledge base system implementing
      * its 'tell' and 'ask' interface.
      */
-	class KnowledgeBase : public QueryEngine {
+	class KnowledgeBase {
 	public:
 	    /**
 	     * @param config a property tree used to configure this.
@@ -52,22 +72,37 @@ namespace knowrob {
          */
         auto vocabulary() { return backendManager_->vocabulary(); }
 
+        std::shared_ptr<KnowledgeGraph> centralKG();
+
         /**
          * @return import hierarchy of named graphs
          */
         auto importHierarchy() { return backendManager_->importHierarchy(); }
 
-        // Override QueryEngine
-        AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags) override;
+        /**
+         * Evaluate a query represented as a vector of literals.
+         * The call is non-blocking and returns a stream of answers.
+         * @param literals a vector of literals
+         * @param label an optional modalFrame label
+         * @return a stream of query results
+         */
+        AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery);
 
-        // Override QueryEngine
-        AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery) override;
+        /**
+         * Evaluate a query represented as a Literal.
+         * The call is non-blocking and returns a stream of answers.
+         * @param query a literal
+         * @return a stream of query results
+         */
+        AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags);
 
-        // Override QueryEngine
-        AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags) override;
-
-        // Override QueryEngine
-        AnswerBufferPtr submitQuery(const LabeledLiteralPtr &query, int queryFlags) override;
+        /**
+         * Evaluate a query represented as a Formula.
+         * The call is non-blocking and returns a stream of answers.
+         * @param query a formula
+         * @return a stream of query results
+         */
+        AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags);
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
@@ -75,6 +110,16 @@ namespace knowrob {
 		std::shared_ptr<ThreadPool> threadPool_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
+
+        static std::vector<RDFComputablePtr> createComputationSequence(
+                const std::list<DependencyNodePtr> &dependencyGroup);
+
+        void createComputationPipeline(
+            const std::shared_ptr<QueryPipeline> &pipeline,
+            const std::vector<RDFComputablePtr> &computableLiterals,
+            const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
+            const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
+            int queryFlags);
 	};
 
     using KnowledgeBasePtr = std::shared_ptr<KnowledgeBase>;

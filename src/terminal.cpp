@@ -54,6 +54,7 @@ public:
 	}
 
 	void save(const std::string &historyFile) {
+	    // FIXME: seems like history file will be corrupted in case the program is terminated during writing!
 		std::ofstream file(historyFile);
 		if(file.good()) {
 			boost::archive::text_oarchive oa(file);
@@ -145,7 +146,15 @@ public:
       kb_(config),
       historyFile_("history.txt")
 	{
-		history_.load(historyFile_);
+        try {
+		    history_.load(historyFile_);
+        }
+        catch(boost::archive::archive_exception &e) {
+            KB_WARN("A 'boost::archive' exception occurred "
+                    "when loading history file ({}) of the terminal: {}. "
+                    "It might be that the file is corrupted for some reason.",
+                    historyFile_, e.what());
+        }
         // define some terminal commands
         registerCommand("exit", 0,
                         [this](const std::vector<TermPtr>&) { return exitTerminal(); });
@@ -278,7 +287,7 @@ public:
 
     bool assertStatements(const std::vector<FormulaPtr> &args) {
         std::vector<StatementData> data(args.size());
-        std::vector<FramedRDFLiteral*> buf(args.size());
+        std::vector<RDFLiteralPtr> buf(args.size());
         uint32_t dataIndex = 0;
 
         for(auto &phi : args) {
@@ -291,19 +300,16 @@ public:
                 throw QueryError("Invalid assertion: '{}'", *phi);
             }
             for(auto &lit : qt.begin()->literals()) {
-                auto modalIteration = lit->label()->modalOperators();
-                buf[dataIndex] = new FramedRDFLiteral(lit, ModalityFrame(modalIteration));
+                buf[dataIndex] = RDFLiteral::fromLiteral(lit);
                 data[dataIndex++] = buf[dataIndex]->toStatementData();
             }
         }
         if(kb_.insert(data)) {
             std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
-            for(auto x : buf) delete x;
             return true;
         }
         else {
             std::cout << "assertion failed." << "\n";
-            for(auto x : buf) delete x;
             return false;
         }
     }
@@ -651,7 +657,7 @@ int main(int argc, char **argv) {
 		return run(argc,argv);
 	}
 	catch(std::exception& e) {
-		KB_ERROR("an exception occurred: {}.", e.what());
+		KB_ERROR("a '{}' exception occurred in main loop: {}.", typeid(e).name(), e.what());
 		return EXIT_FAILURE;
 	}
 }

@@ -27,6 +27,7 @@ namespace knowrob {
 	public:
 		// forward declarations
 		class Runner;
+        using ExceptionHandler = std::function<void(const std::exception&)>;
 
 		explicit ThreadPool(uint32_t maxNumThreads);
 		~ThreadPool();
@@ -41,7 +42,7 @@ namespace knowrob {
 		 * The goal is assigned to a worker thread when one is available.
 		 * @goal the work goal
 		 */
-		void pushWork(const std::shared_ptr<ThreadPool::Runner> &goal);
+		void pushWork(const std::shared_ptr<ThreadPool::Runner> &goal, ExceptionHandler exceptionHandler);
 
 		/**
 		 * A worker thread that pulls work goals from the work queue of a thread pool.
@@ -59,7 +60,6 @@ namespace knowrob {
 		protected:
 			ThreadPool *threadPool_;
 			std::thread thread_;
-			std::shared_ptr<ThreadPool::Runner> goal_;
 
 			std::atomic<bool> isTerminated_;
 			std::atomic<bool> hasTerminateRequest_;
@@ -114,10 +114,14 @@ namespace knowrob {
 			std::atomic<bool> hasStopRequest_;
 			std::mutex mutex_;
 			std::condition_variable finishedCV_;
+            ExceptionHandler exceptionHandler_;
 
 			void runInternal();
 
+			void setExceptionHandler(ExceptionHandler exceptionHandler) { exceptionHandler_ = exceptionHandler; }
+
 			friend class ThreadPool::Worker;
+			friend class ThreadPool;
 		};
 
 	private:

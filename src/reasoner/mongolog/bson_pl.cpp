@@ -337,6 +337,33 @@ bool bsonpl_append(bson_t *doc, const char *key, const PlTerm &term, bson_error_
 			return false;
 		}
 	}
+	else if(std::string_view(term.name()) == "bson_t") {
+	    // the term contains a sub-pipeline encoded as bson_t* object which can be concatenated
+	    // with the pipeline under construction
+	    if(term.arity()!=1) {
+            bson_set_error(err,
+                MONGOC_ERROR_BSON,
+                MONGOC_ERROR_BSON_INVALID,
+                "invalid bson_t term -- arity should be 1: %s", (char*)term
+            );
+            return false;
+	    }
+        const PlTerm &bson_value = term[1];
+	    auto *sub_bson = (bson_t*)bson_value.operator void *();
+	    if(sub_bson) {
+            bool success = bson_concat(doc, sub_bson);
+            bson_destroy(sub_bson);
+            return success;
+	    }
+	    else {
+            bson_set_error(err,
+                MONGOC_ERROR_BSON,
+                MONGOC_ERROR_BSON_INVALID,
+                "invalid bson_t term -- void pointer is null: %s", (char*)term
+            );
+            return false;
+	    }
+	}
 	else {
 		// append typed value otherwise
 		return bsonpl_append_typed(doc,key,term,err);

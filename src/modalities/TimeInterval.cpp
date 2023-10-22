@@ -15,6 +15,11 @@ TimeInterval::TimeInterval(const std::optional<TimePoint> &since, const std::opt
   until_(until)
 {}
 
+bool TimeInterval::operator==(const TimeInterval& other) const
+{
+    return since_ == other.since_ && until_ == other.until_;
+}
+
 const TimeInterval& TimeInterval::anytime()
 {
 	static const TimeInterval timeInterval(std::nullopt,std::nullopt);

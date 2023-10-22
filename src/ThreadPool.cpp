@@ -8,6 +8,7 @@
 
 // STD
 #include <stdexcept>
+#include <utility>
 // KnowRob
 #include <knowrob/Logger.h>
 #include <knowrob/ThreadPool.h>
@@ -39,10 +40,11 @@ ThreadPool::~ThreadPool()
 	workerThreads_.clear();
 }
 
-void ThreadPool::pushWork(const std::shared_ptr<ThreadPool::Runner> &goal)
+void ThreadPool::pushWork(const std::shared_ptr<ThreadPool::Runner> &goal, ExceptionHandler exceptionHandler)
 {
 	{
 		std::lock_guard<std::mutex> scoped_lock(workMutex_);
+		goal->setExceptionHandler(std::move(exceptionHandler));
 		workQueue_.push(goal);
 
         uint32_t numAliveThreads = workerThreads_.size()-numFinishedThreads_;
@@ -119,11 +121,11 @@ void ThreadPool::Worker::run()
 		}
 		
 		// pop work from queue
-		goal_ = threadPool_->popWork();
+		auto goal = threadPool_->popWork();
 		// do the work
-		if(goal_) {
+		if(goal) {
 			KB_DEBUG("Worker has a new goal.");
-			goal_->runInternal();
+			goal->runInternal();
 			KB_DEBUG("Work finished.");
 		}
 	}
@@ -143,7 +145,8 @@ void ThreadPool::Worker::run()
 
 ThreadPool::Runner::Runner()
 : isTerminated_(false),
-  hasStopRequest_(false)
+  hasStopRequest_(false),
+  exceptionHandler_(nullptr)
 {}
 
 ThreadPool::Runner::~Runner()
@@ -166,7 +169,12 @@ void ThreadPool::Runner::runInternal()
 		run();
 	}
 	catch(const std::exception& e) {
-		KB_WARN("Worker error: {}.", e.what());
+		if(exceptionHandler_) {
+		    exceptionHandler_(e);
+		}
+		else {
+		    KB_WARN("Worker error: {}.", e.what());
+		}
 	}
 	// toggle flag
 	isTerminated_ = true;

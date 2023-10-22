@@ -7,7 +7,7 @@
  */
 
 #include <dlfcn.h>
-#include "knowrob/backend/KnowledgeGraphPlugin.h"
+#include "knowrob/semweb/KnowledgeGraphPlugin.h"
 
 using namespace knowrob;
 

@@ -10,7 +10,8 @@
 #include "AnswerBuffer.h"
 #include "AnswerBroadcaster.h"
 #include "DependencyGraph.h"
-#include "QueryEngine.h"
+#include "Query.h"
+#include "knowrob/semweb/RDFLiteral.h"
 
 namespace knowrob {
     /**
@@ -18,12 +19,9 @@ namespace knowrob {
      */
     class QueryStage : public AnswerBroadcaster {
     public:
-        explicit QueryStage(const std::list<LiteralPtr> &literals,
-                            const ModalityLabelPtr &label={});
+        explicit QueryStage(RDFLiteralPtr literal, int queryFlags=Query::defaultFlags());
 
         ~QueryStage();
-
-        void setQueryEngine(QueryEngine *queryEngine);
 
         void setQueryFlags(int flags);
 
@@ -33,7 +31,7 @@ namespace knowrob {
          * but will ensure no more messages will be pushed into the output
          * stream of this stage.
          */
-        void stop();
+        virtual void close() override;
 
         /**
          * @return true if no EOS has been received.
@@ -46,22 +44,25 @@ namespace knowrob {
         bool hasStopRequest() const { return hasStopRequest_; }
 
     protected:
-        const std::list<LiteralPtr> literals_;
-        const ModalityLabelPtr label_;
+        const RDFLiteralPtr literal_;
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> isAwaitingInput_;
         std::atomic<bool> hasStopRequest_;
+        std::weak_ptr<QueryStage> selfWeakRef_;
 
-        QueryEngine *queryEngine_;
+        using ActiveQuery = std::pair<AnswerBufferPtr, std::shared_ptr<AnswerStream>>;
+        std::list<ActiveQuery> graphQueries_;
         int queryFlags_;
-        std::list<AnswerBufferPtr> graphQueries_;
 
         void push(const AnswerPtr &msg) override;
 
-        static AnswerPtr transformAnswer(const AnswerPtr &graphQueryAnswer, const AnswerPtr &partialResult);
+        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
 
         void pushTransformed(const AnswerPtr &transformedAnswer,
-                             std::list<AnswerBufferPtr>::iterator graphQueryIterator);
+                             std::list<ActiveQuery>::iterator graphQueryIterator);
+
+        friend class QueryStageTransformer;
+        friend class KnowledgeBase; // weak ref hack
     };
 
     using QueryPipelineStagePtr = std::shared_ptr<QueryStage>;

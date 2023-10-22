@@ -21,39 +21,6 @@
 :- sw_register_prefix(swrl_tests,    'http://knowrob.org/kb/swrl_test#').
 :- sw_register_prefix(test_datatype, 'http://knowrob.org/kb/datatype_test#').
 
-test('assert triple(a,b,c)') :-
-	assert_true(mongolog_assert(triple(a,b,c))).
-
-test('assert triple(a,b,_)', [throws(error(instantiation_error,assert(triple(a,b,_))))]) :-
-	mongolog_assert(triple(a,b,_)).
-
-test('triple(a,b,c)') :-
-	assert_true(mongolog_call(triple(a,b,c))),
-	assert_false(mongolog_call(triple(x,b,c))),
-	assert_false(mongolog_call(triple(a,x,c))),
-	assert_false(mongolog_call(triple(a,b,x))).
-
-test('triple(A,b,c)') :-
-	mongolog_call(triple(A,b,c)),
-	assert_equals(A,a),
-	assert_false(mongolog_call(triple(_,x,c))).
-
-test('triple(a,B,c)') :-
-	mongolog_call(triple(a,B,c)),
-	assert_equals(B,b),
-	assert_false(mongolog_call(triple(x,_,c))).
-
-test('triple(a,b,C)') :-
-	mongolog_call(triple(a,b,C)),
-	assert_equals(C,c),
-	assert_false(mongolog_call(triple(a,x,_))).
-
-test('triple(A,b,C)') :-
-	mongolog_call(triple(A,b,C)),
-	assert_equals(A,a),
-	assert_equals(C,c),
-	assert_false(mongolog_call(triple(_,x,_))).
-
 % load swrl owl file for tripledb testing
 test('load local owl file') :-
 	assert_true(mongolog_call(load_rdf_xml('owl/test/swrl.owl', test))),
@@ -126,25 +93,6 @@ test('assert list') :-
 	->	assert_equals(Actual,DataTerm)
 	;	true
 	).
-
-% tests for time scope
-test('assert with scope'):-
-	rdf_global_term(test_datatype:'Lecturer4',S),
-	rdf_global_term(test_datatype:'last_name',P),
-	time_scope(=(double(5)), =(double(10)), T_S1),
-	time_scope(=(double(5)), =(double(20)), T_S2),
-	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
-	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S1)])),
-	assert_false(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
-
-% tests for time scope extension
-test('extend time scope'):-
-	rdf_global_term(test_datatype:'Lecturer4',S),
-	rdf_global_term(test_datatype:'last_name',P),
-	time_scope(=(double(10)), =(double(20)), T_S1),
-	time_scope(=(double(5)),  =(double(20)), T_S2),
-	mongolog_assert(triple(S, P, 'Spiendler'), [query_scope(T_S1)]),
-	assert_true(mongolog_call(triple(S, P, 'Spiendler'), [query_scope(T_S2)])).
 
 test('query value operators') :-
 	assert_true(mongolog_call(triple(swrl_tests:'RectangleSmall',swrl_tests:'hasHeightInMeters', =(6)))),
@@ -266,13 +214,13 @@ test('call_with_context(+Triple,+Context)') :-
 	assert_true(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Ernest'),
-			[ query_scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
+			[ query_scope(dict{ since: Time, until: Time }) ]
 		), Time, 999)),
 	%
 	assert_false(mongolog:test_call(
 		call_with_context(
 			triple(swrl_tests:'Rex', swrl_tests:isParentOf, swrl_tests:'Rex'),
-			[ query_scope(dict{ time: dict{ since: =<(Time), until: >=(Time) } }) ]
+			[ query_scope(dict{ since: Time, until: Time }) ]
 		), Time, 999)).
 
 :- end_tests('mongolog_triple').

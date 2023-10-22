@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <map>
 #include <memory>
+#include <utility>
 // gtest
 #include <gtest/gtest.h>
 // KnowRob
@@ -34,26 +35,31 @@ namespace knowrob {
         struct Request {
             const uint32_t queryID;
             std::shared_ptr<StringTerm> queryModule;
-            std::shared_ptr<AllocatedQuery> queryInstance;
+            std::shared_ptr<const Query> goal;
+            std::shared_ptr<ModalityLabel> label;
             functor_t callFunctor;
-            const std::shared_ptr<const Query> goal;
-            Request(const std::shared_ptr<AllocatedQuery> &queryInstance,
+            Request(const std::shared_ptr<const Query> &goal,
                     functor_t callFunctor,
                     const std::shared_ptr<StringTerm> &queryModule,
+                    const std::shared_ptr<ModalityLabel> &label,
                     uint32_t queryID=0)
                     : queryID(queryID),
                       queryModule(queryModule),
-                      queryInstance(queryInstance),
-                      callFunctor(callFunctor),
-                      goal(queryInstance->query()) {};
+                      goal(goal),
+                      label(label),
+                      callFunctor(callFunctor) {};
         };
 
-        PrologQueryRunner(PrologReasoner *reasoner, Request request, bool sendEOS=false);
+        PrologQueryRunner(PrologReasoner *reasoner,
+                Request request,
+                const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+                bool sendEOS=false);
 
         // Override Runner
         void run() override;
 
     protected:
+        std::shared_ptr<AnswerStream::Channel> outputChannel_;
         PrologReasoner *reasoner_;
         Request request_;
         bool sendEOS_;

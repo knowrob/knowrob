@@ -116,7 +116,7 @@ triple_step_vars(triple(S,P,O), Ctx, StepVars) :-
 			),
 			StepVars)
 	;	StepVars=[]
-	).
+	),!.
 
 %%
 % ask(triple(S,P,O)) uses $lookup to join input documents with
@@ -139,6 +139,11 @@ compile_ask(triple(S,P,O), Ctx, Pipeline) :-
 				string('$next.scope.time.since'),
 				string('$next.scope.time.until'),
 				Ctx0, Step)
+		% update "uncertain" flag
+		;	Step=['$set', [['v_scope.uncertain', [['$or', array([
+				string('$v_scope.uncertain'),
+				string('$next.uncertain')
+			])]]]]]
 		% the triple doc contains parents of the P at p*
 		% and parents of O at o*.
 		% these can be unwinded to yield a solution for each parent.

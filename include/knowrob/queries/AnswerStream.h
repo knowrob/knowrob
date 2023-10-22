@@ -54,7 +54,7 @@ namespace knowrob {
 		 * Note that a stream auto-closes once it has received EOS
 		 * messages from all of its input channels.
 		 */
-		void close();
+		virtual void close();
 		
 		/**
 		 * @return true if opened.
@@ -109,7 +109,7 @@ namespace knowrob {
 
 		protected:
 			// the stream of this channel
-			const std::shared_ptr<AnswerStream> stream_;
+			std::shared_ptr<AnswerStream> stream_;
 			// iterator of this channel withing the stream
 			std::list<std::shared_ptr<Channel>>::iterator iterator_;
 			// flag indicating whether channel is open (i.e., no EOS received so far)
@@ -122,6 +122,7 @@ namespace knowrob {
 		std::list<std::shared_ptr<Channel>> channels_;
 		std::atomic<bool> isOpened_;
 		std::mutex channel_mutex_;
+		//uint32_t numCompletedChannels_;
 
 		virtual void push(const Channel &channel, const AnswerPtr &msg);
 

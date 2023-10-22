@@ -27,6 +27,12 @@ namespace knowrob {
 		 */
 		TimeInterval(const std::optional<TimePoint> &since, const std::optional<TimePoint> &until);
 
+        /**
+         * @param other another time interval
+         * @return true if both time intervals are equal
+         */
+        bool operator==(const TimeInterval& other) const;
+
 		/**
 		 * @return a time interval without further constraints on begin and end time point of the interval.
 		 */

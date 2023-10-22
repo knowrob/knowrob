@@ -30,6 +30,8 @@ namespace knowrob::mongo {
         bson_iter_t resultIter_;
         bson_iter_t varIter_;
         bson_iter_t valIter_;
+        bson_iter_t scopeIter_;
+        bson_iter_t timeIter_;
     };
 
     using AnswerCursorPtr = std::shared_ptr<AnswerCursor>;

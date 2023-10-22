@@ -3,7 +3,7 @@
 //
 
 #include "knowrob/Logger.h"
-#include "knowrob/modalities/ModalityFrame.h"
+#include "knowrob/modalities/ModalityLabel.h"
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/modalities/EpistemicModality.h"
 #include "knowrob/modalities/BeliefModality.h"
@@ -11,12 +11,10 @@
 
 using namespace knowrob;
 
-ModalityFrame::ModalityFrame()
-= default;
-
-ModalityFrame::ModalityFrame(const ModalIteration &modalIteration)
+ModalityLabel::ModalityLabel(const ModalIteration &modalOperators)
+: FormulaLabel()
 {
-    for(auto &x : modalIteration) {
+    for(auto &x : modalOperators) {
         if(x->modality().modalityType() == ModalityType::Epistemic) {
             epistemicOperator_ = x;
         }
@@ -29,7 +27,8 @@ ModalityFrame::ModalityFrame(const ModalIteration &modalIteration)
     }
 }
 
-ModalityFrame::ModalityFrame(const StatementData &tripleData)
+ModalityLabel::ModalityLabel(const StatementData &tripleData)
+: FormulaLabel()
 {
     // init epistemic operator
     auto epistemicOperator = tripleData.epistemicOperator;
@@ -76,42 +75,48 @@ ModalityFrame::ModalityFrame(const StatementData &tripleData)
     }
 }
 
-bool ModalityFrame::hasValue() const
+std::shared_ptr<ModalityLabel> ModalityLabel::emptyLabel()
+{
+    static const auto empty = std::make_shared<ModalityLabel>(ModalIteration());
+    return empty;
+}
+
+bool ModalityLabel::hasValue() const
 {
 	return epistemicOperator_.get() != nullptr || pastOperator_.get() != nullptr;
 }
 
-bool ModalityFrame::isAboutKnowledge() const
+bool ModalityLabel::isAboutKnowledge() const
 {
     return !isAboutBelief();
 }
 
-bool ModalityFrame::isAboutBelief() const
+bool ModalityLabel::isAboutBelief() const
 {
     return epistemicOperator_ ? epistemicOperator_->isModalPossibility() : false;
 }
 
-bool ModalityFrame::isAboutPresent() const
+bool ModalityLabel::isAboutPresent() const
 {
     return !isAboutPast();
 }
 
-bool ModalityFrame::isAboutSomePast() const
+bool ModalityLabel::isAboutSomePast() const
 {
     return isAboutPast() && pastOperator_->isModalPossibility();
 }
 
-bool ModalityFrame::isAboutAllPast() const
+bool ModalityLabel::isAboutAllPast() const
 {
     return isAboutPast() && pastOperator_->isModalNecessity();
 }
 
-bool ModalityFrame::isAboutPast() const
+bool ModalityLabel::isAboutPast() const
 {
     return pastOperator_.get() != nullptr;
 }
 
-const std::optional<std::string>& ModalityFrame::agent() const
+const std::optional<std::string>& ModalityLabel::agent() const
 {
     if(epistemicOperator_) {
         auto epistemicModality = (EpistemicModality*)&epistemicOperator_->modality();
@@ -123,7 +128,7 @@ const std::optional<std::string>& ModalityFrame::agent() const
     }
 }
 
-const std::optional<TimeInterval>& ModalityFrame::timeInterval() const
+const std::optional<TimeInterval>& ModalityLabel::timeInterval() const
 {
     if(pastOperator_) {
         auto pastModality = (PastModality*)&pastOperator_->modality();
@@ -135,13 +140,33 @@ const std::optional<TimeInterval>& ModalityFrame::timeInterval() const
     }
 }
 
-void ModalityFrame::setTimeInterval(const TimeInterval &ti)
+void ModalityLabel::setTimeInterval(const TimeInterval &ti)
 {
 	pastOperator_ = PastModality::P(ti);
 }
 
+bool ModalityLabel::operator==(const ModalityLabel &other) const
+{
+    if(this==&other) return true;
+
+    if(!epistemicOperator_)            return !other.epistemicOperator_;
+    else if(!other.epistemicOperator_) return false;
+    else if(!(*epistemicOperator_ == *other.epistemicOperator_)) return false;
+
+    if(!pastOperator_)            return !other.pastOperator_;
+    else if(!other.pastOperator_) return false;
+    else if(!(*pastOperator_ == *other.pastOperator_)) return false;
+
+    return true;
+}
+
+bool ModalityLabel::isEqual(const FormulaLabel &other) const
+{
+    { return *this == *static_cast<const ModalityLabel*>(&other); } // NOLINT
+}
+
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::ModalityFrame& modality) //NOLINT
+	std::ostream& operator<<(std::ostream& os, const knowrob::ModalityLabel& modality) //NOLINT
 	{
 		if(modality.epistemicOperator())
 			os << *modality.epistemicOperator();

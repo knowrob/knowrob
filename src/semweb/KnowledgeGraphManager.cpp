@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "knowrob/Logger.h"
-#include "knowrob/backend/KnowledgeGraphManager.h"
-#include "knowrob/backend/KnowledgeGraphError.h"
+#include "knowrob/semweb/KnowledgeGraphManager.h"
+#include "knowrob/semweb/KnowledgeGraphError.h"
 
 using namespace knowrob;
 

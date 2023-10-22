@@ -28,6 +28,7 @@ std::shared_ptr<AnswerQueue> AnswerBuffer::createQueue()
     auto queue = std::make_shared<AnswerQueue>();
     addSubscriber(Channel::create(queue));
     stopBuffering();
+    // TODO: should keep reference on buffer?
     return queue;
 }
 

@@ -9,7 +9,7 @@
 #ifndef KNOWROB_BUILTIN_EVALUATOR_H
 #define KNOWROB_BUILTIN_EVALUATOR_H
 
-#include "knowrob/reasoner/IReasoner.h"
+#include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
 	/**
@@ -17,7 +17,7 @@ namespace knowrob {
 	 * This is thought to be used to avoid calling a reasoner just for the evaluation
 	 * of a builtin.
 	 */
-	class BuiltinEvaluator : public IReasoner {
+	class BuiltinEvaluator : public Reasoner {
 	private:
 		// it's a singleton
 		BuiltinEvaluator();
@@ -48,7 +48,7 @@ namespace knowrob {
 				const std::shared_ptr<PredicateIndicator> &indicator) override;
 
 		// Override IReasoner
-        bool runQuery(const AllocatedQueryPtr &query) override;
+        bool evaluateLiteral(const AllocatedQueryPtr &query) override;
 
 	protected:
 		static std::shared_ptr<BuiltinEvaluator> singleton_;

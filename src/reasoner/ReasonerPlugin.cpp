@@ -36,7 +36,7 @@ bool ReasonerPlugin::loadDLL()
 {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
 	if(handle_ != nullptr) {
-		create_ = (std::shared_ptr<IReasoner> (*)(const std::string&))
+		create_ = (std::shared_ptr<Reasoner> (*)(const std::string&))
 				dlsym(handle_, "knowrob_createReasoner");
 		get_name_ = (char* (*)())
 				dlsym(handle_, "knowrob_getPluginName");
@@ -47,7 +47,7 @@ bool ReasonerPlugin::loadDLL()
 	}
 }
 
-std::shared_ptr<IReasoner> ReasonerPlugin::createReasoner(const std::string &reasonerID)
+std::shared_ptr<Reasoner> ReasonerPlugin::createReasoner(const std::string &reasonerID)
 {
 	return create_(reasonerID);
 }

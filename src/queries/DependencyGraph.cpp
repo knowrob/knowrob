@@ -28,14 +28,15 @@ void DependencyGraph::operator+=(const DependencyNodePtr &node)
     insert(node);
 }
 
-void DependencyGraph::insert(const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label)
+void DependencyGraph::insert(const std::vector<LiteralPtr> &literals)
 {
-    insert(std::make_shared<ModalDependencyNode>(literals, label));
+    for(auto &l : literals)
+        insert(std::make_shared<DependencyNode>(l));
 }
 
 void DependencyGraph::insert(const LiteralPtr &literal)
 {
-    insert(std::make_shared<LiteralDependencyNode>(literal));
+    insert(std::make_shared<DependencyNode>(literal));
 }
 
 void DependencyGraph::insert(const DependencyNodePtr &newNode)
@@ -84,29 +85,14 @@ void DependencyGraph::insert(const DependencyNodePtr &newNode)
 }
 
 
+DependencyNode::DependencyNode(const LiteralPtr &literal)
+        : literal_(literal)
+{
+}
 
 void DependencyNode::addDependency(const std::shared_ptr<DependencyNode> &other)
 {
     neighbors_.push_back(other);
-}
-
-LiteralDependencyNode::LiteralDependencyNode(const LiteralPtr &literal)
-        : DependencyNode(),
-          literal_(literal)
-{
-}
-
-ModalDependencyNode::ModalDependencyNode(
-        const std::list<LiteralPtr> &literals, const ModalityLabelPtr &label)
-        : DependencyNode(),
-          literals_(literals),
-          label_(label)
-{
-    for(auto &literal : literals) {
-        auto &literalVariables = literal->predicate()->getVariables();
-        // remember variables that appear in the literal
-        variables_.insert(literalVariables.begin(), literalVariables.end());
-    }
 }
 
 
@@ -114,7 +100,6 @@ ModalDependencyNode::ModalDependencyNode(
 class DependencyGraphTest : public ::testing::Test {
 protected:
     LiteralPtr p_, q_, r_, s_;
-    ModalityLabelPtr m1_, m2_;
     void SetUp() override {
         p_ = std::make_shared<Literal>(QueryParser::parsePredicate("p(a,X)"), false);
         q_ = std::make_shared<Literal>(QueryParser::parsePredicate("q(X,Y)"), false);
@@ -123,7 +108,6 @@ protected:
 
         auto x = std::make_shared<ModalIteration>();
         *x += KnowledgeModality::K();
-        m2_ = std::make_shared<ModalityLabel>(x);
     }
     void TearDown() override {}
 };
@@ -131,7 +115,7 @@ protected:
 TEST_F(DependencyGraphTest, SingleLiteral)
 {
     DependencyGraph dg;
-    dg.insert({p_}, m1_);
+    dg.insert({p_});
     ASSERT_EQ(dg.numNodes(),1);
     ASSERT_EQ(dg.numGroups(),1);
 }
@@ -139,41 +123,41 @@ TEST_F(DependencyGraphTest, SingleLiteral)
 TEST_F(DependencyGraphTest, DependantLiterals)
 {
     DependencyGraph dg;
-    dg.insert({p_, q_}, m2_);
-    ASSERT_EQ(dg.numNodes(),1);
+    dg.insert({p_, q_});
+    ASSERT_EQ(dg.numNodes(),2);
     ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, IndependantLiterals)
 {
     DependencyGraph dg;
-    dg.insert({p_, r_}, m1_);
-    ASSERT_EQ(dg.numNodes(),1);
-    ASSERT_EQ(dg.numGroups(),1);
+    dg.insert({p_, r_});
+    ASSERT_EQ(dg.numNodes(),2);
+    ASSERT_EQ(dg.numGroups(),2);
 }
 
 TEST_F(DependencyGraphTest, ChainAndOne)
 {
     DependencyGraph dg;
-    dg.insert({p_, q_, r_, s_}, m1_);
-    ASSERT_EQ(dg.numNodes(),1);
+    dg.insert({p_, q_, r_});
+    ASSERT_EQ(dg.numNodes(),3);
     ASSERT_EQ(dg.numGroups(),1);
 }
 
 TEST_F(DependencyGraphTest, MultiModalDependant)
 {
     DependencyGraph dg;
-    dg.insert({p_, r_, s_}, m1_);
-    dg.insert({q_}, m2_);
-    ASSERT_EQ(dg.numNodes(),2);
-    ASSERT_EQ(dg.numGroups(),1);
+    dg.insert({p_, r_, s_});
+    dg.insert({q_});
+    ASSERT_EQ(dg.numNodes(),4);
+    ASSERT_EQ(dg.numGroups(),2);
 }
 
 TEST_F(DependencyGraphTest, MultiModalIndependant)
 {
     DependencyGraph dg;
-    dg.insert({p_, r_, q_}, m1_);
-    dg.insert({s_}, m2_);
-    ASSERT_EQ(dg.numNodes(),2);
+    dg.insert({p_, r_, q_});
+    dg.insert({s_});
+    ASSERT_EQ(dg.numNodes(),4);
     ASSERT_EQ(dg.numGroups(),2);
 }

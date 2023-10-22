@@ -31,6 +31,15 @@ static inline void matchSinceBeforeUntil(aggregation::Pipeline &pipeline)
     pipeline.appendStageEnd(matchStage);
 }
 
+static inline void matchEmptyArray(aggregation::Pipeline &pipeline, const char *arrayKey)
+{
+    bson_t emptyArray;
+    auto matchStage = pipeline.appendStageBegin("$match");
+    BSON_APPEND_ARRAY_BEGIN(matchStage,arrayKey, &emptyArray);
+    bson_append_array_end(matchStage, &emptyArray);
+    pipeline.appendStageEnd(matchStage);
+}
+
 static inline void intersectTimeInterval(aggregation::Pipeline &pipeline,
                                          const char *newSinceValue,
                                          const char *newUntilValue)
@@ -56,6 +65,20 @@ static inline void intersectTimeInterval(aggregation::Pipeline &pipeline,
         bson_append_document_end(setStage, &untilDoc);
     }
     pipeline.appendStageEnd(setStage);
+}
+
+static inline void updateUncertainFlag(aggregation::Pipeline &pipeline)
+{
+    // $set(v_scope.uncertain = ($v_scope.uncertain || $next.uncertain))
+    bson_t orDoc, orArray;
+    auto stage = pipeline.appendStageBegin("$set");
+    BSON_APPEND_DOCUMENT_BEGIN(stage, "v_scope.uncertain", &orDoc);
+    BSON_APPEND_ARRAY_BEGIN(&orDoc, "$or", &orArray);
+    BSON_APPEND_UTF8(&orArray, "0", "$v_scope.uncertain");
+    BSON_APPEND_UTF8(&orArray, "1", "$next.uncertain");
+    bson_append_array_end(&orDoc, &orArray);
+    bson_append_document_end(stage, &orDoc);
+    pipeline.appendStageEnd(stage);
 }
 
 static inline std::string getVariableKey(const std::string_view &varName)
@@ -138,8 +161,6 @@ static void setTripleVariables(
         const aggregation::TripleLookupData &lookupData)
 {
     // TODO: consider storing the document id of the triple in which var is grounded.
-    // TODO: consider storing the confidence value of triples
-    //      - both would need a list as multiple predicates could back a grounding
 
     std::list<std::pair<const char*,Variable*>> varList;
     for(auto &it : {
@@ -163,24 +184,24 @@ static void setTripleVariables(
     }
 }
 
-static inline const char* getOperatorString(knowrob::FramedRDFLiteral::OperatorType operatorType)
+static inline const char* getOperatorString(knowrob::RDFLiteral::OperatorType operatorType)
 {
     switch(operatorType) {
-        case FramedRDFLiteral::EQ:
+        case RDFLiteral::EQ:
             return nullptr;
-        case FramedRDFLiteral::LEQ:
+        case RDFLiteral::LEQ:
             return MONGO_OPERATOR_LTE;
-        case FramedRDFLiteral::GEQ:
+        case RDFLiteral::GEQ:
             return MONGO_OPERATOR_GTE;
-        case FramedRDFLiteral::LT:
+        case RDFLiteral::LT:
             return MONGO_OPERATOR_LT;
-        case FramedRDFLiteral::GT:
+        case RDFLiteral::GT:
             return MONGO_OPERATOR_GT;
     }
     return nullptr;
 }
 
-void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendGraphSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
     auto gt = tripleExpression.graphTerm();
     if(!gt) return;
@@ -205,24 +226,64 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc, const FramedRDFLitera
     }
 }
 
-void aggregation::appendAgentSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
+    static const bool allowConfidenceNullValues = true;
+    static auto zero = std::make_shared<Integer32Term>(0);
+    auto ct = tripleExpression.confidenceTerm();
     auto at = tripleExpression.agentTerm();
+    auto op = tripleExpression.label()->epistemicOperator();
 
-    if(!at) {
-        // TODO: should a null value be appended for using an index including the "agent" key?
-        return;
+    // enforce that uncertain=false in case knowledge modality is selected in query
+    if(op && op->isModalNecessity()) {
+        // note: null value of "uncertain" field is seen as value "false"
+        aggregation::appendTermQuery(
+                    selectorDoc,
+                    "uncertain",
+                    zero,
+                    nullptr,
+                    true);
     }
 
-    if(at->type() == TermType::STRING) {
-        aggregation::appendTermQuery(selectorDoc, "agent", at);
+    if(at) {
+        if(at->type() == TermType::STRING) {
+            aggregation::appendTermQuery(
+                selectorDoc,
+                "agent",
+                at,
+                nullptr,
+                false);
+        }
+        else {
+            KB_WARN("agent term {} has unexpected type", at);
+        }
     }
     else {
-        KB_WARN("graph term {} has unexpected type", at);
+        // make sure agent field is undefined: { agent: { $exists: false } }
+        // note: null value of agent field is seen as "self", i.e. the agent running the knowledge base
+        bson_t agentDoc;
+        BSON_APPEND_DOCUMENT_BEGIN(selectorDoc, "agent", &agentDoc);
+        BSON_APPEND_BOOL(&agentDoc, "$exists", false);
+        bson_append_document_end(selectorDoc, &agentDoc);
+    }
+
+    if(ct) {
+        if(ct->type() == TermType::DOUBLE) {
+            // note: null value of confidence is seen as larger than the requested threshold
+            aggregation::appendTermQuery(
+                    selectorDoc,
+                    "confidence",
+                    ct,
+                    MONGO_OPERATOR_GTE,
+                    true);
+        }
+        else {
+            KB_WARN("confidence term {} has unexpected type", *ct);
+        }
     }
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression)
 {
     static const bool allowNullValues = true;
     static auto b_occasional = std::make_shared<Integer32Term>(static_cast<int32_t>(true));
@@ -234,8 +295,8 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     // - H: bt >= since_H && et <= until_H
     // - P: et >= since_H && bt <= until_H
     // - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-    auto &mf = tripleExpression.modalityFrame();
-    if(mf.isAboutSomePast()) {
+    auto &label = tripleExpression.label();
+    if(label->isAboutSomePast()) {
         // just swap bt/et (see above comment)
         auto swap = bt;
         bt = et;
@@ -278,33 +339,9 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedRDFLiteral
     }
 }
 
-void aggregation::appendConfidenceSelector(bson_t *selectorDoc, const FramedRDFLiteral &tripleExpression)
-{
-    static const bool allowNullValues = true;
-    auto ct = tripleExpression.confidenceTerm();
-    if(!ct) return;
-
-    // TODO: take into account epistemic operator here
-    //  - well null value is interpreted as confidence=1.0 below,
-    //    but there could be documents in B without confidence specified.
-    // TODO: merge agent selector into this function, rename to appendEpistemicSelector
-
-    if(ct->type() == TermType::DOUBLE) {
-        aggregation::appendTermQuery(
-                selectorDoc,
-                "confidence",
-                ct,
-                MONGO_OPERATOR_GTE,
-                allowNullValues);
-    }
-    else {
-        KB_WARN("confidence term {} has unexpected type", *ct);
-    }
-}
-
 void aggregation::appendTripleSelector(
             bson_t *selectorDoc,
-            const FramedRDFLiteral &tripleExpression,
+            const RDFLiteral &tripleExpression,
             bool b_isTaxonomicProperty)
 {
     // "s"" field
@@ -322,12 +359,10 @@ void aggregation::appendTripleSelector(
             objectOperator);
     // "g" field
     appendGraphSelector(selectorDoc, tripleExpression);
-    // "a" field
-    appendAgentSelector(selectorDoc, tripleExpression);
-    // "b" & "e" fields
+    // epistemic fields
+    appendEpistemicSelector(selectorDoc, tripleExpression);
+    // temporal fields
     appendTimeSelector(selectorDoc, tripleExpression);
-    // "c" field
-    appendConfidenceSelector(selectorDoc, tripleExpression);
 }
 
 static inline void lookupTriple_nontransitive_(
@@ -346,7 +381,7 @@ static inline void lookupTriple_nontransitive_(
     uint32_t arrIndex;
 
     bool b_skipInputGroundings=false;
-    if(lookupData.expr->isGround()) {
+    if(lookupData.expr->numVariables()==0) {
         // the triple expression has no variables
         b_skipInputGroundings = true;
     }
@@ -463,17 +498,28 @@ static inline void lookupTriple_nontransitive_(
 */
     }
 
-    // at this point the 'next' field holds an array of matching documents that is unwinded next.
-    pipeline.unwind("$next");
-    // compute the intersection of time interval so far with time interval of next triple.
-    // note that the operations work fine in case the time interval is undefined.
-    intersectTimeInterval(pipeline,
-                          "$next.scope.time.since",
-                          "$next.scope.time.until");
-   	// then verify that the scope is non-empty.
-   	matchSinceBeforeUntil(pipeline);
-    // project new variable groundings
-    setTripleVariables(pipeline, lookupData);
+    if(lookupData.expr->isNegated()) {
+        // following closed-world assumption succeed if no solutions have been found for
+        // the formula which appears negated in the queried literal
+        matchEmptyArray(pipeline, "next");
+    }
+    else {
+        // at this point the 'next' field holds an array of matching documents that is unwinded next.
+        pipeline.unwind("$next");
+        // compute the intersection of time interval so far with time interval of next triple.
+        // note that the operations works fine in case the time interval is undefined.
+        // TODO: below time interval computation is only ok assuming the statements are not "occasional"
+        intersectTimeInterval(pipeline,
+                              "$next.scope.time.since",
+                              "$next.scope.time.until");
+        // then verify that the scope is non-empty.
+        matchSinceBeforeUntil(pipeline);
+        // remember if one of the statements used to draw the answer is uncertain
+        updateUncertainFlag(pipeline);
+        // project new variable groundings
+        setTripleVariables(pipeline, lookupData);
+    }
+
     // remove next field again: { $unset: "next" }
     pipeline.unset("next");
 }
@@ -527,12 +573,9 @@ static inline void lookupTriple_transitive_(
         aggregation::appendTermQuery(&restrictSearchDoc,
                                      (b_isTaxonomicProperty ? "p" : "p*"),
                                      lookupData.expr->propertyTerm());
-        aggregation::appendGraphSelector(&restrictSearchDoc,
-                                         *lookupData.expr);
-        aggregation::appendTimeSelector(&restrictSearchDoc,
-                                        *lookupData.expr);
-        aggregation::appendConfidenceSelector(&restrictSearchDoc,
-                                              *lookupData.expr);
+        aggregation::appendGraphSelector(&restrictSearchDoc, *lookupData.expr);
+        aggregation::appendEpistemicSelector(&restrictSearchDoc,*lookupData.expr);
+        aggregation::appendTimeSelector(&restrictSearchDoc, *lookupData.expr);
     }
     bson_append_document_end(lookupStage, &restrictSearchDoc);
     pipeline.appendStageEnd(lookupStage);
@@ -645,7 +688,7 @@ void aggregation::lookupTriplePaths(
         aggregation::Pipeline &pipeline,
         const std::string_view &collection,
         const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-        const std::vector<FramedRDFLiteralPtr> &tripleExpressions)
+        const std::vector<RDFLiteralPtr> &tripleExpressions)
 {
     std::set<std::string_view> varsSoFar;
 
