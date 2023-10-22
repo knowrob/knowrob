@@ -62,3 +62,6 @@ uint8 temporalOperator # Default: CURRENTLY
 # It is also allowed to set only one of the fields to a positive value.
 float64 minPastTimestamp # Default: UNSPECIFIED_TIMESTAMP
 float64 maxPastTimestamp # Default: UNSPECIFIED_TIMESTAMP
+
+# The minimal confidence of the statement
+float64 confidence # Default: 0.0

@@ -17,6 +17,7 @@
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/modalities/KnowledgeModality.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/queries/QueryTree.h"
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -34,12 +35,14 @@ ROSInterface::ROSInterface(const boost::property_tree::ptree& config)
         : askall_action_server_(nh_, "knowrob/askall", boost::bind(&ROSInterface::executeAskAllCB, this, _1), false),
           askone_action_server_(nh_, "knowrob/askone", boost::bind(&ROSInterface::executeAskOneCB, this, _1), false),
           askincremental_action_server_(nh_, "knowrob/askincremental", boost::bind(&ROSInterface::executeAskIncrementalCB, this, _1), false),
+          tell_action_server_(nh_, "knowrob/tell", boost::bind(&ROSInterface::executeTellCB, this, _1), false),
           kb_(config)
 {
     // Start all action servers
     askall_action_server_.start();
     askone_action_server_.start();
     askincremental_action_server_.start();
+    tell_action_server_.start();
 }
 
 ROSInterface::~ROSInterface() = default;
@@ -52,9 +55,13 @@ ROSInterface::applyModality(const GraphQueryMessage &query,
     // Add epistemic operator
     if (query.epistemicOperator == GraphQueryMessage::BELIEF) {
         if (!query.aboutAgentIRI.empty()) {
-            // TODO: Add confidence here if decided on API description
-            mFormula = std::make_shared<ModalFormula>(
-                    BeliefModality::B(query.aboutAgentIRI),mFormula);
+            if (query.confidence != 1.0){
+                mFormula = std::make_shared<ModalFormula>(
+                        BeliefModality::B(query.aboutAgentIRI, query.confidence), mFormula);
+            } else {
+                mFormula = std::make_shared<ModalFormula>(
+                        BeliefModality::B(query.aboutAgentIRI), mFormula);
+            }
         }
     } else if (query.epistemicOperator == GraphQueryMessage::KNOWLEDGE) {
         if (!query.aboutAgentIRI.empty()) {
@@ -241,7 +248,6 @@ void ROSInterface::executeAskIncrementalCB(const askincrementalGoalConstPtr& goa
 
 void ROSInterface::executeAskOneCB(const askoneGoalConstPtr& goal)
 {
-    // Implement your action here
     FormulaPtr phi(QueryParser::parse(goal->query.queryString));
 
     FormulaPtr mPhi = applyModality(goal->query, phi);
@@ -268,13 +274,45 @@ void ROSInterface::executeAskOneCB(const askoneGoalConstPtr& goal)
     askone_action_server_.setSucceeded(result);
 }
 
-//void ROSInterface::executeAskIterativeCB(const iai_knowledge_msgs::askiterativeGoalConstPtr& goal)
-//{
-//    // Implement your action here
-//
-//    // By default, saying the action was successful
-//    askiterative_action_server_.setSucceeded();
-//}
+void ROSInterface::executeTellCB(const tellGoalConstPtr &goal) {
+    FormulaPtr phi(QueryParser::parse(goal->query.queryString));
+
+    FormulaPtr mPhi = applyModality(goal->query, phi);
+
+    const QueryTree qt(phi);
+    if(qt.numPaths()>1) {
+        throw QueryError("Disjunctions are not allowed in assertions. "
+                         "Appears in statement {}.", *phi);
+    }
+    else if(qt.numPaths()==0) {
+        throw QueryError("Invalid assertion: '{}'", *phi);
+    }
+
+    std::vector<StatementData> data(qt.begin()->literals().size());
+    std::vector<FramedRDFLiteral*> buf(qt.begin()->literals().size());
+    uint32_t dataIndex = 0;
+    for(auto &lit : qt.begin()->literals()) {
+        auto modalIteration = lit->label()->modalOperators();
+        buf[dataIndex] = new FramedRDFLiteral(lit, ModalityFrame(modalIteration));
+        data[dataIndex++] = buf[dataIndex]->toStatementData();
+    }
+
+    tellResult result;
+    tellFeedback feedback;
+    if(kb_.insert(data)) {
+        std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
+        result.status = tellResult::TRUE;
+        for(auto x : buf) delete x;
+    }
+    else {
+        result.status = tellResult::TELL_FAILED;
+        std::cout << "assertion failed." << "\n";
+        for(auto x : buf) delete x;
+    }
+    feedback.finished = true;
+    tell_action_server_.publishFeedback(feedback);
+    tell_action_server_.setSucceeded(result);
+}
 
 boost::property_tree::ptree loadSetting() {
     // Check for settings file

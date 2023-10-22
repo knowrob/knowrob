@@ -27,6 +27,7 @@
 #include <knowrob/askallAction.h>
 #include <knowrob/askoneAction.h>
 #include <knowrob/askincrementalAction.h>
+#include <knowrob/tellAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace knowrob {
@@ -38,6 +39,7 @@ namespace knowrob {
         actionlib::SimpleActionServer <askallAction> askall_action_server_;
         actionlib::SimpleActionServer <askoneAction> askone_action_server_;
         actionlib::SimpleActionServer <askincrementalAction> askincremental_action_server_;
+        actionlib::SimpleActionServer <tellAction> tell_action_server_;
         KnowledgeBase kb_;
     public:
         explicit ROSInterface(const boost::property_tree::ptree& ptree);
@@ -49,6 +51,8 @@ namespace knowrob {
         void executeAskOneCB(const askoneGoalConstPtr &goal);
 
         void executeAskIncrementalCB(const askincrementalGoalConstPtr &goal);
+
+        void executeTellCB(const tellGoalConstPtr &goal);
 
         static FormulaPtr
         applyModality(const GraphQueryMessage &query,

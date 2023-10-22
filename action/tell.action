@@ -1,0 +1,8 @@
+GraphQueryMessage query
+---
+byte TRUE = 0
+byte TELL_FAILED = 1
+
+byte status
+---
+bool finished

@@ -151,6 +151,8 @@ public:
                         [this](const std::vector<TermPtr>&) { return exitTerminal(); });
         registerCommand("assert", 1,
                         [this](const std::vector<FormulaPtr> &x) { return assertStatements(x); });
+        registerCommand("tell", 1,
+                        [this](const std::vector<FormulaPtr> &x) { return assertStatements(x); });
 	}
 
 	static char getch() {

@@ -90,6 +90,7 @@ if (catkin_FOUND)
 	  	askall.action 
 	  	askone.action
 	  	askincremental.action
+	  	tell.action
 	)
 
 	add_message_files(
