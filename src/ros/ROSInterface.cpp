@@ -289,25 +289,22 @@ void ROSInterface::executeTellCB(const tellGoalConstPtr &goal) {
     }
 
     std::vector<StatementData> data(qt.begin()->literals().size());
-    std::vector<FramedRDFLiteral*> buf(qt.begin()->literals().size());
+    std::vector<RDFLiteralPtr> buf(qt.begin()->literals().size());
     uint32_t dataIndex = 0;
     for(auto &lit : qt.begin()->literals()) {
-        auto modalIteration = lit->label()->modalOperators();
-        buf[dataIndex] = new FramedRDFLiteral(lit, ModalityFrame(modalIteration));
+        buf[dataIndex] = RDFLiteral::fromLiteral(lit);
         data[dataIndex++] = buf[dataIndex]->toStatementData();
     }
 
     tellResult result;
     tellFeedback feedback;
     if(kb_.insert(data)) {
-        std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
         result.status = tellResult::TRUE;
-        for(auto x : buf) delete x;
+        std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
     }
     else {
         result.status = tellResult::TELL_FAILED;
         std::cout << "assertion failed." << "\n";
-        for(auto x : buf) delete x;
     }
     feedback.finished = true;
     tell_action_server_.publishFeedback(feedback);

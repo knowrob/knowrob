@@ -102,9 +102,9 @@ if (catkin_FOUND)
 	)
 
 	generate_messages(DEPENDENCIES
-    	std_msgs
-    	geometry_msgs
-    	actionlib_msgs)	
+		std_msgs
+		geometry_msgs
+		actionlib_msgs)	
 
 	catkin_package(
 		CATKIN_DEPENDS roscpp roslib
