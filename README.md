@@ -8,6 +8,41 @@ Its purpose is to equip robots with the capability to organize information in re
 knowledge chunks, and to perform reasoning in an expressive logic.
 It further provides a set of tools for visualization and acquisition of knowledge.
 
+## NEW 
+
+## Getting Started
+
+These instructions will get you a copy of KnowRob up and running on your local machine.
+
+### Prerequisites
+
+- [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) (*ROS noetic* for the master branch)
+- SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- mongo DB server >= 4.4 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- [spdlog](https://github.com/gabime/spdlog.git)
+- [raptor2](https://librdf.org/raptor/)
+- [FMT](https://github.com/fmtlib/fmt)
+
+- [rosprolog](https://github.com/knowrob/rosprolog)
+
+### Apt Packages for Ubuntu 20.04 LTS 
+
+(Tested using a WSL2 and Windows 11)
+
+Does not install ROS as that requires key setup before.
+Follow [these instructions](http://wiki.ros.org/noetic/Installation/Ubuntu).
+
+```
+sudo apt update
+sudo apt install libspdlog-dev swi-prolog raptor2-utils libraptor2-dev libmongoc-1.0-0 libmongoc-dev libfmt-dev
+```
+
+
+
+## END NEW
+
+
+
 ## Getting Started
 
 These instructions will get you a copy of KnowRob up and running on your local machine.
