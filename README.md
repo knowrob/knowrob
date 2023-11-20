@@ -64,18 +64,25 @@ This installs version 9.0.4 which apparently does not provide -lswipl
 
 ### Installing MongoDB
 
+KnowRob requires version 4.4 or higher.
+If your version is lower you will need to update.
+
+Newer versions are **not** compatible with old DBs and won't allow the mongodb service to start.
+To avoid issues later, a complete re-installation of the newer version is performed, 
+which requires wiping, dumping or restoring all existing DBs.
+As this will delete all previous deps, settings and DBs, 
+you should store them **before** starting the update.
 
 ```bash
 # Install mongodb
 sudo apt install libmongoc-dev
+
 # Check the mongodb version
 mongod --version
+
 # If below 4.4, an update is needed.
-# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
-# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
-# Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
-# The following procedure reinstalls mongodb completely with the desired version. 
-# All previous deps, settings, DBs of mongodb will be lost!
+# ! Store your DBs before proceeding !
+
 
 # Stop the service
 sudo systemctl stop mongod.service
@@ -114,15 +121,15 @@ sudo systemctl status mongod.service
 
 (Tested using a WSL2 and Windows 11)
 
-Does not install ROS as that requires key setup before.
-Follow [these instructions](http://wiki.ros.org/noetic/Installation/Ubuntu).
-
 ```
 sudo apt update
 sudo apt install libspdlog-dev swi-prolog raptor2-utils libraptor2-dev libmongoc-1.0-0 libmongoc-dev libfmt-dev
 ```
 
+### ROS
 
+Follow [these instructions](http://wiki.ros.org/noetic/Installation/Ubuntu) to install ROS Noetic on your machine.
+Only required if you want to use catkin and ROS tools.
 
 ## END NEW
 
