@@ -8,24 +8,109 @@ Its purpose is to equip robots with the capability to organize information in re
 knowledge chunks, and to perform reasoning in an expressive logic.
 It further provides a set of tools for visualization and acquisition of knowledge.
 
-## NEW 
+# NEW 
 
-## Getting Started
+## Architecture / Use Case
 
-These instructions will get you a copy of KnowRob up and running on your local machine.
+Knowledge is stored in a graph using a given ontology and ... .
+Users can query this graph using KnowRobs interfaces from their own applications. 
 
-### Prerequisites
 
-- [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) (*ROS noetic* for the master branch)
+## Dependencies
+
 - SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
 - mongo DB server >= 4.4 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
 - [spdlog](https://github.com/gabime/spdlog.git)
 - [raptor2](https://librdf.org/raptor/)
 - [FMT](https://github.com/fmtlib/fmt)
 
-- [rosprolog](https://github.com/knowrob/rosprolog)
+### ROS Version only
 
-### Apt Packages for Ubuntu 20.04 LTS 
+- [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) (*ROS noetic* for the master branch)
+
+- [??? rosprolog](https://github.com/knowrob/rosprolog)
+
+
+
+## Getting Started
+
+These instructions will get you a copy of KnowRob up and running on your local machine.
+
+### Installing SWI Prolog
+
+KnowRob requires SWI Prolog's latest stable version 8.2.4 or higher. 
+The latest version shipped with Ubuntu 20.04 or older is 7.6.4,
+so you might need to manually update the library.
+
+```bash
+# Install from apt
+sudo apt install swi-prolog
+
+# Check the version
+swipl --version
+
+# If it's under 8.2.4, add the ppa of the latest stable version and update
+sudo apt-add-repository -y ppa:swi-prolog/stable
+sudo apt update
+
+# upgrade
+sudo apt upgrade
+
+# or use this command? upgrade seems harsh if we only want to upgrade swi prolog
+sudo apt install swi-prolog
+```
+
+This installs version 9.0.4 which apparently does not provide -lswipl
+
+### Installing MongoDB
+
+
+```bash
+# Install mongodb
+sudo apt install libmongoc-dev
+# Check the mongodb version
+mongod --version
+# If below 4.4, an update is needed.
+# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
+# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
+# Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
+# The following procedure reinstalls mongodb completely with the desired version. 
+# All previous deps, settings, DBs of mongodb will be lost!
+
+# Stop the service
+sudo systemctl stop mongod.service
+# Remove all DBs
+sudo rm -r /var/log/mongodb
+sudo rm -r /var/lib/mongodb
+# Uninstall all mongo packages
+# Be aware that this also removes unrelated packages starting with 'mongo*'
+sudo apt purge mongo*
+# Fetch the latest packages of mongodb-org
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-value add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+# Update references and install mongodb
+sudo apt update
+sudo apt install mongodb-org
+
+# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
+# Replace the <version> with your own new version. To this day it is '4.4.10'. 
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.4.<version>_amd64.deb
+
+# Try to run the mongodb service
+sudo systemctl start mongod.service
+# Check if the service is running properly
+sudo systemctl status mongod.service
+# Refer to the mongodb error code explaination for further insight: 
+# https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
+# Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
+# To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
+# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect.
+# Either set owner and group of these two paths to mongodb, or reinstall mongodb.
+```
+
+
+
+### Apt Packages for Ubuntu 20.04 LTS and higher?
 
 (Tested using a WSL2 and Windows 11)
 
