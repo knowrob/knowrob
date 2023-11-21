@@ -222,8 +222,8 @@ sudo mkdir -p ~/data/db
 sudo mongod --dbpath ~/data/db
  ```
 
-If you now re-launch [this example](https://github.com/marcomasa/knowrob/tree/update-using-knowrob#launch-command)),
-you should see the [expected output](https://github.com/marcomasa/knowrob/tree/update-setup#expected-output)).
+If you now re-launch [this example](https://github.com/marcomasa/knowrob#launch-command),
+you should see the [expected output](https://github.com/marcomasa/knowrob#expected-output).
 
 
 ## Using Knowrob
