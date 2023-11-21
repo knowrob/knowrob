@@ -72,7 +72,7 @@ add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 
 find_package(catkin QUIET COMPONENTS
 		roscpp roslib tests/urdf message_generation 
-		geometry_msgs message_generation json_prolog_msgs actionlib actionlob_msgs)
+		geometry_msgs message_generation json_prolog_msgs actionlib actionlib_msgs)
 
 if (catkin_FOUND)
 	message(STATUS "Building with ROS1 support.")
