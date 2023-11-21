@@ -18,19 +18,15 @@ Users can query this graph using KnowRobs interfaces from their own applications
 
 ## Dependencies
 
-- SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
-- mongo DB server >= 4.4 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- [SWI Prolog](https://www.swi-prolog.org/) >= 8.2.4
+- [mongo DB server](https://www.mongodb.com/de-de) >= 4.4 and libmongoc
 - [spdlog](https://github.com/gabime/spdlog.git)
-- [raptor2](https://librdf.org/raptor/)
-- [FMT](https://github.com/fmtlib/fmt)
+- [Raptor2](https://librdf.org/raptor/)
+- [fmt](https://github.com/fmtlib/fmt)
 
 ### ROS Version only
 
 - [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) (*ROS noetic* for the master branch)
-
-- [??? rosprolog](https://github.com/knowrob/rosprolog)
-
-
 
 ## Getting Started
 
@@ -117,7 +113,7 @@ sudo systemctl status mongod.service
 
 
 
-### Apt Packages for Ubuntu 20.04 LTS and higher?
+### Raptor2, spdlog and fmt
 
 (Tested using a WSL2 and Windows 11)
 
@@ -228,11 +224,18 @@ you should see the [expected output](https://github.com/marcomasa/knowrob#expect
 
 ## Using Knowrob
 
+### Provided interfaces
+
 Once knowrob is launched, it provides four actions to ask queries:
 - askone
 - askincremental
 - askall
 - tell
+
+### Interface libraries
+
+We provide both a C++ and Python library for you to include in your own project.
+They implement the action client interface to access knowrob data.
 
 
 ## END NEW
