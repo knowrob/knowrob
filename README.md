@@ -10,6 +10,16 @@ It further provides a set of tools for visualization and acquisition of knowledg
 
 # NEW 
 
+## Outline
+
+1. [Architecture Overview]()
+2. [Dependencies]()
+3. [Install Instructions]()
+4. [Building Knowrob]()
+5. [Starting Knowrob]()
+6. [Using Knowrob]()
+
+
 ## Architecture / Use Case
 
 Knowledge is stored in a graph using a given ontology and ... .
@@ -28,7 +38,7 @@ Users can query this graph using KnowRobs interfaces from their own applications
 
 - [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) (*ROS noetic* for the master branch)
 
-## Getting Started
+## Install Instructions
 
 These instructions will get you a copy of KnowRob up and running on your local machine.
 
@@ -113,7 +123,7 @@ sudo systemctl status mongod.service
 
 
 
-### Raptor2, spdlog and fmt
+### Installing Raptor2, spdlog and fmt
 
 (Tested using a WSL2 and Windows 11)
 
@@ -122,17 +132,17 @@ sudo apt update
 sudo apt install libspdlog-dev raptor2-utils libraptor2-dev libfmt-dev
 ```
 
-### ROS
+### Installing ROS Noetic
 
 Follow [these instructions](http://wiki.ros.org/noetic/Installation/Ubuntu) to install ROS Noetic on your machine.
 Only required if you want to use catkin and ROS tools.
 
 
-### Building Knowrob
+## Building Knowrob
 
-#### Standalone Package
+### Standalone Package
 
-#### ROS Package
+### ROS Package
 
 To build knowrob, you will need to add this repository to your catkin workspace.
 Then proceed by executing
