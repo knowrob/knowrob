@@ -163,3 +163,22 @@ TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
 	EXPECT_EQ(lookupAll(queryString).size(), 1);
 	EXPECT_TRUE(containsAnswer(lookupAll(queryString), "X", QueryParser::parseConstant("swrl_test:Rex")));
 }
+
+TEST_F(KnowledgeBaseTest, atomic_IDB) {
+	EXPECT_EQ(lookupAll("p(swrl_test:Ernest, X)").size(), 1);
+	EXPECT_EQ(*lookupAll("p(swrl_test:Ernest, X)")[0]->get("X"), StringTerm("x"));
+	EXPECT_EQ(lookupAll("p(x, X)").size(), 0);
+	EXPECT_EQ(lookupAll("q(x, X)").size(), 1);
+}
+
+TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
+	const auto queryString = "swrl_test:hasSibling(swrl_test:Fred,Ernest) , p(Ernest,Y)";
+	EXPECT_EQ(lookupAll(queryString).size(), 1);
+	EXPECT_EQ(*lookupAll(queryString)[0]->get("Y"), StringTerm("x"));
+}
+
+TEST_F(KnowledgeBaseTest, IDB_interaction) {
+	const auto queryString = "p(Ernest,X) , q(X,Y)";
+	EXPECT_EQ(lookupAll(queryString).size(), 1);
+	EXPECT_EQ(*lookupAll(queryString)[0]->get("Y"), StringTerm("y"));
+}
