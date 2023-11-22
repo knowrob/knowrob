@@ -789,8 +789,7 @@ user:term_expansion(
 	->	Export=[]
 	;	(
 		assertz(kb_predicate(Term1)),
-		current_scope(QScope),
-		Export=[(:-(Term1, lang_query:kb_call(Term1, QScope, _FScope, [])))]
+		Export=[(:-(Term1, lang_query:kb_call(Term1)))]
 	)).
 
 %%
