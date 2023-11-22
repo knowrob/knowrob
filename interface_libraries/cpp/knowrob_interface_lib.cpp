@@ -1,1 +1,0 @@
-#include <knowrob/../../interface_libraries/cpp/knowrob_interface_lib.hpp>

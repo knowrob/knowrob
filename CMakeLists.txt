@@ -310,6 +310,50 @@ if (catkin_FOUND)
 			knowrob_qa
 			${catkin_LIBRARIES})
 	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
+
+
+
+	## ROS Client Interface
+	add_library( 
+		knowrob-ros-cli
+
+		include/knowrob/ros_client/cpp/knowrob_client.hpp
+		src/ros_client/knowrob_client.cpp	
+	)
+
+	add_dependencies(
+		knowrob-ros-cli
+		${catkin_EXPORTED_TARGETS}
+	)
+
+	target_link_libraries(
+		knowrob-ros-cli
+		${catkin_LIBRARIES}
+	)
+
+	install(
+  		TARGETS knowrob-ros-cli
+  		LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	)
+
+	## Test node for the client library
+	add_executable(
+		client-node
+		src/ros_client/client_node.cpp
+	)
+
+	add_dependencies(
+		client-node
+		${catkin_EXPORTED_TARGETS}
+	)
+
+	target_link_libraries(
+		client-node
+		knowrob-ros-cli
+		${catkin_LIBRARIES}
+	)
+
+
 endif()
 
 ##############
