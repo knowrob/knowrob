@@ -30,6 +30,8 @@ namespace knowrob {
 
         static TermPtr parseConstant(const std::string &queryString);
 
+        static std::string parseRawAtom(const std::string &queryString);
+
 	protected:
 		ParserRules *bnf_;
 	};

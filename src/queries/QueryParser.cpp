@@ -60,7 +60,6 @@ namespace knowrob {
         PredicateRule predicate;
         PredicateRule predicateNullary;
         PredicateRule predicateWithArgs;
-        PredicateRule predicateWithNS;
 
         // a rule that matches a single argument of a predicate
         TermRule argument;
@@ -81,6 +80,11 @@ namespace knowrob {
         StringRule doubleQuotes;
         StringRule lowerPrefix;
         StringRule upperPrefix;
+        StringRule atomRaw;
+
+        StringRule iri;
+        StringRule iri_ns;
+        StringRule iri_entity;
     };
 }
 
@@ -105,10 +109,12 @@ namespace {
 }
 
 static std::string createIRI(const std::string &prefix, const std::string &name) {
+    KB_INFO("createIRI");
     auto uri = semweb::PrefixRegistry::get().createIRI(prefix, name);
     if (uri.has_value()) {
         return uri.value();
     } else {
+    KB_INFO("prefix not registered");
         throw QueryError("Cannot construct IRI for '{}': "
                          "IRI prefix '{}' is not registered!", name, prefix);
     }
@@ -309,9 +315,21 @@ QueryParser::QueryParser() {
     bnf_->lowerPrefix %= qi::lexeme[ascii::lower >> *ascii::alnum];
     bnf_->upperPrefix %= qi::lexeme[ascii::upper >> *ascii::alnum];
 
+    // the raw string data of an atom. also handles IRI expansion.
+    bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->iri | bnf_->lowerPrefix);
+    // a IRI namespace is an alphanumeric word.
+    // note that no single quotes are allowed, the greedy parser would match the `singleQuotes` rule before.
+    bnf_->iri_ns %= (qi::lexeme[ascii::alpha >> *ascii::alnum]);
+    // right part of colon must be an alphanumeric word, or wrapped in single quoted.
+    // Note that there is no need to enquote entities whose name starts with an uppercase character.
+    bnf_->iri_entity %= (bnf_->singleQuotes | qi::lexeme[ascii::alpha >> *ascii::alnum]);
+    // IRI's are encoded as "ns:entity", ns must be a registered namespace at parse-time
+    bnf_->iri = ((bnf_->iri_ns >> qi::char_(':') >> bnf_->iri_entity)
+            [qi::_val = boost::phoenix::bind(&createIRI, qi::_1, qi::_3)]);
+
     ///////////////////////////
     // atomic constants: strings, numbers etc.
-    bnf_->atom = ((bnf_->lowerPrefix | bnf_->singleQuotes)
+    bnf_->atom = (bnf_->atomRaw
             [qi::_val = ptr_<StringTerm>()(qi::_1)]);
     bnf_->string = (bnf_->doubleQuotes
             [qi::_val = ptr_<StringTerm>()(qi::_1)]);
@@ -335,25 +353,18 @@ QueryParser::QueryParser() {
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->variable = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
     // TODO: also support some operators like '<', '>' etc. without quotes
-    bnf_->compound = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
+    bnf_->compound = (((bnf_->atomRaw) >>
             qi::char_('(') >> (bnf_->argument % ',') >> ')')
             [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
 
     ///////////////////////////
     // predicates
-    bnf_->predicateWithNS = (((bnf_->lowerPrefix) >>
-            qi::char_(':') >> (bnf_->lowerPrefix | bnf_->singleQuotes) >>
-            qi::char_('(') >> (bnf_->argument % ',') >> ')')
-            [qi::_val = ptr_<Predicate>()(
-                    boost::phoenix::bind(&createIRI, qi::_1, qi::_3),
-                    qi::_5)]);
-    bnf_->predicateWithArgs = (((bnf_->lowerPrefix | bnf_->singleQuotes) >>
-            qi::char_('(') >> (bnf_->argument % ',') >> ')')
+    bnf_->predicateWithArgs = (((bnf_->atomRaw) >> qi::char_('(') >> (bnf_->argument % ',') >> ')')
             [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
-    bnf_->predicateNullary = ((bnf_->lowerPrefix | bnf_->singleQuotes)
+    bnf_->predicateNullary = ((bnf_->atomRaw)
             [qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
-    bnf_->predicate %= bnf_->predicateWithNS | bnf_->predicateWithArgs | bnf_->predicateNullary;
+    bnf_->predicate %= bnf_->predicateWithArgs | bnf_->predicateNullary;
 
     // formulas
     bnf_->brackets %= ('(' >> bnf_->formula >> ')');
@@ -430,6 +441,10 @@ PredicatePtr QueryParser::parsePredicate(const std::string &queryString) {
 
 TermPtr QueryParser::parseConstant(const std::string &queryString) {
     return parse_<TermPtr, TermRule>(queryString, get()->constant);
+}
+
+std::string QueryParser::parseRawAtom(const std::string &queryString) {
+    return parse_<std::string, StringRule>(queryString, get()->atomRaw);
 }
 
 // fixture class for testing
@@ -525,6 +540,15 @@ TEST_F(QueryParserTest, Numbers) {
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("234"), 234.0))
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("-45"), -45.0))
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("-45.64"), -45.64))
+}
+
+TEST_F(QueryParserTest, RawAtoms) {
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p"), "p"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p2"), "p2"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("'Foo'"), "Foo"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:foo"), "http://www.w3.org/2002/07/owl#foo"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:Foo"), "http://www.w3.org/2002/07/owl#Foo"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:'Foo'"), "http://www.w3.org/2002/07/owl#Foo"))
 }
 
 TEST_F(QueryParserTest, Atoms) {
