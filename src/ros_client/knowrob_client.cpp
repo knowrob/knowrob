@@ -8,13 +8,15 @@ KnowrobClient::KnowrobClient() :
 {
     ros::NodeHandle prvt_nh("~");
     prvt_nh.param("logger_prefix", m_logger_prefix, std::string("[KR-RC]\t"));
-    prvt_nh.param("verbose", m_verbose, false);
+    prvt_nh.param("verbose", m_verbose, true);
 
     ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Verbose enabled!");
 }
 
 bool KnowrobClient::initialize(ros::NodeHandle &nh)
 {
+    ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Initializing client interfaces..");
+
     ros::NodeHandle prvt_nh("~");
     std::string action_topic;
 
@@ -23,11 +25,11 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
 
 
     // ASK ONE
-    prvt_nh.param("askAll/action_topic", action_topic, std::string("askAll"));
+    prvt_nh.param("ask_one/action_topic", action_topic, std::string("knowrob/askone"));
     m_actCli_ask_one = std::make_shared<askOneClient>(nh, action_topic, true);
 
     bool wait_for_actionserver = false;
-    prvt_nh.param("askAll/wait_for_actionserver", wait_for_actionserver, false);
+    prvt_nh.param("ask_one/wait_for_actionserver", wait_for_actionserver, true);
 
     if (wait_for_actionserver)
     {
@@ -41,22 +43,62 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
     // ASK ALL
 
     // TELL
+    prvt_nh.param("tell/action_topic", action_topic, std::string("knowrob/tell"));
+    m_actCli_tell = std::make_shared<tellClient>(nh, action_topic, true);
+
+    wait_for_actionserver = false;
+    prvt_nh.param("tell/wait_for_actionserver", wait_for_actionserver, true);
+
+    if (wait_for_actionserver)
+    {
+        ROS_INFO_STREAM(m_logger_prefix << "Waiting for actionserver to start.. Topic = " << action_topic);
+        m_actCli_tell->waitForServer();
+        ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
+    }
 
     ROS_INFO_STREAM(m_logger_prefix << "Init complete!");
+    m_is_initialized = true;
     return true;
 }
 
-bool KnowrobClient::askOne(const std::string& query, 
-                const std::string& lang,
-                const int epistemic_operator,
-                const std::string& about_agent_iri,
-                const std::string& about_simulation_iri,
-                const int temporal_operator,
-                const double min_past_timestamp,
-                const double max_past_timestamp,
-                const double confidence)
+
+KnowrobQuery KnowrobClient::getDefaultQueryMessage() const
+{ 
+    return m_default_query; 
+}
+
+KnowrobQuery KnowrobClient::createQuery(const std::string &query,
+                                           const std::string &lang,
+                                           const int epistemic_operator,
+                                           const std::string &about_agent_iri,
+                                           const std::string &about_simulation_iri,
+                                           const int temporal_operator,
+                                           const double min_past_timestamp,
+                                           const double max_past_timestamp,
+                                           const double confidence) const
 {
-    // pre-check if server is available
+    KnowrobQuery gqm;
+    
+    gqm.queryString = query;
+    gqm.lang = lang;
+    gqm.epistemicOperator = epistemic_operator;
+    gqm.aboutAgentIRI = about_agent_iri;
+    gqm.aboutSimulationIRI = about_simulation_iri;
+    gqm.temporalOperator = temporal_operator;
+    gqm.minPastTimestamp = min_past_timestamp;
+    gqm.maxPastTimestamp = max_past_timestamp;
+    gqm.confidence = confidence;
+
+    return gqm;
+}
+
+
+
+
+bool KnowrobClient::askOne(const KnowrobQuery &knowrob_query,
+                           KnowrobAnswer &knowrob_answer)
+{
+     // pre-check if server is available
     if(!m_is_initialized)
     {
         ROS_ERROR_STREAM(m_logger_prefix << "Knowrob client is not initialized! Call initialize() function first!");
@@ -74,17 +116,8 @@ bool KnowrobClient::askOne(const std::string& query,
 
     // build the action goal
     knowrob::askoneGoal action_goal;
-
-    action_goal.query.queryString = query;
-    action_goal.query.lang = lang;
-    action_goal.query.epistemicOperator = epistemic_operator;
-    action_goal.query.aboutAgentIRI = about_agent_iri;
-    action_goal.query.aboutSimulationIRI = about_simulation_iri;
-    action_goal.query.temporalOperator = temporal_operator;
-    action_goal.query.minPastTimestamp = min_past_timestamp;
-    action_goal.query.maxPastTimestamp = max_past_timestamp;
-    action_goal.query.confidence = confidence;
-
+    action_goal.query = knowrob_query;
+ 
     // send the goal and wait for an answer
     m_actCli_ask_one->sendGoal(action_goal);
 
@@ -101,7 +134,54 @@ bool KnowrobClient::askOne(const std::string& query,
     // inspect the result
     knowrob::askoneResultConstPtr action_result = m_actCli_ask_one->getResult();
 
-    
+    knowrob_answer = action_result->answer;
+
+    return true;
+}
+
+bool KnowrobClient::tell(const KnowrobQuery &knowrob_query)
+{
+         // pre-check if server is available
+    if(!m_is_initialized)
+    {
+        ROS_ERROR_STREAM(m_logger_prefix << "Knowrob client is not initialized! Call initialize() function first!");
+        return false;
+    }
+
+    if (!m_actCli_ask_one->isServerConnected())
+    {
+        ROS_ERROR_STREAM(m_logger_prefix << "Tell - Actionserver is not connected!");
+        return false;
+    }
+
+    // cancel all remaining goals
+    m_actCli_tell->cancelAllGoals();
+
+    // build the action goal
+    knowrob::tellGoal action_goal;
+    action_goal.query = knowrob_query;
+ 
+    // send the goal and wait for an answer
+    m_actCli_tell->sendGoal(action_goal);
+
+    if(m_actCli_tell->waitForResult())
+    {
+        ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Action finished!");
+    }   
+    else
+    {
+        ROS_ERROR_STREAM(m_logger_prefix << "Timeout for askone action!");
+        return false;
+    }
+
+    // inspect the result
+    knowrob::tellResultConstPtr action_result = m_actCli_tell->getResult();
+
+    if(action_result->status == action_result->TELL_FAILED)
+    {
+        ROS_ERROR_STREAM(m_logger_prefix << "Tell failed!");
+        return false;
+    }
 
     return true;
 }
