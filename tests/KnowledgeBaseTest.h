@@ -9,8 +9,9 @@
 
 // fixture class for testing
 class KnowledgeBaseTest : public ::testing::Test {
-protected:
+public:
     static std::shared_ptr<knowrob::KnowledgeBase> kb_;
+protected:
     static void SetUpTestSuite();
     //void TearDown() override;
 };

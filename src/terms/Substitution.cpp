@@ -43,6 +43,11 @@ const TermPtr& Substitution::get(const Variable &var) const
 	}
 }
 
+const TermPtr& Substitution::get(const std::string &varName) const
+{
+	return get(Variable(varName));
+}
+
 size_t Substitution::computeHash() const
 {
     static const auto GOLDEN_RATIO_HASH = static_cast<size_t>(0x9e3779b9);
