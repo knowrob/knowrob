@@ -109,12 +109,10 @@ namespace {
 }
 
 static std::string createIRI(const std::string &prefix, const std::string &name) {
-    KB_INFO("createIRI");
     auto uri = semweb::PrefixRegistry::get().createIRI(prefix, name);
     if (uri.has_value()) {
         return uri.value();
     } else {
-    KB_INFO("prefix not registered");
         throw QueryError("Cannot construct IRI for '{}': "
                          "IRI prefix '{}' is not registered!", name, prefix);
     }
@@ -312,17 +310,17 @@ QueryParser::QueryParser() {
     bnf_ = new ParserRules();
     bnf_->singleQuotes %= qi::lexeme['\'' >> +(qi::char_ - '\'') >> '\''];
     bnf_->doubleQuotes %= qi::lexeme['"' >> +(qi::char_ - '"') >> '"'];
-    bnf_->lowerPrefix %= qi::lexeme[ascii::lower >> *ascii::alnum];
-    bnf_->upperPrefix %= qi::lexeme[ascii::upper >> *ascii::alnum];
+    bnf_->lowerPrefix %= qi::raw[ascii::lower >> *(ascii::alnum | '_')];
+    bnf_->upperPrefix %= qi::raw[ascii::upper >> *(ascii::alnum | '_')];
 
     // the raw string data of an atom. also handles IRI expansion.
     bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->iri | bnf_->lowerPrefix);
     // a IRI namespace is an alphanumeric word.
     // note that no single quotes are allowed, the greedy parser would match the `singleQuotes` rule before.
-    bnf_->iri_ns %= (qi::lexeme[ascii::alpha >> *ascii::alnum]);
+    bnf_->iri_ns %= (qi::raw[ascii::alpha >> *(ascii::alnum | '_')]);
     // right part of colon must be an alphanumeric word, or wrapped in single quoted.
     // Note that there is no need to enquote entities whose name starts with an uppercase character.
-    bnf_->iri_entity %= (bnf_->singleQuotes | qi::lexeme[ascii::alpha >> *ascii::alnum]);
+    bnf_->iri_entity %= (bnf_->singleQuotes | qi::raw[ascii::alpha >> *(ascii::alnum | '_')]);
     // IRI's are encoded as "ns:entity", ns must be a registered namespace at parse-time
     bnf_->iri = ((bnf_->iri_ns >> qi::char_(':') >> bnf_->iri_entity)
             [qi::_val = boost::phoenix::bind(&createIRI, qi::_1, qi::_3)]);
@@ -545,6 +543,7 @@ TEST_F(QueryParserTest, Numbers) {
 TEST_F(QueryParserTest, RawAtoms) {
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p"), "p"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p2"), "p2"))
+    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p_2"), "p_2"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("'Foo'"), "Foo"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:foo"), "http://www.w3.org/2002/07/owl#foo"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:Foo"), "http://www.w3.org/2002/07/owl#Foo"))
