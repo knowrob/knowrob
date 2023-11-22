@@ -109,6 +109,8 @@ namespace knowrob {
          */
         AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags);
 
+		auto& reasonerManager() const { return reasonerManager_; }
+
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<KnowledgeGraphManager> backendManager_;
