@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "KnowledgeBaseTest.h"
+#include "knowrob/queries/QueryParser.h"
 
 using namespace knowrob;
 
@@ -22,15 +23,11 @@ void KnowledgeBaseTest::SetUpTestSuite() {
 	kb_ = std::make_shared<KnowledgeBase>(KB_TEST_SETTINGS_FILE);
 }
 
-void KnowledgeBaseTest::TearDown() {
-	resetDB();
-}
-
-void KnowledgeBaseTest::resetDB() {
-	// TODO delete all records that are stored in the DB.
-}
-
-TEST_F(KnowledgeBaseTest, ThisFails)
+TEST_F(KnowledgeBaseTest, atomic_EDB)
 {
+    auto answerStream = kb_->submitQuery(
+            QueryParser::parse("swrl_test:hasSibling(swrl_test:'Ernest', Sibling)"),
+            QUERY_FLAG_ALL_SOLUTIONS);
+    //auto q = answerStream->createQueue()->toArray();
     EXPECT_EQ(1, 0);
 }

@@ -12,8 +12,7 @@ class KnowledgeBaseTest : public ::testing::Test {
 protected:
     static std::shared_ptr<knowrob::KnowledgeBase> kb_;
     static void SetUpTestSuite();
-    void TearDown() override;
-    void resetDB();
+    //void TearDown() override;
 };
 
 #endif //KNOWROB_KNOWLEDGE_BASE_TEST_H
