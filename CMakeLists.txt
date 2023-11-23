@@ -269,21 +269,20 @@ if (catkin_FOUND)
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #	### TF messages ###
-#	add_library(tf_knowrob SHARED
-#		src/ros/tf/tf.cpp
-#		src/ros/tf/memory.cpp
-#		src/ros/tf/logger.cpp
-#		src/ros/tf/publisher.cpp
-#		src/ros/tf/republisher.cpp)
-#	target_link_libraries(tf_knowrob
-#		${SWIPL_LIBRARIES}
-#		${MONGOC_LIBRARIES}
-#		${catkin_LIBRARIES})
-#		#mongo_kb
-#	add_dependencies(tf_knowrob
-#		${${PROJECT_NAME}_EXPORTED_TARGETS}
-#		${catkin_EXPORTED_TARGETS})
-#
+	add_library(tf_knowrob SHARED
+            src/reasoner/tf/tf.cpp
+            src/reasoner/tf/memory.cpp
+            src/reasoner/tf/logger.cpp
+            src/reasoner/tf/publisher.cpp
+            src/reasoner/tf/republisher.cpp)
+	target_link_libraries(tf_knowrob
+		${SWIPL_LIBRARIES}
+		${MONGOC_LIBRARIES}
+		${catkin_LIBRARIES})
+	add_dependencies(tf_knowrob
+		${${PROJECT_NAME}_EXPORTED_TARGETS}
+		${catkin_EXPORTED_TARGETS})
+
 #	## RViz marker ###
 #	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
 #	target_link_libraries(marker_knowrob

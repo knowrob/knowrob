@@ -1,7 +1,10 @@
 #include <tf/LinearMath/Quaternion.h>
 
-#include <knowrob/ros/tf/logger.h>
-#include <knowrob/mongodb/MongoInterface.h>
+#include "knowrob/ros/tf/logger.h"
+#include "knowrob/mongodb/MongoInterface.h"
+
+using namespace knowrob;
+using namespace knowrob::mongo;
 
 TFLogger::TFLogger(
 		ros::NodeHandle &node,
@@ -25,13 +28,10 @@ TFLogger::~TFLogger()
 void TFLogger::store_document(bson_t *doc)
 {
 	bson_error_t err;
-    std::shared_ptr<MongoCollection> collection_ = MongoInterface::get().connect(
-            db_uri_.c_str(), db_name_.c_str(),topic_.c_str());
-	if(!mongoc_collection_insert(
-			(*collection_)(),MONGOC_INSERT_NONE,doc,NULL,&err))
-	{
-		ROS_WARN("[TFLogger] insert failed: %s.", err.message);
-	}
+    Document tfMessage(bson_new());
+    std::shared_ptr<Collection> collection_(MongoInterface::get().connect(
+            db_uri_.c_str(), db_name_.c_str(),topic_.c_str()));
+	collection_->storeOne(tfMessage);
 }
 
 void TFLogger::store(const geometry_msgs::TransformStamped &ts)

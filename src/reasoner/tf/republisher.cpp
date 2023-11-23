@@ -1,4 +1,4 @@
-#include <knowrob/ros/tf/republisher.h>
+#include "knowrob/ros/tf/republisher.h"
 #include <std_msgs/Float64.h>
 
 #define CLEAR_MEMORY_AFTER_PUBLISH 0
@@ -134,11 +134,11 @@ void TFRepublisher::create_cursor(double start_time)
 		mongoc_cursor_destroy(cursor_);
 	}
 
-	collection_ = MongoInterface::get().connect(
-		db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());
+    collection_ = MongoInterface::get().connect(
+            db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());
 	collection_->appendSession(opts);
 	cursor_ = mongoc_collection_find_with_opts(
-	    (*collection_)(), filter, opts, NULL /* read_prefs */ );
+	    collection_->coll(), filter, opts, NULL /* read_prefs */ );
 	// cleanup
 	if(filter) {
 		bson_destroy(filter);
@@ -178,8 +178,9 @@ void TFRepublisher::set_initial_poses(double unix_time)
     collection_ = MongoInterface::get().connect(
             db_uri_.c_str(), db_name_.c_str(),db_collection_.c_str());
 	collection_->appendSession(append_opts);
+    collection_->evalAggregation(pipeline);
 	mongoc_cursor_t *cursor = mongoc_collection_aggregate(
-		(*collection_)(), MONGOC_QUERY_NONE, pipeline, NULL, NULL);
+		collection_->coll(), MONGOC_QUERY_NONE, pipeline, NULL, NULL);
 	memory_.clear_transforms_only();
 	if(cursor!=NULL) {
 		const bson_t *doc;

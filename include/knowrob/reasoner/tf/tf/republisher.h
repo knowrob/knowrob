@@ -13,9 +13,12 @@
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
 
-#include <knowrob/ros/tf/memory.h>
-#include <knowrob/ros/tf/publisher.h>
-#include <knowrob/mongodb/MongoInterface.h>
+#include "memory.h"
+#include "publisher.h"
+#include "knowrob/mongodb/MongoInterface.h"
+
+using namespace knowrob;
+using namespace knowrob::mongo;
 
 /**
  * A TF publisher that publishes data stored in mongo DB.
@@ -71,7 +74,7 @@ protected:
 	std::string db_name_;
     std::string db_uri_;
 	std::string db_collection_;
-    std::shared_ptr<MongoCollection> collection_;
+    std::shared_ptr<Collection> collection_;
 
 	mongoc_cursor_t *cursor_;
 	geometry_msgs::TransformStamped ts_;
