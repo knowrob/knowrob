@@ -48,6 +48,11 @@ namespace knowrob {
 	     */
 		explicit KnowledgeBase(const boost::property_tree::ptree &config);
 
+	    /**
+	     * @param configFile path to file that encodes a boost property tree used to configure the KB.
+	     */
+		explicit KnowledgeBase(const std::string_view &configFile);
+
         /**
          * Asserts a proposition into the knowledge base.
          * @param tripleData data representing the proposition.
@@ -103,6 +108,8 @@ namespace knowrob {
          * @return a stream of query results
          */
         AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags);
+
+		auto& reasonerManager() const { return reasonerManager_; }
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;

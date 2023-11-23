@@ -8,9 +8,12 @@
 
 #include <thread>
 #include <utility>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
+#include <knowrob/URI.h>
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
@@ -89,6 +92,17 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 {
 	backendManager_ = std::make_shared<KnowledgeGraphManager>(threadPool_);
 	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
+	loadConfiguration(config);
+}
+
+KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
+: threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()))
+{
+	backendManager_ = std::make_shared<KnowledgeGraphManager>(threadPool_);
+	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
+
+	boost::property_tree::ptree config;
+	boost::property_tree::read_json(URI::resolve(configFile), config);
 	loadConfiguration(config);
 }
 
