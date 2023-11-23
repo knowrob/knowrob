@@ -68,6 +68,16 @@ namespace knowrob {
 		 * @return a term reference.
 		 */
 		const TermPtr& get(const Variable &var) const;
+
+		/**
+		 * Map the name of a variable to a term.
+		 * A null pointer reference is returned if the given variable
+		 * is not included in the mapping.
+		 *
+		 * @var a variable.
+		 * @return a term reference.
+		 */
+		const TermPtr& get(const std::string &varName) const;
 		
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.

@@ -321,7 +321,8 @@ endif()
 # flag for the linker.
 add_executable(all_gtests
 		tests/gtests.cpp
-		src/neems/test.cpp)
+		src/neems/test.cpp
+        tests/KnowledgeBaseTest.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		knowrob_qa
