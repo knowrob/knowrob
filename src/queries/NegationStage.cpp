@@ -30,14 +30,14 @@ bool NegationStage::succeeds(const AnswerPtr &answer) {
 	std::vector<AnswerBufferPtr> results;
 
 	for (auto &lit: negativeLiterals_) {
-		// create an instance of the literal based on given substitution
-		auto instance = RDFLiteral::fromLiteral(
-				lit->applySubstitution(*answer->substitution()));
-
+		auto lit1 = lit->applySubstitution(*answer->substitution());
 		// for now evaluate positive variant of the literal.
 		// NOTE: for open-world semantics this cannot be done. open-world reasoner
 		//       would need to receive negative literal instead.
-		instance->setIsNegated(false);
+		lit1->setIsNegated(false);
+
+		// create an instance of the literal based on given substitution
+		auto instance = RDFLiteral::fromLiteral(lit1);
 
 		// check if the EDB contains positive lit, if so negation cannot be true
 		results.push_back(kg_->submitQuery(
@@ -49,7 +49,7 @@ bool NegationStage::succeeds(const AnswerPtr &answer) {
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
 		for (auto &pair: reasonerManager_->reasonerPool()) {
 			auto &r = pair.second->reasoner();
-			if (r->canEvaluate(*lit)) {
+			if (r->canEvaluate(*instance)) {
 				results.push_back(r->submitQuery(instance, QUERY_FLAG_ALL_SOLUTIONS));
 			}
 		}
