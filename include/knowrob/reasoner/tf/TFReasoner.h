@@ -14,17 +14,13 @@
 
 namespace knowrob {
 
-	class TFReasoner : public PrologReasoner {
+	class TFReasoner : public knowrob::Reasoner {
 	public:
 		static const std::string SWRL_FORMAT;
 
 		explicit TFReasoner(const std::string &reasonerID);
 
-		bool loadSWRLFile(const DataSourcePtr &dataFile);
-
 	protected:
-		// Override PrologReasoner
-		bool initializeDefaultPackages() override;
 	};
 
 } // knowrob
