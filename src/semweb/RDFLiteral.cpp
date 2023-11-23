@@ -120,7 +120,7 @@ RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
 
 std::shared_ptr<RDFLiteral> RDFLiteral::fromLiteral(const LiteralPtr &literal)
 {
-    if(literal->arity()==2) {
+	if(literal->arity()==2) {
 		auto s = literal->predicate()->arguments()[0];
 		// TODO: a copy of the name is held by Vocabulary class
 		//  memory could be mapped into StringTerm but StringTerm does not support it yet.
