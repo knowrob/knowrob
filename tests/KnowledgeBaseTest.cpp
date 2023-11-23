@@ -163,8 +163,8 @@ TEST_F(KnowledgeBaseTest, negated_IDB) {
 }
 
 TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
-	const auto queryString = "(swrl_test:hasSibling(swrl_test:Fred,X) ; "\
-		"swrl_test:hasAncestor(swrl_test:Fred,X)) , ~swrl_test:hasSibling(X,Y)";
+	// Rex is an ancestor of Fred who does not have a sibling
+	const auto queryString = "swrl_test:hasAncestor(swrl_test:Fred,X) & ~swrl_test:hasSibling(X,Y)";
 	EXPECT_EQ(lookupAll(queryString).size(), 1);
 	EXPECT_TRUE(containsAnswer(lookupAll(queryString), "X", QueryParser::parseConstant("swrl_test:Rex")));
 }
