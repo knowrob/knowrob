@@ -394,24 +394,32 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralP
 
 void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
-    auto channel = AnswerStream::Channel::create(resultStream);
-    auto cursor = lookup(query->literals());
+	auto channel = AnswerStream::Channel::create(resultStream);
 
-    // limit to one solution if requested
-    if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
-        cursor->limit(1);
-    }
+	try {
+		auto cursor = lookup(query->literals());
 
-    while(true) {
-        std::shared_ptr<Answer> next = std::make_shared<Answer>();
-        if(cursor->nextAnswer(next)) {
-            channel->push(next);
-        }
-        else {
-            channel->push(AnswerStream::eos());
-            break;
-        }
-    }
+		// limit to one solution if requested
+		if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
+			cursor->limit(1);
+		}
+
+		while(true) {
+			std::shared_ptr<Answer> next = std::make_shared<Answer>();
+			if(cursor->nextAnswer(next)) {
+				channel->push(next);
+			}
+			else {
+				channel->push(AnswerStream::eos());
+				break;
+			}
+		}
+	}
+	catch(const std::exception &e) {
+		// make sure EOS is pushed to the stream
+		channel->push(AnswerStream::eos());
+		throw;
+	}
 }
 
 AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)

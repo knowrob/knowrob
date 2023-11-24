@@ -199,6 +199,6 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 }
 
 TEST_F(KnowledgeBaseTest, ask_one) {
-    EXPECT_EQ(lookupOne("swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
-    EXPECT_EQ(lookupOne("B swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+	EXPECT_EQ(lookupOne("swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+	EXPECT_EQ(lookupOne("B swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
 }
