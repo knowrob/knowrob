@@ -189,6 +189,11 @@ add_library(knowrob_qa SHARED
         src/queries/GraphQuery.cpp
         src/queries/Query.cpp
         src/queries/RedundantAnswerFilter.cpp
+        src/queries/EDBStage.cpp
+        src/queries/QueryStage.cpp
+        src/queries/IDBStage.cpp
+        src/queries/QueryPipeline.cpp
+        src/queries/NegationStage.cpp
 		src/semweb/PrefixRegistry.cpp
         src/semweb/PrefixProbe.cpp
 		src/semweb/xsd.cpp
@@ -238,11 +243,7 @@ add_library(knowrob_qa SHARED
         src/modalities/ModalityLabel.cpp
         src/semweb/KnowledgeGraph.cpp
         src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp
-        src/queries/EDBStage.cpp
-        src/queries/QueryStage.cpp
-        src/queries/IDBStage.cpp
-        src/queries/QueryPipeline.cpp)
+        src/semweb/KnowledgeGraphPlugin.cpp)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

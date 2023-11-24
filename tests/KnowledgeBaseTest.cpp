@@ -162,14 +162,19 @@ TEST_F(KnowledgeBaseTest, complex_EDB) {
 }
 
 TEST_F(KnowledgeBaseTest, negated_EDB) {
-	const auto queryString = "~swrl_test:hasSibling(swrl_test:Lea,X)";
-	EXPECT_EQ(lookupAll(queryString).size(), 1);
-	EXPECT_TRUE(lookupAll(queryString)[0]->empty());
+	EXPECT_EQ(lookupAll("~swrl_test:hasSibling(swrl_test:Lea,X)").size(), 1);
+	EXPECT_TRUE(lookupAll("~swrl_test:hasSibling(swrl_test:Lea,X)")[0]->empty());
+	EXPECT_EQ(lookupAll("~swrl_test:hasSibling(swrl_test:Fred,X)").size(), 0);
+}
+
+TEST_F(KnowledgeBaseTest, negated_IDB) {
+	EXPECT_EQ(lookupAll("~p(swrl_test:Ernest, X)").size(), 0);
+	EXPECT_EQ(lookupAll("~p(swrl_test:Lea, X)").size(), 1);
 }
 
 TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
-	const auto queryString = "(swrl_test:hasSibling(swrl_test:Fred,X) ; "\
-		"swrl_test:hasAncestor(swrl_test:Fred,X)) , ~swrl_test:hasSibling(X,Y)";
+	// Rex is an ancestor of Fred who does not have a sibling
+	const auto queryString = "swrl_test:hasAncestor(swrl_test:Fred,X) & ~swrl_test:hasSibling(X,Y)";
 	EXPECT_EQ(lookupAll(queryString).size(), 1);
 	EXPECT_TRUE(containsAnswer(lookupAll(queryString), "X", QueryParser::parseConstant("swrl_test:Rex")));
 }

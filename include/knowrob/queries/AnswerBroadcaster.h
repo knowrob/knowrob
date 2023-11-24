@@ -41,7 +41,7 @@ namespace knowrob {
 
 		// Override QueryResultStream
 		void push(const AnswerPtr &msg) override;
-		void pushToBroadcast(const AnswerPtr &msg);
+		virtual void pushToBroadcast(const AnswerPtr &msg);
 	};
 
     void operator>>(const std::shared_ptr<AnswerBroadcaster> &a,

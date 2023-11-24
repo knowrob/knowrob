@@ -600,6 +600,15 @@ TEST_F(QueryParserTest, InvalidPredicates) {
     EXPECT_THROW(QueryParser::parsePredicate("p,q"), QueryError);
 }
 
+TEST_F(QueryParserTest, Negations) {
+    TEST_NO_THROW(testCompound(FormulaType::NEGATION,
+                               QueryParser::parse("~p"),
+                               1, {FormulaType::PREDICATE}))
+    TEST_NO_THROW(testCompound(FormulaType::NEGATION,
+                               QueryParser::parse("~(p&q)"),
+                               1, {FormulaType::CONJUNCTION}))
+}
+
 TEST_F(QueryParserTest, Conjunctions) {
     TEST_NO_THROW(testCompound(FormulaType::CONJUNCTION,
                                QueryParser::parse("p,q"),
