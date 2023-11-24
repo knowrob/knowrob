@@ -82,9 +82,9 @@ void KnowledgeBaseTest::SetUpTestSuite() {
 		"r2", std::make_shared<TestReasoner>("q", "x", "y"));
 }
 
-static std::vector<SubstitutionPtr> lookupAll(const std::string &queryString) {
+static std::vector<SubstitutionPtr> lookup(const std::string &queryString, QueryFlag qflag) {
 	auto answerStream = KnowledgeBaseTest::kb_->submitQuery(
-			QueryParser::parse(queryString), QUERY_FLAG_ALL_SOLUTIONS);
+			QueryParser::parse(queryString), qflag);
 	auto answerQueue = answerStream->createQueue();
 	std::vector<SubstitutionPtr> out;
 	while(true) {
@@ -93,6 +93,16 @@ static std::vector<SubstitutionPtr> lookupAll(const std::string &queryString) {
 		out.push_back(solution->substitution());
 	}
 	return out;
+}
+
+static std::vector<SubstitutionPtr> lookupAll(const std::string &queryString) {
+    return lookup(queryString, QUERY_FLAG_ALL_SOLUTIONS);
+
+}
+
+static std::vector<SubstitutionPtr> lookupOne(const std::string &queryString) {
+    return lookup(queryString, QUERY_FLAG_ONE_SOLUTION);
+
 }
 
 static bool containsAnswer(const std::vector<SubstitutionPtr> &answers, const std::string &key, const TermPtr &value) {
@@ -181,4 +191,9 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 	const auto queryString = "p(Ernest,X) , q(X,Y)";
 	EXPECT_EQ(lookupAll(queryString).size(), 1);
 	EXPECT_EQ(*lookupAll(queryString)[0]->get("Y"), StringTerm("y"));
+}
+
+TEST_F(KnowledgeBaseTest, ask_one) {
+    EXPECT_EQ(lookupOne("swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+    EXPECT_EQ(lookupOne("B swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
 }
