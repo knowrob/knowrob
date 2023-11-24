@@ -89,7 +89,7 @@ namespace knowrob {
          * @param tripleExpressions a vector of triple expressions
          * @return a cursor over matching triples
          */
-        mongo::AnswerCursorPtr lookup(const std::vector<RDFLiteralPtr> &tripleExpressions);
+        mongo::AnswerCursorPtr lookup(const std::vector<RDFLiteralPtr> &tripleExpressions, uint32_t limit=0);
 
         /**
          * @param graphName the name of a graph

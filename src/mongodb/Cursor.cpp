@@ -18,7 +18,8 @@ using namespace knowrob::mongo;
 Cursor::Cursor(const std::shared_ptr<Collection> &collection)
 : cursor_(nullptr),
   collection_(collection),
-  isAggregateQuery_(false)
+  isAggregateQuery_(false),
+  limit_(0)
 {
 	query_ = bson_new();
 	opts_ = bson_new();
@@ -40,7 +41,7 @@ Cursor::~Cursor()
 
 void Cursor::limit(unsigned int limit)
 {
-	BSON_APPEND_INT64(opts_, "limit", limit);
+	limit_ = limit;
 }
 
 void Cursor::ascending(const char *key)
@@ -76,6 +77,9 @@ bool Cursor::next(const bson_t **doc, bool ignore_empty)
 		else {
 			cursor_ = mongoc_collection_find_with_opts(
                     collection_->coll(), query_, opts_, nullptr /* read_prefs */ );
+		}
+		if(limit_ > 0) {
+			mongoc_cursor_set_limit(cursor_, limit_);
 		}
 		// make sure cursor has no error after creation
 		bson_error_t err1;

@@ -87,6 +87,7 @@ namespace knowrob::mongo {
         bson_t *opts_;
         std::string id_;
         bool isAggregateQuery_;
+		int64_t limit_;
     };
 }
 
