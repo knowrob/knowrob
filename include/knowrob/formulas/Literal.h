@@ -41,6 +41,12 @@ namespace knowrob {
         auto isNegated() const { return isNegated_; }
 
         /**
+         * Set the negated flag of this literal.
+         * @param isNegated true indicates the literal is negated.
+         */
+        void setIsNegated(bool isNegated) { isNegated_ = isNegated; }
+
+        /**
          * Get the functor of this literal.
          *
          * @return the functor name.
@@ -75,7 +81,7 @@ namespace knowrob {
     protected:
         const PredicatePtr predicate_;
         const ModalityLabelPtr label_;
-        const bool isNegated_;
+        bool isNegated_;
     };
 
     using LiteralPtr = std::shared_ptr<Literal>;

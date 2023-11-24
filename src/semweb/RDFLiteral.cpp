@@ -120,15 +120,24 @@ RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
 
 std::shared_ptr<RDFLiteral> RDFLiteral::fromLiteral(const LiteralPtr &literal)
 {
-    if(literal->arity()!=2) {
-        throw QueryError("RDF literal can only be constructed from 2-ary predicates but {} is not.", *literal);
-    }
-    auto s = literal->predicate()->arguments()[0];
-    // TODO: a copy of the name is held by Vocabulary class
-    //  memory could be mapped into StringTerm but StringTerm does not support it yet.
-    auto p = std::make_shared<StringTerm>(literal->functor());
-    auto o = literal->predicate()->arguments()[1];
-    return std::make_shared<RDFLiteral>(s,p,o,literal->isNegated(),literal->label());
+	if(literal->arity()==2) {
+		auto s = literal->predicate()->arguments()[0];
+		// TODO: a copy of the name is held by Vocabulary class
+		//  memory could be mapped into StringTerm but StringTerm does not support it yet.
+		auto p = std::make_shared<StringTerm>(literal->functor());
+		auto o = literal->predicate()->arguments()[1];
+		return std::make_shared<RDFLiteral>(s,p,o,literal->isNegated(),literal->label());
+	}
+	else if(literal->arity()==3 && literal->functor()=="triple") {
+		// handle triple/3 predicate here
+		auto s = literal->predicate()->arguments()[0];
+		auto p = literal->predicate()->arguments()[1];
+		auto o = literal->predicate()->arguments()[2];
+		return std::make_shared<RDFLiteral>(s,p,o,literal->isNegated(),literal->label());
+	}
+	else {
+		throw QueryError("RDF literal can only be constructed from 2-ary predicates but {} is not.", *literal);
+	}
 }
 
 std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName)

@@ -20,6 +20,7 @@
 #include "knowrob/queries/AnswerCombiner.h"
 #include "knowrob/queries/IDBStage.h"
 #include "knowrob/queries/EDBStage.h"
+#include "knowrob/queries/NegationStage.h"
 
 using namespace knowrob;
 
@@ -380,11 +381,10 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
         else computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
     }
 
-    std::shared_ptr<AnswerBuffer> edbOut;
     // --------------------------------------
     // run EDB query with all edb-only literals.
     // --------------------------------------
-
+    std::shared_ptr<AnswerBuffer> edbOut;
     if(edbOnlyLiterals.empty()) {
         edbOut = std::make_shared<AnswerBuffer>();
         auto channel = AnswerStream::Channel::create(edbOut);
@@ -399,6 +399,9 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     }
     pipeline->addStage(edbOut);
 
+    // --------------------------------------
+    // handle positive IDB literals.
+    // --------------------------------------
     std::shared_ptr<AnswerBroadcaster> idbOut;
     if(computableLiterals.empty())
     {
@@ -414,11 +417,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
         DependencyGraph dg;
         dg.insert(computableLiterals.begin(), computableLiterals.end());
 
+        // --------------------------------------
+        // Construct a pipeline for each dependency group.
+        // --------------------------------------
         if(dg.numGroups()==1) {
             auto &literalGroup = *dg.begin();
-            // --------------------------------------
-            // Construct a pipeline for each dependency group.
-            // --------------------------------------
             createComputationPipeline(
                     pipeline,
                     createComputationSequence(literalGroup.member_),
@@ -454,11 +457,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     // --------------------------------------
     std::shared_ptr<AnswerBroadcaster> lastStage;
     if(!negativeLiterals.empty()) {
-        // append a parallel step for each negative literal and reasoner that can compute it.
-        // FIXME: maybe every possible source must report that a negated literal cannot be grounded?
-        //xxx;
-        KB_WARN("todo: submitQuery negations");
-        lastStage = idbOut;
+        // run a dedicated stage where negated literals can be evaluated in parallel
+        auto negStage = std::make_shared<NegationStage>(
+                kg, reasonerManager_, negativeLiterals);
+        idbOut >> negStage;
+        lastStage = negStage;
     }
     else {
         lastStage = idbOut;
