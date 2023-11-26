@@ -375,43 +375,54 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const StatementData &tripleDa
     return lookup(RDFLiteral(tripleData));
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions)
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions, uint32_t limit)
 {
-    bson_t pipelineDoc = BSON_INITIALIZER;
-    bson_t pipelineArray;
-    BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-    aggregation::Pipeline pipeline(&pipelineArray);
-    aggregation::lookupTriplePaths(pipeline,
-                                  tripleCollection_->name(),
-                                  vocabulary_,
-                                  tripleExpressions);
-    bson_append_array_end(&pipelineDoc, &pipelineArray);
+	bson_t pipelineDoc = BSON_INITIALIZER;
+	bson_t pipelineArray;
+	BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+	aggregation::Pipeline pipeline(&pipelineArray);
+	aggregation::lookupTriplePaths(pipeline,
+			tripleCollection_->name(),
+			vocabulary_,
+			tripleExpressions);
+	if(limit > 0) {
+		pipeline.limit(limit);
+	}
+	bson_append_array_end(&pipelineDoc, &pipelineArray);
 
-    auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
-    cursor->aggregate(&pipelineDoc);
-    return cursor;
+	auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
+	cursor->aggregate(&pipelineDoc);
+	return cursor;
 }
 
 void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, AnswerBufferPtr &resultStream)
 {
-    auto channel = AnswerStream::Channel::create(resultStream);
-    auto cursor = lookup(query->literals());
+	auto channel = AnswerStream::Channel::create(resultStream);
 
-    // limit to one solution if requested
-    if(query->flags() & QUERY_FLAG_ONE_SOLUTION) {
-        cursor->limit(1);
-    }
+	try {
+		uint32_t limit = (query->flags() & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
+		auto cursor = lookup(query->literals(), limit);
 
-    while(true) {
-        std::shared_ptr<Answer> next = std::make_shared<Answer>();
-        if(cursor->nextAnswer(next)) {
-            channel->push(next);
-        }
-        else {
-            channel->push(AnswerStream::eos());
-            break;
-        }
-    }
+		// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
+		//       anyways, we add instead a $limit stage in the aggregation pipeline.
+		//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
+
+		while(true) {
+			std::shared_ptr<Answer> next = std::make_shared<Answer>();
+			if(cursor->nextAnswer(next)) {
+				channel->push(next);
+			}
+			else {
+				channel->push(AnswerStream::eos());
+				break;
+			}
+		}
+	}
+	catch(const std::exception &e) {
+		// make sure EOS is pushed to the stream
+		channel->push(AnswerStream::eos());
+		throw;
+	}
 }
 
 AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
