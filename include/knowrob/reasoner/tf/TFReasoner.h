@@ -16,11 +16,34 @@ namespace knowrob {
 
 	class TFReasoner : public knowrob::Reasoner {
 	public:
-		static const std::string SWRL_FORMAT;
+        /**
+         * @param reasonerID a knowledge base identifier of this reasoner.
+         */
+        explicit TFReasoner(std::string reasonerID);
 
-		explicit TFReasoner(const std::string &reasonerID);
+        ~TFReasoner() override;
 
-	protected:
+        // Override IReasoner
+        bool loadConfiguration(const ReasonerConfiguration &cfg) override;
+
+        // Override IReasoner
+        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+
+        // Override IReasoner
+        std::shared_ptr<PredicateDescription> getPredicateDescription(
+                const std::shared_ptr<PredicateIndicator> &indicator) override;
+
+        // Override IReasoner
+        unsigned long getCapabilities() const override;
+
+        // Override IReasoner
+        AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) override;
+
+        // Override IReasoner
+        bool loadDataSourceWithUnknownFormat(const DataSourcePtr &dataFile) override;
+
+
+    protected:
 	};
 
 } // knowrob
