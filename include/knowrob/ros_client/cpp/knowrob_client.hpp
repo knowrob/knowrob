@@ -42,6 +42,8 @@ private:
     double m_query_timeout;
 
     std::shared_ptr<askOneClient> m_actCli_ask_one;
+    std::shared_ptr<askAllClient> m_actCli_ask_all;
+
     std::shared_ptr<tellClient> m_actCli_tell;
 
     const knowrob::GraphQueryMessage m_default_query;
@@ -50,7 +52,14 @@ public:
     KnowrobClient();
     //~KnowrobClient();
 
-
+    /**
+     * @brief Initializes parameters from ROS param server and connects the action servers.
+     * Blocking if the action servers are not reachable
+     * 
+     * @param nh a nodehandle from your node
+     * @return true if the process was finished successfully
+     * @return false if something went wrong
+     */
     bool initialize(ros::NodeHandle &nh);
 
     KnowrobQuery getDefaultQueryMessage() const; 
@@ -65,11 +74,38 @@ public:
                                            const double max_past_timestamp = 0.0,
                                            const double confidence = 0.0) const;
 
+    std::string getAnswerText(const KnowrobAnswer& answer) const;
+
+    /**
+     * @brief 
+     * 
+     * @param knowrob_query the query you want to ask
+     * @param knowrob_answer a single answer propt by knowrob
+     * @return true when the call was successful - not considering the content of the answer
+     * @return false when something went wrong during communication
+     */
     bool askOne(const KnowrobQuery &knowrob_query,
                 KnowrobAnswer &knowrob_answer);
 
-    void askIncremental();
-    void askAll();
+    /**
+     * @brief 
+     * 
+     * @param knowrob_query the query you want to ask
+     * @param knowrob_answers an array of all answers from knowrob
+     * @return true when the call was successful - not considering the content of the answer
+     * @return false when something went wrong during communication
+     */
+    bool askAll(const KnowrobQuery &knowrob_query,
+                std::vector<KnowrobAnswer> &knowrob_answers);
 
+    void askIncremental();
+
+    /**
+     * @brief 
+     * 
+     * @param knowrob_query the query you want to tell
+     * @return true when the call was successful - not considering the content of the answer
+     * @return false when something went wrong during communication
+     */
     bool tell(const KnowrobQuery &knowrob_query);
 };
