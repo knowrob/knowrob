@@ -107,6 +107,8 @@ if (catkin_FOUND)
 		actionlib_msgs)	
 
 	catkin_package(
+		INCLUDE_DIRS include
+		LIBRARIES knowrob-ros-cli
 		CATKIN_DEPENDS roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
