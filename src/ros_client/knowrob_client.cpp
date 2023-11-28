@@ -37,9 +37,17 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
     if (wait_for_actionserver)
     {
         ROS_INFO_STREAM(m_logger_prefix << "Waiting for actionserver to start.. Topic = " << action_topic);
-        m_actCli_ask_one->waitForServer(dur_action_server_timeout);
+        if(m_actCli_ask_one->waitForServer(dur_action_server_timeout))
+        {
+            ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
+        }
+        else
+        {
+            ROS_ERROR_STREAM(m_logger_prefix << "Timeout while waiting for the ask one action server!"); 
+            return false;
+        }
         ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
-    }
+    }   
 
     // ASK ALL
     prvt_nh.param("ask_all/action_topic", action_topic, std::string("knowrob/askall"));
@@ -57,7 +65,7 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
         }
         else
         {
-            ROS_ERROR_STREAM(m_logger_prefix << "Timeout while waiting for the tell action server!"); 
+            ROS_ERROR_STREAM(m_logger_prefix << "Timeout while waiting for the ask all action server!"); 
             return false;
         }
         ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
