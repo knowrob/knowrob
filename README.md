@@ -10,12 +10,12 @@ It further provides a set of tools for visualization and acquisition of knowledg
 
 ## Outline
 
-1. [Functionality]()
-2. [Dependencies]()
-3. [Install Instructions]()
-4. [Building Knowrob]()
-5. [Starting Knowrob]()
-6. [Using Knowrob]()
+1. [Functionality](https://github.com/marcomasa/knowrob/tree/modal_doc#functionality)
+2. [Dependencies](https://github.com/marcomasa/knowrob/tree/modal_doc#dependencies)
+3. [Install Instructions](https://github.com/marcomasa/knowrob/tree/modal_doc#install-instructions)
+4. [Building Knowrob](https://github.com/marcomasa/knowrob/tree/modal_doc#building-knowrob)
+5. [Starting Knowrob](https://github.com/marcomasa/knowrob/tree/modal_doc#starting-knowrob)
+6. [Using Knowrob](https://github.com/marcomasa/knowrob/tree/modal_doc#using-knowrob)
 
 
 ## Functionality
