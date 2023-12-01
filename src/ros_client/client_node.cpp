@@ -3,13 +3,14 @@
 int main(int argc, char** argv)
 {
    ros::init(argc, argv, "KnowrobClientNode");
+   ros::NodeHandle nh;
+
    std::string logger_prefix = std::string("[KCN]\t");
 
    ROS_INFO_STREAM(logger_prefix << "Starting the knowrob client node..");
    ros::Duration(1.0).sleep();
 
 
-   ros::NodeHandle nh;
    KnowrobClient kc;
    kc.initialize(nh);  
 
@@ -19,7 +20,7 @@ int main(int argc, char** argv)
    std::vector<KnowrobAnswer> multi_answer;
    single_query.queryString = std::string("test:hasSon(A,B)");
    
-   ROS_INFO_STREAM(logger_prefix << "Sending AskAll Query!");
+   ROS_INFO_STREAM(logger_prefix << "Sending AskAll Query: " << single_query.queryString);
    bool result = kc.askAll(single_query, multi_answer);
 
    if(!result)
@@ -29,16 +30,16 @@ int main(int argc, char** argv)
    else
    {
       ROS_INFO_STREAM(logger_prefix << "AskAll true!");
-      ROS_INFO_STREAM(logger_prefix << "Best Answer is: " << multi_answer.at(0).instantiation);
+      ROS_INFO_STREAM(logger_prefix << "Best Answer is: " << kc.getAnswerText(multi_answer.at(0)));
    }
 
-   ros::Duration(1.0).sleep();
 
    // first tell
    KnowrobQuery single_tell = kc.getDefaultQueryMessage();
    single_tell.queryString = std::string("test:hasSon(a,b)");
    
-   ROS_INFO_STREAM(logger_prefix << "Sending Tell Query!");
+   ROS_INFO_STREAM(logger_prefix << "Sending Tell Query: " << single_tell.queryString);
+   ros::Duration(1.0).sleep();
    result = kc.tell(single_tell);
 
    if(!result)
@@ -53,6 +54,8 @@ int main(int argc, char** argv)
 
    // second ask
    multi_answer.clear();
+   ROS_INFO_STREAM(logger_prefix << "Sending AskAll Query: " << single_query.queryString);
+   ros::Duration(1.0).sleep();
    result = kc.askAll(single_query, multi_answer);
 
    if(!result)
@@ -65,7 +68,5 @@ int main(int argc, char** argv)
       ROS_INFO_STREAM(logger_prefix << "Best Answer is: " << kc.getAnswerText(multi_answer.at(0)) );
    }
 
-
-   
    exit(0);
 }
