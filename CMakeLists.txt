@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
+set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -O2 -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
 set (CMAKE_CXX_STANDARD 17)
 
 project(knowrob)
@@ -72,7 +72,7 @@ add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 
 find_package(catkin QUIET COMPONENTS
 		roscpp roslib tests/urdf message_generation 
-		geometry_msgs message_generation json_prolog_msgs actionlib actionlob_msgs)
+		geometry_msgs message_generation json_prolog_msgs actionlib actionlib_msgs)
 
 if (catkin_FOUND)
 	message(STATUS "Building with ROS1 support.")
@@ -107,6 +107,8 @@ if (catkin_FOUND)
 		actionlib_msgs)	
 
 	catkin_package(
+		INCLUDE_DIRS include
+		LIBRARIES knowrob-ros-cli
 		CATKIN_DEPENDS roscpp roslib
 		CFG_EXTRAS ontologies.cmake
 	)
@@ -311,6 +313,50 @@ if (catkin_FOUND)
 			knowrob_qa
 			${catkin_LIBRARIES})
 	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
+
+
+
+	## ROS Client Interface
+	add_library( 
+		knowrob-ros-cli
+
+		include/knowrob/ros_client/cpp/knowrob_client.hpp
+		src/ros_client/knowrob_client.cpp	
+	)
+
+	add_dependencies(
+		knowrob-ros-cli
+		${catkin_EXPORTED_TARGETS}
+	)
+
+	target_link_libraries(
+		knowrob-ros-cli
+		${catkin_LIBRARIES}
+	)
+
+	install(
+  		TARGETS knowrob-ros-cli
+  		LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	)
+
+	## Test node for the client library
+	add_executable(
+		client-node
+		src/ros_client/client_node.cpp
+	)
+
+	add_dependencies(
+		client-node
+		${catkin_EXPORTED_TARGETS}
+	)
+
+	target_link_libraries(
+		client-node
+		knowrob-ros-cli
+		${catkin_LIBRARIES}
+	)
+
+
 endif()
 
 ##############
