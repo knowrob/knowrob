@@ -1,4 +1,4 @@
-#include "knowrob/ros/tf/republisher.h"
+#include "knowrob/reasoner/tf/republisher.h"
 #include <std_msgs/Float64.h>
 
 #define CLEAR_MEMORY_AFTER_PUBLISH 0

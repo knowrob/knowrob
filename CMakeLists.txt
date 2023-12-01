@@ -242,7 +242,10 @@ add_library(knowrob_qa SHARED
         src/queries/EDBStage.cpp
         src/queries/QueryStage.cpp
         src/queries/IDBStage.cpp
-        src/queries/QueryPipeline.cpp)
+        src/queries/QueryPipeline.cpp
+		include/knowrob/reasoner/ComputableReasoner.h
+		src/reasoner/ComputableReasoner.cpp
+)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
@@ -274,7 +277,8 @@ if (catkin_FOUND)
             src/reasoner/tf/memory.cpp
             src/reasoner/tf/logger.cpp
             src/reasoner/tf/publisher.cpp
-            src/reasoner/tf/republisher.cpp)
+            src/reasoner/tf/republisher.cpp
+			src/reasoner/tf/TFReasoner.cpp)
 	target_link_libraries(tf_knowrob
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

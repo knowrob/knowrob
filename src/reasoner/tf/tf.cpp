@@ -1,8 +1,8 @@
 
-#include "knowrob/ros/tf/memory.h"
-#include "knowrob/ros/tf/logger.h"
-#include "knowrob/ros/tf/publisher.h"
-#include "knowrob/ros/tf/republisher.h"
+#include "knowrob/reasoner/tf/memory.h"
+#include "knowrob/reasoner/tf/logger.h"
+#include "knowrob/reasoner/tf/publisher.h"
+#include "knowrob/reasoner/tf/republisher.h"
 
 static ros::NodeHandle node;
 static TFMemory memory;

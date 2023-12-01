@@ -9,12 +9,11 @@
 #ifndef KNOWROB_TF_REASONER_H
 #define KNOWROB_TF_REASONER_H
 
-// KnowRob
-#include <knowrob/reasoner/prolog/PrologReasoner.h>
+#include "knowrob/reasoner/ComputableReasoner.h"
 
 namespace knowrob {
 
-	class TFReasoner : public knowrob::Reasoner {
+	class TFReasoner : public ComputableReasoner {
 	public:
         /**
          * @param reasonerID a knowledge base identifier of this reasoner.
@@ -22,9 +21,6 @@ namespace knowrob {
         explicit TFReasoner(std::string reasonerID);
 
         ~TFReasoner() override;
-
-        // Override IReasoner
-        bool loadConfiguration(const ReasonerConfiguration &cfg) override;
 
         // Override IReasoner
         void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
@@ -41,6 +37,9 @@ namespace knowrob {
 
         // Override IReasoner
         bool loadDataSourceWithUnknownFormat(const DataSourcePtr &dataFile) override;
+
+		static void tfGetPose(const std::shared_ptr<knowrob::RDFLiteral> &literal,
+					   const std::shared_ptr<AnswerStream::Channel> &outputChannel);
 
 
     protected:
