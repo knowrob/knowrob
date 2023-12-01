@@ -40,6 +40,7 @@ private:
     bool m_verbose;
 
     double m_query_timeout;
+    ros::Duration m_dur_query_timeout;
 
     std::shared_ptr<askOneClient> m_actCli_ask_one;
     std::shared_ptr<askAllClient> m_actCli_ask_all;

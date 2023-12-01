@@ -4,7 +4,8 @@ KnowrobClient::KnowrobClient() :
     m_logger_prefix("[KR-RC]\t"),
     m_is_initialized(false),
     m_verbose(false),
-    m_query_timeout(0.0)
+    m_query_timeout(0.0),
+    m_dur_query_timeout(0.0)
 {
     ros::NodeHandle prvt_nh("~");
     prvt_nh.param("logger_prefix", m_logger_prefix, std::string("[KR-RC]\t"));
@@ -22,6 +23,7 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
 
     prvt_nh.param("query_timeout", m_query_timeout, 0.0);
     ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Query timeout is set to " << m_query_timeout << "s");
+    m_dur_query_timeout = ros::Duration(m_query_timeout);
 
     double action_server_timeout = 0.0;
     prvt_nh.param("action_server_timeout", action_server_timeout, 1.0);
@@ -46,7 +48,6 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
             ROS_ERROR_STREAM(m_logger_prefix << "Timeout while waiting for the ask one action server!"); 
             return false;
         }
-        ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
     }   
 
     // ASK ALL
@@ -68,7 +69,6 @@ bool KnowrobClient::initialize(ros::NodeHandle &nh)
             ROS_ERROR_STREAM(m_logger_prefix << "Timeout while waiting for the ask all action server!"); 
             return false;
         }
-        ROS_INFO_STREAM(m_logger_prefix << "Server is ready!");
     }
 
     // ASK INCREMENTAL
@@ -141,7 +141,7 @@ std::string KnowrobClient::getAnswerText(const KnowrobAnswer& answer) const
     int i = 0;
     for(auto& elem : answer.substitution)
     {
-        ss << "[" << i << "]" << "\t" 
+        ss << "[" << i++ << "]" << "\t" 
            << "[Key]=" << elem.key << "\t"
            << "[Value]=";
 
@@ -223,7 +223,7 @@ bool KnowrobClient::askOne(const KnowrobQuery &knowrob_query,
     // send the goal and wait for an answer
     m_actCli_ask_one->sendGoal(action_goal);
 
-    if(m_actCli_ask_one->waitForResult())
+    if(m_actCli_ask_one->waitForResult(m_dur_query_timeout))
     {
         ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Action finished!");
     }   
@@ -269,7 +269,7 @@ bool KnowrobClient::askAll(const KnowrobQuery &knowrob_query,
     // send the goal and wait for an answer
     m_actCli_ask_all->sendGoal(action_goal);
 
-    if(m_actCli_ask_all->waitForResult())
+    if(m_actCli_ask_all->waitForResult(m_dur_query_timeout))
     {
         ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Action finished!");
     }   
@@ -286,7 +286,7 @@ bool KnowrobClient::askAll(const KnowrobQuery &knowrob_query,
 
     if(!knowrob_answers.size())
     {
-        ROS_ERROR_STREAM(m_logger_prefix << "Ask All - Answers vector is empty!");
+        ROS_WARN_STREAM(m_logger_prefix << "Ask All - Answers vector is empty!");
         return false;
     }
 
@@ -322,7 +322,7 @@ bool KnowrobClient::tell(const KnowrobQuery &knowrob_query)
     // send the goal and wait for an answer
     m_actCli_tell->sendGoal(action_goal);
 
-    if(m_actCli_tell->waitForResult())
+    if(m_actCli_tell->waitForResult(m_dur_query_timeout))
     {
         ROS_INFO_STREAM_COND(m_verbose, m_logger_prefix << "Action finished!");
     }   
