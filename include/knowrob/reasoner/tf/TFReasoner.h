@@ -26,23 +26,18 @@ namespace knowrob {
         void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
 
         // Override IReasoner
-        std::shared_ptr<PredicateDescription> getPredicateDescription(
-                const std::shared_ptr<PredicateIndicator> &indicator) override;
-
-        // Override IReasoner
         unsigned long getCapabilities() const override;
 
-        // Override IReasoner
-        AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) override;
-
-        // Override IReasoner
-        bool loadDataSourceWithUnknownFormat(const DataSourcePtr &dataFile) override;
+		// Override IReasoner
+		bool loadConfiguration(const ReasonerConfiguration &cfg) override;
 
 		static void tfGetPose(const std::shared_ptr<knowrob::RDFLiteral> &literal,
 					   const std::shared_ptr<AnswerStream::Channel> &outputChannel);
 
 
     protected:
+		void tfMemClear(const std::shared_ptr<knowrob::RDFLiteral> &literal,
+						const std::shared_ptr<AnswerStream::Channel> &outputChannel);
 	};
 
 } // knowrob

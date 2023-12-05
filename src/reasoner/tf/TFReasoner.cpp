@@ -27,40 +27,50 @@ double time_threshold=-1.0;
 std::string logger_db_name="roslog";
 
 // make reasoner type accessible
-// KNOWROB_BUILTIN_REASONER("TF", TFReasoner)
+KNOWROB_BUILTIN_REASONER("TF", TFReasoner)
 
 // map of functors to corresponding map
-std::map<std::string, computableFunc> COMPUTABLES;
+std::map<std::string, computableFunc> COMPUTABLES = {
+		{"is_at",&knowrob::TFReasoner::tfGetPose},
+		{"tf_get_pose",&knowrob::TFReasoner::tfGetPose}
+};
 
 TFReasoner::TFReasoner(std::string reasonerID)
 {
-	COMPUTABLES["is_at"] = &knowrob::TFReasoner::tfGetPose;
 	functors = COMPUTABLES;
 }
 
-bool loadConfiguration(const ReasonerConfiguration &cfg)  { return true; }
-void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) {}
-unsigned long getCapabilities() { return CAPABILITY_TOP_DOWN_EVALUATION; };
+void TFReasoner::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) {}
+unsigned long TFReasoner::getCapabilities() const {return CAPABILITY_TOP_DOWN_EVALUATION;}
 
-AnswerBufferPtr TFReasoner::submitQuery(const RDFLiteralPtr &literal, int queryFlags) {
-	bool sendEOS = true;
-	auto answerBuffer = std::make_shared<AnswerBuffer>();
-	auto outputChannel = AnswerStream::Channel::create(answerBuffer);
+// Load the settings specified for this reasoner
+// TODO: Maybe have a format to express for reasoners what
+// the avaiable fields are?  E.g. README.md
+bool TFReasoner::loadConfiguration(const ReasonerConfiguration &cfg)  {
 
-	auto p = std::static_pointer_cast<StringTerm>(literal->propertyTerm()) ;
-
-	computableFunc f = functors[p->value()];
-	(*f)(literal, outputChannel);
-
-	if (p->value() == "is_at")  {
-		tfGetPose(literal, outputChannel);
-	} else if (p->value() == "tf_get_pose") {
-		tfGetPose(literal, outputChannel);
+	// load properties into the reasoner module.
+	// this is needed mainly for the `reasoner_setting/2` that provides reasoner instance specific settings.
+	for(auto &pair : cfg.settings) {
+		std::stringstream key;
+		key << pair.first;
+		if(key.str() == "log_tf", pair.second->type() == TermType::INT32) {
+			auto intTerm = (Integer32Term*) pair.second.get();
+			if (intTerm->value()) {
+				tf_logger = new TFLogger(node,memory);
+				tf_logger->set_db_name(logger_db_name);
+				tf_logger->set_time_threshold(time_threshold);
+				tf_logger->set_vectorial_threshold(vectorial_threshold);
+				tf_logger->set_angular_threshold(angular_threshold);
+			}
+		}
 	}
 
-	outputChannel->push(AnswerStream::eos());
-	return answerBuffer;
+	return true;
 }
+
+
+
+// Functions for the computables of this reasoner
 
 void TFReasoner::tfGetPose(const std::shared_ptr<knowrob::RDFLiteral> &literal,
 						   const std::shared_ptr<AnswerStream::Channel> &outputChannel) {
@@ -73,5 +83,9 @@ void TFReasoner::tfGetPose(const std::shared_ptr<knowrob::RDFLiteral> &literal,
 		auto v = *literal->objectTerm()->getVariables().begin();
 		answer->substitution()->set(*v, std::make_shared<StringTerm>((char*) pose_term));
 	}
+}
 
+void TFReasoner::tfMemClear(const std::shared_ptr<knowrob::RDFLiteral> &literal,
+						   const std::shared_ptr<AnswerStream::Channel> &outputChannel) {
+	memory.clear();
 }

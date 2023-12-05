@@ -22,6 +22,20 @@ namespace knowrob {
 		}
 	}
 
+	AnswerBufferPtr ComputableReasoner::submitQuery(const RDFLiteralPtr &literal, int queryFlags) {
+		bool sendEOS = true;
+		auto answerBuffer = std::make_shared<AnswerBuffer>();
+		auto outputChannel = AnswerStream::Channel::create(answerBuffer);
+
+		auto p = std::static_pointer_cast<StringTerm>(literal->propertyTerm()) ;
+
+		computableFunc f = functors[p->value()];
+		(*f)(literal, outputChannel);
+
+		outputChannel->push(AnswerStream::eos());
+		return answerBuffer;
+	}
+
 
 
 } // knowrob

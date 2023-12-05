@@ -273,8 +273,7 @@ if (catkin_FOUND)
 
 #	### TF messages ###
 	add_library(tf_knowrob SHARED
-            src/reasoner/tf/tf.cpp
-            src/reasoner/tf/memory.cpp
+			src/reasoner/tf/memory.cpp
             src/reasoner/tf/logger.cpp
             src/reasoner/tf/publisher.cpp
             src/reasoner/tf/republisher.cpp

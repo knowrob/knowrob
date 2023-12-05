@@ -32,6 +32,9 @@ namespace knowrob {
 		std::shared_ptr<PredicateDescription> getPredicateDescription(
 				const std::shared_ptr<PredicateIndicator> &indicator) override;
 
+		// Override IReasoner
+		AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) override;
+
 	protected:
 		// Map of provided functors to implemented functions
 		std::map<std::string, computableFunc> functors;
