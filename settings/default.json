@@ -29,6 +29,12 @@
       "type": "Mongolog",
       "name": "mongolog",
       "data-backend": "mongodb"
+    },
+    {
+      "lib" : "/home/sascha/knowrob_ws/devel/lib/libtf_knowrob.so",
+      "type": "TF",
+      "name": "tf",
+      "log_tf_topic": true
     }
   ]
 }

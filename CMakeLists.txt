@@ -277,11 +277,13 @@ if (catkin_FOUND)
             src/reasoner/tf/logger.cpp
             src/reasoner/tf/publisher.cpp
             src/reasoner/tf/republisher.cpp
-			src/reasoner/tf/TFReasoner.cpp)
+			src/reasoner/tf/TFReasoner.cpp
+	)
 	target_link_libraries(tf_knowrob
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
-		${catkin_LIBRARIES})
+		${catkin_LIBRARIES}
+	)
 	add_dependencies(tf_knowrob
 		${${PROJECT_NAME}_EXPORTED_TARGETS}
 		${catkin_EXPORTED_TARGETS})
@@ -342,4 +344,6 @@ target_link_libraries(all_gtests
 #		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
 
 install(DIRECTORY src/reasoner/prolog DESTINATION share
+		PATTERN ".cpp" EXCLUDE)
+install(DIRECTORY src/reasoner/tf DESTINATION share
 		PATTERN ".cpp" EXCLUDE)

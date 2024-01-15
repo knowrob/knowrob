@@ -27,7 +27,7 @@ double time_threshold=-1.0;
 std::string logger_db_name="roslog";
 
 // make reasoner type accessible
-KNOWROB_BUILTIN_REASONER("TF", TFReasoner)
+REASONER_PLUGIN("","")
 
 // map of functors to corresponding map
 std::map<std::string, computableFunc> COMPUTABLES = {
