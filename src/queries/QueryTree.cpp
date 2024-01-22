@@ -336,13 +336,33 @@ TEST_F(QueryTreeTest, Conjunction_pq)
     QueryTree qt(p_ & q_);
     EXPECT_EQ(qt.numPaths(), 1);
     if(qt.numPaths()==1) {
-        auto &path = qt.paths().front();
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 2);
+            int flags = 0;
+            if(path.numLiterals() == 2) {
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE(lit->isNegated());
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flags |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flags |= 2;
+                    }
+                }
+                EXPECT_EQ(flags, 3);
+            }
+        }
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
             EXPECT_TRUE(!lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
@@ -351,13 +371,36 @@ TEST_F(QueryTreeTest, Conjunction_pqr)
     QueryTree qt(~p_ & q_ & r_);
     EXPECT_EQ(qt.numPaths(), 1);
     if(qt.numPaths()==1) {
-        auto &path = qt.paths().front();
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 3);
+            if(path.numLiterals() == 3) {
+                int flags = 0;
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE((lit->isNegated()) && ("p" != lit->functor()));
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flags |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flags |= 2;
+                    }
+                    if("r" == lit->functor()) {
+                        flags |= 4;
+                    }
+                }
+                EXPECT_EQ(flags, 7);
+            }
+        }
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 3);
         if(path.numLiterals() == 3) {
             auto &lit = path.literals().front();
             EXPECT_TRUE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
@@ -366,13 +409,33 @@ TEST_F(QueryTreeTest, Disjunction_pq)
     QueryTree qt(p_ | q_);
     EXPECT_EQ(qt.numPaths(), 2);
     if(qt.numPaths()==2) {
-        auto &path = qt.paths().front();
+        int flags = 0;
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 1);
+            if(path.numLiterals() == 1) {
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE(lit->isNegated());
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flags |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flags |= 2;
+                    }
+                }
+            }
+        }
+        EXPECT_EQ(flags, 3);
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
             EXPECT_FALSE(lit->isNegated());
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
@@ -381,12 +444,35 @@ TEST_F(QueryTreeTest, Disjunction_pqr)
     QueryTree qt(~p_ | q_ | r_);
     EXPECT_EQ(qt.numPaths(), 3);
     if(qt.numPaths()==3) {
-        auto &path = qt.paths().front();
+        int flags = 0;
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 1);
+            if(path.numLiterals() == 1) {
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE((lit->isNegated()) && ("p" != lit->functor()));
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flags |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flags |= 2;
+                    }
+                    if("r" == lit->functor()) {
+                        flags |= 4;
+                    }
+                }
+            }
+        }
+        EXPECT_EQ(flags, 7);
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 1);
         if(path.numLiterals() == 1) {
             auto &lit = path.literals().front();
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
@@ -395,12 +481,51 @@ TEST_F(QueryTreeTest, AndOr)
     QueryTree qt((p_ | ~r_) & (q_ | r_));
     EXPECT_EQ(qt.numPaths(), 4);
     if(qt.numPaths()==4) {
-        auto &path = qt.paths().front();
+        int flags = 0;
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            int flagsP = 0;
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 2);
+            if(path.numLiterals() == 2) {
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE((lit->isNegated()) && ("r" != lit->functor()));
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flagsP |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flagsP |= 2;
+                    }
+                    if(("r" == lit->functor()) && (lit->isNegated())) {
+                        flagsP |= 4;
+                    }
+                    if(("r" == lit->functor()) && (!lit->isNegated())) {
+                        flagsP |= 8;
+                    }
+                }
+                if(3 == flagsP) { //pq
+                    flags |= 1;
+                }
+                if(9 == flagsP) { //pr
+                    flags |= 2;
+                }
+                if(6 == flagsP) { //-rq
+                    flags |= 4;
+                }
+                if(12 == flagsP) { //-rr
+                    flags |= 8;
+                }
+            }
+        }
+        EXPECT_EQ(flags, 15);
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
@@ -409,12 +534,45 @@ TEST_F(QueryTreeTest, OrAnd)
     QueryTree qt((p_ & ~r_) | (q_ & r_));
     EXPECT_EQ(qt.numPaths(), 2);
     if(qt.numPaths()==2) {
-        auto &path = qt.paths().front();
+        int flags = 0;
+        for(auto pathIt = qt.paths().begin(); pathIt != qt.paths().end(); pathIt++) {
+            int flagsP = 0;
+            auto path = *pathIt;
+            EXPECT_EQ(path.numLiterals(), 2);
+            if(path.numLiterals() == 2) {
+                for(auto litIt = path.literals().begin(); litIt != path.literals().end(); litIt++) {
+                    auto lit = *litIt;
+                    EXPECT_FALSE((lit->isNegated()) && ("r" != lit->functor()));
+                    EXPECT_TRUE(*lit->label() == *emptyLabel());
+                    if("p" == lit->functor()) {
+                        flagsP |= 1;
+                    }
+                    if("q" == lit->functor()) {
+                        flagsP |= 2;
+                    }
+                    if(("r" == lit->functor()) && (lit->isNegated())) {
+                        flagsP |= 4;
+                    }
+                    if(("r" == lit->functor()) && (!lit->isNegated())) {
+                        flagsP |= 8;
+                    }
+                }
+                if(5 == flagsP) { //p-r
+                    flags |= 1;
+                }
+                if(10 == flagsP) { //qr
+                    flags |= 2;
+                }
+            }
+        }
+        EXPECT_EQ(flags, 3);
+        /*auto &path = qt.paths().front();
         EXPECT_EQ(path.numLiterals(), 2);
         if(path.numLiterals() == 2) {
             auto &lit = path.literals().front();
             EXPECT_TRUE(*lit->label() == *emptyLabel());
         }
+        */
     }
 }
 
