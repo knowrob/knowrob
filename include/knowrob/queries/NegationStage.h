@@ -7,6 +7,8 @@
 
 #include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/reasoner/ReasonerManager.h"
+#include "knowrob/KnowledgeBase.h"
+#include "knowrob/formulas/ModalFormula.h"
 
 namespace knowrob {
 	/**
@@ -15,18 +17,36 @@ namespace knowrob {
 	 */
 	class NegationStage : public AnswerBroadcaster {
 	public:
-		NegationStage(const std::shared_ptr<KnowledgeGraph> &kg,
-					  const std::shared_ptr<ReasonerManager> &reasonerManager,
-					  const std::vector<RDFLiteralPtr> &negativeLiterals);
-
-		bool succeeds(const AnswerPtr &answer);
+		NegationStage(KnowledgeBase *kb, QueryContextPtr ctx);
 
 	protected:
-		std::shared_ptr<KnowledgeGraph> kg_;
-		std::shared_ptr<ReasonerManager> reasonerManager_;
-		const std::vector<RDFLiteralPtr> negativeLiterals_;
+		KnowledgeBase *kb_;
+		const QueryContextPtr ctx_;
 
 		void pushToBroadcast(const AnswerPtr &msg) override;
+		virtual bool succeeds(const AnswerPtr &answer) = 0;
+	};
+
+	class LiteralNegationStage : public NegationStage {
+	public:
+		LiteralNegationStage(KnowledgeBase *kb,
+		                     const QueryContextPtr &ctx,
+		                     const std::vector<RDFLiteralPtr> &negatedLiterals);
+
+	protected:
+		const std::vector<RDFLiteralPtr> negatedLiterals_;
+		bool succeeds(const AnswerPtr &answer) override;
+	};
+
+	class ModalNegationStage : public NegationStage {
+	public:
+		ModalNegationStage(KnowledgeBase *kb,
+						   const QueryContextPtr &ctx,
+						   const std::vector<std::shared_ptr<ModalFormula>> &negatedModals);
+
+	protected:
+		const std::vector<std::shared_ptr<ModalFormula>> negatedModals_;
+		bool succeeds(const AnswerPtr &answer) override;
 	};
 
 } // knowrob

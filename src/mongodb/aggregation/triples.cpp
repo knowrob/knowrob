@@ -232,10 +232,10 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral 
     static auto zero = std::make_shared<Integer32Term>(0);
     auto ct = tripleExpression.confidenceTerm();
     auto at = tripleExpression.agentTerm();
-    auto op = tripleExpression.label()->epistemicOperator();
+    auto op = tripleExpression.epistemicOperator();
 
     // enforce that uncertain=false in case knowledge modality is selected in query
-    if(op && op->isModalNecessity()) {
+    if(op && op.value() == EpistemicOperator::KNOWLEDGE) {
         // note: null value of "uncertain" field is seen as value "false"
         aggregation::appendTermQuery(
                     selectorDoc,
@@ -290,13 +290,13 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &trip
     static auto b_always = std::make_shared<Integer32Term>(static_cast<int32_t>(false));
     auto bt = tripleExpression.beginTerm();
     auto et = tripleExpression.endTerm();
+    auto op = tripleExpression.temporalOperator();
 
     // matching must be done depending on temporal operator:
     // - H: bt >= since_H && et <= until_H
     // - P: et >= since_H && bt <= until_H
     // - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-    auto &label = tripleExpression.label();
-    if(label->isAboutSomePast()) {
+    if(op && op.value() == TemporalOperator::SOMETIMES) {
         // just swap bt/et (see above comment)
         auto swap = bt;
         bt = et;

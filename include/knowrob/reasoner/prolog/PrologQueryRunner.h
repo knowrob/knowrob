@@ -36,17 +36,17 @@ namespace knowrob {
             const uint32_t queryID;
             std::shared_ptr<StringTerm> queryModule;
             std::shared_ptr<const Query> goal;
-            std::shared_ptr<ModalityLabel> label;
+			GraphSelector graphSelector;
             functor_t callFunctor;
             Request(const std::shared_ptr<const Query> &goal,
                     functor_t callFunctor,
                     const std::shared_ptr<StringTerm> &queryModule,
-                    const std::shared_ptr<ModalityLabel> &label,
+                   const GraphSelector &graphSelector,
                     uint32_t queryID=0)
                     : queryID(queryID),
                       queryModule(queryModule),
                       goal(goal),
-                      label(label),
+                      graphSelector(graphSelector),
                       callFunctor(callFunctor) {};
         };
 

@@ -290,7 +290,8 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 
 std::shared_ptr<ModalQuery> PrologQuery::toQuery(const std::shared_ptr<Term> &t)
 {
-	return std::make_shared<ModalQuery>(toFormula(t), Query::defaultFlags());
+	auto ctx = std::make_shared<QueryContext>(Query::defaultFlags());
+	return std::make_shared<ModalQuery>(toFormula(t), ctx);
 }
 
 TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT

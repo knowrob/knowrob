@@ -11,11 +11,11 @@
 
 namespace knowrob {
 
-    class EDBStage : public QueryStage {
+    class EDBStage : public LiteralQueryStage {
     public:
         EDBStage(KnowledgeGraphPtr edb,
                  const RDFLiteralPtr &literal,
-                 int queryFlags);
+                 const QueryContextPtr &ctx);
 
     protected:
         KnowledgeGraphPtr edb_;

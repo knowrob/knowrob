@@ -16,6 +16,7 @@
 #include "ThreadPool.h"
 #include "knowrob/queries/DependencyGraph.h"
 #include "knowrob/queries/QueryPipeline.h"
+#include "knowrob/queries/QueryContext.h"
 
 namespace knowrob {
     enum QueryFlag {
@@ -99,7 +100,7 @@ namespace knowrob {
          * @param query a literal
          * @return a stream of query results
          */
-        AnswerBufferPtr submitQuery(const LiteralPtr &query, int queryFlags);
+        AnswerBufferPtr submitQuery(const LiteralPtr &query, const QueryContextPtr &ctx);
 
         /**
          * Evaluate a query represented as a Formula.
@@ -107,7 +108,7 @@ namespace knowrob {
          * @param query a formula
          * @return a stream of query results
          */
-        AnswerBufferPtr submitQuery(const FormulaPtr &query, int queryFlags);
+        AnswerBufferPtr submitQuery(const FormulaPtr &query, const QueryContextPtr &ctx);
 
 		auto& reasonerManager() const { return reasonerManager_; }
 
@@ -126,7 +127,7 @@ namespace knowrob {
             const std::vector<RDFComputablePtr> &computableLiterals,
             const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
             const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
-            int queryFlags);
+            const QueryContextPtr &ctx);
 	};
 
     using KnowledgeBasePtr = std::shared_ptr<KnowledgeBase>;

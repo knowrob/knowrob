@@ -11,8 +11,8 @@
 
 using namespace knowrob;
 
-ModalQuery::ModalQuery(const std::shared_ptr<Formula> &formula, int flags)
-: Query(flags), formula_(formula)
+ModalQuery::ModalQuery(const std::shared_ptr<Formula> &formula, const QueryContextPtr &ctx)
+: Query(ctx), formula_(formula)
 {
 }
 
@@ -22,7 +22,7 @@ std::shared_ptr<ModalQuery> ModalQuery::applySubstitution(const Substitution &su
 		formula_->isGround() ?
 		formula_ :
 		formula_->applySubstitution(sub),
-		flags_
+		ctx_
 	);
 }
 

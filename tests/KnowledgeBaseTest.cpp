@@ -34,7 +34,7 @@ public:
 		}
 	}
 
-	AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) override {
+	AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override {
 		auto answerBuffer = std::make_shared<AnswerBuffer>();
 		auto outputChannel = AnswerStream::Channel::create(answerBuffer);
 		auto answer = std::make_shared<Answer>();
@@ -82,9 +82,9 @@ void KnowledgeBaseTest::SetUpTestSuite() {
 		"r2", std::make_shared<TestReasoner>("q", "x", "y"));
 }
 
-static std::vector<SubstitutionPtr> lookup(const std::string &queryString, QueryFlag qflag) {
+static std::vector<SubstitutionPtr> lookup(const std::string &queryString, const QueryContextPtr &ctx) {
 	auto answerStream = KnowledgeBaseTest::kb_->submitQuery(
-			QueryParser::parse(queryString), qflag);
+			QueryParser::parse(queryString), ctx);
 	auto answerQueue = answerStream->createQueue();
 	std::vector<SubstitutionPtr> out;
 	while(true) {
@@ -96,12 +96,14 @@ static std::vector<SubstitutionPtr> lookup(const std::string &queryString, Query
 }
 
 static std::vector<SubstitutionPtr> lookupAll(const std::string &queryString) {
-    return lookup(queryString, QUERY_FLAG_ALL_SOLUTIONS);
+	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
+    return lookup(queryString, ctx);
 
 }
 
 static std::vector<SubstitutionPtr> lookupOne(const std::string &queryString) {
-    return lookup(queryString, QUERY_FLAG_ONE_SOLUTION);
+	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
+    return lookup(queryString, ctx);
 
 }
 
@@ -130,15 +132,6 @@ TEST_F(KnowledgeBaseTest, atomic_EDB) {
 	EXPECT_EQ(lookupAll("swrl_test:hasSibling(swrl_test:Lea, X)").size(), 0);
 	EXPECT_EQ(lookupAll("swrl_test:hasSibling(X, swrl_test:Ernest)").size(), 1);
 	EXPECT_EQ(lookupAll("swrl_test:hasSibling(swrl_test:Fred, swrl_test:Ernest)").size(), 1);
-}
-
-TEST_F(KnowledgeBaseTest, modal_EDB) {
-	EXPECT_EQ(lookupAll("B swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
-	EXPECT_EQ(*lookupAll("B swrl_test:hasSibling(swrl_test:Fred, X)")[0]->get("X"),
-	          *QueryParser::parseConstant("swrl_test:Ernest"));
-	EXPECT_EQ(lookupAll("K swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
-	EXPECT_EQ(*lookupAll("K swrl_test:hasSibling(swrl_test:Fred, X)")[0]->get("X"),
-	          *QueryParser::parseConstant("swrl_test:Ernest"));
 }
 
 TEST_F(KnowledgeBaseTest, conjunctive_EDB) {
@@ -196,6 +189,16 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 	const auto queryString = "p(Ernest,X) , q(X,Y)";
 	EXPECT_EQ(lookupAll(queryString).size(), 1);
 	EXPECT_EQ(*lookupAll(queryString)[0]->get("Y"), StringTerm("y"));
+}
+
+TEST_F(KnowledgeBaseTest, modal_EDB) {
+	EXPECT_EQ(lookupAll("swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+	EXPECT_EQ(lookupAll("K swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+	EXPECT_EQ(*lookupAll("K swrl_test:hasSibling(swrl_test:Fred, X)")[0]->get("X"),
+	          *QueryParser::parseConstant("swrl_test:Ernest"));
+	EXPECT_EQ(lookupAll("B swrl_test:hasSibling(swrl_test:Fred, X)").size(), 1);
+	EXPECT_EQ(*lookupAll("B swrl_test:hasSibling(swrl_test:Fred, X)")[0]->get("X"),
+	          *QueryParser::parseConstant("swrl_test:Ernest"));
 }
 
 TEST_F(KnowledgeBaseTest, ask_one) {

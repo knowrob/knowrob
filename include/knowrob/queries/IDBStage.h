@@ -10,12 +10,12 @@
 
 namespace knowrob {
 
-    class IDBStage : public QueryStage {
+    class IDBStage : public LiteralQueryStage {
     public:
         IDBStage(const std::shared_ptr<Reasoner> &reasoner,
                  const RDFLiteralPtr &literal,
                  const std::shared_ptr<ThreadPool> &threadPool,
-                 int queryFlags);
+                 const QueryContextPtr &ctx);
 
     protected:
         std::shared_ptr<Reasoner> reasoner_;

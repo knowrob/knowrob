@@ -9,7 +9,6 @@
 #ifndef KNOWROB_DEPENDENCY_GRAPH_H
 #define KNOWROB_DEPENDENCY_GRAPH_H
 
-#include "knowrob/modalities/ModalityLabel.h"
 #include "knowrob/formulas/Literal.h"
 
 namespace knowrob {

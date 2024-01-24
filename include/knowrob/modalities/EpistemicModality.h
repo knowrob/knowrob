@@ -8,6 +8,7 @@
 #include "knowrob/Logger.h"
 #include "Modality.h"
 #include "knowrob/terms/Constant.h"
+#include "knowrob/semweb/Agent.h"
 
 #include <utility>
 
@@ -26,7 +27,7 @@ namespace knowrob {
 
         explicit EpistemicModality(const std::string_view &agent);
 
-        const std::optional<std::string>& agent() const;
+        const std::optional<AgentPtr>& agent() const;
 
         ModalityType modalityType() const override;
 
@@ -35,7 +36,7 @@ namespace knowrob {
         const char* possibility_symbol() const override;
 
     protected:
-        const std::optional<std::string> agent_;
+        const std::optional<AgentPtr> agent_;
     };
 
 } // knowrob

@@ -10,15 +10,15 @@
 
 using namespace knowrob;
 
-GraphQuery::GraphQuery(const std::vector<RDFLiteralPtr> &literals, int flags)
-: Query(flags),
+GraphQuery::GraphQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx)
+: Query(ctx),
   literals_(literals)
 {
     init();
 }
 
-GraphQuery::GraphQuery(const RDFLiteralPtr &literal, int flags)
-: Query(flags),
+GraphQuery::GraphQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
+: Query(ctx),
   literals_({literal})
 {
     init();
@@ -53,7 +53,6 @@ const FormulaPtr& GraphQuery::formula() const
 
 std::ostream& GraphQuery::print(std::ostream &os) const
 {
-    // TODO: also print ModalFrame
     os << *formula();
     return os;
 }
