@@ -38,6 +38,7 @@ namespace knowrob {
         const ModalOperatorPtr modalOperator_;
 
         ModalFormula(const ModalFormula &other, const Substitution &sub);
+		bool isEqual(const Formula &other) const override;
     };
 
     namespace modality {

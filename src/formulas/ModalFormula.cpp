@@ -23,6 +23,13 @@ ModalFormula::ModalFormula(const ModalFormula &other, const Substitution &sub)
 {
 }
 
+bool ModalFormula::isEqual(const Formula &other) const
+{
+	const auto &x = static_cast<const ModalFormula&>(other); // NOLINT
+	return (*modalOperator()) == (*x.modalOperator()) &&
+	       (*modalFormula()) == (*x.modalFormula());
+}
+
 std::shared_ptr<Formula> ModalFormula::applySubstitution(const Substitution &sub) const
 {
     return std::shared_ptr<ModalFormula>(new ModalFormula(*this, sub));

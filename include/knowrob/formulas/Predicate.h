@@ -170,6 +170,7 @@ namespace knowrob {
 		VariableSet getVariables1() const;
 		// Override Term
 		bool isEqual(const Term &other) const override;
+		bool isEqual(const Formula &other) const override;
 		
 		static std::vector<TermPtr> applySubstitution(
 			const std::vector<TermPtr> &in,

@@ -21,6 +21,23 @@ Conjunction::Conjunction(const Conjunction &other, const Substitution &sub)
 {
 }
 
+bool Conjunction::isEqual(const Formula &other) const
+{
+	const auto &x = static_cast<const Conjunction&>(other); // NOLINT
+	if(formulae_.size() != x.formulae_.size()) return false;
+	for(auto &y1 : formulae_) {
+		bool hasEqual=false;
+		for(auto &y2 : x.formulae_) {
+			if(*y1 == *y2) {
+				hasEqual = true;
+				break;
+			}
+		}
+		if(!hasEqual) return false;
+	}
+	return true;
+}
+
 FormulaPtr Conjunction::applySubstitution(const Substitution &sub) const
 {
 	return std::shared_ptr<Conjunction>(

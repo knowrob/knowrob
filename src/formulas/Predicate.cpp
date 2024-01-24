@@ -78,6 +78,11 @@ Predicate::Predicate(
 {
 }
 
+bool Predicate::isEqual(const Formula &other) const {
+	const Term &x = static_cast<const Predicate&>(other); // NOLINT
+	return isEqual(x);
+}
+
 bool Predicate::isEqual(const Term& other) const {
 	const auto &x = static_cast<const Predicate&>(other); // NOLINT
     if(*indicator() == *x.indicator() && arguments_.size() == x.arguments_.size()) {

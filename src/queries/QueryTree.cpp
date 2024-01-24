@@ -249,7 +249,7 @@ TEST_F(QueryTreeTest, PositiveLiteral)
     EXPECT_EQ(qt.numPaths(), 1);
     if (qt.numPaths() > 0) {
         auto &path = qt.paths().front();
-        EXPECT_EQ(path.toFormula(), p_);
+        EXPECT_EQ(*path.toFormula(), *p_);
         EXPECT_EQ(path.numNodes(), 1);
     }
 }
@@ -260,7 +260,7 @@ TEST_F(QueryTreeTest, NegativeLiteral)
     EXPECT_EQ(qt.numPaths(), 1);
     if (qt.numPaths() > 0) {
         auto &path = qt.paths().front();
-        //EXPECT_EQ(path.toFormula(), ~p_);
+        EXPECT_EQ(*path.toFormula(), *(~p_));
         EXPECT_EQ(path.numNodes(), 1);
     }
 }
@@ -271,7 +271,7 @@ TEST_F(QueryTreeTest, LiteralWithModality)
     EXPECT_EQ(qt.numPaths(), 1);
     if (qt.numPaths() > 0) {
         auto &path = qt.paths().front();
-        //EXPECT_EQ(path.toFormula(), K(p_));
+        EXPECT_EQ(*path.toFormula(), *K(p_));
         EXPECT_EQ(path.numNodes(), 1);
     }
 }
@@ -282,7 +282,7 @@ TEST_F(QueryTreeTest, NestedModality)
     EXPECT_EQ(qt.numPaths(), 1);
     if (qt.numPaths() > 0) {
         auto &path = qt.paths().front();
-        //EXPECT_EQ(path.toFormula(), K(B(~p_)));
+        EXPECT_EQ(*path.toFormula(), *K(B(~p_)));
         EXPECT_EQ(path.numNodes(), 1);
     }
 }
@@ -294,7 +294,7 @@ TEST_F(QueryTreeTest, Conjunction_pq)
     if(qt.numPaths() > 0) {
         auto &path = qt.paths().front();
         EXPECT_EQ(path.numNodes(), 2);
-        //EXPECT_EQ(path.toFormula(), p_ & q_);
+        EXPECT_EQ(*path.toFormula(), *(p_ & q_));
     }
 }
 
@@ -305,7 +305,7 @@ TEST_F(QueryTreeTest, Conjunction_pqr)
     if(qt.numPaths() > 0) {
         auto &path = qt.paths().front();
         EXPECT_EQ(path.numNodes(), 3);
-        //EXPECT_EQ(path.toFormula(), ~p_ & q_ & r_);
+        EXPECT_EQ(*path.toFormula(), *(~p_ & q_ & r_));
     }
 }
 
@@ -316,7 +316,6 @@ TEST_F(QueryTreeTest, Disjunction_pq)
     if(qt.numPaths() > 0) {
         auto &path = qt.paths().front();
         EXPECT_EQ(path.numNodes(), 1);
-        //EXPECT_EQ(path.toFormula(), p_);
     }
 }
 

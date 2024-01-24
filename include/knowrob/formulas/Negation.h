@@ -28,6 +28,7 @@ namespace knowrob {
 
     protected:
         Negation(const Negation &other, const Substitution &sub);
+		bool isEqual(const Formula &other) const override;
     };
 
     /**

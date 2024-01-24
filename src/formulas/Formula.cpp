@@ -16,6 +16,12 @@ Formula::Formula(const FormulaType &type)
 : type_(type)
 {}
 
+bool Formula::operator==(const Formula& other) const
+{
+	// note: isEqual can safely perform static cast as type id's do match
+	return typeid(*this) == typeid(other) && isEqual(other);
+}
+
 bool Formula::isAtomic() const
 {
 	return type() == FormulaType::PREDICATE;
