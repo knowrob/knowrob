@@ -48,6 +48,9 @@ namespace knowrob {
          */
         auto end() const { return paths_.end(); }
 
+        /**
+         * A node in a QueryTree.
+         */
         class Node {
         public:
             Node(Node *parent, FormulaPtr formula, bool isNegated);

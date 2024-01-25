@@ -11,12 +11,12 @@
 
 namespace knowrob {
 	/**
-	 * Evaluates a formula under a given modality.
+	 * A query stages that evaluates a modal formula.
 	 */
     class ModalStage : public FormulaQueryStage {
     public:
         ModalStage(KnowledgeBase *kb,
-                   const std::shared_ptr<ModalFormula> &modalFormula,
+                   const std::shared_ptr<ModalFormula> &modal,
                    const QueryContextPtr &ctx);
 
     protected:
