@@ -6,6 +6,7 @@
 #define KNOWROB_NEGATED_FORMULA_H
 
 #include "CompoundFormula.h"
+#include "Predicate.h"
 
 namespace knowrob {
     /**

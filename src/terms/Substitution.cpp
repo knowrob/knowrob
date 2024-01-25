@@ -20,6 +20,26 @@ void Reversible::rollBack()
 	}
 }
 
+bool Substitution::operator==(const Substitution &other) const
+{
+	if(mapping_.size() != other.mapping_.size()) {
+		return false;
+	}
+
+	for(auto &x : mapping_) {
+		auto &val1 = x.second;
+		auto &val2 = other.get(x.first);
+		if(val1 && val2) {
+			if(!(*val1 == *val2)) return false;
+		}
+		else if(val1 || val2) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Substitution::set(const Variable &var, const TermPtr &term)
 {
 	mapping_.insert(std::pair<Variable,TermPtr>(var, term));
