@@ -9,7 +9,11 @@
 #include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
-
+	/**
+	 * A query stage that runs an IDB query. It does so by attempting to ground
+	 * literals that appear in the query through a top-down method that perform the
+	 * grounding on the fly through some form of computation.
+	 */
     class IDBStage : public LiteralQueryStage {
     public:
         IDBStage(const std::shared_ptr<Reasoner> &reasoner,

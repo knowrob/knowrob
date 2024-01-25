@@ -10,7 +10,10 @@
 #include "QueryStage.h"
 
 namespace knowrob {
-
+	/**
+	 * A query stage that runs an EDB query. It does so by attempting to ground
+	 * literals that appear in the query in the extensional database.
+	 */
     class EDBStage : public LiteralQueryStage {
     public:
         EDBStage(KnowledgeGraphPtr edb,
