@@ -59,7 +59,7 @@ bool LiteralNegationStage::succeeds(const AnswerPtr &answer)
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
 		for (auto &pair: kb_->reasonerManager()->reasonerPool()) {
 			auto &r = pair.second->reasoner();
-			if (r->canEvaluate(*instance)) {
+			if (r->getLiteralDescription(*instance) != nullptr) {
 				results.push_back(r->submitQuery(instance, ctx_));
 			}
 		}

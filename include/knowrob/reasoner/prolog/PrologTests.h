@@ -47,7 +47,7 @@ namespace knowrob {
 				ss << "prolog" << reasonerIndex_++;
 				r = std::make_shared<T>(ss.str());
                 reasonerManager->addReasoner(ss.str(), r);
-                r->loadConfiguration(knowrob::ReasonerConfiguration());
+				r->loadConfig(knowrob::ReasonerConfig());
 			}
 			return r;
 		}

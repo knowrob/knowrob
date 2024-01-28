@@ -37,13 +37,6 @@ MongologReasoner::MongologReasoner(const std::string &reasonerID)
 MongologReasoner::~MongologReasoner()
 = default;
 
-unsigned long MongologReasoner::getCapabilities() const
-{
-    return CAPABILITY_CONJUNCTIVE_QUERIES |
-           CAPABILITY_DISJUNCTIVE_QUERIES |
-           CAPABILITY_TOP_DOWN_EVALUATION;
-}
-
 bool MongologReasoner::initializeDefaultPackages()
 {
 	static bool initialized = false;
@@ -74,9 +67,9 @@ bool MongologReasoner::initializeDefaultPackages()
 	return true;
 }
 
-bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerConfiguration)
+bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration)
 {
-    if(!PrologReasoner::loadConfiguration(reasonerConfiguration)) return false;
+    if(!PrologReasoner::loadConfig(reasonerConfiguration)) return false;
 
     if(!knowledgeGraph_) {
         knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>("mongodb://localhost:27017", "knowrob", "triples");
@@ -92,9 +85,9 @@ bool MongologReasoner::loadConfiguration(const ReasonerConfiguration &reasonerCo
     return true;
 }
 
-void MongologReasoner::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph)
+void MongologReasoner::setDataBackend(const DataBackendPtr &backend)
 {
-    knowledgeGraph_ = std::dynamic_pointer_cast<MongoKnowledgeGraph>(knowledgeGraph);
+    knowledgeGraph_ = std::dynamic_pointer_cast<MongoKnowledgeGraph>(backend);
     if(!knowledgeGraph_) {
         throw ReasonerError("Unexpected data knowledgeGraph used for Mongolog reasoner. MongoKnowledgeGraph must be used.");
     }
@@ -341,7 +334,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
             }
         }
 
-        mongolog->knowledgeGraph()->insert(tripleData);
+        mongolog->knowledgeGraph()->insertOne(tripleData);
         return true;
     }
     return false;

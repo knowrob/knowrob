@@ -91,8 +91,9 @@ void KnowledgeGraphManager::loadKnowledgeGraph(const boost::property_tree::ptree
 	auto backend = factory->createKnowledgeGraph(backendID);
 	backend->knowledgeGraph()->setThreadPool(threadPool_);
 
-	if(!backend->knowledgeGraph()->loadConfiguration(config)) {
-		KB_WARN("Backend `{}` failed to loadConfiguration.", backendID);
+	ReasonerConfig reasonerConfig(&config);
+	if(!backend->knowledgeGraph()->loadConfig(reasonerConfig)) {
+		KB_WARN("Backend `{}` failed to loadConfig.", backendID);
 	}
 	else {
         addKnowledgeGraph(backend);

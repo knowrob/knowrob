@@ -68,21 +68,14 @@ PrologReasoner::PrologReasoner(std::string reasonerID)
   reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
 {
-    addDataSourceHandler(DataSource::PROLOG_FORMAT, [this]
-            (const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
-    addDataSourceHandler(DataSource::RDF_XML_FORMAT, [this]
-            (const DataSourcePtr &dataFile) { return load_rdf_xml(dataFile->uri()); });
+	addDataHandler(DataSource::PROLOG_FORMAT, [this]
+			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
+	addDataHandler(DataSource::RDF_XML_FORMAT, [this]
+			(const DataSourcePtr &dataFile) { return load_rdf_xml(dataFile->uri()); });
 }
 
 PrologReasoner::~PrologReasoner()
 {
-}
-
-unsigned long PrologReasoner::getCapabilities() const
-{
-	return CAPABILITY_CONJUNCTIVE_QUERIES |
-		   CAPABILITY_DISJUNCTIVE_QUERIES |
-		   CAPABILITY_TOP_DOWN_EVALUATION;
 }
 
 const functor_t& PrologReasoner::callFunctor()
@@ -125,7 +118,7 @@ bool PrologReasoner::initializeGlobalPackages()
                    "user", false);
 }
 
-bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
+bool PrologReasoner::loadConfig(const ReasonerConfig &cfg)
 {
     // call PL_initialize
     initializeProlog();
@@ -163,8 +156,10 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 
 	// load properties into the reasoner module.
 	// this is needed mainly for the `reasoner_setting/2` that provides reasoner instance specific settings.
-	for(auto &pair : cfg.settings) {
-	    setReasonerSetting(pair.first, pair.second);
+	for(auto &pair : cfg) {
+		auto key_t = cfg.createKeyTerm(pair.first, ":");
+		auto val_t = std::make_shared<StringTerm>(pair.second);
+	    setReasonerSetting(key_t, val_t);
 	}
 	// load reasoner default packages. this is usually the code that implements the reasoner.
 	initializeDefaultPackages();
@@ -172,9 +167,17 @@ bool PrologReasoner::loadConfiguration(const ReasonerConfiguration &cfg)
 	return true;
 }
 
-void PrologReasoner::setDataBackend(const KnowledgeGraphPtr &knowledgeGraph)
+void PrologReasoner::setDataBackend(const DataBackendPtr &backend)
 {
     // TODO: think about how data backend of Prolog would be configured
+}
+
+void PrologReasoner::start()
+{
+}
+
+void PrologReasoner::stop()
+{
 }
 
 bool PrologReasoner::setReasonerSetting(const TermPtr &key, const TermPtr &valueString)
@@ -227,8 +230,7 @@ bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact)
 	return eval(std::make_shared<Predicate>(Predicate(assert_f, { fact })));
 }
 
-std::shared_ptr<PredicateDescription> PrologReasoner::getPredicateDescription(
-		const std::shared_ptr<PredicateIndicator> &indicator)
+PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorPtr &indicator)
 {
 	static auto current_predicate_f = std::make_shared<PredicateIndicator>(
 			"reasoner_defined_predicate", 2);

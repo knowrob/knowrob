@@ -17,6 +17,7 @@
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/semweb/ImportHierarchy.h"
+#include "knowrob/DataBackend.h"
 
 namespace knowrob {
     /**
@@ -43,22 +44,13 @@ namespace knowrob {
      * It is supposed to be implemented by different backends
      * that can be used to handle graph data.
      */
-    class KnowledgeGraph {
+	class KnowledgeGraph : public DataBackend {
     public:
         explicit KnowledgeGraph();
 
         KnowledgeGraph(const KnowledgeGraph&) = delete;
 
         ~KnowledgeGraph();
-
-        /**
-         * Initialize this KG from a property tree.
-         * Note that each KG implementation has a different set of properties used
-         * to configure it.
-         * @param config a property tree.
-         * @return true on success
-         */
-        virtual bool loadConfiguration(const boost::property_tree::ptree &config) = 0;
 
         /**
          * Read RDF ontology from a remote URI or a local file, and load
@@ -105,32 +97,6 @@ namespace knowrob {
          * @return true if the KG contains a statement involving the class IRI
          */
         bool isDefinedClass(const std::string_view &iri);
-
-        /**
-         * Add an assertion to this KG.
-         * @param tripleData data representing an atomic proposition.
-         * @return true on success
-         */
-        virtual bool insert(const StatementData &tripleData) = 0;
-
-        /**
-         * Add assertions to this KG.
-         * @param tripleData data representing atomic propositions.
-         * @return true on success
-         */
-        virtual bool insert(const std::vector<StatementData> &tripleData) = 0;
-
-        /**
-         * Delete all matching statements from this KG.
-         * @param tripleExpression an expression used to match statements in the KG.
-         */
-        virtual void removeAll(const RDFLiteral &tripleExpression) = 0;
-
-        /**
-         * Delete the first matching statement from this KG.
-         * @param tripleExpression an expression used to match statements in the KG.
-         */
-        virtual void removeOne(const RDFLiteral &tripleExpression) = 0;
 
         /**
          * Submits a graph query to this knowledge graph.

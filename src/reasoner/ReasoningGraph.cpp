@@ -70,6 +70,7 @@ ReasoningGraph::Node::Node(
 {
 }
 
+/*
 bool ReasoningGraph::Node::canBeCombinedWith(
 		const NodePtr &other, ReasonerCapability requiredCapability)
 {
@@ -82,6 +83,7 @@ bool ReasoningGraph::Node::canBeCombinedWith(
 	}
 	return false;
 }
+ */
 
 bool ReasoningGraph::Node::isBuiltinSupported(const Predicate &phi) const
 {

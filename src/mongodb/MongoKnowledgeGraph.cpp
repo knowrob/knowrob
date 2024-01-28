@@ -63,19 +63,22 @@ MongoKnowledgeGraph::MongoKnowledgeGraph(const char* db_uri, const char* db_name
     dropGraph("user");
 }
 
-bool MongoKnowledgeGraph::loadConfiguration(const boost::property_tree::ptree &config)
+bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config)
 {
-    tripleCollection_ = connect(config);
+	auto ptree = config.ptree();
+	if(!ptree) return false;
+
+    tripleCollection_ = connect(*ptree);
     initialize();
 
     // set isReadOnly_ flag
-    auto o_readOnly = config.get_optional<bool>(MONGO_KG_SETTING_READ_ONLY);
+    auto o_readOnly = ptree->get_optional<bool>(MONGO_KG_SETTING_READ_ONLY);
     if(o_readOnly.has_value()) {
         isReadOnly_ = o_readOnly.value();
     }
 
     // auto-drop some named graphs
-    auto o_drop_graphs = config.get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
+    auto o_drop_graphs = ptree->get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
     if(o_drop_graphs.has_value()) {
         BOOST_FOREACH(const auto &v, o_drop_graphs.value()) {
             dropGraph(v.second.data());
@@ -301,7 +304,7 @@ bson_t* MongoKnowledgeGraph::getSelector(
     return doc;
 }
 
-bool MongoKnowledgeGraph::insert(const StatementData &tripleData)
+bool MongoKnowledgeGraph::insertOne(const StatementData &tripleData)
 {
     auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -315,7 +318,7 @@ bool MongoKnowledgeGraph::insert(const StatementData &tripleData)
     return true;
 }
 
-bool MongoKnowledgeGraph::insert(const std::vector<StatementData> &statements)
+bool MongoKnowledgeGraph::insertAll(const std::vector<StatementData> &statements)
 {
     auto &graph = importHierarchy_->defaultGraph();
     TripleLoader loader(graph,
@@ -705,7 +708,7 @@ std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 {
     StatementData data_abc("a", "b", "c");
-    EXPECT_NO_THROW(kg_->insert(data_abc));
+    EXPECT_NO_THROW(kg_->insertOne(data_abc));
     EXPECT_EQ(lookup(data_abc).size(), 1);
     EXPECT_EQ(lookup(parse("triple(x,b,c)")).size(), 0);
     EXPECT_EQ(lookup(parse("triple(a,x,c)")).size(), 0);
@@ -747,7 +750,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple)
         true), GraphSelector::getDefault());
     EXPECT_EQ(lookup(*negated).size(), 1);
     StatementData statement("x","p","y");
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(*negated).size(), 0);
 }
 
@@ -771,7 +774,7 @@ TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf)
         swrl_test_"Adult",
         rdfs::subClassOf.data(),
         swrl_test_"Car");
-    EXPECT_NO_THROW(kg_->insert(existing));
+    EXPECT_NO_THROW(kg_->insertOne(existing));
     EXPECT_EQ(lookup(existing).size(), 1);
     EXPECT_EQ(lookup(not_existing).size(), 0);
 }
@@ -781,7 +784,7 @@ TEST_F(MongoKnowledgeGraphTest, Knowledge)
     StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "X");
     statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     statement.epistemicOperator = EpistemicOperator::BELIEF;
     EXPECT_EQ(lookup(statement).size(), 1);
@@ -794,7 +797,7 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent)
     statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
     statement.agent = "agent_a";
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     for(const auto& solution : lookup(statement))
     {
@@ -812,7 +815,7 @@ TEST_F(MongoKnowledgeGraphTest, Belief)
     StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
     statement.epistemicOperator = EpistemicOperator::BELIEF;
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     for(const auto& solution : lookup(statement))
     {
@@ -830,7 +833,7 @@ TEST_F(MongoKnowledgeGraphTest, WithConfidence)
     statement.epistemicOperator = EpistemicOperator::BELIEF;
     statement.confidence = 0.5;
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     for(const auto& solution : lookup(statement))
     {
@@ -849,7 +852,7 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval)
     statement.begin = 5.0;
     statement.end = 10.0;
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     for(const auto& solution : lookup(statement))
     {
@@ -872,7 +875,7 @@ TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval)
     statement.begin = 10.0;
     statement.end = 20.0;
     EXPECT_EQ(lookup(statement).size(), 0);
-    EXPECT_NO_THROW(kg_->insert(statement));
+    EXPECT_NO_THROW(kg_->insertOne(statement));
     EXPECT_EQ(lookup(statement).size(), 1);
     for(const auto& solution : lookup(statement))
     {

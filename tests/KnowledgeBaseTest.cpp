@@ -36,15 +36,16 @@ public:
 	TestReasoner(const std::string_view &p, const std::string_view &s, const std::string_view &o)
 	: knowrob::Reasoner(), p_(p), s_(s), o_(o) {}
 
-	bool loadConfiguration(const ReasonerConfiguration &cfg) override { return true; }
-	void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override {}
-	unsigned long getCapabilities() const override { return CAPABILITY_TOP_DOWN_EVALUATION; };
+	bool loadConfig(const ReasonerConfig &cfg) override { return true; }
+	void setDataBackend(const DataBackendPtr &backend) override {}
+	void start() override {}
+	void stop() override {}
+	TruthMode getTruthMode() const override { return TruthMode::CLOSED_WORLD; };
 
-	std::shared_ptr<PredicateDescription> getPredicateDescription(
-		const std::shared_ptr<PredicateIndicator> &indicator) override {
+	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
 		if(indicator->functor() == p_) {
 			return std::make_shared<PredicateDescription>(
-				std::make_shared<PredicateIndicator>(p_,2), PredicateType::RELATION);
+				std::make_shared<PredicateIndicator>(p_,2), PredicateType::IDB_RELATION);
 		}
 		else {
 			return {};
