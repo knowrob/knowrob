@@ -108,7 +108,7 @@ namespace knowrob {
 			 * @param requiredCapability a capability flag
 			 * @return true if this node can be combined with another via a reasoner capability
 			 */
-			bool canBeCombinedWith(const NodePtr &other, ReasonerCapability requiredCapability);
+			//bool canBeCombinedWith(const NodePtr &other, ReasonerCapability requiredCapability);
 
 			/**
 			 * @return the formula associated to this node.

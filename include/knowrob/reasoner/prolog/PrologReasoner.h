@@ -176,20 +176,25 @@ namespace knowrob {
         // Override LogicProgramReasoner
         bool assertFact(const std::shared_ptr<Predicate> &predicate) override;
 
-        // Override IReasoner
-        bool loadConfiguration(const ReasonerConfiguration &cfg) override;
+        // Override Reasoner
+        bool loadConfig(const ReasonerConfig &cfg) override;
 
-        // Override IReasoner
-        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+        // Override Reasoner
+        void setDataBackend(const DataBackendPtr &backend) override;
 
-        // Override IReasoner
-        std::shared_ptr<PredicateDescription> getPredicateDescription(
-                const std::shared_ptr<PredicateIndicator> &indicator) override;
+        // Override Reasoner
+		TruthMode getTruthMode() const override { return TruthMode::CLOSED_WORLD; }
 
-        // Override IReasoner
-        unsigned long getCapabilities() const override;
+        // Override Reasoner
+        PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override;
 
-        // Override IReasoner
+        // Override Reasoner
+        void start() override;
+
+        // Override Reasoner
+        void stop() override;
+
+        // Override Reasoner
         AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override;
 
     protected:

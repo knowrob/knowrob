@@ -7,49 +7,8 @@
  */
 
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/terms/Constant.h"
 
 using namespace knowrob;
-
-namespace knowrob {
-	PredicateType predicateTypeFromTerm(const TermPtr &term) {
-		auto &type_string = ((StringTerm*)term.get())->value();
-		if(type_string == "relation") return PredicateType::RELATION;
-		else                          return PredicateType::BUILT_IN;
-	}
-}
-
-PredicateIndicator::PredicateIndicator(std::string functor, unsigned int arity)
-: functor_(std::move(functor)),
-  arity_(arity)
-{
-}
-
-bool PredicateIndicator::operator==(const PredicateIndicator& other) const
-{
-    return arity_ == other.arity_ && functor_ == other.functor_;
-}
-
-bool PredicateIndicator::operator< (const PredicateIndicator& other) const
-{
-	return (other.functor_ < this->functor_) ||
-	       (other.arity_   < this->arity_);
-}
-
-void PredicateIndicator::write(std::ostream& os) const
-{
-	os << functor_ << '/' << arity_;
-}
-
-std::shared_ptr<Term> PredicateIndicator::toTerm() const
-{
-	static const auto indicatorIndicator = std::make_shared<PredicateIndicator>("/",2);
-	return std::make_shared<Predicate>(Predicate(indicatorIndicator, {
-		std::make_shared<StringTerm>(functor()),
-		std::make_shared<LongTerm>(arity())
-	}));
-}
-
 
 Predicate::Predicate(
 	const std::shared_ptr<PredicateIndicator> &indicator,

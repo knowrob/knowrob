@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
 set (CMAKE_CXX_STANDARD 17)
+cmake_policy(SET CMP0148 OLD)
 
 project(knowrob)
 
@@ -17,10 +18,12 @@ find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
 
+find_package(Python COMPONENTS Interpreter Development)
+
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization python3)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -57,7 +60,8 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include
 		${SWIPL_INCLUDE_DIRS}
 		${EIGEN3_INCLUDE_DIR}
-		${Boost_INCLUDE_DIRS})
+		${Boost_INCLUDE_DIRS}
+		${Python_INCLUDE_DIRS})
 
 # define some constants for the compilation of source files that
 # are used to load project-relative files.
@@ -140,7 +144,7 @@ link_directories(${MONGOC_LIBRARY_DIRS})
 #### QUERY ANSWERING
 ##############
 
-add_library(knowrob_qa SHARED
+add_library(knowrob SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
@@ -245,20 +249,56 @@ add_library(knowrob_qa SHARED
         src/semweb/KnowledgeGraphPlugin.cpp
         src/queries/ModalStage.cpp
         src/semweb/Agent.cpp
-        include/knowrob/semweb/Agent.h)
-target_link_libraries(knowrob_qa
+        include/knowrob/semweb/Agent.h
+        src/formulas/PredicateIndicator.cpp
+        src/formulas/PredicateDescription.cpp
+        src/reasoner/ReasonerModule.cpp)
+set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
 		${RAPTOR_LIBRARIES}
+		${Python_LIBRARIES}
 		spdlog::spdlog
 		${GTEST_LIBRARIES})
+target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 
 add_executable(knowrob-terminal src/terminal.cpp)
 target_link_libraries(knowrob-terminal
+		${KNOWROB_LIBRARIES}
 		Boost::program_options
 		Boost::serialization
-		knowrob_qa)
+		Boost::python3
+		knowrob)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
+
+##############
+########## Python block
+##############
+
+# Without this, any build libraries automatically have names "lib{x}.so"
+set(CMAKE_SHARED_MODULE_PREFIX "")
+
+add_library(knowrob_py MODULE src/py/knowrob_module.cpp)
+target_include_directories(knowrob_py PRIVATE
+		${SWIPL_INCLUDE_DIRS}
+		${EIGEN3_INCLUDE_DIR}
+		${Boost_INCLUDE_DIRS}
+		${PYTHON_INCLUDE_DIRS})
+target_link_libraries(knowrob_py PRIVATE
+		${KNOWROB_LIBRARIES}
+		Boost::program_options
+		Boost::serialization
+		Boost::python3
+		knowrob)
+# Rename the library to knowrob.so such that it can be loaded by the
+# Python interpreter through the "import knowrob" statement.
+# NOTE: The library needs to be copied into site-packages directory of Python, or
+#       the PYTHONPATH needs to be set to include the build directory.
+add_custom_command(TARGET knowrob_py POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/knowrob_py.so
+        ${CMAKE_BINARY_DIR}/knowrob.so
+    COMMAND_EXPAND_LISTS)
 
 ##############
 ########## ROS1 block
@@ -268,7 +308,7 @@ if (catkin_FOUND)
 
 	# install into ROS workspace
 	#add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(knowrob ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #	### TF messages ###
@@ -310,7 +350,7 @@ if (catkin_FOUND)
 	 ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(knowrob-ros
 			Boost::program_options
-			knowrob_qa
+			knowrob
 			${catkin_LIBRARIES})
 	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
 endif()
@@ -320,7 +360,7 @@ endif()
 ##############
 
 # add an executable target for GTest.
-# but the testing code is actually in the *knowrob_qa* library
+# but the testing code is actually in the *knowrob* library
 # where gtest won't find them without using the "--no-as-needed"
 # flag for the linker.
 add_executable(all_gtests
@@ -329,7 +369,7 @@ add_executable(all_gtests
         tests/KnowledgeBaseTest.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
-		knowrob_qa
+		knowrob
 		-Wl,--no-whole-archive
 		${GTEST_MAIN_LIBRARIES})
 

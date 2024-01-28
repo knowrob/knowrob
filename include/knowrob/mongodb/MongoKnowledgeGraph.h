@@ -26,7 +26,7 @@ namespace knowrob {
 
         /**
          * Constructor with configuration.
-         * There is no need to call loadConfiguration if this constructor is used.
+         * There is no need to call loadConfig if this constructor is used.
          * @param db_uri MongoDB URI string
          * @param db_name MongoDB database name where KG is stored
          * @param collectionName MongoDB collection name where KG is stored
@@ -98,16 +98,16 @@ namespace knowrob {
         std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
 
         // Override KnowledgeGraph
-        bool loadConfiguration(const boost::property_tree::ptree &config) override;
+        bool loadConfig(const ReasonerConfig &config) override;
 
         // Override KnowledgeGraph
         bool loadFile(const std::string_view &uriString, TripleFormat format, const GraphSelector &selector) override;
 
         // Override KnowledgeGraph
-        bool insert(const StatementData &tripleData) override;
+        bool insertOne(const StatementData &tripleData) override;
 
         // Override KnowledgeGraph
-        bool insert(const std::vector<StatementData> &tripleData) override;
+        bool insertAll(const std::vector<StatementData> &tripleData) override;
 
         // Override KnowledgeGraph
         void removeAll(const RDFLiteral &tripleExpression) override;

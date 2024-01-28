@@ -229,7 +229,7 @@ term_t PrologQueryRunner::createQueryArgumentTerms(
     }
     auto setval_args2 = PL_new_term_refs(2);
     if(!PL_put_atom(setval_args2, reasoner_manager_a) ||
-       !PL_put_integer(setval_args2+1, reasoner_->reasonerManagerID()))
+       !PL_put_integer(setval_args2+1, reasoner_->managerID()))
     {
         return (term_t)0;
     }

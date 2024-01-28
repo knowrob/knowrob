@@ -24,17 +24,15 @@ namespace knowrob {
 
 		~MongologReasoner() override;
 
-        unsigned long getCapabilities() const override;
-
         //bool projectIntoEDB(const Statement &statement) override;
 
         //bool exportData(const std::filesystem::path &path) override;
 
         //bool importData(const std::filesystem::path &path) override;
 
-        bool loadConfiguration(const ReasonerConfiguration &cfg) override;
+        bool loadConfig(const ReasonerConfig &cfg) override;
 
-        void setDataBackend(const KnowledgeGraphPtr &knowledgeGraph) override;
+        void setDataBackend(const DataBackendPtr &backend) override;
 
         const auto& knowledgeGraph() const { return knowledgeGraph_; }
 		

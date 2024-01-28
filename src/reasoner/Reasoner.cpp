@@ -21,28 +21,18 @@ void Reasoner::setReasonerManager(uint32_t managerID)
     reasonerManagerID_ = managerID;
 }
 
-bool Reasoner::hasCapability(ReasonerCapability capability) const
+PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &literal)
 {
-    return (getCapabilities() & capability);
-}
-
-bool Reasoner::canEvaluate(const RDFLiteral &literal)
-{
-	if(literal.propertyTerm()->type() == TermType::VARIABLE) {
-		// TODO: maybe some reasoner can infer relations between given entities
-		return false;
-	}
-	else if(literal.propertyTerm()->type() == TermType::STRING) {
+	if(literal.propertyTerm()->type() == TermType::STRING) {
 		auto p = std::static_pointer_cast<StringTerm>(literal.propertyTerm());
-		return getPredicateDescription(std::make_shared<PredicateIndicator>(p->value(), 2)) != nullptr;
+		return getDescription(std::make_shared<PredicateIndicator>(p->value(), 2));
 	}
 	else {
-		// TODO: print message
-		return false;
+		return {};
 	}
 }
 
-void Reasoner::addDataSourceHandler(const std::string &format, const DataSourceLoader &fn)
+void Reasoner::addDataHandler(const std::string &format, const std::function<bool(const DataSourcePtr &)> &fn)
 {
 	dataSourceHandler_[format] = fn;
 }

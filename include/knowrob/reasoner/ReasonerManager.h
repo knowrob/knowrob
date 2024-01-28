@@ -14,6 +14,7 @@
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
 #include "knowrob/semweb/KnowledgeGraphManager.h"
+#include "ReasonerModule.h"
 
 namespace knowrob {
 	/**
@@ -98,12 +99,14 @@ namespace knowrob {
 		std::map<std::string, std::shared_ptr<DefinedReasoner>> reasonerPool_;
 		// maps plugin names to factories used to create reasoner instances
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
+		std::map<std::string, std::shared_ptr<ReasonerModule>> loadedModules_;
 		// a counter used to generate unique IDs
 		uint32_t reasonerIndex_;
         // an identifier for this manager
         uint32_t managerID_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
+		std::shared_ptr<ReasonerModule> loadReasonerModule(const std::string &path, const std::string &type);
 
         /**
          * Remove a reasoner from this manager.

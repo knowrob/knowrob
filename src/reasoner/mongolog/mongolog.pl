@@ -73,11 +73,11 @@ mongolog_current_predicate1(_Module, Functor, _Arity, built_in) :-
 	% TODO: take arity into account
     step_command(user, Functor), !.
 
-mongolog_current_predicate1(Module, Functor, _Arity, relation) :-
+mongolog_current_predicate1(Module, Functor, _Arity, idb_relation) :-
 	% TODO: take arity into account
     step_command(Module, Functor), !.
 
-mongolog_current_predicate1(Module, Functor, 2, relation) :-
+mongolog_current_predicate1(Module, Functor, 2, idb_relation) :-
 	current_reasoner_manager(Manager),
 	mng_rdf_current_property_cpp(Manager, Module, Functor), !.
 
@@ -85,7 +85,7 @@ mongolog_current_predicate1(_Module, Functor, Arity, built_in) :-
     mongolog_rule(user, Functor, Args, _),
     length(Args, Arity),!.
 
-mongolog_current_predicate1(Module, Functor, Arity, relation) :-
+mongolog_current_predicate1(Module, Functor, Arity, idb_relation) :-
     mongolog_rule(Module, Functor, Args, _),
     length(Args, Arity),!.
 
@@ -1357,7 +1357,7 @@ expand_instantiations(Head, Expanded) :-
 % user defined relations
 expand_instantiations(Head, (Head, trace_predicate(Head))) :-
     Head =.. [Functor|Args], length(Args,Arity),
-    mongolog_current_predicate(Functor/Arity, relation), !.
+    mongolog_current_predicate(Functor/Arity, idb_relation), !.
 % builtins
 expand_instantiations(Head, Head).
 

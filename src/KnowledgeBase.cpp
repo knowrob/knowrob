@@ -282,18 +282,22 @@ void KnowledgeBase::createComputationPipeline(
         auto stepOutput = std::make_shared<AnswerBroadcaster>();
         pipeline->addStage(stepOutput);
 
+		// TODO: only add edb stage if the predicate was materialized in EDB before
+		// -> KG::isDefinedProperty
         auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
         edbStage->selfWeakRef_ = edbStage;
         stepInput >> edbStage;
         edbStage >> stepOutput;
         pipeline->addStage(edbStage);
 
+		// TODO: check if queries are cached already
         for(auto &r : lit->reasonerList()) {
             auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, ctx);
             idbStage->selfWeakRef_ = idbStage;
             stepInput >> idbStage;
             idbStage >> stepOutput;
             pipeline->addStage(idbStage);
+            // TODO: what about the materialization of the predicate in EDB?
         }
 
         lastOut = stepOutput;
@@ -341,7 +345,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
         std::vector<std::shared_ptr<Reasoner>> l_reasoner;
         for(auto &pair : reasonerManager_->reasonerPool()) {
             auto &r = pair.second->reasoner();
-            if(r->canEvaluate(*l)) l_reasoner.push_back(r);
+            auto descr = r->getLiteralDescription(*l);
+            if(descr) {
+            	// TODO: check descr, e.g. about materialization in EDB
+				l_reasoner.push_back(r);
+			}
         }
         if(l_reasoner.empty()) edbOnlyLiterals.push_back(l);
         else computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
@@ -527,7 +535,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 		if(posLiterals.empty()) {
 			// if there are none, we still need to indicate begin and end of stream for the rest of the pipeline.
 			// so we just push `bos` (an empty substitution) followed by `eos` and feed these messages to the next stage.
-			// FIXME: need to call stopBuffering!?!
+			// TODO: need to call stopBuffering!?!
 			firstBuffer = std::make_shared<AnswerBuffer>();
 			lastStage = firstBuffer;
 			auto channel = AnswerStream::Channel::create(lastStage);
@@ -609,7 +617,7 @@ bool KnowledgeBase::insert(const std::vector<StatementData> &propositions)
 {
     bool status = true;
     for(auto &kg : backendManager_->knowledgeGraphPool()) {
-        if(!kg.second->knowledgeGraph()->insert(propositions)) {
+        if(!kg.second->knowledgeGraph()->insertAll(propositions)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }
@@ -622,7 +630,7 @@ bool KnowledgeBase::insert(const StatementData &proposition)
     bool status = true;
     // assert each statement into each knowledge graph backend
     for(auto &kg : backendManager_->knowledgeGraphPool()) {
-        if(!kg.second->knowledgeGraph()->insert(proposition)) {
+        if(!kg.second->knowledgeGraph()->insertOne(proposition)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }

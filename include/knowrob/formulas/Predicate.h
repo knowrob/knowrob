@@ -13,96 +13,11 @@
 #include <memory>
 #include <string>
 #include "Formula.h"
+#include "PredicateIndicator.h"
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Substitution.h"
 
 namespace knowrob {
-	/**
-	 * The type of a predicate.
-	 */
-	enum class PredicateType {
-		BUILT_IN = 0,
-		FORMULA,
-		RELATION
-	};
-
-	/**
-	 * Read predicate type from term.
-	 * @param term a term.
-	 * @return the predicate type encoded by term.
-	 */
-	PredicateType predicateTypeFromTerm(const TermPtr &term);
-
-	/**
-	 * The indicator of a predicate defined by its functor and arity.
-	 */
-	class PredicateIndicator {
-	public:
-		/**
-		 * @functor the functor name.
-		 * @arity thr arity of this predicate.
-		 */
-		PredicateIndicator(std::string functor, unsigned int arity);
-
-        // Override '==' operator
-        bool operator==(const PredicateIndicator& other) const;
-		// Override '<' operator
-		bool operator< (const PredicateIndicator& other) const;
-		
-		/**
-		 * Get the functor of this predicate.
-		 *
-		 * @return the functor name.
-		 */
-		const std::string& functor() const { return functor_; }
-		
-		/**
-		 * Get the arity of this predicate.
-		 *
-		 * @return arity of predicate
-		 */
-		unsigned int arity() const { return arity_; }
-
-		/**
-		 * Convert the predicate indicator to a term of the form `'/'(Functor,Arity)`.
-		 * @return the indicator as a term.
-		 */
-		std::shared_ptr<Term> toTerm() const;
-
-		void write(std::ostream& os) const;
-	
-	private:
-		const std::string functor_;
-		const unsigned int arity_;
-	};
-
-	/**
-	 * The description of a defined predicate.
-	 */
-	class PredicateDescription {
-	public:
-		/**
-		 * @param indicator the indicator of the predicate.
-		 * @param type the type of the predicate.
-		 */
-		PredicateDescription(const std::shared_ptr<PredicateIndicator> &indicator, PredicateType type)
-		: indicator_(indicator), type_(type) {}
-
-		/**
-		 * @return the indicator of the predicate.
-		 */
-		const std::shared_ptr<PredicateIndicator>& indicator() const { return indicator_; }
-
-		/**
-		 * @return the type of the predicate.
-		 */
-		PredicateType type() const { return type_; }
-
-	protected:
-		std::shared_ptr<PredicateIndicator> indicator_;
-		PredicateType type_;
-	};
-
 	/**
 	 * A predicate with a functor and a number of term arguments.
 	 */
