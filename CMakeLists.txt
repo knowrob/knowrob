@@ -371,6 +371,7 @@ target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		knowrob
 		-Wl,--no-whole-archive
+		Boost::python3
 		${GTEST_MAIN_LIBRARIES})
 
 ##############
