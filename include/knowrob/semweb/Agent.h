@@ -10,7 +10,10 @@
 #include "Resource.h"
 
 namespace knowrob {
-
+	/**
+	 * This is an identifier for an agent.
+	 * A special identifier is used for the agent that runs the knowledge base.
+	 */
 	class Agent : public semweb::Resource {
 	public:
 		explicit Agent(const std::string_view &iri);
