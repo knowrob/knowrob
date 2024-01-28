@@ -38,6 +38,12 @@ namespace knowrob {
 	 */
 	class Substitution {
 	public:
+		Substitution() = default;
+
+		explicit Substitution(std::map<Variable,TermPtr> mapping) : mapping_(std::move(mapping)) {};
+
+		bool operator==(const Substitution &other) const;
+
 		/**
 		 * @return true if this substitution does not map a single variable to a term.
 		 */

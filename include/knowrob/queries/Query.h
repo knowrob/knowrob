@@ -12,10 +12,12 @@
 #include <memory>
 #include <ostream>
 #include <optional>
+#include <utility>
 #include "knowrob/formulas/Predicate.h"
 #include <knowrob/formulas/Formula.h>
 #include "knowrob/modalities/TimeInterval.h"
 #include "knowrob/modalities/ConfidenceInterval.h"
+#include "QueryContext.h"
 
 namespace knowrob {
 	/**
@@ -27,11 +29,13 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        explicit Query(int flags) : flags_(flags) {}
+        explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
 
         static int defaultFlags();
 
-        int flags() const { return flags_; }
+        int flags() const { return ctx_->queryFlags_; }
+
+        auto& ctx() const { return ctx_; }
 
         virtual std::ostream& print(std::ostream &os) const = 0;
 
@@ -41,7 +45,7 @@ namespace knowrob {
         virtual const FormulaPtr& formula() const = 0;
 
 	protected:
-		const int flags_;
+		QueryContextPtr ctx_;
 	};
 }
 

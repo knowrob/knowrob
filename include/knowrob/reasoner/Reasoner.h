@@ -96,7 +96,7 @@ namespace knowrob {
 
 		bool canEvaluate(const RDFLiteral &literal);
 
-        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) = 0;
+        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
 
 	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;

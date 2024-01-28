@@ -434,7 +434,7 @@ AnswerBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal)
 bool MongoKnowledgeGraph::loadFile( //NOLINT
         const std::string_view &uriString,
         TripleFormat format,
-        const ModalityLabel &label)
+        const GraphSelector &selector)
 {
     // TODO: rather format IRI's as e.g. "soma:foo" and store namespaces as part of graph?
     //          or just assume namespace prefixes are unique withing knowrob.
@@ -467,7 +467,7 @@ bool MongoKnowledgeGraph::loadFile( //NOLINT
     KB_INFO("Loading ontology at '{}' with version "
             "\"{}\" into graph \"{}\".", *importURI, newVersion, graphName);
     // load [s,p,o] documents into the triples collection
-    if(!loadURI(loader, *importURI, blankPrefix, format, label)) {
+    if(!loadURI(loader, *importURI, blankPrefix, format, selector)) {
         KB_WARN("Failed to parse ontology {} ({})", *importURI, uriString);
         return false;
     }
@@ -476,7 +476,7 @@ bool MongoKnowledgeGraph::loadFile( //NOLINT
     // update o* and p* fields
     updateHierarchy(loader);
     // load imported ontologies
-    for(auto &imported : loader.imports()) loadFile(imported, format, label);
+    for(auto &imported : loader.imports()) loadFile(imported, format, selector);
 
     return true;
 }
@@ -696,7 +696,8 @@ protected:
     }
     static RDFLiteral parse(const std::string &str) {
         auto p = QueryParser::parsePredicate(str);
-        return { p->arguments()[0], p->arguments()[1], p->arguments()[2], false };
+        return { p->arguments()[0], p->arguments()[1], p->arguments()[2],
+                 false, GraphSelector::getDefault() };
     }
 };
 std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
@@ -720,11 +721,11 @@ TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c)
 TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL)
 {
     EXPECT_FALSE(kg_->getCurrentGraphVersion("swrl").has_value());
-    EXPECT_NO_THROW(kg_->loadFile("owl/test/swrl.owl", knowrob::RDF_XML, *ModalityLabel::emptyLabel()));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/swrl.owl", knowrob::RDF_XML, GraphSelector::getDefault()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("swrl").has_value());
 
     EXPECT_FALSE(kg_->getCurrentGraphVersion("datatype_test").has_value());
-    EXPECT_NO_THROW(kg_->loadFile("owl/test/datatype_test.owl", knowrob::RDF_XML, *ModalityLabel::emptyLabel()));
+    EXPECT_NO_THROW(kg_->loadFile("owl/test/datatype_test.owl", knowrob::RDF_XML, GraphSelector::getDefault()));
     EXPECT_TRUE(kg_->getCurrentGraphVersion("datatype_test").has_value());
 }
 
@@ -743,7 +744,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple)
 {
     auto negated = RDFLiteral::fromLiteral(std::make_shared<Literal>(
         QueryParser::parsePredicate("p(x,y)"),
-        true));
+        true), GraphSelector::getDefault());
     EXPECT_EQ(lookup(*negated).size(), 1);
     StatementData statement("x","p","y");
     EXPECT_NO_THROW(kg_->insert(statement));

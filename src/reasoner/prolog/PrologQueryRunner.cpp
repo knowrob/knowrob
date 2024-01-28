@@ -139,14 +139,11 @@ term_t PrologQueryRunner::createContextTerm(
     static const auto solution_scope_f = PL_new_functor(PL_new_atom("solution_scope"), 1);
     static const auto predicates_f = PL_new_functor(PL_new_atom("predicates"), 1);
 
-    auto &label = *request_.label;
+    auto &selector = request_.graphSelector;
     int numFrameKeys = 2;
-    if(label.agent().has_value()) numFrameKeys +=1;
-    if(label.timeInterval().has_value()) {
-        auto &ti = label.timeInterval().value();
-        if(ti.since().has_value()) numFrameKeys += 1;
-        if(ti.until().has_value()) numFrameKeys += 1;
-    }
+    if(selector.agent.has_value()) numFrameKeys +=1;
+    if(selector.begin.has_value()) numFrameKeys += 1;
+    if(selector.end.has_value()) numFrameKeys += 1;
 
     // create an option list
     auto listTerm = PL_new_term_ref();
@@ -157,33 +154,35 @@ term_t PrologQueryRunner::createContextTerm(
     auto scopeValues = PL_new_term_refs(numFrameKeys);
 
     // epistemicMode: knowledge|belief
+    bool isAboutBelief = (selector.epistemicOperator &&
+    	selector.epistemicOperator.value() == EpistemicOperator::BELIEF);
     int keyIndex = 0;
     scopeKeys[keyIndex] = epistemicMode_a;
-    if(!PL_put_atom(scopeValues, label.isAboutBelief() ? belief_a : knowledge_a)) return (term_t)0;
+    if(!PL_put_atom(scopeValues, isAboutBelief ? belief_a : knowledge_a)) return (term_t)0;
 
     // temporalMode: sometimes|always
+    bool isAboutSomePast = (selector.temporalOperator &&
+    	selector.temporalOperator.value() == TemporalOperator::SOMETIMES);
     scopeKeys[++keyIndex] = temporalMode_a;
-    if(!PL_put_atom(scopeValues+keyIndex, label.isAboutSomePast() ? sometimes_a : always_a)) return (term_t)0;
+    if(!PL_put_atom(scopeValues+keyIndex, isAboutSomePast ? sometimes_a : always_a)) return (term_t)0;
 
     // agent: $name
-    if(label.agent().has_value()) {
+    if(selector.agent.has_value()) {
         scopeKeys[++keyIndex] = agent_a;
-        if(!PL_put_atom_chars(scopeValues+keyIndex, label.agent().value().c_str())) return (term_t)0;
+        auto &agent_iri = selector.agent.value()->iri();
+        if(!PL_put_atom_chars(scopeValues+keyIndex, agent_iri.c_str())) return (term_t)0;
     }
 
-    if(label.timeInterval().has_value()) {
-        auto &ti = label.timeInterval().value();
-        // since: $name
-        if(ti.since().has_value()) {
-            scopeKeys[++keyIndex] = since_a;
-            if(!PL_put_float(scopeValues+keyIndex, ti.since().value().value())) return (term_t)0;
-        }
-        // until: $name
-        if(ti.until().has_value()) {
-            scopeKeys[++keyIndex] = until_a;
-            if(!PL_put_float(scopeValues+keyIndex, ti.until().value().value())) return (term_t)0;
-        }
-    }
+	// since: $name
+	if(selector.begin.has_value()) {
+		scopeKeys[++keyIndex] = since_a;
+		if(!PL_put_float(scopeValues+keyIndex, selector.begin.value())) return (term_t)0;
+	}
+	// until: $name
+	if(selector.end.has_value()) {
+		scopeKeys[++keyIndex] = until_a;
+		if(!PL_put_float(scopeValues+keyIndex, selector.end.value())) return (term_t)0;
+	}
 
     auto dictTerm = PL_new_term_ref();
     auto frameOption = PL_new_term_ref();

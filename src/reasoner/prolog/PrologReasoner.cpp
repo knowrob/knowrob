@@ -330,8 +330,9 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
                                       const char *moduleName,
                                       bool doTransformQuery)
 {
+	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
 	return oneSolution(
-	        std::make_shared<ModalQuery>(goal, QUERY_FLAG_ONE_SOLUTION),
+	        std::make_shared<ModalQuery>(goal, ctx),
             moduleName,
             doTransformQuery);
 }
@@ -351,7 +352,7 @@ AnswerPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
             this,
-            PrologQueryRunner::Request(goal, call_f, moduleTerm, ModalityLabel::emptyLabel()),
+            PrologQueryRunner::Request(goal, call_f, moduleTerm, GraphSelector::getDefault()),
             outputChannel,
 			true
 	);
@@ -372,8 +373,9 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicat
                                                   const char *moduleName,
                                                   bool doTransformQuery)
 {
+	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
 	return allSolutions(
-	        std::make_shared<ModalQuery>(goal, QUERY_FLAG_ALL_SOLUTIONS),
+	        std::make_shared<ModalQuery>(goal, ctx),
             moduleName,
             doTransformQuery);
 }
@@ -396,7 +398,7 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
             this,
-            PrologQueryRunner::Request(goal, call_f, moduleTerm, ModalityLabel::emptyLabel()),
+            PrologQueryRunner::Request(goal, call_f, moduleTerm, GraphSelector::getDefault()),
             outputChannel,
 			true
 	);
@@ -426,14 +428,14 @@ std::list<AnswerPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Qu
 	return results;
 }
 
-AnswerBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, int queryFlags)
+AnswerBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
 {
     bool sendEOS = true;
     auto reasoner = this;
     auto answerBuffer = std::make_shared<AnswerBuffer>();
     auto outputChannel = AnswerStream::Channel::create(answerBuffer);
 
-    auto query = std::make_shared<GraphQuery>(literal, queryFlags);
+    auto query = std::make_shared<GraphQuery>(literal, ctx);
    	// create a runner for a worker thread
    	auto workerGoal = std::make_shared<PrologQueryRunner>(
             reasoner,
@@ -441,7 +443,7 @@ AnswerBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, int qu
 				query,
 				callFunctor(),
 				reasonerIDTerm_,
-				literal->label()),
+				ctx->selector_),
             outputChannel,
             sendEOS);
     // assign the goal to a worker thread

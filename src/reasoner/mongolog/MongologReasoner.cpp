@@ -207,7 +207,7 @@ foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
     if(mongolog && PL_get_atom_chars(t_ontologyURI, &ontologyURI)) {
         auto &kg = mongolog->knowledgeGraph();
 
-        if(!kg->loadFile(ontologyURI, TripleFormat::RDF_XML, *ModalityLabel::emptyLabel())) return false;
+        if(!kg->loadFile(ontologyURI, TripleFormat::RDF_XML, GraphSelector::getDefault())) return false;
 
         char *parentGraph;
         if(!PL_is_variable(t_parentGraph) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {

@@ -25,6 +25,7 @@ namespace knowrob {
 
     protected:
         Implication(const Implication &other, const Substitution &sub);
+		bool isEqual(const Formula &other) const override;
     };
 
 } // knowrob

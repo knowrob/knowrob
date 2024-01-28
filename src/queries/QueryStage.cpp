@@ -34,6 +34,8 @@ namespace knowrob {
 				return graphQueryAnswer;
 			}
 			else {
+				// FIXME: e.g. P(x)&P(y) the answer would not receive time interval as x or y!
+				//          so there are different cases how and if time intervals of answers must be combined here.
 				auto combined = std::make_shared<Answer>(*graphQueryAnswer);
 				// TODO: could be done without unification
 				combined->combine(partialResult);
@@ -65,10 +67,37 @@ namespace knowrob {
 	};
 }
 
-QueryStage::QueryStage(RDFLiteralPtr literal, int queryFlags)
+LiteralQueryStage::LiteralQueryStage(RDFLiteralPtr literal, const QueryContextPtr &ctx)
+: QueryStage(ctx),
+  literal_(std::move(literal))
+{
+}
+
+AnswerBufferPtr LiteralQueryStage::pushSubstitution(const Substitution &substitution)
+{
+	// apply the substitution mapping
+	auto literalInstance = std::make_shared<RDFLiteral>(*literal_, substitution);
+	// submit a query
+	return submitQuery(literalInstance);
+}
+
+FormulaQueryStage::FormulaQueryStage(FormulaPtr formula, const QueryContextPtr &ctx)
+: QueryStage(ctx),
+  formula_(std::move(formula))
+{
+}
+
+AnswerBufferPtr FormulaQueryStage::pushSubstitution(const Substitution &substitution)
+{
+	// apply the substitution mapping
+	auto formulaInstance = formula_->applySubstitution(substitution);
+	// submit a query
+	return submitQuery(formulaInstance);
+}
+
+QueryStage::QueryStage(QueryContextPtr ctx)
 : AnswerBroadcaster(),
-  literal_(std::move(literal)),
-  queryFlags_(queryFlags),
+  ctx_(std::move(ctx)),
   isQueryOpened_(true),
   isAwaitingInput_(true),
   hasStopRequest_(false)
@@ -80,11 +109,6 @@ QueryStage::~QueryStage()
     QueryStage::close();
 }
 
-void QueryStage::setQueryFlags(int queryFlags)
-{
-    queryFlags_ = queryFlags;
-}
-
 void QueryStage::close()
 {
     if(hasStopRequest_) return;
@@ -93,11 +117,11 @@ void QueryStage::close()
     hasStopRequest_ = true;
 
     // clear all graph queries
-    for(auto &pair : graphQueries_) {
+    for(auto &pair : activeQueries_) {
         pair.first->close();
         pair.second->close();
     }
-    graphQueries_.clear();
+    activeQueries_.clear();
 
     // close all channels
     AnswerStream::close();
@@ -107,10 +131,10 @@ void QueryStage::pushTransformed(const AnswerPtr &transformedAnswer,
                                  std::list<ActiveQuery>::iterator graphQueryIterator)
 {
 	if(AnswerStream::isEOS(transformedAnswer)) {
-		graphQueries_.erase(graphQueryIterator);
+		activeQueries_.erase(graphQueryIterator);
 		// only push EOS message if no query is still active and
 		// if the stream has received EOS as input already.
-		if(graphQueries_.empty() && !isAwaitingInput_) {
+		if(activeQueries_.empty() && !isAwaitingInput_) {
 			isQueryOpened_ = false;
 			pushToBroadcast(transformedAnswer);
 		}
@@ -118,7 +142,10 @@ void QueryStage::pushTransformed(const AnswerPtr &transformedAnswer,
 	else if(isQueryOpened()) {
 		pushToBroadcast(transformedAnswer);
 		// close the stage if only one solution is requested
-		if((queryFlags_ & (int)QueryFlag::QUERY_FLAG_ONE_SOLUTION) == (int)QueryFlag::QUERY_FLAG_ONE_SOLUTION) close();
+		if((ctx_->queryFlags_ & (int)QueryFlag::QUERY_FLAG_ONE_SOLUTION) == (int)QueryFlag::QUERY_FLAG_ONE_SOLUTION) {
+			pushToBroadcast(AnswerStream::eos());
+			close();
+		}
 	}
 }
 
@@ -129,7 +156,7 @@ void QueryStage::push(const AnswerPtr &partialResult)
         isAwaitingInput_ = false;
 
         // only broadcast EOS if no graph query is still active.
-        if(graphQueries_.empty() && !hasStopRequest_) {
+        if(activeQueries_.empty() && !hasStopRequest_) {
             isQueryOpened_ = false;
             pushToBroadcast(partialResult);
         }
@@ -142,18 +169,15 @@ void QueryStage::push(const AnswerPtr &partialResult)
         auto selfRef = selfWeakRef_.lock();
         if(!selfRef) return;
 
-        // apply the substitution mapping
-        auto literalInstance =
-            std::make_shared<RDFLiteral>(*literal_, *partialResult->substitution());
-
         // submit a query
-        auto graphQueryStream = submitQuery(literalInstance);
+        auto graphQueryStream = pushSubstitution(*partialResult->substitution());
+
         // combine query result with partial answer
         auto transformer = std::make_shared<QueryStageTransformer>(selfRef, partialResult);
 
         // keep a reference on the stream
-        auto pair = graphQueries_.emplace_front(graphQueryStream, transformer);
-        auto graphQueryIt = graphQueries_.begin();
+        auto pair = activeQueries_.emplace_front(graphQueryStream, transformer);
+        auto graphQueryIt = activeQueries_.begin();
         transformer->graphQueryIterator_ = graphQueryIt;
 
         // combine graph query answer with partialResult and push it to the broadcast

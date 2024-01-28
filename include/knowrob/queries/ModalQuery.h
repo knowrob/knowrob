@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        ModalQuery(const FormulaPtr &formula, int flags);
+        ModalQuery(const FormulaPtr &formula, const QueryContextPtr &ctx);
 		
 		/**
 		 * Replaces variables in the query with terms based on a mapping provided in the argument.

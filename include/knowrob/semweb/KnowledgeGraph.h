@@ -68,7 +68,7 @@ namespace knowrob {
          * @param frame the modality frame of statments in the file
          * @return true if the file was loaded successfully
          */
-        virtual bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityLabel &label) = 0;
+        virtual bool loadFile(const std::string_view &uriString, TripleFormat format, const GraphSelector &selector) = 0;
 
         /**
          * Loads statements from file with default modality frame.
@@ -202,7 +202,7 @@ namespace knowrob {
                      const std::string &uriString,
                      std::string &blankPrefix,
                      TripleFormat format,
-                     const ModalityLabel &label);
+                     const GraphSelector &selector);
     };
 
     using KnowledgeGraphPtr = std::shared_ptr<KnowledgeGraph>;

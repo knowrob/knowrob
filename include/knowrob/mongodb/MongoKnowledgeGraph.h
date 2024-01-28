@@ -101,7 +101,7 @@ namespace knowrob {
         bool loadConfiguration(const boost::property_tree::ptree &config) override;
 
         // Override KnowledgeGraph
-        bool loadFile(const std::string_view &uriString, TripleFormat format, const ModalityLabel &label) override;
+        bool loadFile(const std::string_view &uriString, TripleFormat format, const GraphSelector &selector) override;
 
         // Override KnowledgeGraph
         bool insert(const StatementData &tripleData) override;

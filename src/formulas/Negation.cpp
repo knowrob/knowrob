@@ -19,6 +19,12 @@ Negation::Negation(const Negation &other, const Substitution &sub)
 {
 }
 
+bool Negation::isEqual(const Formula &other) const
+{
+	const auto &x = static_cast<const Negation&>(other); // NOLINT
+	return (*negatedFormula()) == (*x.negatedFormula());
+}
+
 std::shared_ptr<Formula> Negation::applySubstitution(const Substitution &sub) const
 {
     return std::shared_ptr<Negation>(new Negation(*this, sub));

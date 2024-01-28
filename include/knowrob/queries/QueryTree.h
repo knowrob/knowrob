@@ -15,7 +15,6 @@
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/modalities/ModalityLabel.h"
 
 namespace knowrob {
     /**
@@ -49,6 +48,20 @@ namespace knowrob {
          */
         auto end() const { return paths_.end(); }
 
+        /**
+         * A node in a QueryTree.
+         */
+        class Node {
+        public:
+            Node(Node *parent, FormulaPtr formula, bool isNegated);
+            Node *parent;
+            const FormulaPtr formula;
+            bool isNegated;
+            bool isOpen;
+            std::list<Node*> successors;
+
+            int priority() const;
+        };
 
         /**
          * A path in a QueryTree from root of the tree to a leaf.
@@ -60,47 +73,33 @@ namespace knowrob {
             /**
              * @return number of literals in this path
              */
-            auto numLiterals() const { return literals_.size(); }
+            auto numNodes() const { return nodes_.size(); }
 
             /**
              * @return list of literals
              */
-            const auto& literals() const { return literals_; }
+            const auto& nodes() const { return nodes_; }
 
             /**
              * @return begin iterator over literals in a path.
              */
-            auto begin() const { return literals_.begin(); }
+            auto begin() const { return nodes_.begin(); }
 
             /**
              * @return end iterator over literals in a path.
              */
-            auto end() const { return literals_.end(); }
+            auto end() const { return nodes_.end(); }
+
+            std::shared_ptr<Formula> toFormula() const;
 
         protected:
-            std::list<LiteralPtr> literals_;
+            std::vector<FormulaPtr> nodes_;
             friend class QueryTree;
         };
 
     protected:
         const FormulaPtr query_;
         std::list<Path> paths_;
-
-        class Node {
-        public:
-            Node(Node *parent,
-                 const std::shared_ptr<ModalIteration> &modalOperators,
-                 const FormulaPtr &formula,
-                 bool isNegated);
-            Node *parent;
-            std::shared_ptr<ModalIteration> modalOperators;
-            const FormulaPtr formula;
-            bool isNegated;
-            bool isOpen;
-            std::list<Node*> successors;
-
-            int priority() const;
-        };
 
         Node* rootNode_;
 
@@ -109,10 +108,7 @@ namespace knowrob {
         };
         std::priority_queue<Node*, std::vector<Node*>, NodeComparator> openNodes_;
 
-        Node* createNode(Node *parent,
-                         const std::shared_ptr<ModalIteration> &modalOperators,
-                         const FormulaPtr &phi,
-                         bool isNegated);
+        Node* createNode(Node *parent, const FormulaPtr &phi, bool isNegated);
 
         static std::list<QueryTree::Node*> getLeafs(Node *n);
 

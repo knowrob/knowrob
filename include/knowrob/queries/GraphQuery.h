@@ -16,6 +16,7 @@
 #include "knowrob/queries/AnswerBuffer.h"
 #include "knowrob/queries/Query.h"
 #include "knowrob/formulas/Conjunction.h"
+#include "QueryContext.h"
 
 namespace knowrob {
     /**
@@ -30,7 +31,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(const std::vector<RDFLiteralPtr> &literals, int flags);
+        GraphQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx);
 
         /**
          * A literal query. Answers are instantiations of the literal where free variables
@@ -38,7 +39,7 @@ namespace knowrob {
          * @param literals an ordered sequence of literals.
          * @param label an optional label of the literals
          */
-        GraphQuery(const RDFLiteralPtr &literal, int flags);
+        GraphQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx);
 
         const auto& literals() const { return literals_; }
 

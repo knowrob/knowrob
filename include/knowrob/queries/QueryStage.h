@@ -19,11 +19,9 @@ namespace knowrob {
      */
     class QueryStage : public AnswerBroadcaster {
     public:
-        explicit QueryStage(RDFLiteralPtr literal, int queryFlags=Query::defaultFlags());
+		QueryStage(QueryContextPtr ctx);
 
         ~QueryStage();
-
-        void setQueryFlags(int flags);
 
         /**
          * Request the stage to stop any active processes.
@@ -44,28 +42,49 @@ namespace knowrob {
         bool hasStopRequest() const { return hasStopRequest_; }
 
     protected:
-        const RDFLiteralPtr literal_;
         std::atomic<bool> isQueryOpened_;
         std::atomic<bool> isAwaitingInput_;
         std::atomic<bool> hasStopRequest_;
         std::weak_ptr<QueryStage> selfWeakRef_;
 
         using ActiveQuery = std::pair<AnswerBufferPtr, std::shared_ptr<AnswerStream>>;
-        std::list<ActiveQuery> graphQueries_;
-        int queryFlags_;
+        std::list<ActiveQuery> activeQueries_;
+		QueryContextPtr ctx_;
 
         void push(const AnswerPtr &msg) override;
 
-        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
+		virtual AnswerBufferPtr pushSubstitution(const Substitution &substitution) = 0;
 
         void pushTransformed(const AnswerPtr &transformedAnswer,
                              std::list<ActiveQuery>::iterator graphQueryIterator);
 
         friend class QueryStageTransformer;
         friend class KnowledgeBase; // weak ref hack
-    };
+	};
 
     using QueryPipelineStagePtr = std::shared_ptr<QueryStage>;
+
+    class LiteralQueryStage : public QueryStage {
+	public:
+		LiteralQueryStage(RDFLiteralPtr literal, const QueryContextPtr &ctx);
+
+    protected:
+        const RDFLiteralPtr literal_;
+
+        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
+		AnswerBufferPtr pushSubstitution(const Substitution &substitution) override;
+	};
+
+    class FormulaQueryStage : public QueryStage {
+	public:
+		FormulaQueryStage(FormulaPtr formula, const QueryContextPtr &ctx);
+
+    protected:
+        const FormulaPtr formula_;
+
+        virtual AnswerBufferPtr submitQuery(const FormulaPtr &formula) = 0;
+		AnswerBufferPtr pushSubstitution(const Substitution &substitution) override;
+	};
 } // knowrob
 
 #endif //KNOWROB_QUERY_STAGE_H

@@ -190,7 +190,7 @@ namespace knowrob {
         unsigned long getCapabilities() const override;
 
         // Override IReasoner
-        AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, int queryFlags) override;
+        AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override;
 
     protected:
         static bool isPrologInitialized_;

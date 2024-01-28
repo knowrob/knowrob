@@ -21,6 +21,8 @@
 #include "knowrob/queries/IDBStage.h"
 #include "knowrob/queries/EDBStage.h"
 #include "knowrob/queries/NegationStage.h"
+#include "knowrob/queries/ModalStage.h"
+#include "knowrob/queries/QueryError.h"
 
 using namespace knowrob;
 
@@ -187,42 +189,6 @@ std::shared_ptr<KnowledgeGraph> KnowledgeBase::centralKG()
     }
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, int queryFlags)
-{
-    auto outStream = std::make_shared<AnswerBuffer>();
-
-    auto pipeline = std::make_shared<QueryPipeline>();
-    pipeline->addStage(outStream);
-
-    // convert into DNF and submit a query for each conjunction.
-    // note that the number of conjunctions can get pretty high for
-    // queries using several disjunctions.
-    // e.g. (p|~q)&(r|q) would create 4 paths (p&r, p&q, ~q&r and ~q&q).
-    // it is assumed here that queries are rather simple and that
-    // the number of path's in the query tree is rather low.
-    QueryTree qt(phi);
-    for(auto &path : qt)
-    {
-        auto &literals = path.literals();
-        std::vector<RDFLiteralPtr> rdfLiterals(literals.size());
-        uint32_t literalIndex=0;
-        for(auto &l : literals) {
-            rdfLiterals[literalIndex++] = RDFLiteral::fromLiteral(l);
-        }
-        auto pathQuery = std::make_shared<GraphQuery>(rdfLiterals, queryFlags);
-
-        auto pathOutput = submitQuery(pathQuery);
-        pathOutput >> outStream;
-        pathOutput->stopBuffering();
-        pipeline->addStage(pathOutput);
-    }
-
-    auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
-    outStream >> out;
-    outStream->stopBuffering();
-    return out;
-}
-
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
         const std::list<DependencyNodePtr> &dependencyGroup)
 {
@@ -290,7 +256,7 @@ void KnowledgeBase::createComputationPipeline(
     const std::vector<RDFComputablePtr> &computableLiterals,
     const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
     const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
-    int queryFlags)
+    const QueryContextPtr &ctx)
 {
     // This function generates a query pipeline for literals that
     // can be computed (EDB-only literals are processed separately).
@@ -316,14 +282,14 @@ void KnowledgeBase::createComputationPipeline(
         auto stepOutput = std::make_shared<AnswerBroadcaster>();
         pipeline->addStage(stepOutput);
 
-        auto edbStage = std::make_shared<EDBStage>(edb, lit, queryFlags);
+        auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
         edbStage->selfWeakRef_ = edbStage;
         stepInput >> edbStage;
         edbStage >> stepOutput;
         pipeline->addStage(edbStage);
 
         for(auto &r : lit->reasonerList()) {
-            auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, queryFlags);
+            auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, ctx);
             idbStage->selfWeakRef_ = idbStage;
             stepInput >> idbStage;
             idbStage >> stepOutput;
@@ -393,8 +359,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     }
     else {
         auto edbOnlyQuery = std::make_shared<GraphQuery>(
-                    edbOnlyLiterals,
-                    graphQuery->flags());
+                    edbOnlyLiterals, graphQuery->ctx());
         edbOut = kg->submitQuery(edbOnlyQuery);
     }
     pipeline->addStage(edbOut);
@@ -427,7 +392,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
                     createComputationSequence(literalGroup.member_),
                     edbOut,
                     idbOut,
-                    graphQuery->flags());
+                    graphQuery->ctx());
         }
         else {
             // there are multiple dependency groups. They can be evaluated in parallel.
@@ -445,7 +410,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
                         createComputationSequence(literalGroup.member_),
                         edbOut,
                         answerCombiner,
-                        graphQuery->flags());
+                        graphQuery->ctx());
             }
             answerCombiner >> idbOut;
             pipeline->addStage(answerCombiner);
@@ -458,8 +423,8 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     std::shared_ptr<AnswerBroadcaster> lastStage;
     if(!negativeLiterals.empty()) {
         // run a dedicated stage where negated literals can be evaluated in parallel
-        auto negStage = std::make_shared<NegationStage>(
-                kg, reasonerManager_, negativeLiterals);
+        auto negStage = std::make_shared<LiteralNegationStage>(
+                this, graphQuery->ctx(), negativeLiterals);
         idbOut >> negStage;
         lastStage = negStage;
     }
@@ -489,11 +454,155 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     return out;
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, int queryFlags)
+AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx)
 {
-    auto rdfLiteral = RDFLiteral::fromLiteral(literal);
+    auto rdfLiteral = RDFLiteral::fromLiteral(literal, ctx->selector_);
     return submitQuery(std::make_shared<GraphQuery>(
-        GraphQuery({rdfLiteral}, queryFlags)));
+        GraphQuery({rdfLiteral}, ctx)));
+}
+
+AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx)
+{
+    auto outStream = std::make_shared<AnswerBuffer>();
+
+    auto pipeline = std::make_shared<QueryPipeline>();
+    pipeline->addStage(outStream);
+
+    // --------------------------------------
+    // Pick a Knowledge Graph for EDB queries
+    // --------------------------------------
+    std::shared_ptr<KnowledgeGraph> kg = centralKG();
+
+    // decompose input formula into parts that are considered in disjunction,
+    // and thus can be evaluated in parallel.
+    QueryTree qt(phi);
+    for(auto &path : qt)
+    {
+    	// each node in a path is either a predicate, a negated predicate,
+		// a modal formula, or the negation of a modal formula.
+
+		std::vector<RDFLiteralPtr> posLiterals, negLiterals;
+		std::vector<std::shared_ptr<ModalFormula>> posModals, negModals;
+
+        for(auto &node : path.nodes()) {
+			switch(node->type()) {
+			case FormulaType::PREDICATE:
+				// TODO: rather directly construct RDFLit?
+				posLiterals.push_back(RDFLiteral::fromLiteral(std::make_shared<Literal>(
+					std::static_pointer_cast<Predicate>(node),
+					false
+				),  ctx->selector_));
+				break;
+
+			case FormulaType::MODAL:
+				posModals.push_back(std::static_pointer_cast<ModalFormula>(node));
+				break;
+
+			case FormulaType::NEGATION: {
+				auto negation = (Negation*)node.get();
+				auto negated = negation->negatedFormula();
+				switch(negated->type()) {
+				case FormulaType::PREDICATE:
+					// TODO: rather directly construct RDFLit?
+					negLiterals.push_back(RDFLiteral::fromLiteral(std::make_shared<Literal>(
+						std::static_pointer_cast<Predicate>(negated), true), ctx->selector_));
+					break;
+				case FormulaType::MODAL:
+					negModals.push_back(std::static_pointer_cast<ModalFormula>(negated));
+					break;
+				default:
+					throw QueryError("Unexpected negated formula type {} in QueryTree.", (int)negated->type());
+				}
+				break;
+			}
+			default:
+				throw QueryError("Unexpected formula type {} in QueryTree.", (int)node->type());
+			}
+		}
+
+		std::shared_ptr<AnswerBroadcaster> lastStage;
+		std::shared_ptr<AnswerBuffer> firstBuffer;
+
+		// first evaluate positive literals if any
+		if(posLiterals.empty()) {
+			// if there are none, we still need to indicate begin and end of stream for the rest of the pipeline.
+			// so we just push `bos` (an empty substitution) followed by `eos` and feed these messages to the next stage.
+			// FIXME: need to call stopBuffering!?!
+			firstBuffer = std::make_shared<AnswerBuffer>();
+			lastStage = firstBuffer;
+			auto channel = AnswerStream::Channel::create(lastStage);
+			channel->push(AnswerStream::bos());
+			channel->push(AnswerStream::eos());
+        	pipeline->addStage(lastStage);
+		}
+		else {
+        	auto pathQuery = std::make_shared<GraphQuery>(posLiterals, ctx);
+        	firstBuffer = submitQuery(pathQuery);
+        	lastStage = firstBuffer;
+        	pipeline->addStage(lastStage);
+		}
+
+		// --------------------------------------
+		// Evaluate all positive modals in sequence.
+		// TODO: compute dependency between modals, evaluate independent modals in parallel.
+		//       they could also be independent in evaluation context only, we could check which variables receive
+		//       grounding already before in posLiteral query!
+		//       this is effectively what is done in submitQuery(pathQuery)
+		// --------------------------------------
+		for(auto &posModal : posModals) {
+			// FIXME: use of this pointer below. only ok if destructor makes sure to destroy all pipelines.
+			//        maybe a better way would be having another class generating pipelines with the ability
+			//        to create reference pointer on a KnowledgeBase
+			auto modalStage = std::make_shared<ModalStage>(this, posModal, ctx);
+            modalStage->selfWeakRef_ = modalStage;
+			lastStage >> modalStage;
+			lastStage = modalStage;
+        	pipeline->addStage(lastStage);
+		}
+
+		// --------------------------------------
+		// Evaluate all negative literals in parallel.
+		// --------------------------------------
+		if(!negLiterals.empty()) {
+			// run a dedicated stage where negated literals can be evaluated in parallel
+			auto negLiteralStage = std::make_shared<LiteralNegationStage>(
+					this, ctx, negLiterals);
+			lastStage >> negLiteralStage;
+			lastStage = negLiteralStage;
+        	pipeline->addStage(lastStage);
+		}
+
+		// --------------------------------------
+		// Evaluate all negative modals in parallel.
+		// --------------------------------------
+		if(!negModals.empty()) {
+			// run a dedicated stage where negated modals can be evaluated in parallel
+			auto negModalStage = std::make_shared<ModalNegationStage>(
+					this, ctx, negModals);
+			lastStage >> negModalStage;
+			lastStage = negModalStage;
+        	pipeline->addStage(lastStage);
+		}
+
+		/*
+        auto &literals = path.literals();
+        std::vector<RDFLiteralPtr> rdfLiterals(literals.size());
+        uint32_t literalIndex=0;
+        for(auto &l : literals) {
+            rdfLiterals[literalIndex++] = RDFLiteral::fromLiteral(l);
+        }
+        auto pathQuery = std::make_shared<GraphQuery>(rdfLiterals, queryFlags);
+        */
+
+        lastStage >> outStream;
+        firstBuffer->stopBuffering();
+        pipeline->addStage(lastStage);
+    }
+
+    auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
+    outStream >> out;
+    outStream->stopBuffering();
+    return out;
 }
 
 bool KnowledgeBase::insert(const std::vector<StatementData> &propositions)

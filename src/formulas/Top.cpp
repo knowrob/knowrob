@@ -21,6 +21,11 @@ Top::Top()
 {
 }
 
+bool Top::isEqual(const Formula &other) const
+{
+	return true; // isEqual is only called of other also has type "Bottom"
+}
+
 void Top::write(std::ostream& os) const
 {
 	os << "\u22A4";

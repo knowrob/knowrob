@@ -240,10 +240,12 @@ add_library(knowrob_qa SHARED
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
-        src/modalities/ModalityLabel.cpp
         src/semweb/KnowledgeGraph.cpp
         src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp)
+        src/semweb/KnowledgeGraphPlugin.cpp
+        src/queries/ModalStage.cpp
+        src/semweb/Agent.cpp
+        include/knowrob/semweb/Agent.h)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

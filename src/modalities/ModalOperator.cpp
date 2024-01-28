@@ -68,9 +68,9 @@ bool ModalOperator::isModalPossibility() const
     return operatorType_ == ModalOperatorType::POSSIBILITY;
 }
 
-const std::shared_ptr<ModalIteration>& ModalIteration::emptyIteration()
+const ModalIteration& ModalIteration::emptyIteration()
 {
-    static auto empty = std::make_shared<ModalIteration>();
+    static ModalIteration empty;
     return empty;
 }
 
@@ -89,6 +89,13 @@ bool ModalIteration::operator==(const ModalIteration &other) const
         ++jt;
     }
     return true;
+}
+
+ModalIteration ModalIteration::operator+(const ModalOperatorPtr &modalOperator) const
+{
+	ModalIteration it(*this);
+	it += modalOperator;
+	return it;
 }
 
 void ModalIteration::operator+=(const ModalOperatorPtr &next) //NOLINT

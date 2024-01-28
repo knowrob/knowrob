@@ -12,6 +12,7 @@
 #include <ostream>
 #include <utility>
 #include "Term.h"
+#include "knowrob/formulas/Predicate.h"
 
 namespace knowrob {
 	/**
@@ -66,6 +67,8 @@ namespace knowrob {
 				: Constant(TermType::STRING, v) {}
 		explicit StringTerm(const char *v)
 				: Constant(TermType::STRING, v) {}
+
+		PredicatePtr operator()(TermPtr arg1, TermPtr arg2) const;
 		
 		// Override Term
 		void write(std::ostream& os) const override;

@@ -27,6 +27,11 @@ void Bottom::write(std::ostream& os) const
 	os << "\u22A5";
 }
 
+bool Bottom::isEqual(const Formula &other) const
+{
+	return true; // isEqual is only called of other also has type "Bottom"
+}
+
 TEST(bottom_term, isGround) {
     EXPECT_TRUE(Bottom::get()->isGround());
 }

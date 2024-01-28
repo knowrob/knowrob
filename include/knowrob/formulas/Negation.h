@@ -6,6 +6,7 @@
 #define KNOWROB_NEGATED_FORMULA_H
 
 #include "CompoundFormula.h"
+#include "Predicate.h"
 
 namespace knowrob {
     /**
@@ -28,6 +29,7 @@ namespace knowrob {
 
     protected:
         Negation(const Negation &other, const Substitution &sub);
+		bool isEqual(const Formula &other) const override;
     };
 
     /**

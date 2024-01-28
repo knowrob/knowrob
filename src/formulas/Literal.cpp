@@ -6,21 +6,18 @@
 
 using namespace knowrob;
 
-Literal::Literal(const PredicatePtr &predicate, bool isNegative, const ModalityLabelPtr &label)
+Literal::Literal(const PredicatePtr &predicate, bool isNegative)
 : predicate_(predicate),
-  isNegated_(isNegative),
-  label_(label)
+  isNegated_(isNegative)
 {}
 
 Literal::Literal(const Literal &other, const Substitution &sub)
 : predicate_(std::make_shared<Predicate>(*other.predicate_, sub)),
-  isNegated_(other.isNegated_),
-  label_(other.label_)
+  isNegated_(other.isNegated_)
 {}
 
 std::ostream& Literal::write(std::ostream& os) const
 {
-    // TODO: also print label
     if(isNegated()) {
         os << "not(" << *predicate_ << ")";
     }
