@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "knowrob/Logger.h"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/semweb/xsd.h"
 
 namespace fs = std::filesystem;
@@ -150,6 +150,13 @@ KnowledgeGraph::KnowledgeGraph()
   vocabulary_(std::make_shared<semweb::Vocabulary>()),
   importHierarchy_(std::make_unique<semweb::ImportHierarchy>())
 {
+	addDataHandler(DataSource::RDF_XML_FORMAT, [this] (const DataSourcePtr &dataFile) {
+		return loadFile(dataFile->uri(), TripleFormat::RDF_XML);
+	});
+	addDataHandler(DataSource::RDF_TURTLE_FORMAT, [this] (const DataSourcePtr &dataFile) {
+		return loadFile(dataFile->uri(), TripleFormat::TURTLE);
+	});
+
     // TODO: reconsider handling of raptor worlds, e.g. some reasoner could
     //       access data from raptor API, but in some cases it could be desired
     //       to keep all the data only in some database
@@ -167,11 +174,6 @@ KnowledgeGraph::~KnowledgeGraph()
 {
     // FIXME: stop all GraphQueryRunner's as they hold a pointer to this
     raptor_free_world(raptorWorld_);
-}
-
-void KnowledgeGraph::setThreadPool(const std::shared_ptr<ThreadPool> &threadPool)
-{
-    threadPool_ = threadPool;
 }
 
 bool KnowledgeGraph::isDefinedResource(const std::string_view &iri)

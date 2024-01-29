@@ -17,7 +17,7 @@
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/DataBackend.h"
+#include "knowrob/backend/DataBackend.h"
 
 namespace knowrob {
     /**
@@ -150,13 +150,6 @@ namespace knowrob {
          * @return true if versionString is a valid version string
          */
         static bool isVersionString(const std::string &versionString);
-
-        /**
-         * Assign thread pool to be used during query evaluation.
-         * This is optional, and if not called a default one will be used.
-         * @param threadPool a thread pool.
-         */
-        void setThreadPool(const std::shared_ptr<ThreadPool> &threadPool);
 
     protected:
         std::shared_ptr<ThreadPool> threadPool_;

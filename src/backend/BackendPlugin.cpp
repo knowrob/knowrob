@@ -7,11 +7,11 @@
  */
 
 #include <dlfcn.h>
-#include "knowrob/semweb/KnowledgeGraphPlugin.h"
+#include "knowrob/backend/BackendPlugin.h"
 
 using namespace knowrob;
 
-KnowledgeGraphPlugin::KnowledgeGraphPlugin(std::string dllPath)
+BackendPlugin::BackendPlugin(std::string dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
@@ -19,7 +19,7 @@ KnowledgeGraphPlugin::KnowledgeGraphPlugin(std::string dllPath)
 {
 }
 
-KnowledgeGraphPlugin::~KnowledgeGraphPlugin()
+BackendPlugin::~BackendPlugin()
 {
 	if(handle_) {
 		dlclose(handle_);
@@ -27,17 +27,17 @@ KnowledgeGraphPlugin::~KnowledgeGraphPlugin()
 	}
 }
 
-bool KnowledgeGraphPlugin::isLoaded()
+bool BackendPlugin::isLoaded()
 {
 	return (create_ != nullptr && get_name_ != nullptr);
 }
 
-bool KnowledgeGraphPlugin::loadDLL()
+bool BackendPlugin::loadDLL()
 {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
 	if(handle_ != nullptr) {
-		create_ = (std::shared_ptr<KnowledgeGraph> (*)())
-				dlsym(handle_, "knowrob_createKnowledgeGraph");
+		create_ = (std::shared_ptr<DataBackend> (*)())
+				dlsym(handle_, "knowrob_createBackend");
 		get_name_ = (char* (*)())
 				dlsym(handle_, "knowrob_getPluginName");
 		return isLoaded();
@@ -47,7 +47,7 @@ bool KnowledgeGraphPlugin::loadDLL()
 	}
 }
 
-std::shared_ptr<DefinedKnowledgeGraph> KnowledgeGraphPlugin::createKnowledgeGraph(const std::string &reasonerID)
+std::shared_ptr<DefinedBackend> BackendPlugin::createBackend(const std::string &reasonerID)
 {
-	return std::make_shared<DefinedKnowledgeGraph>(reasonerID, create_());
+	return std::make_shared<DefinedBackend>(reasonerID, create_());
 }

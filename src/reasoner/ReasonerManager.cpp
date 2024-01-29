@@ -20,7 +20,7 @@ std::map<uint32_t, ReasonerManager*> ReasonerManager::reasonerManagers_ = {};
 uint32_t ReasonerManager::managerIDCounter_ = 0;
 
 ReasonerManager::ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
-                                 const std::shared_ptr<KnowledgeGraphManager> &backendManager)
+                                 const std::shared_ptr<BackendManager> &backendManager)
 : threadPool_(threadPool),
   backendManager_(backendManager),
   reasonerIndex_(0)
@@ -46,7 +46,7 @@ ReasonerManager* ReasonerManager::getReasonerManager(uint32_t managerID)
     }
 }
 
-void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
+std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 {
 	// a reasoner that is implemented in a DLL
 	auto lib = config.get_optional<std::string>("lib");
@@ -102,9 +102,9 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
     reasoner->setReasonerManager(managerID_);
 
 	if(backendName.has_value()) {
-	    auto definedBackend = backendManager_->getKnowledgeGraphWithID(backendName.value());
+	    auto definedBackend = backendManager_->getBackendWithID(backendName.value());
 	    if(definedBackend) {
-            reasoner->setDataBackend(definedBackend->knowledgeGraph());
+            reasoner->setDataBackend(definedBackend->backend());
 	    }
 	    else {
 		    throw ReasonerError("Reasoner `{}` refers to unknown data-backend `{}`.", reasonerID, backendName.value());
@@ -114,19 +114,21 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 		// check if reasoner implements DataBackend interface
 		auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);
 		if(backend) {
+			backend->setThreadPool(threadPool_);
             reasoner->setDataBackend(backend);
 		}
 		else {
         	throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
 		}
 	}
-    addReasoner(reasonerID, reasoner);
+    auto definedReasoner = addReasoner(reasonerID, reasoner);
 
 	ReasonerConfig reasonerConfig(&config);
 	if(!reasoner->loadConfig(reasonerConfig)) {
 		KB_WARN("Reasoner `{}` failed to loadConfig.", reasonerID);
 	}
 	else {
+		// load the reasoner-specific data sources.
         for(auto &dataSource : reasonerConfig.dataSources()) {
             if(!reasoner->loadDataSource(dataSource)) {
                 KB_WARN("Reasoner `{}` failed to load data source {}.", reasonerID, dataSource->uri());
@@ -135,6 +137,8 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	}
 	// increase reasonerIndex_
 	reasonerIndex_ += 1;
+
+	return definedReasoner;
 }
 
 std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::string &path)

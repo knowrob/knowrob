@@ -20,7 +20,8 @@
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/GraphQuery.h"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/DataSourceHandler.h"
 
 namespace knowrob {
 	/**
@@ -38,9 +39,11 @@ namespace knowrob {
 	 * The axioms and rules may refer to extensional data which is stored in the
 	 * knowledge base in form of a knowledge graph, and which may need to be mirrored
 	 * into the reasoner's own data backend in case it cannot operate directly
-	 * on the central extensional database.s
+	 * on the central extensional database.
+	 * Note that a reasoner is also a data source handler, i.e. data which is needed
+	 * by the reasoner to operate which is not stored in a backend.
 	 */
-	class Reasoner {
+	class Reasoner : public DataSourceHandler {
 	public:
         Reasoner();
 		virtual ~Reasoner()= default;
@@ -54,22 +57,6 @@ namespace knowrob {
          * Set the data backend of this reasoner.
 		 */
         virtual void setDataBackend(const DataBackendPtr &backend) = 0;
-
-		/**
-		 * Add a handler for a data source format.
-		 * @param format the format name.
-		 * @param fn the handler function.
-		 */
-		void addDataHandler(const std::string &format,
-							const std::function<bool(const DataSourcePtr &)> &fn);
-
-		/**
-		 * Load a data source.
-		 * The knowledge base system calls this function for each data source
-		 * that is passed to the reasoner.
-		 * @param dataSource the data source to load.
-		 */
-		bool loadDataSource(const DataSourcePtr &dataSource);
 
 		/**
 		 * Load a reasoner configuration.
@@ -127,10 +114,7 @@ namespace knowrob {
         virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
 
 	protected:
-		std::map<std::string, DataSourceLoader> dataSourceHandler_;
         uint32_t reasonerManagerID_;
-
-		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr&) { return false; }
 
         void setReasonerManager(uint32_t managerID);
 
@@ -145,6 +129,9 @@ namespace knowrob {
 	class ReasonerWithBackend : public Reasoner, public DataBackend {
 	public:
 		ReasonerWithBackend() : Reasoner(), DataBackend() {}
+
+		// avoid a self-reference
+		void setDataBackend(const DataBackendPtr &backend) final {}
 	};
 }
 

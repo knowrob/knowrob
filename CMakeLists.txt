@@ -244,15 +244,16 @@ add_library(knowrob SHARED
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
-        src/semweb/KnowledgeGraph.cpp
-        src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp
+        src/backend/KnowledgeGraph.cpp
+        src/backend/BackendManager.cpp
+        src/backend/BackendPlugin.cpp
         src/queries/ModalStage.cpp
         src/semweb/Agent.cpp
         include/knowrob/semweb/Agent.h
         src/formulas/PredicateIndicator.cpp
         src/formulas/PredicateDescription.cpp
-        src/reasoner/ReasonerModule.cpp)
+        src/reasoner/ReasonerModule.cpp
+        src/DataSourceHandler.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

@@ -6,16 +6,16 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_KG_ERROR_H_
-#define KNOWROB_KG_ERROR_H_
+#ifndef KNOWROB_BACKEND_ERROR_H_
+#define KNOWROB_BACKEND_ERROR_H_
 
 #include <fmt/core.h>
 
 namespace knowrob {
 	/**
-	 * A data KG-related runtime error.
+	 * A data backend-related runtime error.
 	 */
-	class KnowledgeGraphError : public std::runtime_error {
+	class BackendError : public std::runtime_error {
 	public:
 		/**
 		 * @tparam Args fmt-printable arguments.
@@ -23,9 +23,9 @@ namespace knowrob {
 		 * @param args list of arguments used to instantiate the pattern.
 		 */
 		template<typename ... Args>
-		explicit KnowledgeGraphError(const char *fmt, Args&& ... args)
+		explicit BackendError(const char *fmt, Args&& ... args)
 		: std::runtime_error(fmt::format(fmt, args...)) {}
 	};
 }
 
-#endif //KNOWROB_KG_ERROR_H_
+#endif //KNOWROB_BACKEND_ERROR_H_

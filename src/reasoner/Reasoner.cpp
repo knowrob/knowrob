@@ -31,19 +31,3 @@ PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &litera
 		return {};
 	}
 }
-
-void Reasoner::addDataHandler(const std::string &format, const std::function<bool(const DataSourcePtr &)> &fn)
-{
-	dataSourceHandler_[format] = fn;
-}
-
-bool Reasoner::loadDataSource(const DataSourcePtr &dataSource)
-{
-	if(dataSource->dataFormat().empty()) {
-		return loadDataSourceWithUnknownFormat(dataSource);
-	}
-	else {
-		auto it = dataSourceHandler_.find(dataSource->dataFormat());
-		return (it != dataSourceHandler_.end()) && it->second(dataSource);
-	}
-}

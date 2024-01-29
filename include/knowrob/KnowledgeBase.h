@@ -12,7 +12,7 @@
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/semweb/KnowledgeGraphManager.h"
+#include "knowrob/backend/BackendManager.h"
 #include "ThreadPool.h"
 #include "knowrob/queries/DependencyGraph.h"
 #include "knowrob/queries/QueryPipeline.h"
@@ -73,17 +73,20 @@ namespace knowrob {
          */
         auto& threadPool() { return *threadPool_; }
 
+		/**
+		 * @return the central knowledge graph
+		 */
+        auto centralKG() const { return centralKG_; }
+
         /**
          * @return the vocabulary of this knowledge base, i.e. all known properties and classes
          */
-        auto vocabulary() { return backendManager_->vocabulary(); }
-
-        std::shared_ptr<KnowledgeGraph> centralKG();
+        auto vocabulary() const { return centralKG()->vocabulary(); }
 
         /**
          * @return import hierarchy of named graphs
          */
-        auto importHierarchy() { return backendManager_->importHierarchy(); }
+        auto importHierarchy() const { return centralKG()->importHierarchy(); }
 
         /**
          * Evaluate a query represented as a vector of literals.
@@ -114,8 +117,9 @@ namespace knowrob {
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
-		std::shared_ptr<KnowledgeGraphManager> backendManager_;
+		std::shared_ptr<BackendManager> backendManager_;
 		std::shared_ptr<ThreadPool> threadPool_;
+		std::shared_ptr<KnowledgeGraph> centralKG_;
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 

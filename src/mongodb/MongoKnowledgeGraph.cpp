@@ -19,7 +19,7 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/queries/QueryParser.h"
-#include "knowrob/semweb/KnowledgeGraphManager.h"
+#include "knowrob/backend/BackendManager.h"
 #include "knowrob/KnowledgeBase.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"

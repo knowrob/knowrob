@@ -8,9 +8,6 @@ class DummyReasoner(ReasonerWithBackend):
 		print("loadConfig: " + str(config))
 		return True
 
-	def setDataBackend(self, backend):
-		pass
-
 	def getTruthMode(self):
 		return TruthMode.CLOSED_WORLD
 

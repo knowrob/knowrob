@@ -129,9 +129,6 @@ struct ReasonerWithBackendWrap :
 	void removeOne(const RDFLiteral &literal) override
 	{ python::call_method<void>(self, "removeOne", literal); }
 
-	void setDataBackend(const DataBackendPtr &backend) override
-	{ python::call_method<void>(self, "setDataBackend", backend); }
-
 	TruthMode getTruthMode() const override
 	{ return python::call_method<TruthMode>(self, "getTruthMode"); }
 

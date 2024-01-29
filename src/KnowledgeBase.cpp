@@ -93,7 +93,7 @@ namespace knowrob
 KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 : threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()))
 {
-	backendManager_ = std::make_shared<KnowledgeGraphManager>(threadPool_);
+	backendManager_ = std::make_shared<BackendManager>(threadPool_);
 	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
 	loadConfiguration(config);
 }
@@ -101,7 +101,7 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
 : threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency()))
 {
-	backendManager_ = std::make_shared<KnowledgeGraphManager>(threadPool_);
+	backendManager_ = std::make_shared<BackendManager>(threadPool_);
 	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
 
 	boost::property_tree::ptree config;
@@ -132,7 +132,7 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	if(backendList) {
 		for(const auto &pair : backendList.value()) {
 			try {
-                backendManager_->loadKnowledgeGraph(pair.second);
+				backendManager_->loadBackend(pair.second);
 			}
 			catch(std::exception& e) {
 				KB_ERROR("failed to load a knowledgeGraph: {}", e.what());
@@ -143,11 +143,37 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		KB_ERROR("configuration has no 'backends' key.");
 	}
 
+	// get the central backend, ensure it implements KnowledgeGraph class.
+	auto centralBackendName = config.get_optional<std::string>("central-backend");
+	if(centralBackendName) {
+		auto centralBackend = backendManager_->getBackendWithID(centralBackendName.value());
+		if(!centralBackend) {
+			KB_ERROR("failed to find central backend with ID '{}'.", centralBackendName.value());
+		}
+		centralKG_ = std::dynamic_pointer_cast<KnowledgeGraph>(centralBackend->backend());
+		if(!centralKG_) {
+			KB_ERROR("backend '{}' is not a type of KnowledgeGraph.", centralBackendName.value());
+		}
+	}
+	else {
+		KB_ERROR("configuration has no 'central-backend' key.");
+	}
+	if(!centralKG_) {
+		// TODO: throw exception of custom type
+		throw std::runtime_error("failed to initialize central knowledge graph.");
+	}
+
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
 		for(const auto &pair : reasonerList.value()) {
 			try {
-				reasonerManager_->loadReasoner(pair.second);
+				auto definedReasoner = reasonerManager_->loadReasoner(pair.second);
+				// if reasoner implements DataBackend class, add it to the backend manager
+				auto reasonerBackend = std::dynamic_pointer_cast<DataBackend>(definedReasoner->reasoner());
+				if(reasonerBackend) {
+					auto backendID = definedReasoner->name() + "__BACKEND";
+					backendManager_->addBackend(backendID, reasonerBackend);
+				}
 			}
 			catch(std::exception& e) {
 				KB_ERROR("failed to load a reasoner: {}", e.what());
@@ -158,6 +184,8 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		KB_ERROR("configuration has no 'reasoner' key.");
 	}
 
+	// load the "global" data sources.
+	// these are data sources that can be used by all backends.
 	auto dataSourcesList = config.get_child_optional("data-sources");
 	if(dataSourcesList) {
 	    static const std::string formatDefault = {};
@@ -168,24 +196,10 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 			auto source = std::make_shared<DataSource>(dataFormat);
 			source->loadSettings(subtree);
 
-			for(auto &kg_pair : backendManager_->knowledgeGraphPool()) {
-			    // FIXME: handle format specified in settings file
-			    kg_pair.second->knowledgeGraph()->loadFile(source->uri(), TripleFormat::RDF_XML);
+			for(auto &kg_pair : backendManager_->backendPool()) {
+			    kg_pair.second->backend()->loadDataSource(source);
 			}
         }
-    }
-}
-
-std::shared_ptr<KnowledgeGraph> KnowledgeBase::centralKG()
-{
-    auto knowledgeGraphs_ = backendManager_->knowledgeGraphPool();
-    std::shared_ptr<KnowledgeGraph> centralKG;
-    if(knowledgeGraphs_.empty()) {
-        return {};
-    }
-    else {
-        // TODO: flag one of the KGs as "preferred" in settings
-        return (*knowledgeGraphs_.begin()).second->knowledgeGraph();
     }
 }
 
@@ -616,8 +630,8 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 bool KnowledgeBase::insert(const std::vector<StatementData> &propositions)
 {
     bool status = true;
-    for(auto &kg : backendManager_->knowledgeGraphPool()) {
-        if(!kg.second->knowledgeGraph()->insertAll(propositions)) {
+    for(auto &kg : backendManager_->backendPool()) {
+        if(!kg.second->backend()->insertAll(propositions)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }
@@ -629,8 +643,8 @@ bool KnowledgeBase::insert(const StatementData &proposition)
 {
     bool status = true;
     // assert each statement into each knowledge graph backend
-    for(auto &kg : backendManager_->knowledgeGraphPool()) {
-        if(!kg.second->knowledgeGraph()->insertOne(proposition)) {
+    for(auto &kg : backendManager_->backendPool()) {
+        if(!kg.second->backend()->insertOne(proposition)) {
             KB_WARN("assertion of triple data failed!");
             status = false;
         }

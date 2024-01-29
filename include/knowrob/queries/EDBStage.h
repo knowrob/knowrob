@@ -6,7 +6,7 @@
 #define KNOWROB_EDB_STAGE_H
 
 #include <memory>
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "QueryStage.h"
 
 namespace knowrob {

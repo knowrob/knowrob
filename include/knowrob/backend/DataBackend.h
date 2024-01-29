@@ -9,6 +9,8 @@
 #include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
+#include "knowrob/ThreadPool.h"
+#include "knowrob/DataSourceHandler.h"
 
 namespace knowrob {
 	/**
@@ -18,7 +20,7 @@ namespace knowrob {
 	 * However, reasoners may use their own data backend to store
 	 * extensional data that is used to evaluate axioms and rules.
 	 */
-    class DataBackend {
+    class DataBackend : public DataSourceHandler {
     public:
         DataBackend() = default;
 
@@ -56,6 +58,21 @@ namespace knowrob {
          * @param literal an expression used to match statements in the KG.
          */
         virtual void removeOne(const RDFLiteral &literal) = 0;
+
+        /**
+         * Assign thread pool to be used during query evaluation.
+         * This is optional, and if not called a default one will be used.
+         * @param threadPool a thread pool.
+         */
+        void setThreadPool(const std::shared_ptr<ThreadPool> &threadPool) { threadPool_ = threadPool; }
+
+        /**
+		 * @return the thread pool used during query evaluation.
+		 */
+		auto& threadPool() const { return threadPool_; }
+
+	protected:
+		std::shared_ptr<ThreadPool> threadPool_;
     };
 
     using DataBackendPtr = std::shared_ptr<DataBackend>;
