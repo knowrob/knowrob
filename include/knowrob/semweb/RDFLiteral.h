@@ -30,6 +30,13 @@ namespace knowrob {
 		 */
         explicit RDFLiteral(const StatementData &tripleData, bool isNegated=false);
 
+		/**
+		 * @param predicate a predicate with two arguments.
+		 * @param isNegated a value of true refers to the statement being false.
+		 * @param selector a selector for the graph, agent, begin, end and confidence.
+		 */
+		RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector);
+
         /**
          * Substitution constructor.
          * @other a literal.
@@ -42,8 +49,6 @@ namespace knowrob {
                    const TermPtr &o,
                    bool isNegated,
                    const GraphSelector &selector);
-
-        static std::shared_ptr<RDFLiteral> fromLiteral(const LiteralPtr &literal, const GraphSelector &selector);
 
         /**
          * @return the subject term of this expression.
@@ -121,6 +126,7 @@ namespace knowrob {
 
         static std::shared_ptr<Predicate> getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o);
         static std::shared_ptr<Predicate> getRDFPredicate(const StatementData &data);
+        static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
     };
     using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
 

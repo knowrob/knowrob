@@ -47,7 +47,8 @@ bool LiteralNegationStage::succeeds(const AnswerPtr &answer)
 		lit1->setIsNegated(false);
 
 		// create an instance of the literal based on given substitution
-		auto instance = RDFLiteral::fromLiteral(lit1, ctx_->selector_);
+		auto instance = std::make_shared<RDFLiteral>(
+				lit1->predicate(), lit1->isNegated(), ctx_->selector_);
 
 		// check if the EDB contains positive lit, if so negation cannot be true
 		results.push_back(kg->submitQuery(

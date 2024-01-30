@@ -41,6 +41,32 @@ RDFLiteral::RDFLiteral(const StatementData &data, bool isNegated)
     }
 }
 
+RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector)
+: Literal(getRDFPredicate(predicate), isNegated),
+  subjectTerm_(predicate_->arguments()[0]),
+  propertyTerm_(predicate_->arguments()[1]),
+  objectTerm_(predicate_->arguments()[2]),
+  objectOperator_(EQ),
+  epistemicOperator_(selector.epistemicOperator),
+  temporalOperator_(selector.temporalOperator)
+{
+    if(selector.confidence.has_value()) {
+        confidenceTerm_ = std::make_shared<DoubleTerm>(selector.confidence.value());
+    }
+    if(selector.begin.has_value()) {
+        beginTerm_ = std::make_shared<DoubleTerm>(selector.begin.value());
+    }
+    if(selector.end.has_value()) {
+        endTerm_ = std::make_shared<DoubleTerm>(selector.end.value());
+    }
+    if(selector.graph) {
+        graphTerm_ = getGraphTerm(selector.graph);
+    }
+    if(selector.agent) {
+        agentTerm_ = std::make_shared<StringTerm>(selector.agent.value()->iri());
+    }
+}
+
 RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
 : Literal(other, sub),
   subjectTerm_(predicate_->arguments()[0]),
@@ -92,28 +118,6 @@ RDFLiteral::RDFLiteral(
 	}
 }
 
-std::shared_ptr<RDFLiteral> RDFLiteral::fromLiteral(const LiteralPtr &literal, const GraphSelector &selector)
-{
-	if(literal->arity()==2) {
-		auto s = literal->predicate()->arguments()[0];
-		// TODO: a copy of the name is held by Vocabulary class
-		//  memory could be mapped into StringTerm but StringTerm does not support it yet.
-		auto p = std::make_shared<StringTerm>(literal->functor());
-		auto o = literal->predicate()->arguments()[1];
-		return std::make_shared<RDFLiteral>(s,p,o,literal->isNegated(),selector);
-	}
-	else if(literal->arity()==3 && literal->functor()=="triple") {
-		// handle triple/3 predicate here
-		auto s = literal->predicate()->arguments()[0];
-		auto p = literal->predicate()->arguments()[1];
-		auto o = literal->predicate()->arguments()[2];
-		return std::make_shared<RDFLiteral>(s,p,o,literal->isNegated(),selector);
-	}
-	else {
-		throw QueryError("RDF literal can only be constructed from 2-ary predicates but {} is not.", *literal);
-	}
-}
-
 std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName)
 {
     static std::map<std::string, TermPtr, std::less<>> graphTerms;
@@ -134,6 +138,21 @@ std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName
 std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o)
 {
     return std::make_shared<Predicate>(TRIPLE_INDICATOR, std::vector<TermPtr>({s,p,o}));
+}
+
+std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const PredicatePtr &predicate)
+{
+	if(predicate->indicator()->arity()==3 && predicate->indicator()->functor() == "triple") {
+		return predicate;
+	}
+	else if(predicate->indicator()->arity()==2) {
+		return getRDFPredicate(predicate->arguments()[0],
+							   std::make_shared<StringTerm>(predicate->indicator()->functor()),
+							   predicate->arguments()[1]);
+	}
+	else {
+		throw QueryError("RDF literal can only be constructed from 2-ary predicates but {} is not.", *predicate);
+	}
 }
 
 std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const StatementData &data)
@@ -278,7 +297,7 @@ StatementData RDFLiteral::toStatementData() const
 
     // handle epistemic modality
     if(epistemicOperator_) {
-		data.epistemicOperator = epistemicOperator_.value();
+		data.epistemicOperator = epistemicOperator_;
     }
     if(agentTerm_) {
         data.agent = readStringConstant(agentTerm_);
@@ -289,7 +308,7 @@ StatementData RDFLiteral::toStatementData() const
 
     // handle temporal modality
     if(temporalOperator_) {
-        data.temporalOperator = temporalOperator_.value();
+        data.temporalOperator = temporalOperator_;
     }
     if(beginTerm_) {
         data.begin = readDoubleConstant(beginTerm_);

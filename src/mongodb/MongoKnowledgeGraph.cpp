@@ -745,9 +745,9 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple)
 
 TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple)
 {
-    auto negated = RDFLiteral::fromLiteral(std::make_shared<Literal>(
+    auto negated = std::make_shared<RDFLiteral>(
         QueryParser::parsePredicate("p(x,y)"),
-        true), GraphSelector::getDefault());
+        true, GraphSelector::getDefault());
     EXPECT_EQ(lookup(*negated).size(), 1);
     StatementData statement("x","p","y");
     EXPECT_NO_THROW(kg_->insertOne(statement));

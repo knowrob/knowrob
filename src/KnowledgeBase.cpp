@@ -310,6 +310,7 @@ void KnowledgeBase::createComputationPipeline(
 			idbStage >> stepOutput;
 			pipeline->addStage(idbStage);
 			// TODO: what about the materialization of the predicate in EDB?
+			//       there is also the QUERY_FLAG_PERSIST_SOLUTIONS flag
 		}
 
 		// --------------------------------------
@@ -455,16 +456,6 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 		lastStage = idbOut;
 	}
 
-	/*
-
-			// TODO: optionally persist top-down inferences in data backend(s)
-			if(graphQuery->flags() & QUERY_FLAG_PERSIST_SOLUTIONS) {
-				//auto persistStage = std::make_shared<XXX>();
-				//lastStage >> persistStage;
-				//lastStage = persistStage;
-			}
-	*/
-
 	auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
 	lastStage >> out;
 	edbOut->stopBuffering();
@@ -472,7 +463,8 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 }
 
 AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx) {
-	auto rdfLiteral = RDFLiteral::fromLiteral(literal, ctx->selector_);
+	auto rdfLiteral = std::make_shared<RDFLiteral>(
+			literal->predicate(), literal->isNegated(), ctx->selector_);
 	return submitQuery(std::make_shared<GraphQuery>(
 			GraphQuery({rdfLiteral}, ctx)));
 }
@@ -501,11 +493,9 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 		for (auto &node: path.nodes()) {
 			switch (node->type()) {
 				case FormulaType::PREDICATE:
-					// TODO: rather directly construct RDFLit?
-					posLiterals.push_back(RDFLiteral::fromLiteral(std::make_shared<Literal>(
+					posLiterals.push_back(std::make_shared<RDFLiteral>(
 							std::static_pointer_cast<Predicate>(node),
-							false
-					), ctx->selector_));
+							false, ctx->selector_));
 					break;
 
 				case FormulaType::MODAL:
@@ -517,9 +507,9 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 					auto negated = negation->negatedFormula();
 					switch (negated->type()) {
 						case FormulaType::PREDICATE:
-							// TODO: rather directly construct RDFLit?
-							negLiterals.push_back(RDFLiteral::fromLiteral(std::make_shared<Literal>(
-									std::static_pointer_cast<Predicate>(negated), true), ctx->selector_));
+							negLiterals.push_back(std::make_shared<RDFLiteral>(
+									std::static_pointer_cast<Predicate>(negated),
+									true, ctx->selector_));
 							break;
 						case FormulaType::MODAL:
 							negModals.push_back(std::static_pointer_cast<ModalFormula>(negated));
@@ -538,10 +528,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 		std::shared_ptr<AnswerBuffer> firstBuffer;
 
 		// first evaluate positive literals if any
+		// note that the first stage is buffered, so that the next stage can be added to the pipeline
+		// and only after stopping the buffering messages will be forwarded to the next stage.
 		if (posLiterals.empty()) {
 			// if there are none, we still need to indicate begin and end of stream for the rest of the pipeline.
 			// so we just push `bos` (an empty substitution) followed by `eos` and feed these messages to the next stage.
-			// TODO: need to call stopBuffering!?!
 			firstBuffer = std::make_shared<AnswerBuffer>();
 			lastStage = firstBuffer;
 			auto channel = AnswerStream::Channel::create(lastStage);
@@ -597,21 +588,16 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 			pipeline->addStage(lastStage);
 		}
 
-		/*
-        auto &literals = path.literals();
-        std::vector<RDFLiteralPtr> rdfLiterals(literals.size());
-        uint32_t literalIndex=0;
-        for(auto &l : literals) {
-            rdfLiterals[literalIndex++] = RDFLiteral::fromLiteral(l);
-        }
-        auto pathQuery = std::make_shared<GraphQuery>(rdfLiterals, queryFlags);
-        */
-
 		lastStage >> outStream;
 		firstBuffer->stopBuffering();
 		pipeline->addStage(lastStage);
 	}
+	// At this point outStream could already contain solutions, but these are buffered
+	// such that they won't be lost during pipeline creation.
 
+	// Finally, wrap output into AnswerBuffer_WithReference object.
+	// Note that the AnswerBuffer_WithReference object is used such that the caller can
+	// destroy the whole pipeline by de-referencing the returned AnswerBufferPtr.
 	auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
 	outStream >> out;
 	outStream->stopBuffering();
