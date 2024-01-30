@@ -84,6 +84,12 @@ namespace knowrob {
         auto vocabulary() const { return centralKG()->vocabulary(); }
 
         /**
+         * @param property a property IRI
+         * @return true if the property is materialized in the EDB
+         */
+        bool isMaterializedInEDB(std::string_view property) const;
+
+        /**
          * @return import hierarchy of named graphs
          */
         auto importHierarchy() const { return centralKG()->importHierarchy(); }

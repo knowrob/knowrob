@@ -23,6 +23,8 @@
 #include "knowrob/queries/NegationStage.h"
 #include "knowrob/queries/ModalStage.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/KnowledgeBaseError.h"
+#include "knowrob/queries/RedundantAnswerFilter.h"
 
 using namespace knowrob;
 
@@ -159,10 +161,10 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		KB_ERROR("configuration has no 'central-backend' key.");
 	}
 	if(!centralKG_) {
-		// TODO: throw exception of custom type
-		throw std::runtime_error("failed to initialize central knowledge graph.");
+		throw KnowledgeBaseError("failed to initialize central knowledge graph.");
 	}
 
+	// load reasoners from configuration
 	auto reasonerList = config.get_child_optional("reasoner");
 	if(reasonerList) {
 		for(const auto &pair : reasonerList.value()) {
@@ -185,7 +187,8 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	}
 
 	// load the "global" data sources.
-	// these are data sources that can be used by all backends.
+	// these are data sources that are loaded into all backends, however
+	// the backends may decide to ignore some of the data sources.
 	auto dataSourcesList = config.get_child_optional("data-sources");
 	if(dataSourcesList) {
 	    static const std::string formatDefault = {};
@@ -201,6 +204,11 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 			}
         }
     }
+}
+
+bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const
+{
+	return centralKG()->isDefinedProperty(property);
 }
 
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
@@ -272,21 +280,12 @@ void KnowledgeBase::createComputationPipeline(
     const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
     const QueryContextPtr &ctx)
 {
-    // This function generates a query pipeline for literals that
-    // can be computed (EDB-only literals are processed separately).
-    // The literals are part of one dependency group.
-    // They are sorted, and also evaluated in this order.
-    // For each computable literal there is at least one reasoner
-    // that can compute the literal.
-    // However, instances of the literal may also occur in the EDB.
-    // Hence, computation results must be combined with results of
-    // an EDB query for each literal.
-    // There are more sophisticated strategies that could be employed
-    // to reduce number of EDB calls.
-    // For the moment we rather use a simple implementation
-    // where a parallel query step is created for each computable literal.
-    // In this step, an EDB query and computations run in parallel.
-    // The results are then given to the next step if any.
+    // This function generates a query pipeline for literals that can be computed
+	// (EDB-only literals are processed separately). The literals are part of one dependency group.
+    // They are sorted, and also evaluated in this order. For each computable literal there is at
+	// least one reasoner that can compute the literal. However, instances of the literal may also
+	// occur in the EDB. Hence, computation results must be combined with results of an EDB query
+	// for each literal.
 
     auto lastOut = pipelineInput;
     auto edb = centralKG();
@@ -296,15 +295,28 @@ void KnowledgeBase::createComputationPipeline(
         auto stepOutput = std::make_shared<AnswerBroadcaster>();
         pipeline->addStage(stepOutput);
 
-		// TODO: only add edb stage if the predicate was materialized in EDB before
-		// -> KG::isDefinedProperty
-        auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
-        edbStage->selfWeakRef_ = edbStage;
-        stepInput >> edbStage;
-        edbStage >> stepOutput;
-        pipeline->addStage(edbStage);
+		// --------------------------------------
+		// Construct a pipeline that grounds the literal in the EDB.
+		// But only add an EDB stage if the predicate was materialized in EDB before,
+		// or if the predicate is a variable.
+		// --------------------------------------
+		bool isEDBStageNeeded = true;
+		if(lit->propertyTerm() && lit->propertyTerm()->type()==TermType::STRING) {
+			auto st = (StringTerm*)lit->propertyTerm().get();
+			isEDBStageNeeded = isMaterializedInEDB(st->value());
+		}
+		if(isEDBStageNeeded) {
+			auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
+			edbStage->selfWeakRef_ = edbStage;
+			stepInput >> edbStage;
+			edbStage >> stepOutput;
+			pipeline->addStage(edbStage);
+		}
 
-		// TODO: check if queries are cached already
+		// --------------------------------------
+		// Construct a pipeline that grounds the literal in the IDB.
+		// To this end add an IDB stage for each reasoner that defines the literal.
+		// --------------------------------------
         for(auto &r : lit->reasonerList()) {
             auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, ctx);
             idbStage->selfWeakRef_ = idbStage;
@@ -314,7 +326,18 @@ void KnowledgeBase::createComputationPipeline(
             // TODO: what about the materialization of the predicate in EDB?
         }
 
-        lastOut = stepOutput;
+		// --------------------------------------
+		// Optionally add a stage to the pipeline that drops all redundant result.
+		// The filter is applied here to remove redundancies early on directly after IDB and EDB
+		// results are combined.
+		// --------------------------------------
+		if(ctx->queryFlags_ & QUERY_FLAG_UNIQUE_SOLUTIONS) {
+			auto filterStage = std::make_shared<RedundantAnswerFilter>();
+			stepOutput >> filterStage;
+			lastOut = filterStage;
+		} else {
+        	lastOut = stepOutput;
+		}
     }
 
     lastOut >> pipelineOutput;
@@ -455,12 +478,6 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery)
     }
 
     /*
-            // optionally add a stage to the pipeline that drops all redundant result.
-            if(graphQuery->flags() & QUERY_FLAG_UNIQUE_SOLUTIONS) {
-                auto filterStage = std::make_shared<RedundantAnswerFilter>();
-                lastStage >> filterStage;
-                lastStage = filterStage;
-            }
 
             // TODO: optionally persist top-down inferences in data backend(s)
             if(graphQuery->flags() & QUERY_FLAG_PERSIST_SOLUTIONS) {
