@@ -444,8 +444,6 @@ std::shared_ptr<GraphSelector> PrologQuery::createSolutionFrame(term_t pl_scope)
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
 				if (flagAtom == true_a) {
 					frame->epistemicOperator = EpistemicOperator::BELIEF;
-				} else {
-					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 				}
 			}
 		}
@@ -476,6 +474,9 @@ std::shared_ptr<GraphSelector> PrologQuery::createSolutionFrame(term_t pl_scope)
 		if (PL_get_dict_key(agent_key, pl_scope, scope_val)) {
 			atom_t agentAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &agentAtom)) {
+				if(!frame->epistemicOperator.has_value()) {
+					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+				}
 				frame->agent = Agent::get(PL_atom_chars(agentAtom));
 			}
 		}

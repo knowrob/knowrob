@@ -65,7 +65,7 @@ void PrologQueryRunner::run() {
 		// handle stop request
 		if (hasStopRequest()) break;
 
-		KB_DEBUG("Prolog has a next solution for query `{}`.", request_.queryID);
+		KB_DEBUG("Prolog has a next solution.");
 		// create an empty solution
 		auto solution = std::make_shared<AnswerYes>();
 		solution->setReasonerTerm(reasoner_->reasonerIDTerm_);
@@ -73,6 +73,7 @@ void PrologQueryRunner::run() {
 
 		// TODO: set flag to indicate if answer is well-founded or not.
 		//       if prolog was using negation as failure, the answer is not well-founded.
+		// TODO: allow frame-specification on per-literal basis?
 
 		// set the solution scope, if reasoner specified it
 		auto frame_rw = PrologQuery::createSolutionFrame(solution_scope);
@@ -86,10 +87,14 @@ void PrologQueryRunner::run() {
 
 		// add substitutions
 		for (const auto &kv: pl_goal.vars()) {
-			// TODO: skip for variables that do not have grounding?
-			solution->set(Variable(kv.first), PrologQuery::constructTerm(kv.second));
+			auto grounding = PrologQuery::constructTerm(kv.second);
+			if(grounding && grounding->type()!=TermType::VARIABLE) {
+				solution->set(Variable(kv.first), PrologQuery::constructTerm(kv.second));
+			}
 		}
+
 		// store instantiations of predicates
+		bool hasInstances = false;
 		if (PL_is_list(instantiations)) {
 			auto head = PL_new_term_ref(); /* the elements */
 			auto list = PL_copy_term_ref(instantiations);
@@ -97,8 +102,25 @@ void PrologQueryRunner::run() {
 				// TODO: what about negative literals?
 				auto t = PrologQuery::constructTerm(head);
 				solution->addGrounding(std::static_pointer_cast<Predicate>(t), frame);
+				hasInstances = true;
 			}
 		}
+		if(!hasInstances) {
+			// auto-add instances for simple queries
+			if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
+				auto conjunctive =
+					std::static_pointer_cast<const GraphQuery>(pl_goal.qa_query());
+				for(auto &rdfLiteral : conjunctive->literals()) {
+					auto p = rdfLiteral->predicate();
+					auto p_instance = p->applySubstitution(*solution->substitution());
+					solution->addGrounding(
+							std::static_pointer_cast<Predicate>(p_instance),
+							frame,
+							rdfLiteral->isNegated());
+				}
+			}
+		}
+
 		// push the solution into the output stream
 		outputChannel_->push(solution);
 

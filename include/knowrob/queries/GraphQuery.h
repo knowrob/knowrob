@@ -52,6 +52,9 @@ namespace knowrob {
 		// Override Query
 		std::ostream &print(std::ostream &os) const override;
 
+        // Override Query
+		QueryType type() const override { return QueryType::CONJUNCTIVE; }
+
 	protected:
 		std::vector<RDFLiteralPtr> literals_;
 		FormulaPtr formula_;

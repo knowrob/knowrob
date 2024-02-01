@@ -43,6 +43,9 @@ namespace knowrob {
         // Override Query
         std::ostream& print(std::ostream &os) const override;
 
+        // Override Query
+		QueryType type() const override { return QueryType::FORMULA; }
+
 	protected:
 		const std::shared_ptr<Formula> formula_;
 	};

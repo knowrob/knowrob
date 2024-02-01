@@ -17,6 +17,11 @@
 #include "QueryContext.h"
 
 namespace knowrob {
+	enum class QueryType : uint8_t  {
+		CONJUNCTIVE = 0,
+		FORMULA
+	};
+
 	/**
 	 * A query represented by a propositional formula.
 	 * @deprecated use Formula instead
@@ -27,6 +32,8 @@ namespace knowrob {
 		 * @formula the formula associated to this query.
 		 */
 		explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
+
+		virtual QueryType type() const = 0;
 
 		static int defaultFlags();
 
