@@ -19,6 +19,7 @@
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/formulas/Negation.h"
+#include "knowrob/formulas/Implication.h"
 
 using namespace knowrob;
 
@@ -38,18 +39,28 @@ PrologQuery::~PrologQuery() {
 bool PrologQuery::putTerm( //NOLINT
 		term_t pl_term, const FormulaPtr &phi, PrologVariableMap &vars) {
 	static auto negationFun = PL_new_functor(PL_new_atom("\\+"), 1);
+	static auto implicationFun = PL_new_functor(PL_new_atom(":-"), 2);
 
-	switch (phi->type()) {
+	switch(phi->type()) {
 		case FormulaType::PREDICATE: {
-			auto qa_pred = std::dynamic_pointer_cast<Term>(phi);
-			return putTerm(pl_term, qa_pred, vars);
+			auto qa_pred = std::static_pointer_cast<Predicate>(phi);
+			auto qa_term = std::static_pointer_cast<Term>(qa_pred);
+			return putTerm(pl_term, qa_term, vars);
 		}
 
 		case FormulaType::NEGATION: {
-			auto negated = std::dynamic_pointer_cast<Negation>(phi)->negatedFormula();
+			auto negated = std::static_pointer_cast<Negation>(phi)->negatedFormula();
 			auto negated_t = PL_new_term_ref();
 			return putTerm(negated_t, negated, vars) &&
 				   PL_cons_functor_v(pl_term, negationFun, negated_t);
+		}
+
+		case FormulaType::IMPLICATION: {
+			auto implication = std::static_pointer_cast<Implication>(phi);
+			auto args = PL_new_term_refs(2);
+			return putTerm(args, implication->consequent(), vars) &&
+				   putTerm(args+1, implication->antecedent(), vars) &&
+				   PL_cons_functor_v(pl_term, implicationFun, args);
 		}
 
 		case FormulaType::CONJUNCTION:
@@ -59,6 +70,10 @@ bool PrologQuery::putTerm( //NOLINT
 		case FormulaType::DISJUNCTION:
 			return putTerm(pl_term, PrologQuery::FUNCTOR_semicolon(),
 						   (CompoundFormula *) phi.get(), vars);
+
+		case FormulaType::MODAL:
+			KB_WARN("Modal formula cannot be mapped to Prolog terms.");
+			return false;
 	}
 	return false;
 }
@@ -283,8 +298,10 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 {
 	static const auto commaIndicator = std::make_shared<PredicateIndicator>(",", 2);
 	static const auto semicolonIndicator = std::make_shared<PredicateIndicator>(";", 2);
+	static const auto implicationIndicator = std::make_shared<PredicateIndicator>(":-", 2);
+	static const auto negationIndicator = std::make_shared<PredicateIndicator>("\\+", 1);
 
-	switch (phi->type()) {
+	switch(phi->type()) {
 		case FormulaType::PREDICATE:
 			return std::dynamic_pointer_cast<Predicate>(phi);
 
@@ -293,6 +310,22 @@ TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
 
 		case FormulaType::DISJUNCTION:
 			return toTerm((CompoundFormula *) phi.get(), semicolonIndicator);
+
+		case FormulaType::NEGATION: {
+			auto negated_t = toTerm(std::static_pointer_cast<Negation>(phi)->negatedFormula());
+			return std::make_shared<Predicate>(negationIndicator, std::vector<TermPtr>{negated_t});
+		}
+
+		case FormulaType::IMPLICATION: {
+			auto implication = std::static_pointer_cast<Implication>(phi);
+			auto head_t = toTerm(implication->consequent());
+			auto body_t = toTerm(implication->antecedent());
+			return std::make_shared<Predicate>(implicationIndicator, std::vector<TermPtr>{head_t, body_t});
+		}
+
+		case FormulaType::MODAL:
+			KB_WARN("Modal formula cannot be mapped to Prolog terms.");
+			break;
 	}
 
 	return {};
