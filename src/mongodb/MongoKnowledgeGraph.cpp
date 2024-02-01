@@ -378,6 +378,8 @@ MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions,
 }
 
 void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) {
+	static const auto edbTerm = std::make_shared<const StringTerm>("EDB");
+
 	auto channel = TokenStream::Channel::create(resultStream);
 
 	try {
@@ -391,6 +393,8 @@ void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenB
 		bool hasPositiveAnswer = false;
 		while (true) {
 			auto next = std::make_shared<AnswerYes>();
+			next->setReasonerTerm(edbTerm);
+
 			if (cursor->nextAnswer(next, query->literals())) {
 				channel->push(next);
 				hasPositiveAnswer = true;
@@ -398,6 +402,10 @@ void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenB
 				if (!hasPositiveAnswer) {
 					// send one negative answer if no positive answer was found
 					auto negativeAnswer = std::make_shared<AnswerNo>();
+					negativeAnswer->setReasonerTerm(edbTerm);
+					// the answer is uncertain as we only were not able to obtain a positive answer
+					// which does not mean that there is no positive answer.
+					negativeAnswer->setIsUncertain(true);
 					// add ungrounded literals to negative answer.
 					// unfortunately, the information is lost at which literal the query failed.
 					// so for now we just add all literals. to give a little idea why the query failed.

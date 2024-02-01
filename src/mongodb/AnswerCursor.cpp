@@ -110,12 +110,8 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 bool AnswerCursor::nextAnswer(
 		const std::shared_ptr<AnswerYes> &answer,
 		const std::vector<RDFLiteralPtr> &literals) {
-	static const auto edbTerm = std::make_shared<const StringTerm>("EDB");
-
 	if (!next(&resultDocument_)) return false;
 	if (!bson_iter_init(&resultIter_, resultDocument_)) return false;
-
-	answer->setReasonerTerm(edbTerm);
 
 	std::shared_ptr<GraphSelector> frame_rw;
 	while (bson_iter_next(&resultIter_)) {
