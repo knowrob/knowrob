@@ -129,7 +129,7 @@ void Predicate::write(std::ostream& os) const
 {
 	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
 
-	if(indicator_->arity()==3 && indicator_->functor() == "triple") {
+	if(indicator_->arity()==3 && indicator_->functor() == "triple" && arguments_[1]->type()!=TermType::VARIABLE) {
 		os << *arguments_[1] << '(' << *arguments_[0] << ',' << *arguments_[2] << ')';
 	}
 	else {
