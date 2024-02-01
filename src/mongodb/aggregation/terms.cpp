@@ -67,7 +67,6 @@ void aggregation::appendTermQuery( //NOLINT
             appendArrayQuery(valueDocument, valueKey,
                              ((ListTerm*)term.get())->elements());
             break;
-        case TermType::MODAL_OPERATOR:
         case TermType::PREDICATE:
             break;
     }

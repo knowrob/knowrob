@@ -61,8 +61,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.value("LONG", TermType::LONG)
 			.value("STRING", TermType::STRING)
 			.value("VARIABLE", TermType::VARIABLE)
-			.value("LIST", TermType::LIST)
-			.value("MODAL_OPERATOR", TermType::MODAL_OPERATOR);
+			.value("LIST", TermType::LIST);
 	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", python::no_init)
 			.def("type", &Term::type, CONST_REF_RETURN)
 			.def("__eq__", &Term::operator==)

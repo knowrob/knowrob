@@ -69,6 +69,10 @@ include_directories(include
 add_definitions(-DKNOWROB_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 add_definitions(-DKNOWROB_BUILD_DIR=\"${CMAKE_BINARY_DIR}\")
+add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
+# ignore BOOST deprecated headers
+add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 ##############
 ########## ROS1 block

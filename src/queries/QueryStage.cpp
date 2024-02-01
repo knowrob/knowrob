@@ -54,6 +54,10 @@ void QueryStage::pushTransformed(const TokenPtr &transformedTok,
 			pushToBroadcast(transformedTok);
 		}
 	} else if (isQueryOpened()) {
+		// FIXME: pushing of "no" must be deferred, because it could be that another
+		// instance of the query is asked with response "yes" later.
+		// TODO: also set the ungrounded literals based on the more general query here for negative answers.
+		//xxx;
 		pushToBroadcast(transformedTok);
 		// close the stage if only one solution is requested
 		if ((ctx_->queryFlags_ & (int) QueryFlag::QUERY_FLAG_ONE_SOLUTION) ==
