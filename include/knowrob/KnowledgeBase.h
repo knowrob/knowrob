@@ -14,7 +14,7 @@
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/backend/BackendManager.h"
 #include "ThreadPool.h"
-#include "knowrob/queries/DependencyGraph.h"
+#include "knowrob/formulas/DependencyGraph.h"
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryContext.h"
 
@@ -102,7 +102,7 @@ namespace knowrob {
 		 * @param label an optional modalFrame label
 		 * @return a stream of query results
 		 */
-		AnswerBufferPtr submitQuery(const GraphQueryPtr &graphQuery);
+		TokenBufferPtr submitQuery(const GraphQueryPtr &graphQuery);
 
 		/**
 		 * Evaluate a query represented as a Literal.
@@ -110,7 +110,7 @@ namespace knowrob {
 		 * @param query a literal
 		 * @return a stream of query results
 		 */
-		AnswerBufferPtr submitQuery(const LiteralPtr &query, const QueryContextPtr &ctx);
+		TokenBufferPtr submitQuery(const LiteralPtr &query, const QueryContextPtr &ctx);
 
 		/**
 		 * Evaluate a query represented as a Formula.
@@ -118,7 +118,7 @@ namespace knowrob {
 		 * @param query a formula
 		 * @return a stream of query results
 		 */
-		AnswerBufferPtr submitQuery(const FormulaPtr &query, const QueryContextPtr &ctx);
+		TokenBufferPtr submitQuery(const FormulaPtr &query, const QueryContextPtr &ctx);
 
 		auto &reasonerManager() const { return reasonerManager_; }
 
@@ -136,8 +136,8 @@ namespace knowrob {
 		void createComputationPipeline(
 				const std::shared_ptr<QueryPipeline> &pipeline,
 				const std::vector<RDFComputablePtr> &computableLiterals,
-				const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
-				const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
+				const std::shared_ptr<TokenBroadcaster> &pipelineInput,
+				const std::shared_ptr<TokenBroadcaster> &pipelineOutput,
 				const QueryContextPtr &ctx);
 	};
 

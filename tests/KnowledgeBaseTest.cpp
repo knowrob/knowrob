@@ -6,6 +6,7 @@
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/formulas/ModalFormula.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 using namespace knowrob::modality;
@@ -52,10 +53,10 @@ public:
 		}
 	}
 
-	AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override {
-		auto answerBuffer = std::make_shared<AnswerBuffer>();
-		auto outputChannel = AnswerStream::Channel::create(answerBuffer);
-		auto answer = std::make_shared<Answer>();
+	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override {
+		auto answerBuffer = std::make_shared<TokenBuffer>();
+		auto outputChannel = TokenStream::Channel::create(answerBuffer);
+		auto answer = std::make_shared<AnswerYes>();
 
 		bool succeed = true;
 		if(literal->propertyTerm()->isGround()) {
@@ -84,7 +85,7 @@ public:
 			outputChannel->push(answer);
 		}
 
-		outputChannel->push(AnswerStream::eos());
+		outputChannel->push(EndOfEvaluation::get());
 		return answerBuffer;
 	}
 };
@@ -119,8 +120,14 @@ static std::vector<SubstitutionPtr> lookup(const FormulaPtr &formula, const Quer
 	std::vector<SubstitutionPtr> out;
 	while(true) {
 		auto solution = answerQueue->pop_front();
-		if(AnswerStream::isEOS(solution)) break;
-		out.push_back(solution->substitution());
+		if(solution->indicatesEndOfEvaluation()) break;
+		if(solution->type() == TokenType::ANSWER_TOKEN) {
+			auto answer = std::static_pointer_cast<const Answer>(solution);
+			if(answer->isPositive()) {
+				auto answerYes = std::static_pointer_cast<const AnswerYes>(answer);
+				out.push_back(answerYes->substitution());
+			}
+		}
 	}
 	return out;
 }

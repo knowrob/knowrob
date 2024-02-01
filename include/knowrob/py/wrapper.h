@@ -93,8 +93,8 @@ struct ReasonerWrap : public Reasoner, boost::python::wrapper<Reasoner>
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return python::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
-	AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
-	{ return python::call_method<AnswerBufferPtr>(self, "submitQuery", literal, ctx); }
+	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
+	{ return python::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
 	void start() override { python::call_method<void>(self, "start"); }
 	void stop() override { python::call_method<void>(self, "stop"); }
@@ -135,8 +135,8 @@ struct ReasonerWithBackendWrap :
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return python::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
-	AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
-	{ return python::call_method<AnswerBufferPtr>(self, "submitQuery", literal, ctx); }
+	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
+	{ return python::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
 	void start() override { python::call_method<void>(self, "start"); }
 	void stop() override { python::call_method<void>(self, "stop"); }

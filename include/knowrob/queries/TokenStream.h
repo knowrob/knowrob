@@ -1,51 +1,31 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_QUERY_RESULT_STREAM_H_
-#define KNOWROB_QUERY_RESULT_STREAM_H_
+#ifndef KNOWROB_TOKEN_STREAM_H_
+#define KNOWROB_TOKEN_STREAM_H_
 
 #include <memory>
 #include <mutex>
 #include <atomic>
 #include <list>
-#include <knowrob/queries/Answer.h>
+#include <knowrob/queries/Token.h>
+#include <knowrob/queries/EndOfEvaluation.h>
 
 namespace knowrob {
 	/**
 	 * A stream of query results.
 	 * The only way to write to a stream is by creating a channel.
 	 */
-	class AnswerStream {
+	class TokenStream {
 	public:
-		AnswerStream();
-		~AnswerStream();
-		AnswerStream(const AnswerStream&) = delete;
-		
-		/**
-		 * Find out if a message indicates the end-of-stream (EOS).
-		 * @msg a QueryResult pointer.
-		 * @return true if the result indicates EOS.
-		 */
-		static bool isEOS(const AnswerPtr &msg);
-		
-		/**
-		 * Get the end-of-stream (eos) message.
-		 * @return the eos message.
-		 */
-		static AnswerPtr& eos();
-		
-		/**
-		 * Get the begin-of-stream (bos) message.
-		 * This is basically an empty substitution mapping.
-		 * @return the bos message.
-		 */
-		static AnswerPtr& bos();
-		
+		TokenStream();
+
+		~TokenStream();
+
+		TokenStream(const TokenStream &) = delete;
+
 		/**
 		 * Close the stream.
 		 * This will push an EOS message, and all future
@@ -55,7 +35,7 @@ namespace knowrob {
 		 * messages from all of its input channels.
 		 */
 		virtual void close();
-		
+
 		/**
 		 * @return true if opened.
 		 */
@@ -69,14 +49,14 @@ namespace knowrob {
 			/**
 			 * @param stream the query result stream associated to this channel.
 			 */
-			explicit Channel(const std::shared_ptr<AnswerStream> &stream);
+			explicit Channel(const std::shared_ptr<TokenStream> &stream);
 
 			~Channel();
 
 			/**
 			 * Cannot be copy-assigned.
 			 */
-			Channel(const Channel&) = delete;
+			Channel(const Channel &) = delete;
 
 			/**
 			 * Create a new stream channel.
@@ -84,13 +64,13 @@ namespace knowrob {
 			 * is closed already.
 			 * @return a new stream channel
 			 */
-			static std::shared_ptr<Channel> create(const std::shared_ptr<AnswerStream> &stream);
+			static std::shared_ptr<Channel> create(const std::shared_ptr<TokenStream> &stream);
 
 			/**
 			 * Push a QueryResult into this channel.
 			 * @msg a QueryResult pointer.
 			 */
-			void push(const AnswerPtr &msg);
+			void push(const TokenPtr &tok);
 
 			/**
 			 * Close the channel.
@@ -109,13 +89,13 @@ namespace knowrob {
 
 		protected:
 			// the stream of this channel
-			std::shared_ptr<AnswerStream> stream_;
+			std::shared_ptr<TokenStream> stream_;
 			// iterator of this channel withing the stream
 			std::list<std::shared_ptr<Channel>>::iterator iterator_;
 			// flag indicating whether channel is open (i.e., no EOS received so far)
 			std::atomic<bool> isOpened_;
 
-			friend class AnswerStream;
+			friend class TokenStream;
 		};
 
 	protected:
@@ -124,10 +104,10 @@ namespace knowrob {
 		std::mutex channel_mutex_;
 		//uint32_t numCompletedChannels_;
 
-		virtual void push(const Channel &channel, const AnswerPtr &msg);
+		virtual void push(const Channel &channel, const TokenPtr &tok);
 
-		virtual void push(const AnswerPtr &msg) = 0;
+		virtual void push(const TokenPtr &tok) = 0;
 	};
 }
 
-#endif //KNOWROB_QUERY_RESULT_STREAM_H_
+#endif //KNOWROB_TOKEN_STREAM_H_

@@ -120,7 +120,9 @@ namespace knowrob {
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
-        static bool putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope);
+        //static bool putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope);
+
+        static std::shared_ptr<GraphSelector> createSolutionFrame(term_t pl_scope);
 
         /**
          * Put the scope of a QueryResult in a Prolog term reference.

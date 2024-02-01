@@ -16,7 +16,7 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
 #include "knowrob/DataSource.h"
-#include "knowrob/queries/AnswerBuffer.h"
+#include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/GraphQuery.h"
@@ -45,18 +45,19 @@ namespace knowrob {
 	 */
 	class Reasoner : public DataSourceHandler {
 	public:
-        Reasoner();
-		virtual ~Reasoner()= default;
+		Reasoner();
 
-        /**
-         * @return ID of the manager that created the reasoner.
-         */
-        uint32_t managerID() const { return reasonerManagerID_; }
+		virtual ~Reasoner() = default;
 
-        /**
-         * Set the data backend of this reasoner.
+		/**
+		 * @return ID of the manager that created the reasoner.
 		 */
-        virtual void setDataBackend(const DataBackendPtr &backend) = 0;
+		uint32_t managerID() const { return reasonerManagerID_; }
+
+		/**
+		 * Set the data backend of this reasoner.
+		 */
+		virtual void setDataBackend(const DataBackendPtr &backend) = 0;
 
 		/**
 		 * Load a reasoner configuration.
@@ -96,10 +97,10 @@ namespace knowrob {
 		 */
 		virtual void start() = 0;
 
-        /**
-         * Stop the reasoner, and destroy all resources.
-         * No further queries can be submitted after this function has been called.
-         */
+		/**
+		 * Stop the reasoner, and destroy all resources.
+		 * No further queries can be submitted after this function has been called.
+		 */
 		virtual void stop() = 0;
 
 		/**
@@ -111,12 +112,12 @@ namespace knowrob {
 		 * @param ctx a query context.
 		 * @return a buffer that can be used to retrieve the results of the query.
 		 */
-        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
+		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
 
 	protected:
-        uint32_t reasonerManagerID_;
+		uint32_t reasonerManagerID_;
 
-        void setReasonerManager(uint32_t managerID);
+		void setReasonerManager(uint32_t managerID);
 
 		friend class ReasonerManager;
 	};

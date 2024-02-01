@@ -1,89 +1,88 @@
-//
-// Created by daniel on 15.07.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_QUERY_STAGE_H
 #define KNOWROB_QUERY_STAGE_H
 
-#include "Answer.h"
-#include "AnswerQueue.h"
-#include "AnswerBuffer.h"
-#include "AnswerBroadcaster.h"
-#include "DependencyGraph.h"
 #include "Query.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "Answer.h"
+#include "TokenBuffer.h"
+#include "TokenBroadcaster.h"
 
 namespace knowrob {
-    /**
-     * A step within a query pipeline.
-     */
-    class QueryStage : public AnswerBroadcaster {
-    public:
-		QueryStage(QueryContextPtr ctx);
+	/**
+	 * A step within a query pipeline.
+	 */
+	class QueryStage : public TokenBroadcaster {
+	public:
+		explicit QueryStage(QueryContextPtr ctx);
 
-        ~QueryStage();
+		~QueryStage();
 
-        /**
-         * Request the stage to stop any active processes.
-         * This will not necessary cause the processes to immediately exit,
-         * but will ensure no more messages will be pushed into the output
-         * stream of this stage.
-         */
-        virtual void close() override;
+		/**
+		 * Request the stage to stop any active processes.
+		 * This will not necessary cause the processes to immediately exit,
+		 * but will ensure no more messages will be pushed into the output
+		 * stream of this stage.
+		 */
+		void close() override;
 
-        /**
-         * @return true if no EOS has been received.
-         */
-        bool isQueryOpened() const { return isQueryOpened_; }
+		/**
+		 * @return true if query is still active.
+		 */
+		bool isQueryOpened() const { return isQueryOpened_; }
 
-        /**
-         * @return true if it has been requested that the stage stops any active processes.
-         */
-        bool hasStopRequest() const { return hasStopRequest_; }
+		/**
+		 * @return true if it has been requested that the stage stops any active processes.
+		 */
+		bool hasStopRequest() const { return hasStopRequest_; }
 
-    protected:
-        std::atomic<bool> isQueryOpened_;
-        std::atomic<bool> isAwaitingInput_;
-        std::atomic<bool> hasStopRequest_;
-        std::weak_ptr<QueryStage> selfWeakRef_;
+	protected:
+		/**
+		 * Submits a query using given substitution mapping.
+		 * @param substitution a mapping from variables to terms.
+		 * @return an answer buffer.
+		 */
+		virtual TokenBufferPtr submitQuery(const Substitution &substitution) = 0;
 
-        using ActiveQuery = std::pair<AnswerBufferPtr, std::shared_ptr<AnswerStream>>;
-        std::list<ActiveQuery> activeQueries_;
+	protected:
+		std::atomic<bool> isQueryOpened_;
+		std::atomic<bool> isAwaitingInput_;
+		std::atomic<bool> hasStopRequest_;
+		std::weak_ptr<QueryStage> selfWeakRef_;
+
+		using ActiveQuery = std::pair<TokenBufferPtr, std::shared_ptr<TokenStream>>;
+		using ActiveQueryIter = std::list<ActiveQuery>::iterator;
+		std::list<ActiveQuery> activeQueries_;
 		QueryContextPtr ctx_;
 
-        void push(const AnswerPtr &msg) override;
+		/**
+		 * Pushes tokens into the output stream of a stage.
+		 */
+		class Pusher : public TokenStream {
+		public:
+			std::shared_ptr<QueryStage> stage_;
+			ActiveQueryIter graphQueryIterator_;
+			std::mutex pushLock_;
 
-		virtual AnswerBufferPtr pushSubstitution(const Substitution &substitution) = 0;
+			explicit Pusher(std::shared_ptr<QueryStage> stage);
 
-        void pushTransformed(const AnswerPtr &transformedAnswer,
-                             std::list<ActiveQuery>::iterator graphQueryIterator);
+			void push(const TokenPtr &tok) override;
 
-        friend class QueryStageTransformer;
-        friend class KnowledgeBase; // weak ref hack
-	};
+			void close() override;
+		};
 
-    using QueryPipelineStagePtr = std::shared_ptr<QueryStage>;
+		// push a token into the output stream of this stage,
+		// this is called by the Pusher objects.
+		void pushTransformed(const TokenPtr &transformedToken, ActiveQueryIter graphQueryIterator);
 
-    class LiteralQueryStage : public QueryStage {
-	public:
-		LiteralQueryStage(RDFLiteralPtr literal, const QueryContextPtr &ctx);
+		// override AnswerBroadcaster
+		void push(const TokenPtr &tok) override;
 
-    protected:
-        const RDFLiteralPtr literal_;
-
-        virtual AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
-		AnswerBufferPtr pushSubstitution(const Substitution &substitution) override;
-	};
-
-    class FormulaQueryStage : public QueryStage {
-	public:
-		FormulaQueryStage(FormulaPtr formula, const QueryContextPtr &ctx);
-
-    protected:
-        const FormulaPtr formula_;
-
-        virtual AnswerBufferPtr submitQuery(const FormulaPtr &formula) = 0;
-		AnswerBufferPtr pushSubstitution(const Substitution &substitution) override;
+		// needed for "weak ref hack"
+		friend class KnowledgeBase;
 	};
 } // knowrob
 

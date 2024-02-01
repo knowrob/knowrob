@@ -22,6 +22,8 @@ namespace knowrob {
 
 		static std::shared_ptr<Agent> get(const std::string_view &iri);
 
+		bool isEgoAgent() const { return this == Agent::getEgo().get(); }
+
 	protected:
 		static std::map<std::string_view, std::shared_ptr<Agent>> agentMap_;
 	};

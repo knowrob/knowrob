@@ -9,13 +9,14 @@
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"
+#include "AnswerYes.h"
 
 namespace knowrob {
 	/**
 	 * A stage that evaluates a set of negations which are considered
 	 * in conjunction.
 	 */
-	class NegationStage : public AnswerBroadcaster {
+	class NegationStage : public TokenBroadcaster {
 	public:
 		NegationStage(KnowledgeBase *kb, QueryContextPtr ctx);
 
@@ -23,19 +24,21 @@ namespace knowrob {
 		KnowledgeBase *kb_;
 		const QueryContextPtr ctx_;
 
-		void pushToBroadcast(const AnswerPtr &msg) override;
-		virtual bool succeeds(const AnswerPtr &answer) = 0;
+		void pushToBroadcast(const TokenPtr &tok) override;
+
+		virtual bool succeeds(const AnswerYesPtr &answer) = 0;
 	};
 
 	class LiteralNegationStage : public NegationStage {
 	public:
 		LiteralNegationStage(KnowledgeBase *kb,
-		                     const QueryContextPtr &ctx,
-		                     const std::vector<RDFLiteralPtr> &negatedLiterals);
+							 const QueryContextPtr &ctx,
+							 const std::vector<RDFLiteralPtr> &negatedLiterals);
 
 	protected:
 		const std::vector<RDFLiteralPtr> negatedLiterals_;
-		bool succeeds(const AnswerPtr &answer) override;
+
+		bool succeeds(const AnswerYesPtr &answer) override;
 	};
 
 	class ModalNegationStage : public NegationStage {
@@ -46,7 +49,8 @@ namespace knowrob {
 
 	protected:
 		const std::vector<std::shared_ptr<ModalFormula>> negatedModals_;
-		bool succeeds(const AnswerPtr &answer) override;
+
+		bool succeeds(const AnswerYesPtr &answer) override;
 	};
 
 } // knowrob

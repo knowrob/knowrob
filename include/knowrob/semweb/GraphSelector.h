@@ -1,6 +1,7 @@
-//
-// Created by daniel on 17.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_GRAPH_SELECTOR_H
 #define KNOWROB_GRAPH_SELECTOR_H
@@ -17,43 +18,73 @@ namespace knowrob {
 	 * For example, each point in time is conceptually a separate graph, and
 	 * a query may only address a specific point in time, or time interval.
 	 */
-    struct GraphSelector {
-        GraphSelector() : graph(nullptr) {}
+	struct GraphSelector {
+		GraphSelector() : graph(nullptr) {}
+
 		/**
 		 * The name of the graph, usually reflects the name of an ontology.
 		 */
-        const char* graph; // TODO: rename to "ontology" ?
-        /**
-         * The agent that is the host of the knowledge.
-         */
-        std::optional<AgentPtr> agent;
-        /**
-         * The temporal modality of consideration.
-         */
-        std::optional<TemporalOperator> temporalOperator;
-        /**
-         * The epistemic modality of consideration.
-         */
-        std::optional<EpistemicOperator> epistemicOperator;
-        /**
-         * The begin of the time interval of consideration.
-         */
-        std::optional<double> begin;
-        /**
-         * The end of the time interval of consideration.
-         */
-        std::optional<double> end;
-        /**
-         * The minimum confidence threshold for statements.
-         */
-        std::optional<double> confidence;
+		const char *graph; // TODO: rename to "ontology" ?
+		/**
+		 * The agent that is the host of the knowledge.
+		 */
+		std::optional<AgentPtr> agent;
+		/**
+		 * The temporal modality of consideration.
+		 */
+		std::optional<TemporalOperator> temporalOperator;
+		/**
+		 * The epistemic modality of consideration.
+		 */
+		std::optional<EpistemicOperator> epistemicOperator;
+		/**
+		 * The begin of the time interval of consideration.
+		 */
+		std::optional<double> begin;
+		/**
+		 * The end of the time interval of consideration.
+		 */
+		std::optional<double> end;
+		/**
+		 * The minimum confidence threshold for statements.
+		 */
+		std::optional<double> confidence;
 
-		static const GraphSelector& getDefault()
-		{
-			static GraphSelector defaultSelector;
-			return defaultSelector;
-		}
-    };
+		/**
+		 * Compute the hash value of this selector.
+		 * @return the hash value
+		 */
+		size_t hash() const;
+
+		/**
+		 * Merge this selector with another selector.
+		 * @param other another selector.
+		 * @return true if the merge was successful.
+		 */
+		bool mergeWith(const GraphSelector &other);
+
+		/**
+		 * Write this selector to a stream.
+		 * @param os the stream
+		 * @return the stream
+		 */
+		std::ostream &write(std::ostream &os) const;
+	};
+
+	// alias
+	using GraphSelectorPtr = std::shared_ptr<const GraphSelector>;
+
+	/**
+	 * @return the default graph selector
+	 */
+	static GraphSelectorPtr DefaultGraphSelector() {
+		static auto defaultSelector = std::make_shared<const GraphSelector>();
+		return defaultSelector;
+	}
+}
+
+namespace std {
+	std::ostream &operator<<(std::ostream &os, const knowrob::GraphSelector &selector);
 }
 
 #endif //KNOWROB_GRAPH_SELECTOR_H

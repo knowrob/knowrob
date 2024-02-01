@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -29,28 +26,31 @@ namespace knowrob {
 		/**
 		 * @formula the formula associated to this query.
 		 */
-        explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
+		explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
 
-        static int defaultFlags();
+		static int defaultFlags();
 
-        int flags() const { return ctx_->queryFlags_; }
+		int flags() const { return ctx_->queryFlags_; }
 
-        auto& ctx() const { return ctx_; }
+		auto &ctx() const { return ctx_; }
 
-        virtual std::ostream& print(std::ostream &os) const = 0;
+		virtual std::ostream &print(std::ostream &os) const = 0;
 
 		/**
 		 * @return the formula associated to this query.
 		 */
-        virtual const FormulaPtr& formula() const = 0;
+		virtual const FormulaPtr &formula() const = 0;
 
 	protected:
 		QueryContextPtr ctx_;
 	};
+
+	// alias
+	using QueryPtr = std::shared_ptr<const Query>;
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Query &q);
 }
 
 #endif //KNOWROB_QUERY_H_

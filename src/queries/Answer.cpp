@@ -1,101 +1,69 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include <knowrob/queries/Answer.h>
 #include "knowrob/Logger.h"
+#include "knowrob/knowrob.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 
-Answer::Answer()
-: substitution_(std::make_shared<Substitution>()),
-  isUncertain_(false),
-  timeInterval_(std::nullopt)
-{
-}
-
-Answer::Answer(const Answer &other)
-: substitution_(std::make_shared<Substitution>(*other.substitution_)),
-  predicates_(other.predicates_),
-  isUncertain_(other.isUncertain_),
-  timeInterval_(other.timeInterval_)
-{
-}
-
-const std::shared_ptr<const Answer>& Answer::emptyAnswer()
-{
-	static auto result = std::make_shared<const Answer>();
-	return result;
-}
-
-void Answer::substitute(const Variable &var, const TermPtr &term)
-{
-	substitution_->set(var, term);
-}
-
-bool Answer::hasSubstitution(const Variable &var) const
-{
-	return substitution_->contains(var);
-}
-
-void Answer::addPredicate(const std::shared_ptr<StringTerm> &reasonerModule,
-                          const std::shared_ptr<Predicate> &predicate)
-{
-	predicates_.emplace_back(reasonerModule, predicate);
-}
-
-size_t Answer::computeHash() const
-{
-    return substitution_->computeHash();
-}
-
-bool Answer::combine(const std::shared_ptr<const Answer> &other, Reversible *changes)
-{
-	// unify substitutions
-	if(!substitution_->unifyWith(*other->substitution_, changes)) {
-		// unification failed -> results cannot be combined
-		return false;
+size_t Answer::hash() const {
+	size_t val = Token::hash();
+	if (isNegative()) {
+		hashCombine(val, 0);
+	} else if (isPositive()) {
+		hashCombine(val, 1);
+	} else {
+		hashCombine(val, 2);
 	}
-	// combine modal frames
-	if(other->isUncertain()) isUncertain_ = true;
-    if(other->timeInterval().has_value()) {
-        if(timeInterval_.has_value()) {
-            timeInterval_->intersectWith(other->timeInterval().value());
-        } else {
-            timeInterval_ = other->timeInterval();
-        }
-    }
-
-	// merge instantiated predicates
-	predicates_.insert(predicates_.end(),
-					   other->predicates_.begin(),
-					   other->predicates_.end());
-	return true;
+	return val;
 }
 
-namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Answer& solution) //NOLINT
-	{
-        os << (solution.isCertain() ? "K" : "B") << "::";
-        if(solution.timeInterval().has_value())
-            os << solution.timeInterval().value();
-        os << "::";
-
-		if(solution.substitution()->empty())
-			os << "yes";
-		else
-			os << *solution.substitution();
-
-		if(!solution.predicates().empty()) {
-			os << "\nwith:";
-			for(auto &instance : solution.predicates()) {
-				os << '\n' << '\t' << instance.reasonerModule()->value() << ':' << *instance.predicate();
+namespace knowrob {
+	AnswerPtr mergeAnswers(const AnswerPtr &a, const AnswerPtr &b, bool ignoreInconsistencies) {
+		// a negative answer overrules any positive answer.
+		// also for the moment we do not combine two negative answers
+		if (a->isNegative()) {
+			// a is "no"
+			// TODO: merge negative answers
+			return a;
+		} else if (b->isNegative()) {
+			// b is "no"
+			// TODO: merge negative answers
+			return b;
+		} else if (a->isPositive()) {
+			if (b->isPositive()) {
+				// both positive -> combine
+				auto a_positive = std::static_pointer_cast<const AnswerYes>(a);
+				auto b_positive = std::static_pointer_cast<const AnswerYes>(b);
+				return mergePositiveAnswers(a_positive, b_positive, ignoreInconsistencies);
+			} else {
+				// b is "don't know"
+				return b;
 			}
+		} else {
+			// b is "don't know"
+			return a;
 		}
-		return os;
+	}
+
+	bool AnswerComparator::operator()(const AnswerPtr &v0, const AnswerPtr &v1) const {
+		if (!v0) {
+			if (!v1) return false;
+			else return true;
+		} else if (!v1 || v0 == v1) {
+			return false;
+		} else if (v0->isCertain() != v1->isCertain()) {
+			return v0->isCertain() < v1->isCertain();
+		} else if (v0->isPositive() != v1->isPositive()) {
+			return v0->isPositive() < v1->isPositive();
+		} else if (v0->isNegative() != v1->isNegative()) {
+			return v0->isNegative() > v1->isNegative();
+		} else {
+			return v0->hash() < v1->hash();
+		}
 	}
 }

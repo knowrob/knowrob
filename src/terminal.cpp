@@ -11,6 +11,7 @@
 #include <exception>
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include <list>
 // BOOST
 #include <boost/program_options/options_description.hpp>
@@ -30,6 +31,8 @@
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/queries/QueryTree.h"
+#include "knowrob/queries/Answer.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
@@ -136,7 +139,7 @@ protected:
 	const CommandFunction function_;
 };
 
-class KnowRobTerminal : public QueryResultHandler {
+class KnowRobTerminal {
 public:
 	explicit KnowRobTerminal(const boost::property_tree::ptree &config)
 			: has_stop_request_(false),
@@ -193,8 +196,8 @@ public:
 	}
 
 	// Override QueryResultHandler
-	bool pushQueryResult(const AnswerPtr &solution) override {
-		std::cout << *solution << std::endl;
+	bool pushQueryResult(const AnswerPtr &solution) {
+		std::cout << *solution;
 		numSolutions_ += 1;
 		return !has_stop_request_;
 	}
@@ -263,15 +266,23 @@ public:
 		while (true) {
 			auto nextResult = resultQueue->pop_front();
 
-			if (AnswerStream::isEOS(nextResult)) {
+			if (nextResult->indicatesEndOfEvaluation()) {
 				break;
-			} else {
-				if (nextResult->substitution()->empty()) {
-					std::cout << "yes." << std::endl;
-					numSolutions_ += 1;
-					break;
+			} else if (nextResult->type() == TokenType::ANSWER_TOKEN) {
+				auto answer = std::static_pointer_cast<const Answer>(nextResult);
+
+				if (answer->isPositive()) {
+					auto positiveAnswer = std::static_pointer_cast<const AnswerYes>(answer);
+					if (positiveAnswer->substitution()->empty()) {
+						std::cout << "yes." << std::endl;
+						numSolutions_ += 1;
+						break;
+					} else {
+						pushQueryResult(positiveAnswer);
+						numSolutions_ += 1;
+					}
 				} else {
-					pushQueryResult(nextResult);
+					std::cout << *answer;
 					numSolutions_ += 1;
 				}
 			}
@@ -298,9 +309,10 @@ public:
 			for (auto &psi: qt.begin()->nodes()) {
 				switch (psi->type()) {
 					case knowrob::FormulaType::PREDICATE:
-						buf[dataIndex] = RDFLiteral::fromLiteral(std::make_shared<Literal>(
-																		 std::static_pointer_cast<Predicate>(psi), false),
-																 GraphSelector::getDefault());
+						buf[dataIndex] = std::make_shared<RDFLiteral>(
+								std::static_pointer_cast<Predicate>(psi),
+								false,
+								*DefaultGraphSelector());
 						data[dataIndex++] = buf[dataIndex]->toStatementData();
 						break;
 					default:

@@ -297,33 +297,30 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for the AnswerStream class and related classes
 	/////////////////////////////////////////////////////
-	class_<AnswerStream::Channel, std::shared_ptr<AnswerStream::Channel>, boost::noncopyable>
-			("AnswerChannel", no_init)
-			.def("create", &AnswerStream::Channel::create)
-			.def("push", &AnswerStream::Channel::push)
-			.def("close", &AnswerStream::Channel::close)
-			.def("isOpened", &AnswerStream::Channel::isOpened)
-			.def("id", &AnswerStream::Channel::id);
-	class_<AnswerStream, std::shared_ptr<AnswerStream>, boost::noncopyable>("AnswerStream", no_init)
-			.def("isOpened", &AnswerStream::isOpened)
-			.def("eos", &AnswerStream::eos, EXISTING_REF_RETURN)
-			.def("bos", &AnswerStream::bos, EXISTING_REF_RETURN)
-			.def("isEOS", &AnswerStream::isEOS);
-	class_<AnswerQueue, std::shared_ptr<AnswerQueue>, bases<AnswerStream>, boost::noncopyable>
-			("AnswerQueue", init<>())
-			.def("front", &AnswerQueue::front, EXISTING_REF_RETURN)
-			.def("pop", &AnswerQueue::pop)
-			.def("pop_front", &AnswerQueue::pop_front)
-			.def("empty", &AnswerQueue::empty)
-			.def("size", &AnswerQueue::size);
-	class_<AnswerBroadcaster, std::shared_ptr<AnswerBroadcaster>, bases<AnswerStream>, boost::noncopyable>
-			("AnswerBroadcaster", init<>())
-			.def("addSubscriber", &AnswerBroadcaster::addSubscriber)
-			.def("removeSubscriber", &AnswerBroadcaster::removeSubscriber);
-	class_<AnswerBuffer, std::shared_ptr<AnswerBuffer>, bases<AnswerBroadcaster>, boost::noncopyable>
-			("AnswerBuffer", init<>())
-			.def("stopBuffering", &AnswerBuffer::stopBuffering)
-			.def("createQueue", &AnswerBuffer::createQueue);
+	class_<TokenStream::Channel, std::shared_ptr<TokenStream::Channel>, boost::noncopyable>
+			("TokenChannel", no_init)
+			.def("create", &TokenStream::Channel::create)
+			.def("push", &TokenStream::Channel::push)
+			.def("close", &TokenStream::Channel::close)
+			.def("isOpened", &TokenStream::Channel::isOpened)
+			.def("id", &TokenStream::Channel::id);
+	class_<TokenStream, std::shared_ptr<TokenStream>, boost::noncopyable>("TokenStream", no_init)
+			.def("isOpened", &TokenStream::isOpened);
+	class_<TokenQueue, std::shared_ptr<TokenQueue>, bases<TokenStream>, boost::noncopyable>
+			("TokenQueue", init<>())
+			.def("front", &TokenQueue::front, EXISTING_REF_RETURN)
+			.def("pop", &TokenQueue::pop)
+			.def("pop_front", &TokenQueue::pop_front)
+			.def("empty", &TokenQueue::empty)
+			.def("size", &TokenQueue::size);
+	class_<TokenBroadcaster, std::shared_ptr<TokenBroadcaster>, bases<TokenStream>, boost::noncopyable>
+			("TokenBroadcaster", init<>())
+			.def("addSubscriber", &TokenBroadcaster::addSubscriber)
+			.def("removeSubscriber", &TokenBroadcaster::removeSubscriber);
+	class_<TokenBuffer, std::shared_ptr<TokenBuffer>, bases<TokenBroadcaster>, boost::noncopyable>
+			("TokenBuffer", init<>())
+			.def("stopBuffering", &TokenBuffer::stopBuffering)
+			.def("createQueue", &TokenBuffer::createQueue);
 
 	/////////////////////////////////////////////////////
 	// mappings for the data source and backend classes

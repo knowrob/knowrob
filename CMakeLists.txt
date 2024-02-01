@@ -68,6 +68,7 @@ include_directories(include
 # TODO: needs to be defined differently when catkin is used?
 add_definitions(-DKNOWROB_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
+add_definitions(-DKNOWROB_BUILD_DIR=\"${CMAKE_BINARY_DIR}\")
 
 ##############
 ########## ROS1 block
@@ -182,14 +183,14 @@ add_library(knowrob SHARED
         src/queries/ModalQuery.cpp
 		src/queries/QueryError.cpp
         src/queries/Answer.cpp
-		src/queries/AnswerStream.cpp
-		src/queries/AnswerQueue.cpp
-		src/queries/AnswerCombiner.cpp
-		src/queries/AnswerBroadcaster.cpp
-		src/queries/DependencyGraph.cpp
+        src/queries/TokenStream.cpp
+        src/queries/TokenQueue.cpp
+        src/queries/ConjunctiveBroadcaster.cpp
+        src/queries/TokenBroadcaster.cpp
+        src/formulas/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-		src/queries/AnswerBuffer.cpp
+        src/queries/TokenBuffer.cpp
         src/queries/GraphQuery.cpp
         src/queries/Query.cpp
         src/queries/RedundantAnswerFilter.cpp
@@ -253,7 +254,19 @@ add_library(knowrob SHARED
         src/formulas/PredicateIndicator.cpp
         src/formulas/PredicateDescription.cpp
         src/reasoner/ReasonerModule.cpp
-        src/DataSourceHandler.cpp)
+        src/DataSourceHandler.cpp
+        src/queries/AnswerYes.cpp
+        include/knowrob/queries/AnswerYes.h
+        src/queries/AnswerNo.cpp
+        include/knowrob/queries/AnswerNo.h
+        src/queries/AnswerDontKnow.cpp
+        include/knowrob/queries/AnswerDontKnow.h
+        src/queries/DisjunctiveBroadcaster.cpp
+        src/queries/Token.cpp
+        src/semweb/GraphSelector.cpp
+        src/queries/AnswerMerger.cpp
+        src/queries/QueryStageLiteral.cpp
+        src/queries/QueryStageFormula.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

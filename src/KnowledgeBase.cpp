@@ -17,7 +17,7 @@
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
-#include "knowrob/queries/AnswerCombiner.h"
+#include "knowrob/queries/ConjunctiveBroadcaster.h"
 #include "knowrob/queries/IDBStage.h"
 #include "knowrob/queries/EDBStage.h"
 #include "knowrob/queries/NegationStage.h"
@@ -25,6 +25,8 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/KnowledgeBaseError.h"
 #include "knowrob/queries/RedundantAnswerFilter.h"
+#include "knowrob/queries/DisjunctiveBroadcaster.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 
@@ -78,10 +80,10 @@ namespace knowrob {
 
 	using QueryPipelineNodePtr = std::shared_ptr<QueryPipelineNode>;
 
-	class AnswerBuffer_WithReference : public AnswerBuffer {
+	class AnswerBuffer_WithReference : public TokenBuffer {
 	public:
 		explicit AnswerBuffer_WithReference(const std::shared_ptr<QueryPipeline> &pipeline)
-				: AnswerBuffer(), pipeline_(pipeline) {}
+				: TokenBuffer(), pipeline_(pipeline) {}
 
 	protected:
 		std::shared_ptr<QueryPipeline> pipeline_;
@@ -263,8 +265,8 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 void KnowledgeBase::createComputationPipeline(
 		const std::shared_ptr<QueryPipeline> &pipeline,
 		const std::vector<RDFComputablePtr> &computableLiterals,
-		const std::shared_ptr<AnswerBroadcaster> &pipelineInput,
-		const std::shared_ptr<AnswerBroadcaster> &pipelineOutput,
+		const std::shared_ptr<TokenBroadcaster> &pipelineInput,
+		const std::shared_ptr<TokenBroadcaster> &pipelineOutput,
 		const QueryContextPtr &ctx) {
 	// This function generates a query pipeline for literals that can be computed
 	// (EDB-only literals are processed separately). The literals are part of one dependency group.
@@ -278,7 +280,7 @@ void KnowledgeBase::createComputationPipeline(
 
 	for (auto &lit: computableLiterals) {
 		auto stepInput = lastOut;
-		auto stepOutput = std::make_shared<AnswerBroadcaster>();
+		auto stepOutput = std::make_shared<TokenBroadcaster>();
 		pipeline->addStage(stepOutput);
 
 		// --------------------------------------
@@ -313,6 +315,14 @@ void KnowledgeBase::createComputationPipeline(
 			//       there is also the QUERY_FLAG_PERSIST_SOLUTIONS flag
 		}
 
+		// add a stage that consolidates the results of the EDB and IDB stages.
+		// in particular the case needs to be handled where none of the stages return
+		// 'true'. Also print a warning if two stages disagree but state they are confident.
+		auto consolidator = std::make_shared<DisjunctiveBroadcaster>();
+		stepOutput >> consolidator;
+		// TODO: are all these addStage calls really needed?
+		pipeline->addStage(consolidator);
+
 		// --------------------------------------
 		// Optionally add a stage to the pipeline that drops all redundant result.
 		// The filter is applied here to remove redundancies early on directly after IDB and EDB
@@ -330,7 +340,7 @@ void KnowledgeBase::createComputationPipeline(
 	lastOut >> pipelineOutput;
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
+TokenBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 	auto allLiterals = graphQuery->literals();
 
 	// --------------------------------------
@@ -374,19 +384,36 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 				l_reasoner.push_back(r);
 			}
 		}
-		if (l_reasoner.empty()) edbOnlyLiterals.push_back(l);
-		else computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
+		if (l_reasoner.empty()) {
+			edbOnlyLiterals.push_back(l);
+			auto l_p = l->propertyTerm();
+			if(l_p && l_p->type()==TermType::STRING &&
+			  !isMaterializedInEDB(std::static_pointer_cast<StringTerm>(l_p)->value())) {
+			  	// generate a "don't know" message and return.
+				auto out = std::make_shared<TokenBuffer>();
+				auto channel = TokenStream::Channel::create(out);
+				auto dontKnow = std::make_shared<AnswerDontKnow>();
+				KB_WARN("Predicate is neither materialized in EDB nor defined by a reasoner: {}",
+						*l->predicate());
+			  	// TODO: also provide an explanation why the answer is "don't know"
+				channel->push(dontKnow);
+				channel->push(EndOfEvaluation::get());
+				return out;
+			}
+		} else {
+			computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
+		}
 	}
 
 	// --------------------------------------
 	// run EDB query with all edb-only literals.
 	// --------------------------------------
-	std::shared_ptr<AnswerBuffer> edbOut;
+	std::shared_ptr<TokenBuffer> edbOut;
 	if (edbOnlyLiterals.empty()) {
-		edbOut = std::make_shared<AnswerBuffer>();
-		auto channel = AnswerStream::Channel::create(edbOut);
-		channel->push(AnswerStream::bos());
-		channel->push(AnswerStream::eos());
+		edbOut = std::make_shared<TokenBuffer>();
+		auto channel = TokenStream::Channel::create(edbOut);
+		channel->push(GenericYes());
+		channel->push(EndOfEvaluation::get());
 	} else {
 		auto edbOnlyQuery = std::make_shared<GraphQuery>(
 				edbOnlyLiterals, graphQuery->ctx());
@@ -397,11 +424,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 	// --------------------------------------
 	// handle positive IDB literals.
 	// --------------------------------------
-	std::shared_ptr<AnswerBroadcaster> idbOut;
+	std::shared_ptr<TokenBroadcaster> idbOut;
 	if (computableLiterals.empty()) {
 		idbOut = edbOut;
 	} else {
-		idbOut = std::make_shared<AnswerBroadcaster>();
+		idbOut = std::make_shared<TokenBroadcaster>();
 		pipeline->addStage(idbOut);
 		// --------------------------------------
 		// Compute dependency groups of computable literals.
@@ -423,8 +450,8 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 		} else {
 			// there are multiple dependency groups. They can be evaluated in parallel.
 
-			// combines answers computed in different parallel steps
-			auto answerCombiner = std::make_shared<AnswerCombiner>();
+			// combines sub-answers computed in different parallel steps
+			auto answerCombiner = std::make_shared<ConjunctiveBroadcaster>();
 			// create a parallel step for each dependency group
 			for (auto &literalGroup: dg) {
 				// --------------------------------------
@@ -445,7 +472,7 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 	// --------------------------------------
 	// Evaluate all negative literals in parallel.
 	// --------------------------------------
-	std::shared_ptr<AnswerBroadcaster> lastStage;
+	std::shared_ptr<TokenBroadcaster> lastStage;
 	if (!negativeLiterals.empty()) {
 		// run a dedicated stage where negated literals can be evaluated in parallel
 		auto negStage = std::make_shared<LiteralNegationStage>(
@@ -462,15 +489,15 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 	return out;
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx) {
+TokenBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx) {
 	auto rdfLiteral = std::make_shared<RDFLiteral>(
 			literal->predicate(), literal->isNegated(), ctx->selector_);
 	return submitQuery(std::make_shared<GraphQuery>(
 			GraphQuery({rdfLiteral}, ctx)));
 }
 
-AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx) {
-	auto outStream = std::make_shared<AnswerBuffer>();
+TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx) {
+	auto outStream = std::make_shared<TokenBuffer>();
 
 	auto pipeline = std::make_shared<QueryPipeline>();
 	pipeline->addStage(outStream);
@@ -524,8 +551,8 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 			}
 		}
 
-		std::shared_ptr<AnswerBroadcaster> lastStage;
-		std::shared_ptr<AnswerBuffer> firstBuffer;
+		std::shared_ptr<TokenBroadcaster> lastStage;
+		std::shared_ptr<TokenBuffer> firstBuffer;
 
 		// first evaluate positive literals if any
 		// note that the first stage is buffered, so that the next stage can be added to the pipeline
@@ -533,11 +560,11 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 		if (posLiterals.empty()) {
 			// if there are none, we still need to indicate begin and end of stream for the rest of the pipeline.
 			// so we just push `bos` (an empty substitution) followed by `eos` and feed these messages to the next stage.
-			firstBuffer = std::make_shared<AnswerBuffer>();
+			firstBuffer = std::make_shared<TokenBuffer>();
 			lastStage = firstBuffer;
-			auto channel = AnswerStream::Channel::create(lastStage);
-			channel->push(AnswerStream::bos());
-			channel->push(AnswerStream::eos());
+			auto channel = TokenStream::Channel::create(lastStage);
+			channel->push(GenericYes());
+			channel->push(EndOfEvaluation::get());
 			pipeline->addStage(lastStage);
 		} else {
 			auto pathQuery = std::make_shared<GraphQuery>(posLiterals, ctx);
@@ -595,11 +622,22 @@ AnswerBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCon
 	// At this point outStream could already contain solutions, but these are buffered
 	// such that they won't be lost during pipeline creation.
 
+	// if there were multiple paths, consolidate answers from them.
+	// e.g. if one yields no and the other true, the no should be ignored.
+	std::shared_ptr<TokenBroadcaster> finalStage;
+	if (qt.numPaths() > 1) {
+		auto consolidator = std::make_shared<DisjunctiveBroadcaster>();
+		outStream >> consolidator;
+		finalStage = consolidator;
+	} else {
+		finalStage = outStream;
+	}
+
 	// Finally, wrap output into AnswerBuffer_WithReference object.
 	// Note that the AnswerBuffer_WithReference object is used such that the caller can
 	// destroy the whole pipeline by de-referencing the returned AnswerBufferPtr.
 	auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
-	outStream >> out;
+	finalStage >> out;
 	outStream->stopBuffering();
 	return out;
 }

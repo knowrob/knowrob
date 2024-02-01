@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "knowrob/queries/DependencyGraph.h"
+#include "knowrob/formulas/DependencyGraph.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/modalities/KnowledgeModality.h"
 

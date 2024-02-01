@@ -5,86 +5,144 @@
 #include "knowrob/Logger.h"
 #include "knowrob/mongodb/AnswerCursor.h"
 
+using namespace knowrob;
 using namespace knowrob::mongo;
 
 AnswerCursor::AnswerCursor(const std::shared_ptr<Collection> &collection)
-: Cursor(collection),
-  resultDocument_(nullptr),
-  resultIter_(),
-  varIter_(),
-  valIter_(),
-  scopeIter_()
-{
+		: Cursor(collection),
+		  resultDocument_(nullptr),
+		  resultIter_(),
+		  timeIter_(),
+		  varIter_(),
+		  valIter_(),
+		  scopeIter_() {
 }
 
-bool AnswerCursor::nextAnswer(const std::shared_ptr<Answer> &answer)
-{
-    if(!next(&resultDocument_)) return false;
-    if(!bson_iter_init(&resultIter_, resultDocument_)) return false;
+void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
+	while (bson_iter_next(&varIter_)) {
+		Variable var(bson_iter_key(&varIter_));
 
-    while(bson_iter_next(&resultIter_)) {
-        std::string_view resultKey(bson_iter_key(&resultIter_));
+		if (!bson_iter_recurse(&varIter_, &valIter_)) continue;
+		if (!bson_iter_find(&valIter_, "val")) continue;
 
-        // read variables from "v_VARS". each sub-field is named according to the field of
-        // a variable.
-        if(resultKey == "v_VARS" && bson_iter_recurse(&resultIter_, &varIter_))
-        {
-            while(bson_iter_next (&varIter_))
-            {
-                Variable var(bson_iter_key(&varIter_));
+		// read the value of the variable
+		switch (bson_iter_type(&valIter_)) {
+			case BSON_TYPE_UTF8:
+				answer->set(var, std::make_shared<StringTerm>(bson_iter_utf8(&valIter_, nullptr)));
+				break;
+			case BSON_TYPE_INT32:
+				answer->set(var, std::make_shared<Integer32Term>(bson_iter_int32(&valIter_)));
+				break;
+			case BSON_TYPE_INT64:
+				answer->set(var, std::make_shared<LongTerm>(bson_iter_int64(&valIter_)));
+				break;
+			case BSON_TYPE_BOOL:
+				answer->set(var, std::make_shared<Integer32Term>(bson_iter_bool(&valIter_)));
+				break;
+			case BSON_TYPE_DOUBLE:
+				answer->set(var, std::make_shared<DoubleTerm>(bson_iter_double(&valIter_)));
+				break;
+			default:
+				KB_WARN("unsupported type {} for predicate arguments.", bson_iter_type(&valIter_));
+				break;
+		}
+	}
+}
 
-                if(!bson_iter_recurse(&varIter_, &valIter_)) continue;
-                if(!bson_iter_find(&valIter_, "val")) continue;
+std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_ptr<AnswerYes> &answer) {
+	std::shared_ptr<GraphSelector> frame;
 
-                // read the value of the variable
-                switch(bson_iter_type(&valIter_)) {
-                    case BSON_TYPE_UTF8:
-                        answer->substitute(var, std::make_shared<StringTerm>(bson_iter_utf8(&valIter_,nullptr)));
-                        break;
-                    case BSON_TYPE_INT32:
-                        answer->substitute(var, std::make_shared<Integer32Term>(bson_iter_int32(&valIter_)));
-                        break;
-                    case BSON_TYPE_INT64:
-                        answer->substitute(var, std::make_shared<LongTerm>(bson_iter_int64(&valIter_)));
-                        break;
-                    case BSON_TYPE_BOOL:
-                        answer->substitute(var, std::make_shared<Integer32Term>(bson_iter_bool(&valIter_)));
-                        break;
-                    case BSON_TYPE_DOUBLE:
-                        answer->substitute(var, std::make_shared<DoubleTerm>(bson_iter_double(&valIter_)));
-                        break;
-                    default:
-                        KB_WARN("unsupported type {} for predicate arguments.", bson_iter_type(&valIter_));
-                        break;
-                }
-            }
-        }
-        else if(resultKey == "v_scope" && bson_iter_recurse(&resultIter_, &scopeIter_))
-        {
-            while(bson_iter_next(&scopeIter_))
-            {
-                std::string_view scopeKey(bson_iter_key(&scopeIter_));
+	while (bson_iter_next(&scopeIter_)) {
+		std::string_view scopeKey(bson_iter_key(&scopeIter_));
 
-                if(scopeKey == "uncertain")
-                {
-                    answer->setIsUncertain(bson_iter_bool(&scopeIter_));
-                }
-                else if(scopeKey == "time" && bson_iter_recurse(&scopeIter_, &timeIter_))
-                {
-                    std::optional<TimePoint> since, until;
-                    while(bson_iter_next(&timeIter_))
-                    {
-                        std::string_view timeKey(bson_iter_key(&timeIter_));
-                        if(timeKey == "since") since = bson_iter_double(&timeIter_);
-                        else if(timeKey == "until") until = bson_iter_double(&timeIter_);
-                    }
-                    if(since.has_value() || until.has_value()) {
-                        answer->setTimeInterval(TimeInterval(since, until));
-                    }
-                }
-            }
-        }
-    }
+		if (scopeKey == "uncertain") {
+			if (!frame) frame = std::make_shared<GraphSelector>();
+			if (bson_iter_bool(&scopeIter_)) {
+				frame->epistemicOperator = EpistemicOperator::BELIEF;
+			}
+		} else if (scopeKey == "time" && bson_iter_recurse(&scopeIter_, &timeIter_)) {
+			if (!frame) frame = std::make_shared<GraphSelector>();
+			std::optional<TimePoint> since, until;
+			while (bson_iter_next(&timeIter_)) {
+				std::string_view timeKey(bson_iter_key(&timeIter_));
+				if (timeKey == "since") {
+					frame->begin = bson_iter_double(&timeIter_);
+				} else if (timeKey == "until") {
+					frame->end = bson_iter_double(&timeIter_);
+				}
+			}
+		} else if (scopeKey == "confidence") {
+			if (!frame) frame = std::make_shared<GraphSelector>();
+			frame->confidence = bson_iter_double(&timeIter_);
+			if (frame->confidence.value() < 0.999) {
+				frame->epistemicOperator = EpistemicOperator::BELIEF;
+			} else {
+				frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+			}
+		} else if (scopeKey == "agent") {
+			if (!frame) frame = std::make_shared<GraphSelector>();
+			auto agent_iri = bson_iter_utf8(&timeIter_, nullptr);
+			if(!frame->epistemicOperator.has_value()) {
+				frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+			}
+			frame->agent = Agent::get(agent_iri);
+		} else if (scopeKey == "occasional") {
+			if (!frame) frame = std::make_shared<GraphSelector>();
+			if (bson_iter_bool(&scopeIter_)) {
+				frame->temporalOperator = TemporalOperator::SOMETIMES;
+			} else {
+				frame->temporalOperator = TemporalOperator::ALWAYS;
+			}
+		}
+		// TODO: what about "ontology"/"graph" field?
+	}
 
-    return true;
+	if (frame) {
+		return frame;
+	} else {
+		return {};
+	}
+}
+
+bool AnswerCursor::nextAnswer(
+		const std::shared_ptr<AnswerYes> &answer,
+		const std::vector<RDFLiteralPtr> &literals) {
+	static const auto edbTerm = std::make_shared<const StringTerm>("EDB");
+
+	if (!next(&resultDocument_)) return false;
+	if (!bson_iter_init(&resultIter_, resultDocument_)) return false;
+
+	answer->setReasonerTerm(edbTerm);
+
+	std::shared_ptr<GraphSelector> frame_rw;
+	while (bson_iter_next(&resultIter_)) {
+		std::string_view resultKey(bson_iter_key(&resultIter_));
+		// read variables from "v_VARS". each sub-field is named according to the field of
+		// a variable.
+		if (resultKey == "v_VARS" && bson_iter_recurse(&resultIter_, &varIter_)) {
+			setSubstitution(answer);
+		} else if (resultKey == "v_scope" && bson_iter_recurse(&resultIter_, &scopeIter_)) {
+			frame_rw = readAnswerFrame(answer);
+		}
+	}
+
+	GraphSelectorPtr frame_readonly;
+	if (frame_rw) {
+		frame_readonly = frame_rw;
+		answer->setFrame(frame_rw);
+	} else {
+		frame_readonly = DefaultGraphSelector();
+	}
+
+	// add predicate groundings to the answer
+	for (auto &rdfLiteral: literals) {
+		auto p = rdfLiteral->predicate();
+		auto p_instance = p->applySubstitution(*answer->substitution());
+		answer->addGrounding(
+				std::static_pointer_cast<Predicate>(p_instance),
+				frame_readonly,
+				rdfLiteral->isNegated());
+	}
+
+	return true;
 }

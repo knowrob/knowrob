@@ -33,7 +33,7 @@ namespace knowrob {
 		/**
 		 * @return the typed data value.
 		 */
-		const T& value() { return value_; }
+		const T& value() const { return value_; }
 		
 		// Override Term
 		bool isGround() const override { return true; }

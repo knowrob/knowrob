@@ -52,14 +52,14 @@ namespace knowrob {
 
         PrologQueryRunner(PrologReasoner *reasoner,
                 Request request,
-                const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+                const std::shared_ptr<TokenStream::Channel> &outputChannel,
                 bool sendEOS=false);
 
         // Override Runner
         void run() override;
 
     protected:
-        std::shared_ptr<AnswerStream::Channel> outputChannel_;
+        std::shared_ptr<TokenStream::Channel> outputChannel_;
         PrologReasoner *reasoner_;
         Request request_;
         bool sendEOS_;
