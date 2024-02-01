@@ -50,6 +50,11 @@ namespace knowrob {
 		 */
 		virtual std::string toHumanReadableString() const = 0;
 
+		/**
+		 * @return the name of the reasoner that was used to generate this answer.
+		 */
+		void setReasonerTerm(const std::shared_ptr<const StringTerm> &reasonerTerm) { reasonerTerm_ = reasonerTerm; }
+
 		// override Token
 		bool indicatesEndOfEvaluation() const override { return false; }
 
@@ -58,6 +63,9 @@ namespace knowrob {
 
 		// override Token
 		size_t hash() const override;
+
+	protected:
+		std::shared_ptr<const StringTerm> reasonerTerm_;
 	};
 
 	// alias

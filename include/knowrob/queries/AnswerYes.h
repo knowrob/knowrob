@@ -107,11 +107,6 @@ namespace knowrob {
 		 */
 		bool mergeWith(const AnswerYes &other, bool ignoreInconsistencies = false);
 
-		/**
-		 * @return the name of the reasoner that was used to generate this answer.
-		 */
-		void setReasonerTerm(const std::shared_ptr<const StringTerm> &reasonerTerm) { reasonerTerm_ = reasonerTerm; }
-
 		// override Token
 		size_t hash() const override;
 
@@ -138,7 +133,6 @@ namespace knowrob {
 		std::vector<FramedPredicate> negativeGroundings_;
 		SubstitutionPtr substitution_;
 		std::shared_ptr<GraphSelector> frame_;
-		std::shared_ptr<const StringTerm> reasonerTerm_;
 	};
 
 	// alias

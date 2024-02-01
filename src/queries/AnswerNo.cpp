@@ -53,6 +53,9 @@ size_t AnswerNo::hash() const {
 }
 
 std::ostream &AnswerNo::write(std::ostream &os) const {
+	if(reasonerTerm_) {
+		os << "[" << reasonerTerm_->value() << "] ";
+	}
 	if(isUncertain()) {
 		os << "probably ";
 	}

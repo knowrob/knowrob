@@ -145,9 +145,22 @@ void PrologQueryRunner::run() {
 	// if no solution was found, indicate that via a NegativeAnswer.
 	if (!hasSolution) {
 		auto negativeAnswer = std::make_shared<AnswerNo>();
+		negativeAnswer->setReasonerTerm(reasoner_->reasonerIDTerm_);
 		// however, as Prolog cannot proof negations such an answer is always not well-founded
 		// and can be overruled by a well-founded one.
 		negativeAnswer->setIsUncertain(std::nullopt);
+		// we do not have the information accessible here at which literal the query failed.
+		// But at least we know if the query only contains a single literal.
+		if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
+			auto conjunctive =
+				std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
+			if(conjunctive->literals().size()==1) {
+				auto rdfLiteral = conjunctive->literals().front();
+				negativeAnswer->addUngrounded(
+						std::static_pointer_cast<Predicate>(rdfLiteral->predicate()),
+						rdfLiteral->isNegated());
+			}
+		}
 		outputChannel_->push(negativeAnswer);
 	}
 
