@@ -27,9 +27,9 @@ AnswerNo::AnswerNo(const AnswerNo &other)
 
 void AnswerNo::addUngrounded(const std::shared_ptr<Predicate> &predicate, bool isNegated) {
 	if (isNegated) {
-		negativeUngrounded_.emplace_back(predicate);
+		negativeUngrounded_.emplace_back(predicate, DefaultGraphSelector(), reasonerTerm_);
 	} else {
-		positiveUngrounded_.emplace_back(predicate);
+		positiveUngrounded_.emplace_back(predicate, DefaultGraphSelector(), reasonerTerm_);
 	}
 }
 
@@ -52,6 +52,17 @@ size_t AnswerNo::hash() const {
 	return val;
 }
 
+bool AnswerNo::mergeWith(const AnswerNo &other) {
+	reasonerTerm_ = {};
+	isUncertain_ = isUncertain_ || other.isUncertain_;
+	// insert groundings of other answer
+	positiveUngrounded_.insert(positiveUngrounded_.end(),
+							   other.positiveUngrounded_.begin(), other.positiveUngrounded_.end());
+	negativeUngrounded_.insert(negativeUngrounded_.end(),
+							   other.negativeUngrounded_.begin(), other.negativeUngrounded_.end());
+	return true;
+}
+
 std::ostream &AnswerNo::write(std::ostream &os) const {
 	if(reasonerTerm_) {
 		os << "[" << reasonerTerm_->value() << "] ";
@@ -63,10 +74,18 @@ std::ostream &AnswerNo::write(std::ostream &os) const {
 	if(!positiveUngrounded_.empty() || !negativeUngrounded_.empty()) {
 		os << ", because:\n";
 		for(auto &x : positiveUngrounded_) {
-			os << '\t' << *x << '\n';
+			os << '\t' << *x.graphSelector() << ' ' << '~' << *x.predicate();
+			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+			}
+			os << '\n';
 		}
 		for(auto &x : negativeUngrounded_) {
-			os << '\t' << "not "<< *x << '\n';
+			os << '\t' << *x.graphSelector() << *x.predicate();
+			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+			}
+			os << '\n';
 		}
 	}
 	return os;
@@ -77,3 +96,14 @@ std::string AnswerNo::toHumanReadableString() const {
 	return longMsg;
 }
 
+namespace knowrob {
+	AnswerPtr mergeNegativeAnswers(const AnswerNoPtr &a, const AnswerNoPtr &b) {
+		auto mergedAnswer = std::make_shared<AnswerNo>(*a);
+		if (mergedAnswer->mergeWith(*b)) {
+			return mergedAnswer;
+		} else {
+			// merging failed
+			return {};
+		}
+	}
+} // knowrob

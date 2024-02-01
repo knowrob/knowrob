@@ -5,6 +5,7 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/Disjunction.h"
+#include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/queries/AnswerYes.h"
 

@@ -7,6 +7,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/knowrob.h"
 #include "knowrob/queries/AnswerYes.h"
+#include "knowrob/queries/AnswerNo.h"
 
 using namespace knowrob;
 
@@ -24,15 +25,19 @@ size_t Answer::hash() const {
 
 namespace knowrob {
 	AnswerPtr mergeAnswers(const AnswerPtr &a, const AnswerPtr &b, bool ignoreInconsistencies) {
-		// a negative answer overrules any positive answer.
 		// also for the moment we do not combine two negative answers
 		if (a->isNegative()) {
-			// a is "no"
-			// TODO: merge negative answers
-			return a;
+			if(b->isNegative()) {
+				// both are on
+				auto a_negative = std::static_pointer_cast<const AnswerNo>(a);
+				auto b_negative = std::static_pointer_cast<const AnswerNo>(b);
+				return mergeNegativeAnswers(a_negative, b_negative);
+			} else {
+				// a is "no"
+				return a;
+			}
 		} else if (b->isNegative()) {
 			// b is "no"
-			// TODO: merge negative answers
 			return b;
 		} else if (a->isPositive()) {
 			if (b->isPositive()) {

@@ -407,10 +407,14 @@ void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenB
 					// which does not mean that there is no positive answer.
 					negativeAnswer->setIsUncertain(true);
 					// add ungrounded literals to negative answer.
-					// unfortunately, the information is lost at which literal the query failed.
-					// so for now we just add all literals. to give a little idea why the query failed.
-					for (auto &l: query->literals()) {
-						negativeAnswer->addUngrounded(l->predicate(), l->isNegated());
+					// but at the moment the information is lost at which literal the query failed.
+					// TODO: would be great if we could report the failing literal.
+					//       but seems hard to provide this information in the current framework.
+					//       it could be queried here, but that seems a bit costly.
+					// well at least we know if it is a single literal.
+					if(query->literals().size() == 1) {
+						negativeAnswer->addUngrounded(query->literals().front()->predicate(),
+													 query->literals().front()->isNegated());
 					}
 					channel->push(negativeAnswer);
 				}

@@ -82,7 +82,8 @@ namespace knowrob {
 		 * @param predicate a predicate.
 		 * @param isNegated true if the negation of the predicate is grounded.
 		 */
-		bool addGrounding(const std::shared_ptr<Predicate> &predicate, const GraphSelectorPtr &frame,
+		bool addGrounding(const std::shared_ptr<Predicate> &predicate,
+		                  const GraphSelectorPtr &frame,
 						  bool isNegated = false);
 
 		/**

@@ -7,6 +7,7 @@
 #define KNOWROB_NEGATIVE_ANSWER_H
 
 #include "Answer.h"
+#include "knowrob/formulas/FramedPredicate.h"
 
 namespace knowrob {
 	/**
@@ -47,6 +48,13 @@ namespace knowrob {
 		 */
 		auto &negativeUngrounded() const { return negativeUngrounded_; }
 
+		/**
+		 * Merge this answer with another answer.
+		 * @param other another answer.
+		 * @return true if the merge was successful.
+		 */
+		bool mergeWith(const AnswerNo &other);
+
 		// override Token
 		size_t hash() const override;
 
@@ -69,8 +77,8 @@ namespace knowrob {
 		void setIsUncertain(std::optional<double> confidence) override;
 
 	protected:
-		std::vector<PredicatePtr> positiveUngrounded_;
-		std::vector<PredicatePtr> negativeUngrounded_;
+		std::vector<FramedPredicate> positiveUngrounded_;
+		std::vector<FramedPredicate> negativeUngrounded_;
 
 		bool isUncertain_;
 		std::optional<double> confidence_;
@@ -83,6 +91,8 @@ namespace knowrob {
 	 * @return a positive result without additional constraints.
 	 */
 	const std::shared_ptr<const AnswerNo> &GenericNo();
+
+	AnswerPtr mergeNegativeAnswers(const AnswerNoPtr &a, const AnswerNoPtr &b);
 
 } // knowrob
 

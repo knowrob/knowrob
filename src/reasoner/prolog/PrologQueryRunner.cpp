@@ -150,6 +150,7 @@ void PrologQueryRunner::run() {
 		// and can be overruled by a well-founded one.
 		negativeAnswer->setIsUncertain(std::nullopt);
 		// we do not have the information accessible here at which literal the query failed.
+		// TODO: would be great if we could report the failing literal.
 		// But at least we know if the query only contains a single literal.
 		if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
 			auto conjunctive =

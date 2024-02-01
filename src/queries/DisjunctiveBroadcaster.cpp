@@ -45,8 +45,7 @@ void DisjunctiveBroadcaster::pushAnswer(const AnswerPtr &answer) {
 	// consider the query as satisfiable.
 
 	if (answer->isNegative()) {
-		auto negativeAnswer = std::static_pointer_cast<const AnswerNo>(answer);
-		negativeAnswers_.emplace_back(negativeAnswer);
+		negativeAnswers_.emplace_back(std::static_pointer_cast<const AnswerNo>(answer));
 	} else if (answer->isPositive()) {
 		// a positive answer indicates that a subsystem suggests the input query is satisfiable.
 		// however, the answer can be uncertain, so the "YES" answer is only
@@ -77,7 +76,8 @@ void DisjunctiveBroadcaster::push(const TokenPtr &tok) {
 		pushDeferredMessages();
 		TokenBroadcaster::push(tok);
 	} else if (tok->type() == TokenType::ANSWER_TOKEN) {
-		auto answer = std::static_pointer_cast<const Answer>(tok);
-		pushAnswer(answer);
+		pushAnswer(std::static_pointer_cast<const Answer>(tok));
+	} else {
+		TokenBroadcaster::push(tok);
 	}
 }

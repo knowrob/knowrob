@@ -212,6 +212,9 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 			minNumNeighbors = n->numNeighbors();
 			first = n;
 		}
+		else if(minNumNeighbors == n->numNeighbors() && n->numVariables() < first->numVariables()) {
+			first = n;
+		}
 	}
 
 	// remember visited nodes, needed for circular dependencies
@@ -395,7 +398,6 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 				auto dontKnow = std::make_shared<AnswerDontKnow>();
 				KB_WARN("Predicate is neither materialized in EDB nor defined by a reasoner: {}",
 						*l->predicate());
-			  	// TODO: also provide an explanation why the answer is "don't know"
 				channel->push(dontKnow);
 				channel->push(EndOfEvaluation::get());
 				return out;

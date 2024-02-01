@@ -62,16 +62,17 @@ void AnswerYes::setIsUncertain(std::optional<double> confidence) {
 	}
 }
 
-bool
-AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate, const GraphSelectorPtr &frame, bool isNegated) {
+bool AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate,
+                             const GraphSelectorPtr &frame,
+                             bool isNegated) {
 	if (!frame_->mergeWith(*frame)) {
 		KB_WARN("Failed to merge frames");
 		return false;
 	}
 	if (isNegated) {
-		negativeGroundings_.emplace_back(predicate, frame);
+		negativeGroundings_.emplace_back(predicate, frame, reasonerTerm_);
 	} else {
-		positiveGroundings_.emplace_back(predicate, frame);
+		positiveGroundings_.emplace_back(predicate, frame, reasonerTerm_);
 	}
 	return true;
 }
@@ -93,6 +94,7 @@ bool AnswerYes::mergeWith(const AnswerYes &other, bool ignoreInconsistencies) {
 		return false;
 	}
 
+	reasonerTerm_ = {};
 	// insert groundings of other answer
 	positiveGroundings_.insert(positiveGroundings_.end(),
 							   other.positiveGroundings_.begin(), other.positiveGroundings_.end());
@@ -121,10 +123,18 @@ std::ostream &AnswerYes::write(std::ostream &os) const {
 	if(!positiveGroundings_.empty() || !negativeGroundings_.empty()) {
 		os << ", because:\n";
 		for(auto &x : positiveGroundings_) {
-			os << '\t' << *x.graphSelector() << ' ' << *x.predicate() << '\n';
+			os << '\t' << *x.graphSelector() << ' ' << *x.predicate();
+			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+			}
+			os << '\n';
 		}
 		for(auto &x : negativeGroundings_) {
-			os << '\t' << *x.graphSelector() << "not "<< *x.predicate() << '\n';
+			os << '\t' << *x.graphSelector() << '~' << *x.predicate();
+			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+			}
+			os << '\n';
 		}
 	}
 	else {
