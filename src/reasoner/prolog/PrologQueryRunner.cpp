@@ -109,7 +109,7 @@ void PrologQueryRunner::run() {
 			// auto-add instances for simple queries
 			if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
 				auto conjunctive =
-					std::static_pointer_cast<const GraphQuery>(pl_goal.qa_query());
+					std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
 				for(auto &rdfLiteral : conjunctive->literals()) {
 					auto p = rdfLiteral->predicate();
 					auto p_instance = p->applySubstitution(*solution->substitution());

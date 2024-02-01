@@ -180,7 +180,7 @@ add_library(knowrob SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
         src/formulas/Literal.cpp
-        src/queries/ModalQuery.cpp
+        src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
         src/queries/Answer.cpp
         src/queries/TokenStream.cpp
@@ -191,7 +191,7 @@ add_library(knowrob SHARED
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
         src/queries/TokenBuffer.cpp
-        src/queries/GraphQuery.cpp
+        src/queries/ConjunctiveQuery.cpp
         src/queries/Query.cpp
         src/queries/RedundantAnswerFilter.cpp
         src/queries/EDBStage.cpp

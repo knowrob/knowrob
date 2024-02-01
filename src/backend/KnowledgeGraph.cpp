@@ -23,12 +23,12 @@ namespace knowrob {
 	class GraphQueryRunner : public ThreadPool::Runner {
 	public:
 		KnowledgeGraph *kg_;
-		GraphQueryPtr query_;
+		ConjunctiveQueryPtr query_;
 		TokenBufferPtr result_;
 
 		GraphQueryRunner(
 				KnowledgeGraph *kg,
-				GraphQueryPtr query,
+				ConjunctiveQueryPtr query,
 				TokenBufferPtr &result)
 				: kg_(kg), query_(std::move(query)), result_(result), ThreadPool::Runner() {}
 
@@ -183,7 +183,7 @@ bool KnowledgeGraph::isDefinedClass(const std::string_view &iri) {
 	return vocabulary_->isDefinedClass(iri);
 }
 
-TokenBufferPtr KnowledgeGraph::submitQuery(const GraphQueryPtr &query) {
+TokenBufferPtr KnowledgeGraph::submitQuery(const ConjunctiveQueryPtr &query) {
 	TokenBufferPtr result = std::make_shared<TokenBuffer>();
 	auto runner = std::make_shared<GraphQueryRunner>(this, query, result);
 	if (!threadPool_) {

@@ -19,7 +19,7 @@
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/formulas/PredicateDescription.h"
-#include "knowrob/queries/GraphQuery.h"
+#include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/DataSourceHandler.h"
 

@@ -17,14 +17,16 @@
 #include "QueryContext.h"
 
 namespace knowrob {
-	enum class QueryType : uint8_t  {
+	/**
+	 * The type of a query.
+	 */
+	enum class QueryType : uint8_t {
 		CONJUNCTIVE = 0,
 		FORMULA
 	};
 
 	/**
-	 * A query represented by a propositional formula.
-	 * @deprecated use Formula instead
+	 * A query is a question that can be asked to the knowledge base.
 	 */
 	class Query {
 	public:
@@ -33,14 +35,29 @@ namespace knowrob {
 		 */
 		explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
 
+		/**
+		 * @return the type of this query.
+		 */
 		virtual QueryType type() const = 0;
 
+		/**
+		 * @return the default flags associated to queries.
+		 */
 		static int defaultFlags();
 
+		/**
+		 * @return the flags associated to this query.
+		 */
 		int flags() const { return ctx_->queryFlags_; }
 
+		/**
+		 * @return the query context.
+		 */
 		auto &ctx() const { return ctx_; }
 
+		/**
+		 * Prints the query to the output stream.
+		 */
 		virtual std::ostream &print(std::ostream &os) const = 0;
 
 		/**
@@ -51,9 +68,6 @@ namespace knowrob {
 	protected:
 		QueryContextPtr ctx_;
 	};
-
-	// alias
-	using QueryPtr = std::shared_ptr<const Query>;
 }
 
 namespace std {

@@ -377,7 +377,7 @@ MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions,
 	return cursor;
 }
 
-void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, TokenBufferPtr &resultStream) {
+void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) {
 	auto channel = TokenStream::Channel::create(resultStream);
 
 	try {
@@ -418,7 +418,7 @@ void MongoKnowledgeGraph::evaluateQuery(const GraphQueryPtr &query, TokenBufferP
 	}
 }
 
-TokenBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal) {
+TokenBufferPtr MongoKnowledgeGraph::watchQuery(const ConjunctiveQueryPtr &literal) {
 	// TODO implement watchQuery in MongoKnowledgeGraph
 	return {};
 }

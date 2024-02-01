@@ -60,7 +60,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 
 		// check if the EDB contains positive lit, if so negation cannot be true
 		results.push_back(kg->submitQuery(
-				std::make_shared<GraphQuery>(instance, ctx_)));
+				std::make_shared<ConjunctiveQuery>(instance, ctx_)));
 
 		// next check if positive lit is an IDB predicate, if so negation cannot be true.
 		// get list of reasoner that define the literal

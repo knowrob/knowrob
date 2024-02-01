@@ -235,7 +235,7 @@ public:
 			// parse query
 			if (!isQueryHandled) {
 				auto phi = QueryParser::parse(queryString);
-				auto query = std::make_shared<ModalQuery>(phi, ctx);
+				auto query = std::make_shared<FormulaQuery>(phi, ctx);
 				if (query->formula()->type() == FormulaType::PREDICATE) {
 					auto p = std::dynamic_pointer_cast<Predicate>(query->formula());
 					auto needle = firstOrderCommands_.find(p->indicator()->functor());
@@ -257,7 +257,7 @@ public:
 		history_.save(historyFile_);
 	}
 
-	void runQuery(const std::shared_ptr<const ModalQuery> &query) {
+	void runQuery(const std::shared_ptr<const FormulaQuery> &query) {
 		// evaluate query in hybrid QA system
 		auto resultStream = kb_.submitQuery(query->formula(), query->ctx());
 		auto resultQueue = resultStream->createQueue();

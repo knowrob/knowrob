@@ -11,7 +11,7 @@
 #include "raptor2.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/queries/TokenBuffer.h"
-#include "knowrob/queries/GraphQuery.h"
+#include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/semweb/StatementData.h"
@@ -109,7 +109,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @return a stream with answers to the query
 		 */
-		TokenBufferPtr submitQuery(const GraphQueryPtr &query);
+		TokenBufferPtr submitQuery(const ConjunctiveQueryPtr &query);
 
 		/**
 		 * Evaluates a query and may block until evaluation completed.
@@ -117,14 +117,14 @@ namespace knowrob {
 		 * @param query a query.
 		 * @param resultStream a stream of answers.
 		 */
-		virtual void evaluateQuery(const GraphQueryPtr &query, TokenBufferPtr &resultStream) = 0;
+		virtual void evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) = 0;
 
 		/**
 		 * Watch for instantiations of a literal in the knowledge graph.
 		 * @param literal a literal
 		 * @return a stream with answers to the query
 		 */
-		virtual TokenBufferPtr watchQuery(const GraphQueryPtr &query) = 0;
+		virtual TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &query) = 0;
 
 		//virtual bool unwatchQuery(const BufferedAnswerStreamPtr &queryStream) = 0;
 

@@ -10,5 +10,5 @@ EDBStage::EDBStage(KnowledgeGraphPtr edb, const RDFLiteralPtr &literal, const Qu
 }
 
 TokenBufferPtr EDBStage::submitQuery(const RDFLiteralPtr &literal) {
-	return edb_->submitQuery(std::make_shared<GraphQuery>(literal, ctx_));
+	return edb_->submitQuery(std::make_shared<ConjunctiveQuery>(literal, ctx_));
 }

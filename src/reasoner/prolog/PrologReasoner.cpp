@@ -324,7 +324,7 @@ AnswerYesPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
 										 bool doTransformQuery) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
 	return oneSolution(
-			std::make_shared<ModalQuery>(goal, ctx),
+			std::make_shared<FormulaQuery>(goal, ctx),
 			moduleName,
 			doTransformQuery);
 }
@@ -374,7 +374,7 @@ std::list<AnswerYesPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predi
 													 bool doTransformQuery) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
 	return allSolutions(
-			std::make_shared<ModalQuery>(goal, ctx),
+			std::make_shared<FormulaQuery>(goal, ctx),
 			moduleName,
 			doTransformQuery);
 }
@@ -435,7 +435,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const Q
 	auto answerBuffer = std::make_shared<TokenBuffer>();
 	auto outputChannel = TokenStream::Channel::create(answerBuffer);
 
-	auto query = std::make_shared<GraphQuery>(literal, ctx);
+	auto query = std::make_shared<ConjunctiveQuery>(literal, ctx);
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
 			reasoner,

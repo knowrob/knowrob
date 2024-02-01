@@ -102,7 +102,7 @@ namespace knowrob {
 		 * @param label an optional modalFrame label
 		 * @return a stream of query results
 		 */
-		TokenBufferPtr submitQuery(const GraphQueryPtr &graphQuery);
+		TokenBufferPtr submitQuery(const ConjunctiveQueryPtr &graphQuery);
 
 		/**
 		 * Evaluate a query represented as a Literal.

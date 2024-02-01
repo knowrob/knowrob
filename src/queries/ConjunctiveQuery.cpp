@@ -1,30 +1,29 @@
-//
-// Created by daniel on 04.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
-#include "knowrob/queries/GraphQuery.h"
-#include "knowrob/modalities/BeliefModality.h"
-#include "knowrob/modalities/PastModality.h"
-#include "knowrob/Logger.h"
+#include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/formulas/Negation.h"
+#include "knowrob/formulas/Conjunction.h"
 
 using namespace knowrob;
 
-GraphQuery::GraphQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx)
+ConjunctiveQuery::ConjunctiveQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx)
 : Query(ctx),
   literals_(literals)
 {
     init();
 }
 
-GraphQuery::GraphQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
+ConjunctiveQuery::ConjunctiveQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
 : Query(ctx),
   literals_({literal})
 {
     init();
 }
 
-void GraphQuery::init()
+void ConjunctiveQuery::init()
 {
     std::vector<FormulaPtr> formulae(literals_.size());
 
@@ -46,12 +45,12 @@ void GraphQuery::init()
     }
 }
 
-const FormulaPtr& GraphQuery::formula() const
+const FormulaPtr& ConjunctiveQuery::formula() const
 {
     return formula_;
 }
 
-std::ostream& GraphQuery::print(std::ostream &os) const
+std::ostream& ConjunctiveQuery::print(std::ostream &os) const
 {
     os << *formula();
     return os;

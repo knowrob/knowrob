@@ -274,9 +274,9 @@ FormulaPtr PrologQuery::toFormula(const TermPtr &t) //NOLINT
 	}
 }
 
-std::shared_ptr<ModalQuery> PrologQuery::toQuery(const std::shared_ptr<Term> &t) {
+std::shared_ptr<FormulaQuery> PrologQuery::toQuery(const std::shared_ptr<Term> &t) {
 	auto ctx = std::make_shared<QueryContext>(Query::defaultFlags());
-	return std::make_shared<ModalQuery>(toFormula(t), ctx);
+	return std::make_shared<FormulaQuery>(toFormula(t), ctx);
 }
 
 TermPtr PrologQuery::toTerm(const FormulaPtr &phi) //NOLINT
@@ -355,7 +355,7 @@ static inline void readFuzzyInterval(
 	}
 }
 
-bool PrologQuery::putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_scope) {
+bool PrologQuery::putScope(const std::shared_ptr<FormulaQuery> &query, term_t pl_scope) {
 	static const auto time_key = PL_new_atom("time");
 	static const auto confidence_key = PL_new_atom("confidence");
 

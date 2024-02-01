@@ -340,7 +340,7 @@ void KnowledgeBase::createComputationPipeline(
 	lastOut >> pipelineOutput;
 }
 
-TokenBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
+TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery) {
 	auto allLiterals = graphQuery->literals();
 
 	// --------------------------------------
@@ -415,7 +415,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 		channel->push(GenericYes());
 		channel->push(EndOfEvaluation::get());
 	} else {
-		auto edbOnlyQuery = std::make_shared<GraphQuery>(
+		auto edbOnlyQuery = std::make_shared<ConjunctiveQuery>(
 				edbOnlyLiterals, graphQuery->ctx());
 		edbOut = kg->submitQuery(edbOnlyQuery);
 	}
@@ -492,8 +492,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphQueryPtr &graphQuery) {
 TokenBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx) {
 	auto rdfLiteral = std::make_shared<RDFLiteral>(
 			literal->predicate(), literal->isNegated(), ctx->selector_);
-	return submitQuery(std::make_shared<GraphQuery>(
-			GraphQuery({rdfLiteral}, ctx)));
+	return submitQuery(std::make_shared<ConjunctiveQuery>(
+			ConjunctiveQuery({rdfLiteral}, ctx)));
 }
 
 TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx) {
@@ -567,7 +567,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 			channel->push(EndOfEvaluation::get());
 			pipeline->addStage(lastStage);
 		} else {
-			auto pathQuery = std::make_shared<GraphQuery>(posLiterals, ctx);
+			auto pathQuery = std::make_shared<ConjunctiveQuery>(posLiterals, ctx);
 			firstBuffer = submitQuery(pathQuery);
 			lastStage = firstBuffer;
 			pipeline->addStage(lastStage);

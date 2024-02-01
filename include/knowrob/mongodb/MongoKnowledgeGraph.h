@@ -116,10 +116,10 @@ namespace knowrob {
 		void removeOne(const RDFLiteral &tripleExpression) override;
 
 		// Override KnowledgeGraph
-		void evaluateQuery(const GraphQueryPtr &query, TokenBufferPtr &resultStream) override;
+		void evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) override;
 
 		// Override KnowledgeGraph
-		TokenBufferPtr watchQuery(const GraphQueryPtr &literal) override;
+		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal) override;
 
 	protected:
 		std::shared_ptr<mongo::Collection> tripleCollection_;
