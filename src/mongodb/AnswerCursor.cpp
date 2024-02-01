@@ -66,9 +66,12 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 			while (bson_iter_next(&timeIter_)) {
 				std::string_view timeKey(bson_iter_key(&timeIter_));
 				if (timeKey == "since") {
-					frame->begin = bson_iter_double(&timeIter_);
+					frame->begin = bson_iterOptionalDouble(&timeIter_);
+					if(frame->begin.value() == 0) {
+						frame->begin = std::nullopt;
+					}
 				} else if (timeKey == "until") {
-					frame->end = bson_iter_double(&timeIter_);
+					frame->end = bson_iterOptionalDouble(&timeIter_);
 				}
 			}
 		} else if (scopeKey == "confidence") {

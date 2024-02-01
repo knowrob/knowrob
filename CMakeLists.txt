@@ -266,7 +266,8 @@ add_library(knowrob SHARED
         src/semweb/GraphSelector.cpp
         src/queries/AnswerMerger.cpp
         src/queries/QueryStageLiteral.cpp
-        src/queries/QueryStageFormula.cpp)
+        src/queries/QueryStageFormula.cpp
+        src/mongodb/bson-helper.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
