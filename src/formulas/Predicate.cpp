@@ -128,17 +128,23 @@ size_t Predicate::computeHash() const
 void Predicate::write(std::ostream& os) const
 {
 	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
-	os << indicator_->functor();
-	if(!arguments_.empty()) {
-		os << '(';
-		for(uint32_t i=0; i<arguments_.size(); i++) {
-			Term *t = arguments_[i].get();
-			os << (*t);
-			if(i+1 < arguments_.size()) {
-				os << ',' << ' ';
+
+	if(indicator_->arity()==3 && indicator_->functor() == "triple") {
+		os << *arguments_[1] << '(' << *arguments_[0] << ',' << *arguments_[2] << ')';
+	}
+	else {
+		os << indicator_->functor();
+		if(!arguments_.empty()) {
+			os << '(';
+			for(uint32_t i=0; i<arguments_.size(); i++) {
+				Term *t = arguments_[i].get();
+				os << (*t);
+				if(i+1 < arguments_.size()) {
+					os << ',' << ' ';
+				}
 			}
+			os << ')';
 		}
-		os << ')';
 	}
 }
 

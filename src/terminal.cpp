@@ -216,7 +216,10 @@ public:
 	}
 
 	void runQuery(const std::string &queryString) {
-		auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
+		auto ctx = std::make_shared<QueryContext>(
+			QUERY_FLAG_ALL_SOLUTIONS
+			//| QUERY_FLAG_UNIQUE_SOLUTIONS
+		);
 		try {
 			bool isQueryHandled = false;
 			// make a lookahead if the query string starts with a functor of a registered
