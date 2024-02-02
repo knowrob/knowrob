@@ -66,7 +66,7 @@ bool AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate,
                              const GraphSelectorPtr &frame,
                              bool isNegated) {
 	if (!frame_->mergeWith(*frame)) {
-		KB_WARN("Failed to merge frames");
+		KB_WARN("Failed to frame \"{}\" with \"{}\".", *frame_, *frame);
 		return false;
 	}
 	if (isNegated) {
@@ -106,9 +106,9 @@ bool AnswerYes::mergeWith(const AnswerYes &other, bool ignoreInconsistencies) {
 
 size_t AnswerYes::hash() const {
 	size_t val = Answer::hash();
-	hashCombine(val, substitution_->computeHash());
 	hashCombine(val, frame_->hash());
-	// TODO: might be good to include to hash the predicates...
+	// TODO: maybe it would be good to hash the predicate instances instead of the substitution mapping.
+	hashCombine(val, substitution_->computeHash());
 	return val;
 }
 

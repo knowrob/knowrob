@@ -20,13 +20,17 @@ void DisjunctiveBroadcaster::pushDeferredMessages() {
 	} else {
 		// neither a certain positive nor a certain negative answer has been produced.
 		if (deferredPositiveAnswers_.empty()) {
-			// TODO: merge all negative answers into one?
-			if (!negativeAnswers_.empty()) {
+			if (negativeAnswers_.size()==1) {
 				TokenBroadcaster::push(negativeAnswers_.back());
+			} else if (!negativeAnswers_.empty()) {
+				auto no = std::make_shared<AnswerNo>();
+				for (auto &x: negativeAnswers_) {
+					no->mergeWith(*x);
+				}
+				TokenBroadcaster::push(no);
 			}
 		} else {
 			// only push positive answers if there are any
-			// TODO: merge all positive answers into one?
 			for (auto &x: deferredPositiveAnswers_) {
 				TokenBroadcaster::push(x);
 			}

@@ -10,6 +10,8 @@
 #include "Answer.h"
 #include "TokenBuffer.h"
 #include "TokenBroadcaster.h"
+#include "AnswerNo.h"
+#include "AnswerDontKnow.h"
 
 namespace knowrob {
 	/**
@@ -51,7 +53,10 @@ namespace knowrob {
 		std::atomic<bool> isQueryOpened_;
 		std::atomic<bool> isAwaitingInput_;
 		std::atomic<bool> hasStopRequest_;
+		std::atomic<bool> hasPositiveAnswer_;
 		std::weak_ptr<QueryStage> selfWeakRef_;
+		std::vector<AnswerNoPtr> deferredNegativeAnswers_;
+		std::vector<AnswerDontKnowPtr> deferredDontKnowAnswers_;
 
 		using ActiveQuery = std::pair<TokenBufferPtr, std::shared_ptr<TokenStream>>;
 		using ActiveQueryIter = std::list<ActiveQuery>::iterator;
@@ -80,6 +85,8 @@ namespace knowrob {
 
 		// override AnswerBroadcaster
 		void push(const TokenPtr &tok) override;
+
+		void pushDeferred();
 
 		// needed for "weak ref hack"
 		friend class KnowledgeBase;

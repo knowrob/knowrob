@@ -47,13 +47,19 @@ void ConjunctiveBroadcaster::push(const Channel &channel, const TokenPtr &tok) {
 		} else if (answer->isNegative()) {
 			// do not combine negative answers like the positive ones above.
 			// only push "no" when receiving EOF while no positive answer has been produced.
-			negativeAnswers_.emplace_back(answer);
+			negativeAnswers_.emplace_back(std::static_pointer_cast<const AnswerNo>(answer));
 		}
 	} else {
 		if (tok->indicatesEndOfEvaluation() && !hasSolution_) {
-			// TODO: merge all negative answers into one?
-			for (auto &x: negativeAnswers_) {
-				TokenBroadcaster::push(x);
+			if(negativeAnswers_.size()==1) {
+				TokenBroadcaster::push(negativeAnswers_.front());
+			}
+			else {
+				auto no = std::make_shared<AnswerNo>();
+				for (auto &x: negativeAnswers_) {
+					no->mergeWith(*x);
+				}
+				TokenBroadcaster::push(no);
 			}
 		}
 		// pass through non-answer messages

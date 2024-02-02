@@ -9,6 +9,7 @@
 #include <mutex>
 #include "TokenBroadcaster.h"
 #include "Answer.h"
+#include "AnswerNo.h"
 
 namespace knowrob {
 	/**
@@ -28,7 +29,7 @@ namespace knowrob {
 		std::mutex buffer_mutex_;
 		bool ignoreInconsistentAnswers_;
 		bool hasSolution_;
-		std::vector<AnswerPtr> negativeAnswers_;
+		std::vector<AnswerNoPtr> negativeAnswers_;
 
 		// Override AnswerBroadcaster
 		void push(const Channel &channel, const TokenPtr &tok) override;

@@ -87,6 +87,8 @@ std::ostream &AnswerNo::write(std::ostream &os) const {
 			}
 			os << '\n';
 		}
+	} else {
+		os << '\n';
 	}
 	return os;
 }
