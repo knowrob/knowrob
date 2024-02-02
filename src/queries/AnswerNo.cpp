@@ -48,7 +48,7 @@ size_t AnswerNo::hash() const {
 	size_t val = Answer::hash();
 	hashCombine(val, isUncertain_);
 	hashCombine(val, std::hash<std::optional<double>>{}(confidence_));
-	// TODO: should include predicates, but best ordering agnostic
+	// FIXME: must include predicates in hash. best to keep them in a sorted container.
 	return val;
 }
 
