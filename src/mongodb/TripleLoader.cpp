@@ -181,6 +181,10 @@ void TripleLoader::loadTriple(const StatementData &tripleData)
         // TODO: maybe better for less hierarchy updates to load right away?
         imports_.emplace_back(tripleData.object);
     }
+    else if(semweb::isPropertyIRI(tripleData.predicate)) {
+    	// increase assertion counter which is used in ordering metrics
+    	vocabulary_->increaseFrequency(tripleData.predicate);
+    }
 
     auto document = createTripleDocument(tripleData, graphName_, isTaxonomic);
     if(!bulkOperation_) {

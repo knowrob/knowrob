@@ -31,54 +31,6 @@
 using namespace knowrob;
 
 namespace knowrob {
-	struct EDBComparator {
-		inline bool operator()(const RDFLiteralPtr &l1, const RDFLiteralPtr &l2) {
-			// note: using ">" in return statements means that smaller element appears before larger.
-			// note: this heuristic ignores dependencies.
-
-			// (1) prefer evaluation of literals with fewer variables
-			auto numVars1 = l1->numVariables();
-			auto numVars2 = l2->numVariables();
-			if (numVars1 < numVars2) return (numVars1 > numVars2);
-
-			// TODO: (2) prefer evaluation of literals with less EDB assertions
-
-			return (l1 < l2);
-		}
-	};
-
-	// used to sort nodes in a priority queue.
-	// the priority value is used to determine which nodes should be evaluated first.
-	struct CompareNodes {
-		bool operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const {
-			// note: using ">" in return statements means that smaller element appears before larger.
-			if (a->numVariables() != b->numVariables()) {
-				// prefer node with less variables
-				return a->numVariables() > b->numVariables();
-			}
-			if (a->numNeighbors() != b->numNeighbors()) {
-				// prefer node with less neighbors
-				return a->numNeighbors() > b->numNeighbors();
-			}
-			return a < b;
-		}
-	};
-
-	// represents a possible step in the query pipeline
-	struct QueryPipelineNode {
-		explicit QueryPipelineNode(const DependencyNodePtr &node)
-				: node_(node) {
-			// add all nodes to a priority queue
-			for (auto &neighbor: node->neighbors()) {
-				neighbors_.push(neighbor);
-			}
-		}
-
-		const DependencyNodePtr node_;
-		std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, CompareNodes> neighbors_;
-	};
-
-	using QueryPipelineNodePtr = std::shared_ptr<QueryPipelineNode>;
 
 	class AnswerBuffer_WithReference : public TokenBuffer {
 	public:
@@ -202,18 +154,17 @@ bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
 }
 
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
-		const std::list<DependencyNodePtr> &dependencyGroup) {
+		const std::list<DependencyNodePtr> &dependencyGroup) const {
 	// Pick a node to start with.
-	// For now the one with minimum number of neighbors is picked.
+	auto comparator = IDBComparator(vocabulary());
 	DependencyNodePtr first;
-	unsigned long minNumNeighbors = 0;
+	RDFComputablePtr firstComputable;
 	for (auto &n: dependencyGroup) {
-		if (!first || n->numNeighbors() < minNumNeighbors) {
-			minNumNeighbors = n->numNeighbors();
+		auto computable_n =
+			std::static_pointer_cast<RDFComputable>(n->literal());
+		if (!first || comparator(firstComputable, computable_n)) {
 			first = n;
-		}
-		else if(minNumNeighbors == n->numNeighbors() && n->numVariables() < first->numVariables()) {
-			first = n;
+			firstComputable = computable_n;
 		}
 	}
 
@@ -223,11 +174,11 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 	visited.insert(first.get());
 
 	std::vector<RDFComputablePtr> sequence;
-	sequence.push_back(std::static_pointer_cast<RDFComputable>(first->literal()));
+	sequence.push_back(firstComputable);
 
 	// start with a FIFO queue only containing first node
-	std::deque<QueryPipelineNodePtr> queue;
-	auto qn0 = std::make_shared<QueryPipelineNode>(first);
+	std::deque<std::shared_ptr<DependencyNodeQueue>> queue;
+	auto qn0 = std::make_shared<DependencyNodeQueue>(first);
 	queue.push_front(qn0);
 
 	// loop until queue is empty and process exactly one successor of
@@ -255,7 +206,7 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 
 		if (topNext) {
 			// push a new node onto FIFO
-			auto qn_next = std::make_shared<QueryPipelineNode>(topNext);
+			auto qn_next = std::make_shared<DependencyNodeQueue>(topNext);
 			queue.push_front(qn_next);
 			sequence.push_back(std::static_pointer_cast<RDFComputable>(topNext->literal()));
 			visited.insert(topNext.get());
@@ -367,11 +318,6 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	}
 
 	// --------------------------------------
-	// sort positive literals. the EDB might evaluate literals in the given order.
-	// --------------------------------------
-	std::sort(positiveLiterals.begin(), positiveLiterals.end(), EDBComparator());
-
-	// --------------------------------------
 	// split positive literals into edb-only and computable.
 	// also associate list of reasoner to computable literals.
 	// --------------------------------------
@@ -390,14 +336,13 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 		if (l_reasoner.empty()) {
 			edbOnlyLiterals.push_back(l);
 			auto l_p = l->propertyTerm();
-			if(l_p && l_p->type()==TermType::STRING &&
-			  !isMaterializedInEDB(std::static_pointer_cast<StringTerm>(l_p)->value())) {
-			  	// generate a "don't know" message and return.
+			if (l_p && l_p->type() == TermType::STRING &&
+				!isMaterializedInEDB(std::static_pointer_cast<StringTerm>(l_p)->value())) {
+				// generate a "don't know" message and return.
 				auto out = std::make_shared<TokenBuffer>();
 				auto channel = TokenStream::Channel::create(out);
 				auto dontKnow = std::make_shared<AnswerDontKnow>();
-				KB_WARN("Predicate is neither materialized in EDB nor defined by a reasoner: {}",
-						*l->predicate());
+				KB_WARN("Predicate {} is neither materialized in EDB nor defined by a reasoner.", *l->predicate());
 				channel->push(dontKnow);
 				channel->push(EndOfEvaluation::get());
 				return out;
@@ -406,6 +351,11 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 			computableLiterals.push_back(std::make_shared<RDFComputable>(*l, l_reasoner));
 		}
 	}
+
+	// --------------------------------------
+	// sort positive literals.
+	// --------------------------------------
+	std::sort(edbOnlyLiterals.begin(), edbOnlyLiterals.end(), EDBComparator(vocabulary()));
 
 	// --------------------------------------
 	// run EDB query with all edb-only literals.
@@ -417,9 +367,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 		channel->push(GenericYes());
 		channel->push(EndOfEvaluation::get());
 	} else {
-		auto edbOnlyQuery = std::make_shared<ConjunctiveQuery>(
-				edbOnlyLiterals, graphQuery->ctx());
-		edbOut = kg->submitQuery(edbOnlyQuery);
+		edbOut = kg->submitQuery(
+			std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
 
@@ -665,4 +614,84 @@ bool KnowledgeBase::insert(const StatementData &proposition) {
 		}
 	}
 	return status;
+}
+
+KnowledgeBase::DependencyNodeQueue::DependencyNodeQueue(const DependencyNodePtr &node)
+		: node_(node) {
+	// add all nodes to a priority queue
+	for (auto &neighbor: node->neighbors()) {
+		neighbors_.push(neighbor);
+	}
+}
+
+bool KnowledgeBase::DependencyNodeComparator::operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const {
+	// - prefer node with less variables
+	if (a->numVariables() != b->numVariables()) {
+		return a->numVariables() > b->numVariables();
+	}
+	// - prefer node with less neighbors
+	if (a->numNeighbors() != b->numNeighbors()) {
+		return a->numNeighbors() > b->numNeighbors();
+	}
+	return a < b;
+}
+
+bool KnowledgeBase::EDBComparator::operator()(const RDFLiteralPtr &a, const RDFLiteralPtr &b) const {
+	// - prefer evaluation of literals with fewer variables
+	auto numVars_a = a->numVariables();
+	auto numVars_b = b->numVariables();
+	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
+
+	// - prefer literals with grounded predicate
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type()==TermType::STRING);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type()==TermType::STRING);
+	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
+
+	// - prefer properties that appear less often in the EDB
+	if(hasProperty_a) {
+		auto numAsserts_a = vocabulary_->frequency(
+				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+		auto numAsserts_b = vocabulary_->frequency(
+				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+		if (numAsserts_a != numAsserts_b) return (numAsserts_a > numAsserts_b);
+	}
+
+	return (a < b);
+}
+
+bool KnowledgeBase::IDBComparator::operator()(const RDFComputablePtr &a, const RDFComputablePtr &b) const {
+	// - prefer evaluation of literals with fewer variables
+	auto numVars_a = a->numVariables();
+	auto numVars_b = b->numVariables();
+	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
+
+	// - prefer literals with grounded predicate
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type()==TermType::STRING);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type()==TermType::STRING);
+	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
+
+	// - prefer literals with EDB assertions over literals without
+	if(hasProperty_a) {
+		auto hasEDBAssertion_a = vocabulary_->isDefinedProperty(
+				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+		auto hasEDBAssertion_b = vocabulary_->isDefinedProperty(
+				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+		if (hasEDBAssertion_a != hasEDBAssertion_b) return (hasEDBAssertion_a < hasEDBAssertion_b);
+	}
+
+	// - prefer properties that appear less often in the EDB
+	if(hasProperty_a) {
+		auto numAsserts_a = vocabulary_->frequency(
+				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+		auto numAsserts_b = vocabulary_->frequency(
+				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+		if (numAsserts_a != numAsserts_b) return (numAsserts_a > numAsserts_b);
+	}
+
+	// - prefer literals with more reasoner
+	auto numReasoner_a = a->reasonerList().size();
+	auto numReasoner_b = b->reasonerList().size();
+	if (numReasoner_a != numReasoner_b) return (numReasoner_a < numReasoner_b);
+
+	return (a < b);
 }

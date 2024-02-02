@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -11,33 +8,23 @@
 
 #include <memory>
 #include <boost/property_tree/ptree.hpp>
+#include <utility>
+#include "ThreadPool.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/backend/BackendManager.h"
-#include "ThreadPool.h"
 #include "knowrob/formulas/DependencyGraph.h"
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryContext.h"
+#include "knowrob/semweb/RDFComputable.h"
 
 namespace knowrob {
 	enum QueryFlag {
 		QUERY_FLAG_ALL_SOLUTIONS = 1 << 0,
 		QUERY_FLAG_ONE_SOLUTION = 1 << 1,
 		QUERY_FLAG_PERSIST_SOLUTIONS = 1 << 2,
-		QUERY_FLAG_UNIQUE_SOLUTIONS = 1 << 3
+		QUERY_FLAG_UNIQUE_SOLUTIONS = 1 << 3,
+		//QUERY_FLAG_ORDER_PRESERVING = 1 << 4,
 	};
-
-	class RDFComputable : public RDFLiteral {
-	public:
-		RDFComputable(const RDFLiteral &lit, const std::vector<std::shared_ptr<Reasoner>> &reasonerList)
-				: RDFLiteral(lit), reasonerList_(reasonerList) {}
-
-		const auto &reasonerList() const { return reasonerList_; }
-
-	protected:
-		std::vector<std::shared_ptr<Reasoner>> reasonerList_;
-	};
-
-	using RDFComputablePtr = std::shared_ptr<RDFComputable>;
 
 	/**
 	 * The main interface to the knowledge base system implementing
@@ -128,10 +115,36 @@ namespace knowrob {
 		std::shared_ptr<ThreadPool> threadPool_;
 		std::shared_ptr<KnowledgeGraph> centralKG_;
 
+		// used to sort dependency nodes in a priority queue.
+		// the nodes are considered to be dependent on each other through free variables.
+		// the priority value is used to determine which nodes should be evaluated first.
+		struct DependencyNodeComparator {
+			bool operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const;
+		};
+		struct DependencyNodeQueue {
+			const DependencyNodePtr node_;
+			std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, DependencyNodeComparator> neighbors_;
+			explicit DependencyNodeQueue(const DependencyNodePtr &node);
+		};
+
+		// compares literals
+		struct EDBComparator {
+			explicit EDBComparator(semweb::VocabularyPtr vocabulary)
+			: vocabulary_(std::move(vocabulary)) {}
+			bool operator()(const RDFLiteralPtr &a, const RDFLiteralPtr &b) const;
+			semweb::VocabularyPtr vocabulary_;
+		};
+		struct IDBComparator {
+			explicit IDBComparator(semweb::VocabularyPtr vocabulary)
+			: vocabulary_(std::move(vocabulary)) {}
+			bool operator()(const RDFComputablePtr &a, const RDFComputablePtr &b) const;
+			semweb::VocabularyPtr vocabulary_;
+		};
+
 		void loadConfiguration(const boost::property_tree::ptree &config);
 
-		static std::vector<RDFComputablePtr> createComputationSequence(
-				const std::list<DependencyNodePtr> &dependencyGroup);
+		std::vector<RDFComputablePtr> createComputationSequence(
+				const std::list<DependencyNodePtr> &dependencyGroup) const;
 
 		void createComputationPipeline(
 				const std::shared_ptr<QueryPipeline> &pipeline,

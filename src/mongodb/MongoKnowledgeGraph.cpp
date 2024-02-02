@@ -48,6 +48,7 @@ KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 
 // AGGREGATION PIPELINES
 bson_t *newPipelineImportHierarchy(const char *collection);
+bson_t *newRelationCounter(const char *collection);
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
 		: KnowledgeGraph(),
@@ -196,6 +197,24 @@ void MongoKnowledgeGraph::initialize() {
 									   "p", BCON_UTF8(owl::inverseOf.data()))).bson());
 		while (cursor.nextTriple(tripleData))
 			vocabulary_->setInverseOf(tripleData.subject, tripleData.object);
+	}
+
+	// query number of assertions of each property.
+	// this is useful information for optimizing the query planner.
+	{
+		const bson_t *result;
+		Cursor cursor(tripleCollection_);
+		Document document(newRelationCounter(tripleCollection_->name().c_str()));
+		cursor.aggregate(document.bson());
+		while (cursor.next(&result)) {
+			bson_iter_t iter;
+			if (!bson_iter_init(&iter, result)) break;
+			if (!bson_iter_find(&iter, "property")) break;
+			auto property = bson_iter_utf8(&iter, nullptr);
+			if (!bson_iter_find(&iter, "count")) break;
+			auto count = bson_iter_as_int64(&iter);
+			vocabulary_->setFrequency(property, count);
+		}
 	}
 
 	// initialize the import hierarchy
@@ -412,9 +431,9 @@ void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, TokenB
 					//       but seems hard to provide this information in the current framework.
 					//       it could be queried here, but that seems a bit costly.
 					// well at least we know if it is a single literal.
-					if(query->literals().size() == 1) {
+					if (query->literals().size() == 1) {
 						negativeAnswer->addUngrounded(query->literals().front()->predicate(),
-													 query->literals().front()->isNegated());
+													  query->literals().front()->isNegated());
 					}
 					channel->push(negativeAnswer);
 				}
@@ -634,33 +653,60 @@ bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm) {
 
 // AGGREGATION PIPELINES
 
+bson_t *newRelationCounter(const char *collection) {
+	return BCON_NEW("pipeline", "[",
+					"{", "$match", "{",
+						"p", BCON_UTF8(rdf::type.data()),
+						"$expr", "{", "$in", "[", "$o", "[", BCON_UTF8(owl::ObjectProperty.data()), BCON_UTF8(owl::DatatypeProperty.data()), "]", "]", "}",
+					"}", "}",
+					"{", "$lookup", "{",
+						"from", BCON_UTF8(collection),
+						"as", BCON_UTF8("x"),
+						"let", "{", "outer", BCON_UTF8("$s"), "}",
+						"pipeline", "[",
+							"{", "$match", "{",
+								"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
+							"}", "}",
+						"]",
+					"}", "}",
+					"{", "$project", "{",
+						"property", BCON_UTF8("$s"),
+						"count", "{", "$size", BCON_UTF8("$x"), "}",
+					"}", "}",
+					"{", "$match", "{",
+						"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
+					"}", "}",
+					"]"
+	);
+}
+
 bson_t *newPipelineImportHierarchy(const char *collection) {
 	return BCON_NEW("pipeline", "[",
 					"{", "$match", "{", "p", BCON_UTF8(MONGO_KG_VERSION_KEY), "}", "}",
 					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("x"),
-					"let", "{", "x", BCON_UTF8("$graph"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(owl::imports.data()),
-					"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
-					"}", "}",
-					"{", "$project", "{", "o", BCON_INT32(1), "}", "}",
-					"]",
+						"from", BCON_UTF8(collection),
+						"as", BCON_UTF8("x"),
+						"let", "{", "x", BCON_UTF8("$graph"), "}",
+						"pipeline", "[",
+							"{", "$match", "{",
+								"p", BCON_UTF8(owl::imports.data()),
+								"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
+							"}", "}",
+							"{", "$project", "{", "o", BCON_INT32(1), "}", "}",
+						"]",
 					"}", "}",
 					"{", "$unwind", BCON_UTF8("$x"), "}",
 					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("y"),
-					"let", "{", "x", BCON_UTF8("$x.o"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(MONGO_KG_VERSION_KEY),
-					"$expr", "{", "$eq", "[", BCON_UTF8("$s"), BCON_UTF8("$$x"), "]", "}",
-					"}", "}",
-					"{", "$project", "{", "graph", BCON_INT32(1), "}", "}",
-					"]",
+						"from", BCON_UTF8(collection),
+						"as", BCON_UTF8("y"),
+						"let", "{", "x", BCON_UTF8("$x.o"), "}",
+						"pipeline", "[",
+							"{", "$match", "{",
+								"p", BCON_UTF8(MONGO_KG_VERSION_KEY),
+								"$expr", "{", "$eq", "[", BCON_UTF8("$s"), BCON_UTF8("$$x"), "]", "}",
+							"}", "}",
+							"{", "$project", "{", "graph", BCON_INT32(1), "}", "}",
+						"]",
 					"}", "}",
 					"{", "$unwind", BCON_UTF8("$y"), "}",
 					"{", "$project", "{", "importer", BCON_UTF8("$graph"), "imported", BCON_UTF8("$y.graph"), "}", "}",
