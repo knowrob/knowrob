@@ -42,6 +42,8 @@ namespace knowrob {
 		 */
 		explicit KnowledgeBase(const std::string_view &configFile);
 
+		~KnowledgeBase();
+
 		/**
 		 * Asserts a proposition into the knowledge base.
 		 * @param tripleData data representing the proposition.
@@ -142,6 +144,8 @@ namespace knowrob {
 		};
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
+		void startReasoner();
+		void stopReasoner();
 
 		std::vector<RDFComputablePtr> createComputationSequence(
 				const std::list<DependencyNodePtr> &dependencyGroup) const;

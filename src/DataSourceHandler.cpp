@@ -1,6 +1,3 @@
-
-#include <utility>
-
 #include "knowrob/DataSourceHandler.h"
 
 using namespace knowrob;
@@ -17,6 +14,10 @@ bool DataSourceHandler::loadDataSource(const DataSourcePtr &dataSource)
 	}
 	else {
 		auto it = dataSourceHandler_.find(dataSource->dataFormat());
-		return (it != dataSourceHandler_.end()) && it->second(dataSource);
+		if(it != dataSourceHandler_.end()) {
+			return it->second(dataSource);
+		} else {
+			return false;
+		}
 	}
 }

@@ -1,0 +1,14 @@
+pyfactxx
+pip
+attrs
+distro
+wheel
+cryptography
+Pillow
+docutils
+tornado
+Jinja2
+setuptools
+packaging
+zipp
+future

@@ -47,6 +47,7 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 	backendManager_ = std::make_shared<BackendManager>(threadPool_);
 	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
 	loadConfiguration(config);
+	startReasoner();
 }
 
 KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
@@ -57,6 +58,24 @@ KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
 	boost::property_tree::ptree config;
 	boost::property_tree::read_json(URI::resolve(configFile), config);
 	loadConfiguration(config);
+	startReasoner();
+}
+
+KnowledgeBase::~KnowledgeBase() {
+	// stop all reasoners
+	stopReasoner();
+}
+
+void KnowledgeBase::startReasoner() {
+	for(auto &pair: reasonerManager_->reasonerPool()) {
+		pair.second->reasoner()->start();
+	}
+}
+
+void KnowledgeBase::stopReasoner() {
+	for(auto &pair: reasonerManager_->reasonerPool()) {
+		pair.second->reasoner()->stop();
+	}
 }
 
 void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config) {

@@ -44,6 +44,15 @@ BOOST_PYTHON_MODULE (knowrob) {
 	typedef std::vector<FormulaPtr> FormulaList;
 
 	/////////////////////////////////////////////////////
+	// logging
+	/////////////////////////////////////////////////////
+	def("logInfo", +[](const std::string &msg) { KB_INFO(msg); });
+	def("logWarn", +[](const std::string &msg) { KB_WARN(msg); });
+	def("logError", +[](const std::string &msg) { KB_ERROR(msg); });
+	def("logDebug", +[](const std::string &msg) { KB_DEBUG(msg); });
+	def("logCritical", +[](const std::string &msg) { KB_CRITICAL(msg); });
+
+	/////////////////////////////////////////////////////
 	// mappings for the Agent class
 	/////////////////////////////////////////////////////
 	class_<Agent, std::shared_ptr<Agent>>("Agent", no_init)
@@ -328,7 +337,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("dataFormat", &DataSource::dataFormat, CONST_REF_RETURN)
 			.def("uri", &DataSource::uri, CONST_REF_RETURN)
 			.def("path", &DataSource::path, CONST_REF_RETURN);
-	class_<DataBackend, std::shared_ptr<DataBackendWrap>, boost::noncopyable>("DataBackend", init<>())
+	class_<DataSourceHandler, std::shared_ptr<DataSourceHandler>>("DataSourceHandler", init<>())
+			.def("addDataHandler", +[]
+				(DataSourceHandler &x, const std::string &format, python::object fn)
+				{ x.addDataHandler(format, fn); })
+			.def("loadDataSource", &DataSourceHandler::loadDataSource);
+
+	class_<DataBackend, std::shared_ptr<DataBackendWrap>, bases<DataSourceHandler>, boost::noncopyable>
+	        ("DataBackend", init<>())
 			// methods that must be implemented by backend plugins
 			.def("loadConfig", &DataBackendWrap::loadConfig)
 			.def("insertOne", &DataBackendWrap::insertOne)
@@ -347,10 +363,8 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("__iter__", range(&ReasonerConfig::begin, &ReasonerConfig::end))
 			.def("get", &ReasonerConfig::get)
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
-	class_<Reasoner, std::shared_ptr<ReasonerWrap>, boost::noncopyable>("Reasoner", init<>())
+	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
 			.def("managerID", &ReasonerWrap::managerID)
-			.def("addDataHandler", &ReasonerWrap::addDataHandler)
-			.def("loadDataSource", &ReasonerWrap::loadDataSource)
 					// methods that must be implemented by reasoner plugins
 			.def("getTruthMode", &ReasonerWrap::getTruthMode)
 			.def("loadConfig", &ReasonerWrap::loadConfig)
