@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -183,9 +180,6 @@ namespace knowrob {
 
 		// Override Reasoner
 		void setDataBackend(const DataBackendPtr &backend) override;
-
-		// Override Reasoner
-		TruthMode getTruthMode() const override { return TruthMode::CLOSED_WORLD; }
 
 		// Override Reasoner
 		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override;

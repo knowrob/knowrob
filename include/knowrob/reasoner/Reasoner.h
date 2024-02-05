@@ -25,15 +25,6 @@
 
 namespace knowrob {
 	/**
-	 * Flags indicating the truth mode of a reasoner distinguishing between
-	 * closed world and open world semantics.
-	 */
-	enum TruthMode : uint8_t {
-		OPEN_WORLD = 1,
-		CLOSED_WORLD
-	};
-
-	/**
 	 * A reasoner is a component that can infer new knowledge.
 	 * It does so by evaluating axioms or rules that are defined by the reasoner.
 	 * The axioms and rules may refer to extensional data which is stored in the
@@ -65,13 +56,6 @@ namespace knowrob {
 		 * @param config a ReasonerConfig object.
 		 */
 		virtual bool loadConfig(const ReasonerConfig &config) = 0;
-
-		/**
-		 * The truth mode of this reasoner determines whether it operates
-		 * with open world or closed world semantics.
-		 * @return the truth mode of this reasoner.
-		 */
-		virtual TruthMode getTruthMode() const = 0;
 
 		/**
 		 * Get the description of a predicate currently defined by this reasoner.
@@ -113,6 +97,8 @@ namespace knowrob {
 		 * @return a buffer that can be used to retrieve the results of the query.
 		 */
 		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
+
+		void setInferredTriples(const std::vector<StatementData> &triples);
 
 	protected:
 		uint32_t reasonerManagerID_;

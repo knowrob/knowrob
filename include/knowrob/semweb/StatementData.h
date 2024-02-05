@@ -67,7 +67,11 @@ namespace knowrob {
         double objectDouble;
         long objectInteger;
         RDFType objectType;
+
+		bool operator==(const StatementData &other) const;
     };
+
+    using StatementDataPtr = std::shared_ptr<StatementData>;
 }
 
 #endif //KNOWROB_SEMWEB_STATEMENT_DATA_H

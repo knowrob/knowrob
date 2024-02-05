@@ -6,6 +6,8 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/CompoundFormula.h"
+#include "knowrob/reasoner/ReasonerError.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 namespace python = boost::python;
@@ -15,6 +17,18 @@ namespace python = boost::python;
 // and cannot be instantiated directly.
 // This header should be included in code that generates a Python module,
 // it does not need to be included in the KnowRob library itself.
+
+namespace knowrob::py {
+	// call a method of a python object
+	template<typename R, typename... Args> R call_method(PyObject *self, const char *method, Args... args) {
+		try {
+			return python::call_method<R>(self, method, python::object(args)...);
+		} catch (const python::error_already_set&) {
+			knowrob::py::handlePythonError();
+			throw ReasonerError("Python error");
+		}
+	}
+}
 
 // this struct is needed because Term has pure virtual methods
 struct TermWrap : public Term, boost::python::wrapper<Term>
@@ -58,19 +72,19 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	explicit DataBackendWrap(PyObject *p) : self(p), DataBackend() {}
 
 	bool loadConfig(const ReasonerConfig &config) override
-	{ return python::call_method<bool>(self, "loadConfig", config); }
+	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
 
 	bool insertOne(const StatementData &tripleData) override
-	{ return python::call_method<bool>(self, "insertOne", tripleData); }
+	{ return knowrob::py::call_method<bool>(self, "insertOne", tripleData); }
 
 	bool insertAll(const std::vector<StatementData> &data) override
-	{ return python::call_method<bool>(self, "insertAll", data); }
+	{ return knowrob::py::call_method<bool>(self, "insertAll", data); }
 
 	void removeAll(const RDFLiteral &literal) override
-	{ python::call_method<void>(self, "removeAll", literal); }
+	{ knowrob::py::call_method<void>(self, "removeAll", literal); }
 
 	void removeOne(const RDFLiteral &literal) override
-	{ python::call_method<void>(self, "removeOne", literal); }
+	{ knowrob::py::call_method<void>(self, "removeOne", literal); }
 
 private:
 	PyObject *self;
@@ -82,22 +96,19 @@ struct ReasonerWrap : public Reasoner, boost::python::wrapper<Reasoner>
 	explicit ReasonerWrap(PyObject *p) : self(p), Reasoner() {}
 
 	void setDataBackend(const DataBackendPtr &backend) override
-	{ python::call_method<void>(self, "setDataBackend", backend); }
+	{ knowrob::py::call_method<void>(self, "setDataBackend", backend); }
 
 	bool loadConfig(const ReasonerConfig &config) override
-	{ return python::call_method<bool>(self, "loadConfig", config); }
-
-	TruthMode getTruthMode() const override
-	{ return python::call_method<TruthMode>(self, "getTruthMode"); }
+	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
-	{ return python::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
+	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
 	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
-	{ return python::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
+	{ return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
-	void start() override { python::call_method<void>(self, "start"); }
-	void stop() override { python::call_method<void>(self, "stop"); }
+	void start() override { knowrob::py::call_method<void>(self, "start"); }
+	void stop() override { knowrob::py::call_method<void>(self, "stop"); }
 
 private:
 	PyObject *self;
@@ -115,31 +126,28 @@ struct ReasonerWithBackendWrap :
 	//    because of the boost::python::wrapper superclass.
 
 	bool loadConfig(const ReasonerConfig &config) override
-	{ return python::call_method<bool>(self, "loadConfig", config); }
+	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
 
 	bool insertOne(const StatementData &tripleData) override
-	{ return python::call_method<bool>(self, "insertOne", tripleData); }
+	{ return knowrob::py::call_method<bool>(self, "insertOne", tripleData); }
 
 	bool insertAll(const std::vector<StatementData> &data) override
-	{ return python::call_method<bool>(self, "insertAll", data); }
+	{ return knowrob::py::call_method<bool>(self, "insertAll", data); }
 
 	void removeAll(const RDFLiteral &literal) override
-	{ python::call_method<void>(self, "removeAll", literal); }
+	{ knowrob::py::call_method<void>(self, "removeAll", literal); }
 
 	void removeOne(const RDFLiteral &literal) override
-	{ python::call_method<void>(self, "removeOne", literal); }
-
-	TruthMode getTruthMode() const override
-	{ return python::call_method<TruthMode>(self, "getTruthMode"); }
+	{ knowrob::py::call_method<void>(self, "removeOne", literal); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
-	{ return python::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
+	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
 	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
-	{ return python::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
+	{ return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
-	void start() override { python::call_method<void>(self, "start"); }
-	void stop() override { python::call_method<void>(self, "stop"); }
+	void start() override { knowrob::py::call_method<void>(self, "start"); }
+	void stop() override { knowrob::py::call_method<void>(self, "stop"); }
 private:
 	PyObject *self;
 };

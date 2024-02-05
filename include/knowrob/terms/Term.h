@@ -86,6 +86,11 @@ namespace knowrob {
 		 */
 		virtual void write(std::ostream& os) const = 0;
 
+		/**
+		 * @return the string representation of this term.
+		 */
+		std::string toString() const;
+
         /**
          * @return the hash of this.
          */

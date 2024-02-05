@@ -2,6 +2,7 @@ from knowrob import *
 from pyfactxx import coras
 from rdflib import BNode, URIRef
 from rdflib.query import ResultRow
+from rdflib.namespace import XSD
 
 
 class FactxxReasoner(ReasonerWithBackend):
@@ -9,6 +10,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		super(FactxxReasoner, self).__init__()
 		self.crs = coras.Coras()
 		self.is_parse_needed = False
+		self.ignore_bnodes = True
 		# add data handler for OWL files
 		self.addDataHandler('rdf-xml', lambda ds: self.load_owl(ds, 'xml'))
 		self.addDataHandler('turtle', lambda ds: self.load_owl(ds, 'turtle'))
@@ -72,55 +74,64 @@ class FactxxReasoner(ReasonerWithBackend):
 	def loadConfig(self, config: ReasonerConfiguration) -> bool:
 		return True
 
-	def getTruthMode(self) -> TruthMode:
-		return TruthMode.OPEN_WORLD
-
 	def parse(self):
 		self.is_parse_needed = False
 		self.crs.parse()
 
-	def updateInferences(self):
-		reasoner = self.factxx()
-		# select all triples
-		query = 'SELECT ?a ?b ?c WHERE {?a ?b ?c}'
+	def update_inferred_triples(self):
 		# retrieve all inferred triples
 		# NOTE: this also includes the triples that were already inferred before.
+		query = 'SELECT ?a ?b ?c WHERE {?a ?b ?c}'
 		result_rows: list[ResultRow] = self.crs.query(query, scope='inferred')
-		inferred_data = []
-
-		# TODO: first idea: maintain a map of inferences.
-		#   Key can be a hash of the triple, maybe via StatementData type as this is used
-		#   in KnowRob for assert.
-		#   (1) build a new map of inferences
-		#   (2) find all keys that appear in the old map but not in the new map.
-		#       then tell the KB these triples should be removed.
-		#       TODO: side-quest: KB should maintain who asserts triples, but could be ignored for the moment
-		#   (3) find all keys that appear in the new map but not in the old map.
-		#       then tell the KB these triples should be added.
-		#   (4) update the old map with the new map.
-		#   TODO: side-quest: how to handle insert into KB? need to have an additional interface.
-		#                     also make sure insert below is not called for reasoner that does an assertion.
-		#   TODO: side-quest: inferred triples should be marked as such, graph="inferred" ok?
-
-		# TODO: how to obtain only the newly inferred triples?
-		# TODO: can bnodes be excluded via the query?
+		# convert rows to knowrob terms
+		knowrob_terms = []
 		for row in result_rows:
-			if type(row[0]) is not URIRef:
-				# require subject to be a URI
-				continue
-			if type(row[1]) is not URIRef:
-				# require property to be a URI
-				continue
+			if self.ignore_bnodes:
+				if type(row[0]) is not URIRef:
+					# require subject to be a URI
+					continue
+				if type(row[1]) is not URIRef:
+					# require property to be a URI
+					continue
 			if type(row[2]) is BNode:
-				# require property to be a URI
+				# require object to be a URI or Literal
 				continue
-			a_uri = StringTerm(row[0])
-			b_uri = StringTerm(row[1])
+			# TODO: this might do a lot of unneeded copies of the same string! can the memory by mapped maybe?
+			#       could add a StringViewTerm or so that is a view on a string.
+			#       else maybe provide a factory in knowrob to get concept names etc as StringTerm.
+			kb_term = StatementData()
+			kb_term.subject = str(row[0])
+			kb_term.predicate = str(row[1])
 
-			# TODO: how are data values handled?
-			# TODO
-			# inferred_data.append(StatementData(a_uri, b_uri, c_node))
-			logWarn("{} {} {}".format(a_uri, b_uri, str(row[2])))
+			if type(row[2]) is Literal:
+				literal: Literal = row[2]
+				datatype = literal.datatype
+				if datatype == XSD.string:
+					kb_term.object = str(row[2])
+					kb_term.objectType = RDFType.STRING_LITERAL
+				elif datatype == XSD.integer or datatype == XSD.long:
+					kb_term.objectInteger = int(row[2])
+					kb_term.objectType = RDFType.INT64_LITERAL
+				elif datatype == XSD.boolean:
+					kb_term.objectInteger = int(row[2])
+					kb_term.objectType = RDFType.BOOLEAN_LITERAL
+				elif datatype == XSD.float or datatype == XSD.float:
+					kb_term.objectDouble = float(row[2])
+					kb_term.objectType = RDFType.DOUBLE_LITERAL
+				else:
+					logWarn("unknown datatype in inferred triple: " + str(datatype))
+					continue
+			elif type(row[2]) is URIRef:
+				kb_term.object = str(row[2])
+				kb_term.objectType = RDFType.RESOURCE
+			else:
+				# should not happen
+				continue
+
+			knowrob_terms.append(kb_term)
+
+		logWarn("FactxxReasoner set inferred")
+		self.setInferredTriples(knowrob_terms)
 
 	def update(self):
 		reasoner = self.factxx()
@@ -131,7 +142,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		reasoner.classify()
 		reasoner.realise()
 
-		self.updateInferences()
+		self.update_inferred_triples()
 
 	def start(self):
 		logWarn("start FactxxReasoner")

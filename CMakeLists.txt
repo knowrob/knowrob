@@ -271,7 +271,9 @@ add_library(knowrob SHARED
         src/queries/AnswerMerger.cpp
         src/queries/QueryStageLiteral.cpp
         src/queries/QueryStageFormula.cpp
-        src/mongodb/bson-helper.cpp)
+        src/mongodb/bson-helper.cpp
+        src/py/utils.cpp
+        src/semweb/StatementData.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

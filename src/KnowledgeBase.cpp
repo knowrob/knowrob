@@ -68,7 +68,12 @@ KnowledgeBase::~KnowledgeBase() {
 
 void KnowledgeBase::startReasoner() {
 	for(auto &pair: reasonerManager_->reasonerPool()) {
-		pair.second->reasoner()->start();
+		try {
+			pair.second->reasoner()->start();
+		}
+		catch (std::exception &e) {
+			KB_ERROR("failed to start reasoner '{}': {}", pair.first, e.what());
+		}
 	}
 }
 

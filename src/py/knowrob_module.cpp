@@ -42,6 +42,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
 	typedef std::vector<TermPtr> TermList;
 	typedef std::vector<FormulaPtr> FormulaList;
+	typedef std::vector<StatementData> StatementList;
 
 	/////////////////////////////////////////////////////
 	// logging
@@ -74,6 +75,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", python::no_init)
 			.def("type", &Term::type, CONST_REF_RETURN)
 			.def("__eq__", &Term::operator==)
+			.def("__str__", +[](Term &t){ return t.toString(); })
 			.def("isGround", python::pure_virtual(&Term::isGround))
 			.def("isAtomic", python::pure_virtual(&Term::isAtomic))
 			.def("computeHash", python::pure_virtual(&Term::computeHash))
@@ -138,7 +140,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.def("antecedent", &Implication::antecedent, CONST_REF_RETURN)
 			.def("consequent", &Implication::consequent, CONST_REF_RETURN);
 
-	// allow conversion between std::vector and python::list for Formula objects.s
+	// allow conversion between std::vector and python::list for Formula objects.
 	custom_vector_from_seq<FormulaPtr>();
 	class_<FormulaList>("FormulaList").def(vector_indexing_suite<FormulaList, true>());
 
@@ -221,6 +223,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for StatementData
 	/////////////////////////////////////////////////////
+
+	enum_<RDFType>("RDFType")
+			.value("BOOLEAN_LITERAL", RDF_BOOLEAN_LITERAL)
+			.value("INT64_LITERAL", RDF_INT64_LITERAL)
+			.value("DOUBLE_LITERAL", RDF_DOUBLE_LITERAL)
+			.value("STRING_LITERAL", RDF_STRING_LITERAL)
+			.value("RESOURCE", RDF_RESOURCE);
+
 	class_<StatementData, std::shared_ptr<StatementData>>("StatementData", init<>())
 			.def(init<const char *, const char *, const char *, const char *, const char *>())
 			.def_readwrite("documentID", &StatementData::documentID)
@@ -237,6 +247,10 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.BOOST_PYTHON_ADD_OPTIONAL("begin", &StatementData::begin)
 			.BOOST_PYTHON_ADD_OPTIONAL("end", &StatementData::end)
 			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &StatementData::confidence);
+
+	// allow conversion between std::vector and python::list for Formula objects.
+	custom_vector_from_seq<StatementData>();
+	class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
 
 	/////////////////////////////////////////////////////
 	// mappings for literals
@@ -339,7 +353,7 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("path", &DataSource::path, CONST_REF_RETURN);
 	class_<DataSourceHandler, std::shared_ptr<DataSourceHandler>>("DataSourceHandler", init<>())
 			.def("addDataHandler", +[]
-				(DataSourceHandler &x, const std::string &format, python::object fn)
+				(DataSourceHandler &x, const std::string &format, python::object &fn)
 				{ x.addDataHandler(format, fn); })
 			.def("loadDataSource", &DataSourceHandler::loadDataSource);
 
@@ -356,17 +370,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for the Reasoner class and it sub-classes
 	/////////////////////////////////////////////////////
-	enum_<TruthMode>("TruthMode")
-			.value("OPEN_WORLD", TruthMode::OPEN_WORLD)
-			.value("CLOSED_WORLD", TruthMode::CLOSED_WORLD);
 	class_<ReasonerConfig, std::shared_ptr<ReasonerConfig>>("ReasonerConfiguration", init<>())
 			.def("__iter__", range(&ReasonerConfig::begin, &ReasonerConfig::end))
 			.def("get", &ReasonerConfig::get)
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
 	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
 			.def("managerID", &ReasonerWrap::managerID)
+			.def("setInferredTriples", &ReasonerWrap::setInferredTriples)
 					// methods that must be implemented by reasoner plugins
-			.def("getTruthMode", &ReasonerWrap::getTruthMode)
 			.def("loadConfig", &ReasonerWrap::loadConfig)
 			.def("setDataBackend", &ReasonerWrap::setDataBackend)
 			.def("getDescription", &ReasonerWrap::getDescription)

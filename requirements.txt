@@ -12,3 +12,5 @@ setuptools
 packaging
 zipp
 future
+
+rdflib
