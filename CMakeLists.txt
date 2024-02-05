@@ -16,6 +16,7 @@ include("cmake/ontologies.cmake")
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -243,15 +244,20 @@ add_library(knowrob_qa SHARED
         src/modalities/ModalityLabel.cpp
         src/semweb/KnowledgeGraph.cpp
         src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp)
+        src/semweb/KnowledgeGraphPlugin.cpp
+		src/interfaces/Interface.cpp
+		include/knowrob/interfaces/Interface.h
+		src/interfaces/rest/RestInterface.cpp
+		include/knowrob/interfaces/RestInterface.h)
 target_link_libraries(knowrob_qa
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
 		${RAPTOR_LIBRARIES}
 		spdlog::spdlog
+		nlohmann_json::nlohmann_json
 		${GTEST_LIBRARIES})
 
-add_executable(knowrob-terminal src/terminal.cpp)
+add_executable(knowrob-terminal src/interfaces/terminal.cpp)
 target_link_libraries(knowrob-terminal
 		Boost::program_options
 		Boost::serialization
@@ -303,6 +309,8 @@ if (catkin_FOUND)
 	## ROS Interface ###
 	add_executable(knowrob-ros 
 	src/ros/ROSInterface.cpp
+			src/interfaces/Interface.cpp
+			include/knowrob/interfaces/Interface.h
 	)
 	add_dependencies(knowrob-ros
 	 ${catkin_EXPORTED_TARGETS})

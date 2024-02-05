@@ -10,7 +10,7 @@
 #ifndef KNOWROB_ROSINTERFACE_H
 #define KNOWROB_ROSINTERFACE_H
 
-#include "knowrob/ros/ROSInterface.h"
+#include "knowrob/interfaces/Interface.h"
 // KnowRob
 #include "knowrob/knowrob.h"
 #include "knowrob/Logger.h"
@@ -31,7 +31,7 @@
 #include <actionlib/server/simple_action_server.h>
 
 namespace knowrob {
-    class ROSInterface {
+    class ROSInterface : public Interface {
     private:
         ros::NodeHandle nh_;
 

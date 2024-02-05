@@ -22,9 +22,9 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <utility>
 // KnowRob
-#include <knowrob/knowrob.h>
-#include <knowrob/Logger.h>
-#include <knowrob/KnowledgeBase.h>
+#include "knowrob/knowrob.h"
+#include "knowrob/Logger.h"
+#include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/semweb/PrefixRegistry.h"
