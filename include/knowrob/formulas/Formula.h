@@ -42,6 +42,12 @@ namespace knowrob {
 		explicit Formula(const FormulaType &type);
 
 		/**
+		 * @param other another formula
+		 * @return true if both formulas are syntactically equal
+		 */
+        bool operator==(const Formula& other) const;
+
+		/**
 		 * @return the type of this formula.
 		 */
 		FormulaType type() const { return type_; }
@@ -82,6 +88,8 @@ namespace knowrob {
 	
 	protected:
 		const FormulaType type_;
+
+		virtual bool isEqual(const Formula &other) const = 0;
 	};
 
     /**

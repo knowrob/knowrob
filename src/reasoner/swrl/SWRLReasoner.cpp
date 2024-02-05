@@ -42,8 +42,8 @@ const std::string SWRLReasoner::SWRL_FORMAT="pl-swrl";
 SWRLReasoner::SWRLReasoner(const std::string &reasonerID)
 		: PrologReasoner(reasonerID)
 {
-    addDataSourceHandler(SWRL_FORMAT, [this]
-            (const DataSourcePtr &dataFile) { return loadSWRLFile(dataFile); });
+	addDataHandler(SWRL_FORMAT, [this]
+			(const DataSourcePtr &dataFile) { return loadSWRLFile(dataFile); });
 }
 
 bool SWRLReasoner::loadSWRLFile(const DataSourcePtr &dataFile)

@@ -6,20 +6,20 @@
 #define KNOWROB_REDUNDANT_ANSWER_FILTER_H
 
 #include "set"
-#include "AnswerBroadcaster.h"
+#include "TokenBroadcaster.h"
 
 namespace knowrob {
 
-    class RedundantAnswerFilter : public AnswerBroadcaster {
-    public:
-        RedundantAnswerFilter() = default;
+	class RedundantAnswerFilter : public TokenBroadcaster {
+	public:
+		RedundantAnswerFilter() = default;
 
-    protected:
-        std::set<std::size_t> previousAnswers_;
+	protected:
+		std::set<std::size_t> previousAnswers_;
 
-        // Override QueryResultStream
-        void push(const AnswerPtr &msg) override;
-    };
+		// Override QueryResultStream
+		void push(const TokenPtr &tok) override;
+	};
 
 } // knowrob
 

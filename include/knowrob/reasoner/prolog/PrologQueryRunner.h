@@ -36,30 +36,30 @@ namespace knowrob {
             const uint32_t queryID;
             std::shared_ptr<StringTerm> queryModule;
             std::shared_ptr<const Query> goal;
-            std::shared_ptr<ModalityLabel> label;
+			GraphSelector graphSelector;
             functor_t callFunctor;
             Request(const std::shared_ptr<const Query> &goal,
                     functor_t callFunctor,
                     const std::shared_ptr<StringTerm> &queryModule,
-                    const std::shared_ptr<ModalityLabel> &label,
+                   const GraphSelector &graphSelector,
                     uint32_t queryID=0)
                     : queryID(queryID),
                       queryModule(queryModule),
                       goal(goal),
-                      label(label),
+                      graphSelector(graphSelector),
                       callFunctor(callFunctor) {};
         };
 
         PrologQueryRunner(PrologReasoner *reasoner,
                 Request request,
-                const std::shared_ptr<AnswerStream::Channel> &outputChannel,
+                const std::shared_ptr<TokenStream::Channel> &outputChannel,
                 bool sendEOS=false);
 
         // Override Runner
         void run() override;
 
     protected:
-        std::shared_ptr<AnswerStream::Channel> outputChannel_;
+        std::shared_ptr<TokenStream::Channel> outputChannel_;
         PrologReasoner *reasoner_;
         Request request_;
         bool sendEOS_;

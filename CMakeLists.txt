@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
 set (CMAKE_CXX_STANDARD 17)
+cmake_policy(SET CMP0148 OLD)
 
 project(knowrob)
 
@@ -18,10 +19,12 @@ find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
+find_package(Python COMPONENTS Interpreter Development)
+
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization python3)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -58,13 +61,19 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include
 		${SWIPL_INCLUDE_DIRS}
 		${EIGEN3_INCLUDE_DIR}
-		${Boost_INCLUDE_DIRS})
+		${Boost_INCLUDE_DIRS}
+		${Python_INCLUDE_DIRS})
 
 # define some constants for the compilation of source files that
 # are used to load project-relative files.
 # TODO: needs to be defined differently when catkin is used?
 add_definitions(-DKNOWROB_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
+add_definitions(-DKNOWROB_BUILD_DIR=\"${CMAKE_BINARY_DIR}\")
+add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
+# ignore BOOST deprecated headers
+add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 ##############
 ########## ROS1 block
@@ -141,7 +150,7 @@ link_directories(${MONGOC_LIBRARY_DIRS})
 #### QUERY ANSWERING
 ##############
 
-add_library(knowrob_qa SHARED
+add_library(knowrob SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
         src/Logger.cpp
@@ -176,18 +185,18 @@ add_library(knowrob_qa SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
         src/formulas/Literal.cpp
-        src/queries/ModalQuery.cpp
+        src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
         src/queries/Answer.cpp
-		src/queries/AnswerStream.cpp
-		src/queries/AnswerQueue.cpp
-		src/queries/AnswerCombiner.cpp
-		src/queries/AnswerBroadcaster.cpp
-		src/queries/DependencyGraph.cpp
+        src/queries/TokenStream.cpp
+        src/queries/TokenQueue.cpp
+        src/queries/ConjunctiveBroadcaster.cpp
+        src/queries/TokenBroadcaster.cpp
+        src/formulas/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-		src/queries/AnswerBuffer.cpp
-        src/queries/GraphQuery.cpp
+        src/queries/TokenBuffer.cpp
+        src/queries/ConjunctiveQuery.cpp
         src/queries/Query.cpp
         src/queries/RedundantAnswerFilter.cpp
         src/queries/EDBStage.cpp
@@ -241,28 +250,81 @@ add_library(knowrob_qa SHARED
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
-        src/modalities/ModalityLabel.cpp
-        src/semweb/KnowledgeGraph.cpp
-        src/semweb/KnowledgeGraphManager.cpp
-        src/semweb/KnowledgeGraphPlugin.cpp
 		src/interfaces/Interface.cpp
 		include/knowrob/interfaces/Interface.h
 		src/interfaces/rest/RestInterface.cpp
 		include/knowrob/interfaces/RestInterface.h)
 target_link_libraries(knowrob_qa
+        src/backend/KnowledgeGraph.cpp
+        src/backend/BackendManager.cpp
+        src/backend/BackendPlugin.cpp
+        src/queries/ModalStage.cpp
+        src/semweb/Agent.cpp
+        include/knowrob/semweb/Agent.h
+        src/formulas/PredicateIndicator.cpp
+        src/formulas/PredicateDescription.cpp
+        src/reasoner/ReasonerModule.cpp
+        src/DataSourceHandler.cpp
+        src/queries/AnswerYes.cpp
+        include/knowrob/queries/AnswerYes.h
+        src/queries/AnswerNo.cpp
+        include/knowrob/queries/AnswerNo.h
+        src/queries/AnswerDontKnow.cpp
+        include/knowrob/queries/AnswerDontKnow.h
+        src/queries/DisjunctiveBroadcaster.cpp
+        src/queries/Token.cpp
+        src/semweb/GraphSelector.cpp
+        src/queries/AnswerMerger.cpp
+        src/queries/QueryStageLiteral.cpp
+        src/queries/QueryStageFormula.cpp
+        src/mongodb/bson-helper.cpp)
+set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
 		${RAPTOR_LIBRARIES}
+		${Python_LIBRARIES}
 		spdlog::spdlog
 		nlohmann_json::nlohmann_json
 		${GTEST_LIBRARIES})
+target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 
 add_executable(knowrob-terminal src/interfaces/terminal.cpp)
 target_link_libraries(knowrob-terminal
+		${KNOWROB_LIBRARIES}
 		Boost::program_options
 		Boost::serialization
-		knowrob_qa)
+		Boost::python3
+		knowrob)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
+
+##############
+########## Python block
+##############
+
+# Without this, any build libraries automatically have names "lib{x}.so"
+set(CMAKE_SHARED_MODULE_PREFIX "")
+
+add_library(knowrob_py MODULE src/py/knowrob_module.cpp)
+target_include_directories(knowrob_py PRIVATE
+		${SWIPL_INCLUDE_DIRS}
+		${EIGEN3_INCLUDE_DIR}
+		${Boost_INCLUDE_DIRS}
+		${PYTHON_INCLUDE_DIRS})
+target_link_libraries(knowrob_py PRIVATE
+		${KNOWROB_LIBRARIES}
+		Boost::program_options
+		Boost::serialization
+		Boost::python3
+		knowrob)
+# Rename the library to knowrob.so such that it can be loaded by the
+# Python interpreter through the "import knowrob" statement.
+# NOTE: The library needs to be copied into site-packages directory of Python, or
+#       the PYTHONPATH needs to be set to include the build directory.
+add_custom_command(TARGET knowrob_py POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/knowrob_py.so
+        ${CMAKE_BINARY_DIR}/knowrob.so
+    COMMAND_EXPAND_LISTS)
 
 ##############
 ########## ROS1 block
@@ -272,7 +334,7 @@ if (catkin_FOUND)
 
 	# install into ROS workspace
 	#add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(knowrob_qa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+	add_dependencies(knowrob ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #	### TF messages ###
@@ -316,7 +378,7 @@ if (catkin_FOUND)
 	 ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(knowrob-ros
 			Boost::program_options
-			knowrob_qa
+			knowrob
 			${catkin_LIBRARIES})
 	install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
 endif()
@@ -326,7 +388,7 @@ endif()
 ##############
 
 # add an executable target for GTest.
-# but the testing code is actually in the *knowrob_qa* library
+# but the testing code is actually in the *knowrob* library
 # where gtest won't find them without using the "--no-as-needed"
 # flag for the linker.
 add_executable(all_gtests
@@ -335,8 +397,9 @@ add_executable(all_gtests
         tests/KnowledgeBaseTest.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
-		knowrob_qa
+		knowrob
 		-Wl,--no-whole-archive
+		Boost::python3
 		${GTEST_MAIN_LIBRARIES})
 
 ##############

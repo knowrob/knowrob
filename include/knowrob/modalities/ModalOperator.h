@@ -8,6 +8,7 @@
 #include <list>
 #include <optional>
 #include "knowrob/terms/Term.h"
+#include "knowrob/terms/Constant.h"
 
 namespace knowrob {
     /**
@@ -23,7 +24,7 @@ namespace knowrob {
      * An operator of a modal language, e.g. "B" is often used for "belief" and
      * "K" for "knowledge".
      */
-    class ModalOperator : public Term {
+    class ModalOperator : public StringTerm {
     public:
         ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType);
 
@@ -101,6 +102,8 @@ namespace knowrob {
          */
         void operator+=(const ModalOperatorPtr &modalOperator);
 
+        ModalIteration operator+(const ModalOperatorPtr &modalOperator) const;
+
         /**
          * @return number of operators in this sequence.
          */
@@ -119,7 +122,7 @@ namespace knowrob {
         /**
          * @return an empty iteration.
          */
-        static const std::shared_ptr<ModalIteration>& emptyIteration();
+        static const ModalIteration& emptyIteration();
 
     protected:
         std::list<ModalOperatorPtr> modalitySequence_;

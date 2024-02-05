@@ -89,10 +89,15 @@ bool TripleCursor::nextTriple(StatementData &tripleData) //NOLINT
 
                 while(bson_iter_next(&timeIter)) {
                     std::string_view scopeKey = bson_iter_key(&timeIter);
-                    if(scopeKey=="since")
-                        tripleData.begin = bson_iter_double(&timeIter);
-                    else if(scopeKey=="until")
-                        tripleData.end = bson_iter_double(&timeIter);
+                    if(scopeKey=="since") {
+						tripleData.begin = bson_iterOptionalDouble(&timeIter);
+						if(tripleData.begin.value() == 0) {
+							tripleData.begin = std::nullopt;
+						}
+                    }
+                    else if(scopeKey=="until") {
+                        tripleData.end = bson_iterOptionalDouble(&timeIter);
+                    }
                 }
             }
         }

@@ -6,22 +6,25 @@
 #define KNOWROB_EDB_STAGE_H
 
 #include <memory>
-#include "knowrob/semweb/KnowledgeGraph.h"
-#include "QueryStage.h"
+#include "knowrob/backend/KnowledgeGraph.h"
+#include "QueryStageLiteral.h"
 
 namespace knowrob {
+	/**
+	 * A query stage that runs an EDB query. It does so by attempting to ground
+	 * literals that appear in the query in the extensional database.
+	 */
+	class EDBStage : public QueryStageLiteral {
+	public:
+		EDBStage(KnowledgeGraphPtr edb,
+				 const RDFLiteralPtr &literal,
+				 const QueryContextPtr &ctx);
 
-    class EDBStage : public QueryStage {
-    public:
-        EDBStage(KnowledgeGraphPtr edb,
-                 const RDFLiteralPtr &literal,
-                 int queryFlags);
+	protected:
+		KnowledgeGraphPtr edb_;
 
-    protected:
-        KnowledgeGraphPtr edb_;
-
-        AnswerBufferPtr submitQuery(const RDFLiteralPtr &literal) override;
-    };
+		TokenBufferPtr submitQuery(const RDFLiteralPtr &literal) override;
+	};
 
 } // knowrob
 

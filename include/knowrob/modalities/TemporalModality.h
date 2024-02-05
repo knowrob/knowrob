@@ -9,9 +9,9 @@
 #include "TimeInterval.h"
 
 namespace knowrob {
-    enum class TemporalOperator {
-        ALWAYS=0,
-        SOMETIMES=1
+    enum class TemporalOperator : uint8_t {
+        ALWAYS=1,
+        SOMETIMES=0
     };
 
     /**

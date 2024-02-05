@@ -15,6 +15,7 @@
 namespace knowrob::semweb {
     /**
      * The vocabulary of a knowledge graph.
+     * It contains the definitions of classes and properties.
      */
     class Vocabulary {
     public:
@@ -45,6 +46,10 @@ namespace knowrob::semweb {
          */
         std::vector<ClassPtr> getDefinedClassesWithPrefix(const std::string_view &prefix) const;
 
+		/**
+		 * @param prefix a IRI prefix
+		 * @return all known class names with matching prefix
+		 */
         std::vector<std::string_view> getDefinedClassNamesWithPrefix(const std::string_view &prefix) const;
 
         /**
@@ -80,6 +85,10 @@ namespace knowrob::semweb {
          */
         std::vector<PropertyPtr> getDefinedPropertiesWithPrefix(const std::string_view &prefix) const;
 
+		/**
+		 * @param prefix a IRI prefix
+		 * @return all known property names with matching prefix
+		 */
         std::vector<std::string_view> getDefinedPropertyNamesWithPrefix(const std::string_view &prefix) const;
 
         /**
@@ -122,9 +131,33 @@ namespace knowrob::semweb {
          */
         static bool isTaxonomicProperty(const std::string_view &iri);
 
+		/**
+		 * Set the frequency of a resource reflecting how often it appears
+		 * in the knowledge corpus.
+		 * @param iri a IRI
+		 * @param frequency a frequency
+		 */
+        void setFrequency(const std::string_view &iri, uint32_t frequency);
+
+        /**
+         * Increase the frequency of a resource by one reflecting that it appears
+         * one more time in the knowledge corpus.
+         * @param iri a IRI
+         */
+        void increaseFrequency(const std::string_view &iri);
+
+        /**
+         * Returns the frequency of a resource reflecting how often it appears
+         * in the knowledge corpus.
+         * @param iri a IRI
+         * @return the frequency
+         */
+        uint32_t frequency(const std::string_view &iri) const;
+
     protected:
         std::map<std::string_view, ClassPtr, std::less<>> definedClasses_;
         std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
+        std::map<std::string_view, uint32_t> frequency_;
     };
 
     using VocabularyPtr = std::shared_ptr<Vocabulary>;

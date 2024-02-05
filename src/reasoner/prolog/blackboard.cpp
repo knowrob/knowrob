@@ -2,14 +2,16 @@
 #include <SWI-Prolog.h>
 #include <filesystem>
 
-#include "knowrob/queries/AnswerStream.h"
-#include "knowrob/queries/AnswerQueue.h"
+#include "knowrob/queries/TokenStream.h"
+#include "knowrob/queries/TokenQueue.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
-#include "knowrob/reasoner/Blackboard.h"
+//#include "knowrob/reasoner/Blackboard.h"
 #include "knowrob/Logger.h"
 #include "knowrob/terms/OptionList.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/reasoner/ReasonerManager.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 
@@ -19,108 +21,115 @@ using namespace knowrob;
  */
 class QACallContext {
 public:
-    //std::shared_ptr<Blackboard> blackboard_;
-    std::shared_ptr<AnswerQueue> results_;
-    std::shared_ptr<ModalQuery> query_;
-    std::map<std::string, term_t> queryVars_;
+	//std::shared_ptr<Blackboard> blackboard_;
+	std::shared_ptr<TokenQueue> results_;
+	std::shared_ptr<FormulaQuery> query_;
+	std::map<std::string, term_t> queryVars_;
 
-    QACallContext(term_t t_reasonerManagerID, term_t t_goal, term_t t_queryCtx)
-    : results_(std::make_shared<AnswerQueue>())
-    {
-        // create query object
-        query_ = PrologQuery::toQuery(PrologQuery::constructTerm(t_goal, &queryVars_));
-        // set query context from context term t_queryCtx
-        if(t_queryCtx != (term_t)0) {
-            PrologQuery::putScope(query_, t_queryCtx);
-        }
-        // find the reasoner manager
-        int reasonerManagerID=0;
-        if(!PL_get_integer(t_reasonerManagerID, &reasonerManagerID)) reasonerManagerID=0;
-        auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
-        // TODO: run query
-        //blackboard_ = std::make_shared<Blackboard>(reasonerManager, results_, query_);
-        //blackboard_->start();
-    }
+	QACallContext(term_t t_reasonerManagerID, term_t t_goal, term_t t_queryCtx)
+			: results_(std::make_shared<TokenQueue>()) {
+		// create query object
+		query_ = PrologQuery::toQuery(PrologQuery::constructTerm(t_goal, &queryVars_));
+		// set query context from context term t_queryCtx
+		if (t_queryCtx != (term_t) 0) {
+			PrologQuery::putScope(query_, t_queryCtx);
+		}
+		// find the reasoner manager
+		int reasonerManagerID = 0;
+		if (!PL_get_integer(t_reasonerManagerID, &reasonerManagerID)) reasonerManagerID = 0;
+		auto reasonerManager = ReasonerManager::getReasonerManager(reasonerManagerID);
+		// TODO: run query
+		//blackboard_ = std::make_shared<Blackboard>(reasonerManager, results_, query_);
+		//blackboard_->start();
+	}
 
-    void applySolution(const AnswerPtr &solution) {
-        // FIXME: for some reason this does not work as expected.
-        //    idea is to remember all variables on PL_FIRST_CALL to quickly instantiate them
-        //    with each solution. for now PL_unify is used instead.
-        for(auto &pair : *solution->substitution()) {
-            auto pl_term_it = queryVars_.find(pair.first.name());
-            if(pl_term_it != queryVars_.end()) {
-                PrologQuery::putTerm(pl_term_it->second, pair.second, queryVars_);
-            } else {
-                KB_WARN("unknown variable {}", pair.first.name());
-            }
-        }
-    }
+	void applySolution(const AnswerYesPtr &solution) {
+		// FIXME: for some reason this does not work as expected.
+		//    idea is to remember all variables on PL_FIRST_CALL to quickly instantiate them
+		//    with each solution. for now PL_unify is used instead.
+		for (auto &pair: *solution->substitution()) {
+			auto pl_term_it = queryVars_.find(pair.first.name());
+			if (pl_term_it != queryVars_.end()) {
+				PrologQuery::putTerm(pl_term_it->second, pair.second, queryVars_);
+			} else {
+				KB_WARN("unknown variable {}", pair.first.name());
+			}
+		}
+	}
 
-    AnswerPtr nextSolution() {
-        return results_->pop_front();
-    }
+	auto nextSolution() {
+		return results_->pop_front();
+	}
 
-    bool hasMoreSolutions() {
-        return !results_->empty() || results_->isOpened();
-    }
+	bool hasMoreSolutions() {
+		return !results_->empty() || results_->isOpened();
+	}
 };
 
 foreign_t pl_qa_call4(term_t t_reasonerManager, term_t t_goal,
-                      term_t t_queryCtx, term_t t_resultCtx,
-                      control_t handle)
-{
-    // get, create, or delete call context
-    QACallContext *callContext;
-    switch(PL_foreign_control(handle)) {
-        case PL_FIRST_CALL:
-            // create a new call context
-            callContext = new QACallContext(t_reasonerManager, t_goal, t_queryCtx);
-            break;
-        case PL_REDO:
-            // pop next choice point
-            callContext = (QACallContext*)PL_foreign_context_address(handle);
-            break;
-        case PL_PRUNED:
-            // remaining choice points were pruned
-            callContext = (QACallContext*)PL_foreign_context_address(handle);
-            delete callContext;
-            return TRUE;
-    }
-    // callContext is an existing context below, try to get next solution
-    // TODO: list of instantiated predicates is lost here, need to hand it back to Prolog!
-    auto solution = callContext->nextSolution();
-    if(AnswerStream::isEOS(solution)) {
-        // no solution, fail
-        delete callContext;
-        return FALSE;
-    }
-    // apply substitution mapping
-    auto pl_queryInstance = PL_new_term_ref();
-    auto queryInstance = callContext->query_->applySubstitution(*solution->substitution());
-    PrologQuery::putTerm(pl_queryInstance, queryInstance->formula(), callContext->queryVars_);
-    if(!PL_unify(t_goal, pl_queryInstance)) {
-        // something went wrong, fail
-        delete callContext;
-        return FALSE;
-    }
+					  term_t t_queryCtx, term_t t_resultCtx,
+					  control_t handle) {
+	// get, create, or delete call context
+	QACallContext *callContext;
+	switch (PL_foreign_control(handle)) {
+		case PL_FIRST_CALL:
+			// create a new call context
+			callContext = new QACallContext(t_reasonerManager, t_goal, t_queryCtx);
+			break;
+		case PL_REDO:
+			// pop next choice point
+			callContext = (QACallContext *) PL_foreign_context_address(handle);
+			break;
+		case PL_PRUNED:
+			// remaining choice points were pruned
+			callContext = (QACallContext *) PL_foreign_context_address(handle);
+			delete callContext;
+			return TRUE;
+	}
+	// callContext is an existing context below, try to get next solution
+	// TODO: list of instantiated predicates is lost here, need to hand it back to Prolog!
 
-    // put scope term into t_resultCtx
-    if(t_resultCtx != (term_t)0) {
-        PrologQuery::putScope(t_resultCtx, solution);
-    }
-    if(!callContext->hasMoreSolutions()) {
-        // succeed without a choice point
-        delete callContext;
-        return TRUE;
-    }
-    // succeed with a choice point
-    PL_retry_address(callContext);
+	// get next positive answer
+	AnswerYesPtr positiveAnswer;
+	do {
+		auto tok = callContext->nextSolution();
+		if (tok->indicatesEndOfEvaluation()) {
+			// no solution, fail
+			delete callContext;
+			return FALSE;
+		} else if (tok->type() == TokenType::ANSWER_TOKEN) {
+			if (std::static_pointer_cast<const Answer>(tok)->isPositive()) {
+				positiveAnswer = std::static_pointer_cast<const AnswerYes>(tok);
+			}
+		}
+	} while (!positiveAnswer);
+
+	// apply substitution mapping
+	auto pl_queryInstance = PL_new_term_ref();
+	auto queryInstance = callContext->query_->applySubstitution(*positiveAnswer->substitution());
+	PrologQuery::putTerm(pl_queryInstance, queryInstance->formula(), callContext->queryVars_);
+	if (!PL_unify(t_goal, pl_queryInstance)) {
+		// something went wrong, fail
+		delete callContext;
+		return FALSE;
+	}
+
+	// put scope term into t_resultCtx
+	if (t_resultCtx != (term_t) 0) {
+		PrologQuery::putScope(t_resultCtx, positiveAnswer);
+	}
+	if (!callContext->hasMoreSolutions()) {
+		// succeed without a choice point
+		delete callContext;
+		return TRUE;
+	}
+	// succeed with a choice point
+	PL_retry_address(callContext);
 }
 
-foreign_t pl_qa_call2(term_t t_reasonerManager, term_t t_goal, control_t handle)
-{
-    return pl_qa_call4(t_reasonerManager, t_goal,
-                       (term_t)0, (term_t)0, handle);
+foreign_t pl_qa_call2(term_t t_reasonerManager, term_t t_goal, control_t handle) {
+	return pl_qa_call4(t_reasonerManager, t_goal,
+					   (term_t) 0, (term_t) 0, handle);
 }
 
 /*
@@ -266,9 +275,9 @@ foreign_t pl_qa_memorize3(term_t t_reasonerManager, term_t t_path, term_t t_opti
 */
 
 PL_extension qa_predicates[] = {
-        { "qa_call", 2, (pl_function_t)pl_qa_call2, PL_FA_NONDETERMINISTIC },
-        { "qa_call", 4, (pl_function_t)pl_qa_call4, PL_FA_NONDETERMINISTIC },
-        //{ "qa_remember", 3, (pl_function_t)pl_qa_remember3, 0 },
-        //{ "qa_memorize", 3, (pl_function_t)pl_qa_memorize3, 0 },
-        { nullptr,   0, nullptr, 0 }
+		{"qa_call", 2, (pl_function_t) pl_qa_call2, PL_FA_NONDETERMINISTIC},
+		{"qa_call", 4, (pl_function_t) pl_qa_call4, PL_FA_NONDETERMINISTIC},
+		//{ "qa_remember", 3, (pl_function_t)pl_qa_remember3, 0 },
+		//{ "qa_memorize", 3, (pl_function_t)pl_qa_memorize3, 0 },
+		{nullptr,   0, nullptr, 0}
 };

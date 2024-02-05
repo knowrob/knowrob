@@ -9,6 +9,7 @@
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/Literal.h"
+#include "knowrob/queries/QueryContext.h"
 
 namespace knowrob {
     /**
@@ -22,13 +23,19 @@ namespace knowrob {
          */
         enum OperatorType { EQ, LT, GT, LEQ, GEQ };
 
-        RDFLiteral(const TermPtr &s,
-                   const TermPtr &p,
-                   const TermPtr &o,
-                   bool isNegated,
-                   const ModalityLabelPtr &label=ModalityLabel::emptyLabel());
+		/**
+		 * Copy char data of StatementData object into Term data structures.
+		 * @param tripleData input data, can be deleted afterwards.
+		 * @param isNegated a value of true refers to the statement being false.
+		 */
+        explicit RDFLiteral(const StatementData &tripleData, bool isNegated=false);
 
-        explicit RDFLiteral(const StatementData &tripleData);
+		/**
+		 * @param predicate a predicate with two arguments.
+		 * @param isNegated a value of true refers to the statement being false.
+		 * @param selector a selector for the graph, agent, begin, end and confidence.
+		 */
+		RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector);
 
         /**
          * Substitution constructor.
@@ -37,7 +44,11 @@ namespace knowrob {
          */
         RDFLiteral(const RDFLiteral &other, const Substitution &sub);
 
-        static std::shared_ptr<RDFLiteral> fromLiteral(const LiteralPtr &literal);
+        RDFLiteral(const TermPtr &s,
+                   const TermPtr &p,
+                   const TermPtr &o,
+                   bool isNegated,
+                   const GraphSelector &selector);
 
         /**
          * @return the subject term of this expression.
@@ -86,6 +97,10 @@ namespace knowrob {
          */
         OperatorType objectOperator() const;
 
+        std::optional<TemporalOperator> temporalOperator() const { return temporalOperator_; };
+
+        std::optional<EpistemicOperator> epistemicOperator() const { return epistemicOperator_; };
+
         void setObjectOperator(OperatorType objectOperator) { objectOperator_ = objectOperator; }
 
         uint32_t numVariables() const override;
@@ -96,17 +111,22 @@ namespace knowrob {
         std::shared_ptr<Term> subjectTerm_;
         std::shared_ptr<Term> propertyTerm_;
         std::shared_ptr<Term> objectTerm_;
+        OperatorType objectOperator_;
+
+		// below are treated as optional
         std::shared_ptr<Term> graphTerm_;
         std::shared_ptr<Term> agentTerm_;
         std::shared_ptr<Term> beginTerm_;
         std::shared_ptr<Term> endTerm_;
         std::shared_ptr<Term> confidenceTerm_;
-        OperatorType objectOperator_;
+        std::optional<TemporalOperator> temporalOperator_;
+        std::optional<EpistemicOperator> epistemicOperator_;
 
         static std::shared_ptr<Term> getGraphTerm(const std::string_view &graphName);
 
         static std::shared_ptr<Predicate> getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o);
         static std::shared_ptr<Predicate> getRDFPredicate(const StatementData &data);
+        static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
     };
     using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
 

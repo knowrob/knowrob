@@ -26,6 +26,8 @@ namespace knowrob {
 
 	private:
 		Top();
+	protected:
+		bool isEqual(const Formula &other) const override;
 	};
 }
 

@@ -13,7 +13,8 @@
 #include "knowrob/reasoner/ReasonerPlugin.h"
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
-#include "knowrob/semweb/KnowledgeGraphManager.h"
+#include "knowrob/backend/BackendManager.h"
+#include "ReasonerModule.h"
 
 namespace knowrob {
 	/**
@@ -22,7 +23,7 @@ namespace knowrob {
 	class ReasonerManager {
 	public:
 		ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
-		                const std::shared_ptr<KnowledgeGraphManager> &backendManager);
+		                const std::shared_ptr<BackendManager> &backendManager);
         ~ReasonerManager();
 
         /**
@@ -52,7 +53,7 @@ namespace knowrob {
 		 * for built-in reasoner types need to be added to the reasoner manager before.
 		 * @param config a property tree holding a reasoner configuration
 		 */
-		void loadReasoner(const boost::property_tree::ptree &config);
+		std::shared_ptr<DefinedReasoner> loadReasoner(const boost::property_tree::ptree &config);
 
 		/**
 		 * Get the definition of a predicate.
@@ -84,7 +85,7 @@ namespace knowrob {
 
 	private:
         std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<KnowledgeGraphManager> backendManager_;
+        std::shared_ptr<BackendManager> backendManager_;
 		// maps reasoner type name to factory used to create instances of that type
 		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
         // maps manager id to manager
@@ -98,12 +99,14 @@ namespace knowrob {
 		std::map<std::string, std::shared_ptr<DefinedReasoner>> reasonerPool_;
 		// maps plugin names to factories used to create reasoner instances
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
+		std::map<std::string, std::shared_ptr<ReasonerModule>> loadedModules_;
 		// a counter used to generate unique IDs
 		uint32_t reasonerIndex_;
         // an identifier for this manager
         uint32_t managerID_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
+		std::shared_ptr<ReasonerModule> loadReasonerModule(const std::string &path, const std::string &type);
 
         /**
          * Remove a reasoner from this manager.

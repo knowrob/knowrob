@@ -6,24 +6,26 @@
 #define KNOWROB_QUERY_PIPELINE_H
 
 #include "memory"
-#include "AnswerStream.h"
+#include "vector"
+#include "TokenStream.h"
 
 namespace knowrob {
-    /**
-     * Holds a reference to pipeline stages during execution,
-     * and stops each stage on destruction ensuring that none of them
-     * continues broadcasting messages.
-     */
-    class QueryPipeline {
-    public:
-        QueryPipeline() = default;
-        ~QueryPipeline();
+	/**
+	 * Holds a reference to pipeline stages during execution,
+	 * and stops each stage on destruction ensuring that none of them
+	 * continues broadcasting messages.
+	 */
+	class QueryPipeline {
+	public:
+		QueryPipeline() = default;
 
-        void addStage(const std::shared_ptr<AnswerStream> &stage);
+		~QueryPipeline();
 
-    protected:
-        std::vector<std::shared_ptr<AnswerStream>> stages_;
-    };
+		void addStage(const std::shared_ptr<TokenStream> &stage);
+
+	protected:
+		std::vector<std::shared_ptr<TokenStream>> stages_;
+	};
 }
 
 

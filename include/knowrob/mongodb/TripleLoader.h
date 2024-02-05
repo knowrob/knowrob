@@ -9,7 +9,7 @@
 #include "memory"
 #include "list"
 #include "set"
-#include "knowrob/semweb/KnowledgeGraph.h"
+#include "knowrob/backend/KnowledgeGraph.h"
 #include "knowrob/semweb/Class.h"
 #include "knowrob/semweb/Property.h"
 #include "knowrob/semweb/Vocabulary.h"

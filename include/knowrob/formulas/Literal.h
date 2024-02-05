@@ -6,7 +6,6 @@
 #define KNOWROB_LITERAL_H
 
 #include <memory>
-#include "knowrob/modalities/ModalityLabel.h"
 #include "Predicate.h"
 #include "knowrob/semweb/StatementData.h"
 
@@ -16,7 +15,7 @@ namespace knowrob {
      */
     class Literal {
     public:
-        Literal(const PredicatePtr &predicate, bool isNegative, const ModalityLabelPtr &label=ModalityLabel::emptyLabel());
+        Literal(const PredicatePtr &predicate, bool isNegative);
 
         /**
          * Substitution constructor.
@@ -24,11 +23,6 @@ namespace knowrob {
          * @sub a mapping from terms to variables.
          */
         Literal(const Literal &other, const Substitution &sub);
-
-        /**
-         * @return the label of this literal.
-         */
-        const auto& label() const { return label_; }
 
         /**
          * @return the predicate of this literal.
@@ -80,7 +74,6 @@ namespace knowrob {
 
     protected:
         const PredicatePtr predicate_;
-        const ModalityLabelPtr label_;
         bool isNegated_;
     };
 

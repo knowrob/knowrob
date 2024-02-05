@@ -11,8 +11,14 @@
 
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/terms/Constant.h"
+#include "knowrob/formulas/Predicate.h"
 
 using namespace knowrob;
+
+PredicatePtr StringTerm::operator()(TermPtr arg1, TermPtr arg2) const
+{
+	return std::make_shared<Predicate>(value_, std::vector<TermPtr>{arg1, arg2});
+}
 
 void StringTerm::write(std::ostream& os) const
 {

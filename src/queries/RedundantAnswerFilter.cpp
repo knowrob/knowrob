@@ -6,11 +6,10 @@
 
 using namespace knowrob;
 
-void RedundantAnswerFilter::push(const AnswerPtr &msg)
-{
-    auto msgHash = msg->computeHash();
-    if(previousAnswers_.count(msgHash)==0) {
-        AnswerBroadcaster::push(msg);
-        previousAnswers_.insert(msgHash);
-    }
+void RedundantAnswerFilter::push(const TokenPtr &tok) {
+	auto msgHash = tok->hash();
+	if (previousAnswers_.count(msgHash) == 0) {
+		TokenBroadcaster::push(tok);
+		previousAnswers_.insert(msgHash);
+	}
 }

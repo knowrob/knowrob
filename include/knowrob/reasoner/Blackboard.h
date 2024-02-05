@@ -15,8 +15,8 @@
 // KnowRob
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "ReasoningGraph.h"
-#include "knowrob/queries/AnswerQueue.h"
-#include "knowrob/queries/AnswerBroadcaster.h"
+#include "knowrob/queries/TokenQueue.h"
+#include "knowrob/queries/TokenBroadcaster.h"
 
 namespace knowrob {
 	/**
@@ -92,7 +92,7 @@ namespace knowrob {
 			uint32_t queryID_;
 			std::atomic<bool> isQueryOpened_;
 			std::atomic<bool> hasStopRequest_;
-			void push(const AnswerPtr &msg) override;
+			void push(const TokenPtr &msg) override;
 			friend class Blackboard;
 		};
 	};

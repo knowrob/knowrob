@@ -9,6 +9,8 @@
 #ifndef KNOWROB_H_
 #define KNOWROB_H_
 
+#include <cstdlib>
+
 namespace knowrob {
 	/**
 	 * Static initialization of the knowledge base.
@@ -22,7 +24,14 @@ namespace knowrob {
 	/**
 	 * @return the name of the executable in which the knowledge base is running.
 	 */
-	char* getNameOfExecutable();
+	char *getNameOfExecutable();
+
+	/**
+	 * Combine a hash value with another value.
+	 * @param seed a hash value.
+	 * @param v a value to combine with the seed.
+	 */
+	void hashCombine(std::size_t &seed, const std::size_t &v);
 }
 
 #endif //KNOWROB_H_

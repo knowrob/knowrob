@@ -20,7 +20,7 @@ std::map<uint32_t, ReasonerManager*> ReasonerManager::reasonerManagers_ = {};
 uint32_t ReasonerManager::managerIDCounter_ = 0;
 
 ReasonerManager::ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
-                                 const std::shared_ptr<KnowledgeGraphManager> &backendManager)
+                                 const std::shared_ptr<BackendManager> &backendManager)
 : threadPool_(threadPool),
   backendManager_(backendManager),
   reasonerIndex_(0)
@@ -46,9 +46,12 @@ ReasonerManager* ReasonerManager::getReasonerManager(uint32_t managerID)
     }
 }
 
-void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
+std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 {
+	// a reasoner that is implemented in a DLL
 	auto lib = config.get_optional<std::string>("lib");
+	// a reasoner that is implemented in a Python module
+	auto module = config.get_optional<std::string>("module");
 	auto type = config.get_optional<std::string>("type");
 	auto name = config.get_optional<std::string>("name");
 	auto backendName = config.get_optional<std::string>("data-backend");
@@ -56,8 +59,15 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	// get a reasoner factory
 	std::shared_ptr<ReasonerFactory> factory;
 	if(lib.has_value()) {
-		// use factory in DLL
 		factory = loadReasonerPlugin(lib.value());
+	}
+	else if(module.has_value()) {
+		if(type.has_value()) {
+			factory = loadReasonerModule(module.value(), type.value());
+		}
+		else {
+			KB_WARN("modules require type key in settings, but it's missing for module '{}'.", module.value());
+		}
 	}
 	else if(type.has_value()) {
 		// map type name to a factory
@@ -92,26 +102,34 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
     reasoner->setReasonerManager(managerID_);
 
 	if(backendName.has_value()) {
-	    auto backend = backendManager_->getKnowledgeGraphWithID(backendName.value());
-	    if(backend) {
-            reasoner->setDataBackend(backend->knowledgeGraph());
+	    auto definedBackend = backendManager_->getBackendWithID(backendName.value());
+	    if(definedBackend) {
+            reasoner->setDataBackend(definedBackend->backend());
 	    }
 	    else {
 		    throw ReasonerError("Reasoner `{}` refers to unknown data-backend `{}`.", reasonerID, backendName.value());
 	    }
 	}
 	else {
-        throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
+		// check if reasoner implements DataBackend interface
+		auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);
+		if(backend) {
+			backend->setThreadPool(threadPool_);
+            reasoner->setDataBackend(backend);
+		}
+		else {
+        	throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
+		}
 	}
-    addReasoner(reasonerID, reasoner);
+    auto definedReasoner = addReasoner(reasonerID, reasoner);
 
-	ReasonerConfiguration reasonerConfig;
-	reasonerConfig.loadPropertyTree(&config);
-	if(!reasoner->loadConfiguration(reasonerConfig)) {
-		KB_WARN("Reasoner `{}` failed to loadConfiguration.", reasonerID);
+	ReasonerConfig reasonerConfig(&config);
+	if(!reasoner->loadConfig(reasonerConfig)) {
+		KB_WARN("Reasoner `{}` failed to loadConfig.", reasonerID);
 	}
 	else {
-        for(auto &dataSource : reasonerConfig.dataSources) {
+		// load the reasoner-specific data sources.
+        for(auto &dataSource : reasonerConfig.dataSources()) {
             if(!reasoner->loadDataSource(dataSource)) {
                 KB_WARN("Reasoner `{}` failed to load data source {}.", reasonerID, dataSource->uri());
             }
@@ -119,6 +137,8 @@ void ReasonerManager::loadReasoner(const boost::property_tree::ptree &config)
 	}
 	// increase reasonerIndex_
 	reasonerIndex_ += 1;
+
+	return definedReasoner;
 }
 
 std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::string &path)
@@ -130,6 +150,24 @@ std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::s
 		auto jt = loadedPlugins_.insert(std::pair<std::string,
 										std::shared_ptr<ReasonerPlugin>>(absPath, p));
 		if(jt.first->second->loadDLL()) {
+			return jt.first->second;
+		}
+	}
+	else if(it->second->isLoaded()) {
+		return it->second;
+	}
+	KB_WARN("Failed to open reasoner library at path '{}'.", path);
+	return {};
+}
+
+std::shared_ptr<ReasonerModule> ReasonerManager::loadReasonerModule(const std::string &path, const std::string &type)
+{
+	auto it = loadedModules_.find(path);
+	if(it == loadedModules_.end()) {
+		auto p = std::make_shared<ReasonerModule>(path,type);
+		auto jt = loadedModules_.insert(std::pair<std::string,
+										std::shared_ptr<ReasonerModule>>(path, p));
+		if(jt.first->second->loadModule()) {
 			return jt.first->second;
 		}
 	}
@@ -183,7 +221,7 @@ std::shared_ptr<DefinedPredicate> ReasonerManager::getPredicateDefinition(
 {
 	auto description = std::make_shared<DefinedPredicate>(indicator);
 	for(auto &x : reasonerPool_) {
-		auto description_n = x.second->reasoner()->getPredicateDescription(indicator);
+		auto description_n = x.second->reasoner()->getDescription(indicator);
 		if(description_n && !description->addReasoner(x.second, description_n)) {
 			KB_WARN("ignoring inconsistent reasoner descriptions provided.");
 		}

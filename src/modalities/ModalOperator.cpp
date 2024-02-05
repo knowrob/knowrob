@@ -9,7 +9,8 @@
 using namespace knowrob;
 
 ModalOperator::ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType)
-: Term(TermType::MODAL_OPERATOR),
+: StringTerm(operatorType == ModalOperatorType::NECESSITY ?
+		modality->necessity_symbol() : modality->possibility_symbol()),
   modality_(modality),
   operatorType_(operatorType)
 {
@@ -27,10 +28,7 @@ bool ModalOperator::isEuclidean() const
 
 const char* ModalOperator::symbol() const
 {
-    if(operatorType_ == ModalOperatorType::NECESSITY)
-        return modality_->necessity_symbol();
-    else
-        return modality_->possibility_symbol();
+    return value().c_str();
 }
 
 void ModalOperator::write(std::ostream& os) const
@@ -68,9 +66,9 @@ bool ModalOperator::isModalPossibility() const
     return operatorType_ == ModalOperatorType::POSSIBILITY;
 }
 
-const std::shared_ptr<ModalIteration>& ModalIteration::emptyIteration()
+const ModalIteration& ModalIteration::emptyIteration()
 {
-    static auto empty = std::make_shared<ModalIteration>();
+    static ModalIteration empty;
     return empty;
 }
 
@@ -89,6 +87,13 @@ bool ModalIteration::operator==(const ModalIteration &other) const
         ++jt;
     }
     return true;
+}
+
+ModalIteration ModalIteration::operator+(const ModalOperatorPtr &modalOperator) const
+{
+	ModalIteration it(*this);
+	it += modalOperator;
+	return it;
 }
 
 void ModalIteration::operator+=(const ModalOperatorPtr &next) //NOLINT

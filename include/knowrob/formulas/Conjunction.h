@@ -32,6 +32,7 @@ namespace knowrob {
 		
 	protected:
 		Conjunction(const Conjunction &other, const Substitution &sub);
+		bool isEqual(const Formula &other) const override;
 	};
 
     /**

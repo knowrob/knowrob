@@ -7,49 +7,8 @@
  */
 
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/terms/Constant.h"
 
 using namespace knowrob;
-
-namespace knowrob {
-	PredicateType predicateTypeFromTerm(const TermPtr &term) {
-		auto &type_string = ((StringTerm*)term.get())->value();
-		if(type_string == "relation") return PredicateType::RELATION;
-		else                          return PredicateType::BUILT_IN;
-	}
-}
-
-PredicateIndicator::PredicateIndicator(std::string functor, unsigned int arity)
-: functor_(std::move(functor)),
-  arity_(arity)
-{
-}
-
-bool PredicateIndicator::operator==(const PredicateIndicator& other) const
-{
-    return arity_ == other.arity_ && functor_ == other.functor_;
-}
-
-bool PredicateIndicator::operator< (const PredicateIndicator& other) const
-{
-	return (other.functor_ < this->functor_) ||
-	       (other.arity_   < this->arity_);
-}
-
-void PredicateIndicator::write(std::ostream& os) const
-{
-	os << functor_ << '/' << arity_;
-}
-
-std::shared_ptr<Term> PredicateIndicator::toTerm() const
-{
-	static const auto indicatorIndicator = std::make_shared<PredicateIndicator>("/",2);
-	return std::make_shared<Predicate>(Predicate(indicatorIndicator, {
-		std::make_shared<StringTerm>(functor()),
-		std::make_shared<LongTerm>(arity())
-	}));
-}
-
 
 Predicate::Predicate(
 	const std::shared_ptr<PredicateIndicator> &indicator,
@@ -76,6 +35,11 @@ Predicate::Predicate(
 	const std::vector<TermPtr> &arguments)
 : Predicate(std::make_shared<PredicateIndicator>(functor, arguments.size()), arguments)
 {
+}
+
+bool Predicate::isEqual(const Formula &other) const {
+	const Term &x = static_cast<const Predicate&>(other); // NOLINT
+	return isEqual(x);
 }
 
 bool Predicate::isEqual(const Term& other) const {
@@ -164,17 +128,25 @@ size_t Predicate::computeHash() const
 void Predicate::write(std::ostream& os) const
 {
 	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
-	os << indicator_->functor();
-	if(!arguments_.empty()) {
-		os << '(';
-		for(uint32_t i=0; i<arguments_.size(); i++) {
-			Term *t = arguments_[i].get();
-			os << (*t);
-			if(i+1 < arguments_.size()) {
-				os << ',' << ' ';
+
+	if(indicator_->arity()==3 &&
+		arguments_[1]->type()!=TermType::VARIABLE &&
+		indicator_->functor() == "triple") {
+		os << *arguments_[1] << '(' << *arguments_[0] << ',' << *arguments_[2] << ')';
+	}
+	else {
+		os << indicator_->functor();
+		if(!arguments_.empty()) {
+			os << '(';
+			for(uint32_t i=0; i<arguments_.size(); i++) {
+				Term *t = arguments_[i].get();
+				os << (*t);
+				if(i+1 < arguments_.size()) {
+					os << ',' << ' ';
+				}
 			}
+			os << ')';
 		}
-		os << ')';
 	}
 }
 

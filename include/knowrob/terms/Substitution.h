@@ -28,7 +28,7 @@ namespace knowrob {
 		 */
 		void rollBack();
 	};
-	
+
 	/**
 	 * A substitution is a mapping from variables to terms.
 	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
@@ -38,10 +38,23 @@ namespace knowrob {
 	 */
 	class Substitution {
 	public:
+		Substitution() = default;
+
+		explicit Substitution(std::map<Variable, TermPtr> mapping) : mapping_(std::move(mapping)) {};
+
+		bool operator==(const Substitution &other) const;
+
+		void operator+=(const Substitution &other);
+
 		/**
 		 * @return true if this substitution does not map a single variable to a term.
 		 */
 		bool empty() const { return mapping_.empty(); }
+
+		/**
+		 * @return number of variables mapped to terms.
+		 */
+		auto size() const { return mapping_.size(); }
 
 		/**
 		 * @return begin iterator of substitution.
@@ -52,13 +65,14 @@ namespace knowrob {
 		 * @return end iterator of substitution.
 		 */
 		auto end() const { return mapping_.end(); }
-		
+
 		/**
+		 * Map a variable to a term.
 		 * @var a variable.
 		 * @term a term.
 		 */
 		void set(const Variable &var, const TermPtr &term);
-		
+
 		/**
 		 * Map a variable to a term.
 		 * A null pointer reference is returned if the given variable
@@ -67,7 +81,7 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		const TermPtr& get(const Variable &var) const;
+		const TermPtr &get(const Variable &var) const;
 
 		/**
 		 * Map the name of a variable to a term.
@@ -77,8 +91,8 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		const TermPtr& get(const std::string &varName) const;
-		
+		const TermPtr &get(const std::string &varName) const;
+
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
@@ -94,22 +108,23 @@ namespace knowrob {
 		 * @changes the diff of the substitute operation
 		 * @return true if the operation succeeded.
 		 */
-		bool unifyWith(const Substitution &other, Reversible *reversible= nullptr);
+		bool unifyWith(const Substitution &other, Reversible *reversible = nullptr);
 
-        /**
-         * @return the hash of this.
-         */
+		/**
+		 * @return the hash of this.
+		 */
 		size_t computeHash() const;
+
 	protected:
-		std::map<Variable,TermPtr> mapping_;
+		std::map<Variable, TermPtr> mapping_;
 	};
-	
+
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Substitution& omega);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Substitution &omega);
 }
 
 #endif //KNOWROB_SUBSTITUTION_H_

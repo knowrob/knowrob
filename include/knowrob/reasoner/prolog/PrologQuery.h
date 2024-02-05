@@ -17,10 +17,10 @@
 #include <SWI-Prolog.h>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include "knowrob/queries/ModalQuery.h"
+#include "knowrob/queries/FormulaQuery.h"
 #include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/queries/Answer.h"
-#include "knowrob/queries/GraphQuery.h"
+#include "knowrob/queries/ConjunctiveQuery.h"
 
 namespace knowrob {
     using PrologVariableMap = std::map<std::string, term_t>;
@@ -70,7 +70,7 @@ namespace knowrob {
 		 * @t a Term pointer.
 		 * @return the Query object created.
 		 */
-		static std::shared_ptr<ModalQuery> toQuery(const TermPtr &t);
+		static std::shared_ptr<FormulaQuery> toQuery(const TermPtr &t);
 
 		/**
 		 * Converts a formula to a term by converting formula
@@ -112,7 +112,7 @@ namespace knowrob {
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
-        static bool putScope(const std::shared_ptr<ModalQuery> &query, term_t pl_scope);
+        static bool putScope(const std::shared_ptr<FormulaQuery> &query, term_t pl_scope);
 
         /**
          * Put a Prolog term encoding the scope in a Answer object.
@@ -120,7 +120,9 @@ namespace knowrob {
          * @param pl_scope A Prolog term.
          * @return true on success.
          */
-        static bool putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope);
+        //static bool putScope(const std::shared_ptr<Answer> &solution, term_t pl_scope);
+
+        static std::shared_ptr<GraphSelector> createSolutionFrame(term_t pl_scope);
 
         /**
          * Put the scope of a QueryResult in a Prolog term reference.

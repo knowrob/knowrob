@@ -4,13 +4,11 @@
 
 using namespace knowrob;
 
-EDBStage::EDBStage(KnowledgeGraphPtr edb, const RDFLiteralPtr &literal, int queryFlags)
-: QueryStage(literal, queryFlags),
-  edb_(std::move(edb))
-{
+EDBStage::EDBStage(KnowledgeGraphPtr edb, const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
+		: QueryStageLiteral(literal, ctx),
+		  edb_(std::move(edb)) {
 }
 
-AnswerBufferPtr EDBStage::submitQuery(const RDFLiteralPtr &literal)
-{
-    return edb_->submitQuery(std::make_shared<GraphQuery>(literal, queryFlags_));
+TokenBufferPtr EDBStage::submitQuery(const RDFLiteralPtr &literal) {
+	return edb_->submitQuery(std::make_shared<ConjunctiveQuery>(literal, ctx_));
 }

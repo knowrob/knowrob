@@ -12,7 +12,7 @@
 #include <string>
 #include <fmt/core.h>
 #include "knowrob/terms/Term.h"
-#include <knowrob/queries/ModalQuery.h>
+#include <knowrob/queries/FormulaQuery.h>
 
 namespace knowrob {
 	/**
