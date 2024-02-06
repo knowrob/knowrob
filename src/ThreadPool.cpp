@@ -15,6 +15,14 @@
 
 using namespace knowrob;
 
+namespace knowrob {
+	std::shared_ptr<ThreadPool> DefaultThreadPool() {
+		static auto pool =
+			std::make_shared<ThreadPool>(std::thread::hardware_concurrency());
+		return pool;
+	}
+}
+
 ThreadPool::ThreadPool(uint32_t maxNumThreads)
 		: maxNumThreads_(maxNumThreads),
 		  numFinishedThreads_(0),
