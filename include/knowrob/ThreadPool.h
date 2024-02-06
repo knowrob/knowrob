@@ -123,6 +123,20 @@ namespace knowrob {
 			friend class ThreadPool::Worker;
 			friend class ThreadPool;
 		};
+		/**
+		 * A runner that executes a lambda function.
+		 */
+		class LambdaRunner : public Runner {
+		public:
+			/**
+			 * @param fn the lambda function to be executed
+			 */
+			explicit LambdaRunner(const std::function<void()> &fn) : fn_(fn) {}
+
+			void run() override { fn_(); }
+		protected:
+			std::function<void()> fn_;
+		};
 
 	private:
 		// list of threads doing work
@@ -148,6 +162,11 @@ namespace knowrob {
 		// is called to finalize each worker thread
 		virtual void finalizeWorker() {}
 	};
+
+	/**
+	 * @return a default thread pool.
+	 */
+	std::shared_ptr<ThreadPool> DefaultThreadPool();
 }
 
 #endif //KNOWROB_THREAD_POOL_H_
