@@ -14,11 +14,20 @@
 namespace knowrob::py {
 	void handlePythonError() {
 		PyObject *p_type, *p_value, *p_traceback;
+
 		PyErr_Fetch(&p_type, &p_value, &p_traceback);
-		// TODO: could include line number
-		// TODO: could include stacktrace in exception
-		std::string strErrorMessage = boost::python::extract<std::string>(p_value);
-		throw ReasonerError(strErrorMessage);
+		PyErr_NormalizeException(&p_type, &p_value, &p_traceback);
+		Py_XDECREF(p_type);
+		Py_XDECREF(p_traceback);
+
+		PyObject* pyExcValueStr1 = PyObject_Repr(p_value);
+		PyObject* pyExcValueStr2 = PyUnicode_AsEncodedString(pyExcValueStr1, "utf-8", "Error ~");
+		std::string strExcValue(PyBytes_AS_STRING(pyExcValueStr2));
+		Py_XDECREF(p_value);
+		Py_XDECREF(pyExcValueStr1);
+		Py_XDECREF(pyExcValueStr2);
+
+		throw ReasonerError(strExcValue);
 	}
 }
 
