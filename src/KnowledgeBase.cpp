@@ -634,9 +634,16 @@ bool KnowledgeBase::insertOne(const StatementData &triple) {
 	// TODO: add a notion of database transactions, I guess we can use worker thread that performs
 	//       transaction instead of the main thread. This would also allow to parallelize the
 	//       insertion of triples into different backends.
+	//       but there is a problem with StatementData that it does not have a reference on the data.
+	//       so feeding it into a worker thread is unsafe.
+	//       StatementData could instead have a reference on the
+	//       mapped object, which is automatically deleted when the StatementData object is deleted and no
+	//	     other StatementData object references the same object.
+	//       Maybe rather use a typed container of StatementData that has a reference on mapped object.
+	// TODO: should this operation be atomic? i.e. should all backends be able to rollback the transaction
+	//	     if one of them fails?
 	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
 	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
-
 	if (!centralKG_->insertOne(triple)) {
 		KB_WARN("assertion of triple into central backend failed!");
 		return false;
