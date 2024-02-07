@@ -307,6 +307,12 @@ bson_t *MongoKnowledgeGraph::getSelector(
 	return doc;
 }
 
+bson_t *MongoKnowledgeGraph::getSelector(
+		const StatementData &triple,
+		bool b_isTaxonomicProperty) {
+	return getSelector(RDFLiteral(triple), b_isTaxonomicProperty);
+}
+
 bool MongoKnowledgeGraph::insertOne(const StatementData &tripleData) {
 	auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
 	TripleLoader loader(graph,
@@ -339,16 +345,29 @@ bool MongoKnowledgeGraph::insertAll(const std::vector<StatementData> &statements
 	return true;
 }
 
-void MongoKnowledgeGraph::removeAll(const RDFLiteral &tripleExpression) {
-	bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
-	tripleCollection_->removeAll(
-			Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
+bool MongoKnowledgeGraph::removeOne(const StatementData &triple) {
+	bool b_isTaxonomicProperty = isTaxonomicProperty(triple.predicate);
+	tripleCollection_->removeOne(Document(getSelector(triple, b_isTaxonomicProperty)));
+	return true;
 }
 
-void MongoKnowledgeGraph::removeOne(const RDFLiteral &tripleExpression) {
-	bool b_isTaxonomicProperty = isTaxonomicProperty(tripleExpression.propertyTerm());
-	tripleCollection_->removeOne(
-			Document(getSelector(tripleExpression, b_isTaxonomicProperty)));
+bool MongoKnowledgeGraph::removeAll(const std::vector<StatementData> &triples) {
+	// TODO: make this more efficient
+	for(auto &triple : triples) {
+		removeOne(triple);
+	}
+	return true;
+}
+
+int MongoKnowledgeGraph::removeMatching(const RDFLiteral &query, bool doMatchMany) {
+	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
+	if(doMatchMany) {
+		tripleCollection_->removeAll(Document(getSelector(query, b_isTaxonomicProperty)));
+	} else {
+		tripleCollection_->removeOne(Document(getSelector(query, b_isTaxonomicProperty)));
+	}
+	// TODO: does mongo return number of documents removed?
+	return -1;
 }
 
 AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression) {
@@ -642,6 +661,14 @@ void MongoKnowledgeGraph::updateHierarchy(TripleLoader &tripleLoader) {
 	bson_destroy(&pipelineDoc);
 }
 
+bool MongoKnowledgeGraph::isTaxonomicProperty(const char *property) {
+	if (property) {
+		return vocabulary_->isTaxonomicProperty(property);
+	} else {
+		return false;
+	}
+}
+
 bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm) {
 	if (propertyTerm->type() == TermType::STRING) {
 		return vocabulary_->isTaxonomicProperty(((StringTerm *) propertyTerm.get())->value());
@@ -724,7 +751,6 @@ protected:
 				"mongodb://localhost:27017",
 				"knowrob",
 				"triplesTest");
-		kg_->setThreadPool(std::make_shared<ThreadPool>(4));
 		kg_->drop();
 		kg_->createSearchIndices();
 	}
@@ -804,7 +830,7 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf) {
 			swrl_test_"Adult",
 			rdfs::subClassOf.data(),
 			swrl_test_"TestThing");
-	EXPECT_NO_THROW(kg_->removeAll(RDFLiteral(triple)));
+	EXPECT_NO_THROW(kg_->removeOne(triple));
 	EXPECT_EQ(lookup(triple).size(), 0);
 }
 

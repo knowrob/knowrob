@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -17,8 +14,8 @@ using namespace knowrob;
 // make reasoner type accessible
 KNOWROB_BUILTIN_REASONER("ESG", ESGReasoner)
 
-ESGReasoner::ESGReasoner(const std::string &reasonerID)
-: PrologReasoner(reasonerID)
+ESGReasoner::ESGReasoner()
+: PrologReasoner()
 {
 }
 

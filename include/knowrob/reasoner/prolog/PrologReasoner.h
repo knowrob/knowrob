@@ -31,10 +31,7 @@ namespace knowrob {
 	 */
 	class PrologReasoner : public LogicProgramReasoner {
 	public:
-		/**
-		 * @param reasonerID a knowledge base identifier of this reasoner.
-		 */
-		explicit PrologReasoner(std::string reasonerID);
+		PrologReasoner();
 
 		~PrologReasoner() override;
 
@@ -198,8 +195,6 @@ namespace knowrob {
 		static bool isKnowRobInitialized_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 
-		const std::string reasonerID_;
-		std::shared_ptr<StringTerm> reasonerIDTerm_;
 		// cache of predicate descriptions
 		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 

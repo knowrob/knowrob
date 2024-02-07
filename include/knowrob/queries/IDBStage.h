@@ -18,7 +18,6 @@ namespace knowrob {
 	public:
 		IDBStage(const std::shared_ptr<Reasoner> &reasoner,
 				 const RDFLiteralPtr &literal,
-				 const std::shared_ptr<ThreadPool> &threadPool,
 				 const QueryContextPtr &ctx);
 
 	protected:

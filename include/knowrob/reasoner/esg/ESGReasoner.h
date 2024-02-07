@@ -16,7 +16,7 @@ namespace knowrob {
 
 	class ESGReasoner : public PrologReasoner {
 	public:
-		explicit ESGReasoner(const std::string &reasonerID);
+		ESGReasoner();
 
 	protected:
 		// Override PrologReasoner

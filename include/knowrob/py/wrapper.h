@@ -74,17 +74,20 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool loadConfig(const ReasonerConfig &config) override
 	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
 
-	bool insertOne(const StatementData &tripleData) override
-	{ return knowrob::py::call_method<bool>(self, "insertOne", tripleData); }
+	bool insertOne(const StatementData &triple) override
+	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
 
-	bool insertAll(const std::vector<StatementData> &data) override
-	{ return knowrob::py::call_method<bool>(self, "insertAll", data); }
+	bool insertAll(const std::vector<StatementData> &triples) override
+	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
-	void removeAll(const RDFLiteral &literal) override
-	{ knowrob::py::call_method<void>(self, "removeAll", literal); }
+	bool removeOne(const StatementData &triple) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
 
-	void removeOne(const RDFLiteral &literal) override
-	{ knowrob::py::call_method<void>(self, "removeOne", literal); }
+	bool removeAll(const std::vector<StatementData> &triples) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", triples); }
+
+	int removeMatching(const RDFLiteral &query, bool doMatchMany) override
+	{ return knowrob::py::call_method<int>(self, "removeMatching", query, doMatchMany); }
 
 private:
 	PyObject *self;
@@ -128,17 +131,20 @@ struct ReasonerWithBackendWrap :
 	bool loadConfig(const ReasonerConfig &config) override
 	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
 
-	bool insertOne(const StatementData &tripleData) override
-	{ return knowrob::py::call_method<bool>(self, "insertOne", tripleData); }
+	bool insertOne(const StatementData &triple) override
+	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
 
-	bool insertAll(const std::vector<StatementData> &data) override
-	{ return knowrob::py::call_method<bool>(self, "insertAll", data); }
+	bool insertAll(const std::vector<StatementData> &triples) override
+	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
-	void removeAll(const RDFLiteral &literal) override
-	{ knowrob::py::call_method<void>(self, "removeAll", literal); }
+	bool removeOne(const StatementData &triple) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
 
-	void removeOne(const RDFLiteral &literal) override
-	{ knowrob::py::call_method<void>(self, "removeOne", literal); }
+	bool removeAll(const std::vector<StatementData> &triples) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", triples); }
+
+	int removeMatching(const RDFLiteral &query, bool doMatchMany) override
+	{ return knowrob::py::call_method<int>(self, "removeMatching", query, doMatchMany); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }

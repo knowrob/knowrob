@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -34,18 +31,16 @@ namespace knowrob {
 
 		static std::shared_ptr<T> reasoner() {
 			static std::shared_ptr<T> r;
-			static std::shared_ptr<ThreadPool> threadPool;
 			static std::shared_ptr<BackendManager> backendManager;
 			static std::shared_ptr<ReasonerManager> reasonerManager;
 			static int reasonerIndex_=0;
 			if(!r) {
-			    threadPool = std::make_shared<ThreadPool>(4);
-			    backendManager = std::make_shared<BackendManager>(threadPool);
-			    reasonerManager = std::make_shared<ReasonerManager>(threadPool, backendManager);
+			    backendManager = std::make_shared<BackendManager>(nullptr);
+			    reasonerManager = std::make_shared<ReasonerManager>(nullptr, backendManager);
 
 				std::stringstream ss;
 				ss << "prolog" << reasonerIndex_++;
-				r = std::make_shared<T>(ss.str());
+				r = std::make_shared<T>();
                 reasonerManager->addReasoner(ss.str(), r);
 				r->loadConfig(knowrob::ReasonerConfig());
 			}

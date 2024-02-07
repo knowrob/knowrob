@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -24,6 +21,9 @@
 #include "knowrob/DataSourceHandler.h"
 
 namespace knowrob {
+	// forward declarations
+	class KnowledgeBase;
+
 	/**
 	 * A reasoner is a component that can infer new knowledge.
 	 * It does so by evaluating axioms or rules that are defined by the reasoner.
@@ -41,9 +41,31 @@ namespace knowrob {
 		virtual ~Reasoner() = default;
 
 		/**
+		 * @return name of the reasoner name.
+		 */
+		const std::string &reasonerName() const { return t_reasonerName_->value(); }
+
+		/**
+		 * @return a term representing the reasoner name.
+		 */
+		std::shared_ptr<StringTerm> reasonerNameTerm() const { return t_reasonerName_; }
+
+		/**
 		 * @return ID of the manager that created the reasoner.
 		 */
 		uint32_t managerID() const { return reasonerManagerID_; }
+
+		/**
+		 * Note that this will raise an exception if the reasoner is not associated with a knowledge base.
+		 * @return the knowledge base that this reasoner is associated with.
+		 */
+		KnowledgeBase *kb() const;
+
+		/**
+		 * Evaluate a lambda function in a worker thread.
+		 * @param fn a function to be executed.
+		 */
+		void pushWork(const std::function<void(void)> &fn);
 
 		/**
 		 * Set the data backend of this reasoner.
@@ -98,12 +120,53 @@ namespace knowrob {
 		 */
 		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
 
+		/**
+		 * Create a triple that can be used to insert or remove data from the reasoner's data backend.
+		 * @return a triple.
+		 */
+		StatementData createTriple() const;
+
+		/**
+		 * Create a vector of triples that can be used to insert or remove data from the reasoner's data backend.
+		 * @param count the number of triples to create.
+		 * @return a vector of triples.
+		 */
+		std::vector<StatementData> createTriples(uint32_t count) const;
+
+		/**
+		 * Set the inferred triples of this reasoner.
+		 * Calling this function will replace the current set of inferred triples, and will
+		 * delete all triples from the KB that are not in the inferred set anymore, and add all triples
+		 * to the KB that newly appear.
+		 * @param triples a vector of inferred triples.
+		 */
 		void setInferredTriples(const std::vector<StatementData> &triples);
 
+		/**
+		 * Add additional triples to the inferred set of this reasoner,
+		 * and adding the inferred triples to the KB.
+		 * @param triples a vector of inferred triples.
+		 */
+		void addInferredTriples(const std::vector<StatementData> &triples) const;
+
+		/**
+		 * Remove triples from the inferred set of this reasoner,
+		 * and remove the inferred triples from the KB.
+		 * @param triples a vector of inferred triples.
+		 */
+		void removeInferredTriples(const std::vector<StatementData> &triples) const;
+
 	protected:
+		void initTriple(StatementData *triple) const;
+
+	private:
+		std::shared_ptr<StringTerm> t_reasonerName_;
+		std::set<StatementData> inferredTriples_;
 		uint32_t reasonerManagerID_;
 
 		void setReasonerManager(uint32_t managerID);
+
+		void setReasonerName(std::string_view name);
 
 		friend class ReasonerManager;
 	};

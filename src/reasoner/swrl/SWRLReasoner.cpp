@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -39,8 +36,8 @@ KNOWROB_BUILTIN_REASONER("SWRL", SWRLReasoner)
 
 const std::string SWRLReasoner::SWRL_FORMAT="pl-swrl";
 
-SWRLReasoner::SWRLReasoner(const std::string &reasonerID)
-		: PrologReasoner(reasonerID)
+SWRLReasoner::SWRLReasoner()
+		: PrologReasoner()
 {
 	addDataHandler(SWRL_FORMAT, [this]
 			(const DataSourcePtr &dataFile) { return loadSWRLFile(dataFile); });

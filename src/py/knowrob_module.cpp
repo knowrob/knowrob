@@ -26,11 +26,11 @@
 
 // optional member must be added with add_property
 #define BOOST_PYTHON_ADD_OPTIONAL(X, Y) add_property(X, \
-    make_getter(Y, _RETURN_POLICY_BY_VALUE), make_setter(Y, _RETURN_POLICY_BY_VALUE))
+    make_getter(Y, KB_RETURN_POLICY_BY_VALUE), make_setter(Y, KB_RETURN_POLICY_BY_VALUE))
 
 #define CONST_REF_RETURN return_value_policy<copy_const_reference>()
 #define EXISTING_REF_RETURN return_value_policy<reference_existing_object>()
-#define _RETURN_POLICY_BY_VALUE return_value_policy<return_by_value>()
+#define KB_RETURN_POLICY_BY_VALUE return_value_policy<return_by_value>()
 
 #include "knowrob/py/converter.h"
 #include "knowrob/py/wrapper.h"
@@ -376,7 +376,12 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
 	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
 			.def("managerID", &ReasonerWrap::managerID)
+			.def("createTriple", &ReasonerWrap::createTriple)
+			.def("createTriples", &ReasonerWrap::createTriples)
+			.def("pushWork", +[](Reasoner &x, python::object &fn){ x.pushWork(fn); })
 			.def("setInferredTriples", &ReasonerWrap::setInferredTriples)
+			.def("addInferredTriples", &ReasonerWrap::addInferredTriples)
+			.def("removeInferredTriples", &ReasonerWrap::removeInferredTriples)
 					// methods that must be implemented by reasoner plugins
 			.def("loadConfig", &ReasonerWrap::loadConfig)
 			.def("setDataBackend", &ReasonerWrap::setDataBackend)

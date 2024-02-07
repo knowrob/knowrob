@@ -12,6 +12,7 @@
 #include <map>
 #include <mutex>
 #include <boost/property_tree/ptree.hpp>
+#include "knowrob/KnowledgeBase.h"
 #include "TypedBackendFactory.h"
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
@@ -22,14 +23,18 @@ namespace knowrob {
 	 */
 	class BackendManager {
 	public:
-		explicit BackendManager(const std::shared_ptr<ThreadPool> &threadPool);
-        ~BackendManager();
+		/**
+		 * @param kb the knowledge base this manager is associated with.
+		 */
+		explicit BackendManager(KnowledgeBase *kb);
 
-        /**
-         * @param managerID the ID of a backend manager
-         * @return the backend manager, or nullptr if ID is unknown
-         */
-        static BackendManager* getManager(uint32_t managerID);
+		~BackendManager();
+
+		/**
+		 * @param managerID the ID of a backend manager
+		 * @return the backend manager, or nullptr if ID is unknown
+		 */
+		static BackendManager *getManager(uint32_t managerID);
 
 		/**
 		 * Add a backend factory to the manager.
@@ -37,11 +42,20 @@ namespace knowrob {
 		 * do not need to be added manually.
 		 * @param typeName the name of the backend type
 		 * @param factory a backend factory
+		 * @return true if the factory was added, false otherwise
 		 */
 		static bool addFactory(const std::string &typeName, const std::shared_ptr<BackendFactory> &factory);
 
-		template<class T> static bool addFactory(const std::string &typeName)
-		{ return addFactory(typeName, std::make_shared<TypedBackendFactory<T>>(typeName)); }
+		/**
+		 * Add a typed backend factory to the manager.
+		 * @tparam T a backend type.
+		 * @param typeName the name of the backend type
+		 * @return true if the factory was added, false otherwise
+		 */
+		template<class T>
+		static bool addFactory(const std::string &typeName) {
+			return addFactory(typeName, std::make_shared<TypedBackendFactory<T>>(typeName));
+		}
 
 		/**
 		 * Load a new backend instance into the backend manager.
@@ -60,30 +74,37 @@ namespace knowrob {
 		 */
 		std::shared_ptr<DefinedBackend> getBackendWithID(const std::string &backendID);
 
-        /**
-         * Add a backend to this manager.
-         * @reasoner a defined backend.
-         */
-        std::shared_ptr<DefinedBackend> addBackend(
-                const std::string &reasonerID, const DataBackendPtr &backend);
+		/**
+		 * Add a backend to this manager.
+		 * @reasoner a defined backend.
+		 */
+		std::shared_ptr<DefinedBackend> addBackend(
+				const std::string &reasonerID, const DataBackendPtr &backend);
 
-        void addBackend(const std::shared_ptr<DefinedBackend> &backend);
+		/**
+		 * Add a backend to this manager.
+		 * @param backend a defined backend.
+		 */
+		void addBackend(const std::shared_ptr<DefinedBackend> &backend);
 
-        /**
-         * @return map of all KG defined by this manager.
-         */
-        const auto& backendPool() const  { return backendPool_; }
+		/**
+		 * @return map of all KG defined by this manager.
+		 */
+		const auto &backendPool() const { return backendPool_; }
 
-        auto managerID() const  { return managerID_; }
+		/**
+		 * @return the manager ID.
+		 */
+		auto managerID() const { return managerID_; }
 
 	private:
-        std::shared_ptr<ThreadPool> threadPool_;
-        // maps backend id to manager
-        static std::map<uint32_t, BackendManager*> backendManagers_;
-        // counts number of initialized managers
-        static uint32_t managerIDCounter_;
-        // mutex used to interact with static variables
-        std::mutex staticMutex_;
+		KnowledgeBase *kb_;
+		// maps backend id to manager
+		static std::map<uint32_t, BackendManager *> backendManagers_;
+		// counts number of initialized managers
+		static uint32_t managerIDCounter_;
+		// mutex used to interact with static variables
+		std::mutex staticMutex_;
 		// pool of all backend instances created via this manager
 		// maps backend ID to backend instance.
 		std::map<std::string, std::shared_ptr<DefinedBackend>> backendPool_;
@@ -91,23 +112,23 @@ namespace knowrob {
 		std::map<std::string, std::shared_ptr<BackendPlugin>> loadedPlugins_;
 		// a counter used to generate unique IDs
 		uint32_t backendIndex_;
-        // an identifier for this manager
-        uint32_t managerID_;
+		// an identifier for this manager
+		uint32_t managerID_;
 
 		std::shared_ptr<BackendPlugin> loadBackendPlugin(const std::string &path);
 
-        /**
-         * Remove a reasoner from this manager.
-         * @reasoner a reasoner.
-         */
-        void removeBackend(const std::shared_ptr<DefinedBackend> &reasoner);
+		/**
+		 * Remove a reasoner from this manager.
+		 * @reasoner a reasoner.
+		 */
+		void removeBackend(const std::shared_ptr<DefinedBackend> &reasoner);
 	};
 
 	// a macro for static registration of a knowledge graph type.
 	// knowledge graph types registered with this macro are builtin knowledge graphs that are not
 	// loaded from a plugin.
-	#define KNOWROB_BUILTIN_BACKEND(Name,Type) class Type ## _Registration{ static bool isRegistered; }; \
-		bool Type ## _Registration::isRegistered = BackendManager::addFactory<Type>(Name);
+#define KNOWROB_BUILTIN_BACKEND(Name, Type) class Type ## _Registration{ static bool isRegistered; }; \
+        bool Type ## _Registration::isRegistered = BackendManager::addFactory<Type>(Name);
 }
 
 #endif //KNOWROB_BACKEND_MANAGER_H_

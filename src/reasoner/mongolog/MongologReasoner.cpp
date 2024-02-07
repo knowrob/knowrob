@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -36,8 +33,8 @@ foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reason
 
 foreign_t pl_assert_triple_cpp9(term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t);
 
-MongologReasoner::MongologReasoner(const std::string &reasonerID)
-		: PrologReasoner(reasonerID) {}
+MongologReasoner::MongologReasoner()
+		: PrologReasoner() {}
 
 MongologReasoner::~MongologReasoner()
 = default;
@@ -79,7 +76,7 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
 	importHierarchy_ = knowledgeGraph_->importHierarchy();
-	importHierarchy_->addDirectImport("user", reasonerID_);
+	importHierarchy_->addDirectImport("user", reasonerName());
 
 	// load some common ontologies
 	loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/rdf-schema.xml"));

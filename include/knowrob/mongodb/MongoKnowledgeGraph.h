@@ -103,17 +103,20 @@ namespace knowrob {
 		// Override KnowledgeGraph
 		bool loadFile(const std::string_view &uriString, TripleFormat format, const GraphSelector &selector) override;
 
-		// Override KnowledgeGraph
-		bool insertOne(const StatementData &tripleData) override;
+		// Override IDataBackend
+		bool insertOne(const StatementData &triple) override;
 
-		// Override KnowledgeGraph
-		bool insertAll(const std::vector<StatementData> &tripleData) override;
+		// Override IDataBackend
+		bool insertAll(const std::vector<StatementData> &triples) override;
 
-		// Override KnowledgeGraph
-		void removeAll(const RDFLiteral &tripleExpression) override;
+		// Override IDataBackend
+		bool removeOne(const StatementData &triple) override;
 
-		// Override KnowledgeGraph
-		void removeOne(const RDFLiteral &tripleExpression) override;
+		// Override IDataBackend
+		bool removeAll(const std::vector<StatementData> &triples) override;
+
+		// Override IDataBackend
+		int removeMatching(const RDFLiteral &query, bool doMatchMany) override;
 
 		// Override KnowledgeGraph
 		void evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) override;
@@ -145,8 +148,10 @@ namespace knowrob {
 		void updateTimeInterval(const StatementData &tripleLoader);
 
 		static bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
+		static bson_t *getSelector(const StatementData &triple, bool isTaxonomicProperty);
 
 		bool isTaxonomicProperty(const TermPtr &propertyTerm);
+		bool isTaxonomicProperty(const char *property);
 	};
 
 } // knowrob::mongo

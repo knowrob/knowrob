@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -42,18 +39,16 @@ namespace knowrob {
 	};
 }
 
-KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
-		: threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency())) {
-	backendManager_ = std::make_shared<BackendManager>(threadPool_);
-	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
+KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config) {
+	backendManager_ = std::make_shared<BackendManager>(this);
+	reasonerManager_ = std::make_shared<ReasonerManager>(this, backendManager_);
 	loadConfiguration(config);
 	startReasoner();
 }
 
-KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
-		: threadPool_(std::make_shared<ThreadPool>(std::thread::hardware_concurrency())) {
-	backendManager_ = std::make_shared<BackendManager>(threadPool_);
-	reasonerManager_ = std::make_shared<ReasonerManager>(threadPool_, backendManager_);
+KnowledgeBase::KnowledgeBase(const std::string_view &configFile) {
+	backendManager_ = std::make_shared<BackendManager>(this);
+	reasonerManager_ = std::make_shared<ReasonerManager>(this, backendManager_);
 
 	boost::property_tree::ptree config;
 	boost::property_tree::read_json(URI::resolve(configFile), config);
@@ -66,8 +61,12 @@ KnowledgeBase::~KnowledgeBase() {
 	stopReasoner();
 }
 
+const std::map<std::string, std::shared_ptr<DefinedReasoner>> &KnowledgeBase::reasonerPool() const {
+	return reasonerManager_->reasonerPool();
+}
+
 void KnowledgeBase::startReasoner() {
-	for(auto &pair: reasonerManager_->reasonerPool()) {
+	for (auto &pair: reasonerManager_->reasonerPool()) {
 		try {
 			pair.second->reasoner()->start();
 		}
@@ -78,7 +77,7 @@ void KnowledgeBase::startReasoner() {
 }
 
 void KnowledgeBase::stopReasoner() {
-	for(auto &pair: reasonerManager_->reasonerPool()) {
+	for (auto &pair: reasonerManager_->reasonerPool()) {
 		pair.second->reasoner()->stop();
 	}
 }
@@ -99,7 +98,7 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		}
 	}
 
-	// initialize RDF data backends from configuration
+	// initialize data backends from configuration
 	auto backendList = config.get_child_optional("data-backends");
 	if (backendList) {
 		for (const auto &pair: backendList.value()) {
@@ -185,7 +184,7 @@ std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
 	RDFComputablePtr firstComputable;
 	for (auto &n: dependencyGroup) {
 		auto computable_n =
-			std::static_pointer_cast<RDFComputable>(n->literal());
+				std::static_pointer_cast<RDFComputable>(n->literal());
 		if (!first || comparator(firstComputable, computable_n)) {
 			first = n;
 			firstComputable = computable_n;
@@ -245,7 +244,7 @@ void KnowledgeBase::createComputationPipeline(
 		const std::vector<RDFComputablePtr> &computableLiterals,
 		const std::shared_ptr<TokenBroadcaster> &pipelineInput,
 		const std::shared_ptr<TokenBroadcaster> &pipelineOutput,
-		const QueryContextPtr &ctx) {
+		const QueryContextPtr &ctx) const {
 	// This function generates a query pipeline for literals that can be computed
 	// (EDB-only literals are processed separately). The literals are part of one dependency group.
 	// They are sorted, and also evaluated in this order. For each computable literal there is at
@@ -284,7 +283,7 @@ void KnowledgeBase::createComputationPipeline(
 		// To this end add an IDB stage for each reasoner that defines the literal.
 		// --------------------------------------
 		for (auto &r: lit->reasonerList()) {
-			auto idbStage = std::make_shared<IDBStage>(r, lit, threadPool_, ctx);
+			auto idbStage = std::make_shared<IDBStage>(r, lit, ctx);
 			idbStage->selfWeakRef_ = idbStage;
 			stepInput >> idbStage;
 			idbStage >> stepOutput;
@@ -392,7 +391,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 		channel->push(EndOfEvaluation::get());
 	} else {
 		edbOut = kg->submitQuery(
-			std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
+				std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
 
@@ -617,27 +616,129 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 	return out;
 }
 
-bool KnowledgeBase::insert(const std::vector<StatementData> &propositions) {
-	bool status = true;
-	for (auto &kg: backendManager_->backendPool()) {
-		if (!kg.second->backend()->insertAll(propositions)) {
-			KB_WARN("assertion of triple data failed!");
-			status = false;
-		}
+DataBackendPtr KnowledgeBase::findSourceBackend(const StatementData &triple) {
+	if (!triple.graph) return {};
+
+	auto definedBackend = backendManager_->getBackendWithID(triple.graph);
+	if (definedBackend) return definedBackend->backend();
+
+	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph);
+	if (definedReasoner) {
+		return reasonerManager_->getReasonerBackend(definedReasoner);
 	}
-	return status;
+
+	return {};
 }
 
-bool KnowledgeBase::insert(const StatementData &proposition) {
-	bool status = true;
-	// assert each statement into each knowledge graph backend
-	for (auto &kg: backendManager_->backendPool()) {
-		if (!kg.second->backend()->insertOne(proposition)) {
-			KB_WARN("assertion of triple data failed!");
-			status = false;
+bool KnowledgeBase::insertOne(const StatementData &triple) {
+	// TODO: add a notion of database transactions, I guess we can use worker thread that performs
+	//       transaction instead of the main thread. This would also allow to parallelize the
+	//       insertion of triples into different backends.
+	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
+	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
+
+	if (!centralKG_->insertOne(triple)) {
+		KB_WARN("assertion of triple into central backend failed!");
+		return false;
+	}
+	// find the source backend, if any
+	auto sourceBackend = findSourceBackend(triple);
+	// insert into all other backends
+	for (auto &definedBackend: backendManager_->backendPool()) {
+		// skip the central backend (handled above)
+		if (definedBackend.second->backend() == centralKG_) continue;
+		// skip the source backend
+		if (definedBackend.second->backend() == sourceBackend) continue;
+
+		if (!definedBackend.second->backend()->insertOne(triple)) {
+			KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
 		}
 	}
-	return status;
+	return true;
+}
+
+bool KnowledgeBase::insertAll(const std::vector<StatementData> &triples) {
+	if (triples.empty()) {
+		return true;
+	}
+	if (!centralKG_->insertAll(triples)) {
+		KB_WARN("assertion of triple into central backend failed!");
+		return false;
+	}
+	// find the source backend, if any
+	auto sourceBackend = findSourceBackend(triples[0]);
+	// insert into all other backends
+	for (auto &definedBackend: backendManager_->backendPool()) {
+		// skip the central backend (handled above)
+		if (definedBackend.second->backend() == centralKG_) continue;
+		// skip the source backend
+		if (definedBackend.second->backend() == sourceBackend) continue;
+
+		if (!definedBackend.second->backend()->insertAll(triples)) {
+			KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+		}
+	}
+	return true;
+}
+
+bool KnowledgeBase::removeOne(const StatementData &triple) {
+	if (!centralKG_->removeOne(triple)) {
+		KB_WARN("deletion of triple from central backend failed!");
+		return false;
+	}
+	// find the source backend, if any
+	auto sourceBackend = findSourceBackend(triple);
+	// insert into all other backends
+	for (auto &definedBackend: backendManager_->backendPool()) {
+		// skip the central backend (handled above)
+		if (definedBackend.second->backend() == centralKG_) continue;
+		// skip the source backend
+		if (definedBackend.second->backend() == sourceBackend) continue;
+
+		if (!definedBackend.second->backend()->removeOne(triple)) {
+			KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+		}
+	}
+	return true;
+}
+
+bool KnowledgeBase::removeAll(const std::vector<StatementData> &triples) {
+	if (triples.empty()) {
+		return true;
+	}
+	if (!centralKG_->removeAll(triples)) {
+		KB_WARN("deletion of triple from central backend failed!");
+		return false;
+	}
+	// find the source backend, if any
+	auto sourceBackend = findSourceBackend(triples[0]);
+	// insert into all other backends
+	for (auto &definedBackend: backendManager_->backendPool()) {
+		// skip the central backend (handled above)
+		if (definedBackend.second->backend() == centralKG_) continue;
+		// skip the source backend
+		if (definedBackend.second->backend() == sourceBackend) continue;
+
+		if (!definedBackend.second->backend()->removeAll(triples)) {
+			KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+		}
+	}
+	return true;
+}
+
+int KnowledgeBase::removeMatching(const RDFLiteral &query, bool doMatchMany) {
+	int overall_count = 0;
+	for (auto &kg: backendManager_->backendPool()) {
+		auto count = kg.second->backend()->removeMatching(query, doMatchMany);
+		if (overall_count >= 0) {
+			if (count < 0) {
+				overall_count = count;
+			} else {
+				overall_count += count;
+			}
+		}
+	}
+	return overall_count;
 }
 
 KnowledgeBase::DependencyNodeQueue::DependencyNodeQueue(const DependencyNodePtr &node)
@@ -667,12 +768,12 @@ bool KnowledgeBase::EDBComparator::operator()(const RDFLiteralPtr &a, const RDFL
 	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
 
 	// - prefer literals with grounded predicate
-	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type()==TermType::STRING);
-	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type()==TermType::STRING);
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type() == TermType::STRING);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type() == TermType::STRING);
 	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
 
 	// - prefer properties that appear less often in the EDB
-	if(hasProperty_a) {
+	if (hasProperty_a) {
 		auto numAsserts_a = vocabulary_->frequency(
 				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
 		auto numAsserts_b = vocabulary_->frequency(
@@ -690,12 +791,12 @@ bool KnowledgeBase::IDBComparator::operator()(const RDFComputablePtr &a, const R
 	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
 
 	// - prefer literals with grounded predicate
-	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type()==TermType::STRING);
-	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type()==TermType::STRING);
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type() == TermType::STRING);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type() == TermType::STRING);
 	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
 
 	// - prefer literals with EDB assertions over literals without
-	if(hasProperty_a) {
+	if (hasProperty_a) {
 		auto hasEDBAssertion_a = vocabulary_->isDefinedProperty(
 				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
 		auto hasEDBAssertion_b = vocabulary_->isDefinedProperty(
@@ -704,7 +805,7 @@ bool KnowledgeBase::IDBComparator::operator()(const RDFComputablePtr &a, const R
 	}
 
 	// - prefer properties that appear less often in the EDB
-	if(hasProperty_a) {
+	if (hasProperty_a) {
 		auto numAsserts_a = vocabulary_->frequency(
 				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
 		auto numAsserts_b = vocabulary_->frequency(

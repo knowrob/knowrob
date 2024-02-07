@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -18,7 +15,7 @@ namespace knowrob {
 	public:
 		static const std::string SWRL_FORMAT;
 
-		explicit SWRLReasoner(const std::string &reasonerID);
+		SWRLReasoner();
 
 		bool loadSWRLFile(const DataSourcePtr &dataFile);
 

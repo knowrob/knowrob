@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -76,10 +73,8 @@ extern PL_extension qa_predicates[];
 bool PrologReasoner::isPrologInitialized_ = false;
 bool PrologReasoner::isKnowRobInitialized_ = false;
 
-PrologReasoner::PrologReasoner(std::string reasonerID)
-		: reasonerID_(std::move(reasonerID)),
-		  reasonerIDTerm_(std::make_shared<StringTerm>(reasonerID_)),
-		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()) {
+PrologReasoner::PrologReasoner()
+		: importHierarchy_(std::make_unique<semweb::ImportHierarchy>()) {
 	addDataHandler(DataSource::PROLOG_FORMAT, [this]
 			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
 	addDataHandler(DataSource::RDF_XML_FORMAT, [this]
@@ -188,7 +183,7 @@ bool PrologReasoner::setReasonerSetting(const TermPtr &key, const TermPtr &value
 	static auto set_setting_f =
 			std::make_shared<PredicateIndicator>("reasoner_set_setting", 3);
 	return eval(std::make_shared<Predicate>(
-						Predicate(set_setting_f, {reasonerIDTerm_, key, valueString})),
+						Predicate(set_setting_f, {reasonerNameTerm(), key, valueString})),
 				nullptr, false);
 }
 
@@ -220,7 +215,7 @@ bool PrologReasoner::load_rdf_xml(const std::filesystem::path &rdfFile) {
 	static auto consult_f = std::make_shared<PredicateIndicator>("load_rdf_xml", 2);
 	auto path = getResourcePath(rdfFile);
 	auto arg0 = std::make_shared<StringTerm>(path.native());
-	return eval(std::make_shared<Predicate>(Predicate(consult_f, {arg0, reasonerIDTerm_})));
+	return eval(std::make_shared<Predicate>(Predicate(consult_f, {arg0, reasonerNameTerm()})));
 }
 
 bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact) {
@@ -308,7 +303,7 @@ bool PrologReasoner::eval(
 		const char *moduleName,
 		bool doTransformQuery) {
 	auto answer = oneSolution(p, moduleName, doTransformQuery);
-	return (answer ? !answer->indicatesEndOfEvaluation() : false);
+	return answer && !answer->indicatesEndOfEvaluation();
 }
 
 bool PrologReasoner::eval(
@@ -316,7 +311,7 @@ bool PrologReasoner::eval(
 		const char *moduleName,
 		bool doTransformQuery) {
 	auto answer = oneSolution(q, moduleName, doTransformQuery);
-	return (answer ? !answer->indicatesEndOfEvaluation() : false);
+	return answer && !answer->indicatesEndOfEvaluation();
 }
 
 AnswerYesPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
@@ -337,7 +332,7 @@ AnswerYesPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goa
 	auto outputChannel = TokenStream::Channel::create(outputStream);
 	auto call_f = (doTransformQuery ? callFunctor() : (functor_t) 0);
 	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
-											 std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_;
+											 std::make_shared<StringTerm>(moduleName) : reasonerNameTerm();
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
 			this,
@@ -393,7 +388,7 @@ std::list<AnswerYesPtr> PrologReasoner::allSolutions(const std::shared_ptr<const
 	std::optional<std::exception> exc;
 	auto excPtr = &exc;
 	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
-											 std::make_shared<StringTerm>(moduleName) : reasonerIDTerm_;
+											 std::make_shared<StringTerm>(moduleName) : reasonerNameTerm();
 	// create a runner for a worker thread
 	auto workerGoal = std::make_shared<PrologQueryRunner>(
 			this,
@@ -442,7 +437,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const Q
 			PrologQueryRunner::Request(
 					query,
 					callFunctor(),
-					reasonerIDTerm_,
+					reasonerNameTerm(),
 					ctx->selector_),
 			outputChannel,
 			sendEOS);
