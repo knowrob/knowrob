@@ -100,7 +100,7 @@ namespace knowrob {
 		 */
 		TokenBufferPtr submitQuery(const FormulaPtr &query, const QueryContextPtr &ctx);
 
-		//auto &reasonerManager() const { return reasonerManager_; }
+		auto &reasonerManager() const { return reasonerManager_; }
 
 		// override IDataBackend
 		bool insertOne(const StatementData &triple) override;
