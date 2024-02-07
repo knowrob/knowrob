@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -14,6 +11,7 @@
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
 #include "knowrob/backend/BackendManager.h"
+#include "knowrob/KnowledgeBase.h"
 #include "ReasonerModule.h"
 
 namespace knowrob {
@@ -22,15 +20,20 @@ namespace knowrob {
 	 */
 	class ReasonerManager {
 	public:
-		ReasonerManager(const std::shared_ptr<ThreadPool> &threadPool,
-		                const std::shared_ptr<BackendManager> &backendManager);
-        ~ReasonerManager();
+		/**
+		 * Create a new reasoner manager.
+		 * @param kb the knowledge base associated with this manager.
+		 * @param backendManager the backend manager associated with this manager.
+		 */
+		ReasonerManager(KnowledgeBase *kb, const std::shared_ptr<BackendManager> &backendManager);
 
-        /**
-         * @param managerID the ID of a reasoner manager
-         * @return the reasoner manager, or nullptr if ID is unknown
-         */
-        static ReasonerManager* getReasonerManager(uint32_t managerID);
+		~ReasonerManager();
+
+		/**
+		 * @param managerID the ID of a reasoner manager
+		 * @return the reasoner manager, or nullptr if ID is unknown
+		 */
+		static ReasonerManager *getReasonerManager(uint32_t managerID);
 
 		/**
 		 * Add a reasoner factory to the manager.
@@ -41,8 +44,15 @@ namespace knowrob {
 		 */
 		static bool addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory);
 
-		template<class T> static bool addReasonerFactory(const std::string &typeName)
-		{ return addReasonerFactory(typeName, std::make_shared<TypedReasonerFactory<T>>(typeName)); }
+		/**
+		 * Add a typed reasoner factory to the manager.
+		 * @param typeName the name of the reasoner type
+		 * @param factory a reasoner factory
+		 */
+		template<class T>
+		static bool addReasonerFactory(const std::string &typeName) {
+			return addReasonerFactory(typeName, std::make_shared<TypedReasonerFactory<T>>(typeName));
+		}
 
 		/**
 		 * Load a new reasoner instance into the reasoner manager.
@@ -69,57 +79,77 @@ namespace knowrob {
 		 */
 		std::shared_ptr<DefinedReasoner> getReasonerWithID(const std::string &reasonerID);
 
-        /**
-         * Add a reasoner to this manager.
-         * @reasoner a reasoner.
-         */
-        std::shared_ptr<DefinedReasoner> addReasoner(
-                const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner);
+		/**
+		 * Return the backend associated with a reasoner if any.
+		 * @param reasoner a defined reasoner.
+		 * @return a backend or a null reference.
+		 */
+		std::shared_ptr<DataBackend> getReasonerBackend(const std::shared_ptr<DefinedReasoner> &reasoner);
 
-        /**
-         * @return map of all reasoner defined by this manager.
-         */
-        const auto& reasonerPool() const  { return reasonerPool_; }
+		/**
+		 * Add a reasoner to this manager.
+		 * @reasoner a reasoner.
+		 */
+		std::shared_ptr<DefinedReasoner> addReasoner(
+				const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner);
 
-        auto managerID() const  { return managerID_; }
+		/**
+		 * @return map of all reasoner defined by this manager.
+		 */
+		const auto &reasonerPool() const { return reasonerPool_; }
+
+		/**
+		 * @return the ID of this manager.
+		 */
+		auto managerID() const { return managerID_; }
+
+		/**
+		 * @return the knowledge base associated with this manager.
+		 */
+		auto kb() const { return kb_; }
 
 	private:
-        std::shared_ptr<ThreadPool> threadPool_;
-        std::shared_ptr<BackendManager> backendManager_;
+		KnowledgeBase *kb_;
+		std::shared_ptr<BackendManager> backendManager_;
 		// maps reasoner type name to factory used to create instances of that type
 		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
-        // maps manager id to manager
-        static std::map<uint32_t, ReasonerManager*> reasonerManagers_;
-        // counts number of initialized managers
-        static uint32_t managerIDCounter_;
-        // mutex used to interact with static variables
-        std::mutex staticMutex_;
+		// maps manager id to manager
+		static std::map<uint32_t, ReasonerManager *> reasonerManagers_;
+		// counts number of initialized managers
+		static uint32_t managerIDCounter_;
+		// mutex used to interact with static variables
+		std::mutex staticMutex_;
 		// pool of all reasoner instances created via this manager
 		// maps reasoner ID to reasoner instance.
 		std::map<std::string, std::shared_ptr<DefinedReasoner>> reasonerPool_;
 		// maps plugin names to factories used to create reasoner instances
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
 		std::map<std::string, std::shared_ptr<ReasonerModule>> loadedModules_;
+		// maps reasoner to their backends
+		std::map<std::string, std::shared_ptr<DataBackend>> reasonerBackends_;
 		// a counter used to generate unique IDs
 		uint32_t reasonerIndex_;
-        // an identifier for this manager
-        uint32_t managerID_;
+		// an identifier for this manager
+		uint32_t managerID_;
 
 		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
+
 		std::shared_ptr<ReasonerModule> loadReasonerModule(const std::string &path, const std::string &type);
 
-        /**
-         * Remove a reasoner from this manager.
-         * @reasoner a reasoner.
-         */
-        void removeReasoner(const std::shared_ptr<DefinedReasoner> &reasoner);
+		void setDataBackend(const std::shared_ptr<Reasoner> &reasoner, const std::shared_ptr<DataBackend> &dataBackend);
+
+		/**
+		 * Remove a reasoner from this manager.
+		 * @reasoner a reasoner.
+		 */
+		void removeReasoner(const std::shared_ptr<DefinedReasoner> &reasoner);
 	};
 
 	// a macro for static registration of a reasoner type.
 	// reasoner types registered with this macro are builtin reasoners that are not
 	// loaded from a plugin.
-	#define KNOWROB_BUILTIN_REASONER(Name,Type) class Type ## _Registration{ static bool isRegistered; }; \
-		bool Type ## _Registration::isRegistered = ReasonerManager::addReasonerFactory<Type>(Name);
+#define KNOWROB_BUILTIN_REASONER(Name, Type) class Type ## _Registration{ static bool isRegistered; }; \
+        bool Type ## _Registration::isRegistered = ReasonerManager::addReasonerFactory<Type>(Name);
 }
 
 #endif //KNOWROB_REASONER_MANAGER_H_

@@ -20,31 +20,31 @@
 namespace knowrob {
 	class MongologReasoner : public PrologReasoner {
 	public:
-		explicit MongologReasoner(const std::string &reasonerID);
+		MongologReasoner();
 
 		~MongologReasoner() override;
 
-        //bool projectIntoEDB(const Statement &statement) override;
+		//bool projectIntoEDB(const Statement &statement) override;
 
-        //bool exportData(const std::filesystem::path &path) override;
+		//bool exportData(const std::filesystem::path &path) override;
 
-        //bool importData(const std::filesystem::path &path) override;
+		//bool importData(const std::filesystem::path &path) override;
 
-        bool loadConfig(const ReasonerConfig &cfg) override;
+		bool loadConfig(const ReasonerConfig &cfg) override;
 
-        void setDataBackend(const DataBackendPtr &backend) override;
+		void setDataBackend(const DataBackendPtr &backend) override;
 
-        const auto& knowledgeGraph() const { return knowledgeGraph_; }
-		
+		const auto &knowledgeGraph() const { return knowledgeGraph_; }
+
 	protected:
-	    std::shared_ptr<MongoKnowledgeGraph> knowledgeGraph_;
+		std::shared_ptr<MongoKnowledgeGraph> knowledgeGraph_;
 
 		// Override PrologReasoner
-		const functor_t& callFunctor() override;
+		const functor_t &callFunctor() override;
 
 		// Override PrologReasoner
 		bool initializeDefaultPackages() override;
-    };
+	};
 }
 
 #endif //KNOWROB_MONGOLOG_REASONER_H_

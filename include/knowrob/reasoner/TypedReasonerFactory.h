@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -19,7 +16,8 @@ namespace knowrob {
 	 * A reasoner factory implementation for builtin reasoner types.
 	 * @tparam T the type of reasoner.
 	 */
-	template<class T> class TypedReasonerFactory : public ReasonerFactory {
+	template<class T>
+	class TypedReasonerFactory : public ReasonerFactory {
 	public:
 		/**
 		 * @param name name of the reasoner type for which the factory can create instances.
@@ -27,11 +25,12 @@ namespace knowrob {
 		explicit TypedReasonerFactory(std::string name) : name_(std::move(name)) {}
 
 		// Override ReasonerFactory
-		std::shared_ptr<Reasoner> createReasoner(const std::string &reasonerID) override
-		{ return std::make_shared<T>(reasonerID); }
+		std::shared_ptr<Reasoner>
+		createReasoner(const std::string &reasonerID) override { return std::make_shared<T>(); }
 
 		// Override ReasonerFactory
-		const std::string& name() const override {  return name_; }
+		const std::string &name() const override { return name_; }
+
 	protected:
 		std::string name_;
 	};

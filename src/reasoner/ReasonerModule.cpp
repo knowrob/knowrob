@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include "knowrob/reasoner/ReasonerModule.h"
+#include "knowrob/py/utils.h"
 #include "knowrob/URI.h"
 
 using namespace knowrob;
@@ -34,9 +32,7 @@ bool ReasonerModule::isLoaded()
 		return pyReasonerType_ && !pyReasonerType_.is_none();
 	}
 	catch(const python::error_already_set&){
-		// TODO: better exception handling
-		PyErr_Print();
-		PyErr_Clear();
+		knowrob::py::handlePythonError();
 	}
 	return false;
 }
@@ -77,9 +73,7 @@ bool ReasonerModule::loadModule()
 		pyReasonerType_ = pyModule_.attr(reasonerType_.c_str());
 	}
 	catch(const python::error_already_set&){
-		// TODO: better exception handling
-		PyErr_Print();
-		PyErr_Clear();
+		knowrob::py::handlePythonError();
 	}
 	return isLoaded();
 }
@@ -104,9 +98,7 @@ std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reas
 		}
 	}
 	catch(const python::error_already_set&){
-		// TODO: better exception handling
-		PyErr_Print();
-		PyErr_Clear();
+		knowrob::py::handlePythonError();
 	}
 	KB_ERROR("Failed to create reasoner from module '{}'", modulePath_.c_str());
 	return {};

@@ -26,11 +26,11 @@
 
 // optional member must be added with add_property
 #define BOOST_PYTHON_ADD_OPTIONAL(X, Y) add_property(X, \
-    make_getter(Y, _RETURN_POLICY_BY_VALUE), make_setter(Y, _RETURN_POLICY_BY_VALUE))
+    make_getter(Y, KB_RETURN_POLICY_BY_VALUE), make_setter(Y, KB_RETURN_POLICY_BY_VALUE))
 
 #define CONST_REF_RETURN return_value_policy<copy_const_reference>()
 #define EXISTING_REF_RETURN return_value_policy<reference_existing_object>()
-#define _RETURN_POLICY_BY_VALUE return_value_policy<return_by_value>()
+#define KB_RETURN_POLICY_BY_VALUE return_value_policy<return_by_value>()
 
 #include "knowrob/py/converter.h"
 #include "knowrob/py/wrapper.h"
@@ -42,6 +42,16 @@ BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
 	typedef std::vector<TermPtr> TermList;
 	typedef std::vector<FormulaPtr> FormulaList;
+	typedef std::vector<StatementData> StatementList;
+
+	/////////////////////////////////////////////////////
+	// logging
+	/////////////////////////////////////////////////////
+	def("logInfo", +[](const std::string &msg) { KB_INFO(msg); });
+	def("logWarn", +[](const std::string &msg) { KB_WARN(msg); });
+	def("logError", +[](const std::string &msg) { KB_ERROR(msg); });
+	def("logDebug", +[](const std::string &msg) { KB_DEBUG(msg); });
+	def("logCritical", +[](const std::string &msg) { KB_CRITICAL(msg); });
 
 	/////////////////////////////////////////////////////
 	// mappings for the Agent class
@@ -65,6 +75,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", python::no_init)
 			.def("type", &Term::type, CONST_REF_RETURN)
 			.def("__eq__", &Term::operator==)
+			.def("__str__", +[](Term &t){ return t.toString(); })
 			.def("isGround", python::pure_virtual(&Term::isGround))
 			.def("isAtomic", python::pure_virtual(&Term::isAtomic))
 			.def("computeHash", python::pure_virtual(&Term::computeHash))
@@ -129,7 +140,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.def("antecedent", &Implication::antecedent, CONST_REF_RETURN)
 			.def("consequent", &Implication::consequent, CONST_REF_RETURN);
 
-	// allow conversion between std::vector and python::list for Formula objects.s
+	// allow conversion between std::vector and python::list for Formula objects.
 	custom_vector_from_seq<FormulaPtr>();
 	class_<FormulaList>("FormulaList").def(vector_indexing_suite<FormulaList, true>());
 
@@ -212,6 +223,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for StatementData
 	/////////////////////////////////////////////////////
+
+	enum_<RDFType>("RDFType")
+			.value("BOOLEAN_LITERAL", RDF_BOOLEAN_LITERAL)
+			.value("INT64_LITERAL", RDF_INT64_LITERAL)
+			.value("DOUBLE_LITERAL", RDF_DOUBLE_LITERAL)
+			.value("STRING_LITERAL", RDF_STRING_LITERAL)
+			.value("RESOURCE", RDF_RESOURCE);
+
 	class_<StatementData, std::shared_ptr<StatementData>>("StatementData", init<>())
 			.def(init<const char *, const char *, const char *, const char *, const char *>())
 			.def_readwrite("documentID", &StatementData::documentID)
@@ -228,6 +247,10 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.BOOST_PYTHON_ADD_OPTIONAL("begin", &StatementData::begin)
 			.BOOST_PYTHON_ADD_OPTIONAL("end", &StatementData::end)
 			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &StatementData::confidence);
+
+	// allow conversion between std::vector and python::list for Formula objects.
+	custom_vector_from_seq<StatementData>();
+	class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
 
 	/////////////////////////////////////////////////////
 	// mappings for literals
@@ -328,7 +351,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("dataFormat", &DataSource::dataFormat, CONST_REF_RETURN)
 			.def("uri", &DataSource::uri, CONST_REF_RETURN)
 			.def("path", &DataSource::path, CONST_REF_RETURN);
-	class_<DataBackend, std::shared_ptr<DataBackendWrap>, boost::noncopyable>("DataBackend", init<>())
+	class_<DataSourceHandler, std::shared_ptr<DataSourceHandler>>("DataSourceHandler", init<>())
+			.def("addDataHandler", +[]
+				(DataSourceHandler &x, const std::string &format, python::object &fn)
+				{ x.addDataHandler(format, fn); })
+			.def("loadDataSource", &DataSourceHandler::loadDataSource);
+
+	class_<DataBackend, std::shared_ptr<DataBackendWrap>, bases<DataSourceHandler>, boost::noncopyable>
+	        ("DataBackend", init<>())
 			// methods that must be implemented by backend plugins
 			.def("loadConfig", &DataBackendWrap::loadConfig)
 			.def("insertOne", &DataBackendWrap::insertOne)
@@ -340,19 +370,19 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for the Reasoner class and it sub-classes
 	/////////////////////////////////////////////////////
-	enum_<TruthMode>("TruthMode")
-			.value("OPEN_WORLD", TruthMode::OPEN_WORLD)
-			.value("CLOSED_WORLD", TruthMode::CLOSED_WORLD);
 	class_<ReasonerConfig, std::shared_ptr<ReasonerConfig>>("ReasonerConfiguration", init<>())
 			.def("__iter__", range(&ReasonerConfig::begin, &ReasonerConfig::end))
 			.def("get", &ReasonerConfig::get)
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
-	class_<Reasoner, std::shared_ptr<ReasonerWrap>, boost::noncopyable>("Reasoner", init<>())
+	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
 			.def("managerID", &ReasonerWrap::managerID)
-			.def("addDataHandler", &ReasonerWrap::addDataHandler)
-			.def("loadDataSource", &ReasonerWrap::loadDataSource)
+			.def("createTriple", &ReasonerWrap::createTriple)
+			.def("createTriples", &ReasonerWrap::createTriples)
+			.def("pushWork", +[](Reasoner &x, python::object &fn){ x.pushWork(fn); })
+			.def("setInferredTriples", &ReasonerWrap::setInferredTriples)
+			.def("addInferredTriples", &ReasonerWrap::addInferredTriples)
+			.def("removeInferredTriples", &ReasonerWrap::removeInferredTriples)
 					// methods that must be implemented by reasoner plugins
-			.def("getTruthMode", &ReasonerWrap::getTruthMode)
 			.def("loadConfig", &ReasonerWrap::loadConfig)
 			.def("setDataBackend", &ReasonerWrap::setDataBackend)
 			.def("getDescription", &ReasonerWrap::getDescription)

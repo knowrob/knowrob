@@ -27,15 +27,17 @@ namespace knowrob {
 	public:
 		// forward declarations
 		class Runner;
-        using ExceptionHandler = std::function<void(const std::exception&)>;
+
+		using ExceptionHandler = std::function<void(const std::exception &)>;
 
 		explicit ThreadPool(uint32_t maxNumThreads);
+
 		~ThreadPool();
 
 		/**
 		 * Cannot be copy-assigned.
 		 */
-		ThreadPool(const ThreadPool&) = delete;
+		ThreadPool(const ThreadPool &) = delete;
 
 		/**
 		 * Pushes a goal for a worker.
@@ -50,12 +52,13 @@ namespace knowrob {
 		class Worker {
 		public:
 			explicit Worker(ThreadPool *thread_pool);
+
 			~Worker();
 
 			/**
 			 * Cannot be copy-assigned.
 			 */
-			Worker(const Worker&) = delete;
+			Worker(const Worker &) = delete;
 
 		protected:
 			ThreadPool *threadPool_;
@@ -76,12 +79,13 @@ namespace knowrob {
 		class Runner {
 		public:
 			Runner();
+
 			~Runner();
 
 			/**
 			 * Cannot be copy-assigned.
 			 */
-			Runner(const Runner&) = delete;
+			Runner(const Runner &) = delete;
 
 			/**
 			 * Wait until run function has exited.
@@ -114,19 +118,36 @@ namespace knowrob {
 			std::atomic<bool> hasStopRequest_;
 			std::mutex mutex_;
 			std::condition_variable finishedCV_;
-            ExceptionHandler exceptionHandler_;
+			ExceptionHandler exceptionHandler_;
 
 			void runInternal();
 
 			void setExceptionHandler(ExceptionHandler exceptionHandler) { exceptionHandler_ = exceptionHandler; }
 
 			friend class ThreadPool::Worker;
+
 			friend class ThreadPool;
+		};
+
+		/**
+		 * A runner that executes a lambda function.
+		 */
+		class LambdaRunner : public Runner {
+		public:
+			/**
+			 * @param fn the lambda function to be executed
+			 */
+			explicit LambdaRunner(const std::function<void()> &fn) : fn_(fn) {}
+
+			void run() override { fn_(); }
+
+		protected:
+			std::function<void()> fn_;
 		};
 
 	private:
 		// list of threads doing work
-		std::list<Worker*> workerThreads_;
+		std::list<Worker *> workerThreads_;
 		// currently queued work that has not been associated to a worker yet
 		std::queue<std::shared_ptr<ThreadPool::Runner>> workQueue_;
 		// condition variable used to wake up worker after new work was queued
@@ -136,18 +157,23 @@ namespace knowrob {
 		uint32_t maxNumThreads_;
 		// number of terminated threads that are still in workerThreads_ list
 		std::atomic_uint32_t numFinishedThreads_;
-        // number of currently active workers
-        std::atomic_uint32_t numActiveWorker_;
-		
+		// number of currently active workers
+		std::atomic_uint32_t numActiveWorker_;
+
 		// get work from queue
 		std::shared_ptr<ThreadPool::Runner> popWork();
-		
+
 		// is called initially in each worker thread
 		virtual bool initializeWorker() { return true; }
-		
+
 		// is called to finalize each worker thread
 		virtual void finalizeWorker() {}
 	};
+
+	/**
+	 * @return a default thread pool.
+	 */
+	std::shared_ptr<ThreadPool> DefaultThreadPool();
 }
 
 #endif //KNOWROB_THREAD_POOL_H_

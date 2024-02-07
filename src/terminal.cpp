@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -323,7 +320,7 @@ public:
 				}
 			}
 		}
-		if (kb_.insert(data)) {
+		if (kb_.insertAll(data)) {
 			std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
 			return true;
 		} else {

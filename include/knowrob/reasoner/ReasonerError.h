@@ -25,6 +25,9 @@ namespace knowrob {
 		template<typename ... Args>
 		explicit ReasonerError(const char *fmt, Args&& ... args)
 		: std::runtime_error(fmt::format(fmt, args...)) {}
+
+		explicit ReasonerError(const std::string &msg)
+		: std::runtime_error(msg) {}
 	};
 }
 

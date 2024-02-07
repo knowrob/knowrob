@@ -7,6 +7,7 @@
 #include "knowrob/queries/NegationStage.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 
 using namespace knowrob;
 
@@ -66,7 +67,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 		// get list of reasoner that define the literal
 		// TODO: could be done faster through interface in manager
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
-		for (auto &pair: kb_->reasonerManager()->reasonerPool()) {
+		for (auto &pair: kb_->reasonerPool()) {
 			auto &r = pair.second->reasoner();
 			if (r->getLiteralDescription(*instance) != nullptr) {
 				results.push_back(r->submitQuery(instance, ctx_));

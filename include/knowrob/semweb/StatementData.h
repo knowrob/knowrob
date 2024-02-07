@@ -57,6 +57,7 @@ namespace knowrob {
         const char* subject;
         const char *predicate;
         const char* object;
+		// TODO: rename to source
         const char* graph;
         const char* agent;
         std::optional<TemporalOperator> temporalOperator;
@@ -67,7 +68,12 @@ namespace knowrob {
         double objectDouble;
         long objectInteger;
         RDFType objectType;
+
+		bool operator==(const StatementData &other) const;
+		bool operator<(const StatementData &other) const;
     };
+
+    using StatementDataPtr = std::shared_ptr<StatementData>;
 }
 
 #endif //KNOWROB_SEMWEB_STATEMENT_DATA_H

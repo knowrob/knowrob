@@ -10,12 +10,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <utility>
 #include "ThreadPool.h"
-#include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/backend/BackendManager.h"
 #include "knowrob/formulas/DependencyGraph.h"
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/semweb/RDFComputable.h"
+#include "knowrob/reasoner/DefinedReasoner.h"
 
 namespace knowrob {
 	enum QueryFlag {
@@ -26,11 +25,17 @@ namespace knowrob {
 		//QUERY_FLAG_ORDER_PRESERVING = 1 << 4,
 	};
 
+	// forward declaration
+	class ReasonerManager;
+
+	// forward declaration
+	class BackendManager;
+
 	/**
 	 * The main interface to the knowledge base system implementing
 	 * its 'tell' and 'ask' interface.
 	 */
-	class KnowledgeBase {
+	class KnowledgeBase : public IDataBackend {
 	public:
 		/**
 		 * @param config a property tree used to configure this.
@@ -42,24 +47,12 @@ namespace knowrob {
 		 */
 		explicit KnowledgeBase(const std::string_view &configFile);
 
-		/**
-		 * Asserts a proposition into the knowledge base.
-		 * @param tripleData data representing the proposition.
-		 * @return true on success.
-		 */
-		bool insert(const StatementData &proposition);
+		~KnowledgeBase();
 
 		/**
-		 * Asserts a sequence of propositions into the knowledge base.
-		 * @param tripleData data representing a list of proposition.
-		 * @return true on success.
+		 * @return the set of reasoner of this KB.
 		 */
-		bool insert(const std::vector<StatementData> &propositions);
-
-		/**
-		 * @return a thread pool owned by this.
-		 */
-		auto &threadPool() { return *threadPool_; }
+		const std::map<std::string, std::shared_ptr<DefinedReasoner>> &reasonerPool() const;
 
 		/**
 		 * @return the central knowledge graph
@@ -107,12 +100,26 @@ namespace knowrob {
 		 */
 		TokenBufferPtr submitQuery(const FormulaPtr &query, const QueryContextPtr &ctx);
 
-		auto &reasonerManager() const { return reasonerManager_; }
+		//auto &reasonerManager() const { return reasonerManager_; }
+
+		// override IDataBackend
+		bool insertOne(const StatementData &triple) override;
+
+		// override IDataBackend
+		bool insertAll(const std::vector<StatementData> &triples) override;
+
+		// override IDataBackend
+		bool removeOne(const StatementData &triple) override;
+
+		// override IDataBackend
+		bool removeAll(const std::vector<StatementData> &triples) override;
+
+		// override IDataBackend
+		int removeMatching(const RDFLiteral &query, bool doMatchMany) override;
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
-		std::shared_ptr<ThreadPool> threadPool_;
 		std::shared_ptr<KnowledgeGraph> centralKG_;
 
 		// used to sort dependency nodes in a priority queue.
@@ -121,27 +128,40 @@ namespace knowrob {
 		struct DependencyNodeComparator {
 			bool operator()(const DependencyNodePtr &a, const DependencyNodePtr &b) const;
 		};
+
 		struct DependencyNodeQueue {
 			const DependencyNodePtr node_;
 			std::priority_queue<DependencyNodePtr, std::vector<DependencyNodePtr>, DependencyNodeComparator> neighbors_;
+
 			explicit DependencyNodeQueue(const DependencyNodePtr &node);
 		};
 
 		// compares literals
 		struct EDBComparator {
 			explicit EDBComparator(semweb::VocabularyPtr vocabulary)
-			: vocabulary_(std::move(vocabulary)) {}
+					: vocabulary_(std::move(vocabulary)) {}
+
 			bool operator()(const RDFLiteralPtr &a, const RDFLiteralPtr &b) const;
+
 			semweb::VocabularyPtr vocabulary_;
 		};
+
 		struct IDBComparator {
 			explicit IDBComparator(semweb::VocabularyPtr vocabulary)
-			: vocabulary_(std::move(vocabulary)) {}
+					: vocabulary_(std::move(vocabulary)) {}
+
 			bool operator()(const RDFComputablePtr &a, const RDFComputablePtr &b) const;
+
 			semweb::VocabularyPtr vocabulary_;
 		};
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
+
+		void startReasoner();
+
+		void stopReasoner();
+
+		DataBackendPtr findSourceBackend(const StatementData &triple);
 
 		std::vector<RDFComputablePtr> createComputationSequence(
 				const std::list<DependencyNodePtr> &dependencyGroup) const;
@@ -151,7 +171,7 @@ namespace knowrob {
 				const std::vector<RDFComputablePtr> &computableLiterals,
 				const std::shared_ptr<TokenBroadcaster> &pipelineInput,
 				const std::shared_ptr<TokenBroadcaster> &pipelineOutput,
-				const QueryContextPtr &ctx);
+				const QueryContextPtr &ctx) const;
 	};
 
 	using KnowledgeBasePtr = std::shared_ptr<KnowledgeBase>;

@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -14,6 +11,14 @@
 #include <knowrob/ThreadPool.h>
 
 using namespace knowrob;
+
+namespace knowrob {
+	std::shared_ptr<ThreadPool> DefaultThreadPool() {
+		static auto pool =
+				std::make_shared<ThreadPool>(std::thread::hardware_concurrency());
+		return pool;
+	}
+}
 
 ThreadPool::ThreadPool(uint32_t maxNumThreads)
 		: maxNumThreads_(maxNumThreads),

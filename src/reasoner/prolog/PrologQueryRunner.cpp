@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -68,7 +65,7 @@ void PrologQueryRunner::run() {
 		KB_DEBUG("Prolog has a next solution.");
 		// create an empty solution
 		auto solution = std::make_shared<AnswerYes>();
-		solution->setReasonerTerm(reasoner_->reasonerIDTerm_);
+		solution->setReasonerTerm(reasoner_->reasonerNameTerm());
 		hasSolution = true;
 
 		// TODO: set flag to indicate if answer is well-founded or not.
@@ -88,7 +85,7 @@ void PrologQueryRunner::run() {
 		// add substitutions
 		for (const auto &kv: pl_goal.vars()) {
 			auto grounding = PrologQuery::constructTerm(kv.second);
-			if(grounding && grounding->type()!=TermType::VARIABLE) {
+			if (grounding && grounding->type() != TermType::VARIABLE) {
 				solution->set(Variable(kv.first), PrologQuery::constructTerm(kv.second));
 			}
 		}
@@ -105,12 +102,12 @@ void PrologQueryRunner::run() {
 				hasInstances = true;
 			}
 		}
-		if(!hasInstances) {
+		if (!hasInstances) {
 			// auto-add instances for simple queries
-			if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
+			if (pl_goal.qa_query()->type() == QueryType::CONJUNCTIVE) {
 				auto conjunctive =
-					std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
-				for(auto &rdfLiteral : conjunctive->literals()) {
+						std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
+				for (auto &rdfLiteral: conjunctive->literals()) {
 					auto p = rdfLiteral->predicate();
 					auto p_instance = p->applySubstitution(*solution->substitution());
 					solution->addGrounding(
@@ -145,17 +142,17 @@ void PrologQueryRunner::run() {
 	// if no solution was found, indicate that via a NegativeAnswer.
 	if (!hasSolution) {
 		auto negativeAnswer = std::make_shared<AnswerNo>();
-		negativeAnswer->setReasonerTerm(reasoner_->reasonerIDTerm_);
+		negativeAnswer->setReasonerTerm(reasoner_->reasonerNameTerm());
 		// however, as Prolog cannot proof negations such an answer is always not well-founded
 		// and can be overruled by a well-founded one.
 		negativeAnswer->setIsUncertain(std::nullopt);
 		// we do not have the information accessible here at which literal the query failed.
 		// TODO: would be great if we could report the failing literal.
 		// But at least we know if the query only contains a single literal.
-		if(pl_goal.qa_query()->type()==QueryType::CONJUNCTIVE) {
+		if (pl_goal.qa_query()->type() == QueryType::CONJUNCTIVE) {
 			auto conjunctive =
-				std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
-			if(conjunctive->literals().size()==1) {
+					std::static_pointer_cast<const ConjunctiveQuery>(pl_goal.qa_query());
+			if (conjunctive->literals().size() == 1) {
 				auto rdfLiteral = conjunctive->literals().front();
 				negativeAnswer->addUngrounded(
 						std::static_pointer_cast<Predicate>(rdfLiteral->predicate()),
