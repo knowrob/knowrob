@@ -8,6 +8,7 @@
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/queries/AnswerYes.h"
+#include "knowrob/reasoner/ReasonerManager.h"
 
 using namespace knowrob;
 using namespace knowrob::modality;
@@ -42,7 +43,6 @@ public:
 	void setDataBackend(const DataBackendPtr &backend) override {}
 	void start() override {}
 	void stop() override {}
-	TruthMode getTruthMode() const override { return TruthMode::CLOSED_WORLD; };
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
 		if(indicator->functor() == p_) {
