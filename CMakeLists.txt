@@ -224,7 +224,6 @@ add_library(knowrob SHARED
 		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
-		src/reasoner/ReasonerAttention.cpp
 		src/reasoner/prolog/PrologQuery.cpp
 		src/reasoner/prolog/PrologQueryRunner.cpp
 		src/reasoner/prolog/PrologThreadPool.cpp
