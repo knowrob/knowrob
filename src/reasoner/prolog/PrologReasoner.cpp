@@ -22,7 +22,7 @@
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/backend/KnowledgeGraph.h"
+#include "knowrob/db/KnowledgeGraph.h"
 #include "knowrob/URI.h"
 #include "knowrob/KnowledgeBase.h"
 

@@ -12,13 +12,13 @@
 
 #include "knowrob/terms/Term.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
-#include "knowrob/DataSource.h"
+#include "knowrob/db/DataSource.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/ConjunctiveQuery.h"
-#include "knowrob/backend/KnowledgeGraph.h"
-#include "knowrob/DataSourceHandler.h"
+#include "knowrob/db/KnowledgeGraph.h"
+#include "knowrob/db/DataSourceHandler.h"
 
 namespace knowrob {
 	// forward declarations

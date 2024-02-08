@@ -15,7 +15,7 @@
 #include <optional>
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/terms/Term.h"
-#include "knowrob/DataSource.h"
+#include "knowrob/db/DataSource.h"
 
 namespace knowrob {
 	/**

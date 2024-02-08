@@ -159,7 +159,7 @@ add_library(knowrob SHARED
 		src/ThreadPool.cpp
 		src/Logger.cpp
 		src/KnowledgeBase.cpp
-		src/DataSource.cpp
+        src/db/DataSource.cpp
 		src/URI.cpp
 		src/modalities/ConfidenceValue.cpp
 		src/modalities/ConfidenceInterval.cpp
@@ -237,32 +237,32 @@ add_library(knowrob SHARED
 		src/reasoner/mongolog/bson_pl.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
-		src/mongodb/MongoInterface.cpp
-		src/mongodb/Database.cpp
-		src/mongodb/Collection.cpp
-		src/mongodb/ChangeStream.cpp
-		src/mongodb/Cursor.cpp
-		src/mongodb/QueryWatch.cpp
-		src/mongodb/MongoKnowledgeGraph.cpp
-		src/mongodb/BulkOperation.cpp
-		src/mongodb/TripleLoader.cpp
-		src/mongodb/aggregation/graph.cpp
-		src/mongodb/Pipeline.cpp
-		src/mongodb/TripleCursor.cpp
-		src/mongodb/AnswerCursor.cpp
-		src/mongodb/aggregation/terms.cpp
-		src/mongodb/aggregation/triples.cpp
-		src/mongodb/Connection.cpp
-		src/backend/KnowledgeGraph.cpp
-		src/backend/BackendManager.cpp
-		src/backend/BackendPlugin.cpp
+        src/db/mongo/MongoInterface.cpp
+        src/db/mongo/Database.cpp
+        src/db/mongo/Collection.cpp
+        src/db/mongo/ChangeStream.cpp
+        src/db/mongo/Cursor.cpp
+        src/db/mongo/QueryWatch.cpp
+        src/db/mongo/MongoKnowledgeGraph.cpp
+        src/db/mongo/BulkOperation.cpp
+        src/db/mongo/TripleLoader.cpp
+        src/db/mongo/aggregation/graph.cpp
+        src/db/mongo/Pipeline.cpp
+        src/db/mongo/TripleCursor.cpp
+        src/db/mongo/AnswerCursor.cpp
+        src/db/mongo/aggregation/terms.cpp
+        src/db/mongo/aggregation/triples.cpp
+        src/db/mongo/Connection.cpp
+        src/db/KnowledgeGraph.cpp
+        src/db/BackendManager.cpp
+        src/db/BackendPlugin.cpp
 		src/queries/ModalStage.cpp
 		src/semweb/Agent.cpp
 		include/knowrob/semweb/Agent.h
 		src/formulas/PredicateIndicator.cpp
 		src/formulas/PredicateDescription.cpp
 		src/reasoner/ReasonerModule.cpp
-		src/DataSourceHandler.cpp
+        src/db/DataSourceHandler.cpp
 		src/queries/AnswerYes.cpp
 		include/knowrob/queries/AnswerYes.h
 		src/queries/AnswerNo.cpp
@@ -275,7 +275,7 @@ add_library(knowrob SHARED
 		src/queries/AnswerMerger.cpp
 		src/queries/QueryStageLiteral.cpp
 		src/queries/QueryStageFormula.cpp
-		src/mongodb/bson-helper.cpp
+        src/db/mongo/bson-helper.cpp
 		src/py/utils.cpp
 		src/semweb/StatementData.cpp)
 set(KNOWROB_LIBRARIES
