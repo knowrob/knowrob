@@ -3,6 +3,8 @@ from pyfactxx import coras
 from rdflib import BNode, URIRef
 from rdflib.query import ResultRow
 from rdflib.namespace import XSD
+from typing import List
+
 
 
 class FactxxReasoner(ReasonerWithBackend):
@@ -67,7 +69,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		reasoner.set_o_range(r, role_range)
 		return r
 
-	def get_role_fillers(self, role: str, individual: str) -> list[str]:
+	def get_role_fillers(self, role: str, individual: str) -> List[str]:
 		role = self.factxx().object_role(role)
 		return self.factxx().get_role_fillers(individual, role)
 
@@ -118,7 +120,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		# retrieve all inferred triples
 		# NOTE: this also includes the triples that were already inferred before.
 		query = 'SELECT ?a ?b ?c WHERE {?a ?b ?c}'
-		result_rows: list[ResultRow] = self.crs.query(query, scope='inferred')
+		result_rows: List[ResultRow] = self.crs.query(query, scope='inferred')
 
 		# create a vector of KB triples at once
 		filtered_rows = list(filter(self.include_triple, result_rows))
@@ -169,7 +171,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		logWarn("insertOne not supported")
 		return False
 
-	def insertAll(self, triples: list[StatementData]) -> bool:
+	def insertAll(self, triples: List[StatementData]) -> bool:
 		# NOTE: currently only the initial loading of OWL files is supported
 		logWarn("insertAll not supported")
 		return False
@@ -178,7 +180,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		# NOTE: currently only the initial loading of OWL files is supported
 		return False
 
-	def removeAll(self, triples: list[StatementData]) -> bool:
+	def removeAll(self, triples: List[StatementData]) -> bool:
 		# NOTE: currently only the initial loading of OWL files is supported
 		return False
 
