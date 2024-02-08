@@ -21,12 +21,14 @@ find_package(spdlog REQUIRED)
 find_package(Python COMPONENTS Interpreter Development)
 
 # Construct Boost Python component name based on the found Python version
-set(Boost_Python_COMPONENT "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+set(Boost_Python_VERSION "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+set(Boost_Python_COMPONENT "Boost::${Boost_Python_VERSION}")
+message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_COMPONENT})
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
 
 enable_testing()
 find_package(GTest REQUIRED)
