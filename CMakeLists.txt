@@ -20,10 +20,13 @@ find_package(spdlog REQUIRED)
 
 find_package(Python COMPONENTS Interpreter Development)
 
+# Construct Boost Python component name based on the found Python version
+set(Boost_Python_COMPONENT "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization python3)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_COMPONENT})
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -47,14 +50,14 @@ include_directories(include ${RAPTOR_INCLUDE_DIRS})
 # TODO: there is a similar macros called FetchContent_* shipped with CMake.
 #       Have a look if install_ontology can use it or be replaced with it.
 install_ontology(
-	URL		  "http://www.ease-crc.org/ont/DUL.owl"
-	VERSION   "3.34")
+		URL		  "http://www.ease-crc.org/ont/DUL.owl"
+		VERSION   "3.34")
 install_ontology(
-	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl"
-	VERSION   "${SOMA_VERSION}")
+		URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA.owl"
+		VERSION   "${SOMA_VERSION}")
 install_ontology(
-	URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA-HOME.owl"
-	VERSION   "${SOMA_VERSION}")
+		URL       "https://ease-crc.github.io/soma/owl/${SOMA_VERSION}/SOMA-HOME.owl"
+		VERSION   "${SOMA_VERSION}")
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -pthread ${CMAKE_CXX_FLAGS}")
 include_directories(include
@@ -80,44 +83,44 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 # NOTE: seems catkin_package must be called *before* any library is build.
 
 find_package(catkin QUIET COMPONENTS
-		roscpp roslib tests/urdf message_generation 
+		roscpp roslib tests/urdf message_generation
 		geometry_msgs message_generation json_prolog_msgs actionlib actionlob_msgs)
 
-if (catkin_FOUND)
+if (false)
 	message(STATUS "Building with ROS1 support.")
 
 	add_definitions(-DKNOWROB_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
-	
+
 	include_directories(${catkin_INCLUDE_DIRS})
-	
+
 	catkin_python_setup()
 
 	# build messages
 	add_action_files(
-	  DIRECTORY action
-	  FILES 
-	  	askall.action 
-	  	askone.action
-	  	askincremental.action
-	  	tell.action
+			DIRECTORY action
+			FILES
+			askall.action
+			askone.action
+			askincremental.action
+			tell.action
 	)
 
 	add_message_files(
-	  FILES
-	  KeyValuePair.msg
-	  GraphQueryMessage.msg
-	  GraphAnswerMessage.msg
-	  EventToken.msg
+			FILES
+			KeyValuePair.msg
+			GraphQueryMessage.msg
+			GraphAnswerMessage.msg
+			EventToken.msg
 	)
 
 	generate_messages(DEPENDENCIES
-		std_msgs
-		geometry_msgs
-		actionlib_msgs)	
+			std_msgs
+			geometry_msgs
+			actionlib_msgs)
 
 	catkin_package(
-		CATKIN_DEPENDS roscpp roslib
-		CFG_EXTRAS ontologies.cmake
+			CATKIN_DEPENDS roscpp roslib
+			CFG_EXTRAS ontologies.cmake
 	)
 else()
 	message(STATUS "Building without ROS1 support.")
@@ -152,8 +155,8 @@ link_directories(${MONGOC_LIBRARY_DIRS})
 add_library(knowrob SHARED
 		src/knowrob.cpp
 		src/ThreadPool.cpp
-        src/Logger.cpp
-        src/KnowledgeBase.cpp
+		src/Logger.cpp
+		src/KnowledgeBase.cpp
 		src/DataSource.cpp
 		src/URI.cpp
 		src/modalities/ConfidenceValue.cpp
@@ -164,8 +167,8 @@ add_library(knowrob SHARED
 		src/modalities/KnowledgeModality.cpp
 		src/modalities/PastModality.cpp
 		src/modalities/ModalOperator.cpp
-        src/modalities/EpistemicModality.cpp
-        src/modalities/TemporalModality.cpp
+		src/modalities/EpistemicModality.cpp
+		src/modalities/TemporalModality.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
@@ -178,33 +181,33 @@ add_library(knowrob SHARED
 		src/formulas/Conjunction.cpp
 		src/formulas/Disjunction.cpp
 		src/formulas/Implication.cpp
-        src/formulas/Negation.cpp
+		src/formulas/Negation.cpp
 		src/formulas/Predicate.cpp
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
-        src/formulas/Literal.cpp
-        src/queries/FormulaQuery.cpp
+		src/formulas/Literal.cpp
+		src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
-        src/queries/Answer.cpp
-        src/queries/TokenStream.cpp
-        src/queries/TokenQueue.cpp
-        src/queries/ConjunctiveBroadcaster.cpp
-        src/queries/TokenBroadcaster.cpp
-        src/formulas/DependencyGraph.cpp
+		src/queries/Answer.cpp
+		src/queries/TokenStream.cpp
+		src/queries/TokenQueue.cpp
+		src/queries/ConjunctiveBroadcaster.cpp
+		src/queries/TokenBroadcaster.cpp
+		src/formulas/DependencyGraph.cpp
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
-        src/queries/TokenBuffer.cpp
-        src/queries/ConjunctiveQuery.cpp
-        src/queries/Query.cpp
-        src/queries/RedundantAnswerFilter.cpp
-        src/queries/EDBStage.cpp
-        src/queries/QueryStage.cpp
-        src/queries/IDBStage.cpp
-        src/queries/QueryPipeline.cpp
-        src/queries/NegationStage.cpp
+		src/queries/TokenBuffer.cpp
+		src/queries/ConjunctiveQuery.cpp
+		src/queries/Query.cpp
+		src/queries/RedundantAnswerFilter.cpp
+		src/queries/EDBStage.cpp
+		src/queries/QueryStage.cpp
+		src/queries/IDBStage.cpp
+		src/queries/QueryPipeline.cpp
+		src/queries/NegationStage.cpp
 		src/semweb/PrefixRegistry.cpp
-        src/semweb/PrefixProbe.cpp
+		src/semweb/PrefixProbe.cpp
 		src/semweb/xsd.cpp
 		src/semweb/Vocabulary.cpp
 		src/semweb/owl.cpp
@@ -212,11 +215,11 @@ add_library(knowrob SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/semweb/RDFLiteral.cpp
+		src/semweb/RDFLiteral.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
-        src/reasoner/Reasoner.cpp
+		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
 		src/reasoner/ReasonerAttention.cpp
@@ -230,15 +233,15 @@ add_library(knowrob SHARED
 		src/reasoner/prolog/blackboard.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/mongolog/mongo_kb.cpp
-        src/reasoner/mongolog/bson_pl.cpp
+		src/reasoner/mongolog/bson_pl.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
 		src/mongodb/MongoInterface.cpp
 		src/mongodb/Database.cpp
 		src/mongodb/Collection.cpp
 		src/mongodb/ChangeStream.cpp
-        src/mongodb/Cursor.cpp
-        src/mongodb/QueryWatch.cpp
+		src/mongodb/Cursor.cpp
+		src/mongodb/QueryWatch.cpp
 		src/mongodb/MongoKnowledgeGraph.cpp
 		src/mongodb/BulkOperation.cpp
 		src/mongodb/TripleLoader.cpp
@@ -249,31 +252,31 @@ add_library(knowrob SHARED
 		src/mongodb/aggregation/terms.cpp
 		src/mongodb/aggregation/triples.cpp
 		src/mongodb/Connection.cpp
-        src/backend/KnowledgeGraph.cpp
-        src/backend/BackendManager.cpp
-        src/backend/BackendPlugin.cpp
-        src/queries/ModalStage.cpp
-        src/semweb/Agent.cpp
-        include/knowrob/semweb/Agent.h
-        src/formulas/PredicateIndicator.cpp
-        src/formulas/PredicateDescription.cpp
-        src/reasoner/ReasonerModule.cpp
-        src/DataSourceHandler.cpp
-        src/queries/AnswerYes.cpp
-        include/knowrob/queries/AnswerYes.h
-        src/queries/AnswerNo.cpp
-        include/knowrob/queries/AnswerNo.h
-        src/queries/AnswerDontKnow.cpp
-        include/knowrob/queries/AnswerDontKnow.h
-        src/queries/DisjunctiveBroadcaster.cpp
-        src/queries/Token.cpp
-        src/semweb/GraphSelector.cpp
-        src/queries/AnswerMerger.cpp
-        src/queries/QueryStageLiteral.cpp
-        src/queries/QueryStageFormula.cpp
-        src/mongodb/bson-helper.cpp
-        src/py/utils.cpp
-        src/semweb/StatementData.cpp)
+		src/backend/KnowledgeGraph.cpp
+		src/backend/BackendManager.cpp
+		src/backend/BackendPlugin.cpp
+		src/queries/ModalStage.cpp
+		src/semweb/Agent.cpp
+		include/knowrob/semweb/Agent.h
+		src/formulas/PredicateIndicator.cpp
+		src/formulas/PredicateDescription.cpp
+		src/reasoner/ReasonerModule.cpp
+		src/DataSourceHandler.cpp
+		src/queries/AnswerYes.cpp
+		include/knowrob/queries/AnswerYes.h
+		src/queries/AnswerNo.cpp
+		include/knowrob/queries/AnswerNo.h
+		src/queries/AnswerDontKnow.cpp
+		include/knowrob/queries/AnswerDontKnow.h
+		src/queries/DisjunctiveBroadcaster.cpp
+		src/queries/Token.cpp
+		src/semweb/GraphSelector.cpp
+		src/queries/AnswerMerger.cpp
+		src/queries/QueryStageLiteral.cpp
+		src/queries/QueryStageFormula.cpp
+		src/mongodb/bson-helper.cpp
+		src/py/utils.cpp
+		src/semweb/StatementData.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
@@ -288,7 +291,7 @@ target_link_libraries(knowrob-terminal
 		${KNOWROB_LIBRARIES}
 		Boost::program_options
 		Boost::serialization
-		Boost::python3
+		${Boost_Python_COMPONENT}
 		knowrob)
 install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
 
@@ -309,66 +312,66 @@ target_link_libraries(knowrob_py PRIVATE
 		${KNOWROB_LIBRARIES}
 		Boost::program_options
 		Boost::serialization
-		Boost::python3
+		${Boost_Python_COMPONENT}
 		knowrob)
 # Rename the library to knowrob.so such that it can be loaded by the
 # Python interpreter through the "import knowrob" statement.
 # NOTE: The library needs to be copied into site-packages directory of Python, or
 #       the PYTHONPATH needs to be set to include the build directory.
 add_custom_command(TARGET knowrob_py POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_BINARY_DIR}/knowrob_py.so
-        ${CMAKE_BINARY_DIR}/knowrob.so
-    COMMAND_EXPAND_LISTS)
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_BINARY_DIR}/knowrob_py.so
+		${CMAKE_BINARY_DIR}/knowrob.so
+		COMMAND_EXPAND_LISTS)
 
 ##############
 ########## ROS1 block
 ##############
 
-if (catkin_FOUND)
+if (false)
 
 	# install into ROS workspace
 	#add_dependencies(mongo_kb ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 	add_dependencies(knowrob-terminal ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-#	### TF messages ###
-#	add_library(tf_knowrob SHARED
-#		src/ros/tf/tf.cpp
-#		src/ros/tf/memory.cpp
-#		src/ros/tf/logger.cpp
-#		src/ros/tf/publisher.cpp
-#		src/ros/tf/republisher.cpp)
-#	target_link_libraries(tf_knowrob
-#		${SWIPL_LIBRARIES}
-#		${MONGOC_LIBRARIES}
-#		${catkin_LIBRARIES})
-#		#mongo_kb
-#	add_dependencies(tf_knowrob
-#		${${PROJECT_NAME}_EXPORTED_TARGETS}
-#		${catkin_EXPORTED_TARGETS})
-#
-#	## RViz marker ###
-#	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
-#	target_link_libraries(marker_knowrob
-#		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-#	add_dependencies(marker_knowrob
-#		${${PROJECT_NAME}_EXPORTED_TARGETS}
-#		${catkin_EXPORTED_TARGETS})
-#
-#	## URDf ###
-#	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
-#	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
-#	add_dependencies(urdf_parser
-#		${${PROJECT_NAME}_EXPORTED_TARGETS}
-#		${catkin_EXPORTED_TARGETS})
+	#	### TF messages ###
+	#	add_library(tf_knowrob SHARED
+	#		src/ros/tf/tf.cpp
+	#		src/ros/tf/memory.cpp
+	#		src/ros/tf/logger.cpp
+	#		src/ros/tf/publisher.cpp
+	#		src/ros/tf/republisher.cpp)
+	#	target_link_libraries(tf_knowrob
+	#		${SWIPL_LIBRARIES}
+	#		${MONGOC_LIBRARIES}
+	#		${catkin_LIBRARIES})
+	#		#mongo_kb
+	#	add_dependencies(tf_knowrob
+	#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+	#		${catkin_EXPORTED_TARGETS})
+	#
+	#	## RViz marker ###
+	#	add_library(marker_knowrob SHARED src/ros/marker/publisher.cpp)
+	#	target_link_libraries(marker_knowrob
+	#		${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+	#	add_dependencies(marker_knowrob
+	#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+	#		${catkin_EXPORTED_TARGETS})
+	#
+	#	## URDf ###
+	#	add_library(urdf_parser SHARED src/ros/urdf/parser.cpp)
+	#	target_link_libraries(urdf_parser ${SWIPL_LIBRARIES} ${catkin_LIBRARIES})
+	#	add_dependencies(urdf_parser
+	#		${${PROJECT_NAME}_EXPORTED_TARGETS}
+	#		${catkin_EXPORTED_TARGETS})
 
 	## ROS Interface ###
-	add_executable(knowrob-ros 
-	src/ros/ROSInterface.cpp
+	add_executable(knowrob-ros
+			src/ros/ROSInterface.cpp
 	)
 	add_dependencies(knowrob-ros
-	 ${catkin_EXPORTED_TARGETS})
+			${catkin_EXPORTED_TARGETS})
 	target_link_libraries(knowrob-ros
 			Boost::program_options
 			knowrob
@@ -387,12 +390,12 @@ endif()
 add_executable(all_gtests
 		tests/gtests.cpp
 		src/neems/test.cpp
-        tests/KnowledgeBaseTest.cpp)
+		tests/KnowledgeBaseTest.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		knowrob
 		-Wl,--no-whole-archive
-		Boost::python3
+		${Boost_Python_COMPONENT}
 		${GTEST_MAIN_LIBRARIES})
 
 ##############
