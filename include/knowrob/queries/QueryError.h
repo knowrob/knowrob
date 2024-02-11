@@ -1,43 +1,51 @@
-/*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
- * This file is part of KnowRob, please consult
- * https://github.com/knowrob/knowrob for license details.
- */
-
 #ifndef KNOWROB_QUERY_ERROR_H_
 #define KNOWROB_QUERY_ERROR_H_
 
-#include <string>
-#include <fmt/core.h>
-#include "knowrob/terms/Term.h"
-#include <knowrob/queries/FormulaQuery.h>
+#include "knowrob/BaseError.h" // Include the base class header
+#include "knowrob/terms/Term.h" // For Term class
+#include "knowrob/queries/FormulaQuery.h" // For Query class
 
 namespace knowrob {
 	/**
 	 * A querying-related runtime error.
 	 */
-	class QueryError : public std::runtime_error {
+	class QueryError : public BaseError {
+	private:
+		std::string queryDescription; // Additional field to store query description
+
 	public:
-		/**
-		 * @tparam Args fmt-printable arguments.
-		 * @param fmt A fmt string pattern.
-		 * @param args list of arguments used to instantiate the pattern.
-		 */
-		template<typename ... Args> explicit QueryError(const char *fmt, Args&& ... args)
-		: std::runtime_error(fmt::format(fmt, args...))
+		// Constructor forwarding to BaseError with fmt string and arguments
+		template<typename ... Args>
+		explicit QueryError(const char *fmt, Args&& ... args)
+				: BaseError(fmt, std::forward<Args>(args)...) {}
+
+		// Constructor for a simple message without stack trace
+		explicit QueryError(const std::string &msg)
+				: BaseError(msg.c_str()) {}
+
+		// Constructor for error with simple string message and optional stacktrace
+		explicit QueryError(const std::string& msg, const std::string& stacktrace)
+				: BaseError(msg, stacktrace) {}
+
+		// Constructor with fmt string, stack trace, and arguments
+		template<typename ... Args>
+		explicit QueryError(const char *fmt, const std::string& stacktrace, Args&& ... args)
+				: BaseError(fmt, stacktrace, std::forward<Args>(args)...) {}
+
+		// Constructor with query and error term information
+		QueryError(const Query &erroneousQuery, const Term &errorTerm)
+				: BaseError("Query error"), // Initialize with a basic error message; adjust as needed
+				  queryDescription(erroneousQuery.toString() + ": " + errorTerm.toString()) // Assuming these methods exist
 		{}
 
-		/**
-		 * @param erroneousQuery the query that caused an error
-		 * @param errorTerm a term denoting the error
-		 */
-		QueryError(const Query &erroneousQuery, const Term &errorTerm);
-	
-	protected:
-		
-		static std::string formatErrorString(const Query &erroneousQuery, const Term &errorTerm);
+		// Override what() to include query description if present
+		const char* what() const noexcept override {
+			static std::string fullMessage = BaseError::what(); // Start with base message
+			if (!queryDescription.empty()) {
+				fullMessage += "\nQuery Description: " + queryDescription;
+			}
+			return fullMessage.c_str();
+		}
 	};
 }
 

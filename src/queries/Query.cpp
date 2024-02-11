@@ -10,6 +10,13 @@ using namespace knowrob;
 int Query::defaultFlags()
 { return (int)QueryFlag::QUERY_FLAG_ALL_SOLUTIONS; }
 
+std::string Query::toString() const
+{
+	std::stringstream ss;
+	ss << *this;
+	return ss.str();
+}
+
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q) //NOLINT
 	{

@@ -3,6 +3,7 @@
 #define KNOWROB_PY_WRAPPER_H
 
 #include <boost/python.hpp>
+#include <boost/stacktrace/stacktrace.hpp>
 #include "knowrob/terms/Term.h"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/CompoundFormula.h"
@@ -25,7 +26,7 @@ namespace knowrob::py {
 			return python::call_method<R>(self, method, python::object(args)...);
 		} catch (const python::error_already_set&) {
 			knowrob::py::handlePythonError();
-			throw ReasonerError("Python error");
+			throw ReasonerError("Python error", boost::stacktrace::stacktrace());
 		}
 	}
 }

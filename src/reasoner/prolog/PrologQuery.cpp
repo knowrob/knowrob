@@ -7,6 +7,7 @@
  */
 
 #include <list>
+#include <boost/stacktrace.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/prolog/PrologQuery.h"
 #include "knowrob/terms/Term.h"
@@ -28,7 +29,7 @@ PrologQuery::PrologQuery(const std::shared_ptr<const Query> &qa_query)
 		  pl_query_(PL_new_term_ref()) {
 	// translate into term_t
 	if (!putTerm(pl_query_, qa_query->formula(), vars_)) {
-		throw QueryError("Failed to create term_t from Query.");
+		throw QueryError("Failed to create term_t from Query.", boost::stacktrace::stacktrace());
 	}
 }
 

@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <utility>
+#include <boost/stacktrace.hpp>
 
 #include "knowrob/Logger.h"
 #include "knowrob/db/BackendManager.h"
@@ -65,7 +66,7 @@ void BackendManager::loadBackend(const boost::property_tree::ptree &config) {
 	}
 	// make sure factory was found above
 	if (!factory) {
-		throw BackendError("failed to load a backend.");
+		throw BackendError("failed to load a backend.", boost::stacktrace::stacktrace());
 	}
 	// create a reasoner id, or use name property
 	std::string backendID;
