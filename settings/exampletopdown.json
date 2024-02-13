@@ -27,9 +27,9 @@
   "central-backend": "mongodb",
   "reasoner": [
     {
-      "type": "ChatGPTReasoner",
-      "name": "ChatGPTReasoner",
-      "module": "reasoner/chatgpt/ChatGPTReasoner.py"
+      "type": "ExampleTopDown",
+      "name": "ExampleTopDown",
+      "module": "reasoner/example_python/ExampleTopDown.py"
     }
   ]
 }
