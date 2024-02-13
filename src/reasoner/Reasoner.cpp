@@ -3,6 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <boost/stacktrace.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/reasoner/Reasoner.h"
@@ -28,7 +29,7 @@ KnowledgeBase *Reasoner::kb() const {
 	if (rm) {
 		return rm->kb();
 	} else {
-		throw ReasonerError("KnowledgeBase not found.");
+		throw ReasonerError("KnowledgeBase not found.", boost::stacktrace::stacktrace());
 	}
 }
 

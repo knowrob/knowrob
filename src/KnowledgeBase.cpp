@@ -11,6 +11,7 @@
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
 #include <knowrob/URI.h>
+#include <boost/stacktrace.hpp>
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
@@ -128,7 +129,7 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		KB_ERROR("configuration has no 'central-backend' key.");
 	}
 	if (!centralKG_) {
-		throw KnowledgeBaseError("failed to initialize central knowledge graph.");
+		throw KnowledgeBaseError("failed to initialize central knowledge graph.", boost::stacktrace::stacktrace());
 	}
 
 	// load reasoners from configuration

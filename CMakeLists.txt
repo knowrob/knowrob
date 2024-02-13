@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
+set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef -g")
 set (CMAKE_CXX_STANDARD 17)
 cmake_policy(SET CMP0148 OLD)
 
@@ -28,7 +28,11 @@ message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+find_package(Boost 1.50 REQUIRED COMPONENTS
+		program_options
+		serialization
+		${Boost_Python_VERSION}
+		stacktrace_backtrace)
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -75,6 +79,8 @@ add_definitions(-DKNOWROB_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\")
 add_definitions(-DKNOWROB_BUILD_DIR=\"${CMAKE_BINARY_DIR}\")
 add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
+add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
+
 # ignore BOOST deprecated headers
 add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
@@ -190,7 +196,6 @@ add_library(knowrob SHARED
 		src/formulas/ModalFormula.cpp
 		src/formulas/Literal.cpp
 		src/queries/FormulaQuery.cpp
-		src/queries/QueryError.cpp
 		src/queries/Answer.cpp
 		src/queries/TokenStream.cpp
 		src/queries/TokenQueue.cpp
@@ -284,7 +289,9 @@ set(KNOWROB_LIBRARIES
 		${RAPTOR_LIBRARIES}
 		${Python_LIBRARIES}
 		spdlog::spdlog
-		${GTEST_LIBRARIES})
+		${GTEST_LIBRARIES}
+		${Boost_STACKTRACE_BACKTRACE_LIBRARY}
+		pthread dl)
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 
 add_executable(knowrob-terminal src/terminal.cpp)

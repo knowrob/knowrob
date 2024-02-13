@@ -4,6 +4,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <boost/stacktrace.hpp>
 
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/prolog/PrologTests.h"
@@ -89,7 +90,8 @@ void MongologReasoner::setDataBackend(const DataBackendPtr &backend) {
 	knowledgeGraph_ = std::dynamic_pointer_cast<MongoKnowledgeGraph>(backend);
 	if (!knowledgeGraph_) {
 		throw ReasonerError(
-				"Unexpected data knowledgeGraph used for Mongolog reasoner. MongoKnowledgeGraph must be used.");
+				"Unexpected data knowledgeGraph used for Mongolog reasoner. MongoKnowledgeGraph must be used.",
+				boost::stacktrace::stacktrace());
 	}
 }
 

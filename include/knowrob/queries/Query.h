@@ -65,6 +65,11 @@ namespace knowrob {
 		 */
 		virtual const FormulaPtr &formula() const = 0;
 
+		/**
+ 		* @return the string representation of this query.
+ 		*/
+		std::string toString() const;
+
 	protected:
 		QueryContextPtr ctx_;
 	};

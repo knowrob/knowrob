@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <utility>
+#include <boost/stacktrace.hpp>
 
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerManager.h"
@@ -86,7 +87,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 	}
 	// make sure factory was found above
 	if (!factory) {
-		throw ReasonerError("failed to load a reasoner.");
+		throw ReasonerError("failed to load a reasoner.", boost::stacktrace::stacktrace());
 	}
 	// create a reasoner id, or use name property
 	std::string reasonerID;
@@ -108,7 +109,8 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 		if (definedBackend) {
 			setDataBackend(reasoner, definedBackend->backend());
 		} else {
-			throw ReasonerError("Reasoner `{}` refers to unknown data-backend `{}`.", reasonerID, backendName.value());
+			throw ReasonerError("Reasoner `{}` refers to unknown data-backend `{}`.", reasonerID, backendName.value(),
+								boost::stacktrace::stacktrace());
 		}
 	} else {
 		// check if reasoner implements DataBackend interface
@@ -116,7 +118,8 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 		if (backend) {
 			setDataBackend(reasoner, backend);
 		} else {
-			throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
+			throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID,
+								boost::stacktrace::stacktrace());
 		}
 	}
 	auto definedReasoner = addReasoner(reasonerID, reasoner);
