@@ -66,7 +66,7 @@ class ChatGPTReasoner(ReasonerWithBackend):
 		return 0
 
 	def getDescription(self, indicator: PredicateIndicator) -> PredicateDescription:
-		description = PredicateDescription(indicator=indicator)
+		description = PredicateDescription(indicator, PredicateType.BUILT_IN, MaterializationStrategy.ON_DEMAND)
 		return description
 
 	def submitQuery(self, query: RDFLiteral, ctx: QueryContext) -> TokenBuffer:
@@ -78,6 +78,7 @@ class ChatGPTReasoner(ReasonerWithBackend):
 		prompt = CUSTOM_PROMPT.format(input=InputTriple)
 		# print prompt
 		answer = llm.predict(prompt)
+		print("Answer: " + answer, file=stderr)
 
 		tokenBuffer = TokenBuffer()
 		token = Token()

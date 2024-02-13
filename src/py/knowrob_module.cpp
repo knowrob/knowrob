@@ -72,7 +72,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.value("STRING", TermType::STRING)
 			.value("VARIABLE", TermType::VARIABLE)
 			.value("LIST", TermType::LIST);
-	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", python::no_init)
+	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", boost::python::no_init)
 			.def("type", &Term::type, CONST_REF_RETURN)
 			.def("__eq__", &Term::operator==)
 			.def("__str__", +[](Term &t){ return t.toString(); })
@@ -194,6 +194,14 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for the Predicate class
 	/////////////////////////////////////////////////////
+	enum_<MaterializationStrategy>("MaterializationStrategy")
+			.value("NEVER", MaterializationStrategy::NEVER)
+			.value("ALWAYS", MaterializationStrategy::ALWAYS)
+			.value("ON_DEMAND", MaterializationStrategy::ON_DEMAND);
+	enum_<PredicateType>("PredicateType")
+			.value("BUILT_IN", PredicateType::BUILT_IN)
+			.value("EDB_RELATION", PredicateType::EDB_RELATION)
+			.value("IDB_RELATION", PredicateType::IDB_RELATION);
 	class_<PredicateIndicator, std::shared_ptr<PredicateIndicator>>
 			("PredicateIndicator", init<const std::string &, unsigned int>())
 			.def("__eq__", &PredicateIndicator::operator==)
@@ -315,6 +323,8 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)
 			.BOOST_PYTHON_ADD_OPTIONAL("end", &GraphSelector::end)
 			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);
+	python::to_python_converter<knowrob::QueryContextPtr, QueryContextPtr_to_Python>();
+
 
 	/////////////////////////////////////////////////////
 	// mappings for the AnswerStream class and related classes
