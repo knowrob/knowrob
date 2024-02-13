@@ -34,9 +34,16 @@
 
 #include "knowrob/py/converter.h"
 #include "knowrob/py/wrapper.h"
+#include "knowrob/queries/Answer.h"
+#include "knowrob/queries/AnswerYes.h"
 
 using namespace knowrob;
 namespace python = boost::python;
+
+std::shared_ptr<EndOfEvaluation> getEndOfEvaluationInstance() {
+	// Use const_pointer_cast to cast away const-ness for Boost.Python compatibility
+	return std::const_pointer_cast<EndOfEvaluation>(EndOfEvaluation::get());
+}
 
 BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
@@ -326,10 +333,12 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);
 	register_ptr_to_python<std::shared_ptr<knowrob::QueryContext const>>();
 
-
 	/////////////////////////////////////////////////////
 	// mappings for the AnswerStream class and related classes
 	/////////////////////////////////////////////////////
+	enum_<TokenType>("TokenType")
+			.value("CONTROL_TOKEN", TokenType::CONTROL_TOKEN)
+			.value("ANSWER_TOKEN", TokenType::ANSWER_TOKEN);
 	class_<TokenStream::Channel, std::shared_ptr<TokenStream::Channel>, boost::noncopyable>
 			("TokenChannel", no_init)
 			.def("create", &TokenStream::Channel::create)
@@ -354,6 +363,45 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			("TokenBuffer", init<>())
 			.def("stopBuffering", &TokenBuffer::stopBuffering)
 			.def("createQueue", &TokenBuffer::createQueue);
+	class_<Token, std::shared_ptr<Token>, boost::noncopyable>("Token", no_init)
+			.def("type", pure_virtual(&Token::type))
+			.def("isControlToken", &Token::isControlToken)
+			.def("isAnswerToken", &Token::isAnswerToken)
+			.def("hash", pure_virtual(&Token::hash))
+			.def("indicatesEndOfEvaluation", pure_virtual(&Token::indicatesEndOfEvaluation))
+			.def("write", pure_virtual(&Token::write), return_value_policy<reference_existing_object>());
+	class_<Answer, bases<Token>, std::shared_ptr<Answer>, boost::noncopyable>("Answer", no_init)
+			.def("isNegative", &Answer::isNegative)
+			.def("isPositive", &Answer::isPositive)
+			.def("isUncertain", &Answer::isUncertain)
+			.def("isCertain", &Answer::isCertain)
+			.def("setIsUncertain", &Answer::setIsUncertain)
+			.def("toHumanReadableString", &Answer::toHumanReadableString)
+			.def("setReasonerTerm", &Answer::setReasonerTerm);
+	class_<AnswerYes, bases<Answer, Token>, std::shared_ptr<AnswerYes>, boost::noncopyable>("AnswerYes")
+			.def("isRicherThan", &AnswerYes::isRicherThan)
+			.def("isGenericYes", &AnswerYes::isGenericYes)
+			.def("substitution", &AnswerYes::substitution, return_internal_reference<>())
+			.def("set", &AnswerYes::set)
+			.def("hasGrounding", &AnswerYes::hasGrounding)
+			.def("frame", &AnswerYes::frame, return_internal_reference<>())
+			.def("setFrame", &AnswerYes::setFrame)
+			.def("addGrounding", &AnswerYes::addGrounding)
+			.def("positiveGroundings", &AnswerYes::positiveGroundings, return_internal_reference<>())
+			.def("negativeGroundings", &AnswerYes::negativeGroundings, return_internal_reference<>())
+			.def("mergeWith", &AnswerYes::mergeWith)
+			.def("toHumanReadableString", &AnswerYes::toHumanReadableString)
+			.def("isNegative", &AnswerYes::isNegative)
+			.def("isPositive", &AnswerYes::isPositive)
+			.def("isUncertain", &AnswerYes::isUncertain)
+			.def("setIsUncertain", &AnswerYes::setIsUncertain);
+	class_<EndOfEvaluation, std::shared_ptr<EndOfEvaluation>, bases<Token>, boost::noncopyable>("EndOfEvaluation", no_init)
+			.def("get", &EndOfEvaluation::get, EXISTING_REF_RETURN)
+			.staticmethod("get");
+	register_ptr_to_python<std::shared_ptr<knowrob::AnswerYes const>>();
+	register_ptr_to_python<std::shared_ptr<knowrob::Answer const>>();
+	register_ptr_to_python<std::shared_ptr<knowrob::Token const>>();
+
 
 	/////////////////////////////////////////////////////
 	// mappings for the data source and backend classes

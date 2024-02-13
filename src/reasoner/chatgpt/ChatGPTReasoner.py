@@ -1,8 +1,9 @@
 from knowrob import *
 from typing import List
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.prompts.prompt import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
 
 TEMPLATE = """KnowRob is a software that accepts triple queries in the form of \"triple(Subject, Predicate, Object)\" and use an Prolog-like Semantic. 
 Here are some examples of statements in natural language translated to triples:
@@ -15,6 +16,8 @@ You will get an triple with one field unspecified as input, the not specified fi
 
 You should only answer with the filled in triple, for example for the input triple(milk, has_storing_place, Unspecified) you should answer
 triple(milk, has_storing_place, fridge)
+
+You are only allowed to answer with the filled triple.
 
 Give me the filled triple for the following input:
 {input}"""
@@ -30,9 +33,8 @@ class ChatGPTReasoner(ReasonerWithBackend):
 
 	def __init__(self):
 		super(ChatGPTReasoner, self).__init__()
-		logError("ChatGPTReasoner initialized")
 		# configure the OpenAI API
-		llm = OpenAI(openai_api_key="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")
+		self.llm = ChatOpenAI(openai_api_key="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")
 
 	def loadConfig(self, config: ReasonerConfiguration) -> bool:
 		return True
@@ -71,19 +73,29 @@ class ChatGPTReasoner(ReasonerWithBackend):
 
 	def submitQuery(self, query: RDFLiteral, ctx: QueryContext) -> TokenBuffer:
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
-		InputTriple = "triple(" + query.subjectTerm() + ", " + query.predicateTerm() + ", Unspecified)"
-		logError("InputTriple: ", InputTriple)
-		print("InputTriple: " + InputTriple, file=stderr)
+		InputTriple = "triple(" + str(query.subjectTerm()) + ", " + str(query.propertyTerm()) + ", Unspecified)"
+		print("InputTriple: " + InputTriple)
 
-		prompt = CUSTOM_PROMPT.format(input=InputTriple)
+		prompt = CUSTOM_PROMPT
+		output_parser = StrOutputParser()
+
+		chain = prompt | self.llm | output_parser
 		# print prompt
-		answer = llm.predict(prompt)
-		print("Answer: " + answer, file=stderr)
+		answer = chain.invoke({"input": InputTriple})
+		print("Answer: " + answer)
+
+		# parse triple(Sub, Pred, Obj) to three string Sub, Pred, Obj
+		answer = answer.replace("triple(", "").replace(")", "").replace(" ", "")
+		answerList = answer.split(",")
+		print(str(answerList))
 
 		tokenBuffer = TokenBuffer()
-		token = Token()
-		token.type = TokenType.STRING
-		token.value = answer
-		tokenBuffer.tokens = [token]
+		tokenChan = TokenChannel.create(tokenBuffer)
+
+		answer = AnswerYes()
+		answer.set(Variable("A"), StringTerm(answerList[2]))
+
+		tokenChan.push(answer)
+		tokenChan.push(EndOfEvaluation.get())
 
 		return tokenBuffer
