@@ -95,11 +95,4 @@ struct python_optional : private boost::noncopyable {
 	}
 };
 
-struct QueryContextPtr_to_Python {
-	static PyObject* convert(const knowrob::QueryContextPtr& ctxPtr) {
-		// Assuming QueryContext is already exposed to Python
-		return incref(object(ptr(ctxPtr.get())).ptr());
-	}
-};
-
 #endif //KNOWROB_PY_CONVERTER_H

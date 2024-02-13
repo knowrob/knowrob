@@ -100,6 +100,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	class_<Integer32Term, std::shared_ptr<Integer32Term>, bases<Term>>
 			("Integer32Term", init<int32_t>())
 			.def("value", &Integer32Term::value, CONST_REF_RETURN);
+	register_ptr_to_python<std::shared_ptr<knowrob::Term>>();
 
 	// allow conversion between std::vector and python::list for Term objects.
 	custom_vector_from_seq<TermPtr>();
@@ -323,7 +324,7 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)
 			.BOOST_PYTHON_ADD_OPTIONAL("end", &GraphSelector::end)
 			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);
-	python::to_python_converter<knowrob::QueryContextPtr, QueryContextPtr_to_Python>();
+	register_ptr_to_python<std::shared_ptr<knowrob::QueryContext const>>();
 
 
 	/////////////////////////////////////////////////////
