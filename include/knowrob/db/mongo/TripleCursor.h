@@ -6,7 +6,7 @@
 #define KNOWROB_MONGO_TRIPLE_CURSOR_H
 
 #include "Cursor.h"
-#include "knowrob/db/KnowledgeGraph.h"
+#include "knowrob/semweb/StatementData.h"
 
 namespace knowrob::mongo {
     /**

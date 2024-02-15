@@ -6,7 +6,7 @@
 #define KNOWROB_EDB_STAGE_H
 
 #include <memory>
-#include "knowrob/db/KnowledgeGraph.h"
+#include "knowrob/db/QueryableBackend.h"
 #include "QueryStageLiteral.h"
 
 namespace knowrob {
@@ -16,12 +16,12 @@ namespace knowrob {
 	 */
 	class EDBStage : public QueryStageLiteral {
 	public:
-		EDBStage(KnowledgeGraphPtr edb,
+		EDBStage(QueryableBackendPtr edb,
 				 const RDFLiteralPtr &literal,
 				 const QueryContextPtr &ctx);
 
 	protected:
-		KnowledgeGraphPtr edb_;
+		QueryableBackendPtr edb_;
 
 		TokenBufferPtr submitQuery(const RDFLiteralPtr &literal) override;
 	};

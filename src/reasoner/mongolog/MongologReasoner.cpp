@@ -68,9 +68,14 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 	if (!PrologReasoner::loadConfig(reasonerConfiguration)) return false;
 
 	if (!knowledgeGraph_) {
-		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>("mongodb://localhost:27017", "knowrob", "triples");
+		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
 		knowledgeGraph_->setVocabulary(std::make_shared<semweb::Vocabulary>());
 		knowledgeGraph_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+		knowledgeGraph_->init(
+				MongoKnowledgeGraph::DB_URI_DEFAULT,
+				MongoKnowledgeGraph::DB_NAME_KNOWROB,
+				MongoKnowledgeGraph::COLL_NAME_TRIPLES
+		);
 		kb()->backendManager()->addBackend("mongo", knowledgeGraph_);
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
@@ -92,33 +97,6 @@ std::string_view MongologReasoner::callFunctor() {
 	static const auto call_f = "mongolog_call";
 	return call_f;
 }
-
-/*
-bool MongologReasoner::projectIntoEDB(const Statement &statement)
-{
-    // FIXME: handle time interval and confidence value!
-    auto mongolog_project = std::make_shared<Predicate>(Predicate("mongolog_project",{
-            statement.predicate()
-    }));
-    return eval(mongolog_project, nullptr, false);
-}
-
-bool MongologReasoner::importData(const std::filesystem::path &path)
-{
-    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_import",{
-            std::make_shared<StringTerm>(path.u8string())
-    }));
-    return eval(mng_dump, nullptr, false);
-}
-
-bool MongologReasoner::exportData(const std::filesystem::path &path)
-{
-    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_export",{
-        std::make_shared<StringTerm>(path.u8string())
-    }));
-    return eval(mng_dump, nullptr, false);
-}
-*/
 
 static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_reasonerManager,
 																	term_t t_reasonerModule) {

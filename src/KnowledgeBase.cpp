@@ -84,7 +84,7 @@ void KnowledgeBase::init(const boost::property_tree::ptree &config) {
 	loadConfiguration(config);
 
 	// load common ontologies
-	for(auto &ontoPath : { "owl/rdf-schema.xml", "owl/owl.rdf" }) {
+	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
 		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
 	}
 
@@ -146,25 +146,6 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		}
 	} else {
 		KB_ERROR("configuration has no 'backends' key.");
-	}
-
-	// get the central backend, ensure it implements KnowledgeGraph class.
-	// TODO: remove notion of central backend entirely? some configurations may not require one.
-	auto centralBackendName = config.get_optional<std::string>("central-backend");
-	if (centralBackendName) {
-		auto centralBackend = backendManager_->getBackendWithID(centralBackendName.value());
-		if (!centralBackend) {
-			KB_ERROR("failed to find central backend with ID '{}'.", centralBackendName.value());
-		}
-		centralKG_ = std::dynamic_pointer_cast<KnowledgeGraph>(centralBackend->backend());
-		if (!centralKG_) {
-			KB_ERROR("backend '{}' is not a type of KnowledgeGraph.", centralBackendName.value());
-		}
-	} else {
-		KB_ERROR("configuration has no 'central-backend' key.");
-	}
-	if (!centralKG_) {
-		throw KnowledgeBaseError("failed to initialize central knowledge graph.");
 	}
 
 	// TODO: support initial synch of persistent with non-persistent data backends.
@@ -263,7 +244,25 @@ DataSourcePtr KnowledgeBase::createDataSource(const boost::property_tree::ptree 
 }
 
 bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
-	return centralKG()->isDefinedProperty(property);
+	return vocabulary_->frequency(property) > 0;
+}
+
+QueryableBackendPtr KnowledgeBase::getBackendForQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) const {
+	auto &queryable = backendManager_->queryable();
+	if(queryable.empty()) {
+		throw KnowledgeBaseError("no queryable backends available.");
+	}
+	return queryable.begin()->second;
+}
+
+QueryableBackendPtr
+KnowledgeBase::getBackendForQuery(const std::vector<RDFLiteralPtr> &query, const QueryContextPtr &ctx) const {
+	// TODO: pick backend depending on query context and queried literals
+	auto &queryable = backendManager_->queryable();
+	if(queryable.empty()) {
+		throw KnowledgeBaseError("no queryable backends available.");
+	}
+	return queryable.begin()->second;
 }
 
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
@@ -343,7 +342,6 @@ void KnowledgeBase::createComputationPipeline(
 	// for each literal.
 
 	auto lastOut = pipelineInput;
-	auto edb = centralKG();
 
 	for (auto &lit: computableLiterals) {
 		auto stepInput = lastOut;
@@ -361,6 +359,7 @@ void KnowledgeBase::createComputationPipeline(
 			isEDBStageNeeded = isMaterializedInEDB(st->value());
 		}
 		if (isEDBStageNeeded) {
+			auto edb = getBackendForQuery(lit, ctx);
 			auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
 			edbStage->selfWeakRef_ = edbStage;
 			stepInput >> edbStage;
@@ -414,11 +413,6 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	// Construct a pipeline that holds references to stages.
 	// --------------------------------------
 	auto pipeline = std::make_shared<QueryPipeline>();
-
-	// --------------------------------------
-	// Pick a Knowledge Graph for EDB queries
-	// --------------------------------------
-	std::shared_ptr<KnowledgeGraph> kg = centralKG();
 
 	// --------------------------------------
 	// split input literals into positive and negative literals.
@@ -480,7 +474,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 		channel->push(GenericYes());
 		channel->push(EndOfEvaluation::get());
 	} else {
-		edbOut = kg->submitQuery(
+		auto edb = getBackendForQuery(edbOnlyLiterals, graphQuery->ctx());
+		edbOut = edb->submitQuery(
 				std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
@@ -565,11 +560,6 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 
 	auto pipeline = std::make_shared<QueryPipeline>();
 	pipeline->addStage(outStream);
-
-	// --------------------------------------
-	// Pick a Knowledge Graph for EDB queries
-	// --------------------------------------
-	std::shared_ptr<KnowledgeGraph> kg = centralKG();
 
 	// decompose input formula into parts that are considered in disjunction,
 	// and thus can be evaluated in parallel.
@@ -741,7 +731,7 @@ static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 		const semweb::TripleContainerPtr &triples,
 		const std::function<void(const StatementData &)> &fn) {
 	auto perTripleWorker =
-			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker&) {
+			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
 				std::for_each(triples->begin(), triples->end(), [fn](const StatementData &triple) {
 					fn(triple);
 				});
@@ -754,17 +744,10 @@ static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 }
 
 bool KnowledgeBase::insertOne(const StatementData &triple) {
-	//if (!centralKG_->insertOne(triple)) {
-	//	KB_WARN("assertion of triple into central backend failed!");
-	//	return false;
-	//}
-
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
-		// skip the central backend (handled above)
-		if (definedBackend.second->backend() == centralKG_) continue;
 		// skip the source backend
 		if (definedBackend.second->backend() == sourceBackend) continue;
 
@@ -777,17 +760,10 @@ bool KnowledgeBase::insertOne(const StatementData &triple) {
 }
 
 bool KnowledgeBase::removeOne(const StatementData &triple) {
-	//if (!centralKG_->removeOne(triple)) {
-	//	KB_WARN("deletion of triple from central backend failed!");
-	//	return false;
-	//}
-
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
-		// skip the central backend (handled above)
-		//if (definedBackend.second->backend() == centralKG_) continue;
 		// skip the source backend
 		if (definedBackend.second->backend() == sourceBackend) continue;
 
@@ -796,6 +772,34 @@ bool KnowledgeBase::removeOne(const StatementData &triple) {
 		}
 	}
 	updateVocabularyRemove(triple);
+	return true;
+}
+
+bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples, const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
+	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
+	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
+	if (triples->empty()) return true;
+
+	// find the source backend, if any.
+	auto sourceBackend = findSourceBackend(*triples->begin());
+	// push a worker goal that updates the vocabulary
+	auto vocabWorker = pushPerTripleWork(triples,
+										 [this](const StatementData &triple) {
+											 updateVocabularyInsert(triple);
+										 });
+
+	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
+	std::vector<std::shared_ptr<DataTransaction>> transactions;
+	for (auto &definedBackend: backends) {
+		// skip the source backend
+		if (definedBackend->backend() == sourceBackend) continue;
+		transactions.push_back(createTransaction<DataInsertion>(definedBackend, triples));
+	}
+
+	// wait for all transactions to finish
+	vocabWorker->join();
+	for (auto &transaction: transactions) transaction->join();
+
 	return true;
 }
 
@@ -858,7 +862,9 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 class ReasonerTripleContainer : public semweb::TripleContainer {
 public:
 	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
+
 	const std::vector<StatementData> &asVector() const override { return *triples_; }
+
 protected:
 	const std::vector<StatementData> *triples_;
 };
@@ -879,12 +885,12 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 		auto definedBackend = it.second;
 		// create a worker goal that performs the transaction
 		auto transaction = std::make_shared<ThreadPool::LambdaRunner>(
-			[definedBackend, origin](const ThreadPool::LambdaRunner::StopChecker&) {
-				if (!definedBackend->backend()->removeAllWithOrigin(origin)) {
-					KB_WARN("removal of triples with origin '{}' from backend '{}' failed!", origin,
-							definedBackend->name());
-				}
-			});
+				[definedBackend, origin](const ThreadPool::LambdaRunner::StopChecker &) {
+					if (!definedBackend->backend()->removeAllWithOrigin(origin)) {
+						KB_WARN("removal of triples with origin '{}' from backend '{}' failed!", origin,
+								definedBackend->name());
+					}
+				});
 		// push goal to thread pool
 		DefaultThreadPool()->pushWork(
 				transaction,
@@ -894,7 +900,8 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 		transactions.push_back(transaction);
 	}
 
-	// TODO: also update vocabulary
+	// TODO: update version of origin to nullopt in backends
+	// TODO: update vocabulary
 
 	// wait for all transactions to finish
 	for (auto &transaction: transactions) transaction->join();
@@ -974,6 +981,19 @@ bool KnowledgeBase::loadDataSource(const DataSourcePtr &source) {
 	return false;
 }
 
+std::optional<std::string> KnowledgeBase::getVersionOfOrigin(
+		const std::shared_ptr<DefinedBackend> &definedBackend, std::string_view origin) const {
+	// check if the origin was loaded before in this session
+	auto runtimeVersion = definedBackend->getVersionOfOrigin(origin);
+	if (runtimeVersion) return runtimeVersion;
+	// otherwise check if the backend is persistent and if so, ask the persistent backend
+	auto persistentBackend = backendManager_->persistent().find(definedBackend->name());
+	if (persistentBackend != backendManager_->persistent().end()) {
+		return persistentBackend->second->getVersionOfOrigin(origin);
+	}
+	return {};
+}
+
 bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports) {
 	std::queue<std::string> ontologyURIs;
 	// TODO resolve needed here, DS does it already or?
@@ -985,16 +1005,24 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		auto origin = DataSource::getNameFromURI(resolved);
 		auto newVersion = DataSource::getVersionFromURI(resolved);
 
-		// check if ontology is already loaded
-		if(centralKG_) {
-			auto currentVersion = centralKG_->getVersionOfOrigin(origin);
-			if (currentVersion) {
-				// ontology was loaded before
-				if (currentVersion == newVersion) continue;
-				// delete old triples if a new version is loaded
-				removeAllWithOrigin(origin);
+		// check which backends need to load the ontology.
+		std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad;
+		for (auto &it: backendManager_->backendPool()) {
+			// check if the ontology is already loaded by the backend,
+			// and if so whether it has the right version.
+			auto definedBackend = it.second;
+			auto currentVersion = getVersionOfOrigin(definedBackend, origin);
+			if (currentVersion.has_value()) {
+				if (currentVersion.value() != newVersion) {
+					backendsToLoad.push_back(definedBackend);
+					// TODO: rather include this operation as part of the transaction below
+					definedBackend->backend()->removeAllWithOrigin(origin);
+				}
+			} else {
+				backendsToLoad.push_back(definedBackend);
 			}
 		}
+		if (backendsToLoad.empty()) continue;
 
 		// some OWL files are downloaded compile-time via CMake,
 		// they are downloaded into owl/external e.g. there are SOMA.owl and DUL.owl.
@@ -1015,8 +1043,8 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		});
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
-		auto result = parser.run([this](const semweb::TripleContainerPtr &tripleContainer) {
-			insertAll(tripleContainer);
+		auto result = parser.run([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
+			insertAllInto(triples, backendsToLoad);
 		});
 		if (!result) {
 			KB_WARN("Failed to parse ontology {} ({})", *importURI, source->uri());
@@ -1024,13 +1052,17 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		}
 
 		// update the version triple
-		if(centralKG_) {
-			centralKG_->setVersionOfOrigin(origin, newVersion);
+		for (auto &it: backendManager_->backendPool()) {
+			it.second->setVersionOfOrigin(origin, newVersion);
+		}
+		for (auto &it: backendManager_->persistent()) {
+			auto persistentBackend = it.second;
+			persistentBackend->setVersionOfOrigin(origin, newVersion);
 		}
 
 		// add direct import
 		// TODO: why not build the import hierarchy recursively?
-		if(source->parentOrigin().has_value()) {
+		if (source->parentOrigin().has_value()) {
 			importHierarchy_->addDirectImport(source->parentOrigin().value(), origin);
 		} else {
 			importHierarchy_->addDirectImport(importHierarchy_->defaultGraph(), origin);

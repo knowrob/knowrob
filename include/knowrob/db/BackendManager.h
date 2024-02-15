@@ -16,6 +16,8 @@
 #include "TypedBackendFactory.h"
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
+#include "QueryableBackend.h"
+#include "PersistentBackend.h"
 
 namespace knowrob {
 	/**
@@ -93,6 +95,16 @@ namespace knowrob {
 		const auto &backendPool() const { return backendPool_; }
 
 		/**
+		 * @return map of all persistent backends defined by this manager.
+		 */
+		const auto &persistent() const { return persistent_; }
+
+		/**
+		 * @return map of all queryable backends defined by this manager.
+		 */
+		const auto &queryable() const { return queryable_; }
+
+		/**
 		 * @return the manager ID.
 		 */
 		auto managerID() const { return managerID_; }
@@ -108,6 +120,8 @@ namespace knowrob {
 		// pool of all backend instances created via this manager
 		// maps backend ID to backend instance.
 		std::map<std::string, std::shared_ptr<DefinedBackend>> backendPool_;
+		std::map<std::string, PersistentBackendPtr> persistent_;
+		std::map<std::string, QueryableBackendPtr> queryable_;
 		// maps plugin names to factories used to create backend instances
 		std::map<std::string, std::shared_ptr<BackendPlugin>> loadedPlugins_;
 		// a counter used to generate unique IDs

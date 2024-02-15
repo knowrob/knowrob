@@ -6,7 +6,7 @@
 #ifndef KNOWROB_PROLOG_BACKEND_H
 #define KNOWROB_PROLOG_BACKEND_H
 
-#include "knowrob/db/KnowledgeGraph.h"
+#include "knowrob/db/DataBackend.h"
 #include "PrologTerm.h"
 
 //#define KNOWROB_USE_PROLOG_RDF11
@@ -19,7 +19,7 @@ namespace knowrob {
 	 * The reason is that Prolog reasoners do not support multiple EDBs due to limitations of the
 	 * underlying Prolog "semweb" library which only has a global storage.
 	 */
-	class PrologBackend : public KnowledgeGraph {
+	class PrologBackend : public DataBackend {
 	public:
 		// override DataBackend
 		bool loadConfig(const ReasonerConfig &cfg) override;
@@ -41,15 +41,6 @@ namespace knowrob {
 
 		// override DataBackend
 		bool removeAllMatching(const RDFLiteral &query) override;
-
-		// override KnowledgeGraph
-		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) override;
-
-		// override KnowledgeGraph
-		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
-
-		// override KnowledgeGraph
-		void setVersionOfOrigin(std::string_view origin, std::string_view version) override;
 
 	protected:
 		static PrologTerm transaction(std::string_view rdf_functor, const semweb::TripleContainerPtr &triples);

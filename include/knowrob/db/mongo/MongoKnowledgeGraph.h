@@ -8,7 +8,9 @@
 #include <optional>
 #include <list>
 #include "boost/property_tree/ptree.hpp"
-#include "knowrob/db/KnowledgeGraph.h"
+#include "knowrob/db/DataBackend.h"
+#include "knowrob/db/QueryableBackend.h"
+#include "knowrob/db/PersistentBackend.h"
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/Literal.h"
@@ -19,21 +21,25 @@ namespace knowrob {
 	/**
 	 * A knowledge graph implemented with MongoDB.
 	 */
-	class MongoKnowledgeGraph : public knowrob::KnowledgeGraph {
+	class MongoKnowledgeGraph : public DataBackend,
+			                    public QueryableBackend,
+								public PersistentBackend {
 	public:
+		static const std::string DB_URI_DEFAULT;
+		static const std::string DB_NAME_KNOWROB;
+		static const std::string COLL_NAME_TRIPLES;
+		static const std::string COLL_NAME_TESTS;
+
 		MongoKnowledgeGraph();
 
 		/**
-		 * Constructor with configuration.
-		 * There is no need to call loadConfig if this constructor is used.
-		 * @param db_uri MongoDB URI string
-		 * @param db_name MongoDB database name where KG is stored
-		 * @param collectionName MongoDB collection name where KG is stored
+		 * Initialize the knowledge graph with a MongoDB URI.
+		 * @param db_uri the URI string used to connect to the database.
+		 * @param db_name the name of the database.
+		 * @param collectionName the name of the collection for triples.
+		 * @return true on success
 		 */
-		explicit MongoKnowledgeGraph(
-				const char *db_uri,
-				const char *db_name = "knowrob",
-				const char *collectionName = "triples");
+		bool init(std::string_view db_uri, std::string_view db_name = "knowrob", std::string_view collectionName = "triples");
 
 		/**
 		 * @return the name of the database.
@@ -94,12 +100,6 @@ namespace knowrob {
 		// Override KnowledgeGraph
 		bool loadConfig(const ReasonerConfig &config) override;
 
-		// Override KnowledgeGraph
-		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
-
-		// Override KnowledgeGraph
-		void setVersionOfOrigin(std::string_view origin, std::string_view version) override;
-
 		// Override IDataBackend
 		bool insertOne(const StatementData &triple) override;
 
@@ -118,7 +118,13 @@ namespace knowrob {
 		// Override IDataBackend
 		bool removeAllMatching(const RDFLiteral &query) override;
 
-		// Override KnowledgeGraph
+		// Override PersistentBackend
+		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
+
+		// Override PersistentBackend
+		void setVersionOfOrigin(std::string_view origin, std::string_view version) override;
+
+		// Override QueryableBackend
 		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) override;
 
 	protected:

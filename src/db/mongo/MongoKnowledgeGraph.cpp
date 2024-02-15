@@ -52,17 +52,25 @@ bson_t *newPipelineImportHierarchy(const char *collection);
 
 bson_t *newRelationCounter(const char *collection);
 
+const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
+const std::string MongoKnowledgeGraph::DB_NAME_KNOWROB = "knowrob";
+const std::string MongoKnowledgeGraph::COLL_NAME_TRIPLES = "triples";
+const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triplesTest";
+
 MongoKnowledgeGraph::MongoKnowledgeGraph()
-		: KnowledgeGraph(),
+		: DataBackend(),
+		  QueryableBackend(),
+		  PersistentBackend(),
 		  isReadOnly_(false) {
 }
 
-MongoKnowledgeGraph::MongoKnowledgeGraph(const char *db_uri, const char *db_name, const char *collectionName)
-		: KnowledgeGraph(),
-		  tripleCollection_(MongoInterface::get().connect(db_uri, db_name, collectionName)),
-		  isReadOnly_(false) {
+bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name, std::string_view collectionName) {
+	tripleCollection_ = MongoInterface::get().connect(db_uri.data(), db_name.data(), collectionName.data());
+	if(!tripleCollection_) return false;
+
 	initialize();
 	dropOrigin("user");
+	return true;
 }
 
 bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config) {
@@ -843,12 +851,14 @@ protected:
 
 	static void SetUpTestSuite() {
 		vocabulary_ = std::make_shared<semweb::Vocabulary>();
-		kg_ = std::make_shared<MongoKnowledgeGraph>(
-				"mongodb://localhost:27017",
-				"knowrob",
-				"triplesTest");
+
+		kg_ = std::make_shared<MongoKnowledgeGraph>();
 		kg_->setVocabulary(vocabulary_);
 		kg_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+		kg_->init(
+			MongoKnowledgeGraph::DB_URI_DEFAULT,
+			MongoKnowledgeGraph::DB_NAME_KNOWROB,
+			MongoKnowledgeGraph::COLL_NAME_TESTS);
 		kg_->drop();
 		kg_->createSearchIndices();
 	}

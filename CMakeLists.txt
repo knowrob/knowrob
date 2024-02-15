@@ -234,7 +234,7 @@ add_library(knowrob SHARED
 		src/reasoner/mongolog/bson_pl.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
-        src/db/KnowledgeGraph.cpp
+        src/db/QueryableBackend.cpp
         src/db/BackendManager.cpp
         src/db/BackendPlugin.cpp
         src/db/DataSourceHandler.cpp

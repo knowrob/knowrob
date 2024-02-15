@@ -17,8 +17,10 @@
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/ConjunctiveQuery.h"
-#include "knowrob/db/KnowledgeGraph.h"
 #include "knowrob/db/DataSourceHandler.h"
+#include "knowrob/semweb/Vocabulary.h"
+#include "knowrob/semweb/ImportHierarchy.h"
+#include "knowrob/db/DataBackend.h"
 
 namespace knowrob {
 	// forward declarations

@@ -17,7 +17,6 @@
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/db/KnowledgeGraph.h"
 #include "knowrob/URI.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/reasoner/prolog/PrologBackend.h"

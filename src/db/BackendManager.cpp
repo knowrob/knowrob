@@ -9,6 +9,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/db/BackendManager.h"
 #include "knowrob/db/BackendError.h"
+#include "knowrob/db/QueryableBackend.h"
 
 using namespace knowrob;
 
@@ -46,7 +47,7 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 	auto type = config.get_optional<std::string>("type");
 	auto name = config.get_optional<std::string>("name");
 
-	// get a reasoner factory
+	// get a backend factory
 	std::shared_ptr<BackendFactory> factory;
 	if (lib.has_value()) {
 		// use factory in DLL
@@ -78,6 +79,8 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 
 	// create a new DataBackend instance
 	auto definedBackend = factory->createBackend(backendID);
+	definedBackend->backend()->setImportHierarchy(kb_->importHierarchy());
+	definedBackend->backend()->setVocabulary(kb_->vocabulary());
 
 	ReasonerConfig reasonerConfig(&config);
 	if (!definedBackend->backend()->loadConfig(reasonerConfig)) {
@@ -126,6 +129,18 @@ std::shared_ptr<DefinedBackend> BackendManager::addBackend(
 	backendPool_[backendID] = managedBackend;
 	backend->setImportHierarchy(kb_->importHierarchy());
 	backend->setVocabulary(kb_->vocabulary());
+	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
+	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(backend);
+	if (queryable) {
+		KB_DEBUG("adding queryable backend with id '{}'.", backendID);
+		queryable_[backendID] = queryable;
+	}
+	// check if the backend is a PersistentBackend, if so store it in the persistent_ map
+	auto persistent = std::dynamic_pointer_cast<PersistentBackend>(backend);
+	if (persistent) {
+		KB_DEBUG("adding persistent backend with id '{}'.", backendID);
+		persistent_[backendID] = persistent;
+	}
 
 	return managedBackend;
 }

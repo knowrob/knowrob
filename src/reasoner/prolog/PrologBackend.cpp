@@ -56,17 +56,3 @@ PrologTerm PrologBackend::transaction(std::string_view rdf_functor, const semweb
 	}
 	return PrologTerm(rdf_transaction, transactionGoal);
 }
-
-void PrologBackend::evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) {
-	// TODO: implement
-	KB_WARN("PrologBackend::evaluateQuery not implemented yet");
-}
-
-std::optional<std::string> PrologBackend::getVersionOfOrigin(std::string_view origin) {
-	return std::nullopt;
-}
-
-void PrologBackend::setVersionOfOrigin(std::string_view origin, std::string_view version) {
-	// TODO: implement
-	KB_WARN("PrologBackend::setVersionOfOrigin not implemented yet");
-}

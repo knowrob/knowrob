@@ -16,6 +16,8 @@
 #include "knowrob/semweb/RDFComputable.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
 #include "knowrob/db/OntologyFile.h"
+#include "knowrob/db/QueryableBackend.h"
+#include "knowrob/db/DefinedBackend.h"
 
 namespace knowrob {
 	enum QueryFlag {
@@ -66,10 +68,11 @@ namespace knowrob {
 		 */
 		bool loadDataSource(const DataSourcePtr &source);
 
-		/**
-		 * @return the central knowledge graph
-		 */
-		auto centralKG() const { return centralKG_; }
+
+		QueryableBackendPtr getBackendForQuery(const RDFLiteralPtr &query, const QueryContextPtr &ctx) const;
+
+		QueryableBackendPtr
+		getBackendForQuery(const std::vector<RDFLiteralPtr> &query, const QueryContextPtr &ctx) const;
 
 		/**
 		 * @return the vocabulary of this knowledge base, i.e. all known properties and classes
@@ -141,7 +144,6 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
-		std::shared_ptr<KnowledgeGraph> centralKG_;
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 		uint32_t tripleBatchSize_;
@@ -193,16 +195,21 @@ namespace knowrob {
 
 		bool loadNonOntologySource(const DataSourcePtr &source) const;
 
-		bool loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports=true);
+		bool loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports = true);
 
 		bool loadSPARQLDataSource(const std::shared_ptr<DataSource> &source);
 
+		bool insertAllInto(const semweb::TripleContainerPtr &triples, const std::vector<std::shared_ptr<DefinedBackend>> &backends);
+
 		static DataSourceType getDataSourceType(const std::string &format, const boost::optional<std::string> &language,
-										 const boost::optional<std::string> &type);
+												const boost::optional<std::string> &type);
 
 		void updateVocabularyInsert(const StatementData &tripleData);
 
 		void updateVocabularyRemove(const StatementData &tripleData);
+
+		std::optional<std::string> getVersionOfOrigin(const std::shared_ptr<DefinedBackend> &definedBackend,
+													  std::string_view origin) const;
 
 		std::vector<RDFComputablePtr> createComputationSequence(
 				const std::list<DependencyNodePtr> &dependencyGroup) const;

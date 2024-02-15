@@ -4,7 +4,7 @@
 
 using namespace knowrob;
 
-EDBStage::EDBStage(KnowledgeGraphPtr edb, const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
+EDBStage::EDBStage(QueryableBackendPtr edb, const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
 		: QueryStageLiteral(literal, ctx),
 		  edb_(std::move(edb)) {
 }
