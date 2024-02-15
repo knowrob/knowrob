@@ -68,12 +68,22 @@ namespace knowrob {
 		explicit StringTerm(const char *v)
 				: Constant(TermType::STRING, v) {}
 
-		PredicatePtr operator()(TermPtr arg1, TermPtr arg2) const;
+		template<typename ... Args> PredicatePtr operator()(Args&& ... args) const {
+			return std::make_shared<Predicate>(value_, readArgs(std::forward<Args>(args)...));
+		}
 		
 		// Override Term
 		void write(std::ostream& os) const override;
     protected:
         static void write1(std::ostream& os, const std::string &str);
+
+		template<typename ... Args> std::vector<TermPtr> readArgs(Args&& ... args) const {
+			// use a fold expression to convert the arguments to a vector
+			// @see https://en.cppreference.com/w/cpp/language/fold
+			std::vector<TermPtr> argTerms;
+			([&args,&argTerms] { argTerms.push_back(args); } (), ...);
+			return argTerms;
+		}
 	};
 	
 	/**

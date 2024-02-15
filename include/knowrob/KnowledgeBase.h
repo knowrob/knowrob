@@ -15,6 +15,7 @@
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/semweb/RDFComputable.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
+#include "knowrob/db/OntologyFile.h"
 
 namespace knowrob {
 	enum QueryFlag {
@@ -47,12 +48,23 @@ namespace knowrob {
 		 */
 		explicit KnowledgeBase(const std::string_view &configFile);
 
+		KnowledgeBase();
+
 		~KnowledgeBase();
 
 		/**
 		 * @return the set of reasoner of this KB.
 		 */
 		const std::map<std::string, std::shared_ptr<DefinedReasoner>> &reasonerPool() const;
+
+		/**
+		 * Load a data source into the knowledge base.
+		 * This will potentially load the data source into multiple backends
+		 * depending on which data formats are supported by the backends.
+		 * @param source the data source to load
+		 * @return true if the data source was loaded successfully
+		 */
+		bool loadDataSource(const DataSourcePtr &source);
 
 		/**
 		 * @return the central knowledge graph
@@ -62,7 +74,7 @@ namespace knowrob {
 		/**
 		 * @return the vocabulary of this knowledge base, i.e. all known properties and classes
 		 */
-		auto vocabulary() const { return centralKG()->vocabulary(); }
+		auto vocabulary() const { return vocabulary_; }
 
 		/**
 		 * @param property a property IRI
@@ -73,7 +85,7 @@ namespace knowrob {
 		/**
 		 * @return import hierarchy of named graphs
 		 */
-		auto importHierarchy() const { return centralKG()->importHierarchy(); }
+		auto importHierarchy() const { return importHierarchy_; }
 
 		/**
 		 * Evaluate a query represented as a vector of literals.
@@ -102,25 +114,37 @@ namespace knowrob {
 
 		auto &reasonerManager() const { return reasonerManager_; }
 
+		auto &backendManager() const { return backendManager_; }
+
 		// override IDataBackend
 		bool insertOne(const StatementData &triple) override;
 
 		// override IDataBackend
-		bool insertAll(const std::vector<StatementData> &triples) override;
+		bool insertAll(const semweb::TripleContainerPtr &triples) override;
+
+		bool insertAll(const std::vector<StatementData> &triples);
 
 		// override IDataBackend
 		bool removeOne(const StatementData &triple) override;
 
 		// override IDataBackend
-		bool removeAll(const std::vector<StatementData> &triples) override;
+		bool removeAll(const semweb::TripleContainerPtr &triples) override;
+
+		bool removeAll(const std::vector<StatementData> &triples);
 
 		// override IDataBackend
-		int removeMatching(const RDFLiteral &query, bool doMatchMany) override;
+		bool removeAllWithOrigin(std::string_view origin) override;
+
+		// override IDataBackend
+		bool removeAllMatching(const RDFLiteral &query) override;
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
 		std::shared_ptr<KnowledgeGraph> centralKG_;
+		std::shared_ptr<semweb::Vocabulary> vocabulary_;
+		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		uint32_t tripleBatchSize_;
 
 		// used to sort dependency nodes in a priority queue.
 		// the nodes are considered to be dependent on each other through free variables.
@@ -155,13 +179,30 @@ namespace knowrob {
 			semweb::VocabularyPtr vocabulary_;
 		};
 
+		void init(const boost::property_tree::ptree &config);
+
 		void loadConfiguration(const boost::property_tree::ptree &config);
+
+		static DataSourcePtr createDataSource(const boost::property_tree::ptree &subtree);
 
 		void startReasoner();
 
 		void stopReasoner();
 
 		DataBackendPtr findSourceBackend(const StatementData &triple);
+
+		bool loadNonOntologySource(const DataSourcePtr &source) const;
+
+		bool loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports=true);
+
+		bool loadSPARQLDataSource(const std::shared_ptr<DataSource> &source);
+
+		static DataSourceType getDataSourceType(const std::string &format, const boost::optional<std::string> &language,
+										 const boost::optional<std::string> &type);
+
+		void updateVocabularyInsert(const StatementData &tripleData);
+
+		void updateVocabularyRemove(const StatementData &tripleData);
 
 		std::vector<RDFComputablePtr> createComputationSequence(
 				const std::list<DependencyNodePtr> &dependencyGroup) const;

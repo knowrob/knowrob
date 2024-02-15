@@ -66,7 +66,7 @@ namespace knowrob {
 		 * for built-in backend types need to be added to the backend manager before.
 		 * @param config a property tree holding a backend configuration
 		 */
-		void loadBackend(const boost::property_tree::ptree &config);
+		DataBackendPtr loadBackend(const boost::property_tree::ptree &config);
 
 		/**
 		 * @param backendID a backend ID string.

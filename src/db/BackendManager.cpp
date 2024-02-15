@@ -41,7 +41,7 @@ BackendManager *BackendManager::getManager(uint32_t managerID) {
 	}
 }
 
-void BackendManager::loadBackend(const boost::property_tree::ptree &config) {
+DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &config) {
 	auto lib = config.get_optional<std::string>("lib");
 	auto type = config.get_optional<std::string>("type");
 	auto name = config.get_optional<std::string>("name");
@@ -87,6 +87,8 @@ void BackendManager::loadBackend(const boost::property_tree::ptree &config) {
 	}
 	// increase reasonerIndex_
 	backendIndex_ += 1;
+
+	return definedBackend->backend();
 }
 
 std::shared_ptr<BackendPlugin> BackendManager::loadBackendPlugin(const std::string &path) {
@@ -122,6 +124,8 @@ std::shared_ptr<DefinedBackend> BackendManager::addBackend(
 	}
 	auto managedBackend = std::make_shared<DefinedBackend>(backendID, backend);
 	backendPool_[backendID] = managedBackend;
+	backend->setImportHierarchy(kb_->importHierarchy());
+	backend->setVocabulary(kb_->vocabulary());
 
 	return managedBackend;
 }

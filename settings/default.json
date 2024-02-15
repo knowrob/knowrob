@@ -11,7 +11,8 @@
   "data-sources": [
     {
       "path": "owl/test/swrl.owl",
-      "format": "rdf-xml"
+      "language": "owl",
+      "format": "xml"
     }
   ],
   "data-backends": [

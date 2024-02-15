@@ -6,7 +6,7 @@
 
 using namespace knowrob;
 
-class NEEMTests: public PrologTests<knowrob::MongologReasoner> {
+class NEEMTests: public PrologTests<knowrob::MongologReasoner,knowrob::MongoKnowledgeGraph> {
 protected:
 	static void SetUpTestSuite() {
 		reasoner()->consult(std::filesystem::path("neems") / "__init__.pl", nullptr, false);

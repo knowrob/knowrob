@@ -15,7 +15,7 @@
 :- sw_register_prefix(qudt, 'http://data.nasa.gov/qudt/owl/qudt#').
 
 % load QUDT RDF data into a graph named "qudt"
-:- rdf_load('../../../owl/unit.owl', [graph(qudt), silent(true)]).
+:- rdf_load('../../../../owl/unit.owl', [graph(qudt), silent(true)]).
 
 
 %% qudt_unit(?Symbol,?Kind,?Multiplier,?Offset) is nondet.

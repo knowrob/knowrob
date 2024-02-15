@@ -19,7 +19,7 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('blackboard'),
+:- use_module(library('reasoner'),
 		[ current_reasoner_module/1 ]).
 :- use_module('client').
 :- use_module(library('mongolog/mongolog')).

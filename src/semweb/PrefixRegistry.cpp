@@ -21,18 +21,14 @@ PrefixRegistry &PrefixRegistry::get() {
 	return singleton;
 }
 
-void PrefixRegistry::registerPrefix(const std::string &prefix, const std::string &uri) {
-	if (uri[uri.size() - 1] == '#') {
-		auto x = uri;
-		x.pop_back();
-		uriToAlias_[x] = prefix;
-		aliasToURI_[prefix] = x;
-		KB_INFO("registered alias {} -> {}", prefix, x);
-	} else {
-		uriToAlias_[uri] = prefix;
-		aliasToURI_[prefix] = uri;
-		KB_INFO("registered alias {} -> {}", prefix, uri);
+void PrefixRegistry::registerPrefix(std::string_view prefix, std::string_view uri) {
+	auto s_prefix = std::string(prefix.data());
+	auto s_uri = std::string(uri.data());
+	if (s_uri[s_uri.size() - 1] == '#') {
+		s_uri.pop_back();
 	}
+	uriToAlias_[s_uri] = s_prefix;
+	aliasToURI_[s_prefix] = s_uri;
 }
 
 OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri) const {

@@ -252,6 +252,11 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	custom_vector_from_seq<StatementData>();
 	class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
 
+	// abstract container which is used in the DataBackend class
+	class_<semweb::TripleContainer, std::shared_ptr<semweb::TripleContainer>, boost::noncopyable>
+	        ("TripleContainer", no_init)
+			.def("__iter__", range(&semweb::TripleContainer::begin, &semweb::TripleContainer::end));
+
 	/////////////////////////////////////////////////////
 	// mappings for literals
 	/////////////////////////////////////////////////////
@@ -347,10 +352,12 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for the data source and backend classes
 	/////////////////////////////////////////////////////
-	class_<DataSource, std::shared_ptr<DataSource>>("DataSource", init<std::string>())
-			.def("dataFormat", &DataSource::dataFormat, CONST_REF_RETURN)
+	class_<DataSource, std::shared_ptr<DataSource>>("DataSource", no_init)
+			.def("format", &DataSource::format, CONST_REF_RETURN)
 			.def("uri", &DataSource::uri, CONST_REF_RETURN)
-			.def("path", &DataSource::path, CONST_REF_RETURN);
+			.def("path", &DataSource::path, CONST_REF_RETURN)
+			.def("version", &DataSource::version)
+			.def("name", &DataSource::name);
 	class_<DataSourceHandler, std::shared_ptr<DataSourceHandler>>("DataSourceHandler", init<>())
 			.def("addDataHandler", +[]
 				(DataSourceHandler &x, const std::string &format, python::object &fn)
@@ -375,7 +382,6 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("get", &ReasonerConfig::get)
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
 	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
-			.def("managerID", &ReasonerWrap::managerID)
 			.def("createTriple", &ReasonerWrap::createTriple)
 			.def("createTriples", &ReasonerWrap::createTriples)
 			.def("pushWork", +[](Reasoner &x, python::object &fn){ x.pushWork(fn); })

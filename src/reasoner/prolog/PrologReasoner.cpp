@@ -5,18 +5,13 @@
 
 #include <memory>
 #include <filesystem>
-#include <utility>
 
-#define PL_SAFE_ARG_MACROS
-
-#include <SWI-cpp.h>
-
-#include "knowrob/knowrob.h"
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 #include "knowrob/reasoner/prolog/logging.h"
-#include "knowrob/reasoner/prolog/algebra.h"
+#include "knowrob/reasoner/prolog/ext/algebra.h"
+#include "knowrob/reasoner/prolog/semweb.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/queries/TokenQueue.h"
@@ -25,106 +20,70 @@
 #include "knowrob/db/KnowledgeGraph.h"
 #include "knowrob/URI.h"
 #include "knowrob/KnowledgeBase.h"
+#include "knowrob/reasoner/prolog/PrologBackend.h"
+#include "knowrob/reasoner/ReasonerError.h"
+#include "knowrob/queries/AnswerNo.h"
 
 using namespace knowrob;
+
+static const int prologQueryFlags = PL_Q_CATCH_EXCEPTION | PL_Q_NODEBUG;
+
+#define PROLOG_REASONER_EVAL(goal) PROLOG_ENGINE_EVAL(getReasonerQuery(goal))
 
 // make reasoner type accessible
 KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
-// forward declarations of foreign predicates
-foreign_t pl_rdf_register_namespace2(term_t, term_t);
+foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term) {
+	char *prefix, *uri;
+	if (PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
+		semweb::PrefixRegistry::get().registerPrefix(prefix, uri);
+	}
+	return TRUE;
+}
 
-foreign_t sw_graph_get_imports4(term_t, term_t, term_t, term_t);
+foreign_t url_resolve2(term_t t_url, term_t t_resolved) {
+	char *url;
+	if (PL_get_atom_chars(t_url, &url)) {
+		auto resolved = URI::resolve(url);
+		return PL_unify_atom_chars(t_resolved, resolved.c_str());
+	}
+	return false;
+}
 
-foreign_t sw_graph_add_direct_import4(term_t, term_t, term_t, term_t);
-
-foreign_t sw_current_graph3(term_t, term_t, term_t);
-
-foreign_t sw_set_current_graph3(term_t, term_t, term_t);
-
-foreign_t sw_unset_current_graph3(term_t, term_t, term_t);
-
-foreign_t sw_default_graph3(term_t, term_t, term_t);
-
-foreign_t sw_set_default_graph3(term_t, term_t, term_t);
-
-foreign_t sw_url_graph2(term_t, term_t);
-
-foreign_t sw_url_version2(term_t, term_t);
-
-foreign_t url_resolve2(term_t, term_t);
-
-// semantic web extension
-PL_extension sw_extension[] = {
-		{"sw_url_graph",                   2, (pl_function_t) sw_url_graph2,               0},
-		{"sw_url_version",                 2, (pl_function_t) sw_url_version2,             0},
-		{"sw_default_graph_cpp",           3, (pl_function_t) sw_default_graph3,           0},
-		{"sw_set_default_graph_cpp",       3, (pl_function_t) sw_set_default_graph3,       0},
-		{"sw_graph_get_imports_cpp",       4, (pl_function_t) sw_graph_get_imports4,       0},
-		{"sw_graph_add_direct_import_cpp", 4, (pl_function_t) sw_graph_add_direct_import4, 0},
-		{"sw_current_graph_cpp",           3, (pl_function_t) sw_current_graph3,           0},
-		{"sw_set_current_graph_cpp",       3, (pl_function_t) sw_set_current_graph3,       0},
-		{"sw_unset_current_graph_cpp",     3, (pl_function_t) sw_unset_current_graph3,     0},
-		{nullptr,                          0, nullptr,                                     0}
-};
-// defined in blackboard.cpp
-extern PL_extension qa_predicates[];
-
-bool PrologReasoner::isPrologInitialized_ = false;
 bool PrologReasoner::isKnowRobInitialized_ = false;
 
-PrologReasoner::PrologReasoner()
-		: importHierarchy_(std::make_unique<semweb::ImportHierarchy>()) {
-	addDataHandler(DataSource::PROLOG_FORMAT, [this]
+PrologReasoner::PrologReasoner() : Reasoner() {
+	addDataHandler("prolog", [this]
 			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
-	addDataHandler(DataSource::RDF_XML_FORMAT, [this]
-			(const DataSourcePtr &dataFile) { return load_rdf_xml(dataFile->uri()); });
+	//addDataHandler(DataSource::RDF_XML_FORMAT, [this]
+	//		(const DataSourcePtr &dataFile) { return load_rdf_xml(dataFile->uri()); });
 }
 
 PrologReasoner::~PrologReasoner() {
+	stopPrologReasoner();
 }
 
-const functor_t &PrologReasoner::callFunctor() {
-	static const auto reasoner_call_f = PL_new_functor(PL_new_atom("reasoner_call"), 2);
+std::string_view PrologReasoner::callFunctor() {
+	static const auto reasoner_call_f = "reasoner_call";
 	return reasoner_call_f;
 }
 
-PrologThreadPool &PrologReasoner::threadPool() {
-	// make sure PL_initialise was called
-	initializeProlog();
-	// a thread pool shared among all PrologReasoner instances
-	static PrologThreadPool threadPool_(std::thread::hardware_concurrency());
-	return threadPool_;
-}
-
-void PrologReasoner::initializeProlog() {
-	if (isPrologInitialized_) return;
-	// toggle on flag
-	isPrologInitialized_ = true;
-
-	static int pl_ac = 0;
-	static char *pl_av[5];
-	pl_av[pl_ac++] = getNameOfExecutable();
-	// '-g true' is used to suppress the welcome message
-	pl_av[pl_ac++] = (char *) "-g";
-	pl_av[pl_ac++] = (char *) "true";
-	// Inhibit any signal handling by Prolog
-	pl_av[pl_ac++] = (char *) "--signals=false";
-	pl_av[pl_ac] = nullptr;
-	PL_initialise(pl_ac, pl_av);
-	KB_DEBUG("Prolog has been initialized.");
+PrologTerm PrologReasoner::transformGoal(const PrologTerm &goal) {
+	// TODO: init frame term to some default value!
+	return PrologTerm(callFunctor(), goal, PrologTerm());
 }
 
 bool PrologReasoner::initializeGlobalPackages() {
-	// load some default code into user module.  e.g. the extended module syntax etc
+	// load some default code into user module
 	return consult(std::filesystem::path("reasoner") / "prolog" / "__init__.pl",
 				   "user", false);
 }
 
 bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
 	// call PL_initialize
-	initializeProlog();
+	PrologEngine::initializeProlog();
 
+	// TODO: move below into PrologEngine::initializeProlog
 	if (!isKnowRobInitialized_) {
 		isKnowRobInitialized_ = true;
 		// register some foreign predicates, i.e. cpp functions that are used to evaluate predicates.
@@ -133,31 +92,26 @@ bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
 							2, (pl_function_t) pl_rdf_register_namespace2, 0);
 		PL_register_foreign("url_resolve",
 							2, (pl_function_t) url_resolve2, 0);
-		PL_register_foreign("log_message", 2, (pl_function_t) pl_log_message2, 0);
-		PL_register_foreign("log_message", 4, (pl_function_t) pl_log_message4, 0);
-		PL_register_extensions_in_module("algebra", algebra_predicates);
-		PL_register_extensions_in_module("semweb", sw_extension);
-		PL_register_extensions_in_module("user", qa_predicates);
-		KB_INFO("common foreign Prolog modules have been registered.");
+		PL_register_foreign("log_message", 2, (pl_function_t) prolog::log_message2, 0);
+		PL_register_foreign("log_message", 4, (pl_function_t) prolog::log_message4, 0);
+		PL_register_extensions_in_module("algebra", prolog::PL_extension_algebra);
+		PL_register_extensions_in_module("semweb", prolog::PL_extension_semweb);
+		KB_DEBUG("common foreign Prolog modules have been registered.");
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
 
 		// register RDF namespaces with Prolog.
 		// in particular the ones specified in settings are globally registered with PrefixRegistry.
-		static const auto register_prefix_i =
-				std::make_shared<PredicateIndicator>("rdf_register_prefix", 3);
+		static const auto register_prefix_i = "sw_register_prefix";
 		for (auto &pair: semweb::PrefixRegistry::get()) {
 			const auto &uri = pair.first;
 			const auto &alias = pair.second;
-			eval(std::make_shared<Predicate>(Predicate(register_prefix_i, {
-					std::make_shared<StringTerm>(alias),
-					std::make_shared<StringTerm>(uri + "#")
-			})), nullptr, false);
+			PROLOG_REASONER_EVAL(PrologTerm(register_prefix_i, alias, uri + "#"));
 		}
 	}
 
 	// load properties into the reasoner module.
-	// this is needed mainly for the `reasoner_setting/2` that provides reasoner instance specific settings.
+	// this is needed mainly for `reasoner_setting/2` that provides reasoner instance specific settings.
 	for (auto &pair: cfg) {
 		auto key_t = cfg.createKeyTerm(pair.first, ":");
 		auto val_t = std::make_shared<StringTerm>(pair.second);
@@ -170,21 +124,25 @@ bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
 }
 
 void PrologReasoner::setDataBackend(const DataBackendPtr &backend) {
-	// TODO: think about how data backend of Prolog would be configured
-}
-
-void PrologReasoner::start() {
-}
-
-void PrologReasoner::stop() {
+	knowledgeGraph_ = std::dynamic_pointer_cast<PrologBackend>(backend);
+	if (!knowledgeGraph_) {
+		throw ReasonerError("Unexpected data knowledgeGraph used for Prolog reasoner. PrologBackend must be used.");
+	}
 }
 
 bool PrologReasoner::setReasonerSetting(const TermPtr &key, const TermPtr &valueString) {
-	static auto set_setting_f =
-			std::make_shared<PredicateIndicator>("reasoner_set_setting", 3);
-	return eval(std::make_shared<Predicate>(
-						Predicate(set_setting_f, {reasonerNameTerm(), key, valueString})),
-				nullptr, false);
+	static auto set_setting_f = "reasoner_set_setting";
+	return PROLOG_REASONER_EVAL(PrologTerm(set_setting_f, reasonerName(), key, valueString));
+}
+
+PrologTerm PrologReasoner::getReasonerQuery(const PrologTerm &goal) {
+	static const auto b_setval_f = "b_setval";
+	static const auto reasoner_module_a = "reasoner_module";
+	static const auto reasoner_manager_a = "reasoner_manager";
+	auto managerID = std::make_shared<Integer32Term>(reasonerManager().managerID());
+	return PrologTerm(b_setval_f, reasoner_module_a, reasonerName()) &
+		   PrologTerm(b_setval_f, reasoner_manager_a, managerID) &
+		   goal;
 }
 
 std::shared_ptr<DefinedReasoner> PrologReasoner::getDefinedReasoner(
@@ -202,25 +160,21 @@ std::shared_ptr<DefinedReasoner> PrologReasoner::getDefinedReasoner(
 	}
 }
 
-bool PrologReasoner::consult(const std::filesystem::path &prologFile,
-							 const char *contextModule,
-							 bool doTransformQuery) {
-	static auto consult_f = std::make_shared<PredicateIndicator>("consult", 1);
-	auto path = getPrologPath(prologFile);
-	auto arg = std::make_shared<StringTerm>(path.native());
-	return eval(std::make_shared<Predicate>(Predicate(consult_f, {arg})), contextModule, doTransformQuery);
+bool PrologReasoner::consult(const std::filesystem::path &uri, const char *module, bool doTransformQuery) {
+	static auto consult_f = "consult";
+	auto path = PrologEngine::getPrologPath(uri);
+
+	return PrologEngine::eval([&]() {
+		PrologTerm plTerm(consult_f, path.native());
+		if (module) plTerm.setModule(module);
+		return getReasonerQuery(doTransformQuery ? transformGoal(plTerm) : plTerm);
+	});
 }
 
 bool PrologReasoner::load_rdf_xml(const std::filesystem::path &rdfFile) {
-	static auto consult_f = std::make_shared<PredicateIndicator>("load_rdf_xml", 2);
-	auto path = getResourcePath(rdfFile);
-	auto arg0 = std::make_shared<StringTerm>(path.native());
-	return eval(std::make_shared<Predicate>(Predicate(consult_f, {arg0, reasonerNameTerm()})));
-}
-
-bool PrologReasoner::assertFact(const std::shared_ptr<Predicate> &fact) {
-	static auto assert_f = std::make_shared<PredicateIndicator>("assertz", 1);
-	return eval(std::make_shared<Predicate>(Predicate(assert_f, {fact})));
+	static auto load_rdf_xml_f = "load_rdf_xml";
+	auto path = PrologEngine::getResourcePath(rdfFile);
+	return PROLOG_REASONER_EVAL(PrologTerm(load_rdf_xml_f, path.native(), reasonerName()));
 }
 
 PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorPtr &indicator) {
@@ -234,256 +188,287 @@ PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorP
 	} else {
 		// evaluate query
 		auto type_v = std::make_shared<Variable>("Type");
-		auto solution = oneSolution(std::make_shared<Predicate>(Predicate(
-				current_predicate_f, {indicator->toTerm(), type_v})));
+		TermPtr kbTerm = std::make_shared<Predicate>(Predicate(
+				current_predicate_f, {indicator->toTerm(), type_v}));
+		auto solution = PROLOG_ENGINE_ONE_SOL(PrologTerm(kbTerm));
 
-		if (!solution || solution->indicatesEndOfEvaluation()) {
-			// FIXME: this is not safe if files are consulted at runtime
-			static std::shared_ptr<PredicateDescription> nullDescr;
-			predicateDescriptions_[*indicator] = nullDescr;
-			return nullDescr;
-		} else {
+		if (solution.has_value()) {
 			// read type of predicate
-			auto ptype = predicateTypeFromTerm(solution->substitution()->get(*type_v));
+			auto ptype = predicateTypeFromTerm(solution.value()[type_v->name()]);
 			// create a PredicateDescription
 			auto newDescr = std::make_shared<PredicateDescription>(indicator, ptype);
 			predicateDescriptions_[*indicator] = newDescr;
 			return newDescr;
-		}
-	}
-}
-
-std::shared_ptr<Term> PrologReasoner::readTerm(const std::string &queryString) {
-	static std::shared_ptr<Variable> termVar(new Variable("TermFromAtom"));
-	static std::shared_ptr<Variable> listVar(new Variable("Vars"));
-	static std::shared_ptr<ListTerm> opts(new ListTerm({
-															   std::make_shared<Predicate>(
-																	   Predicate("variable_names", {listVar}))
-													   }));
-
-	auto termAtom = std::make_shared<StringTerm>(queryString);
-	// run a query
-	auto result = oneSolution(std::make_shared<Predicate>(Predicate(
-			"read_query", {termAtom, termVar, opts})), nullptr, false);
-
-	if (result->indicatesEndOfEvaluation()) {
-		return Bottom::get();
-	} else {
-		std::shared_ptr<Term> term = result->substitution()->get(*termVar);
-		std::shared_ptr<Term> varNames = result->substitution()->get(*listVar);
-
-		if (varNames->type() == TermType::LIST) {
-			auto *l = (ListTerm *) varNames.get();
-			if (l->elements().empty()) {
-				return term;
-			}
-
-			Substitution s;
-			std::map<std::string, Variable *> varNames0;
-			for (const auto &x: l->elements()) {
-				// each element in the list has the form '='(VarName,Var)
-				auto *p = (Predicate *) x.get();
-				auto *varName = (StringTerm *) (p->arguments()[0].get());
-				auto *var = (Variable *) (p->arguments()[1].get());
-
-				s.set(*var, std::make_shared<Variable>(varName->value()));
-			}
-
-			auto *p0 = (Predicate *) term.get();
-			return std::dynamic_pointer_cast<Predicate>(p0->applySubstitution(s));
 		} else {
-			KB_WARN("something went wrong");
-			return term;
+			// FIXME: this is not safe if files are consulted at runtime
+			static std::shared_ptr<PredicateDescription> nullDescr;
+			predicateDescriptions_[*indicator] = nullDescr;
+			return nullDescr;
 		}
 	}
 }
 
-bool PrologReasoner::eval(
-		const std::shared_ptr<Predicate> &p,
-		const char *moduleName,
-		bool doTransformQuery) {
-	auto answer = oneSolution(p, moduleName, doTransformQuery);
-	return answer && !answer->indicatesEndOfEvaluation();
+void PrologReasoner::start() {
+	// nothing to do here, Prolog only runs when queries are submitted
 }
 
-bool PrologReasoner::eval(
-		const std::shared_ptr<const Query> &q,
-		const char *moduleName,
-		bool doTransformQuery) {
-	auto answer = oneSolution(q, moduleName, doTransformQuery);
-	return answer && !answer->indicatesEndOfEvaluation();
+void PrologReasoner::stop() {
+	stopPrologReasoner();
 }
 
-AnswerYesPtr PrologReasoner::oneSolution(const std::shared_ptr<Predicate> &goal,
-										 const char *moduleName,
-										 bool doTransformQuery) {
-	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
-	return oneSolution(
-			std::make_shared<FormulaQuery>(goal, ctx),
-			moduleName,
-			doTransformQuery);
-}
-
-AnswerYesPtr PrologReasoner::oneSolution(const std::shared_ptr<const Query> &goal,
-										 const char *moduleName,
-										 bool doTransformQuery) {
-	// create an output queue for the query
-	auto outputStream = std::make_shared<TokenQueue>();
-	auto outputChannel = TokenStream::Channel::create(outputStream);
-	auto call_f = (doTransformQuery ? callFunctor() : (functor_t) 0);
-	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
-											 std::make_shared<StringTerm>(moduleName) : reasonerNameTerm();
-	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologQueryRunner>(
-			this,
-			PrologQueryRunner::Request(goal, call_f, moduleTerm, *DefaultGraphSelector()),
-			outputChannel,
-			true
-	);
-
-	std::optional<std::exception> exc;
-	auto excPtr = &exc;
-	PrologReasoner::threadPool().pushWork(workerGoal,
-										  [outputStream, excPtr](const std::exception &e) {
-											  *excPtr = e;
-											  outputStream->close();
-										  });
-	auto solution = outputStream->pop_front();
-	// rethrow any exceptions in this thread!
-	if (exc.has_value()) throw (exc.value());
-
-	if (solution->indicatesEndOfEvaluation()) {
-		return {};
-	}
-	if (solution->type() == TokenType::ANSWER_TOKEN) {
-		auto nextAnswer = std::static_pointer_cast<const Answer>(solution);
-		if (nextAnswer->isPositive()) {
-			return std::static_pointer_cast<const AnswerYes>(nextAnswer);
-		}
-	}
-	return {};
-}
-
-std::list<AnswerYesPtr> PrologReasoner::allSolutions(const std::shared_ptr<Predicate> &goal,
-													 const char *moduleName,
-													 bool doTransformQuery) {
-	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
-	return allSolutions(
-			std::make_shared<FormulaQuery>(goal, ctx),
-			moduleName,
-			doTransformQuery);
-}
-
-std::list<AnswerYesPtr> PrologReasoner::allSolutions(const std::shared_ptr<const Query> &goal,
-													 const char *moduleName,
-													 bool doTransformQuery) {
-	std::list<AnswerYesPtr> results;
-	TokenPtr nextResult;
-
-	// create an output queue for the query
-	auto outputStream = std::make_shared<TokenQueue>();
-	auto outputChannel = TokenStream::Channel::create(outputStream);
-	auto call_f = (doTransformQuery ? callFunctor() : (functor_t) 0);
-	// stores exception if any
-	std::optional<std::exception> exc;
-	auto excPtr = &exc;
-	std::shared_ptr<StringTerm> moduleTerm = moduleName ?
-											 std::make_shared<StringTerm>(moduleName) : reasonerNameTerm();
-	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologQueryRunner>(
-			this,
-			PrologQueryRunner::Request(goal, call_f, moduleTerm, *DefaultGraphSelector()),
-			outputChannel,
-			true
-	);
-
-	// assign the goal to a worker thread
-	PrologReasoner::threadPool().pushWork(workerGoal,
-										  [outputStream, excPtr](const std::exception &e) {
-											  *excPtr = e;
-											  outputStream->close();
-										  });
-	// wait until work is done, and push EOS
-	workerGoal->join();
-	// get all results
-	while (true) {
-		nextResult = outputStream->pop_front();
-
-		if (nextResult->indicatesEndOfEvaluation()) {
-			break;
-		} else if (nextResult->type() == TokenType::ANSWER_TOKEN) {
-			auto nextAnswer = std::static_pointer_cast<const Answer>(nextResult);
-			if (nextAnswer->isPositive()) {
-				results.push_back(std::static_pointer_cast<const AnswerYes>(nextAnswer));
-			}
-		}
-	}
-
-	if (exc.has_value()) throw (exc.value());
-
-	return results;
+void PrologReasoner::stopPrologReasoner() {
+	// TODO: stop and join all worker threads
 }
 
 TokenBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) {
-	bool sendEOS = true;
-	auto reasoner = this;
+	// context term options:
+	static const auto query_scope_f = "query_scope";
+	static const auto solution_scope_f = "solution_scope";
+
 	auto answerBuffer = std::make_shared<TokenBuffer>();
 	auto outputChannel = TokenStream::Channel::create(answerBuffer);
 
-	auto query = std::make_shared<ConjunctiveQuery>(literal, ctx);
-	// create a runner for a worker thread
-	auto workerGoal = std::make_shared<PrologQueryRunner>(
-			reasoner,
-			PrologQueryRunner::Request(
-					query,
-					callFunctor(),
-					reasonerNameTerm(),
-					ctx->selector_),
-			outputChannel,
-			sendEOS);
-	// assign the goal to a worker thread
-	PrologReasoner::threadPool().pushWork(workerGoal,
-										  [literal, outputChannel](const std::exception &e) {
-											  KB_WARN("an exception occurred for prolog query ({}): {}.", literal,
-													  e.what());
-											  outputChannel->close();
-										  });
+	// create runner that evaluates the goal in a thread with a Prolog engine
+	auto runner = std::make_shared<ThreadPool::LambdaRunner>(
+			[&](const ThreadPool::LambdaRunner::StopChecker &hasStopRequest) {
+				PrologTerm queryFrame, answerFrame;
+				putQueryFrame(queryFrame, ctx->selector_);
+
+				PrologTerm rdfGoal(*literal);
+				// :- ContextTerm = [query_scope(...), solution_scope(Variable)]
+				PrologList contextTerm({
+											   PrologTerm(query_scope_f, queryFrame),
+											   PrologTerm(solution_scope_f, answerFrame)
+									   });
+				// :- QueryGoal = ( b_setval(reasoner_module, reasonerName()),
+				//                  b_setval(reasoner_manager, managerID),
+				//                  reasoner_call(LiteralGoal, ContextTerm) ).
+				PrologTerm queryGoal = getReasonerQuery(
+						PrologTerm(callFunctor(), rdfGoal, contextTerm));
+
+				auto qid = queryGoal.openQuery(prologQueryFlags);
+				bool hasSolution = false;
+				while (!hasStopRequest() && queryGoal.nextSolution(qid)) {
+					outputChannel->push(yes(literal, rdfGoal, answerFrame));
+					hasSolution = true;
+					if (ctx->queryFlags_ & QUERY_FLAG_ONE_SOLUTION) break;
+				}
+				PL_close_query(qid);
+				if (!hasSolution) outputChannel->push(no(literal));
+				outputChannel->push(EndOfEvaluation::get());
+			});
+
+	// push goal and return
+	PrologEngine::pushGoal(runner, [literal, outputChannel](const std::exception &e) {
+		KB_WARN("an exception occurred for prolog query ({}): {}.", *literal, e.what());
+		outputChannel->close();
+	});
 
 	return answerBuffer;
 }
 
-std::filesystem::path PrologReasoner::getPrologPath(const std::filesystem::path &filePath) {
-	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
-	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
+AnswerYesPtr PrologReasoner::yes(const RDFLiteralPtr &literal,
+								 const PrologTerm &rdfGoal,
+								 const PrologTerm &answerFrameTerm) {
+	KB_DEBUG("Prolog has a next solution.");
+	// create an empty solution
+	auto yes = std::make_shared<AnswerYes>();
+	yes->setReasonerTerm(reasonerNameTerm());
 
-	if (!exists(filePath)) {
-		auto possiblePaths = {
-				projectPath / filePath,
-				projectPath / "src" / filePath,
-				projectPath / "src" / "reasoner" / "prolog" / filePath,
-				installPath / "share" / "knowrob" / filePath
-		};
-		for (const auto &p: possiblePaths) {
-			if (exists(p)) return p;
+	// TODO: set flag to indicate if answer is well-founded or not.
+	//       if prolog was using negation as failure, the answer is not well-founded.
+	// TODO: allow frame-specification on per-literal basis?
+
+	// set the solution scope, if reasoner specified it
+	auto answerFrame_rw = createAnswerFrame(answerFrameTerm);
+	GraphSelectorPtr answerFrame_ro;
+	if (answerFrame_rw) {
+		yes->setFrame(answerFrame_rw);
+		answerFrame_ro = answerFrame_rw;
+	} else {
+		answerFrame_ro = DefaultGraphSelector();
+	}
+
+	// add substitutions
+	for (const auto &kv: rdfGoal.vars()) {
+		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
+		if (grounding && grounding->type() != TermType::VARIABLE) {
+			yes->set(Variable(kv.first), PrologTerm::toKnowRobTerm(kv.second));
 		}
 	}
-	return filePath;
+
+	// store instantiation of literal
+	auto p = literal->predicate();
+	auto p_instance = p->applySubstitution(*yes->substitution());
+	yes->addGrounding(std::static_pointer_cast<Predicate>(p_instance), answerFrame_ro, literal->isNegated());
+
+	return yes;
 }
 
-std::filesystem::path PrologReasoner::getResourcePath(const std::filesystem::path &filePath) {
-	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
-	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
+AnswerNoPtr PrologReasoner::no(const RDFLiteralPtr &rdfLiteral) {
+	KB_DEBUG("Prolog has no solution.");
+	// if no solution was found, indicate that via a NegativeAnswer.
+	auto negativeAnswer = std::make_shared<AnswerNo>();
+	negativeAnswer->setReasonerTerm(reasonerNameTerm());
+	// however, as Prolog cannot proof negations such an answer is always not well-founded
+	// and can be overruled by a well-founded one.
+	negativeAnswer->setIsUncertain(std::nullopt);
+	// as the query goal was only a single literal, we know that exactly this literal cannot be proven.
+	negativeAnswer->addUngrounded(
+			std::static_pointer_cast<Predicate>(rdfLiteral->predicate()),
+			rdfLiteral->isNegated());
+	return negativeAnswer;
+}
 
-	if (!exists(filePath)) {
-		auto possiblePaths = {
-				projectPath / filePath,
-				installPath / "share" / "knowrob" / filePath
-		};
-		for (const auto &p: possiblePaths) {
-			if (exists(p)) return p;
-		}
+
+bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &frame) {
+	// Map an GraphSelector to a Prolog dict term.
+	// The term has the form:
+	// { epistemicMode: knowledge|belief,
+	//   temporalMode: sometimes|always,
+	//   [agent: $name,]
+	//   [since: $time,]
+	//   [until: $time] }
+
+	int numFrameKeys = 2;
+	if (frame.agent.has_value()) numFrameKeys += 1;
+	if (frame.begin.has_value()) numFrameKeys += 1;
+	if (frame.end.has_value()) numFrameKeys += 1;
+
+	// option: frame($dictTerm)
+	atom_t scopeKeys[numFrameKeys];
+	auto scopeValues = PL_new_term_refs(numFrameKeys);
+
+	// epistemicMode: knowledge|belief
+	static const auto epistemicMode_a = PL_new_atom("epistemicMode");
+	static const auto knowledge_a = PL_new_atom("knowledge");
+	static const auto belief_a = PL_new_atom("belief");
+
+	bool isAboutBelief = (frame.epistemicOperator &&
+						  frame.epistemicOperator.value() == EpistemicOperator::BELIEF);
+	int keyIndex = 0;
+	scopeKeys[keyIndex] = epistemicMode_a;
+	if (!PL_put_atom(scopeValues, isAboutBelief ? belief_a : knowledge_a)) return false;
+
+	// temporalMode: sometimes|always
+	static const auto temporalMode_a = PL_new_atom("temporalMode");
+	static const auto sometimes_a = PL_new_atom("sometimes");
+	static const auto always_a = PL_new_atom("always");
+
+	bool isAboutSomePast = (frame.temporalOperator &&
+							frame.temporalOperator.value() == TemporalOperator::SOMETIMES);
+	scopeKeys[++keyIndex] = temporalMode_a;
+	if (!PL_put_atom(scopeValues + keyIndex, isAboutSomePast ? sometimes_a : always_a)) return false;
+
+	// agent: $name
+	if (frame.agent.has_value()) {
+		static const auto agent_a = PL_new_atom("agent");
+		scopeKeys[++keyIndex] = agent_a;
+		auto &agent_iri = frame.agent.value()->iri();
+		if (!PL_put_atom_chars(scopeValues + keyIndex, agent_iri.c_str())) return false;
 	}
-	return filePath;
+
+	// since: $name
+	if (frame.begin.has_value()) {
+		static const auto since_a = PL_new_atom("since");
+		scopeKeys[++keyIndex] = since_a;
+		if (!PL_put_float(scopeValues + keyIndex, frame.begin.value())) return false;
+	}
+	// until: $name
+	if (frame.end.has_value()) {
+		static const auto until_a = PL_new_atom("until");
+		scopeKeys[++keyIndex] = until_a;
+		if (!PL_put_float(scopeValues + keyIndex, frame.end.value())) return false;
+	}
+
+	return PL_put_dict(frameTerm(), 0, numFrameKeys, scopeKeys, scopeValues);
+}
+
+std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTerm &plTerm) {
+	std::shared_ptr<GraphSelector> frame;
+
+	if (PL_is_variable(plTerm())) {
+		// reasoner did not specify a solution scope
+		return {};
+	} else if (PL_is_dict(plTerm())) {
+		// the solution scope was generated as a Prolog dictionary
+		auto scope_val = PL_new_term_ref();
+
+		frame = std::make_shared<GraphSelector>();
+
+		// read "time" key, the value is expected to be a predicate `range(Since,Until)`
+		static const auto time_key = PL_new_atom("time");
+		if (PL_get_dict_key(time_key, plTerm(), scope_val)) {
+			term_t arg = PL_new_term_ref();
+			std::optional<TimePoint> v_since, v_until;
+			double val = 0.0;
+
+			if (PL_get_arg(1, scope_val, arg) &&
+				PL_term_type(arg) == PL_FLOAT &&
+				PL_get_float(arg, &val) &&
+				val > 0.001) { frame->begin = val; }
+
+			if (PL_get_arg(2, scope_val, arg) &&
+				PL_term_type(arg) == PL_FLOAT &&
+				PL_get_float(arg, &val)) { frame->end = val; }
+		}
+
+		static const auto uncertain_key = PL_new_atom("uncertain");
+		if (PL_get_dict_key(uncertain_key, plTerm(), scope_val)) {
+			atom_t flagAtom;
+			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
+				if (flagAtom == PrologTerm::ATOM_true()) {
+					frame->epistemicOperator = EpistemicOperator::BELIEF;
+				}
+			}
+		}
+
+		static const auto confidence_key = PL_new_atom("confidence");
+		if (PL_get_dict_key(confidence_key, plTerm(), scope_val)) {
+			double confidenceValue = 1.0;
+			if (PL_term_type(scope_val) == PL_FLOAT && PL_get_float(scope_val, &confidenceValue)) {
+				frame->confidence = confidenceValue;
+				if (confidenceValue > 0.999) {
+					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+				} else {
+					frame->epistemicOperator = EpistemicOperator::BELIEF;
+				}
+			}
+		}
+
+		static const auto occasional_key = PL_new_atom("occasional");
+		if (PL_get_dict_key(occasional_key, plTerm(), scope_val)) {
+			atom_t flagAtom;
+			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
+				if (flagAtom == PrologTerm::ATOM_true()) {
+					frame->temporalOperator = TemporalOperator::SOMETIMES;
+				} else {
+					frame->temporalOperator = TemporalOperator::ALWAYS;
+				}
+			}
+		}
+
+		static const auto agent_key = PL_new_atom("agent");
+		if (PL_get_dict_key(agent_key, plTerm(), scope_val)) {
+			atom_t agentAtom;
+			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &agentAtom)) {
+				if (!frame->epistemicOperator.has_value()) {
+					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+				}
+				frame->agent = Agent::get(PL_atom_chars(agentAtom));
+			}
+		}
+
+		PL_reset_term_refs(scope_val);
+	} else {
+		KB_WARN("solution scope has an unexpected type (should be dict).");
+	}
+
+	if (frame) {
+		return frame;
+	} else {
+		return {};
+	}
 }
 
 std::list<TermPtr> PrologReasoner::runTests(const std::string &target) {
@@ -491,147 +476,24 @@ std::list<TermPtr> PrologReasoner::runTests(const std::string &target) {
 			std::make_shared<PredicateIndicator>("xunit_term", 1);
 	static const auto xunit_var = std::make_shared<Variable>("Term");
 	static const auto silent_flag = std::make_shared<StringTerm>("silent");
+	static const auto xunit_opt = std::make_shared<Predicate>(Predicate(xunit_indicator, {xunit_var}));
 
-	auto solutions = allSolutions(std::make_shared<Predicate>(Predicate(
+	TermPtr pred = std::make_shared<Predicate>(Predicate(
 			"test_and_report", {
 					// unittest target
 					std::make_shared<StringTerm>(target),
 					// options
-					std::make_shared<ListTerm>(ListTerm({
-																std::make_shared<Predicate>(
-																		Predicate(xunit_indicator, {xunit_var})),
-																silent_flag
-														}))
-			})), nullptr, false);
+					std::make_shared<ListTerm>(ListTerm({xunit_opt, silent_flag}))
+			}));
+	auto solutions = PROLOG_ENGINE_ALL_SOL(getReasonerQuery(PrologTerm(pred)));
 
 	std::list<TermPtr> output;
 	for (auto &solution: solutions) {
-		output.push_back(solution->substitution()->get(*xunit_var));
+		if (solution.count(xunit_var->name()) > 0) {
+			output.push_back(solution[xunit_var->name()]);
+		} else {
+			KB_WARN("Solution has no key '{}'.", xunit_var->name());
+		}
 	}
 	return output;
-}
-
-// FOREIGN PREDICATES
-
-foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term) {
-	char *prefix, *uri;
-	if (PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
-		semweb::PrefixRegistry::get().registerPrefix(prefix, uri);
-	}
-	return TRUE;
-}
-
-std::shared_ptr<semweb::ImportHierarchy> &getImportHierarchy(term_t t_manager, term_t t_reasoner) {
-	static std::shared_ptr<semweb::ImportHierarchy> null;
-	auto definedReasoner =
-			PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
-	if (!definedReasoner) return null;
-	auto prologReasoner =
-			std::dynamic_pointer_cast<PrologReasoner>(definedReasoner->reasoner());
-	return prologReasoner ? prologReasoner->importHierarchy() : null;
-}
-
-foreign_t sw_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-
-	char *graph;
-	if (hierarchy && PL_get_atom_chars(t_graph, &graph)) {
-		return hierarchy->isCurrentGraph(graph);
-	} else {
-		return false;
-	}
-}
-
-foreign_t sw_set_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-
-	char *graph;
-	if (hierarchy && PL_get_atom_chars(t_graph, &graph)) {
-		hierarchy->addCurrentGraph(graph);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-foreign_t sw_unset_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-
-	char *graph;
-	if (hierarchy && PL_get_atom_chars(t_graph, &graph)) {
-		hierarchy->removeCurrentGraph(graph);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-foreign_t sw_graph_add_direct_import4(term_t t_manager, term_t t_reasoner, term_t t_importer, term_t t_imported) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-
-	char *importer, *imported;
-	if (hierarchy &&
-		PL_get_atom_chars(t_importer, &importer) &&
-		PL_get_atom_chars(t_imported, &imported)) {
-		hierarchy->addDirectImport(importer, imported);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-foreign_t sw_graph_get_imports4(term_t t_manager, term_t t_reasoner, term_t t_importer, term_t t_importedList) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-	char *importer;
-	if (hierarchy && PL_get_atom_chars(t_importer, &importer)) {
-		PlTail l(t_importedList);
-		for (auto &x: hierarchy->getImports(importer))
-			l.append(x->name().c_str());
-		l.close();
-		return true;
-	}
-	return false;
-}
-
-foreign_t sw_set_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-	char *graph;
-	if (hierarchy && PL_get_atom_chars(t_graph, &graph)) {
-		hierarchy->setDefaultGraph(graph);
-		return true;
-	}
-	return false;
-
-}
-
-foreign_t sw_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto &hierarchy = getImportHierarchy(t_manager, t_reasoner);
-	return hierarchy && PL_unify_atom_chars(t_graph, hierarchy->defaultGraph().c_str());
-}
-
-foreign_t sw_url_graph2(term_t t_url, term_t t_graph) {
-	char *url;
-	if (PL_get_atom_chars(t_url, &url)) {
-		auto name = KnowledgeGraph::getNameFromURI(url);
-		return PL_unify_atom_chars(t_graph, name.c_str());
-	}
-	return false;
-}
-
-foreign_t sw_url_version2(term_t t_url, term_t t_version) {
-	char *url;
-	if (PL_get_atom_chars(t_url, &url)) {
-		auto version = KnowledgeGraph::getVersionFromURI(url);
-		return PL_unify_atom_chars(t_version, version.c_str());
-	}
-	return false;
-}
-
-foreign_t url_resolve2(term_t t_url, term_t t_resolved) {
-	char *url;
-	if (PL_get_atom_chars(t_url, &url)) {
-		auto resolved = URI::resolve(url);
-		return PL_unify_atom_chars(t_resolved, resolved.c_str());
-	}
-	return false;
 }

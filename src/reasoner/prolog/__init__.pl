@@ -35,7 +35,7 @@
 :- use_module(library('semweb/rdf_db'), [rdf_meta/1, rdf_current_ns/2, rdf_register_prefix/3]).
 
 % more fancy module declarations
-:- use_module(library('module')).
+:- use_module(library('ext/module')).
 % message formatting and logging
 :- use_module(library('messages')).
 :- use_module(library('logging')).
@@ -44,21 +44,24 @@
 
 :- dynamic user:defined_reasoner_setting/4.
 
-:- use_module(library('filesystem')).
-:- use_module(library('functional')).
-:- use_module(library('algebra')).
-%:- use_module(library('atom')).
+:- use_module(library('ext/filesystem')).
+:- use_module(library('ext/functional')).
+:- use_module(library('ext/algebra')).
+%:- use_module(library('ext/atom')).
 
 % extensions for semantic web
 :- use_module(library('semweb')).
+:- use_module(library('semweb/rdf_db'),
+		[ rdf_assert/4,
+		  rdf_retractall/4,
+		  rdf_transaction/1 ]).
+% interface for PrologReasoner implementations
+:- use_module(library('reasoner')).
 
 :- sw_register_prefix(dul,  'http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#').
 :- sw_register_prefix(soma, 'http://www.ease-crc.org/ont/SOMA.owl#').
 :- sw_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#').
 
 % auto-load common models
-:- use_module(library('xsd')).
-:- use_module(library('qudt')).
-
-% predicates that interact with the QA system in some way
-:- use_module(library('blackboard')).
+:- use_module(library('ext/xsd')).
+:- use_module(library('ext/qudt')).

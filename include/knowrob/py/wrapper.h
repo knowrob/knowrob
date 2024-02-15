@@ -77,17 +77,20 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool insertOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
 
-	bool insertAll(const std::vector<StatementData> &triples) override
+	bool insertAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
 	bool removeOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
 
-	bool removeAll(const std::vector<StatementData> &triples) override
-	{ return knowrob::py::call_method<bool>(self, "removeOne", triples); }
+	bool removeAll(const semweb::TripleContainerPtr &triples) override
+	{ return knowrob::py::call_method<bool>(self, "removeAll", triples); }
 
-	int removeMatching(const RDFLiteral &query, bool doMatchMany) override
-	{ return knowrob::py::call_method<int>(self, "removeMatching", query, doMatchMany); }
+	bool removeAllWithOrigin(std::string_view origin) override
+	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
+
+	bool removeAllMatching(const RDFLiteral &query) override
+	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 private:
 	PyObject *self;
@@ -134,17 +137,20 @@ struct ReasonerWithBackendWrap :
 	bool insertOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
 
-	bool insertAll(const std::vector<StatementData> &triples) override
+	bool insertAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
 	bool removeOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
 
-	bool removeAll(const std::vector<StatementData> &triples) override
-	{ return knowrob::py::call_method<bool>(self, "removeOne", triples); }
+	bool removeAll(const semweb::TripleContainerPtr &triples) override
+	{ return knowrob::py::call_method<bool>(self, "removeAll", triples); }
 
-	int removeMatching(const RDFLiteral &query, bool doMatchMany) override
-	{ return knowrob::py::call_method<int>(self, "removeMatching", query, doMatchMany); }
+	bool removeAllWithOrigin(std::string_view origin) override
+	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
+
+	bool removeAllMatching(const RDFLiteral &query) override
+	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }

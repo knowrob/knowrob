@@ -12,7 +12,6 @@
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/Literal.h"
-#include "knowrob/db/mongo/TripleLoader.h"
 #include "knowrob/db/mongo/AnswerCursor.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 
@@ -57,12 +56,6 @@ namespace knowrob {
 		void createSearchIndices();
 
 		/**
-		 * Delete all statements in a named graph
-		 * @param graphName a graph name
-		 */
-		void dropGraph(const std::string_view &graphName);
-
-		/**
 		 * Delete all statements in the database.
 		 * Note: ths will also delete all indices which need to be re-created afterwards.
 		 */
@@ -92,48 +85,50 @@ namespace knowrob {
 		mongo::AnswerCursorPtr lookup(const std::vector<RDFLiteralPtr> &tripleExpressions, uint32_t limit = 0);
 
 		/**
-		 * @param graphName the name of a graph
-		 * @return the version string associated to the named graph if any
+		 * Watch for instantiations of a literal in the knowledge graph.
+		 * @param literal a literal
+		 * @return a stream with answers to the query
 		 */
-		std::optional<std::string> getCurrentGraphVersion(const std::string &graphName);
+		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal);
 
 		// Override KnowledgeGraph
 		bool loadConfig(const ReasonerConfig &config) override;
 
 		// Override KnowledgeGraph
-		bool loadFile(const std::string_view &uriString, TripleFormat format, const GraphSelector &selector) override;
+		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
+
+		// Override KnowledgeGraph
+		void setVersionOfOrigin(std::string_view origin, std::string_view version) override;
 
 		// Override IDataBackend
 		bool insertOne(const StatementData &triple) override;
 
 		// Override IDataBackend
-		bool insertAll(const std::vector<StatementData> &triples) override;
+		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
 		// Override IDataBackend
 		bool removeOne(const StatementData &triple) override;
 
 		// Override IDataBackend
-		bool removeAll(const std::vector<StatementData> &triples) override;
+		bool removeAll(const semweb::TripleContainerPtr &triples) override;
 
 		// Override IDataBackend
-		int removeMatching(const RDFLiteral &query, bool doMatchMany) override;
+		bool removeAllWithOrigin(std::string_view origin) override;
+
+		// Override IDataBackend
+		bool removeAllMatching(const RDFLiteral &query) override;
 
 		// Override KnowledgeGraph
-		void evaluateQuery(const ConjunctiveQueryPtr &query, TokenBufferPtr &resultStream) override;
-
-		// Override KnowledgeGraph
-		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal) override;
+		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) override;
 
 	protected:
+		using StringPair = std::pair<std::string_view, std::string_view>;
+
 		std::shared_ptr<mongo::Collection> tripleCollection_;
 		std::shared_ptr<mongo::Collection> oneCollection_;
 		bool isReadOnly_;
 
 		void initialize();
-
-		void setCurrentGraphVersion(const std::string &graphName,
-									const std::string &graphURI,
-									const std::string &graphVersion);
 
 		static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
 
@@ -141,17 +136,27 @@ namespace knowrob {
 
 		static std::string getCollectionName(const boost::property_tree::ptree &config);
 
+		bson_t *createTripleDocument(const StatementData &tripleData, const std::string &graphName, bool isTaxonomic);
+
 		static std::string getURI(const boost::property_tree::ptree &config);
 
-		void updateHierarchy(mongo::TripleLoader &tripleLoader);
+		void updateHierarchy(
+				const std::vector<StringPair> &subClassAssertions,
+				const std::vector<StringPair> &subPropertyAssertions);
 
 		void updateTimeInterval(const StatementData &tripleLoader);
 
 		static bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
+
 		static bson_t *getSelector(const StatementData &triple, bool isTaxonomicProperty);
 
 		bool isTaxonomicProperty(const TermPtr &propertyTerm);
+
 		bool isTaxonomicProperty(const char *property);
+
+		bool dropOrigin(std::string_view origin);
+
+		friend class MongoKnowledgeGraphTest;
 	};
 
 } // knowrob::mongo

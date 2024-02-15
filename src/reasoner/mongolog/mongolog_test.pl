@@ -65,7 +65,7 @@ setup(RDFFile) :-
 		),
 		mongolog_triple:drop_graph(TestSubGraph)
 	),
-	mongolog_call(load_rdf_xml(RDFFile,test)).
+	load_rdf_xml(RDFFile,test).
 
 %%
 cleanup(RDFFile) :-

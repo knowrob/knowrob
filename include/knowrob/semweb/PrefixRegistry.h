@@ -29,7 +29,7 @@ namespace knowrob::semweb {
 		 * @param prefix a short name for the URI.
 		 * @param uri a full URI.
 		 */
-        void registerPrefix(const std::string &prefix, const std::string &uri);
+        void registerPrefix(std::string_view prefix, std::string_view uri);
 
 		/**
 		 * Maps URI to alias.

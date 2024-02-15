@@ -12,11 +12,11 @@
 using namespace knowrob;
 
 Reasoner::Reasoner()
-		: reasonerManagerID_(0) {
+		: reasonerManager_(nullptr) {
 }
 
-void Reasoner::setReasonerManager(uint32_t managerID) {
-	reasonerManagerID_ = managerID;
+void Reasoner::setReasonerManager(ReasonerManager *reasonerManager) {
+	reasonerManager_ = reasonerManager;
 }
 
 void Reasoner::setReasonerName(std::string_view name) {
@@ -24,16 +24,28 @@ void Reasoner::setReasonerName(std::string_view name) {
 }
 
 KnowledgeBase *Reasoner::kb() const {
-	auto rm = ReasonerManager::getReasonerManager(reasonerManagerID_);
-	if (rm) {
-		return rm->kb();
+	return reasonerManager().kb();
+}
+
+ReasonerManager &Reasoner::reasonerManager() const {
+	if(reasonerManager_) {
+		return *reasonerManager_;
 	} else {
-		throw ReasonerError("KnowledgeBase not found.");
+		throw ReasonerError("ReasonerManager not found.");
 	}
 }
 
+std::shared_ptr<semweb::Vocabulary> Reasoner::vocabulary() const {
+	return reasonerManager().kb()->vocabulary();
+}
+
+std::shared_ptr<semweb::ImportHierarchy> Reasoner::importHierarchy() const {
+	return reasonerManager().kb()->importHierarchy();
+}
+
 void Reasoner::pushWork(const std::function<void(void)> &fn) {
-	auto runner = std::make_shared<ThreadPool::LambdaRunner>(fn);
+	auto runner =
+			std::make_shared<ThreadPool::LambdaRunner>([&fn](const ThreadPool::LambdaRunner::StopChecker&) { fn(); });
 	DefaultThreadPool()->pushWork(runner, [](const std::exception &e) {
 		KB_ERROR("Error in reasoner worker thread: {}", e.what());
 	});
@@ -88,12 +100,21 @@ void Reasoner::setInferredTriples(const std::vector<StatementData> &triples) {
 	}
 }
 
+class ReasonerTripleContainer : public semweb::TripleContainer {
+public:
+	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
+	const std::vector<StatementData> &asVector() const override { return *triples_; }
+protected:
+	const std::vector<StatementData> *triples_;
+};
+
 void Reasoner::addInferredTriples(const std::vector<StatementData> &triples) const {
-	kb()->insertAll(triples);
+	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
+	kb()->insertAll(std::make_shared<ReasonerTripleContainer>(&triples));
 }
 
 void Reasoner::removeInferredTriples(const std::vector<StatementData> &triples) const {
-	kb()->removeAll(triples);
+	kb()->removeAll(std::make_shared<ReasonerTripleContainer>(&triples));
 }
 
 PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &literal) {

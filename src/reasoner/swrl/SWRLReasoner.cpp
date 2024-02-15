@@ -45,10 +45,9 @@ SWRLReasoner::SWRLReasoner()
 
 bool SWRLReasoner::loadSWRLFile(const DataSourcePtr &dataFile)
 {
-	static auto consult_f = std::make_shared<PredicateIndicator>("swrl_file_load", 1);
-	auto path = getResourcePath(dataFile->uri());
-	auto arg0 = std::make_shared<StringTerm>(path.native());
-	return eval(std::make_shared<Predicate>(Predicate(consult_f, { arg0 })));
+	static auto consult_f = "swrl_file_load";
+	auto path = PrologEngine::getResourcePath(dataFile->uri());
+	return PROLOG_ENGINE_EVAL(PrologTerm(consult_f, path.native()));
 }
 
 bool SWRLReasoner::initializeDefaultPackages()
@@ -56,7 +55,7 @@ bool SWRLReasoner::initializeDefaultPackages()
 	return consult(std::filesystem::path("reasoner") / "swrl" / "__init__.pl");
 }
 
-class SWRLTests: public PrologTests<knowrob::SWRLReasoner> {
+class SWRLTests: public PrologTests<knowrob::SWRLReasoner,knowrob::PrologBackend> {
 protected:
 	static std::string getPath(const std::string &filename)
 	{ return std::filesystem::path("reasoner") / "swrl" / filename; }

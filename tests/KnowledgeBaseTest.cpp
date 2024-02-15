@@ -189,13 +189,13 @@ TEST_F(KnowledgeBaseTest, atomic_EDB) {
 		// the query formula:
 		(*hasSibling_)(Fred_, varX_),
 		// the expected solution as substitution mapping:
-		Substitution({{*varX_, Ernest_}}));
+		Substitution({{*varX_, Ernest_}}))
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(varX_, Ernest_),
-		Substitution({{*varX_, Fred_}}));
+		Substitution({{*varX_, Fred_}}))
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(Fred_, Ernest_),
-		Substitution());
+		Substitution())
 	// negative case without any solution:
 	EXPECT_NO_SOLUTION((*hasSibling_)(Lea_, varX_));
 }
@@ -206,7 +206,7 @@ TEST_F(KnowledgeBaseTest, conjunctive_EDB) {
 		Substitution({
 			{*varNum_, std::make_shared<StringTerm>("123456")},
 			{*varX_, Ernest_}
-		}));
+		}))
 }
 
 TEST_F(KnowledgeBaseTest, disjunctive_EDB) {
@@ -224,20 +224,20 @@ TEST_F(KnowledgeBaseTest, complex_EDB) {
 		Substitution({
 			{*varX_, Ernest_},
 			{*varY_, Fred_}
-		}));
+		}))
 }
 
 TEST_F(KnowledgeBaseTest, negated_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		~(*hasSibling_)(Lea_, varX_),
-		Substitution());
+		Substitution())
 	EXPECT_NO_SOLUTION(~(*hasSibling_)(Fred_, varX_));
 }
 
 TEST_F(KnowledgeBaseTest, negated_IDB) {
 	EXPECT_ONLY_SOLUTION(
 		~(*p_)(Lea_, varX_),
-		Substitution());
+		Substitution())
 	EXPECT_NO_SOLUTION(~(*p_)(Ernest_, varX_));
 }
 
@@ -245,16 +245,16 @@ TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
 	// Rex is an ancestor of Fred who does not have a sibling
 	EXPECT_ONLY_SOLUTION(
 		(*hasAncestor_)(Fred_, varX_) & ~(*hasSibling_)(varX_, varY_),
-		Substitution({{*varX_, Rex_}}));
+		Substitution({{*varX_, Rex_}}))
 }
 
 TEST_F(KnowledgeBaseTest, atomic_IDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*p_)(Ernest_, varX_),
-		Substitution({{*varX_, std::make_shared<StringTerm>("x")}}));
+		Substitution({{*varX_, std::make_shared<StringTerm>("x")}}))
 	EXPECT_ONLY_SOLUTION(
 		(*q_)(std::make_shared<StringTerm>("x"), varX_),
-		Substitution({{*varX_, std::make_shared<StringTerm>("y")}}));
+		Substitution({{*varX_, std::make_shared<StringTerm>("y")}}))
 	EXPECT_NO_SOLUTION((*p_)(std::make_shared<StringTerm>("x"), varX_));
 }
 
@@ -264,7 +264,7 @@ TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
 		Substitution({
 			{*varX_, Ernest_},
 			{*varY_, std::make_shared<StringTerm>("x")}
-		}));
+		}))
 }
 
 TEST_F(KnowledgeBaseTest, IDB_interaction) {
@@ -274,14 +274,14 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 			{*varX_, Ernest_},
 			{*varY_, std::make_shared<StringTerm>("x")},
 			{*varZ_, std::make_shared<StringTerm>("y")}
-		}));
+		}))
 }
 
 TEST_F(KnowledgeBaseTest, modal_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		K((*hasSibling_)(Fred_, varX_)),
-		Substitution({{*varX_, Ernest_}}));
+		Substitution({{*varX_, Ernest_}}))
 	EXPECT_ONLY_SOLUTION(
 		B((*hasSibling_)(Fred_, varX_)),
-		Substitution({{*varX_, Ernest_}}));
+		Substitution({{*varX_, Ernest_}}))
 }

@@ -1,6 +1,5 @@
-:- module(blackboard,
-    [ read_query/3,
-      current_reasoner_module/1,      % -ReasonerModule
+:- module(reasoner,
+    [ current_reasoner_module/1,      % -ReasonerModule
       current_reasoner_manager/1,     % -ReasonerManager
       set_current_reasoner_module/1,  % +ReasonerModule
       reasoner_defined_predicate/2,   % ?PredicateIndicator, ?PredicateType
@@ -8,20 +7,7 @@
       reasoner_setting/4,             % +Name, +Type, +Default, +Comment
       reasoner_set_setting/3,         % +ResonerModule, +Name, +Value
       reasoner_rdf_init/1,            % +ResonerModule
-      reasoner_call/2,
-      kb_call(t),                     % +Goal
-      kb_call(t,t,t),                 % +Goal, +QScope, -FScope
-      %kb_call(t,t,t,t),               % +Goal, +QScope, -FScope, +Options
-      %kb_project(t),                  % +Goal
-      %kb_project(t,t),                % +Goal, +Scope
-      %kb_project(t,t,t),              % +Goal, +Scope, +Options
-      %kb_unproject(t),                % +Goal
-      %kb_unproject(t,t),              % +Goal, +Scope
-      %kb_unproject(t,t,t)             % +Goal, +Scope, +Options
-      memorize/1,                     % +Path
-      memorize/2,                     % +Path, +Options
-      remember/1,                     % +Path
-      remember/2                      % +Path, +Options
+      reasoner_call/2
     ]).
 
 /** <module> Query evaluation via a blackboard.
@@ -36,43 +22,6 @@
           rdf/4 ]).
 :- use_module(library('settings'), [ setting/2 ]).
 :- use_module(library('logging')).
-
-%% read_query(+Atom, -Term, +Options) is semidet.
-%
-% Calls read_term_from_atom/3 and does some additional
-% rewriting for expansion of RDF prefixes.
-%
-%
-read_query(Atom, Term, Options) :-
-    read_term_from_atom(Atom, Term0, Options),
-    rdf_global_term(Term0, Term1),
-    expand_rdf_query(Term1, Term).
-
-%%
-expand_rdf_query(NS:Goal, Expanded) :-
-    compound(Goal),
-    Goal =.. [P, S, O],
-    rdf_global_term(NS:P,P0),
-    atom_concat('http', _, P0),
-    Expanded =.. [P0, S, O], !.
-expand_rdf_query(triple(S,P,O), Expanded) :-
-    % rewrite triple(S,P,O) to P(S,O) if ground(P)
-    ground(P),!,
-    Expanded =.. [P,S,O].
-expand_rdf_query(Goal, Goal) :-
-    is_list(Goal), !.
-expand_rdf_query(Goal, Expanded) :-
-    compound(Goal), !,
-    Goal =.. [Functor | Args],
-    expand_rdf_query1(Args, ExpandedArgs),
-    Expanded =.. [Functor | ExpandedArgs].
-expand_rdf_query(Goal, Goal).
-
-%%
-expand_rdf_query1([],[]).
-expand_rdf_query1([X|Xs],[Y|Ys]) :-
-    expand_rdf_query(X,Y),
-    expand_rdf_query1(Xs,Ys).
 
 %% current_reasoner_module(?Reasoner) is semidet.
 %
@@ -213,13 +162,14 @@ reasoner_defined_predicate_1(_, Head, built_in) :-
 reasoner_defined_predicate_1(_, Head, built_in) :-
     user:predicate_property(Head, visible), !.
 
-%reasoner_defined_predicate_1(Reasoner, Head, relation(idb)) :-
-%    Reasoner:predicate_property(Head, number_of_rules(NumRules)),
-%    NumRules > 0, !.
-
 reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     \+ user:predicate_property(Head, defined),
     Reasoner:predicate_property(Head, visible), !.
+
+% TODO: rather only yield IDB predicates, remove EDB case below
+%reasoner_defined_predicate_1(Reasoner, Head, relation(idb)) :-
+%    Reasoner:predicate_property(Head, number_of_rules(NumRules)),
+%    NumRules > 0, !.
 
 reasoner_defined_predicate_1(Reasoner, Head, relation) :-
     % RDF predicates
@@ -360,126 +310,3 @@ expand_meta_instantiations1([ArgN|Args], [ModeN|Modes], [Next|Rest], Xs-Zs) :-
 
 expand_meta_instantiations1([ArgN|Args], [_|Modes], [ArgN|Rest], Xs-Ys) :-
     expand_meta_instantiations1(Args,Modes,Rest,Xs-Ys).
-
-%% kb_call(+Goal) is nondet.
-%
-% Same as kb_call/3 with default scope to include
-% only facts that hold now.
-%
-% @param Statement a statement term.
-%
-kb_call(Goal) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_call(ReasonerManager, Goal).
-
-%% kb_call(+Goal, +QScope, -FScope) is nondet.
-%
-% Same as kb_call/4 with empty options list.
-%
-% @param Statement a statement term.
-%
-kb_call(Goal, QScope, FScope) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_call(ReasonerManager, Goal, QScope, FScope).
-
-%% kb_call(+Statement, +QScope, -FScope, +Options) is nondet.
-%
-% True if Statement holds within QScope.
-% Statement can also be a list of statements.
-% FactScope is the actual scope of the statement being true that overlaps
-% with QScope. Options include:
-%
-%     - max_queue_size(MaxSize)
-%     Determines the maximum number of messages queued in each stage.  Default is 50.
-%     - graph(GraphName)
-%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
-%
-% Any remaining options are passed to the querying backends that are invoked.
-%
-% @param Statement a statement term.
-% @param QScope the requested scope.
-% @param FScope the actual scope.
-% @param Options list of options.
-%
-%kb_call(Goal, QScope, FScope, Options) :- fail.
-
-%% kb_project(+Statement) is nondet.
-%
-% Same as kb_project/2 with universal scope.
-%
-% @param Statement a statement term.
-%
-
-%% kb_project(+Statement, +Scope) is nondet.
-%
-% Same as kb_project/3 with empty options list.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-
-%% kb_project(+Statement, +Scope, +Options) is semidet.
-%
-% Assert that some statement is true.
-% Scope is the scope of the statement being true.
-% Statement can also be a list of statements. Options include:
-%
-%     - graph(GraphName)
-%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
-%
-% Any remaining options are passed to the querying backends that are invoked.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-% @param Options list of options.
-%
-
-%% kb_unproject(+Statement) is nondet.
-%
-% Same as kb_unproject/2 with universal scope.
-%
-% @param Statement a statement term.
-%
-
-%% kb_unproject(+Statement, +Scope) is nondet.
-%
-% Same as kb_unproject/3 with empty options list.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-%
-
-%% kb_unproject(+Statement, +Scope, +Options) is semidet.
-%
-% Unproject that some statement is true.
-% Statement must be a term triple/3. 
-% It can also be a list of such terms.
-% Scope is the scope of the statement to unproject. Options include:
-%
-%     - graph(GraphName)
-%     Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.
-%
-% Any remaining options are passed to the querying backends that are invoked.
-%
-% @param Statement a statement term.
-% @param Scope the scope of the statement.
-% @param Options list of options.
-%
-
-%%
-memorize(Path, Options) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_memorize(ReasonerManager, Path, Options).
-
-%%
-memorize(Path) :-
-    memorize(Path, []).
-
-%%
-remember(Path, Options) :-
-    current_reasoner_manager(ReasonerManager),
-    qa_remember(ReasonerManager, Path, Options).
-
-%%
-remember(Path) :-
-    remember(Path, []).

@@ -27,6 +27,10 @@ ReasonerManager::ReasonerManager(KnowledgeBase *kb, const std::shared_ptr<Backen
 
 ReasonerManager::~ReasonerManager() {
 	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
+	for(auto &x: reasonerPool_) {
+		// make sure reasoner does not interact with the manager anymore
+		x.second->reasoner()->setReasonerManager(nullptr);
+	}
 	reasonerManagers_.erase(managerID_);
 }
 
@@ -100,7 +104,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 	auto reasoner = factory->createReasoner(reasonerID);
 	// reasoner need to have a reference to the reasoner manager such that
 	// predicates can be defined that interact with the KB
-	reasoner->setReasonerManager(managerID_);
+	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
 
 	if (backendName.has_value()) {
@@ -115,6 +119,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 		auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);
 		if (backend) {
 			setDataBackend(reasoner, backend);
+			backendManager_->addBackend(reasonerID, backend);
 		} else {
 			throw ReasonerError("Reasoner `{}` has no 'data-backend' configured.", reasonerID);
 		}
@@ -186,8 +191,15 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
 	}
 	auto managedReasoner = std::make_shared<DefinedReasoner>(reasonerID, reasoner);
 	reasonerPool_[reasonerID] = managedReasoner;
-	reasoner->setReasonerManager(managerID_);
+	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
+
+	// check if reasoner implements DataBackend interface
+	auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);
+	if (backend) {
+		setDataBackend(reasoner, backend);
+		backendManager_->addBackend(reasonerID, backend);
+	}
 
 	return managedReasoner;
 }

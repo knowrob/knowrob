@@ -23,6 +23,7 @@
 namespace knowrob {
 	// forward declarations
 	class KnowledgeBase;
+	class ReasonerManager;
 
 	/**
 	 * A reasoner is a component that can infer new knowledge.
@@ -51,15 +52,25 @@ namespace knowrob {
 		std::shared_ptr<StringTerm> reasonerNameTerm() const { return t_reasonerName_; }
 
 		/**
-		 * @return ID of the manager that created the reasoner.
+		 * @return the reasoner manager associated with this reasoner.
 		 */
-		uint32_t managerID() const { return reasonerManagerID_; }
+		ReasonerManager &reasonerManager() const;
 
 		/**
 		 * Note that this will raise an exception if the reasoner is not associated with a knowledge base.
 		 * @return the knowledge base that this reasoner is associated with.
 		 */
 		KnowledgeBase *kb() const;
+
+		/**
+		 * @return the vocabulary of this backend.
+		 */
+		std::shared_ptr<semweb::Vocabulary> vocabulary() const;
+
+		/**
+		 * @return the import hierarchy between named graphs.
+		 */
+		std::shared_ptr<semweb::ImportHierarchy> importHierarchy() const;
 
 		/**
 		 * Evaluate a lambda function in a worker thread.
@@ -162,13 +173,13 @@ namespace knowrob {
 	private:
 		std::shared_ptr<StringTerm> t_reasonerName_;
 		std::set<StatementData> inferredTriples_;
-		uint32_t reasonerManagerID_;
-
-		void setReasonerManager(uint32_t managerID);
-
-		void setReasonerName(std::string_view name);
 
 		friend class ReasonerManager;
+		ReasonerManager *reasonerManager_;
+
+		void setReasonerManager(ReasonerManager *reasonerManager);
+
+		void setReasonerName(std::string_view name);
 	};
 
 	/**
