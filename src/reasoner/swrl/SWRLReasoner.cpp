@@ -47,6 +47,7 @@ bool SWRLReasoner::loadSWRLFile(const DataSourcePtr &dataFile)
 {
 	static auto consult_f = "swrl_file_load";
 	auto path = PrologEngine::getResourcePath(dataFile->uri());
+	KB_INFO("Loading SWRL file: {}", dataFile->uri());
 	return PROLOG_ENGINE_EVAL(PrologTerm(consult_f, path.native()));
 }
 

@@ -68,8 +68,7 @@ std::string_view PrologReasoner::callFunctor() {
 }
 
 PrologTerm PrologReasoner::transformGoal(const PrologTerm &goal) {
-	// TODO: init frame term to some default value!
-	return PrologTerm(callFunctor(), goal, PrologTerm());
+	return PrologTerm(callFunctor(), goal, PrologTerm::nil());
 }
 
 bool PrologReasoner::initializeGlobalPackages() {

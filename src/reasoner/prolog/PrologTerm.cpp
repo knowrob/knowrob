@@ -97,6 +97,12 @@ PrologTerm::PrologTerm(const TermPtr &kbTerm)
 	putTerm(kbTerm);
 }
 
+PrologTerm PrologTerm::nil() {
+	PrologTerm empty_list;
+	PL_put_nil(empty_list());
+	return empty_list;
+}
+
 PrologTerm PrologTerm::operator&(const PrologTerm &other) const {
 	static const auto comma_f = ",";
 	if (PL_term_type(plTerm_) == PL_VARIABLE) {

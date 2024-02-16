@@ -127,21 +127,7 @@ std::shared_ptr<DefinedBackend> BackendManager::addBackend(
 	}
 	auto managedBackend = std::make_shared<DefinedBackend>(backendID, backend);
 	backendPool_[backendID] = managedBackend;
-	backend->setImportHierarchy(kb_->importHierarchy());
-	backend->setVocabulary(kb_->vocabulary());
-	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
-	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(backend);
-	if (queryable) {
-		KB_DEBUG("adding queryable backend with id '{}'.", backendID);
-		queryable_[backendID] = queryable;
-	}
-	// check if the backend is a PersistentBackend, if so store it in the persistent_ map
-	auto persistent = std::dynamic_pointer_cast<PersistentBackend>(backend);
-	if (persistent) {
-		KB_DEBUG("adding persistent backend with id '{}'.", backendID);
-		persistent_[backendID] = persistent;
-	}
-
+	initBackend(managedBackend);
 	return managedBackend;
 }
 
@@ -150,6 +136,24 @@ void BackendManager::addBackend(const std::shared_ptr<DefinedBackend> &definedKG
 		KB_WARN("overwriting backend with name '{}'", definedKG->name());
 	}
 	backendPool_[definedKG->name()] = definedKG;
+	initBackend(definedKG);
+}
+
+void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedKG) {
+	definedKG->backend()->setImportHierarchy(kb_->importHierarchy());
+	definedKG->backend()->setVocabulary(kb_->vocabulary());
+	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
+	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->backend());
+	if (queryable) {
+		KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
+		queryable_[definedKG->name()] = queryable;
+	}
+	// check if the backend is a PersistentBackend, if so store it in the persistent_ map
+	auto persistent = std::dynamic_pointer_cast<PersistentBackend>(definedKG->backend());
+	if (persistent) {
+		KB_INFO("adding persistent backend with id '{}'.", definedKG->name());
+		persistent_[definedKG->name()] = persistent;
+	}
 }
 
 void BackendManager::removeBackend(const std::shared_ptr<DefinedBackend> &backend) {

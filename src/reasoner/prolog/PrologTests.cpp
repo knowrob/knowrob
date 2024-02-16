@@ -73,7 +73,7 @@ void PrologTestsBase::runPrologTests(
 		}
 	}
 	EXPECT_TRUE(hasResult);
-	KB_INFO1(target.c_str(), 1, "{}/{} tests succeeded.", (numTests - numFailedTests), numTests);
+	KB_INFO1(target.c_str(), 1, "{}/{} tests succeeded for target '{}'.", (numTests - numFailedTests), numTests, target);
 }
 
 class PrologReasonerTests : public PrologTests<knowrob::PrologReasoner, knowrob::PrologBackend> {

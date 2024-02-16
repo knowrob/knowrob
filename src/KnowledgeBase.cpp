@@ -56,6 +56,7 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
 		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
+	KB_INFO("creating knowledge base");
 	backendManager_ = std::make_unique<BackendManager>(this);
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 	initFromConfig(config);
@@ -90,7 +91,8 @@ void KnowledgeBase::init() {
 
 void KnowledgeBase::initFromConfig(const boost::property_tree::ptree &config) {
 	loadConfiguration(config);
-	init();
+	//init();
+	startReasoner();
 }
 
 KnowledgeBase::~KnowledgeBase() {
@@ -179,6 +181,11 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 		auto definedBackend = pair.second;
 		definedBackend->backend()->setVocabulary(vocabulary_);
 		definedBackend->backend()->setImportHierarchy(importHierarchy_);
+	}
+
+	// load common ontologies
+	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
+		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
 	}
 
 	// load the "global" data sources.
@@ -881,6 +888,7 @@ bool KnowledgeBase::removeAll(const std::vector<StatementData> &triples) {
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
+	KB_INFO("unloading origin '{}'", origin);
 	// remove all triples with a given origin from all backends.
 	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
 	for (auto &it: backendManager_->backendPool()) {
@@ -938,14 +946,26 @@ void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
 		sub->addDirectParent(sup);
 	} else if (semweb::isTypeIRI(tripleData.predicate)) {
 		vocabulary_->addResourceType(tripleData.subject, tripleData.object);
+		// increase frequency in vocabulary
+		//vocabulary_->increaseFrequency(tripleData.subject);
+		// TODO: string comparison below is not efficient, could put all classes in a map here, or add
+		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
+		if (vocabulary_->isDefinedClass(tripleData.object) &&
+		    semweb::owl::Class != tripleData.object &&
+		    semweb::owl::Restriction != tripleData.object &&
+		    semweb::owl::NamedIndividual != tripleData.object &&
+		    semweb::owl::AnnotationProperty != tripleData.object &&
+		    semweb::owl::ObjectProperty != tripleData.object &&
+		    semweb::owl::DatatypeProperty != tripleData.object &&
+		    semweb::rdfs::Class != tripleData.object &&
+		    semweb::rdf::Property != tripleData.object) {
+			vocabulary_->increaseFrequency(tripleData.object);
+		}
 	} else if (semweb::isInverseOfIRI(tripleData.predicate)) {
 		auto p = vocabulary_->defineProperty(tripleData.subject);
 		auto q = vocabulary_->defineProperty(tripleData.object);
 		p->setInverse(q);
 		q->setInverse(p);
-	} else if (semweb::isPropertyIRI(tripleData.predicate) || semweb::isClassIRI(tripleData.predicate)) {
-		// increase assertion counter which is used in ordering metrics
-		vocabulary_->increaseFrequency(tripleData.predicate);
 	} else if (semweb::owl::imports == tripleData.predicate) {
 		auto resolvedImport = URI::resolve(tripleData.object);
 		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
@@ -954,6 +974,10 @@ void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
 		} else {
 			KB_WARN("import statement without graph");
 		}
+	} else if (vocabulary_->isObjectProperty(tripleData.predicate) ||
+	           vocabulary_->isDatatypeProperty(tripleData.predicate)) {
+		// increase frequency of property in vocabulary
+		vocabulary_->increaseFrequency(tripleData.predicate);
 	}
 }
 

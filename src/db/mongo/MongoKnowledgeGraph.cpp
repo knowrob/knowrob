@@ -51,6 +51,7 @@ KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 bson_t *newPipelineImportHierarchy(const char *collection);
 
 bson_t *newRelationCounter(const char *collection);
+bson_t *newClassCounter(const char *collection);
 
 const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
 const std::string MongoKnowledgeGraph::DB_NAME_KNOWROB = "knowrob";
@@ -229,6 +230,21 @@ void MongoKnowledgeGraph::initialize() {
 			if (!bson_iter_find(&iter, "count")) break;
 			auto count = bson_iter_as_int64(&iter);
 			vocabulary_->setFrequency(property, count);
+		}
+	}
+	{
+		const bson_t *result;
+		Cursor cursor(tripleCollection_);
+		Document document(newClassCounter(tripleCollection_->name().c_str()));
+		cursor.aggregate(document.bson());
+		while (cursor.next(&result)) {
+			bson_iter_t iter;
+			if (!bson_iter_init(&iter, result)) break;
+			if (!bson_iter_find(&iter, "class")) break;
+			auto cls = bson_iter_utf8(&iter, nullptr);
+			if (!bson_iter_find(&iter, "count")) break;
+			auto count = bson_iter_as_int64(&iter);
+			vocabulary_->setFrequency(cls, count);
 		}
 	}
 
@@ -783,28 +799,70 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleDat
 
 bson_t *newRelationCounter(const char *collection) {
 	return BCON_NEW("pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(rdf::type.data()),
-					"$expr", "{", "$in", "[", "$o", "[", BCON_UTF8(owl::ObjectProperty.data()),
-					BCON_UTF8(owl::DatatypeProperty.data()), "]", "]", "}",
-					"}", "}",
-					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("x"),
-					"let", "{", "outer", BCON_UTF8("$s"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
-					"}", "}",
-					"]",
-					"}", "}",
-					"{", "$project", "{",
-					"property", BCON_UTF8("$s"),
-					"count", "{", "$size", BCON_UTF8("$x"), "}",
-					"}", "}",
-					"{", "$match", "{",
-					"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
-					"}", "}",
+						"{", "$match", "{",
+							"p", BCON_UTF8(rdf::type.data()),
+							"$expr", "{", "$in", "[", "$o", "[",
+								BCON_UTF8(owl::ObjectProperty.data()),
+								BCON_UTF8(owl::DatatypeProperty.data()),
+							"]", "]", "}",
+						"}", "}",
+						"{", "$group", "{",
+							"_id", BCON_NULL,
+							"s", "{", "$addToSet", "$s", "}",
+						"}", "}",
+						"{", "$unwind", "$s", "}",
+						"{", "$lookup", "{",
+							"from", BCON_UTF8(collection),
+							"as", BCON_UTF8("x"),
+							"let", "{", "outer", BCON_UTF8("$s"), "}",
+							"pipeline", "[",
+								"{", "$match", "{",
+									"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
+								"}", "}",
+							"]",
+						"}", "}",
+						"{", "$project", "{",
+							"property", BCON_UTF8("$s"),
+							"count", "{", "$size", BCON_UTF8("$x"), "}",
+						"}", "}",
+						"{", "$match", "{",
+							"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
+						"}", "}",
+					"]"
+	);
+}
+
+bson_t *newClassCounter(const char *collection) {
+	// TODO: skip classes that start with "_" character as these are blank nodes
+	return BCON_NEW("pipeline", "[",
+						"{", "$match", "{",
+							"p", BCON_UTF8(rdf::type.data()),
+							"$expr", "{", "$in", "[", "$o", "[",
+								BCON_UTF8(owl::Class.data()),
+							"]", "]", "}",
+						"}", "}",
+						"{", "$group", "{",
+							"_id", BCON_NULL,
+							"s", "{", "$addToSet", "$s", "}",
+						"}", "}",
+						"{", "$unwind", "$s", "}",
+						"{", "$lookup", "{",
+							"from", BCON_UTF8(collection),
+							"as", BCON_UTF8("x"),
+							"let", "{", "outer", BCON_UTF8("$s"), "}",
+							"pipeline", "[",
+								"{", "$match", "{",
+									"$expr", "{", "$eq", "[", BCON_UTF8("$o"), BCON_UTF8("$$outer"), "]", "}",
+								"}", "}",
+							"]",
+						"}", "}",
+						"{", "$project", "{",
+							"class", BCON_UTF8("$s"),
+							"count", "{", "$size", BCON_UTF8("$x"), "}",
+						"}", "}",
+						"{", "$match", "{",
+							"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
+						"}", "}",
 					"]"
 	);
 }

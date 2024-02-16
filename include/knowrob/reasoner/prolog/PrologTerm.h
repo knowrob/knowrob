@@ -208,6 +208,11 @@ namespace knowrob {
 		 */
 		static std::string getVarName(term_t plTerm);
 
+		/**
+		 * @return a term representing the empty list
+		 */
+		static PrologTerm nil();
+
 	protected:
 		std::map<std::string, term_t> vars_;
 		std::optional<std::string_view> module_;

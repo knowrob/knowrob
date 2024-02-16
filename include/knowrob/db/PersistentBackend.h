@@ -28,6 +28,8 @@ namespace knowrob {
 		 * @param version a version string.
 		 */
 		virtual void setVersionOfOrigin(std::string_view origin, std::string_view version) = 0;
+
+		// TODO: add interface for frequency of resources?
 	};
 
 	using PersistentBackendPtr = std::shared_ptr<PersistentBackend>;

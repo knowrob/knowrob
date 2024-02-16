@@ -131,29 +131,55 @@ bool Vocabulary::isAnnotationProperty(const std::string_view &iri) {
 	return it != definedProperties_.end() && it->second->hasFlag(ANNOTATION_PROPERTY);
 }
 
+bool Vocabulary::isObjectProperty(const std::string_view &iri) {
+	auto it = definedProperties_.find(iri);
+	return it != definedProperties_.end() && it->second->hasFlag(OBJECT_PROPERTY);
+}
+
+bool Vocabulary::isDatatypeProperty(const std::string_view &iri) {
+	auto it = definedProperties_.find(iri);
+	return it != definedProperties_.end() && it->second->hasFlag(DATATYPE_PROPERTY);
+}
+
 bool Vocabulary::isTaxonomicProperty(const std::string_view &iri) {
 	return isSubClassOfIRI(iri) ||
 		   isSubPropertyOfIRI(iri) ||
 		   isTypeIRI(iri);
 }
 
+// FIXME: the frequency of parent/child properties and classes should be managed too!
+
 void Vocabulary::setFrequency(const std::string_view &iri, uint32_t frequency) {
-	frequency_[iri] = frequency;
+	if(frequency==0) {
+		frequency_.erase(iri);
+	} else {
+		auto p_it = definedProperties_.find(iri);
+		if (p_it != definedProperties_.end()) {
+			frequency_[p_it->second->iri()] = frequency;
+			return;
+		}
+		auto c_it = definedClasses_.find(iri);
+		if (c_it != definedClasses_.end()) {
+			frequency_[c_it->second->iri()] = frequency;
+			return;
+		}
+		KB_WARN("cannot set frequency for unknown IRI '{}'", iri);
+	}
 }
 
 void Vocabulary::increaseFrequency(const std::string_view &iri) {
-	if (frequency_.count(iri) == 0)
-		frequency_[iri] = 1;
-	else
-		frequency_[iri]++;
+	auto it = frequency_.find(iri);
+	if (it == frequency_.end()) {
+		setFrequency(iri, 1);
+	} else {
+		it->second++;
+	}
 }
 
 uint32_t Vocabulary::frequency(const std::string_view &iri) const {
 	auto it = frequency_.find(iri);
-	if (it == frequency_.end())
-		return 0;
-	else
-		return it->second;
+	if(it == frequency_.end()) return 0;
+	else return it->second;
 }
 
 

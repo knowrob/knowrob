@@ -127,6 +127,18 @@ namespace knowrob::semweb {
 
         /**
          * @param iri a IRI
+         * @return true if IRI is a defined object property
+         */
+        bool isObjectProperty(const std::string_view &iri);
+
+        /**
+         * @param iri a IRI
+         * @return true if IRI is a defined data type property
+         */
+        bool isDatatypeProperty(const std::string_view &iri);
+
+        /**
+         * @param iri a IRI
          * @return true if IRI is a defined taxonomic property
          */
         static bool isTaxonomicProperty(const std::string_view &iri);

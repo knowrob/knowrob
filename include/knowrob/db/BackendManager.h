@@ -136,6 +136,8 @@ namespace knowrob {
 		 * @reasoner a reasoner.
 		 */
 		void removeBackend(const std::shared_ptr<DefinedBackend> &reasoner);
+
+		void initBackend(const std::shared_ptr<DefinedBackend> &definedKG);
 	};
 
 	// a macro for static registration of a knowledge graph type.
