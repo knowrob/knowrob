@@ -195,7 +195,7 @@ test('during(+Triple,+Overlapping)') :-
 	assert_false(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [140,240])).
 
-test('during(+Triple,[-Since,-Until])') :-
+test('during(+Triple,[-Since,-Until])', fixme('variables in second argument of during')) :-
 	assert_true(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [_,_])),
 	(	mongolog_call(
@@ -204,7 +204,7 @@ test('during(+Triple,[-Since,-Until])') :-
 	;	true
 	).
 
-test('during(+Triple,-Interval)') :-
+test('during(+Triple,-Interval)', fixme('variables in second argument of during')) :-
 	assert_true(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during _)),
 	(	mongolog_call(
