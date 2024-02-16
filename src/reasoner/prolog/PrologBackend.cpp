@@ -15,6 +15,10 @@ namespace knowrob {
 	static const auto rdf_transaction = "rdf_transaction";
 }
 
+// TODO: Prolog allows the fourth parameter to be more than a string:
+//    https://www.swi-prolog.org/pldoc/man?section=semweb-graphs
+//    Potentially we could use this to store the whole KnowRob frame of a triple.
+
 bool PrologBackend::loadConfig(const ReasonerConfig &cfg) {
 	return true;
 }

@@ -25,7 +25,7 @@ static inline std::shared_ptr<semweb::ImportHierarchy> getImportHierarchy(term_t
 	return prologReasoner ? prologReasoner->importHierarchy() : null;
 }
 
-static inline KnowledgeBase *getKnowledgebase(term_t t_manager, term_t t_reasoner) {
+static inline KnowledgeBase *getKnowledgeBase(term_t t_manager, term_t t_reasoner) {
 	auto definedReasoner =
 			PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
 	if (!definedReasoner) return nullptr;
@@ -55,13 +55,13 @@ foreign_t sw_set_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_gr
 	}
 }
 
-foreign_t sw_unset_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {
-	auto hierarchy = getImportHierarchy(t_manager, t_reasoner);
+foreign_t sw_unset_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_origin) {
+	auto kb = getKnowledgeBase(t_manager, t_reasoner);
+	if(!kb) return false;
 
-	char *graph;
-	if (hierarchy && PL_get_atom_chars(t_graph, &graph)) {
-		hierarchy->removeCurrentGraph(graph);
-		return true;
+	char *origin;
+	if (PL_get_atom_chars(t_origin, &origin)) {
+		return kb->removeAllWithOrigin(origin);
 	} else {
 		return false;
 	}
@@ -129,7 +129,7 @@ foreign_t sw_url_version2(term_t t_url, term_t t_version) {
 }
 
 foreign_t sw_load_rdf_xml4(term_t t_manager, term_t t_reasoner, term_t t_url, term_t t_parentGraph) {
-	auto kb = getKnowledgebase(t_manager, t_reasoner);
+	auto kb = getKnowledgeBase(t_manager, t_reasoner);
 	char *url, *parentGraph;
 	if (kb && PL_get_atom_chars(t_url, &url) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {
 		URI ontologyURI(url);

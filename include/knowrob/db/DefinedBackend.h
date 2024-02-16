@@ -47,8 +47,12 @@ namespace knowrob {
 			return std::nullopt;
 		}
 
-		void setVersionOfOrigin(std::string_view origin, std::string_view version) {
-			originVersions_[origin.data()] = version.data();
+		void setVersionOfOrigin(std::string_view origin, std::optional<std::string_view> version) {
+			if (version) {
+				originVersions_[origin.data()] = version.value().data();
+			} else {
+				originVersions_.erase(origin.data());
+			}
 		}
 
 	protected:

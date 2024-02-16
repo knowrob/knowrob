@@ -63,6 +63,8 @@ namespace knowrob {
 				r->setDataBackend(db);
 				knowledgeBase->reasonerManager()->addReasoner(ss.str(), r);
 				r->loadConfig(knowrob::ReasonerConfig());
+
+				knowledgeBase->init();
 			}
 			return r;
 		}

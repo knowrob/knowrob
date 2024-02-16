@@ -58,7 +58,7 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
 	backendManager_ = std::make_unique<BackendManager>(this);
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
-	init(config);
+	initFromConfig(config);
 }
 
 KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
@@ -69,7 +69,7 @@ KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 	boost::property_tree::ptree config;
 	boost::property_tree::read_json(URI::resolve(configFile), config);
-	init(config);
+	initFromConfig(config);
 }
 
 KnowledgeBase::KnowledgeBase()
@@ -80,15 +80,17 @@ KnowledgeBase::KnowledgeBase()
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 }
 
-void KnowledgeBase::init(const boost::property_tree::ptree &config) {
-	loadConfiguration(config);
-
+void KnowledgeBase::init() {
 	// load common ontologies
 	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
 		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
 	}
-
 	startReasoner();
+}
+
+void KnowledgeBase::initFromConfig(const boost::property_tree::ptree &config) {
+	loadConfiguration(config);
+	init();
 }
 
 KnowledgeBase::~KnowledgeBase() {
@@ -886,7 +888,10 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 		// create a worker goal that performs the transaction
 		auto transaction = std::make_shared<ThreadPool::LambdaRunner>(
 				[definedBackend, origin](const ThreadPool::LambdaRunner::StopChecker &) {
-					if (!definedBackend->backend()->removeAllWithOrigin(origin)) {
+					if (definedBackend->backend()->removeAllWithOrigin(origin)) {
+						// unset version of origin in backend
+						definedBackend->setVersionOfOrigin(origin, std::nullopt);
+					} else {
 						KB_WARN("removal of triples with origin '{}' from backend '{}' failed!", origin,
 								definedBackend->name());
 					}
@@ -900,11 +905,15 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 		transactions.push_back(transaction);
 	}
 
-	// TODO: update version of origin to nullopt in backends
-	// TODO: update vocabulary
-
 	// wait for all transactions to finish
 	for (auto &transaction: transactions) transaction->join();
+
+	// TODO: update vocabulary, I guess we need to have an interface to select all terms
+	//       that are defined in a given origin, and then remove them from the vocabulary
+	//       if there is no other origin defining it.
+	// TODO: optionally drop all child imports of the origin
+	// remove origin from import hierarchy
+	importHierarchy_->removeCurrentGraph(origin);
 
 	return true;
 }

@@ -24,7 +24,6 @@
       "read-only": false
     }
   ],
-  "central-backend": "mongodb",
   "reasoner": [
     {
       "type": "DummyReasoner",

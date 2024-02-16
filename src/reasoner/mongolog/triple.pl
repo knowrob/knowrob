@@ -2,8 +2,7 @@
         [ mng_triple_doc(t,-,t),
           triple(t,t,t),
           get_unique_name(r,-),
-          is_unique_name(r),
-          drop_graph(+)
+          is_unique_name(r)
         ]).
 /** <module> Handling of triples in query expressions.
 
@@ -450,17 +449,6 @@ graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 	findall(string(X),
 		(X=GraphName ; sw_graph_includes(GraphName,X)),
 		Graphs).
-
-%% drop_graph(+Name) is det.
-%
-% Deletes all triples asserted into given named graph.
-%
-% @param Name the graph name.
-%
-drop_graph(Name) :-
-    current_reasoner_manager(ReasonerManager),
-    current_reasoner_module(Reasoner),
-	mng_drop_graph_cpp(ReasonerManager, Reasoner, Name).
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper

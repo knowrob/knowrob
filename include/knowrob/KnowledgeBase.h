@@ -119,6 +119,8 @@ namespace knowrob {
 
 		auto &backendManager() const { return backendManager_; }
 
+		void init();
+
 		// override IDataBackend
 		bool insertOne(const StatementData &triple) override;
 
@@ -181,7 +183,7 @@ namespace knowrob {
 			semweb::VocabularyPtr vocabulary_;
 		};
 
-		void init(const boost::property_tree::ptree &config);
+		void initFromConfig(const boost::property_tree::ptree &config);
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
 
