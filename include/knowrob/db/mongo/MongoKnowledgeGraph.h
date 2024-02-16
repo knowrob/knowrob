@@ -27,6 +27,7 @@ namespace knowrob {
 	public:
 		static const std::string DB_URI_DEFAULT;
 		static const std::string DB_NAME_KNOWROB;
+		static const std::string DB_NAME_TESTS;
 		static const std::string COLL_NAME_TRIPLES;
 		static const std::string COLL_NAME_TESTS;
 
@@ -137,6 +138,8 @@ namespace knowrob {
 		void initialize();
 
 		static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
+
+		static std::shared_ptr<mongo::Collection> connect(const std::string_view db_uri, const std::string_view db_name, const std::string_view collectionName);
 
 		static std::string getDBName(const boost::property_tree::ptree &config);
 

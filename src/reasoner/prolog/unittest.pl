@@ -86,6 +86,8 @@ prolog:message(test_blocked(Name,Msg)) -->
     [ '[plunit] test "~p" is blocked: ~p'-[Name,Msg] ].
 prolog:message(test_fixme(num_tests(1)))   --> [ '[plunit] 1 test is labeled as `fixme`' ].
 prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled as `fixme`'-[Num] ].
+prolog:message(run_tests(Module)) -->
+    [ '[plunit] testing module "~p"'-[Module] ].
 
 %% Intercept plunit messages, and
 %% create facts using the dynamic "test_*" predicates.
@@ -285,6 +287,7 @@ run_test__(ModuleFile, Opts) :-
 	),
 	% get the module name
 	use_module(Module,ModuleFile,[]),
+	log_info(run_tests(Module)),
 	% load plt file if any
 	load_test_files(_),
 	% remember old user output

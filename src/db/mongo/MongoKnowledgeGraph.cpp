@@ -55,8 +55,9 @@ bson_t *newClassCounter(const char *collection);
 
 const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
 const std::string MongoKnowledgeGraph::DB_NAME_KNOWROB = "knowrob";
+const std::string MongoKnowledgeGraph::DB_NAME_TESTS = "knowrob_test";
 const std::string MongoKnowledgeGraph::COLL_NAME_TRIPLES = "triples";
-const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triplesTest";
+const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triples_test";
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
 		: DataBackend(),
@@ -66,21 +67,27 @@ MongoKnowledgeGraph::MongoKnowledgeGraph()
 }
 
 bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name, std::string_view collectionName) {
-	tripleCollection_ = MongoInterface::get().connect(db_uri.data(), db_name.data(), collectionName.data());
-	if(!tripleCollection_) return false;
-
-	initialize();
-	dropOrigin("user");
-	return true;
+	tripleCollection_ = connect(db_uri, db_name, collectionName);
+	if(tripleCollection_) {
+		initialize();
+		dropOrigin("user");
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config) {
 	auto ptree = config.ptree();
 	if (!ptree) {
-		tripleCollection_ = MongoInterface::get().connect("mongodb://localhost:27017", "knowrob", "triples");
-		initialize();
-		dropOrigin("user");
-		return true;
+		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);
+		if(tripleCollection_) {
+			initialize();
+			dropOrigin("user");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	tripleCollection_ = connect(*ptree);
@@ -117,11 +124,21 @@ bool MongoKnowledgeGraph::isReadOnly() const {
 	return isReadOnly_;
 }
 
+std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
+		const std::string_view db_uri,
+		const std::string_view db_name,
+		const std::string_view collectionName) {
+	auto coll = MongoInterface::get().connect(db_uri.data(), db_name.data(), collectionName.data());
+	if(coll) {
+		KB_INFO("[mongodb] connected to {} ({}.{}).", db_uri, db_name, collectionName);
+	} else {
+		KB_ERROR("[mongodb] failed to connect to {} ({}.{}).", db_uri, db_name, collectionName);
+	}
+	return coll;
+}
+
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(const boost::property_tree::ptree &config) {
-	return MongoInterface::get().connect(
-			getURI(config).c_str(),
-			getDBName(config).c_str(),
-			getCollectionName(config).c_str());
+	return connect(getURI(config), getDBName(config), getCollectionName(config));
 }
 
 std::string MongoKnowledgeGraph::getDBName(const boost::property_tree::ptree &config) {
@@ -293,6 +310,7 @@ void MongoKnowledgeGraph::drop() {
 }
 
 void MongoKnowledgeGraph::setVersionOfOrigin(std::string_view origin, std::string_view version) {
+	KB_INFO("[mongodb] set version for origin \"{}\" to \"{}\".", origin, version);
 	tripleCollection_->storeOne(Document(BCON_NEW(
 												 "s", BCON_UTF8(origin.data()),
 												 "p", BCON_UTF8(MONGO_KG_VERSION_KEY),
@@ -358,6 +376,7 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 	std::for_each(triples->begin(), triples->end(),
 				  [&](auto &data) {
 					  bool isTaxonomic = isTaxonomicProperty(data.predicate);
+
 					  // TODO: why the graph param?
 					  auto document = createTripleDocument(data, graph, isTaxonomic);
 					  bulk->pushInsert(document);
@@ -400,7 +419,7 @@ bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
 }
 
 bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
-	KB_INFO("dropping graph with name \"{}\".", graphName);
+	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
 	tripleCollection_->removeAll(Document(
 			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
 	// TODO: improve handling of default graph names.

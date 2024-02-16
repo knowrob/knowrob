@@ -115,6 +115,8 @@ namespace knowrob {
 
 			auto size() const { return actualSize_; }
 
+			auto origin() const { return origin_; }
+
 			const std::vector<StatementData> &asVector() const override { return mappedData_; }
 
 		protected:

@@ -188,6 +188,7 @@ void OntologyParser::flush() {
 	// lifts the reference.
 	// TODO: this might block the parser, but we could continue already filling the next batch
 	//       on the other hand, if the callback is executed by a worker, maybe too many batches will be queued.
+	//KB_DEBUG("flushing {} triples with origin {}", currentBatch_->size(), currentBatch_->origin());
 	currentBatch_->callback(currentBatch_);
 	currentBatch_ = nullptr;
 }

@@ -26,6 +26,21 @@ namespace knowrob {
 	template<class ReasonerType, class BackendType>
 	class PrologTests : public PrologTestsBase {
 	protected:
+		static std::shared_ptr<BackendType> createBackend(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
+			auto db = std::make_shared<BackendType>();
+			kb->backendManager()->addBackend(name, db);
+			db->loadConfig(knowrob::ReasonerConfig());
+			return db;
+		}
+
+		static std::shared_ptr<ReasonerType> createReasoner(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb, const std::shared_ptr<BackendType> &db) {
+			auto r = std::make_shared<ReasonerType>();
+			kb->reasonerManager()->addReasoner(name, r);
+			r->setDataBackend(db);
+			r->loadConfig(knowrob::ReasonerConfig());
+			return r;
+		}
+
 		// Per-test-suite set-up.
 		static void SetUpTestSuite() {
 			// Initialize the reasoner
@@ -45,31 +60,25 @@ namespace knowrob {
 		}
 
 		static std::shared_ptr<ReasonerType> reasoner() {
-			static std::shared_ptr<ReasonerType> r;
+			static std::shared_ptr<ReasonerType> reasoner;
+			static std::shared_ptr<KnowledgeBase> kb;
 			static std::shared_ptr<BackendType> db;
-			static std::shared_ptr<KnowledgeBase> knowledgeBase;
-			static int reasonerIndex_ = 0;
-			if (!r) {
-				knowledgeBase = std::make_shared<KnowledgeBase>();
 
+			if(!reasoner) {
+				static int reasonerIndex_ = 0;
 				std::stringstream ss;
 				ss << "prolog" << reasonerIndex_++;
 
-				db = std::make_shared<BackendType>();
-				knowledgeBase->backendManager()->addBackend(ss.str(), db);
-				db->loadConfig(knowrob::ReasonerConfig());
+				kb = std::make_shared<KnowledgeBase>();
+				db = createBackend(ss.str(), kb);
+				reasoner = createReasoner(ss.str(), kb, db);
 
-				r = std::make_shared<ReasonerType>();
-				r->setDataBackend(db);
-				knowledgeBase->reasonerManager()->addReasoner(ss.str(), r);
-				r->loadConfig(knowrob::ReasonerConfig());
-
-				knowledgeBase->init();
+				kb->init();
 			}
-			return r;
+			return reasoner;
 		}
 
-		static std::shared_ptr<KnowledgeBase> kb() {
+		static KnowledgeBase* kb() {
 			return reasoner()->reasonerManager().kb();
 		}
 	};
