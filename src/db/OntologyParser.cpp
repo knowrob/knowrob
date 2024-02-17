@@ -92,10 +92,6 @@ OntologyParser::OntologyParser(const std::string_view &fileURI, knowrob::semweb:
 }
 
 OntologyParser::~OntologyParser() {
-	if (currentBatch_) {
-		// there are some triples remaining in the current batch
-		flush();
-	}
 	raptor_free_parser(parser_);
 	raptor_free_uri(uri_);
 	raptor_free_uri(uriBase_);
@@ -112,22 +108,26 @@ raptor_world *OntologyParser::createWorld() {
 	return world;
 }
 
-raptor_parser *OntologyParser::createParser(knowrob::semweb::TripleFormat format) {
+const char* OntologyParser::mimeType(knowrob::semweb::TripleFormat format) {
 	switch (format) {
 		case semweb::RDF_XML:
-			return raptor_new_parser(world_, NAME_RDFXML.data());
+			return NAME_RDFXML.data();
 		case semweb::TURTLE:
-			return raptor_new_parser(world_, NAME_TURTLE.data());
+			return NAME_TURTLE.data();
 		case semweb::N_TRIPLES:
-			return raptor_new_parser(world_, NAME_NTRIPLES.data());
+			return NAME_NTRIPLES.data();
 		case semweb::RDFA:
-			return raptor_new_parser(world_, NAME_RDFA.data());
+			return NAME_RDFA.data();
 		case semweb::TRIG:
-			return raptor_new_parser(world_, NAME_TRIG.data());
+			return NAME_TRIG.data();
 		case semweb::GRDDL:
-			return raptor_new_parser(world_, NAME_GRDDL.data());
+			return NAME_GRDDL.data();
 	}
 	return nullptr;
+}
+
+raptor_parser *OntologyParser::createParser(knowrob::semweb::TripleFormat format) {
+	return raptor_new_parser(world_, mimeType(format));
 }
 
 void OntologyParser::applyFrame(StatementData *triple) {
@@ -157,11 +157,9 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	if (!currentBatch_) {
 		if(origin_.empty()) {
 			KB_WARN("No origin set for ontology parser, falling back to \"user\" origin.");
-			currentBatch_ = std::make_shared<Batch>(
-				callback, batchSize_,
-				semweb::ImportHierarchy::ORIGIN_USER);
+			currentBatch_ = std::make_shared<RaptorContainer>(batchSize_, semweb::ImportHierarchy::ORIGIN_USER);
 		} else {
-			currentBatch_ = std::make_shared<Batch>(callback, batchSize_, origin_);
+			currentBatch_ = std::make_shared<RaptorContainer>(batchSize_, origin_);
 		}
 	}
 	// add to batch, map into knowrob data structures
@@ -177,11 +175,11 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	}
 	// flush if batch is full
 	if (currentBatch_->size() >= batchSize_) {
-		flush();
+		flush(callback);
 	}
 }
 
-void OntologyParser::flush() {
+void OntologyParser::flush(const semweb::TripleHandler &callback) {
 	if (!currentBatch_) return;
 	// reduce vector size to actual number of elements
 	currentBatch_->shrink();
@@ -190,8 +188,9 @@ void OntologyParser::flush() {
 	// lifts the reference.
 	// TODO: this might block the parser, but we could continue already filling the next batch
 	//       on the other hand, if the callback is executed by a worker, maybe too many batches will be queued.
+	//       but we could have a max num of batches in the queue, and use join to wait for the a worker to be done if too many.
 	//KB_DEBUG("flushing {} triples with origin {}", currentBatch_->size(), currentBatch_->origin());
-	currentBatch_->callback(currentBatch_);
+	callback(currentBatch_);
 	currentBatch_ = nullptr;
 }
 
@@ -206,110 +205,11 @@ bool OntologyParser::run(const semweb::TripleHandler &callback) {
 			raptor_parser_get_world(parser_),
 			blankPrefix_.data(), 1);
 
-	return (doParse_() == 0);
-}
-
-RDFType OntologyParser::getLiteralTypeFromURI(const char *typeURI) {
-	if (!typeURI || xsd::isStringType(typeURI))
-		return RDF_STRING_LITERAL;
-	else if (xsd::isIntegerType(typeURI))
-		return RDF_INT64_LITERAL;
-	else if (xsd::isDoubleType(typeURI))
-		return RDF_DOUBLE_LITERAL;
-	else if (xsd::isBooleanType(typeURI))
-		return RDF_BOOLEAN_LITERAL;
-	else {
-		KB_WARN("Unknown data type {} treated as string.", typeURI);
-		return RDF_STRING_LITERAL;
-	}
-}
-
-
-OntologyParser::Batch::Batch(semweb::TripleHandler callback, uint32_t size, std::string_view origin)
-		: callback(std::move(callback)),
-		  raptorData_(size),
-		  mappedData_(size),
-		  origin_(origin),
-		  actualSize_(0) {
-}
-
-OntologyParser::Batch::~Batch() {
-	for (uint32_t i = 0; i < actualSize_; i++) {
-		raptor_free_statement(raptorData_[i]);
-	}
-}
-
-StatementData *OntologyParser::Batch::add(raptor_statement *statement) {
-	// validate input from raptor
-	if (!statement->subject || !statement->predicate || !statement->object) {
-		KB_WARN("received malformed data from raptor, skipping statement.");
-		return nullptr;
-	}
-
-	auto c_statement = raptor_statement_copy(statement);
-	raptorData_[actualSize_] = c_statement;
-
-	// map statement to KnowRob datatype
-	auto triple = &mappedData_[actualSize_];
-	triple->graph = origin_.data();
-
-	// read predicate
-	triple->predicate = (const char *) raptor_uri_as_string(statement->predicate->value.uri);
-	// read subject
-	if (statement->subject->type == RAPTOR_TERM_TYPE_BLANK)
-		triple->subject = (const char *) statement->subject->value.blank.string;
-	else
-		triple->subject = (const char *) raptor_uri_as_string(statement->subject->value.uri);
-
-	// read object
-	if (statement->object->type == RAPTOR_TERM_TYPE_BLANK) {
-		triple->object = (const char *) statement->object->value.blank.string;
-		triple->objectType = RDF_RESOURCE;
-	} else if (statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
-		triple->object = (const char *) statement->object->value.literal.string;
-		// parse literal type
-		if (statement->object->value.literal.datatype) {
-			triple->objectType = getLiteralTypeFromURI((const char *)
-															   raptor_uri_as_string(
-																	   statement->object->value.literal.datatype));
-		} else {
-			triple->objectType = RDF_STRING_LITERAL;
-		}
-		switch (triple->objectType) {
-			case RDF_RESOURCE:
-			case RDF_STRING_LITERAL:
-				break;
-			case RDF_DOUBLE_LITERAL:
-				triple->objectDouble = strtod(triple->object, nullptr);
-				break;
-			case RDF_INT64_LITERAL:
-				triple->objectInteger = strtol(triple->object, nullptr, 10);
-				break;
-			case RDF_BOOLEAN_LITERAL: {
-				bool objectValue;
-				std::istringstream(triple->object) >> objectValue;
-				triple->objectInteger = objectValue;
-				break;
-			}
-		}
+	auto exit_status = doParse_();
+	if(exit_status == 0) {
+		flush(callback);
 	} else {
-		triple->object = (const char *) raptor_uri_as_string(statement->object->value.uri);
-		triple->objectType = RDF_RESOURCE;
+		currentBatch_ = nullptr;
 	}
-
-	actualSize_ += 1;
-	return triple;
-}
-
-void OntologyParser::Batch::rollbackLast()
-{
-	if (actualSize_ > 0) {
-		actualSize_ -= 1;
-		raptor_free_statement(raptorData_[actualSize_]);
-	}
-}
-
-void OntologyParser::Batch::shrink() {
-	mappedData_.resize(actualSize_);
-	raptorData_.resize(actualSize_);
+	return (exit_status == 0);
 }

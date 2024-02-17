@@ -39,6 +39,9 @@ link_directories(${SWIPL_LIBRARY_DIRS})
 pkg_check_modules(RAPTOR REQUIRED raptor2)
 include_directories(include ${RAPTOR_INCLUDE_DIRS})
 
+pkg_check_modules(REDLAND REQUIRED redland)
+include_directories(include ${REDLAND_INCLUDE_DIRS})
+
 # install additional Prolog code
 # FIXME: is added by rosprolog
 #install_prolog_pack(list_util
@@ -284,11 +287,14 @@ add_library(knowrob SHARED
         src/db/DataService.cpp
         src/reasoner/prolog/semweb.cpp
         src/reasoner/prolog/PrologBackend.cpp
-        src/reasoner/prolog/PrologTerm.cpp)
+        src/reasoner/prolog/PrologTerm.cpp
+        src/db/SPARQLService.cpp
+        src/db/RaptorContainer.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
 		${RAPTOR_LIBRARIES}
+		${REDLAND_LIBRARIES}
 		${Python_LIBRARIES}
 		spdlog::spdlog
 		${GTEST_LIBRARIES})

@@ -13,6 +13,7 @@
 #include "knowrob/semweb/TripleFormat.h"
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/semweb/GraphSelector.h"
+#include "RaptorContainer.h"
 
 namespace knowrob {
 	/**
@@ -72,12 +73,14 @@ namespace knowrob {
 		/**
 		 * Flush the parser, pushing all remaining triples to the callback.
 		 */
-		void flush();
+		void flush(const semweb::TripleHandler &callback);
 
 		/**
 		 * @return the list of directly imported ontologies.
 		 */
 		auto &imports() const { return imports_; }
+
+		static const char* mimeType(knowrob::semweb::TripleFormat format);
 
 	protected:
 		raptor_uri *uri_;
@@ -95,38 +98,9 @@ namespace knowrob {
 
 		static raptor_world *createWorld();
 
-		static RDFType getLiteralTypeFromURI(const char *typeURI);
-
 		void applyFrame(StatementData *triple);
 
-		class Batch : public semweb::TripleContainer {
-		public:
-			Batch(semweb::TripleHandler callback, uint32_t size, std::string_view origin);
-
-			~Batch();
-
-			semweb::TripleHandler callback;
-
-			StatementData *add(raptor_statement *statement);
-
-			void rollbackLast();
-
-			void shrink();
-
-			auto size() const { return actualSize_; }
-
-			auto origin() const { return origin_; }
-
-			const std::vector<StatementData> &asVector() const override { return mappedData_; }
-
-		protected:
-			std::vector<raptor_statement *> raptorData_;
-			std::vector<StatementData> mappedData_;
-			uint32_t actualSize_;
-			std::string_view origin_;
-		};
-
-		std::shared_ptr<Batch> currentBatch_;
+		std::shared_ptr<RaptorContainer> currentBatch_;
 		uint32_t batchSize_;
 	};
 
